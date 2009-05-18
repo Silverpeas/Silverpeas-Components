@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>Hyperlink War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>HyperlinkRequestRouter</servlet-name>
+    <display-name>HyperlinkRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.hyperlink.servlets.HyperlinkRequestRouter</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>HyperlinkRequestRouter</servlet-name>
+    <url-pattern>/Rhyperlink/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+
