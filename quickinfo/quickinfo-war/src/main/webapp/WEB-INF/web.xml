@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>QuickInfo War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>QuickInfoRequestRouter</servlet-name>
+    <display-name>QuickInfoRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.quickinfo.servlets.QuickInfoRequestRouter</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>QuickInfoRequestRouter</servlet-name>
+    <url-pattern>/Rquickinfo/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+

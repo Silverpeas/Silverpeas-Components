@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+   <name>quickinfo</name>
+   <label>Actualités - QuickInfo</label>
+   <description>Permet de diffuser des brèves d'information. Les informations sont classées sur le Plan de Classement.</description>
+   <suite>04 Gestion de contenu</suite>
+   <visible>@ComponentVisibleQuickInfo@</visible>
+   <portlet>yes</portlet>
+   <instanceClassName>com.stratelia.webactiv.quickinfo.QuickInfoInstanciator</instanceClassName>
+   <tableList>
+     <tabletpl>publication</tabletpl>
+   </tableList>
+  <Profiles>
+   <Profile name="admin">Gestionnaire</Profile>
+   <Profile name="publisher">Publieur</Profile>
+   <Profile name="user">Lecteur</Profile>
+  </Profiles>
+  <Parameters>
+         <Parameter>
+            <ParameterName>usePdc</ParameterName>
+            <ParameterLabel>Classification PDC</ParameterLabel>
+            <ParameterValue>no</ParameterValue>
+            <ParameterMandatory>Y</ParameterMandatory>
+            <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterHelp>
+		<ParameterHelpFr>Les brèves créées au sein de cette instance pourront être classées sur le Plan de Classement</ParameterHelpFr>
+		<ParameterHelpEn></ParameterHelpEn>
+	    </ParameterHelp>
+        </Parameter>
+  </Parameters>
+</WAComponent>

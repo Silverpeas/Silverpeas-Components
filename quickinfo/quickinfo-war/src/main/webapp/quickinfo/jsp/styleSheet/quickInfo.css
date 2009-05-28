@@ -1,0 +1,47 @@
+
+<!--
+
+.a { font-size: 10px; font-weight: bold; color: #FFFFFF; text-decoration: none}
+.txttitrecol { font-size: 10px; font-weight: bold; color: #FFFFFF}
+.txtlibform { font-size: 8pt; font-weight: bold; color: #6699FF}
+.txtlist { font-size: 8pt; color: #000000 }
+
+.intfdcolor { background-color: #F0A74F}
+.intfdcolor2 { background-color: #FFCC99} 
+.intfdcolor3 { background-color: #FFFFCC}
+.intfdcolor4 { background-color: #FFFFFF }
+.intfdcolor5 { background-color: #FCF38B }
+.intfdcolor6 { background-color: #FFFFCC }
+
+.ArrayCell { font-size: 8pt; color: #000000} 
+.ArrayCellHot { font-size: 8pt; font-weight: bold; color: #FF0000} 
+.ArrayColumn { font-size: 10px; font-weight: bold; color: #000000; background-color: #F0A74F }
+.ArrayNavigation { font-size: 10px; font-weight: bold; color: #000000; background-color: #DEDEDE ;text-decoration: none }
+
+.domainName          { font-size: 13pt; font-weight: bold; color: #000000 }
+.componentName       { font-size: 13pt; font-weight: bold; color: #000000 }
+.componentNav        { font-size: 12px; font-weight: bold; color: #000000 }
+
+  /*
+    Style pour ButtonWA & ButtonWA2
+    */
+    .buttonStyle        { background-color : #F0A74F; text-decoration: none; font-weight : bold; color : #000000}
+    
+    /*
+    Style pour ButtonWA2
+    */
+    .buttonColorLight   { background-color : #FCC78B}
+    .buttonColorDark    { background-color : #E8810C}
+    
+    /*
+    Style pour TabbedPaneWA & TabbedPaneWA2
+    */
+    .ongletOn           { background-color: #F0A74F; font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none} 
+    .ongletOff          { background-color: #E8810C; font-size: 8pt; font-weight: bold; color: #FFFFFF; text-decoration: none}
+    .ongletColorLight   { background-color: #FCC78B}
+    .ongletColorDark    { background-color: #CF6F02}
+
+
+.txtptpetitblanc {  font-size: 10px; font-weight: bold; color: #FFFFFF}
+
+-->
