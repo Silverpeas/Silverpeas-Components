@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>ConnecteurJDBC War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>ConnecteurJDBCRequestRouter</servlet-name>
+    <display-name>ConnecteurJDBCRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.silverpeas.connecteurJDBC.control.ConnecteurJDBCRequestRouter</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ConnecteurJDBCRequestRouter</servlet-name>
+    <url-pattern>/RconnecteurJDBC/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+

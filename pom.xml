@@ -52,6 +52,7 @@
     <module>hyperlink</module>
     <module>quickinfo</module>
     <module>quizz</module>
+    <module>jdbc-connector</module>
   </modules>
   
 </project>
