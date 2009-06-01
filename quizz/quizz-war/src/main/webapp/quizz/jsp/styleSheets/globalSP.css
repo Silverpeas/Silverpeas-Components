@@ -1,0 +1,94 @@
+<!--
+
+/*************************************
+Redefinition des style de balises HTML
+*************************************/
+TD                                { font-family: "Verdana", "Arial", "Helvetica", sans-serif; font-size: 10px}
+A                                 { font-family: "Verdana", "Arial", "Helvetica", sans-serif; font-size: 10px; text-decoration: underline; color: #000000}
+INPUT                             { background-color: #FEEBC2; font-family: "Verdana", "Arial", "Helvetica", sans-serif; font-size: 10px; color: #000000}
+SELECT                            { background-color: #FFF1D1; font-family: "Verdana", "Arial", "Helvetica", sans-serif; font-size: 10px; color: #000000}
+TEXTAREA                          { background-color: #FFF1D1; font-family: "Verdana", "Arial", "Helvetica", sans-serif; font-size: 10px; color: #000000}
+
+TABLE.frame                       { background-color: #00009C}
+TR.frame                          { background-color: #00009C}
+TD.frame                          { background-color: #00009C; color: #FFFFFF; text-align: left;  font-style: normal;  font-weight: bold}
+	
+TABLE.title                       { background-color: #00009C}
+TR.title                          { background-color: #00009C}
+TD.title                          { background-color: #00009C; font-style: normal; font-size: 10pt; font-weight: bold; color: #FFFFFF}
+
+TD.sommaireTitle                  { font-style: normal; font-size: 20pt; font-weight: bold}
+TD.sommaireDescription            { font-style: normal; color: #00009C; font-size: 12pt}
+TD.sommaire                       { font-style: normal; font-size: 12pt; font-weight: bold}	
+
+/* Correction appliqué à Netscape */
+.selectNS                         {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000000}
+
+
+/***************************************
+Definition des class de style Silverpeas
+***************************************/
+.peer                             { color: #00009C}
+.odd 							  { color: #000000}
+.couleurCadreExterieur            { background-color : #A9D943}	
+.couleurCadreInterieur            { background-color : #C0E86B}
+.couleurFondCadre                 { background-color : #FFFFFF}
+.couleurFondOperation             { }
+
+.titremodule                      { font-size: 13pt; font-weight: bold; color: #000000 }
+.txtnote                          { font-size: 10px; color: #000000 }
+.txttitrecol                      { font-size: 10px; color: #000000 ; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold }
+.txtnav                           { font-size: 10pt; font-weight: bold; color: #000000 }
+.txtlibform                       { font-size: 8pt; font-weight: bold; color: #0099CC}
+
+.intfdcolor                       { background-color: #CCCCCC}
+.intfdcolor2                      { background-color: #FFF1D1} 
+.intfdcolor3                      { background-color: #FFD675}
+.intfdcolor4                      { background-color: #FFFFFF}
+.intfdcolor5                      { background-color: #FCF38B}
+.intfdcolor6                      { background-color: #FFFFCC}
+
+
+/*********************************
+Style Utilise par le ViewGenerator
+*********************************/
+
+/* OBJETS : ButtonWA - ButtonWA2 */
+.buttonStyle                      { background-color: #FEEBC2; text-decoration: none; font-weight: bold; color: #000000}
+.buttonColorLight                 { background-color: #DEDEDE}
+.buttonColorDark                  { background-color: #999999}
+
+ /* OBJETS : BrowseBarWA - BrowseBarWA2 */
+.componentName                    { font-size: 13pt; font-weight: bold}
+.componentNav                     { font-size: 10px}	
+.domainName                       { font-size: 13pt; font-weight: bold}
+
+  /* OBJETS : TabbedPaneWA - TabbedPaneWA2 */
+.ongletOn                         { background-color: #CCCCCC; font-size: 8pt; font-weight: bold; color: #006633; text-decoration: none}
+.ongletOff                        { background-color: #999999; font-size: 8pt; font-weight: bold; color: #CCCCCC; text-decoration: none}
+.ongletDark                       { background-color: #666666}
+.ongletColorLight                 { background-color: #DEDEDE}
+.ongletColorDark                  { background-color: #7D7D7D}
+
+  /* OBJETS : TabbedPaneWA - TabbedPaneWA3 */
+.couleurFenetre                   { background-color: #FFEBC2}
+.couleurCadre                     { background-color: #DEDEDE}
+.titreFenetre                     { font-size: 13pt; font-weight: bold; color: #666666}
+.legalInformation                 { color: #999999}
+.titreFenetre2                    { font-size: 13pt; font-weight: bold; color: #FFFFFF}
+.sousTitreFenetre                 { font-size: 10pt; font-weight: bold; color: #666666}
+.styleOngletOn                    { background-color: #DEDEDE; font-size: 10px; font-weight: bold; color: #000000; text-decoration: none}
+.styleOngletOff                   { background-color: #5A5A5A; font-size: 10px; color: #FFFFFF; text-decoration: none}
+
+ /* OBJETS : ArrayPaneWA */
+.ArrayCell                        { font-size: 8pt; color: #000000; background-color: #FFFFFF} 
+.ArrayColumn                      { background-color: #DEDEDE; font-size: 10px; font-weight: bold; color: #000000}
+.ArrayNavigation                  { background-color: #DEDEDE; font-size: 10px; font-weight: bold; color: #000000; text-decoration: none}
+.textePetitRouge { font-size: 10px; color: #FF0000}
+
+
+
+
+
+
+-->

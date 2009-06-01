@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+  <name>quizz</name>
+  <label>Quiz</label>
+  <description>Permet d'évaluer la compréhension ou niveau de connaissance acquis d'un sujet. L'utilisateur peut se faire aider d'indices. Un scoring évalue sa performance.</description>
+  <suite>02 Gestion Collaborative</suite>
+  <visible>@ComponentVisibleQuizz@</visible>
+   <portlet>yes</portlet>
+  <instanceClassName>com.stratelia.webactiv.quizz.QuizzInstanciator</instanceClassName>
+  <tableList>
+    <tabletpl>Quizz</tabletpl>
+    <tabletpl>Question</tabletpl>
+    <tabletpl>Answer</tabletpl>
+    <tabletpl>QuestionResult</tabletpl>
+    <tabletpl>QuizzComment</tabletpl>
+  </tableList>
+ <Profiles>
+    <Profile name="admin">Gestionnaire</Profile>
+    <Profile name="publisher">Publieur</Profile>
+    <Profile name="user">Lecteur</Profile>
+  </Profiles>
+  <Parameters>
+         <Parameter>
+            <ParameterName>usePdc</ParameterName>
+            <ParameterLabel>Classification PDC</ParameterLabel>
+            <ParameterValue>no</ParameterValue>
+            <ParameterMandatory>Y</ParameterMandatory>
+            <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterHelp>
+		<ParameterHelpFr>Les quizz créés au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
+		<ParameterHelpEn></ParameterHelpEn>
+	    </ParameterHelp>
+        </Parameter>
+  </Parameters>
+</WAComponent>

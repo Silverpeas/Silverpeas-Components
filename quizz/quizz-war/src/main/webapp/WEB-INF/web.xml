@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>Quizz War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>QuizzRequestRouter</servlet-name>
+    <display-name>QuizzRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.quizz.servlets.QuizzRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>GoToQuizz</servlet-name>
+    <display-name>GoToQuizz</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.quizz.servlets.GoToQuizz</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>QuizzRequestRouter</servlet-name>
+    <url-pattern>/Rquizz/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToQuizz</servlet-name>
+    <url-pattern>/Survey/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+
