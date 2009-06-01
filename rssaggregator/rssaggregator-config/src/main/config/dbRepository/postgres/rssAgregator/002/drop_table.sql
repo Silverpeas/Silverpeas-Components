@@ -1,0 +1,1 @@
+drop table SC_Rss_Channels;

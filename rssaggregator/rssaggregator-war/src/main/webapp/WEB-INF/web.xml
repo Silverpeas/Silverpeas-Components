@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>rssAgregator War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>RssAgregatorRequestRouter</servlet-name>
+    <display-name>RssAgregatorRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.rssAgregator.servlets.RssAgregatorRequestRouter</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>RssAgregatorRequestRouter</servlet-name>
+    <url-pattern>/RrssAgregator/*</url-pattern>
+  </servlet-mapping>
+</web-app>

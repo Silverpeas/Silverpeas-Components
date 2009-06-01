@@ -53,6 +53,7 @@
     <module>quickinfo</module>
     <module>quizz</module>
     <module>jdbc-connector</module>
+    <module>rssaggregator</module>
   </modules>
   
 </project>
