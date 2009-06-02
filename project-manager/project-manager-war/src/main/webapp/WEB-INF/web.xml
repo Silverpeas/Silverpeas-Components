@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>ProjectManager War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>ProjectManagerRequestRouter</servlet-name>
+    <display-name>ProjectManagerRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.projectManager.servlets.ProjectManagerRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>AjaxProjectManagerServlet</servlet-name>
+    <display-name>AjaxProjectManagerServlet</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.projectManager.servlets.AjaxProjectManagerServlet</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>ProjectManagerRequestRouter</servlet-name>
+    <url-pattern>/RprojectManager/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AjaxProjectManagerServlet</servlet-name>
+    <url-pattern>/RAjaxProjectManagerServlet/*</url-pattern>
+  </servlet-mapping>
+  
+</web-app>

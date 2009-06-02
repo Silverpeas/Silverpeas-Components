@@ -55,6 +55,7 @@
     <module>jdbc-connector</module>
     <module>rssaggregator</module>
     <module>mydb</module>
+    <module>project-manager</module>
   </modules>
   
 </project>
