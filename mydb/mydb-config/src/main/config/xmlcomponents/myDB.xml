@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+  <name>myDB</name>
+  <label>My DB</label>
+  <description>Permet de consulter, modifier ou supprimer le contenu de données en base et de créer de nouvelles tables.</description>
+  <suite>06 Connecteurs</suite>
+  <visible>@ComponentVisiblemyDB@</visible>
+  <portlet>no</portlet>
+  <instanceClassName>com.silverpeas.mydb.MyDBInstanciator</instanceClassName>
+ <Profiles>
+    <Profile name="admin">Gestionnaire</Profile>
+    <Profile name="publisher">Publieur</Profile>
+    <Profile name="user">Lecteur</Profile>
+  </Profiles>
+</WAComponent>

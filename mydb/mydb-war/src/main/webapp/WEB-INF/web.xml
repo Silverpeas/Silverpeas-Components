@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>myDB War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>MyDBRequestRouter</servlet-name>
+    <display-name>MyDBRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.mydb.servlets.MyDBRequestRouter</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>MyDBRequestRouter</servlet-name>
+    <url-pattern>/RmyDB/*</url-pattern>
+  </servlet-mapping>
+</web-app>

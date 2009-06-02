@@ -1,0 +1,1 @@
+ALTER TABLE SC_MyDB_ConnectInfo DROP CONSTRAINT PK_MyDB_ConnectInfo;

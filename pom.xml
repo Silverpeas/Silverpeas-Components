@@ -54,6 +54,7 @@
     <module>quizz</module>
     <module>jdbc-connector</module>
     <module>rssaggregator</module>
+    <module>mydb</module>
   </modules>
   
 </project>
