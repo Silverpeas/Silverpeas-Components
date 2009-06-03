@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>webPages War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>WebPagesRequestRouter</servlet-name>
+    <display-name>WebPagesRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.webpages.servlets.WebPagesRequestRouter</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>WebPagesRequestRouter</servlet-name>
+    <url-pattern>/RwebPages/*</url-pattern>
+  </servlet-mapping>
+</web-app>
