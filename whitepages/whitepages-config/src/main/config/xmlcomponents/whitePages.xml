@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+	<name>whitePages</name>
+	<label>Annuaire d'experts - Annuaire</label>
+	<description>
+		Permet de créer un annuaire de compétences. A chaque expert est
+		associé un formulaire décrivant ses domaines d'expertise.
+		L'indexation du CV sur le plan de classement permet de trouver
+		rapidement une compétence.
+	</description>
+	<suite>03 Gestion de la connaissance</suite>
+	<visible>@ComponentVisibleWhitePages@</visible>
+	<portlet>yes</portlet>
+	<instanceClassName>com.silverpeas.whitePages.WhitePagesInstanciator</instanceClassName>
+	<Profiles>
+		<Profile name="admin">Gestionnaire</Profile>
+		<Profile name="user">Lecteur</Profile>
+	</Profiles>
+	<Parameters>
+		<Parameter>
+			<ParameterName>cardTemplate</ParameterName>
+			<ParameterLabel>Modèle de fiche</ParameterLabel>
+			<ParameterValue>whitePages/annuaire.xml</ParameterValue>
+			<ParameterMandatory>Y</ParameterMandatory>
+			<ParameterUpdatable>OnCreationOnly</ParameterUpdatable>
+			<ParameterHelp>
+				<ParameterHelpFr>
+					Modèle xml spécifique permettant de saisir des
+					informations sur l'expert
+				</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+			<ParameterOrder>1</ParameterOrder>
+		</Parameter>
+		<Parameter>
+			<ParameterName>userTemplate</ParameterName>
+			<ParameterLabel>Modèle d'identité</ParameterLabel>
+			<ParameterValue>whitePages/annuaire.html</ParameterValue>
+			<ParameterMandatory>Y</ParameterMandatory>
+			<ParameterHelp>
+				<ParameterHelpFr>
+					Fichier html permettant de présenter les
+					informations de l'expert
+				</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+			<ParameterOrder>3</ParameterOrder>
+		</Parameter>
+		<Parameter>
+			<ParameterName>isEmailHidden</ParameterName>
+			<ParameterLabel>Masquage de l'email</ParameterLabel>
+			<ParameterValue>no</ParameterValue>
+			<ParameterMandatory>Y</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterOrder>2</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>
+					Active le masquage des mails dans l'IHM. Les
+					notifications envoyées à partir de ce composant
+					auront un expéditeur générique.
+				</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+		<Parameter>
+			<ParameterName>isForcedCardFilling</ParameterName>
+			<ParameterLabel>Forcer le remplissage de la fiche</ParameterLabel>
+			<ParameterValue>no</ParameterValue>
+			<ParameterMandatory>Y</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterOrder>4</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>
+					Si ce paramètre est activé, l'utilisateur n'aura accès qu'à l'écran de création de sa fiche.
+					Le reste du portail lui sera innaccessible tant qu'il n'aura pas rempli sa fiche.
+				</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+		<Parameter>
+			<ParameterName>isFicheVisible</ParameterName>
+			<ParameterLabel>Masquage de l'onglet fiche</ParameterLabel>
+			<ParameterValue>no</ParameterValue>
+			<ParameterMandatory>Y</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterOrder>5</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>
+					Active le masquage de l'onglet fiche pour les lecteurs.
+				</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+	</Parameters>
+</WAComponent>

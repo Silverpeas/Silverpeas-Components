@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="Cp1252"?>
+<recordTemplate>
+
+	<fieldTemplate>
+		<fieldName>texte_input</fieldName>
+		<typeName>text</typeName>
+		<displayerName>simpletext</displayerName>
+		<isMandatory>true</isMandatory>
+		<isReadOnly>false</isReadOnly>
+		<isDisabled>false</isDisabled>
+		<isHidden>false</isHidden>
+		<label>
+			<labelName>type texte dans input</labelName>
+			<language>fr</language>
+		</label>
+	</fieldTemplate>
+
+	<fieldTemplate>
+		<fieldName>texte_area</fieldName>
+		<typeName>text</typeName>
+		<displayerName>simpletext</displayerName>
+		<isMandatory>true</isMandatory>
+		<isReadOnly>false</isReadOnly>
+		<isDisabled>false</isDisabled>
+		<isHidden>false</isHidden>
+		<label>
+			<labelName>Affichage dans textarea</labelName>
+			<language>fr</language>
+		</label>
+	</fieldTemplate>
+
+	<fieldTemplate>
+		<fieldName>What_you_see_is</fieldName>
+		<typeName>text</typeName>
+		<displayerName>wysiwyg</displayerName>
+		<isMandatory>false</isMandatory>
+		<isReadOnly>true</isReadOnly>
+		<isDisabled>true</isDisabled>
+		<isHidden>false</isHidden>
+		<label>
+			<labelName>Affichage editeur WYSIWYG</labelName>
+			<language>fr</language>
+		</label>
+	</fieldTemplate>
+
+	<fieldTemplate>
+		<fieldName>listbox</fieldName>
+		<typeName>text</typeName>
+		<displayerName>listbox</displayerName>
+		<isMandatory>false</isMandatory>
+		<isReadOnly>true</isReadOnly>
+		<isDisabled>true</isDisabled>
+		<isHidden>false</isHidden>
+		<label>
+			<labelName>Une liste de choix</labelName>
+			<language>fr</language>
+		</label>
+		<parameter>
+			<name>keys</name>
+			<value>1##2##3</value>
+		</parameter>
+		<parameter>
+			<name>values</name>
+			<value>Choix 1##Choix 2##Choix 3</value>
+		</parameter>
+	</fieldTemplate>
+
+	<fieldTemplate>
+		<fieldName>adresse_web</fieldName>
+		<typeName>text</typeName>
+		<displayerName>url</displayerName>
+		<isMandatory>false</isMandatory>
+		<isReadOnly>true</isReadOnly>
+		<isDisabled>true</isDisabled>
+		<isHidden>false</isHidden>
+			<label>
+			<labelName>type url dans input</labelName>
+			<language>fr</language>
+		</label>
+	</fieldTemplate>
+
+	<fieldTemplate>
+		<fieldName>date_input</fieldName>
+		<typeName>date</typeName>
+		<displayerName>simpletext</displayerName>
+		<isMandatory>false</isMandatory>
+		<isReadOnly>false</isReadOnly>
+		<isDisabled>false</isDisabled>
+		<isHidden>false</isHidden>
+		<label>
+			<labelName>date dans input</labelName>
+			<language>fr</language>
+		</label>
+	</fieldTemplate>
+	
+</recordTemplate>

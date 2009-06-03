@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="Cp1252"?>
+<recordTemplate>
+	<fieldTemplate>
+		<fieldName>texte_input</fieldName>
+		<typeName>text</typeName>
+		<displayerName>text</displayerName>
+		<isMandatory>true</isMandatory>
+		<isReadOnly>false</isReadOnly>
+		<isDisabled>false</isDisabled>
+		<isHidden>false</isHidden>
+	</fieldTemplate>
+
+	<fieldTemplate>
+		<fieldName>texte_area</fieldName>
+		<typeName>text</typeName>
+		<displayerName>textarea</displayerName>
+		<isMandatory>true</isMandatory>
+		<isReadOnly>false</isReadOnly>
+		<isDisabled>false</isDisabled>
+		<isHidden>false</isHidden>
+	</fieldTemplate>
+
+	<fieldTemplate>
+		<fieldName>What_you_see_is</fieldName>
+		<typeName>text</typeName>
+		<displayerName>wysiwyg</displayerName>
+		<isMandatory>false</isMandatory>
+		<isReadOnly>false</isReadOnly>
+		<isDisabled>false</isDisabled>
+		<isHidden>false</isHidden>
+	</fieldTemplate>
+
+	<fieldTemplate>
+		<fieldName>listbox</fieldName>
+		<typeName>text</typeName>
+		<displayerName>listbox</displayerName>
+		<isMandatory>true</isMandatory>
+		<isReadOnly>false</isReadOnly>
+		<isDisabled>false</isDisabled>
+		<isHidden>false</isHidden>
+		<parameter>
+			<name>keys</name>
+			<value>1##2##3</value>
+		</parameter>
+		<parameter>
+			<name>values</name>
+			<value>Choix 1##Choix 2##Choix 3</value>
+		</parameter>
+	</fieldTemplate>
+
+	<fieldTemplate>
+		<fieldName>adresse_web</fieldName>
+		<typeName>text</typeName>
+		<displayerName>url</displayerName>
+		<isMandatory>false</isMandatory>
+		<isReadOnly>false</isReadOnly>
+		<isDisabled>false</isDisabled>
+		<isHidden>false</isHidden>
+	</fieldTemplate>
+
+	<fieldTemplate>
+		<fieldName>date_input</fieldName>
+		<typeName>date</typeName>
+		<displayerName>date</displayerName>
+		<isMandatory>false</isMandatory>
+		<isReadOnly>false</isReadOnly>
+		<isDisabled>false</isDisabled>
+		<isHidden>false</isHidden>
+	</fieldTemplate>
+
+</recordTemplate>

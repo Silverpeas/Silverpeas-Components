@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+	<display-name>WhitePages War</display-name>
+	<description>no description</description>
+	<filter>
+		<filter-name>whitePagesComponentRequestRouterFilter</filter-name>
+		<filter-class>com.silverpeas.whitePages.filters.ComponentRequestRouterFilter</filter-class>
+	</filter>
+	<filter>
+		<filter-name>whitePagesLoginFilter</filter-name>
+		<filter-class>com.silverpeas.whitePages.filters.LoginFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>whitePagesComponentRequestRouterFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>whitePagesLoginFilter</filter-name>	
+		<url-pattern>/admin/jsp/MainFrameSilverpeasV4.jsp</url-pattern>
+	</filter-mapping>
+	<filter-mapping>
+		<filter-name>whitePagesLoginFilter</filter-name>	
+		<url-pattern>/admin/jsp/MainFrameSilverpeasV5.jsp</url-pattern>
+	</filter-mapping>
+	<servlet>
+		<servlet-name>WhitePagesRequestRouter</servlet-name>
+		<display-name>WhitePagesRequestRouter</display-name>
+		<description>no description</description>
+		<servlet-class>com.silverpeas.whitePages.servlets.WhitePagesRequestRouter</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>WhitePagesRequestRouter</servlet-name>
+		<url-pattern>/RwhitePagesPDC/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>WhitePagesRequestRouter</servlet-name>
+		<url-pattern>/RwhitePages/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>WhitePagesRequestRouter</servlet-name>
+		<url-pattern>/RwhitePagesPeas/*</url-pattern>
+	</servlet-mapping>
+</web-app>
+

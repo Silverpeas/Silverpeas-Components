@@ -57,6 +57,8 @@
     <module>mydb</module>
     <module>project-manager</module>
     <module>websites</module>
+    <module>question-reply</module>
+    <module>whitepages</module>
   </modules>
   
 </project>

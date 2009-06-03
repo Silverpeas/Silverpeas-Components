@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<publicationTemplate>
+	<dataFileName>whitePages/breedge/data.xml</dataFileName>
+	<viewFileName>whitePages/breedge/view.xml</viewFileName>
+	<updateFileName>whitePages/breedge/update.xml</updateFileName>
+	<template>
+		<name>userForm</name>
+		<fileName>whitePages/breedge/user.xml</fileName>
+		<typeName>xml</typeName>
+	</template>
+</publicationTemplate>

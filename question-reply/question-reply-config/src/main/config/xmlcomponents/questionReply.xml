@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+  <name>questionReply</name>
+  <label>Questions/Réponses - Questions aux experts</label>
+  <description>Permet de gérer la base de connaissance des questions posées par les utilisateurs vers les experts, localiser automatiquement l'expert apte à répondre à une question et gérer la distribution de la réponse vers les utilisateurs.</description>
+  <suite>03 Gestion de la connaissance</suite>
+   <portlet>yes</portlet>
+  <visible>@ComponentVisibleQuestionReply@</visible>
+  <instanceClassName>com.silverpeas.questionReply.QuestionReplyInstanciator</instanceClassName>
+ <Profiles>
+    <Profile name="admin">Animateur</Profile>
+    <Profile name="publisher">Demandeur</Profile>
+    <Profile name="writer">Expert</Profile>
+    <Profile name="user">Lecteur</Profile>
+  </Profiles>
+  <Parameters>
+  	<Parameter>
+		<ParameterName>privateRepliesUsed</ParameterName>
+		<ParameterLabel>Utilisation des réponses privées</ParameterLabel>
+		<ParameterType>checkbox</ParameterType>
+		<ParameterValue>no</ParameterValue>
+		<ParameterMandatory>Y</ParameterMandatory>
+		<ParameterUpdatable>always</ParameterUpdatable>
+    	<ParameterOrder>1</ParameterOrder>
+		<ParameterHelp>
+         	<ParameterHelpFr>Possibilité de créer des réponses privées</ParameterHelpFr>
+         	<ParameterHelpEn></ParameterHelpEn>
+		</ParameterHelp>
+	</Parameter>
+  </Parameters>
+</WAComponent>

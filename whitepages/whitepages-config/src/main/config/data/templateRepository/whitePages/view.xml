@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<recordTemplate>
+	<fieldTemplate>
+		<fieldName>service</fieldName>
+		<typeName>text</typeName>
+		<displayerName>simpletext</displayerName>
+		<label>
+			<labelName>Service</labelName>
+			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Department</labelName>
+			<language>en</language>
+		</label>
+	</fieldTemplate>
+	<fieldTemplate>
+		<fieldName>poste</fieldName>
+		<typeName>text</typeName>
+		<displayerName>simpletext</displayerName>
+		<label>
+			<labelName>Poste</labelName>
+			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Post</labelName>
+			<language>en</language>
+		</label>
+	</fieldTemplate>
+	<fieldTemplate>
+		<fieldName>competence</fieldName>
+		<typeName>text</typeName>
+		<displayerName>wysiwyg</displayerName>
+		<isReadOnly>true</isReadOnly>
+		<label>
+			<labelName>Compétences</labelName>
+			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Competences</labelName>
+			<language>en</language>
+		</label>
+	</fieldTemplate>
+</recordTemplate>

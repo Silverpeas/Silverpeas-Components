@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="Cp1252"?>
+<publicationTemplate>
+	<dataFileName>whitePages/dataDocTemplate.xml</dataFileName>
+	<viewFileName>whitePages/viewDocTemplate.xml</viewFileName>
+	<updateFileName>whitePages/updateDocTemplate.xml</updateFileName>
+	<template>
+		<name>userForm</name>
+		<fileName>whitePages/userDocTemplate.xml</fileName>
+		<typeName>xml</typeName>
+	</template>
+</publicationTemplate>

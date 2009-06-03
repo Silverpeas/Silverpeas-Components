@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>QuestionReply War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>QuestionReplyRequestRouter</servlet-name>
+    <display-name>QuestionReplyRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.questionReply.servlets.QuestionReplyRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>GoToQuestion</servlet-name>
+    <display-name>GoToQuestion</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.questionReply.servlets.GoToQuestion</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>QuestionReplyRequestRouter</servlet-name>
+    <url-pattern>/RquestionReplyPDC/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>QuestionReplyRequestRouter</servlet-name>
+    <url-pattern>/RquestionReply/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToQuestion</servlet-name>
+    <url-pattern>/Question/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+
