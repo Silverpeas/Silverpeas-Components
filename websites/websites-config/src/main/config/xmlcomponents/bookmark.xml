@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+   <name>bookmark</name>
+   <label>Annuaire de sites - Bookmark</label>
+   <description>Permet de gérer un référentiel de sites Internet remarquables sur un thème donné.</description>
+   <suite>04 Gestion de contenu</suite>
+   <visible>@ComponentVisibleBookmark@</visible>
+   <portlet>yes</portlet>
+   <instanceClassName>com.stratelia.webactiv.webSites.WebSitesInstanciator</instanceClassName>
+   <tableList>
+     <tabletpl>site</tabletpl>
+     <tabletpl>icons</tabletpl>
+     <tabletpl>siteIcons</tabletpl>
+   </tableList>
+  <Profiles>
+    <Profile name="Admin">Gestionnaires</Profile>
+    <Profile name="Publisher">Publieurs</Profile>
+    <Profile name="Reader">Lecteurs</Profile>
+  </Profiles>
+  <Parameters>
+	<Parameter>
+		<ParameterName>usePdc</ParameterName>
+		<ParameterLabel>Classification PDC</ParameterLabel>
+		<ParameterValue>no</ParameterValue>
+		<ParameterMandatory>Y</ParameterMandatory>
+		<ParameterType>checkbox</ParameterType>
+		<ParameterUpdatable>always</ParameterUpdatable>
+		<ParameterHelp>
+			<ParameterHelpFr>Les bookmarks saisis au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
+			<ParameterHelpEn></ParameterHelpEn>
+		</ParameterHelp>
+	</Parameter>
+	<Parameter>
+        <ParameterName>sortedTopics</ParameterName>
+        <ParameterLabel>Thèmes / liens ordonnés</ParameterLabel>
+        <ParameterValue>no</ParameterValue>
+        <ParameterMandatory>Y</ParameterMandatory>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterHelp>
+			<ParameterHelpFr>Ce paramètre permet d'ordonner les thèmes et les liens</ParameterHelpFr>
+			<ParameterHelpEn>This parameter allows to order topics and links</ParameterHelpEn>
+	    </ParameterHelp>
+    </Parameter>
+  </Parameters>
+</WAComponent>

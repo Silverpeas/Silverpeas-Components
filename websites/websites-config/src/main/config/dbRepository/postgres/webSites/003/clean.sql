@@ -1,0 +1,15 @@
+delete from SC_WebSites_Icons where iconsId = 0;
+delete from SC_WebSites_Icons where iconsId = 1;
+delete from SC_WebSites_Icons where iconsId = 2;
+delete from SC_WebSites_Icons where iconsId = 3;
+delete from SC_WebSites_Icons where iconsId = 4;
+delete from SC_WebSites_Icons where iconsId = 5;
+delete from SC_WebSites_Icons where iconsId = 6;
+delete from SC_WebSites_Icons where iconsId = 7;
+delete from SC_WebSites_Icons where iconsId = 8;
+delete from SC_WebSites_Icons where iconsId = 9;
+delete from SC_WebSites_Icons where iconsId = 10;
+delete from SC_WebSites_Icons where iconsId = 11;
+delete from SC_WebSites_Icons where iconsId = 12;
+delete from SC_WebSites_Icons where iconsId = 13;
+delete from SC_WebSites_Icons where iconsId = 14;

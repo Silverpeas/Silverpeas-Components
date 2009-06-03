@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+   <name>webSites</name>
+   <label>Designer de site web - WebSite Designer</label>
+   <description>Idem à l'annuaire de sites. Propose également des services pour créer un site Web, via un éditeur WYSIWYG. Permet enfin de télécharger un site statique.</description>
+   <suite>04 Gestion de contenu</suite>
+   <visible>@ComponentVisibleWebSites@</visible>
+   <portlet>yes</portlet>
+   <instanceClassName>com.stratelia.webactiv.webSites.WebSitesInstanciator</instanceClassName>
+   <tableList>
+     <tabletpl>site</tabletpl>
+   </tableList>
+  <Profiles>
+    <Profile name="Admin">Gestionnaires</Profile>
+    <Profile name="Publisher">Publieurs</Profile>
+    <Profile name="Reader">Lecteurs</Profile>    
+  </Profiles>
+  <Parameters>
+	<Parameter>
+		<ParameterName>usePdc</ParameterName>
+		<ParameterLabel>Classification PDC</ParameterLabel>
+		<ParameterValue>no</ParameterValue>
+		<ParameterMandatory>Y</ParameterMandatory>
+		<ParameterType>checkbox</ParameterType>
+		<ParameterUpdatable>always</ParameterUpdatable>
+		<ParameterHelp>
+			<ParameterHelpFr>Les bookmarks et/ou sites saisis au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
+			<ParameterHelpEn></ParameterHelpEn>
+		</ParameterHelp>
+	</Parameter>
+	<Parameter>
+        <ParameterName>sortedTopics</ParameterName>
+        <ParameterLabel>Thèmes / liens ordonnés</ParameterLabel>
+        <ParameterValue>no</ParameterValue>
+        <ParameterMandatory>Y</ParameterMandatory>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterHelp>
+			<ParameterHelpFr>Ce paramètre permet d'ordonner les thèmes et les liens</ParameterHelpFr>
+			<ParameterHelpEn>This parameter allows to order topics and links</ParameterHelpEn>
+	    </ParameterHelp>
+    </Parameter>
+  </Parameters>
+</WAComponent>

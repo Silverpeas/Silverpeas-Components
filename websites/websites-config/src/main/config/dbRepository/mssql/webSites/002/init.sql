@@ -1,0 +1,15 @@
+insert into SC_WebSites_Icons (iconsId, iconsName, iconsDescription, iconsAddress) VALUES (0, 'Icon0', 'Desc0', '/silverpeas/util/icons/Coeur.gif');
+insert into SC_WebSites_Icons (iconsId, iconsName, iconsDescription, iconsAddress) VALUES (1, 'Icon1', 'Desc1', '/silverpeas/util/icons/Actualite.gif');
+insert into SC_WebSites_Icons (iconsId, iconsName, iconsDescription, iconsAddress) VALUES (2, 'Icon2', 'Desc2', '/silverpeas/util/icons/News.gif');
+insert into SC_WebSites_Icons (iconsId, iconsName, iconsDescription, iconsAddress) VALUES (3, 'Icon3', 'Desc3', '/silverpeas/util/icons/Lien.gif');
+insert into SC_WebSites_Icons (iconsId, iconsName, iconsDescription, iconsAddress) VALUES (4, 'Icon4', 'Desc4', '/silverpeas/util/icons/Mot.gif');
+insert into SC_WebSites_Icons (iconsId, iconsName, iconsDescription, iconsAddress) VALUES (5, 'Icon5', 'Desc5', '/silverpeas/util/icons/Download.gif');
+insert into SC_WebSites_Icons (iconsId, iconsName, iconsDescription, iconsAddress) VALUES (6, 'Icon6', 'Desc6', '/silverpeas/util/icons/Audio.gif');
+insert into SC_WebSites_Icons (iconsId, iconsName, iconsDescription, iconsAddress) VALUES (7, 'Icon7', 'Desc7', '/silverpeas/util/icons/Video.gif');
+insert into SC_WebSites_Icons (iconsId, iconsName, iconsDescription, iconsAddress) VALUES (8, 'Icon8', 'Desc8', '/silverpeas/util/icons/Multi.gif');
+insert into SC_WebSites_Icons (iconsId, iconsName, iconsDescription, iconsAddress) VALUES (9, 'Icon9', 'Desc9', '/silverpeas/util/icons/Forum.gif');
+insert into SC_WebSites_Icons (iconsId, iconsName, iconsDescription, iconsAddress) VALUES (10, 'Icon10', 'Desc10', '/silverpeas/util/icons/Perso.gif');
+insert into SC_WebSites_Icons (iconsId, iconsName, iconsDescription, iconsAddress) VALUES (11, 'Icon11', 'Desc11', '/silverpeas/util/icons/Login.gif');
+insert into SC_WebSites_Icons (iconsId, iconsName, iconsDescription, iconsAddress) VALUES (12, 'Icon12', 'Desc12', '/silverpeas/util/icons/Home.gif');
+insert into SC_WebSites_Icons (iconsId, iconsName, iconsDescription, iconsAddress) VALUES (13, 'Icon13', 'Desc13', '/silverpeas/util/icons/Payant.gif');
+insert into SC_WebSites_Icons (iconsId, iconsName, iconsDescription, iconsAddress) VALUES (14, 'Icon14', 'Desc14', '/silverpeas/util/icons/Vente.gif');
