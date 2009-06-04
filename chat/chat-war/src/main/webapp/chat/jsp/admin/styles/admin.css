@@ -1,0 +1,24 @@
+<style type="text/css">
+   a.homelink {color: #9999CC; text-decoration: none}
+   a.homelink:link {color: #9999CC; text-decoration: none}
+   a.homelink:active {color: #9999CC; text-decoration: none}
+   a.homelink:visited {color: #9999CC; text-decoration: none}
+   a.homelink:hover {color: #FFFFFF; text-decoration: none}
+   
+   a.menulink {color: #990000; text-decoration: none}
+   a.menulink:link {color: #990000; text-decoration: none}
+   a.menulink:active {color: #990000; text-decoration: none}
+   a.menulink:visited {color: #990000; text-decoration: none}
+   a.menulink:hover {color: #FF0000; text-decoration: underline}
+   
+   a.bluelink {color: #000099; text-decoration: none}
+   a.bluelink:link {color: #000099; text-decoration: none}
+   a.bluelink:active {color: #000099; text-decoration: none}
+   a.bluelink:visited {color: #000099; text-decoration: none}
+   a.bluelink:hover {color: #0000FF; text-decoration: underline}
+
+   .SystemBox {
+     	font-family : Verdana, Arial, Geneva, Helvetica, sans-serif;
+	font-size : 8pt;	
+    }   
+</style>

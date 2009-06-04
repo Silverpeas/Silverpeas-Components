@@ -60,6 +60,7 @@
     <module>question-reply</module>
     <module>whitepages</module>
     <module>webpages</module>
+    <module>chat</module>
   </modules>
   
 </project>

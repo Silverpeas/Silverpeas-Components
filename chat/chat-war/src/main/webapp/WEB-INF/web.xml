@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>Chat War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>ChatRequestRouter</servlet-name>
+    <display-name>ChatRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.silverpeas.chat.servlets.ChatRequestRouter</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ChatRequestRouter</servlet-name>
+    <url-pattern>/Rchat/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+
