@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.silverpeas.mailinglist.service.model.beans">
+  <class name="InternalSubscriber" table="sc_mailinglist_internal_sub">
+    <id name="id" column="id" type="string">
+      <generator class="uuid" />
+    </id>
+    <discriminator column="subscriber_type" type="string" not-null="true"/>
+    <version name="version" type="integer" />
+    <property name="externalId" column="externalId" type="string" not-null="true"/>
+    <subclass name="InternalUserSubscriber" discriminator-value="user"/>
+    <subclass name="InternalGroupSubscriber" discriminator-value="group"/>
+  </class>
+</hibernate-mapping>

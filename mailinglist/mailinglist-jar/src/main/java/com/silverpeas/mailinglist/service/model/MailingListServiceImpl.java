@@ -1,0 +1,292 @@
+package com.silverpeas.mailinglist.service.model;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import com.silverpeas.mailinglist.model.MailingListRuntimeException;
+import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
+import com.silverpeas.mailinglist.service.model.beans.InternalGroupSubscriber;
+import com.silverpeas.mailinglist.service.model.beans.InternalSubscriber;
+import com.silverpeas.mailinglist.service.model.beans.InternalUser;
+import com.silverpeas.mailinglist.service.model.beans.InternalUserSubscriber;
+import com.silverpeas.mailinglist.service.model.beans.MailingList;
+import com.silverpeas.mailinglist.service.model.dao.MailingListDao;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+
+public class MailingListServiceImpl implements MailingListService {
+  public static final String COMPONENT_NAME = "mailinglist";
+
+  private MailingListDao mailingListDao;
+
+  private OrganizationController controller;
+
+  public MailingListDao getMailingListDao() {
+    return mailingListDao;
+  }
+
+  public void setMailingListDao(MailingListDao mailingListDao) {
+    this.mailingListDao = mailingListDao;
+  }
+
+  public OrganizationController getOrganizationController() {
+    return controller;
+  }
+
+  public void setOrganizationController(OrganizationController controller) {
+    this.controller = controller;
+  }
+
+  public String createMailingList(MailingList mailingList) {
+    String subscribedAddress = controller.getComponentParameterValue(
+        mailingList.getComponentId(), PARAM_ADDRESS);
+    String componentId = mailingList.getComponentId();
+    String[] ids = this.controller.getCompoId("mailinglist");
+    if (ids != null) {
+      for (int i = 0; i < ids.length; i++) {
+        String currentId = ids[i];
+        if (currentId != null && !currentId.startsWith(COMPONENT_NAME)) {
+          currentId = COMPONENT_NAME + currentId;
+        }
+        if (!componentId.equalsIgnoreCase(currentId)) {
+          String param = controller.getComponentParameterValue(ids[i],
+              PARAM_ADDRESS);
+          if (param != null && param.equalsIgnoreCase(subscribedAddress)) {
+            SilverTrace.error("mailingList",
+                "MailingListServiceImpl.createMailingList",
+                "mailinglist.creation.existingAddress", subscribedAddress);
+            throw new MailingListRuntimeException(
+                "com.silverpeas.mailinglist.service.model.MailingListServiceImpl",
+                SilverpeasRuntimeException.ERROR, "Address already subscribed");
+          }
+        }
+      }
+    }
+    return this.mailingListDao.createMailingList(mailingList);
+  }
+
+  public void addExternalUser(String componentId, ExternalUser user) {
+    MailingList mailingList = this.mailingListDao
+        .findByComponentId(componentId);
+    if (mailingList != null) {
+      mailingList.getExternalSubscribers().add(user);
+      this.mailingListDao.updateMailingList(mailingList);
+    }
+  }
+
+  public void removeExternalUser(String componentId, ExternalUser user) {
+    MailingList mailingList = this.mailingListDao
+        .findByComponentId(componentId);
+    if (mailingList != null) {
+      mailingList.getExternalSubscribers().remove(user);
+      this.mailingListDao.updateMailingList(mailingList);
+    }
+  }
+
+  public void deleteMailingList(String componentId) {
+    MailingList mailingList = this.mailingListDao
+        .findByComponentId(componentId);
+    if (mailingList != null) {
+      this.mailingListDao.deleteMailingList(mailingList);
+    }
+  }
+
+  public MailingList findMailingList(String componentId) {
+    MailingList mailingList = this.mailingListDao
+        .findByComponentId(componentId);
+    if (mailingList == null) {
+      return null;
+    }
+    fillMailingList(mailingList);
+    return mailingList;
+  }
+  
+  protected void fillMailingList(MailingList mailingList) {
+    String subscribedAddress = controller.getComponentParameterValue(
+        mailingList.getComponentId(), PARAM_ADDRESS);
+    mailingList.setSubscribedAddress(subscribedAddress);
+    ComponentInst component = controller.getComponentInst(mailingList
+        .getComponentId());
+    mailingList.setName(component.getLabel());
+    mailingList.setDescription(component.getDescription());
+    String moderated = controller.getComponentParameterValue(mailingList
+        .getComponentId(), PARAM_MODERATE);
+    mailingList.setModerated(getParamBooleanValue(moderated));
+    String notify = controller.getComponentParameterValue(mailingList
+        .getComponentId(), PARAM_NOTIFY);
+    mailingList.setNotify(getParamBooleanValue(notify));
+    String open = controller.getComponentParameterValue(mailingList
+        .getComponentId(), PARAM_OPEN);
+    mailingList.setOpen(getParamBooleanValue(open));
+    String rss = controller.getComponentParameterValue(mailingList
+        .getComponentId(), PARAM_RSS);
+    mailingList.setSupportRSS(getParamBooleanValue(rss));
+    UserDetail[] details = controller.getAllUsers(mailingList.getComponentId());
+    for (int i = 0; i < details.length; i++) {
+      String[] roles = controller.getUserProfiles(details[i].getId(),
+          mailingList.getComponentId());
+      for (int j = 0; j < roles.length; j++) {
+        if (ROLE_READER.equals(roles[j])) {
+          InternalUser user = new InternalUser(details[i].getId(), details[i]
+              .geteMail());
+          user.setDomain(controller.getDomain(details[i].getDomainId())
+              .getSilverpeasServerURL());
+          user.setName(details[i].getDisplayedName());
+          user.setEmail(details[i].geteMail());
+          mailingList.getReaders().add(user);
+        } else if (ROLE_MODERATOR.equalsIgnoreCase(roles[j])
+            || ROLE_ADMINISTRATOR.equalsIgnoreCase(roles[j])) {
+          InternalUser user = new InternalUser(details[i].getId(), details[i]
+              .geteMail());
+          user.setDomain(controller.getDomain(details[i].getDomainId())
+              .getSilverpeasServerURL());
+          user.setName(details[i].getDisplayedName());
+          user.setEmail(details[i].geteMail());
+          mailingList.getModerators().add(user);
+        }
+      }
+    }
+  }
+
+  public void addExternalUsers(String componentId,
+      Collection<ExternalUser> users) {
+    MailingList mailingList = this.mailingListDao
+        .findByComponentId(componentId);
+    if (mailingList != null) {
+      for (ExternalUser user : users) {
+        user.setComponentId(componentId);
+        mailingList.getExternalSubscribers().add(user);
+      }
+      this.mailingListDao.updateMailingList(mailingList);
+    }
+  }
+
+  public void removeExternalUsers(String componentId,
+      Collection<ExternalUser> users) {
+    MailingList mailingList = this.mailingListDao
+        .findByComponentId(componentId);
+    if (mailingList != null) {
+      for (ExternalUser user : users) {
+        user.setComponentId(componentId);
+        mailingList.getExternalSubscribers().remove(user);
+      }
+      this.mailingListDao.updateMailingList(mailingList);
+    }
+  }
+
+  protected boolean getParamBooleanValue(String param) {
+    return param != null
+        && (Boolean.valueOf(param).booleanValue()
+            || "Y".equalsIgnoreCase(param) || "YES".equalsIgnoreCase(param));
+  }
+
+  public List<MailingList> listAllMailingLists() {
+    List<MailingList> lists = mailingListDao.listMailingLists();
+    for (MailingList mailingList : lists) {
+      fillMailingList(mailingList);
+    }
+    return lists;
+  }
+
+  public void setInternalSubscribers(String componentId,
+      Collection<String> userIds) {
+    MailingList mailingList = this.mailingListDao
+        .findByComponentId(componentId);
+    if (mailingList != null) {
+      Map<String, InternalSubscriber> subscribers = prepareMap(mailingList
+          .getInternalSubscribers());
+      mailingList.getInternalSubscribers().clear();
+      if (userIds != null && !userIds.isEmpty()) {
+        Set<InternalUserSubscriber> newUsers = new HashSet<InternalUserSubscriber>(
+            userIds.size());
+        for (String userId : userIds) {
+          InternalUserSubscriber user = (InternalUserSubscriber) subscribers
+              .get(userId);
+          if (user == null) {
+            user = new InternalUserSubscriber();
+            user.setExternalId(userId);
+          }
+          newUsers.add(user);
+        }
+        mailingList.getInternalSubscribers().addAll(newUsers);
+      } else {
+        mailingList.getInternalSubscribers().clear();
+      }
+      this.mailingListDao.updateMailingList(mailingList);
+    }
+  }
+
+  public void setGroupSubscribers(String componentId,
+      Collection<String> groupIds) {
+    MailingList mailingList = this.mailingListDao
+        .findByComponentId(componentId);
+    if (mailingList != null) {
+      Map<String, InternalSubscriber> groups = prepareMap(mailingList
+          .getGroupSubscribers());
+      mailingList.getGroupSubscribers().clear();
+      if (groupIds != null && !groupIds.isEmpty()) {
+        Set<InternalGroupSubscriber> newGroups = new HashSet<InternalGroupSubscriber>(
+            groupIds.size());
+        for (String groupId : groupIds) {
+          InternalGroupSubscriber group = (InternalGroupSubscriber) groups
+              .get(groupId);
+          if (group == null) {
+            group = new InternalGroupSubscriber();
+            group.setExternalId(groupId);
+          }
+          newGroups.add(group);
+        }
+        mailingList.getGroupSubscribers().addAll(newGroups);
+      } else {
+        mailingList.getGroupSubscribers().clear();
+      }
+      this.mailingListDao.updateMailingList(mailingList);
+    }
+  }
+
+  public void subscribe(String componentId, String userId) {
+    MailingList mailingList = this.mailingListDao
+        .findByComponentId(componentId);
+    if (mailingList != null) {
+      InternalUserSubscriber user = new InternalUserSubscriber();
+      user.setExternalId(userId);
+      mailingList.getInternalSubscribers().add(user);
+      this.mailingListDao.updateMailingList(mailingList);
+    }
+  }
+
+  public void unsubscribe(String componentId, String userId) {
+    MailingList mailingList = this.mailingListDao
+        .findByComponentId(componentId);
+    if (mailingList != null && userId != null) {
+      Iterator<InternalUserSubscriber> iter = mailingList
+          .getInternalSubscribers().iterator();
+      while (iter.hasNext()) {
+        InternalUserSubscriber user = iter.next();
+        if (userId.equalsIgnoreCase(user.getExternalId())) {
+          iter.remove();
+        }
+      }
+      this.mailingListDao.updateMailingList(mailingList);
+    }
+  }
+
+  private Map<String, InternalSubscriber> prepareMap(
+      Set<? extends InternalSubscriber> subscribers) {
+    Map<String, InternalSubscriber> result = new HashMap<String, InternalSubscriber>(
+        subscribers.size());
+    for (InternalSubscriber subscriber : subscribers) {
+      result.put(subscriber.getExternalId(), subscriber);
+    }
+    return result;
+  }
+
+}

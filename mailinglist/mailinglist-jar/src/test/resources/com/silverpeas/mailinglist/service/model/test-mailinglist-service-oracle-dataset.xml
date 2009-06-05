@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <SILVERPEAS.st_domain id="0" name="local" description="Domaine local" propfilename="com.stratelia.silverpeas.domains.domainSP"
+    classname="com.stratelia.silverpeas.domains.silverpeasdriver.SilverpeasDriver" authenticationserver="autDomainSP"
+    thetimestamp="0" silverpeasserverurl="http://localhost:8000" />
+  <SILVERPEAS.st_domain id="-1" name="internal" description="Do not remove - Used by Silverpeas engine" propfilename="-"
+    classname="-" authenticationserver="-" thetimestamp="0" silverpeasserverurl="''" />
+
+  <SILVERPEAS.domainsp_user id="0" lastname="Administrateur" login="SilverAdmin" password="SPJmYbTN83aEs" passwordvalid="Y" />
+
+  <SILVERPEAS.st_user id="0" domainid="0" specificid="0" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
+  <SILVERPEAS.st_user id="200" domainid="0" specificid="200" firstname="bart" lastname="simpson"
+    email="bart.simpson@silverpeas.com" login="bsimpson" accesslevel="U" />
+  <SILVERPEAS.st_user id="201" domainid="0" specificid="201" firstname="lisa" lastname="simpson"
+    email="lisa.simpson@silverpeas.com" login="lsimpson" accesslevel="U" />
+  <SILVERPEAS.st_user id="202" domainid="0" specificid="202" firstname="homer" lastname="simpson"
+    email="homer.simpson@silverpeas.com" login="hsimpson" accesslevel="U" />
+  <SILVERPEAS.st_user id="203" domainid="0" specificid="203" firstname="marge" lastname="simpson"
+    email="marge.simpson@silverpeas.com" login="msimpson" accesslevel="U" />
+  <SILVERPEAS.st_user id="204" domainid="0" specificid="204" firstname="maggie" lastname="simpson"
+    email="maggie.simpson@silverpeas.com" login="magsimpson" accesslevel="U" />
+  <SILVERPEAS.st_user id="205" domainid="0" specificid="205" firstname="krusty" lastname="theklown"
+    email="krusty.theklown@silverpeas.com" login="ktheklown" accesslevel="U" />
+
+  <SILVERPEAS.st_space id="3" name="MGI Coutier" description="''" createdby="0" firstpagetype="1"
+    firstpageextraparam="indicateurs16" ordernum="2" createtime="1194276699849" updatetime="1205750893265" removetime=""
+    spacestatus="" updatedby="0" lang="fr" isinheritanceblocked="0" look="" />
+
+  <SILVERPEAS.st_spaceuserrole id="2" spaceid="3" name="" rolename="admin" description="" isinherited="0" />
+  <SILVERPEAS.st_spaceuserrole id="3" spaceid="3" name="Manager d'espace" rolename="Manager" description="" isinherited="0" />
+  <SILVERPEAS.st_spaceuserrole id="4" spaceid="3" name="" rolename="reader" description="" isinherited="0" />
+
+  <SILVERPEAS.st_componentinstance name="Liste de diffusion de test" id="100" spaceid="3" componentname="mailingList" lang="fr"
+    description="Gestion d'une liste de diffusion" ordernum="5" />
+  <SILVERPEAS.sc_mailinglist_list />
+  <SILVERPEAS.sc_mailinglist_external_user />
+  <SILVERPEAS.sc_mailinglist_internal_sub />
+
+  <!--  Paramètres -->
+  <SILVERPEAS.st_instance_data name="notify" id="400" componentid="100" label="Liste de distribution / d'archivage" value="true" />
+  <SILVERPEAS.st_instance_data name="moderated" id="403" componentid="100" label="Liste de diffusion modérée" value="true" />
+  <SILVERPEAS.st_instance_data name="open" id="404" componentid="100" label="Liste de diffusion ouverte" value="no" />
+  <SILVERPEAS.st_instance_data name="subscribedAddress" id="405" componentid="100" label="Adresse"
+    value="thesimpsons@silverpeas.com" />
+  <SILVERPEAS.st_instance_data name="rss" id="406" componentid="100" label="Flux RSS" value="yes" />
+  <SILVERPEAS.st_notifdefaultaddress />
+
+  <SILVERPEAS.st_userrole id="300" instanceid="100" rolename="admin" name="Gestionnaire" />
+  <SILVERPEAS.st_userrole id="301" instanceid="100" rolename="moderator" name="Modérateur" />
+  <SILVERPEAS.st_userrole id="302" instanceid="100" rolename="subscriber" name="Abonnés" />
+
+  <!-- bart admin -->
+  <SILVERPEAS.st_userrole_user_rel userroleid="300" userid="200" />
+  <!-- homer & marge moderator -->
+  <SILVERPEAS.st_userrole_user_rel userroleid="301" userid="202" />
+  <SILVERPEAS.st_userrole_user_rel userroleid="301" userid="203" />
+  <!-- lisa & maggie subscribers -->
+  <SILVERPEAS.st_userrole_user_rel userroleid="302" userid="201" />
+  <SILVERPEAS.st_userrole_user_rel userroleid="302" userid="204" />
+
+  <SILVERPEAS.st_userset usersettype="S" usersetid="3" />
+  <SILVERPEAS.st_userset usersettype="I" usersetid="100" />
+  <SILVERPEAS.st_userset usersettype="R" usersetid="300" />
+  <SILVERPEAS.st_userset usersettype="R" usersetid="301" />
+  <SILVERPEAS.st_userset usersettype="R" usersetid="302" />
+
+
+  <SILVERPEAS.st_userset_user_rel usersettype="S" userid="200" usersetid="3" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="S" userid="201" usersetid="3" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="S" userid="202" usersetid="3" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="S" userid="203" usersetid="3" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="S" userid="204" usersetid="3" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="I" userid="200" usersetid="100" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="I" userid="201" usersetid="100" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="I" userid="202" usersetid="100" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="I" userid="203" usersetid="100" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="I" userid="204" usersetid="100" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="R" userid="200" usersetid="300" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="R" userid="201" usersetid="302" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="R" userid="202" usersetid="301" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="R" userid="203" usersetid="301" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="R" userid="204" usersetid="302" linkscount="1" />
+
+  <SILVERPEAS.st_userset_userset_rel supersettype="S" supersetid="3" subsettype="I" subsetid="100" linkscount="1" />
+  <SILVERPEAS.st_userset_userset_rel supersettype="I" supersetid="100" subsettype="R" subsetid="300" linkscount="1" />
+  <SILVERPEAS.st_userset_userset_rel supersettype="I" supersetid="100" subsettype="R" subsetid="301" linkscount="1" />
+  <SILVERPEAS.st_userset_userset_rel supersettype="I" supersetid="100" subsettype="R" subsetid="302" linkscount="1" />
+</dataset>

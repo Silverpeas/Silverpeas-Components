@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:jee="http://www.springframework.org/schema/jee"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+  http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.0.xsd">
+
+  <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="locations">
+      <list>
+        <value>classpath:/com/stratelia/silverpeas/notificationserver/channel/smtp/smtpSettings.properties</value>
+        <value>classpath:/com/silverpeas/mailinglist/notification.properties</value>
+      </list>
+    </property>
+    <property name="searchSystemEnvironment" value="true" />
+  </bean>
+
+  <bean id="notificationHelper" class="com.silverpeas.mailinglist.service.notification.NotificationHelperImpl">
+    <property name="session" ref="mailSession" />
+    <property name="notificationSender" ref="notificationSender" />
+    <property name="notificationFormatter" ref="notificationFormatter" />
+    <property name="smtpConfig" ref="smtpConfiguration" />
+    <property name="controller" ref="organizationController" />
+    <property name="calendarBm" ref="calendarBm" />
+    <property name="externalThread" value="false" />
+  </bean>
+
+  <bean id="smtpConfiguration" class="com.silverpeas.mailinglist.service.notification.SmtpConfiguration">
+    <property name="server" value="${SMTPServer}" />
+    <property name="port" value="${SMTPPort}" />
+    <property name="username" value="${SMTPUser}" />
+    <property name="password" value="${SMTPPwd}" />
+    <property name="authenticate" value="${SMTPAuthentication}" />
+  </bean>
+
+  <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubCalendarBm" />
+<!--
+   <bean id="mailCheckerInitializer" name="mailCheckerInitializer"
+    class="com.silverpeas.mailinglist.control.MailCheckerInitialize" init-method="registerAll">
+    <property name="messageChecker" ref="messageChecker" />
+    <property name="mailingListService" ref="mailingListService" />
+    <property name="frequency" value="${mail.check.frequency}" />
+  </bean>
+  -->
+  <bean id="notificationFormatter" name="notificationFormatter"
+    class="com.silverpeas.mailinglist.service.notification.NotificationFormatter">
+    <constructor-arg value="fr" type="java.lang.String" />
+  </bean>
+
+  <bean id="notificationSender" name="notificationSender"
+    class="com.stratelia.silverpeas.notificationManager.NotificationSender">
+    <constructor-arg value="fr" type="java.lang.String" />
+  </bean>
+</beans>

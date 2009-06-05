@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.silverpeas.mailinglist.service.model.beans">
+  <class name="Message" table="sc_mailinglist_message">
+    <id name="id" column="id" type="string">
+      <generator class="uuid" />
+    </id>
+    <natural-id>
+      <property name="messageId" column="mailId" type="string" not-null="true"/>
+      <property name="componentId" column="componentId" type="string" not-null="true"/>
+    </natural-id>
+    <version name="version" type="integer" />
+    <property name="title" column="title" type="string" />
+    <property name="summary" column="summary" type="string" />
+    <property name="sender" column="sender" type="string" />
+    <property name="sentDate" column="sentDate" type="timestamp" />
+    <property name="referenceId" column="referenceId" type="string" />
+    <property name="moderated" column="moderated" type="boolean" />
+    <property name="contentType" column="contentType" type="string" />
+    <property name="attachmentsSize" column="attachmentsSize" type="long" />
+    <property name="year" column="messageYear" type="integer" />
+    <property name="month" column="messageMonth" type="integer" />
+    <property name="body" column="body" type="com.silverpeas.mailinglist.service.util.StringClobType" />
+    <!-- unidirectional relation -->
+    <set name="attachments" lazy="false" inverse="false" cascade="save-update,delete,all-delete-orphan">
+      <key column="messageId" />
+      <one-to-many class="com.silverpeas.mailinglist.service.model.beans.Attachment" />
+    </set>
+  </class>
+</hibernate-mapping>

@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="com.silverpeas.mailinglist.service.model.beans">
+  <class name="ExternalUser" table="sc_mailinglist_external_user">
+    <id name="id" column="id" type="string">
+      <generator class="uuid" />
+    </id>
+    <version name="version" type="integer" />
+    <property name="componentId" column="componentId" type="string" />
+    <property name="email" column="email" type="string" not-null="true"/>
+  </class>
+</hibernate-mapping>

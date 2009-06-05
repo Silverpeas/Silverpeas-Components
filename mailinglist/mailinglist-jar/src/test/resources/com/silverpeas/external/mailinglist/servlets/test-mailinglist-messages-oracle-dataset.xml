@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+  <SILVERPEAS.st_domain id="0" name="domainSilverpeas" description="default domain for Silverpeas"
+    propfilename="com.stratelia.silverpeas.domains.domainSP"
+    classname="com.stratelia.silverpeas.domains.silverpeasdriver.SilverpeasDriver" authenticationserver="autDomainSP"
+    thetimestamp="0" silverpeasserverurl="http://localhost:8000" />
+
+  <SILVERPEAS.st_domain id="-1" name="internal" description="Do not remove - Used by Silverpeas engine" propfilename="-"
+    classname="-" authenticationserver="-" thetimestamp="0" silverpeasserverurl="''" />
+
+  <SILVERPEAS.domainsp_user id="0" lastname="Administrateur" login="SilverAdmin" password="SPJmYbTN83aEs" passwordvalid="Y" />
+  <SILVERPEAS.st_user id="0" domainid="0" specificid="0" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
+
+  <SILVERPEAS.st_space id="3" name="MGI Coutier" description="''" createdby="0" firstpagetype="1"
+    firstpageextraparam="indicateurs16" ordernum="2" createtime="1194276699849" updatetime="1205750893265"
+    spacestatus="[NULL]" domainfatherid="[NULL]" updatedby="0" lang="fr" isinheritanceblocked="0" look="" />
+
+  <SILVERPEAS.domainsp_user id="12" firstname="Homer" lastname="Simpson" login="hsimpson" password="SPyj3vDk7LDtg"
+    passwordvalid="Y" email="homer.simpson@silverpeas.com" />
+  <SILVERPEAS.domainsp_user id="11" firstname="Bart" lastname="Simpson" login="bsimpson" password="SPWEj.7amsdlQ" passwordvalid="Y"
+    email="bart.simpson@silverpeas.com" />
+  <SILVERPEAS.domainsp_user id="13" firstname="Marge" lastname="Simpson" login="msimpson" password="SPRD7QJAXKf2o"
+    passwordvalid="Y" email="marge.simpson@silverpeas.com" />
+  <SILVERPEAS.domainsp_user id="14" firstname="Lisa" lastname="Simpson" login="lsimpson" password="SPBbTn/fcfP3A" passwordvalid="Y"
+    email="lisa.simpson@silverpeas.com" />
+  <SILVERPEAS.domainsp_user id="15" firstname="Maggie" lastname="Simpson" login="bbsimpson" password="SPF2co.HquBD."
+    passwordvalid="Y" email="maggie.simpson@silverpeas.com" />
+
+  <SILVERPEAS.st_spaceuserrole id="2" spaceid="3" name="" rolename="admin" description="" isinherited="0" />
+  <SILVERPEAS.st_spaceuserrole id="3" spaceid="3" name="Manager d'espace" rolename="Manager" description="" isinherited="0" />
+  <SILVERPEAS.st_spaceuserrole id="4" spaceid="3" name="" rolename="reader" description="" isinherited="0" />
+
+
+  <SILVERPEAS.st_componentinstance id="45" spaceid="3" name="Liste de diffusion" componentname="mailinglist"
+    description="Liste de diffusion de test" createdby="0" createtime="1205747025390" ispublic="1" ishidden="0"
+    lang="fr" isinheritanceblocked="0" />
+
+  <SILVERPEAS.sc_mailinglist_list id="2c90815b18bc148e0118bc1f86c90002" version="0" componentid="mailinglist45" />
+
+  <SILVERPEAS.st_instance_data id="358" componentid="45" name="open" label="Ouverte" value="yes" />
+  <SILVERPEAS.st_instance_data id="359" componentid="45" name="name" label="Nom" value="Simpsons" />
+  <SILVERPEAS.st_instance_data id="360" componentid="45" name="notify" label="Diffusion" value="yes" />
+  <SILVERPEAS.st_instance_data id="361" componentid="45" name="subscribedAddress" label="Adresse de la liste de diffusion"
+    value="thesimpsons@silverpeas.com" />
+  <SILVERPEAS.st_instance_data id="362" componentid="45" name="moderated" label="Liste modérée" value="yes" />
+  <SILVERPEAS.st_instance_data id="363" componentid="45" name="rss" label="Flux RSS" value="yes" />
+  <SILVERPEAS.st_user id="8" domainid="0" specificid="12" firstname="Homer" lastname="Simpson" email="homer.simpson@silverpeas.com"
+    login="hsimpson" accesslevel="U" />
+  <SILVERPEAS.st_user id="7" domainid="0" specificid="11" firstname="Bart" lastname="Simpson" email="bart.simpson@silverpeas.com"
+    login="bsimpson" accesslevel="U" />
+  <SILVERPEAS.st_user id="9" domainid="0" specificid="13" firstname="Marge" lastname="Simpson" email="marge.simpson@silverpeas.com"
+    login="msimpson" accesslevel="U" />
+  <SILVERPEAS.st_user id="10" domainid="0" specificid="14" firstname="Lisa" lastname="Simpson" email="lisa.simpson@silverpeas.com"
+    login="lsimpson" accesslevel="U" />
+  <SILVERPEAS.st_user id="11" domainid="0" specificid="15" firstname="Maggie" lastname="Simpson"
+    email="maggie.simpson@silverpeas.com" login="bbsimpson" accesslevel="U" />
+
+  <SILVERPEAS.sc_mailinglist_internal_sub id="100" version="0" externalid="10"
+    mailinglistid="2c90815b18bc148e0118bc1f86c90002" subscriber_type="user" />
+
+  <SILVERPEAS.st_notifdefaultaddress id="1" userid="7" notifaddressid="-12" />
+  <SILVERPEAS.st_notifdefaultaddress id="2" userid="8" notifaddressid="-12" />
+  <SILVERPEAS.st_notifdefaultaddress id="3" userid="9" notifaddressid="-12" />
+  <SILVERPEAS.st_notifdefaultaddress id="4" userid="10" notifaddressid="-12" />
+
+  <SILVERPEAS.personalization id="11" languages="en," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1"
+    onlineeditingstatus="1" />
+  <SILVERPEAS.personalization id="7" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1"
+    onlineeditingstatus="1" />
+  <SILVERPEAS.personalization id="8" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1"
+    onlineeditingstatus="1" />
+  <SILVERPEAS.personalization id="9" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1"
+    onlineeditingstatus="1" />
+  <SILVERPEAS.personalization id="10" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1"
+    onlineeditingstatus="1" />
+  <SILVERPEAS.personalization id="0" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1"
+    onlineeditingstatus="1" />
+
+
+  <SILVERPEAS.st_userrole id="58" instanceid="45" name="Gestionnaire" rolename="admin" isinherited="0" />
+  <SILVERPEAS.st_userrole id="59" instanceid="45" name="Modérateur" rolename="moderator" isinherited="0" />
+  <SILVERPEAS.st_userrole id="61" instanceid="45" name="Lecteurs" rolename="reader" isinherited="0" />
+
+  <SILVERPEAS.st_userrole_user_rel userroleid="58" userid="7" />
+  <SILVERPEAS.st_userrole_user_rel userroleid="59" userid="9" />
+  <SILVERPEAS.st_userrole_user_rel userroleid="59" userid="8" />
+  <SILVERPEAS.st_userrole_user_rel userroleid="61" userid="11" />
+
+  <SILVERPEAS.st_userset usersettype="S" usersetid="3" />
+  <SILVERPEAS.st_userset usersettype="I" usersetid="45" />
+  <SILVERPEAS.st_userset usersettype="R" usersetid="58" />
+  <SILVERPEAS.st_userset usersettype="R" usersetid="59" />
+  <SILVERPEAS.st_userset usersettype="R" usersetid="61" />
+
+
+  <SILVERPEAS.st_userset_user_rel usersettype="R" usersetid="58" userid="7" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="I" usersetid="45" userid="7" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="S" usersetid="3" userid="7" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="R" usersetid="59" userid="9" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="I" usersetid="45" userid="9" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="S" usersetid="3" userid="9" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="R" usersetid="59" userid="8" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="I" usersetid="45" userid="8" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="S" usersetid="3" userid="8" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="R" usersetid="61" userid="10" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="I" usersetid="45" userid="10" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="S" usersetid="3" userid="10" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="R" usersetid="61" userid="11" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="I" usersetid="45" userid="11" linkscount="1" />
+  <SILVERPEAS.st_userset_user_rel usersettype="S" usersetid="3" userid="11" linkscount="1" />
+
+
+  <SILVERPEAS.st_userset_userset_rel supersettype="S" supersetid="3" subsettype="I" subsetid="45" linkscount="1" />
+  <SILVERPEAS.st_userset_userset_rel supersettype="I" supersetid="45" subsettype="R" subsetid="58" linkscount="1" />
+  <SILVERPEAS.st_userset_userset_rel supersettype="S" supersetid="3" subsettype="R" subsetid="58" linkscount="1" />
+  <SILVERPEAS.st_userset_userset_rel supersettype="I" supersetid="45" subsettype="R" subsetid="59" linkscount="1" />
+  <SILVERPEAS.st_userset_userset_rel supersettype="S" supersetid="3" subsettype="R" subsetid="59" linkscount="1" />
+  <SILVERPEAS.st_userset_userset_rel supersettype="I" supersetid="45" subsettype="R" subsetid="61" linkscount="1" />
+  <SILVERPEAS.st_userset_userset_rel supersettype="S" supersetid="3" subsettype="R" subsetid="61" linkscount="1" />
+
+  <!--
+    <SILVERPEAS.uniqueid maxid="153" tablename="DomainSP_User"/>
+    <SILVERPEAS.uniqueid maxid="11" tablename="ST_User"/>
+    <SILVERPEAS.uniqueid maxid="45" tablename="ST_ComponentInstance"/>
+    <SILVERPEAS.uniqueid maxid="362" tablename="ST_Instance_Data"/>
+    <SILVERPEAS.uniqueid maxid="60" tablename="ST_UserRole"/>
+  -->
+
+  <SILVERPEAS.sc_MAILINGLIST_MESSAGE id="1" version="1" title="Simple database message" attachmentsSize="10000"
+    summary="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans"
+    sender="bart.simpson@silverpeas.com" sentDate="2008-03-01 10:34:15.0000" mailId="0000001747b40c8d"
+    referenceId="null" moderated="1" componentid="mailinglist45" messageYear="2008" messageMonth="2"
+    contentType="text/plain"
+    body="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans la prochaine émission.Bart" />
+
+  <SILVERPEAS.sc_MAILINGLIST_MESSAGE id="2" version="1" title="Simple database message 2" attachmentsSize="0"
+    summary="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans"
+    sender="bart.simpson@silverpeas.com" sentDate="2008-02-01 10:34:15.0000" mailId="0000001747b40c83"
+    referenceId="null" moderated="1" componentid="mailinglist45" messageYear="2008" messageMonth="1"
+    contentType="text/plain"
+    body="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans la prochaine émission.Bart" />
+
+  <SILVERPEAS.sc_MAILINGLIST_MESSAGE id="3" version="1" title="Simple database message 3" attachmentsSize="0"
+    summary="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans"
+    sender="bart.simpson@silverpeas.com" sentDate="2008-03-02 10:34:15.0000" mailId="0000001747b40c95"
+    referenceId="null" moderated="1" componentid="mailinglist45" messageYear="2008" messageMonth="2"
+    contentType="text/plain"
+    body="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans la prochaine émission.Bart" />
+
+  <SILVERPEAS.sc_MAILINGLIST_MESSAGE id="4" version="1" title="Simple database message 3" attachmentsSize="0"
+    summary="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans"
+    sender="bart.simpson@silverpeas.com" sentDate="2008-03-02 10:12:15.0000" mailId="0000001747b40c96"
+    referenceId="null" moderated="1" componentid="mailinglist45" messageYear="2008" messageMonth="2"
+    contentType="text/plain"
+    body="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans la prochaine émission.Bart" />
+
+  <SILVERPEAS.sc_MAILINGLIST_MESSAGE id="5" version="1" title="Simple database message 3" attachmentsSize="0"
+    summary="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans"
+    sender="bart.simpson@silverpeas.com" sentDate="2007-11-02 10:34:15.0000" mailId="0000001747b40c91"
+    referenceId="null" moderated="1" componentid="mailinglist45" messageYear="2007" messageMonth="10"
+    contentType="text/plain"
+    body="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans la prochaine émission.Bart" />
+
+  <SILVERPEAS.sc_MAILINGLIST_MESSAGE id="6" version="1" title="Simple database message 3" attachmentsSize="0"
+    summary="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans"
+    sender="bart.simpson@silverpeas.com" sentDate="2007-11-10 10:34:15.0000" mailId="0000001747b40c99"
+    referenceId="null" moderated="1" componentid="mailinglist45" messageYear="2007" messageMonth="10"
+    contentType="text/plain"
+    body="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans la prochaine émission.Bart" />
+
+  <SILVERPEAS.sc_MAILINGLIST_MESSAGE id="7" version="1" title="Simple database message 3" attachmentsSize="0"
+    summary="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans"
+    sender="bart.simpson@silverpeas.com" sentDate="2007-12-02 10:34:15.0000" mailId="0000001747b40c09"
+    referenceId="null" moderated="1" componentid="mailinglist45" messageYear="2007" messageMonth="11"
+    contentType="text/plain"
+    body="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans la prochaine émission.Bart" />
+
+  <SILVERPEAS.sc_mailinglist_MESSAGE id="8" version="1" title="Simple database message 3" attachmentsSize="0"
+    summary="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans"
+    sender="bart.simpson@silverpeas.com" sentDate="2007-12-23 10:34:15.0000" mailId="0000001747b40d67"
+    referenceId="null" moderated="1" componentid="mailinglist45" messageYear="2007" messageMonth="11"
+    contentType="text/plain"
+    body="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans la prochaine émission.Bart" />
+
+  <SILVERPEAS.sc_mailinglist_MESSAGE id="9" version="1" title="Simple database message 3" attachmentsSize="0"
+    summary="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans"
+    sender="bart.simpson@silverpeas.com" sentDate="2008-01-02 10:34:15.0000" mailId="0000001747b40c21"
+    referenceId="null" moderated="1" componentid="mailinglist45" messageYear="2008" messageMonth="0"
+    contentType="text/plain"
+    body="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans la prochaine émission.Bart" />
+
+  <SILVERPEAS.sc_mailinglist_MESSAGE id="10" version="1" title="Simple database message 3" attachmentsSize="0"
+    summary="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans"
+    sender="bart.simpson@silverpeas.com" sentDate="2008-02-20 10:34:15.0000" mailId="0000001747b40c36"
+    referenceId="null" moderated="1" componentid="mailinglist45" messageYear="2008" messageMonth="1"
+    contentType="text/plain"
+    body="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans la prochaine émission.Bart" />
+
+  <SILVERPEAS.sc_mailinglist_MESSAGE id="11" version="1" title="Simple database message 11" attachmentsSize="0"
+    summary="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans"
+    sender="bart.simpson@silverpeas.com" sentDate="2008-02-21 10:34:15.0000" mailId="0000011747b40c36"
+    referenceId="null" moderated="1" componentid="mailinglist45" messageYear="2008" messageMonth="1"
+    contentType="text/plain"
+    body="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans la prochaine émission.Bart" />
+
+  <SILVERPEAS.sc_mailinglist_MESSAGE id="12" version="1" title="Simple database message 12" attachmentsSize="0"
+    summary="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans"
+    sender="bart.simpson@silverpeas.com" sentDate="2008-02-22 10:34:15.0000" mailId="0000012747b40c36"
+    referenceId="null" moderated="0" componentid="mailinglist45" messageYear="2008" messageMonth="1"
+    contentType="text/plain"
+    body="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans la prochaine émission.Bart" />
+
+  <SILVERPEAS.sc_mailinglist_MESSAGE id="13" version="1" title="Simple database message 13" attachmentsSize="0"
+    summary="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans"
+    sender="bart.simpson@silverpeas.com" sentDate="2008-02-23 10:34:15.0000" mailId="0000013747b40c36"
+    referenceId="null" moderated="0" componentid="mailinglist45" messageYear="2008" messageMonth="1"
+    contentType="text/plain"
+    body="Bonjour famille Simpson, j'espère que vous allez bien. Ici tout se passe bien et Krusty est très sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je dois remplacer l'homme canon dans la prochaine émission.Bart" />
+
+  <SILVERPEAS.sc_MAILINGLIST_ATTACHMENT id="1" version="1" fileName="lemonde.html" attachmentSize="10000" messageId="1"
+    contentType="text/html" attachmentPath="c:\tmp\uploads\componentId\mailId@silverpeas.com\lemonde.html" />
+
+  <SILVERPEAS.sc_mailinglist_external_user id="800" version="0" componentid="mailinglist45"
+    listid="2c90815b18bc148e0118bc1f86c90002" email="barney.gumble@silverpeas.com" />
+  <SILVERPEAS.sc_mailinglist_external_user id="801" version="0" componentid="mailinglist45"
+    listid="2c90815b18bc148e0118bc1f86c90002" email="julius.hibbert@silverpeas.com" />
+  <SILVERPEAS.sc_mailinglist_external_user id="802" version="0" componentid="mailinglist45"
+    listid="2c90815b18bc148e0118bc1f86c90002" email="carl.carlson@silverpeas.com" />
+  <SILVERPEAS.sc_mailinglist_external_user id="803" version="0" componentid="mailinglist45"
+    listid="2c90815b18bc148e0118bc1f86c90002" email="edna.krabappel@silverpeas.com" />
+  <SILVERPEAS.sc_mailinglist_external_user id="804" version="0" componentid="mailinglist45"
+    listid="2c90815b18bc148e0118bc1f86c90002" email="nelson.muntz@silverpeas.com" />
+
+  <SILVERPEAS.calendartodo id="2" name="[emmanuel.hugonnet@silverpeas.com] : Simple database message 13 à modérer" description="13"
+    delegatorid="mailinglist45" startday="2008/04/23" classification="private" priority="2" percentcompleted="-1"
+    duration="-1" componentid="mailinglist45" externalid="message/13" />
+
+  <SILVERPEAS.CALENDARTODOATTENDEE todoid="2" userid="7" participationstatus="tentative" />
+  <SILVERPEAS.CALENDARTODOATTENDEE todoid="2" userid="8" participationstatus="tentative" />
+  <SILVERPEAS.CALENDARTODOATTENDEE todoid="2" userid="9" participationstatus="tentative" />
+</dataset>

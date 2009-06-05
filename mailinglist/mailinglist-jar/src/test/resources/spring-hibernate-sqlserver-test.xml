@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+
+
+  <bean id="messageService"
+    class="com.silverpeas.mailinglist.service.model.MessageServiceImpl">
+    <property name="messageDao">
+      <ref bean="messageDao" />
+    </property>
+    <property name="elementsPerPage" value="20" />
+  </bean>
+  
+   <bean id="mailingListDao"
+    class="com.silverpeas.mailinglist.service.model.dao.MailingListDaoImpl">
+    <property name="sessionFactory">
+      <ref bean="sessionFactory" />
+    </property>
+  </bean>
+
+  <bean id="messageDao"
+    class="com.silverpeas.mailinglist.service.model.dao.MessageDaoImpl">
+    <property name="sessionFactory">
+      <ref bean="sessionFactory" />
+    </property>
+  </bean>
+
+  <bean id="txManager"
+    class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="sessionFactory" />
+  </bean>
+
+  <bean id="sessionFactory"
+    class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+    <property name="mappingResources">
+      <list>
+        <value>Message.hbm.xml</value>
+        <value>Attachment.hbm.xml</value>
+        <value>ExternalUser.hbm.xml</value>
+        <value>MailingList.hbm.xml</value>
+      </list>
+    </property>
+    <property name="hibernateProperties">
+      <props>
+        <prop key="hibernate.dialect">
+          org.hibernate.dialect.SQLServerDialect
+        </prop>
+        <prop key="hibernate.query.substitutions">true=1 false=0</prop>
+        <prop key="hibernate.show_sql">true</prop>
+        <prop key="hibernate.use_outer_join">false</prop>
+        <prop key="hbm2ddl.auto">create</prop>
+      </props>
+    </property>
+    <property name="dataSource">
+      <ref bean="dataSource" />
+    </property>
+  </bean>
+  <!-- 
+    <bean id="MyDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName"><value>jdbc/Silverpeas</value></property>
+    </bean>
+  -->
+
+  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+    destroy-method="close">
+    <property name="driverClassName"
+      value="net.sourceforge.jtds.jdbc.Driver" />
+    <property name="url"
+      value="jdbc:jtds:sqlserver://silver-fs:1433/SilverpeasV407" />
+    <property name="username" value="sa" />
+    <property name="password" value="sa" />
+    <property name="maxActive" value="4" />
+    <property name="maxIdle" value="4" />
+    <property name="maxWait" value="5000" />
+    <property name="removeAbandoned" value="true" />
+    <property name="removeAbandonedTimeout" value="5000" />
+  </bean>
+
+  <aop:config>
+    <aop:pointcut id="serviceOperation"
+      expression="execution(* *..*ServiceImpl.*(..))" />
+    <aop:advisor pointcut-ref="serviceOperation" advice-ref="txAdvice" />
+
+  </aop:config>
+
+  <aop:config>
+    <aop:pointcut id="daoOperation"
+      expression="execution(* *..*DaoImpl.*(..))" />
+    <aop:advisor pointcut-ref="daoOperation" advice-ref="txDaoAdvice" />
+  </aop:config>
+
+  <tx:advice id="txAdvice" transaction-manager="txManager">
+    <tx:attributes>
+      <tx:method name="list*" read-only="true" propagation="REQUIRED" />
+      <tx:method name="find*" read-only="true" propagation="REQUIRED" />
+      <tx:method name="*" propagation="REQUIRED" />
+    </tx:attributes>
+  </tx:advice>
+
+  <tx:advice id="txDaoAdvice" transaction-manager="txManager">
+    <tx:attributes>
+      <tx:method name="*" propagation="MANDATORY" />
+    </tx:attributes>
+  </tx:advice>
+
+</beans>

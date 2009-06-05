@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>mailingList War</display-name>
+  <description>Component managing Mailing List</description>
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>
+      /WEB-INF/spring-hibernate.xml /WEB-INF/spring-notification.xml /WEB-INF/spring-checker.xml
+      /WEB-INF/spring-datasource.xml
+    </param-value>
+  </context-param>
+
+  <servlet>
+    <servlet-name>springContext</servlet-name>
+    <description>Servlet pour charger le context Spring</description>
+    <servlet-class>org.springframework.web.context.ContextLoaderServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet>
+    <servlet-name>MailingListRssServlet</servlet-name>
+    <display-name>MailingListRssServlet</display-name>
+    <description>Servlet produisant un flux RSS pour une mailing list</description>
+    <servlet-class>com.silverpeas.external.mailinglist.servlets.RssMailingListServlet</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>MailingListRequestRouter</servlet-name>
+    <display-name>MailingListRequestRouter</display-name>
+    <description>Servlet controller pour le composant mailinglist</description>
+    <servlet-class>com.silverpeas.external.mailinglist.servlets.MailingListRequestRouter</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>GoToMailingListMessage</servlet-name>
+    <display-name>GoToMailingListMessage</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.external.mailinglist.servlets.GoToMessage</servlet-class>
+  </servlet>
+
+  <servlet>
+    <servlet-name>MailingListAttachmentServlet</servlet-name>
+    <display-name>MailingListAttachmentServlet</display-name>
+    <description>Servlet to download mail attachment</description>
+    <servlet-class>com.silverpeas.external.mailinglist.servlets.AttachmentServlet</servlet-class>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>MailingListRssServlet</servlet-name>
+    <url-pattern>/rssmailinglist/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>MailingListRequestRouter</servlet-name>
+    <url-pattern>/Rmailinglist/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>MailingListAttachmentServlet</servlet-name>
+    <url-pattern>/mailingListAttachment/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>GoToMailingListMessage</servlet-name>
+    <url-pattern>/mailinglistMessage/*</url-pattern>
+  </servlet-mapping>
+</web-app>

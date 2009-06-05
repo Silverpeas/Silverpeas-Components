@@ -1,0 +1,773 @@
+Signature-Version: 1.0
+SHA1-Digest-Manifest: CVWmlIrXXpszlkr7qV+YBfhfNi8=
+Created-By: 1.3.1_04 (Sun Microsystems Inc.)
+
+Name: javax/mail/search/SearchTerm.class
+SHA1-Digest: jT5/pNIHpVTJcH0ouwuZZSuz7K4=
+
+Name: javax/mail/SendFailedException.class
+SHA1-Digest: 8841JcZWBWg7GY0BsGpgNYfz1BU=
+
+Name: com/sun/mail/util/SocketFetcher.class
+SHA1-Digest: CTVTtQQIfaJkYWRVr07CR4q36FA=
+
+Name: com/sun/mail/smtp/SMTPTransport.class
+SHA1-Digest: fiiHBMIV2yTpIdT0zxMjySqbWZU=
+
+Name: javax/mail/internet/ParameterList$Value.class
+SHA1-Digest: tDSpz1p6wWCtlNavrJbxQkdLisQ=
+
+Name: javax/mail/StreamLoader.class
+SHA1-Digest: uuITzqrSuGSa3Aod1p+rhgFu1QA=
+
+Name: com/sun/mail/iap/ResponseHandler.class
+SHA1-Digest: Fj7IKGdgbZppX/TtHTlD9ChBTvU=
+
+Name: javax/mail/PasswordAuthentication.class
+SHA1-Digest: 9W1z0f8Ibv9Ihnf71pStLvbqVbs=
+
+Name: javax/mail/event/ConnectionListener.class
+SHA1-Digest: tlaNZJRlfJ+pwRB1uYmIzyV3OxI=
+
+Name: javax/mail/event/MessageCountEvent.class
+SHA1-Digest: pz838hAor6rEUf1j1pnJKoJK5zU=
+
+Name: com/sun/mail/imap/protocol/FLAGS.class
+SHA1-Digest: d/poEj859z914P+mCfGo+tSd20Q=
+
+Name: com/sun/mail/util/QEncoderStream.class
+SHA1-Digest: 5WLlEAqPLg9G7DXTN2uLlQGGDjw=
+
+Name: javax/mail/internet/AsciiOutputStream.class
+SHA1-Digest: EKHkjOkUKuWIvHwaLylQoPz8gN0=
+
+Name: javax/mail/Authenticator.class
+SHA1-Digest: Fpv1QgUilKeLuFm+5AplLnAmAMM=
+
+Name: javax/mail/event/TransportEvent.class
+SHA1-Digest: 6JFaWDXxn5DxyVMbiwqmTa+XyU4=
+
+Name: com/sun/mail/imap/Utility.class
+SHA1-Digest: saMRy/jPiP3geWnU0GGRojvDKts=
+
+Name: javax/mail/search/NotTerm.class
+SHA1-Digest: vgquzYnuJIay2HZV+f0LB3j2C7E=
+
+Name: javax/mail/Transport.class
+SHA1-Digest: moJV5E/Fp4n3bgxIfZyHZ6ZIehY=
+
+Name: com/sun/mail/iap/ParsingException.class
+SHA1-Digest: iw9vLeMIYNgNyibm3mji4GUyn/s=
+
+Name: com/sun/mail/imap/DefaultFolder$1.class
+SHA1-Digest: jtywBpbSk+ndTDo74+j/TTsYvvU=
+
+Name: javax/mail/internet/ParseException.class
+SHA1-Digest: ZmFyZ83gujHlcIHbEj+UuB8gp1s=
+
+Name: javax/mail/internet/ParameterList$MultiValue.class
+SHA1-Digest: iM/ICJMg3rA5V3DM1CMz8fBcUaY=
+
+Name: javax/mail/util/SharedByteArrayInputStream.class
+SHA1-Digest: VQxsRQiju82Xv4Uit5xaY57k3Ug=
+
+Name: javax/mail/search/FromStringTerm.class
+SHA1-Digest: f/ufGZCO4NBcrNBTbRmqUPF/nUM=
+
+Name: com/sun/mail/imap/DefaultFolder$2.class
+SHA1-Digest: +lqCED6/6uNFE0eCJMU0DqaXbBc=
+
+Name: javax/mail/MessageContext.class
+SHA1-Digest: uoY1e7yrxSCREGI/IWy24JJTNsA=
+
+Name: javax/mail/search/IntegerComparisonTerm.class
+SHA1-Digest: L72mWpFu/n/Xt1pYuoJ55vkP5m0=
+
+Name: javax/mail/search/MessageNumberTerm.class
+SHA1-Digest: bNu581kTcIjQe9mukIjQm2kq7nI=
+
+Name: javax/mail/FolderClosedException.class
+SHA1-Digest: McYYNNUjKB+TPGKFZdL/fg3u8pQ=
+
+Name: javax/mail/internet/ParameterList$ToStringBuffer.class
+SHA1-Digest: hJy7UDHCwINxDoWa5jQ9r2IvVys=
+
+Name: com/sun/mail/imap/AppendUID.class
+SHA1-Digest: jVCyCPXVR75ohyex4/mBbNzJE0U=
+
+Name: javax/mail/Part.class
+SHA1-Digest: x+D9dmGcB1Ba5ohXBEuDwMkzD7A=
+
+Name: javax/mail/internet/ContentDisposition.class
+SHA1-Digest: 3Akj7lR2xraoAhY7fXPyeA952t8=
+
+Name: com/sun/mail/util/BEncoderStream.class
+SHA1-Digest: LADUIOKEyv3Bo/dkLE6DUHF32LA=
+
+Name: javax/mail/search/SizeTerm.class
+SHA1-Digest: zU5FT6bG8BSSPYtdqK86J2v/30k=
+
+Name: com/sun/mail/imap/Rights.class
+SHA1-Digest: dXJhEKG8FUk7pLQk7xEh5WY2tQk=
+
+Name: javax/mail/internet/HeaderTokenizer.class
+SHA1-Digest: Qv7RMhsVB+IPcp2yQdZ1Z/mxRpU=
+
+Name: javax/mail/Address.class
+SHA1-Digest: JFr+CiXO00vZQUktH8s8Q8gJ4jY=
+
+Name: javax/mail/Quota$Resource.class
+SHA1-Digest: m4g+oZIETkCOv5bRy1FISBewPUE=
+
+Name: com/sun/mail/imap/IMAPMessage.class
+SHA1-Digest: gfx986CPqzoyumEaCrIu4yr+SaU=
+
+Name: com/sun/mail/smtp/SMTPSendFailedException.class
+SHA1-Digest: /seu1Fd0pf7JKFdxlPHGoWs6qU8=
+
+Name: com/sun/mail/iap/LiteralException.class
+SHA1-Digest: ZWjHOjgeFnjI7w+p2iQ0BjTHVzA=
+
+Name: javax/mail/internet/MailDateFormat.class
+SHA1-Digest: R1AGsGwwA0PNjWCyP7fYc0fzVI8=
+
+Name: com/sun/mail/util/TraceOutputStream.class
+SHA1-Digest: W5RhhkKVaqUGiwgpLSdlnAHwQGs=
+
+Name: com/sun/mail/smtp/SMTPSSLTransport.class
+SHA1-Digest: rFaym6aBGFuLsILJKJACeJtzlas=
+
+Name: javax/mail/event/MessageCountAdapter.class
+SHA1-Digest: Gol6XhSfMAcSN/gMxqDJ8Wm/jUY=
+
+Name: com/sun/mail/util/UUDecoderStream.class
+SHA1-Digest: 7i64h19sdw5dTICb2JiZMuzmHmE=
+
+Name: com/sun/mail/util/CRLFOutputStream.class
+SHA1-Digest: Tb54MB/Shj32Gh8UI9rWca0rNZg=
+
+Name: com/sun/mail/util/LineOutputStream.class
+SHA1-Digest: z+vezIwfgdAprMxuUPA2Mze55/Q=
+
+Name: com/sun/mail/pop3/SharedByteArrayOutputStream.class
+SHA1-Digest: ipsmL1xGHgRXlINqupU53oHfmBw=
+
+Name: com/sun/mail/imap/protocol/INTERNALDATE.class
+SHA1-Digest: NOMczhqWcTtldBZxH6DWpEgVWfc=
+
+Name: javax/mail/ReadOnlyFolderException.class
+SHA1-Digest: V/hXuotmzvWBYOx4vNUaN3W3Uy8=
+
+Name: javax/mail/MessagingException.class
+SHA1-Digest: OibGe6Bk1UCuqidlsSDGxbXtNvM=
+
+Name: com/sun/mail/iap/ResponseInputStream.class
+SHA1-Digest: Lz2y/fovY5rH5xF/ZljS1932K/0=
+
+Name: com/sun/mail/pop3/Protocol.class
+SHA1-Digest: xtzPWwp8h/SC2OVcIFTz6xMFnsU=
+
+Name: javax/mail/internet/ParameterList.class
+SHA1-Digest: 1tayYHlOh8H09tj3FZEoc/UPLOs=
+
+Name: com/sun/mail/imap/protocol/IMAPAddress.class
+SHA1-Digest: 5jiwcSxzGPbm/PeruotCMhbFRks=
+
+Name: com/sun/mail/imap/IMAPNestedMessage.class
+SHA1-Digest: ESssKOPLvIl//vPJViaOFxf0cAA=
+
+Name: com/sun/mail/imap/IMAPFolder$8.class
+SHA1-Digest: PrmaLP5GVDa1bU2BKdJCABAIq8g=
+
+Name: javax/mail/Service.class
+SHA1-Digest: T5ekExww6fKlCtot0qQzvNTcpKs=
+
+Name: com/sun/mail/imap/protocol/FetchResponse.class
+SHA1-Digest: phCT4tCl8glmRidQg4JC3CEh970=
+
+Name: com/sun/mail/imap/IMAPFolder$9.class
+SHA1-Digest: 2qrZS6hUU5ve6Nf8LMcde9zL0iw=
+
+Name: javax/mail/internet/InternetHeaders$matchEnum.class
+SHA1-Digest: aKJuW9D9G8ZTYtjGrSHutCZ7ny4=
+
+Name: com/sun/mail/imap/protocol/BODY.class
+SHA1-Digest: ht1b7mInoKu0+1bJFk57enZ1W6k=
+
+Name: javax/mail/Session$5.class
+SHA1-Digest: CxQwwN+WLXlR6AZCmmp5kq694Ek=
+
+Name: com/sun/mail/imap/IMAPSSLStore.class
+SHA1-Digest: qJTfQcKgT164vSRm0ThTpw3h9e4=
+
+Name: javax/mail/search/OrTerm.class
+SHA1-Digest: 0L3ry5b8pIL1JWahAsnC3hkalfo=
+
+Name: javax/mail/search/ComparisonTerm.class
+SHA1-Digest: Z6T+Z70MUpb+57U7Z1OsQD/F8L0=
+
+Name: javax/mail/internet/MimeMessage$RecipientType.class
+SHA1-Digest: 1Eh5JBRX1+340kr/GVC3tkF4Z2E=
+
+Name: javax/mail/Session$6.class
+SHA1-Digest: 7SuGqssZ0QcaI1fRpO3mKHV11T0=
+
+Name: javax/mail/AuthenticationFailedException.class
+SHA1-Digest: jUzPyaZAFpZQ9GYWmyaGo1T95E4=
+
+Name: com/sun/mail/imap/Utility$Condition.class
+SHA1-Digest: aOCSO5xDdCImsrOh789ep/dxQGA=
+
+Name: com/sun/mail/imap/protocol/MailboxInfo.class
+SHA1-Digest: 5X3cqw5+lhA6HzgaPu2iqRUfEQQ=
+
+Name: javax/mail/Session$7.class
+SHA1-Digest: 2Am0+ZBd7iVguuZGON2CCRB04no=
+
+Name: javax/mail/Version.class
+SHA1-Digest: gtR+jeZkrZPkJ1065HYjXTrWPOI=
+
+Name: com/sun/mail/handlers/multipart_mixed.class
+SHA1-Digest: VjWQp1cpN3kb7XpzftaEd8ZfM4w=
+
+Name: com/sun/mail/pop3/POP3SSLStore.class
+SHA1-Digest: kW9X3pQTgT1d5lJuGbwX7pNl6sI=
+
+Name: com/sun/mail/pop3/POP3Folder.class
+SHA1-Digest: i3/B1WE/KHx1LMpinHVwP9xMhNA=
+
+Name: com/sun/mail/imap/IMAPFolder$6.class
+SHA1-Digest: VcH0kZOi0O6XODlIdQf6ijaMziM=
+
+Name: com/sun/mail/imap/DefaultFolder.class
+SHA1-Digest: PTKr8wyG+NhG5PvEDD/uKm8IprQ=
+
+Name: com/sun/mail/util/MessageRemovedIOException.class
+SHA1-Digest: IpWXixsybUhch5YQdRU4IDx6PHg=
+
+Name: javax/mail/QuotaAwareStore.class
+SHA1-Digest: ZM1f6K8ehuFmepWKMyQIrdZVKoA=
+
+Name: com/sun/mail/util/ASCIIUtility.class
+SHA1-Digest: u4S0VZfhGNs5T77lA1LRn5ajzno=
+
+Name: com/sun/mail/imap/IMAPFolder$7.class
+SHA1-Digest: sjUn8JhLGJazJBBzYXimVYIwVQM=
+
+Name: javax/mail/search/AddressTerm.class
+SHA1-Digest: Y8yHRhho87IAdaoL297+dzMiax4=
+
+Name: com/sun/mail/pop3/POP3Message.class
+SHA1-Digest: 8d5jFuF9uuap3199FHglO4rUYHg=
+
+Name: com/sun/mail/util/BASE64DecoderStream.class
+SHA1-Digest: s+FHaHbdIrngbySLl6QV2tz5LLo=
+
+Name: javax/mail/internet/MailDateParser.class
+SHA1-Digest: nlxXKt7N50n8wYWKtxQChZ+7O+c=
+
+Name: javax/mail/util/SharedFileInputStream$SharedFile.class
+SHA1-Digest: oLAGYQuw6KindNMMlSMPpVsvr4I=
+
+Name: javax/mail/Session$3.class
+SHA1-Digest: TE7dY6bfPUM2Qt6C5wg4nzJQdmo=
+
+Name: javax/mail/Multipart.class
+SHA1-Digest: MYhcWsBkzAJeIIT7tIm0/ekqw3c=
+
+Name: javax/mail/internet/MimePart.class
+SHA1-Digest: 8EQUQ8hlmtDE2rP2Cnlf9a4/I+4=
+
+Name: javax/mail/Folder$TerminatorEvent.class
+SHA1-Digest: kn28z2E+Ew+6LlqktD9rIIU9e6Y=
+
+Name: javax/mail/internet/UniqueValue.class
+SHA1-Digest: 8RCajc17B53jQXoXjgphRg2eUeg=
+
+Name: com/sun/mail/imap/protocol/Namespaces.class
+SHA1-Digest: L3P94aq69galFxUQaC5hdCOYHts=
+
+Name: com/sun/mail/util/FolderClosedIOException.class
+SHA1-Digest: hGoVNaIw6CRakQCymutI5RQJwXw=
+
+Name: javax/mail/Session$4.class
+SHA1-Digest: ByG/GnBGqBPn7ehBxG67zCI5IIM=
+
+Name: com/sun/mail/imap/IMAPFolder$3.class
+SHA1-Digest: c2DP3X6V+Hci878f9K3BjHxaZus=
+
+Name: javax/mail/internet/MimeUtility.class
+SHA1-Digest: OfdNMn6KKLS2/a8YpEAN5VSbzIE=
+
+Name: com/sun/mail/pop3/Response.class
+SHA1-Digest: bpLHsU17o4U9xL+fi1Z0Xen5AqI=
+
+Name: javax/mail/internet/SharedInputStream.class
+SHA1-Digest: mi8U28kj6/Y4OHdmtVs0Z3VrqU4=
+
+Name: com/sun/mail/iap/ConnectionException.class
+SHA1-Digest: VHH6Z6PfAMW8UwsSMoIFIbaJ8wo=
+
+Name: javax/mail/event/TransportListener.class
+SHA1-Digest: won/eGRrRWazNSpMGPiuzb1r32g=
+
+Name: com/sun/mail/imap/IMAPFolder$4.class
+SHA1-Digest: fAebriwpt7nqSrKAjnvhJCTGrgw=
+
+Name: javax/mail/internet/ParameterList$ParamEnum.class
+SHA1-Digest: BppAneux7nWPRBShzxjjP67HDKg=
+
+Name: com/sun/mail/imap/protocol/ListInfo.class
+SHA1-Digest: oC+bH5oF9etwI8IgFFDgWYwHQB0=
+
+Name: com/sun/mail/handlers/message_rfc822.class
+SHA1-Digest: A+xjGUIVXZ6WEdu3IplDBYR2woU=
+
+Name: com/sun/mail/imap/protocol/SearchSequence.class
+SHA1-Digest: 1kKFJDQ0pNuWSplZYmmmb3bBUcc=
+
+Name: javax/mail/search/ReceivedDateTerm.class
+SHA1-Digest: yOdYIY/+asUp0OzGc7mnqIk55Rs=
+
+Name: com/sun/mail/imap/IMAPFolder$17.class
+SHA1-Digest: XktJz0Z8ALyhALcBQ/iT75hR70E=
+
+Name: javax/mail/search/RecipientStringTerm.class
+SHA1-Digest: 0Vy5S9W0SarPJ1oUSDruW+0Fa1I=
+
+Name: javax/mail/event/MessageChangedEvent.class
+SHA1-Digest: lm3J06GlK+mvQ5tdUuXLfC/fc3o=
+
+Name: com/sun/mail/iap/ByteArray.class
+SHA1-Digest: vbzAVfynAZ+AT4SH++yPaxKlZ/I=
+
+Name: javax/mail/internet/MimeMessage.class
+SHA1-Digest: XRmjjyt7tXYOLyHpuxMEHxofATM=
+
+Name: com/sun/mail/imap/IMAPFolder$5.class
+SHA1-Digest: jIQRrZKicAN58NUrgQ0r2dhKWKg=
+
+Name: javax/mail/search/BodyTerm.class
+SHA1-Digest: 0qK4+SxYfhHj4TU4stEkmWZfKys=
+
+Name: javax/mail/internet/MimeUtility$1$NullInputStream.class
+SHA1-Digest: /qPwF8zUNcgBbLnWsGI0qWq89So=
+
+Name: javax/mail/Session$1.class
+SHA1-Digest: RlWYlaXppLka0tVd2u1PSA21PyY=
+
+Name: com/sun/mail/imap/IMAPFolder$18.class
+SHA1-Digest: ITTli4DVgX41o+smaJAMqyXIWXA=
+
+Name: com/sun/mail/handlers/text_xml.class
+SHA1-Digest: Z3uUaDwTEBMTaFVd9+26CSZw1g0=
+
+Name: javax/mail/Header.class
+SHA1-Digest: 1AKVyPYhNt9KJ99m86V8FQ/w2bM=
+
+Name: javax/mail/event/StoreEvent.class
+SHA1-Digest: /g1R0ZCi6rFuAc+fRF8ymeZXyhU=
+
+Name: com/sun/mail/imap/protocol/MessageSet.class
+SHA1-Digest: ZFU8E2Qbvwjih1tAQ15uK4j41do=
+
+Name: javax/mail/event/FolderListener.class
+SHA1-Digest: saMNBa4iVcbx2/T8y4g4T4KqHsk=
+
+Name: com/sun/mail/pop3/DefaultFolder.class
+SHA1-Digest: oXjMF6WkTIwoBDaoH7U3vtzMnS4=
+
+Name: javax/mail/Session$2.class
+SHA1-Digest: vybbe8tIZEwjQ6TtinICHkMd8cE=
+
+Name: com/sun/mail/imap/IMAPFolder$19.class
+SHA1-Digest: 3FweMbnGH5rSuPP4qDKwI1+LPZ8=
+
+Name: com/sun/mail/imap/IMAPFolder$1.class
+SHA1-Digest: vNw0TD2zEr5EB3GucQm1/pP10NY=
+
+Name: com/sun/mail/iap/Literal.class
+SHA1-Digest: aIOElOfOM+WAgIfllb2ImcfJark=
+
+Name: com/sun/mail/handlers/image_jpeg.class
+SHA1-Digest: MniUmt3VBPjOGv6/d0G3EwKRuz8=
+
+Name: javax/mail/Folder.class
+SHA1-Digest: f7mWhhEZNIS4k77xJZnDU6uUNXQ=
+
+Name: com/sun/mail/imap/IMAPFolder$2.class
+SHA1-Digest: UM9wJCUGuhrr7pITTgJBsoTLLf8=
+
+Name: javax/mail/Session.class
+SHA1-Digest: q59o3siRdldCPF2AClPPA1thUyI=
+
+Name: javax/mail/search/MessageIDTerm.class
+SHA1-Digest: qFPMLX36mtdyNaUlGNZ6s86HcCM=
+
+Name: com/sun/mail/imap/IMAPStore$ConnectionPool.class
+SHA1-Digest: xmQMSYjLWg2/dAC9Gi2xyB31jZk=
+
+Name: com/sun/mail/imap/protocol/RFC822SIZE.class
+SHA1-Digest: DRPQg8NwOkcNDCS14T/YRbUTKkc=
+
+Name: javax/mail/search/RecipientTerm.class
+SHA1-Digest: KjAr/Kc4BPJpW9iF5U0Aebk2yJQ=
+
+Name: com/sun/mail/imap/IMAPFolder$15.class
+SHA1-Digest: 4N52Sdh0hJkX65myVF/VT2iIMUA=
+
+Name: javax/mail/MessageAware.class
+SHA1-Digest: s3vr5tXdhqgPZNf5qz9uxzivKek=
+
+Name: com/sun/mail/imap/protocol/Namespaces$Namespace.class
+SHA1-Digest: T0P5nhAgjzCaDIb+ExEMYecGHLE=
+
+Name: com/sun/mail/imap/IMAPFolder$16.class
+SHA1-Digest: MunhEEhAf6GlQJds9rnhfe4hdM4=
+
+Name: javax/mail/internet/InternetHeaders.class
+SHA1-Digest: nfEREk71GsaCabbSOYT2pIATgVs=
+
+Name: com/sun/mail/imap/IMAPFolder.class
+SHA1-Digest: mjKo3ILpo/2nr9jObVlK9iyqMbA=
+
+Name: com/sun/mail/util/QPDecoderStream.class
+SHA1-Digest: FeqJ3JUq+JXkwxM16TgJr26vmEU=
+
+Name: javax/mail/search/AndTerm.class
+SHA1-Digest: CP3G0pybz44Ormt6NYuUpe2PS4w=
+
+Name: com/sun/mail/imap/IMAPBodyPart.class
+SHA1-Digest: d0Gt3WiMjEUAD0RfI8JcNrA5sy4=
+
+Name: com/sun/mail/imap/IMAPFolder$12.class
+SHA1-Digest: 4ztuOJb4T8mqz3+1igMjVrKuhnE=
+
+Name: com/sun/mail/pop3/Status.class
+SHA1-Digest: ejBr5loACqZ6faFLV/Wn5jIkjX8=
+
+Name: javax/mail/search/FromTerm.class
+SHA1-Digest: WIHKIbmavU5ryokSJNdgnUd2BBs=
+
+Name: com/sun/mail/imap/LengthCounter.class
+SHA1-Digest: fVBXJDMlzm2fS5NrEN2YGVEvXJo=
+
+Name: com/sun/mail/imap/IMAPFolder$ProtocolCommand.class
+SHA1-Digest: 7EhREka21xStHgXUzx3RQetGf4A=
+
+Name: com/sun/mail/imap/IMAPFolder$13.class
+SHA1-Digest: 83hu9faszB2FG/Dwsxo+qIzdE5c=
+
+Name: javax/mail/internet/ContentType.class
+SHA1-Digest: pBX5MmOhfBByj3FpG4EJo5Oqj34=
+
+Name: com/sun/mail/iap/Protocol.class
+SHA1-Digest: sBqYrGhd7Mxi+mjjcXFE0olUSPs=
+
+Name: javax/mail/event/MessageCountListener.class
+SHA1-Digest: d6HJ32eu42/ZrBhoCJMvv3pnSnk=
+
+Name: com/sun/mail/iap/ProtocolException.class
+SHA1-Digest: rErFIOPWNT8mbPRr++xP+S66eHU=
+
+Name: com/sun/mail/imap/IMAPFolder$14.class
+SHA1-Digest: YNlgX3r9ofa8N7RcAE0kA+vkPnU=
+
+Name: javax/mail/Provider.class
+SHA1-Digest: PGsIZzHp79dg2K/CkNUW47MeyAo=
+
+Name: com/sun/mail/smtp/SMTPOutputStream.class
+SHA1-Digest: ucQD1lzP7v4XcF42/zSJu+EhIK0=
+
+Name: com/sun/mail/imap/protocol/Item.class
+SHA1-Digest: RqjGNcgKrBKz8k84CKo+m1Hl1lQ=
+
+Name: com/sun/mail/smtp/SMTPMessage.class
+SHA1-Digest: pNG3i4gvgqiQsy4l/PuG85ngX3M=
+
+Name: com/sun/mail/imap/ACL.class
+SHA1-Digest: Hkhm7M2btZogK8UfwypVe+a4fYE=
+
+Name: com/sun/mail/imap/IMAPMultipartDataSource.class
+SHA1-Digest: SuqL03jm2ZTw4vDvGWCOzabQn2o=
+
+Name: javax/mail/EventQueue$QueueElement.class
+SHA1-Digest: PGss4o+HaqCdnPejlVhxTpJKWnA=
+
+Name: javax/mail/internet/ParameterList$1.class
+SHA1-Digest: HV/ACgeclPbOZlArCpY8zs1to8U=
+
+Name: com/sun/mail/imap/protocol/IMAPProtocol.class
+SHA1-Digest: 8ugrD+JDumiBQ3yLA+7AO5VeFIU=
+
+Name: javax/mail/search/SentDateTerm.class
+SHA1-Digest: o/SMh5hLwiXz1oo+Apq3/hlpPC0=
+
+Name: com/sun/mail/handlers/text_plain.class
+SHA1-Digest: yn8n/RPllvA4y/EyBqOPiU4SKcc=
+
+Name: com/sun/mail/imap/IMAPFolder$FetchProfileItem.class
+SHA1-Digest: jMYorh0omnY4Cr2yRMc+xZMYSAY=
+
+Name: javax/mail/event/MessageChangedListener.class
+SHA1-Digest: xTFT2NZ4bI5AQZ8iheviZnEm1NQ=
+
+Name: com/sun/mail/imap/IMAPFolder$10.class
+SHA1-Digest: 62mJdgR/QWoRchRhCGkpvExIavw=
+
+Name: com/sun/mail/util/QDecoderStream.class
+SHA1-Digest: W+X9jlBOGVpRMbSx5VSPsmuOFcc=
+
+Name: com/sun/mail/imap/IMAPFolder$11.class
+SHA1-Digest: Tmn8fn2au7xegmc5NDYfV0aA1nA=
+
+Name: com/sun/mail/imap/MessageLiteral.class
+SHA1-Digest: 2lq9CkUS0yUjNA/NbB535lyIcdY=
+
+Name: com/sun/mail/util/UUEncoderStream.class
+SHA1-Digest: bowL9nEGKZvKS1OZEvHCray/PSk=
+
+Name: com/sun/mail/imap/IMAPMessage$1$FetchProfileCondition.class
+SHA1-Digest: AX0aVSXHBwDNBzenVGrJ93q/lts=
+
+Name: javax/mail/internet/AddressException.class
+SHA1-Digest: mNrn/kUK1J261pAx/bobZP1HLgQ=
+
+Name: com/sun/mail/imap/protocol/ENVELOPE.class
+SHA1-Digest: CO6c29arED7w+LP2LCxvuNZlCqw=
+
+Name: com/sun/mail/imap/protocol/BASE64MailboxEncoder.class
+SHA1-Digest: aIGqUjZI4/NScZcUEXy7W1u24U0=
+
+Name: javax/mail/internet/NewsAddress.class
+SHA1-Digest: 3iUmbG/WwgCBn3zTbRRfJEbJb3s=
+
+Name: javax/mail/MethodNotSupportedException.class
+SHA1-Digest: DpJsHp2PhM/HazYaTWEfXrZOraU=
+
+Name: javax/mail/search/HeaderTerm.class
+SHA1-Digest: A045Ddc5XJOJs3kIRF0yoESERkY=
+
+Name: javax/mail/event/FolderAdapter.class
+SHA1-Digest: HilNNfPGkadz2ZMFwM1RbL3kggk=
+
+Name: com/sun/mail/smtp/DigestMD5.class
+SHA1-Digest: ewUO5V/rFD09rChoBQE5sn//6u0=
+
+Name: com/sun/mail/util/TraceInputStream.class
+SHA1-Digest: dpJ6wyhO9nIIcXpNM8HNt24WvBg=
+
+Name: javax/mail/FetchProfile.class
+SHA1-Digest: mQ/hoP9Xtvwumyt37SZdSfOTr7o=
+
+Name: javax/mail/Quota.class
+SHA1-Digest: UAHVuUkoVQcBci+CTiZW9tZNWw0=
+
+Name: com/sun/mail/imap/protocol/SaslAuthenticator.class
+SHA1-Digest: Hwjn0c42KALvVzgVMea76kkM7wo=
+
+Name: com/sun/mail/imap/IMAPInputStream.class
+SHA1-Digest: txXaubfUsVrzaFd4Mmrpr+9Hmkg=
+
+Name: javax/mail/StoreClosedException.class
+SHA1-Digest: we8PKF7YRqLxbmj+827DMzbSh3g=
+
+Name: javax/mail/Message$RecipientType.class
+SHA1-Digest: XqhuuYMaRKMyLKWpI1XnKbu8PCs=
+
+Name: javax/mail/FolderNotFoundException.class
+SHA1-Digest: taRGbN6+ciYf5aAHg5ScJV/+yt4=
+
+Name: com/sun/mail/iap/Response.class
+SHA1-Digest: omS3tUwHDbL9hmff/wqugBHh5+g=
+
+Name: javax/mail/util/SharedFileInputStream.class
+SHA1-Digest: hUd87wSAuIDgr3P5jBBvCnvLsxo=
+
+Name: javax/mail/Flags$Flag.class
+SHA1-Digest: 6ALdKA7xzBBn2KnhzEHjU2LqIKU=
+
+Name: javax/mail/search/FlagTerm.class
+SHA1-Digest: v1T+qmYBZeE23MDZ+QuStClsGYw=
+
+Name: com/sun/mail/smtp/SMTPAddressFailedException.class
+SHA1-Digest: K2+xs0qr2Up8E7Y5DAK2Sf9o6jo=
+
+Name: com/sun/mail/imap/protocol/IMAPResponse.class
+SHA1-Digest: gWxc32xgzzAqsvvesucUE+DbATU=
+
+Name: com/sun/mail/imap/protocol/BASE64MailboxDecoder.class
+SHA1-Digest: bcE2E8k/KIdckh4S8v2+uYN43ik=
+
+Name: com/sun/mail/handlers/image_gif.class
+SHA1-Digest: KV4DArJHLLx87FUGMB3Duask3r4=
+
+Name: com/sun/mail/util/SocketFetcher$1.class
+SHA1-Digest: LSDqB7ugK/FOZB2lo9MA5M+Z+ww=
+
+Name: com/sun/mail/imap/protocol/IMAPSaslAuthenticator.class
+SHA1-Digest: XG4AKKZr0KLd6n/WMmTaUyp+Wo8=
+
+Name: javax/mail/internet/MimeBodyPart.class
+SHA1-Digest: W3DkbiyA8Q1Y3DMRB/OtTmZkpL4=
+
+Name: javax/mail/NoSuchProviderException.class
+SHA1-Digest: +JSwIVbcqRFxdS39TIuQW2gj+gM=
+
+Name: com/sun/mail/imap/protocol/RFC822DATA.class
+SHA1-Digest: HWomcqwZNcK0GJtkJ8UqV+P02i0=
+
+Name: com/sun/mail/imap/protocol/IMAPSaslAuthenticator$1.class
+SHA1-Digest: mB2y5dPTvhm+lJkOZ9cjN1MvFfA=
+
+Name: com/sun/mail/imap/protocol/Status.class
+SHA1-Digest: ab59GnvEmZnxTGpZbI7qK9h05ys=
+
+Name: com/sun/mail/imap/protocol/UIDSet.class
+SHA1-Digest: n7vtjwYqRcO6oCz4YMd+0xLhHSs=
+
+Name: com/sun/mail/imap/IMAPStore.class
+SHA1-Digest: GPMx6KRc4RUis8LUm30wyV27YMQ=
+
+Name: javax/mail/event/MailEvent.class
+SHA1-Digest: ZnGNhvNweEJvQaDBsy9G1rLZON4=
+
+Name: javax/mail/event/ConnectionEvent.class
+SHA1-Digest: D7Gwn8fLIjxyytwjfTRBKB2dPHY=
+
+Name: javax/mail/event/StoreListener.class
+SHA1-Digest: XD5EhcD7Ab9Pu5JOBOEJjk7MJQ8=
+
+Name: javax/mail/EventQueue.class
+SHA1-Digest: psBnx2e1fcCXXsllVEMvHvr0JHs=
+
+Name: javax/mail/util/ByteArrayDataSource.class
+SHA1-Digest: n+rZL4h0byv6ErBCTDvrpCu20EY=
+
+Name: com/sun/mail/iap/AString.class
+SHA1-Digest: gzf9V+cu2N5DQazQGJtEsweyHOU=
+
+Name: javax/mail/event/FolderEvent.class
+SHA1-Digest: s2RbTap/WNhJiPQqP/8H6041hdk=
+
+Name: com/sun/mail/iap/Atom.class
+SHA1-Digest: kov8k2LHh/5q2aqXAnoiAS6YWtg=
+
+Name: com/sun/mail/util/BASE64EncoderStream.class
+SHA1-Digest: +h2sZOx9m4oLzDTp55C3nzn+VW8=
+
+Name: javax/mail/IllegalWriteException.class
+SHA1-Digest: jmfgtc+IYCAc9RTJjHn0ZcUASeY=
+
+Name: javax/mail/internet/HeaderTokenizer$Token.class
+SHA1-Digest: 1tZEfMN2PlOBJkETB6R191FLqP0=
+
+Name: javax/mail/internet/MimePartDataSource.class
+SHA1-Digest: HzRwlojz9cL2+MKyryEmYKCbKU8=
+
+Name: javax/mail/event/TransportAdapter.class
+SHA1-Digest: UdBy3FkZui5hAeAR8kXTfs7fuS8=
+
+Name: javax/mail/URLName.class
+SHA1-Digest: DQGv7Jt/2RJhPM+4ySKR+30p6fo=
+
+Name: javax/mail/Service$TerminatorEvent.class
+SHA1-Digest: nOLQOVsRca0f8TaIjCTH2y3Epig=
+
+Name: javax/mail/search/DateTerm.class
+SHA1-Digest: M8lIvkR1MroIjD4SP17MYagAhFY=
+
+Name: com/sun/mail/util/LineInputStream.class
+SHA1-Digest: ALOzLD48s52VQBZfb0x7wUwcv38=
+
+Name: javax/mail/FetchProfile$Item.class
+SHA1-Digest: MromdAFdB7jYyXaA/WeRH2nrNgo=
+
+Name: javax/mail/UIDFolder$FetchProfileItem.class
+SHA1-Digest: qS60xsq/31x+Ax2WU4pIvp5Biek=
+
+Name: javax/mail/Message.class
+SHA1-Digest: kRs6KfAmIijEvcNC4+Ladp9ZfX4=
+
+Name: javax/mail/BodyPart.class
+SHA1-Digest: eSm0IjeEFhc1eDWqgIzhLXRtbiM=
+
+Name: com/sun/mail/handlers/text_html.class
+SHA1-Digest: t3nqjehGlDTq+Xozkk57zAeCKtA=
+
+Name: javax/mail/search/SearchException.class
+SHA1-Digest: WTWROn4VSCwNsa4FVED/Lzpac0A=
+
+Name: javax/mail/MessageRemovedException.class
+SHA1-Digest: NIa5EGRo8g7DZUrxlTk9oJOJZvI=
+
+Name: javax/mail/internet/InternetAddress.class
+SHA1-Digest: Evvul34fXb5D+gaW0HMpj1ZfQjA=
+
+Name: com/sun/mail/imap/protocol/BODYSTRUCTURE.class
+SHA1-Digest: 0g23HPpbopkzMTagpRZ6gDKu5Kc=
+
+Name: javax/mail/UIDFolder.class
+SHA1-Digest: cPamZFxAg7v08H8f/phs2SE2yCA=
+
+Name: com/sun/mail/iap/Argument.class
+SHA1-Digest: 9ltYipeSEH837+ItEJ/rwSuBZgo=
+
+Name: com/sun/mail/pop3/POP3Store.class
+SHA1-Digest: h5eBdz0xcIC2v5tQCe+7yxYfbPU=
+
+Name: javax/mail/search/AddressStringTerm.class
+SHA1-Digest: Y5nvueySc0VEYVgd2OYaZKUi1po=
+
+Name: javax/mail/internet/MimeMultipart.class
+SHA1-Digest: 4uS+dDVqu7c+jqM2tv/sC7pFjHI=
+
+Name: javax/mail/Provider$Type.class
+SHA1-Digest: 9geDhTaqFHYbEF0Y8qp+PQRy3zg=
+
+Name: javax/mail/search/StringTerm.class
+SHA1-Digest: 83j3en4GAWhdpurVYUL3cOD5fJc=
+
+Name: javax/mail/internet/InternetHeaders$InternetHeader.class
+SHA1-Digest: rjlU7/yTCTVgXZRLmYwcbHgOTnQ=
+
+Name: com/sun/mail/iap/BadCommandException.class
+SHA1-Digest: QNwFd7eYv3VkDRWDsO0yCNyU88Q=
+
+Name: com/sun/mail/imap/Rights$Right.class
+SHA1-Digest: tmA9m+p5kxwFpVSwpfrofuPhOVQ=
+
+Name: com/sun/mail/imap/protocol/UID.class
+SHA1-Digest: 3b0h6KnJPoZNBnUMxazhmElcJ1w=
+
+Name: javax/mail/search/SubjectTerm.class
+SHA1-Digest: 4cDCWn1KSandTx7L33hX50KtL5s=
+
+Name: javax/mail/Store.class
+SHA1-Digest: jNER+fqWzUvPgL0PLM5MI6R3HoM=
+
+Name: javax/mail/util/ByteArrayDataSource$DSByteArrayOutputStream.clas
+ s
+SHA1-Digest: lu0MOSc/GcekmrXpD79w2M8PzRA=
+
+Name: javax/mail/event/ConnectionAdapter.class
+SHA1-Digest: 6Hoj/BylK+PK1hbb/mT1aGTIfQs=
+
+Name: com/sun/mail/util/QPEncoderStream.class
+SHA1-Digest: NwH7DpObTpBdiNLhZBdKsX2NKnU=
+
+Name: com/sun/mail/smtp/SMTPAddressSucceededException.class
+SHA1-Digest: X89isyWEYrrRQidgdB9PLHnNLKk=
+
+Name: javax/mail/MultipartDataSource.class
+SHA1-Digest: 1h6Gq8MpeNofK/Azlpu2lb85Rbc=
+
+Name: com/sun/mail/iap/CommandFailedException.class
+SHA1-Digest: 3hHf1PPWALZZm0Z1Wl8E3NlMTf8=
+
+Name: javax/mail/internet/PreencodedMimeBodyPart.class
+SHA1-Digest: fBnRjANLvtXf9YreJGaV6fKbTxo=
+
+Name: javax/mail/Flags.class
+SHA1-Digest: n76rN8rrq3WkCD2NXsGFAtfnH7k=
+
