@@ -75,6 +75,7 @@
     <module>webpages</module>
     <module>chat</module>
     <module>mailinglist</module>
+    <module>infoletter</module>
   </modules>
   
 </project>
