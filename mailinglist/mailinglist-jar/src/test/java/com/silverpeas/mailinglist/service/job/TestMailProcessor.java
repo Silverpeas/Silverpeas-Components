@@ -26,29 +26,32 @@ import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import static com.silverpeas.mailinglist.PathTestUtil.*;
 
 public class TestMailProcessor extends AbstractSingleSpringContextTests {
 
   protected String[] getConfigLocations() {
-    return new String[] { "spring-checker.xml", "spring-notification.xml",
-        "spring-hibernate.xml", "spring-datasource.xml" };
+    return new String[]{"spring-checker.xml", "spring-notification.xml",
+          "spring-hibernate.xml", "spring-datasource.xml"};
   }
-
-  private static final String attachmentPath = "c:\\tmp\\uploads\\componentId\\mailId@silverpeas.com\\lemonde.html";
-
-  private static final String textEmailContent = "Bonjour famille Simpson, j'espère que vous allez bien. "
-      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
-      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer"
-      + "l'homme canon dans la prochaine émission.\nBart";
-
-  private static final String htmlEmailSummary = "Politique Recherchez depuis sur"
-      + " Le Monde.fr A la Une Le Desk Vidéos International *Elections américaines"
-      + " Europe Politique *Municipales & Cantonales 2008 Société Carnet Economie "
-      + "Médias Météo Rendez-vou";
+  private static final String attachmentPath = BUILD_PATH + SEPARATOR +
+      "uploads" + SEPARATOR + "componentId" + SEPARATOR +
+      "mailId@silverpeas.com" + SEPARATOR + "lemonde.html";
+  private static final String textEmailContent =
+      "Bonjour famille Simpson, j'espère que vous allez bien. " +
+      "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
+      "depuis que Tahiti Bob est retourné en prison. Je dois remplacer" +
+      "l'homme canon dans la prochaine émission.\nBart";
+  private static final String htmlEmailSummary =
+      "Politique Recherchez depuis sur" +
+      " Le Monde.fr A la Une Le Desk Vidéos International *Elections américaines" +
+      " Europe Politique *Municipales & Cantonales 2008 Société Carnet Economie " +
+      "Médias Météo Rendez-vou";
 
   protected void onTearDown() {
     try {
-      FileFolderManager.deleteFolder("c:\\tmp\\uploads\\componentId", false);
+      FileFolderManager.deleteFolder(BUILD_PATH + SEPARATOR +
+          "uploads" + SEPARATOR + "componentId", false);
     } catch (UtilException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -81,8 +84,8 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
       MessagingException {
     MailProcessor processor = (MailProcessor) getApplicationContext().getBean(
         "mailProcessor");
-    MimeBodyPart part = new MimeBodyPart(TestMessageChecker.class
-        .getResourceAsStream("lemonde.html"));
+    MimeBodyPart part = new MimeBodyPart(TestMessageChecker.class.
+        getResourceAsStream("lemonde.html"));
     part.setDisposition(Part.ATTACHMENT);
     part.setFileName("lemonde.html");
     part.setHeader("Content-Type", "text/html; charset=ISO-8859-1");
@@ -91,9 +94,10 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     message.setMessageId("mailId@silverpeas.com");
     processor.processMailPart(part, message);
     assertEquals(1, message.getAttachments().size());
-    Attachment attachment = (Attachment) message.getAttachments().iterator()
-        .next();
-    assertEquals(attachmentPath, attachment.getPath());
+    Attachment attachment = (Attachment) message.getAttachments().iterator().
+        next();
+    assertNotNull(attachment.getPath());
+    assertEquals(attachment.getPath(), attachmentPath);
     assertEquals("lemonde.html", attachment.getFileName());
     assertEquals(86170, message.getAttachmentsSize());
     assertEquals(86170, attachment.getSize());
@@ -134,8 +138,8 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
 
   public void testProcessMailPartWithInlineAttachment()
       throws MessagingException, IOException {
-    MimeBodyPart part = new MimeBodyPart(TestMessageChecker.class
-        .getResourceAsStream("lemonde.html"));
+    MimeBodyPart part = new MimeBodyPart(TestMessageChecker.class.
+        getResourceAsStream("lemonde.html"));
     part.setFileName("lemonde.html");
     part.setDisposition(Part.INLINE);
     Message message = new Message();
@@ -145,9 +149,10 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
         "mailProcessor");
     processor.processMailPart(part, message);
     assertEquals(1, message.getAttachments().size());
-    Attachment attachment = (Attachment) message.getAttachments().iterator()
-        .next();
-    assertEquals(attachmentPath, attachment.getPath());
+    Attachment attachment = (Attachment) message.getAttachments().iterator().
+        next();
+    assertNotNull(attachment.getPath());
+    assertEquals(attachment.getPath(), attachmentPath);
     assertEquals("lemonde.html", attachment.getFileName());
     assertEquals(86170, message.getAttachmentsSize());
     assertEquals(86170, attachment.getSize());
@@ -192,26 +197,27 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
   public void testReplaceSpecialChars() {
     MailProcessor processor = (MailProcessor) getApplicationContext().getBean(
         "mailProcessor");
-    String specialString = "Bart Simpson -<23_B blue Street> 73882 Springfield."
-        + "'\\Tel:33#0476898967%Youhou/";
+    String specialString =
+        "Bart Simpson -<23_B blue Street> 73882 Springfield." +
+        "'\\Tel:33#0476898967%Youhou/";
     String cleanString = processor.replaceSpecialChars(specialString);
-    assertEquals("Bart_Simpson___23_B_blue_Street__73882_Springfield."
-        + "__Tel_33_0476898967_Youhou_", cleanString);
+    assertEquals("Bart_Simpson___23_B_blue_Street__73882_Springfield." +
+        "__Tel_33_0476898967_Youhou_", cleanString);
     cleanString = processor.replaceSpecialChars(null);
     assertNotNull(cleanString);
     assertEquals("", cleanString);
   }
 
   public void testSaveAttachment() throws IOException, MessagingException {
-    MimeBodyPart part = new MimeBodyPart(TestMessageChecker.class
-        .getResourceAsStream("lemonde.html"));
+    MimeBodyPart part = new MimeBodyPart(TestMessageChecker.class.
+        getResourceAsStream("lemonde.html"));
     part.setFileName("lemonde.html");
     MailProcessor processor = (MailProcessor) getApplicationContext().getBean(
         "mailProcessor");
     String path = processor.saveAttachment(part, "componentId",
         "mailId@silverpeas.com");
     assertNotNull(path);
-    assertEquals(attachmentPath, path);
+    assertEquals(path, attachmentPath);
     File partFile = new File(path);
     assertTrue(partFile.exists());
     assertTrue(partFile.isFile());
@@ -230,12 +236,12 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     mailingList.checkSender("bart.simpson@silverpeas.com");
     control.setReturnValue(true);
     control.replay();
-    MimeMessage mail = new MimeMessage((Session) applicationContext
-        .getBean("mailSession"));
+    MimeMessage mail = new MimeMessage((Session) applicationContext.getBean(
+        "mailSession"));
     InternetAddress bart = new InternetAddress("bart.simpson@silverpeas.com");
     InternetAddress theSimpsons = new InternetAddress(
         "thesimpsons@silverpeas.com");
-    mail.addFrom(new InternetAddress[] { bart });
+    mail.addFrom(new InternetAddress[]{bart});
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Simple text Email test");
     mail.setText(textEmailContent);
@@ -265,12 +271,12 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     mailingList.checkSender("bart.simpson@silverpeas.com");
     control.setReturnValue(true);
     control.replay();
-    MimeMessage mail = new MimeMessage((Session) applicationContext
-        .getBean("mailSession"));
+    MimeMessage mail = new MimeMessage((Session) applicationContext.getBean(
+        "mailSession"));
     InternetAddress bart = new InternetAddress("bart.simpson@silverpeas.com");
     InternetAddress theSimpsons = new InternetAddress(
         "thesimpsons@silverpeas.com");
-    mail.addFrom(new InternetAddress[] { bart });
+    mail.addFrom(new InternetAddress[]{bart});
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Simple HTML Email test");
     String html = loadHtml();
@@ -302,12 +308,12 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     mailingList.checkSender("bart.simpson@silverpeas.com");
     control.setReturnValue(true);
     control.replay();
-    MimeMessage mail = new MimeMessage((Session) applicationContext
-        .getBean("mailSession"));
+    MimeMessage mail = new MimeMessage((Session) applicationContext.getBean(
+        "mailSession"));
     InternetAddress bart = new InternetAddress("bart.simpson@silverpeas.com");
     InternetAddress theSimpsons = new InternetAddress(
         "thesimpsons@silverpeas.com");
-    mail.addFrom(new InternetAddress[] { bart });
+    mail.addFrom(new InternetAddress[]{bart});
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Attachment HTML Email test");
     Multipart multipart = new MimeMultipart();
@@ -316,8 +322,8 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     body.setContent(html, "text/html");
     body.setHeader("Content-Type", "text/html");
     multipart.addBodyPart(body);
-    MimeBodyPart attachment = new MimeBodyPart(TestMessageChecker.class
-        .getResourceAsStream("lemonde.html"));
+    MimeBodyPart attachment = new MimeBodyPart(TestMessageChecker.class.
+        getResourceAsStream("lemonde.html"));
     attachment.setDisposition(Part.INLINE);
     attachment.setFileName("lemonde.html");
     multipart.addBodyPart(attachment);
@@ -338,8 +344,10 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     assertEquals(86170, message.getAttachmentsSize());
     assertEquals("componentId", message.getComponentId());
     Attachment attach = (Attachment) message.getAttachments().iterator().next();
-    assertEquals("c:\\tmp\\uploads\\componentId\\" + mailId + "\\lemonde.html",
-        attach.getPath());
+    assertNotNull(attach.getPath());
+    assertEquals(attach.getPath(), BUILD_PATH + SEPARATOR +
+        "uploads" + SEPARATOR + "componentId" + SEPARATOR + mailId + SEPARATOR +
+        "lemonde.html");
     File partFile = new File(attach.getPath());
     assertTrue(partFile.exists());
     assertTrue(partFile.isFile());
@@ -384,12 +392,12 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     mailingList.checkSender("bart.simpson@silverpeas.com");
     control.setReturnValue(false);
     control.replay();
-    MimeMessage mail = new MimeMessage((Session) applicationContext
-        .getBean("mailSession"));
+    MimeMessage mail = new MimeMessage((Session) applicationContext.getBean(
+        "mailSession"));
     InternetAddress bart = new InternetAddress("bart.simpson@silverpeas.com");
     InternetAddress theSimpsons = new InternetAddress(
         "thesimpsons@silverpeas.com");
-    mail.addFrom(new InternetAddress[] { bart });
+    mail.addFrom(new InternetAddress[]{bart});
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Simple text Email test");
     mail.setText(textEmailContent);

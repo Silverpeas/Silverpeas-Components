@@ -1,5 +1,6 @@
 package com.silverpeas.mailinglist.service.job;
 
+import com.silverpeas.mailinglist.PathTestUtil;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,22 +26,26 @@ import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import static com.silverpeas.mailinglist.PathTestUtil.*;
 
 public class TestMessageCheckerWithStubs extends AbstractSingleSpringContextTests {
-  private static final String theSimpsonsAttachmentPath = "c:\\tmp\\uploads\\thesimpsons@silverpeas.com\\{0}\\lemonde.html";
 
-  private static final String textEmailContent = "Bonjour famille Simpson, j'espère que vous allez bien. "
-      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
-      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer"
-      + "l'homme canon dans la prochaine émission.\r\nBart";
-
+  private static final String theSimpsonsAttachmentPath = BUILD_PATH + SEPARATOR + "uploads" + SEPARATOR +
+      "thesimpsons@silverpeas.com" + SEPARATOR + "{0}" + SEPARATOR +
+      "lemonde.html";
+  private static final String textEmailContent =
+      "Bonjour famille Simpson, j'espère que vous allez bien. " +
+      "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
+      "depuis que Tahiti Bob est retourné en prison. Je dois remplacer" +
+      "l'homme canon dans la prochaine émission.\r\nBart";
 
   protected String loadHtml() throws IOException {
     StringWriter buffer = null;
     BufferedReader reader = null;
     try {
       buffer = new StringWriter();
-      reader = new BufferedReader(new InputStreamReader(
+      reader =
+          new BufferedReader(new InputStreamReader(
           TestMessageCheckerWithStubs.class.getResourceAsStream("lemonde.html")));
       String line = null;
       while ((line = reader.readLine()) != null) {
@@ -58,8 +63,8 @@ public class TestMessageCheckerWithStubs extends AbstractSingleSpringContextTest
   }
 
   protected String[] getConfigLocations() {
-    return new String[] { "spring-checker.xml",
-        "spring-notification.xml", "spring-fake-services.xml"};
+    return new String[]{"spring-checker.xml",
+          "spring-notification.xml", "spring-fake-services.xml"};
   }
 
   public void testCheckNewMessages() throws MessagingException, IOException {
@@ -68,19 +73,21 @@ public class TestMessageCheckerWithStubs extends AbstractSingleSpringContextTest
     messageChecker.removeListener("componentId");
     messageChecker.removeListener("thesimpsons@silverpeas.com");
     messageChecker.removeListener("theflanders@silverpeas.com");
-    StubMessageListener mockListener1 = new StubMessageListener("thesimpsons@silverpeas.com");
-    StubMessageListener mockListener2 = new StubMessageListener("theflanders@silverpeas.com");
+    StubMessageListener mockListener1 = new StubMessageListener(
+        "thesimpsons@silverpeas.com");
+    StubMessageListener mockListener2 = new StubMessageListener(
+        "theflanders@silverpeas.com");
     messageChecker.addMessageListener(mockListener1);
     messageChecker.addMessageListener(mockListener2);
     MimeMessage mail = new MimeMessage(messageChecker.getMailSession());
     InternetAddress bart = new InternetAddress("bart.simpson@silverpeas.com");
     InternetAddress theSimpsons = new InternetAddress(
         "thesimpsons@silverpeas.com");
-    mail.addFrom(new InternetAddress[] { bart });
+    mail.addFrom(new InternetAddress[]{bart});
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Plain text Email test with attachment");
-    MimeBodyPart attachment = new MimeBodyPart(TestMessageCheckerWithStubs.class
-        .getResourceAsStream("lemonde.html"));
+    MimeBodyPart attachment = new MimeBodyPart(
+        TestMessageCheckerWithStubs.class.getResourceAsStream("lemonde.html"));
     attachment.setDisposition(Part.INLINE);
     attachment.setFileName("lemonde.html");
     MimeBodyPart body = new MimeBodyPart();
@@ -96,7 +103,7 @@ public class TestMessageCheckerWithStubs extends AbstractSingleSpringContextTest
     mail = new MimeMessage(messageChecker.getMailSession());
     bart = new InternetAddress("bart.simpson@silverpeas.com");
     theSimpsons = new InternetAddress("thesimpsons@silverpeas.com");
-    mail.addFrom(new InternetAddress[] { bart });
+    mail.addFrom(new InternetAddress[]{bart});
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Plain text Email test");
     mail.setText(textEmailContent);
@@ -108,14 +115,15 @@ public class TestMessageCheckerWithStubs extends AbstractSingleSpringContextTest
     mail = new MimeMessage(messageChecker.getMailSession());
     bart = new InternetAddress("marge.simpson@silverpeas.com");
     theSimpsons = new InternetAddress("thesimpsons@silverpeas.com");
-    mail.addFrom(new InternetAddress[] { bart });
+    mail.addFrom(new InternetAddress[]{bart});
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Plain text Email test");
     mail.setText(textEmailContent);
     mail.setSentDate(new Date());
     Transport.send(mail);
 
-    assertEquals(3, org.jvnet.mock_javamail.Mailbox.get("thesimpsons@silverpeas.com").size());
+    assertEquals(3, org.jvnet.mock_javamail.Mailbox.get(
+        "thesimpsons@silverpeas.com").size());
 
     messageChecker.checkNewMessages(new Date());
     assertNull(mockListener2.getMessageEvent());
@@ -132,10 +140,10 @@ public class TestMessageCheckerWithStubs extends AbstractSingleSpringContextTest
     assertEquals(91636, message.getAttachmentsSize());
     assertEquals(1, message.getAttachments().size());
     String path = MessageFormat.format(theSimpsonsAttachmentPath,
-        new String[] { messageChecker.getMailProcessor().replaceSpecialChars(
-            message.getMessageId()) });
-    Attachment attached = (Attachment) message.getAttachments().iterator()
-        .next();
+        new String[]{messageChecker.getMailProcessor().replaceSpecialChars(
+          message.getMessageId())});
+    Attachment attached =
+        (Attachment) message.getAttachments().iterator().next();
     assertEquals(path, attached.getPath());
     assertEquals("thesimpsons@silverpeas.com", message.getComponentId());
 

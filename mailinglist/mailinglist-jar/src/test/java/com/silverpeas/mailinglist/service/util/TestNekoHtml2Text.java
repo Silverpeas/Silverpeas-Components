@@ -4,12 +4,18 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 
-import com.silverpeas.mailinglist.service.util.Html2Text;
-
 import junit.framework.TestCase;
 
-public class TestHtml2Text extends TestCase {
-	HtmlCleaner parser = new Html2Text(200);
+import com.silverpeas.mailinglist.service.util.neko.NekoHtmlCleaner;
+
+public class TestNekoHtml2Text extends TestCase {
+  HtmlCleaner parser;
+	@Override
+  protected void setUp() throws Exception {
+    parser = new NekoHtmlCleaner();
+    ((NekoHtmlCleaner)parser).setSummarySize(200);
+  }
+
 
 	public void testParse() throws Exception {
 		String html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">"
@@ -25,20 +31,20 @@ public class TestHtml2Text extends TestCase {
 	}
 
 	public void testParseBigContent() throws Exception {
-		Reader reader = new InputStreamReader(TestHtml2Text.class
+		Reader reader = new InputStreamReader(TestNekoHtml2Text.class
 				.getResourceAsStream("lemonde.html"));
 		parser.parse(reader);
 		String summary = parser.getSummary();
 		assertNotNull(summary);
-		assertEquals("<!------ OAS SETUP end ------> Oa name=\"top\"> Politique < " +
-				"< Recherchez depuis sur Le Monde.fr < <!-- info_sq_1_zone --> " +
-				"A la Une Le Desk Vidéos International *Elections américaines Europe " +
-				"Politique *M", summary);
+		assertEquals("Politique Recherchez depuis sur Le Monde.fr A la Une "
+				+ "Le Desk Vidéos International *Elections américaines Europe "
+				+ "Politique *Municipales & Cantonales 2008 Société Carnet "
+				+ "Economie Médias Météo Rendez-vou", summary);
 
 	}
 	
 	public void testParseInraContent() throws Exception {
-    Reader reader = new InputStreamReader(TestHtml2Text.class
+    Reader reader = new InputStreamReader(TestNekoHtml2Text.class
         .getResourceAsStream("mailInra.html"));
     parser.parse(reader);
     String summary = parser.getSummary();

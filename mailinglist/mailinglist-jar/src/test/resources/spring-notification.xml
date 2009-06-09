@@ -8,7 +8,7 @@
     <property name="locations">
       <list>
         <value>classpath:/com/stratelia/silverpeas/notificationserver/channel/smtp/smtpSettings.properties</value>
-        <value>classpath:/com/silverpeas/mailinglist/notification.properties</value>
+        <value>classpath:/com/silverpeas/mailinglist/notification_postgres.properties</value>
       </list>
     </property>
     <property name="searchSystemEnvironment" value="true" />
