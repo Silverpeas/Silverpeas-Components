@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<recordTemplate>
+	<fieldTemplate>
+		<fieldName>area1</fieldName>
+		<typeName>text</typeName>
+		<displayerName>simpletext</displayerName>
+	</fieldTemplate>
+	<fieldTemplate>
+		<fieldName>image</fieldName>
+		<typeName>file</typeName>
+		<displayerName>image</displayerName>
+		<isReadOnly>true</isReadOnly>
+	</fieldTemplate>
+</recordTemplate>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<publicationTemplate>
+	<name>Modèle XML 2</name>
+	<description>Du texte et une image</description>
+	<image>/weblib/xmlForms/model2.gif</image>
+	<visible>true</visible>
+	<dataFileName>model2/data.xml</dataFileName>
+	<viewFileName>model2/view.xml</viewFileName>
+	<updateFileName>model2/update.xml</updateFileName>
+</publicationTemplate>

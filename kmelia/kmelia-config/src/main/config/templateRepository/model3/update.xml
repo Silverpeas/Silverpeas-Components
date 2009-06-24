@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<recordTemplate>
+	<fieldTemplate>
+		<fieldName>area1</fieldName>
+		<typeName>text</typeName>
+		<displayerName>textarea</displayerName>
+		<isMandatory>true</isMandatory>
+		<label>
+			<labelName>Texte de la première colonne</labelName>
+			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Text of the first column</labelName>
+			<language>en</language>
+		</label>
+		<parameter>
+			<name>rows</name>
+			<value>20</value>
+		</parameter>
+		<parameter>
+			<name>cols</name>
+			<value>60</value>
+		</parameter>
+	</fieldTemplate>
+	<fieldTemplate>
+		<fieldName>area2</fieldName>
+		<typeName>text</typeName>
+		<displayerName>textarea</displayerName>
+		<isMandatory>false</isMandatory>
+		<label>
+			<labelName>Texte de la deuxième colonne</labelName>
+			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Text of the second column</labelName>
+			<language>en</language>
+		</label>
+		<parameter>
+			<name>rows</name>
+			<value>20</value>
+		</parameter>
+		<parameter>
+			<name>cols</name>
+			<value>60</value>
+		</parameter>
+	</fieldTemplate>
+	<fieldTemplate>
+		<fieldName>image</fieldName>
+		<typeName>file</typeName>
+		<displayerName>image</displayerName>
+		<isMandatory>false</isMandatory>
+		<label>
+			<labelName>Image</labelName>
+			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Picture</labelName>
+			<language>en</language>
+		</label>
+	</fieldTemplate>
+</recordTemplate>

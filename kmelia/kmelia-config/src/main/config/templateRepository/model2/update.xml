@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<recordTemplate>
+	<fieldTemplate>
+		<fieldName>area1</fieldName>
+		<typeName>text</typeName>
+		<displayerName>textarea</displayerName>
+		<isMandatory>true</isMandatory>
+		<label>
+			<labelName>Saisie de texte</labelName>
+			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Text entry</labelName>
+			<language>en</language>
+		</label>
+		<parameter>
+			<name>rows</name>
+			<value>20</value>
+		</parameter>
+		<parameter>
+			<name>cols</name>
+			<value>130</value>
+		</parameter>
+	</fieldTemplate>
+	<fieldTemplate>
+		<fieldName>image</fieldName>
+		<typeName>file</typeName>
+		<displayerName>image</displayerName>
+		<isMandatory>false</isMandatory>
+		<label>
+			<labelName>Image</labelName>
+			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Picture</labelName>
+			<language>en</language>
+		</label>
+	</fieldTemplate>
+</recordTemplate>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<publicationTemplate>
+	<name>Modèle XML 4</name>
+	<description>Simple mais efficace</description>
+	<image>/weblib/xmlForms/model4.gif</image>
+	<visible>true</visible>
+	<dataFileName>model4/data.xml</dataFileName>
+	<viewFileName>model4/view.xml</viewFileName>
+	<updateFileName>model4/update.xml</updateFileName>
+</publicationTemplate>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>Kmelia War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>KmeliaRequestRouter</servlet-name>
+    <display-name>KmeliaRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.kmelia.servlets.KmeliaRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>AjaxPublicationsListServlet</servlet-name>
+    <display-name>AjaxPublicationsListServlet</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.kmelia.servlets.AjaxPublicationsListServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>AliasFileServer</servlet-name>
+    <display-name>AliasFileServer</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.kmelia.servlets.AliasFileServer</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>KmeliaRequestRouter</servlet-name>
+    <url-pattern>/Rkmelia/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>KmeliaRequestRouter</servlet-name>
+    <url-pattern>/Rkmax/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>KmeliaRequestRouter</servlet-name>
+    <url-pattern>/Rtoolbox/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AjaxPublicationsListServlet</servlet-name>
+    <url-pattern>/RAjaxPublicationsListServlet/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AliasFileServer</servlet-name>
+    <url-pattern>/AliasFileServer/*</url-pattern>
+  </servlet-mapping>
+</web-app>

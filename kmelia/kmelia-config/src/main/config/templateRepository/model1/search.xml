@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<recordTemplate>
+	<fieldTemplate>
+		<fieldName>area1</fieldName>
+		<typeName>text</typeName>
+		<displayerName>text</displayerName>
+		<label>
+			<labelName>Saisie de texte 1</labelName>
+			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Text entry 1</labelName>
+			<language>en</language>
+		</label>
+	</fieldTemplate>
+	<fieldTemplate>
+		<fieldName>area2</fieldName>
+		<typeName>text</typeName>
+		<displayerName>text</displayerName>
+		<label>
+			<labelName>Saisie de texte 2</labelName>
+			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Text entry 2</labelName>
+			<language>en</language>
+		</label>
+	</fieldTemplate>
+</recordTemplate>

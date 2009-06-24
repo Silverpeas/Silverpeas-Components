@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<publicationTemplate>
+	<name>Modèle XML 5</name>
+	<description>1 Titre et un wysiwyg</description>
+	<image>/weblib/xmlForms/model5.gif</image>
+	<visible>true</visible>
+	<dataFileName>model5/data.xml</dataFileName>
+	<viewFileName>model5/view.xml</viewFileName>
+	<updateFileName>model5/update.xml</updateFileName>
+</publicationTemplate>

@@ -1,0 +1,1 @@
+CREATE INDEX IND_Instance ON SC_Kmelia_ModelUsed (instanceId,modelId);

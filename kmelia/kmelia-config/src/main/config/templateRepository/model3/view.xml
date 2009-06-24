@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<recordTemplate>
+	<fieldTemplate>
+		<fieldName>area1</fieldName>
+		<typeName>text</typeName>
+		<displayerName>simpletext</displayerName>
+		<isMandatory>false</isMandatory>
+	</fieldTemplate>
+	<fieldTemplate>
+		<fieldName>area2</fieldName>
+		<typeName>text</typeName>
+		<displayerName>simpletext</displayerName>
+		<isMandatory>false</isMandatory>
+	</fieldTemplate>
+	<fieldTemplate>
+		<fieldName>image</fieldName>
+		<typeName>file</typeName>
+		<displayerName>image</displayerName>
+		<isMandatory>false</isMandatory>
+		<isReadOnly>true</isReadOnly>
+	</fieldTemplate>
+</recordTemplate>
