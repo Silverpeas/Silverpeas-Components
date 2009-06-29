@@ -77,6 +77,7 @@
     <module>mailinglist</module>
     <module>infoletter</module>
     <module>wiki</module>
+    <module>almanach</module>
   </modules>
   
 </project>
