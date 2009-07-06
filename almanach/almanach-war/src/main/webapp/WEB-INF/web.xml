@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>Almanach War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>AlmanachRequestRouter</servlet-name>
+    <display-name>AlmanachRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.almanach.servlets.AlmanachRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>GoToEvent</servlet-name>
+    <display-name>GoToEvent</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.almanach.servlets.GoToEvent</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>AlmanachRssServlet</servlet-name>
+    <display-name>AlmanachRssServlet</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.almanach.servlets.AlmanachRssServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>AlmanachRequestRouter</servlet-name>
+    <url-pattern>/Ralmanach/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToEvent</servlet-name>
+    <url-pattern>/Event/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AlmanachRssServlet</servlet-name>
+    <url-pattern>/rssalmanach/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+
