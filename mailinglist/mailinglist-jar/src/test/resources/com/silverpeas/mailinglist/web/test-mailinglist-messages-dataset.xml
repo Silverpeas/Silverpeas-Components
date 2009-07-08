@@ -32,6 +32,8 @@
   <st_spaceuserrole id="3" spaceid="3" name="Manager d'espace" rolename="Manager" description="" isinherited="0" />
   <st_spaceuserrole id="4" spaceid="3" name="" rolename="reader" description="" isinherited="0" />
 
+  <st_spaceuserrole_user_rel />
+
   <sc_mailinglist_list id="2c90815b18bc148e0118bc1f86c90002" version="0" componentid="mailinglist45" />
 
   <st_componentinstance id="45" spaceid="3" name="Liste de diffusion" componentname="mailinglist"

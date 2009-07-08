@@ -23,6 +23,8 @@
     isinherited="0" />
   <st_spaceuserrole id="4" spaceid="3" name="" rolename="reader" description="" isinherited="0" />
 
+  <st_spaceuserrole_user_rel />
+
   <st_componentinstance name="Liste archivage non modérée et ouverte avec un gestionnaire" id="100"
     spaceid="3" componentname="mailinglist" lang="fr"
     description="Gestion d'une liste d'archivage non modérée et ouverte avec un gestionnaire" ordernum="5" />

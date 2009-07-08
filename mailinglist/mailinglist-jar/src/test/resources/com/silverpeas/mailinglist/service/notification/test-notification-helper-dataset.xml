@@ -24,6 +24,8 @@
     isinherited="0" />
   <st_spaceuserrole id="4" spaceid="3" name="" rolename="reader" description="" isinherited="0" />
 
+  <st_spaceuserrole_user_rel />
+
   <st_componentinstance name="Liste de diffusion de test" id="100" spaceid="3" componentname="mailingList"
     lang="fr" description="Gestion d'une liste de diffusion" ordernum="5" />
 
