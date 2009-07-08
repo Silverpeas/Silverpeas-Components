@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<recordTemplate>
+	<fieldTemplate>
+		<fieldName>area1</fieldName>
+		<typeName>text</typeName>
+		<isMandatory>false</isMandatory>
+	</fieldTemplate>
+	<fieldTemplate>
+		<fieldName>area2</fieldName>
+		<typeName>text</typeName>
+		<isMandatory>false</isMandatory>
+	</fieldTemplate>
+	<fieldTemplate>
+		<fieldName>area3</fieldName>
+		<typeName>text</typeName>
+		<isMandatory>false</isMandatory>
+	</fieldTemplate>
+	<fieldTemplate>
+		<fieldName>area4</fieldName>
+		<typeName>text</typeName>
+		<isMandatory>false</isMandatory>
+	</fieldTemplate>
+	<fieldTemplate>
+		<fieldName>area5</fieldName>
+		<typeName>text</typeName>
+		<isMandatory>false</isMandatory>
+	</fieldTemplate>
+	<fieldTemplate>
+		<fieldName>area6</fieldName>
+		<typeName>text</typeName>
+		<isMandatory>false</isMandatory>
+	</fieldTemplate>
+</recordTemplate>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<publicationTemplate>
+	<name>Employés</name>
+	<description>Employés</description>
+	<image>/weblib/xmlForms/modelContact1.gif</image>
+	<visible>true</visible>
+	<dataFileName>modelContact1/data.xml</dataFileName>
+	<viewFileName>modelContact1/view.xml</viewFileName>
+	<updateFileName>modelContact1/update.xml</updateFileName>
+</publicationTemplate>

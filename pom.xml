@@ -78,6 +78,7 @@
     <module>infoletter</module>
     <module>wiki</module>
     <module>almanach</module>
+    <module>yellowpages</module>
   </modules>
   
 </project>
