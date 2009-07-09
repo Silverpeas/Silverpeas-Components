@@ -79,6 +79,7 @@
     <module>wiki</module>
     <module>almanach</module>
     <module>yellowpages</module>
+    <module>silvercrawler</module>
   </modules>
   
 </project>

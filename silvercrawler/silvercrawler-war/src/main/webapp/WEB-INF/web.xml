@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app>
+  <display-name>silverCrawler War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>SilverCrawlerRequestRouter</servlet-name>
+    <display-name>SilverCrawlerRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.silvercrawler.servlets.SilverCrawlerRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>SilverCrawlerFileServer</servlet-name>
+    <display-name>SilverCrawlerFileServer</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.silvercrawler.servlets.SilverCrawlerFileServer</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>GoToCrawler</servlet-name>
+    <display-name>GoToCrawler</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.silvercrawler.servlets.GoToCrawler</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SilverCrawlerRequestRouter</servlet-name>
+    <url-pattern>/RsilverCrawler/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>SilverCrawlerFileServer</servlet-name>
+    <url-pattern>/SilverCrawlerFileServer/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToCrawler</servlet-name>
+    <url-pattern>/SubDir/*</url-pattern>
+  </servlet-mapping>
+</web-app>

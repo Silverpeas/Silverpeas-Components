@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<WAComponent>
+  <name>silverCrawler</name>
+  <label>Silvercrawler</label>
+  <description>Le composant SilverCrawler permet aux utilisateurs de naviguer et/ou rechercher des fichiers directement sur un serveur de fichiers.</description>
+  <suite>06 Connecteurs</suite>
+  <visible>@ComponentVisiblesilverCrawler@</visible>
+  <portlet>yes</portlet>
+  <instanceClassName>com.silverpeas.silvercrawler.SilverCrawlerInstanciator</instanceClassName>
+  <Profiles>
+    <Profile name="admin">Gestionnaire</Profile>
+    <Profile name="user">Lecteur</Profile>
+  </Profiles>
+  <Parameters>
+    <Parameter>
+      <ParameterName>directory</ParameterName>
+      <ParameterLabel>Répertoire de base</ParameterLabel>
+      <ParameterValue></ParameterValue>
+      <ParameterSize>25</ParameterSize>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>1</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Chemin du répertoire sur le serveur de fichiers</ParameterHelpFr>
+        <ParameterHelpEn>Directory path</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>maxiSize</ParameterName>
+      <ParameterLabel>Taille maximale (Mo)</ParameterLabel>
+      <ParameterValue>10</ParameterValue>
+      <ParameterSize>5</ParameterSize>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>3</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Taille maximale (en Mo) autorisée lors du téléchargement d'un répertoire. Indiquer 0 pour interdire le téléchargement des répertoires.</ParameterHelpFr>
+        <ParameterHelpEn>Maximum size (in Mo) allowed during directory download. Enter 0 to forbidden directories download.</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>privateSearch</ParameterName>
+      <ParameterLabel>Moteur de recherche dédié (O/N)</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>4</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Si ce paramètre est activé, les fichiers indexés ne seront pas retrouvables par le moteur de recherche général mais uniquement par le moteur de recherche dédié à ce composant.</ParameterHelpFr>
+        <ParameterHelpEn>If this parameter is enabled, indexed files will not be findable by global search engine but only by the dedicated search engine of this component.</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>allowedNav</ParameterName>
+      <ParameterLabel>Navigation autorisée (O/N)</ParameterLabel>
+      <ParameterValue>yes</ParameterValue>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>5</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Permet d'autoriser la navigation pour les lecteurs</ParameterHelpFr>
+        <ParameterHelpEn>Allows users to browse directories</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>periodicIndex</ParameterName>
+      <ParameterLabel>Indexation périodique (O/N)</ParameterLabel>
+      <ParameterValue>yes</ParameterValue>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>6</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Permet une indexation périodique des fichiers et répertoires</ParameterHelpFr>
+        <ParameterHelpEn>Allows to index files and directories periodically</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>nbMaxDirectoriesByPage</ParameterName>
+      <ParameterLabel>Nombre maxi de répertoires affichés</ParameterLabel>
+      <ParameterValue>10</ParameterValue>
+      <ParameterSize>5</ParameterSize>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>7</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Nombre maximum de répertoires qui seront affichés par page.</ParameterHelpFr>
+        <ParameterHelpEn>Maximum number of directories visible by page.</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>nbMaxFilesByPage</ParameterName>
+      <ParameterLabel>Nombre maxi de fichiers affichés</ParameterLabel>
+      <ParameterValue>10</ParameterValue>
+      <ParameterSize>5</ParameterSize>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>8</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Nombre maximum de fichiers qui seront affichés par page.</ParameterHelpFr>
+        <ParameterHelpEn>Maximum number of files visible by page.</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+  </Parameters>
+</WAComponent>
