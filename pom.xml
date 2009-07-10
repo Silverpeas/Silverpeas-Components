@@ -81,6 +81,7 @@
     <module>yellowpages</module>
     <module>silvercrawler</module>
     <module>resources-manager</module>
+    <module>process-manager</module>
   </modules>
   
 </project>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+  <name>ficheArrivantINRA</name>
+  <label>Fiches de renseignement INRA</label>
+  <description>Processus : Saisie de fiches de renseignements</description>
+  <suite>05 Workflow</suite>
+  <visible>yes</visible>
+   <portlet>no</portlet>
+  <requestRouter>RprocessManager</requestRouter>
+  <instanceClassName>com.silverpeas.processManager.ProcessManagerInstanciator</instanceClassName>
+  <Profiles>
+    <Profile name="unites">Unites</Profile>
+	<Profile name="bureauPersonnel">Bureau du personnel</Profile>
+    <Profile name="serviceEIC">Service EIC</Profile>
+    <Profile name="serviceTelephonie">Service telephonie</Profile>
+    <Profile name="serviceAcces">Service acces</Profile>
+    <Profile name="serviceBadgeuse">Service badgeuse</Profile>
+	<Profile name="serviceCantine">Service cantine</Profile>
+    <Profile name="supervisor">Superviseurs</Profile>
+  </Profiles>
+  <Parameters>
+    <Parameter>
+       <ParameterName>XMLFileName</ParameterName>
+       <ParameterLabel>Modèle abstrait</ParameterLabel>
+       <ParameterValue>INRA/ArrivantINRA.xml</ParameterValue>
+       <ParameterMandatory>Y</ParameterMandatory>
+    </Parameter>
+	<Parameter>
+		<ParameterName>attachmentTabEnable</ParameterName>
+		<ParameterLabel>Onglet Fichiers joints</ParameterLabel>
+		<ParameterValue>no</ParameterValue>
+		<ParameterMandatory>Y</ParameterMandatory>
+		<ParameterType>checkbox</ParameterType>
+		<ParameterUpdatable>never</ParameterUpdatable>
+		<ParameterOrder>12</ParameterOrder>
+	</Parameter>
+  </Parameters>
+</WAComponent>

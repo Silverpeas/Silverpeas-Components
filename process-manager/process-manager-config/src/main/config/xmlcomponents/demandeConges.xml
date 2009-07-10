@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+  <name>demandeConges</name>
+  <requestRouter>RprocessManager</requestRouter>
+  <label>Processus 'Gestion des congés'</label>
+  <description>Permet de gérer le processus de demande et acceptation des congés</description>
+  <suite>05 Workflow</suite>
+  <visible>@ComponentVisibleDemandeConges@</visible>
+   <portlet>no</portlet>
+  <instanceClassName>com.silverpeas.processManager.ProcessManagerInstanciator</instanceClassName>
+  <Profiles>
+    <Profile name="Employe">Demandeur</Profile>
+    <Profile name="Responsable">Responsable</Profile>
+    <Profile name="Secretaire">Secrétaire</Profile>
+    <Profile name="supervisor">Superviseur</Profile>
+  </Profiles>
+  <Parameters>
+    <Parameter>
+       <ParameterName>XMLFileName</ParameterName>
+       <ParameterLabel>Modèle de procédures</ParameterLabel>
+       <ParameterValue>DemandeConges/DemandeConges.xml</ParameterValue>
+       <ParameterMandatory>Y</ParameterMandatory>
+    </Parameter>
+  </Parameters>
+
+</WAComponent>

@@ -1,0 +1,5 @@
+<!DOCTYPE databases PUBLIC "-//EXOLAB/Castor JDO Configuration DTD Version 1.0//EN" "http://castor.exolab.org/jdo-conf.dtd">
+<database name="fast_Silverpeas" engine="postgresql" >
+  <jndi name="jdbc/Silverpeas" />
+  <mapping href="file:///D:/Silverpeas/KMEdition/Bus/workflowEngine/Others/instanceManager/fast_mapping.xml" />
+</database>

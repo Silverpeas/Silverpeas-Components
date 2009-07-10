@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+  <name>ficheOADM</name>
+  <label>Rédaction de fiches</label>
+  <description>Processus : Rédaction de fiche OADM</description>
+  <suite>05 Workflow</suite>
+  <visible>yes</visible>
+   <portlet>no</portlet>
+  <requestRouter>RprocessManager</requestRouter>
+  <instanceClassName>com.silverpeas.processManager.ProcessManagerInstanciator</instanceClassName>
+  <Profiles>
+    <Profile name="administrateur">Administrateurs</Profile>
+    <Profile name="expert">Auteurs Experts </Profile>
+    <Profile name="conseilSci">Conseil Scientifique</Profile>
+    <Profile name="valideurSci">Valideurs Scientifiques</Profile>
+    <Profile name="redactionMed">Rédaction Médicale</Profile>
+    <Profile name="webmaster">Webmaster</Profile>
+    <Profile name="supervisor">Superviseurs</Profile>
+  </Profiles>
+  <Parameters>
+    <Parameter>
+       <ParameterName>XMLFileName</ParameterName>
+       <ParameterLabel>Modèle abstrait</ParameterLabel>
+       <ParameterValue>OADM/oadm.xml</ParameterValue>
+       <ParameterMandatory>Y</ParameterMandatory>
+    </Parameter>
+    <Parameter>
+    	<ParameterName>hideReturn</ParameterName>
+        <ParameterLabel>Masquer les retours (O/N)</ParameterLabel>
+        <ParameterValue>no</ParameterValue>
+        <ParameterMandatory>N</ParameterMandatory>
+		<ParameterType>checkbox</ParameterType>
+		<ParameterUpdatable>always</ParameterUpdatable>
+		<ParameterOrder>2</ParameterOrder>
+	    <ParameterHelp>
+			<ParameterHelpFr>Permet aux utilisateurs de ne plus voir les boutons retour sur les onglets action</ParameterHelpFr>
+			<ParameterHelpEn></ParameterHelpEn>
+	    </ParameterHelp>
+    </Parameter>
+	<Parameter>
+		<ParameterName>versionControl</ParameterName>
+		<ParameterLabel>Versioning</ParameterLabel>
+		<ParameterValue>yes</ParameterValue>
+		<ParameterMandatory>Y</ParameterMandatory>
+		<ParameterType>checkbox</ParameterType>
+		<ParameterUpdatable>never</ParameterUpdatable>
+		<ParameterOrder>11</ParameterOrder>
+		<ParameterHelp>
+			<ParameterHelpFr>Permet de gérer les versions des fichiers joints. Ce paramêtre n'est modifiable qu'à la création de l'instance</ParameterHelpFr>
+			<ParameterHelpEn></ParameterHelpEn>
+		</ParameterHelp>
+	</Parameter>
+
+	<Parameter>
+		<ParameterName>attachmentTabEnable</ParameterName>
+		<ParameterLabel>Onglet Fichiers joints</ParameterLabel>
+		<ParameterValue>yes</ParameterValue>
+		<ParameterMandatory>Y</ParameterMandatory>
+		<ParameterType>checkbox</ParameterType>
+		<ParameterUpdatable>never</ParameterUpdatable>
+		<ParameterOrder>12</ParameterOrder>
+	</Parameter>
+  </Parameters>
+</WAComponent>

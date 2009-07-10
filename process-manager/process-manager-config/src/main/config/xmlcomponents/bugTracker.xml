@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+  <name>bugTracker</name>
+  <label>Bug Tracker</label>
+  <description>Procédure Silverpeas : suivi de bugs</description>
+  <suite>05 Workflow</suite>
+  <visible>@ComponentVisibleBugTracker@</visible>
+   <portlet>no</portlet>
+  <requestRouter>RprocessManager</requestRouter>  <instanceClassName>com.silverpeas.processManager.ProcessManagerInstanciator</instanceClassName>
+  <Profiles>
+    <Profile name="Sender">Emetteur</Profile>
+    <Profile name="Qualificator">Qualifieur</Profile>
+    <Profile name="Prioritisator">Prioritisateur</Profile>
+    <Profile name="Corrector">Correcteur</Profile>
+    <Profile name="Validator">Valideur</Profile>
+    <Profile name="Viewer">Lecteur</Profile>
+    <Profile name="Customer">Client</Profile>
+    <Profile name="supervisor">Superviseur</Profile>
+  </Profiles>
+  <Parameters>
+    <Parameter>
+       <ParameterName>XMLFileName</ParameterName>
+       <ParameterLabel>Modèle abstrait</ParameterLabel>
+       <ParameterValue>BugTracker/BugTracker.xml</ParameterValue>
+       <ParameterMandatory>Y</ParameterMandatory>
+    </Parameter>
+  </Parameters>
+
+</WAComponent>

@@ -1,0 +1,737 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<processModel>
+    <roles>
+        <role name="supervisor">
+            <label role="supervisor" lang="fr"/>
+        </role>
+        <role name="administrateur">
+            <label>Administrateur</label>
+        </role>
+        <role name="expert">
+            <label>Auteur Expert</label>
+        </role>
+        <role name="conseilSci">
+            <label>Conseil Scientifique</label>
+        </role>
+        <role name="valideurSci">
+            <label>Valideur Scientifique</label>
+        </role>
+        <role name="redactionMed">
+            <label>Rédaction Médicale</label>
+        </role>
+        <role name="webmaster">
+            <label>Webmaster ADMp</label>
+        </role>
+    </roles>
+    
+    <!-- PRESENTATION DES PROCEDURES EN COURS-->
+	<presentation>
+		<title>${folder.titre} (${action.emission.date})</title>
+	</presentation>
+	
+	<dataFolder>
+        <item computed="false" name="titre">
+            <label role="default" lang="default">Titre</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="description">
+            <label role="default" lang="default">Description</label>
+            <type>text</type>
+            <readonly>false</readonly>
+			<param name="rows" value="4"/>
+			<param name="cols" value="50"/>
+        </item>
+        <item computed="false" name="ae_affectation">
+            <label role="default" lang="default">AE Responsable de la sélection du binôme</label>
+            <type>user</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="ae_redaction">
+            <label role="default" lang="default">AE responsable de la rédaction</label>
+            <type>user</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="ae_relecture">
+            <label role="default" lang="default">AE responsable de la relecture</label>
+            <type>user</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="ficheInitiale">
+            <label role="default" lang="default">Fiche initiale</label>
+            <type>file</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="remarques">
+            <label role="default" lang="default">Remarques</label>
+            <type>text</type>
+            <readonly>false</readonly>
+			<param name="rows" value="4"/>
+			<param name="cols" value="50"/>
+        </item>
+		<item computed="false" name="vs_validation">
+            <label role="default" lang="default">Valideur Scientifique responsable de la validation</label>
+            <type>user</type>
+            <readonly>false</readonly>
+        </item>
+		<item computed="false" name="remarquesValideurScientifique">
+            <label role="default" lang="default">Remarques de validation scientifique</label>
+            <type>text</type>
+            <readonly>false</readonly>
+			<param name="rows" value="4"/>
+			<param name="cols" value="50"/>
+        </item>
+		<item computed="false" name="rm_validation">
+            <label role="default" lang="default">Valideur de rédaction médical responsable de la validation</label>
+            <type>user</type>
+            <readonly>false</readonly>
+        </item>
+		<item computed="false" name="remarquesRedactionMedicale">
+            <label role="default" lang="default">Remarques de rédaction médicale finale</label>
+            <type>text</type>
+            <readonly>false</readonly>
+			<param name="rows" value="4"/>
+			<param name="cols" value="50"/>
+        </item>
+		<item computed="false" name="remarquesRedaction">
+            <label role="default" lang="default">Remarques de rédaction</label>
+            <type>text</type>
+            <readonly>false</readonly>
+			<param name="rows" value="4"/>
+			<param name="cols" value="50"/>
+        </item>
+		<item computed="false" name="remarquesAffectation">
+            <label role="default" lang="default">Remarques d'affectation</label>
+            <type>text</type>
+            <readonly>false</readonly>
+			<param name="rows" value="4"/>
+			<param name="cols" value="50"/>
+        </item>
+    </dataFolder>
+	
+    <states>
+        <state id="1" name="EnAffectation" timeoutAction="relanceAffectation" timeoutInterval="168">
+            <label role="default" lang="default">Fiche : En sélection du binôme</label>
+            <workingUsers>
+				<relatedUser folderItem="ae_affectation" role="expert"/>
+			</workingUsers>
+            <interestedUsers>
+				<relatedUser folderItem="ae_affectation" role="expert"/>
+				<userInRole name="administrateur"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+                <allow action="affecter"/>
+            </allowedActions>
+        </state>
+        <state id="2" name="EnVerificationAffectation" timeoutAction="relanceVerifAffectation" timeoutInterval="48">
+            <label role="default" lang="default">Fiche : En vérification de sélection de binôme</label>
+            <workingUsers>
+				<userInRole name="administrateur"/>
+            </workingUsers>
+            <interestedUsers>
+				<relatedUser folderItem="ae_affectation" role="expert"/>
+				<userInRole name="administrateur"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+                <allow action="soumettreRedaction"/>
+				<allow action="modifRedaction"/>
+            </allowedActions>
+        </state>
+        <state id="3" name="EnRedaction" timeoutAction="relanceRedaction" timeoutInterval="504">
+            <label role="default" lang="default">Fiche : En rédaction</label>
+            <workingUsers>
+				<relatedUser folderItem="ae_redaction" role="expert"/>
+            </workingUsers>
+            <interestedUsers>
+				<relatedUser folderItem="ae_affectation" role="expert"/>
+				<relatedUser folderItem="ae_redaction" role="expert"/>
+				<userInRole name="administrateur"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+                <allow action="soumettreRelecture"/>
+				<allow action="retourVerificationAffectation"/>
+            </allowedActions>
+        </state>
+        <state id="4" name="EnRelecture" timeoutAction="relanceRelecture" timeoutInterval="168">
+            <label role="default" lang="default">Fiche : En relecture</label>
+            <workingUsers>
+				<relatedUser folderItem="ae_relecture" role="expert"/>
+            </workingUsers>
+            <interestedUsers>
+				<relatedUser folderItem="ae_affectation" role="expert"/>
+				<relatedUser folderItem="ae_redaction" role="expert"/>
+				<relatedUser folderItem="ae_relecture" role="expert"/>
+				<userInRole name="administrateur"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+                <allow action="soumettreRedactionMedicalePourAffectation"/>
+				<allow action="corrigerRedaction"/>
+            </allowedActions>
+        </state>
+		<state id="5" name="EnRedactionMedicalePourAffectation" timeoutAction="relanceRedactionMedicalePourAffectation" timeoutInterval="168">
+            <label role="default" lang="default">Fiche : En sélection du valideur scientifique</label>
+            <workingUsers>
+				<userInRole name="redactionMed"/>
+            </workingUsers>
+            <interestedUsers>
+				<relatedUser folderItem="ae_affectation" role="expert"/>
+				<relatedUser folderItem="ae_redaction" role="expert"/>
+				<relatedUser folderItem="ae_relecture" role="expert"/>
+				<userInRole name="administrateur"/>
+				<userInRole name="redactionMed"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+                <allow action="soumettreValidation"/>
+				<allow action="corrigerRedaction"/>
+            </allowedActions>
+        </state>
+		<state id="6" name="EnValidationScientifique" timeoutAction="relanceValidationScientifique" timeoutInterval="168">
+            <label role="default" lang="default">Fiche : En validation scientifique</label>
+            <workingUsers>
+				<relatedUser folderItem="vs_validation" role="valideurSci"/>
+            </workingUsers>
+            <interestedUsers>
+				<relatedUser folderItem="ae_affectation" role="expert"/>
+				<relatedUser folderItem="ae_redaction" role="expert"/>
+				<relatedUser folderItem="ae_relecture" role="expert"/>
+				<userInRole name="administrateur"/>
+				<userInRole name="conseilSci"/>
+				<userInRole name="valideurSci"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+                <allow action="soumettreRedactionMedicale"/>
+				<allow action="corriger"/>
+            </allowedActions>
+        </state>
+        <state id="7" name="EnCorrection">
+            <label role="default" lang="default">Fiche : En correction</label>
+            <workingUsers>
+				<relatedUser folderItem="ae_redaction" role="expert"/>
+            </workingUsers>
+            <interestedUsers>
+				<relatedUser folderItem="ae_affectation" role="expert"/>
+				<relatedUser folderItem="ae_redaction" role="expert"/>
+				<relatedUser folderItem="ae_relecture" role="expert"/>
+				<userInRole name="administrateur"/>
+				<userInRole name="conseilSci"/>
+				<userInRole name="valideurSci"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+				<allow action="soumettreRelecture"/>
+            </allowedActions>
+        </state>
+		<state id="8" name="EnRedactionMedicale" timeoutAction="relanceRedactionMedicale" timeoutInterval="168">
+            <label role="default" lang="default">Fiche : En mise en page par la rédaction médicale</label>
+            <workingUsers>
+				<userInRole name="redactionMed"/>
+            </workingUsers>
+            <interestedUsers>
+				<relatedUser folderItem="ae_affectation" role="expert"/>
+				<relatedUser folderItem="ae_redaction" role="expert"/>
+				<relatedUser folderItem="ae_relecture" role="expert"/>
+				<userInRole name="administrateur"/>
+				<userInRole name="conseilSci"/>
+				<userInRole name="valideurSci"/>
+				<userInRole name="redactionMed"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+                <allow action="soumettreRedactionMedicaleFinale"/>
+				<allow action="correctionValideurScientifique"/>
+            </allowedActions>
+        </state>
+        <state id="9" name="EnRedactionMedicaleFinale" timeoutAction="relanceRedactionMedicaleFinale" timeoutInterval="168">
+            <label role="default" lang="default">Fiche : En attente de validation finale</label>
+            <workingUsers>
+				<relatedUser folderItem="rm_validation" role="redactionMed"/>
+            </workingUsers>
+            <interestedUsers>
+				<relatedUser folderItem="ae_affectation" role="expert"/>
+				<relatedUser folderItem="ae_redaction" role="expert"/>
+				<relatedUser folderItem="ae_relecture" role="expert"/>
+				<userInRole name="administrateur"/>
+				<userInRole name="conseilSci"/>
+				<userInRole name="valideurSci"/>
+				<userInRole name="redactionMed"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+                <allow action="valider"/>
+				<allow action="correctionRedactionMedicale"/>
+            </allowedActions>
+        </state>
+        <state id="11" name="Validee">
+            <label role="default" lang="default">Fiche : Validée</label>
+            <workingUsers/>
+            <interestedUsers>
+				<relatedUser folderItem="ae_affectation" role="expert"/>
+				<relatedUser folderItem="ae_redaction" role="expert"/>
+				<relatedUser folderItem="ae_relecture" role="expert"/>
+				<userInRole name="administrateur"/>
+				<userInRole name="conseilSci"/>
+				<userInRole name="valideurSci"/>
+				<userInRole name="redactionMed"/>
+				<userInRole name="webmaster"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+        </state>
+    </states>
+    <actions>
+        <action kind="create" form="emissionForm" name="emission">
+			<label>Rédiger une fiche</label>
+			<allowedUsers>
+				<userInRole name="administrateur"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="1">
+                    <kill>false</kill>
+                    <set state="EnAffectation"/>
+                    <notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;Merci de définir le binôme qui rédigera la fiche intitulée '${folder.titre}'&#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<relatedUser folderItem="ae_affectation" role="expert"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+        <action kind="update" form="affectationForm" name="affecter">
+			<label>Sélectionner un binôme</label>
+			<allowedUsers>
+				<relatedUser folderItem="ae_affectation" role="expert"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="2">
+                    <kill>false</kill>
+                    <set state="EnVerificationAffectation"/>
+                    <notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;Merci de soumettre en rédaction ou en mise à jour la fiche intitulée '${folder.titre}'.&#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<userInRole name="administrateur"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" form="retourForm" name="retourVerificationAffectation">
+			<label>Retour en affectation</label>
+			<allowedUsers>
+				<relatedUser folderItem="ae_affectation" role="expert"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="8">
+                    <kill>false</kill>
+                    <set state="EnVerificationAffectation"/>
+                    <notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;La fiche intitulée '${folder.titre}' vous a été renvoyée par le medecin en charge de la rédaction sur le site http://oadm.silverpeas.com.. Merci de modifier les affectations et de la soumettre de nouveau en rédaction. &#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<userInRole name="administrateur"/>	
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+        <action kind="update" name="soumettreRedaction">
+			<label>Soumettre la fiche en rédaction ou mise à jour</label>
+			<allowedUsers>
+				<userInRole name="administrateur"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="3">
+                    <kill>false</kill>
+                    <set state="EnRedaction"/>
+					<notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;La fiche intitulée '${folder.titre}' vient de vous être envoyée sur le site http://oadm.silverpeas.com.&#10;&#10; Merci de la rédiger puis de la soumettre en relecture en suivant la procédure suivante :&#10;  -	Cliquez sur l'onglet FICHIERS JOINTS pour mettre en ligne la fiche et les documents associés sur lesquels vous avez travaillés &#10; -	Cliquez sur l'onglet ACTION (en haut à droite de la page)&#10; -	Cliquez sur 'soumettre en relecture'  &#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<relatedUser folderItem="ae_redaction" role="expert"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" form="affectationForm" name="modifRedaction">
+			<label>Modifier les Auteurs Experts</label>
+			<allowedUsers>
+				<userInRole name="administrateur"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="4">
+                    <kill>false</kill>
+                    <set state="EnRedaction"/>
+                    <notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;La fiche intitulée '${folder.titre}' vient de vous être envoyée sur le site http://oadm.silverpeas.com.&#10;&#10; Merci de la rédiger puis de la soumettre en relecture en suivant la procédure suivante :&#10; -	Cliquez sur l'onglet ACTION (en haut à droite de la page)&#10; -	Cliquez sur 'soumettre en relecture'  &#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<relatedUser folderItem="ae_redaction" role="expert"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" name="soumettreRelecture">
+			<label>Soumettre en relecture</label>
+           <allowedUsers>
+				<relatedUser folderItem="ae_redaction" role="expert"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="5">
+                    <kill>false</kill>
+                    <set state="EnRelecture"/>
+                    <notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;La fiche intitulée '${folder.titre}' et ses documents complémentaires éventuels, vous ont été envoyés en relecture sur le site : http://oadm.silverpeas.com.&#10;&#10; Merci de la relire puis de la soumettre à la rédaction médicale en suivant la procédure suivante :&#10; -	Cliquez sur l'onglet ACTION (en haut à droite de la page)&#10; -	Cliquez sur 'soumettre à la rédaction médicale et validation'.&#10; Ou si vous avez des corrections à faire apporter sur cette fiche par le rédacteur, cliquer sur 'Retour au rédacteur'. vos commentaires peuvent être ajoutés dans la zone MESSAGE. &#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<relatedUser folderItem="ae_relecture" role="expert"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" name="soumettreRedactionMedicalePourAffectation">
+			<label>Soumettre à rédaction médicale et validation</label>
+           <allowedUsers>
+				<relatedUser folderItem="ae_relecture" role="expert"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="6">
+                    <kill>false</kill>
+                    <set state="EnRedactionMedicalePourAffectation"/>
+                    <notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;La fiche intitulée '${folder.titre}' vous a été envoyée par le relecteur. Merci de lui soumettre un valideur scientifique. &#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<userInRole name="redactionMed"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" form="redactionMedicalePourAffectationForm" name="soumettreValidation">
+			<label>Affectation membre du conseil scientifique pour validation </label>
+           <allowedUsers>
+				<userInRole name="redactionMed"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="7">
+                    <kill>false</kill>
+                    <set state="EnValidationScientifique"/>
+                    <notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;La fiche intitulée '${folder.titre}' vous a été envoyée sur le site http://oadm.silverpeas.com.&#10;&#10; Merci de la corriger puis de la remettre à la rédaction médicale en suivant la procédure suivante :&#10; -	Cliquez sur l'onglet ACTION (en haut à droite de la page)&#10; -	Cliquez sur 'fiche validée et envoi à la rédaction médicale'&#10; ou sur 'soumettre en correction au rédacteur', si vous désirez apporter des corrections sur cette fiche. Vos commentaires peuvent être ajoutés dans la zone 'REMARQUES'.   &#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<relatedUser folderItem="vs_validation" role="valideurSci"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+        <action kind="update" form="correctionForm" name="corriger">
+			<label>Soumettre en correction au rédacteur</label>
+			<allowedUsers>
+				<relatedUser folderItem="vs_validation" role="valideurSci"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="8">
+                    <kill>false</kill>
+                    <set state="EnCorrection"/>
+                    <notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;La fiche intitulée '${folder.titre}'vous a été renvoyée pour correction par le conseil de validation scientifique sur le site http://oadm.silverpeas.com.. Merci de la corriger selon les commentaires qui vous ont été signalés.&#10;&#10; Lorsque vos rectifications seront terminées, veuillez de nouveau la soumettre en relecture en suivant la procédure suivante :&#10; -	Cliquez sur l'onglet ACTION (en haut à droite de la page)&#10; -	Cliquez sur 'soumettre en relecture'  &#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<relatedUser folderItem="ae_redaction" role="expert"/>	
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" form="correctionRedactionForm" name="corrigerRedaction">
+			<label>Soumettre en correction au rédacteur</label>
+			<allowedUsers>
+				<relatedUser folderItem="ae_relecture" role="expert"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="8">
+                    <kill>false</kill>
+                    <set state="EnCorrection"/>
+                    <notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;La fiche intitulée '${folder.titre}' vous a été renvoyée pour correction sur le site http://oadm.silverpeas.com.. Merci de la corriger selon les commentaires qui vous ont été signalés.&#10;&#10; Lorsque vos rectifications seront terminées, veuillez de nouveau la soumettre en relecture en suivant la procédure suivante :&#10; -	Cliquez sur l'onglet ACTION (en haut à droite de la page)&#10; -	Cliquez sur 'soumettre en relecture'  &#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<relatedUser folderItem="ae_redaction" role="expert"/>	
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+        <action kind="update" name="soumettreRedactionMedicale">
+			<label>Fiche validée et envoi à la rédaction médicale </label>
+			<allowedUsers>
+				<relatedUser folderItem="vs_validation" role="valideurSci"/>				
+			</allowedUsers>
+            <consequences>
+                <consequence id="9">
+                    <kill>false</kill>
+                    <set state="EnRedactionMedicale"/>
+                    <notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;La fiche intitulée '${folder.titre}' a été validée par le valideur scientifique.Pouvez-vous la mettre en page ? &#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<userInRole name="redactionMed"/>	
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" form="affectationRedacteurFinalForm" name="soumettreRedactionMedicaleFinale">
+			<label>Soumettre en rédaction médicale finale </label>
+			<allowedUsers>
+				<userInRole name="redactionMed"/>			
+			</allowedUsers>
+            <consequences>
+                <consequence id="10">
+                    <kill>false</kill>
+                    <set state="EnRedactionMedicaleFinale"/>
+                    <notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;La fiche intitulée '${folder.titre}' vous a été envoyée par la rédaction médicale. Merci de la corriger puis de la valider. &#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<relatedUser folderItem="rm_validation" role="redactionMed"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" form="correctionValideurForm" name="correctionValideurScientifique">
+			<label>soumettre en correction au valideur scientifique</label>
+			<allowedUsers>
+				<relatedUser folderItem="rm_validation" role="redactionMed"/>		
+			</allowedUsers>
+            <consequences>
+                <consequence id="10">
+                    <kill>false</kill>
+                    <set state="EnValidationScientifique"/>
+                    <notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;La fiche intitulée '${folder.titre}' vous a été renvoyée par la rédaction médicale sur le site http://oadm.silverpeas.com. . Merci d'apporter vos corrections selon les commentaires qui ont été signalés.&#10; Lorsque vos rectifications seront terminées, veuillez de nouveau la soumettre à la rédaction médicale en suivant la procédure suivante :&#10; -	Cliquez sur l'onglet ACTION (en haut à droite de la page) &#10; -	Cliquez sur 'fiche validée et envoi à la rédaction médicale' &#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<userInRole name="valideurSci"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" name="valider">
+			<label>validation rédaction médicale finale</label>
+			<allowedUsers>
+				<relatedUser folderItem="rm_validation" role="redactionMed"/>			
+			</allowedUsers>
+            <consequences>
+                <consequence id="12">
+                    <kill>false</kill>
+                    <set state="Validee"/>
+                    <notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;La fiche intitulée '${folder.titre}' a été validée par la rédaction médicale.&#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<userInRole name="webmaster"/>
+						<userInRole name="administrateur"/>
+						<relatedUser folderItem="ae_redaction" role="expert"/>
+						<relatedUser folderItem="ae_relecture" role="expert"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" form="correctionRedacteurMedicalForm" name="correctionRedactionMedicale">
+			<label>soumettre en correction médicale finale</label>
+			<allowedUsers>
+				<relatedUser folderItem="rm_validation" role="redactionMed"/>			
+			</allowedUsers>
+            <consequences>
+                <consequence id="10">
+                    <kill>false</kill>
+                    <set state="EnRedactionMedicale"/>
+                    <notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;La fiche intitulée '${folder.titre}' vous a été renvoyée par la rédaction médicale finale. Merci de la corriger selon les commentaires qui ont été signalés et de l'adresser de nouveau à la rédaction médicale finale, en suivant la procédure suivante :&#10; -	Cliquez sur l'onglet ACTION (en haut à droite de la page) &#10;-	Cliquez sur 'Affecter le rédacteur médical final' &#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<userInRole name="redactionMed"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<!-- actions de relance des time out -->
+		<action kind="update" name="relanceAffectation">
+			<label>Relance affectation d'un binôme</label>
+			<allowedUsers>
+				<relatedUser folderItem="ae_affectation" role="expert"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="1">
+                    <kill>false</kill>
+                    <set state="EnAffectation"/>   
+					<notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;Rappel : vous n'avez toujours pas défini le binôme pour la fiche '${folder.titre}'.&#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<relatedUser folderItem="ae_affectation" role="expert"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" name="relanceVerifAffectation">
+			<label>Relance vérification affectation d'un binôme</label>
+			<allowedUsers>
+				<userInRole name="administrateur"/>		
+			</allowedUsers>
+            <consequences>
+                <consequence id="2">
+                    <kill>false</kill>
+                    <set state="EnVerificationAffectation"/>   
+					<notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;Rappel : vous n'avez toujours pas validé l'affectation du binôme sur la fiche '${folder.titre}'.&#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<userInRole name="administrateur"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" name="relanceRedaction">
+			<label>Relance Rédaction</label>
+			<allowedUsers>
+				<relatedUser folderItem="ae_redaction" role="expert"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="3">
+                    <kill>false</kill>
+                    <set state="EnRedaction"/>   
+					<notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;Rappel : vous n'avez toujours pas rendu la fiche '${folder.titre}' rédigée.&#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<relatedUser folderItem="ae_redaction" role="expert"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" name="relanceRelecture">
+			<label>Relance Relecture</label>
+			<allowedUsers>
+				<relatedUser folderItem="ae_relecture" role="expert"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="4">
+                    <kill>false</kill>
+                    <set state="EnRelecture"/>   
+					<notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;Rappel : vous n'avez toujours pas rendu la fiche '${folder.titre}' relue.&#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<relatedUser folderItem="ae_relecture" role="expert"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" name="relanceRedactionMedicalePourAffectation">
+			<label>Relance Rédaction Médicale pour affectation</label>
+			<allowedUsers>
+				<userInRole name="redactionMed"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="5">
+                    <kill>false</kill>
+                    <set state="EnRedactionMedicalePourAffectation"/>   
+					<notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;Rappel : vous n'avez toujours pas affecté de valideur scientifique à la fiche '${folder.titre}'.&#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<userInRole name="redactionMed"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" name="relanceValidationScientifique">
+			<label>Relance Validation Scientifique</label>
+			<allowedUsers>
+				<userInRole name="valideurSci"/>		
+			</allowedUsers>
+            <consequences>
+                <consequence id="6">
+                    <kill>false</kill>
+                    <set state="EnValidationScientifique"/>   
+					<notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;Rappel : vous n'avez toujours pas validé la fiche '${folder.titre}'.&#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<userInRole name="valideurSci"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" name="relanceRedactionMedicale">
+			<label>Relance Rédaction Médicale</label>
+			<allowedUsers>
+				<userInRole name="redactionMed"/>		
+			</allowedUsers>
+            <consequences>
+                <consequence id="7">
+                    <kill>false</kill>
+                    <set state="EnRedactionMedicale"/>   
+					<notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;Rappel : vous n'avez toujours pas relu et validé la fiche '${folder.titre}'.&#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<userInRole name="redactionMed"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" name="relanceRedactionMedicaleFinale">
+			<label>Relance Rédaction Médicale finale</label>
+			<allowedUsers>
+				<relatedUser folderItem="rm_validation" role="redactionMed"/>	
+			</allowedUsers>
+            <consequences>
+                <consequence id="7">
+                    <kill>false</kill>
+                    <set state="EnRedactionMedicaleFinale"/>   
+					<notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;Rappel : vous n'avez toujours relu et validé la fiche '${folder.titre}'.&#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<relatedUser folderItem="rm_validation" role="redactionMed"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+	</actions>
+    
+    <forms>
+        <form name="presentationForm">
+			<title>Rédaction de fiches médicales</title>
+			<!-- affichage de l'auteur de la fiche -->
+			<input value="${action.emission.actor}" displayerName="simpletext">
+				<label>Créée par</label>
+			</input>
+            <input item="titre" displayerName="simpletext"/>
+            <input item="description" displayerName="simpletext"/>
+            <input item="ae_affectation" displayerName="simpletext"/>
+            <input item="ae_redaction" displayerName="simpletext"/>
+            <input item="ae_relecture" displayerName="simpletext"/>
+			<input item="vs_validation" displayerName="simpletext"/>
+			<input item="rm_validation" displayerName="simpletext"/>
+			<input item="remarques" displayerName="simpletext"/>
+			<input item="remarquesValideurScientifique" displayerName="simpletext"/>
+			<input item="remarquesRedactionMedicale" displayerName="simpletext"/>
+        </form>
+		<form name="presentationForm" role="administrateur">
+			<title>Rédaction de fiches médicales</title>
+			<!-- affichage de l'auteur de la fiche -->
+			<input value="${action.emission.actor}" displayerName="simpletext">
+				<label>Créée par</label>
+			</input>
+            <input item="titre" displayerName="simpletext"/>
+            <input item="description" displayerName="simpletext"/>
+            <input item="ae_affectation" displayerName="simpletext"/>
+            <input item="ae_redaction" displayerName="simpletext"/>
+            <input item="ae_relecture" displayerName="simpletext"/>
+			<input item="vs_validation" displayerName="simpletext"/>
+			<input item="rm_validation" displayerName="simpletext"/>
+			<input item="remarquesAffectation" displayerName="simpletext"/>
+			<input item="remarques" displayerName="simpletext"/>
+			<input item="remarquesValideurScientifique" displayerName="simpletext"/>
+			<input item="remarquesRedactionMedicale" displayerName="simpletext"/>
+        </form>
+		<form name="presentationForm" role="expert">
+			<title>Rédaction de fiches médicales</title>
+			<!-- affichage de l'auteur de la fiche -->
+			<input value="${action.emission.actor}" displayerName="simpletext">
+				<label>Créée par</label>
+			</input>
+            <input item="titre" displayerName="simpletext"/>
+            <input item="description" displayerName="simpletext"/>
+            <input item="ae_affectation" displayerName="simpletext"/>
+            <input item="ae_redaction" displayerName="simpletext"/>
+            <input item="ae_relecture" displayerName="simpletext"/>
+            <input item="remarquesRedaction" displayerName="simpletext"/>
+			<input item="remarques" displayerName="simpletext"/>
+			<input item="remarquesValideurScientifique" displayerName="simpletext"/>
+			<input item="remarquesRedactionMedicale" displayerName="simpletext"/>
+        </form>
+		<form name="presentationForm" role="webmaster">
+			<title>Rédaction de fiches médicales</title>
+			<!-- affichage de l'auteur de la fiche -->
+			<input value="${action.emission.actor}" displayerName="simpletext">
+				<label>Créée par</label>
+			</input>
+            <input item="titre" displayerName="simpletext"/>
+            <input item="description" displayerName="simpletext"/>
+            <input item="ae_affectation" displayerName="simpletext"/>
+            <input item="ae_redaction" displayerName="simpletext"/>
+            <input item="ae_relecture" displayerName="simpletext"/>
+			<input item="remarques" displayerName="simpletext"/>
+			<input item="remarquesValideurScientifique" displayerName="simpletext"/>
+			<input item="remarquesRedactionMedicale" displayerName="simpletext"/>
+        </form>
+        <form name="emissionForm">
+            <input item="titre" readonly="false" mandatory="true" displayerName="text"/>
+            <input item="description" readonly="false" mandatory="false" displayerName="textarea"/>
+            <input item="ae_affectation" readonly="false" mandatory="true" displayerName="user"/>
+            <input item="ficheInitiale" readonly="false" mandatory="true" displayerName="file"/>
+        </form>
+        <form name="affectationForm">
+            <input item="ae_redaction" readonly="false" mandatory="true" displayerName="user"/>
+            <input item="ae_relecture" readonly="false" mandatory="true" displayerName="user"/>
+        </form>
+        <form name="correctionForm">
+            <input item="remarques" readonly="false" mandatory="true" displayerName="textarea"/>
+        </form>
+		 <form name="retourForm">
+            <input item="remarquesAffectation" readonly="false" mandatory="true" displayerName="textarea"/>
+        </form>
+		<form name="correctionRedactionForm">
+            <input item="remarquesRedaction" readonly="false" mandatory="true" displayerName="textarea"/>
+        </form>
+		 <form name="correctionValideurForm">
+            <input item="remarquesValideurScientifique" readonly="false" mandatory="true" displayerName="textarea"/>
+        </form>
+		 <form name="correctionRedacteurMedicalForm">
+            <input item="remarquesRedactionMedicale" readonly="false" mandatory="true" displayerName="textarea"/>
+        </form>
+		<form name="redactionMedicalePourAffectationForm">
+			<input item="vs_validation" readonly="false" mandatory="true" displayerName="user"/>
+        </form>
+		<form name="affectationRedacteurFinalForm">
+			<input item="rm_validation" readonly="false" mandatory="true" displayerName="user"/>
+        </form>
+    </forms>
+</processModel>

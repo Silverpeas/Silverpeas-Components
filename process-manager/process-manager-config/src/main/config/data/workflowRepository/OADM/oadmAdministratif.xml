@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<processModel>
+    <roles>
+        <role name="supervisor">
+            <label>Superviseur</label>
+        </role>
+        <role name="administrateur">
+            <label>Administrateur</label>
+        </role>
+        <role name="expert">
+            <label>Auteur Expert</label>
+        </role>
+		<role name="valideur">
+            <label>Valideur</label>
+        </role>
+    </roles>
+    
+    <!-- PRESENTATION DES PROCEDURES EN COURS-->
+	<presentation>
+		<title>${folder.titre} (${action.emission.date})</title>
+	</presentation>
+	
+	<dataFolder>
+        <item computed="false" name="titre">
+            <label role="default" lang="default">Titre</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="description">
+            <label role="default" lang="default">Description</label>
+            <type>text</type>
+            <readonly>false</readonly>
+			<param name="rows" value="4"/>
+			<param name="cols" value="20"/>
+        </item>
+        <item computed="false" name="ae_destinataire">
+            <label role="default" lang="default">AE destinataire du contrat</label>
+            <type>user</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="contrat">
+            <label role="default" lang="default">Contrat</label>
+            <type>file</type>
+            <readonly>false</readonly>
+        </item>
+    </dataFolder>
+	
+    <states>
+        <state id="1" name="EnAttente" timeoutAction="relance" timeoutInterval="168">
+            <label role="default" lang="default">Contrat : En attente de signature par l'auteur expert</label>
+            <workingUsers>
+				<relatedUser folderItem="ae_destinataire" role="expert"/>
+			</workingUsers>
+            <interestedUsers>
+				<relatedUser folderItem="ae_destinataire" role="expert"/>
+				<userInRole name="administrateur"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+				<allow action="refuser"/>
+                <allow action="signer"/>
+            </allowedActions>
+        </state>
+        <state id="2" name="Signe">
+            <label role="default" lang="default">Contrat : En attente de signature par le comité de pilotage</label>
+            <workingUsers>
+				<userInRole name="valideur"/>
+			</workingUsers>
+            <interestedUsers>
+				<relatedUser folderItem="ae_destinataire" role="expert"/>
+				<userInRole name="valideur"/>
+				<userInRole name="administrateur"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+			<allowedActions>
+                <allow action="valider"/>
+            </allowedActions>
+        </state>
+		<state id="3" name="Valide">
+            <label role="default" lang="default">Contrat validé</label>
+            <workingUsers/>
+            <interestedUsers>
+				<relatedUser folderItem="ae_destinataire" role="expert"/>
+				<userInRole name="administrateur"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+        </state>
+		<state id="4" name="Refuse">
+            <label role="default" lang="default">Contrat refusé</label>
+            <workingUsers/>
+            <interestedUsers>
+				<relatedUser folderItem="ae_destinataire" role="expert"/>
+				<userInRole name="administrateur"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+        </state>
+    </states>
+
+    <actions>
+        <action kind="create" form="emissionForm" name="emission">
+			<label>Rédiger un contrat</label>
+			<allowedUsers>
+				<userInRole name="administrateur"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="1">
+                    <kill>false</kill>
+                    <set state="EnAttente"/>  
+					<notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;Votre contrat '${folder.titre}' est disponible, merci de le valider et nous donner votre accord en nous le retournant au plus tôt.&#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<relatedUser folderItem="ae_destinataire" role="expert"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" name="signer">
+			<label>Signer le contrat</label>
+			<allowedUsers>
+				<relatedUser folderItem="ae_destinataire" role="expert"/>		
+			</allowedUsers>
+            <consequences>
+                <consequence id="2">
+                    <kill>false</kill>
+                    <set state="Signe"/>
+                    <notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;Le contrat '${folder.titre}' vient d'être signé, merci de le valider.&#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<userInRole name="valideur"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" name="valider">
+			<label>Signer le contrat</label>
+			<allowedUsers>
+				<userInRole name="administrateur"/>		
+			</allowedUsers>
+            <consequences>
+                <consequence id="3">
+                    <kill>false</kill>
+                    <set state="Valide"/>
+                    <notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;Le contrat '${folder.titre}' vient d'être accepté et validé par le Comité de Pilotage.&#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<relatedUser folderItem="ae_destinataire" role="expert"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" name="relance">
+			<label>Relance</label>
+			<allowedUsers>
+				<relatedUser folderItem="ae_destinataire" role="expert"/>		
+			</allowedUsers>
+            <consequences>
+                <consequence id="4">
+                    <kill>false</kill>
+                    <set state="EnAttente"/>   
+					<notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;Rappel : vous n'avez toujours pas signé votre contrat '${folder.titre}'.&#10;&#10;Vous remerciant par avance de votre réactivité,&#10; &#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<relatedUser folderItem="ae_destinataire" role="expert"/>
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+		<action kind="update" name="refuser">
+			<label>Refuser le contrat</label>
+			<allowedUsers>
+				<relatedUser folderItem="ae_destinataire" role="expert"/>		
+			</allowedUsers>
+            <consequences>
+                <consequence id="5">
+                    <kill>false</kill>
+                    <set state="Refuse"/>
+					<notify message="Madame, Monsieur,&#10;Cher(e) Collègue,&#10;&#10;Le contrat '${folder.titre}' vient d'être refusé par l'expert.&#10;&#10;Cordialement,&#10; &#10;Le Comité de Pilotage du projet ADMp Pédiatrie.">
+						<userInRole name="administrateur"/>	
+					</notify>
+                </consequence>
+            </consequences>
+        </action>
+    </actions>
+    
+    <forms>
+        <form name="presentationForm">
+			<title>Signature de contrat</title>
+			<input value="${action.emission.date}" displayerName="simpletext">
+				<label>Envoyé le</label>
+			</input>
+            <input item="titre" displayerName="simpletext"/>
+            <input item="description" displayerName="simpletext"/>
+            <input item="ae_destinataire" displayerName="simpletext"/>
+			<input value="${action.valider.date}" displayerName="simpletext">
+				<label>Validé le</label>
+			</input>
+        </form>
+        <form name="emissionForm">
+			<title>Envoi d'un nouveau contrat</title>
+            <input item="titre" readonly="false" mandatory="true" displayerName="text"/>
+            <input item="description" readonly="false" mandatory="false" displayerName="textarea"/>
+            <input item="ae_destinataire" readonly="false" mandatory="true" displayerName="user"/>
+            <input item="contrat" readonly="false" mandatory="true" displayerName="file"/>
+        </form>
+    </forms>
+</processModel>

@@ -1,0 +1,549 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<processModel
+    xsi:schemaLocation="http://localhost:8000/weblib/workflow http://localhost:8000/weblib/workflow/processModel.xsd"
+    name="ArrivantINRA" xmlns="" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <roles>
+        <role name="supervisor">
+            <label role="supervisor" lang="fr">Superviseur</label>
+        </role>
+        <role name="bureauPersonnel">
+            <label>Bureau du personnel</label>
+        </role>
+        <role name="unites">
+            <label>Unités</label>
+        </role>
+        <role name="serviceEIC">
+            <label>Service EIC</label>
+        </role>
+        <role name="serviceTelephonie">
+            <label>service Téléphonie</label>
+        </role>
+        <role name="serviceAcces">
+            <label>Service Accès</label>
+        </role>
+        <role name="serviceBadgeuse">
+            <label>Service Badgeuse</label>
+        </role>
+        <role name="serviceCantine">
+            <label>Service Cantine</label>
+        </role>
+    </roles>
+
+	 <!-- PRESENTATION DES PROCEDURES EN COURS-->
+	<presentation>
+		<title>Fiche de ${folder.prenom} ${folder.nom} (${action.emettre.date})</title>
+	</presentation>
+
+    <states>
+        <state name="Start Workflow">
+            <label role="default" lang="default">Emission</label>
+            <workingUsers>
+				<userInRole name="unites"/>
+            </workingUsers>
+            <interestedUsers>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+                <allow action="emettre"/>
+            </allowedActions>
+        </state> 
+        <state id="1" name="enValidationBureauPersonnel">
+            <label role="default" lang="default">En attende de validation bureau du personnel</label>
+             <workingUsers>
+				<userInRole name="bureauPersonnel"/>
+            </workingUsers>
+            <interestedUsers>
+				<userInRole name="unites"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+                <allow action="soumettreEIC"/>
+            </allowedActions>
+        </state>
+        <state id="2" name="enValidationEIC">
+            <label role="default" lang="default">En attente de création d'adresse éléctronique</label>
+            <workingUsers>
+				<userInRole name="serviceEIC"/>
+            </workingUsers>
+            <interestedUsers>
+				<userInRole name="unites"/>
+				<userInRole name="bureauPersonnel"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+                <allow action="soumettreTel"/>
+            </allowedActions>
+        </state>
+        <state id="3" name="enValidationTelephonie">
+            <label role="default" lang="default">En attente de création de ligne téléphonique</label>
+            <workingUsers>
+				<userInRole name="serviceTelephonie"/>
+            </workingUsers>
+            <interestedUsers>
+				<userInRole name="unites"/>
+				<userInRole name="bureauPersonnel"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+                <allow action="soumettreAcces"/>
+            </allowedActions>
+        </state>
+        <state id="4" name="enValidationAcces">
+            <label role="default" lang="default">En attente de demande d'accès</label>
+            <workingUsers>
+				<userInRole name="serviceAcces"/>
+            </workingUsers>
+            <interestedUsers>
+				<userInRole name="unites"/>
+				<userInRole name="bureauPersonnel"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+                <allow action="soumettreBadge"/>
+            </allowedActions>
+        </state>
+        <state id="5" name="enValidationBadge">
+            <label role="default" lang="default">En attente d'enregistrement temps de travail</label>
+            <workingUsers>
+				<userInRole name="serviceBadgeuse"/>
+            </workingUsers>
+            <interestedUsers>
+				<userInRole name="unites"/>
+				<userInRole name="bureauPersonnel"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+                <allow action="soumettreCantine"/>
+            </allowedActions>
+        </state>
+        <state id="6" name="enValidationCantine">
+            <label role="default" lang="default">En attente de demande de laisser-passer cantine</label>
+            <workingUsers>
+				<userInRole name="serviceCantine"/>
+            </workingUsers>
+            <interestedUsers>
+				<userInRole name="unites"/>
+				<userInRole name="bureauPersonnel"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+            <allowedActions>
+                <allow action="valider"/>
+            </allowedActions>
+        </state>
+        <state id="7" name="validee">
+            <label role="default" lang="default">Validé</label>
+            <workingUsers>
+				<userInRole name="bureauPersonnel"/>
+            </workingUsers>
+            <interestedUsers>
+				<userInRole name="unites"/>
+				<userInRole name="supervisor"/>
+            </interestedUsers>
+        </state>
+    </states>
+    <actions>
+        <action kind="create" form="presentationForm" name="emettre">
+			<label>Créer une fiche de renseignement</label>
+			<allowedUsers>
+				<userInRole name="unites"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="1">
+                    <kill>false</kill>
+                    <set state="enValidationBureauPersonnel"/>
+                    <notify/>
+                </consequence>
+            </consequences>
+        </action>
+        <action kind="update" form="presentationForm" name="soumettreEIC">
+			<label>Soumettre fiche de renseignement</label>
+			<allowedUsers>
+				<userInRole name="unites"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="2">
+                    <kill>false</kill>
+                    <set state="enValidationEIC"/>
+                    <notify/>
+                </consequence>
+            </consequences>
+        </action>
+        <action kind="update" form="EICForm" name="soumettreTel">
+			<label>Création d'adresse électronique</label>
+			<allowedUsers>
+				<userInRole name="unites"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="3">
+                    <kill>false</kill>
+                    <set state="enValidationTelephonie"/>
+                    <notify/>
+                </consequence>
+            </consequences>
+        </action>
+        <action kind="update" form="TelForm" name="soumettreAcces">
+			<label>Création de ligne téléphonique</label>
+			<allowedUsers>
+				<userInRole name="unites"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="4">
+                    <kill>false</kill>
+                    <set state="enValidationAcces"/>
+                    <notify/>
+                </consequence>
+            </consequences>
+        </action>
+        <action kind="update" form="accesForm" name="soumettreBadge">
+			<label>Demande d'accès</label>
+			<allowedUsers>
+				<userInRole name="unites"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="5">
+                    <kill>false</kill>
+                    <set state="enValidationBadge"/>
+                    <notify/>
+                </consequence>
+            </consequences>
+        </action>
+        <action kind="update" form="badgeForm" name="soumettreCantine">
+			<label>Enregistrement temps de travail</label>
+			<allowedUsers>
+				<userInRole name="unites"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="6">
+                    <kill>false</kill>
+                    <set state="enValidationCantine"/>
+                    <notify/>
+                </consequence>
+            </consequences>
+        </action>
+        <action kind="update" form="cantineForm" name="valider">
+			<label>Demande de laisser-passer cantine</label>
+			<allowedUsers>
+				<userInRole name="unites"/>
+			</allowedUsers>
+            <consequences>
+                <consequence id="7">
+                    <kill>false</kill>
+                    <set state="validee"/>
+                    <notify/>
+                </consequence>
+            </consequences>
+        </action>
+    </actions>
+    <dataFolder>
+        <item computed="false" name="nom">
+            <label role="default" lang="default">Nom</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="prenom">
+            <label role="default" lang="default">Prénom</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="matricule">
+            <label role="default" lang="default">Matricule</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="patronyme">
+            <label role="default" lang="default">Nom patronymique</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="dateNaissance">
+            <label role="default" lang="default">Date de naissance</label>
+            <type>date</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="lieuNaissance">
+            <label role="default" lang="default">Lieu de naissance</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="numSecu">
+            <label role="default" lang="default">Numéro de sécurité sociale ou INSEE</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="nomPere">
+            <label role="default" lang="default">Nom de père</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="prenomPere">
+            <label role="default" lang="default">Prénom de père</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="nomMere">
+            <label role="default" lang="default">Nom de la mère</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="prenomMere">
+            <label role="default" lang="default">Prénom de la mère</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="situationFamille">
+            <label role="default" lang="default">Situation de famille</label>
+            <type>text</type>
+            <readonly>false</readonly>
+			<param name="keys" value="0##1##2##3"/>
+			<param name="values" value="Célibataire##Marié##Divorcé##Veuf"/>
+        </item>
+        <item computed="false" name="adressePerso">
+            <label role="default" lang="default">Adresse personnelle</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="telDomicile">
+            <label role="default" lang="default">Téléphone domicile</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="telPortable">
+            <label role="default" lang="default">Téléphone portable</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="personneAJoindre">
+            <label role="default" lang="default">Personne à joindre en cas d'urgence</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="adresseINRA">
+            <label role="default" lang="default">Adresse pendant le séjour à l'INRA</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+		<item computed="false" name="diplomeObtenu">
+            <label role="default" lang="default">Diplomes obtenus</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="diplomePrepare">
+            <label role="default" lang="default">Diplome préparé</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="responsableScientifique">
+            <label role="default" lang="default">Responsable scientifique</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="typeContrat">
+            <label role="default" lang="default">Type de contrat</label>
+            <type>text</type>
+            <readonly>false</readonly>
+			<param name="keys" value="0##1##2##3##4##5##6##7##8##9"/>
+			<param name="values" value="Stagiaire##M.O.O.##C.D.D. ou poste budgétaire##C.D.D. sur contrat de recherche##B.T.H. INRA##B.T.H. autre organisme##Post doc##Mise à disposition##Fonctionnaire stagiaire##Autres (préciser)"/>
+        </item>
+        <item computed="false" name="dateArrivee">
+            <label role="default" lang="default">Date d'arrivée</label>
+            <type>date</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="numAgregat">
+            <label role="default" lang="default">Numéro d'agrégat</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="origine">
+            <label role="default" lang="default">Origine</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="numContrat">
+            <label role="default" lang="default">Numéro de contrat</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="nomPRI">
+            <label role="default" lang="default">Nom PRI</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="mail">
+            <label role="default" lang="default">Adresse mail</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="creationLigne">
+            <label role="default" lang="default">Création de la ligne téléphonique</label>
+            <type>text</type>
+            <readonly>false</readonly>
+			<param name="keys" value="0##1##2##3##4##5##6##7##8"/>
+			<param name="values" value="Appels internes##Agglomération + minitel##Agglomération + minitel + Mobile##Région + Minitel##Région + Minitel + Mobile##National + Minitel##National + Minitel + Mobile##International + Minitel##International + Minitel + Mobile"/>
+        </item>
+        <item computed="false" name="posteTelAFournir">
+            <label role="default" lang="default">Poste téléphonique à fournir</label>
+            <type>text</type>
+            <readonly>false</readonly>
+			<param name="keys" value="0##1##2##3##4"/>
+			<param name="values" value="Non## Oui - Numérique##Oui - Analogique##Oui - Analogique sans fil##Oui - Ligne à câbler"/>
+        </item>
+        <item computed="false" name="texteAfficher">
+            <label role="default" lang="default">Texte à afficher sur le téléphone</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="numPoste">
+            <label role="default" lang="default">Numéro de poste</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="numFax">
+            <label role="default" lang="default">Numéro de fax</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="telAttribue">
+            <label role="default" lang="default">Numéro de téléphone attribué</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="accesCROUEL">
+            <label role="default" lang="default">Accès CROUEL</label>
+            <type>text</type>
+            <readonly>false</readonly>
+			<param name="keys" value="0##1##2##3##4##5"/>
+			<param name="values" value="Entrée du site##Agro. Salles Etuves##Entrée principale : SDAK-Agronomie##P.I.A.F.##Amélioration des plantes - Entrée##Amélioration des plantes - 'Pieds sales'"/>
+        </item>
+        <item computed="false" name="accesTHEIX">
+            <label role="default" lang="default">Accès THEIX</label>
+            <type>text</type>
+            <readonly>false</readonly>
+			<param name="keys" value="0##1##2##3##4##5##6##7##8##9##10"/>
+			<param name="values" value="Entrée du site##Hall d'entrée##Labo I##Labo II##Labo IV##Foyer##Arche##Techno 2000##Fermentation##STIM##UENC"/>
+        </item>
+        <item computed="false" name="horairesAcces">
+            <label role="default" lang="default">Horaires d'accès</label>
+            <type>text</type>
+            <readonly>false</readonly>
+			<param name="keys" value="0##1##2"/>
+			<param name="values" value="Jour de 7H à 19H##Nuit de 19H à 7H##Week-ends et jours fériés"/>
+        </item>
+        <item computed="false" name="horaireLundi">
+            <label role="default" lang="default">Horaires lundi</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="horaireMardi">
+            <label role="default" lang="default">Horaire mardi</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="horaireMercredi">
+            <label role="default" lang="default">Horaire mercredi</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="horaireJeudi">
+            <label role="default" lang="default">Horaire jeudi</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="horaireVendredi">
+            <label role="default" lang="default">Horaire vendredi</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="codePhysique">
+            <label role="default" lang="default">Code physique attribué</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="numBadge">
+            <label role="default" lang="default">Numéro de badge</label>
+            <type>text</type>
+            <readonly>false</readonly>
+        </item>
+        <item computed="false" name="laisserPasser">
+            <label role="default" lang="default">Laisser-passer</label>
+            <type>text</type>
+            <readonly>false</readonly>
+			<param name="keys" value="0##1##2"/>
+			<param name="values" value="Aucun##non subventionné##Subventionné"/>
+        </item>
+    </dataFolder>
+    <forms>
+        <form name="presentationForm">
+            <input item="nom" readonly="false" mandatory="false"/>
+            <input item="prenom" readonly="false" mandatory="false"/>
+            <input item="matricule" readonly="false" mandatory="false"/>
+            <input item="patronyme" readonly="false" mandatory="false"/>
+            <input item="dateNaissance" readonly="false" mandatory="false"/>
+            <input item="lieuNaissance" readonly="false" mandatory="false"/>
+            <input item="numSecu" readonly="false" mandatory="false"/>
+            <input item="nomPere" readonly="false" mandatory="false"/>
+            <input item="prenomPere" readonly="false" mandatory="false"/>
+            <input item="nomMere" readonly="false" mandatory="false"/>
+            <input item="prenomMere" readonly="false" mandatory="false"/>
+            <input item="situationFamille" readonly="false" mandatory="false" displayerName="listbox"/>
+            <input item="adressePerso" readonly="false" mandatory="false" displayerName="textarea"/>
+            <input item="telDomicile" readonly="false" mandatory="false"/>
+            <input item="telPortable" readonly="false" mandatory="false"/>
+            <input item="personneAJoindre" readonly="false" mandatory="false"/>
+            <input item="adresseINRA" readonly="false" mandatory="false" displayerName="textarea"/>
+			<input item="diplomeObtenu" readonly="false" mandatory="false" displayerName="textarea"/>
+            <input item="diplomePrepare" readonly="false" mandatory="false"/>
+            <input item="responsableScientifique" readonly="false" mandatory="false"/>
+            <input item="typeContrat" readonly="false" mandatory="false" displayerName="listbox"/>
+            <input item="dateArrivee" readonly="false" mandatory="false"/>
+            <input item="numAgregat" readonly="false" mandatory="false"/>
+            <input item="origine" readonly="false" mandatory="false"/>
+            <input item="numContrat" readonly="false" mandatory="false"/>
+            <input item="nomPRI" readonly="false" mandatory="false"/>
+            <input item="creationLigne" readonly="false" mandatory="false" displayerName="listbox"/>
+            <input item="posteTelAFournir" readonly="false" mandatory="false" displayerName="listbox"/>
+            <input item="texteAfficher" readonly="false" mandatory="false"/>
+            <input item="numPoste" readonly="false" mandatory="false"/>
+            <input item="numFax" readonly="false" mandatory="false"/>
+            <input item="accesCROUEL" readonly="false" mandatory="false" displayerName="checkbox"/>
+            <input item="accesTHEIX" readonly="false" mandatory="false" displayerName="checkbox"/>
+            <input item="horairesAcces" readonly="false" mandatory="false" displayerName="checkbox"/>
+            <input item="horaireLundi" readonly="false" mandatory="false"/>
+            <input item="horaireMardi" readonly="false" mandatory="false"/>
+            <input item="horaireMercredi" readonly="false" mandatory="false"/>
+            <input item="horaireJeudi" readonly="false" mandatory="false"/>
+            <input item="horaireVendredi" readonly="false" mandatory="false"/>
+            <input item="laisserPasser" readonly="false" mandatory="false" displayerName="listbox"/>
+        </form>
+        <form name="EICForm">
+            <input item="nomPRI" readonly="false" mandatory="false"/>
+            <input item="mail" readonly="false" mandatory="false"/>
+        </form>
+        <form name="TelForm">
+            <input item="creationLigne" readonly="false" mandatory="false" displayerName="listbox"/>
+            <input item="posteTelAFournir" readonly="false" mandatory="false" displayerName="listbox"/>
+            <input item="texteAfficher" readonly="false" mandatory="false"/>
+            <input item="numPoste" readonly="false" mandatory="false"/>
+            <input item="numFax" readonly="false" mandatory="false"/>
+            <input item="telAttribue" readonly="false" mandatory="false"/>
+        </form>
+        <form name="accesForm">
+            <input item="accesCROUEL" readonly="false" mandatory="false" displayerName="checkbox"/>
+            <input item="accesTHEIX" readonly="false" mandatory="false" displayerName="checkbox"/>
+            <input item="horairesAcces" readonly="false" mandatory="false" displayerName="checkbox"/>
+            <input item="numBadge" readonly="false" mandatory="false"/>
+        </form>
+        <form name="badgeForm">
+            <input item="horaireLundi" readonly="false" mandatory="false"/>
+            <input item="horaireMardi" readonly="false" mandatory="false"/>
+            <input item="horaireMercredi" readonly="false" mandatory="false"/>
+            <input item="horaireJeudi" readonly="false" mandatory="false"/>
+            <input item="horaireVendredi" readonly="false" mandatory="false"/>
+            <input item="codePhysique" readonly="false" mandatory="false"/>
+            <input item="numBadge" readonly="false" mandatory="false"/>
+        </form>
+        <form name="cantineForm">
+            <input item="laisserPasser" readonly="false" mandatory="false" displayerName="listbox"/>
+        </form>
+    </forms>
+</processModel>

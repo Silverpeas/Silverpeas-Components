@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+  <name>WorkflowBugs</name>
+  <requestRouter>RprocessManager</requestRouter>
+  <label>Processus 'Test et correction'</label>
+  <description>Permet de gérer l'ensemble du processus de détection des anomalies d'un équipement ou logiciel puis de correction et vérification.</description>
+  <suite>05 Workflow</suite>
+  <visible>@ComponentVisibleWorkflowBugs@</visible>
+   <portlet>no</portlet>
+  <instanceClassName>com.silverpeas.processManager.ProcessManagerInstanciator</instanceClassName>
+  <Profiles>
+    <Profile name="Booter">Demandeur</Profile>
+    <Profile name="Qualifieur">Qualifieur</Profile>
+    <Profile name="Developpeur">Developpeur</Profile>
+    <Profile name="Valideur">Valideur</Profile>
+    <Profile name="supervisor">Superviseur</Profile>
+  </Profiles>
+  <Parameters>
+    <Parameter>
+       <ParameterName>XMLFileName</ParameterName>
+       <ParameterLabel>Modèle de procédures</ParameterLabel>
+       <ParameterValue>Bugs/bugs.xml</ParameterValue>
+       <ParameterMandatory>Y</ParameterMandatory>
+    </Parameter>
+  </Parameters>
+
+</WAComponent>

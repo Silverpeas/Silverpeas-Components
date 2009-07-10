@@ -1,0 +1,583 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- DÉFINITION DE MODÈLE DE PROCÉDURE : SUIVI DE BUG -->
+<processModel name="SilverBugTracker" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="processModel.xsd">
+
+	<label>Suivi de bugs</label>
+	<description>Procédure de suivi de bugs pour Silverpeas.</description>
+
+	<!-- DESCRIPTION DES ROLES -->
+	<roles>
+		<role name="Senders">
+			<label>Emetteur</label>
+			<label lang="en">Sender</label>
+			<description>Personne pouvant emettre un bug.</description>
+		</role>
+		<role name="Qualificators">
+			<label>Qualifieur</label>
+			<label lang="en">Qualifyer</label>
+			<description>Personne pouvant qualifier un bug.</description>
+		</role>
+		<role name="Correctors">
+			<label>Correcteur</label>
+			<label lang="en">Corrector</label>
+			<description>Personne pouvant corriger un bug.</description>
+		</role>
+		<role name="supervisor">
+			<label>Superviseur</label>
+		</role>
+	</roles>
+
+	<!-- DEFINITION DES DONNEES UTILISATEUR -->
+	<userInfos>
+	   <item name="company">
+			<label>Société</label>
+			<label lang="en">Company</label>
+			<description>La société où le bug a été constaté</description>
+			<type>text</type>
+		</item>
+		<item name="product">
+			<label>Dernier patch</label>
+			<label lang="en">Product</label>
+			<description>Le produit et sa version concernée, le dernier patch appliqué</description>
+			<type>text</type>
+			<param name="keys" value="P300006##P300007##P300008"/>
+		</item>
+		<item name="platform">
+			<label>Plateforme</label>
+			<label lang="en">Platform</label>
+			<description>La plateforme sous laquelle tourne Silverpeas</description>
+			<type>text</type>
+			<param name="keys" value="Windows NT##Windows 2000##Solaris##Linux"/>
+		</item>
+		<item name="appServer">
+			<label>Serveur d'applications</label>
+			<label lang="en">Application server</label>
+			<description>Le serveur d'applications sur lequel tourne Silverpeas</description>
+			<type>text</type>
+			<param name="keys" value="Orion 1.5.2##Orion 2.0.1##Orion 2.0.2##BEA Weblogic 6.1 SP1##Borland Enterprise Server 5.1"/>
+		</item>
+		<item name="dbServer">
+			<label>Serveur SGBD</label>
+			<label lang="en">Database server</label>
+			<description>Le serveur de base de données avec lequel fonctionne Silverpeas</description>
+			<type>text</type>
+			<param name="keys" value="MS SQL 2000##MS SQL 7##Oracle 8i##Oracle 9i"/>
+		</item>
+	</userInfos>
+
+	<!-- DEFINITION DU DOSSIER -->
+	<dataFolder>
+		<item name="component">
+			<label>Composant</label>
+			<label lang="en">Component</label>
+			<type>text</type>
+		</item>
+		<item name="titre">
+			<label>Titre</label>
+			<label lang="en">Title</label>
+			<type>text</type>
+			<param name="size" value="100"/>
+		</item>
+		<item name="description">
+			<label>Description</label>
+			<description>La description du bug</description>
+			<type>text</type>
+			<param name="rows" value="10"/>
+			<param name="cols" value="94"/>
+		</item>
+		<item name="pbType">
+			<label>Type de problème</label>
+			<label lang="en">Problem type</label>
+			<description>Indique si le type de pb (500, 404, NullPointer, Exception, Icone, AccessBD, Ergo)</description>
+			<type>text</type>
+			<param name="keys" value="Erreur 500##Erreur 404##NullPointerException##Accès à la base##Icônographie##Ergonomie##Autre..."/>
+		</item>
+		<item name="reproducible">
+			<label>Reproductible</label>
+			<label lang="en">Reproducible</label>
+			<description>Le bug peut-il être reproduit ?</description>
+			<type>text</type>
+			<param name="keys" value="Systématiquement##De temps en temps##Rarement##Jamais"/>
+		</item>
+		<item name="remarks">
+			<label>Remarques</label>
+			<label lang="en">Remarks</label>
+			<description>Remarques éventuelles</description>
+			<type>text</type>
+			<param name="rows" value="10"/>
+			<param name="cols" value="94"/>
+		</item>
+		<item name="severity">
+			<label>Gravité</label>
+			<label lang="en">Gravity</label>
+			<description>Gravité du bug</description>
+			<type>text</type>
+			<param name="keys" value="Contournement possible##Uniquement visuel##Limite les fonctionnalités##Bloque le serveur"/>
+		</item>
+		<item name="priority">
+			<label>Priorité</label>
+			<label lang="en">Priority</label>
+			<description>Priorité de correction du bug</description>
+			<type>text</type>
+			<param name="keys" value="Hyper bug##Haute##Moyenne##Basse"/>
+		</item>
+		<item name="assignedTo">
+			<label>Assigné à</label>
+			<label lang="en">Assigned to</label>
+			<description>Personne chargée de la correction</description>
+			<type>user</type>
+		</item>
+		<item name="plannedDate">
+			<label>Date prévue de livraison</label>
+			<label lang="en">Planned delivery date</label>
+			<description>Date à laquelle le correctif devrait être livré</description>
+			<type>date</type>
+		</item>
+		<item name="plannedCorrectionTime">
+			<label>Temps prévu pour la correction</label>
+			<label lang="en">Planned correction time</label>
+			<description>Temps prévu pour la correction</description>
+			<type>text</type>
+		</item>
+		<item name="correctionTime">
+			<label>Temps passé pour la correction</label>
+			<label lang="en">Effective correction time</label>
+			<description>Temps passé pour la correction</description>
+			<type>text</type>
+		</item>
+		<item name="workaround">
+			<label>Correction du bug</label>
+			<label lang="en">Bug correction</label>
+			<description>Descriptif de la correction du bug</description>
+			<type>text</type>
+			<param name="rows" value="10"/>
+			<param name="cols" value="94"/>
+		</item>
+		<item name="forwardTo">
+			<label>Bug déjà rentré</label>
+			<label lang="en">Bug already referenced</label>
+			<description>Le bug a déjà fait l'objet d'une fiche de bug, dont on indique l'identifiant</description>
+			<type>text</type>
+		</item>
+		<item name="patchCorrected">
+			<label>Disponibilité (patch)</label>
+			<label lang="en">Corrected version</label>
+			<description>Version/Patch dans laquelle la correction a eu lieu</description>
+			<type>text</type>
+		</item>
+		<item name="reasonOfAbortion">
+			<label>Raison de l'abandon</label>
+			<label lang="en">Reason of abortion</label>
+			<description>La raison de l'avortement du bug</description>
+			<type>text</type>
+			<param name="keys" value="Bug connu##Déjà Corrigé##Sans objet"/>
+		</item>
+		<item name="attachment">
+			<label>Capture d'écran ou autre document</label>
+			<label lang="en">Snapshot or other document</label>
+			<description>Pièce jointe</description>
+			<type>file</type>
+		</item>
+	</dataFolder>
+
+	<!-- PRESENTATION DES PROCEDURES EN COURS-->
+	<presentation>
+		<title role="Senders">Demande du ${action.Creation.date}</title>
+		<title role="Qualificators">${action.Creation.date} - Demande de ${action.Creation.actor} (${action.Creation.actor.company})</title>
+		<title role="Correctors">Demande du ${action.Creation.date}</title>
+		<title role="supervisor">Demande du ${action.Creation.date}</title>
+		
+		<columns role="Senders">
+			<column item="component"/>
+			<column item="titre"/>
+			<column item="priority"/>
+		</columns>
+		<columns role="Qualificators">
+			<column item="component"/>
+			<column item="titre"/>
+		</columns>
+		<columns role="Correctors">
+			<column item="component"/>
+			<column item="titre"/>
+			<column item="priority"/>
+		</columns>
+		<columns role="supervisor">
+			<column item="component"/>
+			<column item="titre"/>
+			<column item="priority"/>
+		</columns>
+	</presentation>
+
+	<!-- DESCRIPTION DES PARTICIPANTS -->
+	<participants>
+		<participant name="Emetteur" state="" role="Senders">
+			<label>Emetteur du bug.</label>
+			<description>Personne à l'origine de la fiche de bug.</description>
+		</participant>
+		<participant name="Corrector" resolvedState="ToBeCorrected" role="Correctors">
+			<label>Correcteur du bug.</label>
+			<description>Personne en charge de la correction du bug.</description>
+		</participant>
+	</participants>
+
+	<!-- DESCRIPTION DES ÉTATS -->
+	<states>
+		<!-- To Be Qualified -->
+		<state name="ToBeQualified">
+			<label>A qualifier</label>
+			<label lang="en">To be qualified</label>
+			<description>en cours de qualification</description>
+			<workingUsers role="Qualificators">
+				<userInRole name="Qualificators"/>
+			</workingUsers>
+			<interestedUsers>
+				<relatedUser participant="Emetteur" role="Senders"/>
+				<userInRole name="supervisor"/>
+			</interestedUsers>
+			<allowedActions>
+				<allow action="Qualify"/>
+				<allow action="NeedInfos"/>
+				<allow action="Abort"/>
+			</allowedActions>
+		</state>
+
+		<!-- More infos needed -->
+		<state name="MoreInfosNeeded">
+			<label>Plus d'infos nécessaires</label>
+			<label lang="en">More infos needed</label>
+			<description>Retourné à l'envoyeur pour qu'il donne plus d'infos</description>
+			<workingUsers role="Senders">
+				<relatedUser participant="Emetteur"/>
+			</workingUsers>
+			<interestedUsers>
+				<userInRole name="supervisor"/>
+			</interestedUsers>
+			<allowedActions>
+				<allow action="SendInfos"/>
+				<allow action="Abort"/>
+			</allowedActions>
+		</state>
+
+		<!-- To Be Corrected -->
+		<state name="ToBeCorrected">
+			<label>Correction en attente</label>
+			<label lang="en">Assigned</label>
+			<description>En attente de correction</description>
+			<workingUsers role="Correctors">
+				<userInRole name="Correctors"/>
+			</workingUsers>
+			<interestedUsers>
+				<relatedUser participant="Emetteur" role="Senders"/>
+				<userInRole name="Correctors"/>
+				<userInRole name="Qualificators"/>
+				<userInRole name="supervisor"/>
+			</interestedUsers>
+			<allowedActions>
+				<allow action="BeginCorrection"/>
+				<allow action="Abort"/>
+			</allowedActions>
+		</state>
+
+		<state name="Correction">
+			<label>Correction en cours</label>
+			<label lang="en">Correction in progress</label>
+			<workingUsers role="Correctors">
+				<relatedUser participant="Corrector"/>
+			</workingUsers>
+			<interestedUsers>
+				<relatedUser participant="Emetteur" role="Senders"/>
+				<userInRole name="Correctors"/>
+				<userInRole name="Qualificators"/>
+				<userInRole name="supervisor"/>
+			</interestedUsers>
+			<allowedActions>
+				<allow action="Close"/>
+				<allow action="Abort"/>
+			</allowedActions>
+		</state>
+
+		<!-- Closed -->
+		<state name="Closed">
+			<label>Résolu</label>
+			<label lang="en">Fixed</label>
+			<description>Clos (résolu)</description>
+			<workingUsers>
+			</workingUsers>
+			<interestedUsers>
+				<userInRole name="Senders"/>
+				<userInRole name="Qualificators"/>
+				<userInRole name="Correctors"/>
+				<userInRole name="supervisor"/>
+			</interestedUsers>
+			<allowedActions>
+			</allowedActions>
+		</state>
+
+		<!-- Aborted -->
+		<state name="Aborted">
+			<label>Abandonné</label>
+			<label lang="en">Aborted</label>
+			<description>Abandonné</description>
+			<workingUsers>
+			</workingUsers>
+			<interestedUsers>
+				<relatedUser participant="Emetteur" role="Senders"/>
+				<userInRole name="Qualificators"/>
+				<userInRole name="Correctors"/>
+				<userInRole name="supervisor"/>
+			</interestedUsers>
+			<allowedActions>
+			</allowedActions>
+		</state>
+	</states>
+
+	<!-- DESCRIPTION DES ACTIONS -->
+	<actions>
+		<!-- Creation -->
+		<action name="Creation" form="fCreation" kind="create">
+			<label>Création</label>
+			<label lang="en">Creation</label>
+			<description>Emission d'une nouvelle anomalie.</description>
+			<allowedUsers>
+				<userInRole name="Senders"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<set state="ToBeQualified"/>
+					<notify message="Vous devez qualifier l'anomalie suivante : ${folder.titre}.">
+						<userInRole name="Qualificators"/>
+					</notify>
+				</consequence>
+			</consequences>
+		</action>
+
+		<!-- Need more infos -->
+		<action name="NeedInfos" form="fNeedInfos">
+			<label>Demander plus d'infos</label>
+			<label lang="en">Ask more infos</label>
+			<description>Demander plus d'information à l'emetteur du bug.</description>
+			<allowedUsers>
+				<userInRole name="Qualificators"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<set state="MoreInfosNeeded"/>
+					<notify message="Des précisions vous sont demandées sur l'anomalie '${folder.titre}'.">
+						<relatedUser participant="Emetteur"/>
+					</notify>
+				</consequence>
+			</consequences>
+		</action>
+
+		<!-- Need more infos -->
+		<action name="SendInfos" form="fSendInfos">
+			<label>Envoyer un complément d'infos</label>
+			<label lang="en">Send more infos</label>
+			<description>Envoyer un complément d'infos.</description>
+			<allowedUsers>
+				<userInRole name="Senders"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<set state="ToBeQualified"/>
+					<notify message="Les précisions que vous avez demandées ont été rajoutées pour l'anomalie '${folder.titre}'.">
+						<userInRole name="Qualificators"/>
+					</notify>
+				</consequence>
+			</consequences>
+		</action>
+
+		<!-- Qualify -->
+		<action name="Qualify" form="fQualify">
+			<label>Qualifier le bug</label>
+			<label lang="en">Qualify the bug</label>
+			<description>Qualifier le bug.</description>
+			<allowedUsers>
+				<userInRole name="Qualificators"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<set state="ToBeCorrected"/>
+					<notify message="Une nouvelle anomalie vient d'être qualifiée : ${folder.titre}.">
+						<userInRole name="Correctors"/>
+					</notify>
+				</consequence>
+			</consequences>
+		</action>
+
+		<!--<action name="BeginCorrection" form="fBeginCorrection">-->
+		<action name="BeginCorrection">
+			<label>Débuter la correction</label>
+			<label lang="en">Begin correction</label>
+			<description>L'anomalie a été qualifié. La correction a été prise en charge par un correcteur.</description>
+			<allowedUsers>
+				<userInRole name="Correctors"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<set state="Correction"/>
+					<notify message="L'anomalie '${folder.titre}' est en cours de correction.">
+						<relatedUser participant="Emetteur"/>
+						<userInRole name="Correctors"/>
+					</notify>
+				</consequence>
+			</consequences>
+		</action>
+
+		<!-- Abort -->
+		<action name="Abort" form="fAbort">
+			<label>Abandonner le bug</label>
+			<label lang="en">Abort the bug</label>
+			<description>Abandonner le bug.</description>
+			<allowedUsers>
+				<userInRole name="Senders"/>
+				<userInRole name="Qualificators"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<set state="Aborted"/>
+					<notify message="L'anomalie '${folder.titre}' a été abandonnée !">
+						<relatedUser participant="Emetteur"/>
+						<userInRole name="Correctors"/>
+					</notify>
+				</consequence>
+			</consequences>
+		</action>
+
+		<!-- Correct -->
+		<action name="Close" form="fCorrect">
+			<label>Clore le bug</label>
+			<label lang="en">Bug fixed</label>
+			<description>Le bug a été corrigé.</description>
+			<allowedUsers>
+				<userInRole name="Correctors"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<set state="Closed"/>
+					<notify message="L'anomalie '${folder.titre}' a été corrigée !">
+						<relatedUser participant="Emetteur"/>
+						<userInRole name="Correctors"/>
+					</notify>
+				</consequence>
+			</consequences>
+		</action>
+	</actions>
+
+	<!-- DEFINITION DES FORMULAIRES -->
+	<forms>
+		<!-- Formulaire de présentation -->
+		<form name="presentationForm">
+			<title>Fiche d'anomalie</title>
+			<title lang="en">Bug details</title>
+			<input item="component" displayerName="simpletext"/>
+			<input item="titre" displayerName="simpletext"/>
+			<input item="description" displayerName="simpletext"/>
+			<input item="pbType" displayerName="simpletext"/>
+			<input value="${action.Creation.actor.company}" displayerName="simpletext">
+			   <label>Société</label>
+			</input>
+			 <input value="${action.Creation.actor.platform}" displayerName="simpletext">
+			   <label>Plateforme</label>
+			</input>
+			<input value="${action.Creation.actor.appServer}" displayerName="simpletext">
+			   <label>Serveur d'applications</label>
+			</input>
+			<input value="${action.Creation.actor.dbServer}" displayerName="simpletext">
+			   <label>Base de données</label>
+			</input>
+			<input value="${action.Creation.actor.product}" displayerName="simpletext">
+			   <label>Version</label>
+			</input>
+			<input item="reproducible" displayerName="simpletext"/>
+			<input item="severity" displayerName="simpletext"/>
+			<input item="priority" displayerName="simpletext"/>
+			<input item="plannedCorrectionTime" displayerName="simpletext"/>
+			<input item="correctionTime" displayerName="simpletext"/>
+			<input item="workaround" displayerName="simpletext"/>
+			<!--<input item="forwardTo" displayerName="simpletext"/>-->
+			<input item="patchCorrected" displayerName="simpletext"/>
+			<input item="reasonOfAbortion" displayerName="simpletext"/>
+		</form>
+
+		<!-- Formulaire d'impression -->
+		<form name="printForm" HTMLFileName="/weblib/processManager/BugTracker/SilverBugTracker_print.html">
+		</form>
+
+		<!-- Formulaire de création -->
+		<form name="fCreation">
+			<title>Emission d'une anomalie</title>
+			<title lang="en">Bug creation</title>
+			<input item="component" mandatory="true"/>
+			<input item="titre" mandatory="true"/>
+			<input item="description" displayerName="textarea" mandatory="true"/>
+			<input item="pbType" mandatory="true" displayerName="listbox"/>
+			<input item="severity" mandatory="true" displayerName="listbox"/>
+			<input item="attachment" mandatory="false" displayerName="file"/>
+		</form>
+
+		<!-- Formulaire de demande d'infos complémentaire -->
+		<form name="fNeedInfos">
+			<title>Demande d'informations complémentaires</title>
+			<title lang="en">Asking more information</title>
+			<input item="remarks" displayerName="textarea" mandatory="true"/>
+		</form>
+
+		<!-- Formulaire d'envoi d'infos complémentaire -->
+		<form name="fSendInfos">
+			<title>Envoi d'informations complémentaires</title>
+			<title lang="en">Sending more information</title>
+			<input item="remarks" displayerName="textarea" mandatory="true"/>
+		</form>
+
+		<!-- Formulaire de qualification -->
+		<form name="fQualify">
+			<title>Qualification du bug</title>
+			<title lang="en">Bug qualification</title>
+			<input value="${action.Creation.actor.company}" displayerName="simpletext">
+			   <label>Société</label>
+			</input>
+			 <input value="${action.Creation.actor.platform}" displayerName="simpletext">
+			   <label>Plateforme</label>
+			</input>
+			<input value="${action.Creation.actor.appServer}" displayerName="simpletext">
+			   <label>Serveur d'applications</label>
+			</input>
+			<input value="${action.Creation.actor.dbServer}" displayerName="simpletext">
+			   <label>Base de données</label>
+			</input>
+			<input value="${action.Creation.actor.product}" displayerName="simpletext">
+			   <label>Version</label>
+			</input>
+			<input item="component" mandatory="true"/>
+			<input item="titre" mandatory="true"/>
+			<input item="description" displayerName="textarea" mandatory="true"/>
+			<input item="reproducible" mandatory="true" displayerName="listbox"/>
+			<input item="priority" mandatory="true" displayerName="listbox"/>
+			<input item="plannedCorrectionTime" mandatory="true"/>
+			<input item="patchCorrected" mandatory="true"/>
+		</form>
+
+		<!-- Formulaire d'avortement -->
+		<form name="fAbort">
+			<title>Avorter le bug</title>
+			<title lang="en">Bug abortion</title>
+			<input item="reasonOfAbortion" mandatory="true" displayerName="listbox"/>
+			<input item="forwardTo"/>
+			<input item="remarks" displayerName="textarea" mandatory="true"/>
+		</form>
+
+		<!-- Formulaire de correction -->
+		<form name="fCorrect">
+			<title lang="en">Correction</title>
+			<input item="correctionTime" mandatory="true"/>
+			<input item="workaround" mandatory="true" displayerName="textarea"/>
+		</form>
+
+		<!-- Formulaire de refus -->
+		<form name="fRefuse">
+			<title lang="en">Refusal</title>
+			<input item="remarks" displayerName="textarea" mandatory="true"/>
+		</form>
+	</forms>
+</processModel>
