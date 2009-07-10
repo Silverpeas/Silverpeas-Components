@@ -1,0 +1,247 @@
+<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
+<%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
+<%@ page import="com.silverpeas.resourcesmanager.model.ReservationDetail"%>
+<%@ page import="java.util.List" %>
+<%@ page import="java.util.Date" %>
+
+<%@ include file="check.jsp" %>
+
+<% 
+	ReservationDetail 	reservation 			= (ReservationDetail)request.getAttribute("reservation");
+	List 				listResourcesProblem 	= (List)request.getAttribute("listResourcesProblem");
+	String				defaultDate				= (String) request.getAttribute("DefaultDate");
+	
+	String dateBegin = "";
+	String dateEnd = "";
+	if (StringUtil.isDefined(defaultDate))
+	{
+		dateBegin 	= defaultDate;
+		dateEnd		= defaultDate;
+	}
+	
+	String event = "";
+	String reason = "";
+	String place = "";
+	String minuteHourDateBegin = "";
+	String minuteHourDateEnd = "";
+	String reservationId="";
+	
+	if(reservation != null){
+		reservationId = reservation.getId();
+		event = reservation.getEvent();
+		reason = reservation.getReason();
+		if (reason == null)
+			reason = "";
+		place = reservation.getPlace();
+		if (place == null)
+			place = "";
+		dateEnd = resource.getOutputDate(reservation.getEndDate());
+		dateBegin = resource.getOutputDate(reservation.getBeginDate());
+		minuteHourDateBegin = DateUtil.getFormattedTime(reservation.getBeginDate());
+		minuteHourDateEnd = DateUtil.getFormattedTime(reservation.getEndDate());
+	}
+	//creation des boutons Valider et Annuler
+	Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javaScript:verification()", false);
+	Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Main",false);
+	%>
+<html>
+<head>
+<%
+	out.println(gef.getLookStyleSheet());
+%>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/ajax/prototype.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/ajax/rico.js"></script>
+<script language="JavaScript1.2">
+
+function verificationHour(hour){
+	      var tab = hour.match(/\d{2}:\d{2}/)
+	      if(tab==null){
+	    	  return 0;
+	      }
+	      else 
+	    	  return 1;
+	   }
+
+function verificationDate(Date){
+    var tab = Date.match(/\d{2}[/]\d{2}[/]\d{2}/)
+    if(tab==null){
+  	  return 0;
+    }
+    else 
+  	  return 1;
+ }
+
+
+function validerNom(){
+	if(document.getElementById("evenement").value == 0){
+		document.getElementById('validationNom').innerHTML="Evenement obligatoire";
+	}
+	else {
+		document.getElementById('validationNom').style.display='none';
+	}
+}
+function isCorrectForm() 
+{
+	var errorNb = 0;
+	var errorMsg = "";
+	if(document.getElementById("evenement").value == 0){
+		errorNb++;
+		errorMsg+="  - '<%=resource.getString("resourcesManager.evenement")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+	}
+	if(document.getElementById("startDate").value == 0 || (verificationDate(document.getElementById("startDate").value) == 0)){
+		errorNb++;
+		errorMsg+="  - '<%=resource.getString("GML.dateBegin")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+	}
+	if((document.getElementById("startHour").value == 0) || (verificationHour(document.getElementById("startHour").value) == 0)){
+		errorNb++;
+		errorMsg+="  - '<%=resource.getString("resourcesManager.beginHour")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+	}
+	if(document.getElementById("endDate").value == 0 ||(verificationDate(document.getElementById("endDate").value) == 0)){
+		errorNb++;
+		errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+	}
+	if(document.getElementById("endHour").value == 0 ||(verificationHour(document.getElementById("endHour").value) == 0)){
+		errorNb++;
+		errorMsg+="  - '<%=resource.getString("resourcesManager.endHour")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+	}
+	switch(errorNb) 
+ 	{
+    	case 0 :
+        	result = true;
+        	break;
+    	case 1 :
+        	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+        	window.alert(errorMsg);
+        	result = false;
+        	break;
+    	default :
+        	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+        	window.alert(errorMsg);
+        	result = false;
+        	break;
+ 	} 
+	return result;
+}
+
+function verification(){
+	if (isCorrectForm()){
+		if(isCorrectDate(document.getElementById("startDate").value,document.getElementById("startHour").value,document.getElementById("endDate").value,document.getElementById("endHour").value))
+			document.createForm.submit();
+	}
+}
+
+function calendar(indexForm, indexField) {
+	SP_openWindow('<%=m_context+URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm='+indexForm+'&indiceElem='+indexField,'Calendrier',180,200,'');
+}
+
+
+function init(){
+	ajaxEngine.registerRequest('refreshDate', '<%=m_context%>/RAjaxResourcesManagerServlet/dummy');
+	ajaxEngine.registerAjaxElement('listResourceProblem');
+}
+
+function getResourceProblem()
+{
+	var beginDate = document.getElementById("startDate").value;
+	var endDate = document.getElementById("endDate").value;
+	var beginHour = document.getElementById("startHour").value;
+	var endHour = document.getElementById("endHour").value;
+	ajaxEngine.sendRequest('refreshDate','ElementId=listResourceProblem',"ComponentId=<%=componentId%>","reservationId=<%=reservationId%>","beginDate="+beginDate,"beginHour="+beginHour,"endDate="+endDate,"endHour="+endHour);
+}
+
+/* fonction permettant de vérifier que dateBegin,hourBegin est bien inférieur à dateEnd,hourEnd*/
+function renverseStrDate(dateIn, hourIn) { //procedure renverse date
+	 var sOut = "";
+	 sOut = dateIn.charAt(6) + dateIn.charAt(7) + dateIn.charAt(8)+ dateIn.charAt(9) + "/" + dateIn.charAt(3)+ dateIn.charAt(4) + "/" + dateIn.charAt(0)+ dateIn.charAt(1) + "/" + hourIn.charAt(0)+ hourIn.charAt(1)+ "/" + hourIn.charAt(3)+ hourIn.charAt(4);    
+	 return(sOut);
+}
+
+function isCorrectDate(DateBegin, HourBegin, DateEnd, HourEnd) { // procedure du bouton vérifier
+if (renverseStrDate(DateBegin,HourBegin) < renverseStrDate(DateEnd,HourEnd))
+	return true;
+else
+	alert("<%=resource.getString("resourcesManager.ordreDateReservation")%>");
+	return false;
+}
+
+
+</script>
+</head>
+<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onLoad="init()">
+<%
+browseBar.setDomainName(spaceLabel);
+browseBar.setComponentName(componentLabel,"Main");
+browseBar.setPath(resource.getString("resourcesManager.reservationParametre"));
+
+Board	board		 = gef.getBoard();
+out.println(window.printBefore());
+out.println(frame.printBefore());
+out.println(board.printBefore());
+
+
+ButtonPane buttonPane = gef.getButtonPane();
+buttonPane.addButton(validateButton);
+buttonPane.addButton(cancelButton);
+
+
+%>
+<form NAME="createForm" method="post" action="GetAvailableResources">
+<TABLE ALIGN="CENTER" CELLPADDING="3" CELLSPACING="0" BORDER="0" WIDTH="100%">
+	<tr>
+		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.evenement"));%> : </TD>
+		<TD width="100%"><input type="text" name="evenement" size="60" maxlength="60" id="evenement" onChange="validerNom()" value="<%=event%>" >&nbsp;<span id="validationNom" style="color:red"></span><IMG src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5" border="0"></TD>	
+	</tr>
+	
+	<tr>
+		<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.dateBegin")%>&nbsp;:&nbsp;</td>
+		<td valign="baseline"> 
+		<input type="text" name="startDate" size="14" id="startDate" maxlength="<%=DBUtil.DateFieldLength%>" value="<%=dateBegin%>" onBlur="getResourceProblem();">&nbsp;<a href="javascript:calendar('0', '1');" onBlur="getResourceProblem();"><img src="<%=resource.getIcon("resourcesManager.calendrier")%>" border="0" align="middle" alt="Afficher le calendrier" title="Afficher le calendrier"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span> 
+		<span class="txtlibform">&nbsp;</span><input type="text" name="startHour" id="startHour" size="5" maxlength="5" value="<%=minuteHourDateBegin%>" onBlur="getResourceProblem();">&nbsp;<span class="txtnote">(hh:mm)</span>&nbsp;<img src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5">
+	</tr>
+		
+	<tr>
+		<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.dateEnd")%>&nbsp;:&nbsp;</td>
+		<td valign="baseline"> 
+		<input type="text" name="endDate" id="endDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" value="<%=dateEnd%>" onBlur="getResourceProblem();" >&nbsp;<a href="javascript:calendar('0', '3');" onBlur="getResourceProblem();"><img src="<%=resource.getIcon("resourcesManager.calendrier")%>" border="0" align="middle" alt="Afficher le calendrier" title="Afficher le calendrier"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span> 
+		<span class="txtlibform">&nbsp;</span><input type="text" name="endHour" id="endHour" size="5" maxlength="5" value="<%=minuteHourDateEnd%>" onBlur="getResourceProblem();">&nbsp;<span class="txtnote">(hh:mm)</span>&nbsp;<img src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5">
+	</tr>
+	
+	<tr>
+		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.raisonReservation"));%> : </TD>
+		<TD><textarea name="raison" rows="6" cols="57" ><%=reason%></textarea></TD>
+	</tr>
+		
+	
+	<tr>
+		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.lieuReservation"));%> : </TD>
+		<TD><input type="text" name="lieu" size="60" maxlength="60" value="<%=place%>">&nbsp;</TD>
+	</tr>
+
+	
+	<tr>
+		<td colspan="2">( <img border="0" src=<%=resource.getIcon("resourcesManager.obligatoire")%> width="5" height="5"/> : <%=resource.getString("GML.requiredField")%> )</td>
+	</tr>
+	<!-- si le champs caché n est pas vide, cela signifie qu on est en train de modifier la reservation -->
+	<%if (reservation != null) 
+	{
+		//out.println(reservationId);
+		%><input type="HIDDEN" name="reservationId" value=<%=reservationId%>>
+  <%}%>
+</TABLE>
+</form>
+
+<div id="listResourceProblem" />
+
+<SCRIPT>document.createForm.evenement.focus();</SCRIPT>
+<%
+
+
+out.println(board.printAfter());
+out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+out.println(frame.printAfter());
+out.println(window.printAfter());
+%>
+</body>
+</html>

@@ -80,6 +80,7 @@
     <module>almanach</module>
     <module>yellowpages</module>
     <module>silvercrawler</module>
+    <module>resources-manager</module>
   </modules>
   
 </project>

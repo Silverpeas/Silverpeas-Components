@@ -1,0 +1,199 @@
+<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
+<%@ page import="com.silverpeas.resourcesmanager.model.CategoryDetail"%>
+<%@ page import="com.silverpeas.resourcesmanager.model.ResourceDetail"%>
+<%@ page import="java.util.List" %>
+<%@ include file="check.jsp" %>
+<% 
+	String 			idcategory 	= (String) request.getAttribute("categoryId");
+	List 			list 		= (List) request.getAttribute("listCategories");
+	ResourceDetail 	details 	= (ResourceDetail) request.getAttribute("resource");
+	
+	Form 			formUpdate  = (Form) request.getAttribute("Form");
+	DataRecord 		data    	= (DataRecord) request.getAttribute("Data"); 
+	String 			xmlFormName = (String) request.getAttribute("XMLFormName");
+	
+	PagesContext  context = null;
+	if (formUpdate != null)
+	{
+		context = new PagesContext("createForm", "0", resourcesManagerSC.getLanguage(), false, componentId, resourcesManagerSC.getUserId());
+		
+		if (details == null)
+			context.setCurrentFieldIndex("5");
+		else
+			context.setCurrentFieldIndex("6");
+	    context.setBorderPrinted(false);
+	    //context.setObjectId(idResource);
+	}
+	
+	String name = "";
+	String reponsibleId = "";
+	String description = "";
+	boolean bookable = false;
+	String resourceId = "";
+	
+	if (details != null){
+		resourceId 		= details.getId();
+		name 			= details.getName();
+		bookable 		= details.getBookable();
+		reponsibleId 	= details.getResponsibleId();
+		description 	= details.getDescription();
+	}
+	
+	//creation des boutons Valider et Annuler
+	Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javaScript:verification()", false);
+	Button cancelButton = null;
+	if(!idcategory.equals("noCategory"))
+		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "ViewResources?id="+idcategory,false);
+	else
+		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "ViewCategories",false);
+	
+	%>
+<html>
+<head>
+<%
+	out.println(gef.getLookStyleSheet());
+%>
+<script type="text/javascript" src="<%=URLManager.getApplicationURL()%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+<%
+	if (formUpdate != null)
+	{
+		//affichage du formulaire pour la saisie
+		formUpdate.displayScripts(out, context);
+	}
+%>
+<script language=JavaScript>
+function isCorrectResourceForm() 
+{
+	var errorNb = 0;
+	var errorMsg = "";
+	if(document.getElementById("SPRM_name").value == 0){
+		errorNb++;
+		errorMsg+="  - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+	}
+	switch(errorNb) 
+ 	{
+    	case 0 :
+        	result = true;
+        	break;
+    	case 1 :
+        	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+        	window.alert(errorMsg);
+        	result = false;
+        	break;
+    	default :
+        	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+        	window.alert(errorMsg);
+        	result = false;
+        	break;
+ 	} 
+	return result;
+}
+
+function verification(){
+	var xmlFormCorrect = false;
+	<% if (formUpdate != null) { %>
+			xmlFormCorrect = isCorrectForm();
+	<% } else { %>
+			xmlFormCorrect = true;
+	<% } %>
+	
+	if (isCorrectResourceForm() && xmlFormCorrect){
+		document.createForm.submit();
+	}
+}
+</script>
+</head>
+<body>
+<%
+browseBar.setDomainName(spaceLabel);
+browseBar.setComponentName(componentLabel,"Main");
+if (details == null)
+	browseBar.setPath(resource.getString("resourcesManager.creerressource"));	
+else
+	browseBar.setPath(resource.getString("resourcesManager.modifierresource"));
+
+Board	board		 = gef.getBoard();
+
+tabbedPane.addTab(resource.getString("resourcesManager.resource"), "#", true);
+
+out.println(window.printBefore());
+out.println(tabbedPane.print());
+out.println(frame.printBefore());
+out.println(board.printBefore());
+
+ButtonPane buttonPane = gef.getButtonPane();
+buttonPane.addButton(validateButton);
+buttonPane.addButton(cancelButton);
+
+%>
+<form NAME="createForm" method="post" enctype="multipart/form-data" action="<% if(details == null){ %>SaveResource<%}else{%>ModifyResource<%}%>">
+<TABLE ALIGN="CENTER" CELLPADDING="3" CELLSPACING="0" BORDER="0" WIDTH="100%">
+	<input type="hidden" name="SPRM_responsible" value="0"/>
+	<tr>
+		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.nomcategorie"));%> : </TD>
+		<TD width="100%">
+		<%for(int i=0;i< list.size();i++){
+			CategoryDetail category = (CategoryDetail)list.get(i);
+			String categoryId = category.getId();
+		    String nameCategory = category.getName();
+			if (categoryId.equals(idcategory))
+			{
+				%>
+					<input type="hidden" name="SPRM_categoryChoice" value="<%=idcategory%>"/><%=nameCategory %>
+				<%
+			}
+			%>
+		<%} %>
+		</TD>
+	</tr>
+	
+	<tr>
+		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.name"));%> : </TD>
+		<TD><input type="text" name="SPRM_name" size="60" maxlength="60" id="SPRM_name" value="<%=name%>" >&nbsp;<span id="validationNom" style="color:red"></span><IMG src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5" border="0"></TD>	
+	</tr>
+	
+	<tr>
+		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.description"));%> : </TD>
+		<TD><textarea name="SPRM_description" rows="5" cols="57" ><%=description%></textarea></TD>
+	</tr>
+	
+	<tr>
+		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.reservable"));%> : </TD>
+		<TD><input type="checkbox" name="SPRM_bookable" id="bookable" <% if((details != null) && (bookable == true)){out.println("checked="+"checked");}else{out.println("");}%> /> <label for="bookable"></label>&nbsp;</TD>
+	</tr>
+
+	<!--<tr>
+		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.responsable"));%> : </TD>
+		<TD><input type="text" name="SPRM_responsible" size="60" maxlength="60" value=<% if((details != null) && (reponsibleId != "0")){out.println(reponsibleId);}else{out.println("");}%> >&nbsp;</TD>
+	</tr>-->
+	
+	<tr>
+		<td colspan="2">( <img border="0" src=<%=resource.getIcon("resourcesManager.obligatoire")%> width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</td>
+	</tr>
+		<!-- <input type="HIDDEN" name="idcategory" value=<%=idcategory%> > -->
+		<%if (details != null){ %>
+			<input type="HIDDEN" name="SPRM_resourceId" value=<%=resourceId%> >
+		<%}%>
+			
+</TABLE>
+<SCRIPT>document.createForm.name.focus();</SCRIPT>
+<%
+out.println(board.printAfter());
+%>
+<br/>
+<%
+if (formUpdate != null)
+{
+	out.println(board.printBefore());
+	formUpdate.display(out, context, data); 
+	out.println(board.printAfter());
+}
+%>
+</form>
+<%
+out.println("<BR/><center>"+buttonPane.print()+"</center><BR>");
+out.println(frame.printAfter());
+out.println(window.printAfter());
+%>
+</body>
+</html>

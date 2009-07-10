@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+  <name>resourcesManager</name>
+  <label>Gestion de ressources (Béta)</label>
+  <description>Ce composant permet de gérer ses ressources matérielles et de les réserver</description>
+  <suite>02 Gestion Collaborative</suite>
+  <visible>yes</visible>
+  <portlet>no</portlet>
+  <instanceClassName>com.silverpeas.resourcesmanager.ResourcesManagerInstanciator</instanceClassName>
+ <Profiles>
+    <Profile name="admin">Gestionnaires</Profile>
+    <Profile name="publisher">Lecteurs</Profile>
+    <!-- <Profile name="user">Lecteur</Profile> -->
+  </Profiles>
+  <Parameters>
+  		<Parameter>
+        	<ParameterName>comments</ParameterName>
+            <ParameterLabel>Commentaires</ParameterLabel>
+            <ParameterValue>yes</ParameterValue>
+            <ParameterMandatory>Y</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>always</ParameterUpdatable>
+			<ParameterOrder>1</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Les lecteurs peuvent laisser des commentaires sur chaque ressource</ParameterHelpFr>
+				<ParameterHelpEn>Readers are able to post comments on each resource</ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>weekendNotVisible</ParameterName>
+            <ParameterLabel>Masquer les week-end</ParameterLabel>
+			<ParameterOrder>2</ParameterOrder>
+            <ParameterValue>no</ParameterValue>
+            <ParameterMandatory>Y</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>always</ParameterUpdatable>
+			<ParameterHelp>
+				<ParameterHelpFr>Permet d'alléger l'interface et d'optimiser l'affichage du reste de la semaine</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+        </Parameter>
+   </Parameters>
+</WAComponent>

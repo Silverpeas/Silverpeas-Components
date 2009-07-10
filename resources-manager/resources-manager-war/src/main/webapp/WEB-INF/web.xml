@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>resourcesManager War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>ResourcesManagerRequestRouter</servlet-name>
+    <display-name>ResourcesManagerRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.resourcesmanager.servlets.ResourcesManagerRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>AjaxResourcesManagerServlet</servlet-name>
+    <display-name>AjaxResourcesManagerServlet</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.resourcesmanager.servlets.AjaxResourcesManagerServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ResourcesManagerRequestRouter</servlet-name>
+    <url-pattern>/RresourcesManager/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>AjaxResourcesManagerServlet</servlet-name>
+    <url-pattern>/RAjaxResourcesManagerServlet/*</url-pattern>
+  </servlet-mapping>
+</web-app>
