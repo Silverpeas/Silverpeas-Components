@@ -83,7 +83,7 @@ String displayQuizz(QuestionContainerDetail quizz, GraphicElementFactory gef, St
 				r += displayQuizzHeader(quizzScc, quizzHeader, resources, gef);
 
 				//Display the questions
-				r += "<form name=\"quizz\">";
+				r += "<form name=\"quizz\" Action=\"quizzQuestionsNew.jsp\" Method=\"Post\">";
 				r += "<input type=\"hidden\" name=\"Action\">";
 				r += "<input type=\"hidden\" name=\"NbQuestions\" value=\""+questions.size()+"\">";
 				r += "<input type=\"hidden\" name=\"QuizzId\" value=\""+quizzHeader.getPK().getId()+"\">";
@@ -127,7 +127,7 @@ Vector displayQuestions(QuestionContainerDetail quizz, int roundId,GraphicElemen
 				r += displayQuizzHeader(quizzScc, quizzHeader, resources, gef);
 
 				//Display the questions
-				r += "<form name=\"quizz\">";
+				r += "<form name=\"quizz\" Action=\"quizzQuestionsNew.jsp\" Method=\"Post\">";
 				r += "<input type=\"hidden\" name=\"Action\">";
 				r += "<input type=\"hidden\" name=\"RoundId\">";
 				r += "<input type=\"hidden\" name=\"NbQuestions\" value=\""+nbQuestions+"\">";
@@ -578,7 +578,7 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
 				String title = quizzHeader.getTitle();
 
 				//Display the questions
-				r += "<form name=\"quizz\">";
+				r += "<form name=\"quizz\" Action=\"quizzQuestionsNew.jsp\" Method=\"Post\">";
 				r += "<input type=\"hidden\" name=\"Action\">";
 				r += "<input type=\"hidden\" name=\"QuizzId\" value=\""+quizzHeader.getPK().getId()+"\">";
 				Iterator itQ = questions.iterator();
@@ -699,15 +699,12 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
 <%
 
 //Récupération des paramètres
-String action = (String) request.getParameter("Action");
-%>
-
-<%
-String quizzId = (String) request.getParameter("QuizzId");
-String participationIdSTR =  (String) request.getParameter("ParticipationId");
-String userId = (String) request.getParameter("UserId");
-String roundId = (String) request.getParameter("RoundId");
-String origin = (String) request.getParameter("Page");
+String action = request.getParameter("Action");
+String quizzId = request.getParameter("QuizzId");
+String participationIdSTR =  request.getParameter("ParticipationId");
+String userId = request.getParameter("UserId");
+String roundId = request.getParameter("RoundId");
+String origin = request.getParameter("Page");
 if (origin==null) origin="";
 int participationId = 0;
 
@@ -840,7 +837,7 @@ function sendVote(roundId) {
 <%
 
 if (action.equals("RecordQuestionsResponses")) {
-        int nbQuestions = new Integer((String) request.getParameter("NbQuestions")).intValue();
+        int nbQuestions = new Integer(request.getParameter("NbQuestions")).intValue();
         int cluePenalty  = 0;
         Hashtable hash = (Hashtable) session.getAttribute("questionsResponses");
         if (hash == null)
@@ -848,7 +845,7 @@ if (action.equals("RecordQuestionsResponses")) {
 
         for (int i = 1; i <= nbQuestions; i++) {
             Vector v = new Vector(5, 2);
-            cluePenalty = new Integer((String) request.getParameter("cluePenalty_"+i)).intValue();
+            cluePenalty = new Integer(request.getParameter("cluePenalty_"+i)).intValue();
             v.add("PC"+cluePenalty);
             String[] selectedAnswers = (String[]) request.getParameterValues("answer_"+i);
             if (selectedAnswers != null) {
@@ -857,7 +854,7 @@ if (action.equals("RecordQuestionsResponses")) {
                     String answerId = selectedAnswers[j].substring(0, selectedAnswers[j].indexOf(","));
                     v.add(answerId);
               }
-              String openedAnswer = (String) request.getParameter("openedAnswer_"+i);
+              String openedAnswer = request.getParameter("openedAnswer_"+i);
               v.add("OA"+openedAnswer);
               //if (hash.containsKey(questionId))
               hash.put(questionId, v);
@@ -866,15 +863,15 @@ if (action.equals("RecordQuestionsResponses")) {
         session.setAttribute("questionsResponses", hash);
         action = "ViewCurrentQuestions";
 } else if (action.equals("SendVote")) {
-        int nbQuestions = new Integer((String) request.getParameter("NbQuestions")).intValue();
-				int cluePenalty  = 0;
+        int nbQuestions = new Integer(request.getParameter("NbQuestions")).intValue();
+		int cluePenalty  = 0;
         Hashtable hash = (Hashtable) session.getAttribute("questionsResponses");
         if (hash == null)
             hash = new Hashtable();
 
         for (int i = 1; i <= nbQuestions; i++) {
             Vector v = new Vector(5, 2);
-            cluePenalty = new Integer((String) request.getParameter("cluePenalty_"+i)).intValue();
+            cluePenalty = new Integer(request.getParameter("cluePenalty_"+i)).intValue();
             v.add("PC"+cluePenalty);
             String[] selectedAnswers = (String[]) request.getParameterValues("answer_"+i);
             if (selectedAnswers != null) {
@@ -883,7 +880,7 @@ if (action.equals("RecordQuestionsResponses")) {
                     String answerId = selectedAnswers[j].substring(0, selectedAnswers[j].indexOf(","));
                     v.add(answerId);
               } 
-              String openedAnswer = (String) request.getParameter("openedAnswer_"+i);
+              String openedAnswer = request.getParameter("openedAnswer_"+i);
               v.add("OA"+openedAnswer);
               hash.put(questionId, v);
            }

@@ -36,5 +36,12 @@ public class NekoElementRemover extends ElementRemover {
       characters(string, augs);
   }
 
+  @Override
+  public void processingInstruction(java.lang.String target,
+      org.apache.xerces.xni.XMLString data,
+      org.apache.xerces.xni.Augmentations augs)
+      throws org.apache.xerces.xni.XNIException {
+    return;
+  }
 
 }

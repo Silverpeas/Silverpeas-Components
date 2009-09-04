@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+  <name>demandeServiceLBP</name>
+  <label>Demande de service</label>
+  <description>Processus : Demande de service La Banque Postale CRSF de Lyon</description>
+  <suite>05 Workflow</suite>
+  <visible>yes</visible>
+   <portlet>no</portlet>
+  <requestRouter>RprocessManager</requestRouter>
+  <instanceClassName>com.silverpeas.processManager.ProcessManagerInstanciator</instanceClassName>
+  <Profiles>
+    <Profile name="Demandeurs">Demandeurs</Profile>
+    <Profile name="QualifieursIRT">Qualifieurs IRT</Profile>
+    <Profile name="QualifieursLog">Qualifieurs Logistique</Profile>
+    <Profile name="ExpertsIRT">Experts IRT</Profile>
+    <Profile name="ExpertsLog">Experts Logistique</Profile>
+    <Profile name="supervisor">Superviseurs</Profile>
+  </Profiles>
+  <Parameters>
+    <Parameter>
+       <ParameterName>XMLFileName</ParameterName>
+       <ParameterLabel>Modèle abstrait</ParameterLabel>
+       <ParameterValue>DemandeDeService/DemandeDeService.xml</ParameterValue>
+       <ParameterMandatory>Y</ParameterMandatory>
+    </Parameter>
+  </Parameters>
+</WAComponent>

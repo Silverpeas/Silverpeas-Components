@@ -88,7 +88,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 	private InfoLetterDataInterface dataInterface = null;
 
 	/** the tuning parameters */
-	private static final ResourceLocator settings = new ResourceLocator("com.stratelia.silverpeas.infoLetter.settings.infoLetterSettings", "fr");
 	private static final ResourceLocator smtpSettings = new ResourceLocator("com.stratelia.silverpeas.notificationserver.channel.smtp.smtpSettings","");
 
 		
@@ -113,15 +112,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 		// Initialisation de l'interface metier
 		if (dataInterface == null) 
 			dataInterface = ServiceFactory.getInfoLetterData();   
-    }
-
-    /**
-     * Get the Infoletter settings
-     * @return a ResourceLocator object containing infoletter parameters
-     */
-    public ResourceLocator getSettings() 
-    {
-        return settings;
     }
 
 	/*
@@ -285,9 +275,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 	}
 
 	// Notification des abonnes externes
-	public String[] notifyExternals(InfoLetterPublicationPdC ilp, String server) {
-			IdPK letterPK = new IdPK();
-			letterPK.setId(String.valueOf(ilp.getLetterId()));
+	public String[] notifyExternals(InfoLetterPublicationPdC ilp, String server, Vector emails) {
+			IdPK letterPK = new IdPK(String.valueOf(ilp.getLetterId()));
 
 			// Infos  du serveur SMTP
 			String host = getSmtpHost(); 
@@ -298,11 +287,9 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 			boolean m_SmtpDebug = isSmtpDebug();
 			Transport transport = null;
 
-			// Recuperation de la liste de emails
-			Vector extmails = getExternalsSuscribers(letterPK);
-            ArrayList emailErrors = new ArrayList();
+			ArrayList emailErrors = new ArrayList();
 
-			if (extmails.size()>0) {
+			if (emails.size()>0) {
 				int i=0;
 
 				// Corps et sujet du message
@@ -360,7 +347,9 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 					publiPK.setSpace(getSpaceId());
 
 					// create the Multipart and its parts to it
-					Multipart mp = new MimeMultipart("related");
+					//Multipart mp = new MimeMultipart("related");
+					String mimeMultipart = getSettings().getString("SMTPMimeMultipart", "related");
+					Multipart mp = new MimeMultipart(mimeMultipart);
 					mp.addBodyPart(mbp1);
 
 					// Images jointes
@@ -463,9 +452,12 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         			transport.addTransportListener(transportListener);
 
         			InternetAddress[] address = new InternetAddress[1];
-					for (i=0; i<extmails.size(); i++) {
+        			String email = null;
+					for (i=0; i<emails.size(); i++) 
+					{
+						email = (String) emails.elementAt(i);
                         try {
-                            address[0] = new InternetAddress((String) extmails.elementAt(i));
+                            address[0] = new InternetAddress(email);
                             msg.setRecipients(Message.RecipientType.TO, address);
                 			// add Transport Listener to the transport connection.
                 			if (m_SmtpAuthentication)
@@ -475,14 +467,13 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
                 				msg.saveChanges();
                 			}
                 			else
+                			{
                 				transport.connect();
-                			transport.sendMessage(msg, address);
-                            // send the message
-                            //Transport.send(msg);
-                            
+                			}
+                			transport.sendMessage(msg, address);                            
                         } catch (Exception ex) {
-                            SilverTrace.error("infoLetter", "InfoLetterSessionController.notifyExternals()", "root.MSG_GEN_PARAM_VALUE", "Email = " + (String)extmails.elementAt(i), new InfoLetterException("com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController", SilverpeasRuntimeException.ERROR, ex.getMessage()));
-                            emailErrors.add((String)extmails.elementAt(i));
+                            SilverTrace.error("infoLetter", "InfoLetterSessionController.notifyExternals()", "root.MSG_GEN_PARAM_VALUE", "Email = " + email, new InfoLetterException("com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController", SilverpeasRuntimeException.ERROR, ex.getMessage()));
+                            emailErrors.add(email);
                         }
                 		finally
                 		{
@@ -506,6 +497,16 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
             return (String[])emailErrors.toArray(new String[0]);
 	}
 
+	// Notification des abonnes externes
+	public String[] notifyExternals(InfoLetterPublicationPdC ilp, String server) 
+	{
+			IdPK letterPK = new IdPK(String.valueOf(ilp.getLetterId()));
+
+			// Recuperation de la liste de emails
+			Vector extmails = getExternalsSuscribers(letterPK);
+
+            return notifyExternals(ilp, server, extmails);
+	}
 	
 	/**
 	 * Send letter to managers
@@ -513,225 +514,14 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 	 * @param server
 	 * @return
 	 */
-	public String[] notifyManagers(InfoLetterPublicationPdC ilp, String server) {
-			IdPK letterPK = new IdPK();
-			letterPK.setId(String.valueOf(ilp.getLetterId()));
-
-			String host = getSmtpHost(); 
-			boolean m_SmtpAuthentication = isSmtpAuthentication();
-			int m_Port 			= getSmtpPort();
-			String m_User 		= getSmtpUser();
-			String m_Pwd 		= getSmtpPwd();
-			boolean m_SmtpDebug = isSmtpDebug();
-			Transport transport = null;
-
+	public String[] notifyManagers(InfoLetterPublicationPdC ilp, String server) 
+	{		
 			// Recuperation de la liste de emails
 			Vector extmails = getEmailsManagers();
-            ArrayList emailErrors = new ArrayList();
-
-			if (extmails.size()>0) {
-				int i=0;
-
-				// Corps et sujet du message
-				InfoLetter il = dataInterface.getInfoLetter(letterPK);
-				String subject = "Nouvelle parution de la Lettre : " + il.getName();
-
-				// Email du publieur
-				String from = getUserDetail().geteMail();
-
-				// create some properties and get the default Session
-				Properties props = System.getProperties();
-				props.put("mail.smtp.host", host);
-				props.put("mail.smtp.auth", new Boolean(m_SmtpAuthentication).toString());
-	
-				Session session = Session.getInstance(props, null);
-				session.setDebug(m_SmtpDebug);  // print on the console all SMTP messages.
-				
-				SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyManagers()", "root.MSG_GEN_PARAM_VALUE",
-			             "subject = " + subject);
-				SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyManagers()", "root.MSG_GEN_PARAM_VALUE",
-			             "from = " + from);
-				SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyManagers()", "root.MSG_GEN_PARAM_VALUE",
-			             "host= " + host);
-	
-				try {
-					// create a message
-					MimeMessage msg = new MimeMessage(session);
-					msg.setFrom(new InternetAddress(from));
-					msg.setSubject(subject, "ISO-8859-1");
-
-					// create and fill the first message part
-					MimeBodyPart mbp1 = new MimeBodyPart();
-					String fileName = WysiwygController.getWysiwygFileName(ilp.getPK().getId());
-					String htmlMessagePath = com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath(getComponentId()) + "Attachment" + java.io.File.separator + "wysiwyg" + java.io.File.separator;
-					FileReader htmlCodeFile = new FileReader(new File(htmlMessagePath + fileName));
-
-					StringBuffer msgText1 = new StringBuffer();
-					int c;
-					c = htmlCodeFile.read();
-					while (c != -1) {
-						msgText1.append((char)c);
-						c = htmlCodeFile.read();
-					}
-
-					// mbp1.setText(msgText1.toString());
-					mbp1.setDataHandler(new DataHandler(
-						new ByteArrayDataSource(replaceFileServerWithLocal(msgText1.toString(), server), "text/html")));
-					
-					// Fichiers joints
-					// AttachmentController ac = new AttachmentController();
-					WAPrimaryKey publiPK = ilp.getPK();
-					publiPK.setComponentName(getComponentId());
-					publiPK.setSpace(getSpaceId());
-
-					// create the Multipart and its parts to it
-					Multipart mp = new MimeMultipart("related");
-					mp.addBodyPart(mbp1);
-
-					// Images jointes
-					AttachmentPK foreignKey = new AttachmentPK(ilp.getPK().getId(), getSpaceId(), getComponentId());
-					Collection fichiers = AttachmentController.searchAttachmentByPKAndContext(foreignKey, WysiwygController.getImagesFileName(ilp.getPK().getId()));
-
-					String attachmentPath = AttachmentController.createPath(getComponentId(), WysiwygController.getImagesFileName(ilp.getPK().getId()));
-					Iterator imageIter = fichiers.iterator();
-					while(imageIter.hasNext()) {
-						AttachmentDetail ad = (AttachmentDetail) imageIter.next();
-						// create the second message part
-						MimeBodyPart mbp2 = new MimeBodyPart();
-								
-						// attach the file to the message
-						FileDataSource fds = new FileDataSource(attachmentPath + ad.getPhysicalName());
-						mbp2.setDataHandler(new DataHandler(fds));
-						//For Displaying images in the mail
-						mbp2.setFileName(ad.getLogicalName());
-						mbp2.setHeader("Content-ID", ad.getLogicalName());
-						SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyManagers()", "root.MSG_GEN_PARAM_VALUE","content-ID= " + mbp2.getContentID());
-
-						// create the Multipart and its parts to it
-						mp.addBodyPart(mbp2);
-					}
-					
-					// Fichiers joints
-					fichiers = AttachmentController.searchAttachmentByPKAndContext(publiPK, "Images");
-					attachmentPath = com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath(getComponentId()) + "Attachment" + java.io.File.separator + "Images" + java.io.File.separator;
-
-					if (fichiers.size()>0) {
-					  imageIter = fichiers.iterator();
-						while(imageIter.hasNext()) {
-							AttachmentDetail ad = (AttachmentDetail) imageIter.next();
-							// create the second message part
-							MimeBodyPart mbp2 = new MimeBodyPart();
-	
-							// attach the file to the message
-							FileDataSource fds = new FileDataSource(attachmentPath + ad.getPhysicalName());
-							mbp2.setDataHandler(new DataHandler(fds));
-							mbp2.setFileName(ad.getLogicalName());
-							//For Displaying images in the mail
-							mbp2.setHeader("Content-ID", ad.getLogicalName());
-							SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyManagers()", "root.MSG_GEN_PARAM_VALUE","content-ID= " + mbp2.getContentID());
-
-							// create the Multipart and its parts to it
-							mp.addBodyPart(mbp2);
-						}
-					}
-
-					// add the Multipart to the message
-					msg.setContent(mp);
-
-					// set the Date: header
-					msg.setSentDate(new Date());
-					
-					// create a Transport connection (TCP)
-					transport = session.getTransport("smtp");
-					
-					// redefine the TransportListener interface.
-					TransportListener transportListener = new TransportListener()
-					{
-
-						/**
-						 * Method declaration
-						 *
-						 *
-						 * @param e
-						 *
-						 * @see
-						 */
-						public void messageDelivered(TransportEvent e)
-						{  // catch all messages delivered to the SMTP server.
-						}
-
-						/**
-						 * Method declaration
-						 *
-						 *
-						 * @param e
-						 *
-						 * @see
-						 */
-						public void messageNotDelivered(TransportEvent e)
-						{  // catch all messages NOT delivered to the SMTP server.
-						}
-
-						/**
-						 * Method declaration
-						 *
-						 *
-						 * @param e
-						 *
-						 * @see
-						 */
-						public void messagePartiallyDelivered(TransportEvent e) {}
-
-					};
-					
-					// Chaine de destination
-        			transport.addTransportListener(transportListener);
-
-        			InternetAddress[] address = new InternetAddress[1];
-					for (i=0; i<extmails.size(); i++) {
-                        try {
-                            address[0] = new InternetAddress((String) extmails.elementAt(i));
-                            msg.setRecipients(Message.RecipientType.TO, address);
-                			// add Transport Listener to the transport connection.
-                			if (m_SmtpAuthentication)
-                			{
-                				SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyManagers()", "root.MSG_GEN_PARAM_VALUE", "host = " + host+ " m_Port="+m_Port+" m_User="+m_User);
-                				transport.connect(host, m_Port, m_User, m_Pwd);
-                				msg.saveChanges();
-                			}
-                			else
-                				transport.connect();
-                			transport.sendMessage(msg, address);
-                            // send the message
-                            //Transport.send(msg);
-                            
-                        } catch (Exception ex) {
-                            SilverTrace.error("infoLetter", "InfoLetterSessionController.notifyManagers()", "root.MSG_GEN_PARAM_VALUE", "Email = " + (String)extmails.elementAt(i), new InfoLetterException("com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController", SilverpeasRuntimeException.ERROR, ex.getMessage()));
-                            emailErrors.add((String)extmails.elementAt(i));
-                        }
-                		finally
-                		{
-                			if (transport != null)
-                			{
-                				try
-                				{
-                					transport.close();
-                				}
-                				catch (Exception e) 
-                                {
-                                    SilverTrace.error("infoLetter","InfoLetterSessionController.notifyManagers()","root.EX_IGNORED","ClosingTransport",e);
-                                }
-                			}
-                		}
-					}
-				} catch (Exception e) {
-					throw new InfoLetterException("com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController", SilverpeasRuntimeException.ERROR, e.getMessage());
-				}
-			}
-            return (String[])emailErrors.toArray(new String[0]);
+			
+			return notifyExternals(ilp, server, extmails);
 	}
 
-	
 	// Recuperation de la liste des emails externes
 	public Vector getExternalsSuscribers(WAPrimaryKey letterPK) {
 		Vector retour = dataInterface.getExternalsSuscribers(letterPK);
@@ -1018,20 +808,17 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
      * Get emails of component Manager
      * @return Vector of emails
      */
-    private Vector getEmailsManagers()
+    private Vector<String> getEmailsManagers()
     {
-    	Vector emails = new Vector();
-    	AdminController ac = new AdminController(getUserId());
-		ComponentInst componentInst = ac.getComponentInst(getComponentId());
-		ProfileInst profileInst	= componentInst.getProfileInst("admin");
-		if (profileInst != null)
+    	Vector<String> emails = new Vector<String>();
+		List<String> roles = new ArrayList<String>();
+		roles.add("admin");
+		String[] userIds = getOrganizationController().getUsersIdsByRoleNames(getComponentId(), roles);
+		if (userIds != null)
 		{
-			List managers = profileInst.getAllUsers();
-			Iterator itManagers = managers.iterator(); 
-			while (itManagers.hasNext())
-			{
-				String userId = (String) itManagers.next();
-	    		String email = getUserDetail(userId).geteMail();
+			for (int i = 0; i < userIds.length; i++) {
+				String userId = userIds[i];
+				String email = getUserDetail(userId).geteMail();
 	    		if (StringUtil.isDefined(email))
 	    			emails.add(email);
 			}
@@ -1067,6 +854,5 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     {
     	return smtpSettings.getString("SMTPPwd");
     }
-
 
 }

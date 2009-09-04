@@ -1,5 +1,6 @@
 package com.stratelia.webactiv.quickinfo.servlets;
 
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -16,13 +17,13 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBm;
-import com.stratelia.webactiv.clipboard.model.ClipboardSelection;
 import com.stratelia.webactiv.quickinfo.control.QuickInfoSessionController;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationSelection;
+import com.silverpeas.util.clipboard.ClipboardSelection;
 
 public class QuickInfoRequestRouter extends ComponentRequestRouter
 {

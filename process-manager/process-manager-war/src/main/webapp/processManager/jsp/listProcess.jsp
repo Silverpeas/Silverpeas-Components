@@ -34,8 +34,18 @@ Item getItem(Item[] items, String itemName)
   if (hasUserSettings.equals("1"))
 	operationPane.addOperation(resource.getIcon("processManager.userSettings"),
 								resource.getString("processManager.userSettings"),
-								"editUserSettings");	
-
+								"editUserSettings");
+  
+  Boolean isCSVExportEnabled = (Boolean) request.getAttribute("isCSVExportEnabled");
+  
+  if (isCSVExportEnabled != null && isCSVExportEnabled.booleanValue())
+  {
+  	operationPane.addLine();
+  	operationPane.addOperation(resource.getIcon("processManager.csvExport"),
+			resource.getString("processManager.csvExport"),
+			"javaScript:exportCSV();");
+  }
+  
 	String collapse = (String) request.getAttribute("collapse");
 	if (collapse == null) 
 		collapse = "true";
@@ -56,6 +66,7 @@ Item getItem(Item[] items, String itemName)
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <%
    out.println(gef.getLookStyleSheet());
@@ -82,6 +93,11 @@ Item getItem(Item[] items, String itemName)
 	{
 		if (confirm(message))
 			window.location.href = url;
+	}
+
+	function exportCSV()
+	{
+		SP_openWindow("exportCSV", "exportWindow", "550", "350", "directories=0,menubar=0,toolbar=0,alwaysRaised");
 	}
 </SCRIPT>
 </script>

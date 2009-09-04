@@ -1,5 +1,6 @@
 package com.silverpeas.processManager.servlets;
 
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,12 +17,18 @@ import com.silverpeas.processManager.HistoryStepContent;
 import com.silverpeas.processManager.ProcessFilter;
 import com.silverpeas.processManager.ProcessManagerException;
 import com.silverpeas.processManager.ProcessManagerSessionController;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.workflow.api.error.WorkflowError;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.api.instance.Question;
+import com.silverpeas.workflow.api.model.AllowedAction;
+import com.silverpeas.workflow.api.model.AllowedActions;
 import com.silverpeas.workflow.api.model.Item;
+import com.silverpeas.workflow.api.model.QualifiedUsers;
+import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.task.Task;
+import com.silverpeas.workflow.engine.model.ActionRefs;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -29,8 +36,12 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import java.io.File;
+import java.util.Iterator;
 
 
 public class ProcessManagerRequestRouter extends ComponentRequestRouter
@@ -171,6 +182,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter
        handlerMap.put("searchResult.jsp", searchResultHandler);
 	   handlerMap.put("searchResult", searchResultHandler);
        handlerMap.put("attachmentManager", attachmentManagerHandler);
+       handlerMap.put("exportCSV", exportCSVHandler);
 
        //handlerMap.put("adminListProcess", adminListProcessHandler);
        handlerMap.put("adminRemoveProcess", adminRemoveProcessHandler);
@@ -390,6 +402,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter
 			{
 				request.setAttribute("hasUserSettings", "0");
 			}
+			
+			request.setAttribute("isCSVExportEnabled", new Boolean(session.isCSVExportEnabled()));
 			
 			Item[] items = session.getFolderItems();
 			request.setAttribute("FolderItems", items);
@@ -751,6 +765,25 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter
 			if (!process.getErrorStatus())
 			{
 				Task[] tasks = session.getTasks();
+				
+				for (int i=0; tasks!=null && i<tasks.length; i++)
+				{
+					State state = tasks[i].getState();
+					AllowedActions filteredActions = new ActionRefs();
+					Iterator<AllowedAction> actions = state.getAllowedActionsEx().iterateAllowedAction();
+					while (actions.hasNext())
+					{
+				   		AllowedAction action = actions.next();
+				   		QualifiedUsers qualifiedUsers = action.getAction().getAllowedUsers();
+						if (session.getUsers(qualifiedUsers, true).contains(session.getUserId()))
+						{
+							filteredActions.addAllowedAction(action);
+						}
+					}
+				   	
+				   	state.setFilteredActions(filteredActions);
+				}
+				
 				request.setAttribute("tasks", tasks);
 				request.setAttribute("ViewReturn", new Boolean(session.isViewReturn()));
 				request.setAttribute("Error", Boolean.FALSE);
@@ -1234,7 +1267,29 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter
 			return "/processManager/jsp/printButtons.jsp";
        }
     };
-
+    
+    static private FunctionHandler exportCSVHandler = new FunctionHandler()
+	{
+		public String getDestination(String function, 
+									 ProcessManagerSessionController session,
+									 HttpServletRequest request)
+		throws ProcessManagerException
+		{
+			String csvFilename = session.exportListAsCSV();
+			
+			request.setAttribute("CSVFilename", csvFilename);
+			if(StringUtil.isDefined(csvFilename))
+			{
+				File file = new File(FileRepositoryManager.getTemporaryPath() + csvFilename);
+				request.setAttribute("CSVFileSize", Long.valueOf(file.length()));
+				request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename, csvFilename, "text/csv"));
+				file = null;
+			}
+			
+			return "/processManager/jsp/downloadCSV.jsp";
+		}
+	};
+	
 	/**
 	* Set attributes shared by all the processManager pages.
 	*/

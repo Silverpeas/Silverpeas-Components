@@ -7,15 +7,11 @@
 <%@ include file="checkWhitePages.jsp" %>
 
 <%
-
-	String hostComponentName = (String) request.getAttribute("HostComponentName");
-  	String hostUrl = (String) request.getAttribute("HostUrl");
-  	String hostSpaceName = (String) request.getAttribute("HostSpaceName");
+	String hostSpaceName = (String) request.getAttribute("HostSpaceName");
   	String hostPath = (String)request.getAttribute("HostPath");
   	Boolean ficheVisible = (Boolean) request.getAttribute("IsFicheVisible");
   	
   	browseBar.setDomainName(hostSpaceName);
-  	//browseBar.setComponentName(hostComponentName, m_context+hostUrl);
   	browseBar.setPath(hostPath);
   
 	Card card = (Card) request.getAttribute("card");

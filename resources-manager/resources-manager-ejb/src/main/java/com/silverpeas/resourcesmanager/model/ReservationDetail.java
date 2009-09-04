@@ -18,6 +18,14 @@ public class ReservationDetail implements Serializable {
 	private String instanceId;
 	private ArrayList listResourcesReserved;
 	
+	private String userName;
+	
+	public String getUserName() {
+		return userName;
+	}
+	public void setUserName(String userName) {
+		this.userName = userName;
+	}
 	public ArrayList getListResourcesReserved() {
 		return listResourcesReserved;
 	}

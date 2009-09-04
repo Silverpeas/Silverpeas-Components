@@ -38,10 +38,10 @@
    out.println(gef.getLookStyleSheet());
 %>
 </HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<BODY>
 <%
    out.println(window.printBefore());
-	out.println(tabbedPane.print());
+   out.println(tabbedPane.print());
    out.println(frame.printBefore());
 %>
 <CENTER>
@@ -72,10 +72,10 @@
 				   <td>
 <%
 		  ButtonPane buttonPane = gef.getButtonPane();
-			Action[] actions = state.getAllowedActions();
-	   	for (int j=0; actions!=null && j<actions.length ; j++)
+			Action[] actions = state.getFilteredActions();
+	   		for (int j=0; actions!=null && j<actions.length ; j++)
 			{
-			buttonPane.addButton((Button) gef.getFormButton(actions[j].getLabel(currentRole,language), "editAction?state="+state.getName()+"&action="+actions[j].getName() , false));			
+				buttonPane.addButton((Button) gef.getFormButton(actions[j].getLabel(currentRole,language), "editAction?state="+state.getName()+"&action="+actions[j].getName() , false));			
 			}
 
 	   	// affichage des boutons "retour" si autorisé

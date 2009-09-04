@@ -10,9 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Field;
+import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.form.fieldType.DateField;
 import com.silverpeas.form.form.HtmlForm;
 import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.record.GenericFieldTemplate;
@@ -46,13 +48,20 @@ import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.api.user.UserInfo;
 import com.silverpeas.workflow.api.user.UserSettings;
+import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowRecord;
+import com.silverpeas.workflow.engine.model.ItemImpl;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.Hashtable;
+import java.util.StringTokenizer;
 
 
 /**
@@ -175,6 +184,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 			return "yes".equalsIgnoreCase(parameterValue);
 		else
 			return true;
+	}
+	
+	public boolean isCSVExportEnabled()
+	{
+		return "yes".equalsIgnoreCase(getComponentParameterValue("exportCSV"));		
 	}
 
    /**
@@ -473,7 +487,12 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 		return activeUsers;
 	}
 	
-	private List getUsers(QualifiedUsers qualifiedUsers)
+	public List getUsers(QualifiedUsers qualifiedUsers)
+	{
+		return getUsers(qualifiedUsers, false);
+	}
+	
+	public List getUsers(QualifiedUsers qualifiedUsers, boolean useCurrentRole)
 	{
 		List users = new ArrayList();
 		RelatedUser[] relatedUsers = qualifiedUsers.getRelatedUsers();
@@ -517,6 +536,18 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 		{
 			userInRole = userInRoles[u];
 			roles.add(userInRole.getRoleName());
+		}
+		if (useCurrentRole)
+		{
+			if (roles.contains(currentRole))
+			{
+				roles.clear();
+				roles.add(currentRole);
+			}
+			else
+			{
+				roles.clear();
+			}
 		}
 		String[] userIds = getOrganizationController().getUsersIdsByRoleNames(getComponentId(), roles);
 		for (int u=0; u<userIds.length; u++)
@@ -1461,7 +1492,6 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 	{
 		try
 		{
-			Workflow.getProcessModelManager();
 			com.silverpeas.workflow.api.model.Form form = processModel.getForm("printForm");
 			if (form==null)
 			{
@@ -1471,7 +1501,6 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
 			else
 			{
-				//HtmlForm htmlForm = new HtmlForm( processModel.getAllDataTemplate( currentRole, getLanguage() ) );
 				HtmlForm htmlForm = new HtmlForm(processModel.getDataFolder().toRecordTemplate(currentRole, getLanguage(), true));
 				
 				htmlForm.setFileName("http://" + request.getServerName() + ":" + request.getServerPort() + form.getHTMLFileName());
@@ -1780,6 +1809,210 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 			viewReturn = !hideReturnLocal;
 		}
 		return viewReturn;
+	}
+	
+	public String exportListAsCSV() throws ProcessManagerException
+	{
+		try {
+			DataRecord[] processList = getCurrentProcessList();
+			Item[] items = getFolderItems();
+			RecordTemplate listHeaders = getProcessListHeaders();
+			FieldTemplate[] headers = listHeaders.getFieldTemplates();
+			
+			List csvCols = getCSVCols();
+			
+			ProcessInstanceRowRecord instance;
+			StringBuffer csvRow = new StringBuffer();
+			List csvRows = new ArrayList();
+			boolean isProcessIdVisible = isProcessIdVisible();
+			
+			if (isProcessIdVisible)
+				addCSVValue(csvRow, "#");
+
+			addCSVValue(csvRow, "<>");
+			
+			String col;
+			ItemImpl item;
+			for (int i=0; i<csvCols.size(); i++)
+			{
+				if (i==0 || i==1)
+					addCSVValue(csvRow, headers[i].getLabel(getLanguage()));
+				else
+				{
+					col = (String) csvCols.get(i);
+					item = (ItemImpl) getItem(items, col);
+					addCSVValue(csvRow, item.getLabel(getCurrentRole(), getLanguage()));
+				}
+			}
+			csvRows.add(csvRow);
+			
+			for (int i=0; i<processList.length; i++) // boucle sur tous les process
+			{
+				instance = (ProcessInstanceRowRecord) processList[i];
+				if (instance != null)
+				{
+					csvRow = new StringBuffer();
+					if (isProcessIdVisible)
+						addCSVValue(csvRow, instance.getId());
+
+					if (instance.isInError())
+						addCSVValue(csvRow, getString("processManager.inError"));
+					else if (instance.isLockedByAdmin())
+						addCSVValue(csvRow, getString("processManager.lockedByAdmin"));
+					else if (instance.isInTimeout())
+						addCSVValue(csvRow, getString("processManager.timeout"));
+					else
+						addCSVValue(csvRow, "");
+					
+					//add title
+					addCSVValue(csvRow, instance.getField(0).getValue(getLanguage()));
+					
+					//add state
+					addCSVValue(csvRow, instance.getField(1).getValue(getLanguage()));
+					
+					Field field = null;
+					String fieldString;
+					for (int c=2; c<csvCols.size(); c++)
+					{
+						//field = instance.getField(j);
+						String fieldName = (String) csvCols.get(c);
+						try
+						{
+							field = instance.getFullProcessInstance().getField(fieldName);
+							fieldString = field.getValue(getLanguage());
+							if (StringUtil.isDefined(fieldString) && field.getTypeName().equals(DateField.TYPE))
+							{
+								addCSVValue(csvRow, fieldString);
+							}
+							else
+							{
+								item = (ItemImpl) getItem(items, fieldName);
+								if (item != null)
+								{
+									Hashtable keyValuePairs = item.getKeyValuePairs();
+									if (keyValuePairs != null && keyValuePairs.size() > 0)
+									{
+										String newValue = "";
+										if (fieldString.indexOf("##") != -1)
+										{
+											//Try to display a checkbox list
+											StringTokenizer tokenizer = new StringTokenizer(fieldString, "##");
+											String t = null;
+											while (tokenizer.hasMoreTokens())
+											{
+												t = tokenizer.nextToken();
+												
+												t = (String) keyValuePairs.get(t);
+												newValue += t;
+												
+												if (tokenizer.hasMoreTokens())
+													newValue += ", ";
+											}
+										}
+										else if (fieldString != null && fieldString.length() > 0)
+										{
+											newValue = (String) keyValuePairs.get(fieldString);
+										}
+										fieldString = newValue;
+									}
+								}
+							}
+						} 
+						catch (WorkflowException we)
+						{
+							fieldString = "";
+						}
+						addCSVValue(csvRow, fieldString);
+					}
+					csvRows.add(csvRow);
+				}
+			}
+			
+			return writeCSVFile(csvRows);
+		} catch (FormException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	private String writeCSVFile(List csvRows)
+	{
+		FileOutputStream fileOutput = null;
+		String csvFilename = new Date().getTime() + ".csv";
+		try 
+		{
+			fileOutput = new FileOutputStream(FileRepositoryManager.getTemporaryPath() + csvFilename);
+		
+			StringBuffer csvRow;
+			for (int r=0; r<csvRows.size(); r++)
+			{
+				csvRow = (StringBuffer) csvRows.get(r);
+				fileOutput.write(csvRow.toString().getBytes());
+				fileOutput.write("\n".getBytes());
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			csvFilename = null;
+			e.printStackTrace();
+		}
+		finally
+		{
+			if (fileOutput != null)
+			{
+				try {
+					fileOutput.flush();
+					fileOutput.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					csvFilename = null;
+					e.printStackTrace();
+				}
+			}
+		}
+		return csvFilename;
+	}
+	
+	private List getCSVCols() throws ProcessManagerException, FormException
+	{
+		List csvCols = new ArrayList();
+		Item[] items = getFolderItems();
+		RecordTemplate listHeaders = getProcessListHeaders();
+		FieldTemplate[] headers = listHeaders.getFieldTemplates();
+		
+		for (int h=0; h<headers.length; h++)
+		{
+			csvCols.add(headers[h].getFieldName());
+		}
+		
+		Item item;
+		for (int i=0; i<items.length; i++)
+		{
+			item = items[i];
+			if (!csvCols.contains(item.getName()))
+				csvCols.add(item.getName());
+		}
+		
+		return csvCols;
+	}
+	
+	private void addCSVValue(StringBuffer row, String value)
+	{
+		row.append("\"");
+		if (value != null)
+			row.append(value.replaceAll("\"", "\"\""));
+		row.append("\"").append(",");
+	}
+	
+	private Item getItem(Item[] items, String itemName)
+	{
+		Item item = null;
+		for(int i=0; i<items.length; i++)
+		{
+			item = items[i];
+			if (itemName.equals(item.getName()))
+				return item;
+		}
+		return null;
 	}
 
    /**

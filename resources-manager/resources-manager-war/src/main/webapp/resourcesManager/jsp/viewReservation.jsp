@@ -75,7 +75,10 @@ buttonPane.addButton(cancelButton);
 				<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.dateFinReservation"));%> :</TD>
 				<td><%=dateEnd%></td>
 				</tr>
-				
+				<tr>
+					<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.user") %> :</td>
+					<td><%=maReservation.getUserName()%></td>
+				</tr>
 				<tr>
 				<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.raisonReservation"));%> :</td> 
 				<td><%=reason%></TD>

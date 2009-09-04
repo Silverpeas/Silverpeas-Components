@@ -363,7 +363,9 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
 	{		
 		try
 		{ 					
-			return getResourcesManagerBm().getReservation(getComponentId(),reservationId);
+			ReservationDetail reservation = getResourcesManagerBm().getReservation(getComponentId(),reservationId);
+			reservation.setUserName(getUserDetail(reservation.getUserId()).getDisplayedName());
+			return reservation;
 		}
 		catch (RemoteException e) {
 			throw new ResourcesManagerRuntimeException("ResourcesManagerSessionController.getReservation()", SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);

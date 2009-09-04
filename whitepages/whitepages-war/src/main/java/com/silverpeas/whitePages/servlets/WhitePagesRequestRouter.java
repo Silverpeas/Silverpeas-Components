@@ -278,6 +278,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter
     			 * Updates record object with new values.
     			 */ 
     			scc.setCardRecord(request);
+    			scc.saveCard();
 				
 				/*
 				 * If user has been forced to create his own card and done it, removes forced redirection.
@@ -295,17 +296,17 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter
 	        else if (function.equals("consultIdentity"))
 	        {
         		String userCardIdString = request.getParameter("userCardId");
-        		if (userCardIdString==null || userCardIdString.equals("")) {
+        		if (!StringUtil.isDefined(userCardIdString)) {
         			//on vient de reverseHide
         			userCardIdString = (String) request.getAttribute("userCardId");
         		}
-        		if (userCardIdString==null || userCardIdString.equals("")) {
+        		if (!StringUtil.isDefined(userCardIdString)) {
         			//on vient de pdc search
-        			userCardIdString = (String) request.getParameter("documentId");
+        			userCardIdString = request.getParameter("documentId");
         		}
-        		if (userCardIdString==null || userCardIdString.equals("")) {
+        		if (!StringUtil.isDefined(userCardIdString)) {
         			//on vient de search
-        			userCardIdString = (String) request.getParameter("id");
+        			userCardIdString = request.getParameter("id");
         		}
         		long userCardId = new Long(userCardIdString).longValue();
         		Card card = scc.getCard(userCardId);
@@ -347,7 +348,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter
 	        else if (function.equals("consultCard"))
 	        {
         		String userCardIdString = request.getParameter("userCardId");
-        		if (userCardIdString.equals("")) {
+        		if (!StringUtil.isDefined(userCardIdString)) {
         			//on vient de reverseHide
         			userCardIdString = (String) request.getAttribute("userCardId");
         		}
@@ -497,19 +498,19 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter
 	        else if (function.equals("viewIdentity"))
 	        {	        
 	        		String userCardIdString = request.getParameter("userCardId");	
-	        		if (userCardIdString==null || userCardIdString.equals("")) {
+	        		if (!StringUtil.isDefined(userCardIdString)) {
 	        			//on vient de pdc search
-	        			userCardIdString = (String) request.getParameter("documentId");
+	        			userCardIdString = request.getParameter("documentId");
 	        		}
-	        		if (userCardIdString==null || userCardIdString.equals("")) {
+	        		if (!StringUtil.isDefined(userCardIdString)) {
 	        			//on vient de search
-	        			userCardIdString = (String) request.getParameter("id");
+	        			userCardIdString = request.getParameter("id");
 	        		}
 	        		
-					String hostComponentName = (String) request.getParameter("HostComponentName");
-					String hostUrl = (String) request.getParameter("HostUrl");
-					String hostSpaceName = (String) request.getParameter("HostSpaceName");
-					String hostPath = (String)request.getParameter("HostPath");
+					String hostComponentName 	= request.getParameter("HostComponentName");
+					String hostUrl 				= request.getParameter("HostUrl");
+					String hostSpaceName 		= request.getParameter("HostSpaceName");
+					String hostPath 			= request.getParameter("HostPath");
 					
 					if (hostComponentName != null)
 						scc.setHostParameters(hostSpaceName, hostComponentName, hostUrl, hostPath);
@@ -559,8 +560,6 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter
 						request.setAttribute("Form", userForm);
 						request.setAttribute("context", context);
 						request.setAttribute("data", data);
-						request.setAttribute("HostComponentName", hostComponentName);
-						request.setAttribute("HostUrl", hostUrl);
 						request.setAttribute("HostSpaceName", hostSpaceName);
 						request.setAttribute("HostPath", hostPath);
 						request.setAttribute("IsFicheVisible", scc.isFicheVisible());
