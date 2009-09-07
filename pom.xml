@@ -82,6 +82,7 @@
     <module>silvercrawler</module>
     <module>resources-manager</module>
     <module>process-manager</module>
+    <module>forums</module>
   </modules>
   
 </project>

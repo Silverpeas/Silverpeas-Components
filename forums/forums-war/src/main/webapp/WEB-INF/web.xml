@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>Forums War</display-name>
+  <description>no description</description>
+  <!-- A activer pour un accès externe au forum -->
+  
+  <filter>
+    <filter-name>ExternalAccessFilter</filter-name>
+    <filter-class>com.stratelia.webactiv.filter.ExternalAccessFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>ExternalAccessFilter</filter-name>
+    <url-pattern>/Rforums/*</url-pattern>
+  </filter-mapping>
+  
+  <servlet>
+    <servlet-name>ForumsRequestRouter</servlet-name>
+    <display-name>ForumsRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.servlets.ForumsRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>ForumsRssServlet</servlet-name>
+    <display-name>ForumsRssServlet</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.servlets.ForumsRssServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>GoToMessage</servlet-name>
+    <display-name>GoToMessage</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.servlets.GoToMessage</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>ForumsRequestRouter</servlet-name>
+    <url-pattern>/Rforums/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ForumsRssServlet</servlet-name>
+    <url-pattern>/rssforums/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToMessage</servlet-name>
+    <url-pattern>/ForumsMessage/*</url-pattern>
+  </servlet-mapping>
+</web-app>
+

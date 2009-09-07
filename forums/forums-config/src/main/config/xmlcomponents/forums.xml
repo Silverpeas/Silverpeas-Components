@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+  <name>forums</name>
+  <label>Forum</label>
+  <description>Supporte les processus de communication asynchrone de type forum. Des salons peuvent être ouverts, sur des thèmes variés. L'escalade à plusieurs niveaux est possible sur chaque intervention d'un participant. Chaque salon est classable sur le plan de classement.</description>
+  <suite>02 Gestion Collaborative</suite>
+  <visible>@ComponentVisibleForum@</visible>
+   <portlet>yes</portlet>
+  <instanceClassName>com.stratelia.webactiv.forums.instanciator.ForumsInstanciator</instanceClassName>
+  <tableList>
+    <tabletpl>Forum</tabletpl>
+    <tabletpl>Message</tabletpl>
+    <tabletpl>Rights</tabletpl>
+  </tableList>
+  <Profiles>
+    <Profile name="admin">Gestionnaire</Profile>
+    <Profile name="user">Participant</Profile>
+    <Profile name="reader">Lecteur</Profile>
+  </Profiles>
+  <Parameters>
+	<Parameter>
+            <ParameterName>usePdc</ParameterName>
+            <ParameterLabel>Classification PDC</ParameterLabel>
+            <ParameterValue>no</ParameterValue>
+            <ParameterMandatory>Y</ParameterMandatory>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterOrder>2</ParameterOrder>
+	    <ParameterHelp>
+		<ParameterHelpFr>Les forums créés au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
+		<ParameterHelpEn></ParameterHelpEn>
+	    </ParameterHelp>
+	</Parameter>
+	<Parameter>
+            <ParameterName>forumInsideForum</ParameterName>
+            <ParameterLabel>Arborescence de forums</ParameterLabel>
+            <ParameterValue>no</ParameterValue>
+            <ParameterMandatory>Y</ParameterMandatory>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterOrder>1</ParameterOrder>
+	    <ParameterHelp>
+		<ParameterHelpFr>Un forum peut contenir d'autres forums</ParameterHelpFr>
+		<ParameterHelpEn></ParameterHelpEn>
+	    </ParameterHelp>
+	</Parameter>
+	<Parameter>
+    	<ParameterName>rss</ParameterName>
+        <ParameterLabel>Flux RSS</ParameterLabel>
+		<ParameterType>checkbox</ParameterType>
+        <ParameterValue>N</ParameterValue>
+        <ParameterMandatory>N</ParameterMandatory>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterOrder>1</ParameterOrder>
+	    <ParameterHelp>
+			<ParameterHelpFr>Permet de générer un flux RSS de ces forums.</ParameterHelpFr>
+			<ParameterHelpEn>.</ParameterHelpEn>
+	    </ParameterHelp>
+	</Parameter>
+  </Parameters>  
+</WAComponent>

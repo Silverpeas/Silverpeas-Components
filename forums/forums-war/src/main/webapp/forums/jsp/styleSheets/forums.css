@@ -1,0 +1,143 @@
+<!--
+
+body                 { background-image: url(../icons/fond.gif)}
+td                   { font-family: Verdana, Arial, Helvetica, sans-serif}
+a                    { font-size: 10px; color: #000000 }
+input                { font-size: 10px; font-weight: normal; color: #000000 }
+select               { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000000 }
+textarea             {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000000 }
+.selectNS            { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: normal; color: #000000 }
+
+.domainName          { font-size: 13pt; font-weight: bold; color: #000000 }
+.componentName       { font-size: 13pt; font-weight: bold; color: #000000 }
+
+.titremodule         { font-size: 13pt; font-weight: bold; color: #000000 }
+.txtnote             { font-size: 10px; color: #000000 ; font-family: Verdana, Arial, Helvetica, sans-serif}
+.txtnote:hover       { font-size: 10px; color: #666699 ; font-family: Verdana, Arial, Helvetica, sans-serif}
+.txttitrecol         { font-size: 10px; color: #000000 ; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold }
+.texteLabelForm      { font-size: 10px; color: #666666; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold }
+
+.txtnav              { font-size: 10pt; font-weight: bold; color: #000000 }
+
+
+ /*
+    Style pour ButtonWA & ButtonWA2
+    */
+    .buttonStyle        { background-color : #DEDEDE; text-decoration: none; font-weight : bold; color : #000000}
+    
+    /*
+    Style pour ButtonWA2
+    */
+    .buttonColorLight   { background-color : #F0F0F0}
+    .buttonColorDark    { background-color : #C7C7C7}
+    
+
+.couleurCadreInterieur { background-color: #35D7D7}
+.couleurCadreExterieur { background-color: #23AFAF}
+.couleurFondCadre      { background-color: #FFFFFF}
+.couleurFondOperation  { }
+
+.componentColor      { background-color: #009999}
+.componentColorDark  { background-color: #006666}
+.componentColorLight { background-color: #00CCCC}
+.ArrayColumn         { background-color: #91C6CF}
+.ArrayCell           { font-size: 8pt; color: #000000}
+.ArrayCellHot        { font-size: 8pt; font-weight: bold; color: #FF0000}
+th {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: bold; color: #000000; background-color: #DFDFDF}
+.fondCartouche {  background-color: #E5E5E5}
+
+
+.titreCateg {
+    font-size: 11px;
+    font-weight: bold;
+    background-image: url(/silverpeas/forums/jsp/icons/fondCateg.gif);
+    background-repeat: repeat-x;
+}
+
+.titreForum {
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.enteteTableau
+{    
+    background-image: url(/silverpeas/admin/jsp/icons/silverpeasV4/fondOn.gif);
+    background-repeat: repeat-x;
+    font-weight: bold;
+}
+
+.fondClair {
+    background-color: #efefef;
+}
+
+.fondFonce {
+    background-color: #EAEAEA;
+}
+
+.testTableau {
+    border: 1px solid #CCCCCC;
+}
+
+#msgDiv {
+    position: static;
+    height: 120;
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto
+}
+
+.msgLine {
+    background-color : #cccccc
+}
+
+.msgText {
+    background-color : #dddddd
+}
+
+#responseTable {
+    display: none
+}
+
+.notation_on {
+	background-image:url(../icons/starFilled.gif);
+	background-position:center;
+	background-repeat:no-repeat;
+	width: 13px;
+	height: 11px;
+	border: 0px
+}
+
+.notation_off {
+	background-image:url(../icons/starEmpty.gif);
+	background-position:center;
+	background-repeat:no-repeat;
+	width: 13px;
+	height: 11px;
+	border: 0px
+}
+
+.notationLine {
+	height: 20px;
+	vertical-align: top
+}
+
+#notationImg1 {
+	cursor: pointer
+}
+
+#notationImg2 {
+	cursor: pointer
+}
+
+#notationImg3 {
+	cursor: pointer
+}
+
+#notationImg4 {
+	cursor: pointer
+}
+
+#notationImg5 {
+	cursor: pointer
+}
+-->

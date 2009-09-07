@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<contribution product="forums">
+
+    <requirement>
+    </requirement>
+
+    <current version="004">
+        <create_table>
+            <file name="postgres\forums\004\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </create_table>
+        <drop_table>
+            <file name="postgres\forums\004\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </drop_table>
+    </current>
+
+	<upgrade version="002">
+        <create_table>
+            <file name="postgres\forums\up002\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </create_table>
+		<create_constraint>
+            <file name="postgres\forums\up002\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </create_constraint>
+    </upgrade>
+
+</contribution>
