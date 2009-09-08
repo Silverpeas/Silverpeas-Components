@@ -31,6 +31,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.comment.control.CommentController;
@@ -69,7 +70,6 @@ import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.clipboard.model.ClipboardSelection;
 import com.stratelia.webactiv.kmelia.FileImport;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
@@ -84,7 +84,6 @@ import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -595,7 +594,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         return invisibleTabs;
 	}
 
-    public String generatePdf(String pubID)
+    @SuppressWarnings("unchecked")
+	public String generatePdf(String pubID)
     {
         SilverTrace.info("kmelia", "KmeliaSessionControl.generatePdf", "root.MSG_ENTRY_METHOD");
         String nameFilePdf = "";
@@ -612,17 +612,18 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
                 {
                     SilverTrace.info("kmelia", "KmeliaSessionControl.generatePdf", "kmelia.MSG_RETURN_COMPLETE_LIST_OF_PUBLI", "pubId="+pubID);
                 }
-                if(complete != null) {
-                	List listSpaces = this.getOrganizationController().getSpacePath(this.getSpaceId());
-                	Iterator itSpace = listSpaces.iterator();
-                	SpaceInst space;
-                	while(itSpace.hasNext()) { 
-                		space = (SpaceInst) itSpace.next();
+                TopicDetail topic = getPublicationTopic(pubID);
+                if(complete != null && topic != null) {
+                	List<SpaceInst> listSpaces = (List<SpaceInst>) this.getOrganizationController().getSpacePath(this.getSpaceId());
+                   	for(SpaceInst space : listSpaces) {
                 		nameFilePdf += space.getName(getLanguage())+"-";
                 	}
-					nameFilePdf += 	this.getComponentLabel()+"-"+
-									this.getSessionPathString()+"-"+
-									complete.getPublicationDetail().getTitle();
+                   	nameFilePdf = this.getComponentLabel();
+                   	Collection<NodeDetail> path = (Collection<NodeDetail>) topic.getPath();
+                   	for(NodeDetail node : path) {
+                   		nameFilePdf = nameFilePdf+"-"+ node.getName(getCurrentLanguage());
+                   	}
+					nameFilePdf = 	nameFilePdf + "-" + complete.getPublicationDetail().getTitle();
 					//encodage nom du pdf
 					nameFilePdf = nameFilePdf.replaceAll("\\\\", "");
 					nameFilePdf = nameFilePdf.replaceAll("/", "");
@@ -642,9 +643,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 					nameFilePdf = nameFilePdf.replace('%', '_');
 					nameFilePdf = nameFilePdf.replace('+', '_');
 					nameFilePdf = nameFilePdf.replace('|', '_');
-					nameFilePdf = FileServerUtils.replaceAccentChars(nameFilePdf);
-					
-					//path file doit être <= 254 caractères
+					//path file doit ?tre <= 254 caract?res
 					ResourceLocator resourceGeneral = new ResourceLocator("com.stratelia.webactiv.general", "");
 		            String arbo = resourceGeneral.getString("tempPath");
 		            String pathFile = arbo+nameFilePdf+"-"+pubID+".pdf";
@@ -652,8 +651,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 		            	nameFilePdf = nameFilePdf.substring(0, 254-5-arbo.length()-pubID.length());
 		            }
 		            nameFilePdf += "-"+pubID+".pdf";
-
-					
                 	PdfGenerator.generate(nameFilePdf, complete, this);
                 }
             }
@@ -664,6 +661,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         }
         return nameFilePdf;
     }
+
 
     /************************************************************************************************/
     // Current User operations
