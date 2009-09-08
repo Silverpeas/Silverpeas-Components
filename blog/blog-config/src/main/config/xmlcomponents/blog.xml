@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+  <name>blog</name>
+  <label>Blog</label>
+  <description>Permet de réunir des billets affichés par ordre antéchronologique et éventuellement classés par catégorie.</description>
+  <suite>04 Gestion de contenu</suite>
+  <visible>@ComponentVisibleblog@</visible>
+  <portlet>yes</portlet>
+  <instanceClassName>com.silverpeas.blog.BlogInstanciator</instanceClassName>
+ <Profiles>
+    <Profile name="admin">Bloggeur</Profile>
+    <Profile name="user">Lecteur</Profile>
+  </Profiles>
+  <Parameters>
+    <Parameter>
+            <ParameterName>rss</ParameterName>
+            <ParameterLabel>Flux RSS</ParameterLabel>
+			<ParameterType>checkbox</ParameterType>
+            <ParameterValue>N</ParameterValue>
+            <ParameterMandatory>N</ParameterMandatory>
+	    	<ParameterUpdatable>always</ParameterUpdatable>
+	    	<ParameterOrder>1</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Permet de générer un flux RSS de ce blog.</ParameterHelpFr>
+				<ParameterHelpEn>.</ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>usePdc</ParameterName>
+            <ParameterLabel>Classification PDC</ParameterLabel>
+            <ParameterValue>no</ParameterValue>
+            <ParameterMandatory>Y</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>always</ParameterUpdatable>
+			<ParameterOrder>2</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>Les images créées au sein de cette instance pourront être classées sur le Plan de Classement</ParameterHelpFr>
+				<ParameterHelpEn>Images would be classified on PDC</ParameterHelpEn>
+			</ParameterHelp>
+        </Parameter>
+  </Parameters>
+</WAComponent>

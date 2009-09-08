@@ -1,0 +1,12 @@
+CREATE TABLE SC_Blog_Post 
+(
+	pubId		int		NOT NULL ,
+	dateEvent	char(13)	NOT NULL DEFAULT('0000000000000') ,
+	instanceId	varchar (50)	NOT NULL
+);
+
+INSERT INTO SC_Blog_Post (pubId, dateEvent, instanceId)
+ 	SELECT pubId, pubCreationDate, instanceId
+ 	FROM SB_Publication_Publi
+	WHERE instanceId like 'blog%'
+;

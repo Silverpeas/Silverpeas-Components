@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>blog War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>BlogRequestRouter</servlet-name>
+    <display-name>BlogRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.blog.servlets.BlogRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>BlogRssServlet</servlet-name>
+    <display-name>BlogRssServlet</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.blog.servlets.BlogRssServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>GoToPost</servlet-name>
+    <display-name>GoToPost</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.blog.servlets.GoToPost</servlet-class>
+  </servlet>
+  
+  <servlet-mapping>
+    <servlet-name>BlogRequestRouter</servlet-name>
+    <url-pattern>/Rblog/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>BlogRssServlet</servlet-name>
+    <url-pattern>/rssblog/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToPost</servlet-name>
+    <url-pattern>/Post/*</url-pattern>
+  </servlet-mapping>
+  
+</web-app>

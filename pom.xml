@@ -83,6 +83,7 @@
     <module>resources-manager</module>
     <module>process-manager</module>
     <module>forums</module>
+    <module>blog</module>
   </modules>
   
 </project>
