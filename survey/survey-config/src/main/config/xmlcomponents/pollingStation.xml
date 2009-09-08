@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+  <name>pollingStation</name>
+  <label>Vote - QuickVote</label>
+  <description>Permet d'organiser des votes ou referendum sur une question unique, auprès d'une audience ciblée. Une surveillance du niveau de participation et du résultat en cours est possible.</description>
+  <suite>02 Gestion Collaborative</suite>
+  <visible>@ComponentVisiblePollingStation@</visible>
+   <portlet>yes</portlet>
+  <instanceClassName>com.stratelia.webactiv.survey.SurveyInstanciator</instanceClassName>
+  <tableList>
+    <tabletpl>Survey</tabletpl>
+    <tabletpl>Question</tabletpl>
+    <tabletpl>Answer</tabletpl>
+    <tabletpl>QuestionResult</tabletpl>
+    <tabletpl>SurveyComment</tabletpl>
+  </tableList>
+  <Profiles>
+    <Profile name="admin">Gestionnaire</Profile>	
+    <Profile name="publisher">Publieur</Profile>
+    <Profile name="user">Lecteur</Profile>
+  </Profiles>
+  <Parameters>
+         <Parameter>
+            <ParameterName>usePdc</ParameterName>
+            <ParameterLabel>Classification PDC</ParameterLabel>
+            <ParameterValue>no</ParameterValue>
+            <ParameterMandatory>Y</ParameterMandatory>
+            <ParameterUpdatable>Always</ParameterUpdatable>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterHelp>
+				<ParameterHelpFr>Les votes créés au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+        </Parameter>
+		<Parameter>
+			<ParameterName>useAnonymousMode</ParameterName>
+			<ParameterLabel>Mode anonyme</ParameterLabel>
+			<ParameterValue>no</ParameterValue>
+			<ParameterMandatory>Y</ParameterMandatory>
+			<ParameterUpdatable>always</ParameterUpdatable>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterHelp>
+				<ParameterHelpFr>Les votes créés au sein de cette instance pourront être répondus de manière anonyme</ParameterHelpFr>
+				<ParameterHelpEn>The polls created in this instance may be answered by anonymous way.</ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+  </Parameters>
+</WAComponent>

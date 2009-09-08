@@ -84,6 +84,7 @@
     <module>process-manager</module>
     <module>forums</module>
     <module>blog</module>
+    <module>survey</module>
   </modules>
   
 </project>

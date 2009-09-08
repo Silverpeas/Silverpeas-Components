@@ -1,0 +1,116 @@
+<!--
+
+
+	TR.header {background-color: #E9A89A}
+
+	TD {font-family: "Verdana", sans-serif; font-size:8pt; color:black}
+	.field {color: #E9A89A; text-align: left;  font-style : normal;  font-weight : bold}
+	.peer {color : #E9A89A}
+	.odd {color : Black}
+	
+	TABLE.frame {background-color : #E9A89A;}
+	TR.frame{background-color : #E9A89A;}
+	TD.frame {color: Black; text-align: left;  font-style : normal;  font-weight : bold; background-color : #E9A89A; }
+	
+	TABLE.title {background-color : #E9A89A;}
+	TR.title{background-color : #E9A89A;}
+	TD.title {color: Black; font-style : normal;  font-weight : bold; background-color : #E9A89A; }
+	
+	  /*
+    Style pour ButtonWA & ButtonWA2
+    */
+    .buttonStyle        { background-color : #E9A89A; text-decoration: none; font-weight : bold; color : #000000}
+    
+    /*
+    Style pour ButtonWA2
+    */
+    .buttonColorLight   { background-color : #F0BCB1}
+    .buttonColorDark    { background-color : #E58F7E}
+    
+    /*
+    Style pour TabbedPaneWA & TabbedPaneWA2
+    */
+    .ongletOn           { background-color: #E9A89A; font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none} 
+    .ongletOff          { background-color: #E58F7E; font-size: 8pt; font-weight: bold; color: #FFFFFF; text-decoration: none}
+    .ongletColorLight   { background-color: #F0BCB1}
+    .ongletColorDark    { background-color: #CC7262}
+
+
+	.ArrayCell { font-size: 8pt; color: #000000} 
+	.ArrayColumn { font-size: 10px; font-weight: bold; color: #000000; background-color: #E9A89A }
+    .ArrayNavigation { font-size: 10px; font-weight: bold; color: #000000; background-color: #DEDEDE ;text-decoration: none }
+
+	.domainName            {font-family : "Verdana", serif; font-size : 13pt; font-weight : bold }
+	.componentName         {font-family : "Verdana", serif; font-size : 13pt; font-weight : bold }
+	.componentNav          {font-family : "Verdana", serif; font-size : 12px }
+	
+	.couleurCadreExterieur  {background-color : #E58F7E}
+    .couleurCadreInterieur  {background-color : #E9A89A}
+    .couleurFondCadre       {background-color : #FFFFFF}
+
+	BODY {font-family : "Verdana", serif; font-size: 10px; text-align: left; background-color : #FFFFFF }
+		
+	A 		{  font-family: "Verdana", "Arial", "Helvetica", sans-serif; text-decoration : underline; font-size: 10px;}
+
+	a.enableButtonText {  font-size: 8pt; font-weight: bold; color: #000000; text-decoration: none}
+	a.disableButtonText {  font-size: 8pt; font-weight: bold; color: #777777; text-decoration: none}
+	select {  font-family: "Verdana", "Arial", "Helvetica", sans-serif; font-size: 10px; font-weight: normal; color: #000000}
+	input   {  font-family: "Verdana", "Arial", "Helvetica", sans-serif; font-size: 10px; font-weight: normal; color: #000000}
+
+-->
+
+html, body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, textarea, p, blockquote, th, td, img, hr, embed, object {
+	margin:0px;
+	padding:0px;
+	font-family:Arial, Helvetica, sans-serif;
+}
+
+body {
+	margin:20px 0 0 20px;
+}
+
+/* tableau Doodle */
+
+.questionResults th, .questionResults td, .questionResults tr {
+	padding:5px;
+	font-size:12px;
+}
+
+.questionResults .questionResults-top th {
+	background-color:#E4E4E4;
+	border:#CCC 1px solid;
+	width:150px;
+}
+
+.questionResults .questionResults-top .questionResults-vide, .questionResults tbody .questionResults-vide {
+	background-color:#FFFFFF;
+	border:none;
+	padding:3px;
+}
+
+.questionResults tbody tr td:first-child {
+	display:block;
+	background-color:#E4E4E4;
+	border:#CCC 1px solid;
+	margin-right:5px;
+}
+
+.questionResults tbody tr td {
+	background-color:#F9F9F9;
+	border:#E9E9E9 1px solid;
+	min-height:33px;
+}
+
+.questionResults tbody .questionResults-Oui {
+	background-color:#D5FAC5;
+	border:1px solid #7CCC24;
+	text-align:center;
+	font-size:12px;
+}
+
+.questionResults tbody .questionResults-Non {
+	background-color:#FECBCB;
+	border:1px solid #FD433E;
+	text-align:center;
+	font-size:12px;
+}

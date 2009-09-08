@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>Survey War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>SurveyRequestRouter</servlet-name>
+    <display-name>SurveyRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.survey.servlets.SurveyRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>GoToSurvey</servlet-name>
+    <display-name>GoToSurvey</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.survey.servlets.GoToSurvey</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>RecordParticipation</servlet-name>
+    <display-name>RecordParticipation</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.survey.servlets.RecordParticipation</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SurveyRequestRouter</servlet-name>
+    <url-pattern>/Rsurvey/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>SurveyRequestRouter</servlet-name>
+    <url-pattern>/RpollingStation/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToSurvey</servlet-name>
+    <url-pattern>/Survey/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>RecordParticipation</servlet-name>
+    <url-pattern>/RecordParticipation*</url-pattern>
+  </servlet-mapping>
+</web-app>
+
