@@ -1,6 +1,3 @@
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
 <%@ page import="java.io.PrintWriter"%>
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.File"%>
@@ -8,10 +5,8 @@
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
-
-<%@ page import="com.oreilly.servlet.multipart.*"%>
-<%@ page import="com.oreilly.servlet.MultipartRequest"%>
-
+<%@ page import="org.apache.commons.fileupload.FileItem" %>
+<%@ page import=" com.silverpeas.util.web.servlet.FileUploadUtil" %>
 <%@ include file="checkSurvey.jsp" %>
 
 <%!
@@ -48,8 +43,8 @@
 
   }
 
-boolean isCorrectFile(FilePart filePart) {
-    String fileName = filePart.getFileName();
+boolean isCorrectFile(FileItem filePart) {
+    String fileName = FileUploadUtil.getFileName(filePart);
     boolean correctFile = false;
     if (fileName != null) {
         String logicalName = fileName.trim();
@@ -67,19 +62,10 @@ boolean isCorrectFile(FilePart filePart) {
 
 <% 
 //Récupération des paramètres
-String action = "";
-String question = "";
-String nbAnswers = "";
-String answerInput = "";
-String suggestionAllowed = "";
-String suggestionCheck = "";
-String suggestion = "";
-//String qcmCheck = "";
-//String qcm = "0";
-//String openQuestionCheck = "";
-//String openQuestion = "0";
+
+
 String nextAction = "";
-String style = "";
+
 
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
@@ -98,13 +84,19 @@ ButtonPane buttonPane = null;
 
 QuestionContainerDetail survey = null;
 
-SilverpeasMultipartParser mp = new SilverpeasMultipartParser(request);
-Part part;
+List items = FileUploadUtil.parseRequest(request);
+String action = FileUploadUtil.getOldParameter(items, "Action");
+String question = FileUploadUtil.getOldParameter(items, "question");
+String nbAnswers = FileUploadUtil.getOldParameter(items, "nbAnswers");
+String style = FileUploadUtil.getOldParameter(items, "questionStyle");
+String suggestionAllowed = FileUploadUtil.getOldParameter(items, "SuggestionAllowed");
+String suggestionCheck = "";
+String suggestion = "";
 File dir = null;
 String logicalName = null;
 String type = null;
 String physicalName = null;
-String mimeType = null;
+
 boolean file = false;
 long size = 0;
 int nb = 0;
@@ -112,62 +104,43 @@ int attachmentSuffix = 0;
 ArrayList imageList = new ArrayList();
 ArrayList answers = new ArrayList();
 Answer answer = null;
-while ((part = mp.readNextPart()) != null) {
-  String mpName = part.getName();
-  if (part.isParam()) 
+Iterator itemIter = items.iterator();
+while (itemIter.hasNext()) {
+  FileItem item = (FileItem) itemIter.next();
+  if (item.isFormField())
   {
-    // it's a parameter part
-    SilverpeasParamPart paramPart = (SilverpeasParamPart) part;
-
-    if (mpName.equals("Action"))
-        action = paramPart.getStringValue();
-    else if (mpName.equals("question"))
-        question = paramPart.getStringValue();
-    else if (mpName.equals("nbAnswers"))
-        nbAnswers = paramPart.getStringValue();
-    else if (mpName.equals("SuggestionAllowed"))
-        suggestion = paramPart.getStringValue();
-    // traitement du choix du style de la question
-    else if (mpName.equals("questionStyle"))
-    	style = paramPart.getStringValue();
-    //else if (mpName.equals("qcm"))
-        //qcm = paramPart.getStringValue();
-    //else if (mpName.equals("openQuestion")) 
-        //openQuestion = paramPart.getStringValue();
-    else if (mpName.startsWith("answer")) {
-        answerInput = paramPart.getStringValue();
-        answer = new Answer(null, null, answerInput, 0, 0, false, "", 0, false, null);
+    String mpName = item.getFieldName();
+    if (mpName.startsWith("answer")) {
+        answer = new Answer(null, null, item.getString(), 0, 0, false, "", 0, false, null);
         answers.add(answer);    
-    } else if (mpName.equals("suggestionLabel")) {
-        answerInput = paramPart.getStringValue();
-        answer = new Answer(null, null, answerInput, 0, 0, false, "", 0, true, null);
+    } else if ("suggestionLabel".equals(mpName)) {
+        answer = new Answer(null, null, item.getString(), 0, 0, false, "", 0, true, null);
         answers.add(answer);
     }
     else if (mpName.startsWith("valueImageGallery")) 
     {
-    	if (StringUtil.isDefined(paramPart.getStringValue()))
+    	if (StringUtil.isDefined(item.getString()))
     	{
     		// traiter les images venant de la gallery si pas d'image externe
     		if (!file)
-    			answer.setImage(paramPart.getStringValue());
+    			answer.setImage(item.getString());
     	}
     }     
   } 
-  else if (part.isFile()) 
+  else 
   {
-    // it's a file part
-    FilePart filePart = (FilePart) part;
-    boolean correctFile = isCorrectFile(filePart);
+    // it's a file
+    boolean correctFile = isCorrectFile(item);
     if (correctFile) {
       // the part actually contained a file
-      logicalName = filePart.getFileName();
+      logicalName = FileUploadUtil.getFileName(item);
       type = logicalName.substring(logicalName.indexOf(".")+1, logicalName.length());
       physicalName = new Long(new Date().getTime()).toString() + attachmentSuffix + "." +type;
       attachmentSuffix = attachmentSuffix + 1;
-      mimeType = filePart.getContentType();
-      dir = new File(FileRepositoryManager.getAbsolutePath(surveyScc.getSpaceId(), surveyScc.getComponentId())+surveySettings.getString("imagesSubDirectory")+File.separator+physicalName);
-
-      size = filePart.writeTo(dir);
+      String mimeType = item.getContentType();
+      dir = new File(FileRepositoryManager.getAbsolutePath(surveyScc.getComponentId())+surveySettings.getString("imagesSubDirectory")+File.separator+physicalName);
+      FileUploadUtil.saveToFile(dir, item);
+      size = item.getSize();
       if (size > 0)
       {
           answer.setImage(physicalName);

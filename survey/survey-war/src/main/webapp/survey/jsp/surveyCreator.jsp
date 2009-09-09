@@ -1,6 +1,3 @@
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
 <%@ page import="java.io.PrintWriter"%>
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.File"%>
@@ -9,23 +6,13 @@
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
 
-<%@ page import="com.oreilly.servlet.multipart.*"%>
-<%@ page import="com.oreilly.servlet.MultipartRequest"%>
+
 
 <%@ include file="checkSurvey.jsp" %>
 
 <%
 //Récupération des paramètres
-String action = "";
-String surveyId = "";
-String title = "";
-String description = "";
 String creationDate = "";
-String beginDate = "";
-String endDate = "";
-String nbQuestions = "";
-boolean anonymous = true;
-String anonymousString = "1";
 String nextAction = "";
 
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
@@ -37,17 +24,15 @@ Button validateButton = null;
 Button cancelButton = null;
 QuestionContainerDetail survey = null;
 
-action = (String) request.getParameter("Action");
-surveyId = (String) request.getParameter("SurveyId");
-title	 = (String) request.getParameter("title");
-description = (String) request.getParameter("description");
-beginDate = (String) request.getParameter("beginDate");
-endDate = (String) request.getParameter("endDate");
-nbQuestions = (String) request.getParameter("nbQuestions");
-anonymousString = request.getParameter("anonymous");
-anonymous = false;
-if (StringUtil.isDefined(anonymousString)&& anonymousString.equals("true"))
-	anonymous = true;
+String action = request.getParameter("Action");
+String surveyId = request.getParameter("SurveyId");
+String title = request.getParameter("title");
+String description = request.getParameter("description");
+String beginDate = request.getParameter("beginDate");
+String endDate = request.getParameter("endDate");
+String nbQuestions = request.getParameter("nbQuestions");
+String anonymousString = request.getParameter("anonymous");
+boolean anonymous = StringUtil.isDefined(anonymousString) && "true".equalsIgnoreCase(anonymousString);
 
 //Mise a jour de l'espace
 if (action == null) {
@@ -61,7 +46,7 @@ if (action == null) {
 <% out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript1.2">
+<script type="text/javascript" language="JavaScript1.2">
 function sendData() {
     if (isCorrectForm()) {
         document.surveyForm.submit();

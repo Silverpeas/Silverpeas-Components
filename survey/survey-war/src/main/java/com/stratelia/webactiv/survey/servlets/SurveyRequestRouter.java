@@ -14,7 +14,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.survey.control.SurveySessionController;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
-import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 
 
 public class SurveyRequestRouter extends ComponentRequestRouter {
