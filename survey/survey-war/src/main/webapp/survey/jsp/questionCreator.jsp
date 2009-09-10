@@ -6,7 +6,8 @@
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
 <%@ page import="org.apache.commons.fileupload.FileItem" %>
-<%@ page import=" com.silverpeas.util.web.servlet.FileUploadUtil" %>
+<%@ page import="com.silverpeas.util.web.servlet.FileUploadUtil" %>
+<%@ page import="com.stratelia.webactiv.survey.control.FileHelper" %>
 <%@ include file="checkSurvey.jsp" %>
 
 <%!
@@ -42,22 +43,6 @@
     }
 
   }
-
-boolean isCorrectFile(FileItem filePart) {
-    String fileName = FileUploadUtil.getFileName(filePart);
-    boolean correctFile = false;
-    if (fileName != null) {
-        String logicalName = fileName.trim();
-        if (logicalName != null) {
-            if ((logicalName.length() >= 3) && (logicalName.indexOf("*") == -1) && (logicalName.indexOf(".") != -1)) {
-                String type = logicalName.substring(logicalName.indexOf(".")+1, logicalName.length());
-                if (type.length() >= 3)
-                    correctFile = true;
-            }
-        }
-    }
-    return correctFile;
-}
 %>
 
 <% 
@@ -129,9 +114,8 @@ while (itemIter.hasNext()) {
   } 
   else 
   {
-    // it's a file
-    boolean correctFile = isCorrectFile(item);
-    if (correctFile) {
+    // it's a file   
+    if (FileHelper.isCorrectFile(item)) {
       // the part actually contained a file
       logicalName = FileUploadUtil.getFileName(item);
       type = logicalName.substring(logicalName.indexOf(".")+1, logicalName.length());
@@ -211,7 +195,7 @@ function checkAnswers() {
             imageEmpty = false;
         }
       }
-	 if(<%=!suggestion.equals("0") && action.equals("SendQuestionForm")%>){
+	 if(<%=!"0".equals(suggestion) && "SendQuestionForm".equals(action)%>){
          if (isWhitespace(stripInitialWhitespace(document.surveyForm.suggestionLabel.value))) {
                 errorNb++;
          }
@@ -225,7 +209,7 @@ function checkAnswers() {
             for (var i=0; i < fields.length-1; i++) {
                 errorMsg += "<%=resources.getString("SurveyCreationAnswerNb")%> "+fields[i]+" \n";
             }
-			if(<%=!suggestion.equals("0") && action.equals("SendQuestionForm")%>){
+			if(<%=!"0".equals(suggestion) && "SendQuestionForm".equals(action)%>){
                 if (isWhitespace(stripInitialWhitespace(document.surveyForm.suggestionLabel.value))) {
                     errorMsg += "<%=resources.getString("OtherAnswer")%> \n";
                 }
@@ -449,9 +433,9 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
       out.println(board.printBefore());
 %>
       <!--DEBUT CORPS -->
-      <BR>
+      <br/>
       
-      <TABLE border="0" cellPadding="3" cellSpacing="0" width="100%" class="intfdcolor4">
+      <table border="0" cellPadding="3" cellSpacing="0" width="100%" class="intfdcolor4">
         <form name="surveyForm" Action="questionCreator.jsp" method="POST" ENCTYPE="multipart/form-data">
         <tr><td class="txtlibform"><%=resources.getString("SurveyCreationQuestion")%> <%=questionNb%> :</td><td><input type="text" name="question" value="<%=Encode.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.TextFieldLength%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
         <% if (action.equals("SendQuestionForm")) {
