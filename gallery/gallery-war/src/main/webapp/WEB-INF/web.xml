@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>gallery War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>GalleryRequestRouter</servlet-name>
+    <display-name>GalleryRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.gallery.servlets.GalleryRequestRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>GalleryDragAndDrop</servlet-name>
+    <display-name>GalleryDragAndDrop</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.gallery.servlets.GalleryDragAndDrop</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>GalleryInWysiwyg</servlet-name>
+    <display-name>GalleryInWysiwyg</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.gallery.servlets.GalleryInWysiwygRouter</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>GoToImage</servlet-name>
+    <display-name>GoToImage</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.gallery.servlets.GoToImage</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>GalleryRequestRouter</servlet-name>
+    <url-pattern>/Rgallery/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GalleryDragAndDrop</servlet-name>
+    <url-pattern>/RgalleryDragAndDrop/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GalleryInWysiwyg</servlet-name>
+    <url-pattern>/GalleryInWysiwyg/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToImage</servlet-name>
+    <url-pattern>/Image/*</url-pattern>
+  </servlet-mapping>
+  
+</web-app>

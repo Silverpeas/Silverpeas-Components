@@ -1,0 +1,19 @@
+<!DOCTYPE jboss PUBLIC 
+		  "-//JBoss//DTD JBOSS 4.0//EN" 
+		  "http://www.jboss.org/j2ee/dtd/jboss_4_0.dtd">
+<jboss>
+    <enterprise-beans>
+        <session>
+            <ejb-name>ejb/GalleryBm</ejb-name>
+            <jndi-name>ejb/GalleryBm</jndi-name>
+			<ejb-ref>
+				<ejb-ref-name>ejb/NodeBm</ejb-ref-name>
+				<jndi-name>ejb/NodeBm</jndi-name>
+			</ejb-ref>
+			<resource-ref>
+				<res-ref-name>jdbc/Silverpeas</res-ref-name>
+				<jndi-name>java:/Silverpeas</jndi-name>
+			</resource-ref>
+		</session>
+    </enterprise-beans>
+</jboss>

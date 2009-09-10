@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+  <name>gallery</name>
+  <label>Galerie d'images - Gallery</label>
+  <description>Les images sont classées dans des albums. La création des albums est facilitée par la fonction de glisser/déposer.</description>
+  <suite>04 Gestion de contenu</suite>
+  <visible>yes</visible>
+  <portlet>yes</portlet>
+  <instanceClassName>com.silverpeas.gallery.GalleryInstanciator</instanceClassName>
+ <Profiles>
+    <Profile name="admin">Gestionnaire</Profile>
+    <Profile name="publisher">Publieur</Profile>
+    <Profile name="writer">Contributeur</Profile>
+    <Profile name="privilegedUser">Lecteur privilégié</Profile>
+    <Profile name="user">Lecteur</Profile>
+  </Profiles>
+	<Parameters>
+        <Parameter>
+            <ParameterName>slideshow</ParameterName>
+            <ParameterLabel>Diaporama</ParameterLabel>
+            <ParameterValue>5</ParameterValue>
+	    	<ParameterSize>5</ParameterSize>
+            <ParameterMandatory>Y</ParameterMandatory>
+	    	<ParameterUpdatable>always</ParameterUpdatable>
+	    	<ParameterOrder>1</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Temps d'attente entre deux images (en secondes)</ParameterHelpFr>
+				<ParameterHelpEn>Wait between two images (in seconds)</ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter>
+		<Parameter>
+            <ParameterName>dragAndDrop</ParameterName>
+            <ParameterLabel>Glisser/déposer</ParameterLabel>
+			<ParameterType>checkbox</ParameterType>
+            <ParameterValue>N</ParameterValue>
+            <ParameterMandatory>N</ParameterMandatory>
+	    	<ParameterUpdatable>always</ParameterUpdatable>
+	    	<ParameterOrder>2</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Permet de publier très rapidement des images par glisser/déposer. Les fichiers zip sont également pris en charge.</ParameterHelpFr>
+				<ParameterHelpEn>Allow you to quickly publish some images by drag and drop. Zip files are also allowed.</ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter>
+		<Parameter>
+            <ParameterName>usePdc</ParameterName>
+            <ParameterLabel>Classification PDC</ParameterLabel>
+            <ParameterValue>no</ParameterValue>
+            <ParameterMandatory>Y</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>always</ParameterUpdatable>
+			<ParameterOrder>4</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>Les images créées au sein de cette instance pourront être classées sur le Plan de Classement</ParameterHelpFr>
+				<ParameterHelpEn>Images would be classified on PDC</ParameterHelpEn>
+			</ParameterHelp>
+        </Parameter>
+		<Parameter>
+            <ParameterName>viewMetadata</ParameterName>
+            <ParameterLabel>Méta données</ParameterLabel>
+            <ParameterValue>no</ParameterValue>
+            <ParameterMandatory>Y</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>always</ParameterUpdatable>
+			<ParameterOrder>5</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>Permet d'afficher les Méta données (EXIF, IPTC, Windows) de chaque photo</ParameterHelpFr>
+				<ParameterHelpEn>Display image meta data (EXIF, IPTC, Windows)</ParameterHelpEn>
+			</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>viewList</ParameterName>
+            <ParameterLabel>Albums sous forme de liste</ParameterLabel>
+            <ParameterValue>no</ParameterValue>
+            <ParameterMandatory>Y</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>always</ParameterUpdatable>
+			<ParameterOrder>6</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>Permet de visualiser les images détaillées pour le format 266x150</ParameterHelpFr>
+				<ParameterHelpEn>Display a detailed list of image (size 266x150 only)</ParameterHelpEn>
+			</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>watermark</ParameterName>
+            <ParameterLabel>Watermark</ParameterLabel>
+            <ParameterValue>no</ParameterValue>
+            <ParameterMandatory>Y</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>always</ParameterUpdatable>
+			<ParameterOrder>7</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>Permet d'insérer le nom du photographe sous forme de watermark sur les images</ParameterHelpFr>
+				<ParameterHelpEn>Insert photographer's name into image as watermark</ParameterHelpEn>
+			</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>dayBeforeEndVisible</ParameterName>
+            <ParameterLabel>Nb de jours avant fin de visibilité</ParameterLabel>
+            <ParameterValue>3</ParameterValue>
+	    	<ParameterSize>5</ParameterSize>
+            <ParameterMandatory>Y</ParameterMandatory>
+	    	<ParameterUpdatable>always</ParameterUpdatable>
+	    	<ParameterOrder>8</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Nombre de jours avant l'envoi du message au gestionnaire quand une photo arrive en fin de visibilité</ParameterHelpFr>
+				<ParameterHelpEn>Number of days before sending an alert when an image will expired</ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>XMLFormName</ParameterName>
+            <ParameterLabel>Formulaire XML</ParameterLabel>
+            <ParameterValue></ParameterValue>
+	    	<ParameterSize>25</ParameterSize>
+            <ParameterMandatory>N</ParameterMandatory>
+	    	<ParameterUpdatable>always</ParameterUpdatable>
+	    	<ParameterOrder>9</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Nom du formulaire XML associé à la photothèque</ParameterHelpFr>
+				<ParameterHelpEn>Form XML name attached to this gallery</ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>viewInWysiwyg</ParameterName>
+            <ParameterLabel>Images réutilisables</ParameterLabel>
+            <ParameterValue>no</ParameterValue>
+            <ParameterMandatory>Y</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>always</ParameterUpdatable>
+			<ParameterOrder>10</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Permet d'utiliser les images de ce composant depuis l'éditeur Wysiwyg et les composants Vote et Enquête</ParameterHelpFr>
+				<ParameterHelpEn>Images will be available from Wysiwyg editor and Vote and Survey components</ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>comments</ParameterName>
+            <ParameterLabel>Commentaires</ParameterLabel>
+            <ParameterValue>yes</ParameterValue>
+            <ParameterMandatory>Y</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>always</ParameterUpdatable>
+			<ParameterOrder>11</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Les lecteurs peuvent laisser des commentaires sur chaque image</ParameterHelpFr>
+				<ParameterHelpEn>Readers are able to post comments on each image</ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>privateSearch</ParameterName>
+            <ParameterLabel>Moteur de recherche dédié</ParameterLabel>
+            <ParameterValue>no</ParameterValue>
+            <ParameterMandatory>N</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>always</ParameterUpdatable>
+			<ParameterOrder>12</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Si ce paramètre est activé, les images indexées ne seront pas retrouvables par le moteur de recherche général mais uniquement par le moteur de recherche dédié à ce composant.</ParameterHelpFr>
+				<ParameterHelpEn>If this parameter is enabled, indexed images will not be findable by global search engine but only by the dedicated search engine of this component.</ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>download</ParameterName>
+            <ParameterLabel>Image originale téléchargeable</ParameterLabel>
+            <ParameterValue>yes</ParameterValue>
+            <ParameterMandatory>N</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>always</ParameterUpdatable>
+			<ParameterOrder>13</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Si ce paramètre est activé, les images seront téléchargeables, par defaut, dans leur format original. Ce paramètre pourra être changé à tout moment sur chaque photo.</ParameterHelpFr>
+				<ParameterHelpEn>If this parameter is enabled, pictures will be download.</ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>previewSize</ParameterName>
+            <ParameterLabel>Format de prévisualisation</ParameterLabel>
+            <ParameterMandatory>Y</ParameterMandatory>
+	    	<ParameterUpdatable>always</ParameterUpdatable>
+	    	<ParameterOrder>14</ParameterOrder>
+	    	<ParameterType>select</ParameterType>
+	    	<ParameterOptions>
+				<ParameterOption>
+					<Name>600x400</Name>
+					<Value>preview</Value>
+				</ParameterOption>
+				<ParameterOption>
+					<Name>266x150</Name>
+					<Value>266x150</Value>
+				</ParameterOption>
+				<ParameterOption>
+					<Name>133x100</Name>
+					<Value>133x100</Value>
+				</ParameterOption>
+			</ParameterOptions>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Choix de la taille du format de la preview</ParameterHelpFr>
+				<ParameterHelpEn>choice of preview size</ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>WatermarkHD</ParameterName>
+            <ParameterLabel>Watermark image originale</ParameterLabel>
+            <ParameterValue></ParameterValue>
+	    	<ParameterSize>25</ParameterSize>
+            <ParameterMandatory>N</ParameterMandatory>
+	    	<ParameterUpdatable>always</ParameterUpdatable>
+	    	<ParameterOrder>15</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Numéro de la donnée IPTC à mettre comme Watermark sur les images haute définition</ParameterHelpFr>
+				<ParameterHelpEn>number of IPTC data to put as watermark on High definition picture</ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>WatermarkOther</ParameterName>
+            <ParameterLabel>Watermark autres</ParameterLabel>
+            <ParameterValue></ParameterValue>
+	    	<ParameterSize>25</ParameterSize>
+            <ParameterMandatory>N</ParameterMandatory>
+	    	<ParameterUpdatable>always</ParameterUpdatable>
+	    	<ParameterOrder>16</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Numéro de la donnée IPTC à mettre comme Watermark sur les vignettes</ParameterHelpFr>
+				<ParameterHelpEn>number of IPTC data to put as watermark on other pictures</ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>basket</ParameterName>
+            <ParameterLabel>Panier</ParameterLabel>
+            <ParameterValue>no</ParameterValue>
+            <ParameterMandatory>N</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>always</ParameterUpdatable>
+			<ParameterOrder>17</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Si ce paramètre est activé, les lecteurs aurons la possibilité de mettre des photos dans leur panier</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>order</ParameterName>
+            <ParameterLabel>Demandes de photos</ParameterLabel>
+            <ParameterValue>no</ParameterValue>
+            <ParameterMandatory>N</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>always</ParameterUpdatable>
+			<ParameterOrder>18</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Si ce paramètre est activé, les lecteurs aurons la possibilité de faire des demandes de photos</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>XMLOrderFormName</ParameterName>
+            <ParameterLabel>Formulaire XML associé aux demandes</ParameterLabel>
+            <ParameterValue></ParameterValue>
+	    	<ParameterSize>25</ParameterSize>
+            <ParameterMandatory>N</ParameterMandatory>
+	    	<ParameterUpdatable>always</ParameterUpdatable>
+	    	<ParameterOrder>19</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Nom du formulaire XML associé aux demandes de photos</ParameterHelpFr>
+				<ParameterHelpEn>Form XML name attached to the order</ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter>
+        <Parameter>
+            <ParameterName>UrlCharte</ParameterName>
+            <ParameterLabel>Url de la charte</ParameterLabel>
+            <ParameterValue></ParameterValue>
+	    	<ParameterSize>25</ParameterSize>
+            <ParameterMandatory>N</ParameterMandatory>
+	    	<ParameterUpdatable>always</ParameterUpdatable>
+	    	<ParameterOrder>20</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Url de la charte associée aux demandes des photos</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+	    	</ParameterHelp>
+        </Parameter> 
+	</Parameters>
+</WAComponent>
