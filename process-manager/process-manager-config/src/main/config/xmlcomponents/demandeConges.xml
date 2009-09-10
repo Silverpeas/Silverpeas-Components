@@ -13,7 +13,7 @@
     <Profile name="Employe">Demandeur</Profile>
     <Profile name="Responsable">Responsable</Profile>
     <Profile name="Secretaire">Secrétaire</Profile>
-    <Profile name="supervisor">Superviseur</Profile>
+    <Profile name="Supervisor">Superviseur</Profile>
   </Profiles>
   <Parameters>
     <Parameter>
