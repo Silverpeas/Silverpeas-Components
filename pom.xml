@@ -85,6 +85,7 @@
     <module>forums</module>
     <module>blog</module>
     <module>survey</module>
+    <module>gallery</module>
   </modules>
   
 </project>
