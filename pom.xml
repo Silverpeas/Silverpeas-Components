@@ -86,6 +86,7 @@
     <module>blog</module>
     <module>survey</module>
     <module>gallery</module>
+    <module>newsedito</module>
   </modules>
   
 </project>

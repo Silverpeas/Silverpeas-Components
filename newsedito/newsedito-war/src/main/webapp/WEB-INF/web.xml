@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>NewsEdito War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>NewsEditoRequestRouter</servlet-name>
+    <display-name>NewsEditoRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.newsEdito.servlets.NewsEditoRequestRouter</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>NewsEditoRequestRouter</servlet-name>
+    <url-pattern>/RnewsEdito/*</url-pattern>
+  </servlet-mapping>
+</web-app>

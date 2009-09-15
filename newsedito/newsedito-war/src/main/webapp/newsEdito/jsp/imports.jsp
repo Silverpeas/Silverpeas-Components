@@ -1,0 +1,54 @@
+<%@ page import="java.io.PrintWriter"%>
+<%@ page import="java.io.IOException"%>
+<%@ page import="java.io.FileInputStream"%>
+<%@ page import="java.io.ObjectInputStream"%>
+<%@ page import="java.util.Vector"%>
+<%@ page import="java.net.URLEncoder"%>
+<%@ page import="java.util.*, java.io.File"%>
+
+<%@ page import="java.util.*"%>
+<%@ page import="java.lang.*"%>
+<%@ page import="java.io.IOException"%> 
+<%@ page import="java.beans.*"%>
+<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
+<%@ page import="com.stratelia.webactiv.util.*"%>
+<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
+<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.*"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.*"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="com.stratelia.webactiv.util.statistic.model.*"%>
+<%@ page import="com.stratelia.webactiv.newsEdito.control.*"%>
+<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
+<%@ page import="com.stratelia.webactiv.util.publication.model.PublicationDetail"%>
+<%@ page import="com.stratelia.webactiv.newsEdito.control.*"%>
+<%@ page import="com.stratelia.webactiv.util.publication.model.*"%>
+<%@ page import="com.stratelia.webactiv.util.publication.info.model.*"%>
+<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
+<%@ page import="com.stratelia.silverpeas.wysiwyg.WysiwygException"%>
+<%@ page import="com.silverpeas.util.StringUtil"%>
+
+<%@ page import="com.stratelia.webactiv.newsEdito.NewsEditoException"%>
+<%@ page import="com.stratelia.webactiv.newsEdito.CreateNewsEditoException"%>
+<%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
+
+<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+
+<%@ page import="com.silverpeas.publicationTemplate.*"%>
+<%@ page import="com.silverpeas.form.*"%>
