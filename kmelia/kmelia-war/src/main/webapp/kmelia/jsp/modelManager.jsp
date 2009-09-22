@@ -35,6 +35,7 @@ String				wizardLast			= (String) request.getAttribute("WizardLast");
 String 				wizard				= (String) request.getAttribute("Wizard");
 String	 			wizardRow			= (String) request.getAttribute("WizardRow");
 String				currentLang 		= (String) request.getAttribute("Language");
+boolean 			notificationAllowed = ((Boolean) request.getAttribute("NotificationAllowed")).booleanValue();
 
 boolean imageTrouble = false;
 if (bImageTrouble != null)
@@ -109,8 +110,11 @@ function closeWindows() {
       browseBar.setPath(linkedPathString);
 	  browseBar.setExtraInformation(pubName);
 
-      OperationPane operationPane = window.getOperationPane();
-      operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:onClick=goToOperationInAnotherWindow('ToAlertUser', '"+pubId+"', 'ViewAlert')");
+	  if (notificationAllowed)
+	  {
+      	OperationPane operationPane = window.getOperationPane();
+      	operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:onClick=goToOperationInAnotherWindow('ToAlertUser', '"+pubId+"', 'ViewAlert')");
+	  }
 
       // définition des boutons du wizard
    	  	Button cancelWButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "ToPubliContent?WizardRow="+wizardRow, false);

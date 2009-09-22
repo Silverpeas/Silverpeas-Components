@@ -259,12 +259,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 							pubColor = "gray";
 					}
 				} else {
-					if (pub.getStatus() != null && pub.getStatus().equals("Draft")) 
+					if (pub.getStatus() != null && pub.getStatus().equals(PublicationDetail.DRAFT)) 
 					{
 						// en mode brouillon, si on est en co-rédaction et si on autorise le mode brouillon visible par tous,
 						// les publication en mode brouillon sont visibles par tous sauf les lecteurs
 						// sinon, seules les publications brouillons de l'utilisateur sont visibles
-						if (currentUserId.equals(user.getId()) || ((kmeliaScc.isCoWritingEnable() && kmeliaScc.isDraftVisibleWithCoWriting())  && !profile.equals("user"))) 
+						if (currentUserId.equals(pub.getUpdaterId()) || ((kmeliaScc.isCoWritingEnable() && kmeliaScc.isDraftVisibleWithCoWriting())  && !profile.equals("user"))) 
 						{
 							pubColor = "gray";
 							pubState = resources.getString("PubStateDraft");
@@ -272,7 +272,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 					}
 					else 
 					{
-						if (profile.equals("admin") || profile.equals("publisher") || currentUserId.equals(user.getId()) || (!profile.equals("user") && kmeliaScc.isCoWritingEnable())) 
+						if (profile.equals("admin") || profile.equals("publisher") || currentUserId.equals(pub.getUpdaterId()) || (!profile.equals("user") && kmeliaScc.isCoWritingEnable())) 
 						{
 							// si on est en co-rédaction, on affiche toutes les publications à valider (sauf pour les lecteurs)
 							pubColor = "red";

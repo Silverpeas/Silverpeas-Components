@@ -8,6 +8,7 @@ import java.util.Map;
 
 import javax.ejb.EJBObject;
 
+import com.silverpeas.pdc.ejb.PdcBm;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.webactiv.kmelia.model.FullPublication;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
@@ -323,6 +324,8 @@ public interface KmeliaBm extends EJBObject {
 	public PublicationBm getPublicationBm() throws RemoteException;
 
 	public NodeBm getNodeBm() throws RemoteException;
+
+	public PdcBm getPdcBm() throws RemoteException;
 	
 	public void sendModificationAlert(int modificationScope, PublicationPK pubPK) throws RemoteException;
 	

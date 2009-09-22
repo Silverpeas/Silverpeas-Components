@@ -18,7 +18,8 @@
 			if (displayNbPublis.booleanValue())
 				nbPublis = " ("+node.getNbObjects()+")";
 				
-			nodeName	= Encode.javaStringToHtmlString(node.getName(translation))+nbPublis;
+			nodeName	= node.getName(translation).replaceAll("\"", "\\\\\"");
+			nodeName	= nodeName+nbPublis;
 			
 			if (nodeId.equals("0"))
 				nodeName = Encode.javaStringToHtmlString(componentLabel)+nbPublis;

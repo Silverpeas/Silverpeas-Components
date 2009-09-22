@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.silverpeas.blog.control.BlogSessionController;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -118,7 +119,11 @@ public class BlogRequestRouter extends ComponentRequestRouter
              	String title = request.getParameter("Title");
              	String categoryId = request.getParameter("CategoryId");
              	String date = request.getParameter("DateEvent");
-             	Date dateEvent = DateUtil.stringToDate(date, blogSC.getLanguage());
+             	Date dateEvent = null;
+             	if (StringUtil.isDefined(date))
+             		dateEvent = DateUtil.stringToDate(date, blogSC.getLanguage());
+             	else
+             		dateEvent = new Date();
              	String postId = blogSC.createPost(title, categoryId, dateEvent);
             	
             	// appel de la page pour saisir le contenu du billet
@@ -133,6 +138,7 @@ public class BlogRequestRouter extends ComponentRequestRouter
             	request.setAttribute("UserName", blogSC.getUserDetail(post.getPublication().getCreatorId()).getDisplayedName());
             	request.setAttribute("AllCategories", blogSC.getAllCategories());
             	request.setAttribute("IsUsePdc", blogSC.isPdcUsed());
+            	request.setAttribute("Updater", blogSC.getUserDetail(post.getPublication().getUpdaterId()));
             	
             	// appel de la page de modification
             	destination = rootDest + "postManager.jsp";
@@ -143,7 +149,11 @@ public class BlogRequestRouter extends ComponentRequestRouter
             	String title = request.getParameter("Title");
 				String categoryId = request.getParameter("CategoryId");
 				String date = request.getParameter("DateEvent");
-             	Date dateEvent = DateUtil.stringToDate(date, blogSC.getLanguage());
+				Date dateEvent = null;
+             	if (StringUtil.isDefined(date))
+             		dateEvent = DateUtil.stringToDate(date, blogSC.getLanguage());
+             	else
+             		dateEvent = new Date();
              	
 				// MAJ base
 				blogSC.updatePost(postId, title, categoryId, dateEvent);

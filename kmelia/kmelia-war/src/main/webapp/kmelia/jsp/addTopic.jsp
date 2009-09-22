@@ -11,6 +11,7 @@ List 		profiles 		= (List) request.getAttribute("Profiles");
 String		rightsDependsOn = (String) request.getAttribute("RightsDependsOn");
 Boolean		popup			= (Boolean) request.getAttribute("PopupDisplay");
 Boolean		isLinked		= (Boolean) request.getAttribute("IsLink");
+boolean 	notificationAllowed = ((Boolean) request.getAttribute("NotificationAllowed")).booleanValue();
 
 boolean useRightsOnTopics = (profiles != null);
 
@@ -133,7 +134,7 @@ function isCorrectForm() {
 <FORM name="topicForm" action="AddTopic" method="POST">
 <TABLE CELLPADDING="5" WIDTH="100%">
   	<TR><TD class="txtlibform"><%=resources.getString("TopicPath")%> :</TD>
-      <TD valign="top"><%=Encode.javaStringToHtmlString(path)%></TD>
+      <TD valign="top"><%=path%></TD>
 
 	<%=I18NHelper.getFormLine(resources, null, kmeliaScc.getLanguage())%>
 
@@ -152,16 +153,18 @@ function isCorrectForm() {
       		<TD><input type="text" name="Description" size="60" maxlength="200"></TD>
     	</TR>
     <% } %>
-  	<TR>
-  		<TD class="txtlibform" valign="top"><%=resources.getString("TopicAlert")%> :</TD>
-      	<TD valign="top">
-			<select name="AlertType">
-				<option value="NoAlert" selected="selected"><%=resources.getString("NoAlert")%></option>
-				<option value="Publisher"><%=resources.getString("OnlyPubsAlert")%></option>
-				<option value="All"><%=resources.getString("AllUsersAlert")%></option>
-			</select>
-		</TD>
-	</TR>
+	<% if (notificationAllowed) { %>
+	  	<TR>
+	  		<TD class="txtlibform" valign="top"><%=resources.getString("TopicAlert")%> :</TD>
+	      	<TD valign="top">
+				<select name="AlertType">
+					<option value="NoAlert" selected="selected"><%=resources.getString("NoAlert")%></option>
+					<option value="Publisher"><%=resources.getString("OnlyPubsAlert")%></option>
+					<option value="All"><%=resources.getString("AllUsersAlert")%></option>
+				</select>
+			</TD>
+		</TR>
+	<% } %>
    <% if (useRightsOnTopics) { %>
    		<TR>
    			<TD valign="top" class="txtlibform"><%=resources.getString("kmelia.WhichTopicRightsUsed")%> :</TD>

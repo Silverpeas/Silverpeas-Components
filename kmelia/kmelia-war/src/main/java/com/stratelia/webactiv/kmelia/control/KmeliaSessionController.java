@@ -1,5 +1,6 @@
 package com.stratelia.webactiv.kmelia.control;
 
+import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -31,8 +32,10 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.ZipManager;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.versioning.importExport.VersioningImportExport;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.comment.control.CommentController;
 import com.stratelia.silverpeas.comment.ejb.CommentBm;
@@ -79,11 +82,16 @@ import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.kmelia.model.Treeview;
 import com.stratelia.webactiv.kmelia.model.UserCompletePublication;
 import com.stratelia.webactiv.kmelia.model.UserPublication;
+import com.stratelia.webactiv.kmelia.model.updatechain.FieldParameter;
+import com.stratelia.webactiv.kmelia.model.updatechain.FieldUpdateChainDescriptor;
+import com.stratelia.webactiv.kmelia.model.updatechain.Fields;
+import com.stratelia.webactiv.kmelia.model.updatechain.UpdateChainDescriptor;
 import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
 import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -96,6 +104,7 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
@@ -118,6 +127,11 @@ import com.stratelia.webactiv.util.publication.model.ValidationStep;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
+import java.io.FileReader;
+import javax.xml.parsers.ParserConfigurationException;
+
 
 public class KmeliaSessionController extends AbstractComponentSessionController {
 
@@ -202,6 +216,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 	private String currentLanguage = null;
 	
 	private AdminController m_AdminCtrl = null;
+	
+	// sauvegarde pour mise à jour à la chaine
+	Fields saveFields = new Fields();
 
 	/** Creates new sessionClientController */
     public KmeliaSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
@@ -457,8 +474,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
 
 	public boolean isExportComponentAllowed() {
-		ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", getLanguage());
-		return "yes".equals(settings.getString("exportComponentAllowed"));
+		return "yes".equals(getSettings().getString("exportComponentAllowed"));
     }
 
 	public boolean isMassiveDragAndDropAllowed() {
@@ -1366,7 +1382,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     	List publications = getSessionPublicationsList();
     	UserPublication		userPub;
 		PublicationDetail	pub;
-		UserDetail			user;
 		List				orderedPublications = new ArrayList();
 		
 		Calendar calendar = Calendar.getInstance();
@@ -1379,7 +1394,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 		{
 			userPub = (UserPublication) publications.get(p);
             pub		= userPub.getPublication();
-			user	= userPub.getOwner();
 			if (pub.getStatus() != null)
 			{
 				if (pub.getStatus().equals("Valid")) {
@@ -1401,7 +1415,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 						orderedPublications.add(userPub);
 					else
 					{
-						if (getProfile().equals("admin") || getUserId().equals(user.getId()) || (!getProfile().equals("user") && isCoWritingEnable()))
+						if (getProfile().equals("admin") || getUserId().equals(pub.getUpdaterId()) || (!getProfile().equals("user") && isCoWritingEnable()))
 							orderedPublications.add(userPub);
 					}
 				} else {
@@ -1410,13 +1424,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 						// si le theme est en co-rédaction et si on autorise le mode brouillon visible par tous
 						// toutes les publications en mode brouillon sont visibles par tous, sauf les lecteurs
 						// sinon, seule les publications brouillon de l'utilisateur sont visibles
-						if (getUserId().equals(user.getId()) || ((isCoWritingEnable() && isDraftVisibleWithCoWriting())  && !getProfile().equals("user"))) 
+						if (getUserId().equals(pub.getUpdaterId()) || ((isCoWritingEnable() && isDraftVisibleWithCoWriting())  && !getProfile().equals("user"))) 
 								orderedPublications.add(userPub);
 					} 
 					else
 					{
 						// si le thème est en co-rédaction, toutes les publications sont visibles par tous, sauf les lecteurs
-						if (getProfile().equals("admin") || getProfile().equals("publisher") || getUserId().equals(user.getId()) || (!getProfile().equals("user") && isCoWritingEnable())) {
+						if (getProfile().equals("admin") || getProfile().equals("publisher") || getUserId().equals(pub.getUpdaterId()) || (!getProfile().equals("user") && isCoWritingEnable())) {
 							orderedPublications.add(userPub);
 						}
 					}
@@ -2519,7 +2533,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 	/**
 	 * @return
 	 */
-	private PdcBm getPdcBm() {
+	public PdcBm getPdcBm() {
 		if (pdcBm == null)
 			pdcBm = new PdcBmImpl();
 		return pdcBm;
@@ -2929,6 +2943,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 		return pubId;
 	}
 	
+	public String getFirst()
+	{
+		rang = 0;
+		UserPublication pub = (UserPublication) getSessionPublicationsList().get(0);
+		String pubId = pub.getPublication().getId();
+
+		return pubId;
+	}
+	
 	/**
 	 * getPrevious
 	 * @return previous publication id
@@ -2965,7 +2988,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 		this.sessionTreeview = sessionTreeview;
 	}
 	
-	public boolean isDragAndDropEnable() throws RemoteException
+	public synchronized boolean isDragAndDropEnable() throws RemoteException
 	{
 		try
 		{
@@ -3883,6 +3906,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 		getKmeliaBm().setAlias(getSessionPublication().getPublication().getPublicationDetail().getPK(), aliases);
 	}
 	
+	public void setAliases(PublicationPK pubPK, List aliases) throws RemoteException
+	{
+		getKmeliaBm().setAlias(pubPK, aliases);
+	}
+	
 	public List getAliases() throws RemoteException
 	{
 		List aliases = (List) getKmeliaBm().getAlias(getSessionPublication().getPublication().getPublicationDetail().getPK());
@@ -4013,6 +4041,248 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 	private boolean isToolbox()
 	{
 		return KmeliaHelper.isToolbox(getComponentId());
+	}
+	
+	public String getFirstAttachmentURLOfCurrentPublication() throws RemoteException
+	{
+		PublicationPK pubPK = getSessionPublication().getPublication().getPublicationDetail().getPK();
+		String url = null;
+		if (isVersionControlled())
+		{
+			VersioningUtil versioning = new VersioningUtil();
+			List documents = versioning.getDocuments(new ForeignPK(pubPK));
+			if (documents.size() != 0)
+			{
+				Document document = (Document) documents.get(0);
+				DocumentVersion documentVersion = versioning.getLastPublicVersion(document.getPk());
+				if (documentVersion != null)
+					url = versioning.getDocumentVersionURL(document.getInstanceId(), documentVersion.getLogicalName(), document.getPk().getId(), documentVersion.getPk().getId());
+			}
+		}
+		else
+		{
+			Vector attachments = AttachmentController.searchAttachmentByPKAndContext(pubPK, "Images");
+			if (attachments.size() != 0)
+			{
+				AttachmentDetail attachment = (AttachmentDetail) attachments.get(0);
+				url = attachment.getAttachmentURL();
+			}
+		}
+		return url;
+	}
+	
+	public boolean useUpdateChain()
+	{
+		return "yes".equals(getComponentParameterValue("updateChain"));
+	}
+	
+	public void setFieldUpdateChain(Fields fields)
+	{
+		this.saveFields = fields;
+	}
+	
+	public Fields getFieldUpdateChain()
+	{
+		return saveFields;
+	}
+	
+	public void initUpdateChainTopicChoice(String pubId) 
+	{
+		Collection path;
+		try {
+			String[] topics = null;
+			if (saveFields.getTree() != null)
+			{
+				// initialisation du premier thème coché
+				FieldParameter param = saveFields.getTree().getParams().get(0);
+				if (!param.getName().equals("none"))
+				{
+					String id = param.getValue();
+					topics = new String[1];
+					NodePK node = getNodeHeader(id).getNodePK();
+					topics[0] = id + "," + node.getComponentName();
+				}
+			}
+			else
+			{
+				path = getPublicationFathers(pubId);
+				topics = new String[path.size()];
+				Iterator it = path.iterator();
+				int i = 0;
+				while (it.hasNext())
+				{
+					NodePK node = (NodePK) it.next();
+					topics[i] = node.getId() + "," + node.getComponentName();
+					i++;
+				}
+				
+			}
+			getFieldUpdateChain().setTopics(topics);
+		}
+		catch (RemoteException e) {
+			getFieldUpdateChain().setTopics(null);
+		}
+	}
+	
+	public boolean isTopicHaveUpdateChainDescriptor() 
+	{
+		boolean haveDescriptor = false;
+		// regarder si ce fichier existe
+		if (useUpdateChain())
+		{
+			File descriptorFile = new File(getUpdateChainDescriptorFilename(getSessionTopic().getNodePK().getId()));
+			if (descriptorFile.exists())
+				haveDescriptor = true;
+		}
+		return haveDescriptor;
+	}
+	
+	private String getUpdateChainDescriptorFilename(String topicId)
+	{
+		return getSettings().getString("updateChainRepository") + getComponentId() + "_" + topicId + ".xml";
+	}
+	
+	public synchronized List getSubTopics(String rootId) throws RemoteException
+    {
+   		return getNodeBm().getSubTree(getNodePK(rootId));
+    }
+	
+	public List<NodeDetail> getUpdateChainTopics() throws RemoteException
+	{
+		List<NodeDetail> topics = new ArrayList<NodeDetail>();
+	    if (getFieldUpdateChain().getTree() != null)
+	    {
+	    	FieldParameter param = getFieldUpdateChain().getTree().getParams().get(0);
+			if (param.getName().equals("rootId"))
+			{
+				topics = getSubTopics(param.getValue());
+			}
+			if (param.getName().equals("targetId"))
+			{
+				topics.add(getNodeHeader(param.getValue()));
+			}
+	    }
+	    else
+	    {
+	    	topics = getAllTopics();
+	    }
+	    return topics;
+	}
+	
+	public void initUpdateChainDescriptor() throws IOException, ClassNotFoundException, ParserConfigurationException
+	{
+		XStream xstream = new XStream(new DomDriver());
+		xstream.alias("fieldDescriptor", FieldUpdateChainDescriptor.class);
+		xstream.alias("updateChain", UpdateChainDescriptor.class);
+		xstream.alias("parameter", FieldParameter.class);
+		
+		File descriptorFile = new File(getUpdateChainDescriptorFilename(getSessionTopic().getNodePK().getId()));
+		UpdateChainDescriptor updateChainDescriptor = (UpdateChainDescriptor) xstream.fromXML(new FileReader(descriptorFile));
+		
+		String title = updateChainDescriptor.getTitle();
+		String libelle = updateChainDescriptor.getLibelle();
+		saveFields.setTitle(title);
+		saveFields.setLibelle(libelle);
+		
+		List<FieldUpdateChainDescriptor> fields = updateChainDescriptor.getFields();
+		Iterator it = fields.iterator();
+		while (it.hasNext())
+		{
+			FieldUpdateChainDescriptor field = (FieldUpdateChainDescriptor) it.next();
+			
+			saveFields.setHelper(updateChainDescriptor.getHelper());
+			
+			if (field.getName().equals("Name"))
+			{
+				saveFields.setName(field);
+			}
+			else if (field.getName().equals("Description"))
+			{
+				saveFields.setDescription(field);
+			}
+			else if (field.getName().equals("Keywords"))
+			{
+				saveFields.setKeywords(field);
+			}
+			else if (field.getName().equals("Topics"))
+			{
+				saveFields.setTree(field);
+			}
+		}
+		
+	}
+
+	public String getXmlFormForFiles()
+	{
+		return getComponentParameterValue("XmlFormForFiles");
+	}
+	
+	public List<String> exportPublication()
+	{
+		List<String> result = new ArrayList<String>();
+		PublicationPK pubPK = getSessionPublication().getPublication().getPublicationDetail().getPK();
+		
+		try {
+			//get PDF
+			String pdf = generatePdf(pubPK.getId());
+			String pdfWithoutExtension = pdf.substring(0, pdf.indexOf(".pdf"));
+			
+			//create subdir to zip
+			String subdir 		= "ExportPubli_"+new Date().getTime();
+			//String subDirPath 	= FileRepositoryManager.getTemporaryPath()+subdir;
+			//FileRepositoryManager.createGlobalTempPath(subdir);
+			String subDirPath 	= FileRepositoryManager.getTemporaryPath()+subdir+File.separator+pdfWithoutExtension;
+			FileFolderManager.createFolder(subDirPath);
+						
+			//copy pdf into zip
+			String filePath = FileRepositoryManager.getTemporaryPath("useless", getComponentId()) + pdf;
+			FileRepositoryManager.copyFile(filePath, subDirPath+File.separator+pdf);
+			
+			//copy files
+			new AttachmentImportExport().getAttachments(pubPK, subDirPath, "useless", null);
+			new VersioningImportExport().exportDocuments(pubPK, subDirPath, "useless", null);
+			
+			String zipFileName = pdfWithoutExtension+".zip";
+			
+			//zip PDF and files
+			long zipSize = ZipManager.compressPathToZip(subDirPath, FileRepositoryManager.getTemporaryPath()+zipFileName);
+			
+			result.add(zipFileName);
+			result.add(String.valueOf(zipSize));
+			result.add(FileServerUtils.getUrlToTempDir(zipFileName, zipFileName, "application/zip"));
+		} catch (Exception e) {
+			throw new KmeliaRuntimeException("KmeliaSessionController.exportPublication()", SilverpeasRuntimeException.ERROR, "kmelia.CANT_EXPORT_PUBLICATION", e);
+		}
+		
+		return result;
+	}
+
+	public boolean isNotificationAllowed()
+	{
+		String parameterValue = getComponentParameterValue("notifications");
+		if (!StringUtil.isDefined(parameterValue))	{
+			return true;
+		} else {
+			return "yes".equals(parameterValue.toLowerCase());
+		}
+	}
+	
+	public boolean isWysiwygOnTopicsEnabled()
+	{
+		return "yes".equals(getComponentParameterValue("wysiwygOnTopics").toLowerCase());
+	}
+	
+	public String getWysiwygOnTopic()
+	{
+		if (isWysiwygOnTopicsEnabled())
+		{
+			try {
+				return WysiwygController.load(getComponentId(), "Node_"+getSessionTopic().getNodePK().getId(), getLanguage());
+			} catch (WysiwygException e) {
+				return "";
+			}
+		}
+		return "";
 	}
 	
 }

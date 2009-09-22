@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Vector;
 
@@ -456,18 +457,29 @@ public class SurveySessionController extends AbstractComponentSessionController
 	
 	public Collection<String> getUserByQuestion(ForeignPK questionPK) throws RemoteException
 	{
+		return getUserByQuestion(questionPK,true);
+	}
+	public Collection<String> getUserByQuestion(ForeignPK questionPK, boolean withName) throws RemoteException
+	{
 		Collection<QuestionResult> results = getQuestionResultBm().getQuestionResultToQuestion(questionPK);
-		Collection<String> users = new ArrayList<String>();
+		Collection<String> users = new LinkedHashSet<String>();
 		Iterator<QuestionResult> it = results.iterator();
 		while (it.hasNext())
 		{
 			QuestionResult result = (QuestionResult) it.next();
 			
-			//if (result != null && result.getAnswerPK().getId().equals(answer.getPK().getId()))
 			if (result != null)
 			{
-				String userName = getUserDetail(result.getUserId()).getDisplayedName();
-				users.add(result.getUserId()+ "-" + userName );
+				String userName = "";
+				if (withName)
+				{
+					userName = getUserDetail(result.getUserId()).getDisplayedName();
+					users.add(result.getUserId()+ "-" + userName );
+				}
+				else
+				{
+					users.add(result.getUserId());
+				}
 			}
 		}
 		return users;
@@ -593,6 +605,21 @@ public class SurveySessionController extends AbstractComponentSessionController
 	public Collection<String> getUsersByAnswer(String answerId) throws RemoteException
 	{
 		return getUserByAnswer(answerId);
+	}
+	
+	public Collection<String> getUsersBySurvey(String surveyId) throws RemoteException, SurveyException
+	{
+		Collection<String> users = new LinkedHashSet<String>();
+		QuestionContainerDetail survey = getSurvey(surveyId);
+		Collection<Question> questions = survey.getQuestions();
+		Iterator<Question> it = questions.iterator();
+		while (it.hasNext())
+		{
+			Question question = (Question) it.next();
+			ForeignPK questionPK = new ForeignPK(question.getPK());
+			users.addAll(getUserByQuestion(questionPK, false));
+		}
+		return users;
 	}
 
 	public UserDetail getUserDetail(String userId)

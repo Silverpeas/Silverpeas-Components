@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<updateChain>
+	<title>ENTRETIENS ANNUELS</title>
+	<libelle>l'emplacement est le service du collaborateur</libelle>
+	<helper>com.silverpeas.kmelia.updatechainhelpers.DefineServiceOfUser</helper>
+	<fields>
+		<fieldDescriptor>	<!-- la zone "nom" va récupérer la liste de tous les utilisateurs de la plateforme -->
+			<type>jdbc</type>	
+			<name>Name</name>
+			<parameters>
+				<parameter>
+					<name>url</name>
+					<value lang="fr">jdbc:postgresql://localhost:5432/Silverpeas410M2</value>
+				</parameter>
+				<parameter>
+					<name>valueFieldType</name>
+					<value lang="fr">1</value>
+				</parameter>
+				<parameter>
+					<name>query</name>
+					<value lang="fr">select distinct lastname, firstname from personnel where lastname is not null order by lastname asc</value>
+				</parameter>
+				<parameter>
+					<name>login</name>
+					<value lang="fr">postgres</value>
+				</parameter>
+				<parameter>
+					<name>password</name>
+					<value lang="fr">postgres</value>
+				</parameter>
+				<parameter>
+					<name>driverName</name>
+					<value lang="fr">org.postgresql.Driver</value>
+				</parameter>	
+			</parameters>
+		</fieldDescriptor>
+		<fieldDescriptor>   <!-- la zone "description" propose une valeur -->
+			<type>text</type>
+			<name>Description</name>
+			<lastValue>true</lastValue>
+			<value>Entretien annuel 2009</value>
+		</fieldDescriptor>
+		<fieldDescriptor>   <!-- la zone "mots clés" est vierge, elle va permettre de saisir le nom du candidat -->
+			<type>text</type>
+			<name>Keywords</name>
+			<lastValue>false</lastValue>
+		</fieldDescriptor>
+		<fieldDescriptor>
+			<type>tree</type>
+			<name>Topics</name>
+			<parameters>
+				<parameter>
+					<name>none</name>	<!-- on ne propose aucun theme (il sera calculé) -->
+					<value>true</value>
+				</parameter>
+			</parameters> 
+		</fieldDescriptor>
+	</fields>
+</updateChain>

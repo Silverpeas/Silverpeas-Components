@@ -403,5 +403,31 @@
 			<ParameterHelpEn></ParameterHelpEn>
 	   	</ParameterHelp>
     </Parameter>
+    <Parameter>
+        <ParameterName>wysiwygOnTopics</ParameterName>
+        <ParameterLabel>Description riche</ParameterLabel>
+        <ParameterValue>no</ParameterValue>
+        <ParameterMandatory>Y</ParameterMandatory>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterOrder>29</ParameterOrder>
+	   	<ParameterHelp>
+			<ParameterHelpFr>Ce paramètre permet de saisir une description Wysiwyg sur un thème qui sera affichée dans le thème</ParameterHelpFr>
+			<ParameterHelpEn>This feature allows to make a rich description of a topic.</ParameterHelpEn>
+	   	</ParameterHelp>
+    </Parameter>
+	<Parameter>
+        <ParameterName>useFileSharing</ParameterName>
+        <ParameterLabel>Fichiers partageables</ParameterLabel>
+        <ParameterValue>no</ParameterValue>
+        <ParameterMandatory>Y</ParameterMandatory>
+	    <ParameterUpdatable>never</ParameterUpdatable>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterOrder>30</ParameterOrder>
+	   	<ParameterHelp>
+			<ParameterHelpFr>Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail</ParameterHelpFr>
+			<ParameterHelpEn>This feature allows to activate file sharing with persons who have no access to the portal</ParameterHelpEn>
+	   	</ParameterHelp>
+    </Parameter>
   </Parameters>
 </WAComponent>

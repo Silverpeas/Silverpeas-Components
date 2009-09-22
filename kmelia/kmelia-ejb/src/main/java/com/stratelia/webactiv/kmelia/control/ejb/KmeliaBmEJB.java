@@ -255,15 +255,19 @@ public class KmeliaBmEJB implements SessionBean {
     return versioningBm;
   }
 
-  private PdcBm getPdcBm() {
-    PdcBm pdcBm = null;
-    try {
-      PdcBmHome pdcBmHome = (PdcBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PDCBM_EJBHOME, PdcBmHome.class);
-      pdcBm = pdcBmHome.create();
-    } catch (Exception e) {
-      throw new PdcBmRuntimeException("KmeliaBmEJB.getPdcBm", SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return pdcBm;
+  public PdcBm getPdcBm()
+  {
+	  PdcBm pdcBm = null;
+	  try
+	  {
+		  PdcBmHome pdcBmHome = (PdcBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PDCBM_EJBHOME, PdcBmHome.class);
+		  pdcBm = pdcBmHome.create();			
+	  }
+	  catch (Exception e)
+	  {
+		  throw new PdcBmRuntimeException("KmeliaBmEJB.getPdcBm", SilverpeasRuntimeException.ERROR,"root.EX_CANT_GET_REMOTE_OBJECT",e);
+	  }
+	  return pdcBm;
   }
 
   /**
@@ -1745,11 +1749,11 @@ public class KmeliaBmEJB implements SessionBean {
 
           //french notifications
           String subject = getSubscriptionsNotificationSubject(message);
-          String body = getSubscriptionsNotificationBody(pubDetail, displayPath(path, 10, "fr"), message);
+					String body 	= getSubscriptionsNotificationBody(pubDetail, getHTMLNodePath(fatherPK, "fr"), message);
 
           //english notifications
           String subject_en = getSubscriptionsNotificationSubject(message_en);
-          String body_en = getSubscriptionsNotificationBody(pubDetail, displayPath(path, 10, "en"), message_en);
+					String body_en 		= getSubscriptionsNotificationBody(pubDetail, getHTMLNodePath(fatherPK, "en"), message_en);
 
           NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
           notifMetaData.addLanguage("en", subject_en, body_en);

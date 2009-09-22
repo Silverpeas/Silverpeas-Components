@@ -11,7 +11,7 @@
   <groupId>com.silverpeas.components.kmelia</groupId>
   <artifactId>kmelia-war</artifactId>
   <packaging>war</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>${parent.version}</version>
   <name>kmelia Webapp</name>
 
   <dependencies>
@@ -25,7 +25,7 @@
       <groupId>com.silverpeas.components.kmelia</groupId>
       <artifactId>kmelia-ejb</artifactId>
       <classifier>client</classifier>
-      <version>1.0-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -109,6 +109,10 @@
       <version>${core.version}</version>
       <classifier>client</classifier>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.thoughtworks.xstream</groupId>
+      <artifactId>xstream</artifactId>
     </dependency>
   </dependencies>
 

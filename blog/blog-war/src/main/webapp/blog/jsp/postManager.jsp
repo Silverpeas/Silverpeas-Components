@@ -6,6 +6,7 @@
 	Collection 	categories		= (Collection) request.getAttribute("AllCategories");
 	String 		userName		= (String) request.getAttribute("UserName");
 	Boolean		isUsePdc		= (Boolean) request.getAttribute("IsUsePdc");
+	UserDetail  updater			= (UserDetail) request.getAttribute("Updater");
 	
 	// déclaration des variables :
 	String 		title			= "";
@@ -42,13 +43,15 @@
 	
 %>
 
-<html>
+
+<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%><html>
 		<head>
 		<%
 			out.println(gef.getLookStyleSheet());
 		%>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+		<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 		<script language="javascript">
 			
 			// fonctions de contrôle des zones du formulaire avant validation
@@ -90,6 +93,13 @@
 		     	} 
 		     	return result;
 			}
+
+			function editDate(elementId) {
+				chemin = "<%=m_context%>/Ragenda/jsp/calendar.jsp?idElem="+elementId;
+				largeur = "180";
+				hauteur = "200";
+				SP_openWindow(chemin,"calendrierAlmanach",largeur,hauteur,"");
+			}
 		</script>
 		
 		</head>
@@ -124,7 +134,7 @@
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("blog.dateEvent")%> :</td>
-		<td><input type="text" name="DateEvent" size="60" maxlength="150" value="<%=resource.getOutputDate(dateEvent)%>"/></td>
+		<td><input type="text" id="eventDate" name="DateEvent" size="12" maxlength="10" value="<%=resource.getOutputDate(dateEvent)%>"/>&nbsp;<a href="javascript:OnClick=editDate('eventDate');"><img src="<%=resource.getIcon("blog.calendar") %>" width="13" height="15" border="0" alt="Afficher le calendrier" title="Afficher le calendrier" align="absmiddle"/></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.category")%> :</td>
@@ -156,14 +166,13 @@
 	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.creationDate")%> :</td>
 		<TD><%=creationDate%>&nbsp;<span class="txtlibform"><%=resource.getString("GML.by")%></span>&nbsp;<%=creatorName%></TD>
-		<% if (updateDate != null )
-		{ %>
-			</tr>
+	</tr>
+		<% if (updateDate != null) { %>
 			<tr>
 				<td class="txtlibform"><%=resource.getString("GML.updateDate")%> :</td>
-				<TD><%=updateDate%></TD>
+				<TD><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("GML.by")%></span>&nbsp;<%=updater.getDisplayedName()%></TD>
+			</tr>
 		<% } %>
-	</tr>
 	<tr><td colspan="2">( <img border="0" src=<%=resource.getIcon("blog.obligatoire")%> width="5" height="5"/> : <%=resource.getString("GML.requiredField")%> )</td></tr>
 
   </form>

@@ -12,6 +12,7 @@ List 		profiles 		= (List) request.getAttribute("Profiles");
 String		rightsDependsOn = (String) request.getAttribute("RightsDependsOn");
 Boolean		popup			= (Boolean) request.getAttribute("PopupDisplay");
 String		language		= (String) request.getAttribute("Language");
+boolean 	notificationAllowed = ((Boolean) request.getAttribute("NotificationAllowed")).booleanValue();
 
 boolean useRightsOnTopics = (profiles != null);
 
@@ -174,7 +175,7 @@ function removeTranslation()
 <TABLE CELLPADDING="5" WIDTH="100%">
 	<TR>
 		<TD class="txtlibform"><%=resources.getString("TopicPath")%> :</TD>
-      	<TD valign="top"><%=Encode.javaStringToHtmlString(path)%><input type="hidden" name="ChildId" value="<%=id%>"></TD>
+      	<TD valign="top"><%=path%><input type="hidden" name="ChildId" value="<%=id%>"></TD>
     </TR>
     <%=I18NHelper.getFormLine(resources, node, translation)%>
   	<TR>
@@ -192,16 +193,18 @@ function removeTranslation()
 	      	<TD><input type="text" name="Description" id="nodeDesc" value="<%=Encode.javaStringToHtmlString(description)%>" size="60" maxlength="200"></TD>
 	    </TR>
     <% } %>
-  	<TR>
-  		<TD valign="top" class="txtlibform"><%=resources.getString("TopicAlert")%> :</TD>
-      	<TD valign="top">
-      		<select name="AlertType">
-				<option value="NoAlert" selected="selected"><%=resources.getString("NoAlert")%></option>
-				<option value="Publisher"><%=resources.getString("OnlyPubsAlert")%></option>
-				<option value="All"><%=resources.getString("AllUsersAlert")%></option>
-			</select>
-    	</TD>
-   	</TR>
+	<% if (notificationAllowed) { %>
+	  	<TR>
+	  		<TD valign="top" class="txtlibform"><%=resources.getString("TopicAlert")%> :</TD>
+	      	<TD valign="top">
+	      		<select name="AlertType">
+					<option value="NoAlert" selected="selected"><%=resources.getString("NoAlert")%></option>
+					<option value="Publisher"><%=resources.getString("OnlyPubsAlert")%></option>
+					<option value="All"><%=resources.getString("AllUsersAlert")%></option>
+				</select>
+	    	</TD>
+	   	</TR>
+	<% } %>
 <% if (useRightsOnTopics) { %>
 	<TR>
 		<TD valign="top" class="txtlibform"><%=resources.getString("kmelia.WhichTopicRightsUsed")%> :</TD>

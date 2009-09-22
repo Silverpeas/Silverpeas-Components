@@ -53,6 +53,7 @@ String refusedSrc;
 	ValidationStep			validation		= (ValidationStep) request.getAttribute("ValidationStep");
 	int						validationType	= ((Integer) request.getAttribute("ValidationType")).intValue();
 	boolean isWriterApproval = ((Boolean) request.getAttribute("WriterApproval")).booleanValue();
+	boolean notificationAllowed = ((Boolean) request.getAttribute("NotificationAllowed")).booleanValue();
 
 	if (action == null)
 		action = "View";
@@ -93,6 +94,7 @@ String refusedSrc;
 	refusedSrc				= m_context + "/util/icons/wrong.gif";
 	String pubDraftInSrc	= m_context + "/util/icons/publicationDraftIn.gif";
 	String pubDraftOutSrc	= m_context + "/util/icons/publicationDraftOut.gif";
+	String exportSrc		= m_context + "/util/icons/exportComponent.gif";
 
 	String screenMessage = "";
 	String user_id = kmeliaScc.getUserId();
@@ -318,6 +320,11 @@ function showTranslation(lang)
 {
 	location.href="ViewPublication?SwitchLanguage="+lang;
 }
+
+function zipPublication()
+{
+	SP_openWindow("ZipPublication", "ZipPublication", "500", "300", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
+}
 </script>
 </HEAD>
 <BODY class="yui-skin-sam" onUnload="closeWindows()" onLoad="openSingleAttachment()">
@@ -337,7 +344,11 @@ function showTranslation(lang)
 
         OperationPane operationPane = window.getOperationPane();
 
-        operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers()");
+        if (notificationAllowed)
+        {
+        	operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers()");
+        }
+        operationPane.addOperation(exportSrc, resources.getString("kmelia.DownloadPublication"), "javaScript:zipPublication()");
 		operationPane.addLine();
 		if (isOwner) {
 			if (!"supervisor".equals(profile))
@@ -370,10 +381,7 @@ function showTranslation(lang)
 		}
         if (!toolboxMode && isOwner) {
             if (profile.equals("admin") || profile.equals("publisher") || isWriterApproval) {
-							if ("Valid".equals(pubDetail.getStatus())) {
-								operationPane.addLine();
-								operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate()");
-							} else if ("ToValidate".equals(pubDetail.getStatus())) {
+							if ("ToValidate".equals(pubDetail.getStatus())) {
 								if (validation == null)
 								{
 									operationPane.addLine();
@@ -424,7 +432,7 @@ function showTranslation(lang)
     	out.println("<TABLE border=\"0\" width=\"98%\" align=center>");
     	out.println("<TR><TD align=\"left\">");
 
-    	out.println("<span class=\"txtnav\"><b>"+Encode.convertHTMLEntities(pubDetail.getName(language))+"</b></span>");
+    	out.println("<span class=\"txtnav\"><b>"+pubDetail.getName(language)+"</b></span>");
     	
 		if (!"user".equals(profile))
 		{
@@ -438,7 +446,7 @@ function showTranslation(lang)
 				out.println("<img src=\""+refusedSrc+"\" alt=\""+resources.getString("PublicationRefused")+"\" align=\"absmiddle\">");
 		}
     	
-		out.println("<br><b>"+Encode.javaStringToHtmlParagraphe(Encode.convertHTMLEntities(pubDetail.getDescription(language)))+"<b><BR><BR>");
+		out.println("<br><b>"+Encode.javaStringToHtmlParagraphe(pubDetail.getDescription(language))+"<b><BR><BR>");
 
 		out.println("</td><td valign=top align=\"right\">");
 		

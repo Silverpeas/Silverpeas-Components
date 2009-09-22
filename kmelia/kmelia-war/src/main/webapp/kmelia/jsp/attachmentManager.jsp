@@ -10,6 +10,7 @@ String 				wizard		= (String) request.getAttribute("Wizard");
 String	 			wizardRow	= (String) request.getAttribute("WizardRow");
 String				currentLang = (String) request.getAttribute("Language");
 List				languages	= (List) request.getAttribute("Languages");
+String 				xmlForm		= (String) request.getAttribute("XmlFormForFiles");
 
 String pubName 	= pubDetail.getName(currentLang);
 String pubId 	= pubDetail.getPK().getId();
@@ -108,12 +109,12 @@ function topicGoTo(id)
 	if (kmeliaScc.isVersionControlled()) 
 	{
 		//Versioning links
-		getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/documents.jsp?Id="+URLEncoder.encode(pubId)+"&SpaceId="+URLEncoder.encode(spaceId)+"&ComponentId="+URLEncoder.encode(componentId)+"&Context=Images&IndexIt="+pIndexIt+"&Url="+URLEncoder.encode(url)+"&SL="+URLEncoder.encode(kmeliaScc.getSpaceLabel())+"&NodeId="+kmeliaScc.getSessionTopic().getNodePK().getId()+"&TopicRightsEnabled="+kmeliaScc.isRightsOnTopicsEnabled()+"&VersionningFileRightsMode="+kmeliaScc.getVersionningFileRightsMode()+"&CL="+URLEncoder.encode(kmeliaScc.getComponentLabel())).include(request, response);
+		getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/documents.jsp?Id="+URLEncoder.encode(pubId)+"&SpaceId="+URLEncoder.encode(spaceId)+"&ComponentId="+URLEncoder.encode(componentId)+"&Context=Images&IndexIt="+pIndexIt+"&Url="+URLEncoder.encode(url)+"&SL="+URLEncoder.encode(kmeliaScc.getSpaceLabel())+"&NodeId="+kmeliaScc.getSessionTopic().getNodePK().getId()+"&TopicRightsEnabled="+kmeliaScc.isRightsOnTopicsEnabled()+"&VersionningFileRightsMode="+kmeliaScc.getVersionningFileRightsMode()+"&CL="+URLEncoder.encode(kmeliaScc.getComponentLabel())+"&XMLFormName="+URLEncoder.encode(xmlForm)).include(request, response);
 	} 
 	else
 	{
 		//Attachments links
-		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttFiles.jsp?Id="+pubId+"&ComponentId="+componentId+"&Context=Images&IndexIt="+pIndexIt+"&Url="+url+"&UserId="+kmeliaScc.getUserId()+"&OpenUrl="+openUrl+"&Profile="+kmeliaScc.getProfile()+"&Language="+currentLang).include(request, response);
+		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttFiles.jsp?Id="+pubId+"&ComponentId="+componentId+"&Context=Images&IndexIt="+pIndexIt+"&Url="+url+"&UserId="+kmeliaScc.getUserId()+"&OpenUrl="+openUrl+"&Profile="+kmeliaScc.getProfile()+"&Language="+currentLang+"&XMLFormName="+URLEncoder.encode(xmlForm)).include(request, response);
 	}
 	
 	if ("progress".equals(wizard))

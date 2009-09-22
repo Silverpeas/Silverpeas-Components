@@ -121,6 +121,7 @@ boolean isFieldDescriptionMandatory = kmeliaScc.isFieldDescriptionMandatory();
 boolean isFieldKeywordsVisible 		= kmeliaScc.isFieldKeywordsVisible();
 boolean isFieldImportanceVisible 	= kmeliaScc.isFieldImportanceVisible();
 boolean isFieldVersionVisible 		= kmeliaScc.isFieldVersionVisible();
+boolean isNotificationAllowed		= kmeliaScc.isNotificationAllowed();
 
 String linkedPathString = kmeliaScc.getSessionPath();
 String pathString = "";
@@ -568,14 +569,16 @@ function removeTranslation()
 		browseBar.setExtraInformation(name);
 
         if (action.equals("UpdateView")) {
-        	if (kmeliaScc.getSessionClone() == null)
+        	if (kmeliaScc.getSessionClone() == null && isNotificationAllowed)
+        	{
         		operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers();");
+        		operationPane.addLine();
+        	}
 			
 			if (!"supervisor".equals(profile))
 			{
 				if (kmeliaScc.getSessionClone() == null)
 				{
-					operationPane.addLine();
 					operationPane.addOperation(resources.getIcon("kmelia.copy"), resources.getString("GML.copy"), "javaScript:clipboardCopy()");
 		        	
 					if (suppressionAllowed)

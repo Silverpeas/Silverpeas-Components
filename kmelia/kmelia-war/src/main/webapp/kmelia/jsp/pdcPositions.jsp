@@ -92,7 +92,12 @@ function validate() {
 	}
 	out.flush();
 
-	getServletConfig().getServletContext().getRequestDispatcher("/pdcPeas/jsp/positionsInComponent.jsp?SilverObjectId="+kmeliaScc.getSilverObjectId(pubId)+"&ComponentId="+componentId+"&ReturnURL="+URLEncoder.encode(url)+"&SendSubscriptions=0").include(request, response);
+	// si la publication est valide, envoyer la notification pour l'abonnement pdc
+	String sendSubscription = "0";
+	if (kmeliaScc.getSessionPublication().getPublication().getPublicationDetail().getStatus().equals("Valid"))
+		sendSubscription = "1";
+	
+	getServletConfig().getServletContext().getRequestDispatcher("/pdcPeas/jsp/positionsInComponent.jsp?SilverObjectId="+kmeliaScc.getSilverObjectId(pubId)+"&ComponentId="+componentId+"&ReturnURL="+URLEncoder.encode(url)+"&SendSubscriptions="+sendSubscription+"").include(request, response);
 
 	if ("progress".equals(wizard))
 	{

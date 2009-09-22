@@ -481,5 +481,83 @@
 			<ParameterHelpEn>Only administrators of this service are be able to remove publications and to access to publications bin.</ParameterHelpEn>
 	   	</ParameterHelp>
     </Parameter>
+    <Parameter>
+        <ParameterName>updateChain</ParameterName>
+        <ParameterLabel>Modifications enchainées</ParameterLabel>
+        <ParameterValue>no</ParameterValue>
+        <ParameterMandatory>Y</ParameterMandatory>
+	    <ParameterUpdatable>never</ParameterUpdatable>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterOrder>32</ParameterOrder>
+	   	<ParameterHelp>
+			<ParameterHelpFr>Possibilité d'effectuer des modifications enchainées sur certains thèmes (possédant un descripteur)</ParameterHelpFr>
+			<ParameterHelpEn>possibility of making successive modifications on certains topics (having a descriptor)</ParameterHelpEn>
+	   	</ParameterHelp>
+    </Parameter>
+    <Parameter>
+        <ParameterName>XmlFormForFiles</ParameterName>
+        <ParameterLabel>Formulaire XML pour fichiers</ParameterLabel>
+        <ParameterValue></ParameterValue>
+	    <ParameterSize>20</ParameterSize>
+        <ParameterMandatory>N</ParameterMandatory>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterOrder>33</ParameterOrder>
+	   	<ParameterHelp>
+			<ParameterHelpFr>Ce paramètre permet d'activer la saisie d'informations complémentaires pour chaque fichier joint. Ces informations sont saisies au travers d'un formulaire XML.</ParameterHelpFr>
+			<ParameterHelpEn>This feature allows to enter additional informations on each file. XML template is used to enter this data.</ParameterHelpEn>
+	   	</ParameterHelp>
+    </Parameter>
+    <Parameter>
+        <ParameterName>notifications</ParameterName>
+        <ParameterLabel>Notifications</ParameterLabel>
+        <ParameterValue>yes</ParameterValue>
+        <ParameterMandatory>Y</ParameterMandatory>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterOrder>34</ParameterOrder>
+	   	<ParameterHelp>
+			<ParameterHelpFr>Permet de désactiver l'opération "Notifier" sur les publications</ParameterHelpFr>
+			<ParameterHelpEn>Avoid "Notify" operation on publications</ParameterHelpEn>
+	   	</ParameterHelp>
+    </Parameter>
+    <Parameter>
+        <ParameterName>privateSearch</ParameterName>
+        <ParameterLabel>Exclu de la recherche</ParameterLabel>
+        <ParameterValue>no</ParameterValue>
+        <ParameterMandatory>Y</ParameterMandatory>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterOrder>35</ParameterOrder>
+	   	<ParameterHelp>
+			<ParameterHelpFr>Si ce paramètre est activé, les informations indexées ne seront pas retrouvables par le moteur de recherche général.</ParameterHelpFr>
+			<ParameterHelpEn>If this parameter is enabled, indexed informations won't be findable by global search engine.</ParameterHelpEn>
+	   	</ParameterHelp>
+    </Parameter>
+    <Parameter>
+        <ParameterName>wysiwygOnTopics</ParameterName>
+        <ParameterLabel>Description riche</ParameterLabel>
+        <ParameterValue>no</ParameterValue>
+        <ParameterMandatory>Y</ParameterMandatory>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterOrder>36</ParameterOrder>
+	   	<ParameterHelp>
+			<ParameterHelpFr>Ce paramètre permet de saisir une description Wysiwyg sur un thème qui sera affichée dans le thème</ParameterHelpFr>
+			<ParameterHelpEn>This feature allows to make a rich description of a topic.</ParameterHelpEn>
+	   	</ParameterHelp>
+    </Parameter>
+    <Parameter>
+        <ParameterName>useFileSharing</ParameterName>
+        <ParameterLabel>Fichiers partageables</ParameterLabel>
+        <ParameterValue>no</ParameterValue>
+        <ParameterMandatory>Y</ParameterMandatory>
+	    <ParameterUpdatable>never</ParameterUpdatable>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterOrder>37</ParameterOrder>
+	   	<ParameterHelp>
+			<ParameterHelpFr>Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail</ParameterHelpFr>
+			<ParameterHelpEn>This feature allows to activate file sharing with persons who have no access to the portal</ParameterHelpEn>
+	   	</ParameterHelp>
+    </Parameter>
   </Parameters>
 </WAComponent>

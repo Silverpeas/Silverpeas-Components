@@ -931,6 +931,9 @@ import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
 			PublicationDetail pubDetail = getPublicationBm().getDetail(pubPK);
 			pubDetail.setUpdaterId(userId);
 			getPublicationBm().setDetail(pubDetail);
+			
+			// envoie notification si abonnement
+		 	sendSubscriptionsNotification(new NodePK("0", pubPK.getSpaceId(), pubPK.getInstanceId()), pubDetail, "update");
 		} 
 		catch (RemoteException e) {
 			// TODO Auto-generated catch block

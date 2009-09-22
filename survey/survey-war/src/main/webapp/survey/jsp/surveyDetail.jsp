@@ -480,26 +480,24 @@ else if (action.equals("ViewResult")) {
          <TITLE></TITLE>
          <style>
 
-			html, body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, textarea, p, blockquote, th, td, img, hr, embed, object {
-				margin:0px;
-				padding:0px;
-				font-family:Arial, Helvetica, sans-serif;
-			}
+
 			
 			body {
 				margin:20px 0 0 20px;
 			}
-			
+		
 			/* tableau Doodle */
+			.questionResults th {
+				border-top:#CCC 1px solid;
+			}
 			
 			.questionResults th, .questionResults td, .questionResults tr {
 				padding:5px;
-				font-size:12px;
+				font-size:10px;
 			}
 			
 			.questionResults .questionResults-top th {
 				background-color:#E4E4E4;
-				border:#CCC 1px solid;
 				width:150px;
 			}
 			
@@ -509,33 +507,35 @@ else if (action.equals("ViewResult")) {
 				padding:3px;
 			}
 			
-			.questionResults tbody tr td:first-child {
-				display:block;
+			.questionResults .displayUserName , .questionResults .displayUserName a {
+				/*display:block;*/
 				background-color:#E4E4E4;
-				border:#CCC 1px solid;
 				margin-right:5px;
+				font-size:10px;
+				font-weight:bold;
 			}
 			
 			.questionResults tbody tr td {
-				background-color:#F9F9F9;
-				border:#E9E9E9 1px solid;
+				background-color:#FFFFFF;
 				min-height:33px;
 			}
 			
 			.questionResults tbody .questionResults-Oui {
 				background-color:#D5FAC5;
-				border:1px solid #7CCC24;
 				text-align:center;
-				font-size:12px;
+				font-size:10px;
 			}
 			
 			.questionResults tbody .questionResults-Non {
 				background-color:#FECBCB;
-				border:1px solid #FD433E;
 				text-align:center;
-				font-size:12px;
+				font-size:10px;
 			}
-		
+			
+			.questionResults .labelAnswer {
+				text-align:right;
+				width:50%;
+			}		
 		</style>
 <%
         out.println(gef.getLookStyleSheet());
@@ -554,6 +554,8 @@ else if (action.equals("ViewResult")) {
  		} 
  		
  		var notifyWindow = window;
+ 		var usersWindow = window;
+ 		
  		function goToNotify(url) 
         {
         	windowName = "notifyWindow";
@@ -568,17 +570,32 @@ else if (action.equals("ViewResult")) {
         function viewUsers(id)
         {
         	url = "ViewListResult?AnswerId="+id;
- 		    windowName = "users";
+ 		    windowName = "usersWindow";
  		    larg = "550";
  		    haut = "250";
  		    windowParams = "directories=0,menubar=0,toolbar=0,resizable=1,scrollbars=1,alwaysRaised";
- 		    suggestions = SP_openWindow(url, windowName, larg , haut, windowParams);
- 		    suggestions.focus();
+ 		    if (!usersWindow.closed && usersWindow.name == "usersWindow")
+                usersWindow.close();
+ 		    usersWindow = SP_openWindow(url, windowName, larg , haut, windowParams);
+ 		    usersWindow.focus();
         }
 
-        function viewResultByUser(userId)
+		function viewAllUsers(id)
         {
-        	url = "UserResult?UserId="+userId;
+        	url = "ViewAllUsers?SurveyId="+id;
+ 		    windowName = "usersWindow";
+ 		    larg = "550";
+ 		    haut = "250";
+ 		    windowParams = "directories=0,menubar=0,toolbar=0,resizable=1,scrollbars=1,alwaysRaised";
+ 		    if (!usersWindow.closed && usersWindow.name == "usersWindow")
+                usersWindow.close();
+ 		    usersWindow = SP_openWindow(url, windowName, larg , haut, windowParams);
+ 		    usersWindow.focus();
+        }
+
+        function viewResultByUser(userId, userName)
+        {
+        	url = "UserResult?UserId="+userId+"&UserName="+userName;
  		    windowName = "resultByUser";
  		    larg = "700";
  		    haut = "500";

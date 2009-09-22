@@ -302,7 +302,7 @@ function createPollingStation() {
 	}
 
 function deleteSurvey(surveyId, name) {
-  if(window.confirm("<%=resources.getString("ConfirmDeleteSurvey")%> '" + name + "' ?")){
+  if(window.confirm("<%=Encode.javaStringToJsString(resources.getString("ConfirmDeleteSurvey"))%> '" + name + "' ?")){
       document.surveysForm.Action.value = "DeleteSurvey";
       document.surveysForm.SurveyId.value = surveyId;
       document.surveysForm.submit();
@@ -311,7 +311,7 @@ function deleteSurvey(surveyId, name) {
 
 function updateSurvey(surveyId, name)
 {
-	if(window.confirm("<%=resources.getString("survey.confirmUpdateSurvey")%> '" + name + "' ?"))
+	if(window.confirm("<%=Encode.javaStringToJsString(resources.getString("survey.confirmUpdateSurvey"))%> '" + name + "' ?"))
 	{
 		document.updateForm.action = "UpdateSurvey";
       	document.updateForm.Action.value = "UpdateSurveyHeader";

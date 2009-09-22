@@ -232,7 +232,7 @@ String link	= post.getPermalink();
 										    		<td class="infoTicket"><%=resource.getString("blog.addComment")%></td>
 										    	</tr>
 												<tr>
-													<td><TEXTAREA ROWS="8" COLS="100" name="Message"></TEXTAREA></td>
+													<td><TEXTAREA ROWS="8" COLS="80" name="Message"></TEXTAREA></td>
 														<input type="hidden" name="PostId" value="<%=postId%>"><input type="hidden" name="CommentId" value=""></td>
 										    	</tr>
 									    	</form>

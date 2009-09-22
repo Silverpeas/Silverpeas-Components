@@ -87,6 +87,7 @@
     <module>survey</module>
     <module>gallery</module>
     <module>newsedito</module>
+    <module>kmelia</module>
   </modules>
   
 </project>

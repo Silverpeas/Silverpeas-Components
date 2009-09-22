@@ -89,6 +89,8 @@
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@ page import="com.stratelia.webactiv.util.statistic.model.HistoryByUser"%>
 
+<%@ page import="com.silverpeas.form.*"%>
+<%@ page import="com.silverpeas.publicationTemplate.*"%>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%

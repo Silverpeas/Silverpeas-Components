@@ -14,6 +14,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.survey.control.SurveySessionController;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
+import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 
 
 public class SurveyRequestRouter extends ComponentRequestRouter {
@@ -133,9 +134,25 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
     	  request.setAttribute("Users", users);
     	  destination = rootDest + "answerResult.jsp";
       }
+      else if (function.equals("ViewAllUsers"))
+      {
+    	  String surveyId = request.getParameter("SurveyId");
+    	  Collection<String> users = new ArrayList<String>();
+    	  try 
+    	  {
+    		  users = surveySC.getUsersBySurvey(surveyId);
+    	  } 
+    	  catch(Exception e)
+    	  {
+				SilverTrace.warn("Survey","SurveyRequestRouter.getDestination()","root.EX_USERPANEL_FAILED","function = "+function, e);
+    	  }	  
+    	  request.setAttribute("Users", users);
+    	  destination = rootDest + "answerResult.jsp";
+      }
       else if (function.equals("UserResult"))
       {
     	  String userId = request.getParameter("UserId");
+    	  String userName = request.getParameter("UserName");
     	  Collection<String> result = new ArrayList<String>();
     	  try 
     	  {
@@ -146,7 +163,10 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
 				SilverTrace.warn("Survey","SurveyRequestRouter.getDestination()","root.EX_USERPANEL_FAILED","function = "+function, e);
     	  }	  
     	  request.setAttribute("ResultUser", result);
+    	  request.setAttribute("UserName", userName);
+    	  request.setAttribute("UserId", userId);
     	  request.setAttribute("Survey", surveySC.getSessionSurvey());
+    	  
     	  destination = rootDest + "resultByUser.jsp";
       }
       else if (function.startsWith("searchResult")) {

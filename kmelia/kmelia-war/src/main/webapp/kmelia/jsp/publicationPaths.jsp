@@ -104,6 +104,7 @@ function sendData()
 	}
 	else
 	{
+		document.getElementById("LoadedComponentIds").value=","+loadedPanes+",";
 		document.paths.submit();
 	}
 }
@@ -190,7 +191,9 @@ function getObjects(selected)
     	}
         %>
         <form name="paths" action="SetPath" method="POST">
-        <input type="hidden" name="PubId" value="<%=id%>">
+        	<input type="hidden" name="PubId" value="<%=id%>"/>
+        	<input type="hidden" name="LoadedComponentIds" id="LoadedComponentIds" value=""/> 
+        	
         <%
     	if(otherComponents.size() == 1 && topics != null && !topics.isEmpty())
     	{

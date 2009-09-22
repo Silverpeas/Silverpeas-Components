@@ -89,7 +89,7 @@ public class KmeliaSecurity implements ComponentSecurity {
 		if (!controller.isComponentAvailable(componentId, userId))
 			return false;
 		
-		if (objectType != null && ("Publication".equalsIgnoreCase(objectType) || objectType.startsWith("Attachment")))
+		if (objectType != null && ("Publication".equalsIgnoreCase(objectType) || objectType.startsWith("Attachment") || objectType.startsWith("Version")))
 		{
 			PublicationPK pk = new PublicationPK(objectId, componentId);
 			
@@ -145,7 +145,7 @@ public class KmeliaSecurity implements ComponentSecurity {
 	public boolean isObjectAvailable(String componentId, String userId, String objectId, String objectType)
 	{
 		boolean objectAvailable = false;
-		if (objectType != null && ("Publication".equalsIgnoreCase(objectType) || objectType.startsWith("Attachment")))
+		if (objectType != null && ("Publication".equalsIgnoreCase(objectType) || objectType.startsWith("Attachment") || objectType.startsWith("Version")))
 		{
 			objectAvailable = isPublicationAvailable(new PublicationPK(objectId, componentId), userId);
 		}

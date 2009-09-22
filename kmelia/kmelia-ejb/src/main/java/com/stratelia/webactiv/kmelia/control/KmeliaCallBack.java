@@ -61,7 +61,7 @@ public class KmeliaCallBack extends CallBack {
 						getKmeliaBm().deleteTopic(nodePK);
 					}
 				}
-				else
+				else if(extraParam instanceof String)
 				{
 					String pubId = (String) extraParam;
 					

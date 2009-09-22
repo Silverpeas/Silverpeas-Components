@@ -54,7 +54,10 @@ TopicDetail currentTopic 		= (TopicDetail) request.getAttribute("CurrentTopic");
 String 		pathString 			= (String) request.getAttribute("PathString");
 String 		linkedPathString 	= (String) request.getAttribute("LinkedPathString");
 
-String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox) 
+String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
+String		wysiwygDescription	= (String) request.getAttribute("WysiwygDescription");
+
+boolean 	haveDescriptor		= ((Boolean) request.getAttribute("HaveDescriptor")).booleanValue();
 
 String id = currentTopic.getNodeDetail().getNodePK().getId();
 boolean useTreeview = (treeview != null);
@@ -191,6 +194,11 @@ function goToValidate() {
     closeWindows();
     document.topicDetailForm.action = "ViewPublicationsToValidate";
     document.topicDetailForm.submit();
+}
+
+function updateChain()
+{
+    document.updateChain.submit();
 }
 
 function topicAdd(isLinked) {
@@ -488,6 +496,10 @@ function init()
 					operationPane.addOperation(topicAccueilInfoSrc, kmeliaScc.getString("TopicWysiwyg"), "javascript:onClick=topicWysiwyg('"+id+"')");
 					operationPane.addLine();
 				}
+				else if (kmeliaScc.isWysiwygOnTopicsEnabled()) {
+					operationPane.addOperation(topicAccueilInfoSrc, kmeliaScc.getString("TopicWysiwyg"), "javascript:onClick=topicWysiwyg('"+id+"')");
+					operationPane.addLine();
+				}
 				if (kmeliaScc.isExportComponentAllowed() && (kmeliaScc.isExportZipAllowed() || kmeliaScc.isExportPdfAllowed()))
 				{
 					if (id.equals("0") && kmeliaScc.isExportZipAllowed())
@@ -529,10 +541,18 @@ function init()
 		            	operationPane.addOperation(resources.getIcon("kmelia.sortPublications"), kmeliaScc.getString("kmelia.OrderPublications"), "ToOrderPublications");
 		            operationPane.addLine();
 		 		}
+		        
 		        if (!id.equals("1"))
 		        {
 		        	if (!id.equals("0"))
 		        	{
+		        		// Modification en chaine
+		        		if (haveDescriptor && currentTopic.getPublicationDetails().size() != 0)
+		        		{
+		        			operationPane.addOperation(resources.getIcon("kmelia.updateByChain"), kmeliaScc.getString("kmelia.updateByChain"), "javascript:onClick=updateChain()");
+		            		operationPane.addLine();
+		        		}
+		            	
 		        		operationPane.addOperation(resources.getIcon("kmelia.copy"), resources.getString("GML.copy"), "javascript:onClick=clipboardCopy()");
 	            		operationPane.addOperation(resources.getIcon("kmelia.cut"), resources.getString("GML.cut"), "javascript:onClick=clipboardCut()");
 		        	}
@@ -613,6 +633,14 @@ function init()
 		<table width="98%" border="0"><tr><td valign="top"><%@ include file="treeview.jsp.inc" %></td><td valign="top" width="100%">
 	<% } %>
 <%
+	if (StringUtil.isDefined(wysiwygDescription))
+	{
+		%>
+		<table width="98%" cellpadding="5" cellspacing="0"><tr><td>
+			<%=wysiwygDescription %>
+		</td></tr></table>
+		<%
+	}
 	boolean subTopicsVisible = currentTopic.getNodeDetail().getChildrenNumber() > 0;
 	if (!id.equals("1") && !id.equals("2") && kmeliaScc.isTreeStructure()) {
         if (profile.equals("admin") || (kmeliaScc.isTopicManagementDelegated() && (profile.equals("publisher") || profile.equals("writer"))))
@@ -715,6 +743,7 @@ function init()
 <form name="frm_report" action="GoToTopic">
   	<input type="hidden" name="Id" value="<%=id%>">
 </form>
-
+<form name="updateChain" action="UpdateChainInit">
+</form>
 </BODY>
 </HTML>

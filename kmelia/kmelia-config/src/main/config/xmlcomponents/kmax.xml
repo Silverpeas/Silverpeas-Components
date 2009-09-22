@@ -198,12 +198,22 @@
 		<ParameterType>checkbox</ParameterType>
 		<ParameterOrder>14</ParameterOrder>
 		<ParameterHelp>
-			<ParameterHelpFr>Cett fonction permet d'exporter toutes les publications visibles du composant.</ParameterHelpFr>
+			<ParameterHelpFr>Cette fonction permet d'exporter toutes les publications visibles du composant.</ParameterHelpFr>
 			<ParameterHelpEn>This function allow the user to export all the visible publications in the component</ParameterHelpEn>
 		</ParameterHelp>
 	</Parameter>
-    
-    
+	<Parameter>
+        <ParameterName>useFileSharing</ParameterName>
+        <ParameterLabel>Fichiers partageables</ParameterLabel>
+        <ParameterValue>no</ParameterValue>
+        <ParameterMandatory>Y</ParameterMandatory>
+	    <ParameterUpdatable>never</ParameterUpdatable>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterOrder>37</ParameterOrder>
+	   	<ParameterHelp>
+			<ParameterHelpFr>Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail</ParameterHelpFr>
+			<ParameterHelpEn>This feature allows to activate file sharing with persons who have no access to the portal</ParameterHelpEn>
+	   	</ParameterHelp>
+    </Parameter>
   </Parameters>
-  
 </WAComponent>

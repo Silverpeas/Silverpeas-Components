@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<updateChain>
+	<title>Documents collaborateurs</title>
+	<libelle></libelle>
+	<helper>com.silverpeas.kmelia.updatechainhelpers.DefineServiceOfUserAndDocuments</helper>
+	<fields>
+		<fieldDescriptor>	<!-- la zone "nom" va récupérer la liste de tous les utilisateurs de la plateforme -->
+			<type>jdbc</type>	
+			<name>Name</name>
+			<parameters>
+				<parameter>
+					<name>url</name>
+					<value lang="fr">jdbc:postgresql://localhost:5432/Silverpeas410M2</value>
+				</parameter>
+				<parameter>
+					<name>valueFieldType</name>
+					<value lang="fr">1</value>
+				</parameter>
+				<parameter>
+					<name>query</name>
+					<value lang="fr">select distinct lastname, firstname, matricule from personnel where lastname is not null order by lastname asc</value>
+				</parameter>
+				<parameter>
+					<name>login</name>
+					<value lang="fr">silver</value>
+				</parameter>
+				<parameter>
+					<name>password</name>
+					<value lang="fr">silver</value>
+				</parameter>
+				<parameter>
+					<name>driverName</name>
+					<value lang="fr">org.postgresql.Driver</value>
+				</parameter>
+				<parameter>
+					<name>size</name>
+					<value>60</value>
+				</parameter>
+			</parameters>
+		</fieldDescriptor>
+		<fieldDescriptor>   <!-- la zone "description" propose une liste de Métiers -->
+			<type>text</type>
+			<name>Description</name>
+			<lastValue>true</lastValue>
+			<values>
+				<string>Infirmière</string>
+				<string>Médecin</string>
+				<string>Biologiste</string>
+			</values>
+		</fieldDescriptor>
+
+		<fieldDescriptor>   <!-- la zone "mots clés" propose une liste de Diplomes -->
+			<type>text</type>
+			<name>Keywords</name>
+			<lastValue>true</lastValue>
+			<values>
+				<string>Diplome d'état de laborantin d'analyses médicales</string>
+				<string>BTS Biologie</string>
+				<string>BTS Biochimie</string>
+			</values>
+		</fieldDescriptor>
+
+		<fieldDescriptor>
+			<type>tree</type>
+			<name>Topics</name>
+			<parameters>
+				<parameter>
+					<name>none</name>	<!-- on ne propose aucun theme (il sera calculé) -->
+					<value>true</value>
+				</parameter>
+			</parameters> 
+		</fieldDescriptor>
+	</fields>
+</updateChain>

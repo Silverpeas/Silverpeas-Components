@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<updateChain>
+	<title>CANDIDATURES SPONTANEES</title>
+	<libelle>Saisir le nom du candidat dans la zone mot clé</libelle>
+	<helper>com.silverpeas.kmelia.updatechainhelpers.DefineUnpromptedCandidacy</helper>
+	<fields>
+		<fieldDescriptor>	
+			<type>text</type>	
+			<name>Name</name>
+			<lastValue>false</lastValue>
+			<values>
+				<string>Développeur</string>
+				<string>Chef de projet</string>
+				<string>Technicien</string>
+			</values>
+		</fieldDescriptor>
+		<fieldDescriptor>   
+			<type>text</type>
+			<name>Description</name>
+			<lastValue>false</lastValue>
+			<values>
+				<string>Lyon</string>
+				<string>Grenoble</string>
+				<string>Genève</string>
+			</values>
+		</fieldDescriptor>
+		<fieldDescriptor>   
+			<type>text</type>
+			<name>Keywords</name>
+			<lastValue>false</lastValue>
+		</fieldDescriptor>
+		<fieldDescriptor>
+			<type>tree</type>
+			<name>Topics</name>
+			<parameters>
+				<parameter>		
+					<name>targetId</name>
+					<value>696</value>
+				</parameter>
+			</parameters> 
+		</fieldDescriptor>
+	</fields>
+</updateChain>
