@@ -74,7 +74,7 @@
 %>
 </head>
 
-<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF" <%addBodyOnload(out, fsc);%>>
+<body id="forum" <%addBodyOnload(out, fsc);%>>
 <% 
     // AFFICHAGE DE LA FENETRE DU COMPOSANT
     Window window = graphicFactory.getWindow();

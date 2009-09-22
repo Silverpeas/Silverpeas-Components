@@ -1,0 +1,1 @@
+update SC_Forums_Forum set forumId=forumId;

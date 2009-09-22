@@ -182,11 +182,9 @@
         out.println(graphicFactory.getLookStyleSheet());
         if (!graphicFactory.hasExternalStylesheet())
         {
-%>
-    <link rel="stylesheet" type="text/css" href="styleSheets/forums.css"><%
-
-        }
-%>
+		%>
+    		<link rel="stylesheet" type="text/css" href="styleSheets/forums.css">
+    	<% } %>
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/viewMessage.js"></script>
@@ -295,7 +293,7 @@
     </script>
 </head>
 
-<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF" <%addBodyOnload(out, fsc);%>><%
+<body id="forum" <%addBodyOnload(out, fsc);%>><%
 
         Window window = graphicFactory.getWindow();
         Frame frame=graphicFactory.getFrame();
@@ -451,11 +449,14 @@
                         <a name="msg<%=currentId%>"/>
                         <table width="100%" border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor">
                             <tr>
+								<td valign="top" width="150px" bgcolor="#EEEEEE">
+									<span class="txtnav"><%=authorLabel%></span><br/>
+									<span class="txtnote"><%=resource.getString("forums.nbMessages")%> : <%=nbMessages%></span>
+								</td>
                                 <td valign="top">
                                     <table border="0" cellspacing="0" cellpadding="5" width="100%">
                                         <tr>
-                                            <td><span class="txtnote"><%=convertDate(currentMessage.getDate(), resources)%></span>
-                                                &nbsp;<span class="txtnav"><%=currentMessage.getTitle()%></span></td>
+                                            <td><span class="txtnav"><%=currentMessage.getTitle()%></span>&nbsp;<span class="txtnote"><%=convertDate(currentMessage.getDate(), resources)%></span></td>
                                             <td valign="top" align="right">&nbsp;<%
 
             if (displayAllMessages) {
@@ -465,10 +466,6 @@
             }
 %>
                                             </td>
-                                        </tr>
-                                        <tr>
-                                            <td><span class="titremodule"><%=authorLabel%></span></td>
-                                            <td align="right"><span class="txtnote"><%=resource.getString("forums.nbMessages")%> : <%=nbMessages%></span></td>
                                         </tr>
                                         <tr>
                                             <td colspan="2"><img src="<%=context%>/util/icons/colorPix/1px.gif" width="100%" height="1" class="intfdcolor"></td>

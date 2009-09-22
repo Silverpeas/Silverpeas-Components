@@ -118,7 +118,7 @@
     </script>
 </head>
 
-<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" <%addBodyOnload(out, fsc);%>><%
+<body id="forum" <%addBodyOnload(out, fsc);%>><%
 
     Window window = graphicFactory.getWindow();
 

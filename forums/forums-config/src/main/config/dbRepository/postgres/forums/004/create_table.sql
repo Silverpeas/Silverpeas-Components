@@ -1,49 +1,44 @@
-CREATE TABLE sc_forums_forum
+CREATE TABLE SC_Forums_Forum 
 (
-  forumid integer NOT NULL,
-  forumname character varying(1000) NOT NULL,
-  forumdescription character varying(2000),
-  forumcreationdate character varying(50) NOT NULL,
-  forumclosedate character varying(50),
-  forumcreator character varying(255) NOT NULL,
-  forumactive integer NOT NULL,
-  forumparent integer NOT NULL DEFAULT 0,
-  forummodes character varying(50),
-  forumlocklevel integer,
-  instanceid character varying(50) NOT NULL,
-  categoryid character varying(50),
-  CONSTRAINT pk_forums_forum PRIMARY KEY (forumid)
+	forumId			int		NOT NULL ,
+	forumName		varchar (1000)	NOT NULL ,
+	forumDescription	varchar (2000)	NULL ,
+	forumCreationDate	varchar (50)	NOT NULL ,
+	forumCloseDate		varchar (50)	NULL ,
+	forumCreator		varchar (255)	NOT NULL ,
+	forumActive		int		NOT NULL ,
+	forumParent		int		DEFAULT 0 NOT NULL ,
+	forumModes		varchar (50)	NULL ,
+	forumLockLevel		int		NULL ,
+	instanceId		varchar (50)	NOT NULL , 
+	categoryId		varchar (50)	NULL
 );
 
-CREATE TABLE sc_forums_historyuser
+CREATE TABLE SC_Forums_Message 
 (
-  userid character varying(255) NOT NULL,
-  messageid integer NOT NULL,
-  lastaccess character varying(50) NOT NULL,
-  CONSTRAINT pk_forums_historyuser PRIMARY KEY (userid, messageid)
+	messageId		int		NOT NULL ,
+	messageTitle		varchar (1000)	NOT NULL ,
+	messageAuthor		varchar (255)	NOT NULL ,
+	forumId			int		NOT NULL ,
+	messageParentId		int		NULL ,
+	messageDate		timestamp
 );
 
-CREATE TABLE sc_forums_message
+CREATE TABLE SC_Forums_Rights 
 (
-  messageid integer NOT NULL,
-  messagetitle character varying(1000) NOT NULL,
-  messageauthor character varying(255) NOT NULL,
-  forumid integer NOT NULL,
-  messageparentid integer,
-  messagedate timestamp without time zone,
-  CONSTRAINT pk_forums_message PRIMARY KEY (messageid)
+	userId			varchar (255)	NOT NULL ,
+	forumId			varchar (255)	NOT NULL 
 );
 
-CREATE TABLE sc_forums_rights
+CREATE TABLE SC_Forums_Subscription 
 (
-  userid character varying(255) NOT NULL,
-  forumid character varying(255) NOT NULL,
-  CONSTRAINT pk_forums_rights PRIMARY KEY (userid, forumid)
+	userId			varchar (255)	NOT NULL ,
+	messageId		varchar (255)	NOT NULL 
 );
 
-CREATE TABLE sc_forums_subscription
+CREATE TABLE SC_Forums_HistoryUser
 (
-  userid character varying(255) NOT NULL,
-  messageid character varying(255) NOT NULL,
-  CONSTRAINT pk_forums_subscription PRIMARY KEY (userid, messageid)
-);
+	userId			varchar (255)	NOT NULL ,
+	messageId 		int		NOT NULL , 
+	lastAccess		varchar (50)	NOT NULL
+);  

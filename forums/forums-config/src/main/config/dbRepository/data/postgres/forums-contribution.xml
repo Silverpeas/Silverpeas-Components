@@ -9,9 +9,15 @@
         <create_table>
             <file name="postgres\forums\004\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_table>
+        <create_constraint>
+            <file name="postgres\forums\004\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </create_constraint>
         <drop_table>
             <file name="postgres\forums\004\drop_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </drop_table>
+        <drop_constraint>
+            <file name="postgres\forums\004\drop_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </drop_constraint>
     </current>
 
 	<upgrade version="002">
@@ -21,6 +27,12 @@
 		<create_constraint>
             <file name="postgres\forums\up002\create_constraint.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
         </create_constraint>
+    </upgrade>
+
+	<upgrade version="003">
+        <create_table>
+            <file name="postgres\forums\up003\create_table.sql" type="sqlstatementlist" delimiter=";" keepdelimiter="NO"/>
+        </create_table>
     </upgrade>
 
 </contribution>

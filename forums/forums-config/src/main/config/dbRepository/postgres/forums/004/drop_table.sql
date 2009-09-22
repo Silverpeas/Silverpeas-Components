@@ -1,5 +1,11 @@
-drop table sc_forums_message;
-drop table sc_forums_rights;
-drop table sc_forums_historyuser;
-drop table sc_forums_subscription;
-drop table sc_forums_forum;
+drop table SC_Forums_Forum
+;
+drop table SC_Forums_Message
+;
+drop table SC_Forums_Rights
+;
+drop table SC_Forums_Subscription
+;
+drop table SC_Forums_HistoryUser
+;
+ 

@@ -44,7 +44,7 @@
     </script>
 </head>
 
-<body marginheight="2" marginwidth="2" leftmargin="2" topmargin="2">
+<body id="forum" marginheight="2" marginwidth="2" leftmargin="2" topmargin="2">
     <center><%
 
     //displayForumsList(spaceId, instanceId, out, resource, isAdmin, isModerator, 0, "main", fsc);

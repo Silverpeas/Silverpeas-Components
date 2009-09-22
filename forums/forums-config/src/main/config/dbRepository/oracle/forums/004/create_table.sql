@@ -19,11 +19,9 @@ CREATE TABLE SC_Forums_Message
 	messageId		int		NOT NULL ,
 	messageTitle		varchar (1000)	NOT NULL ,
 	messageAuthor		varchar (255)	NOT NULL ,
-	messageCreationDate	varchar (50)	NULL ,
 	forumId			int		NOT NULL ,
 	messageParentId		int		NULL ,
-	messageText		varchar (2000)	NULL,
-	messageCreationTime	char(13)	DEFAULT('0000000000000') NOT NULL
+	messageDate		timestamp
 );
 
 CREATE TABLE SC_Forums_Rights 
