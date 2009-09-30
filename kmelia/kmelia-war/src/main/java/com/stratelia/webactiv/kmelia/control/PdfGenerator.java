@@ -1,3 +1,26 @@
+/**
+ * Copyright (C) 2000 - 2009 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.stratelia.webactiv.kmelia.control;
 
 import java.awt.Color;
@@ -775,24 +798,24 @@ public class PdfGenerator extends PdfPageEventHelper {
       tbl.setPadding(2);
       addRowToTable(tbl, header_font, new String[] {
           messageAttachment.getString("fichier"), // pas affiché dans
-                                                  // l'interface onglet fichiers
-                                                  // joints
+          // l'interface onglet fichiers
+          // joints
           messageVersioning.getString("name"),
           messageAttachment.getString("Description"), // pas affiché dans
-                                                      // l'interface onglet
-                                                      // fichiers joints
+          // l'interface onglet
+          // fichiers joints
           messageVersioning.getString("version"),
           messageVersioning.getString("date"),
           messageVersioning.getString("validator") }, // pas affiché dans
-                                                      // l'interface onglet
-                                                      // fichiers joints mais
-                                                      // besoin INRA -> si
-                                                      // Ordonné avec
-                                                      // approbation :
-                                                      // "Valideurs" = liste des
-                                                      // valideurs, sinon
-                                                      // "Créateur" = créateur
-                                                      // version
+          // l'interface onglet
+          // fichiers joints mais
+          // besoin INRA -> si
+          // Ordonné avec
+          // approbation :
+          // "Valideurs" = liste des
+          // valideurs, sinon
+          // "Créateur" = créateur
+          // version
           Color.LIGHT_GRAY, true);
     }
 
@@ -891,7 +914,7 @@ public class PdfGenerator extends PdfPageEventHelper {
               if (document_version.getSize() != 0
                   || !"dummy".equals(document_version.getLogicalName())) {
                 if (2 == document.getTypeWorkList()) {// Ordonné avec
-                                                      // Approbation
+                  // Approbation
                   users = document.getWorkList();
                   for (int i = 0; i < users.size(); i++) {
                     user = (Worker) users.get(i);
@@ -1188,7 +1211,7 @@ public class PdfGenerator extends PdfPageEventHelper {
   private static String troncatePath(String completPath, java.util.List list,
       boolean isLinked, int withLastValue) {
     int nbShowedEltAuthorized = 2; // nombre de noeud que l'on veut afficher
-                                   // avant les ...
+    // avant les ...
     String separatorPath = " / "; // separateur pour le chemin complet
     String troncateSeparator = " ... ";
 
@@ -1229,7 +1252,7 @@ public class PdfGenerator extends PdfPageEventHelper {
   private static String buildCompletPath(java.util.List list, boolean isLinked,
       int withLastValue) {
     int maxEltAuthorized = 5; // nombre min d'elements avant la troncature du
-                              // chemin
+    // chemin
     String separatorPath = " / "; // separateur pour le chemin complet
 
     String completPath = "";
@@ -1454,8 +1477,8 @@ public class PdfGenerator extends PdfPageEventHelper {
     } else {
       if ((completePublicationDetail.getInfoDetail() != null)
           && (completePublicationDetail.getModelDetail() != null)) {// Modèles
-                                                                    // Base de
-                                                                    // données
+        // Base de
+        // données
         document.add(tblHeader);
 
         String toParse = completePublicationDetail.getModelDetail()

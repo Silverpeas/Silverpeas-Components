@@ -103,6 +103,7 @@
                 <exclude>**/*.sql</exclude>
                 <exclude>**/*.js</exclude>
                 <exclude>**/*.html</exclude>
+                <exclude>**/fckeditor/**/*.*</exclude>
               </excludes>
             </configuration>
             <executions>

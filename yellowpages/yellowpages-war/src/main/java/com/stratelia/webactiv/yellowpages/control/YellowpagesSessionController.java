@@ -1,3 +1,26 @@
+/**
+ * Copyright (C) 2000 - 2009 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.stratelia.webactiv.yellowpages.control;
 
 import java.rmi.NoSuchObjectException;
@@ -419,10 +442,10 @@ public class YellowpagesSessionController extends
               && contact.getNodeId().startsWith(
                   YellowpagesSessionController.GroupReferentielPrefix)
               && contact.getContactDetail().getUserId() != null) {// contact de
-                                                                  // type user
-                                                                  // appartenant
-                                                                  // à un groupe
-                                                                  // Silverpeas
+            // type user
+            // appartenant
+            // à un groupe
+            // Silverpeas
             userFull = this.getOrganizationController().getUserFull(
                 contact.getContactDetail().getUserId());
             if (userFull != null) {
@@ -1042,7 +1065,7 @@ public class YellowpagesSessionController extends
     query = query.trim();
 
     if (!"All".equals(typeSearch)) {// typeSearch = LastName || FirstName ||
-                                    // LastNameFirstName
+      // LastNameFirstName
       // Recherche sur nom et/ou prénom
 
       String nom = null;
@@ -1057,7 +1080,7 @@ public class YellowpagesSessionController extends
       } else if ("LastNameFirstName".equals(typeSearch)) {// nom et/ou prénom
         indexEspace = query.indexOf(" ");
         if (indexEspace == -1) { // seulement recherche sur le nom, on cherchera
-                                 // sur le prénom après
+          // sur le prénom après
           nom = query;
         } else { // recherche sur le nom et le prénom
           nom = query.substring(0, indexEspace);
@@ -1087,10 +1110,10 @@ public class YellowpagesSessionController extends
           true);
 
       if ("LastNameFirstName".equals(typeSearch) && indexEspace == -1) {// ajout
-                                                                        // recherche
-                                                                        // sur
-                                                                        // le
-                                                                        // prénom
+        // recherche
+        // sur
+        // le
+        // prénom
         modelUser.setLastName(null);
         if (query.endsWith("*") || query.endsWith("%"))
           query = query.substring(0, query.length() - 1);
@@ -1183,12 +1206,12 @@ public class YellowpagesSessionController extends
             && contactFather.getNodeId().startsWith(
                 YellowpagesSessionController.GroupReferentielPrefix)
             && contactFather.getContactDetail().getUserId() != null) {// contact
-                                                                      // de type
-                                                                      // user
-                                                                      // appartenant
-                                                                      // à un
-                                                                      // groupe
-                                                                      // Silverpeas
+          // de type
+          // user
+          // appartenant
+          // à un
+          // groupe
+          // Silverpeas
           itUserFull = listFullUsers.iterator();
           while (itUserFull.hasNext()) {
             userFull = (UserFull) itUserFull.next();
@@ -1217,8 +1240,8 @@ public class YellowpagesSessionController extends
 
   public List getListContactFather(List contacts,
       boolean retourneUserReferentiel) throws RemoteException { // en paramètre
-                                                                // une liste de
-                                                                // ContactDetail
+    // une liste de
+    // ContactDetail
     List result = new ArrayList();
     ContactFatherDetail contactFather;
     if (contacts != null) {

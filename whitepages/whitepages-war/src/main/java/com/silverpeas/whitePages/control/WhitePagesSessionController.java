@@ -1,3 +1,26 @@
+/**
+ * Copyright (C) 2000 - 2009 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.silverpeas.whitePages.control;
 
 import java.util.ArrayList;
@@ -50,22 +73,22 @@ public class WhitePagesSessionController extends
   private Card currentCard = null; // fiche courante
   private Card currentCreateCard = null; // fiche en cours de création
   private Collection currentUserCards = new ArrayList(); // liste des fiches
-                                                         // (Collection de
-                                                         // WhitePagesCard)
-                                                         // inter-instance du
-                                                         // user de la fiche
-                                                         // courante
-                                                         // (currentCard.getUserId())
+  // (Collection de
+  // WhitePagesCard)
+  // inter-instance du
+  // user de la fiche
+  // courante
+  // (currentCard.getUserId())
   private Collection userInstanceIds = null; // liste des id des instances
-                                             // d'annuaire pour lequel
-                                             // l'utilisateur courant
-                                             // (getUserId()) a des droits
-                                             // (admin ou user)
+  // d'annuaire pour lequel
+  // l'utilisateur courant
+  // (getUserId()) a des droits
+  // (admin ou user)
   private UserTemplate userTemplate = null; // permet de gèrer le modèle
-                                            // d'affichage de l'identité d'un
-                                            // user à partir d'un modèle html
+  // d'affichage de l'identité d'un
+  // user à partir d'un modèle html
   private PublicationTemplate cardTemplate = null; // permet la gestion du
-                                                   // modèle des fiches
+  // modèle des fiches
   private String[] hostParameters = null;
   private String returnURL = "";
   private ContainerContext containerContext;
@@ -461,8 +484,8 @@ public class WhitePagesSessionController extends
           Card card = (Card) it.next();
 
           if (getUserTemplate().getRecord(card.getUserId()).getUserDetail() == null) {// l'utilisateur
-                                                                                      // n'existe
-                                                                                      // plus
+            // n'existe
+            // plus
             String idCard = card.getPK().getId();
             ArrayList listId = new ArrayList();
             listId.add(idCard);
