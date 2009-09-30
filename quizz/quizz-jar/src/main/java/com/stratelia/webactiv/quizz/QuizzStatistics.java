@@ -20,56 +20,52 @@ import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class QuizzStatistics implements ComponentStatisticsInterface
-{
+public class QuizzStatistics implements ComponentStatisticsInterface {
 
-    private QuestionContainerBm questionContainerBm = null;
+  private QuestionContainerBm questionContainerBm = null;
 
-    public Collection getVolume(String spaceId, String componentId) throws Exception
-    {
-        ArrayList  myArrayList = new ArrayList();
+  public Collection getVolume(String spaceId, String componentId)
+      throws Exception {
+    ArrayList myArrayList = new ArrayList();
 
-        Collection c = getQuizz(spaceId, componentId);
-        Iterator   iter = c.iterator();
-        while (iter.hasNext())
-        {
-            QuestionContainerHeader qcHeader = (QuestionContainerHeader) iter.next();
+    Collection c = getQuizz(spaceId, componentId);
+    Iterator iter = c.iterator();
+    while (iter.hasNext()) {
+      QuestionContainerHeader qcHeader = (QuestionContainerHeader) iter.next();
 
-            UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-            myCouple.setUserId(qcHeader.getCreatorId());
-            myCouple.setCountVolume(1);
-            myArrayList.add(myCouple);
-        }
-
-        return myArrayList;
+      UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
+      myCouple.setUserId(qcHeader.getCreatorId());
+      myCouple.setCountVolume(1);
+      myArrayList.add(myCouple);
     }
 
-    private QuestionContainerBm getQuestionContainerBm()
-    {
-        if (questionContainerBm == null)
-        {
-            try
-            {
-                QuestionContainerBmHome questionContainerBmHome = (QuestionContainerBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBmHome.class);
-                questionContainerBm = questionContainerBmHome.create();
-            }
-            catch (Exception e)
-            {
-                throw new EJBException(e);
-            }
-        }
-        return questionContainerBm;
-    }
+    return myArrayList;
+  }
 
-
-    public Collection getQuizz(String spaceId, String componentId) throws RemoteException
-    {
-        Collection result = getQuestionContainerBm().getNotClosedQuestionContainers(new QuestionContainerPK(null, spaceId, componentId));
-        return result;
+  private QuestionContainerBm getQuestionContainerBm() {
+    if (questionContainerBm == null) {
+      try {
+        QuestionContainerBmHome questionContainerBmHome = (QuestionContainerBmHome) EJBUtilitaire
+            .getEJBObjectRef(JNDINames.QUESTIONCONTAINERBM_EJBHOME,
+                QuestionContainerBmHome.class);
+        questionContainerBm = questionContainerBmHome.create();
+      } catch (Exception e) {
+        throw new EJBException(e);
+      }
     }
+    return questionContainerBm;
+  }
+
+  public Collection getQuizz(String spaceId, String componentId)
+      throws RemoteException {
+    Collection result = getQuestionContainerBm()
+        .getNotClosedQuestionContainers(
+            new QuestionContainerPK(null, spaceId, componentId));
+    return result;
+  }
 
 }

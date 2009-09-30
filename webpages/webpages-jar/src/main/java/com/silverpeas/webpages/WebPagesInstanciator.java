@@ -12,28 +12,33 @@ public class WebPagesInstanciator implements ComponentsInstanciatorIntf {
 
   public WebPagesInstanciator() {
   }
-  
-  public void create(Connection con, String spaceId, String componentId, String userId) throws InstanciationException {
-	SilverTrace.info("webPages","WebPagesInstanciator.create()","root.MSG_GEN_ENTER_METHOD", "space = "+spaceId+", componentId = "+componentId+", userId ="+userId);
 
-	//insert your code here !
-	
-	SilverTrace.info("webPages","WebPagesInstanciator.create()","root.MSG_GEN_EXIT_METHOD");
+  public void create(Connection con, String spaceId, String componentId,
+      String userId) throws InstanciationException {
+    SilverTrace.info("webPages", "WebPagesInstanciator.create()",
+        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
+            + componentId + ", userId =" + userId);
+
+    // insert your code here !
+
+    SilverTrace.info("webPages", "WebPagesInstanciator.create()",
+        "root.MSG_GEN_EXIT_METHOD");
   }
 
-  public void delete(Connection con, String spaceId, String componentId, String userId) throws InstanciationException 
-  {
-	SilverTrace.info("webPages","WebPagesInstanciator.delete()","root.MSG_GEN_ENTER_METHOD","space = "+spaceId+", componentId = "+componentId+", userId ="+userId);
+  public void delete(Connection con, String spaceId, String componentId,
+      String userId) throws InstanciationException {
+    SilverTrace.info("webPages", "WebPagesInstanciator.delete()",
+        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
+            + componentId + ", userId =" + userId);
 
-	try
-	{
-		WysiwygController.deleteFileAndAttachment(componentId, componentId);
-	}
-	catch (Exception e)
-	{
-		throw new InstanciationException("WebPagesInstanciator.delete", SilverpeasException.ERROR, "webPages.WYSIWYG_DELETION_FAILED", e);		
-	}
+    try {
+      WysiwygController.deleteFileAndAttachment(componentId, componentId);
+    } catch (Exception e) {
+      throw new InstanciationException("WebPagesInstanciator.delete",
+          SilverpeasException.ERROR, "webPages.WYSIWYG_DELETION_FAILED", e);
+    }
 
-	SilverTrace.info("webPages","WebPagesInstanciator.delete()","root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("webPages", "WebPagesInstanciator.delete()",
+        "root.MSG_GEN_EXIT_METHOD");
   }
 }

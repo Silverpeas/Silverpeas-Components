@@ -45,14 +45,14 @@ public class RestRequest implements MailingListRoutage {
       componentId = id;
       SilverTrace.debug("mailingList", "RestRequest()",
           "root.MSG_GEN_ENTER_METHOD", "componentId=" + id);
-    } else if(id != null) {
+    } else if (id != null) {
       elements.put(element, id);
       SilverTrace.debug("mailingList", "RestRequest()",
           "root.MSG_GEN_ENTER_METHOD", element + '=' + id);
     }
     boolean isKey = true;
     String key = null;
-    String value  = null;
+    String value = null;
     while (tokenizer.hasMoreTokens()) {
       value = tokenizer.nextToken();
       if (isKey) {
@@ -65,9 +65,9 @@ public class RestRequest implements MailingListRoutage {
         isKey = true;
       }
     }
-    if(DELETE_ACTION.equalsIgnoreCase(value)){
+    if (DELETE_ACTION.equalsIgnoreCase(value)) {
       this.action = DELETE;
-    }else if (UPDATE_ACTION.equalsIgnoreCase(value)){
+    } else if (UPDATE_ACTION.equalsIgnoreCase(value)) {
       this.action = UPDATE;
     }
   }

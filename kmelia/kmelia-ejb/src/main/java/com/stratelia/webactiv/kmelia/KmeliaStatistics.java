@@ -21,89 +21,84 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class KmeliaStatistics implements ComponentStatisticsInterface
-{
+public class KmeliaStatistics implements ComponentStatisticsInterface {
 
   private PublicationBm publicationBm = null;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param spaceId
-     * @param componentId
-     *
-     * @return
-     *
-     * @see
-     */
-    public Collection getVolume(String spaceId, String componentId) throws Exception
-    {
-        ArrayList  myArrayList = new ArrayList();
-        Collection c = getElements(spaceId, componentId);
-        Iterator   iter = c.iterator();
-        while (iter.hasNext())
-        {
-            PublicationDetail       detail = (PublicationDetail) iter.next();
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param spaceId
+   * @param componentId
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public Collection getVolume(String spaceId, String componentId)
+      throws Exception {
+    ArrayList myArrayList = new ArrayList();
+    Collection c = getElements(spaceId, componentId);
+    Iterator iter = c.iterator();
+    while (iter.hasNext()) {
+      PublicationDetail detail = (PublicationDetail) iter.next();
 
-            UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
+      UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
 
-            myCouple.setUserId(detail.getCreatorId());
-            myCouple.setCountVolume(1);
-            myArrayList.add(myCouple);
-        }
-
-        return myArrayList;
+      myCouple.setUserId(detail.getCreatorId());
+      myCouple.setCountVolume(1);
+      myArrayList.add(myCouple);
     }
 
+    return myArrayList;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    private PublicationBm getPublicationBm()
-    {
-        if (publicationBm == null)
-        {
-            try
-            {
-                publicationBm = ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class)).create();
-            }
-            catch (Exception e)
-            {
-                SilverTrace.error("kmelia", "KmeliaStatistics.getPublicationBm", "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
-                throw new EJBException(e);
-            }
-        }
-        return publicationBm;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  private PublicationBm getPublicationBm() {
+    if (publicationBm == null) {
+      try {
+        publicationBm = ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class)).create();
+      } catch (Exception e) {
+        SilverTrace.error("kmelia", "KmeliaStatistics.getPublicationBm",
+            "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
+        throw new EJBException(e);
+      }
     }
+    return publicationBm;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param spaceId
-     * @param componentId
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
-    public Collection getElements(String spaceId, String componentId) throws RemoteException
-    {
-        Collection result = getPublicationBm().getAllPublications(new PublicationPK("useless", componentId));
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param spaceId
+   * @param componentId
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
+  public Collection getElements(String spaceId, String componentId)
+      throws RemoteException {
+    Collection result = getPublicationBm().getAllPublications(
+        new PublicationPK("useless", componentId));
 
-        return result;
-    }
+    return result;
+  }
 
 }

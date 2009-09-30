@@ -43,8 +43,6 @@ public class Attachment extends IdentifiedObject {
     this.fileName = fileName;
   }
 
-
-
   public String getContentType() {
     return contentType;
   }
@@ -84,6 +82,5 @@ public class Attachment extends IdentifiedObject {
       return false;
     return true;
   }
-
 
 }

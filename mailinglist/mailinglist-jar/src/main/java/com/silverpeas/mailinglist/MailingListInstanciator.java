@@ -26,7 +26,8 @@ public class MailingListInstanciator implements ComponentsInstanciatorIntf {
     ServicesFactory.getMailingListService().createMailingList(mailingList);
     SilverTrace.info("mailingList", "MailingListInstanciator.create()",
         "root.MSG_GEN_EXIT_METHOD");
-    mailingList = ServicesFactory.getMailingListService().findMailingList(componentId);
+    mailingList = ServicesFactory.getMailingListService().findMailingList(
+        componentId);
     MailingListComponent component = new MailingListComponent(componentId);
     ServicesFactory.getMessageChecker().addMessageListener(component);
   }

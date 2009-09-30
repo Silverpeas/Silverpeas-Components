@@ -19,23 +19,22 @@ import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class HyperlinkStatistics implements ComponentStatisticsInterface
-{
+public class HyperlinkStatistics implements ComponentStatisticsInterface {
 
-    public Collection getVolume(String spaceId, String componentId) throws Exception
-    {
-        ArrayList  myArrayList = new ArrayList();
+  public Collection getVolume(String spaceId, String componentId)
+      throws Exception {
+    ArrayList myArrayList = new ArrayList();
 
-        UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-        myCouple.setUserId("-2"); // unknown userId
-        myCouple.setCountVolume(1);
-        myArrayList.add(myCouple);
+    UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
+    myCouple.setUserId("-2"); // unknown userId
+    myCouple.setCountVolume(1);
+    myArrayList.add(myCouple);
 
-        return myArrayList;
-    }
+    return myArrayList;
+  }
 
 }

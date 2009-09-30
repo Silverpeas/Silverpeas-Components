@@ -9,10 +9,8 @@ import java.rmi.RemoteException;
  * 
  * @author Antoine HEDIN
  */
-public interface MyDBBmHome
-	extends EJBHome
-{
-	
-    public MyDBBm create() throws RemoteException, CreateException;
-    
+public interface MyDBBmHome extends EJBHome {
+
+  public MyDBBm create() throws RemoteException, CreateException;
+
 }

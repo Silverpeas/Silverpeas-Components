@@ -11,18 +11,24 @@ import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterfa
 
 /**
  * @author neysseri
- *
+ * 
  */
 public class WhitePagesIndexer implements ComponentIndexerInterface {
 
-	WhitePagesSessionController sc = null;
-	
-	/* (non-Javadoc)
-	 * @see com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface#index(com.stratelia.silverpeas.peasCore.MainSessionController, com.stratelia.silverpeas.peasCore.ComponentContext)
-	 */
-	public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws Exception {
-		sc = new WhitePagesSessionController(mainSessionCtrl, context, null, null);
-		
-		sc.indexVisibleCards();
-	}
+  WhitePagesSessionController sc = null;
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface
+   * #index(com.stratelia.silverpeas.peasCore.MainSessionController,
+   * com.stratelia.silverpeas.peasCore.ComponentContext)
+   */
+  public void index(MainSessionController mainSessionCtrl,
+      ComponentContext context) throws Exception {
+    sc = new WhitePagesSessionController(mainSessionCtrl, context, null, null);
+
+    sc.indexVisibleCards();
+  }
 }

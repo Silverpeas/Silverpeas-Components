@@ -47,12 +47,12 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 public class ProcessManagerBmEJB implements SessionBean {
-	
-	String currentRole = "supervisor";
-	ProcessModel processModel = null;
-	String userId = null;
-	
-	public String createProcess(String componentId, String userId, String fileName, byte[] fileContent)
+
+  String currentRole = "supervisor";
+  ProcessModel processModel = null;
+  String userId = null;
+
+  public String createProcess(String componentId, String userId, String fileName, byte[] fileContent)
 	{
 		String instanceId = "unknown";
 		try {
@@ -133,236 +133,225 @@ public class ProcessManagerBmEJB implements SessionBean {
 		
 		return instanceId;
 	}
-	
-	/**
-	 * Create a new process instance with the filled form.
-	 */
-	private String createProcessInstance(DataRecord data) throws ProcessManagerException
-	{
-		try
-		{
-			Action creation = processModel.getCreateAction();
-			TaskDoneEvent event = getCreationTask().buildTaskDoneEvent(creation.getName(), data);
-			Workflow.getWorkflowEngine().process(event);
-			return event.getProcessInstance().getInstanceId();
-		}
-		catch (WorkflowException e)
-		{
-			throw new ProcessManagerException("SessionController", "processManager.CREATION_PROCESSING_FAILED", e);
-		}
-	}
-	
-	/**
-	  * Returns the form which starts a new instance.
-	  */
-	private Form getCreationForm() throws ProcessManagerException
-	{
-	   try
-		{
-			Action creation = processModel.getCreateAction();
-			return processModel.getPublicationForm(creation.getName(), "administrateur", getLanguage());
-		}
-		catch (WorkflowException e)
-		{
-			throw new ProcessManagerException("SessionController",
-			    "processManager.ERR_NO_CREATION_FORM", e);
-		}
-	}
-	
-	/**
-	    * Returns the an empty creation record
-	    * which will be filled with the creation form.
-	    */
-	private DataRecord getEmptyCreationRecord()
-		   throws ProcessManagerException
-	   {
-		   try
-			{
-				Action creation = processModel.getCreateAction();
-				return processModel.getNewActionRecord(creation.getName(), currentRole, getLanguage(), null);
-			}
-			catch (WorkflowException e)
-			{
-				throw new ProcessManagerException("SessionController",
-				    "processManager.UNKNOWN_ACTION", e);
-			}
-	   }
-	   
-	   /**
-		* Returns the creation task.
-		*/
-		private Task getCreationTask()
-			throws ProcessManagerException
-		{
-			try
-			{
-				OrganizationController controller = new OrganizationController();
-				User user = new UserImpl(controller.getUserDetail(userId), null);
-				Task creationTask = Workflow.getTaskManager().getCreationTask(user, currentRole, processModel);
 
-				return creationTask;
-			}
-			catch (WorkflowException e)
-			{
-				throw new ProcessManagerException("SessionController", "processManager.CREATION_TASK_UNAVAILABLE", e);
-			}
-		}
-	
-	/**
-	* Returns the process model having the given id.
-	*/
-	private ProcessModel getProcessModel(String modelId) throws ProcessManagerException
-	{
-      try
-      {
-         return Workflow.getProcessModelManager().getProcessModel(modelId);
+  /**
+   * Create a new process instance with the filled form.
+   */
+  private String createProcessInstance(DataRecord data)
+      throws ProcessManagerException {
+    try {
+      Action creation = processModel.getCreateAction();
+      TaskDoneEvent event = getCreationTask().buildTaskDoneEvent(
+          creation.getName(), data);
+      Workflow.getWorkflowEngine().process(event);
+      return event.getProcessInstance().getInstanceId();
+    } catch (WorkflowException e) {
+      throw new ProcessManagerException("SessionController",
+          "processManager.CREATION_PROCESSING_FAILED", e);
+    }
+  }
+
+  /**
+   * Returns the form which starts a new instance.
+   */
+  private Form getCreationForm() throws ProcessManagerException {
+    try {
+      Action creation = processModel.getCreateAction();
+      return processModel.getPublicationForm(creation.getName(),
+          "administrateur", getLanguage());
+    } catch (WorkflowException e) {
+      throw new ProcessManagerException("SessionController",
+          "processManager.ERR_NO_CREATION_FORM", e);
+    }
+  }
+
+  /**
+   * Returns the an empty creation record which will be filled with the creation
+   * form.
+   */
+  private DataRecord getEmptyCreationRecord() throws ProcessManagerException {
+    try {
+      Action creation = processModel.getCreateAction();
+      return processModel.getNewActionRecord(creation.getName(), currentRole,
+          getLanguage(), null);
+    } catch (WorkflowException e) {
+      throw new ProcessManagerException("SessionController",
+          "processManager.UNKNOWN_ACTION", e);
+    }
+  }
+
+  /**
+   * Returns the creation task.
+   */
+  private Task getCreationTask() throws ProcessManagerException {
+    try {
+      OrganizationController controller = new OrganizationController();
+      User user = new UserImpl(controller.getUserDetail(userId), null);
+      Task creationTask = Workflow.getTaskManager().getCreationTask(user,
+          currentRole, processModel);
+
+      return creationTask;
+    } catch (WorkflowException e) {
+      throw new ProcessManagerException("SessionController",
+          "processManager.CREATION_TASK_UNAVAILABLE", e);
+    }
+  }
+
+  /**
+   * Returns the process model having the given id.
+   */
+  private ProcessModel getProcessModel(String modelId)
+      throws ProcessManagerException {
+    try {
+      return Workflow.getProcessModelManager().getProcessModel(modelId);
+    } catch (WorkflowException e) {
+      throw new ProcessManagerException("ProcessManagerSessionControler",
+          "processManager.UNKNOWN_PROCESS_MODEL", modelId, e);
+    }
+  }
+
+  private String processUploadedFile(byte[] fileContent, String fileName,
+      PagesContext pagesContext) throws Exception {
+    String attachmentId = null;
+
+    String componentId = pagesContext.getComponentId();
+    String userId = pagesContext.getUserId();
+    String objectId = pagesContext.getObjectId();
+    String logicalName = fileName;
+    String physicalName = null;
+    String mimeType = null;
+    String context = "Images";
+    File dir = null;
+    long size = 0;
+    VersioningUtil versioningUtil = new VersioningUtil();
+    if (StringUtil.isDefined(logicalName)) {
+      logicalName = logicalName.substring(logicalName
+          .lastIndexOf(File.separator) + 1, logicalName.length());
+      String type = FileRepositoryManager.getFileExtension(logicalName);
+      mimeType = FileUtil.getMimeType(logicalName);
+      if (mimeType.equals("application/x-zip-compressed")) {
+        if (type.equalsIgnoreCase("jar") || type.equalsIgnoreCase("ear")
+            || type.equalsIgnoreCase("war"))
+          mimeType = "application/java-archive";
+        else if (type.equalsIgnoreCase("3D"))
+          mimeType = "application/xview3d-3d";
       }
-      catch (WorkflowException e)
-      {
-         throw new ProcessManagerException("ProcessManagerSessionControler", "processManager.UNKNOWN_PROCESS_MODEL", modelId, e);
+      physicalName = new Long(new Date().getTime()).toString() + "." + type;
+
+      String path = "";
+      if (pagesContext.isVersioningUsed())
+        path = versioningUtil.createPath("useless", componentId, "useless");
+      else
+        path = AttachmentController.createPath(componentId, context);
+      dir = new File(path + physicalName);
+
+      java.io.FileOutputStream fos = new java.io.FileOutputStream(dir);
+
+      if (fileContent != null && fileContent.length > 0) {
+        fos.write(fileContent);
+        fos.close();
+
+        size = dir.length();
+
+        AttachmentDetail ad = createAttachmentDetail(objectId, componentId,
+            physicalName, logicalName, mimeType, size, context, userId);
+
+        if (pagesContext.isVersioningUsed()) {
+          // mode versioning
+          attachmentId = createDocument(objectId, ad);
+        } else {
+          // mode classique
+          ad = AttachmentController.createAttachment(ad, true);
+          attachmentId = ad.getPK().getId();
+        }
       }
-	}
-	
-	private String processUploadedFile(byte[] fileContent, String fileName, PagesContext pagesContext) throws Exception
-	{
-		String attachmentId = null;
+    }
+    return attachmentId;
+  }
 
-		String	componentId		= pagesContext.getComponentId();
-		String	userId			= pagesContext.getUserId();
-		String 	objectId		= pagesContext.getObjectId();
-		String 	logicalName 	= fileName;
-		String 	physicalName 	= null;
-		String 	mimeType 		= null;
-		String 	context 		= "Images";
-		File 	dir 			= null;
-		long 	size 			= 0;
-		VersioningUtil versioningUtil = new VersioningUtil();
-		if(StringUtil.isDefined(logicalName)) 
-		{
-			logicalName = logicalName.substring(logicalName.lastIndexOf(File.separator)+1, logicalName.length());
-			String type = FileRepositoryManager.getFileExtension(logicalName);
-			mimeType = FileUtil.getMimeType(logicalName);
-			if (mimeType.equals("application/x-zip-compressed"))
-			{
-				if (type.equalsIgnoreCase("jar") || type.equalsIgnoreCase("ear") || type.equalsIgnoreCase("war"))
-					mimeType = "application/java-archive";
-				else if (type.equalsIgnoreCase("3D"))
-					mimeType = "application/xview3d-3d";
-			}
-			physicalName = new Long(new Date().getTime()).toString()+"."+type;
+  private AttachmentDetail createAttachmentDetail(String objectId,
+      String componentId, String physicalName, String logicalName,
+      String mimeType, long size, String context, String userId) {
+    // create AttachmentPK with spaceId and componentId
+    AttachmentPK atPK = new AttachmentPK(null, "useless", componentId);
 
-			String path = "";
-			if (pagesContext.isVersioningUsed())
-				path = versioningUtil.createPath("useless", componentId, "useless");
-			else
-				path = AttachmentController.createPath(componentId, context);
-			dir = new File(path+physicalName);
-			
-			java.io.FileOutputStream fos = new java.io.FileOutputStream(dir);
+    // create foreignKey with spaceId, componentId and id
+    // use AttachmentPK to build the foreign key of customer object.
+    AttachmentPK foreignKey = new AttachmentPK("-1", "useless", componentId);
+    if (objectId != null)
+      foreignKey.setId(objectId);
 
-			if (fileContent != null && fileContent.length > 0)
-			{
-				fos.write(fileContent);
-				fos.close();
-				
-				size = dir.length();
-			
-				AttachmentDetail ad = createAttachmentDetail(objectId, componentId, physicalName, logicalName, mimeType, size, context, userId);
+    // create AttachmentDetail Object
+    AttachmentDetail ad = new AttachmentDetail(atPK, physicalName, logicalName,
+        null, mimeType, size, context, new Date(), foreignKey);
+    ad.setAuthor(userId);
 
-				if (pagesContext.isVersioningUsed())
-				{
-					//mode versioning
-					attachmentId = createDocument(objectId, ad);
-				}
-				else
-				{
-					//mode classique
-					ad = AttachmentController.createAttachment(ad, true);
-					attachmentId = ad.getPK().getId();
-				}
-			}
-		}
-		return attachmentId;
-	}
-		
-	private AttachmentDetail createAttachmentDetail(String objectId, String componentId, String physicalName, String logicalName, String mimeType, long size, String context, String userId)
-	{
-		//create AttachmentPK with spaceId and componentId
-		AttachmentPK atPK = new AttachmentPK(null, "useless", componentId);
+    return ad;
+  }
 
-		//create foreignKey with spaceId, componentId and id
-		//use AttachmentPK to build the foreign key of customer object.
-		AttachmentPK foreignKey = new AttachmentPK("-1", "useless", componentId);
-		if (objectId != null)
-			foreignKey.setId(objectId);
+  private String createDocument(String objectId, AttachmentDetail attachment)
+      throws RemoteException {
+    String componentId = attachment.getPK().getInstanceId();
+    int userId = Integer.parseInt(attachment.getAuthor());
+    ForeignPK pubPK = new ForeignPK("-1", componentId);
+    if (objectId != null)
+      pubPK.setId(objectId);
 
-		//create AttachmentDetail Object
-		AttachmentDetail ad = new AttachmentDetail(atPK, physicalName, logicalName, null, mimeType, size, context, new Date(), foreignKey);
-		ad.setAuthor(userId);
+    // Création d'un nouveau document
+    DocumentPK docPK = new DocumentPK(-1, "useless", componentId);
+    Document document = new Document(docPK, pubPK, attachment.getLogicalName(),
+        "", -1, userId, new Date(), null, null, null, null, 0, 0);
 
-		return ad;
-	}
-	
-	private String createDocument(String objectId, AttachmentDetail attachment) throws RemoteException
-	{
-		String			componentId = attachment.getPK().getInstanceId();
-		int				userId		= Integer.parseInt(attachment.getAuthor());
-		ForeignPK 		pubPK 		= new ForeignPK("-1", componentId);
-		if (objectId != null)
-			pubPK.setId(objectId);
-		
-		//Création d'un nouveau document
-		DocumentPK docPK = new DocumentPK(-1, "useless", componentId);
-		Document document = new Document(docPK, pubPK, attachment.getLogicalName(), "", -1, userId, new Date(), null, null, null, null, 0, 0);
-		
-		//document.setWorkList(getWorkers(componentId, userId));
-		
-		DocumentVersion version = new DocumentVersion(attachment);
-		version.setAuthorId(userId);
+    // document.setWorkList(getWorkers(componentId, userId));
 
-		//et on y ajoute la première version
-		version.setMajorNumber(1);
-		version.setMinorNumber(0);
-		version.setType(DocumentVersion.TYPE_PUBLIC_VERSION);
-		version.setStatus(DocumentVersion.STATUS_VALIDATION_NOT_REQ);
-		version.setCreationDate(new Date());
+    DocumentVersion version = new DocumentVersion(attachment);
+    version.setAuthorId(userId);
 
-		docPK = getVersioningBm().createDocument(document, version);
-		document.setPk(docPK);
-		
-		return docPK.getId();
-	}
-	
-	private VersioningBm getVersioningBm()
-	{
-		VersioningBm versioningBm = null;
-		try {
-			VersioningBmHome vscEjbHome = (VersioningBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
-			versioningBm = vscEjbHome.create();
-		} catch (Exception e) {
-			// NEED
-			//throw new ...RuntimeException("VersioningSessionController.initEJB()",SilverpeasRuntimeException.ERROR,"root.EX_CANT_GET_REMOTE_OBJECT",e);
-		}
-		return versioningBm;
-	}
-	
-	private String getLanguage()
-	{
-		return "fr";
-	}
+    // et on y ajoute la première version
+    version.setMajorNumber(1);
+    version.setMinorNumber(0);
+    version.setType(DocumentVersion.TYPE_PUBLIC_VERSION);
+    version.setStatus(DocumentVersion.STATUS_VALIDATION_NOT_REQ);
+    version.setCreationDate(new Date());
 
-	public void ejbCreate() {}
-	
-	public void setSessionContext(SessionContext arg0) throws EJBException, RemoteException {
-	}
+    docPK = getVersioningBm().createDocument(document, version);
+    document.setPk(docPK);
 
-	public void ejbRemove() throws EJBException, RemoteException {
-	}
+    return docPK.getId();
+  }
 
-	public void ejbActivate() throws EJBException, RemoteException {
-	}
+  private VersioningBm getVersioningBm() {
+    VersioningBm versioningBm = null;
+    try {
+      VersioningBmHome vscEjbHome = (VersioningBmHome) EJBUtilitaire
+          .getEJBObjectRef(JNDINames.VERSIONING_EJBHOME, VersioningBmHome.class);
+      versioningBm = vscEjbHome.create();
+    } catch (Exception e) {
+      // NEED
+      // throw new
+      // ...RuntimeException("VersioningSessionController.initEJB()",SilverpeasRuntimeException.ERROR,"root.EX_CANT_GET_REMOTE_OBJECT",e);
+    }
+    return versioningBm;
+  }
 
-	public void ejbPassivate() throws EJBException, RemoteException {
-	}
+  private String getLanguage() {
+    return "fr";
+  }
+
+  public void ejbCreate() {
+  }
+
+  public void setSessionContext(SessionContext arg0) throws EJBException,
+      RemoteException {
+  }
+
+  public void ejbRemove() throws EJBException, RemoteException {
+  }
+
+  public void ejbActivate() throws EJBException, RemoteException {
+  }
+
+  public void ejbPassivate() throws EJBException, RemoteException {
+  }
 
 }

@@ -2,6 +2,7 @@ package com.silverpeas.mailinglist.service.notification;
 
 /**
  * SMTP configuration
+ * 
  * @author Emmanuel Hugonnet
  * @version $revision$
  */

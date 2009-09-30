@@ -47,54 +47,49 @@ import com.stratelia.webactiv.util.JNDINames;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class AlmanachStatistics implements ComponentStatisticsInterface
-{
+public class AlmanachStatistics implements ComponentStatisticsInterface {
 
-    private AlmanachBm almanachBm = null;
+  private AlmanachBm almanachBm = null;
 
-    public Collection getVolume(String spaceId, String componentId) throws Exception
-    {
-        ArrayList  myArrayList = new ArrayList();
-        Collection c = getEvents(spaceId, componentId);
-        Iterator   iter = c.iterator();
-        while (iter.hasNext())
-        {
-            EventDetail       detail = (EventDetail) iter.next();
+  public Collection getVolume(String spaceId, String componentId)
+      throws Exception {
+    ArrayList myArrayList = new ArrayList();
+    Collection c = getEvents(spaceId, componentId);
+    Iterator iter = c.iterator();
+    while (iter.hasNext()) {
+      EventDetail detail = (EventDetail) iter.next();
 
-            UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
+      UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
 
-            myCouple.setUserId(detail.getDelegatorId());
-            myCouple.setCountVolume(1);
-            myArrayList.add(myCouple);
-        }
-
-        return myArrayList;
+      myCouple.setUserId(detail.getDelegatorId());
+      myCouple.setCountVolume(1);
+      myArrayList.add(myCouple);
     }
 
-    private AlmanachBm getAlmanachBm()
-    {
-        if (almanachBm == null)
-        {
-            try
-            {
-                almanachBm = ((AlmanachBmHome)EJBUtilitaire.getEJBObjectRef(JNDINames.ALMANACHBM_EJBHOME, AlmanachBmHome.class)).create();
-            }
-            catch (Exception e)
-            {
-                SilverTrace.error("almanach", "AlmanachStatistics.getAlmanachBm", "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
-                throw new EJBException(e);
-            }
-        }
-        return almanachBm;
-    }
+    return myArrayList;
+  }
 
-    public Collection getEvents(String spaceId, String componentId) throws RemoteException
-    {
-        return getAlmanachBm().getAllEvents(new EventPK("", spaceId, componentId));
+  private AlmanachBm getAlmanachBm() {
+    if (almanachBm == null) {
+      try {
+        almanachBm = ((AlmanachBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.ALMANACHBM_EJBHOME, AlmanachBmHome.class)).create();
+      } catch (Exception e) {
+        SilverTrace.error("almanach", "AlmanachStatistics.getAlmanachBm",
+            "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
+        throw new EJBException(e);
+      }
     }
+    return almanachBm;
+  }
+
+  public Collection getEvents(String spaceId, String componentId)
+      throws RemoteException {
+    return getAlmanachBm().getAllEvents(new EventPK("", spaceId, componentId));
+  }
 
 }

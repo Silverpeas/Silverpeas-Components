@@ -116,53 +116,57 @@ import com.stratelia.webactiv.webSites.siteManage.model.SiteDetail;
  * portlétisation
  *
  */
- 
+
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class WebSitesRequestRouter extends ComponentRequestRouter
-{
+public class WebSitesRequestRouter extends ComponentRequestRouter {
 
-    /**
-     * This method has to be implemented in the component request router class.
-     * returns the session control bean name to be put in the request object
-     * ex : for almanach, returns "almanach"
-     */
-    public String getSessionControlBeanName()
-    {
-        return "webSites";
-    }
+  /**
+   * This method has to be implemented in the component request router class.
+   * returns the session control bean name to be put in the request object ex :
+   * for almanach, returns "almanach"
+   */
+  public String getSessionControlBeanName() {
+    return "webSites";
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param mainSessionCtrl
-     * @param componentContext
-     *
-     * @return
-     *
-     * @see
-     */
-    public ComponentSessionController createComponentSessionController(MainSessionController mainSessionCtrl, ComponentContext componentContext)
-    {
-        ComponentSessionController component = (ComponentSessionController) new WebSiteSessionController(mainSessionCtrl, componentContext);
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param mainSessionCtrl
+   * @param componentContext
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public ComponentSessionController createComponentSessionController(
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+    ComponentSessionController component = (ComponentSessionController) new WebSiteSessionController(
+        mainSessionCtrl, componentContext);
 
-        return component;
-    }
+    return component;
+  }
 
-    /**
-     * This method has to be implemented by the component request router
-     * it has to compute a destination page
-     * @param function The entering request function (ex : "Main.jsp")
-     * @param componentSC The component Session Control, build and initialised.
-     * @param request The entering request. The request router need it to get parameters
-     * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
-     */
-    public String getDestination(String function, ComponentSessionController componentSC, HttpServletRequest request)
+  /**
+   * This method has to be implemented by the component request router it has to
+   * compute a destination page
+   * 
+   * @param function
+   *          The entering request function (ex : "Main.jsp")
+   * @param componentSC
+   *          The component Session Control, build and initialised.
+   * @param request
+   *          The entering request. The request router need it to get parameters
+   * @return The complete destination URL for a forward (ex :
+   *         "/almanach/jsp/almanach.jsp?flag=user")
+   */
+  public String getDestination(String function, ComponentSessionController componentSC, HttpServletRequest request)
     {
 
         SilverTrace.info("webSites", "WebSitesRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "fonction = " + function);
@@ -1304,461 +1308,471 @@ public class WebSitesRequestRouter extends ComponentRequestRouter
         return destination;
     }
 
-	private String getWebSitesDestination(SiteDetail sitedetail, HttpServletRequest request, WebSiteSessionController scc)
-	{
-		String siteId	= sitedetail.getSitePK().getId();
-		
-		//CBO : UPDATE
-		//String nomPage	= sitedetail.getPage();
-		String nomPage	= sitedetail.getContent();
-		
-		int    type		= sitedetail.getType();
+  private String getWebSitesDestination(SiteDetail sitedetail,
+      HttpServletRequest request, WebSiteSessionController scc) {
+    String siteId = sitedetail.getSitePK().getId();
 
-		if (type == 1)
-		{  
-			// type bookmark
-			if (nomPage.indexOf("://")==-1)
-			{
-				//no protocol is mentionned
-				//by default = "http"
-				nomPage = "http://" + nomPage;
-			}
-		}
-		else
-		{  	// upload, design
-			ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
-			
-			//CBO : UPDATE
-			//nomPage = URLManager.getHttpMode() + getMachine(request) + File.separator + settings.getString("Context") + File.separator + scc.getComponentId() + File.separator + siteId + File.separator + nomPage;
-			nomPage = "http://" + getMachine(request) + File.separator + settings.getString("Context") + File.separator + scc.getComponentId() + File.separator + siteId + File.separator + nomPage;
-		}
-		return "/webSites/jsp/ouvertureSite.jsp?URL=" + EncodeHelper.javaStringToJsString(nomPage);
-	}
+    // CBO : UPDATE
+    // String nomPage = sitedetail.getPage();
+    String nomPage = sitedetail.getContent();
 
-    /* construitTab */
+    int type = sitedetail.getType();
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param deb
-     *
-     * @return
-     *
-     * @see
-     */
-    private ArrayList construitTab(String deb)
-    {
-        /* deb = id/rep/  ou id\rep/ */
-        /* res = [id | rep] */
-        int       i = 0;
-        String    noeud = "";
-        ArrayList array = new ArrayList();
+    if (type == 1) {
+      // type bookmark
+      if (nomPage.indexOf("://") == -1) {
+        // no protocol is mentionned
+        // by default = "http"
+        nomPage = "http://" + nomPage;
+      }
+    } else { // upload, design
+      ResourceLocator settings = new ResourceLocator(
+          "com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
 
-
-        while (i < deb.length())
-        {
-            char car = deb.charAt(i);
-
-            if (car == '/' || car == '\\')
-            {
-                array.add(noeud);
-                noeud = "";
-            }
-            else
-            {
-                noeud += car;
-            }
-            i++;
-        }
-        return array;
+      // CBO : UPDATE
+      // nomPage = URLManager.getHttpMode() + getMachine(request) +
+      // File.separator + settings.getString("Context") + File.separator +
+      // scc.getComponentId() + File.separator + siteId + File.separator +
+      // nomPage;
+      nomPage = "http://" + getMachine(request) + File.separator
+          + settings.getString("Context") + File.separator
+          + scc.getComponentId() + File.separator + siteId + File.separator
+          + nomPage;
     }
+    return "/webSites/jsp/ouvertureSite.jsp?URL="
+        + EncodeHelper.javaStringToJsString(nomPage);
+  }
 
-    /* getMachine */
+  /* construitTab */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param request
-     *
-     * @return
-     *
-     * @see
-     */
-    private String getMachine(HttpServletRequest request)
-    {
-        ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
-        ResourceLocator generalSettings = new ResourceLocator("com.stratelia.webactiv.general", "fr");
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param deb
+   * 
+   * @return
+   * 
+   * @see
+   */
+  private ArrayList construitTab(String deb) {
+    /* deb = id/rep/ ou id\rep/ */
+    /* res = [id | rep] */
+    int i = 0;
+    String noeud = "";
+    ArrayList array = new ArrayList();
 
-        String          machine = settings.getString("Machine"); //ex : http://info.aero.jussieu.fr:8080
-        String          context = (generalSettings.getString("ApplicationURL")).substring(1);
+    while (i < deb.length()) {
+      char car = deb.charAt(i);
 
-        if (machine.equals(""))
-        {
-        	//CBO : UPDATE
-            /*HttpUtils    u = new HttpUtils();
-            StringBuffer url = u.getRequestURL(request);*/
-        	StringBuffer url = request.getRequestURL();
-            //CBO : FIN UPDATE
-
-            ArrayList    a = construitTab(url.toString());
-
-            int          j = 1;
-
-            while (true)
-            {
-                if (j > a.size())
-                {
-                    break;
-                }
-
-                if (!a.get(j).equals(context))
-                {
-                    if (machine.equals(""))
-                    {
-                        machine += a.get(j);
-                    }
-                    else
-                    {
-                        machine = machine + File.separator + a.get(j);
-                    }
-                }
-                else
-                {
-                    break;
-                }
-                j++;
-            }
-        }
-        return machine;
+      if (car == '/' || car == '\\') {
+        array.add(noeud);
+        noeud = "";
+      } else {
+        noeud += car;
+      }
+      i++;
     }
+    return array;
+  }
 
-    /* getFlag */
+  /* getMachine */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param profiles
-     *
-     * @return
-     *
-     * @see
-     */
-    private String getFlag(String[] profiles)
-    {
-        String flag = "Reader";
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param request
+   * 
+   * @return
+   * 
+   * @see
+   */
+  private String getMachine(HttpServletRequest request) {
+    ResourceLocator settings = new ResourceLocator(
+        "com.stratelia.webactiv.webSites.settings.webSiteSettings", "fr");
+    ResourceLocator generalSettings = new ResourceLocator(
+        "com.stratelia.webactiv.general", "fr");
 
-        for (int i = 0; i < profiles.length; i++)
-        {
-            // if admin, return it, we won't find a better profile
-            if (profiles[i].equals("Admin"))
-            	return profiles[i];
-			if (profiles[i].equals("Publisher"))
-				flag = profiles[i];
+    String machine = settings.getString("Machine"); // ex :
+                                                    // http://info.aero.jussieu.fr:8080
+    String context = (generalSettings.getString("ApplicationURL")).substring(1);
+
+    if (machine.equals("")) {
+      // CBO : UPDATE
+      /*
+       * HttpUtils u = new HttpUtils(); StringBuffer url =
+       * u.getRequestURL(request);
+       */
+      StringBuffer url = request.getRequestURL();
+      // CBO : FIN UPDATE
+
+      ArrayList a = construitTab(url.toString());
+
+      int j = 1;
+
+      while (true) {
+        if (j > a.size()) {
+          break;
         }
-        return flag;
-    }
-    
-    //CBO : ADD
-    /* doubleAntiSlash */
-    private String doubleAntiSlash(String chemin) {
-          int i = 0;
-          String res = chemin;
-          boolean ok = true;
 
-          while (ok) {
-            int j = i + 1;
-            if ((i < res.length()) && (j < res.length())) {
-                char car1 = res.charAt(i);
-                char car2 = res.charAt(j);
-
-                if ( (car1 == '\\' && car2 == '\\') ||
-                     (car1 != '\\' && car2 != '\\') ) {
-                }
-                else {
-                        String avant = res.substring(0, j);
-                        String apres = res.substring(j);
-                        if ( (apres.startsWith("\\\\")) ||
-                             (avant.endsWith("\\\\")) ) {
-                        }
-                        else {
-                            res = avant + '\\' + apres;
-                            i++;
-                        }
-                }
-            }
-            else {
-                if (i < res.length()) {
-                    char car = res.charAt(i);
-                    if (car == '\\')
-                        res = res + '\\';
-                }
-                ok = false;
-            }
-            i = i + 2;
+        if (!a.get(j).equals(context)) {
+          if (machine.equals("")) {
+            machine += a.get(j);
+          } else {
+            machine = machine + File.separator + a.get(j);
           }
-          return res;
-    }
-    
-    /* ignoreAntiSlash */
-    public String ignoreAntiSlash(String chemin) {
-      /* ex : \\\rep1\\rep2\\rep3 */
-      /* res = rep1\\rep2\\re3 */
-
-        String res = chemin;
-        boolean ok = false;
-        while (!ok) {
-            char car = res.charAt(0);
-            if (car == '\\') {
-                res = res.substring(1);
-            }
-            else ok = true;
+        } else {
+          break;
         }
-        return res;
-
+        j++;
+      }
     }
+    return machine;
+  }
 
-    /* supprDoubleAntiSlash */
-    public String supprDoubleAntiSlash(String chemin) {
-      /* ex : id\\rep1\\rep11\\rep111 */
-      /* res = id\rep1\rep11\re111 */
+  /* getFlag */
 
-        String res = "";
-        int i = 0;
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param profiles
+   * 
+   * @return
+   * 
+   * @see
+   */
+  private String getFlag(String[] profiles) {
+    String flag = "Reader";
 
-        while (i < chemin.length()) {
-            char car = chemin.charAt(i);
-            if (car == '\\') {
-                res = res + car;
-                i++;
-            }
-            else res = res + car;
+    for (int i = 0; i < profiles.length; i++) {
+      // if admin, return it, we won't find a better profile
+      if (profiles[i].equals("Admin"))
+        return profiles[i];
+      if (profiles[i].equals("Publisher"))
+        flag = profiles[i];
+    }
+    return flag;
+  }
+
+  // CBO : ADD
+  /* doubleAntiSlash */
+  private String doubleAntiSlash(String chemin) {
+    int i = 0;
+    String res = chemin;
+    boolean ok = true;
+
+    while (ok) {
+      int j = i + 1;
+      if ((i < res.length()) && (j < res.length())) {
+        char car1 = res.charAt(i);
+        char car2 = res.charAt(j);
+
+        if ((car1 == '\\' && car2 == '\\') || (car1 != '\\' && car2 != '\\')) {
+        } else {
+          String avant = res.substring(0, j);
+          String apres = res.substring(j);
+          if ((apres.startsWith("\\\\")) || (avant.endsWith("\\\\"))) {
+          } else {
+            res = avant + '\\' + apres;
             i++;
+          }
         }
-        return res;
+      } else {
+        if (i < res.length()) {
+          char car = res.charAt(i);
+          if (car == '\\')
+            res = res + '\\';
+        }
+        ok = false;
+      }
+      i = i + 2;
+    }
+    return res;
+  }
+
+  /* ignoreAntiSlash */
+  public String ignoreAntiSlash(String chemin) {
+    /* ex : \\\rep1\\rep2\\rep3 */
+    /* res = rep1\\rep2\\re3 */
+
+    String res = chemin;
+    boolean ok = false;
+    while (!ok) {
+      char car = res.charAt(0);
+      if (car == '\\') {
+        res = res.substring(1);
+      } else
+        ok = true;
+    }
+    return res;
+
+  }
+
+  /* supprDoubleAntiSlash */
+  public String supprDoubleAntiSlash(String chemin) {
+    /* ex : id\\rep1\\rep11\\rep111 */
+    /* res = id\rep1\rep11\re111 */
+
+    String res = "";
+    int i = 0;
+
+    while (i < chemin.length()) {
+      char car = chemin.charAt(i);
+      if (car == '\\') {
+        res = res + car;
+        i++;
+      } else
+        res = res + car;
+      i++;
+    }
+    return res;
+  }
+
+  /* finNode */
+  public String finNode(WebSiteSessionController scc, String path) {
+    /* ex : ....webSite17\\id\\rep1\\rep2\\rep3 */
+    /* res : id\rep1\rep2\rep3 */
+
+    int longueur = scc.getComponentId().length();
+    int index = path.lastIndexOf(scc.getComponentId());
+    String chemin = path.substring(index + longueur);
+
+    chemin = ignoreAntiSlash(chemin);
+    chemin = supprDoubleAntiSlash(chemin);
+
+    return chemin;
+  }
+
+  /* sortCommun */
+  private ArrayList sortCommun(ArrayList tabContexte, ArrayList tab) {
+    /* tabContexte = [id | rep1 | rep2] */
+    /* tab = [id | rep1 | rep3] */
+    /* res = [id | rep1] */
+    int i = 0;
+    boolean ok = true;
+    ArrayList array = new ArrayList();
+
+    while (ok && i < tabContexte.size()) {
+      String contenuContexte = (String) tabContexte.get(i);
+      if (i < tab.size()) {
+        String contenu = (String) tab.get(i);
+        if (contenuContexte.equals(contenu)) {
+          array.add(contenu);
+
+        } else
+          ok = false;
+        i++;
+      } else
+        ok = false;
+    }
+    return array;
+  }
+
+  /* sortRester */
+  private String sortReste(ArrayList tab, ArrayList tabCommun) {
+    /* tab = [id | rep1 | rep2 | rep3] */
+    /* tabCommun = [id | rep1] */
+    /* res = rep2/rep3 */
+    String res = "";
+
+    int indice = tabCommun.size();
+
+    while (indice < tab.size()) {
+      String contenu = (String) tab.get(indice);
+      res += contenu + "/";
+      indice++;
     }
 
-    /* finNode */
-    public String finNode(WebSiteSessionController scc, String path) {
-        /* ex : ....webSite17\\id\\rep1\\rep2\\rep3 */
-        /* res : id\rep1\rep2\rep3 */
+    if (!res.equals(""))
+      res = res.substring(0, res.length() - 1);
 
+    return res;
+  }
+
+  /* parseCodeSupprImage */
+  private String parseCodeSupprImage(WebSiteSessionController scc, String code,
+      HttpServletRequest request, ResourceLocator settings, String currentPath) {
+    String theCode = code;
+    String avant;
+    String apres;
+    int index;
+    String finChemin;
+    String image = "<IMG border=0 src=\"http://" + getMachine(request) + "/"
+        + settings.getString("Context") + "/" + scc.getComponentId() + "/";
+    int longueurImage = 19 + ("http://" + getMachine(request) + "/"
+        + settings.getString("Context") + "/" + scc.getComponentId() + "/")
+        .length();
+    index = code.indexOf(image);
+    if (index == -1)
+      return theCode;
+    else {
+      avant = theCode.substring(0, index + 19);
+      finChemin = theCode.substring(index + longueurImage);
+
+      int indexGuillemet = finChemin.indexOf("\"");
+      String absolute = finChemin.substring(0, indexGuillemet);
+
+      apres = finChemin.substring(indexGuillemet);
+      int indexSlash = absolute.lastIndexOf("/");
+      String fichier = absolute.substring(indexSlash + 1);
+
+      String deb = absolute.substring(0, indexSlash);
+      ArrayList tab = construitTab(deb + "/");
+
+      /* id/rep1 */
+      String cheminContexte = finNode(scc, currentPath);
+      ArrayList tabContexte = construitTab(cheminContexte + "/");
+      ArrayList tabCommun = sortCommun(tabContexte, tab);
+      String reste = sortReste(tab, tabCommun);
+      int nbPas = tabContexte.size() - tabCommun.size();
+      String relatif = "";
+      int i = 0;
+      while (i < nbPas) {
+        relatif += "../";
+        i++;
+      }
+
+      if (reste.equals(""))
+        relatif += fichier;
+      else
+        relatif += reste + "/" + fichier;
+      apres = relatif + apres;
+      return (avant + parseCodeSupprImage(scc, apres, request, settings,
+          currentPath));
+    }
+  }
+
+  /* parseCodeSupprHref */
+  /*
+   * ex : code = ...<a href="rr:icones/fleche.html"> <a href="http://www.etc">
+   * <a href="aa:REP1/page.html">: liens deja en relatif (rr:) ou url externe
+   * (http://) ou liens en abslu res = ...<a href="icones/fleche.html"> <a
+   * href="http://www.etc"> <a href="page.html"> : tous les liens en relatifs ou
+   * urlk externe
+   */
+  private String parseCodeSupprHref(WebSiteSessionController scc, String code,
+      ResourceLocator settings, String currentPath) {
+    String theCode = code;
+    String avant;
+    String apres;
+    int index;
+    String href = "<A href=\""; /* longueur de chaine = 9 */
+    String finChemin;
+    String fichier;
+    String deb;
+    String theReturn = "";
+
+    index = theCode.indexOf(href);
+    if (index == -1)
+      theReturn = theCode;
+
+    else {
+
+      avant = theCode.substring(0, index + 9);
+
+      apres = theCode.substring(index + 9);
+
+      if (apres.substring(0, 7).equals("http://")) { /* lien externe */
+        theReturn = avant
+            + parseCodeSupprHref(scc, apres, settings, currentPath);
+      } else if (apres.substring(0, 6).equals("ftp://")) { /* lien externe */
+        theReturn = avant
+            + parseCodeSupprHref(scc, apres, settings, currentPath);
+      } else if (apres.substring(0, 3).equals("rr:")) { /* deja en relatif */
+
+        apres = apres.substring(3);
+
+        theReturn = avant
+            + parseCodeSupprHref(scc, apres, settings, currentPath);
+      } else if (apres.substring(0, 3).equals("aa:")) { /*
+                                                         * lien absolu a
+                                                         * transformer en
+                                                         * relatif
+                                                         */
+
+        /* finChemin = rep/coucou.html">... */
+        finChemin = theCode.substring(index + 9 + 3);
+        SilverTrace.info("webSites", "JSPcreateSite",
+            "root.MSG_GEN_PARAM_VALUE", "finChemin = " + finChemin);
+
+        /* traitement */
+        int indexGuillemet = finChemin.indexOf("\"");
+        SilverTrace.info("webSites", "JSPcreateSite",
+            "root.MSG_GEN_PARAM_VALUE", "indexGuillemet = "
+                + new Integer(indexGuillemet).toString());
+
+        /* absolute = rep/coucou.html */
+        String absolute = finChemin.substring(0, indexGuillemet);
+        SilverTrace.info("webSites", "JSPcreateSite",
+            "root.MSG_GEN_PARAM_VALUE", "absolute = " + absolute);
+
+        /* apres = ">... */
+        apres = finChemin.substring(indexGuillemet);
+        SilverTrace.info("webSites", "JSPcreateSite",
+            "root.MSG_GEN_PARAM_VALUE", "apres = " + apres);
+
+        int indexSlash = absolute.lastIndexOf("\\");
+        SilverTrace.info("webSites", "JSPcreateSite",
+            "root.MSG_GEN_PARAM_VALUE", "indexSlash = "
+                + new Integer(indexSlash).toString());
+
+        if (indexSlash == -1) { /*
+                                 * pas d'arborescence, le fichier du lien est
+                                 * sur la racine
+                                 */
+          fichier = absolute;
+          deb = "";
+        } else {
+          /* fichier = coucou.html */
+          fichier = absolute.substring(indexSlash + 1);
+          deb = absolute.substring(0, indexSlash);
+        }
+        ArrayList tab = construitTab(deb + "/"); /*
+                                                  * dans ce tableau il manque
+                                                  * l'id
+                                                  */
+
+        /* cheminContexte = id/rep */
         int longueur = scc.getComponentId().length();
-        int index = path.lastIndexOf(scc.getComponentId());
-        String chemin = path.substring(index + longueur);
+        int index2 = currentPath.lastIndexOf(scc.getComponentId());
+        String chemin = currentPath.substring(index2 + longueur);
 
-        chemin = ignoreAntiSlash(chemin);
+        chemin = chemin.substring(1);
         chemin = supprDoubleAntiSlash(chemin);
+        String cheminContexte = chemin;
+        ArrayList tabContexte = construitTab(cheminContexte + "/");
+        /* ajoute l'id dans le premier tableau */
+        tab.add(0, tabContexte.get(0));
 
-        return chemin;
-    }
+        /* tabCommun = [id | rep] */
+        ArrayList tabCommun = sortCommun(tabContexte, tab);
 
-    /* sortCommun */
-    private ArrayList sortCommun(ArrayList tabContexte, ArrayList tab) {
-      /* tabContexte = [id | rep1 | rep2] */
-      /* tab = [id | rep1 | rep3] */
-      /* res = [id | rep1] */
+        /* reste = vide */
+        String reste = sortReste(tab, tabCommun);
+
+        /* nbPas = 0 */
+        int nbPas = tabContexte.size() - tabCommun.size();
+        String relatif = "";
         int i = 0;
-        boolean ok = true;
-        ArrayList array = new ArrayList();
+        while (i < nbPas) {
+          relatif += "../";
+          i++;
+        }
 
+        if (reste.equals(""))
+          relatif += fichier;
+        else
+          relatif += reste + "/" + fichier;
 
-
-        while (ok && i < tabContexte.size()) {
-            String contenuContexte = (String) tabContexte.get(i);
-            if (i < tab.size()) {
-              String contenu = (String) tab.get(i);
-              if (contenuContexte.equals(contenu)) {
-                array.add(contenu);
-
-              }
-              else ok = false;
-              i++;
-            }
-            else ok = false;
-         }
-         return array;
+        /* relatif = vide */
+        apres = relatif + apres;
+        theReturn = avant
+            + parseCodeSupprHref(scc, apres, settings, currentPath);
+      }
     }
-    
-    /* sortRester */
-    private String sortReste(ArrayList tab, ArrayList tabCommun) {
-      /* tab = [id | rep1 | rep2 | rep3] */
-      /* tabCommun = [id | rep1] */
-      /* res = rep2/rep3 */
-        String res = "";
-
-
-
-        int indice = tabCommun.size();
-
-        while (indice < tab.size()) {
-            String contenu = (String) tab.get(indice);
-            res += contenu + "/";
-            indice++;
-         }
-
-         if (! res.equals(""))
-            res = res.substring(0, res.length() - 1);
-
-         return res;
-    }
-
-    
-    /* parseCodeSupprImage */
-    private String parseCodeSupprImage(WebSiteSessionController scc, String code, HttpServletRequest request, ResourceLocator settings, String currentPath) {
-       String theCode = code;
-       String avant;
-       String apres;
-       int index;
-       String finChemin;
-   	String image = "<IMG border=0 src=\"http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+scc.getComponentId()+"/";
-   	int longueurImage = 19 + ("http://"+getMachine(request)+"/"+settings.getString("Context")+"/"+scc.getComponentId()+"/").length();
-   	index = code.indexOf(image);
-   	if (index == -1) return theCode;
-   	else {
-         avant = theCode.substring(0, index + 19);
-         finChemin = theCode.substring(index + longueurImage);
-
-         int indexGuillemet = finChemin.indexOf("\"");
-         String absolute = finChemin.substring(0, indexGuillemet);
-
-         apres = finChemin.substring(indexGuillemet);
-         int indexSlash = absolute.lastIndexOf("/");
-         String fichier = absolute.substring(indexSlash + 1);
-
-         String deb = absolute.substring(0, indexSlash);
-         ArrayList tab = construitTab(deb+"/");
-
-         /* id/rep1 */
-         String cheminContexte = finNode(scc, currentPath);
-         ArrayList tabContexte = construitTab(cheminContexte+"/");
-         ArrayList tabCommun = sortCommun(tabContexte, tab);
-         String reste = sortReste(tab, tabCommun);
-         int nbPas = tabContexte.size() - tabCommun.size();
-         String relatif = "";
-         int i = 0;
-         while (i < nbPas) {
-           relatif += "../";
-           i++;
-         }
-
-         if (reste.equals(""))
-           relatif += fichier;
-         else relatif += reste + "/" + fichier;
-         apres = relatif + apres;
-         return (avant + parseCodeSupprImage(scc, apres, request, settings, currentPath));
-     }
-    }
-
-    /* parseCodeSupprHref */
-    /* ex : code = ...<a href="rr:icones/fleche.html"> <a href="http://www.etc"> <a href="aa:REP1/page.html">: liens deja en relatif (rr:) ou url externe (http://) ou liens en abslu
-            res = ...<a href="icones/fleche.html"> <a href="http://www.etc"> <a href="page.html"> : tous les liens en relatifs ou urlk externe */
-    private String parseCodeSupprHref(WebSiteSessionController scc, String code, ResourceLocator settings, String currentPath) {
-       String theCode = code;
-       String avant;
-       String apres;
-       int index;
-       String href = "<A href=\""; /* longueur de chaine = 9 */
-       String finChemin;
-       String fichier;
-       String deb;
-       String theReturn = "";
-
-
-     index = theCode.indexOf(href);
-     if (index == -1) theReturn = theCode;
-
-     else {
-
-           avant = theCode.substring(0, index + 9);
-
-
-           apres = theCode.substring(index + 9);
-
-
-           if (apres.substring(0, 7).equals("http://")) { /* lien externe */
-                 theReturn = avant + parseCodeSupprHref(scc, apres, settings, currentPath);
-           }
-           else if (apres.substring(0, 6).equals("ftp://")) { /* lien externe */
-                 theReturn = avant + parseCodeSupprHref(scc, apres, settings, currentPath);
-           }
-           else if (apres.substring(0, 3).equals("rr:")) { /* deja en relatif */
-
-                 apres = apres.substring(3);
-
-                 theReturn = avant + parseCodeSupprHref(scc, apres, settings, currentPath);
-           }
-           else if (apres.substring(0, 3).equals("aa:")) { /* lien absolu a transformer en relatif */
-
-               /* finChemin = rep/coucou.html">... */
-               finChemin = theCode.substring(index + 9 + 3);
-               SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "finChemin = "+finChemin);
-
-               /* traitement */
-               int indexGuillemet = finChemin.indexOf("\"");
-   	    SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "indexGuillemet = "+new Integer(indexGuillemet).toString());
-
-               /* absolute = rep/coucou.html */
-              String absolute = finChemin.substring(0, indexGuillemet);
-              SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "absolute = "+absolute);
-
-               /* apres = ">... */
-               apres = finChemin.substring(indexGuillemet);
-               SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "apres = "+apres);
-
-               int indexSlash = absolute.lastIndexOf("\\");
-   	    SilverTrace.info("webSites", "JSPcreateSite", "root.MSG_GEN_PARAM_VALUE", "indexSlash = "+new Integer(indexSlash).toString());
-
-               if (indexSlash == -1) { /* pas d'arborescence, le fichier du lien est sur la racine */
-                   fichier = absolute;
-                   deb = "";
-               }
-               else {
-                 /* fichier = coucou.html */
-                 fichier = absolute.substring(indexSlash + 1);
-                 deb = absolute.substring(0, indexSlash);
-               }
-               ArrayList tab = construitTab(deb+"/"); /* dans ce tableau il manque l'id */
-
-             /* cheminContexte = id/rep */
-   	      int longueur = scc.getComponentId().length();
-   	      int index2 = currentPath.lastIndexOf(scc.getComponentId());
-   	      String chemin = currentPath.substring(index2 + longueur);
-
-   	      chemin = chemin.substring(1);
-   	      chemin = supprDoubleAntiSlash(chemin);
-   	      String cheminContexte = chemin;
-               ArrayList tabContexte = construitTab(cheminContexte+"/");
-               /* ajoute l'id dans le premier tableau */
-               tab.add(0, tabContexte.get(0));
-
-               /* tabCommun = [id | rep] */
-               ArrayList tabCommun = sortCommun(tabContexte, tab);
-
-               /* reste = vide */
-               String reste = sortReste(tab, tabCommun);
-
-               /* nbPas = 0 */
-               int nbPas = tabContexte.size() - tabCommun.size();
-               String relatif = "";
-               int i = 0;
-               while (i < nbPas) {
-                 relatif += "../";
-                 i++;
-               }
-
-               if (reste.equals(""))
-                 relatif += fichier;
-               else relatif += reste + "/" + fichier;
-
-   	        /* relatif = vide */
-               apres = relatif + apres;
-               theReturn = avant + parseCodeSupprHref(scc, apres, settings, currentPath);
-            }
-         }
-         return theReturn;
-   }
+    return theReturn;
+  }
 
 }

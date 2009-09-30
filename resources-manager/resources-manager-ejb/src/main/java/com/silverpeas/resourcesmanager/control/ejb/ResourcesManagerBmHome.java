@@ -6,5 +6,5 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBHome;
 
 public interface ResourcesManagerBmHome extends EJBHome {
-    public ResourcesManagerBm create() throws RemoteException, CreateException;
+  public ResourcesManagerBm create() throws RemoteException, CreateException;
 }

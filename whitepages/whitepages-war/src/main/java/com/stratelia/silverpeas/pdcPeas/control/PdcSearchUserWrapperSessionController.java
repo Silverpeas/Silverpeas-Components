@@ -9,11 +9,11 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 
 /**
  * A simple wrapper to the userpanel.
- *
+ * 
  * @author Didier Wenzek
  */
-public class PdcSearchUserWrapperSessionController
-    extends AbstractComponentSessionController {
+public class PdcSearchUserWrapperSessionController extends
+    AbstractComponentSessionController {
 
   private Pdc m_pdc = null;
 
@@ -27,13 +27,14 @@ public class PdcSearchUserWrapperSessionController
 
   /**
    * Standard Session Controller Constructeur
-   *
-   * @param mainSessionCtrl   The full work session.
-   * @param componentContext  The context of this component session.
+   * 
+   * @param mainSessionCtrl
+   *          The full work session.
+   * @param componentContext
+   *          The context of this component session.
    */
   public PdcSearchUserWrapperSessionController(
-      MainSessionController mainSessionCtrl,
-      ComponentContext componentContext) {
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
         "com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle",
         "com.stratelia.silverpeas.pdcPeas.settings.pdcPeasIcons");
@@ -91,7 +92,10 @@ public class PdcSearchUserWrapperSessionController
   /**
    * Set the selected user (if any).
    */
-  public void setSelectedUserIds(String selectedUserIds) {//parcours de la liste userCardId, userCardId, userCardId ...
+  public void setSelectedUserIds(String selectedUserIds) {// parcours de la
+                                                          // liste userCardId,
+                                                          // userCardId,
+                                                          // userCardId ...
     // Construction d'une liste de GlobalSilverContent à partir de ces Id
   }
 
@@ -105,9 +109,10 @@ public class PdcSearchUserWrapperSessionController
    * Reads the selection made with the user panel.
    */
   public void getUserSelection() {
-    //get selected objects from PDC
+    // get selected objects from PDC
     selectedUsers = getPdc().getSelectedSilverContents();
   }
+
   /**
    * The HTML form name whose user element must be set.
    */

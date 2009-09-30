@@ -44,53 +44,45 @@ import com.stratelia.webactiv.util.JNDINames;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class ForumsStatistics implements ComponentStatisticsInterface
-{
+public class ForumsStatistics implements ComponentStatisticsInterface {
 
-    private ForumsBM forumsBM = null;
+  private ForumsBM forumsBM = null;
 
-    public Collection getVolume(String spaceId, String componentId) throws Exception
-    {
-        ArrayList couples = new ArrayList();
-        ArrayList forums = getForums(spaceId, componentId);
-        Forum forum;
-        for (int i = 0, n = forums.size(); i < n; i++)
-        {
-        	forum = (Forum)forums.get(i);
-            UserIdCountVolumeCouple couple = new UserIdCountVolumeCouple();
-            couple.setUserId(forum.getCategory());
-            couple.setCountVolume(1);
-            couples.add(couple);
-        }
-        return couples;
+  public Collection getVolume(String spaceId, String componentId)
+      throws Exception {
+    ArrayList couples = new ArrayList();
+    ArrayList forums = getForums(spaceId, componentId);
+    Forum forum;
+    for (int i = 0, n = forums.size(); i < n; i++) {
+      forum = (Forum) forums.get(i);
+      UserIdCountVolumeCouple couple = new UserIdCountVolumeCouple();
+      couple.setUserId(forum.getCategory());
+      couple.setCountVolume(1);
+      couples.add(couple);
     }
+    return couples;
+  }
 
-
-    private ForumsBM getForumsBM()
-    {
-        if (forumsBM == null)
-        {
-            try
-            {
-   				ForumsBMHome forumsBMHome = (ForumsBMHome) EJBUtilitaire.getEJBObjectRef(
-   					JNDINames.FORUMSBM_EJBHOME, ForumsBMHome.class);
-				forumsBM = forumsBMHome.create();
-            }
-            catch (Exception e)
-            {
-                throw new EJBException(e);
-            }
-        }
-        return forumsBM;
+  private ForumsBM getForumsBM() {
+    if (forumsBM == null) {
+      try {
+        ForumsBMHome forumsBMHome = (ForumsBMHome) EJBUtilitaire
+            .getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBMHome.class);
+        forumsBM = forumsBMHome.create();
+      } catch (Exception e) {
+        throw new EJBException(e);
+      }
     }
+    return forumsBM;
+  }
 
-    public ArrayList getForums(String spaceId, String componentId) throws RemoteException
-    {
-        return getForumsBM().getForums(new ForumPK(componentId, spaceId));
-    }
-	
+  public ArrayList getForums(String spaceId, String componentId)
+      throws RemoteException {
+    return getForumsBM().getForums(new ForumPK(componentId, spaceId));
+  }
+
 }

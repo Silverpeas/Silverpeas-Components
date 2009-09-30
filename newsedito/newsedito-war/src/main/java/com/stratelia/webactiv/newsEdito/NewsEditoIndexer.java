@@ -6,12 +6,13 @@ import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterfa
 import com.stratelia.webactiv.newsEdito.control.NewsEditoSessionController;
 
 public class NewsEditoIndexer implements ComponentIndexerInterface {
-     
-    private NewsEditoSessionController newsEdito = null;
-    
-    public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws Exception {
-        newsEdito = new NewsEditoSessionController(mainSessionCtrl, context);
 
-		newsEdito.index();
-    }
+  private NewsEditoSessionController newsEdito = null;
+
+  public void index(MainSessionController mainSessionCtrl,
+      ComponentContext context) throws Exception {
+    newsEdito = new NewsEditoSessionController(mainSessionCtrl, context);
+
+    newsEdito.index();
+  }
 }

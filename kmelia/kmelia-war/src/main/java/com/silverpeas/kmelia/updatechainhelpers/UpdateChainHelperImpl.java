@@ -4,24 +4,25 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 public class UpdateChainHelperImpl implements UpdateChainHelper {
 
-	private UpdateChainHelperContext updateChainHelperContext;
-	
-	public UpdateChainHelperContext getUpdateChainHelperContext() {
-		return updateChainHelperContext;
-	}
+  private UpdateChainHelperContext updateChainHelperContext;
 
-	public void setUpdateChainHelperContext(UpdateChainHelperContext updateChainHelperContext) {
-		this.updateChainHelperContext = updateChainHelperContext;
-	}
+  public UpdateChainHelperContext getUpdateChainHelperContext() {
+    return updateChainHelperContext;
+  }
 
-	public void execute(UpdateChainHelperContext uchc) {
-		// TODO Auto-generated method stub
-		
-	}
+  public void setUpdateChainHelperContext(
+      UpdateChainHelperContext updateChainHelperContext) {
+    this.updateChainHelperContext = updateChainHelperContext;
+  }
 
-	public PublicationDetail setPublicationDetail() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  public void execute(UpdateChainHelperContext uchc) {
+    // TODO Auto-generated method stub
+
+  }
+
+  public PublicationDetail setPublicationDetail() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
 }

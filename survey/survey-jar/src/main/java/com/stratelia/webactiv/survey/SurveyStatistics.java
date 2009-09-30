@@ -20,108 +20,106 @@ import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class SurveyStatistics implements ComponentStatisticsInterface
-{
+public class SurveyStatistics implements ComponentStatisticsInterface {
 
   private QuestionContainerBm questionContainerBm = null;
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param spaceId
-     * @param componentId
-     *
-     * @return
-     *
-     * @see
-     */
-    public Collection getVolume(String spaceId, String componentId) throws Exception
-    {
-        ArrayList  myArrayList = new ArrayList();
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param spaceId
+   * @param componentId
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public Collection getVolume(String spaceId, String componentId)
+      throws Exception {
+    ArrayList myArrayList = new ArrayList();
 
-        Collection c = getOpenedSurveys(spaceId, componentId);
-        addSurveys(c, myArrayList);
-        c = getClosedSurveys(spaceId, componentId);
-        addSurveys(c, myArrayList);
-        c = getInWaitSurveys(spaceId, componentId);
-        addSurveys(c, myArrayList);
+    Collection c = getOpenedSurveys(spaceId, componentId);
+    addSurveys(c, myArrayList);
+    c = getClosedSurveys(spaceId, componentId);
+    addSurveys(c, myArrayList);
+    c = getInWaitSurveys(spaceId, componentId);
+    addSurveys(c, myArrayList);
 
-        return myArrayList;
+    return myArrayList;
+  }
+
+  private void addSurveys(Collection c, ArrayList al) {
+    Iterator iter = c.iterator();
+    while (iter.hasNext()) {
+      QuestionContainerHeader surveyHeader = (QuestionContainerHeader) iter
+          .next();
+
+      UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
+      myCouple.setUserId(surveyHeader.getCreatorId());
+      myCouple.setCountVolume(1);
+      al.add(myCouple);
     }
+  }
 
-    private void addSurveys(Collection c, ArrayList al)
-    {
-        Iterator   iter = c.iterator();
-        while (iter.hasNext())
-        {
-            QuestionContainerHeader surveyHeader = (QuestionContainerHeader) iter.next();
-
-            UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-            myCouple.setUserId(surveyHeader.getCreatorId());
-            myCouple.setCountVolume(1);
-            al.add(myCouple);
-        }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @return
+   * 
+   * @see
+   */
+  private QuestionContainerBm getQuestionContainerBm() {
+    if (questionContainerBm == null) {
+      try {
+        QuestionContainerBmHome questionContainerBmHome = (QuestionContainerBmHome) EJBUtilitaire
+            .getEJBObjectRef(JNDINames.QUESTIONCONTAINERBM_EJBHOME,
+                QuestionContainerBmHome.class);
+        questionContainerBm = questionContainerBmHome.create();
+      } catch (Exception e) {
+        throw new EJBException(e);
+      }
     }
+    return questionContainerBm;
+  }
 
-    /**
-     * Method declaration
-     *
-     *
-     * @return
-     *
-     * @see
-     */
-    private QuestionContainerBm getQuestionContainerBm()
-    {
-        if (questionContainerBm == null)
-        {
-            try
-            {
-                QuestionContainerBmHome questionContainerBmHome = (QuestionContainerBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBmHome.class);
-                questionContainerBm = questionContainerBmHome.create();
-            }
-            catch (Exception e)
-            {
-                throw new EJBException(e);
-            }
-        }
-        return questionContainerBm;
-    }
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param spaceId
+   * @param componentId
+   * 
+   * @return
+   * 
+   * @throws RemoteException
+   * 
+   * @see
+   */
 
-    /**
-     * Method declaration
-     *
-     *
-     * @param spaceId
-     * @param componentId
-     *
-     * @return
-     *
-     * @throws RemoteException
-     *
-     * @see
-     */
+  public Collection getOpenedSurveys(String spaceId, String componentId)
+      throws RemoteException {
+    Collection result = getQuestionContainerBm().getOpenedQuestionContainers(
+        new QuestionContainerPK(null, spaceId, componentId));
+    return result;
+  }
 
-    public Collection getOpenedSurveys(String spaceId, String componentId) throws RemoteException
-    {
-        Collection result = getQuestionContainerBm().getOpenedQuestionContainers(new QuestionContainerPK(null, spaceId, componentId));
-        return result;
-    }
+  public Collection getClosedSurveys(String spaceId, String componentId)
+      throws RemoteException {
+    Collection result = getQuestionContainerBm().getClosedQuestionContainers(
+        new QuestionContainerPK(null, spaceId, componentId));
+    return result;
+  }
 
-    public Collection getClosedSurveys(String spaceId, String componentId) throws RemoteException
-    {
-        Collection result = getQuestionContainerBm().getClosedQuestionContainers(new QuestionContainerPK(null, spaceId, componentId));
-        return result;
-    }
-
-    public Collection getInWaitSurveys(String spaceId, String componentId) throws RemoteException
-    {
-        Collection result = getQuestionContainerBm().getInWaitQuestionContainers(new QuestionContainerPK(null, spaceId, componentId));
-        return result;
-    }
+  public Collection getInWaitSurveys(String spaceId, String componentId)
+      throws RemoteException {
+    Collection result = getQuestionContainerBm().getInWaitQuestionContainers(
+        new QuestionContainerPK(null, spaceId, componentId));
+    return result;
+  }
 }

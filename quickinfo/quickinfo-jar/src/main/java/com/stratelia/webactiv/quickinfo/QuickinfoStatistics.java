@@ -19,7 +19,6 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
-
 /*
  * CVS Informations
  *
@@ -51,56 +50,53 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class QuickinfoStatistics implements ComponentStatisticsInterface
-{
+public class QuickinfoStatistics implements ComponentStatisticsInterface {
 
-    private PublicationBm publicationBm = null;
+  private PublicationBm publicationBm = null;
 
-    public Collection getVolume(String spaceId, String componentId) throws Exception
-    {
-        ArrayList  myArrayList = new ArrayList();
-        Collection c = getQuickInfos(spaceId, componentId);
-        Iterator   iter = c.iterator();
-        while (iter.hasNext())
-        {
-            PublicationDetail       detail = (PublicationDetail) iter.next();
+  public Collection getVolume(String spaceId, String componentId)
+      throws Exception {
+    ArrayList myArrayList = new ArrayList();
+    Collection c = getQuickInfos(spaceId, componentId);
+    Iterator iter = c.iterator();
+    while (iter.hasNext()) {
+      PublicationDetail detail = (PublicationDetail) iter.next();
 
-            UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
+      UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
 
-            myCouple.setUserId(detail.getCreatorId());
-            myCouple.setCountVolume(1);
-            myArrayList.add(myCouple);
-        }
-
-        return myArrayList;
+      myCouple.setUserId(detail.getCreatorId());
+      myCouple.setCountVolume(1);
+      myArrayList.add(myCouple);
     }
 
-    private PublicationBm getPublicationBm()
-    {
-        if (publicationBm == null)
-        {
-            try
-            {
-                publicationBm = ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class)).create();
-            }
-            catch (Exception e)
-            {
-                SilverTrace.error("quickinfo", "QuickinfoStatistics.getPublicationBm()", "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME , e);
-                throw new EJBException(e);
-            }
-        }
-        return publicationBm;
-    }
+    return myArrayList;
+  }
 
-    public Collection getQuickInfos(String spaceId, String componentId) throws RemoteException
-    {
-        Collection result = getPublicationBm().getOrphanPublications(new PublicationPK("", spaceId, componentId));
-
-        return result;
+  private PublicationBm getPublicationBm() {
+    if (publicationBm == null) {
+      try {
+        publicationBm = ((PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class)).create();
+      } catch (Exception e) {
+        SilverTrace.error("quickinfo",
+            "QuickinfoStatistics.getPublicationBm()",
+            "root.MSG_EJB_CREATE_FAILED", JNDINames.PUBLICATIONBM_EJBHOME, e);
+        throw new EJBException(e);
+      }
     }
+    return publicationBm;
+  }
+
+  public Collection getQuickInfos(String spaceId, String componentId)
+      throws RemoteException {
+    Collection result = getPublicationBm().getOrphanPublications(
+        new PublicationPK("", spaceId, componentId));
+
+    return result;
+  }
 
 }

@@ -9,40 +9,41 @@ import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterfa
 import com.stratelia.webactiv.survey.control.SurveySessionController;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
 
-
 public class SurveyIndexer implements ComponentIndexerInterface {
-     
-    private SurveySessionController scc = null;
-    
-    public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws SurveyException {
 
-        scc = new SurveySessionController(mainSessionCtrl, context);
+  private SurveySessionController scc = null;
 
-        indexOpenedSurveys();
-        indexClosedSurveys();
-        indexInWaitSurveys();
+  public void index(MainSessionController mainSessionCtrl,
+      ComponentContext context) throws SurveyException {
+
+    scc = new SurveySessionController(mainSessionCtrl, context);
+
+    indexOpenedSurveys();
+    indexClosedSurveys();
+    indexInWaitSurveys();
+  }
+
+  private void indexOpenedSurveys() throws SurveyException {
+    Collection surveys = scc.getOpenedSurveys();
+    indexSurveys(surveys);
+  }
+
+  private void indexClosedSurveys() throws SurveyException {
+    Collection surveys = scc.getClosedSurveys();
+    indexSurveys(surveys);
+  }
+
+  private void indexInWaitSurveys() throws SurveyException {
+    Collection surveys = scc.getInWaitSurveys();
+    indexSurveys(surveys);
+  }
+
+  private void indexSurveys(Collection surveys) throws SurveyException {
+    Iterator it = surveys.iterator();
+    while (it.hasNext()) {
+      QuestionContainerHeader surveyHeader = (QuestionContainerHeader) it
+          .next();
+      scc.updateSurveyHeader(surveyHeader, surveyHeader.getPK().getId());
     }
-
-    private void indexOpenedSurveys() throws SurveyException {
-        Collection surveys = scc.getOpenedSurveys();
-        indexSurveys(surveys);
-    }
-
-    private void indexClosedSurveys() throws SurveyException {
-        Collection surveys = scc.getClosedSurveys();
-        indexSurveys(surveys);
-    }
-
-    private void indexInWaitSurveys() throws SurveyException {
-        Collection surveys = scc.getInWaitSurveys();
-        indexSurveys(surveys);
-    }
-
-    private void indexSurveys(Collection surveys) throws SurveyException {
-        Iterator it = surveys.iterator();
-        while (it.hasNext()) {
-            QuestionContainerHeader surveyHeader = (QuestionContainerHeader) it.next();
-            scc.updateSurveyHeader(surveyHeader, surveyHeader.getPK().getId());
-        }
-    }
+  }
 }

@@ -16,11 +16,11 @@ public class GoToMessage extends GoTo {
       HttpServletResponse response) throws Exception {
     Message message = ServicesFactory.getMessageService().getMessage(id);
     String baseUrl = URLManager.getURL(null, message.getComponentId());
-    if(! baseUrl.endsWith("/")){
+    if (!baseUrl.endsWith("/")) {
       baseUrl = baseUrl + '/';
     }
-    String gotoURL =baseUrl + "message/" + id;
-    return "goto="+URLEncoder.encode(gotoURL, "UTF-8");
+    String gotoURL = baseUrl + "message/" + id;
+    return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
   }
 
 }

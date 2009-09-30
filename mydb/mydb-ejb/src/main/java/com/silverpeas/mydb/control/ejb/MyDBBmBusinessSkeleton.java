@@ -12,22 +12,21 @@ import com.stratelia.webactiv.persistence.PersistenceException;
  * 
  * @author Antoine HEDIN
  */
-public interface MyDBBmBusinessSkeleton
-{
-	
-	public Collection getConnectionList(MyDBConnectionInfoPK pk)
-		throws RemoteException, PersistenceException;
+public interface MyDBBmBusinessSkeleton {
 
-	public void removeConnection(MyDBConnectionInfoPK pk)
-		throws RemoteException, PersistenceException;
+  public Collection getConnectionList(MyDBConnectionInfoPK pk)
+      throws RemoteException, PersistenceException;
 
-	public MyDBConnectionInfoDetail getConnection(MyDBConnectionInfoPK pk)
-		throws RemoteException, PersistenceException;
+  public void removeConnection(MyDBConnectionInfoPK pk) throws RemoteException,
+      PersistenceException;
 
-	public MyDBConnectionInfoPK addConnection(MyDBConnectionInfoDetail detail)
-		throws RemoteException, PersistenceException;
+  public MyDBConnectionInfoDetail getConnection(MyDBConnectionInfoPK pk)
+      throws RemoteException, PersistenceException;
 
-	public void updateConnection(MyDBConnectionInfoDetail detail)
-		throws RemoteException, PersistenceException;
-	  
+  public MyDBConnectionInfoPK addConnection(MyDBConnectionInfoDetail detail)
+      throws RemoteException, PersistenceException;
+
+  public void updateConnection(MyDBConnectionInfoDetail detail)
+      throws RemoteException, PersistenceException;
+
 }

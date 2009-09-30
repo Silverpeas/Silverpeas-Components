@@ -43,9 +43,9 @@ public class EntityReplaceWriter extends Writer {
 
   protected void printEntity(String name) {
     char entity = (char) HTMLEntities.get(name);
-    if(Character.isWhitespace(entity) || "nbsp".equalsIgnoreCase(name)) {
+    if (Character.isWhitespace(entity) || "nbsp".equalsIgnoreCase(name)) {
       entity = ' ';
-    }    
+    }
     super.fPrinter.print(entity);
     super.fPrinter.flush();
   }

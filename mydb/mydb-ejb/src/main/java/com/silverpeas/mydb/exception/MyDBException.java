@@ -7,23 +7,20 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * 
  * @author Antoine HEDIN
  */
-public class MyDBException
-	extends SilverpeasException
-{
-	
-	public MyDBException(String callingClass, int errorLevel, String message, Exception nested)
-	{
-		super(callingClass, errorLevel, message, nested);
-	}
+public class MyDBException extends SilverpeasException {
 
-	public MyDBException(String callingClass, int errorLevel, String message, String extraParams, Exception nested)
-	{
-		super(callingClass, errorLevel, message, extraParams, nested);
-	}
+  public MyDBException(String callingClass, int errorLevel, String message,
+      Exception nested) {
+    super(callingClass, errorLevel, message, nested);
+  }
 
-	public String getModule()
-	{
-		return "myDB";
-	}
+  public MyDBException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
+  }
+
+  public String getModule() {
+    return "myDB";
+  }
 
 }

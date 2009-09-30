@@ -3,14 +3,13 @@
  *
  * Created on 23 août 2001, 11:51
  */
- 
+
 package com.stratelia.webactiv.almanach.control.ejb;
 
-
-/** 
- *
- * @author  groccia
- * @version 
+/**
+ * 
+ * @author groccia
+ * @version
  */
 public class AlmanachPrivateException extends Exception {
 
@@ -18,8 +17,8 @@ public class AlmanachPrivateException extends Exception {
   public AlmanachPrivateException(String message) {
     super(message);
   }
-  
+
   public String getModule() {
-     return "almanach";
+    return "almanach";
   }
 }

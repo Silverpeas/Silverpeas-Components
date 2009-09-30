@@ -5,5 +5,5 @@ import javax.ejb.CreateException;
 import java.rmi.RemoteException;
 
 public interface BlogBmHome extends EJBHome {
-    public BlogBm create() throws RemoteException, CreateException;
+  public BlogBm create() throws RemoteException, CreateException;
 }

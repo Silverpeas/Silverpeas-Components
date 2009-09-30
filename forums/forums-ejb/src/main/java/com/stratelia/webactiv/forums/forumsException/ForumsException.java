@@ -12,21 +12,23 @@ public class ForumsException extends SilverpeasException {
     super(callingClass, errorLevel, message);
   }
 
-  public ForumsException(String callingClass, int errorLevel, String message, String extraParams) {
-	super(callingClass, errorLevel, message, extraParams);
+  public ForumsException(String callingClass, int errorLevel, String message,
+      String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
   }
 
-  public ForumsException(String callingClass, int errorLevel, String message, Exception nested) {
-	super(callingClass, errorLevel, message, nested);
+  public ForumsException(String callingClass, int errorLevel, String message,
+      Exception nested) {
+    super(callingClass, errorLevel, message, nested);
   }
 
-  public ForumsException(String callingClass, int errorLevel, String message, String extraParams,
-	                             Exception nested) {
-	super(callingClass, errorLevel, message, extraParams, nested);
+  public ForumsException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
   }
 
   public String getModule() {
-	 return "forums";
+    return "forums";
   }
-  
+
 }

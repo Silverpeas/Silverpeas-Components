@@ -4,45 +4,43 @@ import java.util.List;
 
 public class Treeview {
 
-	private String 	path = null;
-	private List	tree = null;
-	private int		nbAliases = 0;
-	private String	componentId = null;
-	
-	public Treeview(String path, List tree, String componentId)
-	{
-		this.path = path;
-		this.tree = tree;
-		this.componentId = componentId;
-	}
+  private String path = null;
+  private List tree = null;
+  private int nbAliases = 0;
+  private String componentId = null;
 
-	public String getComponentId() {
-		return componentId;
-	}
+  public Treeview(String path, List tree, String componentId) {
+    this.path = path;
+    this.tree = tree;
+    this.componentId = componentId;
+  }
 
-	public String getPath() {
-		return path;
-	}
+  public String getComponentId() {
+    return componentId;
+  }
 
-	public void setPath(String path) {
-		this.path = path;
-	}
+  public String getPath() {
+    return path;
+  }
 
-	public List getTree() {
-		return tree;
-	}
+  public void setPath(String path) {
+    this.path = path;
+  }
 
-	public void setTree(List tree) {
-		this.tree = tree;
-	}
+  public List getTree() {
+    return tree;
+  }
 
-	public int getNbAliases() {
-		return nbAliases;
-	}
+  public void setTree(List tree) {
+    this.tree = tree;
+  }
 
-	public void setNbAliases(int nbAliases) {
-		this.nbAliases = nbAliases;
-	}
-	
-	
+  public int getNbAliases() {
+    return nbAliases;
+  }
+
+  public void setNbAliases(int nbAliases) {
+    this.nbAliases = nbAliases;
+  }
+
 }

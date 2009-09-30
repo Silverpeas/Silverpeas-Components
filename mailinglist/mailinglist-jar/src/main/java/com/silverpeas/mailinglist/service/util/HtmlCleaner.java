@@ -7,6 +7,6 @@ public interface HtmlCleaner {
   public void setSummarySize(int size);
 
   public String getSummary();
-  
+
   public void parse(Reader in) throws IOException;
 }

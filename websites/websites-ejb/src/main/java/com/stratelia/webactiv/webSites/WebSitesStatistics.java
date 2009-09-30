@@ -51,58 +51,52 @@ import com.stratelia.webactiv.webSites.control.ejb.WebSiteBmHome;
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class WebSitesStatistics implements ComponentStatisticsInterface
-{
+public class WebSitesStatistics implements ComponentStatisticsInterface {
 
-    private WebSiteBm webSiteEjb = null;
+  private WebSiteBm webSiteEjb = null;
 
-    public Collection getVolume(String spaceId, String componentId) throws Exception
-    {
-        ArrayList  myArrayList = new ArrayList();
-        Collection c = getWebSites(spaceId, componentId);
-        Iterator   iter = c.iterator();
-        while (iter.hasNext())
-        {
-            iter.next();
+  public Collection getVolume(String spaceId, String componentId)
+      throws Exception {
+    ArrayList myArrayList = new ArrayList();
+    Collection c = getWebSites(spaceId, componentId);
+    Iterator iter = c.iterator();
+    while (iter.hasNext()) {
+      iter.next();
 
-            UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-            // ATTENTION getAuthor ne renvoie pas l'id mais Nom+Prénom
-            //myCouple.setUserId(detail.getAuthor());
-            myCouple.setUserId("-2"); // unknown userId
-            myCouple.setCountVolume(1);
-            myArrayList.add(myCouple);
-        }
-
-        return myArrayList;
+      UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
+      // ATTENTION getAuthor ne renvoie pas l'id mais Nom+Prénom
+      // myCouple.setUserId(detail.getAuthor());
+      myCouple.setUserId("-2"); // unknown userId
+      myCouple.setCountVolume(1);
+      myArrayList.add(myCouple);
     }
 
-    private WebSiteBm getWebSiteEjb()
-    {
-        if (webSiteEjb == null)
-        {
-            try
-            {
-                WebSiteBmHome webSiteEjbHome = (WebSiteBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.WEBSITESBM_EJBHOME, WebSiteBmHome.class);
-                webSiteEjb =  webSiteEjbHome.create();
-            }
-            catch (Exception e)
-            {
-                throw new EJBException(e);
-            }
-        }
-        return webSiteEjb;
-    }
+    return myArrayList;
+  }
 
-    public Collection getWebSites(String spaceId, String componentId) throws RemoteException
-    {
-        getWebSiteEjb().setPrefixTableName(spaceId);
-        getWebSiteEjb().setComponentId(componentId);
-
-        Collection result = getWebSiteEjb().getAllWebSite();
-        return result;
+  private WebSiteBm getWebSiteEjb() {
+    if (webSiteEjb == null) {
+      try {
+        WebSiteBmHome webSiteEjbHome = (WebSiteBmHome) EJBUtilitaire
+            .getEJBObjectRef(JNDINames.WEBSITESBM_EJBHOME, WebSiteBmHome.class);
+        webSiteEjb = webSiteEjbHome.create();
+      } catch (Exception e) {
+        throw new EJBException(e);
+      }
     }
+    return webSiteEjb;
+  }
+
+  public Collection getWebSites(String spaceId, String componentId)
+      throws RemoteException {
+    getWebSiteEjb().setPrefixTableName(spaceId);
+    getWebSiteEjb().setComponentId(componentId);
+
+    Collection result = getWebSiteEjb().getAllWebSite();
+    return result;
+  }
 }

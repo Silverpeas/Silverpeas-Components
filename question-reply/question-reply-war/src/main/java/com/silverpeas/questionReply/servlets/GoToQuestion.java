@@ -11,25 +11,25 @@ import com.silverpeas.questionReply.model.Question;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class GoToQuestion extends GoTo
-{
-	public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res) throws Exception
-	{
-		Question question = getQuestionManager().getQuestion(new Long(objectId).longValue());
-		String componentId = question.getInstanceId();
+public class GoToQuestion extends GoTo {
+  public String getDestination(String objectId, HttpServletRequest req,
+      HttpServletResponse res) throws Exception {
+    Question question = getQuestionManager().getQuestion(
+        new Long(objectId).longValue());
+    String componentId = question.getInstanceId();
 
-		SilverTrace.info("questionReply", "GoToQuestion.doPost", "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
+    SilverTrace.info("questionReply", "GoToQuestion.doPost",
+        "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
 
-		String gotoURL = URLManager.getURL(null, componentId) + question._getURL();
+    String gotoURL = URLManager.getURL(null, componentId) + question._getURL();
 
-		return "goto=" + URLEncoder.encode(gotoURL, "UTF-8"); 
-	}
+    return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
+  }
 
-	private QuestionManager getQuestionManager()
-	{
-		QuestionManager questionManager = null;
-		if (questionManager == null)
-			questionManager  = QuestionManager.getInstance();
-		return questionManager;
-	}
+  private QuestionManager getQuestionManager() {
+    QuestionManager questionManager = null;
+    if (questionManager == null)
+      questionManager = QuestionManager.getInstance();
+    return questionManager;
+  }
 }

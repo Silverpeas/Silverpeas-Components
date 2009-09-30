@@ -42,36 +42,34 @@ import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class QuestionReplyStatistics implements ComponentStatisticsInterface
-{
+public class QuestionReplyStatistics implements ComponentStatisticsInterface {
 
-    public Collection getVolume(String spaceId, String componentId) throws Exception
-    {
-        ArrayList  myArrayList = new ArrayList();
-        Collection c = getQuestionReplys(spaceId, componentId);
-        Iterator   iter = c.iterator();
-        while (iter.hasNext())
-        {
-            Question       detail = (Question) iter.next();
+  public Collection getVolume(String spaceId, String componentId)
+      throws Exception {
+    ArrayList myArrayList = new ArrayList();
+    Collection c = getQuestionReplys(spaceId, componentId);
+    Iterator iter = c.iterator();
+    while (iter.hasNext()) {
+      Question detail = (Question) iter.next();
 
-            UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
+      UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
 
-            myCouple.setUserId(detail.getCreatorId());
-            myCouple.setCountVolume(1);
-            myArrayList.add(myCouple);
-        }
-
-        return myArrayList;
+      myCouple.setUserId(detail.getCreatorId());
+      myCouple.setCountVolume(1);
+      myArrayList.add(myCouple);
     }
 
-    public Collection getQuestionReplys(String spaceId, String componentId) throws QuestionReplyException
-    {
-        Collection result = QuestionManager.getInstance().getQuestions(componentId);
-        return result;
-    }
+    return myArrayList;
+  }
+
+  public Collection getQuestionReplys(String spaceId, String componentId)
+      throws QuestionReplyException {
+    Collection result = QuestionManager.getInstance().getQuestions(componentId);
+    return result;
+  }
 
 }

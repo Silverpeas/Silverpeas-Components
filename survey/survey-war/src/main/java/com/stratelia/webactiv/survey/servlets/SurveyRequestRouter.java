@@ -16,41 +16,47 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 
-
 public class SurveyRequestRouter extends ComponentRequestRouter {
 
   public String getFlag(String[] profiles) {
-      String flag = "userClassic";
-      for (int i=0; i < profiles.length; i++) {
-		if (profiles[i].equals("userMultiple"))
-			flag = profiles[i];
-        // if admin, return it, we won't find a better profile
-        if (profiles[i].equals("admin")) return profiles[i];
-      }
-      return flag;
+    String flag = "userClassic";
+    for (int i = 0; i < profiles.length; i++) {
+      if (profiles[i].equals("userMultiple"))
+        flag = profiles[i];
+      // if admin, return it, we won't find a better profile
+      if (profiles[i].equals("admin"))
+        return profiles[i];
     }
+    return flag;
+  }
 
-  public ComponentSessionController createComponentSessionController(MainSessionController mainSessionCtrl, ComponentContext componentContext)  {
-      ComponentSessionController component = (ComponentSessionController) new SurveySessionController(mainSessionCtrl, componentContext);
-   return component;
+  public ComponentSessionController createComponentSessionController(
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+    ComponentSessionController component = (ComponentSessionController) new SurveySessionController(
+        mainSessionCtrl, componentContext);
+    return component;
   }
 
   /**
-     * This method has to be implemented in the component request rooter class.
-     * returns the session control bean name to be put in the request object
-     * ex : for almanach, returns "almanach"
-     */
+   * This method has to be implemented in the component request rooter class.
+   * returns the session control bean name to be put in the request object ex :
+   * for almanach, returns "almanach"
+   */
   public String getSessionControlBeanName() {
-      return "surveyScc";
+    return "surveyScc";
   }
 
-    /**
-     * This method has to be implemented by the component request rooter
-     * it has to compute a destination page
-     * @param function The entering request function (ex : "Main.jsp")
-     * @param componentSC The component Session Control, build and initialised.
-     * @return The complete destination URL for a forward (ex : "/almanach/jsp/almanach.jsp?flag=user")
-     */
+  /**
+   * This method has to be implemented by the component request rooter it has to
+   * compute a destination page
+   * 
+   * @param function
+   *          The entering request function (ex : "Main.jsp")
+   * @param componentSC
+   *          The component Session Control, build and initialised.
+   * @return The complete destination URL for a forward (ex :
+   *         "/almanach/jsp/almanach.jsp?flag=user")
+   */
   public String getDestination(String function, ComponentSessionController componentSC, HttpServletRequest request)
   {
       SilverTrace.info("Survey","SurveyRequestRouter.getDestination","Survey.MSG_ENTRY_METHOD");
@@ -203,25 +209,26 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
 
       return destination;
   }
-  
+
   /**
-   * Read cookie from anonymous user
-   * and set status of anonymous user to allow him to vote or not 
+   * Read cookie from anonymous user and set status of anonymous user to allow
+   * him to vote or not
+   * 
    * @param request
    * @param surveyScc
    */
-  private void setAnonymousParticipationStatus(HttpServletRequest request, SurveySessionController surveySC)
-  {
-	  surveySC.hasAlreadyParticipated(false);
-	  if (request.getParameter("SurveyId") != null)
-	  {
-		  Cookie[] cookies = request.getCookies();
-		  for (int i=0; i< cookies.length; i++)
-		  {
-			Cookie currentCookie = cookies[i];
-			if (currentCookie.getName().equals(SurveySessionController.COOKIE_NAME+request.getParameter("SurveyId")))
-				surveySC.hasAlreadyParticipated(true);
-		  }
-	  }
+  private void setAnonymousParticipationStatus(HttpServletRequest request,
+      SurveySessionController surveySC) {
+    surveySC.hasAlreadyParticipated(false);
+    if (request.getParameter("SurveyId") != null) {
+      Cookie[] cookies = request.getCookies();
+      for (int i = 0; i < cookies.length; i++) {
+        Cookie currentCookie = cookies[i];
+        if (currentCookie.getName().equals(
+            SurveySessionController.COOKIE_NAME
+                + request.getParameter("SurveyId")))
+          surveySC.hasAlreadyParticipated(true);
+      }
+    }
   }
 }

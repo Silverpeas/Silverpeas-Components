@@ -12,21 +12,23 @@ public class WebSitesException extends SilverpeasException {
     super(callingClass, errorLevel, message);
   }
 
-  public WebSitesException(String callingClass, int errorLevel, String message, String extraParams) {
-	super(callingClass, errorLevel, message, extraParams);
+  public WebSitesException(String callingClass, int errorLevel, String message,
+      String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
   }
 
-  public WebSitesException(String callingClass, int errorLevel, String message, Exception nested) {
-	super(callingClass, errorLevel, message, nested);
+  public WebSitesException(String callingClass, int errorLevel, String message,
+      Exception nested) {
+    super(callingClass, errorLevel, message, nested);
   }
 
-  public WebSitesException(String callingClass, int errorLevel, String message, String extraParams,
-	                             Exception nested) {
-	super(callingClass, errorLevel, message, extraParams, nested);
+  public WebSitesException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
   }
 
   public String getModule() {
-	 return "webSites";
+    return "webSites";
   }
-  
+
 }

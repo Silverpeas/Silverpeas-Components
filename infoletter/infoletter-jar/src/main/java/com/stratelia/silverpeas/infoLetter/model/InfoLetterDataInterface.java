@@ -11,12 +11,11 @@ import java.util.Vector;
  * 
  * @author
  */
-public interface InfoLetterDataInterface
-{
+public interface InfoLetterDataInterface {
 
   /**
-   * Ouverture de la connection vers
-   * la source de donnees
+   * Ouverture de la connection vers la source de donnees
+   * 
    * @return Connection la connection
    * @exception InfoLetterException
    * @author frageade
@@ -24,62 +23,64 @@ public interface InfoLetterDataInterface
    */
   public Connection openConnection() throws InfoLetterException;
 
-	// Creation d'une lettre d'information
-	public void createInfoLetter(InfoLetter ie);
+  // Creation d'une lettre d'information
+  public void createInfoLetter(InfoLetter ie);
 
-	// Suppression d'une lettre d'information
-	public void deleteInfoLetter(WAPrimaryKey pk);
+  // Suppression d'une lettre d'information
+  public void deleteInfoLetter(WAPrimaryKey pk);
 
-	// Mise a jour d'une lettre d'information
-	public void updateInfoLetter(InfoLetter ie);
+  // Mise a jour d'une lettre d'information
+  public void updateInfoLetter(InfoLetter ie);
 
-	// Recuperation de la liste des lettres
-	public Vector getInfoLetters(String instanceId);
+  // Recuperation de la liste des lettres
+  public Vector getInfoLetters(String instanceId);
 
-	// Recuperation de la liste des publications
-	public Vector getInfoLetterPublications(WAPrimaryKey letterPK);
+  // Recuperation de la liste des publications
+  public Vector getInfoLetterPublications(WAPrimaryKey letterPK);
 
-	// Creation d'une publication
-	public void createInfoLetterPublication(InfoLetterPublicationPdC ilp, String userId);
+  // Creation d'une publication
+  public void createInfoLetterPublication(InfoLetterPublicationPdC ilp,
+      String userId);
 
-	// Suppression d'une publication
-	public void deleteInfoLetterPublication(WAPrimaryKey pk, String componentId);
+  // Suppression d'une publication
+  public void deleteInfoLetterPublication(WAPrimaryKey pk, String componentId);
 
-	// Mise a jour d'une publication
-	public void updateInfoLetterPublication(InfoLetterPublicationPdC ilp);
+  // Mise a jour d'une publication
+  public void updateInfoLetterPublication(InfoLetterPublicationPdC ilp);
 
-	// Validation d'une publication
-	public void validateInfoLetterPublication(InfoLetterPublication ilp);
+  // Validation d'une publication
+  public void validateInfoLetterPublication(InfoLetterPublication ilp);
 
-	// Recuperation d'une lettre par sa clef
-	public InfoLetter getInfoLetter(WAPrimaryKey letterPK);
+  // Recuperation d'une lettre par sa clef
+  public InfoLetter getInfoLetter(WAPrimaryKey letterPK);
 
-	// Recuperation d'une publication par sa clef
-	public InfoLetterPublicationPdC getInfoLetterPublication(WAPrimaryKey publiPK);
+  // Recuperation d'une publication par sa clef
+  public InfoLetterPublicationPdC getInfoLetterPublication(WAPrimaryKey publiPK);
 
-	// Creation de la lettre par defaut a l'instanciation
-	public InfoLetter createDefaultLetter(String spaceId, String componentId);
+  // Creation de la lettre par defaut a l'instanciation
+  public InfoLetter createDefaultLetter(String spaceId, String componentId);
 
-	// Recuperation de la liste des abonnes internes
-	public Vector getInternalSuscribers(WAPrimaryKey letterPK);
+  // Recuperation de la liste des abonnes internes
+  public Vector getInternalSuscribers(WAPrimaryKey letterPK);
 
-	// Mise a jour de la liste des abonnes internes
-	public void setInternalSuscribers(WAPrimaryKey letterPK, Vector abonnes);
+  // Mise a jour de la liste des abonnes internes
+  public void setInternalSuscribers(WAPrimaryKey letterPK, Vector abonnes);
 
-	// Recuperation de la liste des emails externes
-	public Vector getExternalsSuscribers(WAPrimaryKey letterPK);
+  // Recuperation de la liste des emails externes
+  public Vector getExternalsSuscribers(WAPrimaryKey letterPK);
 
-	// Sauvegarde de la liste des emails externes
-	public void setExternalsSuscribers(WAPrimaryKey letterPK, Vector emails);
+  // Sauvegarde de la liste des emails externes
+  public void setExternalsSuscribers(WAPrimaryKey letterPK, Vector emails);
 
-	// abonnement ou desabonnement d'un utilisateur interne
-	public void toggleSuscriber(String userId, WAPrimaryKey letterPK, boolean flag);
+  // abonnement ou desabonnement d'un utilisateur interne
+  public void toggleSuscriber(String userId, WAPrimaryKey letterPK, boolean flag);
 
-	// test d'abonnement d'un utilisateur interne
-	public boolean isSuscriber(String userId, WAPrimaryKey letterPK);
+  // test d'abonnement d'un utilisateur interne
+  public boolean isSuscriber(String userId, WAPrimaryKey letterPK);
 
-	// initialisation du template
-	public void initTemplate(String spaceId, String componentId, WAPrimaryKey letterPK);
+  // initialisation du template
+  public void initTemplate(String spaceId, String componentId,
+      WAPrimaryKey letterPK);
 
-	public int getSilverObjectId(String pubId, String componentId);
+  public int getSilverObjectId(String pubId, String componentId);
 }

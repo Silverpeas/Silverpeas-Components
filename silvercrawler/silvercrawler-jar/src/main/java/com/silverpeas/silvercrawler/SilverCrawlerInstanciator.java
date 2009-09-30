@@ -10,22 +10,27 @@ public class SilverCrawlerInstanciator implements ComponentsInstanciatorIntf {
 
   public SilverCrawlerInstanciator() {
   }
-  
-  public void create(Connection con, String spaceId, String componentId, String userId) throws InstanciationException {
-	SilverTrace.info("silverCrawler","SilverCrawlerInstanciator.create()","root.MSG_GEN_ENTER_METHOD", "space = "+spaceId+", componentId = "+componentId+", userId ="+userId);
 
-	//insert your code here !
-	
+  public void create(Connection con, String spaceId, String componentId,
+      String userId) throws InstanciationException {
+    SilverTrace.info("silverCrawler", "SilverCrawlerInstanciator.create()",
+        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
+            + componentId + ", userId =" + userId);
+
+    // insert your code here !
+
   }
 
+  public void delete(Connection con, String spaceId, String componentId,
+      String userId) throws InstanciationException {
+    SilverTrace.info("silverCrawler", "SilverCrawlerInstanciator.delete()",
+        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
+            + componentId + ", userId =" + userId);
 
-  public void delete(Connection con, String spaceId, String componentId, String userId) throws InstanciationException 
-  {
-	SilverTrace.info("silverCrawler","SilverCrawlerInstanciator.delete()","root.MSG_GEN_ENTER_METHOD","space = "+spaceId+", componentId = "+componentId+", userId ="+userId);
+    // insert your code here !
 
-	//insert your code here !
-
-	SilverTrace.info("silverCrawler","SilverCrawlerInstanciator.delete()","root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("silverCrawler", "SilverCrawlerInstanciator.delete()",
+        "root.MSG_GEN_EXIT_METHOD");
   }
-  
+
 }

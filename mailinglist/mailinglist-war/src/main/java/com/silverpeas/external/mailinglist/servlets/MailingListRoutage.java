@@ -47,7 +47,6 @@ public interface MailingListRoutage {
   public static final String DESTINATION_DISPLAY_USERS = "users.jsp";
   public static final String DESTINATION_DISPLAY_PORTLET = "portlet.jsp";
 
-
   public static final String CURRENT_YEAR_PARAM = "currentYear";
   public static final String CURRENT_MONTH_PARAM = "currentMonth";
   public static final String CURRENT_PAGE_PARAM = "currentPage";

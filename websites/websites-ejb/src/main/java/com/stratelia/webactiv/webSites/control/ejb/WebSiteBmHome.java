@@ -20,10 +20,10 @@ import java.rmi.RemoteException;
 import javax.ejb.CreateException;
 import javax.ejb.EJBHome;
 
-/** 
- * The Home interface for WebSiteBm EJB 
+/**
+ * The Home interface for WebSiteBm EJB
  */
 public interface WebSiteBmHome extends EJBHome {
-  
-    public WebSiteBm create() throws RemoteException, CreateException;
+
+  public WebSiteBm create() throws RemoteException, CreateException;
 }

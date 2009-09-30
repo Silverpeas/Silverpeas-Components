@@ -32,17 +32,17 @@ public class MailProcessor {
   public static final String MAIL_HEADER_IN_REPLY_TO = "In-Reply-To";
 
   public static final String MAIL_HEADER_REFERENCES = "References";
-  
+
   private HtmlCleaner cleaner;
 
-  
   public void setCleaner(HtmlCleaner cleaner) {
     this.cleaner = cleaner;
     this.cleaner.setSummarySize(SUMMARY_SIZE);
   }
+
   /**
    * Processes a part for a multi-part email.
-   *
+   * 
    * @param part
    *          the part to be processed.
    * @param message
@@ -77,7 +77,7 @@ public class MailProcessor {
 
   /**
    * Processes the body (text) part of an email.
-   *
+   * 
    * @param part
    *          the text content of the email.
    * @param contentType
@@ -101,7 +101,7 @@ public class MailProcessor {
         message.setSummary(new String(message.getBody()));
       }
     } else if (message.getContentType().indexOf(MimeTypes.HTML_MIME_TYPE) >= 0) {
-      message.setBody(content);      
+      message.setBody(content);
       Reader reader = null;
       try {
         reader = new StringReader(content);
@@ -125,7 +125,7 @@ public class MailProcessor {
 
   /**
    * Replaces special chars.
-   *
+   * 
    * @param toParse
    *          the String whose chars are to be replaced.
    * @return the String without its special chars. Empty String if toParse is
@@ -152,7 +152,7 @@ public class MailProcessor {
 
   /**
    * Saves an attachment as a file, and stores the path in the message.
-   *
+   * 
    * @param part
    *          the part corresponding to the attachment.
    * @param componentId
@@ -207,7 +207,7 @@ public class MailProcessor {
 
   /**
    * Process an email, extracting attachments and constructing a Message.
-   *
+   * 
    * @param mail
    *          the email to be processed.
    * @param mailingList
@@ -273,7 +273,7 @@ public class MailProcessor {
   /**
    * Analyze the part to check if it is an attachment, a base64 encoded file or
    * some text.
-   *
+   * 
    * @param part
    *          the part to be analyzed.
    * @return true if it is some text - false otherwise.

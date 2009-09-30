@@ -87,7 +87,8 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 public class WikiJSPFilter extends WikiServletFilter {
   private Boolean m_useOutputStream;
   private static Pattern pattern = Pattern.compile(URLManager
-      .getApplicationURL() + "/Rwiki/.*\\.jsp");
+      .getApplicationURL()
+      + "/Rwiki/.*\\.jsp");
 
   /** {@inheritDoc} */
   public void init(FilterConfig config) throws ServletException {

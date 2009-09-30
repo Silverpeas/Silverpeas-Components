@@ -9,14 +9,11 @@ import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterfa
  * 
  * @author Antoine HEDIN
  */
-public class MyDBIndexer
-	implements ComponentIndexerInterface
-{
+public class MyDBIndexer implements ComponentIndexerInterface {
 
-    public void index(MainSessionController mainSessionCtrl, ComponentContext context)
-    	throws Exception
-    {
-    	
-    }
-    
+  public void index(MainSessionController mainSessionCtrl,
+      ComponentContext context) throws Exception {
+
+  }
+
 }

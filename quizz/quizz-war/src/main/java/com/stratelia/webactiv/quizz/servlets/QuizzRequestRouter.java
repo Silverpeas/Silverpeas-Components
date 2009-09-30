@@ -59,128 +59,114 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
  * 
  * @author
  */
-public class QuizzRequestRouter extends ComponentRequestRouter
-{
+public class QuizzRequestRouter extends ComponentRequestRouter {
 
-    /**
-     * This method has to be implemented in the component request rooter class.
-     * returns the session control bean name to be put in the request object
-     * ex : for quizz, returns "quizz"
-     */
-    public String getSessionControlBeanName()
-    {
-        return "quizz";
+  /**
+   * This method has to be implemented in the component request rooter class.
+   * returns the session control bean name to be put in the request object ex :
+   * for quizz, returns "quizz"
+   */
+  public String getSessionControlBeanName() {
+    return "quizz";
+  }
+
+  /**
+   * Method declaration
+   * 
+   * 
+   * @param mainSessionCtrl
+   * @param componentContext
+   * 
+   * @return
+   * 
+   * @see
+   */
+  public ComponentSessionController createComponentSessionController(
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+    ComponentSessionController component = (ComponentSessionController) new QuizzSessionController(
+        mainSessionCtrl, componentContext);
+
+    return component;
+  }
+
+  /**
+   * This method has to be implemented by the component request rooter it has to
+   * compute a destination page
+   * 
+   * @param function
+   *          The entering request function (ex : "Main.jsp")
+   * @param componentSC
+   *          The component Session Control, build and initialised.
+   * @param request
+   *          The entering request. The request rooter need it to get parameters
+   * @return The complete destination URL for a forward (ex :
+   *         "/quizz/jsp/quizz.jsp?flag=user")
+   */
+  public String getDestination(String function,
+      ComponentSessionController componentSC, HttpServletRequest request) {
+    SilverTrace.info("Quizz", "QuizzRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE", function);
+    QuizzSessionController quizzSC = (QuizzSessionController) componentSC;
+    String destination = "";
+
+    try {
+      boolean profileError = false;
+      if (function.startsWith("Main")) {
+        // the flag is the best user's profile
+        String flag = componentSC.getUserRoleLevel();
+        if ("publisher".equals(flag) || "admin".equals(flag)) {
+          destination = "quizzAdmin.jsp";
+        } else {
+          destination = "quizzUser.jsp";
+        }
+      } else if (function.startsWith("portlet")) {
+        String flag = componentSC.getUserRoleLevel();
+        if ("publisher".equals(flag) || "admin".equals(flag))
+          destination = "quizzPortlet.jsp";
+        else
+          destination = "quizzUserPortlet.jsp";
+      } else if (function.startsWith("quizzCreator")) {
+        String flag = componentSC.getUserRoleLevel();
+
+        if ("publisher".equals(flag) || "admin".equals(flag)) {
+          destination = "quizzCreator.jsp";
+        } else {
+          profileError = true;
+        }
+      } else if (function.startsWith("searchResult")) {
+        String flag = componentSC.getUserRoleLevel();
+        String id = request.getParameter("Id");
+
+        SilverTrace.info("Quizz", "QuizzRequestRouter.getDestination()", "",
+            "id = " + id);
+
+        if ("publisher".equals(flag) || "admin".equals(flag)) {
+          destination = "quizzQuestionsNew.jsp?Action=ViewQuizz&QuizzId=" + id;
+        } else {
+          if (quizzSC.isParticipationAllowed(id))
+            destination = "quizzQuestionsNew.jsp?Action=ViewCurrentQuestions&QuizzId="
+                + id;
+          else
+            destination = "quizzResultUser.jsp";
+        }
+      } else {
+        destination = function;
+      }
+
+      if (profileError) {
+        String sessionTimeout = GeneralPropertiesManager
+            .getGeneralResourceLocator().getString("sessionTimeout");
+
+        destination = sessionTimeout;
+      } else {
+        destination = "/quizz/jsp/" + destination;
+      }
+    } catch (Exception e) {
+      request.setAttribute("javax.servlet.jsp.jspException", e);
+      destination = "/admin/jsp/errorpage.jsp";
     }
 
-
-    /**
-     * Method declaration
-     * 
-     * 
-     * @param mainSessionCtrl
-     * @param componentContext
-     * 
-     * @return
-     * 
-     * @see
-     */
-    public ComponentSessionController createComponentSessionController(MainSessionController mainSessionCtrl, ComponentContext componentContext)
-    {
-        ComponentSessionController component = (ComponentSessionController) new QuizzSessionController(mainSessionCtrl, componentContext);
-
-        return component;
-    }
-
-    /**
-     * This method has to be implemented by the component request rooter
-     * it has to compute a destination page
-     * @param function The entering request function (ex : "Main.jsp")
-     * @param componentSC The component Session Control, build and initialised.
-     * @param request The entering request. The request rooter need it to get parameters
-     * @return The complete destination URL for a forward (ex : "/quizz/jsp/quizz.jsp?flag=user")
-     */
-    public String getDestination(String function, ComponentSessionController componentSC, HttpServletRequest request)
-    {
-        SilverTrace.info("Quizz", "QuizzRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", function);
-        QuizzSessionController quizzSC = (QuizzSessionController) componentSC;
-        String  destination = "";
-        
-        try {
-			boolean profileError = false;
-			if (function.startsWith("Main"))
-			{
-			    // the flag is the best user's profile
-			    String flag = componentSC.getUserRoleLevel();
-          if ("publisher".equals(flag)||"admin".equals(flag))
-			    {
-			        destination = "quizzAdmin.jsp";
-			    }
-			    else
-			    {
-			        destination = "quizzUser.jsp";
-			    }
-			}
-			else if (function.startsWith("portlet")) 
-			{
-				String flag = componentSC.getUserRoleLevel();
-			    if ("publisher".equals(flag)||"admin".equals(flag))
-					destination = "quizzPortlet.jsp";
-				else
-					destination = "quizzUserPortlet.jsp";
-			}
-			else if (function.startsWith("quizzCreator"))
-			{
-			    String flag = componentSC.getUserRoleLevel();
-
-			    if ("publisher".equals(flag)||"admin".equals(flag))
-			    {
-			        destination = "quizzCreator.jsp";
-			    }
-			    else
-			    {
-			        profileError = true;
-			    }
-			}
-			else if (function.startsWith("searchResult"))
-			{
-			    String flag = componentSC.getUserRoleLevel();
-			    String id = request.getParameter("Id");
-
-			    SilverTrace.info("Quizz", "QuizzRequestRouter.getDestination()", "", "id = " + id);
-
-			    if ("publisher".equals(flag)||"admin".equals(flag))
-			    {
-			        destination = "quizzQuestionsNew.jsp?Action=ViewQuizz&QuizzId=" + id;
-			    }
-			    else
-			    {
-			    	if (quizzSC.isParticipationAllowed(id))
-			    		destination = "quizzQuestionsNew.jsp?Action=ViewCurrentQuestions&QuizzId=" + id;
-			    	else
-			    		destination = "quizzResultUser.jsp";
-			    }
-			}
-			else
-			{
-			    destination = function;
-			}
-
-			if (profileError)
-			{
-			    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
-
-			    destination = sessionTimeout;
-			}
-			else
-			{
-			    destination = "/quizz/jsp/" + destination;
-			}
-		} catch (Exception e) {
-			request.setAttribute("javax.servlet.jsp.jspException", e);
-			destination = "/admin/jsp/errorpage.jsp";
-		}
-
-        return destination;
-    }
+    return destination;
+  }
 
 }

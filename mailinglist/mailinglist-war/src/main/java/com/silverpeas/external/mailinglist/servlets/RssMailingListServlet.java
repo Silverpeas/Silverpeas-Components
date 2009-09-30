@@ -33,8 +33,8 @@ public class RssMailingListServlet extends RssServlet {
 
   public String getElementLink(Object element, String userId) {
     Message message = (Message) element;
-    return ServicesFactory
-        .getNotificationFormatter().prepareUrl("", message, false);
+    return ServicesFactory.getNotificationFormatter().prepareUrl("", message,
+        false);
   }
 
   public String getElementTitle(Object element, String userId) {

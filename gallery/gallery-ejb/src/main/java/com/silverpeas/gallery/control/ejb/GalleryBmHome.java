@@ -6,5 +6,5 @@ import javax.ejb.CreateException;
 import javax.ejb.EJBHome;
 
 public interface GalleryBmHome extends EJBHome {
-    public GalleryBm create() throws RemoteException, CreateException;
+  public GalleryBm create() throws RemoteException, CreateException;
 }

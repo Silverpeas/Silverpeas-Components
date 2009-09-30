@@ -9,60 +9,60 @@ import java.util.Date;
 
 /**
  * @author neysseri
- *
+ * 
  */
 public class HolidayDetail implements Serializable {
 
-	private Date 	holidayDate = null;
-	private String 	instanceId 	= null;
-	private int 	fatherId	= -1;
+  private Date holidayDate = null;
+  private String instanceId = null;
+  private int fatherId = -1;
 
-	public HolidayDetail(Date holidayDate, int fatherId, String instanceId) {
-		setDate(holidayDate);
-		setInstanceId(instanceId);
-		setFatherId(fatherId);
-	}
+  public HolidayDetail(Date holidayDate, int fatherId, String instanceId) {
+    setDate(holidayDate);
+    setInstanceId(instanceId);
+    setFatherId(fatherId);
+  }
 
-	/**
-	 * @return
-	 */
-	public int getFatherId() {
-		return fatherId;
-	}
+  /**
+   * @return
+   */
+  public int getFatherId() {
+    return fatherId;
+  }
 
-	/**
-	 * @return
-	 */
-	public Date getDate() {
-		return holidayDate;
-	}
+  /**
+   * @return
+   */
+  public Date getDate() {
+    return holidayDate;
+  }
 
-	/**
-	 * @return
-	 */
-	public String getInstanceId() {
-		return instanceId;
-	}
+  /**
+   * @return
+   */
+  public String getInstanceId() {
+    return instanceId;
+  }
 
-	/**
-	 * @param i
-	 */
-	public void setFatherId(int i) {
-		fatherId = i;
-	}
+  /**
+   * @param i
+   */
+  public void setFatherId(int i) {
+    fatherId = i;
+  }
 
-	/**
-	 * @param date
-	 */
-	public void setDate(Date date) {
-		holidayDate = date;
-	}
+  /**
+   * @param date
+   */
+  public void setDate(Date date) {
+    holidayDate = date;
+  }
 
-	/**
-	 * @param string
-	 */
-	public void setInstanceId(String string) {
-		instanceId = string;
-	}
-	
+  /**
+   * @param string
+   */
+  public void setInstanceId(String string) {
+    instanceId = string;
+  }
+
 }

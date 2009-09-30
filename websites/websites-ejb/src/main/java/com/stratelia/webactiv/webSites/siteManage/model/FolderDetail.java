@@ -16,57 +16,62 @@ public class FolderDetail extends Object implements java.io.Serializable {
   /** A NodeDetail collection representing the path from leaf to root */
   private Collection publicationDetails;
 
-  /** A int collection which contains the number of publication containing under each sub topics of the topics */
+  /**
+   * A int collection which contains the number of publication containing under
+   * each sub topics of the topics
+   */
   private Collection nbPubByTopic;
-    
-  public FolderDetail(){
-        init(null, null, null, null);
-  }
-  
-  public FolderDetail(Collection path,NodeDetail nodeDetail,Collection pubDetails,Collection nbPubByTopic) {
-        init(path, nodeDetail, pubDetails, nbPubByTopic);
+
+  public FolderDetail() {
+    init(null, null, null, null);
   }
 
-  private void init(Collection path, NodeDetail nodeDetail, Collection pubDetails, Collection nbPubByTopic) {
-        this.path = path;
-        this.nodeDetail = nodeDetail;
-        this.publicationDetails = pubDetails;
-        this.nbPubByTopic = nbPubByTopic;
+  public FolderDetail(Collection path, NodeDetail nodeDetail,
+      Collection pubDetails, Collection nbPubByTopic) {
+    init(path, nodeDetail, pubDetails, nbPubByTopic);
   }
-  
+
+  private void init(Collection path, NodeDetail nodeDetail,
+      Collection pubDetails, Collection nbPubByTopic) {
+    this.path = path;
+    this.nodeDetail = nodeDetail;
+    this.publicationDetails = pubDetails;
+    this.nbPubByTopic = nbPubByTopic;
+  }
+
   public Collection getPath() {
-        return this.path;
+    return this.path;
   }
-  
+
   public NodePK getNodePK() {
-        return this.nodeDetail.getNodePK();
+    return this.nodeDetail.getNodePK();
   }
 
   public NodeDetail getNodeDetail() {
-        return this.nodeDetail;
+    return this.nodeDetail;
   }
-  
+
   public Collection getPublicationDetails() {
-        return this.publicationDetails;
+    return this.publicationDetails;
   }
-  
+
   public Collection getNbPubByTopic() {
-        return this.nbPubByTopic;
+    return this.nbPubByTopic;
   }
 
   public void setPath(Collection path) {
-        this.path = path;
+    this.path = path;
   }
 
   public void setNodeDetail(NodeDetail nd) {
-        this.nodeDetail = nd;
+    this.nodeDetail = nd;
   }
 
   public void setPublicationDetails(Collection pd) {
-        this.publicationDetails = pd;
+    this.publicationDetails = pd;
   }
-  
+
   public void setNbPubByTopic(Collection nbPubByTopic) {
-        this.nbPubByTopic = nbPubByTopic;
+    this.nbPubByTopic = nbPubByTopic;
   }
 }

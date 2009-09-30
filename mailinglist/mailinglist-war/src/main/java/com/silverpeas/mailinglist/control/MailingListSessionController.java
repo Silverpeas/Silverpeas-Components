@@ -10,13 +10,13 @@ public class MailingListSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   *
-   *
+   * 
+   * 
    * @param mainSessionCtrl
    *          The user's profile
    * @param componentContext
    *          The component's profile
-   *
+   * 
    * @see
    */
   public MailingListSessionController(MainSessionController mainSessionCtrl,

@@ -14,7 +14,8 @@ public class InternalSubscriber extends IdentifiedObject {
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((externalId == null) ? 0 : externalId.hashCode());
+    result = prime * result
+        + ((externalId == null) ? 0 : externalId.hashCode());
     result = prime * result + this.getClass().hashCode();
     return result;
   }

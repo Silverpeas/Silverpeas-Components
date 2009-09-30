@@ -7,21 +7,22 @@ import com.stratelia.silverpeas.connecteurJDBC.model.ConnecteurJDBCConnectionInf
 import com.stratelia.silverpeas.connecteurJDBC.model.ConnecteurJDBCConnectionInfoPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 
-public interface ConnecteurJDBCBmBusinessSkeleton
-{
+public interface ConnecteurJDBCBmBusinessSkeleton {
 
   public Collection getConnectionList(ConnecteurJDBCConnectionInfoPK pk)
-	throws RemoteException, PersistenceException;
+      throws RemoteException, PersistenceException;
 
   public void removeConnection(ConnecteurJDBCConnectionInfoPK pk)
-	throws RemoteException, PersistenceException;
+      throws RemoteException, PersistenceException;
 
-  public ConnecteurJDBCConnectionInfoDetail getConnection(ConnecteurJDBCConnectionInfoPK pk)
-	throws RemoteException, PersistenceException;
+  public ConnecteurJDBCConnectionInfoDetail getConnection(
+      ConnecteurJDBCConnectionInfoPK pk) throws RemoteException,
+      PersistenceException;
 
-  public ConnecteurJDBCConnectionInfoPK addConnection(ConnecteurJDBCConnectionInfoDetail detail)
-	throws RemoteException, PersistenceException;
+  public ConnecteurJDBCConnectionInfoPK addConnection(
+      ConnecteurJDBCConnectionInfoDetail detail) throws RemoteException,
+      PersistenceException;
 
   public void updateConnection(ConnecteurJDBCConnectionInfoDetail detail)
-	throws RemoteException, PersistenceException;
+      throws RemoteException, PersistenceException;
 }

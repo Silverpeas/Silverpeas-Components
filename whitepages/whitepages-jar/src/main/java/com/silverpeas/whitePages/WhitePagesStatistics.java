@@ -39,37 +39,33 @@ import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple
 
 /**
  * Class declaration
- *
- *
+ * 
+ * 
  * @author
  */
-public class WhitePagesStatistics implements ComponentStatisticsInterface
-{
+public class WhitePagesStatistics implements ComponentStatisticsInterface {
 
+  public Collection getVolume(String spaceId, String componentId)
+      throws Exception {
+    ArrayList myArrayList = new ArrayList();
+    Collection c = getWhitePages(spaceId, componentId);
+    Iterator iter = c.iterator();
+    while (iter.hasNext()) {
+      Card detail = (Card) iter.next();
+      UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
 
-    public Collection getVolume(String spaceId, String componentId) throws Exception
-    {
-        ArrayList  myArrayList = new ArrayList();
-        Collection c = getWhitePages(spaceId, componentId);
-        Iterator   iter = c.iterator();
-        while (iter.hasNext())
-        {
-            Card       detail = (Card) iter.next();
-            UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-
-            myCouple.setUserId(detail.getUserId());
-            myCouple.setCountVolume(1);
-            myArrayList.add(myCouple);
-         }
-
-        return myArrayList;
+      myCouple.setUserId(detail.getUserId());
+      myCouple.setCountVolume(1);
+      myArrayList.add(myCouple);
     }
 
+    return myArrayList;
+  }
 
-    public Collection getWhitePages(String spaceId, String componentId) throws WhitePagesException
-    {
-        Collection result =  CardManager.getInstance().getCards(componentId) ;
-        return result;
-    }
+  public Collection getWhitePages(String spaceId, String componentId)
+      throws WhitePagesException {
+    Collection result = CardManager.getInstance().getCards(componentId);
+    return result;
+  }
 
 }

@@ -7,127 +7,105 @@ import java.util.Vector;
 
 import com.stratelia.webactiv.forums.forumEntity.ejb.ForumPK;
 
-public class Forum
-	implements Serializable
-{
-	
-	private int id;
-	private String name;
-	private String description;
-	private boolean active;
-	private int parentId;
-	private String category;
-	private String creationDate;
-	private String instanceId;
-	private ForumPK pk;
-	
-	public Forum(int id, String name, String description, boolean active, int parentId,
-		String category)
-	{
-		this.id = id;
-		this.name = name;
-		this.description = description;
-		this.active = active;
-		this.parentId = parentId;
-		this.category = category;
-	}
-	
-	public Forum(int id, String name, String description, boolean active, int parentId,
-		String category, String creationDate, String instanceId)
-	{
-		this(id, name, description, active, parentId, category);
-		this.instanceId = instanceId;
-		this.creationDate = creationDate;
-	}
+public class Forum implements Serializable {
 
-	public int getId()
-	{
-		return id;
-	}
+  private int id;
+  private String name;
+  private String description;
+  private boolean active;
+  private int parentId;
+  private String category;
+  private String creationDate;
+  private String instanceId;
+  private ForumPK pk;
 
-	public void setId(int id)
-	{
-		this.id = id;
-	}
+  public Forum(int id, String name, String description, boolean active,
+      int parentId, String category) {
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.active = active;
+    this.parentId = parentId;
+    this.category = category;
+  }
 
-	public String getName()
-	{
-		return name;
-	}
+  public Forum(int id, String name, String description, boolean active,
+      int parentId, String category, String creationDate, String instanceId) {
+    this(id, name, description, active, parentId, category);
+    this.instanceId = instanceId;
+    this.creationDate = creationDate;
+  }
 
-	public void setName(String name)
-	{
-		this.name = name;
-	}
+  public int getId() {
+    return id;
+  }
 
-	public String getDescription()
-	{
-		return description;
-	}
+  public void setId(int id) {
+    this.id = id;
+  }
 
-	public void setDescription(String description)
-	{
-		this.description = description;
-	}
+  public String getName() {
+    return name;
+  }
 
-	public boolean isActive()
-	{
-		return active;
-	}
+  public void setName(String name) {
+    this.name = name;
+  }
 
-	public void setActive(boolean active)
-	{
-		this.active = active;
-	}
+  public String getDescription() {
+    return description;
+  }
 
-	public int getParentId()
-	{
-		return parentId;
-	}
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-	public void setParentId(int parentId)
-	{
-		this.parentId = parentId;
-	}
+  public boolean isActive() {
+    return active;
+  }
 
-	public String getCategory()
-	{
-		return category;
-	}
+  public void setActive(boolean active) {
+    this.active = active;
+  }
 
-	public void setCategory(String category)
-	{
-		this.category = category;
-	}
-	
-	public String getCreationDate()
-	{
-		return creationDate;
-	}
+  public int getParentId() {
+    return parentId;
+  }
 
-	public void setCreationDate(String creationDate)
-	{
-		this.creationDate = creationDate;
-	}
+  public void setParentId(int parentId) {
+    this.parentId = parentId;
+  }
 
-	public String getInstanceId()
-	{
-		return instanceId;
-	}
+  public String getCategory() {
+    return category;
+  }
 
-	public void setInstanceId(String instanceId)
-	{
-		this.instanceId = instanceId;
-	}
+  public void setCategory(String category) {
+    this.category = category;
+  }
 
-	public ForumPK getPk()
-	{
-		return pk;
-	}
+  public String getCreationDate() {
+    return creationDate;
+  }
 
-	public void setPk(ForumPK pk)
-	{
-		this.pk = pk;
-	}
+  public void setCreationDate(String creationDate) {
+    this.creationDate = creationDate;
+  }
+
+  public String getInstanceId() {
+    return instanceId;
+  }
+
+  public void setInstanceId(String instanceId) {
+    this.instanceId = instanceId;
+  }
+
+  public ForumPK getPk() {
+    return pk;
+  }
+
+  public void setPk(ForumPK pk) {
+    this.pk = pk;
+  }
 
 }

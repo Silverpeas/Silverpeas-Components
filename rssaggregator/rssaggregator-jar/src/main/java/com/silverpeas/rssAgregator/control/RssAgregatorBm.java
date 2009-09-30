@@ -12,20 +12,21 @@ import com.silverpeas.rssAgregator.model.SPChannelPK;
 
 /**
  * @author neysseri
- *
+ * 
  */
 public interface RssAgregatorBm {
-	
-	public SPChannel addChannel(SPChannel channel) throws RssAgregatorException;
-	
-	public void updateChannel(SPChannel channel) throws RssAgregatorException;
-	
-	public void deleteChannel(SPChannelPK channelPK) throws RssAgregatorException;
-	
-	public void deleteChannels(String instanceId) throws RssAgregatorException;
-	
-	public List getChannels(String instanceId) throws RssAgregatorException;
-	
-	public SPChannel getChannel(SPChannelPK channelPK) throws RssAgregatorException;
+
+  public SPChannel addChannel(SPChannel channel) throws RssAgregatorException;
+
+  public void updateChannel(SPChannel channel) throws RssAgregatorException;
+
+  public void deleteChannel(SPChannelPK channelPK) throws RssAgregatorException;
+
+  public void deleteChannels(String instanceId) throws RssAgregatorException;
+
+  public List getChannels(String instanceId) throws RssAgregatorException;
+
+  public SPChannel getChannel(SPChannelPK channelPK)
+      throws RssAgregatorException;
 
 }

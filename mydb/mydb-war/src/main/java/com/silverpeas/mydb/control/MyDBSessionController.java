@@ -57,8 +57,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * 
  * @author Antoine HEDIN
  */
-public class MyDBSessionController
-    extends AbstractComponentSessionController {
+public class MyDBSessionController extends AbstractComponentSessionController {
 
   private MyDBBm myDBEjb = null;
   private MyDBConnectionInfoDetail myDBDetail = null;
@@ -78,14 +77,19 @@ public class MyDBSessionController
 
   /**
    * Standard Session Controller Constructor
-   *
-   * @param mainSessionCtrl The user's profile
-   * @param componentContext The component's profile
+   * 
+   * @param mainSessionCtrl
+   *          The user's profile
+   * @param componentContext
+   *          The component's profile
    */
-  public MyDBSessionController(MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    super(mainSessionCtrl, componentContext, "com.silverpeas.mydb.multilang.myDBBundle",
+  public MyDBSessionController(MainSessionController mainSessionCtrl,
+      ComponentContext componentContext) {
+    super(mainSessionCtrl, componentContext,
+        "com.silverpeas.mydb.multilang.myDBBundle",
         "com.silverpeas.mydb.settings.myDBIcons");
-    resources = new ResourcesWrapper(getMultilang(), getIcon(), getSettings(), getLanguage());
+    resources = new ResourcesWrapper(getMultilang(), getIcon(), getSettings(),
+        getLanguage());
     driverManager = new DriverManager();
     dateFormatter = new DateFormatter(resources.getString("DatePattern"));
     formManager = new FormManager(dateFormatter);
@@ -121,10 +125,13 @@ public class MyDBSessionController
 
   /**
    * Update the database filter.
-   *
-   * @param column The name of the column.
-   * @param compare The symbol which links the column and the value.
-   * @param value The value.
+   * 
+   * @param column
+   *          The name of the column.
+   * @param compare
+   *          The symbol which links the column and the value.
+   * @param value
+   *          The value.
    */
   public void updateDbFilter(String column, String compare, String value) {
     dbFilter = new DbFilter(column, compare, value);
@@ -132,8 +139,9 @@ public class MyDBSessionController
 
   /**
    * Update the table's name.
-   *
-   * @param tableName The new name of the table.
+   * 
+   * @param tableName
+   *          The new name of the table.
    * @throws MyDBException
    */
   public void updateTableName(String tableName) throws MyDBException {
@@ -143,8 +151,8 @@ public class MyDBSessionController
   }
 
   /**
-   * @return True if the actual name of the table corresponds to an existing table in database, else return false and
-   * 		   reset the table's name.
+   * @return True if the actual name of the table corresponds to an existing
+   *         table in database, else return false and reset the table's name.
    */
   public boolean checkTableName() {
     String tableName = getTableName();
@@ -156,20 +164,21 @@ public class MyDBSessionController
             return true;
           }
         }
-        // Reach this part of code means that the actual table name does not correspond to an existing table.
+        // Reach this part of code means that the actual table name does not
+        // correspond to an existing table.
         // The name of the table is then reset.
         setTableName("");
       }
     } catch (MyDBException e) {
-      SilverTrace.warn("myDB", "MyDBSessionController.checkTableName()", "myDB.MSG_TABLE_NAME_CHECK_FAILED",
-          "TableName=" + tableName, e);
+      SilverTrace.warn("myDB", "MyDBSessionController.checkTableName()",
+          "myDB.MSG_TABLE_NAME_CHECK_FAILED", "TableName=" + tableName, e);
     }
     return false;
   }
 
   /**
    * Initializes the database connection informations.
-   *
+   * 
    * @throws MyDBRuntimeException
    */
   private void initMyDB() throws MyDBRuntimeException {
@@ -177,10 +186,11 @@ public class MyDBSessionController
       try {
         // load and return the current jdbc settings for the component
         MyDBBm myDBBm = getMyDBBm();
-        Collection c = myDBBm.getConnectionList(new MyDBConnectionInfoPK("", getSpaceId(), getComponentId()));
+        Collection c = myDBBm.getConnectionList(new MyDBConnectionInfoPK("",
+            getSpaceId(), getComponentId()));
         if (c.size() > 1) {
-          throw new MyDBRuntimeException("myDBSessionController.initMyDB()", SilverpeasException.FATAL,
-              "myDB.EX_MUST_BE_ONLY_ONE_CONNECTION");
+          throw new MyDBRuntimeException("myDBSessionController.initMyDB()",
+              SilverpeasException.FATAL, "myDB.EX_MUST_BE_ONLY_ONE_CONNECTION");
         }
 
         Iterator i = c.iterator();
@@ -190,7 +200,8 @@ public class MyDBSessionController
       } catch (Exception e) {
         SilverTrace.error("myDB", "myDBSessionController.initMyDB()",
             "myDB.EX_CONNECTION_SETTING_INIT_FAILED", e);
-        throw new MyDBRuntimeException("myDBSessionController.initMyDB()", SilverpeasException.FATAL,
+        throw new MyDBRuntimeException("myDBSessionController.initMyDB()",
+            SilverpeasException.FATAL,
             "myDB.EX_CONNECTION_SETTING_INIT_FAILED", e);
       }
     }
@@ -198,15 +209,16 @@ public class MyDBSessionController
 
   /**
    * Update the table's name and the corresponding connection information.
-   *
-   * @param tableName The new table's name.
+   * 
+   * @param tableName
+   *          The new table's name.
    * @throws MyDBException
    */
-  public void setTableName(String tableName)
-      throws MyDBException {
+  public void setTableName(String tableName) throws MyDBException {
     if (myDBDetail == null) {
       myDBDetail = new MyDBConnectionInfoDetail();
-      myDBDetail.setPK(new MyDBConnectionInfoPK("", getSpaceId(), getComponentId()));
+      myDBDetail.setPK(new MyDBConnectionInfoPK("", getSpaceId(),
+          getComponentId()));
       newMyDB();
     }
     if (myDBDetail != null) {
@@ -219,16 +231,15 @@ public class MyDBSessionController
    * @return The bean component, after having initialized it if needed.
    * @throws MyDBException
    */
-  private MyDBBm getMyDBBm()
-      throws MyDBException {
+  private MyDBBm getMyDBBm() throws MyDBException {
     if (myDBEjb == null) {
       try {
-        MyDBBmHome myDBEjbHome =
-            (MyDBBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.MYDBBM_EJBHOME, MyDBBmHome.class);
+        MyDBBmHome myDBEjbHome = (MyDBBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.MYDBBM_EJBHOME, MyDBBmHome.class);
         myDBEjb = myDBEjbHome.create();
       } catch (Exception e) {
-        throw new MyDBException(
-            "myDBSessionController.getMyDBBm()", SilverpeasException.ERROR, "myDB.EX_EJB_CREATION_FAILED", e);
+        throw new MyDBException("myDBSessionController.getMyDBBm()",
+            SilverpeasException.ERROR, "myDB.EX_EJB_CREATION_FAILED", e);
       }
     }
     return myDBEjb;
@@ -236,19 +247,18 @@ public class MyDBSessionController
 
   /**
    * Loads the connection informations.
-   *
+   * 
    * @throws MyDBException
    */
-  private void newMyDB()
-      throws MyDBException {
+  private void newMyDB() throws MyDBException {
     if (myDBDetail != null) {
       try {
         // load and return the current jdbc settings for the component
         MyDBBm myDBBm = getMyDBBm();
         myDBDetail.setPK(myDBBm.addConnection(myDBDetail));
       } catch (Exception e) {
-        throw new MyDBException(
-            "myDBSessionController.newMyDB()", SilverpeasException.FATAL, "myDB.EX_NEW_CONNECTION_FAILED", e);
+        throw new MyDBException("myDBSessionController.newMyDB()",
+            SilverpeasException.FATAL, "myDB.EX_NEW_CONNECTION_FAILED", e);
       }
     }
   }
@@ -259,15 +269,20 @@ public class MyDBSessionController
 
   /**
    * Initializes the table manager.
-   *
-   * @param mode the table mode (creation or modification).
-   * @param originPage The origin page. Indeed, table mode can be accessed from the table selection page or the table
-   * 		  detail page. This information is also memorized to go back to the origin page when table mode is left.
+   * 
+   * @param mode
+   *          the table mode (creation or modification).
+   * @param originPage
+   *          The origin page. Indeed, table mode can be accessed from the table
+   *          selection page or the table detail page. This information is also
+   *          memorized to go back to the origin page when table mode is left.
    */
   public void initTableManager(int mode, String originPage) {
     String driverName = getJdbcDriverName();
-    ArrayList keywords = driverManager.getDatabaseKeywordsListForDriver(driverName);
-    DataTypeList dataTypeList = driverManager.getDataTypeListForDriver(driverName);
+    ArrayList keywords = driverManager
+        .getDatabaseKeywordsListForDriver(driverName);
+    DataTypeList dataTypeList = driverManager
+        .getDataTypeListForDriver(driverName);
     tableManager = new TableManager(mode, originPage, keywords, dataTypeList);
   }
 
@@ -295,16 +310,22 @@ public class MyDBSessionController
 
   /**
    * Updates the database connection informations.
-   *
-   * @param JDBCdriverName The name of the driver.
-   * @param JDBCurl The URL to access the database.
-   * @param login The login to access the database.
-   * @param password The password to access the database.
-   * @param rowLimit The maximum number of elements to display in a response to a database request.
+   * 
+   * @param JDBCdriverName
+   *          The name of the driver.
+   * @param JDBCurl
+   *          The URL to access the database.
+   * @param login
+   *          The login to access the database.
+   * @param password
+   *          The password to access the database.
+   * @param rowLimit
+   *          The maximum number of elements to display in a response to a
+   *          database request.
    * @throws MyDBException
    */
-  public void updateConnection(String JDBCdriverName, String JDBCurl, String login, String password, int rowLimit)
-      throws MyDBException {
+  public void updateConnection(String JDBCdriverName, String JDBCurl,
+      String login, String password, int rowLimit) throws MyDBException {
     if (myDBDetail != null) {
       myDBDetail.setJdbcDriverName(JDBCdriverName);
       myDBDetail.setJdbcUrl(JDBCurl);
@@ -314,7 +335,8 @@ public class MyDBSessionController
       updateMyDB();
     } else {
       myDBDetail = new MyDBConnectionInfoDetail();
-      myDBDetail.setPK(new MyDBConnectionInfoPK("", getSpaceId(), getComponentId()));
+      myDBDetail.setPK(new MyDBConnectionInfoPK("", getSpaceId(),
+          getComponentId()));
       myDBDetail.setJdbcDriverName(JDBCdriverName);
       myDBDetail.setJdbcUrl(JDBCurl);
       myDBDetail.setLogin(login);
@@ -328,8 +350,10 @@ public class MyDBSessionController
    * Initializes the JDBC connector setting.
    */
   public void initJdbcConnectorSetting() {
-    String driverClassName = driverManager.getDriverClassName(getJdbcDriverName());
-    jdbcConnectorSetting = new JdbcConnectorSetting(driverClassName, getJdbcUrl(), getLogin(), getPassword());
+    String driverClassName = driverManager
+        .getDriverClassName(getJdbcDriverName());
+    jdbcConnectorSetting = new JdbcConnectorSetting(driverClassName,
+        getJdbcUrl(), getLogin(), getPassword());
   }
 
   /**
@@ -344,19 +368,18 @@ public class MyDBSessionController
 
   /**
    * Updates the database connection informations.
-   *
+   * 
    * @throws MyDBException
    */
-  private void updateMyDB()
-      throws MyDBException {
+  private void updateMyDB() throws MyDBException {
     if (myDBDetail != null) {
       try {
         // load and return the current jdbc settings for the component
         MyDBBm myDBBm = getMyDBBm();
         myDBBm.updateConnection(myDBDetail);
       } catch (Exception e) {
-        throw new MyDBException("myDBSessionController.updateMyDB()", SilverpeasException.FATAL,
-            "myDB.EX_UPDATE_CONNECTION_FAILED", e);
+        throw new MyDBException("myDBSessionController.updateMyDB()",
+            SilverpeasException.FATAL, "myDB.EX_UPDATE_CONNECTION_FAILED", e);
       }
     }
   }
@@ -393,15 +416,16 @@ public class MyDBSessionController
       try {
         connection = getConnection();
       } catch (SQLException e) {
-        SilverTrace.warn(
-            "myDB", "MyDBSessionController.startConnection()", "myDB.MSG_CONNECTION_NOT_STARTED", e);
+        SilverTrace.warn("myDB", "MyDBSessionController.startConnection()",
+            "myDB.MSG_CONNECTION_NOT_STARTED", e);
         connection = null;
       }
     }
   }
 
   /**
-   * Closes the database connection and its associated elements (result set and prepared statement).
+   * Closes the database connection and its associated elements (result set and
+   * prepared statement).
    */
   private void closeConnection() {
     try {
@@ -418,7 +442,8 @@ public class MyDBSessionController
         connection = null;
       }
     } catch (SQLException e) {
-      SilverTrace.warn("myDB", "MyDBSessionController.closeConnection()", "myDB.MSG_CONNECTION_NOT_CLOSED", e);
+      SilverTrace.warn("myDB", "MyDBSessionController.closeConnection()",
+          "myDB.MSG_CONNECTION_NOT_CLOSED", e);
     }
   }
 
@@ -434,7 +459,8 @@ public class MyDBSessionController
         driverManager.resetDriver();
       }
     } catch (SQLException e) {
-      SilverTrace.warn("myDB", "MyDBSessionController.checkConnection()", "myDB.MSG_CONNECTION_NOT_CHECKED", e);
+      SilverTrace.warn("myDB", "MyDBSessionController.checkConnection()",
+          "myDB.MSG_CONNECTION_NOT_CHECKED", e);
     } finally {
       closeConnection();
     }
@@ -448,18 +474,20 @@ public class MyDBSessionController
     Vector tableVector = new Vector();
     startConnection();
     if (connection == null) {
-      SilverTrace.warn("myDB", "MyDBSessionController.getTableNames()", "myDB.MSG_CONNECTION_NOT_STARTED");
+      SilverTrace.warn("myDB", "MyDBSessionController.getTableNames()",
+          "myDB.MSG_CONNECTION_NOT_STARTED");
     } else {
       try {
         DatabaseMetaData dbMetaData = connection.getMetaData();
         if (dbMetaData != null) {
-          rs = dbMetaData.getTables(null, null, null, new String[]{"TABLE"});
+          rs = dbMetaData.getTables(null, null, null, new String[] { "TABLE" });
           while (rs.next()) {
             tableVector.addElement(rs.getString("TABLE_NAME"));
           }
         }
       } catch (SQLException e) {
-        SilverTrace.warn("myDBSessionController", "MyDBSessionController.getTableNames()",
+        SilverTrace.warn("myDBSessionController",
+            "MyDBSessionController.getTableNames()",
             "myDB.MSG_CANNOT_GET_TABLES_NAMES");
       } finally {
         closeConnection();
@@ -469,11 +497,11 @@ public class MyDBSessionController
   }
 
   /**
-   * @return the database table corresponding to the current informations (connection, table's name,...).
+   * @return the database table corresponding to the current informations
+   *         (connection, table's name,...).
    * @throws MyDBException
    */
-  public DbTable getDbTable()
-      throws MyDBException {
+  public DbTable getDbTable() throws MyDBException {
     dbTable = null;
     String tableName = getTableName();
     if (tableName != null && tableName.length() > 0) {
@@ -483,7 +511,8 @@ public class MyDBSessionController
         try {
           DatabaseMetaData dbMetaData = connection.getMetaData();
 
-          rs = dbMetaData.getTables(null, "%", tableName, new String[]{"TABLE"});
+          rs = dbMetaData.getTables(null, "%", tableName,
+              new String[] { "TABLE" });
           if (rs.next()) {
             // Table.
             dbTable = new DbTable(tableName);
@@ -502,12 +531,15 @@ public class MyDBSessionController
                 int index = defaultValue.indexOf("::");
                 if (index != -1) {
                   defaultValue = defaultValue.substring(0, index);
-                  if (defaultValue.startsWith("'") && defaultValue.endsWith("'")) {
-                    defaultValue = defaultValue.substring(1, defaultValue.length() - 1);
+                  if (defaultValue.startsWith("'")
+                      && defaultValue.endsWith("'")) {
+                    defaultValue = defaultValue.substring(1, defaultValue
+                        .length() - 1);
                   }
                 }
               }
-              DbColumn newColumn = new DbColumn(columnName, dataType, dataSize, isNull, defaultValue);
+              DbColumn newColumn = new DbColumn(columnName, dataType, dataSize,
+                  isNull, defaultValue);
               dbTable.addColumn(newColumn);
               columnNameSb.append(columnName).append(",");
             }
@@ -550,13 +582,18 @@ public class MyDBSessionController
             }
           }
         } catch (SQLException e) {
-          throw new MyDBException("myDBSessionController.getDbTable()", SilverpeasException.ERROR,
-              "myDB.EX_CANNOT_GET_TABLE_DESCRIPTION", "TableName : " + tableName, e);
+          throw new MyDBException("myDBSessionController.getDbTable()",
+              SilverpeasException.ERROR,
+              "myDB.EX_CANNOT_GET_TABLE_DESCRIPTION", "TableName : "
+                  + tableName, e);
         }
         closeConnection();
 
         if (dbTable != null) {
-          final String query = new StringBuffer(100).append("select ").append(columnNameSb.substring(0, columnNameSb.length() - 1)).append(" from ").append(tableName).append(dbFilter.getQueryFilter(dbTable)).toString();
+          final String query = new StringBuffer(100).append("select ").append(
+              columnNameSb.substring(0, columnNameSb.length() - 1)).append(
+              " from ").append(tableName).append(
+              dbFilter.getQueryFilter(dbTable)).toString();
           startConnection();
           try {
             Statement stmt = connection.createStatement();
@@ -587,12 +624,16 @@ public class MyDBSessionController
             String data;
             String value;
             while (rs.next()) {
-              data = (!filterColumn.equals(DbFilter.ALL) ? rs.getString(filterColumn) : null);
-              if ((!manualFilter) || ((data != null) && (data.toLowerCase().indexOf(filterValue) != -1))) {
+              data = (!filterColumn.equals(DbFilter.ALL) ? rs
+                  .getString(filterColumn) : null);
+              if ((!manualFilter)
+                  || ((data != null) && (data.toLowerCase()
+                      .indexOf(filterValue) != -1))) {
                 // A line is added into the table if :
-                //   - the filter is not manual (the initial request was completed with the filter
-                //	   criteria successfully)
-                //   - the filter is manual (example : like on a numeric column)
+                // - the filter is not manual (the initial request was completed
+                // with the filter
+                // criteria successfully)
+                // - the filter is manual (example : like on a numeric column)
                 DbLine dbLine = new DbLine();
                 i = 0;
                 while (i < columnsNamesCount) {
@@ -603,8 +644,9 @@ public class MyDBSessionController
                     } catch (ParseException e) {
                       value = null;
                       SilverTrace.warn("myDBSessionController",
-                          "MyDBSessionController.getDbTable()", "myDB.MSG_CANNOT_GET_TABLE_LINE",
-                          "TableName=" + tableName, e);
+                          "MyDBSessionController.getDbTable()",
+                          "myDB.MSG_CANNOT_GET_TABLE_LINE", "TableName="
+                              + tableName, e);
                     }
                   }
                   dbLine.addData(columnsNames[i], value);
@@ -614,8 +656,9 @@ public class MyDBSessionController
               }
             }
           } catch (SQLException e) {
-            throw new MyDBException("myDBSessionController.getDbTable()", SilverpeasException.ERROR,
-                "myDB.EX_CANNOT_GET_TABLE_DATA", "TableName : " + tableName, e);
+            throw new MyDBException("myDBSessionController.getDbTable()",
+                SilverpeasException.ERROR, "myDB.EX_CANNOT_GET_TABLE_DATA",
+                "TableName : " + tableName, e);
           }
           closeConnection();
         }
@@ -628,20 +671,21 @@ public class MyDBSessionController
   }
 
   /**
-   * @param tableName The table's name.
-   * @return The index informations about the table which allow to determinate foreign keys links between the
-   * 		   different columns of the table.
+   * @param tableName
+   *          The table's name.
+   * @return The index informations about the table which allow to determinate
+   *         foreign keys links between the different columns of the table.
    * @throws MyDBException
    */
-  public IndexList getIndexInfo(String tableName)
-      throws MyDBException {
+  public IndexList getIndexInfo(String tableName) throws MyDBException {
     IndexList indexList = new IndexList();
     if (tableName != null && tableName.length() > 0) {
       startConnection();
       if (connection != null) {
         try {
           DatabaseMetaData dbMetaData = connection.getMetaData();
-          ResultSet rs = dbMetaData.getIndexInfo(null, null, tableName, false, false);
+          ResultSet rs = dbMetaData.getIndexInfo(null, null, tableName, false,
+              false);
           ArrayList indexElements = new ArrayList();
           String indexName;
           String columnName;
@@ -650,7 +694,8 @@ public class MyDBSessionController
             indexName = rs.getString(IndexElement.INDEX_NAME);
             columnName = rs.getString(IndexElement.COLUMN_NAME);
             position = rs.getShort(IndexElement.ORDINAL_POSITION);
-            indexElements.add(new IndexElement(indexName, columnName, position));
+            indexElements
+                .add(new IndexElement(indexName, columnName, position));
 
             if (!indexList.containsColumn(columnName)) {
               indexList.addColumn(new DbColumn(columnName));
@@ -685,8 +730,9 @@ public class MyDBSessionController
 
           indexList.check(tableManager.getDataTypeList());
         } catch (SQLException e) {
-          throw new MyDBException("myDBSessionController.getIndexInfo()", SilverpeasException.ERROR,
-              "myDB.EX_CANNOT_GET_TABLE_INDEX_INFO", "TableName : " + tableName, e);
+          throw new MyDBException("myDBSessionController.getIndexInfo()",
+              SilverpeasException.ERROR, "myDB.EX_CANNOT_GET_TABLE_INDEX_INFO",
+              "TableName : " + tableName, e);
         }
         closeConnection();
       }
@@ -695,15 +741,18 @@ public class MyDBSessionController
   }
 
   /**
-   * @return An error message if the content of the new line enters in conflict (respect of primary key) with data
-   * 		   already present in database. Returns null if no error is detected.
+   * @return An error message if the content of the new line enters in conflict
+   *         (respect of primary key) with data already present in database.
+   *         Returns null if no error is detected.
    */
   public String getLineCreationErrorMessage() {
     if (!dbTable.getPrimaryKey().isEmpty()) {
       try {
         connection = getConnection();
         String[] primaryKeys = dbTable.getPrimaryKey().getColumns();
-        StringBuffer query = new StringBuffer(100).append("select ").append(primaryKeys[0]).append(" from ").append(dbTable.getName()).append(" where ");
+        StringBuffer query = new StringBuffer(100).append("select ").append(
+            primaryKeys[0]).append(" from ").append(dbTable.getName()).append(
+            " where ");
         final int n = primaryKeys.length;
         for (int i = 0; i < n; i++) {
           if (i > 0) {
@@ -723,8 +772,9 @@ public class MyDBSessionController
 
         if (rs.next()) {
           if (n == 1) {
-            return MessageFormat.format(resources.getString("LineCreationNotAllowed1"),
-                new String[]{primaryKeys[0], getFormParameter(primaryKeys[0])});
+            return MessageFormat.format(resources
+                .getString("LineCreationNotAllowed1"), new String[] {
+                primaryKeys[0], getFormParameter(primaryKeys[0]) });
           } else {
             StringBuffer columnsSb = new StringBuffer();
             StringBuffer valuesSb = new StringBuffer();
@@ -736,12 +786,14 @@ public class MyDBSessionController
               columnsSb.append(primaryKeys[i]);
               valuesSb.append(getFormParameter(primaryKeys[i]));
             }
-            return MessageFormat.format(resources.getString("LineCreationNotAllowedN"),
-                new String[]{columnsSb.toString(), valuesSb.toString()});
+            return MessageFormat.format(resources
+                .getString("LineCreationNotAllowedN"), new String[] {
+                columnsSb.toString(), valuesSb.toString() });
           }
         }
       } catch (SQLException e) {
-        SilverTrace.warn("myDB", "MyDBSessionController.getLineCreationErrorMessage()",
+        SilverTrace.warn("myDB",
+            "MyDBSessionController.getLineCreationErrorMessage()",
             "myDB.MSG_CANNOT_CHECK_LINE_CREATION", e);
       } finally {
         closeConnection();
@@ -751,8 +803,9 @@ public class MyDBSessionController
   }
 
   /**
-   * @return An error message caused by the line creation attempt which could not be anticipated by the method
-   * 		   getLineCreationErrorMessage. The line is added to the table if no error occurred.
+   * @return An error message caused by the line creation attempt which could
+   *         not be anticipated by the method getLineCreationErrorMessage. The
+   *         line is added to the table if no error occurred.
    */
   public String createDbLine() {
     try {
@@ -760,7 +813,9 @@ public class MyDBSessionController
 
       String[] columnsNames = dbTable.getColumnsNames(true);
 
-      StringBuffer query = new StringBuffer(100).append("insert into ").append(dbTable.getName()).append(" (").append(DbUtil.getListAsString(columnsNames)).append(") values (");
+      StringBuffer query = new StringBuffer(100).append("insert into ").append(
+          dbTable.getName()).append(" (").append(
+          DbUtil.getListAsString(columnsNames)).append(") values (");
       for (int i = 0, n = columnsNames.length; i < n; i++) {
         if (i > 0) {
           query.append(", ");
@@ -786,8 +841,10 @@ public class MyDBSessionController
 
       prepStmt.executeUpdate();
     } catch (SQLException e) {
-      SilverTrace.warn("myDB", "MyDBSessionController.createDbLine()", "myDB.MSG_CANNOT_CREATE_LINE", e);
-      return MessageFormat.format(resources.getString("LineCreationError"), new String[]{e.getMessage()});
+      SilverTrace.warn("myDB", "MyDBSessionController.createDbLine()",
+          "myDB.MSG_CANNOT_CREATE_LINE", e);
+      return MessageFormat.format(resources.getString("LineCreationError"),
+          new String[] { e.getMessage() });
     } finally {
       closeConnection();
     }
@@ -795,13 +852,15 @@ public class MyDBSessionController
   }
 
   /**
-   * @return An error message caused by the line update attempt. The line is updated if no error occurred.
+   * @return An error message caused by the line update attempt. The line is
+   *         updated if no error occurred.
    */
   public String updateDbData() {
     try {
       connection = getConnection();
 
-      StringBuffer query = new StringBuffer(100).append("update ").append(dbTable.getName()).append(" set ");
+      StringBuffer query = new StringBuffer(100).append("update ").append(
+          dbTable.getName()).append(" set ");
       String[] columnsNames = dbTable.getColumnsNames(true);
       for (int i = 0, n = columnsNames.length; i < n; i++) {
         if (i > 0) {
@@ -844,8 +903,10 @@ public class MyDBSessionController
       }
       prepStmt.executeUpdate();
     } catch (SQLException e) {
-      SilverTrace.warn("myDB", "MyDBSessionController.updateDbData()", "myDB.MSG_CANNOT_UPDATE_LINE", e);
-      return MessageFormat.format(resources.getString("LineUpdateError"), new String[]{e.getMessage()});
+      SilverTrace.warn("myDB", "MyDBSessionController.updateDbData()",
+          "myDB.MSG_CANNOT_UPDATE_LINE", e);
+      return MessageFormat.format(resources.getString("LineUpdateError"),
+          new String[] { e.getMessage() });
     } finally {
       closeConnection();
     }
@@ -853,9 +914,10 @@ public class MyDBSessionController
   }
 
   /**
-   * @return An error message if the content of the line is linked to others data by foreign keys and makes the
-   * 		   deletion impossible (ex : data present in this line and only in this line into the table but referenced
-   *         by an other one).
+   * @return An error message if the content of the line is linked to others
+   *         data by foreign keys and makes the deletion impossible (ex : data
+   *         present in this line and only in this line into the table but
+   *         referenced by an other one).
    */
   public String getLineDeletionErrorMessage() {
     dbTable.setLineIndex(lineIndex);
@@ -883,40 +945,50 @@ public class MyDBSessionController
           if (value != null && value.length() > 0) {
             dataType = column.getDataType();
 
-            query = new StringBuffer(100).append("select ").append(columnName).append(" from ").append(tableName).append(" where ").append(columnName).append(" = ?").toString();
+            query = new StringBuffer(100).append("select ").append(columnName)
+                .append(" from ").append(tableName).append(" where ").append(
+                    columnName).append(" = ?").toString();
             prepStmt = connection.prepareStatement(query);
             setValueByType(value, dataType, 1);
             rs = prepStmt.executeQuery();
-            // Nombre de lignes dont la colonne traitée possède la même valeur que la ligne courante.
+            // Nombre de lignes dont la colonne traitée possède la même valeur
+            // que la ligne courante.
             resultCount = 0;
             while (rs.next() && resultCount < 2) {
               resultCount++;
             }
 
             if (resultCount == 1) {
-              // La ligne courante possède, pour la colonne traitée, une valeur unique. On vérifie alors
-              // si elle est référencée via ses clés étrangères, dans d'autres tables.
+              // La ligne courante possède, pour la colonne traitée, une valeur
+              // unique. On vérifie alors
+              // si elle est référencée via ses clés étrangères, dans d'autres
+              // tables.
               foreignKeys = column.getExportedForeignKeys();
               for (int j = 0, m = foreignKeys.length; j < m; j++) {
                 fkTableName = foreignKeys[j].getTableName();
                 fkColumnName = foreignKeys[j].getColumnName();
-                query = new StringBuffer(100).append("select ").append(fkColumnName).append(" from ").append(fkTableName).append(" where ").append(fkColumnName).append(" = ?").toString();
+                query = new StringBuffer(100).append("select ").append(
+                    fkColumnName).append(" from ").append(fkTableName).append(
+                    " where ").append(fkColumnName).append(" = ?").toString();
                 prepStmt = connection.prepareStatement(query);
                 setValueByType(value, dataType, 1);
                 rs = prepStmt.executeQuery();
                 if (rs.next()) {
-                  // Au moins une ligne de la table définie dans la clé étrangère contient la même
+                  // Au moins une ligne de la table définie dans la clé
+                  // étrangère contient la même
                   // valeur que la ligne en cours de suppression.
                   // envoi d'un message d'erreur.
-                  return MessageFormat.format(resources.getString("LineDeletionNotAllowed"),
-                      new String[]{value, columnName, fkColumnName, fkTableName});
+                  return MessageFormat.format(resources
+                      .getString("LineDeletionNotAllowed"), new String[] {
+                      value, columnName, fkColumnName, fkTableName });
                 }
               }
             }
           }
         }
       } catch (SQLException e) {
-        SilverTrace.warn("myDB", "MyDBSessionController.getLineDeletionErrorMessage()",
+        SilverTrace.warn("myDB",
+            "MyDBSessionController.getLineDeletionErrorMessage()",
             "myDB.MSG_CANNOT_CHECK_LINE_DELETION", e);
       } finally {
         closeConnection();
@@ -926,14 +998,16 @@ public class MyDBSessionController
   }
 
   /**
-   * @return An error message caused by the line deletion attempt which could not be anticipated by the method
-   * 		   getLineDeletionErrorMessage. The line is removed if no error occurred.
+   * @return An error message caused by the line deletion attempt which could
+   *         not be anticipated by the method getLineDeletionErrorMessage. The
+   *         line is removed if no error occurred.
    */
   public String deleteDbData() {
     dbTable.setLineIndex(lineIndex);
     try {
       connection = getConnection();
-      StringBuffer query = new StringBuffer(100).append("delete from ").append(dbTable.getName()).append(" where ");
+      StringBuffer query = new StringBuffer(100).append("delete from ").append(
+          dbTable.getName()).append(" where ");
       String[] primaryKeys = dbTable.getPrimaryKey().getColumns();
       final int n = primaryKeys.length;
       for (int i = 0; i < n; i++) {
@@ -954,8 +1028,10 @@ public class MyDBSessionController
       prepStmt.executeUpdate();
       closeConnection();
     } catch (SQLException e) {
-      SilverTrace.warn("myDB", "MyDBSessionController.deleteDbData()", "myDB.MSG_CANNOT_DELETE_LINE", e);
-      return MessageFormat.format(resources.getString("LineDeletionError"), new String[]{e.getMessage()});
+      SilverTrace.warn("myDB", "MyDBSessionController.deleteDbData()",
+          "myDB.MSG_CANNOT_DELETE_LINE", e);
+      return MessageFormat.format(resources.getString("LineDeletionError"),
+          new String[] { e.getMessage() });
     } finally {
       closeConnection();
     }
@@ -963,20 +1039,28 @@ public class MyDBSessionController
   }
 
   /**
-   * @param consultation The flag indicating if data have to be displayed as labels or input fields.
-   * @param newRecord The flag which indicates if the form describes a new record or a record to update.
-   * @param beanName Le bean's name.
+   * @param consultation
+   *          The flag indicating if data have to be displayed as labels or
+   *          input fields.
+   * @param newRecord
+   *          The flag which indicates if the form describes a new record or a
+   *          record to update.
+   * @param beanName
+   *          Le bean's name.
    * @return The form describing the record to create/modify.
    * @throws MyDBException
    */
-  public Form getForm(boolean consultation, boolean newRecord, String beanName) throws MyDBException {
+  public Form getForm(boolean consultation, boolean newRecord, String beanName)
+      throws MyDBException {
     dbTable.setLineIndex(lineIndex);
-    return formManager.getForm(
-        dbTable, resources, consultation, newRecord, beanName, getComponentId(), "getJdbcConnectorSetting");
+    return formManager.getForm(dbTable, resources, consultation, newRecord,
+        beanName, getComponentId(), "getJdbcConnectorSetting");
   }
 
   /**
-   * @param newRecord The flag which indicated if the form describes a new record or a record to update.
+   * @param newRecord
+   *          The flag which indicated if the form describes a new record or a
+   *          record to update.
    * @return A data record representing the record to create/modify.
    * @throws FormException
    */
@@ -990,8 +1074,9 @@ public class MyDBSessionController
 
   /**
    * Loads in the form's parameters the values contained into the map.
-   *
-   * @param parameterMap The map which contains the record's describing data.
+   * 
+   * @param parameterMap
+   *          The map which contains the record's describing data.
    */
   public void initFormParameters(Map parameterMap) {
     DbColumn[] columns = dbTable.getColumns();
@@ -1015,17 +1100,20 @@ public class MyDBSessionController
           value = null;
         }
       } else {
-        // Cas d'une première arrivée sur un formulaire de création : utilisation de la valeur par défaut de la
+        // Cas d'une première arrivée sur un formulaire de création :
+        // utilisation de la valeur par défaut de la
         // colonne.
         value = column.getDefaultValue();
       }
-      formParameters[i] = new String[]{columnName, value};
+      formParameters[i] = new String[] { columnName, value };
     }
   }
 
   /**
-   * @param key The name of the searched parameter.
-   * @return The value associated to the key, null if the key is not found in the form's parameters.
+   * @param key
+   *          The name of the searched parameter.
+   * @return The value associated to the key, null if the key is not found in
+   *         the form's parameters.
    */
   public String getFormParameter(String key) {
     for (int i = 0, n = formParameters.length; i < n; i++) {
@@ -1037,8 +1125,9 @@ public class MyDBSessionController
   }
 
   /**
-   * Executes the different queries to create the table corresponding to the current informations of the controller.
-   *
+   * Executes the different queries to create the table corresponding to the
+   * current informations of the controller.
+   * 
    * @return True if the creation ended successfully.
    */
   public boolean createTable() {
@@ -1064,9 +1153,10 @@ public class MyDBSessionController
 
       return true;
     } catch (SQLException e) {
-      SilverTrace.warn("myDB", "MyDBSessionController.createTable()", "myDB.MSG_CANNOT_CREATE_TABLE", e);
-      tableManager.setErrorLabel(
-          MessageFormat.format(resources.getString("TableCreationError"), new String[]{e.getMessage()}));
+      SilverTrace.warn("myDB", "MyDBSessionController.createTable()",
+          "myDB.MSG_CANNOT_CREATE_TABLE", e);
+      tableManager.setErrorLabel(MessageFormat.format(resources
+          .getString("TableCreationError"), new String[] { e.getMessage() }));
       return false;
     } finally {
       closeConnection();
@@ -1074,8 +1164,9 @@ public class MyDBSessionController
   }
 
   /**
-   * Removes from the database the table corresponding to the current informations of the controller.
-   *
+   * Removes from the database the table corresponding to the current
+   * informations of the controller.
+   * 
    * @return True if the deletion ended successfully.
    */
   public boolean dropTable() {
@@ -1083,7 +1174,7 @@ public class MyDBSessionController
       String tableName = tableManager.getTable().getName();
       connection = getConnection();
       DatabaseMetaData dbMetaData = connection.getMetaData();
-      rs = dbMetaData.getTables(null, "%", tableName, new String[]{"TABLE"});
+      rs = dbMetaData.getTables(null, "%", tableName, new String[] { "TABLE" });
       if (rs.next()) {
         // Vérification de l'existence de la table.
         Statement stmt = connection.createStatement();
@@ -1092,9 +1183,10 @@ public class MyDBSessionController
       }
       return true;
     } catch (SQLException e) {
-      SilverTrace.warn("myDB", "MyDBSessionController.dropTable()", "myDB.MSG_CANNOT_DELETE_TABLE", e);
-      tableManager.setErrorLabel(
-          MessageFormat.format(resources.getString("TableDeletionError"), new String[]{e.getMessage()}));
+      SilverTrace.warn("myDB", "MyDBSessionController.dropTable()",
+          "myDB.MSG_CANNOT_DELETE_TABLE", e);
+      tableManager.setErrorLabel(MessageFormat.format(resources
+          .getString("TableDeletionError"), new String[] { e.getMessage() }));
       return false;
     } finally {
       closeConnection();
@@ -1102,22 +1194,27 @@ public class MyDBSessionController
   }
 
   /**
-   * @return A database connection corresponding to JDBC properties of the controller.
+   * @return A database connection corresponding to JDBC properties of the
+   *         controller.
    * @throws SQLException
    */
   private Connection getConnection() throws SQLException {
     Properties info = new Properties();
     info.setProperty("user", getLogin());
     info.setProperty("password", getPassword());
-    return driverManager.getDriver(getJdbcDriverName()).connect(getJdbcUrl(), info);
+    return driverManager.getDriver(getJdbcDriverName()).connect(getJdbcUrl(),
+        info);
   }
 
   /**
    * Completes the statement with the value by respecting its type.
-   *
-   * @param value The value to store in database.
-   * @param dataType The type of the value.
-   * @param index The index of the data in the statement.
+   * 
+   * @param value
+   *          The value to store in database.
+   * @param dataType
+   *          The type of the value.
+   * @param index
+   *          The index of the data in the statement.
    * @throws NumberFormatException
    * @throws SQLException
    */
@@ -1218,8 +1315,8 @@ public class MyDBSessionController
           try {
             prepStmt.setDate(index, dateFormatter.stringToSql(value));
           } catch (ParseException e) {
-            SilverTrace.warn("myDB", "MyDBSessionController.setValueByType()", "myDB.MSG_CANNOT_PARSE_DATE",
-                "Date=" + value, e);
+            SilverTrace.warn("myDB", "MyDBSessionController.setValueByType()",
+                "myDB.MSG_CANNOT_PARSE_DATE", "Date=" + value, e);
             prepStmt.setNull(index, Types.DATE);
           }
           break;

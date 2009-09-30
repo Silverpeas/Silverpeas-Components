@@ -23,9 +23,9 @@ public class DisplayableAttachment implements MailingListRoutage {
     this.url = '/' + DESTINATION_ATTACHMENT + '/' + attachment.getId() + '/'
         + DESTINATION_MESSAGE + '/' + messageId;
   }
-  
+
   public String getDisplayableSize() {
-	  return FileRepositoryManager.formatFileSize(getSize());
+    return FileRepositoryManager.formatFileSize(getSize());
   }
 
   public long getSize() {

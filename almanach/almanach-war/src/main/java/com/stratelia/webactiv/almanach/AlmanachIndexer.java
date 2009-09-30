@@ -13,28 +13,30 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 
 public class AlmanachIndexer implements ComponentIndexerInterface {
-   
-	private AlmanachSessionController scc = null;
 
-    public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws Exception {
+  private AlmanachSessionController scc = null;
 
-		scc = new AlmanachSessionController(mainSessionCtrl, context);
+  public void index(MainSessionController mainSessionCtrl,
+      ComponentContext context) throws Exception {
 
-		indexEvents();
+    scc = new AlmanachSessionController(mainSessionCtrl, context);
+
+    indexEvents();
+  }
+
+  private void indexEvents() throws Exception {
+    SilverTrace.info("almanach", "AlmanachIndexer.indexEvents()",
+        "root.MSG_GEN_ENTER_METHOD");
+
+    Iterator it = scc.getAllEvents().iterator();
+    while (it.hasNext()) {
+      EventDetail event = (EventDetail) (it.next());
+
+      // index event itself
+      scc.indexEvent(event);
+
+      // index possible attachments to the event
+      AttachmentController.attachmentIndexer(event.getPK());
     }
-
-	private void indexEvents() throws Exception {
-		SilverTrace.info("almanach", "AlmanachIndexer.indexEvents()", "root.MSG_GEN_ENTER_METHOD");
-
-		Iterator it = scc.getAllEvents().iterator();
-		while(it.hasNext()){
-			EventDetail event = (EventDetail)(it.next());
-			
-			//index event itself
-			scc.indexEvent(event);
-			
-			//index possible attachments to the event
-			AttachmentController.attachmentIndexer(event.getPK());
-		}
-	}
+  }
 }

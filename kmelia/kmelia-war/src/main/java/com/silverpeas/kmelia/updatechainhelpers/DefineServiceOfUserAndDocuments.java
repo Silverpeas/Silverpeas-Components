@@ -19,10 +19,9 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
-
 public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
 
-	public void execute(UpdateChainHelperContext uchc)
+  public void execute(UpdateChainHelperContext uchc)
 	{
 		KmeliaSessionController kmeliaScc = uchc.getKmeliaScc();
 		
@@ -76,88 +75,82 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
 			pde.printStackTrace();
 		}
 	}
-	
-	private String getField(String field, String userName) 
-	{
-		Connection con = getConnection();
-		String result = "";
-		
-		String query = "select "+field+" from personnel where (lastname||' '||firstname|| ' '||matricule) = ? ";
-		PreparedStatement prepStmt = null;
-		ResultSet rs = null;
-		try 
-		{
-			prepStmt = con.prepareStatement(query);
-			prepStmt.setString(1, userName);
-			rs = prepStmt.executeQuery();
-			while (rs.next())
-			{
-				result = rs.getString(1);
-			}
-		} 
-		catch (Exception e)
-		{
-			throw new KmeliaRuntimeException("DefineServiceOfUser.getUserServiceMatricule()", SilverpeasRuntimeException.ERROR, "kmelia.SERVICE_NOT_EXIST", e);
-		}
-		finally
-		{
-			// fermer la connexion
-			freeConnection(con);
-		}
-		return result;
-	}
 
-	private Connection getConnection() {
-        try
-        {
-			Connection con = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
-            return con;
-        }
-        catch (Exception e)
-        {
-            throw new KmeliaRuntimeException("DefineServiceOfUser.getConnection()", SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-        }
-    }
-	
-	private void freeConnection(Connection con) {
-        if (con != null)
-        {
-            try
-            {
-                con.close();
-            }
-            catch (Exception e)
-            {
-            	throw new KmeliaRuntimeException("DefineServiceOfUser.getConnection()", SilverpeasRuntimeException.ERROR,  "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-            }
-        }
-    }
-	
-	private ClassifyPosition buildPosition(String positionId, String valuesFromJsp) {
-		// valuesFromJsp looks like 12|/0/1/2/,14|/15/34/
-		// [axisId|valuePath+valueId]*
-		StringTokenizer st = new StringTokenizer(valuesFromJsp,",");
-		String valueInfo = "";
-		String axisId = "";
-		String valuePath = "";
-		ClassifyValue value = null;
-		ArrayList values = new ArrayList();
-		for (;st.hasMoreTokens();){
-			valueInfo = st.nextToken();
-			if (valueInfo.length() >= 3) {
-				axisId = valueInfo.substring(0, valueInfo.indexOf("|"));
-				valuePath = valueInfo.substring(valueInfo.indexOf("|")+1, valueInfo.length());
-				value = new ClassifyValue(new Integer(axisId).intValue(), valuePath);
-				values.add(value);
-			}
-		}
+  private String getField(String field, String userName) {
+    Connection con = getConnection();
+    String result = "";
 
-		int id = -1;
-		if (positionId != null)
-			id = new Integer(positionId).intValue();
-		ClassifyPosition position = new ClassifyPosition(values);
-		position.setPositionId(id);
-		return position;
-	}
+    String query = "select "
+        + field
+        + " from personnel where (lastname||' '||firstname|| ' '||matricule) = ? ";
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setString(1, userName);
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        result = rs.getString(1);
+      }
+    } catch (Exception e) {
+      throw new KmeliaRuntimeException(
+          "DefineServiceOfUser.getUserServiceMatricule()",
+          SilverpeasRuntimeException.ERROR, "kmelia.SERVICE_NOT_EXIST", e);
+    } finally {
+      // fermer la connexion
+      freeConnection(con);
+    }
+    return result;
+  }
+
+  private Connection getConnection() {
+    try {
+      Connection con = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
+      return con;
+    } catch (Exception e) {
+      throw new KmeliaRuntimeException("DefineServiceOfUser.getConnection()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+    }
+  }
+
+  private void freeConnection(Connection con) {
+    if (con != null) {
+      try {
+        con.close();
+      } catch (Exception e) {
+        throw new KmeliaRuntimeException("DefineServiceOfUser.getConnection()",
+            SilverpeasRuntimeException.ERROR,
+            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+      }
+    }
+  }
+
+  private ClassifyPosition buildPosition(String positionId, String valuesFromJsp) {
+    // valuesFromJsp looks like 12|/0/1/2/,14|/15/34/
+    // [axisId|valuePath+valueId]*
+    StringTokenizer st = new StringTokenizer(valuesFromJsp, ",");
+    String valueInfo = "";
+    String axisId = "";
+    String valuePath = "";
+    ClassifyValue value = null;
+    ArrayList values = new ArrayList();
+    for (; st.hasMoreTokens();) {
+      valueInfo = st.nextToken();
+      if (valueInfo.length() >= 3) {
+        axisId = valueInfo.substring(0, valueInfo.indexOf("|"));
+        valuePath = valueInfo.substring(valueInfo.indexOf("|") + 1, valueInfo
+            .length());
+        value = new ClassifyValue(new Integer(axisId).intValue(), valuePath);
+        values.add(value);
+      }
+    }
+
+    int id = -1;
+    if (positionId != null)
+      id = new Integer(positionId).intValue();
+    ClassifyPosition position = new ClassifyPosition(values);
+    position.setPositionId(id);
+    return position;
+  }
 
 }

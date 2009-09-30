@@ -14,74 +14,61 @@ import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.util.attachment.AttachmentInstanciator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public class ProcessManagerInstanciator implements ComponentsInstanciatorIntf
-{
+public class ProcessManagerInstanciator implements ComponentsInstanciatorIntf {
 
-	public ProcessManagerInstanciator()
-	{
-	}
+  public ProcessManagerInstanciator() {
+  }
 
-	public void create(Connection con,
-						String spaceId,
-						String componentId,
-						String userId)
-		throws InstanciationException
-	{
-		String XMLFileName = null;
-		try
-		{ 
-			Admin admin = new Admin();         
-			XMLFileName = admin.getComponentParameterValue(componentId, "XMLFileName");
+  public void create(Connection con, String spaceId, String componentId,
+      String userId) throws InstanciationException {
+    String XMLFileName = null;
+    try {
+      Admin admin = new Admin();
+      XMLFileName = admin
+          .getComponentParameterValue(componentId, "XMLFileName");
 
-			Workflow.getProcessModelManager().createProcessModel(XMLFileName, componentId);
-		}
-		catch (WorkflowException e)
-		{
-			throw new InstanciationException("ProcessManagerInstanciator",
-											SilverpeasException.ERROR,
-											"processManager.PROCESS_MODEL_CREATE_FAILED",
-											"peasId="+componentId+", XMLFileName="+XMLFileName,
-											e);
-		}        
-	}
+      Workflow.getProcessModelManager().createProcessModel(XMLFileName,
+          componentId);
+    } catch (WorkflowException e) {
+      throw new InstanciationException("ProcessManagerInstanciator",
+          SilverpeasException.ERROR,
+          "processManager.PROCESS_MODEL_CREATE_FAILED", "peasId=" + componentId
+              + ", XMLFileName=" + XMLFileName, e);
+    }
+  }
 
-	public void delete(Connection con,
-						String spaceId,
-						String componentId,
-						String userId)
-		throws InstanciationException
-	{
-		try
-		{ 
-			//delete forms managed by module named 'formTemplate'
-			Workflow.getProcessModelManager().deleteProcessModel(componentId);
-			
-			//delete all process instances
-			ProcessInstance[] processInstances = Workflow.getProcessInstanceManager().getProcessInstances(componentId, null, "supervisor");
-			ProcessInstance instance = null;
-			for (int p=0; p<processInstances.length; p++)
-			{
-				instance = (ProcessInstance) processInstances[p];
-				((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager()).removeProcessInstance(instance.getInstanceId());
-			}
+  public void delete(Connection con, String spaceId, String componentId,
+      String userId) throws InstanciationException {
+    try {
+      // delete forms managed by module named 'formTemplate'
+      Workflow.getProcessModelManager().deleteProcessModel(componentId);
 
-			//delete attachments
-			AttachmentInstanciator attachmentI = new AttachmentInstanciator();
-			attachmentI.delete(con, spaceId, componentId, userId);
-			
-			//delete versioning
-			VersioningInstanciator versioningI = new VersioningInstanciator();
-			versioningI.delete(con, spaceId, componentId, userId);
-			
-			//delete todos
-			TodoBackboneAccess tbba = new TodoBackboneAccess();
-			tbba.removeEntriesByInstanceId(componentId);
-		}
-		catch (WorkflowException e)
-		{
-			throw new InstanciationException("ProcessManagerInstanciator", SilverpeasException.ERROR,
-											"processManager.PROCESS_MODEL_DELETE_FAILED",
-											"peasId="+componentId, e);
-		}        
-	}
+      // delete all process instances
+      ProcessInstance[] processInstances = Workflow.getProcessInstanceManager()
+          .getProcessInstances(componentId, null, "supervisor");
+      ProcessInstance instance = null;
+      for (int p = 0; p < processInstances.length; p++) {
+        instance = (ProcessInstance) processInstances[p];
+        ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager())
+            .removeProcessInstance(instance.getInstanceId());
+      }
+
+      // delete attachments
+      AttachmentInstanciator attachmentI = new AttachmentInstanciator();
+      attachmentI.delete(con, spaceId, componentId, userId);
+
+      // delete versioning
+      VersioningInstanciator versioningI = new VersioningInstanciator();
+      versioningI.delete(con, spaceId, componentId, userId);
+
+      // delete todos
+      TodoBackboneAccess tbba = new TodoBackboneAccess();
+      tbba.removeEntriesByInstanceId(componentId);
+    } catch (WorkflowException e) {
+      throw new InstanciationException("ProcessManagerInstanciator",
+          SilverpeasException.ERROR,
+          "processManager.PROCESS_MODEL_DELETE_FAILED",
+          "peasId=" + componentId, e);
+    }
+  }
 }

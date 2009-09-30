@@ -29,114 +29,124 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
  * FicheNonRemplie : avec le componentId de l'instance pour que le filtre mappé
  * sur tous les routers des composants puisse intercepter au besoin et renvoyer
  * sur la fiche.
- *
+ * 
  * @author Ludovic Bertin
- *
+ * 
  */
 public class LoginFilter implements Filter {
 
-	public static final String ATTRIBUTE_FORCE_CARD_CREATION = "forceCardCreation";
-	public static final String ATTRIBUTE_COMPONENT_ID = "RedirectToComponentId";
-	/**
-	 * Configuration du filtre, permettant de récupérer les paramètres.
-	 */
-	FilterConfig config = null;
+  public static final String ATTRIBUTE_FORCE_CARD_CREATION = "forceCardCreation";
+  public static final String ATTRIBUTE_COMPONENT_ID = "RedirectToComponentId";
+  /**
+   * Configuration du filtre, permettant de récupérer les paramètres.
+   */
+  FilterConfig config = null;
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
-	 *      javax.servlet.ServletResponse, javax.servlet.FilterChain)
-	 */
-	public void doFilter(ServletRequest request, ServletResponse response,
-			FilterChain chain) throws IOException, ServletException {
-		HttpSession session = ((HttpServletRequest) request).getSession(true);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
+   * javax.servlet.ServletResponse, javax.servlet.FilterChain)
+   */
+  public void doFilter(ServletRequest request, ServletResponse response,
+      FilterChain chain) throws IOException, ServletException {
+    HttpSession session = ((HttpServletRequest) request).getSession(true);
 
-		/*
-		 * Retrieve main session controller
-		 */
-		MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
+    /*
+     * Retrieve main session controller
+     */
+    MainSessionController mainSessionCtrl = (MainSessionController) session
+        .getAttribute("SilverSessionController");
 
-		/*
-		 * If no main session controller, forward user to timeout page
-		 */
-		if (mainSessionCtrl == null)
-	    {
-			SilverTrace.warn("whitePages", "LoginFilter.doFilter", "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + session.getId());
-			RequestDispatcher dispatcher = request.getRequestDispatcher(GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout"));
-			dispatcher.forward(request, response);
-	    }
+    /*
+     * If no main session controller, forward user to timeout page
+     */
+    if (mainSessionCtrl == null) {
+      SilverTrace.warn("whitePages", "LoginFilter.doFilter",
+          "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + session.getId());
+      RequestDispatcher dispatcher = request
+          .getRequestDispatcher(GeneralPropertiesManager
+              .getGeneralResourceLocator().getString("sessionTimeout"));
+      dispatcher.forward(request, response);
+    }
 
-		/*
-		 * Retrieves all instances of WhitePages for which user is Reader.
-		 */
-		else {
-			String userId = mainSessionCtrl.getUserId();
-			try {
-				Admin admin = new Admin();
-				CompoSpace[] availableInstances = admin.getCompoForUser(userId, "whitePages");
+    /*
+     * Retrieves all instances of WhitePages for which user is Reader.
+     */
+    else {
+      String userId = mainSessionCtrl.getUserId();
+      try {
+        Admin admin = new Admin();
+        CompoSpace[] availableInstances = admin.getCompoForUser(userId,
+            "whitePages");
 
-				for (int i=0; i<availableInstances.length; i++) {
-					String instanceId = availableInstances[i].getComponentId();
+        for (int i = 0; i < availableInstances.length; i++) {
+          String instanceId = availableInstances[i].getComponentId();
 
-					/* Retrieve component */
-					ComponentInst instance = admin.getComponentInst(instanceId);
+          /* Retrieve component */
+          ComponentInst instance = admin.getComponentInst(instanceId);
 
-					/* Is user is administrator for that instance */
-					boolean userIsAdmin = false;
-					String[] activeProfiles = admin.getCurrentProfiles(userId, instance);
-					for (int j=0; j<activeProfiles.length; j++) {
-						if (activeProfiles[j].equals("admin"))
-							userIsAdmin = true;
-					}
+          /* Is user is administrator for that instance */
+          boolean userIsAdmin = false;
+          String[] activeProfiles = admin.getCurrentProfiles(userId, instance);
+          for (int j = 0; j < activeProfiles.length; j++) {
+            if (activeProfiles[j].equals("admin"))
+              userIsAdmin = true;
+          }
 
-					/* Is forcedCardFilling parameter turned on */
-					String forcedCardFilling = admin.getComponentParameterValue(instanceId, "isForcedCardFilling");
-					boolean isForcedCardFilling = ( (forcedCardFilling != null) && (forcedCardFilling.equals("yes")) );
+          /* Is forcedCardFilling parameter turned on */
+          String forcedCardFilling = admin.getComponentParameterValue(
+              instanceId, "isForcedCardFilling");
+          boolean isForcedCardFilling = ((forcedCardFilling != null) && (forcedCardFilling
+              .equals("yes")));
 
-					/* Redirect user if and only if user is no admin and forcedCardFilling parameter turned on */
-					if (isForcedCardFilling && !userIsAdmin) {
-						CardManager cardManager = CardManager.getInstance();
-						Card userCard = cardManager.getUserCard(userId, instanceId);
-						if ( (userCard == null) || (!cardManager.isPublicationClassifiedOnPDC(userCard)) ) {
-							session.setAttribute(ATTRIBUTE_COMPONENT_ID, instanceId);
-							session.setAttribute(ATTRIBUTE_FORCE_CARD_CREATION, instanceId);
-							break;
-						}
-					}
-				}
-			} catch (Exception e) {
-				SilverTrace.warn("whitePages", "LoginFilter.doFilter", "root.EX_IGNORED", e);
-			}
+          /*
+           * Redirect user if and only if user is no admin and forcedCardFilling
+           * parameter turned on
+           */
+          if (isForcedCardFilling && !userIsAdmin) {
+            CardManager cardManager = CardManager.getInstance();
+            Card userCard = cardManager.getUserCard(userId, instanceId);
+            if ((userCard == null)
+                || (!cardManager.isPublicationClassifiedOnPDC(userCard))) {
+              session.setAttribute(ATTRIBUTE_COMPONENT_ID, instanceId);
+              session.setAttribute(ATTRIBUTE_FORCE_CARD_CREATION, instanceId);
+              break;
+            }
+          }
+        }
+      } catch (Exception e) {
+        SilverTrace.warn("whitePages", "LoginFilter.doFilter",
+            "root.EX_IGNORED", e);
+      }
 
-			chain.doFilter(request, response);
-		}
-	}
+      chain.doFilter(request, response);
+    }
+  }
 
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.servlet.Filter#getFilterConfig()
+   */
+  public FilterConfig getFilterConfig() {
+    return config;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see javax.servlet.Filter#getFilterConfig()
-	 */
-	public FilterConfig getFilterConfig() {
-		return config;
-	}
+  /*
+   * (non-Javadoc)
+   * 
+   * @see javax.servlet.Filter#setFilterConfig(javax.servlet.FilterConfig)
+   */
+  public void setFilterConfig(FilterConfig arg0) {
+    // this.config = config;
+  }
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see javax.servlet.Filter#setFilterConfig(javax.servlet.FilterConfig)
-	 */
-	public void setFilterConfig(FilterConfig arg0) {
-		//this.config = config;
-	}
+  public void init(FilterConfig arg0) {
+    // this.config = config;
+  }
 
-	public void init(FilterConfig arg0) {
-		//this.config = config;
-	}
+  public void destroy() {
 
-	public void destroy() {
-
-	}
+  }
 }

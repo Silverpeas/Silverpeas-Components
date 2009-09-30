@@ -30,238 +30,222 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * 
  * @author Antoine HEDIN
  */
-public class FormManager
-{
-	
-	public static final String FIELD_PREFIX = "db_";
-	
-	private GenericRecordTemplate template = null;
-	
-	private DateFormatter dateFormatter;
+public class FormManager {
 
-	public FormManager(DateFormatter dateFormatter)
-	{
-		this.dateFormatter = dateFormatter;
-	}
-	
-	/**
-	 * @param dbTable The table which the record belongs to.
-	 * @param resources The resources wrapper.
-	 * @param consultation The flag indicating if data have to be displayed as labels or input fields.
-	 * @param newRecord The flag indicating if the record is a new or a modified one.
-	 * @param beanName The bean name.
-	 * @param componentId The component name.
-	 * @param method The method name.
-	 * @return The XML form describing the concerned database record.
-	 * @throws MyDBException
-	 */
-	public Form getForm(DbTable dbTable, ResourcesWrapper resources, boolean consultation, boolean newRecord,
-			String beanName, String componentId, String method)
-		throws MyDBException
-	{
-		try
-		{
-			return new XmlForm(getRecordTemplate(
-				dbTable, resources, consultation, newRecord, beanName, componentId, method));
-		}
-		catch (Exception e)
-		{
-	        throw new MyDBException("FormManager", SilverpeasException.ERROR, "myDB.EX_GET_FORM", e);
-		}
-	}
-	
-	/**
-	 * @param dbTable The table which the record belongs to.
-	 * @param resources The resources wrapper.
-	 * @param consultation The flag indicating if data have to be displayed as labels or input fields.
-	 * @param newRecord The flag indicating if the record is a new or a modified one.
-	 * @param beanName The bean name.
-	 * @param componentId The component name.
-	 * @param method The method name.
-	 * @return The template needed to create the XML form describing the concerned database record.
-	 * @throws MyDBException
-	 */
-	public RecordTemplate getRecordTemplate(DbTable dbTable, ResourcesWrapper resources, boolean consultation,
-			boolean newRecord, String beanName, String componentId, String method)
-		throws MyDBException 
-	{
-		template = new GenericRecordTemplate();
-		
-		if (dbTable != null)
-		{
-			try
-			{ 
-				DbColumn[] columns = dbTable.getColumns();
-				DbColumn column;
-				String columnName;
-				int columnType;
-				String fieldType;
-				for (int i = 0, n = columns.length; i < n; i++)
-				{
-					column = columns[i];
-					columnName = column.getName();
-					columnType = column.getDataType();
-					if (consultation)
-					{
-						fieldType = TextField.TYPE;
-					}
-					else
-					{
-						if (column.hasImportedForeignKey())
-						{
-							fieldType = JdbcRefField.TYPE;
-						}
-						else
-						{
-							if (columnType == Types.DATE)
-							{
-								fieldType = DateField.TYPE;
-							}
-							else
-							{
-								fieldType = TextField.TYPE;
-							}
-						}
-					}
-					
-					GenericFieldTemplate ft = new GenericFieldTemplate(FIELD_PREFIX + columnName, fieldType);
-					
-					if (consultation)
-					{
-						ft.setDisplayerName("simpletext");
-						ft.setReadOnly(true);
-					}
-					else
-					{
-						if (fieldType.equals(JdbcRefField.TYPE))
-						{
-							DbForeignKey foreignKey = column.getImportedForeignKey();
-							ft.setReadOnly(true);
-							ft.setMandatory(!column.isNullable());
-							
-							ft.addParameter("beanName", beanName);
-							ft.addParameter("componentId", componentId);
-							ft.addParameter("method", method);
-							ft.addParameter("tableName", foreignKey.getTableName());
-							String[][] linkedColumnsNames = dbTable.getForeignKeyColumnsNames(foreignKey.getKeyName());
-							StringBuffer fieldsNamesSb = new StringBuffer();
-							StringBuffer columnsNamesSb = new StringBuffer();
-							for (int j = 0, m = linkedColumnsNames.length; j < m; j++)
-							{
-								if (j > 0)
-								{
-									fieldsNamesSb.append(DbUtil.KEY_SEPARATOR);
-									columnsNamesSb.append(DbUtil.KEY_SEPARATOR);
-								}
-								fieldsNamesSb.append(FIELD_PREFIX).append(linkedColumnsNames[j][0]);
-								columnsNamesSb.append(linkedColumnsNames[j][1]);
-							}
-							ft.addParameter("fieldsNames", fieldsNamesSb.toString());
-							ft.addParameter("columnsNames", columnsNamesSb.toString());
-						}
-						else
-						{
-							switch (columnType)
-							{
-								case Types.INTEGER :
-									ft.addParameter(TextField.CONTENT_TYPE, TextField.CONTENT_TYPE_INT);
-									break;
-								case Types.FLOAT :
-								case Types.DOUBLE :
-									ft.addParameter(TextField.CONTENT_TYPE, TextField.CONTENT_TYPE_FLOAT);
-									break;
-							}
-							boolean readOnly = ((!newRecord && column.isReadOnly()) || column.isAutoIncrement());
-							ft.setReadOnly(readOnly);
-							ft.setMandatory(!readOnly && !column.isNullable());
-							if (column.hasDataSize())
-							{
-								ft.addParameter("maxLength", column.getDataSizeAsString());
-							}
-						}
-					}
-					
-					ft.addLabel(columnName, null);
+  public static final String FIELD_PREFIX = "db_";
 
-					// add the new FieldTemplate in RecordTemplate
-					template.addFieldTemplate(ft);				
-				}
-			}
-			catch (FormException fe)
-			{
-				throw new MyDBException("FormManager", SilverpeasException.ERROR, "myDB.EX_GET_FORM", fe);
-			}
-		}
-		else
-		{
-			template = null;
-		}
-		return template;
-	}
+  private GenericRecordTemplate template = null;
 
-	/**
-	 * @param dbLine The database record line.
-	 * @return The data record corresponding to the line.
-	 * @throws FormException
-	 */
-  	public DataRecord getDataRecord(DbLine dbLine)
-  		throws FormException
-	{
-		DataRecord record = template.getEmptyRecord();
-		if (dbLine == null)
-		{
-			return record;
-		}
-		fillDataRecord(record, dbLine.getAllData());
-		return record;
-	}
-  	
-  	/**
-  	 * @param formParameters the names and values of the form parameters.
-  	 * @return The data record corresponding to the database record.
-  	 * @throws FormException
-  	 */
-  	public DataRecord getDataRecord(String[][] formParameters)
-		throws FormException
-	{
-		DataRecord record = template.getEmptyRecord();
-		fillDataRecord(record, formParameters);
-		return record;
-	}
-  	
-  	/**
-  	 * Fills the data record fields with the data given as parameters.
-  	 * @param defaultRecord The default record.
-  	 * @param data The data used to fill the data record.
-  	 * @throws FormException
-  	 */
-  	private void fillDataRecord(DataRecord defaultRecord, String[][] data)
-  		throws FormException
-	{
-		for (int i = 0, n = data.length; i < n; i++)
-		{
-			Field field = defaultRecord.getField(FIELD_PREFIX + data[i][0]);
-			if (field != null)
-			{
-				if (field.getTypeName().equals(DateField.TYPE))
-				{
-					try
-					{
-						field.setStringValue(dateFormatter.stringToFormString(data[i][1]));
-					}
-					catch (ParseException e)
-					{
-						SilverTrace.warn("myDB", "FormManager.fillDataRecord()", "myDB.MSG_CANNOT_FORMAT_DATE",
-							"Date=" + data[i][1], e);
-						field.setStringValue("");
-					}
-				}
-				else
-				{
-					field.setStringValue(data[i][1]);
-				}
-			}
-		}
-	}
-	
+  private DateFormatter dateFormatter;
+
+  public FormManager(DateFormatter dateFormatter) {
+    this.dateFormatter = dateFormatter;
+  }
+
+  /**
+   * @param dbTable
+   *          The table which the record belongs to.
+   * @param resources
+   *          The resources wrapper.
+   * @param consultation
+   *          The flag indicating if data have to be displayed as labels or
+   *          input fields.
+   * @param newRecord
+   *          The flag indicating if the record is a new or a modified one.
+   * @param beanName
+   *          The bean name.
+   * @param componentId
+   *          The component name.
+   * @param method
+   *          The method name.
+   * @return The XML form describing the concerned database record.
+   * @throws MyDBException
+   */
+  public Form getForm(DbTable dbTable, ResourcesWrapper resources,
+      boolean consultation, boolean newRecord, String beanName,
+      String componentId, String method) throws MyDBException {
+    try {
+      return new XmlForm(getRecordTemplate(dbTable, resources, consultation,
+          newRecord, beanName, componentId, method));
+    } catch (Exception e) {
+      throw new MyDBException("FormManager", SilverpeasException.ERROR,
+          "myDB.EX_GET_FORM", e);
+    }
+  }
+
+  /**
+   * @param dbTable
+   *          The table which the record belongs to.
+   * @param resources
+   *          The resources wrapper.
+   * @param consultation
+   *          The flag indicating if data have to be displayed as labels or
+   *          input fields.
+   * @param newRecord
+   *          The flag indicating if the record is a new or a modified one.
+   * @param beanName
+   *          The bean name.
+   * @param componentId
+   *          The component name.
+   * @param method
+   *          The method name.
+   * @return The template needed to create the XML form describing the concerned
+   *         database record.
+   * @throws MyDBException
+   */
+  public RecordTemplate getRecordTemplate(DbTable dbTable,
+      ResourcesWrapper resources, boolean consultation, boolean newRecord,
+      String beanName, String componentId, String method) throws MyDBException {
+    template = new GenericRecordTemplate();
+
+    if (dbTable != null) {
+      try {
+        DbColumn[] columns = dbTable.getColumns();
+        DbColumn column;
+        String columnName;
+        int columnType;
+        String fieldType;
+        for (int i = 0, n = columns.length; i < n; i++) {
+          column = columns[i];
+          columnName = column.getName();
+          columnType = column.getDataType();
+          if (consultation) {
+            fieldType = TextField.TYPE;
+          } else {
+            if (column.hasImportedForeignKey()) {
+              fieldType = JdbcRefField.TYPE;
+            } else {
+              if (columnType == Types.DATE) {
+                fieldType = DateField.TYPE;
+              } else {
+                fieldType = TextField.TYPE;
+              }
+            }
+          }
+
+          GenericFieldTemplate ft = new GenericFieldTemplate(FIELD_PREFIX
+              + columnName, fieldType);
+
+          if (consultation) {
+            ft.setDisplayerName("simpletext");
+            ft.setReadOnly(true);
+          } else {
+            if (fieldType.equals(JdbcRefField.TYPE)) {
+              DbForeignKey foreignKey = column.getImportedForeignKey();
+              ft.setReadOnly(true);
+              ft.setMandatory(!column.isNullable());
+
+              ft.addParameter("beanName", beanName);
+              ft.addParameter("componentId", componentId);
+              ft.addParameter("method", method);
+              ft.addParameter("tableName", foreignKey.getTableName());
+              String[][] linkedColumnsNames = dbTable
+                  .getForeignKeyColumnsNames(foreignKey.getKeyName());
+              StringBuffer fieldsNamesSb = new StringBuffer();
+              StringBuffer columnsNamesSb = new StringBuffer();
+              for (int j = 0, m = linkedColumnsNames.length; j < m; j++) {
+                if (j > 0) {
+                  fieldsNamesSb.append(DbUtil.KEY_SEPARATOR);
+                  columnsNamesSb.append(DbUtil.KEY_SEPARATOR);
+                }
+                fieldsNamesSb.append(FIELD_PREFIX).append(
+                    linkedColumnsNames[j][0]);
+                columnsNamesSb.append(linkedColumnsNames[j][1]);
+              }
+              ft.addParameter("fieldsNames", fieldsNamesSb.toString());
+              ft.addParameter("columnsNames", columnsNamesSb.toString());
+            } else {
+              switch (columnType) {
+                case Types.INTEGER:
+                  ft.addParameter(TextField.CONTENT_TYPE,
+                      TextField.CONTENT_TYPE_INT);
+                  break;
+                case Types.FLOAT:
+                case Types.DOUBLE:
+                  ft.addParameter(TextField.CONTENT_TYPE,
+                      TextField.CONTENT_TYPE_FLOAT);
+                  break;
+              }
+              boolean readOnly = ((!newRecord && column.isReadOnly()) || column
+                  .isAutoIncrement());
+              ft.setReadOnly(readOnly);
+              ft.setMandatory(!readOnly && !column.isNullable());
+              if (column.hasDataSize()) {
+                ft.addParameter("maxLength", column.getDataSizeAsString());
+              }
+            }
+          }
+
+          ft.addLabel(columnName, null);
+
+          // add the new FieldTemplate in RecordTemplate
+          template.addFieldTemplate(ft);
+        }
+      } catch (FormException fe) {
+        throw new MyDBException("FormManager", SilverpeasException.ERROR,
+            "myDB.EX_GET_FORM", fe);
+      }
+    } else {
+      template = null;
+    }
+    return template;
+  }
+
+  /**
+   * @param dbLine
+   *          The database record line.
+   * @return The data record corresponding to the line.
+   * @throws FormException
+   */
+  public DataRecord getDataRecord(DbLine dbLine) throws FormException {
+    DataRecord record = template.getEmptyRecord();
+    if (dbLine == null) {
+      return record;
+    }
+    fillDataRecord(record, dbLine.getAllData());
+    return record;
+  }
+
+  /**
+   * @param formParameters
+   *          the names and values of the form parameters.
+   * @return The data record corresponding to the database record.
+   * @throws FormException
+   */
+  public DataRecord getDataRecord(String[][] formParameters)
+      throws FormException {
+    DataRecord record = template.getEmptyRecord();
+    fillDataRecord(record, formParameters);
+    return record;
+  }
+
+  /**
+   * Fills the data record fields with the data given as parameters.
+   * 
+   * @param defaultRecord
+   *          The default record.
+   * @param data
+   *          The data used to fill the data record.
+   * @throws FormException
+   */
+  private void fillDataRecord(DataRecord defaultRecord, String[][] data)
+      throws FormException {
+    for (int i = 0, n = data.length; i < n; i++) {
+      Field field = defaultRecord.getField(FIELD_PREFIX + data[i][0]);
+      if (field != null) {
+        if (field.getTypeName().equals(DateField.TYPE)) {
+          try {
+            field.setStringValue(dateFormatter.stringToFormString(data[i][1]));
+          } catch (ParseException e) {
+            SilverTrace.warn("myDB", "FormManager.fillDataRecord()",
+                "myDB.MSG_CANNOT_FORMAT_DATE", "Date=" + data[i][1], e);
+            field.setStringValue("");
+          }
+        } else {
+          field.setStringValue(data[i][1]);
+        }
+      }
+    }
+  }
+
 }

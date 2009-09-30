@@ -7,34 +7,30 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
  * 
  * @author Antoine HEDIN
  */
-public class MyDBRuntimeException
-	extends SilverpeasRuntimeException
-{ 
-	
-    public MyDBRuntimeException (String callingClass, int errorLevel, String message)
-    {
-       super(callingClass, errorLevel, message);
-    }
+public class MyDBRuntimeException extends SilverpeasRuntimeException {
 
-    public MyDBRuntimeException (String callingClass, int errorLevel, String message, String extraParams)
-    {
-        super(callingClass, errorLevel, message, extraParams);
-    }
+  public MyDBRuntimeException(String callingClass, int errorLevel,
+      String message) {
+    super(callingClass, errorLevel, message);
+  }
 
-    public MyDBRuntimeException (String callingClass, int errorLevel, String message, Exception nested)
-    {
-        super(callingClass, errorLevel, message, nested);
-    }
+  public MyDBRuntimeException(String callingClass, int errorLevel,
+      String message, String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
+  }
 
-    public MyDBRuntimeException (String callingClass, int errorLevel, String message, String extraParams,
-    	Exception nested)
-    {
-        super(callingClass, errorLevel, message, extraParams, nested);
-    }
+  public MyDBRuntimeException(String callingClass, int errorLevel,
+      String message, Exception nested) {
+    super(callingClass, errorLevel, message, nested);
+  }
 
-    public String getModule()
-    {
-       return "MyDB";
-    }
+  public MyDBRuntimeException(String callingClass, int errorLevel,
+      String message, String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
+  }
+
+  public String getModule() {
+    return "MyDB";
+  }
 
 }

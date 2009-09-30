@@ -14,30 +14,28 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
-public class GoToPost extends GoTo
-{
-	public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res) throws Exception
-	{
-		PublicationPK pubPK = new PublicationPK(objectId);
-		PostDetail post = getBlogBm().getPost(pubPK);
+public class GoToPost extends GoTo {
+  public String getDestination(String objectId, HttpServletRequest req,
+      HttpServletResponse res) throws Exception {
+    PublicationPK pubPK = new PublicationPK(objectId);
+    PostDetail post = getBlogBm().getPost(pubPK);
 
-		String gotoURL = URLManager.getURL(null, post.getPublication().getInstanceId()) + post.getPublication().getURL();
+    String gotoURL = URLManager.getURL(null, post.getPublication()
+        .getInstanceId())
+        + post.getPublication().getURL();
 
-		return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
-	}
+    return "goto=" + URLEncoder.encode(gotoURL, "UTF-8");
+  }
 
-	private BlogBm getBlogBm()
-	{
-		BlogBm currentBlogBm = null;
-		try
-		{
-			BlogBmHome blogBmHome = (BlogBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.BLOGBM_EJBHOME, BlogBmHome.class);
-			currentBlogBm = blogBmHome.create();
-		}
-		catch (Exception e)
-		{
-			displayError(null);
-		}
-		return currentBlogBm;
-	}
+  private BlogBm getBlogBm() {
+    BlogBm currentBlogBm = null;
+    try {
+      BlogBmHome blogBmHome = (BlogBmHome) EJBUtilitaire.getEJBObjectRef(
+          JNDINames.BLOGBM_EJBHOME, BlogBmHome.class);
+      currentBlogBm = blogBmHome.create();
+    } catch (Exception e) {
+      displayError(null);
+    }
+    return currentBlogBm;
+  }
 }

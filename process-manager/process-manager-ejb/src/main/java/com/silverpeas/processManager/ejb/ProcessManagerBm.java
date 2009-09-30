@@ -6,5 +6,6 @@ import javax.ejb.EJBObject;
 
 public interface ProcessManagerBm extends EJBObject {
 
-	public String createProcess(String componentId, String userId, String fileName, byte[] fileContent) throws RemoteException;
+  public String createProcess(String componentId, String userId,
+      String fileName, byte[] fileContent) throws RemoteException;
 }

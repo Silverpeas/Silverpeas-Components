@@ -15,7 +15,8 @@ import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 
-public class AttachmentServlet extends HttpServlet implements MailingListRoutage {
+public class AttachmentServlet extends HttpServlet implements
+    MailingListRoutage {
 
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
@@ -68,5 +69,4 @@ public class AttachmentServlet extends HttpServlet implements MailingListRoutage
        }
      }
   }
-
 }

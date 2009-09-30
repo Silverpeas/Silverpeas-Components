@@ -38,7 +38,8 @@ public class ServicesFactory implements ApplicationContextAware {
   }
 
   public static MailingListService getMailingListService() {
-    return (MailingListService) getInstance().context.getBean(MAILING_LIST_SERVICE);
+    return (MailingListService) getInstance().context
+        .getBean(MAILING_LIST_SERVICE);
   }
 
   public static MessageService getMessageService() {
@@ -50,11 +51,13 @@ public class ServicesFactory implements ApplicationContextAware {
   }
 
   public static NotificationHelper getNotificationHelper() {
-    return (NotificationHelper) getInstance().context.getBean(NOTIFICATION_HELPER);
+    return (NotificationHelper) getInstance().context
+        .getBean(NOTIFICATION_HELPER);
   }
 
   public static NotificationFormatter getNotificationFormatter() {
-    return (NotificationFormatter) getInstance().context.getBean(NOTIFICATION_FORMATTER);
+    return (NotificationFormatter) getInstance().context
+        .getBean(NOTIFICATION_FORMATTER);
   }
 
 }

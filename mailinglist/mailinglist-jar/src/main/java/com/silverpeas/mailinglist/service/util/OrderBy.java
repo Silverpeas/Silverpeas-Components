@@ -21,9 +21,9 @@ public class OrderBy {
   public void setAsc(final boolean asc) {
     this.asc = asc;
   }
-  
+
   public Order getOrder() {
-    if(asc){
+    if (asc) {
       return Order.asc(propertyName);
     }
     return Order.desc(propertyName);
