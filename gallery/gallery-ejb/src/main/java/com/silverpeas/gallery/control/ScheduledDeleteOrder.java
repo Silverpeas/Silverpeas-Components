@@ -49,8 +49,8 @@ public class ScheduledDeleteOrder implements SchedulerEventHandler {
       "com.silverpeas.gallery.settings.gallerySettings", "");
 
   public void initialize() {
-    SilverTrace.error("gallery", "ScheduledDeleteOrder.initialize()",
-        "gallery.EX_CANT_INIT_SCHEDULED_DELETE_ORDER", "ENTREE");
+    SilverTrace.info("gallery", "ScheduledDeleteOrder.initialize()",
+        "Initializing the scheduler", "ENTREE");
     try {
       String cron = resources.getString("cronScheduledDeleteOrder");
       Vector jobList = SimpleScheduler.getJobList(this);
