@@ -36,6 +36,10 @@ String	 			wizardRow	= (String) request.getAttribute("WizardRow");
 String				currentLang = (String) request.getAttribute("Language");
 List				languages	= (List) request.getAttribute("Languages");
 String 				xmlForm		= (String) request.getAttribute("XmlFormForFiles");
+if (!StringUtil.isDefined(xmlForm))
+{
+	xmlForm = "";
+}
 
 String pubName 	= pubDetail.getName(currentLang);
 String pubId 	= pubDetail.getPK().getId();
