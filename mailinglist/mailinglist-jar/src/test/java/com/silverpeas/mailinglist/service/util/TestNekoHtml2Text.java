@@ -55,26 +55,26 @@ public class TestNekoHtml2Text extends TestCase {
 
 	public void testParseBigContent() throws Exception {
 		Reader reader = new InputStreamReader(TestNekoHtml2Text.class
-				.getResourceAsStream("lemonde.html"));
+				.getResourceAsStream("lemonde.html"), "UTF-8");
 		parser.parse(reader);
 		String summary = parser.getSummary();
 		assertNotNull(summary);
 		assertEquals("Politique Recherchez depuis sur Le Monde.fr A la Une "
-				+ "Le Desk Vidéos International *Elections américaines Europe "
-				+ "Politique *Municipales & Cantonales 2008 Société Carnet "
-				+ "Economie Médias Météo Rendez-vou", summary);
+				+ "Le Desk VidÃ©os International *Elections amÃ©ricaines Europe "
+				+ "Politique *Municipales & Cantonales 2008 SociÃ©tÃ© Carnet "
+				+ "Economie MÃ©dias MÃ©tÃ©o Rendez-vou", summary);
 
 	}
-	
+
 	public void testParseInraContent() throws Exception {
     Reader reader = new InputStreamReader(TestNekoHtml2Text.class
         .getResourceAsStream("mailInra.html"));
     parser.parse(reader);
     String summary = parser.getSummary();
     assertNotNull(summary);
-    assertEquals("Bonjour, Lors de la présention des nouveaux outils effectuée " +
-    		"le 6 avril, il a été émis l'idée par un DU de créer dans l'espace GU " +
-    		"TOULOUSE de SILVERPEAS un espace privé par unité facilitant l'organisa", 
+    assertEquals("Bonjour, Lors de la prÃ©sention des nouveaux outils effectuÃ©e " +
+    		"le 6 avril, il a Ã©tÃ© Ã©mis l'idÃ©e par un DU de crÃ©er dans l'espace GU " +
+    		"TOULOUSE de SILVERPEAS un espace privÃ© par unitÃ© facilitant l'organisa",
     		summary);
 
   }

@@ -62,88 +62,9 @@ public class Filtre implements Serializable {
   private String responsableName = null;
   private String visibleMOA = null;
 
-  // private Date today = new Date();
 
   public Filtre(HttpServletRequest request) {
   }
-
-  /*
-   * public String getSQL() { StringBuffer sql = new StringBuffer();
-   * 
-   * if (getActionFrom() != null && getActionFrom().length()>0)
-   * sql.append(" chrono >= ").append(getActionFrom());
-   * 
-   * if (getActionTo() != null && getActionTo().length()>0) { if (sql.length() >
-   * 0) sql.append(" AND "); sql.append(" chrono <= ").append(getActionTo()); }
-   * 
-   * if (getCodeProjet() != null && getCodeProjet().length()>0) { if
-   * (sql.length() > 0) sql.append(" AND ");
-   * sql.append(" codeProjet = ").append(getCodeProjet()); }
-   * 
-   * if (getDescProjet() != null && getDescProjet().length()>0) { if
-   * (sql.length() > 0) sql.append(" AND ");
-   * sql.append(" descriptionProjet like '%"
-   * ).append(getDescProjet()).append("%' "); }
-   * 
-   * if (getActionNom() != null && getActionNom().length()>0) { if (sql.length()
-   * > 0) sql.append(" AND ");
-   * sql.append(" nom like '%").append(getActionNom()).append("%' "); }
-   * 
-   * if (getStatut() != null && !getStatut().equals("-1")) { if (sql.length() >
-   * 0) sql.append(" AND "); sql.append(" statut = ").append(getStatut()); }
-   * 
-   * if (getDatePVFrom() != null) { if (sql.length() > 0) sql.append(" AND ");
-   * sql
-   * .append(" datePV >= '").append(ProjectManagerDAO.date2DBDate(getDatePVFrom
-   * ())).append("' "); } if (getDatePVTo() != null) { if (sql.length() > 0)
-   * sql.append(" AND ");
-   * sql.append(" datePV <= '").append(ProjectManagerDAO.date2DBDate
-   * (getDatePVTo())).append("' "); }
-   * 
-   * if (getDateDebutFrom() != null) { if (sql.length() > 0)
-   * sql.append(" AND ");
-   * sql.append(" dateDebut >= '").append(ProjectManagerDAO.
-   * date2DBDate(getDateDebutFrom())).append("' "); }
-   * 
-   * if (getDateDebutTo() != null) { if (sql.length() > 0) sql.append(" AND ");
-   * sql
-   * .append(" dateDebut <= '").append(ProjectManagerDAO.date2DBDate(getDateDebutTo
-   * ())).append("' "); }
-   * 
-   * if (getDateFinFrom() != null) { if (sql.length() > 0) sql.append(" AND ");
-   * sql
-   * .append(" dateFin >= '").append(ProjectManagerDAO.date2DBDate(getDateFinFrom
-   * ())).append("' "); }
-   * 
-   * if (getDateFinTo() != null) { if (sql.length() > 0) sql.append(" AND ");
-   * sql
-   * .append(" dateFin <= '").append(ProjectManagerDAO.date2DBDate(getDateFinTo
-   * ())).append("' "); }
-   * 
-   * if (getRetard() != null && !getRetard().equals("-1")) { if (sql.length() >
-   * 0) sql.append(" AND "); if (getRetard().equals("1")) { //les tasks en
-   * retard
-   * sql.append(" dateFin < '").append(ProjectManagerDAO.date2DBDate(today
-   * )).append("' "); } else { //les tasks qui ne sont pas en retard
-   * sql.append(" dateFin >= '"
-   * ).append(ProjectManagerDAO.date2DBDate(today)).append("' "); } }
-   * 
-   * if (getAvancement() != null && !getAvancement().equals("-1")) { if
-   * (sql.length() > 0) sql.append(" AND "); if (getAvancement().equals("1")) {
-   * //les tasks terminées sql.append(" avancement = 100 "); } else { //les
-   * tasks non terminées sql.append(" avancement < 100 "); } }
-   * 
-   * if (getResponsableId() != null && getResponsableId().length()>0) { if
-   * (sql.length() > 0) sql.append(" AND ");
-   * sql.append(" responsableId = ").append(getResponsableId()); }
-   * 
-   * if (getVisibleMOA() != null && !getVisibleMOA().equals("-1")) { if
-   * (sql.length() > 0) sql.append(" AND "); if (getVisibleMOA().equals("1")) {
-   * //les tasks visibles par la MOA sql.append(" visibleMOA = 1 "); } else {
-   * //les tasks non visibles par la MOA sql.append(" visibleMOA = 0 "); } }
-   * 
-   * return sql.toString(); }
-   */
 
   /**
    * @return

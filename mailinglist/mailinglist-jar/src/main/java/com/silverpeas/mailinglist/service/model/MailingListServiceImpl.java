@@ -114,6 +114,7 @@ public class MailingListServiceImpl implements MailingListService {
     }
   }
 
+  @Override
   public void deleteMailingList(String componentId) {
     MailingList mailingList = this.mailingListDao
         .findByComponentId(componentId);
@@ -122,6 +123,7 @@ public class MailingListServiceImpl implements MailingListService {
     }
   }
 
+  @Override
   public MailingList findMailingList(String componentId) {
     MailingList mailingList = this.mailingListDao
         .findByComponentId(componentId);

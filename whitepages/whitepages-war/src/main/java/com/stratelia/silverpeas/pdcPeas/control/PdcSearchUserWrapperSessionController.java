@@ -119,7 +119,7 @@ public class PdcSearchUserWrapperSessionController extends
     // liste userCardId,
     // userCardId,
     // userCardId ...
-    // Construction d'une liste de GlobalSilverContent à partir de ces Id
+    // Construction d'une liste de GlobalSilverContent a partir de ces Ids
   }
 
   /**

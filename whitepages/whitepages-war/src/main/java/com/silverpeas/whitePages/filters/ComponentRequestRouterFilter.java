@@ -38,27 +38,27 @@ import javax.servlet.http.HttpSession;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 /**
- * Le filtre LoginFilter a pour effet de contrôler que l'utilisateur courant n'a
- * pas une fiche à remplir dans une instance de whitePages. Si c'est le cas, 2
+ * Le filtre LoginFilter a pour effet de contrÃ´ler que l'utilisateur courant n'a
+ * pas une fiche Ã  remplir dans une instance de whitePages. Si c'est le cas, 2
  * attributs sont mis en sessions : - RedirectToComponentId : componentId de
  * l'instance pour que le mecanisme de redirection le renvoie sur le composant -
  * - forceCardCreation : componentId de l'instance
- * 
- * Le filtre RequestRouterFilter verifie la présence
- * 
+ *
+ * Le filtre RequestRouterFilter verifie la prÃ©sence
+ *
  * @author Ludovic Bertin
- * 
+ *
  */
 public class ComponentRequestRouterFilter implements Filter {
 
   /**
-   * Configuration du filtre, permettant de récupérer les paramètres.
+   * Configuration du filtre, permettant de rÃ©cupÃ©rer les paramÃ¨tres.
    */
   FilterConfig config = null;
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
    * javax.servlet.ServletResponse, javax.servlet.FilterChain)
    */
@@ -103,7 +103,7 @@ public class ComponentRequestRouterFilter implements Filter {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see javax.servlet.Filter#getFilterConfig()
    */
   public FilterConfig getFilterConfig() {
@@ -112,7 +112,7 @@ public class ComponentRequestRouterFilter implements Filter {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see javax.servlet.Filter#setFilterConfig(javax.servlet.FilterConfig)
    */
   public void setFilterConfig(FilterConfig arg0) {

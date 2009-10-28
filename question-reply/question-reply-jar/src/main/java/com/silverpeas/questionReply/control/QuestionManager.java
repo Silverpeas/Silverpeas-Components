@@ -166,12 +166,12 @@ public class QuestionManager {
 
     IndexEngineProxy.removeIndexEntry(indexEntry);
 
-    // supprimer les index des réponses...
+    // supprimer les index des rÃ©ponses...
   }
 
   /*
-   * enregistre une réponse à une question => met à jour publicReplyNumber et/ou
-   * privateReplyNumber et replyNumber de la question ainsi que le status à 1
+   * enregistre une rÃ©ponse Ã  une question => met Ã  jour publicReplyNumber et/ou
+   * privateReplyNumber et replyNumber de la question ainsi que le status Ã  1
    */
   public long createReply(Reply reply, Question question)
       throws QuestionReplyException {
@@ -208,7 +208,7 @@ public class QuestionManager {
     FullIndexEntry indexEntry = null;
 
     if (reply != null) {
-      // Indexer la Réponse
+      // Indexer la RÃ©ponse
       indexEntry = new FullIndexEntry(reply.getPK().getInstanceId(), "Reply",
           reply.getPK().getId());
       indexEntry.setTitle(reply.getTitle());
@@ -351,9 +351,9 @@ public class QuestionManager {
   }
 
   /*
-   * Affecte le status public à 0 de toutes les réponses d'une liste de
-   * questions : updateReply Affecte le nombre de réponses publiques de la
-   * question à 0 : updateQuestion si question en attente, on a demandé à la
+   * Affecte le status public Ã  0 de toutes les rÃ©ponses d'une liste de
+   * questions : updateReply Affecte le nombre de rÃ©ponses publiques de la
+   * question Ã  0 : updateQuestion si question en attente, on a demandÃ© Ã  la
    * supprimer : deleteQuestion
    */
   public void updateQuestionRepliesPublicStatus(Collection questionIds)
@@ -402,9 +402,9 @@ public class QuestionManager {
   }
 
   /*
-   * Affecte le status private à 0 de toutes les réponses d'une liste de
-   * questions : updateReply Affecte le nombre de réponses privées de la
-   * question à 0 : updateQuestion
+   * Affecte le status private Ã  0 de toutes les rÃ©ponses d'une liste de
+   * questions : updateReply Affecte le nombre de rÃ©ponses privÃ©es de la
+   * question Ã  0 : updateQuestion
    */
   public void updateQuestionRepliesPrivateStatus(Collection questionIds)
       throws QuestionReplyException {
@@ -453,8 +453,8 @@ public class QuestionManager {
   }
 
   /*
-   * Affecte le status public à 0 d'une liste de réponses : updateReply
-   * Décremente le nombre de réponses publiques de la question d'autant :
+   * Affecte le status public Ã  0 d'une liste de rÃ©ponses : updateReply
+   * DÃ©cremente le nombre de rÃ©ponses publiques de la question d'autant :
    * updateQuestion
    */
   public void updateRepliesPublicStatus(Collection replyIds, Question question)
@@ -493,8 +493,8 @@ public class QuestionManager {
   }
 
   /*
-   * Affecte le status private à 0 d'une liste de réponses : updateReply
-   * Décremente le nombre de réponses privées de la question d'autant :
+   * Affecte le status private Ã  0 d'une liste de rÃ©ponses : updateReply
+   * DÃ©cremente le nombre de rÃ©ponses privÃ©es de la question d'autant :
    * updateQuestion
    */
   public void updateRepliesPrivateStatus(Collection replyIds, Question question)
@@ -533,8 +533,8 @@ public class QuestionManager {
   }
 
   /*
-   * Modifie une question => la question est supprimée si publicReplyNumber et
-   * privateReplyNumber sont à 0 et que la question est close => met à jour
+   * Modifie une question => la question est supprimÃ©e si publicReplyNumber et
+   * privateReplyNumber sont Ã  0 et que la question est close => met Ã  jour
    * publicReplyNumber et/ou privateReplyNumber et replyNumber de la question
    */
   private void updateQuestion(Connection con, Question question)
@@ -564,8 +564,8 @@ public class QuestionManager {
   }
 
   /*
-   * Modifie une question => la question est supprimée si publicReplyNumber et
-   * privateReplyNumber sont à 0 et que la question est close => met à jour
+   * Modifie une question => la question est supprimÃ©e si publicReplyNumber et
+   * privateReplyNumber sont Ã  0 et que la question est close => met Ã  jour
    * publicReplyNumber et/ou privateReplyNumber et replyNumber de la question
    */
   public void updateQuestion(Question question) throws QuestionReplyException {
@@ -593,8 +593,8 @@ public class QuestionManager {
   }
 
   /*
-   * Modifie une réponse => La réponse est supprimée si le status public et le
-   * status private sont à 0
+   * Modifie une rÃ©ponse => La rÃ©ponse est supprimÃ©e si le status public et le
+   * status private sont Ã  0
    */
   private void updateReply(Connection con, Reply reply)
       throws QuestionReplyException {
@@ -615,8 +615,8 @@ public class QuestionManager {
   }
 
   /*
-   * Modifie une réponse => La réponse est supprimée si le status public et le
-   * status private sont à 0
+   * Modifie une rÃ©ponse => La rÃ©ponse est supprimÃ©e si le status public et le
+   * status private sont Ã  0
    */
   public void updateReply(Reply reply) throws QuestionReplyException {
     try {
@@ -713,7 +713,7 @@ public class QuestionManager {
         Question question = getQuestion(qId);
         String peasId = question.getInstanceId();
 
-        // rechercher les réponses
+        // rechercher les rÃ©ponses
         Collection replies = getAllReplies(qId);
         Iterator itR = replies.iterator();
         while (itR.hasNext()) {
@@ -722,7 +722,7 @@ public class QuestionManager {
           WAPrimaryKey pkR = reply.getPK();
           pkR.setComponentName(question.getInstanceId());
           reply.setPK(pkR);
-          // supprimer la réponse et son index
+          // supprimer la rÃ©ponse et son index
           deleteReply(replyId);
           deleteReplyIndex(reply);
         }
@@ -769,7 +769,7 @@ public class QuestionManager {
   }
 
   /*
-   * supprime une réponse
+   * supprime une rÃ©ponse
    */
   private void deleteReply(long replyId) throws QuestionReplyException {
     boolean succeed = false;
@@ -795,7 +795,7 @@ public class QuestionManager {
   }
 
   /*
-   * supprime une réponse
+   * supprime une rÃ©ponse
    */
   private void deleteReply(Connection con, long replyId)
       throws QuestionReplyException {
@@ -812,7 +812,7 @@ public class QuestionManager {
   }
 
   /*
-   * recupère une question
+   * recupÃ¨re une question
    */
   public Question getQuestion(long questionId) throws QuestionReplyException {
     Question question = null;
@@ -872,7 +872,7 @@ public class QuestionManager {
   }
 
   /*
-   * recupère la liste des réponses d'une question
+   * recupÃ¨re la liste des rÃ©ponses d'une question
    */
   public Collection getQuestionReplies(long questionId)
       throws QuestionReplyException {
@@ -890,7 +890,7 @@ public class QuestionManager {
   }
 
   /*
-   * recupère la liste des réponses publiques d'une question
+   * recupÃ¨re la liste des rÃ©ponses publiques d'une question
    */
   public Collection getQuestionPublicReplies(long questionId)
       throws QuestionReplyException {
@@ -909,7 +909,7 @@ public class QuestionManager {
   }
 
   /*
-   * recupère la liste des réponses privées d'une question
+   * recupÃ¨re la liste des rÃ©ponses privÃ©es d'une question
    */
   public Collection getQuestionPrivateReplies(long questionId)
       throws QuestionReplyException {
@@ -929,7 +929,7 @@ public class QuestionManager {
   }
 
   /*
-   * recupère la liste des destinataires d'une question
+   * recupÃ¨re la liste des destinataires d'une question
    */
   public Collection getQuestionRecipients(long questionId)
       throws QuestionReplyException {
@@ -948,7 +948,7 @@ public class QuestionManager {
   }
 
   /*
-   * recupère une réponse
+   * recupÃ¨re une rÃ©ponse
    */
   public Reply getReply(long replyId) throws QuestionReplyException {
     Reply reply = null;
@@ -965,8 +965,8 @@ public class QuestionManager {
   }
 
   /*
-   * Recupère la liste des questions emises par un utilisateur => Q dont il est
-   * l'auteur qui ne sont pas closes ou closes avec réponses privées
+   * RecupÃ¨re la liste des questions emises par un utilisateur => Q dont il est
+   * l'auteur qui ne sont pas closes ou closes avec rÃ©ponses privÃ©es
    */
   public Collection getSendQuestions(String userId, String instanceId)
       throws QuestionReplyException {
@@ -986,7 +986,7 @@ public class QuestionManager {
   }
 
   /*
-   * Recupère la liste des questions recues par un utilisateur => Q dont il est
+   * RecupÃ¨re la liste des questions recues par un utilisateur => Q dont il est
    * le destinataire et qui ne sont pas closes
    */
   public Collection getReceiveQuestions(String userId, String instanceId)
@@ -1011,8 +1011,8 @@ public class QuestionManager {
   }
 
   /*
-   * Recupère la liste des questions qui ne sont pas closes ou closes avec
-   * réponses publiques
+   * RecupÃ¨re la liste des questions qui ne sont pas closes ou closes avec
+   * rÃ©ponses publiques
    */
   public Collection getQuestions(String instanceId)
       throws QuestionReplyException {
@@ -1035,7 +1035,7 @@ public class QuestionManager {
   }
 
   /*
-   * Recupère la liste de toutes les questions avec toutes ses réponses
+   * RecupÃ¨re la liste de toutes les questions avec toutes ses rÃ©ponses
    */
   public Collection getAllQuestions(String instanceId)
       throws QuestionReplyException {
@@ -1061,7 +1061,7 @@ public class QuestionManager {
       if ((question.getCategoryId() == null || question.getCategoryId().equals(
           ""))
           && categoryId == null) {
-        // la question est sans catégorie
+        // la question est sans catÃ©gorie
         question = getQuestionAndReplies(Long.parseLong(question.getPK()
             .getId()));
         questions.add(question);
@@ -1079,7 +1079,7 @@ public class QuestionManager {
   }
 
   /*
-   * Recupère la liste des questions publiques avec réponses
+   * RecupÃ¨re la liste des questions publiques avec rÃ©ponses
    */
   public Collection getPublicQuestions(String instanceId)
       throws QuestionReplyException {
@@ -1098,7 +1098,7 @@ public class QuestionManager {
   }
 
   /*
-   * enregistre une question et une réponse
+   * enregistre une question et une rÃ©ponse
    */
   public long createQuestionReply(Question question, Reply reply)
       throws QuestionReplyException {
@@ -1134,7 +1134,7 @@ public class QuestionManager {
   }
 
   /*
-   * recupère le nombre de réponses d'une question
+   * recupÃ¨re le nombre de rÃ©ponses d'une question
    */
   private int getQuestionRepliesNumber(long questionId)
       throws QuestionReplyException {
@@ -1153,7 +1153,7 @@ public class QuestionManager {
   }
 
   /*
-   * recupère le nombre de réponses publiques d'une question
+   * recupÃ¨re le nombre de rÃ©ponses publiques d'une question
    */
   private int getQuestionPublicRepliesNumber(long questionId)
       throws QuestionReplyException {
@@ -1174,7 +1174,7 @@ public class QuestionManager {
   }
 
   /*
-   * recupère le nombre de réponses privées d'une question
+   * recupÃ¨re le nombre de rÃ©ponses privÃ©es d'une question
    */
   private int getQuestionPrivateRepliesNumber(long questionId)
       throws QuestionReplyException {

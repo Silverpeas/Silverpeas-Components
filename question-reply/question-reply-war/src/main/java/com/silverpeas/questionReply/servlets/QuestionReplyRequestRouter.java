@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
 ---*/
 
 package com.silverpeas.questionReply.servlets;
@@ -45,8 +45,8 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class QuestionReplyRequestRouter extends ComponentRequestRouter {
@@ -62,13 +62,13 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    * @param componentContext
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -84,9 +84,9 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
   /**
    * Extract the container context from the request and save it in the session
    * controller.
-   * 
+   *
    * If this context is null then get the last one from the session controller.
-   * 
+   *
    * So the containerContext is the same in the request and the session.
    */
   private void resetContainerContext(QuestionReplySessionController scc,
@@ -123,7 +123,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -159,7 +159,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
 
         /*
          * if (flag.equals("user")) { // pour le lecteur on affiche les
-         * questions et les réponses sous forme de liste DHTML destination =
+         * questions et les rÃ©ponses sous forme de liste DHTML destination =
          * "/questionReply/jsp/listQuestionsDHTML.jsp"; } else { // pour les
          * autres on affiche les questions dans un tableau
          * request.setAttribute("Flag",flag); request.setAttribute("UserId",
@@ -187,7 +187,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("ConsultSendQuestions")) {
         SilverTrace.info("questionReply",
             "QuestionReplyRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "flag entrée= " + flag);
+            "root.MSG_GEN_PARAM_VALUE", "flag entrÃ©e= " + flag);
 
         if ((flag.equals("admin")) || (flag.equals("writer"))
             || (flag.equals("publisher"))) {
@@ -298,7 +298,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         // request);
 
         // redirection vers la liste des question en ouvrant la question
-        // recherchée
+        // recherchÃ©e
         request.setAttribute("QuestionId", questionId);
         destination = getDestination("Main", componentSC, request);
       } else if (function.equals("ConsultQuestion")) {
@@ -340,7 +340,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
          * request); } } else destination = "/admin/jsp/errorpage.jsp";
          */
       } else if (function.equals("UpdateQ")) {
-        // mettre à jour la question courante
+        // mettre Ã  jour la question courante
         String questionId = request.getParameter("QuestionId");
         Question question = scc.getQuestion(Long.parseLong(questionId));
         scc.setCurrentQuestion(question);
@@ -438,7 +438,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         String id = request.getParameter("QuestionId");
         Question question = scc.getQuestion(Long.parseLong(id));
         scc.setCurrentQuestion(question);
-        // passer le paramètre pour savoir si on utilise les réponses privées
+        // passer le paramÃ¨tre pour savoir si on utilise les rÃ©ponses privÃ©es
         Boolean usedPrivateReplies = new Boolean(scc.isPrivateRepliesEnabled());
         request.setAttribute("UsedPrivateReplies", usedPrivateReplies);
         if ((flag.equals("admin")) || (flag.equals("writer"))) {
@@ -587,7 +587,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         destination = "/questionReply/jsp/attachmentManager.jsp";
       }
 
-      // gestion des catégories
+      // gestion des catÃ©gories
       // ----------------------
       else if (function.equals("ViewCategory")) {
         request.setAttribute("Categories", scc.getAllCategories());
@@ -598,7 +598,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
             .getDisplayedName());
         destination = "/questionReply/jsp/categoryManager.jsp";
       } else if (function.equals("CreateCategory")) {
-        // récupération des paramètres
+        // rÃ©cupÃ©ration des paramÃ¨tres
         String name = (String) request.getParameter("Name");
         String description = (String) request.getParameter("Description");
         NodeDetail node = new NodeDetail("unknown", name, description, null,
@@ -643,8 +643,8 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
           request.setAttribute("QuestionId", id);
           destination = getDestination("Main", scc, request);
         } else if (type.startsWith("Reply")) {
-          // traitement des réponses, on arrive sur la question contenant la
-          // réponse
+          // traitement des rÃ©ponses, on arrive sur la question contenant la
+          // rÃ©ponse
           Reply reply = scc.getReply(new Long(id).longValue());
           long questionId = reply.getQuestionId();
           request.setAttribute("QuestionId", Long.toString(questionId));

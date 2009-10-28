@@ -21,22 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * Created on 20 août 2004
- *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
+
 package com.silverpeas.rssAgregator.model;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
-/**
- * @author neysseri
- * 
- *         To change the template for this generated type comment go to
- *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
 public class SPChannelPK extends WAPrimaryKey {
 
   public SPChannelPK(String id) {

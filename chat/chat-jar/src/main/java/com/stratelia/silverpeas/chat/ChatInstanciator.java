@@ -21,11 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * chatInstanciator.java
- * @author  PHiL
- * Created on 12 février 2002, 10:30
- */
 
 package com.stratelia.silverpeas.chat;
 

@@ -121,13 +121,13 @@ public class RssAgregatorSessionController extends
         } else {
           SilverTrace.debug("rssAgregator",
               "RssAgregatorSessionController.getChannels",
-              "Mise à jour du cache", "channelPK = " + channelPK.toString());
+              "Mise a jour du cache", "channelPK = " + channelPK.toString());
           try {
             rssChannel = getChannelFromUrl(channel.getUrl());
           } catch (Exception e) {
             SilverTrace.info("rssAgregator",
                 "RssAgregatorSessionController.getChannelsContent()",
-                "Mise à jour du cache", "channelPK = " + channelPK.toString());
+                "Mise a jour du cache", "channelPK = " + channelPK.toString());
           } finally {
             channel._setChannel(rssChannel);
             cache.addChannelToCache(channel);
@@ -178,10 +178,10 @@ public class RssAgregatorSessionController extends
 
     Channel rssChannel = null;
     if (urlHaveChanged) {
-      // L'url a changé, il faut recharger le channel
+      // L'url a change, il faut recharger le channel
       cache.removeChannelFromCache((SPChannelPK) channel.getPK());
     } else {
-      // L'url n'a pas changé, il n'est pas necessaire de recharger le channel
+      // L'url n'a pas change, il n'est pas necessaire de recharger le channel
       rssChannel = cache.getChannelFromCache(
           (SPChannelPK) currentChannel.getPK())._getChannel();
       currentChannel._setChannel(rssChannel);

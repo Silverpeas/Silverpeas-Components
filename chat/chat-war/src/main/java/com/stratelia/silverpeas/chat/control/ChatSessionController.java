@@ -171,9 +171,6 @@ public class ChatSessionController extends AbstractComponentSessionController {
     return chatDAO.RetreiveListBanned(chatRoomId);
   }
 
-  /*************************************************************/
-  /** SCO - 26/12/2002 Integration AlertUser et AlertUserPeas **/
-  /*************************************************************/
   public String initUserPanel() throws RemoteException,
       jChatBox.Chat.ChatException {
     AlertUser sel = getAlertUser();
@@ -181,53 +178,19 @@ public class ChatSessionController extends AbstractComponentSessionController {
     sel.resetAll();
     sel.setHostSpaceName(getSpaceLabel()); // set nom de l'espace pour browsebar
     sel.setHostComponentId(getComponentId()); // set id du composant pour appel
-    // selectionPeas (extra param
-    // permettant de filtrer les users
-    // ayant acces au composant)
+    // selectionPeas (extra param permettant de filtrer les users ayant acces au composant)
     PairObject hostComponentName = new PairObject(getComponentLabel(), null); // set
-    // nom
-    // du
-    // composant
-    // pour
-    // browsebar
-    // (PairObject(nom_composant,
-    // lien_vers_composant))
-    // NB
-    // :
-    // seul
-    // le
-    // 1er
-    // element
-    // est
-    // actuellement
-    // utilisé
-    // (alertUserPeas
-    // est
-    // toujours
-    // présenté
-    // en
-    // popup
-    // =>
-    // pas
-    // de
-    // lien
-    // sur
-    // nom
-    // du
-    // composant)
+    // nom du composant pour browsebar
+    // (PairObject(nom_composant, lien_vers_composant))
+    // NB : seul le 1er element est actuellement utilisÃ©
+    // (alertUserPeas est toujours prÃ©sentÃ© en popup => pas de lien sur nom du composant)
     sel.setHostComponentName(hostComponentName);
     sel.setNotificationMetaData(getAlertNotificationMetaData()); // set
-    // NotificationMetaData
-    // contenant
-    // les
-    // informations
-    // à notifier
+    // NotificationMetaData contenant les informations Ã  notifier
     // fin initialisation de AlertUser
-    // l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
+    // l'url de nav vers alertUserPeas et demandÃ©e Ã  AlertUser et retournÃ©e
     return AlertUser.getAlertUserURL();
   }
-
-  /*************************************************************/
 
   public String[] getNameSelectedUsers() {
     return nameSelectedUser;
@@ -241,9 +204,6 @@ public class ChatSessionController extends AbstractComponentSessionController {
     return idSelectedUser;
   }
 
-  /*************************************************************/
-  /** SCO - 26/12/2002 Integration AlertUser et AlertUserPeas **/
-  /*************************************************************/
   public NotificationMetaData getAlertNotificationMetaData()
       throws RemoteException, jChatBox.Chat.ChatException {
 
@@ -282,8 +242,6 @@ public class ChatSessionController extends AbstractComponentSessionController {
     notification_message.setSender(this.currentUser.getId());
     return notification_message;
   }
-
-  /*************************************************************/
 
   private String getNotificationSubject(ResourceLocator message) {
     return message.getString("chat.SUBJECT");

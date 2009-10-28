@@ -61,19 +61,20 @@ import static com.silverpeas.mailinglist.PathTestUtil.*;
 
 public class TestMessageChecker extends AbstractSingleSpringContextTests {
 
+  private static int ATT_SIZE = 85922;
+
   private static final String attachmentPath = BUILD_PATH + SEPARATOR +
       "uploads" + SEPARATOR +
       "componentId" + SEPARATOR + "{0}" + SEPARATOR +
       "lemonde.html";
   private static final String textEmailContent =
-      "Bonjour famille Simpson, j'espère que vous allez bien. " +
-      "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
-      "depuis que Tahiti Bob est retourné en prison. Je dois remplacer" +
-      "l'homme canon dans la prochaine émission.\r\nBart";
-  private static final String htmlEmailSummary = "Politique Recherchez depuis sur" +
-      " Le Monde.fr A la Une Le Desk Vidéos International *Elections américaines" +
-      " Europe Politique *Municipales & Cantonales 2008 Société Carnet Economie " +
-      "Médias Météo Rendez-vou";
+      "Bonjour famille Simpson, j'espÃ¨re que vous allez bien. " +
+      "Ici tout se passe bien et Krusty est trÃ¨s sympathique. Surtout " +
+      "depuis que Tahiti Bob est retournÃ© en prison. Je dois remplacer" +
+      "l'homme canon dans la prochaine Ã©mission.\r\nBart";
+  private static final String htmlEmailSummary = "Politique A la Une Le Desk VidÃ©os International *Elections " +
+      "amÃ©ricaines Europe Politique *Municipales & Cantonales 2008 SociÃ©tÃ© Carnet Economie MÃ©dias " +
+      "MÃ©tÃ©o Rendez-vous Sports *Tournoi des VI Nations E";
 
   protected String loadHtml() throws IOException {
     StringWriter buffer = null;
@@ -81,7 +82,7 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     try {
       buffer = new StringWriter();
       reader = new BufferedReader(new InputStreamReader(
-          TestMessageChecker.class.getResourceAsStream("lemonde.html")));
+          TestMessageChecker.class.getResourceAsStream("lemonde.html"), "UTF-8"));
       String line = null;
       while ((line = reader.readLine()) != null) {
         buffer.write(line);
@@ -97,6 +98,7 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     }
   }
 
+  @Override
   protected String[] getConfigLocations() {
     return new String[]{"spring-checker.xml", "spring-notification.xml",
           "spring-fake-services.xml"};
@@ -231,7 +233,7 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Simple html Email test");
     String html = loadHtml();
-    mail.setText(html, "ISO-8859-1", "html");
+    mail.setText(html, "UTF-8", "html");
     mail.setSentDate(new Date());
     Date sentDate = new Date(mail.getSentDate().getTime());
     Transport.send(mail);
@@ -256,7 +258,7 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     assertEquals(0, message.getAttachmentsSize());
     assertEquals(0, message.getAttachments().size());
     assertEquals("componentId", message.getComponentId());
-    assertEquals("text/html; charset=ISO-8859-1", message.getContentType());
+    assertEquals("text/html; charset=UTF-8", message.getContentType());
   }
 
   public void testProcessEmailHtmlTextWithAttachment()
@@ -291,7 +293,7 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     attachment.setDisposition(Part.ATTACHMENT);
     attachment.setFileName("lemonde.html");
     MimeBodyPart body = new MimeBodyPart();
-    body.setContent(html, "text/html");
+    body.setContent(html, "text/html; charset=\"UTF-8\"");
     Multipart multiPart = new MimeMultipart();
     multiPart.addBodyPart(body);
     multiPart.addBodyPart(attachment);
@@ -312,7 +314,7 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     assertEquals("Html Email test with attachment", message.getTitle());
     assertEquals(html, message.getBody());
     assertEquals(htmlEmailSummary, message.getSummary());
-    assertEquals(86170, message.getAttachmentsSize());
+    assertEquals(ATT_SIZE, message.getAttachmentsSize());
     assertEquals(1, message.getAttachments().size());
     String path = MessageFormat.format(attachmentPath,
         new String[]{messageChecker.getMailProcessor().replaceSpecialChars(
@@ -381,7 +383,7 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     assertEquals("Plain text Email test with attachment", message.getTitle());
     assertEquals(textEmailContent, message.getBody());
     assertEquals(textEmailContent.substring(0, 200), message.getSummary());
-    assertEquals(86170, message.getAttachmentsSize());
+    assertEquals(ATT_SIZE, message.getAttachmentsSize());
     assertEquals(1, message.getAttachments().size());
     String path = MessageFormat.format(attachmentPath,
         new String[]{messageChecker.getMailProcessor().replaceSpecialChars(
@@ -436,12 +438,12 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     return (MessageChecker) applicationContext.getBean("messageChecker");
   }
 
+  @Override
   protected void onTearDown() {
     Mailbox.clearAll();
     try {
       FileFolderManager.deleteFolder("c:\\tmp\\uploads\\componentId", false);
     } catch (UtilException e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     }
   }

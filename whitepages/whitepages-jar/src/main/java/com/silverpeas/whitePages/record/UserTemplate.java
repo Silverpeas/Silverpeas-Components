@@ -106,7 +106,7 @@ public class UserTemplate implements RecordTemplate {
       fieldTemplate.setDisplayerName("simpletext");
       fieldTemplate.setReadOnly(true);
     } else {
-      // pb car on n'a pas de UserDetail pour récupérer le nom
+      // pb car on n'a pas de UserDetail pour recuperer le nom
     }
 
     return fieldTemplate;

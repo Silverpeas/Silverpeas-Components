@@ -38,8 +38,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de
- * récupérer rapidement et simplement des données du système d'information de
- * l'entreprise. Copyright: Copyright (c) 2001 Company: Stratélia
+ * recuperer rapidement et simplement des donnees du systeme d'information de
+ * l'entreprise. 
  */
 
 public class ConnecteurJDBCRequestRouter extends ComponentRequestRouter {

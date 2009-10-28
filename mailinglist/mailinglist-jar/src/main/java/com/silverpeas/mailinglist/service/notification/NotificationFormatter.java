@@ -26,6 +26,7 @@ package com.silverpeas.mailinglist.service.notification;
 import java.text.MessageFormat;
 
 import com.silverpeas.mailinglist.service.model.beans.Message;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.ResourceLocator;
 
 public class NotificationFormatter {
@@ -55,7 +56,7 @@ public class NotificationFormatter {
     bodyModerationFormatter = new MessageFormat(resources
         .getString(BODY_MODERATION_KEY));
   }
-
+  
   public String formatTitle(Message message, String mailingListName,
       boolean moderate) {
     if (moderate) {

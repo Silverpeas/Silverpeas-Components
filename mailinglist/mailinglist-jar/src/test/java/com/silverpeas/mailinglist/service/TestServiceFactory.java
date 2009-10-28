@@ -31,6 +31,8 @@ import com.silverpeas.mailinglist.service.model.MessageService;
 
 public class TestServiceFactory extends
     AbstractDependencyInjectionSpringContextTests {
+  
+  @Override
   protected String[] getConfigLocations() {
     return new String[] { "spring-checker.xml",
         "spring-notification.xml", "spring-hibernate.xml",

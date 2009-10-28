@@ -480,7 +480,7 @@ public class ChatDataAccess {
     return exist;
   }
 
-  // récupère la liste des chatRooms
+  // rÃ©cupÃ¨re la liste des chatRooms
   public Vector RetreiveListBanned(int chatRoomId) throws ChatException {
 
     PreparedStatement prepStmt = null;

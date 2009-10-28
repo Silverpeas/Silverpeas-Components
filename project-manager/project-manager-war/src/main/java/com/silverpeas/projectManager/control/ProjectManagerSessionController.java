@@ -145,7 +145,7 @@ public class ProjectManagerSessionController extends
 
     enrichirTask(task);
 
-    // fichiers joint ‡ la t‚che
+    // fichiers joint √† la t√¢che
     task.setAttachments(getAttachments(new Integer(task.getId()).toString()));
 
     task.setLevel(level);
@@ -170,7 +170,7 @@ public class ProjectManagerSessionController extends
       task.setUnfold(true);
       arbo.add(task);
 
-      // la t‚che est dÈpliÈe
+      // la t√¢che est d√©pli√©e
       List sousActions = getProjectManagerBm().getTasksByMotherId(
           getComponentId(), task.getId(), getFiltre());
       level++;
@@ -215,7 +215,7 @@ public class ProjectManagerSessionController extends
   public List getPotentialPreviousTasks(boolean onCreation)
       throws RemoteException {
     List previousTasks = null;
-    int motherId = getCurrentProject().getId(); // par dÈfaut, on est au niveau
+    int motherId = getCurrentProject().getId(); // par d√©faut, on est au niveau
     // du projet
     if (getCurrentTask() != null) {
       // On est au niveau d'une tache
@@ -228,7 +228,7 @@ public class ProjectManagerSessionController extends
         motherId);
 
     // calcul de la date de debut de la nouvelle tache
-    // par rapport ‡ la date de fin de la tache precedente
+    // par rapport √† la date de fin de la tache precedente
     TaskDetail previousTask = null;
     for (int t = 0; t < previousTasks.size(); t++) {
       previousTask = (TaskDetail) previousTasks.get(t);
@@ -266,17 +266,17 @@ public class ProjectManagerSessionController extends
   }
 
   /**
-   * VÈrifie la date de dÈbut d'une t‚che. Si la date de dÈbut est un jour non
-   * travaillÈ, la date de dÈbut sera le prochain jour travaillÈ.
-   * 
+   * V√©rifie la date de d√©but d'une t√¢che. Si la date de d√©but est un jour non
+   * travaill√©, la date de d√©but sera le prochain jour travaill√©.
+   *
    * @param task
-   *          la t‚che dont la date de dÈbut doit Ítre vÈrifiÈe
+   *          la t√¢che dont la date de d√©but doit √™tre v√©rifi√©e
    * @throws RemoteException
    */
   public void checkBeginDate(TaskDetail task) throws RemoteException {
     getCalendar().setTime(task.getDateDebut());
 
-    // rÈcupËre les jours non travaillÈs
+    // r√©cup√®re les jours non travaill√©s
     List holidayDates = getProjectManagerBm().getHolidayDates(getComponentId());
 
     while (holidayDates.contains(getCalendar().getTime())) {
@@ -321,7 +321,7 @@ public class ProjectManagerSessionController extends
 
     enrichirTask(currentTask);
 
-    // rÈcupÈration du nom de la t‚che prÈcÈdente
+    // r√©cup√©ration du nom de la t√¢che pr√©c√©dente
     int previousTaskId = currentTask.getPreviousTaskId();
     if (previousTaskId != -1) {
       TaskDetail previousTask = getProjectManagerBm().getTask(previousTaskId);
@@ -330,7 +330,7 @@ public class ProjectManagerSessionController extends
     }
 
     if (getAttachments) {
-      // fichiers joint ‡ la t‚che
+      // fichiers joint √† la t√¢che
       currentTask.setAttachments(getAttachments(id));
     }
 
@@ -342,7 +342,7 @@ public class ProjectManagerSessionController extends
 
     enrichirTask(currentTask);
 
-    // fichiers joint ‡ la t‚che
+    // fichiers joint √† la t√¢che
     currentTask.setAttachments(getAttachments(currentTask.getId()));
 
     return currentTask;
@@ -381,12 +381,12 @@ public class ProjectManagerSessionController extends
     task.setDateFin(processEndDate(task));
 
     if (getCurrentTask() != null) {
-      // ajout d'une sous t‚che
+      // ajout d'une sous t√¢che
       task.setMereId(getCurrentTask().getId());
       task.setPath(getCurrentTask().getPath());
     } else {
       if (getCurrentProject() != null) {
-        // ajout d'une t‚che au projet
+        // ajout d'une t√¢che au projet
         task.setMereId(getCurrentProject().getId());
         task.setPath(getCurrentProject().getPath());
       } else {
@@ -584,12 +584,12 @@ public class ProjectManagerSessionController extends
 
   /****************************************************************************/
   /**
-   * Gestion des jours non travaillÈs /
+   * Gestion des jours non travaill√©s /
    ****************************************************************************/
 
   /**
    * Change le statut de la date
-   * 
+   *
    * @param date
    *          la date
    * @param nextStatus
@@ -601,14 +601,14 @@ public class ProjectManagerSessionController extends
     HolidayDetail holiday = new HolidayDetail(uiDate2Date(date),
         getCurrentProject().getId(), getComponentId());
     if (status == WORKING_DAY) {
-      // le jour devient un jour travaillÈ
+      // le jour devient un jour travaill√©
       getProjectManagerBm().removeHolidayDate(holiday);
     } else {
-      // le jour devient un jour non travaillÈ
+      // le jour devient un jour non travaill√©
       getProjectManagerBm().addHolidayDate(holiday);
     }
-    // recalcule pour toutes les t‚ches du projet
-    // toutes les dates de dÈbut et de fin
+    // recalcule pour toutes les t√¢ches du projet
+    // toutes les dates de d√©but et de fin
     calculateAllTasksDates();
   }
 
@@ -626,7 +626,7 @@ public class ProjectManagerSessionController extends
     getCalendar().set(Calendar.DATE, 1);
 
     // on se place sur le premier jour du mois
-    // correspondant au jour de la semaine passÈ en paramÍtre
+    // correspondant au jour de la semaine pass√© en param√™tre
     while (getCalendar().get(Calendar.DAY_OF_WEEK) != new Integer(day)
         .intValue()) {
       getCalendar().add(Calendar.DATE, 1);
@@ -653,8 +653,8 @@ public class ProjectManagerSessionController extends
     else
       getProjectManagerBm().addHolidayDates(holidayDates);
 
-    // recalcule pour toutes les t‚ches du projet
-    // toutes les dates de dÈbut et de fin
+    // recalcule pour toutes les t√¢ches du projet
+    // toutes les dates de d√©but et de fin
     calculateAllTasksDates();
   }
 
@@ -669,7 +669,7 @@ public class ProjectManagerSessionController extends
 
   /****************************************************************************/
   /**
-   * MÈthodes utilitaires /
+   * M√©thodes utilitaires /
    ****************************************************************************/
   public Date uiDate2Date(String uiDate) throws ParseException {
     if (uiDate != null && uiDate.length() > 0)

@@ -253,11 +253,11 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
       task.setId(id);
 
       if (task.getMereId() != -1) {
-        // la tache mere est decomposée
+        // la tache mere est decomposÃ©e
         ProjectManagerDAO.actionEstDecomposee(con, task.getMereId(), 1);
       }
 
-      // modification de sa tache mère s'il en existe une
+      // modification de sa tache mÃ¨re s'il en existe une
       updateChargesMotherTask(con, task);
 
       // insertion de la tache correspondante dans le gestionnaire de taches du
@@ -290,7 +290,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
     try {
       TaskDetail actionASupprimer = ProjectManagerDAO.getTask(con, id);
 
-      // Supprime toutes les sous taches (à n'importe quel niveau)
+      // Supprime toutes les sous taches (Ã  n'importe quel niveau)
       List tree = ProjectManagerDAO.getTree(con, id);
       TaskDetail task = null;
       for (int t = 0; t < tree.size(); t++) {
@@ -298,18 +298,18 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
         removeTask(con, task.getId(), task.getInstanceId());
       }
 
-      // La tâche mère a t-elle d'autres taches filles. Est-elle toujours
-      // décomposée ?
+      // La tÃ¢che mÃ¨re a t-elle d'autres taches filles. Est-elle toujours
+      // dÃ©composÃ©e ?
       List actionsSoeur = ProjectManagerDAO.getTree(con, actionASupprimer
           .getMereId());
       if (actionsSoeur.size() == 1) {
-        // La task mère n'a qu'une sous task. Celle que l'on va supprimer.
-        // Elle ne va donc plus être décomposée
+        // La task mÃ¨re n'a qu'une sous task. Celle que l'on va supprimer.
+        // Elle ne va donc plus Ãªtre dÃ©composÃ©e
         ProjectManagerDAO.actionEstDecomposee(con,
             actionASupprimer.getMereId(), 0);
       }
 
-      // Cette tâche est-elle la tâche précédente d'autres tâches
+      // Cette tÃ¢che est-elle la tÃ¢che prÃ©cÃ©dente d'autres tÃ¢ches
       List nextTasks = ProjectManagerDAO.getNextTasks(con, id);
       TaskDetail nextTask = null;
       for (int n = 0; n < nextTasks.size(); n++) {
@@ -318,7 +318,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
         ProjectManagerDAO.updateTask(con, nextTask);
       }
 
-      // modification de sa tache mère s'il en existe une
+      // modification de sa tache mÃ¨re s'il en existe une
       updateChargesMotherTask(con, task);
     } catch (Exception re) {
       throw new ProjectManagerRuntimeException(
@@ -336,17 +336,17 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
         "root.MSG_GEN_ENTER_METHOD", "id = " + id + ", instanceId="
             + instanceId);
 
-    // suppression de la tâche en BdD
+    // suppression de la tÃ¢che en BdD
     ProjectManagerDAO.removeTask(con, id);
 
-    // suppression de la tâche associée
+    // suppression de la tÃ¢che associÃ©e
     removeTodo(id, instanceId);
 
-    // supprime les fichiers joint à la tâche
+    // supprime les fichiers joint Ã  la tÃ¢che
     TaskPK taskPK = new TaskPK(id, instanceId);
     AttachmentController.deleteAttachmentByCustomerPK(taskPK);
 
-    // supprime les commentaires de la tâche
+    // supprime les commentaires de la tÃ¢che
     CommentController.deleteCommentsByForeignPK(taskPK);
 
     // suppression de l'index
@@ -361,21 +361,21 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
       Date beginDate = task.getDateDebut();
       Date endDate = task.getDateFin();
 
-      // Récupération des jours non travaillés
+      // RÃ©cupÃ©ration des jours non travaillÃ©s
       List holidays = getHolidayDates(task.getInstanceId());
 
       Calendar calendar = Calendar.getInstance();
 
-      // quelles sont les tâches liées à la tâche modifiée ? Ce sont :
-      // - soit des tâches suivantes (ie tâches qui ont comme précédence la
-      // tâche modifiée) - niveau N
-      // - soit des sous tâches (sans précédence) de la tâche modifiée - niveau
+      // quelles sont les tÃ¢ches liÃ©es Ã  la tÃ¢che modifiÃ©e ? Ce sont :
+      // - soit des tÃ¢ches suivantes (ie tÃ¢ches qui ont comme prÃ©cÃ©dence la
+      // tÃ¢che modifiÃ©e) - niveau N
+      // - soit des sous tÃ¢ches (sans prÃ©cÃ©dence) de la tÃ¢che modifiÃ©e - niveau
       // N-1
 
-      // on commence par récupérer les tâches suivantes
+      // on commence par rÃ©cupÃ©rer les tÃ¢ches suivantes
       List nextTasks = ProjectManagerDAO.getNextTasks(con, task.getId());
 
-      // détecte les tâches qui doivent être décalées
+      // dÃ©tecte les tÃ¢ches qui doivent Ãªtre dÃ©calÃ©es
       TaskDetail linkedTask = null;
       TaskDetail motherTask = null;
 
@@ -400,8 +400,8 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
         beginDateLinked = linkedTask.getDateDebut();
         saveBeginDate = beginDateLinked;
 
-        // vérifie si la date de début n'est pas
-        // un jour travaillé
+        // vÃ©rifie si la date de dÃ©but n'est pas
+        // un jour travaillÃ©
         calendar.setTime(beginDateLinked);
         while (holidays.contains(beginDateLinked)) {
           calendar.add(Calendar.DATE, 1);
@@ -413,38 +413,38 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
         saveEndDate = endDateLinked;
 
         if (endDate.equals(endDateLinked) || endDate.after(endDateLinked)) {
-          // La date de fin de la tâche précédente est supérieure ou égale à la
-          // tâche liéée
-          // cette tâche doit être décalée
+          // La date de fin de la tÃ¢che prÃ©cÃ©dente est supÃ©rieure ou Ã©gale Ã  la
+          // tÃ¢che liÃ©Ã©e
+          // cette tÃ¢che doit Ãªtre dÃ©calÃ©e
 
-          // calcul de la nouvelle date de début (= date fin + 1)
+          // calcul de la nouvelle date de dÃ©but (= date fin + 1)
           beginDateLinked = getBeginDate(calendar, endDate, holidays);
           linkedTask.setDateDebut(beginDateLinked);
         }
 
-        // calcul de la nouvelle date de fin (date début + charge)
+        // calcul de la nouvelle date de fin (date dÃ©but + charge)
         endDateLinked = processEndDate(linkedTask, calendar, holidays);
         linkedTask.setDateFin(endDateLinked);
 
-        // regarder si les dates sont modifiées
+        // regarder si les dates sont modifiÃ©es
         if (!beginDateLinked.equals(saveBeginDate))
           isModifBeginDate = true;
         if (!endDateLinked.equals(saveEndDate))
           isModifBeginDate = true;
 
-        // si on est dans un cas de modif de date, faire la mise à jour
+        // si on est dans un cas de modif de date, faire la mise Ã  jour
         // seulement si les dates changent
         if (isModifBeginDate || isModifEndDate)
           updateTask(linkedTask, userId);
 
-        // on traite maintenant la tâche mère de la tache liée
+        // on traite maintenant la tÃ¢che mÃ¨re de la tache liÃ©e
         motherTask = ProjectManagerDAO.getTask(con, task.getMereId());
         if (motherTask.getMereId() != -1) {// c'est une tache, pas le projet
           updateMother = false;
           endDateLinked = linkedTask.getDateFin();
 
-          // vérifie si la date de fin n'est pas
-          // un jour travaillé
+          // vÃ©rifie si la date de fin n'est pas
+          // un jour travaillÃ©
           calendar.setTime(motherTask.getDateFin());
           while (holidays.contains(motherTask.getDateFin())) {
             calendar.add(Calendar.DATE, 1);
@@ -453,11 +453,11 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
           }
 
           if (endDateLinked.after(motherTask.getDateFin())) {
-            // La date de fin de la tâche fille est supérieure à celle de la
-            // mère
-            // cette tâche doit être décalée
+            // La date de fin de la tÃ¢che fille est supÃ©rieure Ã  celle de la
+            // mÃ¨re
+            // cette tÃ¢che doit Ãªtre dÃ©calÃ©e
 
-            // nouvelle date de fin de la mère = date fin fille
+            // nouvelle date de fin de la mÃ¨re = date fin fille
             motherTask.setDateFin(endDateLinked);
             updateMother = true;
           }
@@ -475,16 +475,16 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
               calendar.add(Calendar.DATE, 1);
             }
 
-            // recalcul les charges de la tache mère
+            // recalcul les charges de la tache mÃ¨re
             motherTask.setCharge(charge);
 
-            // modification de la tâche mère en BdD
+            // modification de la tÃ¢che mÃ¨re en BdD
             ProjectManagerDAO.updateTask(con, motherTask);
           }
         }
       }
 
-      // on traite maintenant les sous tâches
+      // on traite maintenant les sous tÃ¢ches
       List subTasks = ProjectManagerDAO.getTasksByMotherIdAndPreviousId(con,
           task.getInstanceId(), task.getId(), -1);
 
@@ -493,7 +493,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
       saveBeginDate = null;
       saveEndDate = null;
 
-      // détecte les tâches qui doivent être décalées
+      // dÃ©tecte les tÃ¢ches qui doivent Ãªtre dÃ©calÃ©es
       TaskDetail subTask = null;
       for (int t = 0; t < subTasks.size(); t++) {
         isModifBeginDate = false;
@@ -504,7 +504,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
         beginDateSub = subTask.getDateDebut();
         saveBeginDate = beginDateSub;
 
-        // vérifie si la date de début n'est pas un jour travaillé
+        // vÃ©rifie si la date de dÃ©but n'est pas un jour travaillÃ©
         calendar.setTime(beginDateSub);
         while (holidays.contains(beginDateSub)) {
           calendar.add(Calendar.DATE, 1);
@@ -513,10 +513,10 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
         }
 
         if (beginDate.after(beginDateSub)) {
-          // La date de début de la tâche mêre est supérieure à la sous tâche
-          // cette tâche doit être décalée
+          // La date de dÃ©but de la tÃ¢che mÃªre est supÃ©rieure Ã  la sous tÃ¢che
+          // cette tÃ¢che doit Ãªtre dÃ©calÃ©e
 
-          // nouvelle date de début = date début mère
+          // nouvelle date de dÃ©but = date dÃ©but mÃ¨re
           beginDateSub = beginDate;
           subTask.setDateDebut(beginDate);
         }
@@ -528,30 +528,30 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
         endDateSub = processEndDate(subTask, calendar, holidays);
         subTask.setDateFin(endDateSub);
 
-        // regarder si les dates sont modifiées
+        // regarder si les dates sont modifiÃ©es
         if (!beginDateSub.equals(saveBeginDate))
           isModifBeginDate = true;
         if (!endDateSub.equals(saveEndDate))
           isModifBeginDate = true;
 
-        // si on est dans un cas de modif de date, faire la mise à jour
+        // si on est dans un cas de modif de date, faire la mise Ã  jour
         // seulement si les dates changent
         if (isModifBeginDate || isModifEndDate)
           updateTask(subTask, userId);
       }
 
-      // modification de la tâche en BdD
+      // modification de la tÃ¢che en BdD
       if (task.getAvancement() == 100)
         task.setStatut(TaskDetail.COMPLETE);
       ProjectManagerDAO.updateTask(con, task);
 
-      // modification de sa tache mère s'il en existe une
+      // modification de sa tache mÃ¨re s'il en existe une
       updateChargesMotherTask(con, task);
 
-      // modification de la tache associée
+      // modification de la tache associÃ©e
       updateTodo(task);
 
-      // indexation de la tâche
+      // indexation de la tÃ¢che
       createIndex(task);
 
       // notifie le responsable
@@ -575,13 +575,13 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
     String subject = "";
     StringBuffer body = new StringBuffer(128);
     if (onCreation) {
-      subject = "Nouvelle tâche";
-      body.append("Une nouvelle tâche nommée \"").append(task.getNom()).append(
-          "\" vient de vous être affecté.\n");
+      subject = "Nouvelle tÃ¢che";
+      body.append("Une nouvelle tÃ¢che nommÃ©e \"").append(task.getNom()).append(
+          "\" vient de vous Ãªtre affectÃ©.\n");
     } else {
-      subject = "Modification d'une tâche";
-      body.append("La tâche \"").append(task.getNom()).append(
-          "\" dont vous êtes responsable vient d'être modifiée.\n");
+      subject = "Modification d'une tÃ¢che";
+      body.append("La tÃ¢che \"").append(task.getNom()).append(
+          "\" dont vous Ãªtes responsable vient d'Ãªtre modifiÃ©e.\n");
     }
 
     NotificationMetaData notifMetaData = new NotificationMetaData(
@@ -629,7 +629,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
       calendar = Calendar.getInstance();
 
     if (holidays == null) {
-      // Récupération des jours non travaillés
+      // RÃ©cupÃ©ration des jours non travaillÃ©s
       holidays = getHolidayDates(task.getInstanceId());
     }
 
@@ -667,10 +667,10 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
 
   public void calculateAllTasksDates(String instanceId, int projectId,
       String userId) throws RemoteException {
-    // récupère toutes les tâches de premier niveau sans précédence
+    // rÃ©cupÃ¨re toutes les tÃ¢ches de premier niveau sans prÃ©cÃ©dence
     List tasks = getTasksByMotherIdAndPreviousId(instanceId, projectId, -1);
 
-    // Récupération des jours non travaillés
+    // RÃ©cupÃ©ration des jours non travaillÃ©s
     List holidays = getHolidayDates(instanceId);
 
     Calendar calendar = Calendar.getInstance();
@@ -690,19 +690,19 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
       beginDate = task.getDateDebut();
       saveBeginDate = beginDate;
 
-      // vérifie si la date de début n'est pas un jour travaillé
+      // vÃ©rifie si la date de dÃ©but n'est pas un jour travaillÃ©
       while (holidays.contains(beginDate)) {
         calendar.setTime(beginDate);
         calendar.add(Calendar.DATE, 1);
         beginDate = calendar.getTime();
       }
-      // mise à jour de la date de début si elle est modifiée
+      // mise Ã  jour de la date de dÃ©but si elle est modifiÃ©e
       if (!beginDate.equals(saveBeginDate)) {
         task.setDateDebut(beginDate);
         isModifBeginDate = true;
       }
 
-      // calcul la date de fin et mise à jour si elle est modifiée
+      // calcul la date de fin et mise Ã  jour si elle est modifiÃ©e
       saveEndDate = task.getDateFin();
       endDate = processEndDate(task, calendar, holidays);
       if (!endDate.equals(saveEndDate)) {
@@ -710,7 +710,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
         isModifBeginDate = true;
       }
 
-      // modification de la tâche + autres tâches liées si besoin
+      // modification de la tÃ¢che + autres tÃ¢ches liÃ©es si besoin
       if (isModifBeginDate || isModifEndDate)
         updateTask(task, userId);
     }
@@ -720,7 +720,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
       throws RemoteException {
     try {
       // la tache est une sous-tache -> on recalcule les montants de charges de
-      // la tache mère
+      // la tache mÃ¨re
       TaskDetail motherTask = ProjectManagerDAO.getTask(con, task.getMereId());
       if (motherTask != null && motherTask.getMereId() != -1) {// c'est une
         // tache, pas le
@@ -734,7 +734,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
         for (int t = 0; t < subTasks.size(); t++) {
           subTask = (TaskDetail) subTasks.get(t);
 
-          // calcul la somme des charges consommées et reste à faire
+          // calcul la somme des charges consommÃ©es et reste Ã  faire
           somConsomme += subTask.getConsomme();
           somRaf += subTask.getRaf();
         }
@@ -756,7 +756,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
 
   /**********************************************************************************/
   /**
-   * Gestion du calendrier des jours non travaillés /
+   * Gestion du calendrier des jours non travaillÃ©s /
    **********************************************************************************/
   public List getHolidayDates(String instanceId) throws RemoteException {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.getHolidayDates()",
@@ -987,10 +987,10 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton,
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param con
-   * 
+   *
    * @see
    */
   private void freeConnection(Connection con) {

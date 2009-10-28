@@ -29,10 +29,10 @@
 
 package com.stratelia.webactiv.webSites.control;
 
-/** 
+/**
  * This is the webSite manager main interface
  * It contains all of the methods to be accessible to the client
- * @author Cécile BONIN
+ * @author CÃ©cile BONIN
  * @version 1.0
  */
 
@@ -221,13 +221,13 @@ public class WebSiteSessionController extends
   /*
    * public synchronized void setSessionTopicToLink(FolderDetail topicDetail) {
    * this.sessionTopicToLink = topicDetail; }
-   * 
+   *
    * public synchronized void setSessionPublication(UserCompletePublication
    * pubDetail) { this.sessionPublication = pubDetail; }
-   * 
+   *
    * public synchronized void setSessionPath(String path) { this.sessionPath =
    * path; }
-   * 
+   *
    * public synchronized void setSessionOwner(boolean owner) { this.sessionOwner
    * = owner; }
    */
@@ -246,12 +246,12 @@ public class WebSiteSessionController extends
   /*
    * public synchronized FolderDetail getSessionTopicToLink() { return
    * this.sessionTopicToLink; }
-   * 
+   *
    * public synchronized UserCompletePublication getSessionPublication() {
    * return this.sessionPublication; }
-   * 
+   *
    * public synchronized String getSessionPath() { return this.sessionPath; }
-   * 
+   *
    * public synchronized boolean getSessionOwner() { return this.sessionOwner; }
    */
   // CBO : FIN REMOVE
@@ -269,12 +269,12 @@ public class WebSiteSessionController extends
   /*
    * public synchronized void removeSessionTopicToLink() {
    * setSessionTopicToLink(null); }
-   * 
+   *
    * public synchronized void removeSessionPublication() {
    * setSessionPublication(null); }
-   * 
+   *
    * public synchronized void removeSessionPath() { setSessionPath(null); }
-   * 
+   *
    * public synchronized void removeSessionOwner() { setSessionOwner(false); }
    */
   // CBO : FIN REMOVE
@@ -322,10 +322,10 @@ public class WebSiteSessionController extends
 
   /*----------------------------------------------------------------------------------------------------------*/
 
-  /*-------------- Methodes métier de l'interface 
+  /*-------------- Methodes mÃ©tier de l'interface
   WebSiteSessionController ------------------*/
 
-  /*   ** Gestion des thèmes ** */
+  /*   ** Gestion des thÃ¨mes ** */
 
   public synchronized FolderDetail getFolder(String id)
       throws WebSitesException {
@@ -435,7 +435,7 @@ public class WebSiteSessionController extends
    * "WebSiteSessionController.createPublication()", SilverpeasException.ERROR,
    * "root.EX_CREATE_PUBLICATION_FAILED", "pubDetail = " + pubDetail.toString(),
    * re); } }
-   * 
+   *
    * public synchronized void updatePublication(PublicationDetail pubDetail)
    * throws WebSitesException { try { webSiteEjb.updatePublication(pubDetail); }
    * catch (NoSuchObjectException nsoe) { initEJB();
@@ -1194,7 +1194,7 @@ public class WebSiteSessionController extends
       // CBO : UPDATE
       /*
        * Collection listPubli = webSiteEjb.getAllPublication(idSite);//un seul
-       * résultat if(listPubli != null) {
+       * rÃ©sultat if(listPubli != null) {
        * webSiteEjb.updateClassification((String) listPubli.iterator().next(),
        * arrayTopic); }
        */
@@ -1212,119 +1212,4 @@ public class WebSiteSessionController extends
           "site id =" + idSite, re);
     }
   }
-
-  /********************************************************************************************************/
-  /**
-   * Grosse rustine à enlever... un jour ! Pour reformatter le champ auteur et
-   * date de la table Site
-   */
-  // CBO : REMOVE
-  /*
-   * private void checkAuthorsAndDates() { Collection sites = null; try { sites
-   * = getWebSites(); } catch (Exception e) { throw new
-   * WebSitesRuntimeException("WebSiteSessionController.checkAuthorsAndDates()",
-   * SilverpeasRuntimeException.ERROR, "webSites.EX_GET_WEBSITES_FAILED", e); }
-   * 
-   * Iterator iSites = sites.iterator(); SiteDetail site = null; while
-   * (iSites.hasNext()) { site = (SiteDetail) iSites.next(); try {
-   * Integer.parseInt(site.getAuthor()); } catch (NumberFormatException nfe) {
-   * //Le format n'est pas le bon (ancien) updateSite(site); } } }
-   * 
-   * 
-   * private Collection getWebSites() throws SQLException, UtilException {
-   * Connection con = null; ArrayList theSiteList = new ArrayList();
-   * 
-   * Statement stmt = null; ResultSet rs1 = null; String queryStr1 =
-   * "SELECT * FROM SC_WEBSITES_SITE";
-   * 
-   * try { con = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE); stmt =
-   * con.createStatement(); rs1 = stmt.executeQuery(queryStr1);
-   * 
-   * String idSite = ""; String name = ""; String description = ""; String page
-   * = ""; String author = ""; String date = ""; int type; int state; int popup;
-   * while (rs1.next()) { idSite = new Integer(rs1.getInt(1)).toString(); name =
-   * rs1.getString(2); description = rs1.getString(3); page = rs1.getString(4);
-   * type = rs1.getInt(5); author = rs1.getString(6); date = rs1.getString(7);
-   * state = rs1.getInt(8); popup = rs1.getInt(10); SiteDetail sitedetail = new
-   * SiteDetail(idSite, name, description, page, type, author, date, state,
-   * popup);
-   * 
-   * theSiteList.add(sitedetail); } } finally { DBUtil.close(rs1, stmt);
-   * freeConnection(con); }
-   * 
-   * return theSiteList; }
-   * 
-   * private void updateSite(SiteDetail site) { Connection con = null; Statement
-   * stmt = null; ResultSet rs = null;
-   * 
-   * //Récupère l'id de l'auteur
-   * 
-   * //CBO : UPDATE //int userId = getUserByFullName(site.getAuthor()); int
-   * userId = getUserByFullName(site.getCreatorId());
-   * 
-   * //Formatte correctement la date ! String date = null; try { //CBO : UPDATE
-   * //date = DateUtil.date2SQLDate(site.getDate(), "fr"); date =
-   * DateUtil.date2SQLDate(site.getCreationDate()); } catch (Exception e) { date
-   * = DateUtil.today2SQLDate(); }
-   * 
-   * String query = null; try { con =
-   * DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
-   * 
-   * query =
-   * "UPDATE SC_WEBSITES_SITE SET siteAuthor = '"+userId+"', siteDate = '"
-   * +date+"' WHERE siteId = "+site.getId(); SilverTrace.info("webSites",
-   * "WebSitesSessionController.updateSite", "root.MSG_GEN_PARAM_VALUE",
-   * "query = "+query);
-   * 
-   * stmt = con.createStatement(); stmt.executeUpdate(query); } catch (Exception
-   * e) { SilverTrace.error("webSites", "WebSitesSessionController.updateSite",
-   * "root.EX_SQL_QUERY_FAILED", "query = "+query, e); } finally {
-   * DBUtil.close(rs, stmt); freeConnection(con); } }
-   * 
-   * 
-   * /**
-   * 
-   * @param userFullName = Nom Prénom
-   * 
-   * @return
-   */
-  /*
-   * private int getUserByFullName(String userFullName) {
-   * SilverTrace.info("webSites", "WebSitesSessionController.getUserByFullName",
-   * "root.MSG_GEN_PARAM_VALUE", "userFullName = "+userFullName); Connection con
-   * = null; Statement stmt = null; ResultSet rs = null;
-   * 
-   * String nameBegin = userFullName; int pos = userFullName.indexOf(" "); if
-   * (pos != -1) nameBegin = userFullName.substring(0, pos);
-   * 
-   * nameBegin = nameBegin.substring(0, nameBegin.length()-1);
-   * 
-   * String query = null; try { con =
-   * DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
-   * 
-   * query =
-   * "SELECT id, lastName, firstName FROM ST_USER WHERE lastName like '"+
-   * nameBegin+"%' ORDER BY domainId desc";
-   * 
-   * SilverTrace.info("webSites", "WebSitesSessionController.getUserByFullName",
-   * "root.MSG_GEN_PARAM_VALUE", "query = "+query);
-   * 
-   * stmt = con.createStatement(); rs = stmt.executeQuery(query); int id = -1;
-   * String lastName = null; String firstName = null; String currentFullName =
-   * null; while (rs.next()) { id = rs.getInt(1); lastName = rs.getString(2);
-   * firstName = rs.getString(3); currentFullName = lastName; if (firstName !=
-   * null) currentFullName += " " + firstName;
-   * 
-   * if (userFullName.trim().equalsIgnoreCase(currentFullName.trim())) return
-   * id; } return -1; } catch (Exception e) { SilverTrace.error("webSites",
-   * "WebSitesSessionController.getUserByFullName", "root.EX_SQL_QUERY_FAILED",
-   * "query = "+query, e); return -1; } finally { DBUtil.close(rs, stmt);
-   * freeConnection(con); } }
-   * 
-   * private void freeConnection(Connection con) { if (con != null) { try {
-   * con.close(); } catch (Exception e) { SilverTrace.error("webSites",
-   * "WebSiteBmEJB.freeConnection()", "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-   * } } }
-   */
-  // CBO : FIN REMOVE
 }

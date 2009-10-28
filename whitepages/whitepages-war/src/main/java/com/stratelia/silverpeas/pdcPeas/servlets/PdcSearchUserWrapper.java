@@ -75,8 +75,8 @@ public class PdcSearchUserWrapper extends ComponentRequestRouter {
             .getParameter("elementName"));
         pdcSearchUserWrapperScc.setSelectedUserIds(request
             .getParameter("selectedUsers"));
-        pdcSearchUserWrapperScc.initPdcSearchUser(); // selection par défaut
-        // d'éléments
+        pdcSearchUserWrapperScc.initPdcSearchUser(); // selection par dÃ©faut
+        // d'Ã©lÃ©ments
         // return
         // "/RpdcSearch/jsp/ToSearchToSelect?ComponentName=expertLocator&ReturnURL=/RpdcSearchUserWrapper/jsp/Close";
         return "/RpdcSearch/jsp/ToSearchToSelect?ComponentName=whitePages&ReturnURL=/RpdcSearchUserWrapper/jsp/Close";

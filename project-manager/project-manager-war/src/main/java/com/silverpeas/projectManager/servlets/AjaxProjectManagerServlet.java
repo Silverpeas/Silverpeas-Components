@@ -57,8 +57,8 @@ public class AjaxProjectManagerServlet extends HttpServlet {
       String output = "";
 
       if (action.equals("ProcessUserOccupation")) {
-        // mise à jour de la charge en tenant compte de la modification des
-        // dates de début et fin
+        // mise Ã  jour de la charge en tenant compte de la modification des
+        // dates de dÃ©but et fin
         String taskId = req.getParameter("TaskId");
         String userId = req.getParameter("UserId");
         String userCharge = req.getParameter("UserCharge");
@@ -99,8 +99,8 @@ public class AjaxProjectManagerServlet extends HttpServlet {
               + EncodeHelper.escapeXml(Integer.toString(occupation))
               + " %</font>";
       } else if (action.equals("ProcessUserOccupationInit")) {
-        // mise à jour de la charge en tenant compte de la modification des
-        // dates de début et fin
+        // mise Ã  jour de la charge en tenant compte de la modification des
+        // dates de dÃ©but et fin
         String userId = req.getParameter("UserId");
         String userCharge = req.getParameter("UserCharge");
         String sBeginDate = req.getParameter("BeginDate");

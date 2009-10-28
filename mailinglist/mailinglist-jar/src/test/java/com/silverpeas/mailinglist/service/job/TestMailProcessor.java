@@ -53,6 +53,8 @@ import static com.silverpeas.mailinglist.PathTestUtil.*;
 
 public class TestMailProcessor extends AbstractSingleSpringContextTests {
 
+  private static int ATT_SIZE = 85922;
+
   protected String[] getConfigLocations() {
     return new String[]{"spring-checker.xml", "spring-notification.xml",
           "spring-hibernate.xml", "spring-datasource.xml"};
@@ -61,15 +63,14 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
       "uploads" + SEPARATOR + "componentId" + SEPARATOR +
       "mailId@silverpeas.com" + SEPARATOR + "lemonde.html";
   private static final String textEmailContent =
-      "Bonjour famille Simpson, j'espère que vous allez bien. " +
-      "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
-      "depuis que Tahiti Bob est retourné en prison. Je dois remplacer" +
-      "l'homme canon dans la prochaine émission.\nBart";
+      "Bonjour famille Simpson, j'espÃ¨re que vous allez bien. " +
+      "Ici tout se passe bien et Krusty est trÃ¨s sympathique. Surtout " +
+      "depuis que Tahiti Bob est retournÃ© en prison. Je dois remplacer" +
+      "l'homme canon dans la prochaine Ã©mission.\nBart";
   private static final String htmlEmailSummary =
-      "Politique Recherchez depuis sur" +
-      " Le Monde.fr A la Une Le Desk Vidéos International *Elections américaines" +
-      " Europe Politique *Municipales & Cantonales 2008 Société Carnet Economie " +
-      "Médias Météo Rendez-vou";
+      "Politique A la Une Le Desk VidÃ©os International *Elections amÃ©ricaines Europe Politique " +
+      "*Municipales & Cantonales 2008 SociÃ©tÃ© Carnet Economie MÃ©dias MÃ©tÃ©o Rendez-vous Sports " +
+      "*Tournoi des VI Nations E";
 
   protected void onTearDown() {
     try {
@@ -87,7 +88,7 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     try {
       buffer = new StringWriter();
       reader = new BufferedReader(new InputStreamReader(
-          TestMessageChecker.class.getResourceAsStream("lemonde.html")));
+          TestMessageChecker.class.getResourceAsStream("lemonde.html"), "UTF-8"));
       String line = null;
       while ((line = reader.readLine()) != null) {
         buffer.write(line);
@@ -122,13 +123,13 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     assertNotNull(attachment.getPath());
     assertEquals(attachment.getPath(), attachmentPath);
     assertEquals("lemonde.html", attachment.getFileName());
-    assertEquals(86170, message.getAttachmentsSize());
-    assertEquals(86170, attachment.getSize());
+    assertEquals(85922, message.getAttachmentsSize());
+    assertEquals(85922, attachment.getSize());
     assertEquals("lemonde.html", attachment.getFileName());
     File partFile = new File(attachment.getPath());
     assertTrue(partFile.exists());
     assertTrue(partFile.isFile());
-    assertEquals(86170, partFile.length());
+    assertEquals(85922, partFile.length());
     partFile.delete();
   }
 
@@ -139,7 +140,7 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     MimeBodyPart part = new MimeBodyPart();
     String html = loadHtml();
     part.setContent(html, "text/html");
-    part.setHeader("Content-Type", "text/html; charset=ISO-8859-1");
+    part.setHeader("Content-Type", "text/html; charset=UTF-8");
     Message message = new Message();
     message.setComponentId("componentId");
     message.setMessageId("mailId@silverpeas.com");
@@ -177,12 +178,12 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     assertNotNull(attachment.getPath());
     assertEquals(attachment.getPath(), attachmentPath);
     assertEquals("lemonde.html", attachment.getFileName());
-    assertEquals(86170, message.getAttachmentsSize());
-    assertEquals(86170, attachment.getSize());
+    assertEquals(ATT_SIZE, message.getAttachmentsSize());
+    assertEquals(ATT_SIZE, attachment.getSize());
     File partFile = new File(attachment.getPath());
     assertTrue(partFile.exists());
     assertTrue(partFile.isFile());
-    assertEquals(86170, partFile.length());
+    assertEquals(ATT_SIZE, partFile.length());
     partFile.delete();
   }
 
@@ -244,7 +245,7 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     File partFile = new File(path);
     assertTrue(partFile.exists());
     assertTrue(partFile.isFile());
-    assertEquals(86170, partFile.length());
+    assertEquals(ATT_SIZE, partFile.length());
     partFile.delete();
   }
 
@@ -364,7 +365,7 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     assertEquals(html, message.getBody());
     assertEquals(htmlEmailSummary, message.getSummary());
     assertEquals(1, message.getAttachments().size());
-    assertEquals(86170, message.getAttachmentsSize());
+    assertEquals(85922, message.getAttachmentsSize());
     assertEquals("componentId", message.getComponentId());
     Attachment attach = (Attachment) message.getAttachments().iterator().next();
     assertNotNull(attach.getPath());

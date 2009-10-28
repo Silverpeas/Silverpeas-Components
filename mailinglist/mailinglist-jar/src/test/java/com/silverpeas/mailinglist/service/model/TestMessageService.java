@@ -49,9 +49,9 @@ public class TestMessageService extends
   private static final OrderBy orderByDate = new OrderBy("sentDate", false);
 
   private static final String textEmailContent = "Bonjour famille Simpson, "
-      + "j'espère que vous allez bien. Ici tout se passe bien et Krusty est très "
-      + "sympathique. Surtout depuis que Tahiti Bob est retourné en prison. Je "
-      + "dois remplacer l'homme canon dans la prochaine émission.\nBart";
+      + "j'espÃ¨re que vous allez bien. Ici tout se passe bien et Krusty est trÃ¨s "
+      + "sympathique. Surtout depuis que Tahiti Bob est retournÃ© en prison. Je "
+      + "dois remplacer l'homme canon dans la prochaine Ã©mission.\nBart";
 
   private static final String attachmentPath = "c:\\tmp\\uploads\\componentId\\mailId@silverpeas.com\\";
 
@@ -223,7 +223,7 @@ public class TestMessageService extends
     assertEquals("1", messages.get(1).getId());
     assertEquals("2", messages.get(2).getId());
   }
-  
+
   public void testGetTotalNumberOfMessages() {
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("componentId");

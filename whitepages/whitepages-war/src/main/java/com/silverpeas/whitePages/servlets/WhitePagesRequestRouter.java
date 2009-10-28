@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
 ---*/
 
 package com.silverpeas.whitePages.servlets;
@@ -65,7 +65,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @seecom.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter#
    * createComponentSessionController
    * (com.stratelia.silverpeas.peasCore.MainSessionController,
@@ -85,7 +85,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @seecom.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter#
    * getDestination(java.lang.String,
    * com.stratelia.silverpeas.peasCore.ComponentSessionController,
@@ -243,7 +243,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
           request.setAttribute("user", user);
           destination = "/whitePages/jsp/errorSelectUser.jsp";
         } else {
-          // création Card à partir d'un UserDetail et set de ViewIdentityForm,
+          // crÃ©ation Card Ã  partir d'un UserDetail et set de ViewIdentityForm,
           // currentCard en session
           Card card = scc.createCard(user);
           if (card == null) {
@@ -342,7 +342,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
         if ((flag.equals("admin"))
             || (card != null && card.getUserId().equals(scc.getUserId()))) {
 
-          if (card == null) // user supprimé par appletAdmin
+          if (card == null) // user supprimÃ© par appletAdmin
           {
             destination = "/whitePages/jsp/errorIdentity.jsp";
           } else {
@@ -545,7 +545,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
         }
 
         Card card = null;
-        // interne rôle user
+        // interne rÃ´le user
         if (userCardIdString != null) {
           // retourne un objet Card contenant les infos de la fiche y compris le
           // form et le dataRecord.
@@ -656,7 +656,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
         request.setAttribute("SilverContentId", new Integer(scc
             .getSilverObjectId(userCardId)).toString());
 
-        // paramètre pour ouvrir directement la création d'une position du pdc
+        // paramÃ¨tre pour ouvrir directement la crÃ©ation d'une position du pdc
         String firstVisite = "0";
         if (StringUtil.isDefined((String) request.getAttribute("FirstVisite")))
           firstVisite = (String) request.getAttribute("FirstVisite");
@@ -725,9 +725,9 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
   /**
    * Extract the container context from the request and save it in the session
    * controller.
-   * 
+   *
    * If this context is null then get the last one from the session controller.
-   * 
+   *
    * So the containerContext is the same in the request and the session.
    */
   private void resetContainerContext(WhitePagesSessionController scc,

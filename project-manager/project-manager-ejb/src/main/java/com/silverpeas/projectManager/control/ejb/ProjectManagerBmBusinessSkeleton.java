@@ -77,7 +77,7 @@ public interface ProjectManagerBmBusinessSkeleton {
   public TaskDetail getMostDistantTask(String instanceId, int taskId)
       throws RemoteException;
 
-  // Gestion des jours non travaillés
+  // Gestion des jours non travailles
   public boolean isHolidayDate(HolidayDetail date) throws RemoteException;
 
   public List getHolidayDates(String instanceId) throws RemoteException;

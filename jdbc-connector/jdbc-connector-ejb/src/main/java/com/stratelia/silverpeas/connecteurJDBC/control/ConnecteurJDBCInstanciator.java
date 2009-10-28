@@ -35,8 +35,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de
- * récupérer rapidement et simplement des données du système d'information de
- * l'entreprise. Copyright: Copyright (c) 2001 Company: Stratélia
+ * recuperer rapidement et simplement des donnees du systeme d'information de
+ * l'entreprise.
  * 
  * @author Eric BURGEL
  * @version 1.0

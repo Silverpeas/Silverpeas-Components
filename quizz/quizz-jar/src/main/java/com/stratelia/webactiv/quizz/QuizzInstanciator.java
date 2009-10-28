@@ -39,8 +39,6 @@ import com.stratelia.webactiv.questionContainer.QuestionContainerInstanciator;
  * 
  * @author David LESIMPLE
  * @date 06/04/2001
- * @version 1 update by the Sébastien Antonio - Externalisation of the SQL
- *          request
  */
 public class QuizzInstanciator extends Object implements
     ComponentsInstanciatorIntf {

@@ -45,29 +45,29 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
- * Ce filtre a pour effet de contrôler que l'utilisateur courant n'a pas une
- * fiche à remplir dans une instance de whitePages. Si c'est le cas, 2 attributs
+ * Ce filtre a pour effet de contrÃ´ler que l'utilisateur courant n'a pas une
+ * fiche Ã  remplir dans une instance de whitePages. Si c'est le cas, 2 attributs
  * sont mis en sessions : - RedirectToComponentId : avec le componentId de
  * l'instance pour que le mecanisme de redirection le renvoie sur le composant -
- * FicheNonRemplie : avec le componentId de l'instance pour que le filtre mappé
+ * FicheNonRemplie : avec le componentId de l'instance pour que le filtre mappÃ©
  * sur tous les routers des composants puisse intercepter au besoin et renvoyer
  * sur la fiche.
- * 
+ *
  * @author Ludovic Bertin
- * 
+ *
  */
 public class LoginFilter implements Filter {
 
   public static final String ATTRIBUTE_FORCE_CARD_CREATION = "forceCardCreation";
   public static final String ATTRIBUTE_COMPONENT_ID = "RedirectToComponentId";
   /**
-   * Configuration du filtre, permettant de récupérer les paramètres.
+   * Configuration du filtre, permettant de rÃ©cupÃ©rer les paramÃ¨tres.
    */
   FilterConfig config = null;
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
    * javax.servlet.ServletResponse, javax.servlet.FilterChain)
    */
@@ -149,7 +149,7 @@ public class LoginFilter implements Filter {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see javax.servlet.Filter#getFilterConfig()
    */
   public FilterConfig getFilterConfig() {
@@ -158,7 +158,7 @@ public class LoginFilter implements Filter {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see javax.servlet.Filter#setFilterConfig(javax.servlet.FilterConfig)
    */
   public void setFilterConfig(FilterConfig arg0) {

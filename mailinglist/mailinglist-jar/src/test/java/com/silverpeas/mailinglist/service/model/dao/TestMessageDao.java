@@ -48,12 +48,14 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 public class TestMessageDao extends
     AbstractTransactionalDataSourceSpringContextTests {
 
+  private static final int ATT_SIZE = 87186;
+
   private static final OrderBy orderByDate = new OrderBy("sentDate", false);
 
-  private static final String textEmailContent = "Bonjour famille Simpson, j'espère que vous allez bien. "
-      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
-      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer"
-      + "l'homme canon dans la prochaine émission.\nBart";
+  private static final String textEmailContent = "Bonjour famille Simpson, j'espÃ¨re que vous allez bien. "
+      + "Ici tout se passe bien et Krusty est trÃ¨s sympathique. Surtout "
+      + "depuis que Tahiti Bob est retournÃ© en prison. Je dois remplacer"
+      + "l'homme canon dans la prochaine Ã©mission.\nBart";
 
   private static final String attachmentPath = "c:\\tmp\\uploads\\componentId\\mailId@silverpeas.com\\";
 
@@ -434,7 +436,7 @@ public class TestMessageDao extends
     assertEquals(0, savedMessage.getVersion());
     assertNotNull(savedMessage.getAttachments());
     assertEquals(2, savedMessage.getAttachments().size());
-    assertEquals(174854, savedMessage.getAttachmentsSize());
+    assertEquals(174372, savedMessage.getAttachmentsSize());
     messageDao.deleteMessage(savedMessage);
     savedMessage = messageDao.findMessageById(id);
     assertNull(savedMessage);
@@ -844,7 +846,7 @@ public class TestMessageDao extends
     assertEquals(sentDate.get(Calendar.MONTH), savedMessage.getMonth());
     assertEquals(id1, savedMessage.getId());
     assertEquals(0, savedMessage.getVersion());
-    assertEquals(87427, savedMessage.getAttachmentsSize());
+    assertEquals(87186, savedMessage.getAttachmentsSize());
     assertNotNull(savedMessage.getAttachments());
     assertEquals(1, savedMessage.getAttachments().size());
     assertEquals("text/plain", savedMessage.getContentType());
@@ -853,7 +855,7 @@ public class TestMessageDao extends
     assertNotNull(attached);
     assertEquals(0, attached.getVersion());
     assertNotNull(attached.getId());
-    assertEquals(87427, attached.getSize());
+    assertEquals(87186, attached.getSize());
     assertEquals("lemonde.html", attached.getFileName());
     assertEquals(attachmentPath + "toto" + File.separator + "lemonde.html",
         attached.getPath());
@@ -892,19 +894,20 @@ public class TestMessageDao extends
     assertEquals(sentDate.get(Calendar.MONTH), savedMessage.getMonth());
     assertEquals(id2, savedMessage.getId());
     assertEquals(0, savedMessage.getVersion());
-    assertEquals(87427, savedMessage.getAttachmentsSize());
+    assertEquals(ATT_SIZE, savedMessage.getAttachmentsSize());
     assertNotNull(savedMessage.getAttachments());
     assertEquals(1, savedMessage.getAttachments().size());
     attached = (Attachment) savedMessage.getAttachments().iterator().next();
     assertNotNull(attached);
     assertEquals(0, attached.getVersion());
     assertNotNull(attached.getId());
-    assertEquals(87427, attached.getSize());
+    assertEquals(ATT_SIZE, attached.getSize());
     assertEquals("lemonde.html", attached.getFileName());
     assertEquals(attachmentPath + "toto" + File.separator + "lemonde.html",
         attached.getPath());
   }
 
+  @Override
   protected void onTearDown() throws Exception {
     super.onTearDown();
     try {

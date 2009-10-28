@@ -28,6 +28,7 @@ import org.springframework.test.AbstractSingleSpringContextTests;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 
 public class TestNotificationFormatter extends AbstractSingleSpringContextTests {
+  @Override
   protected String[] getConfigLocations() {
     return new String[] { "spring-checker.xml", "spring-notification.xml",
         "spring-hibernate.xml", "spring-datasource.xml" };
@@ -51,7 +52,7 @@ public class TestNotificationFormatter extends AbstractSingleSpringContextTests 
     message.setTitle("Hello World");
     NotificationFormatter formatter = getFormatter();
     String result = formatter.formatTitle(message, "Test", true);
-    assertEquals("[Test] : Hello World à modérer", result);
+    assertEquals("[Test] : Hello World Ã  modÃ©rer", result);
   }
 
   public void testFormatMessage() {
@@ -76,7 +77,7 @@ public class TestNotificationFormatter extends AbstractSingleSpringContextTests 
     assertEquals(
         "<html><head/><body><p><b>Message [title] : </b></p><p>[null]"
             + "...</p><a href=\"/Rmailinglist/componentId/moderationList/componentId\">"
-            + "Modérez ici</a></body></html>", result);
+            + "ModÃ©rez ici</a></body></html>", result);
   }
 
   public void testPrepareModerationUrl() {

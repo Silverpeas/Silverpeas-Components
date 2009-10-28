@@ -57,10 +57,10 @@ public class TestMessageCheckerWithStubs extends AbstractSingleSpringContextTest
       "thesimpsons@silverpeas.com" + SEPARATOR + "{0}" + SEPARATOR +
       "lemonde.html";
   private static final String textEmailContent =
-      "Bonjour famille Simpson, j'espère que vous allez bien. " +
-      "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
-      "depuis que Tahiti Bob est retourné en prison. Je dois remplacer" +
-      "l'homme canon dans la prochaine émission.\r\nBart";
+      "Bonjour famille Simpson, j'espÃ¨re que vous allez bien. " +
+      "Ici tout se passe bien et Krusty est trÃ¨s sympathique. Surtout " +
+      "depuis que Tahiti Bob est retournÃ© en prison. Je dois remplacer" +
+      "l'homme canon dans la prochaine Ã©mission.\r\nBart";
 
   protected String loadHtml() throws IOException {
     StringWriter buffer = null;
@@ -160,7 +160,7 @@ public class TestMessageCheckerWithStubs extends AbstractSingleSpringContextTest
     assertEquals(textEmailContent, message.getBody());
     assertEquals(textEmailContent.substring(0, 200), message.getSummary());
     assertEquals(sentDate1.getTime(), message.getSentDate().getTime());
-    assertEquals(91636, message.getAttachmentsSize());
+    assertEquals(92536, message.getAttachmentsSize());
     assertEquals(1, message.getAttachments().size());
     String path = MessageFormat.format(theSimpsonsAttachmentPath,
         new String[]{messageChecker.getMailProcessor().replaceSpecialChars(
@@ -185,6 +185,7 @@ public class TestMessageCheckerWithStubs extends AbstractSingleSpringContextTest
     return (MessageChecker) applicationContext.getBean("messageChecker");
   }
 
+  @Override
   protected void onTearDown() {
     Mailbox.clearAll();
     try {

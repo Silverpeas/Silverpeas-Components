@@ -27,8 +27,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Non runtime exception management for this jobPeas.
- * 
- * @author Sébastien Antonio
  */
 public class QuizzException extends SilverpeasException {
 

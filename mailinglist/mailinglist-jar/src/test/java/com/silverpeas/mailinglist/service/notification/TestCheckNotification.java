@@ -97,7 +97,7 @@ public class TestCheckNotification extends
     assertTrue(list.isOpen());
     assertFalse(list.isNotify());
     assertEquals(
-        "Liste archivage non modérée et ouverte avec un lecteur abonné", list
+        "Liste archivage non modÃ©rÃ©e et ouverte avec un lecteur abonnÃ©", list
             .getName());
     assertEquals("thesimpsons@silverpeas.com", list.getSubscribedAddress());
     assertNotNull(list.getInternalSubscribers());
@@ -120,7 +120,7 @@ public class TestCheckNotification extends
     assertNotNull(messages);
     assertEquals(0, messages.size());
   }
-  
+
   @SuppressWarnings("unchecked")
   public void testNotifyArchivageModeratedOpen() throws Exception {
     registerMockJMS();
@@ -133,7 +133,7 @@ public class TestCheckNotification extends
     assertFalse(list.isOpen());
     assertFalse(list.isNotify());
     assertEquals(
-        "Liste archivage modérée et fermée avec un lecteur abonné", list
+        "Liste archivage modÃ©rÃ©e et fermÃ©e avec un lecteur abonnÃ©", list
             .getName());
     assertEquals("thesimpsons@silverpeas.com", list.getSubscribedAddress());
     assertNotNull(list.getInternalSubscribers());

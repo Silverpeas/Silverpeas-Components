@@ -37,9 +37,9 @@ import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterfa
  */
 public class ChatIndexer implements ComponentIndexerInterface {
 
+  @Override
   public void index(MainSessionController mainSessionCtrl,
       ComponentContext context) throws Exception {
-    // Ce composant n'est pas ré-indexable !!!
-    // chat.index();
+    // Ce composant n'est pas re-indexable !!!
   }
 }

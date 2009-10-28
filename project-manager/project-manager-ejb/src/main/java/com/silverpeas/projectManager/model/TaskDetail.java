@@ -71,7 +71,6 @@ public class TaskDetail implements Serializable {
   // les ressources (Collection de TaskResourceDetail)
   private Collection resources = null;
 
-  // Les attributs suivants sont utilisés lors de l'affichage
   private String responsableFullName;
   private String organisateurFullName;
   private String uiDateDebut;

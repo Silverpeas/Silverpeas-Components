@@ -47,11 +47,6 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
-/**
- * 
- * @author cbonin
- * @version update by Sébastien Antonio - Externalisation of the SQL request
- */
 
 public class WebSitesInstanciator extends SQLRequest implements
     ComponentsInstanciatorIntf {

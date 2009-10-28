@@ -21,12 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * QuickInfoSessionController.java
- *
- * Created on 8 décembre 2000, 10:21
- */
-
 package com.stratelia.webactiv.quickinfo.control;
 
 import java.text.SimpleDateFormat;

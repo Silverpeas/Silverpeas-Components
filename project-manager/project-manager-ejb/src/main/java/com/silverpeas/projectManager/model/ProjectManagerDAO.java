@@ -45,7 +45,7 @@ import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * @author neysseri
- * 
+ *
  */
 public class ProjectManagerDAO {
 
@@ -201,7 +201,7 @@ public class ProjectManagerDAO {
 
       prepStmt.executeUpdate();
 
-      // mise à jour des resources
+      // mise Ã  jour des resources
       deleteAllResources(con, task.getId(), task.getInstanceId());
 
       if (task.getResources() != null) {
@@ -296,7 +296,7 @@ public class ProjectManagerDAO {
       rs = stmt.executeQuery();
       if (rs.next()) {
         task = getTaskDetailFromResultset(rs);
-        // récupération des resources
+        // rÃ©cupÃ©ration des resources
         task
             .setResources(getResources(con, task.getId(), task.getInstanceId()));
       }
@@ -552,7 +552,7 @@ public class ProjectManagerDAO {
     }
 
     // si on demande toutes les taches quelque soit le statut,
-    // il faut enlever de la liste les taches dont le statut est "Abandonné"
+    // il faut enlever de la liste les taches dont le statut est "AbandonnÃ©"
     // car elles n'apparaissent pas dans le diagramme de Gantt
     if (filtre == null || filtre.getStatut() == null
         || filtre.getStatut().equals("-1")) {
@@ -806,10 +806,10 @@ public class ProjectManagerDAO {
       if (sql.length() > 0)
         sql.append(" AND ");
       if (filtre.getAvancement().equals("1")) {
-        // les tasks terminées
+        // les tasks terminÃ©es
         sql.append(" avancement = 100 ");
       } else {
-        // les tasks non terminées
+        // les tasks non terminÃ©es
         sql.append(" avancement < 100 ");
       }
     }

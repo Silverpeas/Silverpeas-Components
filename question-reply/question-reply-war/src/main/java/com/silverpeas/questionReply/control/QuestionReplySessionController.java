@@ -73,7 +73,7 @@ public class QuestionReplySessionController extends
   private Reply newReply;
   private QuestionManager questionManager = null;
   private NotificationSender notifSender = null;
-  // attributs utiles a l'intÈgration du PDC
+  // attributs utiles a l'int√©gration du PDC
   private ContainerContext containerContext;
   private String returnURL = "";
 
@@ -84,7 +84,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * RecupËre la liste des questions selon le profil de l'utilisateur courant
+   * Recup√®re la liste des questions selon le profil de l'utilisateur courant
    */
   public Collection getQuestions() throws QuestionReplyException {
     Collection questions = new ArrayList();
@@ -113,7 +113,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * RecupËre la question et ses rÈponses selon le profil de l'utilisateur
+   * Recup√®re la question et ses r√©ponses selon le profil de l'utilisateur
    * courant, ainsi que ses destinataires met la question en session
    */
   public Question getQuestion(long questionId) throws QuestionReplyException {
@@ -149,7 +149,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * RÈcupËre une rÈponse met la rÈponse en session
+   * R√©cup√®re une r√©ponse met la r√©ponse en session
    */
   public Reply getReply(long replyId) throws QuestionReplyException {
     Reply reply = getQuestionManager().getReply(replyId);
@@ -158,7 +158,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * RÈcupËre la rÈponse courante
+   * R√©cup√®re la r√©ponse courante
    */
   public Reply getCurrentReply() {
     return this.currentReply;
@@ -182,7 +182,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * initialise les destinataires de la question ‡ crÈer
+   * initialise les destinataires de la question √† cr√©er
    */
   public void setNewQuestionRecipients(Collection userIds) {
     Collection recipients = new ArrayList();
@@ -198,7 +198,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * initialise le contenu de la question ‡ crÈer
+   * initialise le contenu de la question √† cr√©er
    */
   public void setNewQuestionContent(String title, String content) {
     newQuestion.setTitle(title);
@@ -216,15 +216,15 @@ public class QuestionReplySessionController extends
    * Enregistre la nouvelle question
    */
   public long saveNewQuestion() throws QuestionReplyException {
-    // notifier les experts associÈs ‡ cette question
+    // notifier les experts associ√©s √† cette question
     notifyQuestion(newQuestion);
-    // notifier la question ‡ tous les experts du composant
+    // notifier la question √† tous les experts du composant
     notifyQuestionFromExpert(newQuestion);
     return getQuestionManager().createQuestion(newQuestion);
   }
 
   /*
-   * Retourne une nouvelle rÈponse (questionId, creatorId, creationDate) pour la
+   * Retourne une nouvelle r√©ponse (questionId, creatorId, creationDate) pour la
    * questionCourante met la question en session : newReply
    */
   public Reply getNewReply() {
@@ -240,7 +240,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * initialise le contenu de la rÈponse ‡ crÈer
+   * initialise le contenu de la r√©ponse √† cr√©er
    */
   public void setNewReplyContent(String title, String content, int publicReply,
       int privateReply) {
@@ -269,8 +269,8 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * enregistre la nouvelle rÈponse de la question courante met en session la
-   * question modifiÈe
+   * enregistre la nouvelle r√©ponse de la question courante met en session la
+   * question modifi√©e
    */
   public void saveNewReply() throws QuestionReplyException {
     WAPrimaryKey pk = newReply.getPK();
@@ -300,8 +300,8 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Modifie la rÈponse courante => supprime la rÈponse publique =>
-   * deletePublicReplies() => crÈe une nouvelle rÈponse publique et privÈe met ‡
+   * Modifie la r√©ponse courante => supprime la r√©ponse publique =>
+   * deletePublicReplies() => cr√©e une nouvelle r√©ponse publique et priv√©e met √†
    * jour en session la question courante
    */
   public void updateCurrentReplyOLD(String title, String content)
@@ -335,7 +335,7 @@ public class QuestionReplySessionController extends
 
   /*
    * Supprime une liste de questions selon le profil de l'utilisateur courant
-   * i.e. suppression de toutes les rÈponses publiques ou privÈes des questions
+   * i.e. suppression de toutes les r√©ponses publiques ou priv√©es des questions
    */
   public void deleteQuestions(Collection questionsIds)
       throws QuestionReplyException {
@@ -357,10 +357,10 @@ public class QuestionReplySessionController extends
 
   /*
    * Supprime une liste de reponses selon le profil de l'utilisateur courant
-   * i.e. suppression des rÈponses publiques ou privÈes si ReplyNumber =0 et que
-   * la question est close, la question sera supprimÈe => reSetCurrentQuestion
+   * i.e. suppression des r√©ponses publiques ou priv√©es si ReplyNumber =0 et que
+   * la question est close, la question sera supprim√©e => reSetCurrentQuestion
    * appel de deletePublicReplies ou deletePrivateReplies si le nombre de R
-   * publiques ou privÈes restantes est egal ‡ 0 et que la question est close,
+   * publiques ou priv√©es restantes est egal √† 0 et que la question est close,
    * la question n'est plus visible => reSetCurrentQuestion sinon met en session
    * la question
    */
@@ -411,7 +411,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Clos une question si replyNumber = 0, la question sera supprimÈe =>
+   * Clos une question si replyNumber = 0, la question sera supprim√©e =>
    * reSetCurrentQuestion sinon met en session la question
    */
   public void closeQuestion(long questionId) throws QuestionReplyException {
@@ -432,7 +432,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Supprime les rÈponses publiques aux questions =>
+   * Supprime les r√©ponses publiques aux questions =>
    * getQuestionManager().updateQuestionRepliesPublicStatus()
    */
   /*
@@ -441,7 +441,7 @@ public class QuestionReplySessionController extends
    * getQuestionManager().updateQuestionRepliesPublicStatus(questionsIds); }
    */
   /*
-   * Supprime les rÈponses privÈes aux questions =>
+   * Supprime les r√©ponses priv√©es aux questions =>
    * getQuestionManager().updateQuestionRepliesPrivateStatus()
    */
   /*
@@ -450,9 +450,9 @@ public class QuestionReplySessionController extends
    * getQuestionManager().updateQuestionRepliesPrivateStatus(questionsIds); }
    */
   /*
-   * Supprime les rÈponses publiques =>
+   * Supprime les r√©ponses publiques =>
    * getQuestionManager().updateRepliesPublicStatus() retourne le nombre de
-   * rÈponses publiques restantes
+   * r√©ponses publiques restantes
    */
   private int deletePublicReplies(Collection replyIds)
       throws QuestionReplyException {
@@ -462,9 +462,9 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Supprime les rÈponses privÈes =>
+   * Supprime les r√©ponses priv√©es =>
    * getQuestionManager().updateRepliesPrivateStatus() retourne le nombre de
-   * rÈponses privÈes restantes
+   * r√©ponses priv√©es restantes
    */
   private int deletePrivateReplies(Collection replyIds)
       throws QuestionReplyException {
@@ -474,8 +474,8 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Retourne la liste des questions de l'utilisateur de rÙle User i.e. liste
-   * des questions avec rÈponses publiques =>
+   * Retourne la liste des questions de l'utilisateur de r√¥le User i.e. liste
+   * des questions avec r√©ponses publiques =>
    * getQuestionManager().getPublicQuestions()
    */
   private Collection getUserQuestions() throws QuestionReplyException {
@@ -483,7 +483,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Retourne la liste des questions de l'utilisateur de rÙle Writer (expert)
+   * Retourne la liste des questions de l'utilisateur de r√¥le Writer (expert)
    * i.e. liste des questions dont il est le destinataire non close =>
    * getQuestionManager().getReceiveQuestions()
    */
@@ -493,17 +493,17 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Retourne la liste des questions de l'utilisateur de rÙle Publisher
+   * Retourne la liste des questions de l'utilisateur de r√¥le Publisher
    * (demandeur) i.e. liste des questions dont il est l'auteur non close ou
-   * close avec rÈponses privÈes => getQuestionManager().getSendQuestions()
+   * close avec r√©ponses priv√©es => getQuestionManager().getSendQuestions()
    */
   private Collection getPublisherQuestions() throws QuestionReplyException {
     return getQuestionManager().getSendQuestions(getUserId(), getComponentId());
   }
 
   /*
-   * Retourne la liste des questions de l'utilisateur de rÙle Admin (animateur)
-   * i.e. liste des questions non close ou close avec rÈponses publiques =>
+   * Retourne la liste des questions de l'utilisateur de r√¥le Admin (animateur)
+   * i.e. liste des questions non close ou close avec r√©ponses publiques =>
    * getQuestionManager().getQuestions()
    */
   private Collection getAdminQuestions() throws QuestionReplyException {
@@ -511,7 +511,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * liste les rÈponses publiques d'une question
+   * liste les r√©ponses publiques d'une question
    */
   private Collection getCurrentQuestionPublicReplies()
       throws QuestionReplyException {
@@ -520,7 +520,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * liste les rÈponses privÈes d'une question
+   * liste les r√©ponses priv√©es d'une question
    */
   private Collection getCurrentQuestionPrivateReplies()
       throws QuestionReplyException {
@@ -529,7 +529,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * liste les rÈponses ‡ une question
+   * liste les r√©ponses √† une question
    */
   private Collection getCurrentQuestionReplies() throws QuestionReplyException {
     return getQuestionManager().getQuestionReplies(
@@ -566,7 +566,7 @@ public class QuestionReplySessionController extends
   }
 
   /**
-   * Redefinition method de abstractComponentSessionController car 4 rÙles
+   * Redefinition method de abstractComponentSessionController car 4 r√¥les
    * Return the highest user's role (admin, publisher or user)
    */
   public String getUserRoleLevel() {
@@ -610,7 +610,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * RÈcupËre la liste des positions d'une question
+   * R√©cup√®re la liste des positions d'une question
    */
   public ContainerPositionInterface getSilverContentIdPosition()
       throws QuestionReplyException {
@@ -699,7 +699,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * RÈcupËre la liste des experts du domaine de la question
+   * R√©cup√®re la liste des experts du domaine de la question
    */
   public Collection getCurrentQuestionWriters() throws QuestionReplyException {
     OrganizationController orga = getOrganizationController();
@@ -761,8 +761,8 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * RÈcupËre la liste des experts du domaine de la question qui ne sont pas
-   * dÈj‡ destinataires
+   * R√©cup√®re la liste des experts du domaine de la question qui ne sont pas
+   * d√©j√† destinataires
    */
   public Collection getCurrentQuestionAvailableWriters()
       throws QuestionReplyException {
@@ -935,7 +935,7 @@ public class QuestionReplySessionController extends
     return returnURL;
   }
 
-  // Gestion des catÈgories
+  // Gestion des cat√©gories
   // ----------------------
 
   public Collection getAllCategories() throws QuestionReplyException {
@@ -969,7 +969,7 @@ public class QuestionReplySessionController extends
 
   public Category getCategory(String categoryId) throws QuestionReplyException {
     try {
-      // rechercher la catÈgorie
+      // rechercher la cat√©gorie
       NodePK nodePK = new NodePK(categoryId, getComponentId());
       Category category = new Category(getNodeBm().getDetail(nodePK));
       return category;
@@ -996,8 +996,8 @@ public class QuestionReplySessionController extends
   public synchronized void deleteCategory(String categoryId)
       throws QuestionReplyException {
     try {
-      // pour cette catÈgorie, rechercher les questions et mettre "" dans la
-      // catÈgorie
+      // pour cette cat√©gorie, rechercher les questions et mettre "" dans la
+      // cat√©gorie
       Collection questions = getQuestionsByCategory(categoryId);
       Iterator it = questions.iterator();
       while (it.hasNext()) {
@@ -1006,7 +1006,7 @@ public class QuestionReplySessionController extends
         getQuestionManager().updateQuestion(question);
       }
 
-      // suppression de la catÈgorie
+      // suppression de la cat√©gorie
       NodePK nodePk = new NodePK(categoryId, getComponentId());
       getNodeBm().removeNode(nodePk);
     } catch (Exception e) {

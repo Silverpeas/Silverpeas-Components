@@ -51,7 +51,7 @@ public class TestCryptMd5 extends TestCase {
     assertTrue(file.isFile());
     String hash = CryptMD5.hash(file);
     assertNotNull(hash);
-    assertEquals("5de77d572dc46a7c82fdd658abedffb0", hash);
+    assertEquals("fc8820e7b46497bb444e0155c5ce631d", hash);
   }
 
 }

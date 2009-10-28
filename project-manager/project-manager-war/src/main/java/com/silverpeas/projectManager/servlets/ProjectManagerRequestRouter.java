@@ -68,7 +68,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main")
    * @param componentSC
@@ -104,7 +104,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
           destination = rootDestination + "tasksList.jsp";
         } else {
-          // le projet n'a pas encore été défini.
+          // le projet n'a pas encore Ã©tÃ© dÃ©fini.
           if (role.equals("admin")) {
             String orgaFullName = projectManagerSC.getUserFullName();
 
@@ -229,13 +229,13 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
         destination = getDestination("Main", componentSC, request);
       } else if (function.equals("ProcessEndDate")) {
-        // Création ou modification ?
+        // CrÃ©ation ou modification ?
         String action = request.getParameter("Action");
 
-        // memorise les données saisies
+        // memorise les donnÃ©es saisies
         TaskDetail task = request2TaskDetail(request, projectManagerSC);
 
-        // vérifie la cohérence de la date de début
+        // vÃ©rifie la cohÃ©rence de la date de dÃ©but
         projectManagerSC.checkBeginDate(task);
 
         // calcul la date de fin
@@ -301,7 +301,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
               "root.EX_USERPANEL_FAILED", "function = " + function, e);
         }
       } else if (function.equals("FromUserPanel")) {
-        // récupération des valeurs de userPanel par userPanelPeas
+        // rÃ©cupÃ©ration des valeurs de userPanel par userPanelPeas
         SilverTrace.debug("projectManager",
             "ProjectManagerRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "FromUserPanel:");
@@ -337,7 +337,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
         }
         destination = rootDestination + "refreshFromUserPanel.jsp";
       } else if (function.equals("ToSelectResources")) {
-        // récupération de la liste des resources en cours
+        // rÃ©cupÃ©ration de la liste des resources en cours
         Collection currentResources = request2Resources(request);
         projectManagerSC.setCurrentResources(currentResources);
         try {
@@ -348,7 +348,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
               "root.EX_USERPANEL_FAILED", "function = " + function, e);
         }
       } else if (function.equals("FromUserSelect")) {
-        // récupération des valeurs de userPanel par userPanelPeas
+        // rÃ©cupÃ©ration des valeurs de userPanel par userPanelPeas
         SilverTrace.debug("projectManager",
             "ProjectManagerRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "FromUserSelect:");
@@ -370,9 +370,9 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
               "ProjectManagerRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "userDetails:"
                   + userDetails.toString());
-          // récupération de la liste des resources en cours
+          // rÃ©cupÃ©ration de la liste des resources en cours
           Collection currentResources = projectManagerSC.getCurrentResources();
-          // création des resources à partir des users
+          // crÃ©ation des resources Ã  partir des users
           Collection resources = new ArrayList();
           for (int i = 0; i < userDetails.length; i++) {
             SilverTrace.debug("projectManager",
@@ -384,7 +384,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
             resourceDetail.setUserId(userDetail.getId());
             resourceDetail.setUserName(projectManagerSC
                 .getUserFullName(userDetail));
-            // si la resource existant déjà, on conserve la charge
+            // si la resource existant dÃ©jÃ , on conserve la charge
             if (currentResources != null) {
               SilverTrace.debug("projectManager",
                   "ProjectManagerRequestRouter.getDestination()",
@@ -398,7 +398,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
                     "ProjectManagerRequestRouter.getDestination()",
                     "root.MSG_GEN_PARAM_VALUE", "currentResource userId:"
                         + res.getUserId() + " / " + res.getUserName());
-                // si la resource existe déjà, on conserve la charge
+                // si la resource existe dÃ©jÃ , on conserve la charge
                 if (res.getUserId().equals(userDetail.getId())) {
                   resourceDetail.setCharge(res.getCharge());
                   trouve = true;
@@ -468,7 +468,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
         TaskDetail oldestAction = getOldestTask(tasks);
 
         // Le diagramme de Gantt doit faire apparaitre
-        // les jours non travaillés
+        // les jours non travaillÃ©s
         request.setAttribute("Holidays", projectManagerSC.getHolidayDates());
 
         request.setAttribute("Tasks", tasks);
@@ -532,12 +532,12 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
           // l'id est l'identifiant de la tache et pas l'identifiant du todo
           /*
            * TaskDetail task = projectManagerSC.getTask(id);
-           * 
+           *
            * request.setAttribute("Task", task);
            * request.setAttribute("AbleToAddSubTask",
            * isOrganiteurOrResponsable(projectManagerSC, task));
            * request.setAttribute("Role", projectManagerSC.getRole());
-           * 
+           *
            * destination = rootDestination+"taskView.jsp";
            */
 
@@ -561,7 +561,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
           destination = rootDestination + "portlet.jsp";
         } else {
-          // le projet n'a pas encore été défini.
+          // le projet n'a pas encore Ã©tÃ© dÃ©fini.
           destination = rootDestination + "projectNotDefined.jsp";
         }
       }

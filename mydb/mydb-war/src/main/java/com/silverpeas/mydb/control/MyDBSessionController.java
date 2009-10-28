@@ -77,7 +77,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * MyDB session control.
- * 
+ *
  * @author Antoine HEDIN
  */
 public class MyDBSessionController extends AbstractComponentSessionController {
@@ -100,7 +100,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Standard Session Controller Constructor
-   * 
+   *
    * @param mainSessionCtrl
    *          The user's profile
    * @param componentContext
@@ -148,7 +148,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Update the database filter.
-   * 
+   *
    * @param column
    *          The name of the column.
    * @param compare
@@ -162,7 +162,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Update the table's name.
-   * 
+   *
    * @param tableName
    *          The new name of the table.
    * @throws MyDBException
@@ -201,7 +201,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Initializes the database connection informations.
-   * 
+   *
    * @throws MyDBRuntimeException
    */
   private void initMyDB() throws MyDBRuntimeException {
@@ -232,7 +232,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Update the table's name and the corresponding connection information.
-   * 
+   *
    * @param tableName
    *          The new table's name.
    * @throws MyDBException
@@ -270,7 +270,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Loads the connection informations.
-   * 
+   *
    * @throws MyDBException
    */
   private void newMyDB() throws MyDBException {
@@ -292,7 +292,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Initializes the table manager.
-   * 
+   *
    * @param mode
    *          the table mode (creation or modification).
    * @param originPage
@@ -333,7 +333,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Updates the database connection informations.
-   * 
+   *
    * @param JDBCdriverName
    *          The name of the driver.
    * @param JDBCurl
@@ -391,7 +391,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Updates the database connection informations.
-   * 
+   *
    * @throws MyDBException
    */
   private void updateMyDB() throws MyDBException {
@@ -974,7 +974,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
             prepStmt = connection.prepareStatement(query);
             setValueByType(value, dataType, 1);
             rs = prepStmt.executeQuery();
-            // Nombre de lignes dont la colonne traitée possède la même valeur
+            // Nombre de lignes dont la colonne traitÃ©e possÃ¨de la mÃªme valeur
             // que la ligne courante.
             resultCount = 0;
             while (rs.next() && resultCount < 2) {
@@ -982,9 +982,9 @@ public class MyDBSessionController extends AbstractComponentSessionController {
             }
 
             if (resultCount == 1) {
-              // La ligne courante possède, pour la colonne traitée, une valeur
-              // unique. On vérifie alors
-              // si elle est référencée via ses clés étrangères, dans d'autres
+              // La ligne courante possÃ¨de, pour la colonne traitÃ©e, une valeur
+              // unique. On vÃ©rifie alors
+              // si elle est rÃ©fÃ©rencÃ©e via ses clÃ©s Ã©trangÃ¨res, dans d'autres
               // tables.
               foreignKeys = column.getExportedForeignKeys();
               for (int j = 0, m = foreignKeys.length; j < m; j++) {
@@ -997,8 +997,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
                 setValueByType(value, dataType, 1);
                 rs = prepStmt.executeQuery();
                 if (rs.next()) {
-                  // Au moins une ligne de la table définie dans la clé
-                  // étrangère contient la même
+                  // Au moins une ligne de la table dÃ©finie dans la clÃ©
+                  // Ã©trangÃ¨re contient la mÃªme
                   // valeur que la ligne en cours de suppression.
                   // envoi d'un message d'erreur.
                   return MessageFormat.format(resources
@@ -1097,7 +1097,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Loads in the form's parameters the values contained into the map.
-   * 
+   *
    * @param parameterMap
    *          The map which contains the record's describing data.
    */
@@ -1123,8 +1123,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
           value = null;
         }
       } else {
-        // Cas d'une première arrivée sur un formulaire de création :
-        // utilisation de la valeur par défaut de la
+        // Cas d'une premiÃ¨re arrivÃ©e sur un formulaire de crÃ©ation :
+        // utilisation de la valeur par dÃ©faut de la
         // colonne.
         value = column.getDefaultValue();
       }
@@ -1150,7 +1150,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   /**
    * Executes the different queries to create the table corresponding to the
    * current informations of the controller.
-   * 
+   *
    * @return True if the creation ended successfully.
    */
   public boolean createTable() {
@@ -1189,7 +1189,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   /**
    * Removes from the database the table corresponding to the current
    * informations of the controller.
-   * 
+   *
    * @return True if the deletion ended successfully.
    */
   public boolean dropTable() {
@@ -1199,7 +1199,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
       DatabaseMetaData dbMetaData = connection.getMetaData();
       rs = dbMetaData.getTables(null, "%", tableName, new String[] { "TABLE" });
       if (rs.next()) {
-        // Vérification de l'existence de la table.
+        // VÃ©rification de l'existence de la table.
         Statement stmt = connection.createStatement();
         String query = "DROP TABLE " + tableName;
         stmt.execute(query);
@@ -1231,7 +1231,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Completes the statement with the value by respecting its type.
-   * 
+   *
    * @param value
    *          The value to store in database.
    * @param dataType

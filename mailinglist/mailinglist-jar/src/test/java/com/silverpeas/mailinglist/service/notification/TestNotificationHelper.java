@@ -60,10 +60,10 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 public class TestNotificationHelper extends
     AbstractSilverpeasDatasourceSpringContextTests {
 
-  private static final String textEmailContent = "Bonjour famille Simpson, j'espère que vous allez bien. "
-      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
-      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer "
-      + "l'homme canon dans la prochaine émission.Bart";
+  private static final String textEmailContent = "Bonjour famille Simpson, j'espÃ¨re que vous allez bien. "
+      + "Ici tout se passe bien et Krusty est trÃ¨s sympathique. Surtout "
+      + "depuis que Tahiti Bob est retournÃ© en prison. Je dois remplacer "
+      + "l'homme canon dans la prochaine Ã©mission.Bart";
 
   private NotificationHelperImpl notificationHelper;
 
@@ -264,6 +264,7 @@ public class TestNotificationHelper extends
     assertFalse(helper.getSmtpConfig().isAuthenticate());
   }
 
+  @Override
   protected void onTearDown() {
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
@@ -284,6 +285,7 @@ public class TestNotificationHelper extends
     }
   }
 
+  @Override
   protected void onSetUp() {
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
@@ -312,7 +314,7 @@ public class TestNotificationHelper extends
     assertEquals(2, userIds.size());
     for(String userId : userIds) {
       assertTrue("201".equals(userId) || "204".equals(userId));
-    }    
+    }
     list.setModerated(true);
     userIds = notificationHelper.getUsersIds(list);
     assertEquals(2, userIds.size());
@@ -339,6 +341,7 @@ public class TestNotificationHelper extends
     }
   }
 
+  @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
     if(isOracle()) {
       return new FlatXmlDataSet(TestNotificationHelper.class

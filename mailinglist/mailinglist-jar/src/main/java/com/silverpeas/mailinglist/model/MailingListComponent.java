@@ -38,6 +38,7 @@ public class MailingListComponent implements MessageListener {
     this.componentId = componentId;
   }
 
+  @Override
   public boolean checkSender(String email) {
     MailingList list = ServicesFactory.getMailingListService().findMailingList(
         componentId);

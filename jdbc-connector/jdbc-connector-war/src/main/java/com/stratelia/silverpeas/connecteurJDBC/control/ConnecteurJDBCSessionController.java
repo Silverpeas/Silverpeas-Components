@@ -60,8 +60,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de
- * récupérer rapidement et simplement des données du système d'information de
- * l'entreprise. Copyright: Copyright (c) 2001 Company: Stratélia
+ * recuperer rapidement et simplement des donnees du systeme d'information de
+ * l'entreprise.
  * 
  */
 
@@ -570,7 +570,7 @@ public class ConnecteurJDBCSessionController extends
     return (connecteurJDBCDetail != null);
   }
 
-  // setters (à utiliser via les jsp)
+  // setters (ï¿½ utiliser via les jsp)
   public void setJDBCdriverName(String JDBCdriverName)
       throws ConnecteurJDBCException {
 
@@ -698,7 +698,7 @@ public class ConnecteurJDBCSessionController extends
     while (i < driversNames.length && !driversNames[i].equals(driverName)) {
       SilverTrace.info("connecteurJDBC",
           "ConnecteurJDBCSessionController.searchDriverIndice()",
-          "connecteurJDBC.MSG_DRIVER_NAME", "driver n°" + i + "="
+          "connecteurJDBC.MSG_DRIVER_NAME", "driver nï¿½" + i + "="
               + driversNames[i]);
       i++;
     }

@@ -21,9 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
-
 package com.stratelia.webactiv.quizz.servlets;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,53 +33,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.quizz.control.QuizzSessionController;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
-/*
- * CVS Informations
- * 
- * $Id: QuizzRequestRouter.java,v 1.6 2008/10/15 07:40:55 neysseri Exp $
- * 
- * $Log: QuizzRequestRouter.java,v $
- * Revision 1.6  2008/10/15 07:40:55  neysseri
- * Accès via permalien permettait de répondre à un quizz auquel l'utilisateur avait déjà répondu
- *
- * Revision 1.5  2007/07/04 15:30:04  sfariello
- * Ajout Permalien sur les quizz
- *
- * Revision 1.4  2005/09/30 14:20:14  neysseri
- * Centralisation de la gestion des dates
- *
- * Revision 1.3  2002/12/18 15:14:25  scotte
- * Correction erreurs portlet : Index out of bounds qd un publieur accede a un quizz en portlet,
- * PB de forward du component/space ID en portlet
- *
- * Revision 1.2  2002/12/02 12:43:12  neysseri
- * Quizz In PDC merging
- *
- * Revision 1.1.1.1.16.1  2002/11/29 15:06:53  pbialevich
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:48:01  nchaix
- * no message
- *
- * Revision 1.4  2002/05/17 15:09:55  nchaix
- * Merge de la branche bug001 sur la branche principale
- *
- * Revision 1.3.4.1  2002/04/25 06:52:57  santonio
- * portlétisation
- *
- * Revision 1.3  2002/01/22 17:24:17  mguillem
- * Stabilisation Lot2
- * Réorganisation des Router et SessionController
- * Centralisation de getFlag du Router renommé getUserRoleLevel dans SC
- * 
- */
-
-/**
- * Class declaration
- * 
- * 
- * @author
- */
 public class QuizzRequestRouter extends ComponentRequestRouter {
 
   /**

@@ -34,7 +34,7 @@ package com.stratelia.webactiv.webSites.control.ejb;
  * It is implemented as a session EJB. It controls all the activities 
  * that happen in a client session.
  * It also provides mechanisms to access other session EJBs.
- * @author Cécile BONIN
+ * @author Cecile BONIN
  * @version 1.0
  */
 

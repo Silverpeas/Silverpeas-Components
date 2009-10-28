@@ -34,7 +34,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * 
- * @author nesseric updated by Sébastien Antonio
+ * @author nesseric
  */
 public class RssAgregatorInstanciator implements ComponentsInstanciatorIntf {
 

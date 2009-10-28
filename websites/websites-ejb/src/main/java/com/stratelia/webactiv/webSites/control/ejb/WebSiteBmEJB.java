@@ -34,7 +34,7 @@ package com.stratelia.webactiv.webSites.control.ejb;
  * It is implemented as a session EJB. It controls all the activities 
  * that happen in a client session.
  * It also provides mechanisms to access other session EJBs.
- * @author Cécile BONIN
+ * @author Cecile BONIN
  * @version 1.0
  */
 
@@ -191,7 +191,7 @@ public class WebSiteBmEJB implements SessionBean {
     return currentPublicationBm;
   }
 
-  /*   ** Gestion des thèmes ** */
+  /*   ** Gestion des themes ** */
 
   /**
    * 
@@ -430,7 +430,7 @@ public class WebSiteBmEJB implements SessionBean {
     subFolder.getNodePK().setSpace(this.prefixTableName);
     subFolder.getNodePK().setComponentName(this.componentId);
 
-    // Construction de la date de création (date courante)
+    // Construction de la date de creation (date courante)
     String creationDate = DateUtil.today2SQLDate();
     subFolder.setCreationDate(creationDate);
     subFolder.setCreatorId(currentUser.getId());

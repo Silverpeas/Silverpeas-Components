@@ -85,9 +85,8 @@ public class DbFilter {
       int dataType = dbTable.getColumn(column).getDataType();
       if (((dataType == Types.INTEGER) || (dataType == Types.DOUBLE) || (dataType == Types.FLOAT))
           && (compare.equals(CONTAINS))) {
-        // Impossible de filtrer sous la forme 'like' avec un numérique : on
-        // positionne l'indicateur de
-        // filtrage manuel.
+        // Impossible de filtrer sous la forme 'like' avec un numerique : on
+        // positionne l'indicateur de filtrage manuel.
         manualFilter = true;
       } else {
         StringBuffer queryFilter = new StringBuffer(20).append(" where ")

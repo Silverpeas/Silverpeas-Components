@@ -57,16 +57,18 @@ public class TestMailingListComponent extends
 
   private MailingListComponent component;
 
-  private static final String textEmailContent = "Bonjour famille Simpson, j'espère que vous allez bien. "
-      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
-      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer "
-      + "l'homme canon dans la prochaine émission.Bart";
+  private static final String textEmailContent = "Bonjour famille Simpson, j'espÃ¨re que vous allez bien. "
+      + "Ici tout se passe bien et Krusty est trÃ¨s sympathique. Surtout "
+      + "depuis que Tahiti Bob est retournÃ© en prison. Je dois remplacer "
+      + "l'homme canon dans la prochaine Ã©mission.Bart";
 
+  @Override
   protected String[] getConfigLocations() {
     return new String[] { "spring-checker.xml", "spring-notification.xml",
         "spring-hibernate.xml", "spring-datasource.xml" };
   }
 
+  @Override
   protected void onTearDown() {
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
@@ -87,8 +89,10 @@ public class TestMailingListComponent extends
     }
   }
 
+  @Override
   protected void onSetUp() {
     Mailbox.clearAll();
+    registerDatasource();
     component = new MailingListComponent("100");
     IDatabaseConnection connection = null;
     try {
@@ -109,6 +113,7 @@ public class TestMailingListComponent extends
     }
   }
 
+  @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
     FlatXmlDataSet dataSet;
     if (isOracle()) {
@@ -122,14 +127,15 @@ public class TestMailingListComponent extends
   }
 
   protected void registerMockJMS() throws Exception {
+    prepareJndi();
     InitialContext ic = new InitialContext();
     // Construct BasicDataSource reference
     Reference refFactory = new Reference("javax.jms.QueueConnectionFactory",
         "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
-    ic.rebind(JNDINames.JMS_FACTORY, refFactory);
+    rebind(ic, JNDINames.JMS_FACTORY, refFactory);
     Reference refQueue = new Reference("javax.jms.Queue",
         "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
-    ic.rebind(JNDINames.JMS_QUEUE, refQueue);
+    rebind(ic, JNDINames.JMS_QUEUE, refQueue);
     QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic
         .lookup(JNDINames.JMS_FACTORY);
     assertNotNull(qconFactory);
@@ -295,29 +301,29 @@ public class TestMailingListComponent extends
       assertEquals("thesimpsons@silverpeas.com", source);
     }
     checkSimpleEmail("barney.gumble@silverpeas.com",
-        "[Liste de diffusion de test non modérée] : Simple Message");
+        "[Liste de diffusion de test non modÃ©rÃ©e] : Simple Message");
     checkSimpleEmail("julius.hibbert@silverpeas.com",
-        "[Liste de diffusion de test non modérée] : Simple Message");
+        "[Liste de diffusion de test non modÃ©rÃ©e] : Simple Message");
     checkSimpleEmail("carl.carlson@silverpeas.com",
-        "[Liste de diffusion de test non modérée] : Simple Message");
+        "[Liste de diffusion de test non modÃ©rÃ©e] : Simple Message");
     checkSimpleEmail("edna.krabappel@silverpeas.com",
-        "[Liste de diffusion de test non modérée] : Simple Message");
+        "[Liste de diffusion de test non modÃ©rÃ©e] : Simple Message");
     checkSimpleEmail("nelson.muntz@silverpeas.com",
-        "[Liste de diffusion de test non modérée] : Simple Message");
+        "[Liste de diffusion de test non modÃ©rÃ©e] : Simple Message");
     checkSimpleEmail("ned.flanders@silverpeas.com",
-        "[Liste de diffusion de test non modérée] : Simple Message");
+        "[Liste de diffusion de test non modÃ©rÃ©e] : Simple Message");
     checkSimpleEmail("maude.flanders@silverpeas.com",
-        "[Liste de diffusion de test non modérée] : Simple Message");
+        "[Liste de diffusion de test non modÃ©rÃ©e] : Simple Message");
     checkSimpleEmail("rod.flanders@silverpeas.com",
-        "[Liste de diffusion de test non modérée] : Simple Message");
+        "[Liste de diffusion de test non modÃ©rÃ©e] : Simple Message");
     checkSimpleEmail("todd.flanders@silverpeas.com",
-        "[Liste de diffusion de test non modérée] : Simple Message");
+        "[Liste de diffusion de test non modÃ©rÃ©e] : Simple Message");
     checkSimpleEmail("herschel.krustofski@silverpeas.com",
-        "[Liste de diffusion de test non modérée] : Simple Message");
+        "[Liste de diffusion de test non modÃ©rÃ©e] : Simple Message");
     checkSimpleEmail("selma.bouvier@silverpeas.com",
-        "[Liste de diffusion de test non modérée] : Simple Message");
+        "[Liste de diffusion de test non modÃ©rÃ©e] : Simple Message");
     checkSimpleEmail("patty.bouvier@silverpeas.com",
-        "[Liste de diffusion de test non modérée] : Simple Message");
+        "[Liste de diffusion de test non modÃ©rÃ©e] : Simple Message");
   }
 
   protected void checkNoMessage(String address) throws Exception {

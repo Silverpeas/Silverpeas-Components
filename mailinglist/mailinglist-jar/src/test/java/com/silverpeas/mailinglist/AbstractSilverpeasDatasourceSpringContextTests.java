@@ -23,9 +23,15 @@
  */
 package com.silverpeas.mailinglist;
 
+import com.stratelia.webactiv.util.JNDINames;
+import java.io.File;
+import java.io.IOException;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
+import java.util.Properties;
+import java.util.StringTokenizer;
+import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.Reference;
@@ -38,8 +44,8 @@ import org.dbunit.dataset.IDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
-public abstract class AbstractSilverpeasDatasourceSpringContextTests extends
-    AbstractDependencyInjectionSpringContextTests {
+public abstract class AbstractSilverpeasDatasourceSpringContextTests extends AbstractDependencyInjectionSpringContextTests {
+
   private DataSource datasource;
   private DataSourceConfiguration config;
   private static boolean registred = false;
@@ -66,6 +72,7 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends
       return;
     }
     try {
+      prepareJndi();
       InitialContext ic = new InitialContext();
       // Construct BasicDataSource reference
       Reference ref = new Reference("javax.sql.DataSource",
@@ -78,10 +85,14 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends
       ref.add(new StringRefAddr("maxWait", "5000"));
       ref.add(new StringRefAddr("removeAbandoned", "true"));
       ref.add(new StringRefAddr("removeAbandonedTimeout", "5000"));
-      ic.rebind(config.getJndiName(), ref);
+      rebind(ic, config.getJndiName(), ref);
+      rebind(ic, JNDINames.DATABASE_DATASOURCE, ref);
+      rebind(ic, JNDINames.ADMIN_DATASOURCE, ref);
       registred = true;
     } catch (NamingException nex) {
-
+      logger.error(nex);
+    } catch (IOException ex) {
+      logger.error(ex);
     }
   }
 
@@ -92,13 +103,11 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends
   protected IDatabaseConnection getConnection() throws SQLException {
     if (isOracle()) {
       try {
-      Class.forName(config.getDriver()).newInstance();
-      }catch(Exception ex) {
+        Class.forName(config.getDriver()).newInstance();
+      } catch (Exception ex) {
         logger.error(ex);
       }
-      IDatabaseConnection connection = new DatabaseConnection(DriverManager
-          .getConnection(config.getUrl(), config.getUsername(), config
-              .getPassword()));
+      IDatabaseConnection connection = new DatabaseConnection(DriverManager.getConnection(config.getUrl(), config.getUsername(), config.getPassword()));
       connection.getConfig().setFeature(
           "http://www.dbunit.org/features/qualifiedTableNames", true);
       connection.getConfig().setProperty(
@@ -111,6 +120,7 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends
 
   protected abstract IDataSet getDataSet() throws Exception;
 
+  @Override
   protected void onSetUp() {
     registerDatasource();
     IDatabaseConnection connection = null;
@@ -130,11 +140,13 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends
     }
   }
 
+  @Override
   protected void onTearDown() {
     IDatabaseConnection connection = null;
     try {
       connection = getConnection();
       DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
+      cleanJndi();
     } catch (Exception ex) {
       ex.printStackTrace();
     } finally {
@@ -143,6 +155,65 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends
           connection.getConnection().close();
         } catch (SQLException e) {
           e.printStackTrace();
+        }
+      }
+    }
+  }
+
+  /**
+   * Creates the directory for JNDI files ystem provider
+   * @throws IOException
+   */
+  protected void prepareJndi() throws IOException {
+    Properties jndiProperties = new Properties();
+    jndiProperties.load(PathTestUtil.class.getClassLoader().
+        getResourceAsStream("jndi.properties"));
+    String jndiDirectoryPath = jndiProperties.getProperty("java.naming.provider.url").substring(7);
+    File jndiDirectory = new File(jndiDirectoryPath);
+    if (!jndiDirectory.exists()) {
+      jndiDirectory.mkdirs();
+      jndiDirectory.mkdir();
+    }
+  }
+
+  /**
+   * Deletes the directory for JNDI file system provider
+   * @throws IOException
+   */
+  protected void cleanJndi() throws IOException {
+    Properties jndiProperties = new Properties();
+    jndiProperties.load(PathTestUtil.class.getClassLoader().
+        getResourceAsStream("jndi.properties"));
+    String jndiDirectoryPath = jndiProperties.getProperty("java.naming.provider.url").substring(7);
+    File jndiDirectory = new File(jndiDirectoryPath);
+    if (jndiDirectory.exists()) {
+      jndiDirectory.delete();
+    }
+  }
+
+  /**
+   * Workaround to be able to use Sun's JNDI file system provider on Unix
+   * @param ic : the JNDI initial context
+   * @param jndiName : the binding name
+   * @param ref : the reference to be bound
+   * @throws NamingException
+   */
+  protected void rebind(InitialContext ic, String jndiName, Reference ref) throws NamingException {
+    if ('/' != File.separatorChar) {
+      ic.rebind(jndiName, ref);
+    } else {
+      Context currentContext = ic;
+      StringTokenizer tokenizer = new StringTokenizer(jndiName, "/", false);
+      while (tokenizer.hasMoreTokens()) {
+        String name = tokenizer.nextToken();
+        if (tokenizer.hasMoreTokens()) {
+          try {
+            currentContext = (Context) currentContext.lookup(name);
+          } catch (javax.naming.NameNotFoundException nnfex) {
+            currentContext = currentContext.createSubcontext(name);
+          }
+        } else {
+          currentContext.rebind(name, ref);
         }
       }
     }

@@ -86,7 +86,7 @@ public class WebPagesRequestRouter extends ComponentRequestRouter {
         boolean haveGotWysiwyg = processHaveGotWysiwygNotEmpty(webPagesSC,
             request);
         if (!profile.equals(USER) && !haveGotWysiwyg) {
-          // Si le role est publieur, le composant s'ouvre en édition
+          // Si le role est publieur, le composant s'ouvre en edition
           destination = getDestination("Edit", componentSC, request);
         } else {
           // affichage de la page wysiwyg si le role est lecteur ou si il y a un

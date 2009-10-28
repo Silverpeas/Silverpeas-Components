@@ -52,13 +52,13 @@ public class WebPagesSessionController extends
     AbstractComponentSessionController {
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    *          The user's profile
    * @param componentContext
    *          The component's profile
-   * 
+   *
    * @see
    */
   public WebPagesSessionController(MainSessionController mainSessionCtrl,
@@ -69,8 +69,8 @@ public class WebPagesSessionController extends
   }
 
   /**
-   * Méthode récupérant le role le plus élevé du user
-   * 
+   * MÃ©thode rÃ©cupÃ©rant le role le plus Ã©levÃ© du user
+   *
    * @return le role
    */
   public String getProfile() {
@@ -146,7 +146,7 @@ public class WebPagesSessionController extends
   /**************************************************************************************/
   /**
    * Subscriptions - get the subscription list of the current user
-   * 
+   *
    * @return a Path Collection - it's a Collection of NodeDetail collection
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
@@ -183,7 +183,7 @@ public class WebPagesSessionController extends
   /**
    * Subscriptions - remove a subscription to the subscription list of the
    * current user
-   * 
+   *
    * @param topicId
    *          the subscribe topic Id to remove
    * @since 1.0
@@ -226,7 +226,7 @@ public class WebPagesSessionController extends
 
   /**
    * Subscriptions - add a subscription
-   * 
+   *
    * @param topicId
    *          the subscription topic Id to add
    * @since 1.0
@@ -291,7 +291,7 @@ public class WebPagesSessionController extends
 
   /**
    * Return boolean if subscription is used for this instance
-   * 
+   *
    * @return boolean
    */
   public boolean isSubscriptionUsed() {

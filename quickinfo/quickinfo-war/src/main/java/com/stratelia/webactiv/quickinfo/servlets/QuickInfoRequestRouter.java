@@ -248,7 +248,6 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
         destination = URLManager.getURL(URLManager.CMP_CLIPBOARD)
             + "Idle.jsp?message=REFRESHCLIPBOARD";
       } else if (function.startsWith("copy")) {
-        // appel d'une methode static à ClipboardSessionControler
         ClipboardBm userClipboard = componentSC.getClipboard();
         try {
           PublicationDetail pubDetail = ((QuickInfoSessionController) componentSC)
