@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
 
 package com.stratelia.webactiv.newsEdito;
 
@@ -30,8 +28,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Non runtime exception management for this jobPeas.
- * 
- * @author Sébastien Antonio
  */
 public class NewsEditoException extends SilverpeasException {
 

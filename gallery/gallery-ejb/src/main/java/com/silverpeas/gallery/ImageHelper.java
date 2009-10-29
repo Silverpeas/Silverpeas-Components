@@ -81,7 +81,7 @@ public class ImageHelper {
 
   /**
    * In case of unit upload
-   * 
+   *
    * @param photo
    * @param image
    * @param subDirectory
@@ -120,7 +120,7 @@ public class ImageHelper {
           mimeType = image.getContentType();
           size = image.getSize();
 
-          // création du répertoire pour mettre la photo
+          // crÃ©ation du rÃ©pertoire pour mettre la photo
           String nameRep = subDirectory + photoId;
           FileRepositoryManager.createAbsolutePath(instanceId, nameRep);
           image.write(dir);
@@ -138,7 +138,7 @@ public class ImageHelper {
 
   /**
    * In case of drag And Drop upload
-   * 
+   *
    * @param photo
    * @param image
    * @throws Exception
@@ -177,7 +177,7 @@ public class ImageHelper {
           mimeType = AttachmentController.getMimeType(name);
           size = image.length();
 
-          // création du répertoire pour mettre la photo
+          // crÃ©ation du rÃ©pertoire pour mettre la photo
           String nameRep = subDirectory + photoId;
           FileRepositoryManager.createAbsolutePath(instanceId, nameRep);
 
@@ -201,7 +201,7 @@ public class ImageHelper {
     String photoId = photo.getPhotoPK().getId();
     String instanceId = photo.getPhotoPK().getInstanceId();
 
-    // recherche du paramètre du pourcentage de la taille du watermark
+    // recherche du paramÃ¨tre du pourcentage de la taille du watermark
     String percent = gallerySettings.getString("percentSizeWatermark");
     if (!StringUtil.isDefined(percent))
       percent = "1";
@@ -220,13 +220,13 @@ public class ImageHelper {
 
       String pathFile = FileRepositoryManager.getAbsolutePath(instanceId)
           + subDirectory + photoId + File.separator;
-      // ajout du watermark (si le paramètre est activé) QUE POUR LES IMAGES
+      // ajout du watermark (si le paramÃ¨tre est activÃ©) QUE POUR LES IMAGES
       // JPEG
       String nameAuthor = "";
       String nameForWatermark = "";
       if (StringUtil.isDefined(watermarkHD) && watermark
           && (type.equalsIgnoreCase("jpg") || type.equalsIgnoreCase("jpeg"))) {
-        // création d'un duplicata de l'image originale avec intégration du
+        // crÃ©ation d'un duplicata de l'image originale avec intÃ©gration du
         // watermark
         String property = watermarkHD;
         Metadata metadata = JpegMetadataReader.readMetadata(dir);
@@ -256,7 +256,7 @@ public class ImageHelper {
           nameForWatermark = nameAuthor;
         }
       }
-      // création de la preview et des vignettes
+      // crÃ©ation de la preview et des vignettes
       createVignettes(photo, pathFile, dir, watermark, nameForWatermark);
     }
   }
@@ -286,7 +286,7 @@ public class ImageHelper {
         Metadata metadata = JpegMetadataReader.readMetadata(file);
         Directory exifDirectory = metadata.getDirectory(ExifDirectory.class);
         while (property != null && !"".equals(property)) {
-          // récupération de la valeur
+          // rÃ©cupÃ©ration de la valeur
           String label = settings.getString("METADATA_"
               + Integer.toString(indice) + "_LABEL");
           if (metaDataBundle != null)
@@ -318,7 +318,7 @@ public class ImageHelper {
               }
               value = new String(bytes, "ISO-8859-1");
             }
-            // ajout de cette metadata à la photo
+            // ajout de cette metadata Ã  la photo
             MetaData metaData = new MetaData();
             metaData.setLabel(label);
             metaData.setProperty(property);
@@ -344,7 +344,7 @@ public class ImageHelper {
         metadata = JpegMetadataReader.readMetadata(file);
         Directory iptcDirectory = metadata.getDirectory(IptcDirectory.class);
         while (property != null && !"".equals(property)) {
-          // récupération de la valeur
+          // rÃ©cupÃ©ration de la valeur
           String label = settings.getString("IPTC_" + Integer.toString(indice)
               + "_LABEL");
           if (metaDataBundle != null)
@@ -355,7 +355,7 @@ public class ImageHelper {
 
           String value = iptcDirectory.getString(currentMetadata);
 
-          // ajout de cette metadata à la photo
+          // ajout de cette metadata Ã  la photo
           if (value != null) {
             MetaData metaData = new MetaData();
             metaData.setLabel(label);
@@ -398,7 +398,7 @@ public class ImageHelper {
       boolean watermark, String nameWatermark) throws IOException {
     String fileId = photo.getId();
 
-    // création d'une preview sans watermark (pour être utilisée pour créer les
+    // crÃ©ation d'une preview sans watermark (pour Ãªtre utilisÃ©e pour crÃ©er les
     // vignettes)
     String previewFile = path + fileId + thumbnailSuffix_Xlarge;
     int vignetteFile = 600;
@@ -414,7 +414,7 @@ public class ImageHelper {
 
     dir = new File(previewFile);
 
-    // 1/ création de la preview
+    // 1/ crÃ©ation de la preview
     int sizeWatermarkPreview = Integer.parseInt(gallerySettings
         .getString("sizeWatermark600x400"));
     String previewFileWatermark = path + fileId + previewSuffix;
@@ -430,7 +430,7 @@ public class ImageHelper {
       redimPhoto(dir, previewFileWatermark, largeWidth, watermark,
           nameWatermark, sizeWatermarkPreview);
 
-    // 2/ création de la vignette 266x150
+    // 2/ crÃ©ation de la vignette 266x150
     int sizeWatermark266x150 = Integer.parseInt(gallerySettings
         .getString("sizeWatermark266x150"));
     String vignetteFile1 = path + fileId + thumbnailSuffix_large;
@@ -442,7 +442,7 @@ public class ImageHelper {
       redimPhoto(dir, vignetteFile1, largeWidth, watermark, nameWatermark,
           sizeWatermark266x150);
 
-    // création de la vignette 133x100
+    // crÃ©ation de la vignette 133x100
     int sizeWatermark133x100 = Integer.parseInt(gallerySettings
         .getString("sizeWatermark133x100"));
     String vignetteFile2 = path + fileId + thumbnailSuffix_medium;
@@ -454,7 +454,7 @@ public class ImageHelper {
       redimPhoto(dir, vignetteFile2, largeWidth, watermark, nameWatermark,
           sizeWatermark133x100);
 
-    // création de la vignette 50x66
+    // crÃ©ation de la vignette 50x66
     int sizeWatermark50x66 = Integer.parseInt(gallerySettings
         .getString("sizeWatermark66x50"));
     String vignetteFile3 = path + fileId + thumbnailSuffix_small;
@@ -519,7 +519,7 @@ public class ImageHelper {
   private static void redimPhoto(File inputFile, String outputFile,
       int widthParam, boolean watermark, String nameWatermark, int sizeWatermark)
       throws IOException {
-    // création du buffer avec l'image d'origine
+    // crÃ©ation du buffer avec l'image d'origine
     BufferedImage inputBuf = ImageIO.read(inputFile);
 
     String[] widthAndHeight = getWidthAndHeight(inputBuf, widthParam);
@@ -567,7 +567,7 @@ public class ImageHelper {
       g.dispose();
     }
 
-    // écriture du buffer sortie dans le fichier "outputFile" sur disque
+    // Ã©criture du buffer sortie dans le fichier "outputFile" sur disque
     ImageIO.write(scaledImage, "JPEG", new File(outputFile));
   }
 
@@ -622,22 +622,22 @@ public class ImageHelper {
       File dir, int percentSizeWatermark) throws IOException {
     String watermarkFile = path + fileId + "_watermark.jpg";
 
-    // création du buffer avec l'image d'origine
+    // crÃ©ation du buffer avec l'image d'origine
     BufferedImage inputBuf = ImageIO.read(dir);
     double inputBufWidth = inputBuf.getWidth();
     double inputBufHeight = inputBuf.getHeight();
 
-    // création du buffer a la même taille
+    // crÃ©ation du buffer a la mÃªme taille
     BufferedImage outputBuf = new BufferedImage((int) inputBufWidth,
         (int) inputBufHeight, BufferedImage.TYPE_INT_RGB);
-    // Ajout du watermark (passage par le graphique pour mettre à jour le
+    // Ajout du watermark (passage par le graphique pour mettre Ã  jour le
     // buffer)
     Graphics2D g = (Graphics2D) outputBuf.getGraphics();
     g
         .drawImage(inputBuf, 0, 0, (int) inputBufWidth, (int) inputBufHeight,
             null);
 
-    // opacité du texte de 50%
+    // opacitÃ© du texte de 50%
     AlphaComposite alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
         0.5f);
     g.setComposite(alpha);
@@ -682,7 +682,7 @@ public class ImageHelper {
     g.drawString(name, ((int) inputBufWidth - (int) rect.getWidth()) - size,
         ((int) inputBufHeight - (int) rect.getHeight()) - size);
 
-    // affichage d'un watermark blanc en décalé
+    // affichage d'un watermark blanc en dÃ©calÃ©
     g.setColor(Color.WHITE);
     g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
         RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -699,7 +699,7 @@ public class ImageHelper {
         ((int) inputBufHeight - (int) rect.getHeight()) - size / 2);
 
     g.dispose();
-    // écriture du buffer sortie dans le fichier "outputFile" sur disque
+    // Ã©criture du buffer sortie dans le fichier "outputFile" sur disque
     File fileWatermark = new File(watermarkFile);
     ImageIO.write(outputBuf, "JPEG", fileWatermark);
   }
@@ -719,7 +719,7 @@ public class ImageHelper {
     String toDir = toAbsolutePath + subDirectory + toPK.getId()
         + File.separator;
 
-    // création du répertoire pour mettre la photo
+    // crÃ©ation du rÃ©pertoire pour mettre la photo
     String nameRep = subDirectory + toPK.getId();
     try {
       FileRepositoryManager.createAbsolutePath(toPK.getInstanceId(), nameRep);
@@ -729,7 +729,7 @@ public class ImageHelper {
               + toAbsolutePath + nameRep, e);
     }
 
-    // copier et renommer chaque image présente dans le répertoire d'origine
+    // copier et renommer chaque image prÃ©sente dans le rÃ©pertoire d'origine
     File dirToCopy = new File(fromDir);
     if (dirToCopy.exists()) {
       // copier vignettes

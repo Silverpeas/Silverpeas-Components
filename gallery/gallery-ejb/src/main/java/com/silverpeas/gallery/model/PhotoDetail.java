@@ -235,8 +235,8 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   }
 
   public boolean isDownloadable() {
-    // contrôle si la photo est téléchargeable et si la date du jour est
-    // comprise dans la période de visibilité
+    // contrÃ´le si la photo est tÃ©lÃ©chargeable et si la date du jour est
+    // comprise dans la pÃ©riode de visibilitÃ©
     boolean ok;
     Date date = new Date();
     if (beginDownloadDate == null)

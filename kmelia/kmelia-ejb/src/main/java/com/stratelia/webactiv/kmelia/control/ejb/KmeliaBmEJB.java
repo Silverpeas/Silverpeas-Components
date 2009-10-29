@@ -284,7 +284,7 @@ public class KmeliaBmEJB implements SessionBean {
 	  try
 	  {
 		  PdcBmHome pdcBmHome = (PdcBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PDCBM_EJBHOME, PdcBmHome.class);
-		  pdcBm = pdcBmHome.create();			
+		  pdcBm = pdcBmHome.create();
 	  }
 	  catch (Exception e)
 	  {
@@ -518,7 +518,7 @@ public class KmeliaBmEJB implements SessionBean {
     SilverTrace.info("kmelia", "KmeliaBmEJB.addSubTopic()", "root.MSG_GEN_ENTER_METHOD");
     NodePK pk = null;
 
-    //Construction de la date de création (date courante)
+    //Construction de la date de crÃ©ation (date courante)
     String creationDate = DateUtil.today2SQLDate();
     subTopic.setCreationDate(creationDate);
 
@@ -1372,8 +1372,8 @@ public class KmeliaBmEJB implements SessionBean {
 
         updateSilverContentVisibility(pubDetail);
 
-        //la publication a été modifié par un superviseur
-        //le créateur de la publi doit être averti
+        //la publication a Ã©tÃ© modifiÃ© par un superviseur
+        //le crÃ©ateur de la publi doit Ãªtre averti
         String profile = KmeliaHelper.getProfile(getOrganizationController().getUserProfiles(pubDetail.getUpdaterId(), pubDetail.getPK().getInstanceId()));
         if ("supervisor".equals(profile)) {
           sendModificationAlert(updateScope, pubDetail.getPK());
@@ -1394,7 +1394,7 @@ public class KmeliaBmEJB implements SessionBean {
   }
 
   /******************************************************************************************/
-  /* KMELIA - Copier/coller des documents versionnés		                                  */
+  /* KMELIA - Copier/coller des documents versionnÃ©s		                                  */
   /******************************************************************************************/
   public void pasteDocuments(PublicationPK pubPKFrom, String pubId) throws Exception {
     SilverTrace.info("kmelia", "KmeliaBmEJB.pasteDocuments()", "root.MSG_GEN_ENTER_METHOD", "pubPKFrom = " + pubPKFrom.toString() + ", pubId = " + pubId);
@@ -1822,7 +1822,7 @@ public class KmeliaBmEJB implements SessionBean {
         getPublicationBm().removeFather(pubPK, fatherPK);
       } else {
         //la publication n'a qu'un seul emplacement
-        //elle est donc placée dans la corbeille du créateur
+        //elle est donc placÃ©e dans la corbeille du crÃ©ateur
         sendPublicationToBasket(pubPK);
       }
     } catch (Exception e) {
@@ -1837,7 +1837,7 @@ public class KmeliaBmEJB implements SessionBean {
       getPublicationBm().removeAllFather(pubPK);
 
       //la publication n'a qu'un seul emplacement
-      //elle est donc placée dans la corbeille du créateur
+      //elle est donc placÃ©e dans la corbeille du crÃ©ateur
       sendPublicationToBasket(pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.deletePublicationFromAllTopics()", SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_SUPPRIMER_LA_PUBLICATION_DE_CE_THEME", e);
@@ -2498,13 +2498,13 @@ public class KmeliaBmEJB implements SessionBean {
     PublicationDetail currentPubDetail = currentPub.getPublicationDetail();
     String memInfoId = currentPubDetail.getInfoId();
     PublicationPK pubPK = currentPubDetail.getPK();
-    //merge du clone sur la publi de référence
+    //merge du clone sur la publi de rÃ©fÃ©rence
     String cloneId = currentPubDetail.getCloneId();
     if (!"-1".equals(cloneId)) {
       PublicationPK tempPK = new PublicationPK(cloneId, pubPK);
       CompletePublication tempPubli = getPublicationBm().getCompletePublication(tempPK);
       PublicationDetail tempPubliDetail = tempPubli.getPublicationDetail();
-      //le clone devient la publi de référence
+      //le clone devient la publi de rÃ©fÃ©rence
       //currentPubDetail = (PublicationDetail) tempPubli.getPublicationDetail().clone();
       currentPubDetail = getClone(tempPubliDetail);
 
@@ -2522,7 +2522,7 @@ public class KmeliaBmEJB implements SessionBean {
         if (currentPub.getModelDetail() != null) {
           currentPubDetail.setInfoId(memInfoId);
 
-          //il existait déjà un contenu
+          //il existait dÃ©jÃ  un contenu
           getPublicationBm().updateInfoDetail(pubPK, tempPubli.getInfoDetail());
         } else {
           //il n'y avait pas encore de contenu
@@ -2547,7 +2547,7 @@ public class KmeliaBmEJB implements SessionBean {
           //DataRecord 	data 	= set.getRecord(fromId);
 
           if (memInfoId != null && !"0".equals(memInfoId)) {
-            //il existait déjà un contenu
+            //il existait dÃ©jÃ  un contenu
             set.merge(cloneId, pubPK.getId());
           } else {
             //il n'y avait pas encore de contenu
@@ -2569,7 +2569,7 @@ public class KmeliaBmEJB implements SessionBean {
       AttachmentPK pkTo = new AttachmentPK(cloneId, tempPK.getInstanceId());
       AttachmentController.mergeAttachments(pkFrom, pkTo);
 
-      //merge des fichiers versionnés
+      //merge des fichiers versionnÃ©s
 
       //delete xml content
       removeXMLContentOfPublication(tempPK);
@@ -3615,14 +3615,14 @@ public class KmeliaBmEJB implements SessionBean {
     Collection publications = null;
     Collection coordinates = null;
     try {
-      //Remove node "Toutes catégories" (level == 2) from combination
+      //Remove node "Toutes catÃ©gories" (level == 2) from combination
       int nodeLevel = 0;
       String axisValue = "";
       for (int i = 0; i < combination.size(); i++) {
         axisValue = (String) combination.get(i);
         StringTokenizer st = new StringTokenizer(axisValue, "/");
         nodeLevel = st.countTokens();
-        //if node is level 2, it represents "Toutes Catégories"
+        //if node is level 2, it represents "Toutes CatÃ©gories"
         //this axis is not used by the search
         if (nodeLevel == 2) {
           combination.remove(i);
@@ -3630,7 +3630,7 @@ public class KmeliaBmEJB implements SessionBean {
         }
       }
       if (combination.size() == 0) {
-        //all criterias is "Toutes Catégories"
+        //all criterias is "Toutes CatÃ©gories"
         //get all publications classified
         NodePK basketPK = new NodePK("1", componentId);
         publications = getPublicationBm().getDetailsNotInFatherPK(basketPK);

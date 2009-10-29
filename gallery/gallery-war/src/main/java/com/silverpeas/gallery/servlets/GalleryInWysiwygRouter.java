@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
 ---*/
 
 package com.silverpeas.gallery.servlets;
@@ -58,8 +58,8 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class GalleryInWysiwygRouter extends HttpServlet {
@@ -92,7 +92,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     String language = request.getParameter("Language");
     String size = request.getParameter("Size");
 
-    // contrôle que "componentId" est bien une photothèque ayant le droit d'être
+    // contrÃ´le que "componentId" est bien une photothÃ¨que ayant le droit d'Ãªtre
     // vu dans un Wysiwyg
     boolean isViewInWysiwyg = "yes"
         .equalsIgnoreCase(getOrganizationController()
@@ -136,7 +136,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
   private Collection viewAllAlbums(String componentId) {
     Collection albums = new ArrayList();
 
-    // récupération des albums de la photothèque
+    // rÃ©cupÃ©ration des albums de la photothÃ¨que
     try {
       albums = getGalleryBm().getAllAlbums(componentId);
     } catch (Exception e) {
@@ -148,7 +148,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
   }
 
   private Collection viewPhotosOfAlbum(String componentId, String albumId) {
-    // récupération de toutes les photos d'un album
+    // rÃ©cupÃ©ration de toutes les photos d'un album
     Collection photos = new ArrayList();
     try {
       NodePK nodePK = new NodePK(albumId, componentId);

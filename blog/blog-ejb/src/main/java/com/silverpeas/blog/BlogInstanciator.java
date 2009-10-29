@@ -99,7 +99,7 @@ public class BlogInstanciator implements ComponentsInstanciatorIntf {
     String creationDate = DateUtil.today2SQLDate();
     query = "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, nodeCreatorId, "
         + "nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)	"
-        + "VALUES (0, 'Accueil Catégories', 'Racine Catégories', ? , ? , '/0', 1, -1,'','Visible',?)";
+        + "VALUES (0, 'Accueil CatÃ©gories', 'Racine CatÃ©gories', ? , ? , '/0', 1, -1,'','Visible',?)";
 
     PreparedStatement prepStmt = null;
     try {

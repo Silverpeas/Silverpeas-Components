@@ -37,7 +37,7 @@ public class GSCCreationDateComparatorDesc implements Comparator {
     int compareResult = photo1.getCreationDate().compareTo(
         photo2.getCreationDate());
     if (compareResult == 0) {
-      // les 2 photos on été créée à la même date, comparer les Id
+      // les 2 photos on Ã©tÃ© crÃ©Ã©e Ã  la mÃªme date, comparer les Id
       compareResult = photo1.getPhotoPK().getId().compareTo(
           photo2.getPhotoPK().getId());
     }

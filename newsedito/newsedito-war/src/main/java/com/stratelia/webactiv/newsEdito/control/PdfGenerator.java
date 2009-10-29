@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
 ---*/
 
 /**
@@ -62,9 +62,9 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id: PdfGenerator.java,v 1.6 2007/06/14 08:40:52 neysseri Exp $
- * 
+ *
  * $Log: PdfGenerator.java,v $
  * Revision 1.6  2007/06/14 08:40:52  neysseri
  * no message
@@ -76,13 +76,13 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
  * Centralisation de la gestion des dates
  *
  * Revision 1.4  2004/09/28 09:25:37  neysseri
- * Utilisation de la bibliothèque iText au lieu de Libraries/lowagie + nettoyage sources
+ * Utilisation de la bibliothÃ¨que iText au lieu de Libraries/lowagie + nettoyage sources
  *
  * Revision 1.3  2003/07/22 08:53:06  tleroi
  * *** empty log message ***
  *
  * Revision 1.2  2002/12/18 17:32:24  cbonin
- * 1) Report OCISI : Il n'y a pas de verification javascript sur le format de l'image uploadée
+ * 1) Report OCISI : Il n'y a pas de verification javascript sur le format de l'image uploadÃ©e
  * 2) on ne verifie pas toutes les extensions d'images possibles
  * 3) NullPointer qd on clique 2 fois sur l'onglet Publication
  * 4) Un publieur n'a pas d'onglet Publication
@@ -92,7 +92,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
  * no message
  *
  * Revision 1.4.38.2  2002/10/31 09:03:42  cbonin
- * Bug path de fichiers & répertoires
+ * Bug path de fichiers & rÃ©pertoires
  *
  * Revision 1.4.38.1  2002/10/09 15:48:10  scotte
  * Corrections bug Solaris
@@ -104,8 +104,8 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class PdfGenerator {
@@ -114,8 +114,8 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public static void initRessources() {
@@ -127,10 +127,10 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public static String getImagePath() {
@@ -142,14 +142,14 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param name
    * @param completePubList
    * @param langue
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public static void generatePubList(String name, Collection completePubList,
@@ -216,15 +216,15 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param name
    * @param archiveDetail
    * @param publicationBm
    * @param langue
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public static void generateArchive(String name, NodeDetail archiveDetail,
@@ -280,13 +280,13 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param document
    * @param langue
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public static void createFirstPage(Document document, String langue)
@@ -323,12 +323,12 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param document
    * @param nodeDetail
    * @param publicationBm
-   * 
+   *
    * @see
    */
   public static void addMasterTable(Document document, NodeDetail nodeDetail,
@@ -358,17 +358,17 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param document
    * @param title
    * @param titleCount
    * @param publicationBm
-   * 
+   *
    * @return
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public static Section addTitle(Document document, NodeDetail title,
@@ -405,14 +405,14 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param section
    * @param title
    * @param publicationBm
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public static void addPublications(Section section, NodeDetail title,
@@ -438,11 +438,11 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param section
    * @param complete
-   * 
+   *
    * @see
    */
   public static void addPublication(Section section,
@@ -525,13 +525,13 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param document
    * @param archiveDetail
    * @param publicationBm
    * @param langue
-   * 
+   *
    * @see
    */
   public static void addEditorial(Document document, NodeDetail archiveDetail,

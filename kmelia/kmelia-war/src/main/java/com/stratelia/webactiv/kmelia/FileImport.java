@@ -47,9 +47,9 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * Class for unitary and massive import
- * 
+ *
  * @author dlesimple
- * 
+ *
  */
 public class FileImport {
 
@@ -99,9 +99,9 @@ public class FileImport {
 
   /**
    * Import a single file for a unique publication
-   * 
+   *
    * @return ArrayList of PublicationDetail
-   * 
+   *
    */
   public ArrayList importFile() {
     ArrayList publicationDetails = new ArrayList();
@@ -118,7 +118,7 @@ public class FileImport {
 
   /**
    * Import a zip file for a unique publication with attachments
-   * 
+   *
    * @param KmeliaSessionController
    *          kmeliaScc
    * @return ArrayList of PublicationsDetails
@@ -181,7 +181,7 @@ public class FileImport {
 
   /**
    * Import a zip file for a publication per file in zip
-   * 
+   *
    * @return List of PublicationsDetail
    */
   public ArrayList importFilesMultiPubli() {
@@ -243,7 +243,7 @@ public class FileImport {
 
   /**
    * Convert File into a publication with an attachment
-   * 
+   *
    * @param attachmentIE
    * @param versioningIE
    * @param fileToProcess
@@ -350,7 +350,7 @@ public class FileImport {
 
   /**
    * Return a Publication Detail (filled by the Office properties if possible)
-   * 
+   *
    * @param file
    * @return PublicationDetail
    */
@@ -373,11 +373,11 @@ public class FileImport {
     PublicationDetail publicationDetail = new PublicationDetail(null,
         pubName/* nom */, description/* description */, new Date()/*
                                                                    * date de
-                                                                   * création
+                                                                   * crÃ©ation
                                                                    */,
-        new Date()/* date de début de validité */, null/*
+        new Date()/* date de dÃ©but de validitÃ© */, null/*
                                                         * date de fin de
-                                                        * validité
+                                                        * validitÃ©
                                                         */, kmeliaScc
             .getUserDetail().getId()/* id user */, "1"/* importance */,
         null/* version de la publication */, keywords/* keywords */, content,
@@ -389,7 +389,7 @@ public class FileImport {
 
   /**
    * Format file name without extension
-   * 
+   *
    * @param fileName
    * @return fileName formatted
    */
@@ -402,7 +402,7 @@ public class FileImport {
 
   /**
    * Get the title of the document
-   * 
+   *
    * @param file
    *          Office File
    * @param value
@@ -421,7 +421,7 @@ public class FileImport {
 
   /**
    * Get the subject of the document
-   * 
+   *
    * @param file
    * @param value
    * @return Subject
@@ -438,7 +438,7 @@ public class FileImport {
 
   /**
    * Get the author of the document
-   * 
+   *
    * @param file
    * @param value
    * @return Author name
@@ -455,7 +455,7 @@ public class FileImport {
 
   /**
    * Get the keywords of the document
-   * 
+   *
    * @param file
    * @param value
    * @return

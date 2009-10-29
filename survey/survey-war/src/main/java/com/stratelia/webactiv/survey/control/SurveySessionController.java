@@ -86,9 +86,9 @@ public class SurveySessionController extends AbstractComponentSessionController
 	private boolean pollingStationMode = false;
 	private boolean participationMultipleAllowedForUser = false;
 	private boolean hasAlreadyParticipated = false;
-	public static String COOKIE_NAME = "surpoll"; 
-	
-	
+	public static String COOKIE_NAME = "surpoll";
+
+
 	/** Creates new sessionClientController */
 	public SurveySessionController(MainSessionController mainSessionCtrl, ComponentContext componentContext)
 	{
@@ -121,7 +121,7 @@ public class SurveySessionController extends AbstractComponentSessionController
 	{
 		return questionContainerBm;
 	}
-	
+
 	private void setQuestionResultBm()
 	{
 		if (questionResultBm == null)
@@ -162,7 +162,7 @@ public class SurveySessionController extends AbstractComponentSessionController
 	{
 		return participationMultipleAllowedForUser;
 	}
-	
+
 	/**
 	 * Set user status to know if he can participate more than one time
 	 * @param state
@@ -196,7 +196,7 @@ public class SurveySessionController extends AbstractComponentSessionController
 	{
 		return isAnonymousModeEnabled() && userIsAnonymous();
 	}
-	
+
 	/**
 	 * Return if anonymous mode is enabled
 	 * @return
@@ -243,10 +243,10 @@ public class SurveySessionController extends AbstractComponentSessionController
 			//No specific look is defined, get the default one
 			monLook = new ResourceLocator("com.stratelia.webactiv.util.viewGenerator.settings.defaultLookSettings", "").getString("Initial");
 		}
-		
+
 		ResourceLocator 		settings		 	= new ResourceLocator(monLook, "");
 		String 					guestId 			= settings.getString("guestId");
-		
+
 		if (guestId != null && getUserId().equals(guestId))
 		{
 			if (getComponentId() != null)
@@ -439,7 +439,7 @@ public class SurveySessionController extends AbstractComponentSessionController
 				e);
 		}
 	}
-	
+
 	public void deleteVotes(String surveyId) throws SurveyException
 	{
 		SilverTrace.info("Survey", "SurveySessionClientController.deleteVotes", "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
@@ -458,7 +458,7 @@ public class SurveySessionController extends AbstractComponentSessionController
 				e);
 		}
 	}
-	
+
 	public void deleteResponse(String surveyId) throws SurveyException
 	{
 		SilverTrace.info("Survey", "SurveySessionClientController.deleteQuestions", "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
@@ -477,7 +477,7 @@ public class SurveySessionController extends AbstractComponentSessionController
 				e);
 		}
 	}
-	
+
 	public Collection<String> getUserByQuestion(ForeignPK questionPK) throws RemoteException
 	{
 		return getUserByQuestion(questionPK,true);
@@ -490,7 +490,7 @@ public class SurveySessionController extends AbstractComponentSessionController
 		while (it.hasNext())
 		{
 			QuestionResult result = (QuestionResult) it.next();
-			
+
 			if (result != null)
 			{
 				String userName = "";
@@ -507,12 +507,12 @@ public class SurveySessionController extends AbstractComponentSessionController
 		}
 		return users;
 	}
-	
+
 	public Collection<QuestionResult> getResultByUser(String userId, ForeignPK questionPK) throws RemoteException
 	{
 		return getQuestionResultBm().getUserQuestionResultsToQuestion(userId, questionPK);
 	}
-	
+
 	public Collection<String> getResultByUser(String userId) throws RemoteException
 	{
 		Collection<QuestionResult> result = new ArrayList<QuestionResult>();
@@ -526,7 +526,7 @@ public class SurveySessionController extends AbstractComponentSessionController
 			Collection<QuestionResult> questionResult = getQuestionResultBm().getUserQuestionResultsToQuestion(userId, new ForeignPK(question.getPK()));
 			result.addAll(questionResult);
 		}
-		// ne récupérer que les id des réponses
+		// ne rÃ©cupÃ©rer que les id des rÃ©ponses
 		Iterator itR = result.iterator();
 		while (itR.hasNext())
 		{
@@ -535,7 +535,7 @@ public class SurveySessionController extends AbstractComponentSessionController
 		}
 		return resultId;
 	}
-	
+
 	public Collection<String> getUserByAnswer(String answerId) throws RemoteException
 	{
 		return getQuestionResultBm().getUsersByAnswer(answerId);
@@ -592,7 +592,7 @@ public class SurveySessionController extends AbstractComponentSessionController
 				"Survey.EX_RECORD_REPLY_FAILED", "id = " + surveyId, e);
 		}
 	}
-	
+
 	public void recordReply(String surveyId, Hashtable reply, String comment, boolean isAnonymousComment) throws SurveyException
 	{
 		try
@@ -624,12 +624,12 @@ public class SurveySessionController extends AbstractComponentSessionController
 				e);
 		}
 	}
-	
+
 	public Collection<String> getUsersByAnswer(String answerId) throws RemoteException
 	{
 		return getUserByAnswer(answerId);
 	}
-	
+
 	public Collection<String> getUsersBySurvey(String surveyId) throws RemoteException, SurveyException
 	{
 		Collection<String> users = new LinkedHashSet<String>();
@@ -792,7 +792,7 @@ public class SurveySessionController extends AbstractComponentSessionController
 			SilverTrace.error("surveySession", "SurveySessionController.close", "", e);
 		}
 	}
-	
+
 	// pour la notification
 	public String initAlertUser(String surveyId) throws RemoteException, SurveyException {
         AlertUser sel = getAlertUser();
@@ -800,27 +800,27 @@ public class SurveySessionController extends AbstractComponentSessionController
         sel.resetAll();
 		sel.setHostSpaceName(getSpaceLabel()); // set nom de l'espace pour browsebar
 		sel.setHostComponentId(getComponentId()); // set id du composant pour appel selectionPeas (extra param permettant de filtrer les users ayant acces au composant)
-		PairObject hostComponentName = new PairObject(getComponentLabel(),  null); // set nom du composant pour browsebar (PairObject(nom_composant, lien_vers_composant)) NB : seul le 1er element est actuellement utilisé (alertUserPeas est toujours présenté en popup => pas de lien sur nom du composant)
+		PairObject hostComponentName = new PairObject(getComponentLabel(),  null); // set nom du composant pour browsebar (PairObject(nom_composant, lien_vers_composant)) NB : seul le 1er element est actuellement utilisÃ© (alertUserPeas est toujours prÃ©sentÃ© en popup => pas de lien sur nom du composant)
 		sel.setHostComponentName(hostComponentName);
 		SilverTrace.debug("Survey","SurveySessionController.initAlertUser()","root.MSG_GEN_PARAM_VALUE","name = "+hostComponentName+" componentId="+ getComponentId());
-		sel.setNotificationMetaData(getAlertNotificationMetaData(surveyId)); // set NotificationMetaData contenant les informations à notifier
+		sel.setNotificationMetaData(getAlertNotificationMetaData(surveyId)); // set NotificationMetaData contenant les informations Ã  notifier
 		// fin initialisation de AlertUser
-		// l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
-		
-        return AlertUser.getAlertUserURL(); 
+		// l'url de nav vers alertUserPeas et demandÃ©e Ã  AlertUser et retournÃ©e
+
+        return AlertUser.getAlertUserURL();
     }
-	
-	private synchronized NotificationMetaData getAlertNotificationMetaData(String surveyId) throws RemoteException, SurveyException  
+
+	private synchronized NotificationMetaData getAlertNotificationMetaData(String surveyId) throws RemoteException, SurveyException
 	{
 		QuestionContainerPK pk = new QuestionContainerPK(surveyId);
 		String senderName = getUserDetail().getDisplayedName();
 		QuestionContainerDetail questionDetail = getSurvey(surveyId);
 		SilverTrace.debug("Survey","SurveySessionController.getAlertNotificationMetaData()","root.MSG_GEN_PARAM_VALUE","survey = "+questionDetail.toString());
       	String htmlPath = getQuestionContainerBm().getHTMLQuestionPath(questionDetail);
-      	
+
       	ResourceLocator	message		= new ResourceLocator("com.stratelia.webactiv.survey.multilang.surveyBundle", "fr");
 		ResourceLocator	message_en	= new ResourceLocator("com.stratelia.webactiv.survey.multilang.surveyBundle", "en");
-      	
+
       	String subject = getNotificationSubject(message);
       	String body = getNotificationBody(questionDetail, htmlPath, message, senderName);
 		SilverTrace.debug("Survey","SurveySessionController.getAlertNotificationMetaData()","root.MSG_GEN_PARAM_VALUE","message = "+message.toString()+" message_en = "+ message_en.toString());
@@ -833,19 +833,19 @@ public class SurveySessionController extends AbstractComponentSessionController
 
 		NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
 		notifMetaData.addLanguage("en", subject_en, body_en);
-		
+
 		notifMetaData.setLink(getSurveyUrl(questionDetail));
 		notifMetaData.setComponentId(pk.getInstanceId());
 		notifMetaData.setSender(getUserId());
-		
+
 		return notifMetaData;
     }
-	
+
 	private String getNotificationSubject(ResourceLocator message)
     {
     	return message.getString("survey.notifSubject");
     }
-	
+
 	private String getNotificationBody(QuestionContainerDetail questionDetail, String htmlPath, ResourceLocator message, String senderName)
     {
     	StringBuffer messageText = new StringBuffer();
@@ -854,10 +854,10 @@ public class SurveySessionController extends AbstractComponentSessionController
 	    messageText.append(message.getString("survey.notifName")).append(" : ").append(questionDetail.getHeader().getName()).append("\n");
 	    messageText.append(message.getString("survey.notifDesc")).append(" : ").append(questionDetail.getHeader().getDescription()).append("\n");
 	    messageText.append(message.getString("survey.path")).append(" : ").append(htmlPath);
-	    
+
 	    return messageText.toString();
     }
-	
+
 	private String getSurveyUrl(QuestionContainerDetail questionDetail)
 	{
 		return URLManager.getURL(null, getComponentId())+questionDetail.getHeader().getURL();
@@ -872,19 +872,19 @@ public class SurveySessionController extends AbstractComponentSessionController
 	{
 		this.pollingStationMode = pollingStationMode;
 	}
-	
+
 	public List getGalleries()
 	{
 		List galleries = null;
     	OrganizationController orgaController = new OrganizationController();
     	String[] compoIds = orgaController.getCompoId("gallery");
     	for (int c=0; c<compoIds.length; c++)
-    	{    		
+    	{
     		if ("yes".equalsIgnoreCase(orgaController.getComponentParameterValue("gallery"+compoIds[c], "viewInWysiwyg")))
     		{
     			if (galleries == null)
         			galleries = new ArrayList();
-    			
+
     			ComponentInstLight gallery = orgaController.getComponentInstLight("gallery"+compoIds[c]);
     			galleries.add(gallery);
     		}

@@ -41,13 +41,13 @@ public class PostDAO
 
 	public static void createDateEvent(Connection con, String pubId, Date dateEvent, String instanceId) throws SQLException
 	{
-		// Création 
+		// CrÃ©ation
 		PreparedStatement prepStmt = null;
 		try
 		{
-			// création de la requete
+			// crÃ©ation de la requete
 			String query = "insert into SC_Blog_Post (pubId, dateEvent, instanceId) values (?, ?, ?)";
-			// initialisation des paramètres
+			// initialisation des paramÃ¨tres
 			prepStmt = con.prepareStatement(query);
 			prepStmt.setInt(1, new Integer(pubId).intValue());
 			prepStmt.setString(2, Long.toString((dateEvent).getTime()));
@@ -63,7 +63,7 @@ public class PostDAO
 
 	public static Date getDateEvent(Connection con, String pubId) throws SQLException
 	{
-		// récupérer la date
+		// rÃ©cupÃ©rer la date
 		String query = "select dateEvent from SC_Blog_Post where pubId = ? ";
 		Date dateEvent = new Date();
 		PreparedStatement prepStmt = null;
@@ -78,7 +78,7 @@ public class PostDAO
 				// recuperation de la date
 				dateEvent = new Date(Long.parseLong(rs.getString("dateEvent")));
 			}
-		} 
+		}
 		finally
 		{
 			// fermeture
@@ -86,7 +86,7 @@ public class PostDAO
 		}
 		return dateEvent;
 	}
-	
+
 	public static void deleteDateEvent(Connection con, String pubId) throws SQLException
 	{
 		PreparedStatement prepStmt = null;
@@ -103,15 +103,15 @@ public class PostDAO
 			DBUtil.close(prepStmt);
 		}
 	}
-	
+
 	public static void updateDateEvent(Connection con, String pubId, Date dateEvent) throws SQLException
 	{
 		PreparedStatement prepStmt = null;
 		try
 		{
-			// mettre à jour la date d'évènement 
+			// mettre Ã  jour la date d'Ã©vÃ¨nement
 			String query = "update SC_Blog_Post set dateEvent = ? where pubId = ?";
-			// initialisation des paramètres
+			// initialisation des paramÃ¨tres
 			prepStmt = con.prepareStatement(query);
 			prepStmt.setString(1, "" + dateEvent.getTime());
 			prepStmt.setInt(2, Integer.parseInt(pubId));
@@ -123,10 +123,10 @@ public class PostDAO
 			DBUtil.close(prepStmt);
 		}
 	}
-	
+
 	public static String getOldestEvent(Connection con, String instanceId) throws SQLException
 	{
-		// récupérer le dernier post par date d'évènement
+		// rÃ©cupÃ©rer le dernier post par date d'Ã©vÃ¨nement
 		String query = "select pubId from SC_Blog_Post where instanceId = ? order by dateEvent ASC";
 		PreparedStatement prepStmt = null;
 		ResultSet rs = null;
@@ -148,10 +148,10 @@ public class PostDAO
 		}
 		return pubId;
 	}
-	
+
 	public static Collection<String> getLastEvents(Connection con, String instanceId, int nbReturned) throws SQLException
 	{
-		// récupérer les "nbReturned" derniers posts par date d'évènement
+		// rÃ©cupÃ©rer les "nbReturned" derniers posts par date d'Ã©vÃ¨nement
 		ArrayList<String> listEvents = new ArrayList<String>();
 		String query = "select pubId from SC_Blog_Post where instanceId = ? order by dateEvent DESC";
 		PreparedStatement prepStmt = null;
@@ -163,7 +163,7 @@ public class PostDAO
 			rs = prepStmt.executeQuery();
 			while (rs.next() && nbReturned > 0)
 			{
-				nbReturned = nbReturned - 1; 
+				nbReturned = nbReturned - 1;
 				String pubId = "" + rs.getInt("pubId");
 				listEvents.add(pubId);
 			}
@@ -175,10 +175,10 @@ public class PostDAO
 		}
 		return listEvents;
 	}
-	
+
 	public static Collection<String> getAllEvents(Connection con, String instanceId) throws SQLException
 	{
-		// récupérer les derniers posts par date d'évènement
+		// rÃ©cupÃ©rer les derniers posts par date d'Ã©vÃ¨nement
 		ArrayList listEvents = new ArrayList<String>();
 		String query = "select pubId from SC_Blog_Post where instanceId = ? order by dateEvent DESC";
 		PreparedStatement prepStmt = null;
@@ -201,7 +201,7 @@ public class PostDAO
 		}
 		return listEvents;
 	}
-	
+
 	public static Collection<Date> getAllDateEvents(Connection con, String instanceId) throws SQLException
 	{
 		ArrayList<Date> dateEvents = null;
@@ -226,10 +226,10 @@ public class PostDAO
 		}
 		return dateEvents;
 	}
-	
+
 	public static Collection<String> getEventsByDates(Connection con, String instanceId, String beginDate, String endDate) throws SQLException, ParseException
 	{
-		// récupérer les posts par date d'évènement entre 2 dates
+		// rÃ©cupÃ©rer les posts par date d'Ã©vÃ¨nement entre 2 dates
 		ArrayList<String> listEvents = null;
 
 		String query = "select pubId from SC_Blog_Post where instanceId = ? and dateEvent >= ? and dateEvent <= ? order by dateEvent DESC";

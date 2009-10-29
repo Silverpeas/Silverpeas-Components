@@ -39,17 +39,17 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 public class DefineServiceOfUser extends UpdateChainHelperImpl {
 
-  public void execute(UpdateChainHelperContext uchc) 
+  public void execute(UpdateChainHelperContext uchc)
 	{
-		// récupération des données
+		// rÃ©cupÃ©ration des donnÃ©es
 		PublicationDetail pubDetail = uchc.getPubDetail();
 		List<String> nodes = new ArrayList<String>();
-		
+
 		// Recherche du service de l'utilisateur
 		String service = "";
 		String userName = pubDetail.getName();
 		service = getUserService(userName);
-		
+
 		// associer le service au node
 		String[] topics = new String[1];
 		List<NodeDetail> allTopics = uchc.getAllTopics();
@@ -59,7 +59,7 @@ public class DefineServiceOfUser extends UpdateChainHelperImpl {
 			NodeDetail node = it.next();
 			if (node.getName().equals(service))
 			{
-				// enregistrer 
+				// enregistrer
 				topics[0] = node.getId() + "," + node.getNodePK().getInstanceId();
 			}
 		}
@@ -77,7 +77,7 @@ public class DefineServiceOfUser extends UpdateChainHelperImpl {
       prepStmt.setString(1, userName);
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        // récupération du service
+        // rÃ©cupÃ©ration du service
         service = rs.getString(1);
       }
     } catch (Exception e) {

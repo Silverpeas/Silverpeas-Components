@@ -47,18 +47,18 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
   public void execute(UpdateChainHelperContext uchc)
 	{
 		KmeliaSessionController kmeliaScc = uchc.getKmeliaScc();
-		
-		// récupération des données
+
+		// rÃ©cupÃ©ration des donnÃ©es
 		PublicationDetail pubDetail = uchc.getPubDetail();
-		
+
 		// Recherche du service et du matricule de l'utilisateur
-		
+
 		String userName = pubDetail.getName();
-		String lastName = getField("lastname", userName); 
+		String lastName = getField("lastname", userName);
 		String firstName = getField("firstname", userName);
-		String service = getField("service", userName); 
-		String matricule = getField("matricule", userName); 
-		
+		String service = getField("service", userName);
+		String matricule = getField("matricule", userName);
+
 		// associer le service au node
 		String[] topics = new String[1];
 		List<NodeDetail> allTopics = uchc.getAllTopics();
@@ -67,20 +67,20 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
 		{
 			NodeDetail node = it.next();
 			if (node.getName().toUpperCase().equals(service.toUpperCase()))
-				// enregistrer 
+				// enregistrer
 				topics[0] = node.getId() + "," + node.getNodePK().getInstanceId();
 		}
 		uchc.setTopics(topics);
-		
+
 		//Maj Publication
 		pubDetail.setName(matricule + " " + lastName.toUpperCase() + " " + firstName.toUpperCase());
 		String newDescription = pubDetail.getDescription().concat(" ").concat(pubDetail.getKeywords());
 		pubDetail.setDescription(newDescription);
 		String keywords = kmeliaScc.getComponentLabel();
 		pubDetail.setKeywords(keywords);
-		
+
 		uchc.setPubDetail(pubDetail);
-		
+
         //Classer la publication sur le service
         String positionLabel = service;
         int silverObjectId = kmeliaScc.getSilverObjectId(pubDetail.getId());
@@ -92,7 +92,7 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
 				String selectedPosition = axisValue.getTreeId()+"|"+axisValue.getFullPath();
 				ClassifyPosition position = buildPosition(null, selectedPosition);
 				kmeliaScc.getPdcBm().addPosition(silverObjectId, position, kmeliaScc.getComponentId(), false);
-			} 
+			}
 		} catch (PdcException pde)
 		{
 			pde.printStackTrace();

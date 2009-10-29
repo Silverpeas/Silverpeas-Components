@@ -73,15 +73,15 @@ import com.stratelia.webactiv.util.statistic.model.StatisticResultDetail;
 
 /*
  * CVS Informations
- * 
+ *
  * $Id$
- * 
+ *
  * $Log: NewsEditoSessionController.java,v $
  * Revision 1.9.4.1  2009/06/03 15:08:58  sfariello
  * Remplacer formulaires BdD par formulaires XML
  *
  * Revision 1.9  2008/07/11 14:05:29  ehugonnet
- * Suppression méthode non utilisée
+ * Suppression mÃ©thode non utilisÃ©e
  *
  * Revision 1.8  2007/06/25 09:10:52  sfariello
  * no message
@@ -105,7 +105,7 @@ import com.stratelia.webactiv.util.statistic.model.StatisticResultDetail;
  * Couper/Coller composant
  *
  * Revision 1.3  2004/09/28 09:25:37  neysseri
- * Utilisation de la bibliothèque iText au lieu de Libraries/lowagie + nettoyage sources
+ * Utilisation de la bibliothÃ¨que iText au lieu de Libraries/lowagie + nettoyage sources
  *
  * Revision 1.2  2003/12/05 15:01:54  svuillet
  * no message
@@ -123,8 +123,8 @@ import com.stratelia.webactiv.util.statistic.model.StatisticResultDetail;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class NewsEditoSessionController extends
@@ -148,8 +148,8 @@ public class NewsEditoSessionController extends
 
   /**
    * Constructor declaration
-   * 
-   * 
+   *
+   *
    * @see
    */
   public NewsEditoSessionController(MainSessionController mainSessionCtrl,
@@ -175,10 +175,10 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public ResourceLocator getSettings() {
@@ -191,10 +191,10 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public UserDetail[] getUserList() {
@@ -203,12 +203,12 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param userId
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public UserDetail getUserDetail(String userId) {
@@ -217,10 +217,10 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public String getArchiveId() {
@@ -229,10 +229,10 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param archiveId
-   * 
+   *
    * @see
    */
   public void setArchiveId(String archiveId) {
@@ -242,10 +242,10 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public String getTitleId() {
@@ -254,10 +254,10 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param titleId
-   * 
+   *
    * @see
    */
   public void setTitleId(String titleId) {
@@ -267,10 +267,10 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @see
    */
   public String getPublicationId() {
@@ -279,10 +279,10 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param publicationId
-   * 
+   *
    * @see
    */
   public void setPublicationId(String publicationId) {
@@ -291,10 +291,10 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param pubId
-   * 
+   *
    * @see
    */
   public void initNavigationForPublication(String pubId)
@@ -304,7 +304,7 @@ public class NewsEditoSessionController extends
           getSpaceId(), getComponentId()));
 
       if (result.size() > 2) // 1 -> article normal, 2->article apparaissant
-      // aussi dans l'édito
+      // aussi dans l'Ã©dito
       {
         throw new EJBException(
             "Cette publication a plus de deux noeud pere, mais "
@@ -337,10 +337,10 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param nodeId
-   * 
+   *
    * @see
    */
   public void initNavigationForNode(String nodeId) throws NewsEditoException {
@@ -468,14 +468,14 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param fatherId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public Collection getArchiveUsage(String fatherId) throws NewsEditoException {
@@ -490,13 +490,13 @@ public class NewsEditoSessionController extends
       NodePK pk = new NodePK(fatherId, getSpaceId(), getComponentId());
       NodeDetail nd = nodeBm.getDetail(pk);
 
-      // récupération de la liste de toutes les rubriques (les nodes)
+      // rÃ©cupÃ©ration de la liste de toutes les rubriques (les nodes)
       Collection archiveList = nd.getChildrenDetails();
       Iterator i = archiveList.iterator();
       while (i.hasNext()) {
         NodeDetail nodeDetail = (NodeDetail) i.next();
 
-        // récupérer par rubrique, la liste de tous les articles (publications)
+        // rÃ©cupÃ©rer par rubrique, la liste de tous les articles (publications)
         Collection publications = publicationBm.getDetailsByFatherPK(nodeDetail
             .getNodePK());
 
@@ -505,7 +505,7 @@ public class NewsEditoSessionController extends
         int accessByNode = 0;
         Iterator it = publications.iterator();
         while (it.hasNext()) {
-          // ajouter le nombre d'accès à chaque publication
+          // ajouter le nombre d'accÃ¨s Ã  chaque publication
           PublicationDetail pub = (PublicationDetail) it.next();
           ForeignPK foreignPK = new ForeignPK(pub.getPK().getId(), pub
               .getInstanceId());
@@ -514,7 +514,7 @@ public class NewsEditoSessionController extends
           accessByNode = accessByNode + accessByPub;
         }
 
-        // créer le StatisticResultDetail
+        // crÃ©er le StatisticResultDetail
         StatisticResultDetail statDetail = new StatisticResultDetail(pk,
             Integer.toString(accessByNode));
         if (statDetail != null)
@@ -630,15 +630,15 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param name
    * @param description
-   * 
+   *
    * @return
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public String createPublication(String name, String description)
@@ -675,13 +675,13 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param name
    * @param description
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public void updatePublication(String name, String description)
@@ -714,15 +714,15 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param name
    * @param description
    * @param imageName
    * @param mimeType
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public void updatePublication(String name, String description,
@@ -751,12 +751,12 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param pubId
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public void removePublication(String pubId) throws NewsEditoException {
@@ -773,14 +773,14 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param publicationId
-   * 
+   *
    * @return
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public PublicationDetail getPublicationDetail(String publicationId)
@@ -812,7 +812,7 @@ public class NewsEditoSessionController extends
           publicationId, getSpaceId(), getComponentId()));
 
       if (result.size() > 2) // 1 -> article normal, 2->article apparaissant
-      // aussi dans l'édito
+      // aussi dans l'Ã©dito
       {
         throw new CreateNewsEditoException(
             "NewsEditoSessionControl.getPublicationTitleDetail",
@@ -856,14 +856,14 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param id
-   * 
+   *
    * @return
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public CompletePublication getCompletePublication(String id)
@@ -892,12 +892,12 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @return
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public Collection getAllModels() throws NewsEditoException {
@@ -915,12 +915,12 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param modelId
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public void setPublicationModel(String modelId) throws NewsEditoException {
@@ -1027,12 +1027,12 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param infos
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public void setInfoDetail(InfoDetail infos) throws NewsEditoException {
@@ -1076,7 +1076,7 @@ public class NewsEditoSessionController extends
       }
       NodePK titlePK = new NodePK(titleId, getSpaceId(), getComponentId());
 
-      // on enleve les publications attachées
+      // on enleve les publications attachÃ©es
       if (nodeBm.getHeader(titlePK).getFatherPK().getId().equals("0")) // cas de
       // l'archive
       {
@@ -1168,16 +1168,16 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param fatherId
    * @param name
    * @param description
-   * 
+   *
    * @return
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public String addTitle(String fatherId, String name, String description)
@@ -1346,14 +1346,14 @@ public class NewsEditoSessionController extends
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param pubList
-   * 
+   *
    * @return
-   * 
+   *
    * @throws NewsEditoException
-   * 
+   *
    * @see
    */
   public String generatePdf(String[] pubList) throws NewsEditoException {
@@ -1393,9 +1393,9 @@ public class NewsEditoSessionController extends
   }
 
   /**
-   * Cette méthode initialise la variable IsConsulting. Cette variable indique
+   * Cette mÃ©thode initialise la variable IsConsulting. Cette variable indique
    * si l'utilisateur est en train de consulter ou de modifier une publication.<BR>
-   * En effet, les statistiques ne doivent s'incrémenter seulement si
+   * En effet, les statistiques ne doivent s'incrÃ©menter seulement si
    * l'utilisateur consulte une publication. Attention, l'utilisateur
    */
   public void setIsConsulting(boolean val) {

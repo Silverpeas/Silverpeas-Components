@@ -89,9 +89,9 @@ public class GalleryBmEJB implements SessionBean {
   public AlbumDetail getAlbum(NodePK nodePK, boolean viewAllPhoto) {
     try {
       AlbumDetail album = new AlbumDetail(getNodeBm().getDetail(nodePK));
-      // récupération des photos
+      // rÃ©cupÃ©ration des photos
       Collection photos = getAllPhoto(nodePK, viewAllPhoto);
-      // ajout des photos à l'album
+      // ajout des photos Ã  l'album
       album.setPhotos(photos);
       return album;
     } catch (Exception e) {
@@ -299,7 +299,7 @@ public class GalleryBmEJB implements SessionBean {
       // supprimer les commentaires
       CommentController.deleteCommentsByForeignPK(photoPK);
 
-      // supprime le répertoire de la photo et tout ce qu'il contient
+      // supprime le rÃ©pertoire de la photo et tout ce qu'il contient
       String componentId = photoPK.getInstanceId();
       ResourceLocator gallerySettings = new ResourceLocator(
           "com.silverpeas.gallery.settings.gallerySettings", "");
@@ -523,16 +523,16 @@ public class GalleryBmEJB implements SessionBean {
           Iterator itP = photos.iterator();
           while (itP.hasNext()) {
             PhotoDetail photo = (PhotoDetail) itP.next();
-            // ajout des métadata pour les indéxer
+            // ajout des mÃ©tadata pour les indÃ©xer
             try {
               ImageHelper.setMetaData(photo, metadataSettings);
             } catch (Exception e) {
               SilverTrace.info("gallery", "GalleryBmEJB.indexGallery()",
                   "root.MSG_GEN_ENTER_METHOD",
-                  "Impossible d'ajouter les métadata à la photo "
+                  "Impossible d'ajouter les mÃ©tadata Ã  la photo "
                       + photo.toString());
             }
-            // indéxation de la photo
+            // indÃ©xation de la photo
             createIndex(photo);
           }
         }
@@ -569,7 +569,7 @@ public class GalleryBmEJB implements SessionBean {
             + photo.getPhotoPK().getId());
       }
 
-      // récupération des méta données pour les indéxer
+      // rÃ©cupÃ©ration des mÃ©ta donnÃ©es pour les indÃ©xer
       String metaDataStr = "";
       MetaData metaData;
       Collection properties = photo.getMetaDataProperties();
@@ -585,7 +585,7 @@ public class GalleryBmEJB implements SessionBean {
           "root.MSG_GEN_ENTER_METHOD", "metaData = " + metaDataStr
               + " indexEntry = " + indexEntry.toString());
 
-      // indexation des méta données (une donnée par champ d'index)
+      // indexation des mÃ©ta donnÃ©es (une donnÃ©e par champ d'index)
       it = properties.iterator();
       while (it.hasNext()) {
         String property = (String) it.next();
@@ -601,7 +601,7 @@ public class GalleryBmEJB implements SessionBean {
           indexEntry.addField("IPTC_" + property, value);
       }
 
-      // indéxation du contenu du formulaire XML
+      // indÃ©xation du contenu du formulaire XML
       String xmlFormName = getOrganizationController()
           .getComponentParameterValue(photo.getInstanceId(), "XMLFormName");
       SilverTrace.info("gallery", "GalleryBmEJB.createIndex()",
@@ -685,7 +685,7 @@ public class GalleryBmEJB implements SessionBean {
       searchEngineBm.search(query);
       result = searchEngineBm.getRange(0, searchEngineBm.getResultLength());
 
-      // création des photos à partir des resultats
+      // crÃ©ation des photos Ã  partir des resultats
       for (int i = 0; i < result.length; i++) {
         MatchingIndexEntry matchIndex = result[i];
         // Ne retourne que les photos

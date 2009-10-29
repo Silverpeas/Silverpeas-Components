@@ -28,10 +28,10 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 public class DefineUnpromptedCandidacy extends UpdateChainHelperImpl {
 
   public void execute(UpdateChainHelperContext uchc) {
-    // récupération des données
+    // rÃ©cupÃ©ration des donnÃ©es
     PublicationDetail pubDetail = uchc.getPubDetail();
 
-    // concaténation de "description" et "mot clé"
+    // concatÃ©nation de "description" et "mot clÃ©"
     String newDescription = pubDetail.getDescription() + " \n"
         + pubDetail.getKeywords();
     pubDetail.setDescription(newDescription);

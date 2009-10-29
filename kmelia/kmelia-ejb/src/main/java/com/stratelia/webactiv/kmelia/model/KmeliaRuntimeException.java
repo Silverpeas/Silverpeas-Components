@@ -21,44 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
-
 package com.stratelia.webactiv.kmelia.model;
 
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-/*
- * CVS Informations
- *
- * $Id: KmeliaRuntimeException.java,v 1.4 2007/06/14 11:23:05 neysseri Exp $
- *
- * $Log: KmeliaRuntimeException.java,v $
- * Revision 1.4  2007/06/14 11:23:05  neysseri
- * no message
- *
- * Revision 1.3  2007/04/23 16:45:06  neysseri
- * no message
- *
- * Revision 1.2  2007/04/20 14:30:08  neysseri
- * no message
- *
- * Revision 1.1.1.1  2002/08/06 14:47:57  nchaix
- * no message
- *
- * Revision 1.3  2002/01/22 11:07:02  mguillem
- * Stabilisation Lot2
- * Réorganisation des Router et SessionController
- * Suppression dans les fichiers *Exception de 'implements FromModule'
- *
- */
-
-/**
- * Class declaration
- * 
- * 
- * @author
- */
 public class KmeliaRuntimeException extends SilverpeasRuntimeException {
 
   /**

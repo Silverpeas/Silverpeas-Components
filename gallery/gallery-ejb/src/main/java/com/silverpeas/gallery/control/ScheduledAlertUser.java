@@ -94,7 +94,7 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
       // recherche du nombre de jours
       int nbDays = Integer.parseInt(resources.getString("nbDaysForAlertUser"));
 
-      // rechercher la liste des photos arrivant à échéance
+      // rechercher la liste des photos arrivant Ã  Ã©chÃ©ance
       Collection photos = getGalleryBm().getAllPhotoEndVisible(nbDays);
       SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
           "root.MSG_GEN_PARAM_VALUE", "Photos=" + photos.toString());
@@ -129,7 +129,7 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
               "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
         } else {
           if (currentInstanceId != null) {
-            // Création du message à envoyer aux admins
+            // CrÃ©ation du message Ã  envoyer aux admins
             UserDetail[] admins = orga.getUsers("useless", currentInstanceId,
                 "admin");
             createMessage(message, messageBody, message_en, messageBody_en,
@@ -145,7 +145,7 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
               "root.MSG_GEN_PARAM_VALUE", "currentInstanceId = "
                   + currentInstanceId);
 
-          // initialisation du corps du message avec la première photo de
+          // initialisation du corps du message avec la premiÃ¨re photo de
           // l'instance en cours
           messageBody.append(message.getString("gallery.notifTitle")).append(
               nameInstance).append("\n").append("\n");
@@ -161,7 +161,7 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
               "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
         }
       }
-      // Création du message à envoyer aux admins pour la dernière instance en
+      // CrÃ©ation du message Ã  envoyer aux admins pour la derniÃ¨re instance en
       // cours
       UserDetail[] admins = orga
           .getUsers("useless", currentInstanceId, "admin");
@@ -182,7 +182,7 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
   private void createMessage(ResourceLocator message, StringBuffer messageBody,
       ResourceLocator message_en, StringBuffer messageBody_en,
       PhotoDetail photo, UserDetail[] admins) {
-    // 1. création du message
+    // 1. crÃ©ation du message
 
     // french notifications
     String subject = message.getString("gallery.notifSubject");

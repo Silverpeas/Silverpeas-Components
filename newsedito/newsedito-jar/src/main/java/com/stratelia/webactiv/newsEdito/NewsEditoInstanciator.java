@@ -43,11 +43,6 @@ import com.stratelia.webactiv.beans.admin.instance.control.InstanciationExceptio
 import com.stratelia.webactiv.node.NodeInstanciator;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
 
-/**
- * 
- * @author squere
- * @version update by the Sébastien Antonio - Externalisation of the SQL request
- */
 public class NewsEditoInstanciator extends SQLRequest implements
     ComponentsInstanciatorIntf {
   private static java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(

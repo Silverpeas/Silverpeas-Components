@@ -30,6 +30,7 @@ import com.silverpeas.gallery.model.PhotoDetail;
 public class GSCAuthorComparatorAsc implements Comparator {
   static public GSCAuthorComparatorAsc comparator = new GSCAuthorComparatorAsc();
 
+  @Override
   public int compare(Object o1, Object o2) {
     PhotoDetail photo1 = (PhotoDetail) o1;
     PhotoDetail photo2 = (PhotoDetail) o2;
@@ -41,13 +42,14 @@ public class GSCAuthorComparatorAsc implements Comparator {
 
     int compareResult = photo1.getAuthor().compareTo(photo2.getAuthor());
     if (compareResult == 0) {
-      // les 2 photos on le même auteur, comparer les dates
+      // les 2 photos on le mÃªme auteur, comparer les dates
       compareResult = photo1.getCreationDate().compareTo(
           photo2.getCreationDate());
     }
     return compareResult;
   }
 
+  @Override
   public boolean equals(Object o) {
     return o == this;
   }

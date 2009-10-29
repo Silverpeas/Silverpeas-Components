@@ -42,20 +42,20 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 public class BlogRssServlet extends RssServlet {
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String,
    * int)
    */
   public Collection getListElements(String instanceId, int nbReturned)
       throws RemoteException {
-    // récupération de la liste des 10 prochains billets du Blog
+    // rÃ©cupÃ©ration de la liste des 10 prochains billets du Blog
     Collection events = getBlogBm().getAllPosts(instanceId, nbReturned);
     return events;
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.silverpeas.peasUtil.RssServlet#getElementTitle(java.lang.Object,
    * java.lang.String)
    */
@@ -66,7 +66,7 @@ public class BlogRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.silverpeas.peasUtil.RssServlet#getElementLink(java.lang.Object,
    * java.lang.String)
    */
@@ -78,7 +78,7 @@ public class BlogRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * com.silverpeas.peasUtil.RssServlet#getElementDescription(java.lang.Object,
    * java.lang.String)
@@ -90,7 +90,7 @@ public class BlogRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.silverpeas.peasUtil.RssServlet#getElementDate(java.lang.Object)
    */
   public Date getElementDate(Object element) {

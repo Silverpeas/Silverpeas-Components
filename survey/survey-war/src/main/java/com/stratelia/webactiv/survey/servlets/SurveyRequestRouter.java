@@ -72,7 +72,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -100,66 +100,66 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
 		  surveySC.setPollingStationMode(true);
 	  }
 	  request.setAttribute("PollingStationMode", new Boolean(surveySC.isPollingStationMode()));
-	  
+
 	  //Set status for this vote or survey
 	  setAnonymousParticipationStatus(request, surveySC);
-	  
+
       String destination = "";
       boolean profileError = false;
       if (function.startsWith("portlet"))
       {
           destination = rootDest + "portlet.jsp?Profile=" + flag;
       }
-      else if (function.startsWith("Main") || function.startsWith("surveyList")) 
+      else if (function.startsWith("Main") || function.startsWith("surveyList"))
       {
           // the flag is the best user's profile
           destination = rootDest + "surveyList.jsp?Profile=" + flag;
-      } 
-      else if (function.startsWith("SurveyCreation") || function.startsWith("surveyCreator")) 
+      }
+      else if (function.startsWith("SurveyCreation") || function.startsWith("surveyCreator"))
       {
     	  if (flag.equals("admin") || flag.equals("publisher")) {
     		  destination = rootDest + "surveyCreator.jsp";
     	  } else {
     		  profileError = true;
           }
-      } 
+      }
       else if (function.equals("UpdateSurvey"))
       {
     	  String surveyId = request.getParameter("SurveyId");
-     	  
-    	  try 
+
+    	  try
     	  {
-    		  // vérouiller l'enquête
+    		  // vÃ©rouiller l'enquÃªte
         	  surveySC.closeSurvey(surveyId);
-        	  
-        	  // supprimer les participations 
+
+        	  // supprimer les participations
     		  QuestionContainerDetail survey = surveySC.getSurvey(surveyId);
     		  surveySC.deleteVotes(surveyId);
-     	  } 
+     	  }
     	  catch(Exception e)
     	  {
 				SilverTrace.warn("Survey","SurveyRequestRouter.getDestination()","root.EX_USERPANEL_FAILED","function = "+function, e);
     	  }
-    	  
+
     	  destination = rootDest + "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=" + surveyId;
       }
 /*      else if (function.startsWith("AfterSendVote")) {
           String id = request.getParameter("Id");
 		  request.setAttribute("Profile", flag);
           destination = rootDest + "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId="+id;
-      } */ 
+      } */
       else if (function.equals("ViewListResult"))
       {
     	  String answerId = request.getParameter("AnswerId");
     	  Collection<String> users = new ArrayList<String>();
-    	  try 
+    	  try
     	  {
     		  users = surveySC.getUsersByAnswer(answerId);
-    	  } 
+    	  }
     	  catch(Exception e)
     	  {
 				SilverTrace.warn("Survey","SurveyRequestRouter.getDestination()","root.EX_USERPANEL_FAILED","function = "+function, e);
-    	  }	  
+    	  }
     	  request.setAttribute("Users", users);
     	  destination = rootDest + "answerResult.jsp";
       }
@@ -167,14 +167,14 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
       {
     	  String surveyId = request.getParameter("SurveyId");
     	  Collection<String> users = new ArrayList<String>();
-    	  try 
+    	  try
     	  {
     		  users = surveySC.getUsersBySurvey(surveyId);
-    	  } 
+    	  }
     	  catch(Exception e)
     	  {
 				SilverTrace.warn("Survey","SurveyRequestRouter.getDestination()","root.EX_USERPANEL_FAILED","function = "+function, e);
-    	  }	  
+    	  }
     	  request.setAttribute("Users", users);
     	  destination = rootDest + "answerResult.jsp";
       }
@@ -183,28 +183,28 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
     	  String userId = request.getParameter("UserId");
     	  String userName = request.getParameter("UserName");
     	  Collection<String> result = new ArrayList<String>();
-    	  try 
+    	  try
     	  {
     		  result = surveySC.getResultByUser(userId);
-    	  } 
+    	  }
     	  catch(Exception e)
     	  {
 				SilverTrace.warn("Survey","SurveyRequestRouter.getDestination()","root.EX_USERPANEL_FAILED","function = "+function, e);
-    	  }	  
+    	  }
     	  request.setAttribute("ResultUser", result);
     	  request.setAttribute("UserName", userName);
     	  request.setAttribute("UserId", userId);
     	  request.setAttribute("Survey", surveySC.getSessionSurvey());
-    	  
+
     	  destination = rootDest + "resultByUser.jsp";
       }
       else if (function.startsWith("searchResult")) {
           String id = request.getParameter("Id");
 		  request.setAttribute("Profile", flag);
           destination = rootDest + "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId="+id;
-      } 
+      }
       else if(function.equals("ToAlertUser"))
-		{ 
+		{
 			SilverTrace.debug("Survey","SurveyRequestRouter.getDestination()","root.MSG_GEN_PARAM_VALUE","ToAlertUser: function = "+function+" spaceId="+surveySC.getSpaceId()+" componentId="+ surveySC.getComponentId());
 			String surveyId = request.getParameter("SurveyId");
 			try
@@ -225,7 +225,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
       if (profileError) {
           String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
           destination = sessionTimeout;
-      } 
+      }
       //else {
           //destination = "/survey/jsp/" + destination;
       //}
@@ -236,7 +236,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
   /**
    * Read cookie from anonymous user and set status of anonymous user to allow
    * him to vote or not
-   * 
+   *
    * @param request
    * @param surveyScc
    */

@@ -72,7 +72,7 @@ public class BlogRequestRouter extends ComponentRequestRouter
     {
         return new BlogSessionController(mainSessionCtrl, componentContext);
     }
-    
+
     // recherche du profile de l'utilisateur
 	public String getFlag(String[] profiles)
 	{
@@ -100,31 +100,31 @@ public class BlogRequestRouter extends ComponentRequestRouter
         BlogSessionController  blogSC = (BlogSessionController)componentSC;
         SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
         String rootDest = "/blog/jsp/";
-        
-        // paramètres généraux
+
+        // paramÃ¨tres gÃ©nÃ©raux
         request.setAttribute("Profile", getFlag(blogSC.getUserRoles()));
 
         try
         {
             if (function.startsWith("Main"))
             {
-            	// récupération des derniers billets par date d'évènements
+            	// rÃ©cupÃ©ration des derniers billets par date d'Ã©vÃ¨nements
             	Collection<PostDetail> posts = blogSC.lastPosts();
             	request.setAttribute("Posts", posts);
-            	// récupération des paramètres communs
+            	// rÃ©cupÃ©ration des paramÃ¨tres communs
             	setCommonParam(blogSC, request);
-            	
+
             	//creation d'une liste d'event par rapport aux posts du mois
             	String beginDate = blogSC.getCurrentBeginDateAsString();
             	String endDate = blogSC.getCurrentEndDateAsString();
             	Collection<PostDetail> postsByMonth = blogSC.postsByArchive(beginDate, endDate);
             	Collection<Event> events = getEvents(blogSC, postsByMonth);
             	request.setAttribute("Events", events);
-            	
+
             	request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
             	request.setAttribute("IsUsePdc", blogSC.isPdcUsed());
-            	
-            	// appel de la page d'accueil 
+
+            	// appel de la page d'accueil
 	            destination = rootDest + "accueil.jsp";
             }
             else if (function.equals("NewPost"))
@@ -132,13 +132,13 @@ public class BlogRequestRouter extends ComponentRequestRouter
             	request.setAttribute("AllCategories", blogSC.getAllCategories());
             	request.setAttribute("UserName", blogSC.getUserDetail(blogSC.getUserId()).getDisplayedName());
             	request.setAttribute("IsUsePdc", blogSC.isPdcUsed());
-            	
-            	// appel de la page de création
+
+            	// appel de la page de crÃ©ation
             	destination = rootDest + "postManager.jsp";
             }
             else if (function.equals("CreatePost"))
             {
-             	// récupération des paramètres pour création 
+             	// rÃ©cupÃ©ration des paramÃ¨tres pour crÃ©ation
              	String title = request.getParameter("Title");
              	String categoryId = request.getParameter("CategoryId");
              	String date = request.getParameter("DateEvent");
@@ -148,7 +148,7 @@ public class BlogRequestRouter extends ComponentRequestRouter
              	else
              		dateEvent = new Date();
              	String postId = blogSC.createPost(title, categoryId, dateEvent);
-            	
+
             	// appel de la page pour saisir le contenu du billet
             	request.setAttribute("PostId", postId);
             	destination = getDestination("ViewContent", blogSC, request);
@@ -162,7 +162,7 @@ public class BlogRequestRouter extends ComponentRequestRouter
             	request.setAttribute("AllCategories", blogSC.getAllCategories());
             	request.setAttribute("IsUsePdc", blogSC.isPdcUsed());
             	request.setAttribute("Updater", blogSC.getUserDetail(post.getPublication().getUpdaterId()));
-            	
+
             	// appel de la page de modification
             	destination = rootDest + "postManager.jsp";
             }
@@ -177,17 +177,17 @@ public class BlogRequestRouter extends ComponentRequestRouter
              		dateEvent = DateUtil.stringToDate(date, blogSC.getLanguage());
              	else
              		dateEvent = new Date();
-             	
+
 				// MAJ base
 				blogSC.updatePost(postId, title, categoryId, dateEvent);
-				
+
 				destination = getDestination("ViewContent", blogSC, request);
             }
             else if (function.equals("DeletePost"))
             {
             	String postId = request.getParameter("PostId");
             	blogSC.deletePost(postId);
-            	
+
             	destination = getDestination("Main", blogSC, request);
             }
             else if (function.equals("ViewContent"))
@@ -195,7 +195,7 @@ public class BlogRequestRouter extends ComponentRequestRouter
             	String postId = request.getParameter("PostId");
 				if (postId == null || postId.length() == 0 || "null".equals(postId))
 					postId = (String) request.getAttribute("PostId");
-				
+
             	PostDetail post = blogSC.getPost(postId);
             	PublicationDetail pub = post.getPublication();
 				request.setAttribute("CurrentPublicationDetail", pub);
@@ -217,7 +217,7 @@ public class BlogRequestRouter extends ComponentRequestRouter
             	request.setAttribute("Post", post);
             	setCommonParam(blogSC, request);
             	request.setAttribute("AllComments", blogSC.getAllComments(postId));
-            	//creation d'une liste d'event par rapport à posts
+            	//creation d'une liste d'event par rapport Ã  posts
             	String beginDate = blogSC.getCurrentBeginDateAsString();
             	String endDate = blogSC.getCurrentEndDateAsString();
             	Collection<PostDetail> posts = blogSC.postsByArchive(beginDate, endDate);
@@ -241,66 +241,66 @@ public class BlogRequestRouter extends ComponentRequestRouter
             }
             else if (function.equals("PostByCategory"))
             {
-            	// récupération des paramètres
+            	// rÃ©cupÃ©ration des paramÃ¨tres
             	String categoryId = request.getParameter("CategoryId");
             	if (categoryId == null || categoryId.length() == 0 || "null".equals(categoryId))
             		categoryId = (String) request.getAttribute("CategoryId");
-            	// récupération des billets par catégorie
+            	// rÃ©cupÃ©ration des billets par catÃ©gorie
             	request.setAttribute("Posts", blogSC.postsByCategory(categoryId));
             	setCommonParam(blogSC, request);
-            	//creation d'une liste d'event par rapport à posts
+            	//creation d'une liste d'event par rapport Ã  posts
             	String beginDate = blogSC.getCurrentBeginDateAsString();
             	String endDate = blogSC.getCurrentEndDateAsString();
             	Collection<PostDetail> posts = blogSC.postsByArchive(beginDate, endDate);
             	Collection<Event> events = getEvents(blogSC, posts);
             	request.setAttribute("Events", events);
             	request.setAttribute("DateCalendar", beginDate);
-            	
+
 	            destination = rootDest + "accueil.jsp";
             }
             else if (function.equals("PostByArchive"))
             {
-            	// récupération des paramètres
+            	// rÃ©cupÃ©ration des paramÃ¨tres
             	String beginDate = request.getParameter("BeginDate");
             	if (beginDate == null || beginDate.length() == 0 || "null".equals(beginDate))
             		beginDate = (String) request.getAttribute("BeginDate");
             	String endDate = request.getParameter("EndDate");
             	if (endDate == null || endDate.length() == 0 || "null".equals(endDate))
             		endDate = (String) request.getAttribute("EndDate");
-            	
-            	// récupération des billets par archive
+
+            	// rÃ©cupÃ©ration des billets par archive
             	Collection<PostDetail> posts = blogSC.postsByArchive(beginDate, endDate);
             	request.setAttribute("Posts", posts);
             	setCommonParam(blogSC, request);
-            	//creation d'une liste d'event par rapport à posts
+            	//creation d'une liste d'event par rapport Ã  posts
             	Collection<Event> events = getEvents(blogSC, posts);
             	request.setAttribute("Events", events);
             	request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
-            	
+
 	            destination = rootDest + "accueil.jsp";
             }
             else if (function.equals("PostByDay"))
             {
-            	// récupération des paramètres
+            	// rÃ©cupÃ©ration des paramÃ¨tres
             	String day = request.getParameter("Day");
             	String date = DateUtil.date2SQLDate(day, blogSC.getLanguage());
             	SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "date =" + date);
-            	// récupération des billets par archive
+            	// rÃ©cupÃ©ration des billets par archive
             	request.setAttribute("Posts", blogSC.postsByDate(date));
             	setCommonParam(blogSC, request);
-            	//creation d'une liste d'event par rapport à posts
+            	//creation d'une liste d'event par rapport Ã  posts
             	String beginDate = blogSC.getCurrentBeginDateAsString();
             	String endDate = blogSC.getCurrentEndDateAsString();
             	Collection<PostDetail> posts = blogSC.postsByArchive(beginDate, endDate);
             	Collection<Event> events = getEvents(blogSC, posts);
             	request.setAttribute("Events", events);
             	request.setAttribute("DateCalendar", beginDate);
-            	
+
 	            destination = rootDest + "accueil.jsp";
             }
             else if (function.equals("PreviousMonth"))
             {
-            	//modifier les dates de début et de fin de mois
+            	//modifier les dates de dÃ©but et de fin de mois
             	blogSC.previousMonth();
             	// mettre les dates dans la request
             	request.setAttribute("BeginDate", blogSC.getCurrentBeginDateAsString());
@@ -309,7 +309,7 @@ public class BlogRequestRouter extends ComponentRequestRouter
             }
             else if (function.equals("NextMonth"))
             {
-            	// modifier les dates de début et de fin de mois
+            	// modifier les dates de dÃ©but et de fin de mois
             	blogSC.nextMonth();
             	// mettre les dates dans la request
             	request.setAttribute("BeginDate", blogSC.getCurrentBeginDateAsString());
@@ -318,12 +318,12 @@ public class BlogRequestRouter extends ComponentRequestRouter
             }
             else if (function.equals("AddComment"))
             {
-            	// récupération des paramètres
+            	// rÃ©cupÃ©ration des paramÃ¨tres
             	String message = request.getParameter("Message");
-            	String postId = (String)request.getParameter("PostId"); 
+            	String postId = (String)request.getParameter("PostId");
             	// ajout du commentaire
             	blogSC.addComment(postId, message);
-            	// retour à la page de visualisation du billet 
+            	// retour Ã  la page de visualisation du billet
             	destination = getDestination("ViewPost", blogSC, request);
             }
             else if (function.equals("ViewCategory"))
@@ -334,27 +334,27 @@ public class BlogRequestRouter extends ComponentRequestRouter
             else if (function.equals("NewCategory"))
             {
             	request.setAttribute("UserName", blogSC.getUserDetail(blogSC.getUserId()).getDisplayedName());
-            	
+
             	destination = rootDest + "categoryManager.jsp";
             }
             else if (function.equals("CreateCategory"))
             {
-            	// récupération des paramètres
+            	// rÃ©cupÃ©ration des paramÃ¨tres
             	String name = request.getParameter("Name");
             	String description = request.getParameter("Description");
 				NodeDetail node = new NodeDetail("unknown", name, description, null, null, null, "0", "unknown");
 				Category category = new Category(node);
             	blogSC.createCategory(category);
-            	
+
             	destination = getDestination("ViewCategory", blogSC, request);
             }
             else if (function.equals("EditCategory"))
             {
-            	// récupération des paramètres
+            	// rÃ©cupÃ©ration des paramÃ¨tres
             	String categoryId = request.getParameter("CategoryId");
             	Category category = blogSC.getCategory(categoryId);
             	request.setAttribute("Category", category);
-            	
+
 				destination = rootDest + "categoryManager.jsp";
             }
             else if (function.equals("UpdateCategory"))
@@ -367,14 +367,14 @@ public class BlogRequestRouter extends ComponentRequestRouter
 				category.setDescription(desc);
 				// MAJ base
 				blogSC.updateCategory(category);
-            	
+
             	destination = getDestination("ViewCategory", blogSC, request);
             }
             else if (function.equals("DeleteCategory"))
             {
             	String categoryId = request.getParameter("CategoryId");
             	blogSC.deleteCategory(categoryId);
-            	
+
             	destination = getDestination("ViewCategory", blogSC, request);
             }
             else if (function.equals("ToAlertUser"))
@@ -399,7 +399,7 @@ public class BlogRequestRouter extends ComponentRequestRouter
     		 	SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "posts =" + posts);
     		 	setCommonParam(blogSC, request);
             	request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
-            	
+
 	            destination = rootDest + "accueil.jsp";
             }
             else if (function.equals("PdcPositions"))
@@ -410,14 +410,14 @@ public class BlogRequestRouter extends ComponentRequestRouter
 					postId = (String) request.getAttribute("PostId");
             	PostDetail post = blogSC.getPost(postId);
             	request.setAttribute("Post", post);
-				
+
 				request.setAttribute("SilverObjetId", new Integer(blogSC.getSilverObjectId(postId)));
-				
+
 				destination = rootDest + "pdcPositions.jsp";
 			}
-            else if (function.startsWith("searchResult")) 
+            else if (function.startsWith("searchResult"))
 			{
-				// traiter les recherches 
+				// traiter les recherches
 				String id = request.getParameter("Id");
 				String type = request.getParameter("Type");
 		        SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "Type=" + type);
@@ -431,7 +431,7 @@ public class BlogRequestRouter extends ComponentRequestRouter
 				}
 				else if (type.equals("Node") || type.equals("Topic"))
 				{
-					// traitement des catégories
+					// traitement des catÃ©gories
 					request.setAttribute("CategoryId", id);
 					destination = getDestination("PostByCategory", blogSC, request);
 				}
@@ -446,9 +446,9 @@ public class BlogRequestRouter extends ComponentRequestRouter
 					destination = getDestination("Main", blogSC, request);
 				}
 			}
-            else if (function.startsWith("portlet")) 
+            else if (function.startsWith("portlet"))
 			{
-            	// récupération des derniers billets
+            	// rÃ©cupÃ©ration des derniers billets
              	request.setAttribute("Posts", blogSC.lastPosts());
             	// appel de la page de portlet
 				destination = rootDest + "portlet.jsp";
@@ -473,31 +473,31 @@ public class BlogRequestRouter extends ComponentRequestRouter
         SilverTrace.info("blog", "BlogRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
         return destination;
     }
-    
+
     private Collection<Event> getEvents(BlogSessionController blogSC, Collection<PostDetail> posts)
     {
     	Collection<Event> events = new ArrayList<Event>();
     	Date dateEvent;
  		Iterator<PostDetail> it = (Iterator<PostDetail>) posts.iterator();
-    	 while (it.hasNext()) 
+    	 while (it.hasNext())
     	 {
     		 PostDetail post = (PostDetail) it.next();
-    		 
-    		 // chercher la date de l'évènement
+
+    		 // chercher la date de l'Ã©vÃ¨nement
     		 String pubId = post.getPublication().getPK().getId();
-    		 try 
+    		 try
     		 {
 				dateEvent = blogSC.getDateEvent(pubId);
 			} catch (RemoteException e) {
 				dateEvent = post.getPublication().getCreationDate();
 			}
     		 Event event = new Event(post.getPublication().getPK().getId(), post.getPublication().getName(), dateEvent, dateEvent, null, 0);
-    		 events.add(event);	
+    		 events.add(event);
     	 }
-    	
+
     	return events;
     }
-    
+
     private void setCommonParam(BlogSessionController blogSC, HttpServletRequest request)
     {
     	request.setAttribute("Categories", blogSC.getAllCategories());

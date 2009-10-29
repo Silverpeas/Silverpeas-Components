@@ -93,7 +93,7 @@ public class ScheduledDeleteOrder implements SchedulerEventHandler {
       int nbDays = Integer
           .parseInt(resources.getString("nbDaysForDeleteOrder"));
 
-      // rechercher toutes les demandes arrivant à échéance
+      // rechercher toutes les demandes arrivant Ã  Ã©chÃ©ance
       Collection orders = getGalleryBm().getAllOrderToDelete(nbDays);
       SilverTrace.info("gallery",
           "ScheduledAlertUser.doScheduledDeleteOrder()",

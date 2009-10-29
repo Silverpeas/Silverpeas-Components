@@ -215,7 +215,7 @@ public class PdfGenerator extends PdfPageEventHelper {
    */
   public void onOpenDocument(PdfWriter writer, Document document) {
     // initialization of the header table
-    // Paramétrage global logo entete pdf
+    // ParamÃ©trage global logo entete pdf
     String logo = kmeliaSessionController.getSettings().getString("logoPdf");
     if (!logo.startsWith("http")) {// logo du type /weblib/image.jpg
       logo = serverURL + logo;
@@ -602,7 +602,7 @@ public class PdfGenerator extends PdfPageEventHelper {
       }
     }
 
-    // Mots clés : optionnel
+    // Mots clÃ©s : optionnel
     if (kmeliaSessionController.isFieldKeywordsVisible()) {
       String sKeywords = publicationDetail.getKeywords(publiContentLanguage);
       if (sKeywords != null && sKeywords.length() > 0) {
@@ -696,7 +696,7 @@ public class PdfGenerator extends PdfPageEventHelper {
       sUpdated = updateDate + " " + message.getString("kmelia.By") + " "
           + updaterName;
     }
-    // Créé par, Modifiée par
+    // CrÃ©Ã© par, ModifiÃ©e par
     addRowToTable(tbl2, new String[] {
         message.getString("PubDateCreation") + " :",
         DateUtil.getOutputDate(publicationDetail.getCreationDate(), language)
@@ -729,20 +729,20 @@ public class PdfGenerator extends PdfPageEventHelper {
     }
 
     if (beginDate.length() > 0 && endDate.length() > 0) {
-      // Consultable du 'Date' à 'Heure' au 'Date' à 'Heure'
+      // Consultable du 'Date' Ã  'Heure' au 'Date' Ã  'Heure'
       addRowToTable(tbl2, new String[] {
           message.getString("PubDateDebut") + " :",
           beginDate + " " + message.getString("ToHour") + " " + beginHour,
           message.getString("PubDateFin") + " :",
           endDate + " " + message.getString("ToHour") + " " + endHour, "", "" });
     } else if (beginDate.length() > 0) {
-      // Consultable à partir du 'Date' à 'Heure'
+      // Consultable Ã  partir du 'Date' Ã  'Heure'
       addRowToTable(tbl2, new String[] {
           message.getString("PubDateDebutPdf") + " :",
           beginDate + " " + message.getString("ToHour") + " " + beginHour, "",
           "", "", "" });
     } else if (endDate.length() > 0) {
-      // Consultable jusqu'au 'Date' à 'Heure'
+      // Consultable jusqu'au 'Date' Ã  'Heure'
       addRowToTable(tbl2, new String[] {
           message.getString("PubDateFinPdf") + " :",
           endDate + " " + message.getString("ToHour") + " " + endHour, "", "",
@@ -797,24 +797,24 @@ public class PdfGenerator extends PdfPageEventHelper {
       tbl.setBorderWidth(0);
       tbl.setPadding(2);
       addRowToTable(tbl, header_font, new String[] {
-          messageAttachment.getString("fichier"), // pas affiché dans
+          messageAttachment.getString("fichier"), // pas affichÃ© dans
           // l'interface onglet fichiers
           // joints
           messageVersioning.getString("name"),
-          messageAttachment.getString("Description"), // pas affiché dans
+          messageAttachment.getString("Description"), // pas affichÃ© dans
           // l'interface onglet
           // fichiers joints
           messageVersioning.getString("version"),
           messageVersioning.getString("date"),
-          messageVersioning.getString("validator") }, // pas affiché dans
+          messageVersioning.getString("validator") }, // pas affichÃ© dans
           // l'interface onglet
           // fichiers joints mais
           // besoin INRA -> si
-          // Ordonné avec
+          // OrdonnÃ© avec
           // approbation :
           // "Valideurs" = liste des
           // valideurs, sinon
-          // "Créateur" = créateur
+          // "CrÃ©ateur" = crÃ©ateur
           // version
           Color.LIGHT_GRAY, true);
     }
@@ -856,7 +856,7 @@ public class PdfGenerator extends PdfPageEventHelper {
   }
 
   /**
-   * 
+   *
    * @param documentPdf
    * @throws DocumentException
    * @throws RemoteException
@@ -872,7 +872,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
     if (kmeliaSessionController.isVersionControlled()) {
       // Versioning links
-      // liste des fichiers attachés
+      // liste des fichiers attachÃ©s
       VersioningUtil versioningUtil = new VersioningUtil();
       ForeignPK foreignKey = new ForeignPK(idPubli, instanceId);
       ArrayList documents = versioningUtil.getDocuments(foreignKey);
@@ -882,7 +882,7 @@ public class PdfGenerator extends PdfPageEventHelper {
         // Titre
         documentPdf.add(tblHeader);
 
-        // En-tete tableau des fichiers attachés
+        // En-tete tableau des fichiers attachÃ©s
         tbl = addTableAttachments("V");
 
         Iterator documents_iterator = documents.iterator();
@@ -899,7 +899,7 @@ public class PdfGenerator extends PdfPageEventHelper {
           document = (com.stratelia.silverpeas.versioning.model.Document) documents_iterator
               .next();
 
-          /* Solution 1 : affichage de la dernière version (publique ou privée) */
+          /* Solution 1 : affichage de la derniÃ¨re version (publique ou privÃ©e) */
           is_reader = isUserReader(document, user_id, versioningUtil);
           if (versioningUtil.isWriter(document, user_id) || is_reader
               || "admin".equals(kmeliaSessionController.getUserRoleLevel())) {
@@ -913,7 +913,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
               if (document_version.getSize() != 0
                   || !"dummy".equals(document_version.getLogicalName())) {
-                if (2 == document.getTypeWorkList()) {// Ordonné avec
+                if (2 == document.getTypeWorkList()) {// OrdonnÃ© avec
                   // Approbation
                   users = document.getWorkList();
                   for (int i = 0; i < users.size(); i++) {
@@ -963,8 +963,8 @@ public class PdfGenerator extends PdfPageEventHelper {
     } else {
       // Attachments links
 
-      // liste des fichiers attachés
-      // récupération des fichiers attachés à un événement
+      // liste des fichiers attachÃ©s
+      // rÃ©cupÃ©ration des fichiers attachÃ©s Ã  un Ã©vÃ©nement
       // create foreignKey with componentId and customer id
       // use AttachmentPK to build the foreign key of customer object.
       AttachmentPK foreignKey = new AttachmentPK(idPubli, instanceId);
@@ -974,7 +974,7 @@ public class PdfGenerator extends PdfPageEventHelper {
         // Titre
         documentPdf.add(tblHeader);
 
-        // En-tete tableau des fichiers attachés
+        // En-tete tableau des fichiers attachÃ©s
         tbl = addTableAttachments("A");
 
         Iterator itAttachment = vectAttachment.iterator();
@@ -1173,7 +1173,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   /**
    * Cette methode construit un hyperlien a partir d'un nom et de son lien
-   * 
+   *
    * @param unit
    *          - un objet contenant un nom et un lien. Cette valeur ne doit pas
    *          etre nulle
@@ -1198,7 +1198,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   /**
    * Cette methode construit le chemin complet tronque pour acceder a une valeur
-   * 
+   *
    * @param list
    *          - un objet contenant une liste de liste(nom+url). Cette valeur ne
    *          doit pas etre nulle
@@ -1236,7 +1236,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   /**
    * Cette methode construit le chemin complet pour acceder a une valeur
-   * 
+   *
    * @param list
    *          - un objet contenant une liste de liste(nom+url). Cette valeur ne
    *          doit pas etre nulle
@@ -1476,9 +1476,9 @@ public class PdfGenerator extends PdfPageEventHelper {
       parseHTML(document, sWysiwyg);
     } else {
       if ((completePublicationDetail.getInfoDetail() != null)
-          && (completePublicationDetail.getModelDetail() != null)) {// Modèles
+          && (completePublicationDetail.getModelDetail() != null)) {// ModÃ¨les
         // Base de
-        // données
+        // donnÃ©es
         document.add(tblHeader);
 
         String toParse = completePublicationDetail.getModelDetail()
@@ -1488,7 +1488,7 @@ public class PdfGenerator extends PdfPageEventHelper {
         Iterator imageIterator = completePublicationDetail.getInfoDetail()
             .getInfoImageList().iterator();
         parseModelHTML(document, toParse, textIterator, imageIterator);
-      } else {// Modèles XML
+      } else {// ModÃ¨les XML
 
         String infoId = publicationDetail.getInfoId();
         if (!isInteger(infoId)) {

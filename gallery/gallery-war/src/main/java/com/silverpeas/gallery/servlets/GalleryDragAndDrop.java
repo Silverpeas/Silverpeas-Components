@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
 ---*/
 
 package com.silverpeas.gallery.servlets;
@@ -66,8 +66,8 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class GalleryDragAndDrop extends HttpServlet {
@@ -153,9 +153,9 @@ public class GalleryDragAndDrop extends HttpServlet {
                 "root.MSG_GEN_PARAM_VALUE", "fileName on Unix = " + fileName);
           }
 
-          // Création du fichier (et de l'arborescence) sur le serveur
+          // CrÃ©ation du fichier (et de l'arborescence) sur le serveur
           if (!savePath.equals("")) {
-            // modifier le nom avant de l'écrire
+            // modifier le nom avant de l'Ã©crire
             String extension = FileRepositoryManager.getFileExtension(fileName);
             String name = fileName.substring(1, fileName.lastIndexOf("."));
             // String newName = ImageHelper.replaceSpecialChars(name);
@@ -230,7 +230,7 @@ public class GalleryDragAndDrop extends HttpServlet {
         String newAlbumId = createAlbum(file.getName(), userId, componentId,
             albumId);
 
-        // Traitement récursif spécifique
+        // Traitement rÃ©cursif spÃ©cifique
         importRepository(file.getAbsoluteFile(), userId, componentId,
             newAlbumId, watermark, watermarkHD, watermarkOther, download,
             settings, metadataSettings);
@@ -239,7 +239,7 @@ public class GalleryDragAndDrop extends HttpServlet {
   }
 
   private Iterator getPathContent(File path) {
-    // Récupération du contenu du dossier
+    // RÃ©cupÃ©ration du contenu du dossier
     List listFile = new ArrayList();
 
     String[] listFileName = path.list();
@@ -256,7 +256,7 @@ public class GalleryDragAndDrop extends HttpServlet {
         "root.MSG_GEN_ENTER_METHOD", "name = " + name + ", fatherId = "
             + fatherId);
 
-    // création de l'album (avec le nom du répertoire) une seule fois
+    // crÃ©ation de l'album (avec le nom du rÃ©pertoire) une seule fois
     AlbumDetail album = null;
 
     NodeDetail node = new NodeDetail("unknown", name, null, null, null, null,
@@ -280,7 +280,7 @@ public class GalleryDragAndDrop extends HttpServlet {
         "root.MSG_GEN_ENTER_METHOD", "name = " + name + ", fatherId = "
             + albumId);
 
-    // création de la photo
+    // crÃ©ation de la photo
     PhotoDetail newPhoto = new PhotoDetail(name, null, new Date(), null, null,
         null, download, false);
 
@@ -292,7 +292,7 @@ public class GalleryDragAndDrop extends HttpServlet {
     String photoId = getGalleryBm().createPhoto(newPhoto, albumId);
     newPhoto.getPhotoPK().setId(photoId);
 
-    // Création de la preview et des vignettes sur disque
+    // CrÃ©ation de la preview et des vignettes sur disque
     ImageHelper.processImage(newPhoto, file, watermark, watermarkHD,
         watermarkOther);
     try {
@@ -302,7 +302,7 @@ public class GalleryDragAndDrop extends HttpServlet {
           "gallery.MSG_NOT_ADD_METADATA", "photoId =  " + photoId);
     }
 
-    // Modification de la photo pour mise à jour dimension
+    // Modification de la photo pour mise Ã  jour dimension
     getGalleryBm().updatePhoto(newPhoto);
 
     return photoId;

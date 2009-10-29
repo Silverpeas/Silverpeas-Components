@@ -21,11 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * SurveyInstanciator.java
- *
- * Created on 12 decembre 2000, 17:20
- */
 
 package com.stratelia.webactiv.survey;
 
@@ -37,13 +32,7 @@ import com.stratelia.webactiv.beans.admin.instance.control.InstanciationExceptio
 import com.stratelia.webactiv.question.QuestionInstanciator;
 import com.stratelia.webactiv.questionContainer.QuestionContainerInstanciator;
 
-/**
- * 
- * @author Nicolas EYSSERIC
- * @date 12/12/2000
- * @version 1 update by the Sébastien Antonio - Externalisation of the SQL
- *          request
- */
+
 public class SurveyInstanciator extends Object implements
     ComponentsInstanciatorIntf {
 

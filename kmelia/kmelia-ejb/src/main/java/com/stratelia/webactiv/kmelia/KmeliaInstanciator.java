@@ -45,7 +45,7 @@ import com.stratelia.webactiv.util.DateUtil;
 
 /**
  * 
- * @author nesseric updated by Sébastien Antonio
+ * @author nesseric
  */
 public class KmeliaInstanciator extends SQLRequest implements
     ComponentsInstanciatorIntf {

@@ -37,7 +37,7 @@ public class GSCSizeComparatorAsc implements Comparator {
     int compareResult = new Long(photo1.getImageSize()).compareTo(new Long(
         photo2.getImageSize()));
     if (compareResult == 0) {
-      // les 2 photos on la même taille, comparer les dates
+      // les 2 photos on la mÃªme taille, comparer les dates
       compareResult = photo1.getCreationDate().compareTo(
           photo2.getCreationDate());
     }

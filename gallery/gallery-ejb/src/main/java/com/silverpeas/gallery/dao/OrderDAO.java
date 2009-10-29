@@ -40,24 +40,23 @@ import com.silverpeas.gallery.model.OrderRow;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class OrderDAO {
 
   public static String createOrder(Connection con, Collection basket,
       String userId, String instanceId) throws SQLException, UtilException {
-    // Création d'une commande
+    // CrÃ©ation d'une commande
     String id = "";
     PreparedStatement prepStmt = null;
     try {
-      // 1. création de l'entête de la demande
+      // 1. crÃ©ation de l'entÃªte de la demande
       Date today = new Date();
       int newId = DBUtil.getNextId("SC_Gallery_Order", "orderId");
       id = new Integer(newId).toString();
-      // création de la requête
+      // crÃ©ation de la requÃªte
       String query = "insert into SC_Gallery_Order (orderId, userId, instanceId, creationDate) values (?,?,?,?)";
-      // initialisation des paramètres
+      // initialisation des paramÃ¨tres
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, newId);
       prepStmt.setInt(2, Integer.parseInt(userId));
@@ -65,7 +64,7 @@ public class OrderDAO {
       prepStmt.setString(4, Long.toString(today.getTime()));
       prepStmt.executeUpdate();
 
-      // 2. création des lignes de la demande
+      // 2. crÃ©ation des lignes de la demande
       Iterator it = basket.iterator();
       while (it.hasNext()) {
         String photoId = (String) it.next();
@@ -80,7 +79,7 @@ public class OrderDAO {
 
   public static List getAllPhotos(Connection con, String orderId)
       throws SQLException {
-    // récupérer toutes les photos de la demande
+    // rÃ©cupÃ©rer toutes les photos de la demande
     ArrayList listPhoto = null;
 
     String query = "select photoId, instanceId, downloadDate, downloadDecision  from SC_Gallery_OrderDetail where orderId = ? ";
@@ -119,9 +118,9 @@ public class OrderDAO {
       throws SQLException {
     PreparedStatement prepStmt = null;
     try {
-      // mettre à jour l'entête
+      // mettre Ã  jour l'entÃªte
       String query = "update SC_Gallery_Order set processDate = ?, processUser = ? where orderId = ?";
-      // initialisation des paramètres
+      // initialisation des paramÃ¨tres
       Date today = new Date();
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, Long.toString(today.getTime()));
@@ -135,7 +134,7 @@ public class OrderDAO {
       while (it.hasNext()) {
         OrderRow row = (OrderRow) it.next();
         query = "update SC_Gallery_OrderDetail set downloadDecision = ? where orderId = ? and photoId = ? ";
-        // initialisation des paramètres
+        // initialisation des paramÃ¨tres
         prepStmt = con.prepareStatement(query);
         prepStmt.setString(1, row.getDownloadDecision());
         prepStmt.setInt(2, new Integer(row.getOrderId()).intValue());
@@ -152,9 +151,9 @@ public class OrderDAO {
       throws SQLException {
     PreparedStatement prepStmt = null;
     try {
-      // mettre à jour l'entête
+      // mettre Ã  jour l'entÃªte
       String query = "update SC_Gallery_OrderDetail set downloadDate = ?, downloadDecision = ? where orderId = ? and photoId = ? ";
-      // initialisation des paramètres
+      // initialisation des paramÃ¨tres
       Date today = new Date();
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, Long.toString(today.getTime()));
@@ -173,9 +172,9 @@ public class OrderDAO {
     // ajout d'une photo dans le panier
     PreparedStatement prepStmt = null;
     try {
-      // création de la requete
+      // crÃ©ation de la requete
       String query = "insert into SC_Gallery_OrderDetail (orderId, photoId, instanceId) values (?,?,?)";
-      // initialisation des paramètres
+      // initialisation des paramÃ¨tres
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(orderId));
       prepStmt.setInt(2, Integer.parseInt(photoId));
@@ -189,7 +188,7 @@ public class OrderDAO {
 
   public static List getAllOrders(Connection con, String userId,
       String instanceId) throws SQLException {
-    // récupérer toutes les demandes de l'utilisateur sur cette instance
+    // rÃ©cupÃ©rer toutes les demandes de l'utilisateur sur cette instance
     ArrayList listOrder = null;
 
     boolean allUsers = false;
@@ -241,7 +240,7 @@ public class OrderDAO {
         order.setUserName(orga.getUserDetail(
             Integer.toString(order.getUserId())).getDisplayedName());
 
-        // récupérer les lignes
+        // rÃ©cupÃ©rer les lignes
         order.setRows(getAllPhotos(con, Integer.toString(orderId)));
 
         listOrder.add(order);
@@ -305,7 +304,7 @@ public class OrderDAO {
 
   public static Date getDownloadDate(Connection con, String orderId,
       String photoId) throws SQLException {
-    // rechercher la date de téléchargement si elle existe
+    // rechercher la date de tÃ©lÃ©chargement si elle existe
     String query = "select downloadDate from SC_Gallery_OrderDetail where orderId = ? and photoId = ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -328,7 +327,7 @@ public class OrderDAO {
 
   public static List getAllOrdersToDelete(Connection con, int nbDays)
       throws SQLException {
-    // récupérer toutes les demandes arrivant à échéance
+    // rÃ©cupÃ©rer toutes les demandes arrivant Ã  Ã©chÃ©ance
     ArrayList listOrder = null;
 
     // calcul de la date de fin
@@ -379,7 +378,7 @@ public class OrderDAO {
         order.setUserName(orga.getUserDetail(
             Integer.toString(order.getUserId())).getDisplayedName());
 
-        // récupérer les lignes
+        // rÃ©cupÃ©rer les lignes
         order.setRows(getAllPhotos(con, Integer.toString(orderId)));
 
         listOrder.add(order);

@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
 ---*/
 
 package com.stratelia.webactiv.newsEdito.servlets;
@@ -65,15 +65,15 @@ import com.stratelia.webactiv.util.publication.model.PublicationSelection;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class NewsEditoRequestRouter extends ComponentRequestRouter {
 
   /**
    * This method creates a NewsEditoSessionController instance
-   * 
+   *
    * @param mainSessionCtrl
    *          The MainSessionController instance
    * @param context
@@ -99,7 +99,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -163,7 +163,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
       PublicationDetail pubDetail;
 
       try {
-        // récupérer l'id
+        // rÃ©cupÃ©rer l'id
         String pubId = request.getParameter("PublicationId");
         if (StringUtil.isDefined(pubId))
           pubDetail = newsEdito.getPublicationDetail(pubId);
@@ -193,7 +193,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
      * else if (function.startsWith("GoToFavorite")) { // initialisation de
      * isConsulting inutile String flag = componentSC.getUserRoleLevel(); String
      * favoriteId = request.getParameter("FavoriteId");
-     * 
+     *
      * destination = rootDest + "newsEdito.jsp?Action=SelectTitle&TitleId=" +
      * favoriteId + "&flag=" + flag; }
      */
@@ -222,13 +222,13 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
       destination = rootDest + "model.jsp";
     } else if (function.equals("ReallyUpdatePublication")) {
       try {
-        // mise à jour de l'entête de la publication
+        // mise Ã  jour de l'entÃªte de la publication
         List items = getRequestItems(request);
         String name = getParameterValue(items, "Name");
         String description = getParameterValue(items, "Description");
         newsEdito.updatePublication(name, description);
 
-        // mise à jour du formulaire
+        // mise Ã  jour du formulaire
         updateXmlForm(items, newsEdito);
       } catch (Exception e) {
         SilverTrace.warn("NewsEdito", "NewsEditoRequestRooter.getDestination",
@@ -338,12 +338,12 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
                * ().substring(attachment.getPhysicalName().indexOf(".") + 1,
                * attachment.getPhysicalName().length()); String newName = new
                * Long(new java.util.Date().getTime()).toString() + "." + type;
-               * 
+               *
                * attachment.setPhysicalName(newName); String to =
                * FileRepositoryManager.getAbsolutePath(news.getComponentId()) +
                * news.getSettings().getString("imagesSubDirectory") + "\\" +
                * newName;
-               * 
+               *
                * FileRepositoryManager.copyFile(from, to); } }
                * news.setInfoDetail(pub.getInfoDetail()); }
                */

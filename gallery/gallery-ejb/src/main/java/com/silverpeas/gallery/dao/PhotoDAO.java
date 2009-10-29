@@ -47,7 +47,7 @@ public class PhotoDAO {
 
   public static PhotoDetail getPhoto(Connection con, int photoId)
       throws SQLException {
-    // récupérer une photo
+    // rÃ©cupÃ©rer une photo
     PhotoDetail photo = new PhotoDetail();
     String query = "select * from SC_Gallery_Photo where photoId = ? ";
     PreparedStatement prepStmt = null;
@@ -70,7 +70,7 @@ public class PhotoDAO {
 
   public static Collection getAllPhoto(Connection con, String albumId,
       String instanceId, boolean viewAllPhoto) throws SQLException {
-    // récupérer toutes les photos d'un album
+    // rÃ©cupÃ©rer toutes les photos d'un album
     ArrayList listPhoto = null;
     Date today = new Date();
 
@@ -98,7 +98,7 @@ public class PhotoDAO {
 
   public static Collection getPhotoNotVisible(Connection con, String instanceId)
       throws SQLException {
-    // récupérer les photos qui ne sont plus visibles pour l'instance
+    // rÃ©cupÃ©rer les photos qui ne sont plus visibles pour l'instance
     ArrayList listPhoto = null;
     Date today = new Date();
     String dateToday = DateUtil.date2SQLDate(today);
@@ -127,7 +127,7 @@ public class PhotoDAO {
 
   public static Collection getAllPhotos(Connection con, String instanceId)
       throws SQLException {
-    // récupérer toutes les photos de l'instance
+    // rÃ©cupÃ©rer toutes les photos de l'instance
     ArrayList listPhoto = null;
 
     String query = "select * from SC_Gallery_Photo where instanceId = ? ";
@@ -151,11 +151,11 @@ public class PhotoDAO {
 
   public static Collection getAllPhotoEndVisible(Connection con, int nbDays)
       throws SQLException {
-    // récupérer toutes les photos de l'instance ayant une date de visibilité
-    // arrivant à terme dans 'nbDays' jours
+    // rÃ©cupÃ©rer toutes les photos de l'instance ayant une date de visibilitÃ©
+    // arrivant Ã  terme dans 'nbDays' jours
     ArrayList listPhoto = null;
 
-    // calcul de la date de fin de visibilité
+    // calcul de la date de fin de visibilitÃ©
     Calendar calendar = Calendar.getInstance(Locale.FRENCH);
 
     calendar.add(Calendar.DATE, nbDays);
@@ -186,19 +186,19 @@ public class PhotoDAO {
 
   public static String createPhoto(Connection con, PhotoDetail photo)
       throws SQLException, UtilException {
-    // Création d'une nouvelle photo
+    // CrÃ©ation d'une nouvelle photo
     PhotoDetail newPhoto = photo;
     String id = "";
     PreparedStatement prepStmt = null;
     try {
       int newId = DBUtil.getNextId(con, "SC_Gallery_Photo", "photoId");
       id = new Integer(newId).toString();
-      // création de la requete
+      // crÃ©ation de la requete
       String query = "insert into SC_Gallery_Photo (photoId,title,description,sizeH,sizeL,creationDate,updateDate,vueDate"
           + ",author,download,albumLabel,status,albumId,creatorId,updateId,instanceId,imageName,imageSize,beginDate,endDate"
           + ",imageMimeType,keyWord, beginDownloadDate, endDownloadDate) "
           + "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-      // initialisation des paramètres
+      // initialisation des paramÃ¨tres
       prepStmt = con.prepareStatement(query);
       initParam(prepStmt, newId, newPhoto);
       prepStmt.executeUpdate();
@@ -211,15 +211,15 @@ public class PhotoDAO {
 
   public static String createPath(Connection con, PhotoDetail photo,
       String albumId) throws SQLException, UtilException {
-    // Création d'un emplacement
+    // CrÃ©ation d'un emplacement
     String id = "";
     PreparedStatement prepStmt = null;
     try {
       int newId = DBUtil.getNextId(con, "SC_Gallery_Path", "photoId");
       id = new Integer(newId).toString();
-      // création de la requete
+      // crÃ©ation de la requete
       String query = "insert into SC_Gallery_Path (photoId, nodeId, instanceId) values (?,?,?)";
-      // initialisation des paramètres
+      // initialisation des paramÃ¨tres
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, new Integer(photo.getId()).intValue());
       prepStmt.setInt(2, Integer.parseInt(albumId));
@@ -243,11 +243,11 @@ public class PhotoDAO {
           + " imageName = ? , imageSize = ? , beginDate = ? , endDate = ? , imageMimeType = ? , keyWord = ? ,"
           + " beginDownloadDate = ?, endDownloadDate = ? "
           + " where photoId = ? ";
-      // initialisation des paramètres
+      // initialisation des paramÃ¨tres
       prepStmt = con.prepareStatement(query);
       int photoId = Integer.parseInt(updatedPhoto.getPhotoPK().getId());
       initParam(prepStmt, photoId, updatedPhoto);
-      // initialisation du dernier paramètre
+      // initialisation du dernier paramÃ¨tre
       prepStmt.setInt(25, photoId);
       prepStmt.executeUpdate();
     } finally {
@@ -272,7 +272,7 @@ public class PhotoDAO {
 
   public static Collection getDernieres(Connection con, String instanceId,
       boolean viewAllPhoto) throws SQLException {
-    // récupérer toutes les photos d'un album
+    // rÃ©cupÃ©rer toutes les photos d'un album
     ArrayList listPhoto = null;
     Date today = new Date();
 
@@ -324,7 +324,7 @@ public class PhotoDAO {
 
   public static Collection getPathList(Connection con, String instanceId,
       String photoId) throws SQLException {
-    // récupérer la liste des emplacements de la photo
+    // rÃ©cupÃ©rer la liste des emplacements de la photo
     ArrayList listPath = null;
 
     String query = "select N.NodeId from SC_Gallery_Path P, SB_Node_Node N "
@@ -355,9 +355,9 @@ public class PhotoDAO {
     // suppression de tous les emplacements
     PreparedStatement prepStmt = null;
     try {
-      // création de la requete
+      // crÃ©ation de la requete
       String query = "delete from SC_Gallery_Path where photoId = ? and instanceId = ? ";
-      // initialisation des paramètres
+      // initialisation des paramÃ¨tres
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(photoId));
       prepStmt.setString(2, instanceId);
@@ -376,18 +376,18 @@ public class PhotoDAO {
     // ajout d'un emplacement
     PreparedStatement prepStmt = null;
     try {
-      // création de la requete
+      // crÃ©ation de la requete
       String query = "insert into SC_Gallery_Path values (?,?,?)";
-      // initialisation des paramètres
+      // initialisation des paramÃ¨tres
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(photoId));
       prepStmt.setInt(2, Integer.parseInt(albumId));
       prepStmt.setString(3, instanceId);
       prepStmt.executeUpdate();
-      // mise à jour de l'album dans la table photo
+      // mise Ã  jour de l'album dans la table photo
       // String query2 =
       // "update SC_Gallery_Photo set albumId = ? where photoId = ? and instanceId = ?";
-      // initialisation des paramètres
+      // initialisation des paramÃ¨tres
       // prepStmt = con.prepareStatement(query2);
       // prepStmt.setInt(1, Integer.parseInt(albumId));
       // prepStmt.setInt(2, Integer.parseInt(photoId));
@@ -507,7 +507,7 @@ public class PhotoDAO {
     else
       prepStmt.setInt(11, 0);
     prepStmt.setString(12, photo.getStatus());
-    // on met "0" dans l'albumId qui n'est plus utilisé
+    // on met "0" dans l'albumId qui n'est plus utilisÃ©
     prepStmt.setString(13, "0");
     prepStmt.setString(14, photo.getCreatorId());
     prepStmt.setString(15, photo.getUpdateId());

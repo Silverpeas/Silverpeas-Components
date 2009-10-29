@@ -168,7 +168,7 @@ public class GalleryContentManager implements ContentInterface,
     PhotoDetail photo = null;
     ArrayList headers = new ArrayList();
 
-    // création de la liste "headers" avec toutes les photos (format
+    // crÃ©ation de la liste "headers" avec toutes les photos (format
     // PhotoDetail)
     // en fonction de la liste "ids" des photos (format PhotoPK)
     if (ids != null) {
