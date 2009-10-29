@@ -262,7 +262,7 @@ public class YellowpagesSessionController extends
   }
 
   /**************************************************************************************/
-  /* YELLOWPAGES - Gestion des thËmes */
+  /* YELLOWPAGES - Gestion des th√®mes */
   /**************************************************************************************/
   public synchronized TopicDetail getTopic(String id) throws RemoteException {
     try {
@@ -422,7 +422,7 @@ public class YellowpagesSessionController extends
   }
 
   private synchronized Collection setCurrentFullCompleteUsers()
-      throws RemoteException {// tous les contacts ‡ la racine
+      throws RemoteException {// tous les contacts √† la racine
     try {
       // racine
       TopicDetail rootTopic = getTopic("0");
@@ -444,7 +444,7 @@ public class YellowpagesSessionController extends
               && contact.getContactDetail().getUserId() != null) {// contact de
             // type user
             // appartenant
-            // ‡ un groupe
+            // √† un groupe
             // Silverpeas
             userFull = this.getOrganizationController().getUserFull(
                 contact.getContactDetail().getUserId());
@@ -530,7 +530,7 @@ public class YellowpagesSessionController extends
   public synchronized void deleteContact(String contactId)
       throws RemoteException, PublicationTemplateException, FormException {
     try {
-      // delete donnÈes formulaires XML
+      // delete donn√©es formulaires XML
       UserCompleteContact userCompleteContact = getCompleteContact(contactId);
       String modelId = userCompleteContact.getContact().getModelId();
       if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
@@ -538,7 +538,7 @@ public class YellowpagesSessionController extends
         String xmlFormShortName = xmlFormName.substring(xmlFormName
             .indexOf("/") + 1, xmlFormName.indexOf("."));
 
-        // rÈcupÈration des donnÈes du formulaire (via le DataRecord)
+        // r√©cup√©ration des donn√©es du formulaire (via le DataRecord)
         PublicationTemplate pubTemplate = PublicationTemplateManager
             .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
 
@@ -672,9 +672,9 @@ public class YellowpagesSessionController extends
   }
 
   /**
-   * 
+   *
    * methods for Users
-   * 
+   *
    */
 
   public UserDetail[] getUserList() {
@@ -715,8 +715,8 @@ public class YellowpagesSessionController extends
   /**************************************************************************************/
 
   /**
-   * ParamËtre le userPannel => tous les users, sÈlection d'un seul user
-   * 
+   * Param√®tre le userPannel => tous les users, s√©lection d'un seul user
+   *
    * @param
    * @return
    * @throws
@@ -752,8 +752,8 @@ public class YellowpagesSessionController extends
   }
 
   /**
-   * Met en session le contact sÈlectionnÈ via le userPanel
-   * 
+   * Met en session le contact s√©lectionn√© via le userPanel
+   *
    * @param
    * @throws
    * @see setCurrentContact
@@ -1027,7 +1027,7 @@ public class YellowpagesSessionController extends
         xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1,
             xmlFormName.indexOf("."));
 
-        // rÈcupÈration des donnÈes du formulaire (via le DataRecord)
+        // r√©cup√©ration des donn√©es du formulaire (via le DataRecord)
         pubTemplate = PublicationTemplateManager
             .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
 
@@ -1066,7 +1066,7 @@ public class YellowpagesSessionController extends
 
     if (!"All".equals(typeSearch)) {// typeSearch = LastName || FirstName ||
       // LastNameFirstName
-      // Recherche sur nom et/ou prÈnom
+      // Recherche sur nom et/ou pr√©nom
 
       String nom = null;
       String prenom = null;
@@ -1077,12 +1077,12 @@ public class YellowpagesSessionController extends
       } else if ("FirstName".equals(typeSearch)) {
         nom = "*";
         prenom = query;
-      } else if ("LastNameFirstName".equals(typeSearch)) {// nom et/ou prÈnom
+      } else if ("LastNameFirstName".equals(typeSearch)) {// nom et/ou pr√©nom
         indexEspace = query.indexOf(" ");
         if (indexEspace == -1) { // seulement recherche sur le nom, on cherchera
-          // sur le prÈnom aprËs
+          // sur le pr√©nom apr√®s
           nom = query;
-        } else { // recherche sur le nom et le prÈnom
+        } else { // recherche sur le nom et le pr√©nom
           nom = query.substring(0, indexEspace);
           prenom = query.substring(indexEspace);
           prenom = prenom.trim();
@@ -1113,7 +1113,7 @@ public class YellowpagesSessionController extends
         // recherche
         // sur
         // le
-        // prÈnom
+        // pr√©nom
         modelUser.setLastName(null);
         if (query.endsWith("*") || query.endsWith("%"))
           query = query.substring(0, query.length() - 1);
@@ -1170,10 +1170,10 @@ public class YellowpagesSessionController extends
         contacts = (List) kscEjb.getContactDetailsByLastNameAndFirstName(
             new ContactPK("useless", "useless", getComponentId()), nom, prenom);
       } else if ("LastNameFirstName".equals(typeSearch)) {
-        if (prenom == null) {// nom ou prÈnom
+        if (prenom == null) {// nom ou pr√©nom
           contacts = (List) kscEjb.getContactDetailsByLastNameOrFirstName(
               new ContactPK("useless", "useless", getComponentId()), nom);
-        } else {// nom et prÈnom
+        } else {// nom et pr√©nom
           contacts = (List) kscEjb.getContactDetailsByLastNameAndFirstName(
               new ContactPK("useless", "useless", getComponentId()), nom,
               prenom);
@@ -1209,7 +1209,7 @@ public class YellowpagesSessionController extends
           // de type
           // user
           // appartenant
-          // ‡ un
+          // √† un
           // groupe
           // Silverpeas
           itUserFull = listFullUsers.iterator();
@@ -1239,7 +1239,7 @@ public class YellowpagesSessionController extends
   }
 
   public List getListContactFather(List contacts,
-      boolean retourneUserReferentiel) throws RemoteException { // en paramËtre
+      boolean retourneUserReferentiel) throws RemoteException { // en param√®tre
     // une liste de
     // ContactDetail
     List result = new ArrayList();
@@ -1332,7 +1332,7 @@ public class YellowpagesSessionController extends
   }
 
   /**
-   * 
+   *
    * @param models
    */
   public void addModelUsed(String[] models) {

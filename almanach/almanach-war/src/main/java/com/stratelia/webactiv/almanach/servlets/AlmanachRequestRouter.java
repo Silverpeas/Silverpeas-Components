@@ -70,7 +70,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
 
   /**
    * Set almanach settings
-   * 
+   *
    * @param almanach
    * @param request
    */
@@ -83,7 +83,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request Router it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -113,11 +113,11 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         // initialisation d'un MonthCalendar du viewgenerator
         MonthCalendar monthC = almanach.getMonthCalendar();
 
-        // contrÙle de l'Action de l'utilisateur
+        // contr√¥le de l'Action de l'utilisateur
         String action = request.getParameter("Action");
 
-        // accËs premiËre fois, initialisation de l'almanach ‡ la date du jour
-        // (utile pour gÈnÈrer le Header)
+        // acc√®s premi√®re fois, initialisation de l'almanach √† la date du jour
+        // (utile pour g√©n√©rer le Header)
         if (action == null || action.length() == 0) {
           action = "View";
         } else if (action.equals("PreviousMonth")) {
@@ -167,7 +167,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
           idEvent = eventIcal4jCalendar.getProperties().getProperty(
               Property.UID).getValue();
 
-          // RÈcupËre l'ÈvÈnement
+          // R√©cup√®re l'√©v√©nement
           evtDetail = almanach.getEventDetail(idEvent);
 
           periodList = eventIcal4jCalendar.calculateRecurrenceSet(monthPeriod);
@@ -213,7 +213,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         String dateIteration = request.getParameter("Date"); // not null
         // (yyyy/MM/jj)
 
-        // rÈcupËre l'Event et sa pÈriodicitÈ
+        // r√©cup√®re l'Event et sa p√©riodicit√©
         EventDetail event = almanach.getCompleteEventDetail(id);
 
         java.util.Calendar calDateIteration = java.util.Calendar.getInstance();
@@ -291,7 +291,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         }
         event.setPriority(priorityInt);
 
-        // PÈriodicitÈ
+        // P√©riodicit√©
         Periodicity periodicity = null;
 
         if (unity != null && !"0".equals(unity)) {
@@ -322,24 +322,24 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
             periodicity.setUntilDatePeriod(DateUtil.stringToDate(
                 periodicityUntilDate, almanach.getLanguage()));
           }
-        } else {// update -> pas de pÈriodicitÈ
+        } else {// update -> pas de p√©riodicit√©
           periodicity = null;
         }
         event.setPeriodicity(periodicity);
 
-        // Ajoute l'ÈvÈnement
+        // Ajoute l'√©v√©nement
         almanach.addEvent(event);
 
         destination = getDestination("almanach", almanach, request);
       } else if (function.startsWith("editEvent")) {
         String id = request.getParameter("Id"); // peut etre null en cas de
-        // crÈation
+        // cr√©ation
         String dateIteration = request.getParameter("Date"); // peut etre null
         // en cas de
-        // crÈation
+        // cr√©ation
         // (yyyy/MM/jj)
 
-        // rÈcupËre l'Event et sa pÈriodicitÈ
+        // r√©cup√®re l'Event et sa p√©riodicit√©
         EventDetail event = almanach.getCompleteEventDetail(id);
 
         java.util.Calendar calDateIteration = java.util.Calendar.getInstance();
@@ -350,7 +350,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         request.setAttribute("DateFinIteration", calDateIteration.getTime());
         request.setAttribute("CompleteEvent", event);
 
-        // Met en session l'ÈvÈnement courant
+        // Met en session l'√©v√©nement courant
         almanach.setCurrentUpdateEvent(event);
 
         if (flag.equals("publisher") || flag.equals("admin")) {
@@ -420,10 +420,10 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         }
         event.setPriority(priorityInt);
 
-        // PÈriodicitÈ
+        // P√©riodicit√©
         Periodicity periodicity = null;
         if (id != null && id.length() > 0) {
-          // rÈcupËre la pÈriodicitÈ de l'ÈvÈnement
+          // r√©cup√®re la p√©riodicit√© de l'√©v√©nement
           periodicity = event.getPeriodicity();
         }
 
@@ -455,7 +455,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
             periodicity.setUntilDatePeriod(DateUtil.stringToDate(
                 periodicityUntilDate, almanach.getLanguage()));
           }
-        } else {// update -> pas de pÈriodicitÈ
+        } else {// update -> pas de p√©riodicit√©
           periodicity = null;
           periodicityStartDate = startDate; // meme date
         }
@@ -463,7 +463,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
 
         if ("ReallyUpdateOccurence".equals(action)) {
 
-          // Met ‡ jour l'ÈvÈnement et toutes les occurences de la sÈrie
+          // Met √† jour l'√©v√©nement et toutes les occurences de la s√©rie
           almanach.updateEventOccurence(event, dateDebutIteration,
               dateFinIteration);
         } else if ("ReallyUpdateSerial".equals(action)) {
@@ -475,7 +475,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
           calStartDate.add(java.util.Calendar.DATE, nbDaysDuration);
           event.setEndDate(calStartDate.getTime());
 
-          // Met ‡ jour l'ÈvÈnement
+          // Met √† jour l'√©v√©nement
           almanach.updateEvent(event);
         } else if ("ReallyUpdate".equals(action)) {
           java.util.Date startDateEvent = DateUtil.stringToDate(
@@ -486,7 +486,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
           calStartDate.add(java.util.Calendar.DATE, nbDaysDuration);
           event.setEndDate(calStartDate.getTime());
 
-          // Met ‡ jour l'ÈvÈnement
+          // Met √† jour l'√©v√©nement
           almanach.updateEvent(event);
         }
 
@@ -496,7 +496,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         String id = request.getParameter("Id");
         String dateIteration = request.getParameter("Date");
 
-        // rÈcupËre l'Event
+        // r√©cup√®re l'Event
         EventDetail event = almanach.getEventDetail(id);
 
         request.setAttribute("DateDebutIteration", DateUtil
@@ -508,7 +508,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         String id = request.getParameter("Id");
         String dateIteration = request.getParameter("Date");
 
-        // rÈcupËre l'Event
+        // r√©cup√®re l'Event
         EventDetail event = almanach.getEventDetail(id);
 
         request.setAttribute("DateDebutIteration", DateUtil
@@ -536,7 +536,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("searchResult")) {
         String id = request.getParameter("Id");
 
-        // rÈcupËre l'Event et sa pÈriodicitÈ
+        // r√©cup√®re l'Event et sa p√©riodicit√©
         EventDetail event = almanach.getCompleteEventDetail(id);
 
         java.util.Calendar calDateIteration = java.util.Calendar.getInstance();
@@ -566,7 +566,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
 
         } else if ("ReallyDelete".equals(action)) {
 
-          // Supprime l'ÈvÈnement et toutes les occurences de la sÈrie
+          // Supprime l'√©v√©nement et toutes les occurences de la s√©rie
           almanach
               .removeEvent(almanach.getCurrentUpdateEvent().getPK().getId());
         }

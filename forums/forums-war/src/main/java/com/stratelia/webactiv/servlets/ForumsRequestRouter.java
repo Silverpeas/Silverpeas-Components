@@ -101,7 +101,7 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
     }
 
     else if (function.startsWith("viewMessage")) {
-      // mise à jour de la table des consultations
+      // mise Ã  jour de la table des consultations
       String messageId = request.getParameter("params");
       if (!StringUtil.isDefined(messageId)) {
         messageId = (String) request.getAttribute("params");
@@ -122,14 +122,14 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
       destination = ROOT_DEST + "modifyMessage.jsp";
     }
 
-    // gestion des catégories
+    // gestion des catÃ©gories
     // ----------------------
     else if (function.equals("ViewCategory")) {
       destination = ROOT_DEST + "main.jsp";
     } else if (function.equals("NewCategory")) {
       destination = ROOT_DEST + "categoryManager.jsp";
     } else if (function.equals("CreateCategory")) {
-      // récupération des paramètres
+      // rÃ©cupÃ©ration des paramÃ¨tres
       String name = (String) request.getParameter("Name");
       String description = (String) request.getParameter("Description");
       NodeDetail node = new NodeDetail("unknown", name, description, null,
@@ -139,7 +139,7 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
 
       destination = getDestination("ViewCategory", componentSC, request);
     } else if (function.equals("EditCategory")) {
-      // récupération des paramètres
+      // rÃ©cupÃ©ration des paramÃ¨tres
       String categoryId = (String) request.getParameter("CategoryId");
       Category category = forumsSC.getCategory(categoryId);
       request.setAttribute("Category", category);

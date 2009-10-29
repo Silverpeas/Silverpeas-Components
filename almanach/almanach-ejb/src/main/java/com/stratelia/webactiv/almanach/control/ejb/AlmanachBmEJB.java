@@ -87,7 +87,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /**
    * Get the events of the month
-   * 
+   *
    * @author dlesimple
    * @param pk
    * @param date
@@ -123,7 +123,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /**
    * Get the events of the month
-   * 
+   *
    * @author dlesimple
    * @param pk
    * @param date
@@ -135,7 +135,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * getAllEvents(com.stratelia.webactiv.almanach.model.EventPK)
@@ -166,7 +166,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /**
    * Get all events
-   * 
+   *
    * @param pk
    * @param String
    *          [] of instanceIds
@@ -199,7 +199,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * getEvents(java.util.Collection)
@@ -256,7 +256,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * addEvent(com.stratelia.webactiv.almanach.model.EventDetail)
@@ -343,7 +343,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * createIndex(com.stratelia.webactiv.almanach.model.EventDetail)
@@ -369,7 +369,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /**
    * Update Index Entry
-   * 
+   *
    * @param indexEntry
    * @param eventDetail
    * @return FullIndexEntry
@@ -411,7 +411,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * getNextEvents(java.lang.String, int)
@@ -544,7 +544,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * addPeriodicityException
@@ -614,7 +614,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
     Calendar calendarAlmanach = new Calendar();
     calendarAlmanach.getProperties().add(CalScale.GREGORIAN);
 
-    // transformation des événements (EventDetail) en VEvent du Calendar ical4j
+    // transformation des Ã©vÃ©nements (EventDetail) en VEvent du Calendar ical4j
     EventDetail evtDetail;
     String eventId;
     String title;
@@ -669,7 +669,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
       eventIcal4jCalendar = new VEvent();
       /*
        * if(eventFatherId != null && eventFatherId.length()>0) { //Occurence
-       * spécifique d'un événement récurrent uid = new Uid(eventFatherId);
+       * spÃ©cifique d'un Ã©vÃ©nement rÃ©current uid = new Uid(eventFatherId);
        * recurrenceid = new RecurrenceId(new Date(calStartDate.getTime()));
        * eventIcal4jCalendar.getProperties().add(recurrenceid); } else {
        */
@@ -685,7 +685,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
       description = new Description(descriptionWysiwyg);
       eventIcal4jCalendar.getProperties().add(description);
 
-      // Périodicité
+      // PÃ©riodicitÃ©
       periodicity = getPeriodicity(eventId);
 
       if (periodicity != null) {
@@ -693,7 +693,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
         eventIcal4jCalendar.getProperties().add(
             generateRecurrenceRule(periodicity));
 
-        // Exceptions de périodicité
+        // Exceptions de pÃ©riodicitÃ©
         eventIcal4jCalendar.getProperties().add(
             generateExceptionDate(periodicity));
       }
@@ -775,7 +775,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
   }
 
   public ExDate generateExceptionDate(Periodicity periodicity) {
-    // Exceptions de périodicité
+    // Exceptions de pÃ©riodicitÃ©
     Collection listException = getListPeriodicityException(periodicity.getPK()
         .getId());
     Iterator itException = (Iterator) listException.iterator();
@@ -854,7 +854,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
       idEvent = eventIcal4jCalendar.getProperties().getProperty(Property.UID)
           .getValue();
 
-      // Récupère l'événement
+      // RÃ©cupÃ¨re l'Ã©vÃ©nement
       evtDetail = getEventDetail(new EventPK(idEvent, spaceId, instanceId));
 
       periodList = eventIcal4jCalendar.calculateRecurrenceSet(monthPeriod);
@@ -885,7 +885,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * getSilverObjectId(com.stratelia.webactiv.almanach.model.EventPK)
@@ -978,7 +978,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * getAttachments(com.stratelia.webactiv.almanach.model.EventPK)
@@ -1023,7 +1023,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * getHTMLPath(com.stratelia.webactiv.almanach.model.EventPK)

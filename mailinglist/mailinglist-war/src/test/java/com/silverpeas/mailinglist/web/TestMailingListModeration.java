@@ -80,17 +80,17 @@ public class TestMailingListModeration extends
     assertNotNull(tableTabbedPane);
     tableTabbedPane = tableTabbedPane.getTableCell(0, 0).getTables()[0];
     assertNotNull(tableTabbedPane);
-    assertEquals("ActivitÈ", tableTabbedPane.getCellAsText(0, 2));
+    assertEquals("Activit√©", tableTabbedPane.getCellAsText(0, 2));
     assertEquals("Liste des Messages", tableTabbedPane.getCellAsText(0, 5));
-    assertEquals("ModÈration", tableTabbedPane.getCellAsText(0, 8));
+    assertEquals("Mod√©ration", tableTabbedPane.getCellAsText(0, 8));
     WebLink moderationLink = tableTabbedPane.getTableCell(0, 8).getLinkWith(
-        "ModÈration");
+        "Mod√©ration");
     assertNotNull(moderationLink);
     WebResponse moderationPage = moderationLink.click();
     assertNotNull(moderationPage);
     WebTable browseBar = moderationPage.getTableWithID("browseBar");
     assertNotNull(browseBar);
-    assertEquals("MGI Coutier > Liste de diffusion > ModÈration", browseBar
+    assertEquals("MGI Coutier > Liste de diffusion > Mod√©ration", browseBar
         .getCellAsText(0, 0));
     assertEquals("/silverpeas/Rmailinglist/mailinglist45/Main", browseBar
         .getTableCell(0, 0).getLinkWith("Liste de diffusion").getURLString());
@@ -99,7 +99,7 @@ public class TestMailingListModeration extends
     assertNotNull(tableMessages);
     assertEquals("Messages", tableMessages.getCellAsText(0, 1));
     assertEquals("Fichiers Joints", tableMessages.getCellAsText(0, 2));
-    assertEquals("ExpÈditeur", tableMessages.getCellAsText(0, 3));
+    assertEquals("Exp√©diteur", tableMessages.getCellAsText(0, 3));
     assertEquals("Simple database message 13", tableMessages
         .getCellAsText(1, 1));
     assertEquals(
@@ -162,17 +162,17 @@ public class TestMailingListModeration extends
     assertNotNull(tableTabbedPane);
     tableTabbedPane = tableTabbedPane.getTableCell(0, 0).getTables()[0];
     assertNotNull(tableTabbedPane);
-    assertEquals("ActivitÈ", tableTabbedPane.getCellAsText(0, 2));
+    assertEquals("Activit√©", tableTabbedPane.getCellAsText(0, 2));
     assertEquals("Liste des Messages", tableTabbedPane.getCellAsText(0, 5));
-    assertEquals("ModÈration", tableTabbedPane.getCellAsText(0, 8));
+    assertEquals("Mod√©ration", tableTabbedPane.getCellAsText(0, 8));
     WebLink moderationLink = tableTabbedPane.getTableCell(0, 8).getLinkWith(
-        "ModÈration");
+        "Mod√©ration");
     assertNotNull(moderationLink);
     WebResponse moderationPage = moderationLink.click();
     assertNotNull(moderationPage);
     WebTable browseBar = moderationPage.getTableWithID("browseBar");
     assertNotNull(browseBar);
-    assertEquals("MGI Coutier > Liste de diffusion > ModÈration", browseBar
+    assertEquals("MGI Coutier > Liste de diffusion > Mod√©ration", browseBar
         .getCellAsText(0, 0));
     assertEquals("/silverpeas/Rmailinglist/mailinglist45/Main", browseBar
         .getTableCell(0, 0).getLinkWith("Liste de diffusion").getURLString());
@@ -181,7 +181,7 @@ public class TestMailingListModeration extends
     assertNotNull(tableMessages);
     assertEquals("Messages", tableMessages.getCellAsText(0, 1));
     assertEquals("Fichiers Joints", tableMessages.getCellAsText(0, 2));
-    assertEquals("ExpÈditeur", tableMessages.getCellAsText(0, 3));
+    assertEquals("Exp√©diteur", tableMessages.getCellAsText(0, 3));
     assertEquals("Simple database message 13", tableMessages
         .getCellAsText(1, 1));
     assertEquals(

@@ -27,7 +27,6 @@
 
 package com.stratelia.webactiv.almanach.control;
 
-import com.stratelia.webactiv.almanach.control.*;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -90,10 +89,10 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendar;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendarWA1;
-import com.sun.org.apache.xalan.internal.xsltc.runtime.Hashtable;
+import java.util.Hashtable;
 
 /**
- * 
+ *
  * @author squere
  * @version
  */
@@ -234,7 +233,7 @@ public class AlmanachSessionController extends
 
   /**
    * Delete event
-   * 
+   *
    * @param id
    * @throws AlmanachException
    * @throws RemoteException
@@ -291,7 +290,7 @@ public class AlmanachSessionController extends
 
   /**
    * Delete an occurence of event
-   * 
+   *
    * @param event
    * @param dateDebutException
    * @param dateFinException
@@ -316,7 +315,7 @@ public class AlmanachSessionController extends
     // add exception periodicity in DB
     getAlmanachBm().addPeriodicityException(periodicityException);
 
-    // Ajout de l'Exception de périodicité dans le VEvent du Calendar ical4j
+    // Ajout de l'Exception de pÃ©riodicitÃ© dans le VEvent du Calendar ical4j
     // (pour gestion)
     if (this.getCurrentICal4jCalendar() == null) {
       // initialisation d'un Calendar ical4j
@@ -345,7 +344,7 @@ public class AlmanachSessionController extends
 
   /**
    * Add event
-   * 
+   *
    * @param event
    * @throws AlmanachBadParamException
    * @throws AlmanachException
@@ -412,7 +411,7 @@ public class AlmanachSessionController extends
           .getDescription(getLanguage()));
       eventIcal4jCalendar.getProperties().add(description);
 
-      // Périodicité
+      // PÃ©riodicitÃ©
       if (event.getPeriodicity() != null) {
         Periodicity periodicity = event.getPeriodicity();
         periodicity.setEventId(new Integer(eventId).intValue());
@@ -444,7 +443,7 @@ public class AlmanachSessionController extends
 
   /**
    * Update event
-   * 
+   *
    * @param event
    * @throws AlmanachBadParamException
    * @throws AlmanachException
@@ -482,7 +481,7 @@ public class AlmanachSessionController extends
             event.getId());
       }
 
-      // Mise à jour du VEvent du Calendar ical4j (pour gestion)
+      // Mise Ã  jour du VEvent du Calendar ical4j (pour gestion)
       java.util.Calendar calStartDate = java.util.Calendar.getInstance();
       calStartDate.setTime(startDate);
       if (StringUtil.isDefined(startHour)) {
@@ -532,7 +531,7 @@ public class AlmanachSessionController extends
         DtEnd dtEnd = new DtEnd(new Date(calEndDate.getTime()));
         eventIcal4jCalendar.getProperties().add(dtEnd);
 
-        // Périodicité
+        // PÃ©riodicitÃ©
         Periodicity lastPeriodicity = getAlmanachBm().getPeriodicity(
             event.getPK().getId());
         Periodicity periodicity = event.getPeriodicity();
@@ -566,7 +565,7 @@ public class AlmanachSessionController extends
                 .intValue());
             getAlmanachBm().updatePeriodicity(periodicity);
 
-            // Mise à jour du VEvent du Calendar ical4j (pour gestion)
+            // Mise Ã  jour du VEvent du Calendar ical4j (pour gestion)
             eventIcal4jCalendar.getProperties().add(
                 generateRecurrenceRule(periodicity));
           }
@@ -615,7 +614,7 @@ public class AlmanachSessionController extends
 
   /**
    * build a pdf file representation for the current month.
-   * 
+   *
    * @returns the generated pdf file name.
    */
   public String buildPdf() {
@@ -678,7 +677,7 @@ public class AlmanachSessionController extends
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * com.stratelia.silverpeas.peasCore.AbstractComponentSessionController#getRSSUrl
    * ()
@@ -774,7 +773,7 @@ public class AlmanachSessionController extends
 
   /**
    * Get the color of the almanach
-   * 
+   *
    * @author dlesimple
    * @param instanceId
    * @return color of almanach
@@ -795,7 +794,7 @@ public class AlmanachSessionController extends
 
   /**
    * Get the others almanachs
-   * 
+   *
    * @author dlesimple
    * @return ArrayList of ArrayList (with almanachId, almanachLabel,
    *         almanachColor)
@@ -844,7 +843,7 @@ public class AlmanachSessionController extends
 
   /**
    * Get agregated almanachs
-   * 
+   *
    * @author dlesimple
    * @return String[] of almanachIds
    */
@@ -854,7 +853,7 @@ public class AlmanachSessionController extends
 
   /**
    * Return if an almanach is agregated
-   * 
+   *
    * @author dlesimple
    * @param instanceId
    * @return boolean
@@ -872,7 +871,7 @@ public class AlmanachSessionController extends
 
   /**
    * Set almanachs to be agregated
-   * 
+   *
    * @author dlesimple
    * @param String
    *          [] of instanceIds
@@ -885,7 +884,7 @@ public class AlmanachSessionController extends
 
   /**
    * Delete agregated almanachs
-   * 
+   *
    * @author dlesimple
    */
   private void deleteAgregatedAlmanachs() {
@@ -894,7 +893,7 @@ public class AlmanachSessionController extends
 
   /**
    * Update list of agregated almanachs
-   * 
+   *
    * @author dlesimple
    * @param String
    *          [] of instanceIds
@@ -910,7 +909,7 @@ public class AlmanachSessionController extends
 
   /**
    * Get the color of an almanach
-   * 
+   *
    * @author dlesimple
    * @param position
    *          in the array
@@ -944,14 +943,14 @@ public class AlmanachSessionController extends
         "root.MSG_GEN_PARAM_VALUE", "name = " + hostComponentName
             + " componentId=" + getComponentId());
     sel.setNotificationMetaData(getAlertNotificationEvent(eventId));
-    // l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
+    // l'url de nav vers alertUserPeas et demandÃ©e Ã  AlertUser et retournÃ©e
     return AlertUser.getAlertUserURL();
   }
 
   private synchronized NotificationMetaData getAlertNotificationEvent(
       String eventId) throws RemoteException, AlmanachException,
       AlmanachNoSuchFindEventException {
-    // création des données ...
+    // crÃ©ation des donnÃ©es ...
     EventPK eventPK = new EventPK(eventId, getSpaceId(), getComponentId());
     String senderName = getUserDetail().getDisplayedName();
     EventDetail eventDetail = getAlmanachBm().getEventDetail(eventPK);
@@ -959,16 +958,16 @@ public class AlmanachSessionController extends
         "AlamanachSessionController.getAlertNotificationEvent()",
         "root.MSG_GEN_PARAM_VALUE", "event = " + eventDetail.toString());
 
-    // recherche de l’emplacement de l’évènement
+    // recherche de lâ€™emplacement de lâ€™Ã©vÃ¨nement
     String htmlPath = getAlmanachBm().getHTMLPath(eventPK);
 
-    // création des messages ...
+    // crÃ©ation des messages ...
     ResourceLocator message = new ResourceLocator(
         "com.stratelia.webactiv.almanach.multilang.almanach", "fr");
     ResourceLocator message_en = new ResourceLocator(
         "com.stratelia.webactiv.almanach.multilang.almanach", "en");
 
-    // notifications en français
+    // notifications en franÃ§ais
     String subject = getNotificationSubject(message);
     String body = getNotificationBody(eventDetail, htmlPath, message,
         senderName);
@@ -989,7 +988,7 @@ public class AlmanachSessionController extends
         "root.MSG_GEN_PARAM_VALUE", "sujet_en = " + subject_en + " corps_en = "
             + body_en);
 
-    // création des notifications
+    // crÃ©ation des notifications
     NotificationMetaData notifMetaData = new NotificationMetaData(
         NotificationParameters.NORMAL, subject, body);
     notifMetaData.addLanguage("en", subject_en, body_en);
@@ -1082,8 +1081,8 @@ public class AlmanachSessionController extends
 
   /**
    * Update event occurence (cas particulier de modification d'une occurence
-   * d'événement périodique)
-   * 
+   * d'Ã©vÃ©nement pÃ©riodique)
+   *
    * @param event
    * @param dateDebutIteration
    * @param dateFinIteration
@@ -1101,10 +1100,10 @@ public class AlmanachSessionController extends
         "AlmanachSessionController.updateEventOccurence()",
         "root.MSG_GEN_ENTER_METHOD");
 
-    // Supprime l'occurence : exception dans la série
+    // Supprime l'occurence : exception dans la sÃ©rie
     removeOccurenceEvent(event, dateDebutIteration, dateFinIteration);
 
-    // Ajoute un nouvel événement indépendant
+    // Ajoute un nouvel Ã©vÃ©nement indÃ©pendant
     event.setPeriodicity(null);
     addEvent(event);
 
@@ -1120,7 +1119,7 @@ public class AlmanachSessionController extends
 
   private ExDate generateExceptionDate(Periodicity periodicity)
       throws RemoteException, AlmanachException {
-    // Exceptions de périodicité
+    // Exceptions de pÃ©riodicitÃ©
     return getAlmanachBm().generateExceptionDate(periodicity);
 
   }
@@ -1132,7 +1131,7 @@ public class AlmanachSessionController extends
    */
   public Collection getListRecurrentEvent() throws RemoteException,
       AlmanachException {
-    // Récupère le Calendar ical4j
+    // RÃ©cupÃ¨re le Calendar ical4j
     Calendar calendarAlmanach = getCurrentICal4jCalendar();
 
     return getAlmanachBm().getListRecurrentEvent(calendarAlmanach,

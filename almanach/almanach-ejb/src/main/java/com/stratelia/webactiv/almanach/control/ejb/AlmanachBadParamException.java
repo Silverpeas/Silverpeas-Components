@@ -21,12 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * AlmanachBadParamException.java
- *
- * Created on 24 août 2001, 13:11
- */
-
 package com.stratelia.webactiv.almanach.control.ejb;
 
 /**

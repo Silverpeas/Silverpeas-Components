@@ -129,7 +129,7 @@ public class HistoryDAO {
     try {
       String query = "delete from " + tableName
           + " where path = ? and componentId = ?";
-      // initialisation des paramètres
+      // initialisation des paramÃ¨tres
 
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, path);

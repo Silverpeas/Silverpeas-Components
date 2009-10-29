@@ -26,7 +26,7 @@ package com.silverpeas.silvercrawler.util;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
- * 
+ *
  * @author NEY
  * @version
  */
@@ -46,26 +46,26 @@ public class FileServerUtils extends Object {
 
   public static String replaceAccentChars(String toParse) {
 
-    String newLogicalName = toParse.replace('é', 'e');
-    newLogicalName = newLogicalName.replace('è', 'e');
-    newLogicalName = newLogicalName.replace('ë', 'e');
-    newLogicalName = newLogicalName.replace('ê', 'e');
-    newLogicalName = newLogicalName.replace('ö', 'o');
-    newLogicalName = newLogicalName.replace('ô', 'o');
-    newLogicalName = newLogicalName.replace('õ', 'o');
-    newLogicalName = newLogicalName.replace('ò', 'o');
-    newLogicalName = newLogicalName.replace('ï', 'i');
-    newLogicalName = newLogicalName.replace('î', 'i');
-    newLogicalName = newLogicalName.replace('ì', 'i');
-    newLogicalName = newLogicalName.replace('ñ', 'n');
-    newLogicalName = newLogicalName.replace('ü', 'u');
-    newLogicalName = newLogicalName.replace('û', 'u');
-    newLogicalName = newLogicalName.replace('ù', 'u');
-    newLogicalName = newLogicalName.replace('ç', 'c');
-    newLogicalName = newLogicalName.replace('à', 'a');
-    newLogicalName = newLogicalName.replace('ä', 'a');
-    newLogicalName = newLogicalName.replace('ã', 'a');
-    newLogicalName = newLogicalName.replace('â', 'a');
+    String newLogicalName = toParse.replace('Ã©', 'e');
+    newLogicalName = newLogicalName.replace('Ã¨', 'e');
+    newLogicalName = newLogicalName.replace('Ã«', 'e');
+    newLogicalName = newLogicalName.replace('Ãª', 'e');
+    newLogicalName = newLogicalName.replace('Ã¶', 'o');
+    newLogicalName = newLogicalName.replace('Ã´', 'o');
+    newLogicalName = newLogicalName.replace('Ãµ', 'o');
+    newLogicalName = newLogicalName.replace('Ã²', 'o');
+    newLogicalName = newLogicalName.replace('Ã¯', 'i');
+    newLogicalName = newLogicalName.replace('Ã®', 'i');
+    newLogicalName = newLogicalName.replace('Ã¬', 'i');
+    newLogicalName = newLogicalName.replace('Ã±', 'n');
+    newLogicalName = newLogicalName.replace('Ã¼', 'u');
+    newLogicalName = newLogicalName.replace('Ã»', 'u');
+    newLogicalName = newLogicalName.replace('Ã¹', 'u');
+    newLogicalName = newLogicalName.replace('Ã§', 'c');
+    newLogicalName = newLogicalName.replace('Ã ', 'a');
+    newLogicalName = newLogicalName.replace('Ã¤', 'a');
+    newLogicalName = newLogicalName.replace('Ã£', 'a');
+    newLogicalName = newLogicalName.replace('Ã¢', 'a');
 
     return newLogicalName;
   }

@@ -17,4 +17,25 @@
     <module>mailinglist-war</module>
     <module>mailinglist-config</module>
   </modules>
+
+
+  <dependencies>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>lib-core</artifactId>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>   
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>calendar</artifactId>
+      <version>${core.version}</version>
+      <classifier>client</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-j2ee_1.4_spec</artifactId>
+    </dependency>    
+  </dependencies>
 </project>

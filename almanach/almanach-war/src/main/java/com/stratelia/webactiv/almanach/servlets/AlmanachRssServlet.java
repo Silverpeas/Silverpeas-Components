@@ -45,13 +45,13 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 public class AlmanachRssServlet extends RssServlet {
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String,
    * int)
    */
   public Collection getListElements(String instanceId, int nbReturned)
       throws RemoteException {
-    // récupération de la liste des 10 prochains événements de l'Almanach
+    // rÃ©cupÃ©ration de la liste des 10 prochains Ã©vÃ©nements de l'Almanach
     Collection result = new ArrayList();
 
     Collection allEvents = getAlmanachBm().getAllEvents(
@@ -79,7 +79,7 @@ public class AlmanachRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.silverpeas.peasUtil.RssServlet#getElementTitle(java.lang.Object,
    * java.lang.String)
    */
@@ -90,7 +90,7 @@ public class AlmanachRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.silverpeas.peasUtil.RssServlet#getElementLink(java.lang.Object,
    * java.lang.String)
    */
@@ -101,7 +101,7 @@ public class AlmanachRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * com.silverpeas.peasUtil.RssServlet#getElementDescription(java.lang.Object,
    * java.lang.String)
@@ -113,7 +113,7 @@ public class AlmanachRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see com.silverpeas.peasUtil.RssServlet#getElementDate(java.lang.Object)
    */
   public Date getElementDate(Object element) {

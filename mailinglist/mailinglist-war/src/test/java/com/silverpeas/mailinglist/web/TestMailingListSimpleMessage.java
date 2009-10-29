@@ -78,10 +78,10 @@ public class TestMailingListSimpleMessage extends
     assertNotNull(tableTabbedPane);
     tableTabbedPane = tableTabbedPane.getTableCell(0, 0).getTables()[0];
     assertNotNull(tableTabbedPane);
-    assertEquals("Activité", tableTabbedPane.getCellAsText(0, 2));
+    assertEquals("ActivitÃ©", tableTabbedPane.getCellAsText(0, 2));
     assertEquals("Liste des Messages", tableTabbedPane.getCellAsText(0, 5));
-    assertFalse(activityPage.getText().indexOf("Modération") > 0);
-    assertFalse(activityPage.getText().indexOf("Abonnés Extérieurs") > 0);
+    assertFalse(activityPage.getText().indexOf("ModÃ©ration") > 0);
+    assertFalse(activityPage.getText().indexOf("AbonnÃ©s ExtÃ©rieurs") > 0);
     WebResponse listPage = tableTabbedPane.getTableCell(0, 5).getLinkWith(
         "Liste des Messages").click();
     assertNotNull(listPage);
@@ -89,15 +89,15 @@ public class TestMailingListSimpleMessage extends
     assertNotNull(tableTabbedPane);
     tableTabbedPane = tableTabbedPane.getTableCell(0, 0).getTables()[0];
     assertNotNull(tableTabbedPane);
-    assertEquals("Activité", tableTabbedPane.getCellAsText(0, 2));
+    assertEquals("ActivitÃ©", tableTabbedPane.getCellAsText(0, 2));
     assertEquals("Liste des Messages", tableTabbedPane.getCellAsText(0, 5));
-    assertFalse(listPage.getText().indexOf("Modération") > 0);
-    assertFalse(activityPage.getText().indexOf("Abonnés Extérieurs") > 0);
+    assertFalse(listPage.getText().indexOf("ModÃ©ration") > 0);
+    assertFalse(activityPage.getText().indexOf("AbonnÃ©s ExtÃ©rieurs") > 0);
     WebTable tableMessages = listPage.getTableWithID("list");
     assertNotNull(tableMessages);
     assertEquals("Messages", tableMessages.getCellAsText(0, 0));
     assertEquals("Fichiers Joints", tableMessages.getCellAsText(0, 1));
-    assertEquals("Expéditeur", tableMessages.getCellAsText(0, 2));
+    assertEquals("ExpÃ©diteur", tableMessages.getCellAsText(0, 2));
     assertEquals("Date", tableMessages.getCellAsText(0, 3));
     assertEquals("Simple database message 3", tableMessages.getCellAsText(1, 0));
     assertEquals(
@@ -121,10 +121,10 @@ public class TestMailingListSimpleMessage extends
     assertNotNull(messageTable);
     assertEquals("Simple database message 3", messageTable.getCellAsText(0, 0));
     assertEquals(
-        "Bonjour famille Simpson, j'espère que vous allez bien. "
-            + "Ici tout se passe bien et Krusty est très sympathique. Surtout depuis "
-            + "que Tahiti Bob est retourné en prison. Je dois remplacer l'homme "
-            + "canon dans la prochaine émission.Bart", messageTable
+        "Bonjour famille Simpson, j'espÃ¨re que vous allez bien. "
+            + "Ici tout se passe bien et Krusty est trÃ¨s sympathique. Surtout depuis "
+            + "que Tahiti Bob est retournÃ© en prison. Je dois remplacer l'homme "
+            + "canon dans la prochaine Ã©mission.Bart", messageTable
             .getCellAsText(1, 0));
     assertEquals("bart.simpson@silverpeas.com - 02/03/2008 10:34:15",
         messageTable.getCellAsText(2, 0));
@@ -167,10 +167,10 @@ public class TestMailingListSimpleMessage extends
     assertNotNull(tableTabbedPane);
     tableTabbedPane = tableTabbedPane.getTableCell(0, 0).getTables()[0];
     assertNotNull(tableTabbedPane);
-    assertEquals("Activité", tableTabbedPane.getCellAsText(0, 2));
+    assertEquals("ActivitÃ©", tableTabbedPane.getCellAsText(0, 2));
     assertEquals("Liste des Messages", tableTabbedPane.getCellAsText(0, 5));
-    assertFalse(activityPage.getText().indexOf("Modération") > 0);
-    assertFalse(activityPage.getText().indexOf("Abonnés Extérieurs") > 0);
+    assertFalse(activityPage.getText().indexOf("ModÃ©ration") > 0);
+    assertFalse(activityPage.getText().indexOf("AbonnÃ©s ExtÃ©rieurs") > 0);
     WebResponse listPage = tableTabbedPane.getTableCell(0, 5).getLinkWith(
         "Liste des Messages").click();
     assertNotNull(listPage);
@@ -178,15 +178,15 @@ public class TestMailingListSimpleMessage extends
     assertNotNull(tableTabbedPane);
     tableTabbedPane = tableTabbedPane.getTableCell(0, 0).getTables()[0];
     assertNotNull(tableTabbedPane);
-    assertEquals("Activité", tableTabbedPane.getCellAsText(0, 2));
+    assertEquals("ActivitÃ©", tableTabbedPane.getCellAsText(0, 2));
     assertEquals("Liste des Messages", tableTabbedPane.getCellAsText(0, 5));
-    assertFalse(listPage.getText().indexOf("Modération") > 0);
-    assertFalse(activityPage.getText().indexOf("Abonnés Extérieurs") > 0);
+    assertFalse(listPage.getText().indexOf("ModÃ©ration") > 0);
+    assertFalse(activityPage.getText().indexOf("AbonnÃ©s ExtÃ©rieurs") > 0);
     WebTable tableMessages = listPage.getTableWithID("list");
     assertNotNull(tableMessages);
     assertEquals("Messages", tableMessages.getCellAsText(0, 0));
     assertEquals("Fichiers Joints", tableMessages.getCellAsText(0, 1));
-    assertEquals("Expéditeur", tableMessages.getCellAsText(0, 2));
+    assertEquals("ExpÃ©diteur", tableMessages.getCellAsText(0, 2));
     assertEquals("Date", tableMessages.getCellAsText(0, 3));
     assertEquals("Simple database message 1", tableMessages.getCellAsText(5, 0));
     assertEquals(
@@ -210,10 +210,10 @@ public class TestMailingListSimpleMessage extends
     assertNotNull(messageTable);
     assertEquals("Simple database message 1", messageTable.getCellAsText(0, 0));
     assertEquals(
-        "Bonjour famille Simpson, j'espère que vous allez bien. "
-            + "Ici tout se passe bien et Krusty est très sympathique. Surtout depuis "
-            + "que Tahiti Bob est retourné en prison. Je dois remplacer l'homme "
-            + "canon dans la prochaine émission.Bart", messageTable
+        "Bonjour famille Simpson, j'espÃ¨re que vous allez bien. "
+            + "Ici tout se passe bien et Krusty est trÃ¨s sympathique. Surtout depuis "
+            + "que Tahiti Bob est retournÃ© en prison. Je dois remplacer l'homme "
+            + "canon dans la prochaine Ã©mission.Bart", messageTable
             .getCellAsText(1, 0));
     assertEquals("bart.simpson@silverpeas.com - 01/03/2008 10:34:15",
         messageTable.getCellAsText(2, 0));

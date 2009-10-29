@@ -112,7 +112,7 @@ public class FileFolder extends Object implements java.io.Serializable {
           fChild = new File(path + File.separator + children_name[i]);
           isIndexed = false;
           if (isAdmin) {
-            // rechercher si le répertoire (ou le fichier) est indexé
+            // rechercher si le rÃ©pertoire (ou le fichier) est indexÃ©
             String pathIndex = componentId + "|";
             if (fChild.isDirectory())
               pathIndex = pathIndex + "LinkedDir" + "|";

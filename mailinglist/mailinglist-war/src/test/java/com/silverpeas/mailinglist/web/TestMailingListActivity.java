@@ -70,7 +70,7 @@ public class TestMailingListActivity extends
     assertNotNull(activityPage);
     WebTable browseBar = activityPage.getTableWithID("browseBar");
     assertNotNull(browseBar);
-    assertEquals("MGI Coutier > Liste de diffusion > ActivitÈ", browseBar
+    assertEquals("MGI Coutier > Liste de diffusion > Activit√©", browseBar
         .getCellAsText(0, 0));
     assertEquals("Main", browseBar.getTableCell(0, 0).getLinkWith(
         "Liste de diffusion").getURLString());
@@ -116,16 +116,16 @@ public class TestMailingListActivity extends
         tableHistory.getTableCell(3, 3).getLinkWith("3").getURLString());
     WebTable tableMessages = activityPage.getTableWithID("messages");
     assertNotNull(tableMessages);
-    assertEquals("Message rÈcents", tableMessages.getCellAsText(0, 0));
+    assertEquals("Message r√©cents", tableMessages.getCellAsText(0, 0));
     assertEquals("Simple database message 3", tableMessages.getCellAsText(1, 0));
     assertEquals(MESSAGE_BASE + 3, tableMessages.getTableCell(1, 0)
         .getLinkWith("Simple database message 3").getURLString());
     assertEquals("bart.simpson@silverpeas.com - 02/03/2008 10:34:15",
         tableMessages.getCellAsText(2, 0));
     assertEquals(
-        "Bonjour famille Simpson, j\'espËre que vous allez bien. Ici "
-            + "tout se passe bien et Krusty est trËs sympathique. Surtout depuis que "
-            + "Tahiti Bob est retournÈ en prison. Je dois remplacer l\'homme canon "
+        "Bonjour famille Simpson, j\'esp√®re que vous allez bien. Ici "
+            + "tout se passe bien et Krusty est tr√®s sympathique. Surtout depuis que "
+            + "Tahiti Bob est retourn√© en prison. Je dois remplacer l\'homme canon "
             + "dans ...", tableMessages.getCellAsText(3, 0));
     assertEquals(MESSAGE_BASE + 3,
         tableMessages.getTableCell(3, 0).getLinks()[0].getURLString());
@@ -135,9 +135,9 @@ public class TestMailingListActivity extends
     assertEquals("bart.simpson@silverpeas.com - 02/03/2008 10:12:15",
         tableMessages.getCellAsText(5, 0));
     assertEquals(
-        "Bonjour famille Simpson, j\'espËre que vous allez bien. Ici "
-            + "tout se passe bien et Krusty est trËs sympathique. Surtout depuis que "
-            + "Tahiti Bob est retournÈ en prison. Je dois remplacer l\'homme canon "
+        "Bonjour famille Simpson, j\'esp√®re que vous allez bien. Ici "
+            + "tout se passe bien et Krusty est tr√®s sympathique. Surtout depuis que "
+            + "Tahiti Bob est retourn√© en prison. Je dois remplacer l\'homme canon "
             + "dans ...", tableMessages.getCellAsText(6, 0));
     assertEquals(MESSAGE_BASE + 4,
         tableMessages.getTableCell(6, 0).getLinks()[0].getURLString());
@@ -147,9 +147,9 @@ public class TestMailingListActivity extends
     assertEquals("bart.simpson@silverpeas.com - 01/03/2008 10:34:15",
         tableMessages.getCellAsText(8, 0));
     assertEquals(
-        "Bonjour famille Simpson, j\'espËre que vous allez bien. Ici "
-            + "tout se passe bien et Krusty est trËs sympathique. Surtout depuis que "
-            + "Tahiti Bob est retournÈ en prison. Je dois remplacer l\'homme canon "
+        "Bonjour famille Simpson, j\'esp√®re que vous allez bien. Ici "
+            + "tout se passe bien et Krusty est tr√®s sympathique. Surtout depuis que "
+            + "Tahiti Bob est retourn√© en prison. Je dois remplacer l\'homme canon "
             + "dans ...", tableMessages.getCellAsText(9, 0));
     assertEquals(MESSAGE_BASE + 1,
         tableMessages.getTableCell(9, 0).getLinks()[0].getURLString());
@@ -160,9 +160,9 @@ public class TestMailingListActivity extends
     assertEquals("bart.simpson@silverpeas.com - 21/02/2008 10:34:15",
         tableMessages.getCellAsText(11, 0));
     assertEquals(
-        "Bonjour famille Simpson, j\'espËre que vous allez bien. Ici "
-            + "tout se passe bien et Krusty est trËs sympathique. Surtout depuis que "
-            + "Tahiti Bob est retournÈ en prison. Je dois remplacer l\'homme canon "
+        "Bonjour famille Simpson, j\'esp√®re que vous allez bien. Ici "
+            + "tout se passe bien et Krusty est tr√®s sympathique. Surtout depuis que "
+            + "Tahiti Bob est retourn√© en prison. Je dois remplacer l\'homme canon "
             + "dans ...", tableMessages.getCellAsText(12, 0));
     assertEquals(MESSAGE_BASE + 11, tableMessages.getTableCell(12, 0)
         .getLinks()[0].getURLString());
@@ -170,10 +170,10 @@ public class TestMailingListActivity extends
     assertNotNull(tableTabbedPane);
     tableTabbedPane = tableTabbedPane.getTableCell(0, 0).getTables()[0];
     assertNotNull(tableTabbedPane);
-    assertEquals("ActivitÈ", tableTabbedPane.getCellAsText(0, 2));
+    assertEquals("Activit√©", tableTabbedPane.getCellAsText(0, 2));
     assertEquals("Liste des Messages", tableTabbedPane.getCellAsText(0, 5));
-    assertFalse(activityPage.getText().indexOf("ModÈration") > 0);
-    assertFalse(activityPage.getText().indexOf("AbonnÈs ExtÈrieurs") > 0);
+    assertFalse(activityPage.getText().indexOf("Mod√©ration") > 0);
+    assertFalse(activityPage.getText().indexOf("Abonn√©s Ext√©rieurs") > 0);
   }
 
   public void testAdmin() throws Exception {
@@ -201,7 +201,7 @@ public class TestMailingListActivity extends
     assertNotNull(activityPage);
     WebTable browseBar = activityPage.getTableWithID("browseBar");
     assertNotNull(browseBar);
-    assertEquals("MGI Coutier > Liste de diffusion > ActivitÈ", browseBar
+    assertEquals("MGI Coutier > Liste de diffusion > Activit√©", browseBar
         .getCellAsText(0, 0));
     assertEquals("Main", browseBar.getTableCell(0, 0).getLinkWith(
         "Liste de diffusion").getURLString());
@@ -247,16 +247,16 @@ public class TestMailingListActivity extends
         tableHistory.getTableCell(3, 3).getLinkWith("3").getURLString());
     WebTable tableMessages = activityPage.getTableWithID("messages");
     assertNotNull(tableMessages);
-    assertEquals("Message rÈcents", tableMessages.getCellAsText(0, 0));
+    assertEquals("Message r√©cents", tableMessages.getCellAsText(0, 0));
     assertEquals("Simple database message 3", tableMessages.getCellAsText(1, 0));
     assertEquals(MESSAGE_BASE + 3, tableMessages.getTableCell(1, 0)
         .getLinkWith("Simple database message 3").getURLString());
     assertEquals("bart.simpson@silverpeas.com - 02/03/2008 10:34:15",
         tableMessages.getCellAsText(2, 0));
     assertEquals(
-        "Bonjour famille Simpson, j\'espËre que vous allez bien. Ici "
-            + "tout se passe bien et Krusty est trËs sympathique. Surtout depuis que "
-            + "Tahiti Bob est retournÈ en prison. Je dois remplacer l\'homme canon "
+        "Bonjour famille Simpson, j\'esp√®re que vous allez bien. Ici "
+            + "tout se passe bien et Krusty est tr√®s sympathique. Surtout depuis que "
+            + "Tahiti Bob est retourn√© en prison. Je dois remplacer l\'homme canon "
             + "dans ...", tableMessages.getCellAsText(3, 0));
     assertEquals(MESSAGE_BASE + 3,
         tableMessages.getTableCell(3, 0).getLinks()[0].getURLString());
@@ -266,9 +266,9 @@ public class TestMailingListActivity extends
     assertEquals("bart.simpson@silverpeas.com - 02/03/2008 10:12:15",
         tableMessages.getCellAsText(5, 0));
     assertEquals(
-        "Bonjour famille Simpson, j\'espËre que vous allez bien. Ici "
-            + "tout se passe bien et Krusty est trËs sympathique. Surtout depuis que "
-            + "Tahiti Bob est retournÈ en prison. Je dois remplacer l\'homme canon "
+        "Bonjour famille Simpson, j\'esp√®re que vous allez bien. Ici "
+            + "tout se passe bien et Krusty est tr√®s sympathique. Surtout depuis que "
+            + "Tahiti Bob est retourn√© en prison. Je dois remplacer l\'homme canon "
             + "dans ...", tableMessages.getCellAsText(6, 0));
     assertEquals(MESSAGE_BASE + 4,
         tableMessages.getTableCell(6, 0).getLinks()[0].getURLString());
@@ -278,9 +278,9 @@ public class TestMailingListActivity extends
     assertEquals("bart.simpson@silverpeas.com - 01/03/2008 10:34:15",
         tableMessages.getCellAsText(8, 0));
     assertEquals(
-        "Bonjour famille Simpson, j\'espËre que vous allez bien. Ici "
-            + "tout se passe bien et Krusty est trËs sympathique. Surtout depuis que "
-            + "Tahiti Bob est retournÈ en prison. Je dois remplacer l\'homme canon "
+        "Bonjour famille Simpson, j\'esp√®re que vous allez bien. Ici "
+            + "tout se passe bien et Krusty est tr√®s sympathique. Surtout depuis que "
+            + "Tahiti Bob est retourn√© en prison. Je dois remplacer l\'homme canon "
             + "dans ...", tableMessages.getCellAsText(9, 0));
     assertEquals(MESSAGE_BASE + 1,
         tableMessages.getTableCell(9, 0).getLinks()[0].getURLString());
@@ -291,9 +291,9 @@ public class TestMailingListActivity extends
     assertEquals("bart.simpson@silverpeas.com - 21/02/2008 10:34:15",
         tableMessages.getCellAsText(11, 0));
     assertEquals(
-        "Bonjour famille Simpson, j\'espËre que vous allez bien. Ici "
-            + "tout se passe bien et Krusty est trËs sympathique. Surtout depuis que "
-            + "Tahiti Bob est retournÈ en prison. Je dois remplacer l\'homme canon "
+        "Bonjour famille Simpson, j\'esp√®re que vous allez bien. Ici "
+            + "tout se passe bien et Krusty est tr√®s sympathique. Surtout depuis que "
+            + "Tahiti Bob est retourn√© en prison. Je dois remplacer l\'homme canon "
             + "dans ...", tableMessages.getCellAsText(12, 0));
     assertEquals(MESSAGE_BASE + 11, tableMessages.getTableCell(12, 0)
         .getLinks()[0].getURLString());
@@ -301,10 +301,10 @@ public class TestMailingListActivity extends
     assertNotNull(tableTabbedPane);
     tableTabbedPane = tableTabbedPane.getTableCell(0, 0).getTables()[0];
     assertNotNull(tableTabbedPane);
-    assertEquals("ActivitÈ", tableTabbedPane.getCellAsText(0, 2));
+    assertEquals("Activit√©", tableTabbedPane.getCellAsText(0, 2));
     assertEquals("Liste des Messages", tableTabbedPane.getCellAsText(0, 5));
-    assertEquals("ModÈration", tableTabbedPane.getCellAsText(0, 8));
-    assertEquals("AbonnÈs ExtÈrieurs", tableTabbedPane.getCellAsText(0, 11));
+    assertEquals("Mod√©ration", tableTabbedPane.getCellAsText(0, 8));
+    assertEquals("Abonn√©s Ext√©rieurs", tableTabbedPane.getCellAsText(0, 11));
   }
 
   protected String buildUrl(String path) {

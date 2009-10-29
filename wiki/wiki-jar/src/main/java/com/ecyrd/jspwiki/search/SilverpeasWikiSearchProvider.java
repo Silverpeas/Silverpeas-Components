@@ -102,7 +102,7 @@ public class SilverpeasWikiSearchProvider implements SearchProvider {
 	}
 
 	public String getProviderInfo() {
-		return "Indexeur de Silverpeas (basé sur Lucene)";
+		return "Indexeur de Silverpeas (basÃ© sur Lucene)";
 	}
 
 	public void initialize(WikiEngine engine, Properties props)

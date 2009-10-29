@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- jChatBox XML Configuration - JavaZOOM -->
+<jChatBox>
+    <LOGFOLDER>/Silverpeas/KMEdition/Production/chat</LOGFOLDER>
+    <BACKUPFILE>/Silverpeas/KMEdition/Production/chat/backup.ser</BACKUPFILE>
+    <SYSTEMLOGIN>system</SYSTEMLOGIN>
+    <SYSTEMPASSWORD>5f4dcc3b5aa765d61d8327deb882cf99</SYSTEMPASSWORD>
+    <SYSTEMEMAIL>jchatbox@javazoom.net</SYSTEMEMAIL>
+    <TIMEOUT>300</TIMEOUT>
+    <COOKIEID>JSESSIONID</COOKIEID>
+    <USERSESSIONID>user</USERSESSIONID>
+    <LICENSE>free-for-non-commercial.oxw</LICENSE>
+    <FILTERS>
+        <FILTER>jChatBox.Chat.Filter.HTMLFilter</FILTER>
+        <FILTER>jChatBox.Chat.Filter.URLFilter</FILTER>
+    </FILTERS>
+    <jChatBox>
+        <LOGFOLDER>E:/Intranet/silverpeas/log/chat</LOGFOLDER>
+    </jChatBox>
+</jChatBox>
+

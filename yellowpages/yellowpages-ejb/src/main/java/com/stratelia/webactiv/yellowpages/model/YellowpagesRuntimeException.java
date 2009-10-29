@@ -21,28 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
+
 
 package com.stratelia.webactiv.yellowpages.model;
 
-import com.stratelia.webactiv.util.exception.*;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-/*
- * CVS Informations
- *
- * $Id: YellowpagesRuntimeException.java,v 1.1.1.1 2002/08/06 14:48:02 nchaix Exp $
- *
- * $Log: YellowpagesRuntimeException.java,v $
- * Revision 1.1.1.1  2002/08/06 14:48:02  nchaix
- * no message
- *
- * Revision 1.7  2002/01/22 11:12:20  mguillem
- * Stabilisation Lot2
- * Réorganisation des Router et SessionController
- * Suppression dans les fichiers *Exception de 'implements FromModule'
- *
- */
 
 /**
  * Class declaration

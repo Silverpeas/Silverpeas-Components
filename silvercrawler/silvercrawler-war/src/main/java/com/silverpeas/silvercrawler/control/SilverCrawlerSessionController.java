@@ -68,13 +68,13 @@ public class SilverCrawlerSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    *          The user's profile
    * @param componentContext
    *          The component's profile
-   * 
+   *
    * @see
    */
   public SilverCrawlerSessionController(MainSessionController mainSessionCtrl,
@@ -117,7 +117,7 @@ public class SilverCrawlerSessionController extends
   public void setRootPath() {
     currentPath = rootPath;
 
-    // création de la collection des chemins
+    // crÃ©ation de la collection des chemins
     paths = new ArrayList();
   }
 
@@ -145,7 +145,7 @@ public class SilverCrawlerSessionController extends
   }
 
   public void goToDirectory(String directory) {
-    // parcourir les répertoires et recréer les variables courantes
+    // parcourir les rÃ©pertoires et recrÃ©er les variables courantes
     Collection newPaths = new ArrayList();
 
     currentPath = rootPath;
@@ -154,21 +154,21 @@ public class SilverCrawlerSessionController extends
     Iterator it = paths.iterator();
     while (it.hasNext() && !trouve) {
       String path = (String) it.next();
-      // on ajoute ce répertoire à la liste
+      // on ajoute ce rÃ©pertoire Ã  la liste
       newPaths.add(path);
       // currentPath = currentPath + File.separator + path;
       currentPath = currentPath + separator + path;
       if (path.equals(directory)) {
-        // on est sur le répertoire voulu
+        // on est sur le rÃ©pertoire voulu
         trouve = true;
       }
     }
-    // mise à jour de la collection des répertoires
+    // mise Ã  jour de la collection des rÃ©pertoires
     paths = newPaths;
   }
 
   public Boolean isDownload() {
-    // retourne true si l'utilisateur peut télécharger un répertoire complet
+    // retourne true si l'utilisateur peut tÃ©lÃ©charger un rÃ©pertoire complet
     boolean download = true;
     if (getSizeMax() == 0)
       download = false;
@@ -176,7 +176,7 @@ public class SilverCrawlerSessionController extends
   }
 
   public Boolean isPrivateSearch() {
-    // retourne true si on utilise le moteur de recherche dédié
+    // retourne true si on utilise le moteur de recherche dÃ©diÃ©
     return new Boolean("yes"
         .equalsIgnoreCase(getComponentParameterValue("privateSearch")));
   }
@@ -191,15 +191,15 @@ public class SilverCrawlerSessionController extends
   public void setCurrentPath(String path) {
     // currentPath = currentPath + File.separator + path;
     currentPath = currentPath + separator + path;
-    // mise à jour de la collection des chemins
+    // mise Ã  jour de la collection des chemins
     paths.add(path);
   }
 
   public void setCurrentPathFromResult(String path) {
     currentPath = rootPath + separator + path;
-    // mise à jour de la collection des chemins
+    // mise Ã  jour de la collection des chemins
     paths.clear();
-    // décomposer le chemin pour créer le path
+    // dÃ©composer le chemin pour crÃ©er le path
     SilverTrace.debug("silverCrawler",
         "SilverCrawlerSessionController.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "separator = " + separator + " path = "
@@ -260,14 +260,14 @@ public class SilverCrawlerSessionController extends
         "SilverCrawlerSessionController.zipFolder()",
         "root.MSG_GEN_PARAM_VALUE", "sizeMax = " + sizeMax);
 
-    // rechercher si la taille du répertoire est < à la taille maxi
+    // rechercher si la taille du rÃ©pertoire est < Ã  la taille maxi
     boolean sizeOk = getSize(downloadPath, sizeMax);
 
     SilverTrace.debug("silverCrawler",
         "SilverCrawlerSessionController.zipFolder()",
         "root.MSG_GEN_PARAM_VALUE", "sizeOk = " + sizeOk);
 
-    // si la taille est inferieur à celle autorisée :
+    // si la taille est inferieur Ã  celle autorisÃ©e :
     if (sizeOk) {
       try {
         sizeZip = ZipManager.compressPathToZip(downloadPath, pathZip + fileZip);
@@ -416,7 +416,7 @@ public class SilverCrawlerSessionController extends
           fileOnServer = new File(path);
 
           if (fileOnServer.exists()) {
-            // Récupération des objects indéxés
+            // RÃ©cupÃ©ration des objects indÃ©xÃ©s
             // Modification du chemin absolu pour masquer le contexte
             path = path.substring(rootPath.length() + 1);
             if (type.equals("LinkedFile")) {
@@ -428,12 +428,12 @@ public class SilverCrawlerSessionController extends
                   "SilverCrawlerSessionController.getResultSearch()",
                   "root.MSG_GEN_PARAM_VALUE", "fichier = " + path);
             } else if (type.equals("LinkedDir")) {
-              // un répertoires
+              // un rÃ©pertoires
               file = new FileDetail(matchIndex.getTitle(), path, 0, true);
               docs.add(file);
               SilverTrace.info("silverCrawler",
                   "SilverCrawlerSessionController.getResultSearch()",
-                  "root.MSG_GEN_PARAM_VALUE", "répertoire = " + path);
+                  "root.MSG_GEN_PARAM_VALUE", "rÃ©pertoire = " + path);
             }
           } else {
             // l'objet n'existe plus, suppression de son index

@@ -100,7 +100,7 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
 
         SilverTrace.info("resourcesManager", "AjaxResourcesManagerServlet",
             "root.MSG_GEN_PARAM_VALUE",
-            " avant concaténation listResourceName= " + listResourceName);
+            " avant concatÃ©nation listResourceName= " + listResourceName);
         if (StringUtil.isDefined(listResourceName))
           listResourceName = resourcesManagerSC
               .getString("resourcesManager.resourceUnReservable")

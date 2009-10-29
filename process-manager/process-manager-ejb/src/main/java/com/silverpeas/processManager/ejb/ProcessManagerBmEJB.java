@@ -83,15 +83,15 @@ public class ProcessManagerBmEJB implements SessionBean {
 			this.userId = userId;
 			XmlForm form = (XmlForm) getCreationForm();
 			GenericDataRecord data = (GenericDataRecord) getEmptyCreationRecord();
-			
+
 			PagesContext pagesContext = new PagesContext("creationForm", "0", getLanguage(), true, componentId, userId);
-			
+
 			//versioning used ?
 			OrganizationController controller = new OrganizationController();
 			String paramVersion = controller.getComponentParameterValue(componentId, "versionControl");
 			boolean versioningUsed = (StringUtil.isDefined(paramVersion) && !("no").equals(paramVersion.toLowerCase()));
 			pagesContext.setVersioningUsed(versioningUsed);
-			
+
 			//1 - Populate form data (save file on disk, populate file field)
 			FieldTemplate fieldTemplate;
 			Field field;
@@ -113,19 +113,19 @@ public class ProcessManagerBmEJB implements SessionBean {
 					{
 						field = data.getField(fieldTemplate.getFieldName());
 						FileField fileField = (FileField) field;
-						
+
 						attachmentId = processUploadedFile(fileContent, fileName, pagesContext);
-						
+
 						fileField.setAttachmentId(attachmentId);
-						
+
 						fileInserted = true;
 					}
 				}
 			}
-			
+
 			//2 - Create process instance
 			instanceId = createProcessInstance(data);
-			
+
 			//3 - Update attachment foreignkey
 			//Attachment's foreignkey must be set with the just created instanceId
 			AttachmentPK 	attachmentPK 	= null;
@@ -135,12 +135,12 @@ public class ProcessManagerBmEJB implements SessionBean {
 			for (int a=0; a<attachmentIds.size(); a++)
 			{
 				attachmentId = (String) attachmentIds.get(a);
-				
+
 				if (versioningUsed)
 				{
 					if (versioningUtil == null)
 						versioningUtil = new VersioningUtil();
-					
+
 					documentPK = new DocumentPK(Integer.parseInt(attachmentId), "useless", componentId);
 					versioningUtil.updateDocumentForeignKey(documentPK, instanceId);
 				}
@@ -153,7 +153,7 @@ public class ProcessManagerBmEJB implements SessionBean {
 		} catch (Exception e) {
 			SilverTrace.error("processManager", "ProcessManagerBmEJB.createProcess", "root.MSG_GEN_ERROR", e);
 		}
-		
+
 		return instanceId;
 	}
 
@@ -320,7 +320,7 @@ public class ProcessManagerBmEJB implements SessionBean {
     if (objectId != null)
       pubPK.setId(objectId);
 
-    // Création d'un nouveau document
+    // CrÃ©ation d'un nouveau document
     DocumentPK docPK = new DocumentPK(-1, "useless", componentId);
     Document document = new Document(docPK, pubPK, attachment.getLogicalName(),
         "", -1, userId, new Date(), null, null, null, null, 0, 0);
@@ -330,7 +330,7 @@ public class ProcessManagerBmEJB implements SessionBean {
     DocumentVersion version = new DocumentVersion(attachment);
     version.setAuthorId(userId);
 
-    // et on y ajoute la première version
+    // et on y ajoute la premiÃ¨re version
     version.setMajorNumber(1);
     version.setMinorNumber(0);
     version.setType(DocumentVersion.TYPE_PUBLIC_VERSION);

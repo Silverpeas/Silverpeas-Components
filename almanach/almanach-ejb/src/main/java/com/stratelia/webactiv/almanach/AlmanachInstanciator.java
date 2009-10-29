@@ -40,11 +40,6 @@ import com.stratelia.webactiv.beans.admin.instance.control.InstanciationExceptio
 import com.stratelia.webactiv.util.attachment.AttachmentInstanciator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-/**
- * 
- * @author squere
- * @version update by Sébastien Antonio - Externalisation of the SQL request
- */
 public class AlmanachInstanciator extends SQLRequest implements
     ComponentsInstanciatorIntf {
 

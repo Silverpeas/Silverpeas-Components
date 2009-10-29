@@ -76,7 +76,7 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
 /**
  * Cette classe gere la session de l'acteur durant sa navigation dans les forums
- * 
+ *
  * @author frageade
  * @since September 2000
  */
@@ -278,7 +278,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Cree un nouveau forum dans la datasource
-   * 
+   *
    * @param String
    *          nom du forum
    * @param String
@@ -313,7 +313,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Met a jour les informations sur un forum dans la datasource
-   * 
+   *
    * @param int l'ID du forum dans la datasource
    * @param String
    *          nom du forum
@@ -345,7 +345,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Supprime un forum et tous ses sous-forums a partir de son ID
-   * 
+   *
    * @param int l'ID du forum dans la datasource
    * @author frageade
    * @since 3 Octobre 2000
@@ -360,7 +360,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Indexe un forum a partir de son ID
-   * 
+   *
    * @param int l'ID du forum dans la datasource
    * @author frageade
    * @since 23 Aout 2001
@@ -377,7 +377,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Liste les messages d'un forum
-   * 
+   *
    * @param String
    *          id du forum
    * @return Vector la liste des messages
@@ -424,8 +424,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * Récupère le dernier message d'un forum
-   * 
+   * RÃ©cupÃ¨re le dernier message d'un forum
+   *
    * @param String
    *          id du forum
    * @return String les champs du dernier message
@@ -457,12 +457,12 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Nombre de sujets d'un forum
-   * 
+   *
    * @param String
    *          id du forum
    * @return int le nombre de sujets
    * @author sfariello
-   * @since 07 Décembre 2007
+   * @since 07 DÃ©cembre 2007
    */
   public int getNbSubjects(int forumId) {
     try {
@@ -474,12 +474,12 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Nombre de messages d'un forum
-   * 
+   *
    * @param String
    *          id du forum
    * @return int le nombre de messages
    * @author sfariello
-   * @since 07 Décembre 2007
+   * @since 07 DÃ©cembre 2007
    */
   public int getNbMessages(int forumId) {
     try {
@@ -507,7 +507,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Recupere les infos d'un message
-   * 
+   *
    * @param String
    *          id du message
    * @return Vector la liste des champs du message
@@ -540,7 +540,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Cree un nouveau message dans la datasource
-   * 
+   *
    * @param String
    *          titre du message
    * @param String
@@ -551,7 +551,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    *          id du message parent
    * @param String
    *          texte du message
-   * @return String l'id du message créé
+   * @return String l'id du message crÃ©Ã©
    * @author frageade
    * @since 04 Octobre 2000
    */
@@ -666,7 +666,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Indexe un message a partir de son ID
-   * 
+   *
    * @param String
    *          l'ID du message dans la datasource
    * @author frageade
@@ -682,7 +682,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Supprime un message et tous ses sous-messages a partir de son ID
-   * 
+   *
    * @param String
    *          l'ID du message dans la datasource
    * @author frageade
@@ -937,7 +937,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public Category getCategory(String categoryId) {
     try {
-      // rechercher la catégorie
+      // rechercher la catÃ©gorie
       NodePK nodePK = new NodePK(categoryId, getComponentId());
       return forumsBM.getCategory(nodePK);
     } catch (RemoteException re) {

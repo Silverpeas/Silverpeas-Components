@@ -54,7 +54,7 @@ import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 public class YellowpagesRequestRouter extends ComponentRequestRouter {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
@@ -77,7 +77,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -142,7 +142,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
               request.setAttribute("TypeSearch", scc.getCurrentTypeSearch());
               request.setAttribute("SearchCriteria", scc
                   .getCurrentSearchCriteria());
-            } else {// réinitialise la liste
+            } else {// rÃ©initialise la liste
               contacts = scc.getAllContactDetails(currentTopic.getNodePK());
               scc.resetCurrentTypeSearchCriteria();
             }
@@ -216,7 +216,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         String id = request.getParameter("Id");
         String type = request.getParameter("Type");
 
-        if (type.equals("Contact")) { // un contact peut-être dans plusieurs
+        if (type.equals("Contact")) { // un contact peut-Ãªtre dans plusieurs
           // noeuds de l'annuaire
           TopicDetail currentTopic = scc.getTopic("0");
           scc.setCurrentTopic(currentTopic);
@@ -288,7 +288,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             String xmlFormName = modelId;
             String xmlFormShortName = xmlFormName.substring(xmlFormName
                 .indexOf("/") + 1, xmlFormName.indexOf("."));
-            // création du PublicationTemplate
+            // crÃ©ation du PublicationTemplate
             PublicationTemplateManager.addDynamicPublicationTemplate(scc
                 .getComponentId()
                 + ":" + xmlFormShortName, xmlFormName);
@@ -296,7 +296,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
                 .getPublicationTemplate(scc.getComponentId() + ":"
                     + xmlFormShortName, xmlFormName);
 
-            // création du formulaire et du DataRecord
+            // crÃ©ation du formulaire et du DataRecord
             Form formView = pubTemplate.getViewForm();
             RecordSet recordSet = pubTemplate.getRecordSet();
             DataRecord data = recordSet.getRecord(contactId);
@@ -305,7 +305,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
               data.setId(contactId);// id contact
             }
 
-            // appel de la jsp avec les paramètres
+            // appel de la jsp avec les paramÃ¨tres
             request.setAttribute("Form", formView);
             request.setAttribute("Data", data);
 
@@ -375,7 +375,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         }
         destination = getDestination("topicManager", scc, request);
       } else if (function.startsWith("modelManager")) {
-        // récupération des données saisies dans le formulaire
+        // rÃ©cupÃ©ration des donnÃ©es saisies dans le formulaire
         List items = FileUploadUtil.parseRequest(request);
 
         String action = FileUploadUtil.getParameter(items, "Action");
@@ -423,7 +423,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             String xmlFormName = modelId;
             String xmlFormShortName = xmlFormName.substring(xmlFormName
                 .indexOf("/") + 1, xmlFormName.indexOf("."));
-            // création du PublicationTemplate
+            // crÃ©ation du PublicationTemplate
             PublicationTemplateManager.addDynamicPublicationTemplate(scc
                 .getComponentId()
                 + ":" + xmlFormShortName, xmlFormName);
@@ -431,13 +431,13 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
                 .getPublicationTemplate(scc.getComponentId() + ":"
                     + xmlFormShortName, xmlFormName);
 
-            // création du formulaire et du DataRecord
+            // crÃ©ation du formulaire et du DataRecord
             Form formUpdate = pubTemplate.getUpdateForm();
             RecordSet recordSet = pubTemplate.getRecordSet();
             DataRecord data = recordSet.getEmptyRecord();
             data.setId(contactId); // id Rubrique = id NodeDetail
 
-            // appel de la jsp avec les paramètres
+            // appel de la jsp avec les paramÃ¨tres
             request.setAttribute("Form", formUpdate);
             request.setAttribute("Data", data);
 
@@ -457,7 +457,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             String xmlFormName = modelId;
             String xmlFormShortName = xmlFormName.substring(xmlFormName
                 .indexOf("/") + 1, xmlFormName.indexOf("."));
-            // création du PublicationTemplate
+            // crÃ©ation du PublicationTemplate
             PublicationTemplateManager.addDynamicPublicationTemplate(scc
                 .getComponentId()
                 + ":" + xmlFormShortName, xmlFormName);
@@ -465,7 +465,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
                 .getPublicationTemplate(scc.getComponentId() + ":"
                     + xmlFormShortName, xmlFormName);
 
-            // création du formulaire et du DataRecord
+            // crÃ©ation du formulaire et du DataRecord
             Form formUpdate = pubTemplate.getUpdateForm();
             RecordSet recordSet = pubTemplate.getRecordSet();
             DataRecord data = recordSet.getRecord(contactId);
@@ -474,7 +474,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
               data.setId(contactId);// id contact
             }
 
-            // appel de la jsp avec les paramètres
+            // appel de la jsp avec les paramÃ¨tres
             request.setAttribute("Form", formUpdate);
             request.setAttribute("Data", data);
 
@@ -484,14 +484,14 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             context.setObjectId(contactId);
             request.setAttribute("PagesContext", context);
           }
-        } else if ("Add".equals(action)) { // met à jour le choix de formulaire
+        } else if ("Add".equals(action)) { // met Ã  jour le choix de formulaire
           // XML
           if (StringUtil.isDefined(modelId)) {
             String xmlFormName = modelId;
             String xmlFormShortName = xmlFormName.substring(xmlFormName
                 .indexOf("/") + 1, xmlFormName.indexOf("."));
 
-            // récupération des données du formulaire (via le DataRecord)
+            // rÃ©cupÃ©ration des donnÃ©es du formulaire (via le DataRecord)
             PublicationTemplate pubTemplate = PublicationTemplateManager
                 .getPublicationTemplate(scc.getComponentId() + ":"
                     + xmlFormShortName);
@@ -503,7 +503,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
               data.setId(contactId);// id contact
             }
 
-            // sauvegarde des données du formulaire
+            // sauvegarde des donnÃ©es du formulaire
             PagesContext context = new PagesContext("modelForm", "0", scc
                 .getLanguage(), false, scc.getComponentId(), scc.getUserId());
             context.setObjectId(contactId);

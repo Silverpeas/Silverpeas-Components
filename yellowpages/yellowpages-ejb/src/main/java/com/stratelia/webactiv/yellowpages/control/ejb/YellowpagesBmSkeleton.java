@@ -39,17 +39,17 @@ import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
  * This is the Yellowpages EJB-tier controller of the MVC. It is implemented as
  * a session EJB. It controls all the activities that happen in a client
  * session. It also provides mechanisms to access other session EJBs.
- * 
+ *
  * @author Nicolas Eysseric
  */
 public interface YellowpagesBmSkeleton {
 
   /**************************************************************************************/
-  /* Interface - Gestion des thèmes */
+  /* Interface - Gestion des thÃ¨mes */
   /**************************************************************************************/
   /**
    * Set the space Id where the user is logged on
-   * 
+   *
    * @param space
    *          the space name
    * @since 1.0
@@ -60,7 +60,7 @@ public interface YellowpagesBmSkeleton {
 
   /**
    * Set the current User ActorDetail
-   * 
+   *
    * @param userDetail
    *          the UserDetail of the current User
    * @since 1.0
@@ -68,11 +68,11 @@ public interface YellowpagesBmSkeleton {
   public void setActor(UserDetail userDetail) throws RemoteException;
 
   /**************************************************************************************/
-  /* Interface - Gestion des thèmes */
+  /* Interface - Gestion des thÃ¨mes */
   /**************************************************************************************/
   /**
    * Return a the detail of a topic
-   * 
+   *
    * @param id
    *          the id of the topic
    * @return a TopicDetail
@@ -91,7 +91,7 @@ public interface YellowpagesBmSkeleton {
   /**
    * Add a subtopic to a topic - If a subtopic of same name already exists a
    * NodePK with id=-1 is returned else the new topic NodePK
-   * 
+   *
    * @param fatherId
    *          the topic Id of the future father
    * @param subTopic
@@ -113,7 +113,7 @@ public interface YellowpagesBmSkeleton {
   /**
    * Add a subtopic to currentTopic and alert users - If a subtopic of same name
    * already exists a NodePK with id=-1 is returned else the new topic NodePK
-   * 
+   *
    * @param subTopic
    *          the NodeDetail of the new sub topic
    * @param alertType
@@ -136,7 +136,7 @@ public interface YellowpagesBmSkeleton {
    * Update a subtopic to currentTopic and alert users - If a subtopic of same
    * name already exists a NodePK with id=-1 is returned else the new topic
    * NodePK
-   * 
+   *
    * @param topic
    *          the NodeDetail of the updated sub topic
    * @param alertType
@@ -157,7 +157,7 @@ public interface YellowpagesBmSkeleton {
 
   /**
    * Return a subtopic to currentTopic
-   * 
+   *
    * @param subTopicId
    *          the id of the researched topic
    * @return the detail of the specified topic
@@ -175,7 +175,7 @@ public interface YellowpagesBmSkeleton {
    * Delete a topic and all descendants. Delete all links between descendants
    * and contacts. This contacts will be visible in the Declassified zone.
    * Delete All subscriptions and favorites on this topics and all descendants
-   * 
+   *
    * @param topicId
    *          the id of the topic to delete
    * @exception java.rmi.RemoteException
@@ -197,7 +197,7 @@ public interface YellowpagesBmSkeleton {
   /**************************************************************************************/
   /**
    * Return the detail of a contact (only the Header)
-   * 
+   *
    * @param pubId
    *          the id of the contact
    * @return a ContactDetail
@@ -214,7 +214,7 @@ public interface YellowpagesBmSkeleton {
   /**
    * Return list of all path to this contact - it's a Collection of NodeDetail
    * collection
-   * 
+   *
    * @param pubId
    *          the id of the contact
    * @return a Collection of NodeDetail collection
@@ -230,7 +230,7 @@ public interface YellowpagesBmSkeleton {
 
   /**
    * Create a new Contact (only the header - parameters) to the current Topic
-   * 
+   *
    * @param pubDetail
    *          a ContactDetail
    * @return the id of the new contact
@@ -246,7 +246,7 @@ public interface YellowpagesBmSkeleton {
 
   /**
    * Update a contact (only the header - parameters)
-   * 
+   *
    * @param pubDetail
    *          a ContactDetail
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
@@ -262,7 +262,7 @@ public interface YellowpagesBmSkeleton {
   /**
    * Delete a contact If this contact is in the basket or in the DZ, it's
    * deleted from the database Else it only send to the basket
-   * 
+   *
    * @param pubId
    *          the id of the contact to delete
    * @return a TopicDetail
@@ -279,7 +279,7 @@ public interface YellowpagesBmSkeleton {
 
   /**
    * Add a contact to a topic and send email alerts to topic subscribers
-   * 
+   *
    * @param pubId
    *          the id of the contact
    * @param fatherId
@@ -296,7 +296,7 @@ public interface YellowpagesBmSkeleton {
 
   /**
    * Delete a path between contact and topic
-   * 
+   *
    * @param pubId
    *          the id of the contact
    * @param fatherId
@@ -313,7 +313,7 @@ public interface YellowpagesBmSkeleton {
 
   /**
    * Create model info attached to a contact
-   * 
+   *
    * @param pubId
    *          the id of the contact
    * @param modelId
@@ -330,7 +330,7 @@ public interface YellowpagesBmSkeleton {
 
   /**
    * Return all info of a contact and add a reading statistic
-   * 
+   *
    * @param pubId
    *          the id of a contact
    * @return a CompleteContact
@@ -347,7 +347,7 @@ public interface YellowpagesBmSkeleton {
 
   /**
    * Return all info of a contact and add a reading statistic
-   * 
+   *
    * @param ContactId
    *          the id of a contact
    * @param nodeId
@@ -366,7 +366,7 @@ public interface YellowpagesBmSkeleton {
 
   /**
    * Return a collection of ContactDetail throught a collection of contact ids
-   * 
+   *
    * @param contactIds
    *          a collection of contact ids
    * @return a collection of ContactDetail

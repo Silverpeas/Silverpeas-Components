@@ -26,8 +26,8 @@ package com.stratelia.webactiv.forums.forumEntity.ejb;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
- * Clé primaire associée à un forum.
- * 
+ * ClÃ© primaire associÃ©e Ã  un forum.
+ *
  * @author frageade
  * @since November 2000
  */

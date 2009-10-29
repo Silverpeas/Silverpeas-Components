@@ -217,17 +217,17 @@ public class ForumsDAO {
       if (message != null) {
         String instanceId = messagePK.getComponentName();
         if (instanceId != null && instanceId.length() > 0) {
-          // Vérification que le message retourné fait partie d'un forum dont
+          // VÃ©rification que le message retournÃ© fait partie d'un forum dont
           // l'instanceid
-          // correspond à celui de la clé du message.
+          // correspond Ã  celui de la clÃ© du message.
           String forumInstanceId = getForumInstanceId(con, message.getForumId());
           if (instanceId.equals(forumInstanceId)) {
             message.setInstanceId(instanceId);
             messages.add(message);
           }
         } else {
-          // Ajout systématique si l'instanceid de la clé du message n'est pas
-          // renseignée.
+          // Ajout systÃ©matique si l'instanceid de la clÃ© du message n'est pas
+          // renseignÃ©e.
           messages.add(message);
         }
       }
@@ -615,7 +615,7 @@ public class ForumsDAO {
 
   /**
    * Locks the forum corresponding to the primary key.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param forumPK
@@ -654,7 +654,7 @@ public class ForumsDAO {
 
   /**
    * Unlocks the forum corresponding to the primary key.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param forumPK
@@ -706,7 +706,7 @@ public class ForumsDAO {
 
   /**
    * Creates a forum.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param forumPK
@@ -767,7 +767,7 @@ public class ForumsDAO {
 
   /**
    * Updates the forum corresponding to the primary key.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param forumPK
@@ -825,7 +825,7 @@ public class ForumsDAO {
 
   /**
    * Deletes the forum corresponding to the primary key.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param forumPK
@@ -1637,7 +1637,7 @@ public class ForumsDAO {
 
   /**
    * Creates a message.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param messageTitle
@@ -1665,7 +1665,7 @@ public class ForumsDAO {
     SilverTrace.info("forums", "ForumsDAO.createMessage()",
         "root.MSG_GEN_PARAM_VALUE", "insertQuery  = " + QUERY_CREATE_MESSAGE);
     SilverTrace.info("forums", "ForumsDAO.createMessage()",
-        "root.MSG_GEN_PARAM_VALUE", "date de création = " + messageDate);
+        "root.MSG_GEN_PARAM_VALUE", "date de crÃ©ation = " + messageDate);
 
     PreparedStatement insertStmt = null;
     try {
@@ -1696,7 +1696,7 @@ public class ForumsDAO {
 
   /**
    * Updates the message corresponding to the primary key.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param messagePK
@@ -1733,7 +1733,7 @@ public class ForumsDAO {
 
   /**
    * Deletes the message corresponding to the primary key.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param messagePK
@@ -1842,7 +1842,7 @@ public class ForumsDAO {
   /**
    * Adds the role of moderator to the user on the forum corresponding to the
    * primary key.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param forumPK
@@ -1875,7 +1875,7 @@ public class ForumsDAO {
   /**
    * Removes the role of moderator to the user on the forum corresponding to the
    * primary key.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param forumPK
@@ -1907,7 +1907,7 @@ public class ForumsDAO {
   /**
    * Removes the role of moderator to all users on the forum corresponding to
    * the primary key.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param forumPK
@@ -1938,7 +1938,7 @@ public class ForumsDAO {
   /**
    * Moves the message corresponding to the message primary key from a previous
    * forum to the one corresponding to the forum primary key.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param messagePK
@@ -1995,7 +1995,7 @@ public class ForumsDAO {
   /**
    * Adds to the user the subscription to the message corresponding to the
    * primary key.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param messagePK
@@ -2030,7 +2030,7 @@ public class ForumsDAO {
   /**
    * Removes from the user the subscription to the message corresponding to the
    * primary key.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param messagePK
@@ -2064,7 +2064,7 @@ public class ForumsDAO {
   /**
    * Removes from all users the subscription to the message corresponding to the
    * primary key.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param messagePK
@@ -2288,7 +2288,7 @@ public class ForumsDAO {
       DBUtil.close(rs, selectStmt);
     }
     SilverTrace.info("forums", "ForumsDAO.getLastVisit()",
-        "root.MSG_GEN_PARAM_VALUE", "date de dernière visite = " + lastVisit);
+        "root.MSG_GEN_PARAM_VALUE", "date de derniÃ¨re visite = " + lastVisit);
     return lastVisit;
   }
 
@@ -2298,7 +2298,7 @@ public class ForumsDAO {
   /**
    * Adds an access date to the message corresponding to the message id by the
    * user.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param userId
@@ -2310,13 +2310,13 @@ public class ForumsDAO {
    */
   public static void addLastVisit(Connection con, String userId, int messageId)
       throws SQLException {
-    // supprimer la ligne correspondante à ce user et ce message si elle existe
+    // supprimer la ligne correspondante Ã  ce user et ce message si elle existe
     deleteVisit(con, userId, messageId);
 
     Date date = new Date();
 
     SilverTrace.info("forums", "ForumsDAO.addLastVisit()",
-        "root.MSG_GEN_PARAM_VALUE", "date de dernière visite = " + date);
+        "root.MSG_GEN_PARAM_VALUE", "date de derniÃ¨re visite = " + date);
     SilverTrace.info("forums", "ForumsDAO.addLastVisit()",
         "root.MSG_GEN_PARAM_VALUE", "insertQuery  = " + QUERY_ADD_LAST_VISIT);
 
@@ -2339,7 +2339,7 @@ public class ForumsDAO {
   /**
    * Deletes the access date of the user to the message corresponding to the
    * message id.
-   * 
+   *
    * @param con
    *          The connection to the database.
    * @param userId

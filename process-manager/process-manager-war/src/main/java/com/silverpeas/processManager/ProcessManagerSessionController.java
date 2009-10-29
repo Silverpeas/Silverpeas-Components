@@ -109,7 +109,7 @@ public class ProcessManagerSessionController extends
 
     SilverTrace.info("processManager",
         "ProcessManagerSessionController.constructor()",
-        "root.MSG_GEN_PARAM_VALUE", "après getProcessModel()");
+        "root.MSG_GEN_PARAM_VALUE", "aprÃ¨s getProcessModel()");
 
     // the current user is given by the main session controller.
     currentUser = getUser(mainSessionCtrl.getUserId());
@@ -127,7 +127,7 @@ public class ProcessManagerSessionController extends
 
     SilverTrace.info("processManager",
         "ProcessManagerSessionController.constructor()",
-        "root.MSG_GEN_PARAM_VALUE", "après resetCreationRights()");
+        "root.MSG_GEN_PARAM_VALUE", "aprÃ¨s resetCreationRights()");
 
     // Load user informations
     try {
@@ -146,7 +146,7 @@ public class ProcessManagerSessionController extends
   /**
    * Builds a ill session controller. Initialization is skipped and this session
    * controller can only display the fatal exception.
-   * 
+   *
    * Used by the request router when a full session controller can't be built.
    */
   public ProcessManagerSessionController(MainSessionController mainSessionCtrl,
@@ -160,7 +160,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Get the creation rights
-   * 
+   *
    * @return true if user can do the "Creation" action
    */
   public boolean getCreationRights() {
@@ -187,8 +187,8 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * L'historique peut être filtré. Dans ce cas, les formulaires associés à
-   * chaque état sont visibles uniquement si l'utilisateur courant était un
+   * L'historique peut Ãªtre filtrÃ©. Dans ce cas, les formulaires associÃ©s Ã 
+   * chaque Ã©tat sont visibles uniquement si l'utilisateur courant Ã©tait un
    * working user ou un interested user.
    */
   public boolean filterHistory() {
@@ -219,13 +219,13 @@ public class ProcessManagerSessionController extends
   /**
    * Updates the current process instance from the given id and returns the
    * associated ProcessInstance object.
-   * 
+   *
    * If the instanceId parameter is null, updates nothing and returns the
    * current ProcessInstance.
-   * 
+   *
    * Throws ProcessManagerException when the instanceId is unkwown and when the
    * current user is not allowed to access the instance.
-   * 
+   *
    * Doesn't change the current process instance when an error occures.
    */
   public ProcessInstance resetCurrentProcessInstance(String instanceId)
@@ -298,7 +298,7 @@ public class ProcessManagerSessionController extends
   /**
    * Updates the current process instance list with current filter and returns
    * this list.
-   * 
+   *
    * Doesn't change the current process instance when an error occures.
    */
   public DataRecord[] resetCurrentProcessList() throws ProcessManagerException {
@@ -732,7 +732,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * get the question with the given id
-   * 
+   *
    * @param questionId
    *          question id
    * @return the found question
@@ -926,7 +926,7 @@ public class ProcessManagerSessionController extends
   /**
    * Search for an hypothetic action of kind "delete", allowed for the current
    * user with the given role
-   * 
+   *
    * @return an array of 2 String { action.name, state.name }, null if no action
    *         found
    */
@@ -974,7 +974,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Returns the named form (Read only).
-   * 
+   *
    * Throws an exception if the form is unknown.
    */
   public Form getPresentationForm(String name) throws ProcessManagerException {
@@ -988,7 +988,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Returns the form associated to the named action.
-   * 
+   *
    * Returns null if this action has no form. Throws an exception if the action
    * is unknown.
    */
@@ -1079,7 +1079,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Lock the current instance for current user and given state
-   * 
+   *
    * @param stateName
    *          state name
    */
@@ -1096,7 +1096,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Un-Lock the current instance for current user and given state
-   * 
+   *
    * @param stateName
    *          state name
    */
@@ -1114,7 +1114,7 @@ public class ProcessManagerSessionController extends
   /**
    * Get the list of activities resolved in History Step of current process
    * instance
-   * 
+   *
    * @return an array of string containing activity names
    */
   public String[] getStepActivities() {
@@ -1167,7 +1167,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Get the list of actors in History Step of current process instance
-   * 
+   *
    * @return an array of string containing actors full name
    */
   public String[] getStepActors() {
@@ -1187,7 +1187,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Get the list of actions in History Step of current process instance
-   * 
+   *
    * @return an array of string containing actions names
    */
   public String[] getStepActions() {
@@ -1220,7 +1220,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Get the list of action dates in History Step of current process instance
-   * 
+   *
    * @return an array of string containing action dates
    */
   public String[] getStepDates() {
@@ -1359,7 +1359,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Get the label of given action
-   * 
+   *
    * @param actionName
    *          action name
    * @return action label
@@ -1379,7 +1379,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Get the state with the given name
-   * 
+   *
    * @param stateName
    *          state name
    * @return State object
@@ -1390,7 +1390,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Get the named action
-   * 
+   *
    * @param actionName
    *          action name
    * @return action
@@ -1405,7 +1405,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Tests if there is some question for current user in current processInstance
-   * 
+   *
    * @return true if there is one or more question
    */
   public boolean hasPendingQuestions() {
@@ -1592,7 +1592,7 @@ public class ProcessManagerSessionController extends
   public boolean isViewReturn() {
     boolean viewReturn = true;
 
-    // récupérer le paramètre global
+    // rÃ©cupÃ©rer le paramÃ¨tre global
     boolean hideReturnGlobal = "yes".equalsIgnoreCase(resources
         .getString("hideReturn"));
 

@@ -39,7 +39,7 @@ import com.stratelia.webactiv.util.exception.UtilException;
 
 public class ResourcesManagerDAO {
 
-  /*** Gestion des catégories ***/
+  /*** Gestion des catÃ©gories ***/
   private static CategoryDetail resultSetToCategoryDetail(ResultSet rs)
       throws SQLException {
     boolean bookable = false;
@@ -80,7 +80,7 @@ public class ResourcesManagerDAO {
 
     try {
       int id = DBUtil.getNextId("SC_Resources_Category", "id");
-      // Preparation de la requête
+      // Preparation de la requÃªte
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, id);
       prepStmt.setString(2, instanceId);
@@ -111,7 +111,7 @@ public class ResourcesManagerDAO {
       throws SQLException {
     String query = "UPDATE SC_Resources_Category SET instanceId=?, name=?, updatedate=?, bookable=?, form=?, responsibleid=?, updaterid=?, description=? WHERE id=?";
     PreparedStatement prepStmt = null;
-    // on récupère les informations de ContactDetail
+    // on rÃ©cupÃ¨re les informations de ContactDetail
     String id = category.getId();
     String instanceId = category.getInstanceId();
     String name = category.getName();
@@ -127,7 +127,7 @@ public class ResourcesManagerDAO {
       book = 1;
     }
     try {
-      // Preparation de la requête
+      // Preparation de la requÃªte
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
       prepStmt.setString(2, name);
@@ -247,7 +247,7 @@ public class ResourcesManagerDAO {
       book = 1;
     try {
       id = DBUtil.getNextId("SC_Resources_Resource", "id");
-      // Preparation de la requête
+      // Preparation de la requÃªte
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, id);
       prepStmt.setString(2, instanceId);
@@ -286,7 +286,7 @@ public class ResourcesManagerDAO {
     int idresource = Integer.parseInt(id);
 
     try {
-      // Preparation de la requête
+      // Preparation de la requÃªte
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
       prepStmt.setString(2, name);
@@ -387,7 +387,7 @@ public class ResourcesManagerDAO {
     }
   }
 
-  /** Gestion des réservations **/
+  /** Gestion des rÃ©servations **/
   private static ReservationDetail returnReservationDetail(ResultSet rs,
       String instanceId) throws SQLException {
     int id;
@@ -459,7 +459,7 @@ public class ResourcesManagerDAO {
       throws SQLException {
     String query = "INSERT INTO SC_Resources_Reservation (id, instanceId, evenement, userId, creationdate, updatedate, begindate, enddate, reason, place) VALUES (?,?,?,?,?,?,?,?,?,?)";
     PreparedStatement prepStmt = null;
-    // on récupère les informations de ReservationDetail
+    // on rÃ©cupÃ¨re les informations de ReservationDetail
     String instanceId = reservation.getInstanceId();
     String evenement = reservation.getEvent();
     String userId = reservation.getUserId();
@@ -474,7 +474,7 @@ public class ResourcesManagerDAO {
 
     try {
       id = DBUtil.getNextId("SC_Resources_Reservation", "id");
-      // Preparation de la requête
+      // Preparation de la requÃªte
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, id);
       prepStmt.setString(2, instanceId);
@@ -575,8 +575,8 @@ public class ResourcesManagerDAO {
         categoryName = rs.getString(4);
         int reservationIdProblem = idReservation(con, resourceId, startDate,
             endDate);
-        // on envoie la liste des catégories, vides si toutes les ressources ont
-        // déjà été réservées, ou avec des ressources non réservées
+        // on envoie la liste des catÃ©gories, vides si toutes les ressources ont
+        // dÃ©jÃ  Ã©tÃ© rÃ©servÃ©es, ou avec des ressources non rÃ©servÃ©es
         if (reservationIdProblem == 0) {
           resourceName = rs.getString(3);
         } else {
@@ -605,8 +605,8 @@ public class ResourcesManagerDAO {
         int resourceId = Integer.parseInt(idResource);
         int reservationIdProblem = IdReservationProblem(con, resourceId,
             startDate, endDate);
-        // si reservationIdProblem est différent de 0 c'est qu'une reservation
-        // déjà faite est incompatible avec la nouvelle réservation, donc
+        // si reservationIdProblem est diffÃ©rent de 0 c'est qu'une reservation
+        // dÃ©jÃ  faite est incompatible avec la nouvelle rÃ©servation, donc
         // on met la ressource fautive dans un arrayListe pour pouvoir en
         // informer l'utilisateur.
         if (reservationIdProblem != 0) {
@@ -619,8 +619,8 @@ public class ResourcesManagerDAO {
   }
 
   /***
-   * Renvoie 0 si tout va bien Renvoie l'id de la réservation si une ressource
-   * qu'on veut réservée ne peut l être à cause d'une réservation déjà faite
+   * Renvoie 0 si tout va bien Renvoie l'id de la rÃ©servation si une ressource
+   * qu'on veut rÃ©servÃ©e ne peut l Ãªtre Ã  cause d'une rÃ©servation dÃ©jÃ  faite
    **/
 
   public static int IdReservationProblem(Connection con, int resourceId,
@@ -665,8 +665,8 @@ public class ResourcesManagerDAO {
         int resourceId = Integer.parseInt(idResource);
         int reservationIdProblem = IdReservationDateProblem(con, resourceId,
             startDate, endDate, reservationId);
-        // si reservationIdProblem est différent de 0 c'est qu'une reservation
-        // déjà faite est incompatible avec la nouvelle réservation, donc
+        // si reservationIdProblem est diffÃ©rent de 0 c'est qu'une reservation
+        // dÃ©jÃ  faite est incompatible avec la nouvelle rÃ©servation, donc
         // on met la ressource fautive dans un arrayListe pour pouvoir en
         // informer l'utilisateur.
         if (reservationIdProblem != 0) {
@@ -679,8 +679,8 @@ public class ResourcesManagerDAO {
   }
 
   /***
-   * Renvoie 0 si tout va bien Renvoie l'id de la réservation si une ressource
-   * qu'on veut réservée ne peut l être à cause d'une réservation déjà faite
+   * Renvoie 0 si tout va bien Renvoie l'id de la rÃ©servation si une ressource
+   * qu'on veut rÃ©servÃ©e ne peut l Ãªtre Ã  cause d'une rÃ©servation dÃ©jÃ  faite
    **/
 
   public static int IdReservationDateProblem(Connection con, int resourceId,
@@ -952,7 +952,7 @@ public class ResourcesManagerDAO {
       ReservationDetail reservationCourante) throws SQLException {
     PreparedStatement prepStmt = null;
     String query = "UPDATE SC_Resources_Reservation SET evenement=?, userId=?, updatedate=?, begindate=?, enddate=?, reason=?, place=? WHERE id=? and instanceId=?";
-    // on récupère les informations de ReservationDetail
+    // on rÃ©cupÃ¨re les informations de ReservationDetail
     String instanceId = reservationCourante.getInstanceId();
     String evenement = reservationCourante.getEvent();
     String userId = reservationCourante.getUserId();
@@ -965,7 +965,7 @@ public class ResourcesManagerDAO {
     int reservationId = Integer.parseInt(reservationCourante.getId());
 
     try {
-      // Preparation de la requête
+      // Preparation de la requÃªte
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, evenement);
       prepStmt.setInt(2, idUser);

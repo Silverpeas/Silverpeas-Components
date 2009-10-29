@@ -78,18 +78,18 @@ public class TestMailingListExternalUsers extends
     assertNotNull(tableTabbedPane);
     tableTabbedPane = tableTabbedPane.getTableCell(0, 0).getTables()[0];
     assertNotNull(tableTabbedPane);
-    assertEquals("ActivitÈ", tableTabbedPane.getCellAsText(0, 2));
+    assertEquals("Activit√©", tableTabbedPane.getCellAsText(0, 2));
     assertEquals("Liste des Messages", tableTabbedPane.getCellAsText(0, 5));
-    assertEquals("ModÈration", tableTabbedPane.getCellAsText(0, 8));
-    assertEquals("AbonnÈs ExtÈrieurs", tableTabbedPane.getCellAsText(0, 11));
+    assertEquals("Mod√©ration", tableTabbedPane.getCellAsText(0, 8));
+    assertEquals("Abonn√©s Ext√©rieurs", tableTabbedPane.getCellAsText(0, 11));
     WebLink usersLink = tableTabbedPane.getTableCell(0, 11).getLinkWith(
-        "AbonnÈs ExtÈrieurs");
+        "Abonn√©s Ext√©rieurs");
     assertNotNull(usersLink);
     WebResponse usersPage = usersLink.click();
     assertNotNull(usersPage);
     WebTable browseBar = usersPage.getTableWithID("browseBar");
     assertNotNull(browseBar);
-    assertEquals("MGI Coutier > Liste de diffusion > AbonnÈs ExtÈrieurs",
+    assertEquals("MGI Coutier > Liste de diffusion > Abonn√©s Ext√©rieurs",
         browseBar.getCellAsText(0, 0));
     assertEquals("/silverpeas/Rmailinglist/mailinglist45/Main", browseBar
         .getTableCell(0, 0).getLinkWith("Liste de diffusion").getURLString());
@@ -168,18 +168,18 @@ public class TestMailingListExternalUsers extends
     assertNotNull(tableTabbedPane);
     tableTabbedPane = tableTabbedPane.getTableCell(0, 0).getTables()[0];
     assertNotNull(tableTabbedPane);
-    assertEquals("ActivitÈ", tableTabbedPane.getCellAsText(0, 2));
+    assertEquals("Activit√©", tableTabbedPane.getCellAsText(0, 2));
     assertEquals("Liste des Messages", tableTabbedPane.getCellAsText(0, 5));
-    assertEquals("ModÈration", tableTabbedPane.getCellAsText(0, 8));
-    assertEquals("AbonnÈs ExtÈrieurs", tableTabbedPane.getCellAsText(0, 11));
+    assertEquals("Mod√©ration", tableTabbedPane.getCellAsText(0, 8));
+    assertEquals("Abonn√©s Ext√©rieurs", tableTabbedPane.getCellAsText(0, 11));
     WebLink usersLink = tableTabbedPane.getTableCell(0, 11).getLinkWith(
-        "AbonnÈs ExtÈrieurs");
+        "Abonn√©s Ext√©rieurs");
     assertNotNull(usersLink);
     WebResponse usersPage = usersLink.click();
     assertNotNull(usersPage);
     WebTable browseBar = usersPage.getTableWithID("browseBar");
     assertNotNull(browseBar);
-    assertEquals("MGI Coutier > Liste de diffusion > AbonnÈs ExtÈrieurs",
+    assertEquals("MGI Coutier > Liste de diffusion > Abonn√©s Ext√©rieurs",
         browseBar.getCellAsText(0, 0));
     assertEquals("/silverpeas/Rmailinglist/mailinglist45/Main", browseBar
         .getTableCell(0, 0).getLinkWith("Liste de diffusion").getURLString());

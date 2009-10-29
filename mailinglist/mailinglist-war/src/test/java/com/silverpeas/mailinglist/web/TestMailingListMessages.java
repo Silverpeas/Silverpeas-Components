@@ -80,10 +80,10 @@ public class TestMailingListMessages extends
     assertNotNull(tableTabbedPane);
     tableTabbedPane = tableTabbedPane.getTableCell(0, 0).getTables()[0];
     assertNotNull(tableTabbedPane);
-    assertEquals("Activité", tableTabbedPane.getCellAsText(0, 2));
+    assertEquals("ActivitÃ©", tableTabbedPane.getCellAsText(0, 2));
     assertEquals("Liste des Messages", tableTabbedPane.getCellAsText(0, 5));
-    assertFalse(activityPage.getText().indexOf("Modération") > 0);
-    assertFalse(activityPage.getText().indexOf("Abonnés Extérieurs") > 0);
+    assertFalse(activityPage.getText().indexOf("ModÃ©ration") > 0);
+    assertFalse(activityPage.getText().indexOf("AbonnÃ©s ExtÃ©rieurs") > 0);
     WebResponse listPage = tableTabbedPane.getTableCell(0, 5).getLinkWith(
         "Liste des Messages").click();
     assertNotNull(listPage);
@@ -97,14 +97,14 @@ public class TestMailingListMessages extends
     assertNotNull(tableTabbedPane);
     tableTabbedPane = tableTabbedPane.getTableCell(0, 0).getTables()[0];
     assertNotNull(tableTabbedPane);
-    assertEquals("Activité", tableTabbedPane.getCellAsText(0, 2));
+    assertEquals("ActivitÃ©", tableTabbedPane.getCellAsText(0, 2));
     assertEquals("Liste des Messages", tableTabbedPane.getCellAsText(0, 5));
-    assertFalse(listPage.getText().indexOf("Modération") > 0);
+    assertFalse(listPage.getText().indexOf("ModÃ©ration") > 0);
     WebTable tableMessages = listPage.getTableWithID("list");
     assertNotNull(tableMessages);
     assertEquals("Messages", tableMessages.getCellAsText(0, 0));
     assertEquals("Fichiers Joints", tableMessages.getCellAsText(0, 1));
-    assertEquals("Expéditeur", tableMessages.getCellAsText(0, 2));
+    assertEquals("ExpÃ©diteur", tableMessages.getCellAsText(0, 2));
     assertEquals("Date", tableMessages.getCellAsText(0, 3));
     assertEquals("Simple database message 3", tableMessages.getCellAsText(1, 0));
     assertEquals(MESSAGE_BASE + 3, tableMessages.getTableCell(1, 0)
@@ -157,15 +157,15 @@ public class TestMailingListMessages extends
     assertNotNull(tableTabbedPane);
     tableTabbedPane = tableTabbedPane.getTableCell(0, 0).getTables()[0];
     assertNotNull(tableTabbedPane);
-    assertEquals("Activité", tableTabbedPane.getCellAsText(0, 2));
+    assertEquals("ActivitÃ©", tableTabbedPane.getCellAsText(0, 2));
     assertEquals("Liste des Messages", tableTabbedPane.getCellAsText(0, 5));
-    assertFalse(listPage.getText().indexOf("Modération") > 0);
-    assertFalse(activityPage.getText().indexOf("Abonnés Extérieurs") > 0);
+    assertFalse(listPage.getText().indexOf("ModÃ©ration") > 0);
+    assertFalse(activityPage.getText().indexOf("AbonnÃ©s ExtÃ©rieurs") > 0);
     tableMessages = listPage.getTableWithID("list");
     assertNotNull(tableMessages);
     assertEquals("Messages", tableMessages.getCellAsText(0, 0));
     assertEquals("Fichiers Joints", tableMessages.getCellAsText(0, 1));
-    assertEquals("Expéditeur", tableMessages.getCellAsText(0, 2));
+    assertEquals("ExpÃ©diteur", tableMessages.getCellAsText(0, 2));
     assertEquals("Date", tableMessages.getCellAsText(0, 3));
     assertEquals("Simple database message 5", tableMessages.getCellAsText(1, 0));
     assertEquals(MESSAGE_BASE + 5, tableMessages.getTableCell(1, 0)
@@ -216,10 +216,10 @@ public class TestMailingListMessages extends
     assertNotNull(tableTabbedPane);
     tableTabbedPane = tableTabbedPane.getTableCell(0, 0).getTables()[0];
     assertNotNull(tableTabbedPane);
-    assertEquals("Activité", tableTabbedPane.getCellAsText(0, 2));
+    assertEquals("ActivitÃ©", tableTabbedPane.getCellAsText(0, 2));
     assertEquals("Liste des Messages", tableTabbedPane.getCellAsText(0, 5));
-    assertEquals("Modération", tableTabbedPane.getCellAsText(0, 8));
-    assertEquals("Abonnés Extérieurs", tableTabbedPane.getCellAsText(0, 11));
+    assertEquals("ModÃ©ration", tableTabbedPane.getCellAsText(0, 8));
+    assertEquals("AbonnÃ©s ExtÃ©rieurs", tableTabbedPane.getCellAsText(0, 11));
     HttpUnitOptions.setScriptingEnabled(false);
     WebResponse listPage = tableTabbedPane.getTableCell(0, 5).getLinkWith(
         "Liste des Messages").click();
@@ -236,15 +236,15 @@ public class TestMailingListMessages extends
     assertNotNull(tableTabbedPane);
     tableTabbedPane = tableTabbedPane.getTableCell(0, 0).getTables()[0];
     assertNotNull(tableTabbedPane);
-    assertEquals("Activité", tableTabbedPane.getCellAsText(0, 2));
+    assertEquals("ActivitÃ©", tableTabbedPane.getCellAsText(0, 2));
     assertEquals("Liste des Messages", tableTabbedPane.getCellAsText(0, 5));
-    assertEquals("Modération", tableTabbedPane.getCellAsText(0, 8));
-    assertEquals("Abonnés Extérieurs", tableTabbedPane.getCellAsText(0, 11));
+    assertEquals("ModÃ©ration", tableTabbedPane.getCellAsText(0, 8));
+    assertEquals("AbonnÃ©s ExtÃ©rieurs", tableTabbedPane.getCellAsText(0, 11));
     WebTable tableMessages = listPage.getTableWithID("list");
     assertNotNull(tableMessages);
     assertEquals("Messages", tableMessages.getCellAsText(0, 1));
     assertEquals("Fichiers Joints", tableMessages.getCellAsText(0, 2));
-    assertEquals("Expéditeur", tableMessages.getCellAsText(0, 3));
+    assertEquals("ExpÃ©diteur", tableMessages.getCellAsText(0, 3));
     assertEquals("Date", tableMessages.getCellAsText(0, 4));
     assertEquals("Simple database message 3", tableMessages.getCellAsText(1, 1));
     assertEquals(MESSAGE_BASE + 3, tableMessages.getTableCell(1, 1)
@@ -298,15 +298,15 @@ public class TestMailingListMessages extends
     assertNotNull(tableTabbedPane);
     tableTabbedPane = tableTabbedPane.getTableCell(0, 0).getTables()[0];
     assertNotNull(tableTabbedPane);
-    assertEquals("Activité", tableTabbedPane.getCellAsText(0, 2));
+    assertEquals("ActivitÃ©", tableTabbedPane.getCellAsText(0, 2));
     assertEquals("Liste des Messages", tableTabbedPane.getCellAsText(0, 5));
-    assertEquals("Modération", tableTabbedPane.getCellAsText(0, 8));
-    assertEquals("Abonnés Extérieurs", tableTabbedPane.getCellAsText(0, 11));
+    assertEquals("ModÃ©ration", tableTabbedPane.getCellAsText(0, 8));
+    assertEquals("AbonnÃ©s ExtÃ©rieurs", tableTabbedPane.getCellAsText(0, 11));
     tableMessages = listPage.getTableWithID("list");
     assertNotNull(tableMessages);
     assertEquals("Messages", tableMessages.getCellAsText(0, 1));
     assertEquals("Fichiers Joints", tableMessages.getCellAsText(0, 2));
-    assertEquals("Expéditeur", tableMessages.getCellAsText(0, 3));
+    assertEquals("ExpÃ©diteur", tableMessages.getCellAsText(0, 3));
     assertEquals("Date", tableMessages.getCellAsText(0, 4));
     assertEquals("Simple database message 5", tableMessages.getCellAsText(1, 1));
     assertEquals(MESSAGE_BASE + 5, tableMessages.getTableCell(1, 1)
@@ -330,7 +330,7 @@ public class TestMailingListMessages extends
     assertNotNull(tableMessages);
     assertEquals("Messages", tableMessages.getCellAsText(0, 1));
     assertEquals("Fichiers Joints", tableMessages.getCellAsText(0, 2));
-    assertEquals("Expéditeur", tableMessages.getCellAsText(0, 3));
+    assertEquals("ExpÃ©diteur", tableMessages.getCellAsText(0, 3));
     assertEquals("Date", tableMessages.getCellAsText(0, 4));
     assertEquals("Simple database message 3", tableMessages.getCellAsText(1, 1));
     assertEquals(MESSAGE_BASE + 3, tableMessages.getTableCell(1, 1)

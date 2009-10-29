@@ -501,7 +501,9 @@ public class TestActivitiesProcessor extends
     return dataSet;
   }
 
+  @Override
   protected void onSetUp() {
+    registerDatasource();
     IDatabaseConnection connection = null;
     try {
       connection = getConnection();
@@ -519,23 +521,4 @@ public class TestActivitiesProcessor extends
       }
     }
   }
-
-  protected void onTearDown() {
-    IDatabaseConnection connection = null;
-    try {
-      connection = getConnection();
-      // DatabaseOperation.DELETE.execute(connection, getDataSet());
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    } finally {
-      if (connection != null) {
-        try {
-          connection.getConnection().close();
-        } catch (SQLException e) {
-          e.printStackTrace();
-        }
-      }
-    }
-  }
-
 }

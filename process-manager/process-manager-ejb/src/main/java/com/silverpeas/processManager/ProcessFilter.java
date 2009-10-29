@@ -63,7 +63,7 @@ public class ProcessFilter {
     }
 
     try {
-      // Affichage d'une liste déroulante des états possibles
+      // Affichage d'une liste dÃ©roulante des Ã©tats possibles
       GenericFieldTemplate state = new GenericFieldTemplate("instance.state",
           "text");
       State[] states = model.getStates();
@@ -78,7 +78,7 @@ public class ProcessFilter {
       state.addParameter("keys", values);
       filter.addFieldParameter("instance.state", state);
 
-      // Affichage d'une liste déroulante pour chaque donnée multivaluée
+      // Affichage d'une liste dÃ©roulante pour chaque donnÃ©e multivaluÃ©e
       FieldTemplate[] fields = rowTemplate.getFieldTemplates();
       FieldTemplate field = null;
       for (int f = 2; f < fields.length; f++) {
@@ -134,7 +134,7 @@ public class ProcessFilter {
 
   /**
    * Copy the criteria filled in another context but shared by this filter.
-   * 
+   *
    * We ignore all the form exception, since this copy is only done to simplify
    * the user life.
    */

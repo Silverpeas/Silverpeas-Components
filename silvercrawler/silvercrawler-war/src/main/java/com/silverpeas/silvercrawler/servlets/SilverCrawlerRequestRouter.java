@@ -48,13 +48,13 @@ public class SilverCrawlerRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    * @param componentContext
-   * 
+   *
    * @return
-   * 
+   *
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -75,7 +75,7 @@ public class SilverCrawlerRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   * 
+   *
    * @param function
    *          The entering request function (ex : "Main.jsp")
    * @param componentSC
@@ -99,25 +99,25 @@ public class SilverCrawlerRequestRouter extends ComponentRequestRouter {
 
     try {
       if (function.startsWith("Main")) {
-        // mise à jour du chemin initial
+        // mise Ã  jour du chemin initial
         silverCrawlerSC.setRootPath();
 
         destination = getDestination("ViewDirectory", silverCrawlerSC, request);
       } else if (function.equals("SubDirectory")) {
-        // mise à jour du chemin courant
+        // mise Ã  jour du chemin courant
         String directory = request.getParameter("DirectoryPath");
         silverCrawlerSC.setCurrentPath(directory);
 
         destination = getDestination("ViewDirectory", silverCrawlerSC, request);
       } else if (function.equals("SubDirectoryFromResult")) {
-        // mise à jour du chemin courant
+        // mise Ã  jour du chemin courant
         String directory = request.getParameter("DirectoryPath");
 
         silverCrawlerSC.setCurrentPathFromResult(directory);
 
         destination = getDestination("ViewDirectory", silverCrawlerSC, request);
       } else if (function.equals("ViewDirectory")) {
-        // récupération du répertoire courant
+        // rÃ©cupÃ©ration du rÃ©pertoire courant
         FileFolder currentFolder;
         if (flag.equals("admin"))
           currentFolder = silverCrawlerSC.getCurrentFolder(true);
@@ -132,8 +132,8 @@ public class SilverCrawlerRequestRouter extends ComponentRequestRouter {
         request.setAttribute("IsAllowedNav", silverCrawlerSC.isAllowedNav());
         request.setAttribute("RootPath", silverCrawlerSC.getRootPath());
 
-        // récupération des paramètres pour la taille des tableaux (nb maxi de
-        // répertoires et de fichiers à afficher par page)
+        // rÃ©cupÃ©ration des paramÃ¨tres pour la taille des tableaux (nb maxi de
+        // rÃ©pertoires et de fichiers Ã  afficher par page)
         request.setAttribute("MaxDirectories", silverCrawlerSC
             .getNbMaxDirectoriesByPage());
         request.setAttribute("MaxFiles", silverCrawlerSC.getNbMaxFilesByPage());
@@ -145,7 +145,7 @@ public class SilverCrawlerRequestRouter extends ComponentRequestRouter {
 
         destination = getDestination("ViewDirectory", silverCrawlerSC, request);
       } else if (function.equals("DownloadFolder")) {
-        // récupération du chemin courant et mise à jour du chemin courant
+        // rÃ©cupÃ©ration du chemin courant et mise Ã  jour du chemin courant
         String folderName = (String) request.getParameter("FolderName");
 
         String[] zipInfo = silverCrawlerSC.zipFolder(folderName);
@@ -181,7 +181,7 @@ public class SilverCrawlerRequestRouter extends ComponentRequestRouter {
             .getHistoryByFolderFromResult(path));
 
         // si on viens de la recherche on a tout le chemin dans "name"
-        // extraction du nom pour le passer en paramètre à history.jsp
+        // extraction du nom pour le passer en paramÃ¨tre Ã  history.jsp
         String name = silverCrawlerSC.getNameFromPath(path);
 
         request.setAttribute("Name", name);
@@ -287,7 +287,7 @@ public class SilverCrawlerRequestRouter extends ComponentRequestRouter {
 
         destination = rootDestination + "viewResultSearch.jsp";
       } else if (function.equals("portlet")) {
-        // récupération du répertoire courant
+        // rÃ©cupÃ©ration du rÃ©pertoire courant
         silverCrawlerSC.setRootPath();
         request.setAttribute("Folder", silverCrawlerSC.getCurrentFolder());
 

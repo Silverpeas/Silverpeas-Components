@@ -42,11 +42,6 @@ import com.stratelia.webactiv.contact.ContactInstanciator;
 import com.stratelia.webactiv.node.NodeInstanciator;
 import com.stratelia.webactiv.util.DateUtil;
 
-/**
- * 
- * @author nesseric
- * @version update by the Sébastien Antonio - Externalisation of the SQL request
- */
 public class YellowpagesInstanciator extends SQLRequest implements
     ComponentsInstanciatorIntf {
 

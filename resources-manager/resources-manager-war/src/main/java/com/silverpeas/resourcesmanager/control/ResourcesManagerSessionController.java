@@ -153,13 +153,13 @@ public class ResourcesManagerSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
+   *
+   *
    * @param mainSessionCtrl
    *          The user's profile
    * @param componentContext
    *          The component's profile
-   * 
+   *
    * @see
    */
   public ResourcesManagerSessionController(
@@ -169,7 +169,7 @@ public class ResourcesManagerSessionController extends
         "com.silverpeas.resourcesmanager.settings.resourcesManagerIcons");
   }
 
-  /*** Gestion des catégories ***/
+  /*** Gestion des catÃ©gories ***/
   public void createCategory(CategoryDetail category) {
     try {
       category.setInstanceId(getComponentId());
@@ -319,7 +319,7 @@ public class ResourcesManagerSessionController extends
     }
   }
 
-  /*** Gestion des réservations ***/
+  /*** Gestion des rÃ©servations ***/
   public void createReservation(ReservationDetail reservation) {
     reservation.setInstanceId(getComponentId());
     reservation.setUserId(getUserId());

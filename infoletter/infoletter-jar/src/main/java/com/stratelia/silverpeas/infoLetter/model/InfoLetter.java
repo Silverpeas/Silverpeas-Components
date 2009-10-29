@@ -21,25 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*******************************
- *** InfoLetter				 ***
- *** cree par Franck Rageade ***
- *** le 28 Février 2002      ***
- *******************************/
-
 package com.stratelia.silverpeas.infoLetter.model;
 
-// Bibliotheques
+
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import java.util.Vector;
 
-/**
- * 
- * @author frageade
- * @since February 2002
- */
 public class InfoLetter extends SilverpeasBean implements Comparable {
 
   // Membres

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- jChaBox DTD - JavaZOOM -->
+<!ELEMENT jChatBox (LOGFOLDER?, BACKUPFILE?, SYSTEMLOGIN?, SYSTEMPASSWORD?, SYSTEMEMAIL?, TIMEOUT?, COOKIEID?, USERSESSIONID?, LICENSE?, FILTERS?)>
+<!--Folder containing log files-->
+<!ELEMENT LOGFOLDER (#PCDATA)>
+<!--Backup Filename-->
+<!ELEMENT BACKUPFILE (#PCDATA)>
+<!--System user login-->
+<!ELEMENT SYSTEMLOGIN (#PCDATA)>
+<!--System user password-->
+<!ELEMENT SYSTEMPASSWORD (#PCDATA)>
+<!--System user email-->
+<!ELEMENT SYSTEMEMAIL (#PCDATA)>
+<!--Session Timeout in ms-->
+<!ELEMENT TIMEOUT (#PCDATA)>
+<!--CookieID (deprecated since 2.2.1)-->
+<!ELEMENT COOKIEID (#PCDATA)>
+<!--USERSESSIONID (advanced)-->
+<!ELEMENT USERSESSIONID (#PCDATA)>
+<!--License file-->
+<!ELEMENT LICENSE (#PCDATA)>
+<!--List of filters-->
+<!ELEMENT FILTERS (FILTER*)>
+<!--Filter's class name - Full qualified-->
+<!ELEMENT FILTER (#PCDATA)>

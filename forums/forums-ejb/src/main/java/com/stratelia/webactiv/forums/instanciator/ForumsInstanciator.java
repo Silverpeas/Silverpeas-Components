@@ -40,10 +40,6 @@ import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciato
 import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-/**
- * @author frageade
- * @version update by the Sébastien Antonio - Externalisation of the SQL request
- */
 public class ForumsInstanciator extends SQLRequest implements
     ComponentsInstanciatorIntf {
 

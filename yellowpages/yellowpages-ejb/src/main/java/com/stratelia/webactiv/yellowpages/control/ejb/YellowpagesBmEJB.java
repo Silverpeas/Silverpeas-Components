@@ -73,7 +73,7 @@ import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
  * This is the Yellowpages EJB-tier controller of the MVC. It is implemented as
  * a session EJB. It controls all the activities that happen in a client
  * session. It also provides mechanisms to access other session EJBs.
- * 
+ *
  * @author Nicolas Eysseric
  */
 public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
@@ -96,7 +96,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Set the current User ActorDetail
-   * 
+   *
    * @param ad
    *          a the ActorDetail corresponding to the current User
    * @since 1.0
@@ -227,7 +227,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Return a the detail of a topic
-   * 
+   *
    * @param id
    *          the id of the topic
    * @return a TopicDetail
@@ -338,7 +338,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Return a NodeDetail Collection that represents the path from root to leaf
-   * 
+   *
    * @param nd
    *          the NodeDetail of the leaf topic
    * @return a NodeDetail Collection
@@ -395,7 +395,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Return a NodeDetail Collection that represents a sub path to nd of the path
-   * 
+   *
    * @param currentPath
    *          a NodeDetail Collection that represents a path
    * @param nd
@@ -437,7 +437,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       for (int n = 0; n < tree.size(); n++) {
         node = (NodeDetail) tree.get(n);
         result.add(node);
-        // pour chaque node, récuperer les groupes associés
+        // pour chaque node, rÃ©cuperer les groupes associÃ©s
         List groupIds = (List) GroupDAO.getGroupIds(con, node.getNodePK()
             .getId(), componentId);
         String groupId = null;
@@ -483,7 +483,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   /**
    * Add a subtopic to a topic - If a subtopic of same name already exists a
    * NodePK with id=-1 is returned else the new topic NodePK
-   * 
+   *
    * @param fatherId
    *          the topic Id of the future father
    * @param subTopic
@@ -519,7 +519,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   /**
    * When creates a new subTopic, Check if a subtopic of same name already
    * exists
-   * 
+   *
    * @param subTopic
    *          the NodeDetail of the new sub topic
    * @return true if a subtopic of same name already exists under the
@@ -547,7 +547,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   /**
    * When updates a subTopic, Check if another subtopic of same name already
    * exists
-   * 
+   *
    * @param subTopic
    *          the NodeDetail of the new sub topic
    * @return true if a subtopic of same name already exists under the
@@ -575,7 +575,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   /**
    * Add a subtopic to currentTopic and alert users - If a subtopic of same name
    * already exists a NodePK with id=-1 is returned else the new topic NodePK
-   * 
+   *
    * @param subTopic
    *          the NodeDetail of the new sub topic
    * @param alertType
@@ -599,7 +599,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     subTopic.getNodePK().setSpace(this.space);
     subTopic.getNodePK().setComponentName(this.componentId);
 
-    // Construction de la date de création (date courante)
+    // Construction de la date de crÃ©ation (date courante)
     String creationDate = DateUtil.date2SQLDate(new Date());
     subTopic.setCreationDate(creationDate);
     subTopic.setCreatorId(currentUser.getId());
@@ -617,7 +617,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * Update a subtopic to currentTopic and alert users - If a subtopic of same
    * name already exists a NodePK with id=-1 is returned else the new topic
    * NodePK
-   * 
+   *
    * @param topic
    *          the NodeDetail of the updated sub topic
    * @param alertType
@@ -714,7 +714,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * Delete a topic and all descendants. Delete all links between descendants
    * and contacts. This contacts will be visible in the Declassified zone.
    * Delete All subscriptions and favorites on this topics and all descendants
-   * 
+   *
    * @param topicId
    *          the id of the topic to delete
    * @exception javax.ejb.FinderException
@@ -783,7 +783,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Return the detail of a contact (only the Header)
-   * 
+   *
    * @param ContactId
    *          the id of the contact
    * @return a ContactDetail
@@ -974,7 +974,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   /**
    * Return list of all path to this contact - it's a Collection of NodeDetail
    * collection
-   * 
+   *
    * @param ContactId
    *          the id of the contact
    * @return a Collection of NodeDetail collection
@@ -1024,7 +1024,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Create a new Contact (only the header - parameters) to the current Topic
-   * 
+   *
    * @param contactDetail
    *          a ContactDetail
    * @return the id of the new contact
@@ -1067,7 +1067,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Update a contact (only the header - parameters)
-   * 
+   *
    * @param contactDetail
    *          a ContactDetail
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
@@ -1110,7 +1110,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   /**
    * Delete a contact If this contact is in the basket or in the DZ, it's
    * deleted from the database Else it only send to the basket
-   * 
+   *
    * @param ContactId
    *          the id of the contact to delete
    * @return a TopicDetail
@@ -1158,7 +1158,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Send the contact in the basket topic
-   * 
+   *
    * @param ContactId
    *          the id of the contact
    * @see com.stratelia.webactiv.yellowpages.model.TopicDetail
@@ -1215,7 +1215,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Add a contact to a topic and send email alerts to topic subscribers
-   * 
+   *
    * @param ContactId
    *          the id of the contact
    * @param fatherId
@@ -1246,7 +1246,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       }
       contactBm.addFather(contactPK, fatherPK);
 
-      // réindexe le contact si pas dans la corbeille
+      // rÃ©indexe le contact si pas dans la corbeille
       if (!fatherId.equals("1"))
         createIndex(contactPK);
 
@@ -1261,7 +1261,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Delete a path between contact and topic
-   * 
+   *
    * @param ContactId
    *          the id of the contact
    * @param fatherId
@@ -1297,7 +1297,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Create model info attached to a contact
-   * 
+   *
    * @param ContactId
    *          the id of the contact
    * @param modelId
@@ -1331,7 +1331,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Return all info of a contact and add a reading statistic
-   * 
+   *
    * @param ContactId
    *          the id of a contact
    * @return a CompleteContact
@@ -1393,7 +1393,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Return all info of a contact and add a reading statistic
-   * 
+   *
    * @param ContactId
    *          the id of a contact
    * @param nodeId
@@ -1493,7 +1493,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Return a collection of ContactDetail throught a collection of contact ids
-   * 
+   *
    * @param contactIds
    *          a collection of contact ids
    * @return a collection of ContactDetail

@@ -5,40 +5,21 @@
     <groupId>com.silverpeas.components</groupId>
     <artifactId>mailinglist</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.mailinglist</groupId>
   <artifactId>mailinglist-jar</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
   <name>Lib mailinglist</name>
 	
   <dependencies>
-    <dependency>
-      <groupId>com.silverpeas.core</groupId>
-      <artifactId>lib-core</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>silverstatistics</artifactId>
       <version>${core.version}</version>
       <classifier>client</classifier>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>calendar</artifactId>
-      <version>${core.version}</version>
-      <classifier>client</classifier>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-j2ee_1.4_spec</artifactId>
-    </dependency>
+    </dependency>   
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring</artifactId>
@@ -109,10 +90,6 @@
     <dependency>
       <groupId>com.sun.jndi</groupId>
       <artifactId>providerutil</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-j2ee_1.4_spec</artifactId>
     </dependency>
   </dependencies>
 

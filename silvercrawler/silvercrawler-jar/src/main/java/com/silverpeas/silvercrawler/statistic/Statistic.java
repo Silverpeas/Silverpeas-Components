@@ -83,8 +83,8 @@ public class Statistic {
       HistoryDAO.add(con, historyTableName, userId, path, componentId,
           objectType);
       if (objectType.equals(DIRECTORY)) {
-        // dans le cas d'un répertoire, on le parcours pour ajouter les stats
-        // sur les sous répertoires et les fichiers
+        // dans le cas d'un rÃ©pertoire, on le parcours pour ajouter les stats
+        // sur les sous rÃ©pertoires et les fichiers
         addStatForDirectory(con, userId, path, componentId);
       }
     } catch (Exception e) {
@@ -113,10 +113,10 @@ public class Statistic {
       currentFile = new File(path + "\\" + fileName);
 
       if (currentFile.isDirectory()) {
-        // ajout du répertoire dans les stats
+        // ajout du rÃ©pertoire dans les stats
         HistoryDAO.add(con, historyTableName, userId, currentFile
             .getAbsolutePath(), componentId, DIRECTORY);
-        // et appel récursif de la fonction sur ce répertoire
+        // et appel rÃ©cursif de la fonction sur ce rÃ©pertoire
         processFileList(con, currentFile.list(), userId, currentFile
             .getAbsolutePath()
             + "\\", componentId);
@@ -140,13 +140,13 @@ public class Statistic {
     while (it.hasNext()) {
       HistoryDetail historyObject = (HistoryDetail) it.next();
 
-      // rechercher si le user est déjà enregistré
+      // rechercher si le user est dÃ©jÃ  enregistrÃ©
       Iterator itStat = statByUser.iterator();
       boolean trouve = false;
       while (itStat.hasNext()) {
         HistoryByUser historyUser = (HistoryByUser) itStat.next();
         if (historyUser.getUser().getId().equals(historyObject.getUserId())) {
-          // mettre à jour, l'enregistrement existe
+          // mettre Ã  jour, l'enregistrement existe
           long currentLastAccess = historyUser.getLastDownload().getTime();
           long newDate = historyObject.getDate().getTime();
           if (newDate > currentLastAccess)
@@ -156,7 +156,7 @@ public class Statistic {
         }
       }
       if (!trouve) {
-        // créer l'enregistrement
+        // crÃ©er l'enregistrement
         UserDetail user = orga.getUserDetail(historyObject.getUserId());
         HistoryByUser historyByUser = new HistoryByUser(user, historyObject
             .getDate(), 1);

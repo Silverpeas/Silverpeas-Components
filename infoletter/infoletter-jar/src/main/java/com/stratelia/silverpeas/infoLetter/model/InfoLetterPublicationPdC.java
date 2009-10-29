@@ -21,15 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*******************************
- *** InfoLetterPublication	 ***
- *** cree par Franck Rageade ***
- *** le 28 Février 2002      ***
- *******************************/
-
 package com.stratelia.silverpeas.infoLetter.model;
 
-// Bibliotheques
 import java.util.Iterator;
 
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;

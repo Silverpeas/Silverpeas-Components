@@ -21,12 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * AlmanachRuntimeException.java
- *
- * Created on 23 août 2001, 11:51
- */
-
 package com.stratelia.webactiv.almanach.control.ejb;
 
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;

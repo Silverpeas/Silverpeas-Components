@@ -5,31 +5,23 @@
     <groupId>com.silverpeas.components</groupId>
     <artifactId>mailinglist</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.mailinglist</groupId>
   <artifactId>mailinglist-war</artifactId>
   <packaging>war</packaging>
-  <version>1.0-SNAPSHOT</version>
   <name>mailinglist Webapp</name>
 
   <dependencies>
     <dependency>
-      <groupId>com.silverpeas.components.mailinglist</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>mailinglist-jar</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>web-core</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core</groupId>
-      <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -43,10 +35,6 @@
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-j2ee_1.4_spec</artifactId>
     </dependency>
     <dependency>
       <groupId>httpunit</groupId>
@@ -95,16 +83,35 @@
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
     </dependency>
+     <dependency>
+      <groupId>com.sun.jndi</groupId>
+      <artifactId>fscontext</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.sun.jndi</groupId>
+      <artifactId>providerutil</artifactId>
+    </dependency>
   </dependencies>
 
   
   <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+      </testResource>
+    </testResources>
+    <filters>
+      <filter>src/test/filters/filters.properties</filter>
+    </filters>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skipTests>true</skipTests>
+          <excludes>
+            <exclude>**/web/*.java</exclude>
+          </excludes>
         </configuration>
       </plugin>
       <plugin>

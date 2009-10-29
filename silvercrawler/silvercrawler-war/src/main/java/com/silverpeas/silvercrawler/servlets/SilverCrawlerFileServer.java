@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
 ---*/
 
 package com.silverpeas.silvercrawler.servlets;
@@ -49,8 +49,8 @@ import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * Class declaration
- * 
- * 
+ *
+ *
  * @author
  */
 public class SilverCrawlerFileServer extends HttpServlet {
@@ -91,7 +91,7 @@ public class SilverCrawlerFileServer extends HttpServlet {
 
     String filePath = null;
 
-    // paramètres des stats
+    // paramÃ¨tres des stats
     String type = "";
     String fileStat = "";
 
@@ -119,8 +119,8 @@ public class SilverCrawlerFileServer extends HttpServlet {
       rootPath = rootPath.substring(rootPath.length() - 1, rootPath.length());
 
     // 2 cas :
-    // - téléchargement d'un zip dans répertoire temporaire
-    // - téléchargement d'un fichier depuis le répertoire crawlé
+    // - tÃ©lÃ©chargement d'un zip dans rÃ©pertoire temporaire
+    // - tÃ©lÃ©chargement d'un fichier depuis le rÃ©pertoire crawlÃ©
     if ("link".equals(typeUpload)) {
       filePath = rootPath + separator + sourceFile;
 
@@ -144,7 +144,7 @@ public class SilverCrawlerFileServer extends HttpServlet {
 
     outputFile(res, filePath);
 
-    // ajout dans la table des téléchargements
+    // ajout dans la table des tÃ©lÃ©chargements
     Statistic.addStat(userId, fileStat, componentId, type);
     SilverTrace.info("silverCrawler", "FileServer.doPost()",
         "root.MSG_GEN_ENTER_METHOD", " addStat : fileStat = " + fileStat);

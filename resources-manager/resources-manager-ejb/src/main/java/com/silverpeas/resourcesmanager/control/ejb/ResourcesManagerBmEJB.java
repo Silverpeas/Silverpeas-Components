@@ -76,7 +76,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
     // not implemented
   }
 
-  /*** Gestion des catégories ***/
+  /*** Gestion des catÃ©gories ***/
   public void createCategory(CategoryDetail category) {
     Connection con = initCon();
     try {
@@ -280,7 +280,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
     }
   }
 
-  /*** Gestion des réservations **/
+  /*** Gestion des rÃ©servations **/
   public void saveReservation(ReservationDetail reservation,
       String listReservationCurrent) {
     Connection con = initCon();
@@ -511,7 +511,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
         if (category != null) {
           String xmlFormName = category.getForm();
           if (StringUtil.isDefined(xmlFormName)) {
-            // indéxation du contenu du formulaire XML
+            // indÃ©xation du contenu du formulaire XML
             String xmlFormShortName = xmlFormName.substring(xmlFormName
                 .indexOf("/") + 1, xmlFormName.indexOf("."));
             PublicationTemplate pubTemplate;
@@ -565,7 +565,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
     if (listOfReservation != null) {
       Iterator it = listOfReservation.iterator();
       while (it.hasNext()) {
-        // on récupère chaque réservation
+        // on rÃ©cupÃ¨re chaque rÃ©servation
         ReservationDetail reservation = (ReservationDetail) it.next();
         try {
           createIndex(reservation);
