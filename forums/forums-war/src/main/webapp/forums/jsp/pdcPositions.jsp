@@ -30,6 +30,7 @@
 %>
 <%@ include file="checkForums.jsp" %>
 <%@ include file="tabManager.jsp" %>
+<%@page import="java.net.URLEncoder"%>
 <%
     int forumId = getIntParameter(request, "forumId");
     int params = getIntParameter(request, "params");
@@ -38,10 +39,9 @@
 <html>
 <head>
     <title></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><%
-
-    out.println(graphicFactory.getLookStyleSheet());
-%>
+    <%
+    	out.println(graphicFactory.getLookStyleSheet());
+	%>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
     <script type="text/javascript" src="<%=context%>/util/javaScript/animation.js"></script>
 </head>
@@ -55,10 +55,10 @@
     {
     	OperationPane operationPane = window.getOperationPane();
         operationPane.addOperation(context + "/pdcPeas/jsp/icons/pdcPeas_position_to_add.gif",
-            fsc.getString("NewPdcPosition"), "javascript:openSPWindow('" + context
+            resources.getString("GML.PDCNewPosition"), "javascript:openSPWindow('" + context
                 + "/RpdcClassify/jsp/NewPosition','newposition')");
         operationPane.addOperation(context + "/pdcPeas/jsp/icons/pdcPeas_position_to_del.gif",
-            fsc.getString("DeletePdcPosition"), "javascript:getSelectedItems()");
+        	resources.getString("GML.PDCDeletePosition"), "javascript:getSelectedItems()");
     }
     
     BrowseBar browseBar = window.getBrowseBar();
