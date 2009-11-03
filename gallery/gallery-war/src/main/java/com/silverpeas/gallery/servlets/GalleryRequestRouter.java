@@ -167,6 +167,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter
 
 		request.setAttribute("Profile", flag);
 		request.setAttribute("UserId", userId);
+		request.setAttribute("IsGuest", gallerySC.isGuest());
 
 		SilverTrace.debug("gallery", "GalleryRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE", "Profile=" + flag);
 
@@ -1289,6 +1290,13 @@ public class GalleryRequestRouter extends ComponentRequestRouter
 				request.setAttribute("IsViewList", gallerySC.isViewList());
 				request.setAttribute("Tri", gallerySC.getTri());
 				request.setAttribute("SelectedIds", gallerySC.getListSelected());
+				request.setAttribute("SearchKeyWord", "");
+        request.setAttribute("IsBasket", gallerySC.isBasket());
+        
+        // mise à jour du tag pour les retours
+        gallerySC.setSearchResult(true);
+        gallerySC.setViewNotVisible(false);
+        request.setAttribute("ViewVisible", new Boolean(gallerySC.isViewNotVisible()));
 				// appel jsp
 				destination = rootDest + "viewRestrictedPhotos.jsp";
 			}
