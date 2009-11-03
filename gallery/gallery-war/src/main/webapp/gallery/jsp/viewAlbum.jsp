@@ -40,6 +40,7 @@
 	Collection		selectedIds			= (Collection) request.getAttribute("SelectedIds");
 	boolean			isPdcUsed			= ((Boolean) request.getAttribute("IsUsePdc")).booleanValue();
 	boolean 		isBasket	 		= ((Boolean) request.getAttribute("IsBasket")).booleanValue();
+	boolean 		isGuest		 		= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
 
 	//For Drag And Drop
 	String sRequestURL 		= HttpUtils.getRequestURL(request).toString();
@@ -379,28 +380,29 @@ function uploadCompleted(s)
 	{
 		// possibilité d'ajouter des photos pour les "admin", "publisher" et "writer"
 		operationPane.addOperation(resource.getIcon("gallery.addPhoto"),resource.getString("gallery.ajoutPhoto"),"AddPhoto");
+		operationPane.addLine();
 	}
 	
 	if ("user".equals(profile) && isBasket)
 	{
-		operationPane.addLine();
 		// ajouter les photos sélectionnées au panier
 		operationPane.addOperation(resource.getIcon("gallery.addToBasketSelectedPhoto"),resource.getString("gallery.addToBasketSelectedPhoto"),"javascript:onClick=sendToBasket();");
 		// voir le panier
 		operationPane.addOperation(resource.getIcon("gallery.viewBasket"),resource.getString("gallery.viewBasket"), "BasketView");
+		operationPane.addLine();
 	}
 	
 	if (photos.size() > 1)
 	{
 		// diaporama
-		operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("gallery.startDiaporama"), resource.getString("gallery.diaporama"), "StartDiaporama?Debut="+"ok");
 	}
 	
 	// favoris
-	operationPane.addLine();
-	operationPane.addOperation(resource.getIcon("gallery.addFavorite"),resource.getString("gallery.addFavorite"),"javaScript:addFavorite('"+m_sAbsolute+"','"+m_context+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(albumName))+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(albumDescription))+"','"+albumUrl+"')");
-		
+	if (!isGuest) {
+		operationPane.addOperation(resource.getIcon("gallery.addFavorite"),resource.getString("gallery.addFavorite"),"javaScript:addFavorite('"+m_sAbsolute+"','"+m_context+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(albumName))+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(albumDescription))+"','"+albumUrl+"')");
+	}
+	
 	// derniers résultat de la recherche
 	operationPane.addLine();
     operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString("gallery.lastResult"), "LastResult");

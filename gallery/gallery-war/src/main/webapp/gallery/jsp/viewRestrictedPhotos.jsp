@@ -274,17 +274,17 @@
 </table>
 <%
 	String photoColor = "";
-			PhotoDetail photo;
-			String idP;
-			Calendar calendar = Calendar.getInstance();
-			calendar.set(Calendar.HOUR_OF_DAY, 0);
-			calendar.set(Calendar.MINUTE, 0);
-			calendar.set(Calendar.SECOND, 0);
-			calendar.set(Calendar.MILLISECOND, 0);
-			Date today = calendar.getTime();
-			Iterator it = (Iterator) affPhotos.iterator();
-			while (it.hasNext()) {
-				// affichage de la photo
+	PhotoDetail photo;
+	String idP;
+	Calendar calendar = Calendar.getInstance();
+	calendar.set(Calendar.HOUR_OF_DAY, 0);
+	calendar.set(Calendar.MINUTE, 0);
+	calendar.set(Calendar.SECOND, 0);
+	calendar.set(Calendar.MILLISECOND, 0);
+	Date today = calendar.getTime();
+	Iterator it = (Iterator) affPhotos.iterator();
+	while (it.hasNext()) {
+		// affichage de la photo
 %>
 <table width="98%" border="0" cellspacing="5" cellpadding="0"
 	align=center>
