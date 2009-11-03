@@ -34,7 +34,7 @@ boolean		isPdcUsed		= ((Boolean) request.getAttribute("IsUsePdc")).booleanValue(
 boolean 	isPrivateSearch	= ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
 boolean 	isBasket	 	= ((Boolean) request.getAttribute("IsBasket")).booleanValue();
 boolean 	isOrder		 	= ((Boolean) request.getAttribute("IsOrder")).booleanValue();
-
+boolean 	isGuest		 	= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
 
 // paramètrage pour l'affichage des dernières photos téléchargées
 int nbAffiche 	= 0;
@@ -138,13 +138,12 @@ function clipboardPaste() {
 		
 		//visualisation des photos non visibles par les lecteurs
 		operationPane.addOperation(resource.getIcon("gallery.viewNotVisible"),resource.getString("gallery.viewNotVisible"),"ViewNotVisible");
-
+		operationPane.addLine();
 	}
 
 	if ("user".equals(profile) && isBasket)
 	{
 		// voir le panier
-		operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("gallery.viewBasket"),resource.getString("gallery.viewBasket"), "BasketView");
 	}
 	if (isOrder)
@@ -156,23 +155,23 @@ function clipboardPaste() {
 		}
 	}
 	
-	if (!"admin".equals(profile))
+	if (!"admin".equals(profile) && !isGuest)
 	{
 		// demande de photo auprès du gestionnaire
 		operationPane.addOperation(resource.getIcon("gallery.askPhoto"),resource.getString("gallery.askPhoto"), "javaScript:askPhoto()");
+		operationPane.addLine();
 	}
 
 	
 	if ("admin".equals(profile))
 	{
-		operationPane.addLine();
        	operationPane.addOperation(resource.getIcon("gallery.paste"), resource.getString("GML.paste"), "javascript:onClick=clipboardPaste()");
+       	operationPane.addLine();
 	}
 	
 	// derniers résultat de la recherche
 	if (isPrivateSearch)
 	{
-		operationPane.addLine();
     	operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString("gallery.lastResult"), "LastResult");
 	}
 	
