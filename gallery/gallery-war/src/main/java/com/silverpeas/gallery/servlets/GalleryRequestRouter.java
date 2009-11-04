@@ -1293,10 +1293,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter
 				request.setAttribute("SearchKeyWord", "");
         request.setAttribute("IsBasket", gallerySC.isBasket());
         
-        // mise à jour du tag pour les retours
-        gallerySC.setSearchResult(true);
-        gallerySC.setViewNotVisible(false);
-        request.setAttribute("ViewVisible", new Boolean(gallerySC.isViewNotVisible()));
 				// appel jsp
 				destination = rootDest + "viewRestrictedPhotos.jsp";
 			}
