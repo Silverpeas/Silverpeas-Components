@@ -51,7 +51,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
  * This is the KMelia EJB-tier controller of the MVC. It is implemented as a
  * session EJB. It controls all the activities that happen in a client session.
  * It also provides mechanisms to access other session EJBs.
- *
+ * 
  * @author Nicolas Eysseric
  */
 public interface KmeliaBm extends EJBObject {
@@ -61,7 +61,7 @@ public interface KmeliaBm extends EJBObject {
   /**************************************************************************************/
   /**
    * Return a the detail of a topic
-   *
+   * 
    * @param id
    *          the id of the topic
    * @return a TopicDetail
@@ -75,7 +75,7 @@ public interface KmeliaBm extends EJBObject {
   /**
    * Add a subtopic to a topic - If a subtopic of same name already exists a
    * NodePK with id=-1 is returned else the new topic NodePK
-   *
+   * 
    * @param fatherId
    *          the topic Id of the future father
    * @param subTopic
@@ -92,7 +92,7 @@ public interface KmeliaBm extends EJBObject {
   /**
    * Add a subtopic to currentTopic and alert users - If a subtopic of same name
    * already exists a NodePK with id=-1 is returned else the new topic NodePK
-   *
+   * 
    * @param subTopic
    *          the NodeDetail of the new sub topic
    * @param alertType
@@ -111,7 +111,7 @@ public interface KmeliaBm extends EJBObject {
    * Update a subtopic to currentTopic and alert users - If a subtopic of same
    * name already exists a NodePK with id=-1 is returned else the new topic
    * NodePK
-   *
+   * 
    * @param topic
    *          the NodeDetail of the updated sub topic
    * @param alertType
@@ -128,7 +128,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Return a subtopic to currentTopic
-   *
+   * 
    * @param subTopicId
    *          the id of the researched topic
    * @return the detail of the specified topic
@@ -142,7 +142,7 @@ public interface KmeliaBm extends EJBObject {
    * and publications. This publications will be visible in the Declassified
    * zone. Delete All subscriptions and favorites on this topics and all
    * descendants
-   *
+   * 
    * @param topicId
    *          the id of the topic to delete
    * @since 1.0
@@ -165,7 +165,7 @@ public interface KmeliaBm extends EJBObject {
   /**************************************************************************************/
   /**
    * Subscriptions - get the subscription list of the current user
-   *
+   * 
    * @return a Path Collection - it's a Collection of NodeDetail collection
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
@@ -176,7 +176,7 @@ public interface KmeliaBm extends EJBObject {
   /**
    * Subscriptions - remove a subscription to the subscription list of the
    * current user
-   *
+   * 
    * @param topicId
    *          the subscribe topic Id to remove
    * @since 1.0
@@ -186,7 +186,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Subscriptions - add a subscription
-   *
+   * 
    * @param topicId
    *          the subscription topic Id to add
    * @since 1.0
@@ -199,7 +199,7 @@ public interface KmeliaBm extends EJBObject {
   /**************************************************************************************/
   /**
    * Return the detail of a publication (only the Header)
-   *
+   * 
    * @param pubId
    *          the id of the publication
    * @return a PublicationDetail
@@ -212,7 +212,7 @@ public interface KmeliaBm extends EJBObject {
   /**
    * Return list of all path to this publication - it's a Collection of
    * NodeDetail collection
-   *
+   * 
    * @param pubId
    *          the id of the publication
    * @return a Collection of NodeDetail collection
@@ -227,7 +227,7 @@ public interface KmeliaBm extends EJBObject {
   /**
    * Create a new Publication (only the header - parameters) to the current
    * Topic
-   *
+   * 
    * @param pubDetail
    *          a PublicationDetail
    * @return the id of the new publication
@@ -239,7 +239,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Update a publication (only the header - parameters)
-   *
+   * 
    * @param pubDetail
    *          a PublicationDetail
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
@@ -251,7 +251,7 @@ public interface KmeliaBm extends EJBObject {
   /**
    * Delete a publication If this publication is in the basket or in the DZ,
    * it's deleted from the database Else it only send to the basket
-   *
+   * 
    * @param pubId
    *          the id of the publication to delete
    * @return a TopicDetail
@@ -271,7 +271,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Add a publication to a topic and send email alerts to topic subscribers
-   *
+   * 
    * @param pubId
    *          the id of the publication
    * @param fatherId
@@ -283,7 +283,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Delete a path between publication and topic
-   *
+   * 
    * @param pubId
    *          the id of the publication
    * @param fatherId
@@ -295,7 +295,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Delete a path of publication
-   *
+   * 
    * @param pubId
    *          the id of the publication
    * @since 1.0
@@ -305,7 +305,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * get all available models
-   *
+   * 
    * @return a Collection of ModelDetail
    * @see com.stratelia.webactiv.util.publication.info.model.ModelDetail
    * @since 1.0
@@ -314,7 +314,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Return the detail of a model
-   *
+   * 
    * @param modelId
    *          the id of the model
    * @return a ModelDetail
@@ -325,7 +325,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Create info attached to a publication
-   *
+   * 
    * @param pubId
    *          the id of the publication
    * @param modelId
@@ -340,7 +340,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Create model info attached to a publication
-   *
+   * 
    * @param pubId
    *          the id of the publication
    * @param modelId
@@ -355,7 +355,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * get info attached to a publication
-   *
+   * 
    * @param pubId
    *          the id of the publication
    * @return an InfoDetail
@@ -366,7 +366,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Update info attached to a publication
-   *
+   * 
    * @param pubId
    *          the id of the publication
    * @param infos
@@ -382,7 +382,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Return all info of a publication and add a reading statistic
-   *
+   * 
    * @param pubId
    *          the id of a publication
    * @return a CompletePublication
@@ -408,7 +408,7 @@ public interface KmeliaBm extends EJBObject {
   /**
    * Return a collection of PublicationDetail throught a collection of
    * publication ids
-   *
+   * 
    * @param publicationIds
    *          a collection of publication ids
    * @return a collection of PublicationDetail
@@ -436,7 +436,7 @@ public interface KmeliaBm extends EJBObject {
   /**
    * Change publication status from draft to valid (for publisher) or toValidate
    * (for redactor)
-   *
+   * 
    * @param publicationId
    *          the id of the publication
    * @since 3.0
@@ -446,7 +446,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Change publication status from any state to draft
-   *
+   * 
    * @param publicationId
    *          the id of the publication
    * @since 3.0
@@ -456,7 +456,7 @@ public interface KmeliaBm extends EJBObject {
   /**
    * alert that an external elements of publication (wysiwyg, attachment,
    * versioning) has been created, updated or removed
-   *
+   * 
    * @param pubId
    *          - id of the publication which contains this external elements
    * @throws RemoteException
@@ -481,7 +481,7 @@ public interface KmeliaBm extends EJBObject {
   /*************************************************************/
   /**
    * Send an email to alert users of a publication creation
-   *
+   * 
    * @param pubId
    *          the publication Id
    */
@@ -493,7 +493,7 @@ public interface KmeliaBm extends EJBObject {
   /**************************************************************************************/
   /**
    * get reading control states to a publication
-   *
+   * 
    * @param pubId
    *          the id of a publication
    * @return a Collection (Actor, reading date, nb)
@@ -504,7 +504,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * delete reading controls to a publication
-   *
+   * 
    * @param pubId
    *          the id of a publication
    * @since 1.0
@@ -541,7 +541,7 @@ public interface KmeliaBm extends EJBObject {
   /**************************************************************************************/
   /**
    * Get list of Axis
-   *
+   * 
    * @param componentId
    * @return List of Axis
    * @throws RemoteException
@@ -550,7 +550,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Get list of Axis Headers
-   *
+   * 
    * @param componentId
    * @return List of Axis Headers
    * @throws RemoteException
@@ -559,7 +559,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Add an axis
-   *
+   * 
    * @param axis
    * @param componentId
    * @return
@@ -570,7 +570,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Update an axis
-   *
+   * 
    * @param axis
    * @param componentId
    * @throws RemoteException
@@ -580,7 +580,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Delete axis
-   *
+   * 
    * @param axisId
    * @param componentId
    * @throws RemoteException
@@ -590,7 +590,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Get Node Header
-   *
+   * 
    * @param id
    * @param componentId
    * @return NodeDetail
@@ -601,7 +601,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Add position to a axis
-   *
+   * 
    * @param fatherId
    * @param position
    * @param componentId
@@ -614,7 +614,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Update a position in an axis
-   *
+   * 
    * @param position
    * @param componentId
    * @throws RemoteException
@@ -624,7 +624,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Delete a position in an axis
-   *
+   * 
    * @param positionId
    * @param componentId
    * @throws RemoteException
@@ -634,7 +634,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Get path from a position
-   *
+   * 
    * @param positionId
    * @param componentId
    * @return
@@ -649,7 +649,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Get publications in a combination
-   *
+   * 
    * @param combination
    * @param componentId
    * @return Collection of publication
@@ -660,7 +660,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Get publications in a combination with time criteria
-   *
+   * 
    * @param combination
    * @param componentId
    * @return Collection of publication
@@ -671,7 +671,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Get publications with no classement
-   *
+   * 
    * @param componentId
    * @return Collection of publication
    * @throws RemoteException
@@ -690,7 +690,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Get complete publication of a user
-   *
+   * 
    * @param componentId
    *          , pubId
    * @return UserCompletePublication
@@ -701,7 +701,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Get Collection of coordinates for a publication
-   *
+   * 
    * @param pubId
    *          , componentId
    * @return UserCompletePublication
@@ -712,7 +712,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Add a combination for this publication
-   *
+   * 
    * @param pubId
    *          , combination, componentId
    * @return
@@ -723,7 +723,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Remove a combination for this publication
-   *
+   * 
    * @param pubId
    *          , combinationId, componentId
    * @return
@@ -734,7 +734,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Create a new Publication (only the header - parameters)
-   *
+   * 
    * @param pubDetail
    *          a PublicationDetail
    * @return the id of the new publication
@@ -746,7 +746,7 @@ public interface KmeliaBm extends EJBObject {
 
   /**
    * Delete coordinates of a publication (ie: when publication is deleted)
-   *
+   * 
    * @param coordinatePK
    * @param coordinates
    */

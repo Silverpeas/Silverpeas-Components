@@ -856,7 +856,7 @@ public class PdfGenerator extends PdfPageEventHelper {
   }
 
   /**
-   *
+   * 
    * @param documentPdf
    * @throws DocumentException
    * @throws RemoteException
@@ -899,7 +899,10 @@ public class PdfGenerator extends PdfPageEventHelper {
           document = (com.stratelia.silverpeas.versioning.model.Document) documents_iterator
               .next();
 
-          /* Solution 1 : affichage de la dernière version (publique ou privée) */
+          /*
+           * Solution 1 : affichage de la dernière version (publique ou
+           * privée)
+           */
           is_reader = isUserReader(document, user_id, versioningUtil);
           if (versioningUtil.isWriter(document, user_id) || is_reader
               || "admin".equals(kmeliaSessionController.getUserRoleLevel())) {
@@ -1173,7 +1176,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   /**
    * Cette methode construit un hyperlien a partir d'un nom et de son lien
-   *
+   * 
    * @param unit
    *          - un objet contenant un nom et un lien. Cette valeur ne doit pas
    *          etre nulle
@@ -1198,7 +1201,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   /**
    * Cette methode construit le chemin complet tronque pour acceder a une valeur
-   *
+   * 
    * @param list
    *          - un objet contenant une liste de liste(nom+url). Cette valeur ne
    *          doit pas etre nulle
@@ -1236,7 +1239,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   /**
    * Cette methode construit le chemin complet pour acceder a une valeur
-   *
+   * 
    * @param list
    *          - un objet contenant une liste de liste(nom+url). Cette valeur ne
    *          doit pas etre nulle

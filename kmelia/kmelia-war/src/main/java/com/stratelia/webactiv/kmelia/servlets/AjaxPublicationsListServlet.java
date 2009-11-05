@@ -288,7 +288,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         } else {
           if (pub.getStatus() != null
               && pub.getStatus().equals(PublicationDetail.DRAFT)) {
-            // en mode brouillon, si on est en co-rédaction et si on autorise le
+            // en mode brouillon, si on est en co-rédaction et si on autorise
+            // le
             // mode brouillon visible par tous,
             // les publication en mode brouillon sont visibles par tous sauf les
             // lecteurs
@@ -304,7 +305,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             if (profile.equals("admin") || profile.equals("publisher")
                 || currentUserId.equals(pub.getUpdaterId())
                 || (!profile.equals("user") && kmeliaScc.isCoWritingEnable())) {
-              // si on est en co-rédaction, on affiche toutes les publications à
+              // si on est en co-rédaction, on affiche toutes les publications
+              // à
               // valider (sauf pour les lecteurs)
               pubColor = "red";
               if ("UnValidate".equalsIgnoreCase(pub.getStatus()))

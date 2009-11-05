@@ -96,7 +96,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
   /**
    * This method creates a KmeliaSessionController instance
-   *
+   * 
    * @param mainSessionCtrl
    *          The MainSessionController instance
    * @param context
@@ -122,7 +122,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented by the component request rooter it has to
    * compute a destination page
-   *
+   * 
    * @param function
    *          The entering request function ( : "Main.jsp")
    * @param componentSC
@@ -2052,16 +2052,16 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
    * getParameterValue(parameters, "PubId"); String name =
    * getParameterValue(parameters, "Name"); String description =
    * getParameterValue(parameters, "Description");
-   *
+   * 
    * Date jBeginDate = null; Date jEndDate = null;
-   *
+   * 
    * String pubId = "X"; if (StringUtil.isDefined(id)) pubId = id;
    * PublicationDetail pubDetail = new PublicationDetail(pubId, name,
    * description, null, jBeginDate, jEndDate, null, "0", "", "", "", null, "");
    * pubDetail.setStatus("Valid");
-   *
+   * 
    * I18NHelper.setI18NInfo(pubDetail, parameters);
-   *
+   * 
    * return pubDetail; }
    */
 
@@ -2136,7 +2136,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
   /**
    * Process Form Upload for publications import
-   *
+   * 
    * @param kmeliaScc
    * @param request
    * @param routDestination
@@ -2420,7 +2420,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
       PublicationTemplateException, FormException {
     String destination = "";
     if (function.equals("WizardStart")) {
-      // récupération de l'id du thème dans lequel on veux mettre la publication
+      // récupération de l'id du thème dans lequel on veux mettre la
+      // publication
       // si on ne viens pas d'un theme-tracker
       String topicId = request.getParameter("TopicId");
       if (StringUtil.isDefined(topicId)) {

@@ -80,7 +80,7 @@ public class KmeliaHelper implements Serializable {
   }
 
   public static boolean isIndexable(PublicationDetail pubDetail) {
-    return "Valid".equalsIgnoreCase(pubDetail.getStatus());
+    return pubDetail.isIndexable();
   }
 
   public static String extractObjectIdFromURL(String url) {

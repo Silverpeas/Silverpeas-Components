@@ -3723,14 +3723,11 @@ public class KmeliaBmEJB implements SessionBean {
   public UserCompletePublication getKmaxCompletePublication(String pubId, String currentUserId) {
     SilverTrace.info("kmax", "KmeliaBmEjb.getKmaxCompletePublication()", "root.MSG_GEN_ENTER_METHOD");
     PublicationPK pubPK = null;
-    //NodePK nodePK = null;
     CompletePublication completePublication = null;
-    //StatisticBm statisticBm = getStatisticBm();
 
     PublicationBm pubBm = getPublicationBm();
     try {
       pubPK = new PublicationPK(pubId);
-      //nodePK = new NodePK("0");
       completePublication = pubBm.getCompletePublication(pubPK);
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEjb.getKmaxCompletePublication()", SilverpeasRuntimeException.ERROR, "kmax.EX_IMPOSSIBLE_DOBTENIR_LES_INFORMATIONS_DE_LA_PUBLICATION", e);
@@ -3739,82 +3736,18 @@ public class KmeliaBmEJB implements SessionBean {
     OrganizationController orga = getOrganizationController();
     UserDetail userDetail = orga.getUserDetail(pub.getCreatorId());
     UserCompletePublication userCompletePublication = new UserCompletePublication(userDetail, completePublication);
-    /*try {
-    statisticBm.addReading(currentUserId, nodePK, pubPK);
-    } catch (Exception e) {
-    throw new KmaxRuntimeException("KmeliaBmEjb.getKmaxCompletePublication()",SilverpeasRuntimeException.ERROR,"kmax.EX_IMPOSSIBLE_DOBTENIR_LES_INFORMATIONS_DE_LA_PUBLICATION", e);
-    } */
     SilverTrace.info("kmax", "KmeliaBmEjb.getKmaxCompletePublication()", "root.MSG_GEN_EXIT_METHOD");
     return userCompletePublication;
   }
 
   public Collection getPublicationCoordinates(String pubId, String componentId) {
     SilverTrace.info("kmax", "KmeliaBmEjb.getPublicationCoordinates()", "root.MSG_GEN_ENTER_METHOD");
-    PublicationPK pubPK = null;
-    Collection fatherPKs = null;
-    Collection coordinates = null;
-    PublicationBm pubBm = getPublicationBm();
-
     try {
-      pubPK = new PublicationPK(pubId, componentId);
-      //recupere les coordonnees de la publication (collection de nodePK)
-      fatherPKs = pubBm.getAllFatherPK(pubPK);
-    } catch (Exception e) {
-      throw new KmaxRuntimeException("KmeliaBmEJB.getPublicationCoordinates()", SilverpeasRuntimeException.ERROR, "kmax.EX_IMPOSSIBLE_DOBTENIR_LES_COMBINAISONS_DE_LA_PUBLICATION", e);
+      return getPublicationBm().getCoordinates(pubId, componentId);
+    }catch(Exception e) {
+      throw new KmaxRuntimeException("KmeliaBmEjb.getPublicationCoordinates()", SilverpeasRuntimeException.ERROR,
+        "root.MSG_GEN_PARAM_VALUE", e);
     }
-
-    //construction d'une liste de coordinateId
-    Iterator it = fatherPKs.iterator();
-    String coordinateId = "";
-    ArrayList coordinateIds = new ArrayList();
-    CoordinatePK coordinatePK = new CoordinatePK("unknown", pubPK);
-    while (it.hasNext()) {
-      coordinateId = ((NodePK) it.next()).getId();
-      coordinateIds.add(coordinateId);
-    }
-
-    //Recupere tous les object Coordinate correspondant
-    try {
-      coordinates = getCoordinatesBm().getCoordinatesByCoordinateIds(coordinateIds, coordinatePK);
-    } catch (Exception e) {
-      throw new KmaxRuntimeException("KmeliaBmEJB.getPublicationCoordinates()", SilverpeasRuntimeException.ERROR, "kmax.EX_IMPOSSIBLE_DOBTENIR_LES_COMBINAISONS_DE_LA_PUBLICATION", e);
-    }
-
-    //Enrichit les coordonnees avec le nom du noeud
-    it = coordinates.iterator();
-    Coordinate coordinate = null;
-    Collection points = null;
-    Collection surePoints = null;
-    CoordinatePoint point = null;
-    String pointName = "";
-    int pointLevel;
-    NodeDetail node = null;
-    Iterator pointsIt = null;
-    while (it.hasNext()) {
-      coordinate = (Coordinate) it.next();
-      points = coordinate.getCoordinatePoints();
-      surePoints = new ArrayList();
-      pointsIt = points.iterator();
-      while (pointsIt.hasNext()) {
-        point = (CoordinatePoint) pointsIt.next();
-        try {
-          node = getNodeHeader(new Integer(point.getNodeId()).toString(), componentId);
-
-          pointName = node.getName();
-          pointLevel = node.getLevel();
-          point.setName(pointName);
-          point.setLevel(pointLevel);
-          point.setPath(node.getPath()/*+"/"*/);
-
-          surePoints.add(point);
-        } catch (Exception e) {
-          SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationCoordinates", "root.MSG_GEN_PARAM_VALUE", "node unfindable !");
-        }
-      }
-      coordinate.setCoordinatePoints(surePoints);
-    }
-    SilverTrace.info("kmax", "KmeliaBmEJB.getPublicationCoordinates()", "root.MSG_GEN_EXIT_METHOD");
-    return coordinates;
   }
 
   public void addPublicationToCombination(String pubId, ArrayList combination, String componentId) {
