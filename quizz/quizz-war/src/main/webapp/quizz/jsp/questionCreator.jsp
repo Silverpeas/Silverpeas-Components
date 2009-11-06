@@ -56,6 +56,10 @@
 <%@ page import="com.stratelia.webactiv.util.questionContainer.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.questionContainer.control.*"%>
 <%@ page import="com.stratelia.webactiv.quizz.QuizzException"%>
+<%@ page import="com.silverpeas.util.web.servlet.FileUploadUtil"%>
+<%@ page import="org.apache.commons.fileupload.FileItem"%>
+<%@ page import="com.stratelia.webactiv.quizz.QuestionHelper"%>
+<%@ page import="com.stratelia.webactiv.quizz.QuestionForm"%>
 
 <jsp:useBean id="quizzUnderConstruction" scope="session" class="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail" />
 <jsp:useBean id="questionsVector" scope="session" class="java.util.Vector" />
@@ -106,42 +110,12 @@
 		
         return questionContainerHeaderHTML;
   }
-
-boolean isCorrectFile(FilePart filePart) {
-    boolean correctFile = false;
-    String fileName = filePart.getFileName();
-    if (fileName!=null)
-    {
-      String logicalName = fileName.trim();
-    
-      if ((logicalName != null) && (logicalName.length() >= 3) && (logicalName.indexOf(".") != -1)) {
-        String type = logicalName.substring(logicalName.indexOf(".")+1, logicalName.length());
-        if (type.length() >= 3)
-            correctFile = true;
-      }
-    }
-    return correctFile;
-}
 %>
 
 <% 
 
 //Récupération des paramètres
-String action = "";
-String question = "";
-String nbAnswers = "";
-String answerInput = "";
-String qcmCheck = "";
-String qcm = "0";
-String penalty = "";
-String clue = "";
-String nbPointsMin = "";
-String nbPointsMax = "";
-String nbPoints = "";
-String comment ="";
-
 String nextAction = "";
-
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 int nbZone = 4; // nombre de zones à contrôler
@@ -163,96 +137,22 @@ Button cancelButton = null;
 Button finishButton = null;
 ButtonPane buttonPane = null;
 
-SilverpeasMultipartParser mp = new SilverpeasMultipartParser(request);
-Part part;
-File dir = null;
-String logicalName = null;
-String type = null;
-String physicalName = null;
-String mimeType = null;
+List items = FileUploadUtil.parseRequest(request);
 boolean file = false;
-long size = 0;
 int nb = 0;
 int attachmentSuffix = 0;
-ArrayList imageList = new ArrayList();
-ArrayList answers = new ArrayList();
-Answer answer = null;
-String style = "";
-
-while ((part = mp.readNextPart()) != null) {
-  String mpName = part.getName();
-  if (part.isParam()) {
-    // it's a parameter part
-    SilverpeasParamPart paramPart = (SilverpeasParamPart) part;
-
-    if (mpName.equals("Action"))
-        action = paramPart.getStringValue();
-    else if (mpName.equals("question"))
-        question = paramPart.getStringValue();
-    else if (mpName.equals("clue"))
-        clue = paramPart.getStringValue();
-    else if (mpName.equals("penalty"))
-        penalty = paramPart.getStringValue();
-    else if (mpName.equals("nbPointsMin"))
-        nbPointsMin = paramPart.getStringValue();
-    else if (mpName.equals("nbPointsMax"))
-        nbPointsMax = paramPart.getStringValue();
-    else if (mpName.equals("nbAnswers"))
-        nbAnswers = paramPart.getStringValue();
-    //else if (mpName.equals("qcm"))
-        //qcm = paramPart.getStringValue();
-    else if (mpName.equals("questionStyle"))
-    	style = paramPart.getStringValue();
-    else if (mpName.startsWith("answer")) {
-        answerInput = paramPart.getStringValue();
-        answer = new Answer(null, null, answerInput, 0, false, null, 0, false, null, null);
-        answers.add(answer);
-    }
-    else if (mpName.startsWith("nbPoints")) {
-        nbPoints = paramPart.getStringValue();
-        answer.setNbPoints(new Integer(nbPoints).intValue());
-        if (new Integer(nbPoints).intValue()>0)
-          answer.setIsSolution(true);
-    } 
-    else if (mpName.startsWith("comment")) {
-      comment = paramPart.getStringValue();
-      answer.setComment(comment);
-    } 
-    else if (mpName.startsWith("valueImageGallery")) 
-    {
-    	if (StringUtil.isDefined(paramPart.getStringValue()))
-    	{
-    		// traiter les images venant de la gallery si pas d'image externe
-    		if (!file)
-    			answer.setImage(paramPart.getStringValue());
-    	}
-    }    
-    String value = paramPart.getStringValue();
-  } else if (part.isFile()) {
-    // it's a file part
-    FilePart filePart = (FilePart) part;
-    boolean correctFile = isCorrectFile(filePart);
-    if (correctFile) {
-      // the part actually contained a file
-      logicalName = filePart.getFileName();
-      type = logicalName.substring(logicalName.indexOf(".")+1, logicalName.length());
-      physicalName = new Long(new Date().getTime()).toString() + attachmentSuffix + "." +type;
-      attachmentSuffix = attachmentSuffix + 1;
-      mimeType = filePart.getContentType();
-      dir = new File(FileRepositoryManager.getAbsolutePath(quizzScc.getSpaceId(), quizzScc.getComponentId())+quizzSettings.getString("imagesSubDirectory")+File.separator+physicalName);
-      size = filePart.writeTo(dir);
-      if (size > 0)
-      {
-          answer.setImage(physicalName);
-          file = true;
-      }
-    } else { 
-      // the field did not contain a file
-    }
-    out.flush();
-  }
-}
-
+String action = FileUploadUtil.getOldParameter(items, "Action", "");
+String question = FileUploadUtil.getOldParameter(items, "question", "");
+String clue =  FileUploadUtil.getOldParameter(items, "clue", "");
+String penalty = FileUploadUtil.getOldParameter(items, "penalty", "");
+String nbPointsMin = FileUploadUtil.getOldParameter(items, "nbPointsMin", "");
+String nbPointsMax = FileUploadUtil.getOldParameter(items, "nbPointsMax", "");
+String nbAnswers = FileUploadUtil.getOldParameter(items, "nbAnswers", "");
+String style = FileUploadUtil.getOldParameter(items, "questionStyle", "");
+QuestionForm form = new QuestionForm(file, attachmentSuffix);
+List answers = QuestionHelper.extractAnswer(items, form, quizzScc.getComponentId(), quizzSettings.getString("imagesSubDirectory"));
+file = form.isFile();
+attachmentSuffix = form.getAttachmentSuffix();
 %>
 <HTML>
 <HEAD>
@@ -411,9 +311,6 @@ function isCorrectForm2()
      var nbPointsMin = Number(document.quizzForm.nbPointsMin.value);
      for (var i = 0; i < nb; i++) 
      {
-         //var answer=document.quizzForm.elements[4*i+7].value;
-         //var nbPoints=document.quizzForm.elements[4*i+8].value;
-         //var comment=document.quizzForm.elements[4*i+9].value;
          var answer=document.quizzForm.elements[<%=nbZone%>*i+7].value;
          var nbPoints=document.quizzForm.elements[<%=nbZone%>*i+8].value;
          var comment=document.quizzForm.elements[<%=nbZone%>*i+9].value;
@@ -512,11 +409,6 @@ function confirmCancel()
 		document.getElementById('valueImageGallery'+idImage).value = "";
 	}
 	
-	//function choixImageInGallery(url)
-	//{
-		//document.getElementById('imageGallery'+currentAnswer).innerHTML = "<a href=\""+url+"\" target=\"_blank\"><%=resources.getString("quizz.imageGallery")%></a> <a href=\"javascript:deleteImage('"+currentAnswer+"')\"><img src=\"icons/questionDelete.gif\" border=\"0\" align=\"absmiddle\" alt=\"<%=resources.getString("GML.delete")%>\" title=\"<%=resources.getString("GML.delete")%>\"></a>";
-		//document.getElementById('valueImageGallery'+currentAnswer).value = url;
-	//}
 	function choixImageInGallery(url)
 	{
 		var newLink = document.createElement("a");
@@ -551,10 +443,6 @@ if (action.equals("FirstQuestion")) {
       action = "CreateQuestion";
 }
 if (action.equals("SendNewQuestion")) {
-      //boolean isQCM = false;
-      //if (qcm.equals("1"))
-           //isQCM = true;
-      //boolean isOpen = false;
       Vector questionsV = (Vector) session.getAttribute("questionsVector");
       int questionNb = questionsV.size() + 1;
       int penaltyInt=0;
@@ -651,7 +539,6 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
                     if (!penalty.equals(""))
                       out.println("<tr><td class=\"textePetitBold\" valign=top>"+resources.getString("QuizzPenalty") + " :</td><td>"+penalty+"&nbsp;"+resources.getString("QuizzNbPoints"));
                     out.println("<input type=\"hidden\" name=\"question\" value=\"" + Encode.javaStringToHtmlString(question) + "\">");
-                    //out.println("<input type=\"hidden\" name=\"qcm\" value=\""+qcm+"\">");
                     out.println("<input type=\"hidden\" name=\"questionStyle\" value=\""+style+"\">");
                     out.println("<input type=\"hidden\" name=\"nbAnswers\" value=\""+nbAnswers+"\">");
                     out.println("<input type=\"hidden\" name=\"nbPointsMin\" value=\""+nbPointsMin+"\">");
@@ -679,9 +566,6 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
                         out.println("<tr style=\""+visibility+"\"><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzCreationAnswerImage")+"&nbsp;"+j+" :</td><td><input type=\"file\" size=\"50\" name=\"image"+i+"\"></td><td></td></tr>");
                         //zone pour le lien vers l'image
                         out.println("<tr style=\""+visibility+"\"><td></td><td><span id=\"imageGallery"+i+"\"></span>");
-                        
-
-	                    //List galleries = quizzScc.getGalleries();
 	                    if (galleries != null)
 	                    {
 	                    	out.println("<input type=\"hidden\" id=\"valueImageGallery"+i+"\" name=\"valueImageGallery"+i+"\" >");
@@ -707,11 +591,6 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
                 out.println(board.printBefore());
 			    out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" width=\"98%\">");
                 out.println("<tr><td class=\"txtlibform\" valign=top>" + resources.getString("QuizzCreationQuestion") + questionNb + " :</td><td><textarea name=\"question\" cols=\"49\" wrap=\"VIRTUAL\" rows=\"3\">"+Encode.javaStringToHtmlString(question)+"</textarea>&nbsp;<img border=\"0\" src=\"" + mandatoryField + "\" width=\"5\" height=\"5\"></td></tr>");
-                //out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("GML.type")+" :</td>");
-                //out.println("<td><input type=\"radio\" name=\"qcm\" value=\"0\" checked> "+resources.getString("QuizzCreationQuestionTypeOne")+"<BR>");
-                //out.println("<input type=\"radio\" name=\"qcm\" value=\"1\"> "+resources.getString("QuizzCreationQuestionTypeMany")+"&nbsp;<img border=\"0\" src=\"" + mandatoryField + "\" width=\"5\" height=\"5\"></td></tr>");
-                //out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzCreationQuestionTypeMany")+" :</td><td><input type=\"checkbox\" name=\"qcm\" value=\"1\" "+qcmCheck+"></td></tr>");
- 
 				out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("quizz.style")+" :</td><td>");
                 out.println(" <select id=\"questionStyle\" name=\"questionStyle\" > ");
     			out.println(" <option selected value=\"null\">"+resources.getString("quizz.style")+"</option> ");
@@ -737,9 +616,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
       </form>
       <!-- FIN CORPS -->
 <%
-      out.println(frame.printMiddle());
-%>
-<%    
+      out.println(frame.printMiddle()); 
             out.println("<br><center>"+buttonPane.print());
 out.println(frame.printAfter());
       

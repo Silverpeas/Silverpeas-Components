@@ -82,16 +82,16 @@ Button validateButton = null;
 Button cancelButton = null;
 //QuestionContainerDetail questionContainerDetail = null;
 
-action = (String) request.getParameter("Action");
-quizzId = (String) request.getParameter("QuizzId");
-title = (String) request.getParameter("title");
-description = (String) request.getParameter("description");
-beginDate = (String) request.getParameter("beginDate");
-endDate = (String) request.getParameter("endDate");
-nbQuestions = (String) request.getParameter("nbQuestions");
-notice=(String) request.getParameter("notice");
-nbAnswersNeeded = (String) request.getParameter("nbAnswersNeeded");
-nbAnswersMax = (String) request.getParameter("nbAnswersMax");
+action = request.getParameter("Action");
+quizzId =  request.getParameter("QuizzId");
+title = request.getParameter("title");
+description = request.getParameter("description");
+beginDate = request.getParameter("beginDate");
+endDate = request.getParameter("endDate");
+nbQuestions = request.getParameter("nbQuestions");
+notice= request.getParameter("notice");
+nbAnswersNeeded = request.getParameter("nbAnswersNeeded");
+nbAnswersMax = request.getParameter("nbAnswersMax");
 //Mise a jour de l'espace
 if (action == null) {
 	action = "CreateQuizz";
@@ -265,14 +265,6 @@ if (action.equals("SendNewQuizz")) {
             endDate = null;
       }
 
-	  /*if(nbAnswersMax == null || nbAnswersMax.trim().length() == 0) {
-			nbAnswersMax = "0";
-	  }
-
-	  if(nbAnswersNeeded == null || nbAnswersNeeded.trim().length() == 0) {
-			nbAnswersNeeded = "0";
-	  }  */
-
       QuestionContainerHeader questionContainerHeader = new QuestionContainerHeader(null, title, description,notice, null, null, beginDate, endDate, false, 0, new Integer(nbQuestions).intValue(),new Integer(nbAnswersMax).intValue(),new Integer(nbAnswersNeeded).intValue(),0);
       QuestionContainerDetail questionContainerDetail = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
       questionContainerDetail.setHeader(questionContainerHeader);
@@ -343,6 +335,7 @@ else if (action.equals("CreateQuizz")) {
 	</tr>
 	</form>
 </table>
+</center>
 <%
 	out.println(board.printAfter());
     out.println(frame.printMiddle());

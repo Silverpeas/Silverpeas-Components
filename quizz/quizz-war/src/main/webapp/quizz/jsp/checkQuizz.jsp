@@ -35,17 +35,12 @@
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 
 <%
-	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-	QuizzSessionController quizzScc = (QuizzSessionController) request.getAttribute("quizz");
-	ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
-
-	if (quizzScc == null)
-	{
-	    // No quizz session controller in the request -> security exception
-	    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
-	    getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
-	    return;
-	}
-
-	//ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(quizzScc.getLanguage());
+      GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+      QuizzSessionController quizzScc = (QuizzSessionController) request.getAttribute("quizz");
+      ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
+      if (quizzScc == null) {
+        String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+        getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
+        return;
+      }
 %>
