@@ -24,7 +24,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<!-- DÉFINITION DE MODÈLE DE PROCÉDURE : SUIVI DE BUG -->
+<!-- DEFINITION DE MODELE DE PROCEDURE : SUIVI DE BUG -->
 <processModel name="SilverBugTracker" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="processModel.xsd">
 
 	<label>Suivi de bugs</label>
@@ -92,6 +92,7 @@
 
 	<!-- DEFINITION DU DOSSIER -->
 	<dataFolder>
+		<!-- formulaire de demande -->
 		<item name="component">
 			<label>Composant</label>
 			<label lang="en">Component</label>
@@ -104,11 +105,11 @@
 			<param name="size" value="100"/>
 		</item>
 		<item name="description">
-			<label>Description</label>
+			<label>Description détaillée</label>
 			<description>La description du bug</description>
 			<type>text</type>
 			<param name="rows" value="10"/>
-			<param name="cols" value="94"/>
+			<param name="cols" value="100"/>
 		</item>
 		<item name="pbType">
 			<label>Type de problème</label>
@@ -116,21 +117,6 @@
 			<description>Indique si le type de pb (500, 404, NullPointer, Exception, Icone, AccessBD, Ergo)</description>
 			<type>text</type>
 			<param name="keys" value="Erreur 500##Erreur 404##NullPointerException##Accès à la base##Icônographie##Ergonomie##Autre..."/>
-		</item>
-		<item name="reproducible">
-			<label>Reproductible</label>
-			<label lang="en">Reproducible</label>
-			<description>Le bug peut-il être reproduit ?</description>
-			<type>text</type>
-			<param name="keys" value="Systématiquement##De temps en temps##Rarement##Jamais"/>
-		</item>
-		<item name="remarks">
-			<label>Remarques</label>
-			<label lang="en">Remarks</label>
-			<description>Remarques éventuelles</description>
-			<type>text</type>
-			<param name="rows" value="10"/>
-			<param name="cols" value="94"/>
 		</item>
 		<item name="severity">
 			<label>Gravité</label>
@@ -146,6 +132,59 @@
 			<type>text</type>
 			<param name="keys" value="Hyper bug##Haute##Moyenne##Basse"/>
 		</item>
+		<item name="file1">
+			<label>Fichier #1</label>
+			<label lang="en">File #1</label>
+			<type>file</type>
+		</item>
+		<item name="file2">
+			<label>Fichier #2</label>
+			<label lang="en">File #2</label>
+			<type>file</type>
+		</item>
+		<item name="file3">
+			<label>Fichier #3</label>
+			<label lang="en">File #3</label>
+			<type>file</type>
+		</item>
+		<!-- qualification -->
+		<item name="reproducible">
+			<label>Reproductible</label>
+			<label lang="en">Reproducible</label>
+			<description>Le bug peut-il être reproduit ?</description>
+			<type>text</type>
+			<param name="keys" value="Systématiquement##De temps en temps##Rarement##Jamais"/>
+		</item>
+		<item name="qualifyComment">
+			<label>Précisions apportées par Silverpeas</label>
+			<label lang="en">Comments made by Silverpeas</label>
+			<type>text</type>
+			<param name="rows" value="10"/>
+			<param name="cols" value="100"/>
+		</item>
+		<item name="plannedCorrectionTime">
+			<label>Temps prévu pour la correction</label>
+			<label lang="en">Planned correction time</label>
+			<description>Temps prévu pour la correction</description>
+			<type>text</type>
+		</item>
+		<item name="patchCorrected">
+			<label>Disponibilité (patch)</label>
+			<label lang="en">Corrected version</label>
+			<description>Version/Patch dans laquelle la correction a eu lieu</description>
+			<type>text</type>
+		</item>
+
+		<item name="remarks">
+			<label>Remarques</label>
+			<label lang="en">Remarks</label>
+			<description>Remarques éventuelles</description>
+			<type>text</type>
+			<param name="rows" value="10"/>
+			<param name="cols" value="100"/>
+		</item>
+		
+		
 		<item name="assignedTo">
 			<label>Assigné à</label>
 			<label lang="en">Assigned to</label>
@@ -158,12 +197,12 @@
 			<description>Date à laquelle le correctif devrait être livré</description>
 			<type>date</type>
 		</item>
-		<item name="plannedCorrectionTime">
-			<label>Temps prévu pour la correction</label>
-			<label lang="en">Planned correction time</label>
-			<description>Temps prévu pour la correction</description>
-			<type>text</type>
+		<item name="attachment">
+			<label>Fichier</label>
+			<label lang="en">File</label>
+			<type>file</type>
 		</item>
+		
 		<item name="correctionTime">
 			<label>Temps passé pour la correction</label>
 			<label lang="en">Effective correction time</label>
@@ -176,7 +215,7 @@
 			<description>Descriptif de la correction du bug</description>
 			<type>text</type>
 			<param name="rows" value="10"/>
-			<param name="cols" value="94"/>
+			<param name="cols" value="100"/>
 		</item>
 		<item name="forwardTo">
 			<label>Bug déjà rentré</label>
@@ -184,12 +223,7 @@
 			<description>Le bug a déjà fait l'objet d'une fiche de bug, dont on indique l'identifiant</description>
 			<type>text</type>
 		</item>
-		<item name="patchCorrected">
-			<label>Disponibilité (patch)</label>
-			<label lang="en">Corrected version</label>
-			<description>Version/Patch dans laquelle la correction a eu lieu</description>
-			<type>text</type>
-		</item>
+		
 		<item name="reasonOfAbortion">
 			<label>Raison de l'abandon</label>
 			<label lang="en">Reason of abortion</label>
@@ -197,42 +231,8 @@
 			<type>text</type>
 			<param name="keys" value="Bug connu##Déjà Corrigé##Sans objet"/>
 		</item>
-		<item name="attachment">
-			<label>Capture d'écran ou autre document</label>
-			<label lang="en">Snapshot or other document</label>
-			<description>Pièce jointe</description>
-			<type>file</type>
-		</item>
 	</dataFolder>
-
-	<!-- PRESENTATION DES PROCEDURES EN COURS-->
-	<presentation>
-		<title role="Senders">Demande du ${action.Creation.date}</title>
-		<title role="Qualificators">${action.Creation.date} - Demande de ${action.Creation.actor} (${action.Creation.actor.company})</title>
-		<title role="Correctors">Demande du ${action.Creation.date}</title>
-		<title role="supervisor">Demande du ${action.Creation.date}</title>
-		
-		<columns role="Senders">
-			<column item="component"/>
-			<column item="titre"/>
-			<column item="priority"/>
-		</columns>
-		<columns role="Qualificators">
-			<column item="component"/>
-			<column item="titre"/>
-		</columns>
-		<columns role="Correctors">
-			<column item="component"/>
-			<column item="titre"/>
-			<column item="priority"/>
-		</columns>
-		<columns role="supervisor">
-			<column item="component"/>
-			<column item="titre"/>
-			<column item="priority"/>
-		</columns>
-	</presentation>
-
+	
 	<!-- DESCRIPTION DES PARTICIPANTS -->
 	<participants>
 		<participant name="Emetteur" state="" role="Senders">
@@ -252,8 +252,9 @@
 			<label>A qualifier</label>
 			<label lang="en">To be qualified</label>
 			<description>en cours de qualification</description>
-			<workingUsers role="Qualificators">
+			<workingUsers>
 				<userInRole name="Qualificators"/>
+				<relatedUser participant="Emetteur" role="Senders"/>
 			</workingUsers>
 			<interestedUsers>
 				<relatedUser participant="Emetteur" role="Senders"/>
@@ -261,6 +262,7 @@
 			</interestedUsers>
 			<allowedActions>
 				<allow action="Qualify"/>
+				<allow action="Relaunch"/>
 				<allow action="NeedInfos"/>
 				<allow action="Abort"/>
 			</allowedActions>
@@ -369,7 +371,7 @@
 			<consequences>
 				<consequence>
 					<set state="ToBeQualified"/>
-					<notify message="Vous devez qualifier l'anomalie suivante : ${folder.titre}.">
+					<notify message="Une nouvelle anomalie doit être qualifiée.&#10;&#10;Composant : ${folder.component}&#10;Titre : ${folder.titre}&#10;Type de problème : ${folder.pbType}&#10;Gravité : ${folder.severity}&#10;Priorité : ${folder.priority}&#10;Description :&#10;${folder.description}">
 						<userInRole name="Qualificators"/>
 					</notify>
 				</consequence>
@@ -387,7 +389,7 @@
 			<consequences>
 				<consequence>
 					<set state="MoreInfosNeeded"/>
-					<notify message="Des précisions vous sont demandées sur l'anomalie '${folder.titre}'.">
+					<notify message="Des précisions vous sont demandées sur l'anomalie '${folder.titre}' du composant '${folder.component}'.">
 						<relatedUser participant="Emetteur"/>
 					</notify>
 				</consequence>
@@ -405,7 +407,7 @@
 			<consequences>
 				<consequence>
 					<set state="ToBeQualified"/>
-					<notify message="Les précisions que vous avez demandées ont été rajoutées pour l'anomalie '${folder.titre}'.">
+					<notify message="Les précisions que vous avez demandées ont été rajoutées pour l'anomalie '${folder.titre}' du composant '${folder.component}'.">
 						<userInRole name="Qualificators"/>
 					</notify>
 				</consequence>
@@ -423,7 +425,25 @@
 			<consequences>
 				<consequence>
 					<set state="ToBeCorrected"/>
-					<notify message="Une nouvelle anomalie vient d'être qualifiée : ${folder.titre}.">
+					<notify message="Bonjour,&#10;&#10;L'anomalie ci-dessous vient d'être qualifiée.&#10;&#10;Composant : '${folder.component}'&#10;Titre : ${folder.titre}&#10;Priorité : ${folder.priority}&#10;&#10;Disponibilité (patch) : ${folder.patchCorrected}">
+						<relatedUser participant="Emetteur"/>
+						<userInRole name="Correctors"/>
+					</notify>
+				</consequence>
+			</consequences>
+		</action>
+
+		<action name="Relaunch" form="fRelaunch">
+			<label>Relancer</label>
+			<label lang="en">Relaunch</label>
+			<description>Relance la qualification d'une anomalie</description>
+			<allowedUsers>
+				<userInRole name="Senders"/>
+			</allowedUsers>
+			<consequences>
+				<consequence>
+					<set state="ToBeQualified"/>
+					<notify message="Bonjour,&#10;&#10;L'anomalie ci-dessous n'a pas été assez rapidement prise en compte. Le client s'impatiente et nous relance.&#10;Merci de qualifier cette anomalie le plus rapidement possible.&#10;&#10;Composant : '${folder.component}'&#10;Titre : ${folder.titre}&#10;Priorité : ${folder.priority}">
 						<userInRole name="Correctors"/>
 					</notify>
 				</consequence>
@@ -441,7 +461,7 @@
 			<consequences>
 				<consequence>
 					<set state="Correction"/>
-					<notify message="L'anomalie '${folder.titre}' est en cours de correction.">
+					<notify message="L'anomalie '${folder.titre}' du composant '${folder.component}' est en cours de correction.">
 						<relatedUser participant="Emetteur"/>
 						<userInRole name="Correctors"/>
 					</notify>
@@ -461,7 +481,7 @@
 			<consequences>
 				<consequence>
 					<set state="Aborted"/>
-					<notify message="L'anomalie '${folder.titre}' a été abandonnée !">
+					<notify message="L'anomalie '${folder.titre}' du composant '${folder.component}' a été abandonnée !">
 						<relatedUser participant="Emetteur"/>
 						<userInRole name="Correctors"/>
 					</notify>
@@ -480,7 +500,7 @@
 			<consequences>
 				<consequence>
 					<set state="Closed"/>
-					<notify message="L'anomalie '${folder.titre}' a été corrigée !">
+					<notify message="L'anomalie '${folder.titre}' du composant '${folder.component}' a été corrigée !">
 						<relatedUser participant="Emetteur"/>
 						<userInRole name="Correctors"/>
 					</notify>
@@ -497,8 +517,13 @@
 			<title lang="en">Bug details</title>
 			<input item="component" displayerName="simpletext"/>
 			<input item="titre" displayerName="simpletext"/>
-			<input item="description" displayerName="simpletext"/>
+			<input item="priority" displayerName="simpletext"/>
+			<input item="severity" displayerName="simpletext"/>
 			<input item="pbType" displayerName="simpletext"/>
+			<input item="description" displayerName="simpletext"/>
+			<input item="file1" mandatory="false" displayerName="file" readOnly="true"/>
+			<input item="file2" mandatory="false" displayerName="file" readOnly="true"/>
+			<input item="file3" mandatory="false" displayerName="file" readOnly="true"/>
 			<input value="${action.Creation.actor.company}" displayerName="simpletext">
 			   <label>Société</label>
 			</input>
@@ -515,8 +540,7 @@
 			   <label>Version</label>
 			</input>
 			<input item="reproducible" displayerName="simpletext"/>
-			<input item="severity" displayerName="simpletext"/>
-			<input item="priority" displayerName="simpletext"/>
+			<input item="qualifyComment" displayerName="simpletext"/>
 			<input item="plannedCorrectionTime" displayerName="simpletext"/>
 			<input item="correctionTime" displayerName="simpletext"/>
 			<input item="workaround" displayerName="simpletext"/>
@@ -535,10 +559,13 @@
 			<title lang="en">Bug creation</title>
 			<input item="component" mandatory="true"/>
 			<input item="titre" mandatory="true"/>
-			<input item="description" displayerName="textarea" mandatory="true"/>
 			<input item="pbType" mandatory="true" displayerName="listbox"/>
 			<input item="severity" mandatory="true" displayerName="listbox"/>
-			<input item="attachment" mandatory="false" displayerName="file"/>
+			<input item="priority" mandatory="true" displayerName="listbox"/>
+			<input item="description" displayerName="textarea" mandatory="true"/>
+			<input item="file1" mandatory="false" displayerName="file"/>
+			<input item="file2" mandatory="false" displayerName="file"/>
+			<input item="file3" mandatory="false" displayerName="file"/>
 		</form>
 
 		<!-- Formulaire de demande d'infos complémentaire -->
@@ -577,8 +604,9 @@
 			<input item="component" mandatory="true"/>
 			<input item="titre" mandatory="true"/>
 			<input item="description" displayerName="textarea" mandatory="true"/>
-			<input item="reproducible" mandatory="true" displayerName="listbox"/>
 			<input item="priority" mandatory="true" displayerName="listbox"/>
+			<input item="reproducible" mandatory="true" displayerName="listbox"/>
+			<input item="qualifyComment" displayerName="textarea" mandatory="false"/>
 			<input item="plannedCorrectionTime" mandatory="true"/>
 			<input item="patchCorrected" mandatory="true"/>
 		</form>
