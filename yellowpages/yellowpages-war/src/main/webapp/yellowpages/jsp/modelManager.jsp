@@ -48,8 +48,6 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
 <%@ page import="java.io.File"%>
-<%@ page import="com.oreilly.servlet.multipart.*"%>
-<%@ page import="com.oreilly.servlet.MultipartRequest"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
 
 <%@ page import="com.stratelia.webactiv.util.exception.*"%>

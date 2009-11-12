@@ -22,11 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package com.stratelia.webactiv.yellowpages.model;
 
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-
 
 /**
  * Class declaration

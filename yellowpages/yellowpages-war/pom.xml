@@ -42,7 +42,7 @@
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>formtemplate</artifactId>
-      <version>${core.version}</version>
+      <version>1.0-SNAPSHOT</version>
       <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
@@ -60,6 +60,13 @@
       <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>publication</artifactId>
+      <version>1.0-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
 </project>
+

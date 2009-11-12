@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.yellowpages.control.ejb;
 
+import com.silverpeas.formTemplate.dao.ModelDAO;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -36,7 +37,7 @@ import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.formTemplate.dao.ModelDAO;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -46,6 +47,7 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.contact.control.ContactBm;
 import com.stratelia.webactiv.util.contact.control.ContactBmHome;
@@ -73,11 +75,12 @@ import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
  * This is the Yellowpages EJB-tier controller of the MVC. It is implemented as
  * a session EJB. It controls all the activities that happen in a client
  * session. It also provides mechanisms to access other session EJBs.
- *
+ * 
  * @author Nicolas Eysseric
  */
 public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
+  private SessionContext sc;
   private TopicDetail currentTopic;
   private UserCompleteContact currentContact;
   private String componentId = null;
@@ -96,7 +99,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Set the current User ActorDetail
-   *
+   * 
    * @param ad
    *          a the ActorDetail corresponding to the current User
    * @since 1.0
@@ -110,12 +113,14 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   }
 
   private OrganizationController getOrganizationController() {
-    if (this.organizationController == null)
+    if (this.organizationController == null) {
       this.organizationController = new OrganizationController();
+    }
     return this.organizationController;
   }
 
   public void setSessionContext(SessionContext sc) {
+    this.sc = sc;
   }
 
   public void ejbRemove() {
@@ -227,7 +232,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Return a the detail of a topic
-   *
+   * 
    * @param id
    *          the id of the topic
    * @return a TopicDetail
@@ -270,7 +275,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         while (it.hasNext()) {
           ContactDetail contactDetail = (ContactDetail) it.next();
           if (contactDetail.getUserId() != null) // contact de type user
-          // Silverpeas
+                                                 // Silverpeas
           {
             try {
               UserDetail userDetail = orga.getUserDetail(contactDetail
@@ -325,8 +330,9 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       NodeBm nodeBm = getNodeBm();
       List pathInReverse = (List) nodeBm.getPath(nd.getNodePK());
       // reverse the path from root to leaf
-      for (int i = pathInReverse.size() - 1; i >= 0; i--)
+      for (int i = pathInReverse.size() - 1; i >= 0; i--) {
         newPath.add(pathInReverse.get(i));
+      }
     } catch (Exception re) {
       throw new YellowpagesRuntimeException(
           "YellowpagesBmEJB.getPathFromAToZ()",
@@ -338,7 +344,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Return a NodeDetail Collection that represents the path from root to leaf
-   *
+   * 
    * @param nd
    *          the NodeDetail of the leaf topic
    * @return a NodeDetail Collection
@@ -360,8 +366,9 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     // find = true if nd is in the path of the currentTopic
     while (iterator.hasNext() && !(find)) {
       n = (NodeDetail) iterator.next();
-      if (n.getNodePK().getId().equals(nd.getNodePK().getId()))
+      if (n.getNodePK().getId().equals(nd.getNodePK().getId())) {
         find = true;
+      }
     }
     if (find) {
       // cut the end of the current path collection from nodeDetail
@@ -379,8 +386,9 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
           NodeBm nodeBm = getNodeBm();
           List pathInReverse = (List) nodeBm.getPath(nd.getNodePK());
           // reverse the path from root to leaf
-          for (int i = pathInReverse.size() - 1; i >= 0; i--)
+          for (int i = pathInReverse.size() - 1; i >= 0; i--) {
             newPath.add(pathInReverse.get(i));
+          }
         } catch (Exception re) {
           throw new YellowpagesRuntimeException(
               "YellowpagesBmEJB.getNewPath()",
@@ -395,7 +403,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Return a NodeDetail Collection that represents a sub path to nd of the path
-   *
+   * 
    * @param currentPath
    *          a NodeDetail Collection that represents a path
    * @param nd
@@ -413,13 +421,15 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     while (iterator.hasNext() && !(find)) {
       n = (NodeDetail) iterator.next();
       resultPath.add(n);
-      if (n.getNodePK().getId().equals(nd.getNodePK().getId()))
+      if (n.getNodePK().getId().equals(nd.getNodePK().getId())) {
         find = true;
+      }
     }
-    if (find)
+    if (find) {
       return resultPath;
-    else
+    } else {
       return null;
+    }
   }
 
   public List getTree() {
@@ -437,7 +447,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       for (int n = 0; n < tree.size(); n++) {
         node = (NodeDetail) tree.get(n);
         result.add(node);
-        // pour chaque node, récuperer les groupes associés
+        // pour chaque node, recuperer les groupes associes
         List groupIds = (List) GroupDAO.getGroupIds(con, node.getNodePK()
             .getId(), componentId);
         String groupId = null;
@@ -483,7 +493,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   /**
    * Add a subtopic to a topic - If a subtopic of same name already exists a
    * NodePK with id=-1 is returned else the new topic NodePK
-   *
+   * 
    * @param fatherId
    *          the topic Id of the future father
    * @param subTopic
@@ -519,7 +529,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   /**
    * When creates a new subTopic, Check if a subtopic of same name already
    * exists
-   *
+   * 
    * @param subTopic
    *          the NodeDetail of the new sub topic
    * @return true if a subtopic of same name already exists under the
@@ -547,7 +557,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   /**
    * When updates a subTopic, Check if another subtopic of same name already
    * exists
-   *
+   * 
    * @param subTopic
    *          the NodeDetail of the new sub topic
    * @return true if a subtopic of same name already exists under the
@@ -575,7 +585,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   /**
    * Add a subtopic to currentTopic and alert users - If a subtopic of same name
    * already exists a NodePK with id=-1 is returned else the new topic NodePK
-   *
+   * 
    * @param subTopic
    *          the NodeDetail of the new sub topic
    * @param alertType
@@ -599,7 +609,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     subTopic.getNodePK().setSpace(this.space);
     subTopic.getNodePK().setComponentName(this.componentId);
 
-    // Construction de la date de création (date courante)
+    // Construction de la date de creation (date courante)
     String creationDate = DateUtil.date2SQLDate(new Date());
     subTopic.setCreationDate(creationDate);
     subTopic.setCreatorId(currentUser.getId());
@@ -617,7 +627,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * Update a subtopic to currentTopic and alert users - If a subtopic of same
    * name already exists a NodePK with id=-1 is returned else the new topic
    * NodePK
-   *
+   * 
    * @param topic
    *          the NodeDetail of the updated sub topic
    * @param alertType
@@ -697,8 +707,9 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         Iterator it = descendants.iterator();
         while (it.hasNext()) {
           NodePK descPK = (NodePK) it.next();
-          if (descPK.getId().equals(descId))
+          if (descPK.getId().equals(descId)) {
             isDesc = true;
+          }
         }
       }
     } catch (Exception re) {
@@ -714,7 +725,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * Delete a topic and all descendants. Delete all links between descendants
    * and contacts. This contacts will be visible in the Declassified zone.
    * Delete All subscriptions and favorites on this topics and all descendants
-   *
+   * 
    * @param topicId
    *          the id of the topic to delete
    * @exception javax.ejb.FinderException
@@ -758,7 +769,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   /**************************************************************************************/
   /* Interface - Gestion des contacts */
   /**************************************************************************************/
-
   private Collection contactDetails2userPubs(Collection contactDetails) {
     Iterator iterator = contactDetails.iterator();
     String[] users = new String[contactDetails.size()];
@@ -783,7 +793,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Return the detail of a contact (only the Header)
-   *
+   * 
    * @param ContactId
    *          the id of the contact
    * @return a ContactDetail
@@ -832,7 +842,6 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     contactDetail.setFirstName(userDetail.getFirstName());
     contactDetail.setLastName(userDetail.getLastName());
     contactDetail.setEmail(userDetail.geteMail());
-
     ResourceLocator yellowpagesSettings = new ResourceLocator(
         "com.stratelia.webactiv.yellowpages.settings.yellowpagesSettings", "fr");
     UserFull userFull = null;
@@ -842,18 +851,21 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       if ("Yes"
           .equalsIgnoreCase(yellowpagesSettings.getString("showTelNumber"))
           || "Yes".equalsIgnoreCase(yellowpagesSettings
-              .getString("showFaxNumber")))
+              .getString("showFaxNumber"))) {
         userFull = orga.getUserFull(contactDetail.getUserId());
+      }
     }
 
     if (userFull != null) {
       String userPhone = userFull.getValue("phone");
-      if (StringUtil.isDefined(userPhone))
+      if (StringUtil.isDefined(userPhone)) {
         contactDetail.setPhone(userPhone);
+      }
 
       String userFax = userFull.getValue("fax");
-      if (userFax != null && userFax.trim().length() > 0)
+      if (userFax != null && userFax.trim().length() > 0) {
         contactDetail.setFax(userFax);
+      }
     }
   }
 
@@ -923,8 +935,9 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       Iterator itNode = nodePKs.iterator();
       while (itNode.hasNext()) {
         NodePK pk = (NodePK) itNode.next();
-        if ((!pk.getId().equals("1")) && (!pk.getId().equals("2")))
+        if ((!pk.getId().equals("1")) && (!pk.getId().equals("2"))) {
           nodePKsWithout12.add(pk);
+        }
       }
       ContactPK pk = new ContactPK("unknown", this.space, this.componentId);
       contactDetails = getContactBm().getDetailsByFatherPKs(nodePKsWithout12,
@@ -936,7 +949,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
               .next();
           ContactDetail contactDetail = contactFatherDetail.getContactDetail();
           if (contactDetail.getUserId() != null) // contact de type user
-          // Silverpeas
+                                                 // Silverpeas
           {
             try {
               OrganizationController orga = getOrganizationController();
@@ -956,8 +969,9 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
                   "yellowpages.EX_GET_CONTACTS_FAILED", "contactDetail = "
                       + contactDetail.toString(), e);
             }
-          } else
+          } else {
             contactDetailsR.add(contactFatherDetail);
+          }
         }
       }
       SilverTrace
@@ -974,7 +988,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   /**
    * Return list of all path to this contact - it's a Collection of NodeDetail
    * collection
-   *
+   * 
    * @param ContactId
    *          the id of the contact
    * @return a Collection of NodeDetail collection
@@ -1024,7 +1038,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Create a new Contact (only the header - parameters) to the current Topic
-   *
+   * 
    * @param contactDetail
    *          a ContactDetail
    * @return the id of the new contact
@@ -1067,7 +1081,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Update a contact (only the header - parameters)
-   *
+   * 
    * @param contactDetail
    *          a ContactDetail
    * @see com.stratelia.webactiv.util.contact.model.ContactDetail
@@ -1092,11 +1106,13 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       String fatherId = "2";
       Collection fathers = getContactBm().getAllFatherPK(contactPK);
       Iterator it = fathers.iterator();
-      if (it.hasNext())
+      if (it.hasNext()) {
         fatherId = ((NodePK) it.next()).getId();
+      }
 
-      if (fatherId.equals("2") || fatherId.equals("1"))
+      if (fatherId.equals("2") || fatherId.equals("1")) {
         deleteIndex(contactPK);
+      }
 
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("YellowpagesBmEJB.updateContact()",
@@ -1110,7 +1126,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   /**
    * Delete a contact If this contact is in the basket or in the DZ, it's
    * deleted from the database Else it only send to the basket
-   *
+   * 
    * @param ContactId
    *          the id of the contact to delete
    * @return a TopicDetail
@@ -1158,7 +1174,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Send the contact in the basket topic
-   *
+   * 
    * @param ContactId
    *          the id of the contact
    * @see com.stratelia.webactiv.yellowpages.model.TopicDetail
@@ -1215,7 +1231,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Add a contact to a topic and send email alerts to topic subscribers
-   *
+   * 
    * @param ContactId
    *          the id of the contact
    * @param fatherId
@@ -1240,15 +1256,15 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
           NodePK pk = (NodePK) iterator.next();
           if (pk.getId().equals("1")) {
             contactBm.removeFather(contactPK, pk);
-            // contactBm.setDetail(contactDetail);
           }
         }
       }
       contactBm.addFather(contactPK, fatherPK);
 
-      // réindexe le contact si pas dans la corbeille
-      if (!fatherId.equals("1"))
+      // reindexe le contact si pas dans la corbeille
+      if (!fatherId.equals("1")) {
         createIndex(contactPK);
+      }
 
       createIndex(contactPK);
     } catch (Exception re) {
@@ -1261,7 +1277,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Delete a path between contact and topic
-   *
+   * 
    * @param ContactId
    *          the id of the contact
    * @param fatherId
@@ -1297,7 +1313,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Create model info attached to a contact
-   *
+   * 
    * @param ContactId
    *          the id of the contact
    * @param modelId
@@ -1331,7 +1347,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Return all info of a contact and add a reading statistic
-   *
+   * 
    * @param ContactId
    *          the id of a contact
    * @return a CompleteContact
@@ -1393,7 +1409,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Return all info of a contact and add a reading statistic
-   *
+   * 
    * @param ContactId
    *          the id of a contact
    * @param nodeId
@@ -1493,7 +1509,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
   /**
    * Return a collection of ContactDetail throught a collection of contact ids
-   *
+   * 
    * @param contactIds
    *          a collection of contact ids
    * @return a collection of ContactDetail
@@ -1524,7 +1540,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         while (it.hasNext()) {
           ContactDetail contactDetail = (ContactDetail) it.next();
           if (contactDetail.getUserId() != null) // contact de type user
-          // Silverpeas
+                                                 // Silverpeas
           {
             try {
               OrganizationController orga = getOrganizationController();
@@ -1546,8 +1562,9 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
                           + contactDetail.getUserId(), e);
             }
 
-          } else
+          } else {
             contactDetailsR.add(contactDetail);
+          }
         }
       }
     } catch (Exception re) {
@@ -1732,5 +1749,4 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     }
     return result;
   }
-
 }

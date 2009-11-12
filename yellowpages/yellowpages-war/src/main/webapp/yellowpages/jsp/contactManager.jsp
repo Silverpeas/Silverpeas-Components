@@ -273,31 +273,16 @@ else if (action.equals("Update")) {
 }
 else if (action.equals("ViewContactInTopic"))
 {
-<<<<<<< contactManager.jsp
-    topicId = request.getParameter("TopicId");
-=======
     topicId = (String) request.getAttribute("TopicId");
     CurrentTopic = yellowpagesScc.getTopic(topicId);
->>>>>>> 1.6.4.4
     action = "ViewContact";
 }
-
-<<<<<<< contactManager.jsp
 if (action.equals("View") || action.equals("UpdateView") || action.equals("ViewContact")) {
-=======
-
-/* View || UpdateView || ViewContact */
-if (action.equals("View") || action.equals("UpdateView") || action.equals("ViewContact")) {
->>>>>>> 1.6.4.4
       //Recuperation des parametres du contact
-<<<<<<< contactManager.jsp
       if (StringUtil.isDefined(topicId))
     	  userContactComplete = yellowpagesScc.getCompleteContactInNode(id, topicId);
       else
       	  userContactComplete = yellowpagesScc.getCompleteContact(id);
-=======
-      userContactComplete = yellowpagesScc.getCompleteContact(id);
->>>>>>> 1.6.4.4
       yellowpagesScc.setCurrentContact(userContactComplete);
       contactComplete = userContactComplete.getContact();
       contactDetail = contactComplete.getContactDetail();
