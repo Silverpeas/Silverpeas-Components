@@ -55,15 +55,15 @@
 <fmt:message key="mailingList.tab.list.title" var="listTabTitle" />
 <fmt:message key="mailingList.tab.activity.title" var="activityTabTitle" />
 <view:browseBar link="Main" path="${listTabTitle}" />
+<c:if test="${requestScope.currentUserIsAdmin}">
+  <fmt:message key="mailingList.icons.message.delete.alt" var="deleteMessageAltText" />
+  <fmt:message key="mailingList.icons.message.delete" var="deleteIconPath" bundle="${icons}" />
+  <c:url var="deleteIcon" value="${deleteIconPath}" />
+  <view:operationPane>
+    <view:operation altText="${deleteMessageAltText}" icon="${deleteIcon}" action="${'javascript: deleteMessage();'}" />
+  </view:operationPane>
+</c:if>
 <view:window>
-  <c:if test="${requestScope.currentUserIsAdmin}">
-    <fmt:message key="mailingList.icons.message.delete.alt" var="deleteMessageAltText" />
-    <fmt:message key="mailingList.icons.message.delete" var="deleteIconPath" bundle="${icons}" />
-    <c:url var="deleteIcon" value="${deleteIconPath}" />
-    <view:operationPane>
-      <view:operation altText="${deleteMessageAltText}" icon="${deleteIcon}" action="${'javascript: deleteMessage();'}" />
-    </view:operationPane>
-  </c:if>
   <c:choose>
     <c:when test="${requestScope.currentUserIsAdmin}">
       <c:set var="paginationColspan" value="5" />
