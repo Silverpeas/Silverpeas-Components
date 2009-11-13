@@ -217,7 +217,6 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
               .getString("sessionTimeout");
         }
       } else if (function.startsWith("multicopy")) {
-        ClipboardBm userClipboard = componentSC.getClipboard();
         try {
           String paramName, Id;
           PublicationDetail pubDetail;
@@ -231,13 +230,13 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
                 pubDetail = ((QuickInfoSessionController) componentSC)
                     .getDetail(Id);
                 pubSelect = new PublicationSelection(pubDetail);
-                userClipboard.add((ClipboardSelection) pubSelect);
+                componentSC.addClipboardSelection((ClipboardSelection) pubSelect);
               }
             }
           }
         } catch (Exception e) {
           try {
-            userClipboard.setMessageError("copyError", e);
+            componentSC.setClipboardError("copyError", e);
             // SilverTrace : mettre un warning
           } catch (Exception ee) {
             SilverTrace.error("quickinfo",
@@ -248,15 +247,14 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
         destination = URLManager.getURL(URLManager.CMP_CLIPBOARD)
             + "Idle.jsp?message=REFRESHCLIPBOARD";
       } else if (function.startsWith("copy")) {
-        ClipboardBm userClipboard = componentSC.getClipboard();
         try {
           PublicationDetail pubDetail = ((QuickInfoSessionController) componentSC)
               .getDetail(request.getParameter("Id"));
           PublicationSelection pubSelect = new PublicationSelection(pubDetail);
-          userClipboard.add((ClipboardSelection) pubSelect);
+          componentSC.addClipboardSelection((ClipboardSelection) pubSelect);
         } catch (Exception e) {
           try {
-            userClipboard.setMessageError("copyError", e);
+            componentSC.setClipboardError("copyError", e);
             // SilverTrace : mettre un warning
           } catch (Exception ee) {
             SilverTrace.error("quickinfo",
@@ -267,13 +265,12 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
         destination = URLManager.getURL(URLManager.CMP_CLIPBOARD)
             + "Idle.jsp?message=REFRESHCLIPBOARD";
       } else if (function.startsWith("paste")) {
-        ClipboardBm userClipboard = componentSC.getClipboard();
-        try {
+          try {
           SilverTrace.debug("quickinfo",
               "QuickInfoRequestRouter.getDestination()", "clipboard '"
-                  + userClipboard.getName() + "' count="
-                  + userClipboard.getCount());
-          Collection clipObjects = userClipboard.getSelectedObjects();
+                  + componentSC.getClipboardName() + "' count="
+                  + componentSC.getClipboardCount());
+          Collection clipObjects = componentSC.getClipboardSelectedObjects();
           Iterator clipObjectIterator = clipObjects.iterator();
           while (clipObjectIterator.hasNext()) {
             ClipboardSelection clipObject = (ClipboardSelection) clipObjectIterator
@@ -293,9 +290,9 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
                   .getEndDate());
             }
           }
-          userClipboard.PasteDone();
+          componentSC.clipboardPasteDone();
         } catch (Exception e) {
-          userClipboard.setMessageError("pasteError", e);
+          componentSC.setClipboardError("pasteError", e);
           SilverTrace.error("quickinfo",
               "QuickInfoRequestRouter.getDestination()",
               "quickinfo.PASTE_ERROR", e);

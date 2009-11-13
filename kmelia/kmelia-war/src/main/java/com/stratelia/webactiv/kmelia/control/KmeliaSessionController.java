@@ -3344,8 +3344,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 		CompletePublication pub = getCompletePublication(pubId);
 		PublicationSelection pubSelect = new PublicationSelection(pub);
 
-		SilverTrace.info("kmelia", "KmeliaSessionController.copyPublication()", "root.MSG_GEN_PARAM_VALUE","clipboard = " + getClipboard().getName() + "' count=" + getClipboard().getCount());
-		getClipboard().add((ClipboardSelection) pubSelect);
+		SilverTrace.info("kmelia", "KmeliaSessionController.copyPublication()", "root.MSG_GEN_PARAM_VALUE",
+        "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
+		addClipboardSelection((ClipboardSelection) pubSelect);
 	}
 
 	public void copyPublications(String[] pubIds) throws RemoteException
@@ -3363,8 +3364,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 		PublicationSelection pubSelect = new PublicationSelection(pub);
 		pubSelect.setCutted(true);
 
-		SilverTrace.info("kmelia", "KmeliaSessionController.cutPublication()", "root.MSG_GEN_PARAM_VALUE","clipboard = " + getClipboard().getName() + "' count=" + getClipboard().getCount());
-		getClipboard().add((ClipboardSelection) pubSelect);
+		SilverTrace.info("kmelia", "KmeliaSessionController.cutPublication()", "root.MSG_GEN_PARAM_VALUE",
+        "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
+		addClipboardSelection((ClipboardSelection) pubSelect);
 	}
 
 	public void cutPublications(String[] pubIds) throws RemoteException
@@ -3380,31 +3382,33 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 	{
 		NodeSelection nodeSelect = new NodeSelection(getNodeHeader(id));
 
-		SilverTrace.info("kmelia", "KmeliaSessionController.copyTopic()", "root.MSG_GEN_PARAM_VALUE","clipboard = " + getClipboard().getName() + "' count=" + getClipboard().getCount());
-		getClipboard().add((ClipboardSelection) nodeSelect);
+		SilverTrace.info("kmelia", "KmeliaSessionController.copyTopic()", "root.MSG_GEN_PARAM_VALUE",
+        "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
+		addClipboardSelection((ClipboardSelection) nodeSelect);
 	}
 
 	public void cutTopic(String id) throws RemoteException
 	{
 		NodeSelection nodeSelect = new NodeSelection(getNodeHeader(id));
 		nodeSelect.setCutted(true);
-
-		SilverTrace.info("kmelia", "KmeliaSessionController.cutTopic()", "root.MSG_GEN_PARAM_VALUE","clipboard = " + getClipboard().getName() + "' count=" + getClipboard().getCount());
-		getClipboard().add((ClipboardSelection) nodeSelect);
+		SilverTrace.info("kmelia", "KmeliaSessionController.cutTopic()", "root.MSG_GEN_PARAM_VALUE",
+        "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
+		addClipboardSelection((ClipboardSelection) nodeSelect);
 	}
 
 	public void paste() throws RemoteException
 	{
 		try {
-			SilverTrace.info("kmelia","KmeliaRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE","clipboard = " + getClipboard().getName() + " count=" + getClipboard().getCount());
-			Collection clipObjects = getClipboard().getSelectedObjects();
+			SilverTrace.info("kmelia","KmeliaRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
+          "clipboard = " + getClipboardName() + " count=" + getClipboardCount());
+			Collection clipObjects = getClipboardSelectedObjects();
 			Iterator clipObjectIterator = clipObjects.iterator();
 			while (clipObjectIterator.hasNext()) {
 				ClipboardSelection clipObject = (ClipboardSelection) clipObjectIterator.next();
 				if (clipObject != null) {
 					if (clipObject.isDataFlavorSupported(PublicationSelection.CompletePublicationFlavor)) {
-						CompletePublication pub = (CompletePublication) clipObject.getTransferData(PublicationSelection.CompletePublicationFlavor);
-
+						CompletePublication pub = (CompletePublication)
+                clipObject.getTransferData(PublicationSelection.CompletePublicationFlavor);
 						pastePublication(pub, clipObject.isCutted());
 					}
 					else if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor))
@@ -3431,17 +3435,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
 						if (pasteAllowed)
 							pasteNode(node, getSessionTopic().getNodeDetail(), clipObject.isCutted());
-
-						//if (clipObject.isCutted())
-						//	CallBackManager.invoke(CallBackManager.ACTION_CUTANDPASTE, Integer.parseInt(getUserId()), getComponentId(), node.getNodePK());
 					}
 				}
 			}
 		} catch (Exception e) {
 			throw new KmeliaRuntimeException("KmeliaSessionController.paste()", SilverpeasRuntimeException.ERROR, "kmelia.EX_PASTE_ERROR", e);
 		}
-		//TopicDetail topic = getTopic(nodeId);
-		getClipboard().PasteDone();
+		clipboardPasteDone();
 	}
 
 	private void pasteNode(NodeDetail nodeToPaste, NodeDetail father, boolean isCutted) throws RemoteException

@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
----*/
 
 package com.stratelia.webactiv.newsEdito.servlets;
 
@@ -80,6 +78,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
    *          Context of current component instance
    * @return a NewsEditoSessionController instance
    */
+  @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
     ComponentSessionController component = (ComponentSessionController) new NewsEditoSessionController(
@@ -92,6 +91,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
    * returns the session control bean name to be put in the request object ex :
    * for almanach, returns "almanach"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "newsEdito";
   }
@@ -109,6 +109,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
    * @return The complete destination URL for a forward (ex :
    *         "/almanach/jsp/almanach.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     String destination = "";
@@ -278,18 +279,14 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
      */
     else if (function.startsWith("multicopy")) {
       try {
-        ClipboardBm userClipboard = componentSC.getClipboard();
-        PublicationSelection pubSelect;
         String Ids[] = request.getParameterValues("publicationIds");
-        CompletePublication pub = null;
 
         for (int i = 0; i < Ids.length; i++) {
           if (Ids[i] != null) {
-            pub = ((NewsEditoSessionController) componentSC)
+            CompletePublication pub = ((NewsEditoSessionController) componentSC)
                 .getCompletePublication(Ids[i]);
-
-            pubSelect = new PublicationSelection(pub);
-            userClipboard.add((ClipboardSelection) pubSelect);
+            PublicationSelection pubSelect = new PublicationSelection(pub);
+            componentSC.addClipboardSelection((ClipboardSelection) pubSelect);
           }
         }
       } catch (Exception e) {
@@ -302,10 +299,9 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
       return destination;
     } else if (function.startsWith("paste")) {
       try {
-        ClipboardBm userClipboard = componentSC.getClipboard();
         NewsEditoSessionController news = (NewsEditoSessionController) componentSC;
         String titleId = news.getTitleId();
-        Collection clipObjects = userClipboard.getSelectedObjects();
+        Collection clipObjects = news.getClipboardSelectedObjects();
         Iterator clipObjectIterator = clipObjects.iterator();
 
         while (clipObjectIterator.hasNext()) {
@@ -320,34 +316,6 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
                   .getTransferData(PublicationSelection.CompletePublicationFlavor);
               news.createPublication(pub.getPublicationDetail().getName(), pub
                   .getPublicationDetail().getDescription());
-
-              /*
-               * if (pub.getModelDetail() != null) {
-               * news.setPublicationModel(pub.getModelDetail().getId()); } if
-               * (pub.getInfoDetail() != null) { if
-               * (pub.getInfoDetail().getInfoImageList() != null) { for
-               * (Iterator i =
-               * pub.getInfoDetail().getInfoImageList().iterator(); i.hasNext();
-               * ) { InfoImageDetail attachment = (InfoImageDetail) i.next();
-               * String from =
-               * FileRepositoryManager.getAbsolutePath(pub.getPublicationDetail
-               * ().getPK().getComponentName()) +
-               * news.getSettings().getString("imagesSubDirectory") + "\\" +
-               * attachment.getPhysicalName(); String type =
-               * attachment.getPhysicalName
-               * ().substring(attachment.getPhysicalName().indexOf(".") + 1,
-               * attachment.getPhysicalName().length()); String newName = new
-               * Long(new java.util.Date().getTime()).toString() + "." + type;
-               *
-               * attachment.setPhysicalName(newName); String to =
-               * FileRepositoryManager.getAbsolutePath(news.getComponentId()) +
-               * news.getSettings().getString("imagesSubDirectory") + "\\" +
-               * newName;
-               *
-               * FileRepositoryManager.copyFile(from, to); } }
-               * news.setInfoDetail(pub.getInfoDetail()); }
-               */
-
             } else if (clipObject
                 .isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor)) {
               PublicationDetail pub;
@@ -359,7 +327,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
           }
         }
         news.setTitleId(titleId);
-        userClipboard.PasteDone();
+        news.clipboardPasteDone();
       } catch (Exception e) {
         SilverTrace.warn("NewsEdito", "NewsEditoRequestRooter.getDestination",
             "NewsEdito.EX_PAST_ERROR");
