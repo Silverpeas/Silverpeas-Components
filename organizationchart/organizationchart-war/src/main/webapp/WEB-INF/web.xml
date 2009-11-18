@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<web-app version="2.4">
+  <display-name>organizationchart War</display-name>
+  <description>component displaying organization chart</description>
+  <servlet>
+    <servlet-name>OrganizationChartRequestRouter</servlet-name>
+    <display-name>OrganizationChartRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.components.organizationchart.servlets.OrganizationChartRequestRouter</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>OrganizationChartRequestRouter</servlet-name>
+    <url-pattern>/Rorganizationchart/*</url-pattern>
+  </servlet-mapping>
+</web-app>
