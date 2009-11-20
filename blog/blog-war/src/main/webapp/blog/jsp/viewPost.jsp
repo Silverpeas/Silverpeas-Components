@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="java.util.GregorianCalendar"%>
 <%@ include file="check.jsp" %>
 
 <% 
@@ -49,6 +50,12 @@ if (post.getCategory() != null)
 	categoryId = post.getCategory().getNodePK().getId();
 String postId = post.getPublication().getPK().getId();
 String link	= post.getPermalink();
+
+java.util.Calendar cal = GregorianCalendar.getInstance();
+cal.setTime(post.getDateEvent());
+String day = resource.getString("GML.jour"+cal.get(java.util.Calendar.DAY_OF_WEEK));
+
+boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
 
 %>
 
@@ -155,13 +162,15 @@ String link	= post.getPermalink();
 <table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="blog">
 	<tr>
 		<td colspan="3" id="bandeau" align="center"><a href="<%="Main"%>"><%=componentLabel%></a></td>
-		<% if ("admin".equals(profile)) { 
-			String url = "ToAlertUser?PostId="+postId; 
-			%>
+		<% if ("admin".equals(profile)) { %>
 			<td align="left" rowspan="3" valign="top">
 				&nbsp;<a href="EditPost?PostId=<%=postId%>"><img src="<%=resource.getIcon("blog.updatePost")%>" border="0" alt="<%=resource.getString("blog.updatePost")%>" title="<%=resource.getString("blog.updatePost")%>" /></a><br>
 				&nbsp;<a href="javascript:onClick=deletePost('<%=postId%>')"><img src="<%=resource.getIcon("blog.delPost")%>" border="0" alt="<%=resource.getString("blog.deletePost")%>" title="<%=resource.getString("blog.deletePost")%>" /></a>
-				&nbsp;<a href="javaScript:onClick=goToNotify('<%=url%>')"><img src="<%=resource.getIcon("blog.alert")%>" border="0" alt="<%=resource.getString("GML.notify")%>"  title="<%=resource.getString("GML.notify")%>" /></a>
+				&nbsp;<a href="javaScript:onClick=goToNotify('ToAlertUser?PostId=<%=postId%>')"><img src="<%=resource.getIcon("blog.alert")%>" border="0" alt="<%=resource.getString("GML.notify")%>"  title="<%=resource.getString("GML.notify")%>" /></a>
+			</td>
+		<% } else if (!isUserGuest) { %>
+			<td align="left" rowspan="3" valign="top">
+				&nbsp;<a href="javaScript:onClick=goToNotify('ToAlertUser?PostId=<%=postId%>')"><img src="<%=resource.getIcon("blog.alert")%>" border="0" alt="<%=resource.getString("GML.notify")%>"  title="<%=resource.getString("GML.notify")%>" /></a>
 			</td>
 		<% } %>
   	</tr>
@@ -179,7 +188,7 @@ String link	= post.getPermalink();
 					</td>
 			    </tr>
 			    <tr>
-	    			<td class="infoTicket"><%=post.getCreatorName()%> - <%=resource.getOutputDate(post.getDateEvent())%></td>
+	    			<td class="infoTicket"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></td>
 	    		</tr>
 	    		<tr>
 			    	<td>&nbsp;</td>
@@ -209,8 +218,15 @@ String link	= post.getPermalink();
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 						<span class="versCommentaires"> 
 							<% // date de création et de modification %>
-							<%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> - 
-							<%=resource.getString("GML.updateDate")%> <%=resource.getOutputDate(post.getPublication().getUpdateDate())%>
+							<%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> <%=resource.getString("GML.by")%> <%=post.getCreatorName() %>
+							<% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId())) { 
+									UserDetail updater = m_MainSessionCtrl.getOrganizationController().getUserDetail(post.getPublication().getUpdaterId());
+									String updaterName = "Unknown";
+									if (updater != null)
+										updaterName = updater.getDisplayedName();
+							%>
+								 - <%=resource.getString("GML.updateDate")%> <%=resource.getOutputDate(post.getPublication().getUpdateDate())%> <%=resource.getString("GML.by")%> <%=updaterName%>
+							<% } %>
 						</span>
 					</td>
 			    </tr>
@@ -224,6 +240,8 @@ String link	= post.getPermalink();
 						       	<%
 						      	if (comments != null)
 						      	{
+						      		ResourceLocator commentSettings = new ResourceLocator("com.stratelia.webactiv.util.comment.Comment","");
+						      		boolean adminAllowedToUpdate = commentSettings.getBoolean("AdminAllowedToUpdate", true);
 						      		Iterator itCom = (Iterator) comments.iterator();
 						      		while (itCom.hasNext()) 
 									{
@@ -234,10 +252,15 @@ String link	= post.getPermalink();
 						      			%>
 						      			<tr>
 								   			<td class="versCommentaires"><%=resource.getString("blog.de")%> <%=commentAuthor%> <%=resource.getString("blog.postLe")%> <%=commentDate%> 
-											<% if ("admin".equals(profile) || ownerId.equals(userId) ) { %>
+											<% if (ownerId.equals(userId)) { %>
 								                <A href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=postId%>)"><IMG SRC="<%=resource.getIcon("blog.smallUpdate") %>" border="0" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="absmiddle"/></A>
 								                <A href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><IMG SRC="<%=resource.getIcon("blog.smallDelete") %>" border="0" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="absmiddle"/></A>
-								            <% } %>
+								            <% } else if ("admin".equals(profile)) { %>
+												<% if (adminAllowedToUpdate) { %>
+													<A href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=postId%>)"><IMG SRC="<%=resource.getIcon("blog.smallUpdate") %>" border="0" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="absmiddle"/></A>
+												<% } %>
+								                <A href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><IMG SRC="<%=resource.getIcon("blog.smallDelete") %>" border="0" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="absmiddle"/></A>												
+											<% } %>
 											</td>
 								   		</tr>
 						      				<td><%=Encode.javaStringToHtmlParagraphe(unComment.getMessage())%></td>
@@ -249,34 +272,36 @@ String link	= post.getPermalink();
 									}
 						      	}
 						      	%>
-							   	<tr>
-						   			<td>
-							   			<table width="100%" border="0" cellspacing="0" cellpadding="0">
-									    	<form Name="commentForm" action="AddComment" Method="POST">	
-										    	<tr>
-										    		<td class="infoTicket"><%=resource.getString("blog.addComment")%></td>
-										    	</tr>
-												<tr>
-													<td><TEXTAREA ROWS="8" COLS="80" name="Message"></TEXTAREA></td>
-														<input type="hidden" name="PostId" value="<%=postId%>"><input type="hidden" name="CommentId" value=""></td>
-										    	</tr>
-									    	</form>
-								    	</table>
-						   			</td>
-								</tr>
-								<tr>
-						    		<td>
-							    		<%
-									   	ButtonPane buttonPaneComment = gef.getButtonPane();
-							    		buttonPaneComment.addButton(validateComment);
-							    		buttonPaneComment.addButton(cancelButton);
-										out.println("<BR><center>"+buttonPaneComment.print()+"</center><BR>");
-										%>
-						    		</td>
-					    		</tr>
-				   				<tr>
-				   			 	  	<td class="separateur">&nbsp;</td>
-				   				</tr>
+								<% if (!isUserGuest) { %>
+								   	<tr>
+							   			<td>
+								   			<table width="100%" border="0" cellspacing="0" cellpadding="0">
+										    	<form Name="commentForm" action="AddComment" Method="POST">	
+											    	<tr>
+											    		<td class="infoTicket"><%=resource.getString("blog.addComment")%></td>
+											    	</tr>
+													<tr>
+														<td><TEXTAREA ROWS="8" COLS="80" name="Message"></TEXTAREA></td>
+															<input type="hidden" name="PostId" value="<%=postId%>"><input type="hidden" name="CommentId" value=""></td>
+											    	</tr>
+										    	</form>
+									    	</table>
+							   			</td>
+									</tr>
+									<tr>
+							    		<td>
+								    		<%
+										   	ButtonPane buttonPaneComment = gef.getButtonPane();
+								    		buttonPaneComment.addButton(validateComment);
+								    		buttonPaneComment.addButton(cancelButton);
+											out.println("<BR><center>"+buttonPaneComment.print()+"</center><BR>");
+											%>
+							    		</td>
+						    		</tr>
+					   				<tr>
+					   			 	  	<td class="separateur">&nbsp;</td>
+					   				</tr>
+								<% } %>
 						</table>
 					</td>
 	   			</tr>

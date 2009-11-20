@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="java.util.GregorianCalendar"%>
 <%@ include file="check.jsp" %>
 
 <% 
@@ -38,10 +39,10 @@ List		events		= (List) request.getAttribute("Events");
 String 		dateCal		= (String) request.getAttribute("DateCalendar");
 Boolean		isUsePdc	= (Boolean) request.getAttribute("IsUsePdc");
 
-
 String 		word 		= "";
 Date 	   dateCalendar	= new Date(dateCal);
 boolean		isPdcUsed 	= isUsePdc.booleanValue();
+boolean 	isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
 %>
 
 <html>
@@ -83,13 +84,14 @@ function addSubscription()
     	<td colspan="3" id="bandeau" align="center"><a href="<%="Main"%>"><%=componentLabel%></a></td>
     	<td align="left" rowspan="3" valign="top">
     	<% if ("admin".equals(profile)) { %>
-    		<% if (isPdcUsed) 
-			{ %>
-			&nbsp;<a href="<%="javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+instanceId+"','utilizationPdc1')"%>"><img src="<%=resource.getIcon("blog.pdcUtilizationSrc")%>" border="0" alt="<%=resource.getString("GML.PDCParam")%>" title="<%=resource.getString("GML.PDCParam")%>"/></a><br/>
+    		<% if (isPdcUsed) { %>
+				&nbsp;<a href="<%="javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+instanceId+"','utilizationPdc1')"%>"><img src="<%=resource.getIcon("blog.pdcUtilizationSrc")%>" border="0" alt="<%=resource.getString("GML.PDCParam")%>" title="<%=resource.getString("GML.PDCParam")%>"/></a><br/>
 			<% } %>
 			&nbsp;<a href="<%="NewPost"%>"><img src="<%=resource.getIcon("blog.addPost")%>" border="0" alt="<%=resource.getString("blog.newPost")%>" title="<%=resource.getString("blog.newPost")%>"/></a>
 		<% } %>
-		&nbsp;<a href="<%="javascript:onClick=addSubscription()"%>"><img src="<%=resource.getIcon("blog.addSubscription")%>" border="0" alt="<%=resource.getString("blog.addSubscription")%>" title="<%=resource.getString("blog.addSubscription")%>"/></a>
+		<% if (!isUserGuest) { %>
+			&nbsp;<a href="<%="javascript:onClick=addSubscription()"%>"><img src="<%=resource.getIcon("blog.addSubscription")%>" border="0" alt="<%=resource.getString("blog.addSubscription")%>" title="<%=resource.getString("blog.addSubscription")%>"/></a>
+		<% } %>
 		</td>
   	</tr>
   	<tr>
@@ -104,6 +106,7 @@ function addSubscription()
 		      	{
 		      		out.println("&nbsp;");
 		      	}
+				java.util.Calendar cal = GregorianCalendar.getInstance();
 		  		while (it.hasNext()) 
 		  		{
 		  			PostDetail post = (PostDetail) it.next();
@@ -123,7 +126,11 @@ function addSubscription()
 				       	</td>
 				    </tr>
 				    <tr>
-				    	<td class="infoTicket"><%=post.getCreatorName()%> - <%=resource.getOutputDate(post.getDateEvent())%></td>
+					<%
+						cal.setTime(post.getDateEvent());
+						String day = resource.getString("GML.jour"+cal.get(java.util.Calendar.DAY_OF_WEEK));
+					%>
+				    	<td class="infoTicket"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></td>
 				    </tr>
 				    <tr>
 				    	<td>&nbsp;</td>
@@ -153,8 +160,16 @@ function addSubscription()
 							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 							<span class="versCommentaires"> 
 								<% // date de création et de modification %>
-								<%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> - 
-								<%=resource.getString("GML.updateDate")%> <%=resource.getOutputDate(post.getPublication().getUpdateDate())%>
+								<%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> <%=resource.getString("GML.by")%> <%=post.getCreatorName() %>
+								<% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId())) 
+								   {
+									UserDetail updater = m_MainSessionCtrl.getOrganizationController().getUserDetail(post.getPublication().getUpdaterId());
+									String updaterName = "Unknown";
+									if (updater != null)
+										updaterName = updater.getDisplayedName();
+								%>
+									 - <%=resource.getString("GML.updateDate")%> <%=resource.getOutputDate(post.getPublication().getUpdateDate())%> <%=resource.getString("GML.by")%> <%=updaterName %>
+								<% } %>
 							</span>
 						</td>
 				    </tr>
@@ -179,5 +194,4 @@ function addSubscription()
 </form>
 
 </body>
-
 </html>
