@@ -55,15 +55,16 @@ multilang = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle"
 <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/treeview.css">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="javascript">
-function selectImage(url)
+function selectImage(url, idP)
 {
-	window.parent.selectImage(url);
+	window.parent.selectImage(url+"&UseOriginal="+eval("document.frmVignette.UseOriginal"+idP+".checked"));
 }
 </script>
 </head>
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
 
 <table class="Treeview" width="100%" height="100%"><tr><td valign="top">
+<form name="frmVignette">
 <table width="100%">
 <%	
 if (photos != null)
@@ -110,7 +111,8 @@ if (photos != null)
 						<table border="0" align="center" width="10" cellspacing="1" cellpadding="0" class="fondPhoto">
 							<tr><td align="center" colspan="2">
 								<table cellspacing="1" cellpadding="3" border="0" class="cadrePhoto"><tr><td bgcolor="#FFFFFF">
-									<a href="javaScript:selectImage('<%=url%>');"><IMG SRC="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"></a>
+									<a href="javaScript:selectImage('<%=url%>','<%=idP%>');"><IMG SRC="<%=vignette_url%>" border="0" alt="<%=altTitle%>" title="<%=altTitle%>"></a>
+										<input type="checkbox" name="UseOriginal<%=idP%>" value="true" checked><font style="font-size: 9px"><%=photo.getSizeL()%>x<%=photo.getSizeH()%></font><br>
 								</td></tr></table>
 							</td></tr>
 						</table>
@@ -141,6 +143,7 @@ if (photos != null)
 }
 %>
 </table>
+</form>
 </td></tr></table>
 </body>
 </html>
