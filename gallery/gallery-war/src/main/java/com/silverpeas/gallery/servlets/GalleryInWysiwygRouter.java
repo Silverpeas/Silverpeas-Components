@@ -34,6 +34,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import com.silverpeas.util.StringUtil;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -91,6 +92,9 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     String imageId = request.getParameter("ImageId");
     String language = request.getParameter("Language");
     String size = request.getParameter("Size");
+    boolean useOriginal = false;
+	if (StringUtil.isDefined(request.getParameter("UseOriginal")))
+	    useOriginal = new Boolean(request.getParameter("UseOriginal")); 
 
     // contrôle que "componentId" est bien une photothèque ayant le droit d'être
     // vu dans un Wysiwyg
@@ -111,7 +115,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
         // affichage de l'image
         PhotoDetail image = getGalleryBm().getPhoto(
             new PhotoPK(imageId, componentId));
-        displayImage(response, image, size);
+        displayImage(response, image, size, useOriginal);
       } else if (!isDefined(albumId)) {
         // affichage de l'arborescence des albums
         Collection albums = viewAllAlbums(componentId);
@@ -162,13 +166,19 @@ public class GalleryInWysiwygRouter extends HttpServlet {
   }
 
   private void displayImage(HttpServletResponse res, PhotoDetail image,
-      String size) throws IOException {
+      String size, boolean useOriginal) throws IOException {
     res.setContentType(image.getImageMimeType());
     OutputStream out2 = res.getOutputStream();
     int read;
     BufferedInputStream input = null;
 
+    boolean useOriginal = false;
+	if (StringUtil.isDefined(request.getParameter("UseOriginal")))
+	    useOriginal = new Boolean(request.getParameter("UseOriginal")); 
+	
     String fileName = image.getId() + "_preview.jpg";
+    if (useOriginal)
+        fileName = image.getImageName();
     if (isDefined(size))
       fileName = image.getId() + "_" + size + ".jpg";
 
