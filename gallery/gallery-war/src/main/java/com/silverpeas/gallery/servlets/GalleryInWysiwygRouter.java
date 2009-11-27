@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
----*/
+ ---*/
 
 package com.silverpeas.gallery.servlets;
 
@@ -59,8 +59,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
  * Class declaration
- *
- *
  * @author
  */
 public class GalleryInWysiwygRouter extends HttpServlet {
@@ -92,19 +90,17 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     String imageId = request.getParameter("ImageId");
     String language = request.getParameter("Language");
     String size = request.getParameter("Size");
-    boolean useOriginal = false;
-	if (StringUtil.isDefined(request.getParameter("UseOriginal")))
-	    useOriginal = new Boolean(request.getParameter("UseOriginal")); 
+    boolean useOriginal = Boolean.parseBoolean(request.getParameter("UseOriginal"));
 
     // contrôle que "componentId" est bien une photothèque ayant le droit d'être
     // vu dans un Wysiwyg
     boolean isViewInWysiwyg = "yes"
         .equalsIgnoreCase(getOrganizationController()
-            .getComponentParameterValue(componentId, "viewInWysiwyg"));
+        .getComponentParameterValue(componentId, "viewInWysiwyg"));
     if (isViewInWysiwyg) {
       SilverTrace.info("gallery", "GalleryInWysiwygRouter.doPost",
           "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId
-              + " albumId = " + albumId);
+          + " albumId = " + albumId);
 
       String rootDest = "/gallery/jsp/";
       String destination = "";
@@ -174,7 +170,7 @@ public class GalleryInWysiwygRouter extends HttpServlet {
 
     String fileName = image.getId() + "_preview.jpg";
     if (useOriginal)
-        fileName = image.getImageName();
+      fileName = image.getImageName();
     if (isDefined(size))
       fileName = image.getId() + "_" + size + ".jpg";
 
