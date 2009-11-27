@@ -172,10 +172,6 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     int read;
     BufferedInputStream input = null;
 
-    boolean useOriginal = false;
-	if (StringUtil.isDefined(request.getParameter("UseOriginal")))
-	    useOriginal = new Boolean(request.getParameter("UseOriginal")); 
-	
     String fileName = image.getId() + "_preview.jpg";
     if (useOriginal)
         fileName = image.getImageName();
