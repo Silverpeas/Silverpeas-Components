@@ -50,8 +50,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%
 
-//CBO : REMOVE String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 String url = (String) request.getParameter("URL");
+String popup = (String) request.getParameter("Popup");
 
 %>
 
@@ -69,16 +69,18 @@ out.println(gef.getLookStyleSheet());
 <!--<script type="text/javascript" src="<%/*iconsPath*/%>/util/javaScript/animation.js"></script>-->
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <Script language="JavaScript">
-
-function openSite(URL) {
-    winName = "site";
-    larg ="670";
-    haut = "500";
-    windowParams = "width="+larg+",height="+haut+", toolbar=yes, scrollbars=yes, resizable, alwaysRaised";
-    site = window.open(URL,winName,windowParams);    
-    location.href("Main.jsp");    
+function openSite(URL, popup) {
+	winName = "Site";
+	larg="670" ;
+	haut="500" ;
+	windowParams="width="+ larg + ",height=" + haut	+ " , toolbar=yes, scrollbars=yes, resizable, alwaysRaised";
+	if (popup == "0") {
+		document.location.replace(URL);
+	} else {
+		site=window.open(URL,winName,windowParams);
+		document.location.replace("Main");
+	}
 }
-
 </Script>
 
 </HEAD>
