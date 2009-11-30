@@ -1363,7 +1363,9 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
           + nomPage;
     }
     return "/webSites/jsp/ouvertureSite.jsp?URL="
-        + EncodeHelper.javaStringToJsString(nomPage);
+        + EncodeHelper.javaStringToJsString(nomPage)
+    	+ "&Popup=" + sitedetail.getPopup();
+
   }
 
   /* construitTab */
