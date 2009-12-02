@@ -5,11 +5,12 @@
     <groupId>com.silverpeas</groupId>
     <artifactId>components</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   
   <groupId>com.silverpeas.components</groupId>
   <artifactId>wiki</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>${parent.version}</version>
   <packaging>pom</packaging>
   <name>wiki Component</name>
   <modules>

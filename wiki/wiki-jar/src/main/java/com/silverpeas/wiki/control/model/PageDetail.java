@@ -24,6 +24,7 @@
 package com.silverpeas.wiki.control.model;
 
 public class PageDetail {
+
   int id = -1;
   String pageName = null;
   String instanceId = null;
@@ -82,4 +83,34 @@ public class PageDetail {
     this.pageName = pageName;
   }
 
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    hash = 37 * hash + this.id;
+    hash = 37 * hash + (this.pageName != null ? this.pageName.hashCode() : 0);
+    hash = 37 * hash + (this.instanceId != null ? this.instanceId.hashCode() : 0);
+    return hash;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final PageDetail other = (PageDetail) obj;
+    if (this.id != other.id) {
+      return false;
+    }
+    if ((this.pageName == null) ? (other.pageName != null) : !this.pageName.equals(other.pageName)) {
+      return false;
+    }
+    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(other.instanceId)) {
+      return false;
+    }
+    return true;
+  }
 }

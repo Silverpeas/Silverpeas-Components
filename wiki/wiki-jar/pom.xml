@@ -7,19 +7,23 @@
     <version>1.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-	
+
   <groupId>com.silverpeas.components.wiki</groupId>
   <artifactId>wiki-jar</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>Lib wiki</name>
-	
+
   <dependencies>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
@@ -36,9 +40,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-        <groupId>org.apache.geronimo.specs</groupId>
-        <artifactId>geronimo-j2ee_1.4_spec</artifactId>
-      </dependency>
+      <groupId>org.apache.geronimo.specs</groupId>
+      <artifactId>geronimo-j2ee_1.4_spec</artifactId>
+    </dependency>
     <dependency>
       <groupId>com.ecyrd.jspwiki</groupId>
       <artifactId>jspwiki</artifactId>
@@ -80,5 +84,41 @@
       <groupId>sandler</groupId>
       <artifactId>sandler</artifactId>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-all</artifactId>
+    </dependency>
   </dependencies>
+
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <excludes>
+          <exclude>*.zip</exclude>
+        </excludes>
+        <filtering>true</filtering>
+      </testResource>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <includes>
+          <include>*.zip</include>
+        </includes>
+        <excludes>
+          <exclude>*.properties</exclude>
+        </excludes>
+        <filtering>false</filtering>
+      </testResource>
+    </testResources>
+  </build>
 </project>
