@@ -50,8 +50,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class InfoLetterDataManager implements InfoLetterDataInterface {
@@ -155,7 +153,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     SilverTrace.info("infoLetter",
         "InfoLetterDataManager.createInfoLetterPublication()",
         "root.MSG_GEN_ENTER_METHOD", "ilp = " + ilp.toString() + " userId="
-            + userId);
+        + userId);
     Connection con = openConnection();
 
     try {
@@ -253,7 +251,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
     try {
       retour = new InfoLetterPublicationPdC(
           (InfoLetterPublication) infoLetterPublicationDAO
-              .findByPrimaryKey(publiPK));
+          .findByPrimaryKey(publiPK));
     } catch (PersistenceException pe) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
@@ -264,7 +262,8 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
   // Creation de la lettre par defaut a l'instanciation
   public InfoLetter createDefaultLetter(String spaceId, String componentId) {
-    com.stratelia.webactiv.beans.admin.OrganizationController oc = new com.stratelia.webactiv.beans.admin.OrganizationController();
+    com.stratelia.webactiv.beans.admin.OrganizationController oc =
+        new com.stratelia.webactiv.beans.admin.OrganizationController();
     com.stratelia.webactiv.beans.admin.ComponentInst ci = oc
         .getComponentInst(componentId);
     InfoLetter ie = new InfoLetter();
@@ -616,7 +615,6 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
 
   /**
    * Ouverture de la connection vers la source de donnees
-   * 
    * @return Connection la connection
    * @exception InfoLetterException
    * @author frageade

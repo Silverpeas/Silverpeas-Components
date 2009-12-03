@@ -47,21 +47,15 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class InfoLetterRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param mainSessionCtrl
    * @param componentContext
-   * 
    * @return
-   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -70,9 +64,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   public String getSessionControlBeanName() {
     return "infoLetter";
@@ -80,11 +73,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scc
    * @param request
-   * 
    * @see
    */
   private void setGlobalInfo(InfoLetterSessionController scc,
@@ -112,12 +102,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scc
-   * 
    * @return
-   * 
    * @see
    */
   private InfoLetter getCurrentLetter(InfoLetterSessionController scc) {
@@ -128,13 +114,9 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param scc
    * @param request
-   * 
    * @return
-   * 
    * @see
    */
   private String setMainContext(InfoLetterSessionController scc,
@@ -198,15 +180,12 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
@@ -215,7 +194,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter {
 
     SilverTrace.info("infoLetter", "infoLetterRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + infoLetterSC.getUserId()
-            + " Function=" + function);
+        + " Function=" + function);
     InfoLetterSessionController scc = (InfoLetterSessionController) componentSC;
 
     // the flag is the best user's profile
@@ -439,7 +418,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter {
           String server = request.getRequestURL().substring(
               0,
               request.getRequestURL().toString().indexOf(
-                  URLManager.getApplicationURL()));
+              URLManager.getApplicationURL()));
           emailErrors = scc.notifyExternals(ilp, server);
         }
         request.setAttribute("SpaceId", scc.getSpaceId());
@@ -687,7 +666,7 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter {
           String server = request.getRequestURL().substring(
               0,
               request.getRequestURL().toString().indexOf(
-                  URLManager.getApplicationURL()));
+              URLManager.getApplicationURL()));
           emailErrors = scc.notifyManagers(ilp, server);
         }
         request.setAttribute("SpaceId", scc.getSpaceId());
@@ -719,12 +698,8 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param profiles
-   * 
    * @return
-   * 
    * @see
    */
   private String getFlag(String[] profiles) {
@@ -745,13 +720,9 @@ public class InfoLetterRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param request
    * @param name
-   * 
    * @return
-   * 
    * @see
    */
   private String param(HttpServletRequest request, String name) {

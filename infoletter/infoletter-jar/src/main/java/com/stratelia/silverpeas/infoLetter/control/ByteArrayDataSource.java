@@ -30,9 +30,8 @@ import java.io.*;
 import javax.activation.*;
 
 /**
- * A simple DataSource for demonstration purposes. This class implements a
- * DataSource from: an InputStream a byte array a String
- * 
+ * A simple DataSource for demonstration purposes. This class implements a DataSource from: an
+ * InputStream a byte array a String
  * @author John Mani
  * @author Bill Shannon
  * @author Max Spivak
@@ -77,8 +76,7 @@ public class ByteArrayDataSource implements DataSource {
   }
 
   /**
-   * Return an InputStream for the data. Note - a new stream must be returned
-   * each time.
+   * Return an InputStream for the data. Note - a new stream must be returned each time.
    */
   public InputStream getInputStream() throws IOException {
     if (data == null)

@@ -42,8 +42,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 
-public class InfoLetterInstanciator extends SQLRequest implements
-    ComponentsInstanciatorIntf {
+public class InfoLetterInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
   /** Creates new FileBoxPlusInstanciator */
   public InfoLetterInstanciator() {
@@ -72,13 +71,9 @@ public class InfoLetterInstanciator extends SQLRequest implements
 
   /**
    * Delete all data of one website instance from the website table.
-   * 
-   * @param con
-   *          (Connection) the connection to the data base
-   * @param componentId
-   *          (String) the instance id of the Silverpeas component website.
-   * @param suffixName
-   *          (String) the suffixe of a website table
+   * @param con (Connection) the connection to the data base
+   * @param componentId (String) the instance id of the Silverpeas component website.
+   * @param suffixName (String) the suffixe of a website table
    */
   private void deleteDataOfInstance(Connection con, String componentId,
       String suffixName) throws InstanciationException {

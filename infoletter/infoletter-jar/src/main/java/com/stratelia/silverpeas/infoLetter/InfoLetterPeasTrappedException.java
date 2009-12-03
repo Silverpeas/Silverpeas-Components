@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
+ ---*/
 
 /*
  * JobDomainPeasException.java
@@ -34,20 +34,15 @@ import com.stratelia.webactiv.util.exception.SilverpeasTrappedException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class InfoLetterPeasTrappedException extends SilverpeasTrappedException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
-   * 
    * @see
    */
   public InfoLetterPeasTrappedException(String callingClass, int errorLevel,
@@ -57,13 +52,10 @@ public class InfoLetterPeasTrappedException extends SilverpeasTrappedException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public InfoLetterPeasTrappedException(String callingClass, int errorLevel,
@@ -73,13 +65,10 @@ public class InfoLetterPeasTrappedException extends SilverpeasTrappedException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public InfoLetterPeasTrappedException(String callingClass, int errorLevel,
@@ -89,14 +78,11 @@ public class InfoLetterPeasTrappedException extends SilverpeasTrappedException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public InfoLetterPeasTrappedException(String callingClass, int errorLevel,
@@ -106,10 +92,7 @@ public class InfoLetterPeasTrappedException extends SilverpeasTrappedException {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getModule() {

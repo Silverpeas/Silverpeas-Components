@@ -36,7 +36,6 @@ import com.stratelia.silverpeas.infoLetter.model.*;
 
 /**
  * Cette classe est reponsable de la fabrication des services.
- * 
  * @author frageade
  * @since February 2002
  */
@@ -46,7 +45,6 @@ public class ServiceFactory {
 
   /**
    * Constructeur sans parametres
-   * 
    * @author frageade
    * @since February 2002
    */

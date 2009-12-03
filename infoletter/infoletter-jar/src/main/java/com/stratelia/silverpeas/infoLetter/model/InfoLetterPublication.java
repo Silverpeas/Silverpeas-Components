@@ -23,11 +23,9 @@
  */
 package com.stratelia.silverpeas.infoLetter.model;
 
-
 import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-
 
 public class InfoLetterPublication extends SilverpeasBean implements Comparable {
 
@@ -60,7 +58,6 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable 
 
   /**
    * Constructeur sans parametres
-   * 
    * @author frageade
    * @since February 2002
    */
@@ -75,18 +72,12 @@ public class InfoLetterPublication extends SilverpeasBean implements Comparable 
 
   /**
    * Constructeur a 6 parametres
-   * 
-   * @param WAPrimaryKey
-   *          pk
-   * @param String
-   *          title
-   * @param String
-   *          description
-   * @param String
-   *          parutionDate
+   * @param WAPrimaryKey pk
+   * @param String title
+   * @param String description
+   * @param String parutionDate
    * @param int publicationState
-   * @param String
-   *          letterId
+   * @param String letterId
    * @author frageade
    * @since February 2002
    */

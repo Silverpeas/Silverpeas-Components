@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
+ ---*/
 
 package com.stratelia.silverpeas.infoLetter;
 
@@ -39,8 +39,6 @@ import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class InfoLetterStatistics implements ComponentStatisticsInterface {

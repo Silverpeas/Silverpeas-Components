@@ -30,15 +30,12 @@ import java.util.Vector;
 
 /**
  * Interface declaration
- * 
- * 
  * @author
  */
 public interface InfoLetterDataInterface {
 
   /**
    * Ouverture de la connection vers la source de donnees
-   * 
    * @return Connection la connection
    * @exception InfoLetterException
    * @author frageade

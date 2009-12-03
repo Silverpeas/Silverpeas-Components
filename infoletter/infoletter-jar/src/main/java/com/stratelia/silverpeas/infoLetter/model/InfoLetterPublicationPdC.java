@@ -29,7 +29,6 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
- * 
  * @author lbertin
  * @since February 2002
  */
@@ -41,7 +40,6 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication implements
 
   /**
    * Constructeur sans parametres
-   * 
    * @author frageade
    * @since February 2002
    */
@@ -50,11 +48,8 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication implements
   }
 
   /**
-   * Constructeur pour convertir une InfoLetterPublication en
-   * InfoLetterPublicationPdc
-   * 
-   * @param ilp
-   *          InfoLetterPublication
+   * Constructeur pour convertir une InfoLetterPublication en InfoLetterPublicationPdc
+   * @param ilp InfoLetterPublication
    * @author lbertin
    * @since February 2002
    */
@@ -65,18 +60,12 @@ public class InfoLetterPublicationPdC extends InfoLetterPublication implements
 
   /**
    * Constructeur a 6 parametres
-   * 
-   * @param WAPrimaryKey
-   *          pk
-   * @param String
-   *          title
-   * @param String
-   *          description
-   * @param String
-   *          parutionDate
+   * @param WAPrimaryKey pk
+   * @param String title
+   * @param String description
+   * @param String parutionDate
    * @param int publicationState
-   * @param String
-   *          letterId
+   * @param String letterId
    * @author frageade
    * @since February 2002
    */

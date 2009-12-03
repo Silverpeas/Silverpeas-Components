@@ -46,15 +46,10 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 public class InfoLetterContentManager implements ContentInterface {
   /**
    * Find all the SilverContent with the given list of SilverContentId
-   * 
-   * @param ids
-   *          list of silverContentId to retrieve
-   * @param peasId
-   *          the id of the instance
-   * @param userId
-   *          the id of the user who wants to retrieve silverContent
-   * @param userRoles
-   *          the roles of the user
+   * @param ids list of silverContentId to retrieve
+   * @param peasId the id of the instance
+   * @param userId the id of the user who wants to retrieve silverContent
+   * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
   public List getSilverContentById(List ids, String peasId, String userId,
@@ -81,13 +76,9 @@ public class InfoLetterContentManager implements ContentInterface {
 
   /**
    * add a new content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param ilPub
-   *          the content to register
-   * @param userId
-   *          the creator of the content
+   * @param con a Connection
+   * @param ilPub the content to register
+   * @param userId the creator of the content
    * @return the unique silverObjectId which identified the new content
    */
   public int createSilverContent(Connection con,
@@ -97,19 +88,16 @@ public class InfoLetterContentManager implements ContentInterface {
     SilverTrace.info("infoletter",
         "InfoLetterContentManager.createSilverContent()",
         "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-            + scv.toString());
+        + scv.toString());
     return getContentManager().addSilverContent(con, ilPub.getId(),
         ilPub.getInstanceId(), userId, scv);
   }
 
   /**
-   * update the visibility attributes of the content. Here, the type of content
-   * is a PublicationDetail
-   * 
-   * @param ilPub
-   *          the content
-   * @param silverObjectId
-   *          the unique identifier of the content
+   * update the visibility attributes of the content. Here, the type of content is a
+   * PublicationDetail
+   * @param ilPub the content
+   * @param silverObjectId the unique identifier of the content
    */
   public void updateSilverContentVisibility(InfoLetterPublicationPdC ilPub)
       throws ContentManagerException {
@@ -119,7 +107,7 @@ public class InfoLetterContentManager implements ContentInterface {
     SilverTrace.info("infoletter",
         "InfoLetterContentManager.updateSilverContentVisibility()",
         "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-            + scv.toString());
+        + scv.toString());
     if (silverContentId == -1) {
       createSilverContent(null, ilPub, ilPub.getCreatorId());
     } else {
@@ -132,14 +120,9 @@ public class InfoLetterContentManager implements ContentInterface {
 
   /**
    * delete a content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param pubId
-   *          the identifiant of the content to unregister
-   * @param componentId
-   *          the identifiant of the component instance where the content to
-   *          unregister is
+   * @param con a Connection
+   * @param pubId the identifiant of the content to unregister
+   * @param componentId the identifiant of the component instance where the content to unregister is
    */
   public void deleteSilverContent(Connection con, String pubId,
       String componentId) throws ContentManagerException {
@@ -148,7 +131,7 @@ public class InfoLetterContentManager implements ContentInterface {
       SilverTrace.info("infoletter",
           "InfoLetterContentManager.deleteSilverContent()",
           "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubId + ", contentId = "
-              + contentId);
+          + contentId);
       getContentManager().removeSilverContent(con, contentId, componentId);
     }
   }
@@ -159,9 +142,7 @@ public class InfoLetterContentManager implements ContentInterface {
 
   /**
    * return a list of ids according to a list of silverContentId
-   * 
-   * @param idList
-   *          a list of silverContentId
+   * @param idList a list of silverContentId
    * @return a list of ids
    */
   private ArrayList makePKArray(List idList) {
@@ -187,11 +168,8 @@ public class InfoLetterContentManager implements ContentInterface {
 
   /**
    * return a list of silverContent according to a list of publicationPK
-   * 
-   * @param ids
-   *          a list of publicationPK
-   * @param peasId
-   *          the id of the instance
+   * @param ids a list of publicationPK
+   * @param peasId the id of the instance
    * @return a list of publicationDetail
    */
   private List getHeaders(List ids, String peasId) {

@@ -31,20 +31,15 @@ import com.stratelia.webactiv.util.exception.*;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class InfoLetterException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
-   * 
    * @see
    */
   public InfoLetterException(String callingClass, int errorLevel, String message) {
@@ -53,13 +48,10 @@ public class InfoLetterException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public InfoLetterException(String callingClass, int errorLevel,
@@ -69,13 +61,10 @@ public class InfoLetterException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public InfoLetterException(String callingClass, int errorLevel,
@@ -85,14 +74,11 @@ public class InfoLetterException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public InfoLetterException(String callingClass, int errorLevel,
@@ -102,10 +88,7 @@ public class InfoLetterException extends SilverpeasRuntimeException {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getModule() {
