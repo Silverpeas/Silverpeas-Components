@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
+ ---*/
 
 package com.stratelia.webactiv.forums.forumEntity.ejb;
 
@@ -36,12 +36,10 @@ import com.stratelia.silverpeas.contentManager.*;
 
 /**
  * This object contains the description of a forum
- * 
  * @author Marc Guillemin
  * @version 1.0
  */
-public class ForumDetail extends AbstractI18NBean implements
-    SilverContentInterface, Serializable {
+public class ForumDetail extends AbstractI18NBean implements SilverContentInterface, Serializable {
   private ForumPK pk;
   private String name;
   private String description;
@@ -143,7 +141,7 @@ public class ForumDetail extends AbstractI18NBean implements
     } catch (Exception e) {
       SilverTrace.warn("publication", "ForumDetail.getDate()",
           "root.MSG_GEN_ENTER_METHOD", "date to format = "
-              + getCreationDate().toString());
+          + getCreationDate().toString());
     }
     return formattedDate;
   }

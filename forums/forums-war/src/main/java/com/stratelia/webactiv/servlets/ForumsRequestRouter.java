@@ -48,8 +48,8 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object
    */
   public String getSessionControlBeanName() {
     return "forumsSessionClientController";
@@ -109,7 +109,7 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
       if (StringUtil.isDefined(messageId)) {
         SilverTrace.info("forums", "ForumsRequestRouter",
             "root.MSG_GEN_PARAM_VALUE", "messageId (pour last visite) = "
-                + messageId);
+            + messageId);
         forumsSC.setLastVisit(componentSC.getUserId(), Integer
             .parseInt(messageId));
       }

@@ -27,7 +27,6 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 /**
  * Clé primaire associée à un forum.
- *
  * @author frageade
  * @since November 2000
  */

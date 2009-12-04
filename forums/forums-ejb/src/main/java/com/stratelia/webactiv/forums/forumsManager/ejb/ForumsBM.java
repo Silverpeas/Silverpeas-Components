@@ -41,7 +41,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
  * Cette classe est l'interface Remote du Business Manager qui gere les forums
- * 
  * @author frageade
  * @since September 2000
  */

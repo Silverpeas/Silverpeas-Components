@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
+ ---*/
 
 package com.stratelia.webactiv.forums;
 
@@ -68,8 +68,6 @@ import com.stratelia.webactiv.util.JNDINames;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class ForumsStatistics implements ComponentStatisticsInterface {

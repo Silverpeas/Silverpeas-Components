@@ -76,7 +76,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
  * Cette classe est le Business Manager qui gere les forums
- *
  * @author frageade
  * @since September 2000
  */
@@ -244,11 +243,8 @@ public class ForumsBMEJB implements SessionBean {
   }
 
   /**
-   * Verrouille recursivement l'arborescence d'un forum en ecriture a partir de
-   * sa primary key
-   *
-   * @param ForumPK
-   *          la primary key du forum
+   * Verrouille recursivement l'arborescence d'un forum en ecriture a partir de sa primary key
+   * @param ForumPK la primary key du forum
    * @param int le niveau de verrouillage
    * @author frageade
    * @since 29 Septembre 2000
@@ -272,9 +268,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Deverrouille recursivement un forum en ecriture a partir de sa primary key
-   *
-   * @param ForumPK
-   *          la primary key du forum
+   * @param ForumPK la primary key du forum
    * @param int le niveau de verrouillage
    * @return int le code d'erreur
    * @author frageade
@@ -302,9 +296,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Supprime un forum et tous ses sous-forums a partir de sa primary key
-   *
-   * @param ForumPK
-   *          la primary key du forum
+   * @param ForumPK la primary key du forum
    * @author frageade
    * @since 3 Octobre 2000
    */
@@ -345,18 +337,12 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Cree un nouveau forum dans la datasource
-   *
-   * @param ForumPK
-   *          la primary key
-   * @param String
-   *          nom du forum
-   * @param String
-   *          description du forum
-   * @param String
-   *          l'id du createur du forum
+   * @param ForumPK la primary key
+   * @param String nom du forum
+   * @param String description du forum
+   * @param String l'id du createur du forum
    * @param int l'id du forum parent
-   * @param String
-   *          l'id de la categorie
+   * @param String l'id de la categorie
    * @return String l'id du nouveau forum
    * @author frageade
    * @since 02 Octobre 2000
@@ -384,16 +370,11 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Met a jour les informations sur un forum dans la datasource
-   *
-   * @param ForumPK
-   *          la primary key du forum
-   * @param String
-   *          nom du forum
-   * @param String
-   *          description du forum
+   * @param ForumPK la primary key du forum
+   * @param String nom du forum
+   * @param String description du forum
    * @param int l'id du forum parent
-   * @param String
-   *          l'id de la catégorie
+   * @param String l'id de la catégorie
    * @author frageade
    * @since 03 Octobre 2000
    */
@@ -523,9 +504,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Retourne le dernier message d'un forum
-   *
-   * @param ForumPK
-   *          la primary key du forum
+   * @param ForumPK la primary key du forum
    * @return Vector la liste des champs du dernier message
    * @author sfariello
    * @since
@@ -604,13 +583,9 @@ public class ForumsBMEJB implements SessionBean {
   }
 
   /**
-   * Retourne vrai s'il y a des messages non lus sur ce forum depuis la dernière
-   * visite
-   *
-   * @param forumId
-   *          l'id du forum
-   * @param userId
-   *          l'id de l'utilisateur
+   * Retourne vrai s'il y a des messages non lus sur ce forum depuis la dernière visite
+   * @param forumId l'id du forum
+   * @param userId l'id de l'utilisateur
    * @return String la date de la dernière visite
    * @author sfariello
    * @since
@@ -647,7 +622,7 @@ public class ForumsBMEJB implements SessionBean {
           : null);
       SilverTrace.info("forums", "ForumsBMEJB.isNewMessage()",
           "root.MSG_GEN_PARAM_VALUE", "date du dernier message du sujet = "
-              + dateLastMessageBySubject);
+          + dateLastMessageBySubject);
 
       // recherche sur tous les messages de la date de visite la plus ancienne
       // date de la dernière visite pour un message
@@ -656,7 +631,7 @@ public class ForumsBMEJB implements SessionBean {
       if (dateLastMessageBySubject == null
           || dateLastVisit == null
           || (dateLastMessageBySubject != null && dateLastVisit != null && dateLastVisit
-              .before(dateLastMessageBySubject))) {
+          .before(dateLastMessageBySubject))) {
         // la date de dernière visite de ce message est antérieure à la date du
         // dernier
         // message, il y a donc des réponses non lues pour ce message
@@ -674,11 +649,8 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * enregistre la date de la dernière visite d'un utilisateur sur un forum
-   *
-   * @param messageId
-   *          l'id du message
-   * @param userId
-   *          l'id de l'utilisateur
+   * @param messageId l'id du message
+   * @param userId l'id de l'utilisateur
    * @author sfariello
    * @since
    */
@@ -697,9 +669,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Recupere les infos d'un message
-   *
-   * @param MessagePK
-   *          la primary key du message
+   * @param MessagePK la primary key du message
    * @return Vector la liste des champs du message
    * @author frageade
    * @since 04 Octobre 2000
@@ -761,21 +731,13 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Cree un nouveau message dans la datasource
-   *
-   * @param MessagePK
-   *          la primary key du message
-   * @param String
-   *          titre du message
-   * @param String
-   *          id de l'auteur du message
-   * @param String
-   *          date de creation
-   * @param Strinf
-   *          id du forum
-   * @param String
-   *          id du message parent
-   * @param String
-   *          texte du message
+   * @param MessagePK la primary key du message
+   * @param String titre du message
+   * @param String id de l'auteur du message
+   * @param String date de creation
+   * @param Strinf id du forum
+   * @param String id du message parent
+   * @param String texte du message
    * @return String l'id du nouveau message
    * @author frageade
    * @since 04 Octobre 2000
@@ -830,9 +792,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Supprime un message et tous ses sous-messages a partir de sa primary key
-   *
-   * @param MessagePK
-   *          la primary key du message
+   * @param MessagePK la primary key du message
    * @author frageade
    * @since 04 Octobre 2000
    */
@@ -873,13 +833,9 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @param userId
    * @param forumPK
-   *
    * @return
-   *
    * @see
    */
   public boolean isModerator(String userId, ForumPK forumPK) {
@@ -899,11 +855,8 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @param forumPK
    * @param userId
-   *
    * @see
    */
   public void addModerator(ForumPK forumPK, String userId) {
@@ -920,11 +873,8 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @param forumPK
    * @param userId
-   *
    * @see
    */
   public void removeModerator(ForumPK forumPK, String userId) {
@@ -941,10 +891,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @param forumPK
-   *
    * @see
    */
   public void removeAllModerators(ForumPK forumPK) {
@@ -961,11 +908,8 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @param messagePK
    * @param forumPK
-   *
    * @see
    */
   public void moveMessage(MessagePK messagePK, ForumPK forumPK) {
@@ -1000,9 +944,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Liste tous les sous-messages d'un message
-   *
-   * @param MessagePK
-   *          la primary key du message pere
+   * @param MessagePK la primary key du message pere
    * @return Vector liste des ids fils
    * @author frageade
    * @since 11 Octobre 2000
@@ -1022,9 +964,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Liste tous les sous-messages d'un message récursivement
-   *
-   * @param MessagePK
-   *          la primary key du message pere
+   * @param MessagePK la primary key du message pere
    * @return Vector liste des ids fils
    * @author frageade
    * @since 11 Octobre 2000
@@ -1044,11 +984,8 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @param messagePK
    * @param userId
-   *
    * @see
    */
   public void subscribeMessage(MessagePK messagePK, String userId) {
@@ -1066,11 +1003,8 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @param messagePK
    * @param userId
-   *
    * @see
    */
   public void unsubscribeMessage(MessagePK messagePK, String userId) {
@@ -1088,10 +1022,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @param messagePK
-   *
    * @see
    */
   public void removeAllSubscribers(MessagePK messagePK) {
@@ -1109,12 +1040,8 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @param messagePK
-   *
    * @return
-   *
    * @see
    */
   public Vector listAllSubscribers(MessagePK messagePK) {
@@ -1132,13 +1059,9 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @param messagePK
    * @param userId
-   *
    * @return
-   *
    * @see
    */
   public boolean isSubscriber(MessagePK messagePK, String userId) {
@@ -1158,10 +1081,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @param messagePK
-   *
    * @see
    */
   public void createIndex(MessagePK messagePK) {
@@ -1187,10 +1107,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @param messagePK
-   *
    * @see
    */
   private void deleteIndex(MessagePK messagePK) {
@@ -1200,10 +1117,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @param forumPK
-   *
    * @see
    */
   public void createIndex(ForumPK forumPK) {
@@ -1219,10 +1133,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @param forumPK
-   *
    * @see
    */
   private void deleteIndex(ForumPK forumPK) {
@@ -1234,8 +1145,6 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @see
    */
   public void ejbActivate() {
@@ -1243,8 +1152,6 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @see
    */
   public void ejbPassivate() {
@@ -1252,8 +1159,6 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @see
    */
   public void ejbRemove() {
@@ -1261,10 +1166,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @param sc
-   *
    * @see
    */
   public void setSessionContext(SessionContext sc) {
@@ -1274,10 +1176,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Method declaration
-   *
-   *
    * @throws CreateException
-   *
    * @see
    */
   public void ejbCreate() throws CreateException {
@@ -1287,7 +1186,6 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Ouverture de la connection vers la source de donnees
-   *
    * @return Connection la connection
    * @exception RemoteException
    * @exception SQLException
@@ -1475,9 +1373,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Create the tagclouds corresponding to the forum detail.
-   *
-   * @param forumDetail
-   *          The detail of the forum.
+   * @param forumDetail The detail of the forum.
    * @throws RemoteException
    */
   private void createTagCloud(ForumPK forumPK, String keywords)
@@ -1517,9 +1413,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Delete the tagclouds corresponding to the publication key.
-   *
-   * @param pubPK
-   *          The primary key of the publication.
+   * @param pubPK The primary key of the publication.
    * @throws RemoteException
    */
   private void deleteTagCloud(ForumPK forumPK) throws RemoteException {
@@ -1536,9 +1430,7 @@ public class ForumsBMEJB implements SessionBean {
 
   /**
    * Update the tagclouds corresponding to the publication detail.
-   *
-   * @param forumDetail
-   *          The detail of the forum.
+   * @param forumDetail The detail of the forum.
    * @throws RemoteException
    */
   private void updateTagCloud(ForumPK forumPK, String keywords)
@@ -1598,13 +1490,13 @@ public class ForumsBMEJB implements SessionBean {
   private void deleteNotation(ForumPK forumPK) throws RemoteException {
     getNotationBm().deleteNotation(
         new NotationPK(forumPK.getId(), forumPK.getComponentName(),
-            Notation.TYPE_FORUM));
+        Notation.TYPE_FORUM));
   }
 
   private void deleteNotation(MessagePK messagePK) throws RemoteException {
     getNotationBm().deleteNotation(
         new NotationPK(messagePK.getId(), messagePK.getComponentName(),
-            Notation.TYPE_MESSAGE));
+        Notation.TYPE_MESSAGE));
   }
 
   /**
@@ -1691,7 +1583,7 @@ public class ForumsBMEJB implements SessionBean {
     } catch (WysiwygException e) {
       SilverTrace.error("forums", "ForumsBMEJB.deleteWysiwyg()",
           "componentId = " + messagePK.getComponentName() + " ; messageId = "
-              + messagePK.getId());
+          + messagePK.getId());
     }
   }
 

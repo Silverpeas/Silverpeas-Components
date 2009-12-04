@@ -76,7 +76,6 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 
 /**
  * Cette classe gere la session de l'acteur durant sa navigation dans les forums
- *
  * @author frageade
  * @since September 2000
  */
@@ -166,7 +165,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     }
     SilverTrace.debug("forums",
         "ForumsSessionController.getForumsListByCategory()", "", "retour = "
-            + result);
+        + result);
     return result;
   }
 
@@ -278,13 +277,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Cree un nouveau forum dans la datasource
-   *
-   * @param String
-   *          nom du forum
-   * @param String
-   *          description du forum
-   * @param String
-   *          l'id du createur du forum
+   * @param String nom du forum
+   * @param String description du forum
+   * @param String l'id du createur du forum
    * @param int l'id du forum parent
    * @return l'id du forum nouvellement cree
    * @author frageade
@@ -313,12 +308,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Met a jour les informations sur un forum dans la datasource
-   *
    * @param int l'ID du forum dans la datasource
-   * @param String
-   *          nom du forum
-   * @param String
-   *          description du forum
+   * @param String nom du forum
+   * @param String description du forum
    * @param int l'id du forum parent
    * @author frageade
    * @since 03 Octobre 2000
@@ -335,8 +327,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     try {
       forumsBM
           .updateForum(getForumPK(forumId), truncateTextField(forumName),
-              truncateTextArea(forumDescription), forumParent, categoryId,
-              keywords);
+          truncateTextArea(forumDescription), forumParent, categoryId,
+          keywords);
     } catch (RemoteException re) {
       SilverTrace.error("forums", "ForumsSessionController.updateForum()",
           "forums.EXE_UPDATE_FORUM_FAILED", re.getMessage());
@@ -345,7 +337,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Supprime un forum et tous ses sous-forums a partir de son ID
-   *
    * @param int l'ID du forum dans la datasource
    * @author frageade
    * @since 3 Octobre 2000
@@ -360,7 +351,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Indexe un forum a partir de son ID
-   *
    * @param int l'ID du forum dans la datasource
    * @author frageade
    * @since 23 Aout 2001
@@ -377,9 +367,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Liste les messages d'un forum
-   *
-   * @param String
-   *          id du forum
+   * @param String id du forum
    * @return Vector la liste des messages
    * @author frageade
    * @since 04 Octobre 2000
@@ -425,9 +413,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Récupère le dernier message d'un forum
-   *
-   * @param String
-   *          id du forum
+   * @param String id du forum
    * @return String les champs du dernier message
    * @author sfariello
    * @since
@@ -457,9 +443,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Nombre de sujets d'un forum
-   *
-   * @param String
-   *          id du forum
+   * @param String id du forum
    * @return int le nombre de sujets
    * @author sfariello
    * @since 07 Décembre 2007
@@ -474,9 +458,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Nombre de messages d'un forum
-   *
-   * @param String
-   *          id du forum
+   * @param String id du forum
    * @return int le nombre de messages
    * @author sfariello
    * @since 07 Décembre 2007
@@ -507,9 +489,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Recupere les infos d'un message
-   *
-   * @param String
-   *          id du message
+   * @param String id du message
    * @return Vector la liste des champs du message
    * @author frageade
    * @since 04 Octobre 2000
@@ -540,17 +520,11 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Cree un nouveau message dans la datasource
-   *
-   * @param String
-   *          titre du message
-   * @param String
-   *          id de l'auteur du message
-   * @param Strinf
-   *          id du forum
-   * @param String
-   *          id du message parent
-   * @param String
-   *          texte du message
+   * @param String titre du message
+   * @param String id de l'auteur du message
+   * @param Strinf id du forum
+   * @param String id du message parent
+   * @param String texte du message
    * @return String l'id du message créé
    * @author frageade
    * @since 04 Octobre 2000
@@ -666,9 +640,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Indexe un message a partir de son ID
-   *
-   * @param String
-   *          l'ID du message dans la datasource
+   * @param String l'ID du message dans la datasource
    * @author frageade
    * @since 23 Aout 2001
    */
@@ -682,9 +654,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Supprime un message et tous ses sous-messages a partir de son ID
-   *
-   * @param String
-   *          l'ID du message dans la datasource
+   * @param String l'ID du message dans la datasource
    * @author frageade
    * @since 04 Octobre 2000
    */
@@ -856,7 +826,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public UserDetail[] listUsers() {
     UserDetail[] userDetails = CollectionUtil
         .sortUserDetailArray(getOrganizationController().getAllUsers(
-            getComponentId()));
+        getComponentId()));
     return (userDetails != null ? userDetails : new UserDetail[0]);
   }
 
@@ -869,7 +839,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public String getAdminIds() {
     return NotificationSender
         .getIdsLineFromUserArray(getOrganizationController().getUsers(
-            getSpaceId(), getComponentId(), "admin"));
+        getSpaceId(), getComponentId(), "admin"));
   }
 
   private String truncateTextField(String s) {
@@ -1070,7 +1040,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       try {
         StatisticBmHome statisticHome = (StatisticBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
-                StatisticBmHome.class);
+            StatisticBmHome.class);
         statisticBm = statisticHome.create();
       } catch (Exception e) {
         throw new StatisticRuntimeException(

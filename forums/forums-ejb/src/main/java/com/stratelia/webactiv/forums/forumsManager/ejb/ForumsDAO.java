@@ -112,20 +112,16 @@ public class ForumsDAO {
       + HISTORY_COLUMN_MESSAGE_ID + ", " + HISTORY_COLUMN_LAST_ACCESS;
 
   /**
-   * Private constructor to avoid instantiation since all methods of the class
-   * are static.
+   * Private constructor to avoid instantiation since all methods of the class are static.
    */
   private ForumsDAO() {
   }
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPKs
-   *          The list of forums primary keys.
+   * @param con The connection to the database.
+   * @param forumPKs The list of forums primary keys.
    * @return The list of forums corresponding to the primary keys (ForumDetail).
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static Collection selectByForumPKs(Connection con, Collection forumPKs)
       throws SQLException {
@@ -140,13 +136,10 @@ public class ForumsDAO {
   }
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPKs
-   *          The list of forums primary keys.
+   * @param con The connection to the database.
+   * @param forumPKs The list of forums primary keys.
    * @return The list of forums corresponding to the primary keys (Forum).
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static Collection getForumsByKeys(Connection con, Collection forumPKs)
       throws SQLException {
@@ -165,13 +158,10 @@ public class ForumsDAO {
   }
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param messagePKs
-   *          The list of messages primary keys.
+   * @param con The connection to the database.
+   * @param messagePKs The list of messages primary keys.
    * @return The list of messages corresponding to the primary keys (Message).
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static Collection getMessagesByKeys(Connection con,
       Collection messagePKs) throws SQLException {
@@ -179,13 +169,10 @@ public class ForumsDAO {
   }
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param messagePKs
-   *          The list of messages primary keys.
+   * @param con The connection to the database.
+   * @param messagePKs The list of messages primary keys.
    * @return The list of threads corresponding to the primary keys (Message).
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static Collection getThreadsByKeys(Connection con,
       Collection messagePKs) throws SQLException {
@@ -193,16 +180,12 @@ public class ForumsDAO {
   }
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param messagePKs
-   *          The list of messages primary keys.
-   * @param onlyThreads
-   *          Indicates if only threads messages are searched.
-   * @return The list of messages (or only threads depending on onlyThreads)
-   *         corresponding to the primary keys (Message).
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param messagePKs The list of messages primary keys.
+   * @param onlyThreads Indicates if only threads messages are searched.
+   * @return The list of messages (or only threads depending on onlyThreads) corresponding to the
+   * primary keys (Message).
+   * @throws SQLException An SQL exception.
    */
   private static Collection getMessagesByKeys(Connection con,
       Collection messagePKs, boolean onlyThreads) throws SQLException {
@@ -239,13 +222,10 @@ public class ForumsDAO {
       + " FROM " + FORUM_TABLE + " WHERE " + FORUM_COLUMN_INSTANCE_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
    * @return The list of forums corresponding to the primary key (Forum).
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static ArrayList getForumsList(Connection con, ForumPK forumPK)
       throws SQLException {
@@ -273,13 +253,10 @@ public class ForumsDAO {
       + FORUM_COLUMN_INSTANCE_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
    * @return The list of ids of forums corresponding to the primary key.
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static ArrayList getForumsIds(Connection con, ForumPK forumPK)
       throws SQLException {
@@ -325,21 +302,18 @@ public class ForumsDAO {
       + " IS NULL";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @param categoryId
-   *          The id of the category.
-   * @return The list of forums corresponding to the primary key and the
-   *         category id.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
+   * @param categoryId The id of the category.
+   * @return The list of forums corresponding to the primary key and the category id.
+   * @throws SQLException An SQL exception.
    */
   public static ArrayList getForumsListByCategory(Connection con,
       ForumPK forumPK, String categoryId) throws SQLException {
-    String selectQuery = (StringUtil.isDefined(categoryId) ? QUERY_GET_FORUMS_LIST_BY_CATEGORY_WITH_NOT_NULL_CATEGORY
-        : QUERY_GET_FORUMS_LIST_BY_CATEGORY_WITH_NULL_CATEGORY);
+    String selectQuery =
+        (StringUtil.isDefined(categoryId)
+            ? QUERY_GET_FORUMS_LIST_BY_CATEGORY_WITH_NOT_NULL_CATEGORY
+            : QUERY_GET_FORUMS_LIST_BY_CATEGORY_WITH_NULL_CATEGORY);
     SilverTrace.debug("forums", "ForumsDAO.getForumsListByCategory()",
         "root.MSG_GEN_PARAM_VALUE", "categoryId = " + categoryId);
     SilverTrace.info("forums", "ForumsDAO.getForumsListByCategory()",
@@ -370,14 +344,10 @@ public class ForumsDAO {
       + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @return The list of ids of forums which parent is the forum corresponding
-   *         to the primary key.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
+   * @return The list of ids of forums which parent is the forum corresponding to the primary key.
+   * @throws SQLException An SQL exception.
    */
   public static ArrayList getForumSonsIds(Connection con, ForumPK forumPK)
       throws SQLException {
@@ -406,13 +376,10 @@ public class ForumsDAO {
       + " AND " + FORUM_COLUMN_INSTANCE_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
    * @return The forum corresponding to the primary key (Forum).
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static Forum getForum(Connection con, ForumPK forumPK)
       throws SQLException {
@@ -444,13 +411,10 @@ public class ForumsDAO {
       + FORUM_COLUMN_FORUM_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumId
-   *          The id of the forum.
+   * @param con The connection to the database.
+   * @param forumId The id of the forum.
    * @return The name corresponding to the forum id.
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static String getForumName(Connection con, int forumId)
       throws SQLException {
@@ -477,13 +441,10 @@ public class ForumsDAO {
       + FORUM_COLUMN_FORUM_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumId
-   *          The id of the forum.
+   * @param con The connection to the database.
+   * @param forumId The id of the forum.
    * @return True if the forum is active.
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static boolean isForumActive(Connection con, int forumId)
       throws SQLException {
@@ -510,19 +471,16 @@ public class ForumsDAO {
       + FORUM_COLUMN_FORUM_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumId
-   *          The id of the forum.
+   * @param con The connection to the database.
+   * @param forumId The id of the forum.
    * @return The id of the parent of the forum.
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static int getForumParentId(Connection con, int forumId)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getForumParentId()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery = "
-            + QUERY_GET_FORUM_PARENT_ID);
+        + QUERY_GET_FORUM_PARENT_ID);
 
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
@@ -544,19 +502,16 @@ public class ForumsDAO {
       + FORUM_COLUMN_FORUM_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumId
-   *          The id of the forum.
+   * @param con The connection to the database.
+   * @param forumId The id of the forum.
    * @return The instance id corresponding to the forum id.
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static String getForumInstanceId(Connection con, int forumId)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getForumInstanceId()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery = "
-            + QUERY_GET_FORUM_INSTANCE_ID);
+        + QUERY_GET_FORUM_INSTANCE_ID);
 
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
@@ -578,13 +533,10 @@ public class ForumsDAO {
       + FORUM_COLUMN_FORUM_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumId
-   *          The id of the forum.
+   * @param con The connection to the database.
+   * @param forumId The id of the forum.
    * @return The id of the creator of the forum.
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static String getForumCreatorId(Connection con, int forumId)
       throws SQLException {
@@ -600,7 +552,7 @@ public class ForumsDAO {
         throw new ForumsRuntimeException("ForumsDAO.getForumCreatorId()",
             SilverpeasRuntimeException.ERROR,
             "root.EX_CANT_LOAD_ENTITY_ATTRIBUTES", "ForumId = " + forumId
-                + " not found in database !");
+            + " not found in database !");
       }
     } finally {
       DBUtil.close(rs, stmt);
@@ -615,15 +567,10 @@ public class ForumsDAO {
 
   /**
    * Locks the forum corresponding to the primary key.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @param level
-   *          The lock level.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
+   * @param level The lock level.
+   * @throws SQLException An SQL exception.
    */
   public static void lockForum(Connection con, ForumPK forumPK, int level)
       throws SQLException {
@@ -654,16 +601,11 @@ public class ForumsDAO {
 
   /**
    * Unlocks the forum corresponding to the primary key.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @param level
-   *          The lock level.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
+   * @param level The lock level.
    * @return
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static int unlockForum(Connection con, ForumPK forumPK, int level)
       throws SQLException {
@@ -685,7 +627,7 @@ public class ForumsDAO {
       if (forumLocklevel >= level) {
         SilverTrace.info("forums", "ForumsDAO.unlockForum()",
             "root.MSG_GEN_PARAM_VALUE", "Query2 = "
-                + QUERY_UNLOCK_FORUM_SET_ACTIVE);
+            + QUERY_UNLOCK_FORUM_SET_ACTIVE);
 
         declareStmt = con.prepareStatement(QUERY_UNLOCK_FORUM_SET_ACTIVE);
         declareStmt.setInt(1, 1);
@@ -706,24 +648,15 @@ public class ForumsDAO {
 
   /**
    * Creates a forum.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @param forumName
-   *          The name of the forum.
-   * @param forumDescription
-   *          The description of the forum.
-   * @param forumCreator
-   *          The creator of the forum.
-   * @param forumParent
-   *          The id of the forum's parent forum.
-   * @param categoryId
-   *          The id of the category.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
+   * @param forumName The name of the forum.
+   * @param forumDescription The description of the forum.
+   * @param forumCreator The creator of the forum.
+   * @param forumParent The id of the forum's parent forum.
+   * @param categoryId The id of the category.
    * @return The id of the newly created forum.
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    * @throws UtilException
    */
   public static int createForum(Connection con, ForumPK forumPK,
@@ -767,21 +700,13 @@ public class ForumsDAO {
 
   /**
    * Updates the forum corresponding to the primary key.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @param forumName
-   *          The name of the forum.
-   * @param forumDescription
-   *          The description of the forum.
-   * @param forumParent
-   *          The id of the forum's parent forum.
-   * @param categoryId
-   *          The id of the category.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
+   * @param forumName The name of the forum.
+   * @param forumDescription The description of the forum.
+   * @param forumParent The id of the forum's parent forum.
+   * @param categoryId The id of the category.
+   * @throws SQLException An SQL exception.
    */
   public static void updateForum(Connection con, ForumPK forumPK,
       String forumName, String forumDescription, int forumParent,
@@ -825,13 +750,9 @@ public class ForumsDAO {
 
   /**
    * Deletes the forum corresponding to the primary key.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
+   * @throws SQLException An SQL exception.
    */
   public static void deleteForum(Connection con, ForumPK forumPK)
       throws SQLException {
@@ -841,7 +762,7 @@ public class ForumsDAO {
     try {
       SilverTrace.info("forums", "ForumsDAO.deleteForum()",
           "root.MSG_GEN_PARAM_VALUE", "deleteQuery  = "
-              + QUERY_DELETE_FORUM_SUBSCRIPTION);
+          + QUERY_DELETE_FORUM_SUBSCRIPTION);
       deleteStmt = con.prepareStatement(QUERY_DELETE_FORUM_SUBSCRIPTION);
       deleteStmt.setInt(1, forumId);
       deleteStmt.executeUpdate();
@@ -867,20 +788,16 @@ public class ForumsDAO {
       + MESSAGE_COLUMN_FORUM_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @return The list of messages of the forum corresponding to the primary key
-   *         (Message).
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
+   * @return The list of messages of the forum corresponding to the primary key (Message).
+   * @throws SQLException An SQL exception.
    */
   public static ArrayList getMessagesList(Connection con, ForumPK forumPK)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getMessagesList()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-            + QUERY_GET_MESSAGES_LIST_BY_FORUM);
+        + QUERY_GET_MESSAGES_LIST_BY_FORUM);
 
     ArrayList messages = new ArrayList();
     PreparedStatement selectStmt = null;
@@ -913,17 +830,12 @@ public class ForumsDAO {
       + MESSAGE_COLUMN_MESSAGE_PARENT_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @param messageParentId
-   *          The id of the message's parent message.
-   * @return The list of ids of messages of the forum corresponding to the
-   *         primary key and which parent message corresponds to the message id
-   *         (if it is valued).
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
+   * @param messageParentId The id of the message's parent message.
+   * @return The list of ids of messages of the forum corresponding to the primary key and which
+   * parent message corresponds to the message id (if it is valued).
+   * @throws SQLException An SQL exception.
    */
   public static ArrayList getMessagesIds(Connection con, ForumPK forumPK,
       int messageParentId) throws SQLException {
@@ -952,14 +864,10 @@ public class ForumsDAO {
   }
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @return The list of ids of messages of the forum corresponding to the
-   *         primary key.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
+   * @return The list of ids of messages of the forum corresponding to the primary key.
+   * @throws SQLException An SQL exception.
    */
   public static ArrayList getMessagesIds(Connection con, ForumPK forumPK)
       throws SQLException {
@@ -967,14 +875,10 @@ public class ForumsDAO {
   }
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @return The list of ids of threads of the forum corresponding to the
-   *         primary key.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
+   * @return The list of ids of threads of the forum corresponding to the primary key.
+   * @throws SQLException An SQL exception.
    */
   public static ArrayList getSubjectsIds(Connection con, ForumPK forumPK)
       throws SQLException {
@@ -997,16 +901,11 @@ public class ForumsDAO {
       + MESSAGE_COLUMN_MESSAGE_PARENT_ID + " != 0";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumId
-   *          The id of the forum.
-   * @param type
-   *          The type of the searched messages.
-   * @return The number of messages corresponding to the forum id and the type
-   *         (threads or not).
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param forumId The id of the forum.
+   * @param type The type of the searched messages.
+   * @return The number of messages corresponding to the forum id and the type (threads or not).
+   * @throws SQLException An SQL exception.
    */
   public static int getNbMessages(Connection con, int forumId, String type)
       throws SQLException {
@@ -1014,7 +913,7 @@ public class ForumsDAO {
         : QUERY_GET_NB_MESSAGES_NOT_SUBJECTS);
     SilverTrace.info("forums", "ForumsDAO.getNbSubjects()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = " + selectQuery
-            + " ; forumId = " + forumId);
+        + " ; forumId = " + forumId);
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -1036,20 +935,16 @@ public class ForumsDAO {
       + MESSAGE_COLUMN_MESSAGE_AUTHOR + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param userId
-   *          The user's id.
-   * @return The number of messages written by the author corresponding to the
-   *         user id.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param userId The user's id.
+   * @return The number of messages written by the author corresponding to the user id.
+   * @throws SQLException An SQL exception.
    */
   public static int getAuthorNbMessages(Connection con, String userId)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getAuthorNbMessages()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-            + QUERY_GET_AUTHOR_NB_MESSAGES + " ; messageAuthor = " + userId);
+        + QUERY_GET_AUTHOR_NB_MESSAGES + " ; messageAuthor = " + userId);
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -1072,14 +967,11 @@ public class ForumsDAO {
       + MESSAGE_COLUMN_MESSAGE_PARENT_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumId
-   *          The id of the forum.
-   * @param messageId
-   *          The id of the message.
-   * @return The number of responses to the message corresponding to the message
-   *         id and the forum id.
+   * @param con The connection to the database.
+   * @param forumId The id of the forum.
+   * @param messageId The id of the message.
+   * @return The number of responses to the message corresponding to the message id and the forum
+   * id.
    */
   public static int getNbResponses(Connection con, int forumId, int messageId) {
     PreparedStatement prepStmt = null;
@@ -1115,13 +1007,10 @@ public class ForumsDAO {
       + " DESC";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
    * @return The last message of the forum corresponding to the forum id.
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static Message getLastMessage(Connection con, ForumPK forumPK)
       throws SQLException {
@@ -1150,16 +1039,11 @@ public class ForumsDAO {
   }
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPKs
-   *          The list of forums primary keys.
-   * @param count
-   *          The maximum number of returned threads.
-   * @return The last 'count' threads from the forums corresponding to the
-   *         primary keys.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param forumPKs The list of forums primary keys.
+   * @param count The maximum number of returned threads.
+   * @return The last 'count' threads from the forums corresponding to the primary keys.
+   * @throws SQLException An SQL exception.
    */
   public static ArrayList getLastThreads(Connection con, ForumPK[] forumPKs,
       int count) throws SQLException {
@@ -1205,16 +1089,12 @@ public class ForumsDAO {
   }
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPKs
-   *          The list of forums primary keys.
-   * @param count
-   *          The maximum number of returned threads.
-   * @return The last not answered 'count' threads from the forums corresponding
-   *         to the primary keys.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param forumPKs The list of forums primary keys.
+   * @param count The maximum number of returned threads.
+   * @return The last not answered 'count' threads from the forums corresponding to the primary
+   * keys.
+   * @throws SQLException An SQL exception.
    */
   public static Collection getNotAnsweredLastThreads(Connection con,
       ForumPK[] forumPKs, int count) throws SQLException {
@@ -1283,14 +1163,10 @@ public class ForumsDAO {
   }
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param instanceId
-   *          The id of the forums instance.
-   * @return The list of ids of messages from the forums corresponding to the
-   *         instance id.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param instanceId The id of the forums instance.
+   * @return The list of ids of messages from the forums corresponding to the instance id.
+   * @throws SQLException An SQL exception.
    */
   public static Collection getLastMessageRSS(Connection con, String instanceId)
       throws SQLException {
@@ -1310,19 +1186,16 @@ public class ForumsDAO {
       + FORUM_COLUMN_INSTANCE_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param instanceId
-   *          The id of the forums instance.
+   * @param con The connection to the database.
+   * @param instanceId The id of the forums instance.
    * @return The list of ids of forums corresponding to the instance id.
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   private static Collection getAllForumsByInstanceId(Connection con,
       String instanceId) throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getAllForumsByInstanceId()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-            + QUERY_GET_ALL_FORUMS_BY_INSTANCE_ID);
+        + QUERY_GET_ALL_FORUMS_BY_INSTANCE_ID);
 
     Collection forumIds = new ArrayList();
     PreparedStatement selectStmt = null;
@@ -1347,20 +1220,16 @@ public class ForumsDAO {
       + " DESC";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumId
-   *          The id of the forum.
-   * @return The list of ids of messages from the forum corresponding to the
-   *         forum id.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param forumId The id of the forum.
+   * @return The list of ids of messages from the forum corresponding to the forum id.
+   * @throws SQLException An SQL exception.
    */
   private static Collection getAllMessageByForum(Connection con, int forumId)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getAllMessageByForum()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-            + QUERY_GET_ALL_MESSAGES_BY_FORUM);
+        + QUERY_GET_ALL_MESSAGES_BY_FORUM);
 
     Collection messageIds = new ArrayList();
     PreparedStatement selectStmt = null;
@@ -1380,17 +1249,12 @@ public class ForumsDAO {
   }
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @param messageParentIds
-   *          The ids of the parent messages.
-   * @return The last message from the forum corresponding to the primary key
-   *         among the messages which id or parent message id belong to the
-   *         list.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
+   * @param messageParentIds The ids of the parent messages.
+   * @return The last message from the forum corresponding to the primary key among the messages
+   * which id or parent message id belong to the list.
+   * @throws SQLException An SQL exception.
    */
   public static Message getLastMessage(Connection con, ForumPK forumPK,
       List messageParentIds) throws SQLException {
@@ -1459,20 +1323,17 @@ public class ForumsDAO {
       + MESSAGE_COLUMN_MESSAGE_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param messagePK
-   *          The primary key of the message.
+   * @param con The connection to the database.
+   * @param messagePK The primary key of the message.
    * @return The message corresponding to the primary key (Vector).
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static Vector getMessageInfos(Connection con, MessagePK messagePK)
       throws SQLException {
     SilverTrace
         .info("forums", "ForumsDAO.getMessageInfos()",
-            "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-                + QUERY_GET_MESSAGE_INFOS);
+        "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
+        + QUERY_GET_MESSAGE_INFOS);
 
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
@@ -1494,13 +1355,10 @@ public class ForumsDAO {
       + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param messagePK
-   *          The primary key of the message.
+   * @param con The connection to the database.
+   * @param messagePK The primary key of the message.
    * @return The message corresponding to the primary key (Message).
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static Message getMessage(Connection con, MessagePK messagePK)
       throws SQLException {
@@ -1530,20 +1388,17 @@ public class ForumsDAO {
       + MESSAGE_COLUMN_MESSAGE_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param messageId
-   *          The id of the message.
+   * @param con The connection to the database.
+   * @param messageId The id of the message.
    * @return The title of the message..
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static String getMessageTitle(Connection con, int messageId)
       throws SQLException {
     SilverTrace
         .info("forums", "ForumsDAO.getMessageTitle()",
-            "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-                + QUERY_GET_MESSAGE_TITLE);
+        "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
+        + QUERY_GET_MESSAGE_TITLE);
 
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
@@ -1565,19 +1420,16 @@ public class ForumsDAO {
       + MESSAGE_COLUMN_MESSAGE_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param messageId
-   *          The id of the message.
+   * @param con The connection to the database.
+   * @param messageId The id of the message.
    * @return The id of the parent of the message..
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static int getMessageParentId(Connection con, int messageId)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getMessageParentId()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-            + QUERY_GET_MESSAGE_PARENT_ID);
+        + QUERY_GET_MESSAGE_PARENT_ID);
 
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
@@ -1599,13 +1451,10 @@ public class ForumsDAO {
       + " = ?" + " AND " + MESSAGE_COLUMN_MESSAGE_PARENT_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param messagePK
-   *          The primary key of the message.
+   * @param con The connection to the database.
+   * @param messagePK The primary key of the message.
    * @return The thread corresponding to the primary key (Message).
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   public static Message getThread(Connection con, MessagePK messagePK)
       throws SQLException {
@@ -1637,22 +1486,14 @@ public class ForumsDAO {
 
   /**
    * Creates a message.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param messageTitle
-   *          The title of the message.
-   * @param messageAuthor
-   *          The author of the message.
-   * @param messageDate
-   *          The date of creation of the message.
-   * @param forumId
-   *          The id of the parent forum.
-   * @param messageParent
-   *          The id of the parent message.
+   * @param con The connection to the database.
+   * @param messageTitle The title of the message.
+   * @param messageAuthor The author of the message.
+   * @param messageDate The date of creation of the message.
+   * @param forumId The id of the parent forum.
+   * @param messageParent The id of the parent message.
    * @return The id of the newly created message.
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    * @throws UtilException
    */
   public static int createMessage(Connection con, String messageTitle,
@@ -1696,15 +1537,10 @@ public class ForumsDAO {
 
   /**
    * Updates the message corresponding to the primary key.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param messagePK
-   *          The primary key of the message.
-   * @param title
-   *          The title of the message.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param messagePK The primary key of the message.
+   * @param title The title of the message.
+   * @throws SQLException An SQL exception.
    */
   public static void updateMessage(Connection con, MessagePK messagePK,
       String title) throws SQLException {
@@ -1733,19 +1569,15 @@ public class ForumsDAO {
 
   /**
    * Deletes the message corresponding to the primary key.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param messagePK
-   *          The primary key of the message.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param messagePK The primary key of the message.
+   * @throws SQLException An SQL exception.
    */
   public static void deleteMessage(Connection con, MessagePK messagePK)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.deleteMessage()",
         "root.MSG_GEN_PARAM_VALUE", "deleteQuery  = "
-            + QUERY_DELETE_MESSAGE_MESSAGE);
+        + QUERY_DELETE_MESSAGE_MESSAGE);
 
     PreparedStatement deleteStmt = null;
     try {
@@ -1766,14 +1598,11 @@ public class ForumsDAO {
       + MESSAGE_COLUMN_MESSAGE_PARENT_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param messagePK
-   *          The primary key of the message.
-   * @return The list of ids of the messages which parent is the message
-   *         corresponding to the primary key.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param messagePK The primary key of the message.
+   * @return The list of ids of the messages which parent is the message corresponding to the
+   * primary key.
+   * @throws SQLException An SQL exception.
    */
   public static Vector getMessageSons(Connection con, MessagePK messagePK)
       throws SQLException {
@@ -1801,22 +1630,18 @@ public class ForumsDAO {
       + RIGHTS_COLUMN_USER_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @param userId
-   *          The user's id.
-   * @return True if the user owns the role of moderator on the forum
-   *         corresponding to the primary key, else false.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
+   * @param userId The user's id.
+   * @return True if the user owns the role of moderator on the forum corresponding to the primary
+   * key, else false.
+   * @throws SQLException An SQL exception.
    */
   public static boolean isModerator(Connection con, ForumPK forumPK,
       String userId) throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.isModerator()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = " + QUERY_IS_MODERATOR
-            + " ; userId=" + userId);
+        + " ; userId=" + userId);
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -1840,17 +1665,11 @@ public class ForumsDAO {
       + RIGHTS_TABLE + " (" + RIGHTS_COLUMNS + ")" + " VALUES (?, ?)";
 
   /**
-   * Adds the role of moderator to the user on the forum corresponding to the
-   * primary key.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @param userId
-   *          The user's id.
-   * @throws SQLException
-   *           An SQL exception.
+   * Adds the role of moderator to the user on the forum corresponding to the primary key.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
+   * @param userId The user's id.
+   * @throws SQLException An SQL exception.
    */
   public static void addModerator(Connection con, ForumPK forumPK, String userId)
       throws SQLException {
@@ -1873,17 +1692,11 @@ public class ForumsDAO {
       + RIGHTS_COLUMN_FORUM_ID + " = ?";
 
   /**
-   * Removes the role of moderator to the user on the forum corresponding to the
-   * primary key.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @param userId
-   *          The user's id.
-   * @throws SQLException
-   *           An SQL exception.
+   * Removes the role of moderator to the user on the forum corresponding to the primary key.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
+   * @param userId The user's id.
+   * @throws SQLException An SQL exception.
    */
   public static void removeModerator(Connection con, ForumPK forumPK,
       String userId) throws SQLException {
@@ -1905,21 +1718,16 @@ public class ForumsDAO {
       + RIGHTS_TABLE + " WHERE " + RIGHTS_COLUMN_FORUM_ID + " = ?";
 
   /**
-   * Removes the role of moderator to all users on the forum corresponding to
-   * the primary key.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @throws SQLException
-   *           An SQL exception.
+   * Removes the role of moderator to all users on the forum corresponding to the primary key.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
+   * @throws SQLException An SQL exception.
    */
   public static void removeAllModerators(Connection con, ForumPK forumPK)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.removeAllModerators()",
         "root.MSG_GEN_PARAM_VALUE", "deleteQuery  = "
-            + QUERY_REMOVE_ALL_MODERATORS);
+        + QUERY_REMOVE_ALL_MODERATORS);
 
     PreparedStatement deleteStmt = null;
     try {
@@ -1936,17 +1744,12 @@ public class ForumsDAO {
       + MESSAGE_COLUMN_MESSAGE_ID + " = ?";
 
   /**
-   * Moves the message corresponding to the message primary key from a previous
-   * forum to the one corresponding to the forum primary key.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param messagePK
-   *          The primary key of the message.
-   * @param forumPK
-   *          The primary key of the forum.
-   * @throws SQLException
-   *           An SQL exception.
+   * Moves the message corresponding to the message primary key from a previous forum to the one
+   * corresponding to the forum primary key.
+   * @param con The connection to the database.
+   * @param messagePK The primary key of the message.
+   * @param forumPK The primary key of the forum.
+   * @throws SQLException An SQL exception.
    */
   public static void moveMessage(Connection con, MessagePK messagePK,
       ForumPK forumPK) throws SQLException {
@@ -1965,14 +1768,11 @@ public class ForumsDAO {
   }
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param messagePK
-   *          The primary key of the message.
-   * @return The list of ids of messages which parent is the message
-   *         corresponding to the primary key.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param messagePK The primary key of the message.
+   * @return The list of ids of messages which parent is the message corresponding to the primary
+   * key.
+   * @throws SQLException An SQL exception.
    */
   public static Vector getAllMessageSons(Connection con, MessagePK messagePK)
       throws SQLException {
@@ -1993,24 +1793,18 @@ public class ForumsDAO {
       + " VALUES (?, ?)";
 
   /**
-   * Adds to the user the subscription to the message corresponding to the
-   * primary key.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param messagePK
-   *          The primary key of the message.
-   * @param userId
-   *          The user's id.
-   * @throws SQLException
-   *           An SQL exception.
+   * Adds to the user the subscription to the message corresponding to the primary key.
+   * @param con The connection to the database.
+   * @param messagePK The primary key of the message.
+   * @param userId The user's id.
+   * @throws SQLException An SQL exception.
    */
   public static void subscribeMessage(Connection con, MessagePK messagePK,
       String userId) throws SQLException {
     SilverTrace
         .info("forums", "ForumsDAO.subscribeMessage()",
-            "root.MSG_GEN_PARAM_VALUE", "insertQuery  = "
-                + QUERY_SUBSCRIBE_MESSAGE);
+        "root.MSG_GEN_PARAM_VALUE", "insertQuery  = "
+        + QUERY_SUBSCRIBE_MESSAGE);
 
     PreparedStatement insertStmt = null;
     try {
@@ -2028,23 +1822,17 @@ public class ForumsDAO {
       + " AND " + SUBSCRIPTION_COLUMN_MESSAGE_ID + " = ?";
 
   /**
-   * Removes from the user the subscription to the message corresponding to the
-   * primary key.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param messagePK
-   *          The primary key of the message.
-   * @param userId
-   *          The user's id.
-   * @throws SQLException
-   *           An SQL exception.
+   * Removes from the user the subscription to the message corresponding to the primary key.
+   * @param con The connection to the database.
+   * @param messagePK The primary key of the message.
+   * @param userId The user's id.
+   * @throws SQLException An SQL exception.
    */
   public static void unsubscribeMessage(Connection con, MessagePK messagePK,
       String userId) throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.unsubscribeMessage()",
         "root.MSG_GEN_PARAM_VALUE", "deleteQuery  = "
-            + QUERY_UNSUBSCRIBE_MESSAGE);
+        + QUERY_UNSUBSCRIBE_MESSAGE);
 
     PreparedStatement deleteStmt = null;
     try {
@@ -2062,21 +1850,16 @@ public class ForumsDAO {
       + " = ?";
 
   /**
-   * Removes from all users the subscription to the message corresponding to the
-   * primary key.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param messagePK
-   *          The primary key of the message.
-   * @throws SQLException
-   *           An SQL exception.
+   * Removes from all users the subscription to the message corresponding to the primary key.
+   * @param con The connection to the database.
+   * @param messagePK The primary key of the message.
+   * @throws SQLException An SQL exception.
    */
   public static void removeAllSubscribers(Connection con, MessagePK messagePK)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.removeAllSubscribers()",
         "root.MSG_GEN_PARAM_VALUE", "deleteQuery  = "
-            + QUERY_REMOVE_ALL_SUBSCRIBERS);
+        + QUERY_REMOVE_ALL_SUBSCRIBERS);
 
     PreparedStatement deleteStmt = null;
     try {
@@ -2093,20 +1876,16 @@ public class ForumsDAO {
       + SUBSCRIPTION_COLUMN_MESSAGE_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param messagePK
-   *          The primary key of the message.
-   * @return The list of ids of users who subscribe to the message corresponding
-   *         to the primary key.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param messagePK The primary key of the message.
+   * @return The list of ids of users who subscribe to the message corresponding to the primary key.
+   * @throws SQLException An SQL exception.
    */
   public static Vector listAllSubscribers(Connection con, MessagePK messagePK)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.listAllSubscribers()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-            + QUERY_LIST_ALL_SUBSCRIBERS);
+        + QUERY_LIST_ALL_SUBSCRIBERS);
 
     Vector userIds = new Vector();
     PreparedStatement selectStmt = null;
@@ -2130,16 +1909,11 @@ public class ForumsDAO {
       + SUBSCRIPTION_COLUMN_USER_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param messagePK
-   *          The primary key of the message.
-   * @param userId
-   *          The user's id.
-   * @return True if the user has subscribed to the message corresponding to the
-   *         primary key.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param messagePK The primary key of the message.
+   * @param userId The user's id.
+   * @return True if the user has subscribed to the message corresponding to the primary key.
+   * @throws SQLException An SQL exception.
    */
   public static boolean isSubscriber(Connection con, MessagePK messagePK,
       String userId) throws SQLException {
@@ -2164,13 +1938,10 @@ public class ForumsDAO {
       + FORUM_COLUMN_FORUM_ID + " = ?";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param forumPK
-   *          The primary key of the forum.
+   * @param con The connection to the database.
+   * @param forumPK The primary key of the forum.
    * @return The forum corresponding to the primary key (ForumDetail).
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   private static ForumDetail getForumDetail(Connection con, ForumPK forumPK)
       throws SQLException {
@@ -2186,7 +1957,7 @@ public class ForumsDAO {
         throw new ForumsRuntimeException("ForumsDAO.getForumDetail()",
             SilverpeasRuntimeException.ERROR,
             "root.EX_CANT_LOAD_ENTITY_ATTRIBUTES", "ForumId = "
-                + forumPK.getId() + " not found in database !");
+            + forumPK.getId() + " not found in database !");
       }
     } finally {
       DBUtil.close(rs, stmt);
@@ -2199,16 +1970,11 @@ public class ForumsDAO {
       + " = ?" + " ORDER BY " + HISTORY_COLUMN_LAST_ACCESS + " DESC";
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param userId
-   *          The user's id.
-   * @param messageId
-   *          The id of the message.
-   * @return The last access date to the message corresponding to the message
-   *         id.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param userId The user's id.
+   * @param messageId The id of the message.
+   * @return The last access date to the message corresponding to the message id.
+   * @throws SQLException An SQL exception.
    */
   public static Date getLastVisit(Connection con, String userId, int messageId)
       throws SQLException {
@@ -2225,7 +1991,7 @@ public class ForumsDAO {
       if (rs.next()) {
         SilverTrace.info("forums", "ForumsDAO.getLastVisit()",
             "root.MSG_GEN_PARAM_VALUE", " lastAccess  = "
-                + rs.getString("lastAccess") + " today = " + new Date());
+            + rs.getString("lastAccess") + " today = " + new Date());
         return new Date(Long
             .parseLong(rs.getString(HISTORY_COLUMN_LAST_ACCESS)));
       }
@@ -2236,16 +2002,12 @@ public class ForumsDAO {
   }
 
   /**
-   * @param con
-   *          The connection to the database.
-   * @param userId
-   *          The user's id.
-   * @param messageIds
-   *          The list of ids of the messages.
-   * @return The last access date of the user to the messages corresponding to
-   *         the list of primary keys.
-   * @throws SQLException
-   *           An SQL exception.
+   * @param con The connection to the database.
+   * @param userId The user's id.
+   * @param messageIds The list of ids of the messages.
+   * @return The last access date of the user to the messages corresponding to the list of primary
+   * keys.
+   * @throws SQLException An SQL exception.
    */
   public static Date getLastVisit(Connection con, String userId, List messageIds)
       throws SQLException {
@@ -2296,17 +2058,11 @@ public class ForumsDAO {
       + HISTORY_TABLE + " (" + HISTORY_COLUMNS + ")" + " VALUES (?, ?, ?)";
 
   /**
-   * Adds an access date to the message corresponding to the message id by the
-   * user.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param userId
-   *          The user's id.
-   * @param messageId
-   *          The id of the message.
-   * @throws SQLException
-   *           An SQL exception.
+   * Adds an access date to the message corresponding to the message id by the user.
+   * @param con The connection to the database.
+   * @param userId The user's id.
+   * @param messageId The id of the message.
+   * @throws SQLException An SQL exception.
    */
   public static void addLastVisit(Connection con, String userId, int messageId)
       throws SQLException {
@@ -2337,17 +2093,11 @@ public class ForumsDAO {
       + HISTORY_COLUMN_MESSAGE_ID + " = ?";
 
   /**
-   * Deletes the access date of the user to the message corresponding to the
-   * message id.
-   *
-   * @param con
-   *          The connection to the database.
-   * @param userId
-   *          The user's id.
-   * @param messageId
-   *          The id of the message.
-   * @throws SQLException
-   *           An SQL exception.
+   * Deletes the access date of the user to the message corresponding to the message id.
+   * @param con The connection to the database.
+   * @param userId The user's id.
+   * @param messageId The id of the message.
+   * @throws SQLException An SQL exception.
    */
   public static void deleteVisit(Connection con, String userId, int messageId)
       throws SQLException {
@@ -2366,13 +2116,10 @@ public class ForumsDAO {
   }
 
   /**
-   * @param rs
-   *          The database result set.
-   * @param forumPK
-   *          The primary key of the forum.
+   * @param rs The database result set.
+   * @param forumPK The primary key of the forum.
    * @return The forum corresponding to the primary key (ForumDetail).
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   private static ForumDetail resultSet2ForumDetail(ResultSet rs, ForumPK forumPK)
       throws SQLException {
@@ -2384,8 +2131,8 @@ public class ForumsDAO {
     } catch (ParseException e) {
       throw new SQLException(
           "ForumsDAO : resultSet2ForumDetail() : internal error : "
-              + "creationDate format unknown for forumPK = " + forumPK + " : "
-              + e.toString());
+          + "creationDate format unknown for forumPK = " + forumPK + " : "
+          + e.toString());
     }
 
     String name = rs.getString(FORUM_COLUMN_FORUM_NAME);
@@ -2397,11 +2144,9 @@ public class ForumsDAO {
   }
 
   /**
-   * @param rs
-   *          The database result set.
+   * @param rs The database result set.
    * @return The forum corresponding to the primary key (Forum).
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   private static Forum resultSet2Forum(ResultSet rs) throws SQLException {
     String category = rs.getString(FORUM_COLUMN_CATEGORY_ID);
@@ -2416,11 +2161,9 @@ public class ForumsDAO {
   }
 
   /**
-   * @param rs
-   *          The database result set.
+   * @param rs The database result set.
    * @return The message corresponding to the primary key (Vector).
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   private static Vector resultSet2VectorMessage(ResultSet rs)
       throws SQLException {
@@ -2438,11 +2181,9 @@ public class ForumsDAO {
   }
 
   /**
-   * @param rs
-   *          The database result set.
+   * @param rs The database result set.
    * @return The message corresponding to the primary key (Message).
-   * @throws SQLException
-   *           An SQL exception.
+   * @throws SQLException An SQL exception.
    */
   private static Message resultSet2Message(ResultSet rs) throws SQLException {
     Timestamp timestamp = rs.getTimestamp(MESSAGE_COLUMN_MESSAGE_DATE);

@@ -40,8 +40,7 @@ import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciato
 import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public class ForumsInstanciator extends SQLRequest implements
-    ComponentsInstanciatorIntf {
+public class ForumsInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
   /** Creates new ForumsInstanciator */
   public ForumsInstanciator() {
@@ -52,20 +51,15 @@ public class ForumsInstanciator extends SQLRequest implements
       String userId) throws InstanciationException {
     SilverTrace.info("forums", "ForumsInstanciator.create()",
         "forums.MSG_CREATE_WITH_SPACE_AND_COMPONENT", "space : " + spaceId
-            + "component : " + componentId);
+        + "component : " + componentId);
   }
 
   /**
    * Delete some rows of an instance of a forum.
-   * 
-   * @param con
-   *          (Connection) the connection to the data base
-   * @param spaceId
-   *          (String) the id of a the space where the component exist.
-   * @param componentId
-   *          (String) the instance id of the Silverpeas component forum.
-   * @param userId
-   *          (String) the owner of the component
+   * @param con (Connection) the connection to the data base
+   * @param spaceId (String) the id of a the space where the component exist.
+   * @param componentId (String) the instance id of the Silverpeas component forum.
+   * @param userId (String) the owner of the component
    */
   public void delete(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
@@ -89,13 +83,9 @@ public class ForumsInstanciator extends SQLRequest implements
 
   /**
    * Delete all data of one forum instance from the forum table.
-   * 
-   * @param con
-   *          (Connection) the connection to the data base
-   * @param componentId
-   *          (String) the instance id of the Silverpeas component forum.
-   * @param suffixName
-   *          (String) the suffixe of a Forum table
+   * @param con (Connection) the connection to the data base
+   * @param componentId (String) the instance id of the Silverpeas component forum.
+   * @param suffixName (String) the suffixe of a Forum table
    */
   private void deleteDataOfInstance(Connection con, String componentId,
       String suffixName) throws InstanciationException {

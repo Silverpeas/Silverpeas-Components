@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
+ ---*/
 
 package com.stratelia.webactiv.forums;
 
@@ -54,15 +54,10 @@ public class ForumsContentManager implements ContentInterface {
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
-   * 
-   * @param ids
-   *          list of silverContentId to retrieve
-   * @param peasId
-   *          the id of the instance
-   * @param userId
-   *          the id of the user who wants to retrieve silverContent
-   * @param userRoles
-   *          the roles of the user
+   * @param ids list of silverContentId to retrieve
+   * @param peasId the id of the instance
+   * @param userId the id of the user who wants to retrieve silverContent
+   * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
   public List getSilverContentById(List ids, String peasId, String userId,
@@ -75,13 +70,9 @@ public class ForumsContentManager implements ContentInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param pubId
    * @param peasId
-   * 
    * @return
-   * 
    * @see
    */
   public int getSilverObjectId(String pubId, String peasId) {
@@ -99,13 +90,9 @@ public class ForumsContentManager implements ContentInterface {
 
   /**
    * add a new content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param forumDetail
-   *          the content to register
-   * @param userId
-   *          the creator of the content
+   * @param con a Connection
+   * @param forumDetail the content to register
+   * @param userId the creator of the content
    * @return the unique silverObjectId which identified the new content
    */
   public int createSilverContent(Connection con, ForumPK forumPK, String userId)
@@ -113,19 +100,15 @@ public class ForumsContentManager implements ContentInterface {
     SilverContentVisibility scv = new SilverContentVisibility(true);
     SilverTrace.info("forums", "ForumsContentManager.createSilverContent()",
         "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-            + scv.toString());
+        + scv.toString());
     return getContentManager().addSilverContent(con, forumPK.getId(),
         forumPK.getComponentName(), userId, scv);
   }
 
   /**
-   * update the visibility attributes of the content. Here, the type of content
-   * is a ForumDetail
-   * 
-   * @param forumDetail
-   *          the content
-   * @param silverObjectId
-   *          the unique identifier of the content
+   * update the visibility attributes of the content. Here, the type of content is a ForumDetail
+   * @param forumDetail the content
+   * @param silverObjectId the unique identifier of the content
    */
   public void updateSilverContentVisibility(ForumPK forumPK, String userId)
       throws ContentManagerException {
@@ -139,7 +122,7 @@ public class ForumsContentManager implements ContentInterface {
       SilverTrace.info("forums",
           "ForumsContentManager.updateSilverContentVisibility()",
           "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-              + scv.toString());
+          + scv.toString());
       getContentManager().updateSilverContentVisibilityAttributes(scv,
           forumPK.getComponentName(), silverContentId);
       ClassifyEngine.clearCache();
@@ -148,11 +131,8 @@ public class ForumsContentManager implements ContentInterface {
 
   /**
    * delete a content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param forumPK
-   *          the identifiant of the content to unregister
+   * @param con a Connection
+   * @param forumPK the identifiant of the content to unregister
    */
   public void deleteSilverContent(Connection con, ForumPK forumPK)
       throws ContentManagerException {
@@ -161,7 +141,7 @@ public class ForumsContentManager implements ContentInterface {
     if (contentId != -1) {
       SilverTrace.info("forums", "ForumsContentManager.deleteSilverContent()",
           "root.MSG_GEN_ENTER_METHOD", "pubId = " + forumPK.getId()
-              + ", contentId = " + contentId);
+          + ", contentId = " + contentId);
       getContentManager().removeSilverContent(con, contentId,
           forumPK.getComponentName());
     }
@@ -169,12 +149,8 @@ public class ForumsContentManager implements ContentInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param forumDetail
-   * 
    * @return
-   * 
    * @see
    */
   private boolean isVisible(ForumPK forumPK) {
@@ -183,11 +159,8 @@ public class ForumsContentManager implements ContentInterface {
 
   /**
    * return a list of forumPK according to a list of silverContentId
-   * 
-   * @param idList
-   *          a list of silverContentId
-   * @param peasId
-   *          the id of the instance
+   * @param idList a list of silverContentId
+   * @param peasId the id of the instance
    * @return a list of forumPK
    */
   private ArrayList makePKArray(List idList, String peasId) {
@@ -215,9 +188,7 @@ public class ForumsContentManager implements ContentInterface {
 
   /**
    * return a list of silverContent according to a list of ForumPK
-   * 
-   * @param ids
-   *          a list of ForumPK
+   * @param ids a list of ForumPK
    * @return a list of ForumDetail
    */
   private List getHeaders(List ids) {
@@ -241,10 +212,7 @@ public class ForumsContentManager implements ContentInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private ContentManager getContentManager() {
@@ -261,10 +229,7 @@ public class ForumsContentManager implements ContentInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private ForumsBM getForumsBM() {
