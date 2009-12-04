@@ -42,9 +42,7 @@ public class ForumsRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   *
-   * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String,
-   * int)
+   * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String, int)
    */
   public Collection getListElements(String instanceId, int nbReturned)
       throws RemoteException {
@@ -59,25 +57,21 @@ public class ForumsRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   *
-   * @see com.silverpeas.peasUtil.RssServlet#getElementTitle(java.lang.Object,
-   * java.lang.String)
+   * @see com.silverpeas.peasUtil.RssServlet#getElementTitle(java.lang.Object, java.lang.String)
    */
   public String getElementTitle(Object element, String userId) {
     Vector message = (Vector) element;
 
     SilverTrace.debug("forums", "ForumsRssServlet.getElementTitle()",
         "root.MSG_GEN_PARAM_VALUE", "message.elementAt(1) = "
-            + message.elementAt(1));
+        + message.elementAt(1));
 
     return (String) message.elementAt(1);
   }
 
   /*
    * (non-Javadoc)
-   *
-   * @see com.silverpeas.peasUtil.RssServlet#getElementLink(java.lang.Object,
-   * java.lang.String)
+   * @see com.silverpeas.peasUtil.RssServlet#getElementLink(java.lang.Object, java.lang.String)
    */
   public String getElementLink(Object element, String userId) {
     Vector message = (Vector) element;
@@ -93,9 +87,7 @@ public class ForumsRssServlet extends RssServlet {
 
   /*
    * (non-Javadoc)
-   *
-   * @see
-   * com.silverpeas.peasUtil.RssServlet#getElementDescription(java.lang.Object,
+   * @see com.silverpeas.peasUtil.RssServlet#getElementDescription(java.lang.Object,
    * java.lang.String)
    */
   public String getElementDescription(Object element, String userId) {
@@ -103,30 +95,22 @@ public class ForumsRssServlet extends RssServlet {
 
     SilverTrace.debug("forums", "ForumsRssServlet.getElementDescription()",
         "root.MSG_GEN_PARAM_VALUE", "message.elementAt(6) = "
-            + message.elementAt(1));
+        + message.elementAt(1));
 
-    return (String) message.elementAt(6);
+    return (String) message.elementAt(1);
   }
 
   /*
    * (non-Javadoc)
-   *
    * @see com.silverpeas.peasUtil.RssServlet#getElementDate(java.lang.Object)
    */
   public Date getElementDate(Object element) {
     Vector message = (Vector) element;
-    Date messageCreationDate = new Date(Long.parseLong((String) message
-        .elementAt(3)));
-    /*
-     * Calendar calElement = GregorianCalendar.getInstance();
-     * calElement.setTime(messageCreationDate);
-     * calElement.add(Calendar.HOUR_OF_DAY, 0); //-1 car bug d'affichage du fil
-     * RSS qui affiche toujours 1h en trop
-     */
-
+    // Date messageCreationDate = new Date(Long.parseLong((String) message.elementAt(3)));
+    Date messageCreationDate = (Date) message.elementAt(3);
     SilverTrace.debug("forums", "ForumsRssServlet.getElementDate()",
         "root.MSG_GEN_PARAM_VALUE", "messageCreationDate = "
-            + messageCreationDate);
+        + messageCreationDate);
 
     return messageCreationDate;
   }
