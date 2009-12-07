@@ -1211,12 +1211,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           // tout déselectionner
           gallerySC.setSelect(false);
           gallerySC.clearListSelected();
-
-          // retour à l'album en cours
-          destination = getDestination("GoToCurrentAlbum", gallerySC, request);
         }
-        // destination = URLManager.getURL(URLManager.CMP_CLIPBOARD) +
-        // "Idle.jsp?message=REFRESHCLIPBOARD" ;
+        // retour à l'album en cours
+        destination = getDestination("GoToCurrentAlbum", gallerySC, request);
       } else if (function.startsWith("cut")) {
         SilverTrace.debug("gallery", "GalleryRequestRouter.cut", "root.MSG_GEN_PARAM_VALUE",
             "Entrée couper");
@@ -1250,12 +1247,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           // tout déselectionner
           gallerySC.setSelect(false);
           gallerySC.clearListSelected();
-
-          // retour à l'album en cours
-          destination = getDestination("GoToCurrentAlbum", gallerySC, request);
         }
-        // destination = URLManager.getURL(URLManager.CMP_CLIPBOARD) +
-        // "Idle.jsp?message=REFRESHCLIPBOARD" ;
+        // retour à l'album en cours
+        destination = getDestination("GoToCurrentAlbum", gallerySC, request);
       } else if (function.startsWith("paste")) {
         SilverTrace.debug("gallery", "GalleryRequestRouter.paste", "root.MSG_GEN_PARAM_VALUE",
             "Entrée coller");
