@@ -207,7 +207,8 @@ public class BlogRequestRouter extends ComponentRequestRouter {
         destination = getDestination("ViewPost", componentSC, request);
       } else if (function.equals("UpdateComment")) {
         String postId = request.getParameter("PostId");
-        blogSC.sendSubscriptionsNotification(postId, "commentUpdate");
+        String commentId = request.getParameter("CommentId");
+        blogSC.sendSubscriptionsNotification(postId, "commentUpdate", commentId);
         request.setAttribute("PostId", postId);
         destination = getDestination("ViewPost", componentSC, request);
       } else if (function.equals("PostByCategory")) {
@@ -421,7 +422,7 @@ public class BlogRequestRouter extends ComponentRequestRouter {
       }
       Event event =
           new Event(post.getPublication().getPK().getId(), post.getPublication().getName(),
-              dateEvent, dateEvent, null, 0);
+          dateEvent, dateEvent, null, 0);
       events.add(event);
     }
 

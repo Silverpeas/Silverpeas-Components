@@ -333,6 +333,16 @@ public class BlogSessionController extends AbstractComponentSessionController {
     }
   }
 
+  public Comment getComment(String commentId) {
+    CommentPK commentPK = new CommentPK(commentId);
+    try {
+      return getCommentBm().getComment(commentPK);
+    } catch (RemoteException e) {
+      throw new BlogRuntimeException("BlogSessionController.getComment()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+  }
+
   public Collection<NodeDetail> getAllCategories() {
     try {
       return getBlogBm().getAllCategories(getComponentId());
@@ -432,14 +442,15 @@ public class BlogSessionController extends AbstractComponentSessionController {
     }
   }
 
-  public void sendSubscriptionsNotification(String postId, String type) {
+  public void sendSubscriptionsNotification(String postId, String type, String commentId) {
     // envoie notification si abonnement
     try {
       PostDetail post = getPost(postId);
       PublicationDetail pub = post.getPublication();
       NodePK father = new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().getInstanceId());
-
-      getBlogBm().sendSubscriptionsNotification(father, pub, type, pub.getUpdaterId());
+      Comment comment = getComment(commentId);
+      getBlogBm().sendSubscriptionsNotification(father, pub, type,
+          Integer.toString(comment.getOwnerId()));
     } catch (RemoteException e) {
       throw new BlogRuntimeException("BlogSessionController.sendSubscriptionsNotification()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_ADD_OBJECT", e);

@@ -115,6 +115,7 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 	{
 	    SP_openWindow("<%=m_context%>/comment/jsp/newComment.jsp?id="+id+"&IndexIt=1", "blank", "600", "250","scrollbars=no, resizable, alwaysRaised");
 	    document.commentForm.action = "UpdateComment";
+	    document.commentForm.CommentId.value = id;
 	   	document.commentForm.PostId.value = postId;
 		document.commentForm.submit();
 	}
