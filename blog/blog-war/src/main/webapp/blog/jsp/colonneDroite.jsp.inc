@@ -155,11 +155,15 @@ Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", 
 		      				nameLink = unLink.getName();
 		      				if (nameLink.equals(""))
 		      					nameLink = unLink.getUrl();
+		      				String lien = unLink.getUrl();
+		      				if (lien.indexOf("://") == -1) {
+                    lien = m_context + lien;
+                  }
 		      				String target = "";
 		      				if (unLink.isPopup())
 		      					target = "_blank";
 		      				%>
-		        			<a href="<%=unLink.getUrl()%>" target="<%=target%>"><%=nameLink%></a><br />
+		        			<a href="<%=lien%>" target="<%=target%>"><%=nameLink%></a><br />
 		        			<%
 				  		}
 		      		}
