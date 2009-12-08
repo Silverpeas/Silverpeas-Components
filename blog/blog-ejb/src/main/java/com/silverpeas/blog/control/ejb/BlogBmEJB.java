@@ -101,7 +101,7 @@ import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
 		 }
 		 catch (Exception e)
 		 {
-			throw new BlogRuntimeException("BlogBmEJB.createPost()",SilverpeasRuntimeException.ERROR,"post.MSG_POST_NOT_CREATE", e);
+			throw new BlogRuntimeException("BlogBmEJB.getDateEvent()",SilverpeasRuntimeException.ERROR,"post.MSG_POST_NOT_CREATE", e);
 		 }
 		 finally
 		 {
@@ -130,7 +130,7 @@ import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
 		 	createSilverContent(con, pub, pub.getCreatorId());
 
 		 	// envoie notification si abonnement
-		 	sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().getInstanceId()), pub, "create");
+		 	sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().getInstanceId()), pub, "create", pub.getCreatorId());
 
 			return pk.getId();
 
@@ -145,7 +145,7 @@ import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
 		}
 	 }
 
-	 public void sendSubscriptionsNotification(NodePK fatherPK, PublicationDetail pubDetail, String type)
+	 public void sendSubscriptionsNotification(NodePK fatherPK, PublicationDetail pubDetail, String type, String senderId)
 	 {
 			//send email alerts
 			try {
@@ -192,11 +192,11 @@ import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
 						notifMetaData.setUserRecipients(new Vector(newSubscribers));
 						notifMetaData.setLink(getPostUrl(pubDetail));
 						notifMetaData.setComponentId(fatherPK.getInstanceId());
-						notifyUsers(notifMetaData, pubDetail.getUpdaterId());
+						notifyUsers(notifMetaData, senderId);
 					}
 				}
 			} catch (Exception e) {
-				SilverTrace.warn("blog","BlogBmEJB.sendSubscriptionsNotification()", "kmelia.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS","fatherId = "+fatherPK.getId()+", pubId = "+pubDetail.getPK().getId(),e);
+				SilverTrace.warn("blog","BlogBmEJB.sendSubscriptionsNotification()", "blog.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS","fatherId = "+fatherPK.getId()+", pubId = "+pubDetail.getPK().getId(),e);
 			}
 		}
 
@@ -219,7 +219,7 @@ import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
 		 }
 		 catch (NotificationManagerException e)
 		 {
-			 SilverTrace.warn("kmelia","KmeliaBmEJB.notifyUsers()", "kmelia.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS",e);
+			 SilverTrace.warn("blog","BlogBmEJB.notifyUsers()", "blog.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS",e);
 		 } finally {
 			 fermerCon(con);
 		 }
@@ -268,7 +268,7 @@ import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
 
 		 	// envoie notification si abonnement
 			 PublicationDetail pub = post.getPublication();
-		 	sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().getInstanceId()), pub, "update");
+		 	sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().getInstanceId()), pub, "update", pub.getUpdaterId());
 
 		}
 		catch (Exception e)
@@ -956,7 +956,7 @@ import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
 			getPublicationBm().setDetail(pubDetail);
 
 			// envoie notification si abonnement
-		 	sendSubscriptionsNotification(new NodePK("0", pubPK.getSpaceId(), pubPK.getInstanceId()), pubDetail, "update");
+		 	sendSubscriptionsNotification(new NodePK("0", pubPK.getSpaceId(), pubPK.getInstanceId()), pubDetail, "update", pubDetail.getUpdaterId());
 		}
 		catch (RemoteException e) {
 			// TODO Auto-generated catch block

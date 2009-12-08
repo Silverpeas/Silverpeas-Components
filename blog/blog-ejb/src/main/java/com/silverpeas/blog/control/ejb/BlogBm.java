@@ -42,7 +42,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
  */
 public interface BlogBm extends EJBObject 
 {
-	public String createPost(PostDetail post) throws RemoteException;
+  public String createPost(PostDetail post) throws RemoteException;
 	public void updatePost(PostDetail post) throws RemoteException;
 	public void deletePost(String postId, String instanceId) throws RemoteException;
 	public PostDetail getPost(PublicationPK pubPK) throws RemoteException;
@@ -71,5 +71,5 @@ public interface BlogBm extends EJBObject
 	public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK, String userId) throws RemoteException;
 	
 	public void addSubscription(NodePK topicPK, String userId) throws RemoteException;
-	public void sendSubscriptionsNotification(NodePK fatherPK, PublicationDetail pubDetail, String type) throws RemoteException;
+	public void sendSubscriptionsNotification(NodePK fatherPK, PublicationDetail pubDetail, String type, String senderId) throws RemoteException;
 }
