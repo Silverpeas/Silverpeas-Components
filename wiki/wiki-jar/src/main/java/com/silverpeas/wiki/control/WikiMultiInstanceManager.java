@@ -54,7 +54,7 @@ public class WikiMultiInstanceManager {
   }
 
   private static void manageInstanceChange(String oldId, String newId,
-      ServletConfig config, HttpServletRequest request) {   
+      ServletConfig config, HttpServletRequest request) {
     if ((oldId == null)) {
       WikiEngine engine = WikiEngine.getInstance(config);
       AuthenticationManager authManager = engine.getAuthenticationManager();

@@ -66,12 +66,10 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
- * 
  * @author Ludovic Bertin
  */
-public class WikiVersioningFileProvider extends AbstractFileProvider implements
-    VersioningProvider {
- private VersioningBm versioningBm = null;
+public class WikiVersioningFileProvider extends AbstractFileProvider implements VersioningProvider {
+  private VersioningBm versioningBm = null;
 
   public static final String PAGEDIR = "OLD";
 
@@ -113,11 +111,8 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements
   }
 
   /**
-   * Goes through the repository and decides which version is the newest one in
-   * that directory.
-   * 
-   * @return Latest version number in the repository, or -1, if there is no page
-   *         in the repository.
+   * Goes through the repository and decides which version is the newest one in that directory.
+   * @return Latest version number in the repository, or -1, if there is no page in the repository.
    */
   private int findLatestVersion(String page) throws ProviderException {
     int version = -1;
@@ -209,8 +204,8 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements
   }
 
   /**
-   * Writes the page properties back to the file system. Note that it WILL
-   * overwrite any previous properties.
+   * Writes the page properties back to the file system. Note that it WILL overwrite any previous
+   * properties.
    */
   private void putPageProperties(String page, Properties properties)
       throws IOException {
@@ -229,11 +224,8 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements
   }
 
   /**
-   * Figures out the real version number of the page and also checks for its
-   * existence.
-   * 
-   * @throws NoSuchVersionException
-   *           if there is no such version.
+   * Figures out the real version number of the page and also checks for its existence.
+   * @throws NoSuchVersionException if there is no such version.
    */
   private int realVersion(String page, int requestedVersion)
       throws NoSuchVersionException, ProviderException {
@@ -302,8 +294,8 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements
       } else {
         SilverTrace.warn("wiki", "WikiVersioningFileProvider.readFile()",
             "wiki.EX_FAIL_READ", "Failed to read page from '"
-                + pagedata.getAbsolutePath()
-                + "', possibly a permissions problem");
+            + pagedata.getAbsolutePath()
+            + "', possibly a permissions problem");
         throw new ProviderException("I cannot read the requested page.");
       }
     } else {
@@ -319,9 +311,8 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements
   // FIXME: This method has no rollback whatsoever.
 
   /*
-   * This is how the page directory should look like: version pagedir olddir
-   * none empty empty 1 Main.txt (1) empty 2 Main.txt (2) 1.txt 3 Main.txt (3)
-   * 1.txt, 2.txt
+   * This is how the page directory should look like: version pagedir olddir none empty empty 1
+   * Main.txt (1) empty 2 Main.txt (2) 1.txt 3 Main.txt (3) 1.txt, 2.txt
    */
   public synchronized void putPageText(WikiPage page, String text)
       throws ProviderException {
@@ -525,9 +516,8 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements
   }
 
   /**
-   * Removes the relevant page directory under "OLD" -directory as well, but
-   * does not remove any extra subdirectories from it. It will only touch those
-   * files that it thinks to be WikiPages.
+   * Removes the relevant page directory under "OLD" -directory as well, but does not remove any
+   * extra subdirectories from it. It will only touch those files that it thinks to be WikiPages.
    */
   // FIXME: Should log errors.
   public void deletePage(String page) throws ProviderException {
@@ -628,11 +618,11 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements
       } catch (IOException e) {
         SilverTrace
             .fatal(
-                "wiki",
-                "WikiVersioningFileProvider.deleteVersion()",
-                "root.EXCEPTION",
-                "Something wrong with the page directory - you may have just lost data!",
-                e);
+            "wiki",
+            "WikiVersioningFileProvider.deleteVersion()",
+            "root.EXCEPTION",
+            "Something wrong with the page directory - you may have just lost data!",
+            e);
       } finally {
         try {
           if (in != null)
@@ -739,8 +729,8 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements
       SilverTrace.error("wiki",
           "WikiVersioningFileProvider.internalGetAllPages()",
           "wiki.GET_ALL_PAGES_FAILED", "Wikipages directory '"
-              + getPageDirectory() + "' does not exist! Please check "
-              + PROP_PAGEDIR + " in jspwiki.properties.");
+          + getPageDirectory() + "' does not exist! Please check "
+          + PROP_PAGEDIR + " in jspwiki.properties.");
       throw new InternalWikiException("Page directory does not exist");
     }
 
@@ -756,12 +746,12 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements
         // FIXME: Should we throw an exception here?
         SilverTrace
             .error(
-                "wiki",
-                "WikiVersioningFileProvider.internalGetAllPages()",
-                "wiki.GET_ALL_PAGES_FAILED",
-                "Page "
-                    + wikiname
-                    + " was found in directory listing, but could not be located individually.");
+            "wiki",
+            "WikiVersioningFileProvider.internalGetAllPages()",
+            "wiki.GET_ALL_PAGES_FAILED",
+            "Page "
+            + wikiname
+            + " was found in directory listing, but could not be located individually.");
         continue;
       }
 
@@ -780,8 +770,8 @@ public class WikiVersioningFileProvider extends AbstractFileProvider implements
   }
 
   /**
-   * Iterates through all WikiPages, matches them against the given query, and
-   * returns a Collection of SearchResult objects.
+   * Iterates through all WikiPages, matches them against the given query, and returns a Collection
+   * of SearchResult objects.
    */
   public Collection findPages(QueryItem[] query) {
     File wikipagedir = new File(getPageDirectory());

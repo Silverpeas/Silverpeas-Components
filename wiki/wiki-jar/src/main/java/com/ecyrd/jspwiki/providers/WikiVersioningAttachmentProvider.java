@@ -274,18 +274,18 @@ public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider 
   public List<Attachment> getVersionHistory(Attachment att) {
     int documentId = Integer.parseInt((String) att.getAttribute(DOCUMENT_ID));
     DocumentPK docPk = new DocumentPK(documentId, WikiMultiInstanceManager
-        .getComponentId());    
+        .getComponentId());
     String pageName = att.getParentName();
     List<Attachment> attachments = new ArrayList<Attachment>();
     try {
-    List<DocumentVersion> versions = getAllDocumentVersions(docPk);
-    for (DocumentVersion currentVersion : versions) {
-      Attachment attachment = new Attachment(m_engine, pageName, currentVersion
-          .getLogicalName());
-      fillAttachment(attachment, currentVersion);
-      attachments.add(attachment);
-    }
-    }catch (ProviderException e) {
+      List<DocumentVersion> versions = getAllDocumentVersions(docPk);
+      for (DocumentVersion currentVersion : versions) {
+        Attachment attachment = new Attachment(m_engine, pageName, currentVersion
+            .getLogicalName());
+        fillAttachment(attachment, currentVersion);
+        attachments.add(attachment);
+      }
+    } catch (ProviderException e) {
       e.printStackTrace();
     }
     return attachments;
@@ -373,7 +373,7 @@ public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider 
       Document document = getAttachedDocument(att.getParentName(), att
           .getFileName());
       boolean exists = document != null;
-      if (exists) {        
+      if (exists) {
         docPK = document.getPk();
         DocumentVersion lastVersion = getVersioningBm().getLastDocumentVersion(docPK);
         majorNumber = lastVersion.getMajorNumber();

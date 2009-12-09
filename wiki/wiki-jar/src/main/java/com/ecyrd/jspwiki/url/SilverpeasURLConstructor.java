@@ -34,9 +34,7 @@ import com.ecyrd.jspwiki.WikiContext;
 import com.silverpeas.wiki.control.WikiMultiInstanceManager;
 
 /**
- * Implements the Silverpeas URL constructor using links directly to the JSP
- * pages.
- * 
+ * Implements the Silverpeas URL constructor using links directly to the JSP pages.
  * @author X.Delorme
  */
 public class SilverpeasURLConstructor extends DefaultURLConstructor {
@@ -51,9 +49,7 @@ public class SilverpeasURLConstructor extends DefaultURLConstructor {
 
   /**
    * Constructs the URL with a bunch of parameters.
-   * 
-   * @param parameters
-   *          If null or empty, no parameters are added. {@inheritDoc}
+   * @param parameters If null or empty, no parameters are added. {@inheritDoc}
    */
   public String makeURL(String context, String name, boolean absolute,
       String parameters) {
@@ -91,9 +87,8 @@ public class SilverpeasURLConstructor extends DefaultURLConstructor {
 
   /**
    * URLEncoder returns pluses, when we want to have the percent encoding. See
-   * http://issues.apache.org/bugzilla/show_bug.cgi?id=39278 for more info.
-   * 
-   * We also convert any %2F's back to slashes to make nicer-looking URLs.
+   * http://issues.apache.org/bugzilla/show_bug.cgi?id=39278 for more info. We also convert any
+   * %2F's back to slashes to make nicer-looking URLs.
    */
   private final String encodeURIWithPercent(String uri) {
     uri = m_engine.encodeName(uri);
@@ -117,11 +112,9 @@ public class SilverpeasURLConstructor extends DefaultURLConstructor {
 
   /**
    * This method is not needed for the DefaultURLConstructor.
-   * 
-   * @param request
-   *          The HTTP Request that was used to end up in this page.
-   * @return "Wiki.jsp", "PageInfo.jsp", etc. Just return the name, JSPWiki will
-   *         figure out the page.
+   * @param request The HTTP Request that was used to end up in this page.
+   * @return "Wiki.jsp", "PageInfo.jsp", etc. Just return the name, JSPWiki will figure out the
+   * page.
    */
   public String getForwardPage(HttpServletRequest request) {
     String basePath = request.getPathInfo();

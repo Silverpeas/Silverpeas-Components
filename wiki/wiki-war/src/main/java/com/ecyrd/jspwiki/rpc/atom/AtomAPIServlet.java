@@ -46,9 +46,8 @@ import com.ecyrd.jspwiki.plugin.WeblogPlugin;
 import com.ecyrd.jspwiki.providers.ProviderException;
 
 /**
- * Handles incoming requests for the Atom API. This class uses the "sandler"
- * Atom API implementation.
- * 
+ * Handles incoming requests for the Atom API. This class uses the "sandler" Atom API
+ * implementation.
  * @since 2.1.97
  */
 // FIXME: Rewrite using some other library
@@ -67,8 +66,8 @@ public class AtomAPIServlet extends HttpServlet {
   }
 
   /**
-   * Takes the name of the page from the request URI. The initial slash is also
-   * removed. If there is no page, returns null.
+   * Takes the name of the page from the request URI. The initial slash is also removed. If there is
+   * no page, returns null.
    */
   private String getPageName(HttpServletRequest request) {
     String name = request.getPathInfo();
@@ -92,13 +91,9 @@ public class AtomAPIServlet extends HttpServlet {
    * <li>Only fetches the first content. All other contents are ignored.
    * <li>Assumes that incoming code is plain text or WikiMarkup, not html.
    * </ul>
-   * 
-   * @param request
-   *          {@inheritDoc}
-   * @param response
-   *          {@inheritDoc}
-   * @throws ServletException
-   *           {@inheritDoc}
+   * @param request {@inheritDoc}
+   * @param response {@inheritDoc}
+   * @throws ServletException {@inheritDoc}
    */
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException {
@@ -162,10 +157,8 @@ public class AtomAPIServlet extends HttpServlet {
   }
 
   /**
-   * Handles HTTP GET. However, we do not respond to GET requests, other than to
-   * show an explanatory text.
-   * 
-   * {@inheritDoc}
+   * Handles HTTP GET. However, we do not respond to GET requests, other than to show an explanatory
+   * text. {@inheritDoc}
    */
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException {
@@ -282,7 +275,8 @@ public class AtomAPIServlet extends HttpServlet {
   }
 
   private Link createLink(String rel, String href, String title) {
-    org.intabulas.sandler.elements.impl.LinkImpl link = new org.intabulas.sandler.elements.impl.LinkImpl();
+    org.intabulas.sandler.elements.impl.LinkImpl link =
+        new org.intabulas.sandler.elements.impl.LinkImpl();
 
     link.setRelationship(rel);
     link.setTitle(title);

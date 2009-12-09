@@ -32,10 +32,9 @@ import org.apache.log4j.Logger;
 import com.ecyrd.jspwiki.url.DefaultURLConstructor;
 
 /**
- * This provides a master servlet for dealing with short urls. It mostly does
- * redirects to the proper JSP pages. It also intercepts the servlet shutdown
- * events and uses it to signal wiki shutdown.
- * 
+ * This provides a master servlet for dealing with short urls. It mostly does redirects to the
+ * proper JSP pages. It also intercepts the servlet shutdown events and uses it to signal wiki
+ * shutdown.
  * @author Andrew Jaquith
  * @since 2.2
  */
@@ -56,12 +55,9 @@ public class WikiServlet extends HttpServlet {
   }
 
   /**
-   * Destroys the WikiServlet; called by the servlet container when shutting
-   * down the webapp. This method calls the protected method
-   * {@link WikiEngine#shutdown()}, which sends
-   * {@link com.ecyrd.jspwiki.event.WikiEngineEvent#SHUTDOWN} events to
-   * registered listeners.
-   * 
+   * Destroys the WikiServlet; called by the servlet container when shutting down the webapp. This
+   * method calls the protected method {@link WikiEngine#shutdown()}, which sends
+   * {@link com.ecyrd.jspwiki.event.WikiEngineEvent#SHUTDOWN} events to registered listeners.
    * @see javax.servlet.GenericServlet#destroy()
    */
   public void destroy() {
@@ -95,7 +91,7 @@ public class WikiServlet extends HttpServlet {
 
     RequestDispatcher dispatcher = req
         .getRequestDispatcher("/" + jspPage + "?page="
-            + m_engine.encodeName(pageName) + "&" + req.getQueryString());
+        + m_engine.encodeName(pageName) + "&" + req.getQueryString());
 
     dispatcher.forward(req, res);
   }

@@ -67,9 +67,8 @@ public class WikiRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   public String getSessionControlBeanName() {
     return "Wiki";
@@ -77,13 +76,9 @@ public class WikiRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param mainSessionCtrl
    * @param componentContext
-   * 
    * @return
-   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -92,22 +87,19 @@ public class WikiRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     WikiSessionController wikiSC = (WikiSessionController) componentSC;
     SilverTrace.info("wiki", "WikiRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId()
-            + " Function=" + function);
+        + " Function=" + function);
     String[] roles = componentSC.getUserRoles();
     request.setAttribute(SilverpeasWikiAuthorizer.ROLE_ATTR_NAME, roles);
     request.setAttribute(SilverpeasWikiAuthorizer.USER_ATTR_NAME, wikiSC

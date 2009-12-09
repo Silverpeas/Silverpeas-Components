@@ -11,7 +11,7 @@
   <groupId>com.silverpeas.components.wiki</groupId>
   <artifactId>wiki-war</artifactId>
   <packaging>war</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>${project.parent.version}</version>
   <name>wiki Webapp</name>
 
   <dependencies>
@@ -31,9 +31,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.components.wiki</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>wiki-jar</artifactId>
-      <version>1.0-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

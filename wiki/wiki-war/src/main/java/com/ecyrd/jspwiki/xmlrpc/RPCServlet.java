@@ -49,15 +49,13 @@ import com.ecyrd.jspwiki.WikiEngine;
  * <LI><B>handler</B> : the class which is used to handle the RPC calls.
  * <LI><B>prefix</B> : The command prefix for that particular handler.
  * </UL>
- * 
  * @since 1.6.6
  */
 public class RPCServlet extends HttpServlet {
   private static final long serialVersionUID = 3976735878410416180L;
 
   /**
-   * This is what is appended to each command, if the handler has not been
-   * specified.
+   * This is what is appended to each command, if the handler has not been specified.
    */
   // FIXME: Should this be $default?
   public static final String XMLRPC_PREFIX = "wiki";
@@ -71,10 +69,9 @@ public class RPCServlet extends HttpServlet {
       throws ClassNotFoundException, InstantiationException,
       IllegalAccessException {
     /*
-     * Class handlerClass = Class.forName( handlerName ); WikiRPCHandler
-     * rpchandler = (WikiRPCHandler) handlerClass.newInstance();
-     * rpchandler.initialize( m_engine ); m_xmlrpcServer.addHandler( prefix,
-     * rpchandler );
+     * Class handlerClass = Class.forName( handlerName ); WikiRPCHandler rpchandler =
+     * (WikiRPCHandler) handlerClass.newInstance(); rpchandler.initialize( m_engine );
+     * m_xmlrpcServer.addHandler( prefix, rpchandler );
      */
     Class handlerClass = Class.forName(handlerName);
     m_xmlrpcServer.addHandler(prefix, new LocalHandler(handlerClass));
@@ -108,8 +105,7 @@ public class RPCServlet extends HttpServlet {
   }
 
   /**
-   * Handle HTTP POST. This is an XML-RPC call, and we'll just forward the query
-   * to an XmlRpcServer.
+   * Handle HTTP POST. This is an XML-RPC call, and we'll just forward the query to an XmlRpcServer.
    */
   public void doPost(HttpServletRequest request, HttpServletResponse response)
       throws ServletException {
@@ -145,8 +141,8 @@ public class RPCServlet extends HttpServlet {
   }
 
   /**
-   * Handles HTTP GET. However, we do not respond to GET requests, other than to
-   * show an explanatory text.
+   * Handles HTTP GET. However, we do not respond to GET requests, other than to show an explanatory
+   * text.
    */
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException {
@@ -174,8 +170,7 @@ public class RPCServlet extends HttpServlet {
       m_clazz = clazz;
     }
 
-    public Object execute(String method, Vector params, XmlRpcContext context)
-        throws Exception {
+    public Object execute(String method, Vector params, XmlRpcContext context) throws Exception {
       WikiRPCHandler rpchandler = (WikiRPCHandler) m_clazz.newInstance();
       rpchandler.initialize(((WikiXmlRpcContext) context).getWikiContext());
 

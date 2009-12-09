@@ -42,8 +42,7 @@ import com.silverpeas.wiki.control.model.PageDetail;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 
-public class SilverpeasVersioningFileProvider implements WikiPageProvider,
-    VersioningProvider {
+public class SilverpeasVersioningFileProvider implements WikiPageProvider, VersioningProvider {
 
   private Properties props;
 
@@ -195,7 +194,7 @@ public class SilverpeasVersioningFileProvider implements WikiPageProvider,
   VersioningFileProvider getRealProvider() throws ProviderException {
     String componentId = WikiMultiInstanceManager.getComponentId();
     String path = FileRepositoryManager.getAbsolutePath(componentId);
-    if(providers.containsKey(componentId)) {
+    if (providers.containsKey(componentId)) {
       return providers.get(componentId);
     }
     Properties properties = new Properties(props);
@@ -203,7 +202,7 @@ public class SilverpeasVersioningFileProvider implements WikiPageProvider,
     VersioningFileProvider realProvider = new VersioningFileProvider();
     try {
       realProvider.initialize(engine, properties);
-    } catch (NoRequiredPropertyException e) {      
+    } catch (NoRequiredPropertyException e) {
       e.printStackTrace();
       SilverTrace.error("wiki", "WikiVersioningFileProvider.getRealProvider()",
           "root.EX_PUT_PAGE_FAILED", e);
@@ -214,10 +213,10 @@ public class SilverpeasVersioningFileProvider implements WikiPageProvider,
           "root.EX_PUT_PAGE_FAILED", e);
       throw new ProviderException("Could not instantiate provider: " + e.getMessage());
     }
-    synchronized(providers) {
+    synchronized (providers) {
       this.providers.put(componentId, realProvider);
     }
     return realProvider;
-    
+
   }
 }

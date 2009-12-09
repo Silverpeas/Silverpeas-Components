@@ -46,8 +46,7 @@ public class PageDetail {
   }
 
   /**
-   * @param instanceId
-   *          the instanceId to set
+   * @param instanceId the instanceId to set
    */
   public void setInstanceId(String instanceId) {
     this.instanceId = instanceId;
@@ -61,8 +60,7 @@ public class PageDetail {
   }
 
   /**
-   * @param id
-   *          the id to set
+   * @param id the id to set
    */
   public void setId(int id) {
     this.id = id;
@@ -76,13 +74,11 @@ public class PageDetail {
   }
 
   /**
-   * @param pageName
-   *          the pageName to set
+   * @param pageName the pageName to set
    */
   public void setPageName(String pageName) {
     this.pageName = pageName;
   }
-
 
   @Override
   public int hashCode() {
@@ -108,7 +104,8 @@ public class PageDetail {
     if ((this.pageName == null) ? (other.pageName != null) : !this.pageName.equals(other.pageName)) {
       return false;
     }
-    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(other.instanceId)) {
+    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId
+        .equals(other.instanceId)) {
       return false;
     }
     return true;

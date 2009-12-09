@@ -55,23 +55,22 @@ import com.ecyrd.jspwiki.util.WatchDog;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 /**
- * This filter goes through the generated page response prior and places
- * requested resources at the appropriate inclusion markers. This is done to let
- * dynamic content (e.g. plugins, editors) include custom resources, even after
- * the HTML head section is in fact built. This filter is typically the last
- * filter to execute, and it <em>must</em> run after servlet or JSP code that
+ * This filter goes through the generated page response prior and places requested resources at the
+ * appropriate inclusion markers. This is done to let dynamic content (e.g. plugins, editors)
+ * include custom resources, even after the HTML head section is in fact built. This filter is
+ * typically the last filter to execute, and it <em>must</em> run after servlet or JSP code that
  * performs redirections or sends error codes (such as access control methods).
  * <p>
- * Inclusion markers are placed by the IncludeResourcesTag; the defult content
- * templates (see .../templates/default/commonheader.jsp) are configured to do
- * this. As an example, a JavaScript resource marker is added like this:
+ * Inclusion markers are placed by the IncludeResourcesTag; the defult content templates (see
+ * .../templates/default/commonheader.jsp) are configured to do this. As an example, a JavaScript
+ * resource marker is added like this:
  * 
  * <pre>
  * &lt;wiki:IncludeResources type=&quot;script&quot;/&gt;
  * </pre>
  * 
- * Any code that requires special resources must register a resource request
- * with the TemplateManager. For example:
+ * Any code that requires special resources must register a resource request with the
+ * TemplateManager. For example:
  * 
  * <pre>
  * &lt;wiki:RequestResource type=&quot;script&quot; path=&quot;scripts/custom.js&quot; /&gt;
@@ -83,7 +82,6 @@ import com.stratelia.silverpeas.peasCore.URLManager;
  * TemplateManager.addResourceRequest(context, TemplateManager.RESOURCE_SCRIPT,
  *     &quot;scripts/customresource.js&quot;);
  * </pre>
- * 
  * @see TemplateManager
  * @see com.ecyrd.jspwiki.tags.RequestResourceTag
  */
@@ -177,11 +175,8 @@ public class WikiJSPFilter extends WikiServletFilter {
 
   /**
    * Goes through all types and writes the appropriate response.
-   * 
-   * @param wikiContext
-   *          The usual processing context
-   * @param string
-   *          The source string
+   * @param wikiContext The usual processing context
+   * @param string The source string
    * @return The modified string with all the insertions in place.
    */
   private String filter(WikiContext wikiContext, HttpServletResponse response) {
@@ -217,15 +212,11 @@ public class WikiJSPFilter extends WikiServletFilter {
   }
 
   /**
-   * Inserts whatever resources were requested by any plugins or other
-   * components for this particular type.
-   * 
-   * @param wikiContext
-   *          The usual processing context
-   * @param string
-   *          The source string
-   * @param type
-   *          Type identifier for insertion
+   * Inserts whatever resources were requested by any plugins or other components for this
+   * particular type.
+   * @param wikiContext The usual processing context
+   * @param string The source string
+   * @param type Type identifier for insertion
    * @return The filtered string.
    */
   private String insertResources(WikiContext wikiContext, String string,
@@ -259,16 +250,16 @@ public class WikiJSPFilter extends WikiServletFilter {
   }
 
   /**
-   * Simple response wrapper that just allows us to gobble through the entire
-   * response before it's output.
+   * Simple response wrapper that just allows us to gobble through the entire response before it's
+   * output.
    */
   private static class MyServletResponseWrapper extends
       HttpServletResponseWrapper {
     private CharArrayWriter m_output;
 
     /**
-     * How large the initial buffer should be. This should be tuned to achieve a
-     * balance in speed and memory consumption.
+     * How large the initial buffer should be. This should be tuned to achieve a balance in speed
+     * and memory consumption.
      */
     private static final int INIT_BUFFER_SIZE = 4096;
 
@@ -278,8 +269,7 @@ public class WikiJSPFilter extends WikiServletFilter {
     }
 
     /**
-     * Returns a writer for output; this wraps the internal buffer into a
-     * PrintWriter.
+     * Returns a writer for output; this wraps the internal buffer into a PrintWriter.
      */
     public PrintWriter getWriter() {
       return new PrintWriter(m_output);
@@ -312,8 +302,8 @@ public class WikiJSPFilter extends WikiServletFilter {
   }
 
   /**
-   * Response wrapper for application servers which do not work with
-   * CharArrayWriter Currently only OC4J
+   * Response wrapper for application servers which do not work with CharArrayWriter Currently only
+   * OC4J
    */
   private static class ByteArrayResponseWrapper extends
       HttpServletResponseWrapper {
@@ -321,8 +311,8 @@ public class WikiJSPFilter extends WikiServletFilter {
     private HttpServletResponse m_response;
 
     /**
-     * How large the initial buffer should be. This should be tuned to achieve a
-     * balance in speed and memory consumption.
+     * How large the initial buffer should be. This should be tuned to achieve a balance in speed
+     * and memory consumption.
      */
     private static final int INIT_BUFFER_SIZE = 4096;
 
@@ -333,8 +323,7 @@ public class WikiJSPFilter extends WikiServletFilter {
     }
 
     /**
-     * Returns a writer for output; this wraps the internal buffer into a
-     * PrintWriter.
+     * Returns a writer for output; this wraps the internal buffer into a PrintWriter.
      */
     public PrintWriter getWriter() {
       return new PrintWriter(getOutputStream(), true);
@@ -373,14 +362,11 @@ public class WikiJSPFilter extends WikiServletFilter {
   // events processing .......................................................
 
   /**
-   * Fires a WikiPageEvent of the provided type and page name to all registered
-   * listeners of the current WikiEngine.
-   * 
+   * Fires a WikiPageEvent of the provided type and page name to all registered listeners of the
+   * current WikiEngine.
    * @see com.ecyrd.jspwiki.event.WikiPageEvent
-   * @param type
-   *          the event type to be fired
-   * @param pagename
-   *          the wiki page name as a String
+   * @param type the event type to be fired
+   * @param pagename the wiki page name as a String
    */
   protected final void fireEvent(int type, String pagename) {
     if (WikiEventManager.isListening(m_engine)) {

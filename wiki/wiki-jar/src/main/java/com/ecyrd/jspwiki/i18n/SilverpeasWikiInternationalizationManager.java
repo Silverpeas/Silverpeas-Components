@@ -31,11 +31,9 @@ import com.ecyrd.jspwiki.WikiEngine;
 
 /**
  * Manages all internationalization in JSPWiki.
- * 
  * @author Ludovic Bertin
  */
-public class SilverpeasWikiInternationalizationManager extends
-    InternationalizationManager {
+public class SilverpeasWikiInternationalizationManager extends InternationalizationManager {
 
   private static ThreadLocal preferredLocale = new ThreadLocal();
 
@@ -50,9 +48,7 @@ public class SilverpeasWikiInternationalizationManager extends
 
   /**
    * Constructs a new InternationalizationManager.
-   * 
-   * @param engine
-   *          To which engine this belongs to
+   * @param engine To which engine this belongs to
    */
   public SilverpeasWikiInternationalizationManager(WikiEngine engine) {
     super(engine);
@@ -60,12 +56,9 @@ public class SilverpeasWikiInternationalizationManager extends
 
   /**
    * Returns a String from the CORE_BUNDLE using English as the default locale.
-   * 
-   * @param key
-   *          Key to find
+   * @param key Key to find
    * @return The English string
-   * @throws MissingResourceException
-   *           If there is no such key
+   * @throws MissingResourceException If there is no such key
    */
   public String get(String key) throws MissingResourceException {
     return get(CORE_BUNDLE, null, key);
@@ -73,15 +66,11 @@ public class SilverpeasWikiInternationalizationManager extends
 
   /**
    * Finds a resource bundle.
-   * 
-   * @param bundle
-   *          The ResourceBundle to find. Must exist.
-   * @param locale
-   *          The Locale to use. Set to null to get the default locale.
+   * @param bundle The ResourceBundle to find. Must exist.
+   * @param locale The Locale to use. Set to null to get the default locale.
    * @return A localized string
-   * @throws MissingResourceException
-   *           If the key cannot be located at all, even from the default
-   *           locale.
+   * @throws MissingResourceException If the key cannot be located at all, even from the default
+   * locale.
    */
   public ResourceBundle getBundle(String bundle, Locale locale)
       throws MissingResourceException {
@@ -91,19 +80,14 @@ public class SilverpeasWikiInternationalizationManager extends
   }
 
   /**
-   * If you are too lazy to open your own bundle, use this method to get a
-   * string simply from a bundle.
-   * 
-   * @param bundle
-   *          Which bundle the string is in
-   * @param locale
-   *          Locale to use - null for default
-   * @param key
-   *          Which key to use.
+   * If you are too lazy to open your own bundle, use this method to get a string simply from a
+   * bundle.
+   * @param bundle Which bundle the string is in
+   * @param locale Locale to use - null for default
+   * @param key Which key to use.
    * @return A localized string (or from the default language, if not found)
-   * @throws MissingResourceException
-   *           If the key cannot be located at all, even from the default
-   *           locale.
+   * @throws MissingResourceException If the key cannot be located at all, even from the default
+   * locale.
    */
   public String get(String bundle, Locale locale, String key)
       throws MissingResourceException {

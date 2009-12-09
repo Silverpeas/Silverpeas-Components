@@ -130,24 +130,22 @@ public class WikiBasicAttachmentProvider implements WikiAttachmentProvider {
     if (!f.exists())
       throw new IOException(
           "Could not find or create attachment storage directory '"
-              + m_storageDir + "'");
+          + m_storageDir + "'");
 
     if (!f.canWrite())
       throw new IOException(
           "Cannot write to the attachment storage directory '" + m_storageDir
-              + "'");
+          + "'");
 
     if (!f.isDirectory())
       throw new IOException(
           "Your attachment storage points to a file, not a directory: '"
-              + m_storageDir + "'");
+          + m_storageDir + "'");
   }
 
   /**
    * Finds storage dir, and if it exists, makes sure that it is valid.
-   * 
-   * @param wikipage
-   *          Page to which this attachment is attached.
+   * @param wikipage Page to which this attachment is attached.
    */
   private File findPageDir(String wikipage) throws ProviderException {
     wikipage = mangleName(wikipage);
@@ -204,11 +202,8 @@ public class WikiBasicAttachmentProvider implements WikiAttachmentProvider {
   }
 
   /**
-   * Goes through the repository and decides which version is the newest one in
-   * that directory.
-   * 
-   * @return Latest version number in the repository, or 0, if there is no page
-   *         in the repository.
+   * Goes through the repository and decides which version is the newest one in that directory.
+   * @return Latest version number in the repository, or 0, if there is no page in the repository.
    */
   private int findLatestVersion(Attachment att) throws ProviderException {
     // File pageDir = findPageDir( att.getName() );
@@ -259,8 +254,8 @@ public class WikiBasicAttachmentProvider implements WikiAttachmentProvider {
   }
 
   /**
-   * Writes the page properties back to the file system. Note that it WILL
-   * overwrite any previous properties.
+   * Writes the page properties back to the file system. Note that it WILL overwrite any previous
+   * properties.
    */
   private void putPageProperties(Attachment att, Properties properties)
       throws IOException, ProviderException {
@@ -317,7 +312,7 @@ public class WikiBasicAttachmentProvider implements WikiAttachmentProvider {
       SilverTrace.info("wiki",
           "WikiVersioningFileProvider.putAttachmentData()", "root.INFO",
           "Uploading attachment " + att.getFileName() + " to page "
-              + att.getParentName());
+          + att.getParentName());
       SilverTrace.info("wiki",
           "WikiVersioningFileProvider.putAttachmentData()", "root.INFO",
           "Saving attachment contents to " + newfile.getAbsolutePath());
@@ -468,9 +463,9 @@ public class WikiBasicAttachmentProvider implements WikiAttachmentProvider {
             if (att == null) {
               throw new ProviderException(
                   "Attachment disappeared while reading information:"
-                      + " if you did not touch the repository, there is a serious bug somewhere. "
-                      + "Attachment = " + attachments[i] + ", decoded = "
-                      + attachmentName);
+                  + " if you did not touch the repository, there is a serious bug somewhere. "
+                  + "Attachment = " + attachments[i] + ", decoded = "
+                  + attachmentName);
             }
 
             result.add(att);

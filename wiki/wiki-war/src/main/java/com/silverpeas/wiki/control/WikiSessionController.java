@@ -33,13 +33,8 @@ public class WikiSessionController extends AbstractComponentSessionController {
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
-   * 
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public WikiSessionController(MainSessionController mainSessionCtrl,

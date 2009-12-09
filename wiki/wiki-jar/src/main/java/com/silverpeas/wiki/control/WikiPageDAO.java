@@ -118,7 +118,7 @@ public class WikiPageDAO {
     } catch (SQLException e) {
       throw new WikiException("WikiPageDAO.getPage()",
           SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", "page name = "
-              + pageName, e);
+          + pageName, e);
     } finally {
       DBUtil.close(rs, prepStmt);
       closeConnection(con);
@@ -145,12 +145,12 @@ public class WikiPageDAO {
       } else {
         throw new WikiException("WikiPageDAO.getPage()",
             SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", "page id = "
-                + id);
+            + id);
       }
     } catch (SQLException e) {
       throw new WikiException("WikiPageDAO.getPage()",
           SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", "page id = "
-              + id, e);
+          + id, e);
     } finally {
       DBUtil.close(rs, prepStmt);
       closeConnection(con);

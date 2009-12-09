@@ -39,7 +39,6 @@ import com.ecyrd.jspwiki.dav.methods.GetMethod;
 import com.ecyrd.jspwiki.dav.methods.PropFindMethod;
 
 /**
- * 
  * @since
  */
 public class WikiDavServlet extends WebdavServlet {
@@ -153,8 +152,8 @@ public class WikiDavServlet extends WebdavServlet {
   }
 
   /*
-   * GET /dav/raw/WikiPage.txt GET /dav/html/WikiPage.html GET
-   * /dav/pdf/WikiPage.pdf GET /dav/raw/WikiPage/attachment1.png
+   * GET /dav/raw/WikiPage.txt GET /dav/html/WikiPage.html GET /dav/pdf/WikiPage.pdf GET
+   * /dav/raw/WikiPage/attachment1.png
    */
   protected void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {

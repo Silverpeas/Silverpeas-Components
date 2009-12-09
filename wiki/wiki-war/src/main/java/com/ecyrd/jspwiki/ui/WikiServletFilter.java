@@ -42,21 +42,16 @@ import com.ecyrd.jspwiki.auth.WikiSecurityException;
 import com.ecyrd.jspwiki.tags.WikiTagBase;
 
 /**
- * Filter that verifies that the {@link com.ecyrd.jspwiki.WikiEngine} is
- * running, and sets the authentication status for the user's WikiSession. Each
- * HTTP request processed by this filter is wrapped by a
- * {@link WikiRequestWrapper}. The wrapper's primary responsibility is to return
- * the correct <code>userPrincipal</code> and <code>remoteUser</code> for
- * authenticated JSPWiki users (whether authenticated by container or by
- * JSPWiki's custom system). The wrapper's other responsibility is to
- * incorporate JSPWiki built-in roles into the role-checking algorithm for
- * {@link HttpServletRequest#isUserInRole(String)}. Just before the request is
- * wrapped, the method {@link AuthenticationManager#login(HttpServletRequest)}
- * executes; this method contains all of the logic needed to grab any user login
- * credentials set by the container or by cookies.
- * 
+ * Filter that verifies that the {@link com.ecyrd.jspwiki.WikiEngine} is running, and sets the
+ * authentication status for the user's WikiSession. Each HTTP request processed by this filter is
+ * wrapped by a {@link WikiRequestWrapper}. The wrapper's primary responsibility is to return the
+ * correct <code>userPrincipal</code> and <code>remoteUser</code> for authenticated JSPWiki users
+ * (whether authenticated by container or by JSPWiki's custom system). The wrapper's other
+ * responsibility is to incorporate JSPWiki built-in roles into the role-checking algorithm for
+ * {@link HttpServletRequest#isUserInRole(String)}. Just before the request is wrapped, the method
+ * {@link AuthenticationManager#login(HttpServletRequest)} executes; this method contains all of the
+ * logic needed to grab any user login credentials set by the container or by cookies.
  * @author Andrew Jaquith
- * 
  */
 public class WikiServletFilter implements Filter {
   protected static final Logger log = Logger.getLogger(WikiServletFilter.class);
@@ -71,11 +66,8 @@ public class WikiServletFilter implements Filter {
 
   /**
    * Initializes the WikiServletFilter.
-   * 
-   * @param config
-   *          The FilterConfig.
-   * @throws ServletException
-   *           If a WikiEngine cannot be started.
+   * @param config The FilterConfig.
+   * @throws ServletException If a WikiEngine cannot be started.
    */
   public void init(FilterConfig config) throws ServletException {
     ServletContext context = config.getServletContext();
@@ -89,23 +81,16 @@ public class WikiServletFilter implements Filter {
   }
 
   /**
-   * Checks that the WikiEngine is running ok, wraps the current HTTP request,
-   * and sets the correct authentication state for the users's WikiSession.
-   * First, the method {@link AuthenticationManager#login(HttpServletRequest)}
-   * executes, which sets the authentication state. Then, the request is wrapped
-   * with a {@link WikiRequestWrapper}.
-   * 
-   * @param request
-   *          the current HTTP request object
-   * @param response
-   *          the current HTTP response object
-   * @param chain
-   *          The Filter chain passed down.
-   * @throws ServletException
-   *           if {@link AuthenticationManager#login(HttpServletRequest)} fails
-   *           for any reason
-   * @throws IOException
-   *           If writing to the servlet response fails.
+   * Checks that the WikiEngine is running ok, wraps the current HTTP request, and sets the correct
+   * authentication state for the users's WikiSession. First, the method
+   * {@link AuthenticationManager#login(HttpServletRequest)} executes, which sets the authentication
+   * state. Then, the request is wrapped with a {@link WikiRequestWrapper}.
+   * @param request the current HTTP request object
+   * @param response the current HTTP response object
+   * @param chain The Filter chain passed down.
+   * @throws ServletException if {@link AuthenticationManager#login(HttpServletRequest)} fails for
+   * any reason
+   * @throws IOException If writing to the servlet response fails.
    */
   public void doFilter(ServletRequest request, ServletResponse response,
       FilterChain chain) throws IOException, ServletException {
@@ -195,13 +180,10 @@ public class WikiServletFilter implements Filter {
   }
 
   /**
-   * Figures out the wiki context from the request. This method does not create
-   * the context if it does not exist.
-   * 
-   * @param request
-   *          The request to examine
-   * @return A valid WikiContext value (or null, if the context could not be
-   *         located).
+   * Figures out the wiki context from the request. This method does not create the context if it
+   * does not exist.
+   * @param request The request to examine
+   * @return A valid WikiContext value (or null, if the context could not be located).
    */
   protected WikiContext getWikiContext(ServletRequest request) {
     HttpServletRequest httpRequest = (HttpServletRequest) request;
@@ -213,14 +195,11 @@ public class WikiServletFilter implements Filter {
   }
 
   /**
-   * Determines whether the request has been previously wrapped with a
-   * WikiRequestWrapper. We find the wrapper by recursively unwrapping
-   * successive request wrappers, if they have been supplied.
-   * 
-   * @param request
-   *          the current HTTP request
-   * @return <code>true</code> if the request has previously been wrapped;
-   *         <code>false</code> otherwise
+   * Determines whether the request has been previously wrapped with a WikiRequestWrapper. We find
+   * the wrapper by recursively unwrapping successive request wrappers, if they have been supplied.
+   * @param request the current HTTP request
+   * @return <code>true</code> if the request has previously been wrapped; <code>false</code>
+   * otherwise
    */
   private boolean isWrapped(ServletRequest request) {
     while (!(request instanceof WikiRequestWrapper) && request != null

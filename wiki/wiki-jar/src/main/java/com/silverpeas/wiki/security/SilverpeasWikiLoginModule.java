@@ -45,6 +45,7 @@ import com.ecyrd.jspwiki.auth.login.PrincipalWrapper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+
 /**
  *
  */
@@ -52,7 +53,6 @@ public class SilverpeasWikiLoginModule extends AbstractLoginModule {
 
   /**
    * Logs in the user.
-   * 
    * @see javax.security.auth.spi.LoginModule#login()
    */
   @SuppressWarnings("unchecked")
@@ -112,16 +112,12 @@ public class SilverpeasWikiLoginModule extends AbstractLoginModule {
   }
 
   /**
-   * If the current Authorizer is a
-   * {@link com.ecyrd.jwpwiki.auth.authorize.WebAuthorizer}, this method
-   * iterates through each role returned by the authorizer (via
-   * {@link com.ecyrd.jwpwiki.auth.authorize.WebAuthorizer#isUserInRole(HttpServletRequest, Role)}
-   * ) and injects the appropriate ones into the Subject.
-   * 
-   * @param acb
-   *          the authorizer callback
-   * @param rcb
-   *          the HTTP request
+   * If the current Authorizer is a {@link com.ecyrd.jwpwiki.auth.authorize.WebAuthorizer}, this
+   * method iterates through each role returned by the authorizer (via
+   * {@link com.ecyrd.jwpwiki.auth.authorize.WebAuthorizer#isUserInRole(HttpServletRequest, Role)} )
+   * and injects the appropriate ones into the Subject.
+   * @param acb the authorizer callback
+   * @param rcb the HTTP request
    */
   @SuppressWarnings("unchecked")
   private final void injectWebAuthorizerRoles(Authorizer authorizer,
@@ -143,22 +139,22 @@ public class SilverpeasWikiLoginModule extends AbstractLoginModule {
     // Make sure the same ones are removed if login fails
     m_principalsToRemove.addAll(foundRoles);
   }
-  
+
   /**
-   * Maps a classic Silverpeas role to a JSPWiki role.
-   * JSPWiki roles are defined in jspwiki.policy with their permissions.
+   * Maps a classic Silverpeas role to a JSPWiki role. JSPWiki roles are defined in jspwiki.policy
+   * with their permissions.
    * @param userRole the silverpeas role.
    * @return the JSPWiki corresponding Role.
    */
   protected Role convertSilverpeasRole(String userRole) {
     SilverpeasRole role = SilverpeasRole.valueOf(userRole);
-    switch(role) {
-      case admin :
+    switch (role) {
+      case admin:
         return new Role("Administrator");
-      case publisher :
-      case writer :
+      case publisher:
+      case writer:
         return new Role("Contributor");
-      case user :
+      case user:
         return new Role("Reader");
       default:
         return Role.AUTHENTICATED;

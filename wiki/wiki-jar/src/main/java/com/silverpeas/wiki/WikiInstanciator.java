@@ -49,7 +49,7 @@ public class WikiInstanciator implements ComponentsInstanciatorIntf {
     wikiDAO = new WikiPageDAO();
   }
 
-   public WikiInstanciator(WikiPageDAO dao) {
+  public WikiInstanciator(WikiPageDAO dao) {
     wikiDAO = dao;
   }
 
@@ -105,8 +105,9 @@ public class WikiInstanciator implements ComponentsInstanciatorIntf {
 
   protected void createPages(File directory, String componentId) throws IOException,
       WikiException {
-    ZipInputStream zipFile = new ZipInputStream(this.getClass().getClassLoader().getResourceAsStream(
-        "pages.zip"));
+    ZipInputStream zipFile =
+        new ZipInputStream(this.getClass().getClassLoader().getResourceAsStream(
+            "pages.zip"));
     ZipEntry page = zipFile.getNextEntry();
     while (page != null) {
       String pageName = page.getName();
