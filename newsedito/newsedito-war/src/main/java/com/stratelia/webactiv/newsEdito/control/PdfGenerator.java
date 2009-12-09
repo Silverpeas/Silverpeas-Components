@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
----*/
+ ---*/
 
 /**
  * To generate an archive into a pdf file
@@ -104,8 +104,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * Class declaration
- *
- *
  * @author
  */
 public class PdfGenerator {
@@ -114,8 +112,6 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   *
-   *
    * @see
    */
   public static void initRessources() {
@@ -127,10 +123,7 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   *
-   *
    * @return
-   *
    * @see
    */
   public static String getImagePath() {
@@ -142,14 +135,10 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   *
-   *
    * @param name
    * @param completePubList
    * @param langue
-   *
    * @throws NewsEditoException
-   *
    * @see
    */
   public static void generatePubList(String name, Collection completePubList,
@@ -216,15 +205,11 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   *
-   *
    * @param name
    * @param archiveDetail
    * @param publicationBm
    * @param langue
-   *
    * @throws NewsEditoException
-   *
    * @see
    */
   public static void generateArchive(String name, NodeDetail archiveDetail,
@@ -234,7 +219,7 @@ public class PdfGenerator {
     try {
       String fileName = FileRepositoryManager
           .getTemporaryPath(archiveDetail.getNodePK().getSpace(), archiveDetail
-              .getNodePK().getComponentName())
+          .getNodePK().getComponentName())
           + name;
       // creation of the document with a certain size and certain margins
       Document document = new Document(PageSize.A4, 50, 50, 50, 50);
@@ -280,13 +265,9 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   *
-   *
    * @param document
    * @param langue
-   *
    * @throws NewsEditoException
-   *
    * @see
    */
   public static void createFirstPage(Document document, String langue)
@@ -323,12 +304,9 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   *
-   *
    * @param document
    * @param nodeDetail
    * @param publicationBm
-   *
    * @see
    */
   public static void addMasterTable(Document document, NodeDetail nodeDetail,
@@ -358,17 +336,12 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   *
-   *
    * @param document
    * @param title
    * @param titleCount
    * @param publicationBm
-   *
    * @return
-   *
    * @throws NewsEditoException
-   *
    * @see
    */
   public static Section addTitle(Document document, NodeDetail title,
@@ -405,14 +378,10 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   *
-   *
    * @param section
    * @param title
    * @param publicationBm
-   *
    * @throws NewsEditoException
-   *
    * @see
    */
   public static void addPublications(Section section, NodeDetail title,
@@ -438,11 +407,8 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   *
-   *
    * @param section
    * @param complete
-   *
    * @see
    */
   public static void addPublication(Section section,
@@ -490,12 +456,10 @@ public class PdfGenerator {
             if (imageIterator.hasNext()) {
               imageDetail = (InfoImageDetail) imageIterator.next();
               /*
-               * tk = Toolkit.getDefaultToolkit(); img =
-               * tk.getImage(FileRepositoryManager
+               * tk = Toolkit.getDefaultToolkit(); img = tk.getImage(FileRepositoryManager
                * .getAbsolutePath(imageDetail.getPK().getSpace(),
-               * imageDetail.getPK().getComponentName()) + getImagePath() +
-               * File.separator + imageDetail.getPhysicalName()); waImage = new
-               * WAImage(img);
+               * imageDetail.getPK().getComponentName()) + getImagePath() + File.separator +
+               * imageDetail.getPhysicalName()); waImage = new WAImage(img);
                */
 
               String imagePath = FileRepositoryManager
@@ -525,13 +489,10 @@ public class PdfGenerator {
 
   /**
    * Method declaration
-   *
-   *
    * @param document
    * @param archiveDetail
    * @param publicationBm
    * @param langue
-   *
    * @see
    */
   public static void addEditorial(Document document, NodeDetail archiveDetail,

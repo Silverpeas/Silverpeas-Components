@@ -63,33 +63,28 @@ import com.stratelia.webactiv.util.publication.model.PublicationSelection;
 
 /**
  * Class declaration
- *
- *
  * @author
  */
 public class NewsEditoRequestRouter extends ComponentRequestRouter {
 
   /**
    * This method creates a NewsEditoSessionController instance
-   *
-   * @param mainSessionCtrl
-   *          The MainSessionController instance
-   * @param context
-   *          Context of current component instance
+   * @param mainSessionCtrl The MainSessionController instance
+   * @param context Context of current component instance
    * @return a NewsEditoSessionController instance
    */
   @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
-    ComponentSessionController component = (ComponentSessionController) new NewsEditoSessionController(
-        mainSessionCtrl, context);
+    ComponentSessionController component =
+        (ComponentSessionController) new NewsEditoSessionController(
+            mainSessionCtrl, context);
     return component;
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   @Override
   public String getSessionControlBeanName() {
@@ -97,17 +92,13 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   *
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Controller, build and initialised.
-   * @param request
-   *          The entering request. The request rooter need it to get parameters
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Controller, build and initialised.
+   * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
   public String getDestination(String function,
@@ -191,12 +182,10 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
     }
 
     /*
-     * else if (function.startsWith("GoToFavorite")) { // initialisation de
-     * isConsulting inutile String flag = componentSC.getUserRoleLevel(); String
-     * favoriteId = request.getParameter("FavoriteId");
-     *
-     * destination = rootDest + "newsEdito.jsp?Action=SelectTitle&TitleId=" +
-     * favoriteId + "&flag=" + flag; }
+     * else if (function.startsWith("GoToFavorite")) { // initialisation de isConsulting inutile
+     * String flag = componentSC.getUserRoleLevel(); String favoriteId =
+     * request.getParameter("FavoriteId"); destination = rootDest +
+     * "newsEdito.jsp?Action=SelectTitle&TitleId=" + favoriteId + "&flag=" + flag; }
      */
 
     else if (function.equals("ListModels")) {
@@ -374,7 +363,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
 
     PublicationTemplate pub = PublicationTemplateManager
         .getPublicationTemplate(newsEdito.getComponentId() + ":"
-            + xmlFormShortName);
+        + xmlFormShortName);
 
     RecordSet set = pub.getRecordSet();
     Form form = pub.getUpdateForm();
@@ -420,7 +409,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
 
     PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
         .getPublicationTemplate(newsEdito.getComponentId() + ":"
-            + xmlFormShortName, xmlFormName);
+        + xmlFormShortName, xmlFormName);
     Form formUpdate = pubTemplate.getUpdateForm();
     RecordSet recordSet = pubTemplate.getRecordSet();
 
@@ -446,7 +435,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
     if (StringUtil.isDefined(infoId)) {
       PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
           .getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":"
-              + infoId);
+          + infoId);
 
       // RecordTemplate recordTemplate = pubTemplate.getRecordTemplate();
       Form formView = pubTemplate.getViewForm();

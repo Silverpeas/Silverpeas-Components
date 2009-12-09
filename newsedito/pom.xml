@@ -16,5 +16,5 @@
     <module>newsedito-jar</module>
     <module>newsedito-war</module>
     <module>newsedito-config</module>
-  </modules>  
+  </modules>
 </project>

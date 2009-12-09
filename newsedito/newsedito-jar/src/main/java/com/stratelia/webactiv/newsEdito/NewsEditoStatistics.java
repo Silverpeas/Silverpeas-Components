@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
+ ---*/
 
 package com.stratelia.webactiv.newsEdito;
 
@@ -43,8 +43,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class NewsEditoStatistics implements ComponentStatisticsInterface {

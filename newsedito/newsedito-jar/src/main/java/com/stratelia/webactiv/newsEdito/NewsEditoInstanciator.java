@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
+ ---*/
 
 /*
  * NewsEditoInstanciator.java
@@ -43,8 +43,7 @@ import com.stratelia.webactiv.beans.admin.instance.control.InstanciationExceptio
 import com.stratelia.webactiv.node.NodeInstanciator;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
 
-public class NewsEditoInstanciator extends SQLRequest implements
-    ComponentsInstanciatorIntf {
+public class NewsEditoInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
   private static java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(
       "yyyy/MM/dd");
 
@@ -57,15 +56,11 @@ public class NewsEditoInstanciator extends SQLRequest implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param spaceId
    * @param componentId
    * @param userId
-   * 
    * @throws InstanciationException
-   * 
    * @see
    */
   public void create(Connection con, String spaceId, String componentId,
@@ -90,15 +85,11 @@ public class NewsEditoInstanciator extends SQLRequest implements
 
   /**
    * Method declaration
-   * 
-   * 
    * @param con
    * @param spaceId
    * @param componentId
    * @param userId
-   * 
    * @throws InstanciationException
-   * 
    * @see
    */
   public void delete(Connection con, String spaceId, String componentId,
@@ -120,16 +111,11 @@ public class NewsEditoInstanciator extends SQLRequest implements
 
   /**
    * Insert specific default data of the news Edito component into the database.
-   * 
-   * @param con
-   *          (Connection) the connection to the database
-   * @param componentId
-   *          (String) the identification of the SilverPeas Component
-   * @param userId
-   *          (String) the user id.
-   * @throws InstanciationException
-   *           exception catched during the instanciation of the Silverpeas
-   *           Component
+   * @param con (Connection) the connection to the database
+   * @param componentId (String) the identification of the SilverPeas Component
+   * @param userId (String) the user id.
+   * @throws InstanciationException exception catched during the instanciation of the Silverpeas
+   * Component
    */
   private void insertSpecialNode(Connection con, String componentId,
       String userId) throws InstanciationException {

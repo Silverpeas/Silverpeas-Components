@@ -30,17 +30,11 @@ public class CreateNewsEditoException extends NewsEditoException {
 
   /**
    * Constructor which calls the super constructor
-   * 
-   * @param callingClass
-   *          (String) the name of the module which catchs the Exception
-   * @param errorLevel
-   *          (int) the level error of the exception
-   * @param message
-   *          (String) the level of the exception label
-   * @param extraParams
-   *          (String) the generic exception message
-   * @param nested
-   *          (Exception) the exception catched
+   * @param callingClass (String) the name of the module which catchs the Exception
+   * @param errorLevel (int) the level error of the exception
+   * @param message (String) the level of the exception label
+   * @param extraParams (String) the generic exception message
+   * @param nested (Exception) the exception catched
    */
   public CreateNewsEditoException(String callingClass, int errorLevel,
       String message, String extraParams, Exception nested) {
@@ -49,13 +43,10 @@ public class CreateNewsEditoException extends NewsEditoException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public CreateNewsEditoException(String callingClass, int errorLevel,
@@ -65,13 +56,10 @@ public class CreateNewsEditoException extends NewsEditoException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public CreateNewsEditoException(String callingClass, int errorLevel,
@@ -81,12 +69,9 @@ public class CreateNewsEditoException extends NewsEditoException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
-   * 
    * @see
    */
   public CreateNewsEditoException(String callingClass, int errorLevel,
