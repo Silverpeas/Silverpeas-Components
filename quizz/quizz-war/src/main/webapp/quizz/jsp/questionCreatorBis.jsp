@@ -33,10 +33,6 @@
 <%@ page import="java.io.ObjectInputStream"%>
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
-
-<%@ page import="com.oreilly.servlet.multipart.*"%>
-<%@ page import="com.oreilly.servlet.MultipartRequest"%>
-
 <%@ page import="java.util.*"%>
 <%@ page import="javax.naming.Context,javax.naming.InitialContext,javax.rmi.PortableRemoteObject"%>
 <%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
