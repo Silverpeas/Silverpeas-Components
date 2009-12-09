@@ -29,8 +29,14 @@
 	    		<c:forEach var="child" items="${organigramme}">
 	    	  		mytree.add(<c:out value="${child.id}"/>, 
 	    	  			<c:out value="${child.parentId}"/>,
-		      			'<c:out value="${child.name}"/><br><c:out value="${child.fonction}"/>', 
-		      			'id<c:out value="${child.id}"/>', '<c:out value="${child.description}"/>', 
+		      			'<c:out value="${child.name}"/><c:if test="${child.fonction != ''}"><br></c:if>' +
+		      			'<c:out value="${child.fonction}"/>' +
+		      			'<c:if test="${child.tel != ''}"><br></c:if><c:out value="${child.tel}"/>', 
+		      			<c:choose>
+		      				<c:when test="${child.detailed}">'id<c:out value="${child.id}"/>'</c:when>
+		      				<c:otherwise>''</c:otherwise>
+		      			</c:choose>
+						,'<c:out value="${child.description}"/>', 
 		      			'popup', '', '', true);
 				</c:forEach>
 				

@@ -158,12 +158,24 @@
       </ParameterHelp>
 	</Parameter>
 	<Parameter>
+      <ParameterName>ldapAttTel</ParameterName>
+      <ParameterLabel>attribut désignant le numéro de téléphone</ParameterLabel>
+      <ParameterValue>telephoneNumber</ParameterValue>
+      <ParameterMandatory>F</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>14</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>nom de l'attribut désignant le numéro de téléphone de l'utilisateur</ParameterHelpFr>
+        <ParameterHelpEn>attribut name of the phone number's user</ParameterHelpEn>
+      </ParameterHelp>
+	</Parameter>
+	<Parameter>
       <ParameterName>responsableLabel</ParameterName>
       <ParameterLabel>titre des responsables de service</ParameterLabel>
       <ParameterValue>responsable</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>14</ParameterOrder>
+      <ParameterOrder>15</ParameterOrder>
       <ParameterHelp>
         <ParameterHelpFr>libellé du ou des titre(s) des responsable des service (ex : responsable|directeur)</ParameterHelpFr>
         <ParameterHelpEn>titles label of unit head (ex : manager|boss)</ParameterHelpEn>
@@ -175,7 +187,7 @@
       <ParameterValue></ParameterValue>
       <ParameterMandatory>F</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>15</ParameterOrder>
+      <ParameterOrder>16</ParameterOrder>
       <ParameterHelp>
         <ParameterHelpFr>nom de l'attribut indiquant si la personne est active (attribut booléen)</ParameterHelpFr>
         <ParameterHelpEn>name of the indicating attribute if the person is active (boolean attribut)</ParameterHelpEn>

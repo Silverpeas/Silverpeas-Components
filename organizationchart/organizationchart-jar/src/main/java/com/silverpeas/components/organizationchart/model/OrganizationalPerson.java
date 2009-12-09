@@ -10,6 +10,7 @@ public class OrganizationalPerson {
 	private String fonction; //=title ou ou si responsable
 	private String description;//=tooltip
 	private String service;//ou
+	private String tel;//telephone
 	private boolean responsable;
 	private boolean detailed; //si true, on peut cliquer dessus pour voir toutes ses info
 	private Map<String, String> detail;
@@ -18,12 +19,13 @@ public class OrganizationalPerson {
 		parentId = -1;//root par défaut
 	}
 	
-	public OrganizationalPerson(int id, int parentId, String name, String fonction, 
+	public OrganizationalPerson(int id, int parentId, String name, String fonction, String tel,
 		String description, String service, boolean responsable) {
 		this.id = id;
 		this.parentId = parentId;
 		this.name = name;
 		this.fonction = fonction;
+		this.tel = tel;
 		this.description = description;
 		this.service = service;
 		this.responsable = responsable;
@@ -55,6 +57,9 @@ public class OrganizationalPerson {
 	}
 	public String getFonction() {
 		return fonction;
+	}
+	public String getTel() {
+		return tel;
 	}
 	public String getDescription() {
 		return description;

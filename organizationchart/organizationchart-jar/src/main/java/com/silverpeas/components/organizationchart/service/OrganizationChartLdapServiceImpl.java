@@ -30,8 +30,11 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 	public static final String PARAM_LDAP_ATT_NAME = "ldapAttName";
 	public static final String PARAM_LDAP_ATT_TITLE = "ldapAttTitle";
 	public static final String PARAM_LDAP_ATT_DESC = "ldapAttDesc";
+	public static final String PARAM_LDAP_ATT_TEL = "ldapAttTel";
 	public static final String PARAM_RESPONSABLE_LABEL = "responsableLabel";
 	public static final String PARAM_LDAP_ATT_ACTIF = "ldapAttActif";
+	
+	private static final String LIB_TEL = "Tel : ";
 	
 	private String LDAP_ROOT;
 	private String LDAP_CLASS_PERSON;
@@ -40,6 +43,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 	private String LDAP_ATT_NAME;
 	private String LDAP_ATT_TITLE;
 	private String LDAP_ATT_DESC;
+	private String LDAP_ATT_TEL;
 	private String[] RESPONSABLE_LABEL;
 	private String LDAP_ATT_ACTIF;
 	
@@ -47,6 +51,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 	
 	@Override
 	public OrganizationalPerson[] getOrganizationChart(String componentId) {
+		SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.getOrganizationChart()", "root.MSG_GEN_ENTER_METHOD", "componentId=" + componentId);
 		Hashtable<String, String> env = initEnv(componentId);
 		List<OrganizationalPerson> listPerson = new ArrayList<OrganizationalPerson>();
 		try {
@@ -56,9 +61,10 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 		ctls.setCountLimit(0);
 	
 		try{
-			// recupère les personnes
+			// recupere les personnes
 			NamingEnumeration<SearchResult> results = ctx.search(LDAP_ROOT,
 					"(objectclass=" + LDAP_CLASS_PERSON + ")", ctls);
+			SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.getOrganizationChart()", "root.MSG_GEN_PARAM_VALUE", "users retrieved !");
 			int i = 0;
 			Map<String, Integer> listResponsable = new HashMap<String, Integer>();
 			while (results != null && results.hasMore()) {
@@ -77,6 +83,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 			// recupère les services
 			Map<String, String> listOu = new HashMap<String, String>();
 			results = ctx.search(LDAP_ROOT, "(objectclass=" + LDAP_CLASS_UNIT + ")", ctls);
+			SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.getOrganizationChart()", "root.MSG_GEN_PARAM_VALUE", "services retrieved !");
 			while (results != null && results.hasMore()) {
 				SearchResult entry = (SearchResult)results.next();
 				Attributes attrs = entry.getAttributes();
@@ -113,7 +120,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 		} catch(Exception ex) {
 			ctx.close();
 			ex.printStackTrace();
-			SilverTrace.error("organizationChart", "OrganizationChartLdapServiceImpl.getOrganizationChart", 
+			SilverTrace.error("organizationchart", "OrganizationChartLdapServiceImpl.getOrganizationChart", 
 					"organizationChart.ldap.search.error", ex);
 			return null;
 		} 
@@ -121,7 +128,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 		ctx.close();
 		} catch (NamingException e) {
 			e.printStackTrace();
-			SilverTrace.error("organizationChart", "OrganizationChartLdapServiceImpl.getOrganizationChart", 
+			SilverTrace.error("organizationchart", "OrganizationChartLdapServiceImpl.getOrganizationChart", 
 					"organizationChart.ldap.conection.error", e);
 			return null;
 		}
@@ -163,19 +170,21 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 			}
 		} else
 			service = getAttributValue(ou);
-		Attribute desc = attrs.get(LDAP_ATT_DESC);
+		
 		String fonction = getAttributValue(title);
 		boolean responsable = false;
 		for(String label : RESPONSABLE_LABEL) {
-			if(fonction.contains(label)) {
+			if(fonction != null && label != null && fonction.contains(label)) {
 				responsable = true;
 				fonction = service;
 				listResponsable.put(fonction, id);
 				break;
 			}
 		}
+		Attribute desc = attrs.get(LDAP_ATT_DESC);
+		Attribute tel = attrs.get(LDAP_ATT_TEL);
 		OrganizationalPerson pers = new OrganizationalPerson(id, -1, 
-				getAttributValue(cn), fonction, getAttributValue(desc), service, responsable);
+				getAttributValue(cn), fonction, getLibTel(tel), getAttributValue(desc), service, responsable);
 		NamingEnumeration<?> attributs = attrs.getAll();
 		Map<String, String> details = new HashMap<String, String>();
 		try {
@@ -196,7 +205,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 				}
 			}
 		} catch (NamingException e) {
-			SilverTrace.warn("organizationChart", "OrganizationChartLdapServiceImpl.createPerson", 
+			SilverTrace.warn("organizationchart", "OrganizationChartLdapServiceImpl.createPerson", 
 					"organizationChart.ldap.search.error", e);
 		}
 		pers.setDetail(details);
@@ -210,7 +219,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 			pers.setParentId(listResponsable.get(service));
 		else { //pas de responsable
 			OrganizationalPerson respService = new OrganizationalPerson(i, -1, 
-					service, "", "", service, true);
+					service, "", "", "", service, true);
 			respService.setDetailed(false);
 			listResponsable.put(service, i);
 			pers.setParentId(i);
@@ -228,10 +237,19 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 			return null;
 		try {
 			String val = (String)att.get();
+			if(val == null || val.isEmpty())
+				return null;
 			return val;
 		} catch (Exception e) {
 			return null;
 		}
+	}
+	
+	private String getLibTel(Attribute telAtt) {
+		String tel = getAttributValue(telAtt);
+		if(tel == null) 
+			return "";
+		return LIB_TEL + tel;
 	}
 	
 	private boolean isActif(Attributes attrs) {
@@ -244,6 +262,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 	}
 	
 	private Hashtable<String, String> initEnv(String componentId) {
+		SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.initEnv()", "root.MSG_GEN_ENTER_METHOD", "componentId=" + componentId);
 		Hashtable<String, String> env = new Hashtable<String, String>();
 		//initialise connexion ldap
 		String jndiURL = controller.getComponentParameterValue(componentId, PARAM_SERVERURL);//"ldap://localhost:389/";
@@ -268,11 +287,13 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 		LDAP_ATT_NAME = controller.getComponentParameterValue(componentId, PARAM_LDAP_ATT_NAME);//"cn";
 		LDAP_ATT_TITLE = controller.getComponentParameterValue(componentId, PARAM_LDAP_ATT_TITLE);//"title";
 		LDAP_ATT_DESC = controller.getComponentParameterValue(componentId, PARAM_LDAP_ATT_DESC);//"description";
+		LDAP_ATT_TEL = controller.getComponentParameterValue(componentId, PARAM_LDAP_ATT_TEL);//telephoneNumber
 		String resp = controller.getComponentParameterValue(componentId, PARAM_RESPONSABLE_LABEL);
 		RESPONSABLE_LABEL = resp.split(",");
 		LDAP_ATT_ACTIF = controller.getComponentParameterValue(componentId, PARAM_LDAP_ATT_ACTIF);
 		if(LDAP_ATT_ACTIF == null || LDAP_ATT_ACTIF.isEmpty())
 			LDAP_ATT_ACTIF = null;
+		SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.initEnv()", "root.MSG_GEN_EXIT_METHOD");
 		return env;
 	}
 

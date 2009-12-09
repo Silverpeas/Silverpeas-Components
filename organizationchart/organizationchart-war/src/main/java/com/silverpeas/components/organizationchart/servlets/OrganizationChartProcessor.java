@@ -32,7 +32,8 @@ public class OrganizationChartProcessor {
 		return JSP_BASE + DESTINATION_DISPLAY_CHART;
 	}
 	
-	public static String processPerson(HttpServletRequest request, String idStr, OrganizationChartSessionController  organizationchartSC) {
+	public static String processPerson(HttpServletRequest request, String idStr, 
+			OrganizationChartSessionController  organizationchartSC) {
 		request.removeAttribute("error");
 		try {
 			OrganizationalPerson[] org = (OrganizationalPerson[])request.getSession().getAttribute("organigramme");
