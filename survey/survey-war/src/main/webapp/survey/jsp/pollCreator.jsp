@@ -33,8 +33,6 @@
 <%@ page import="com.silverpeas.util.web.servlet.FileUploadUtil" %>
 <%@ page import="com.stratelia.webactiv.survey.control.FileHelper" %>
 <%@ page import="java.text.ParsePosition"%>
-<%@ page import="javax.naming.Context,javax.naming.InitialContext,javax.rmi.PortableRemoteObject"%>
-<%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
 
 <%@ include file="checkSurvey.jsp" %>
 
@@ -68,6 +66,10 @@
     String style = FileUploadUtil.getOldParameter(items, "questionStyle");
 
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+
+    String anonymousAllowed = "";
+    String anonymousCheck = "";
+    String anonymous = FileUploadUtil.getOldParameter(items, "AnonymousAllowed");
 
 //Icons
     String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
@@ -165,6 +167,8 @@
           if (checkAnswers()) {
             if (window.document.pollForm.suggestion.checked)
               window.document.pollForm.SuggestionAllowed.value = "1";
+            if (window.document.pollForm.anonymous.checked)
+                window.document.pollForm.AnonymousAllowed.value = "1";
             window.document.pollForm.submit();
           }
         }
@@ -425,6 +429,10 @@
             if (! "0".equals(suggestion)) {
               suggestionCheck = "checked";
             }
+            anonymousCheck = "";
+            if (! "0".equals(anonymous)) {
+              anonymousCheck = "checked";
+            }
             nextAction = "SendNewPoll";
           }
 
@@ -471,6 +479,7 @@ disabledValue = "disabled";
 
         <tr><td class="txtlibform"><%=resources.getString("SurveyCreationNbPossibleAnswer")%> :</td><td><input type="text" name="nbAnswers" value="<%=nbAnswers%>" size="3" maxlength="2" <%=disabledValue%>>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> </td></tr>
         <tr><td class="txtlibform"><%=resources.getString("SuggestionAllowed")%> :</td><td><input type="checkbox" name="suggestion" value="" <%=suggestionCheck%> <%=disabledValue%>></td></tr>
+        <tr><td class="txtlibform"><%=resources.getString("survey.pollAnonymous")%> :</td><td><input type="checkbox" name="anonymous" value="" <%=anonymousCheck%> <%=disabledValue%>></td></tr>
 
         <% if ("SendPollForm".equals(action)) {
 nb = new Integer(nbAnswers).intValue();
@@ -513,7 +522,9 @@ if (!"0".equals(suggestion)) {
   }%>
         <tr><td>(<img border="0" src="<%=mandatoryField%>" width="5" height="5"> : <%=resources.getString("GML.requiredField")%>)</td></tr>
         <tr><td><input type="hidden" name="Action" value="<%=nextAction%>">
-            <input type="hidden" name="SuggestionAllowed" value="0"></td></tr>
+            <input type="hidden" name="SuggestionAllowed" value="0">
+             <input type="hidden" name="AnonymousAllowed" value="0">
+         </td></tr>
       </form>
     </table>
 
@@ -542,8 +553,10 @@ if (!"0".equals(suggestion)) {
           }
 
           // création du vote
-          QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, creationDate,
-              beginDate, endDate, false, 0, 1);
+          boolean anonymousB = false;
+          if (anonymous.equals("1"))
+            anonymousB = true;
+          QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, creationDate, beginDate, endDate, false, 0, 1, anonymousB);
           Question questionObject = new Question(null, null, question, "", "", null, style, 0);
           ArrayList questions = new ArrayList();
           questionObject.setAnswers(answers);
