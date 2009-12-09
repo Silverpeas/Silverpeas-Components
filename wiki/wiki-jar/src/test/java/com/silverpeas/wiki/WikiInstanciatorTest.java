@@ -62,7 +62,13 @@ public class WikiInstanciatorTest extends AbstractTestDao {
     Properties props = new Properties();
     props.load(this.getClass().getClassLoader().getResourceAsStream(
         "jndi.properties"));
-    File jndiDir = new File(props.getProperty(Context.PROVIDER_URL).substring(8));
+    String jndiBaseDir = props.getProperty(Context.PROVIDER_URL).substring(8);
+    props = new Properties();
+    props.load(this.getClass().getClassLoader().getResourceAsStream(
+        "jdbc.properties"));
+    String jndiPath =  props.getProperty("jndi.name", "");
+    File jndiDir = new File(jndiBaseDir + File.separatorChar +
+            jndiPath.substring(0, jndiPath.lastIndexOf('/')));
     jndiDir.mkdirs();
     super.setUp();
   }
