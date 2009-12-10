@@ -55,30 +55,27 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter {
 
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
-    ComponentSessionController component = (ComponentSessionController) new HyperlinkSessionController(
-        mainSessionCtrl, context);
+    ComponentSessionController component =
+        (ComponentSessionController) new HyperlinkSessionController(
+            mainSessionCtrl, context);
     return component;
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   public String getSessionControlBeanName() {
     return "hyperlinkScc";
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
@@ -125,25 +122,29 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter {
               .getAttribute("Silverpeas_pwdForHyperlink"));
 
           request.setAttribute("URL", destination);
-
           return "/hyperlink/jsp/sso.jsp";
+        } else if (hyperlinkSCC.isClientSSO()) {
+          request.setAttribute("ComponentId", hyperlinkSCC.getComponentId());
+          String methodType = hyperlinkSCC.getMethodType();
+          request.setAttribute("Method", methodType);
+          destination = "/RwebConnections/jsp/Connection";
         } else {
           try {
             destination = this.getParsedDestination(destination, s_sUserLogin,
                 URLEncoder.encode(hyperlinkSCC.getUserDetail().getLogin(),
-                    ENCODING));
+                ENCODING));
             destination = this.getParsedDestination(destination, s_sUserEmail,
                 URLEncoder.encode(hyperlinkSCC.getUserDetail().geteMail(),
-                    ENCODING));
+                ENCODING));
             destination = this.getParsedDestination(destination,
                 s_sUserFirstName, URLEncoder.encode(hyperlinkSCC
-                    .getUserDetail().getFirstName(), ENCODING));
+                .getUserDetail().getFirstName(), ENCODING));
             destination = this.getParsedDestination(destination,
                 s_sUserLastName, URLEncoder.encode(hyperlinkSCC.getUserDetail()
-                    .getLastName(), ENCODING));
+                .getLastName(), ENCODING));
             destination = this.getParsedDestination(destination,
                 s_sUserFullName, URLEncoder.encode(hyperlinkSCC.getUserDetail()
-                    .getDisplayedName(), ENCODING));
+                .getDisplayedName(), ENCODING));
             destination = this.getParsedDestination(destination, s_sUserId,
                 URLEncoder.encode(hyperlinkSCC.getUserId(), ENCODING));
             destination = this.getParsedDestination(destination, s_sSessionId,
@@ -156,10 +157,10 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter {
               HttpSession session = request.getSession(false);
               destination = this.getParsedDestination(destination,
                   s_sUserPassword, URLEncoder.encode((String) session
-                      .getAttribute("Silverpeas_pwdForHyperlink"), ENCODING));
+                  .getAttribute("Silverpeas_pwdForHyperlink"), ENCODING));
               destination = this.getParsedDestination(destination,
                   s_sUserEncodedPassword, URLEncoder.encode(hyperlinkSCC
-                      .getUserFull().getPassword(), ENCODING));
+                  .getUserFull().getPassword(), ENCODING));
             } else {
               destination = this.getParsedDestination(destination,
                   s_sUserPassword, URLEncoder.encode("??????", ENCODING));

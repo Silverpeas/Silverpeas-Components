@@ -34,7 +34,6 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.beans.admin.UserFull;
 
 /**
- * 
  * @author nchaix
  * @version
  */
@@ -50,5 +49,18 @@ public class HyperlinkSessionController extends
 
   public UserFull getUserFull() {
     return getOrganizationController().getUserFull(getUserId());
+  }
+
+  public boolean isClientSSO() {
+    return "yes".equalsIgnoreCase(getComponentParameterValue("clientSSO"));
+  }
+
+  public String getURL() {
+    return getComponentParameterValue("URL");
+  }
+
+  public String getMethodType() {
+    String methodType = getComponentParameterValue("method");
+    return methodType;
   }
 }

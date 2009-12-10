@@ -58,6 +58,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
+  String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+
 	ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
 
 	Window 		window 		= gef.getWindow();

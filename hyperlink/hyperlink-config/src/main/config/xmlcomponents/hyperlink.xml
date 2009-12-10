@@ -1,85 +1,274 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<!--
+	<!--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+		Copyright (C) 2000 - 2009 Silverpeas This program is free software:
+		you can redistribute it and/or modify it under the terms of the GNU
+		Affero General Public License as published by the Free Software
+		Foundation, either version 3 of the License, or (at your option) any
+		later version. As a special exception to the terms and conditions of
+		version 3.0 of the GPL, you may redistribute this Program in
+		connection with Free/Libre Open Source Software ("FLOSS") applications
+		as described in Silverpeas's FLOSS exception. You should have recieved
+		a copy of the text describing the FLOSS exception, and it is also
+		available here: "http://repository.silverpeas.com/legal/licensing"
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
--->
+		This program is distributed in the hope that it will be useful, but
+		WITHOUT ANY WARRANTY; without even the implied warranty of
+		MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+		Affero General Public License for more details. You should have
+		received a copy of the GNU Affero General Public License along with
+		this program. If not, see <http://www.gnu.org/licenses/>.
+	-->
 
 <WAComponent>
-  <name>hyperlink</name>
-  <label>Hyperlink - Hyperlien</label>
-  <description>Permet de créer un lien URL simple vers un document ou site Web.</description>
-  <suite>04 Gestion de contenu</suite>
-  <visible>@ComponentVisibleHyperlink@</visible>
-   <portlet>yes</portlet>
-  <instanceClassName>com.stratelia.webactiv.hyperlink.HyperlinkInstanciator</instanceClassName>
-  <Profiles>
-     <Profile name="user">Lecteur</Profile>
-  </Profiles>
-  <Parameters>
-     <Parameter>
-		<ParameterName>URL</ParameterName>
-		<ParameterLabel>URL</ParameterLabel>
-		<ParameterValue></ParameterValue>
-		<ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterHelp>
-			<ParameterHelpFr>Saisissez ici l'adresse web du site cible</ParameterHelpFr>
-			<ParameterHelpEn></ParameterHelpEn>
-	    </ParameterHelp>
-    </Parameter>
-	<Parameter>
-            <ParameterName>openNewWindow</ParameterName>
-            <ParameterLabel>Ouvrir dans une nouvelle fenetre</ParameterLabel>
-            <ParameterValue>no</ParameterValue>
-            <ParameterMandatory>Y</ParameterMandatory>
-            <ParameterType>checkbox</ParameterType>
-            <ParameterUpdatable>Always</ParameterUpdatable>
-            <ParameterHelp>
-                <ParameterHelpFr>Le lien peut s'ouvrir soit dans Silverpeas, soit dans une nouvelle fenêtre.</ParameterHelpFr>
-                <ParameterHelpEn />
-            </ParameterHelp>
-    </Parameter>
-	<!--<Parameter>
-            <ParameterName>sso</ParameterName>
-            <ParameterLabel>SSO</ParameterLabel>
-            <ParameterValue>no</ParameterValue>
-            <ParameterMandatory>Y</ParameterMandatory>
-            <ParameterType>checkbox</ParameterType>
-            <ParameterUpdatable>Always</ParameterUpdatable>
-            <ParameterHelp>
-                <ParameterHelpFr>Single Sign-On (SSO) vers des applications nécessitant une authentification basique</ParameterHelpFr>
-                <ParameterHelpEn>Allow to pass the user credentials through the URL for Single Sign-On (SSO) by using Basic authentication</ParameterHelpEn>
-            </ParameterHelp>
-    </Parameter>
-    <Parameter>
-            <ParameterName>domain</ParameterName>
-            <ParameterLabel>Domaine Windows</ParameterLabel>
-            <ParameterValue></ParameterValue>
-            <ParameterMandatory>Y</ParameterMandatory>
-            <ParameterHelp>
-                <ParameterHelpFr>Nom de domaine Windows (pour le SSO uniquement)</ParameterHelpFr>
-                <ParameterHelpEn>Windows domain's name (for SSO only)</ParameterHelpEn>
-            </ParameterHelp>
-    </Parameter>-->
-  </Parameters>
+	<name>hyperlink</name>
+	<label>Hyperlink - Hyperlien</label>
+	<description>Permet de créer un lien URL simple vers un document ou
+		site Web.</description>
+	<suite>04 Gestion de contenu</suite>
+	<visible>@ComponentVisibleHyperlink@</visible>
+	<portlet>yes</portlet>
+	<instanceClassName>com.stratelia.webactiv.hyperlink.HyperlinkInstanciator
+	</instanceClassName>
+	<Profiles>
+		<Profile name="user">Lecteur</Profile>
+	</Profiles>
+	<Parameters>
+		<Parameter>
+			<ParameterName>URL</ParameterName>
+			<ParameterLabel>URL</ParameterLabel>
+			<ParameterValue></ParameterValue>
+			<ParameterMandatory>Y</ParameterMandatory>
+			<ParameterHelp>
+				<ParameterHelpFr>Saisissez ici l'adresse web du site cible
+				</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+		<Parameter>
+			<ParameterName>clientSSO</ParameterName>
+			<ParameterLabel>SSO Client</ParameterLabel>
+			<ParameterValue>no</ParameterValue>
+			<ParameterMandatory>Y</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>Always</ParameterUpdatable>
+			<ParameterOrder>2</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>Activation du SSO Client.</ParameterHelpFr>
+				<ParameterHelpEn />
+			</ParameterHelp>
+		</Parameter>
+		<Parameter>
+			<ParameterName>openNewWindow</ParameterName>
+			<ParameterLabel>Ouvrir dans une nouvelle fenetre</ParameterLabel>
+			<ParameterValue>no</ParameterValue>
+			<ParameterMandatory>Y</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>Always</ParameterUpdatable>
+			<ParameterHelp>
+				<ParameterHelpFr>Le lien peut s'ouvrir soit dans Silverpeas, soit
+					dans une nouvelle fenêtre.</ParameterHelpFr>
+				<ParameterHelpEn />
+			</ParameterHelp>
+		</Parameter>
+		<!--
+			<Parameter> <ParameterName>sso</ParameterName>
+			<ParameterLabel>SSO</ParameterLabel>
+			<ParameterValue>no</ParameterValue>
+			<ParameterMandatory>Y</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>Always</ParameterUpdatable> <ParameterHelp>
+			<ParameterHelpFr>Single Sign-On (SSO) vers des applications
+			nécessitant une authentification basique</ParameterHelpFr>
+			<ParameterHelpEn>Allow to pass the user credentials through the URL
+			for Single Sign-On (SSO) by using Basic
+			authentication</ParameterHelpEn> </ParameterHelp> </Parameter>
+			<Parameter> <ParameterName>domain</ParameterName>
+			<ParameterLabel>Domaine Windows</ParameterLabel>
+			<ParameterValue></ParameterValue>
+			<ParameterMandatory>Y</ParameterMandatory> <ParameterHelp>
+			<ParameterHelpFr>Nom de domaine Windows (pour le SSO
+			uniquement)</ParameterHelpFr> <ParameterHelpEn>Windows domain's name
+			(for SSO only)</ParameterHelpEn> </ParameterHelp> </Parameter>
+		-->
+		<Parameter>
+			<ParameterName>login</ParameterName>
+			<ParameterLabel>Login SSO</ParameterLabel>
+			<ParameterValue></ParameterValue>
+			<ParameterSize>25</ParameterSize>
+			<ParameterMandatory>N</ParameterMandatory>
+			<ParameterOrder>4</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>login de l'application SSO Client.
+				</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+		<Parameter>
+			<ParameterName>password</ParameterName>
+			<ParameterLabel>Mot de passe SSO</ParameterLabel>
+			<ParameterValue></ParameterValue>
+			<ParameterSize>25</ParameterSize>
+			<ParameterMandatory>N</ParameterMandatory>
+			<ParameterOrder>5</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>mot de passe de l'application SSO Client.
+				</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+		<Parameter>
+			<ParameterName>method</ParameterName>
+			<ParameterLabel>Paramètre Method du formulaire</ParameterLabel>
+			<ParameterMandatory>Y</ParameterMandatory>
+			<ParameterUpdatable>always</ParameterUpdatable>
+			<ParameterType>select</ParameterType>
+			<ParameterOrder>6</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>Paramètre Method à passer au formulaire de
+					soumission de l'application SSO Client.</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+			<ParameterOptions>
+				<ParameterOption>
+					<Name>Post</Name>
+					<Value>post</Value>
+				</ParameterOption>
+				<ParameterOption>
+					<Name>Get</Name>
+					<Value>get</Value>
+				</ParameterOption>
+			</ParameterOptions>
+		</Parameter>
+		<Parameter>
+			<ParameterName>nameParam1</ParameterName>
+			<ParameterLabel>Paramètre sup 1</ParameterLabel>
+			<ParameterValue></ParameterValue>
+			<ParameterSize>25</ParameterSize>
+			<ParameterMandatory>N</ParameterMandatory>
+			<ParameterOrder>7</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>nom du paramètre supplémentaire pour l'application
+					SSO Client.</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+		<Parameter>
+			<ParameterName>valueParam1</ParameterName>
+			<ParameterLabel>Valeur paramètre 1</ParameterLabel>
+			<ParameterValue></ParameterValue>
+			<ParameterSize>25</ParameterSize>
+			<ParameterMandatory>N</ParameterMandatory>
+			<ParameterOrder>8</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>valeur du paramètre supplémentaire pour
+					l'application SSO Client.</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+		<Parameter>
+			<ParameterName>nameParam2</ParameterName>
+			<ParameterLabel>Paramètre sup 2</ParameterLabel>
+			<ParameterValue></ParameterValue>
+			<ParameterSize>25</ParameterSize>
+			<ParameterMandatory>N</ParameterMandatory>
+			<ParameterOrder>9</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>nom du paramètre supplémentaire pour l'application
+					SSO Cleint.</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+		<Parameter>
+			<ParameterName>valueParam2</ParameterName>
+			<ParameterLabel>Valeur paramètre 2</ParameterLabel>
+			<ParameterValue></ParameterValue>
+			<ParameterSize>25</ParameterSize>
+			<ParameterMandatory>N</ParameterMandatory>
+			<ParameterOrder>10</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>valeur du paramètre supplémentaire pour
+					l'application SSO Client.</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+		<Parameter>
+			<ParameterName>nameParam3</ParameterName>
+			<ParameterLabel>Paramètre sup 3</ParameterLabel>
+			<ParameterValue></ParameterValue>
+			<ParameterSize>25</ParameterSize>
+			<ParameterMandatory>N</ParameterMandatory>
+			<ParameterOrder>11</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>nom du paramètre supplémentaire pour l'application
+					SSO Cleint.</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+		<Parameter>
+			<ParameterName>valueParam3</ParameterName>
+			<ParameterLabel>Valeur paramètre 3</ParameterLabel>
+			<ParameterValue></ParameterValue>
+			<ParameterSize>25</ParameterSize>
+			<ParameterMandatory>N</ParameterMandatory>
+			<ParameterOrder>12</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>valeur du paramètre supplémentaire pour
+					l'application SSO Client.</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+		<Parameter>
+			<ParameterName>nameParam4</ParameterName>
+			<ParameterLabel>Paramètre sup 4</ParameterLabel>
+			<ParameterValue></ParameterValue>
+			<ParameterSize>25</ParameterSize>
+			<ParameterMandatory>N</ParameterMandatory>
+			<ParameterOrder>13</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>nom du paramètre supplémentaire pour l'application
+					SSO Cleint.</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+		<Parameter>
+			<ParameterName>valueParam4</ParameterName>
+			<ParameterLabel>Valeur paramètre 4</ParameterLabel>
+			<ParameterValue></ParameterValue>
+			<ParameterSize>25</ParameterSize>
+			<ParameterMandatory>N</ParameterMandatory>
+			<ParameterOrder>14</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>valeur du paramètre supplémentaire pour
+					l'application SSO Client.</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+		<Parameter>
+			<ParameterName>nameParam5</ParameterName>
+			<ParameterLabel>Paramètre sup 5</ParameterLabel>
+			<ParameterValue></ParameterValue>
+			<ParameterSize>25</ParameterSize>
+			<ParameterMandatory>N</ParameterMandatory>
+			<ParameterOrder>15</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>nom du paramètre supplémentaire pour l'application
+					SSO Cleint.</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+		<Parameter>
+			<ParameterName>valueParam5</ParameterName>
+			<ParameterLabel>Valeur paramètre 5</ParameterLabel>
+			<ParameterValue></ParameterValue>
+			<ParameterSize>25</ParameterSize>
+			<ParameterMandatory>N</ParameterMandatory>
+			<ParameterOrder>16</ParameterOrder>
+			<ParameterHelp>
+				<ParameterHelpFr>valeur du paramètre supplémentaire pour
+					l'application SSO Client.</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
+	</Parameters>
 </WAComponent>
