@@ -34,6 +34,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
 
@@ -44,21 +46,17 @@ import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.OrderBy;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import java.util.Properties;
 
-public class TestMessageDao extends
-    AbstractTransactionalDataSourceSpringContextTests {
+public class TestMessageDao extends AbstractTransactionalDataSourceSpringContextTests {
 
   private static final int ATT_SIZE = 87186;
-
   private static final OrderBy orderByDate = new OrderBy("sentDate", false);
-
   private static final String textEmailContent = "Bonjour famille Simpson, j'espère que vous allez bien. "
-      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
-      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer"
-      + "l'homme canon dans la prochaine émission.\nBart";
-
-  private static final String attachmentPath = "c:\\tmp\\uploads\\componentId\\mailId@silverpeas.com\\";
-
+          + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
+          + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer"
+          + "l'homme canon dans la prochaine émission.\nBart";
+  private static final String attachmentPath = getAttachmentPath();
   private MessageDao messageDao;
 
   public MessageDao getMessageDao() {
@@ -70,9 +68,9 @@ public class TestMessageDao extends
   }
 
   protected String[] getConfigLocations() {
-    return new String[] { "spring-checker.xml",
-        "spring-notification.xml", "spring-hibernate.xml",
-        "spring-datasource.xml" };
+    return new String[]{"spring-checker.xml",
+              "spring-notification.xml", "spring-hibernate.xml",
+              "spring-datasource.xml"};
   }
 
   protected String loadHtml() throws IOException {
@@ -81,7 +79,7 @@ public class TestMessageDao extends
     try {
       buffer = new StringWriter();
       reader = new BufferedReader(new InputStreamReader(
-          TestMessageChecker.class.getResourceAsStream("lemonde.html")));
+              TestMessageChecker.class.getResourceAsStream("lemonde.html")));
       String line = null;
       while ((line = reader.readLine()) != null) {
         buffer.write(line);
@@ -98,7 +96,7 @@ public class TestMessageDao extends
   }
 
   protected void copyFile(String filePath, String targetPath)
-      throws IOException {
+          throws IOException {
     FileInputStream in = null;
     FileOutputStream out = null;
     try {
@@ -265,8 +263,7 @@ public class TestMessageDao extends
     assertEquals(10000, savedMessage.getAttachmentsSize());
     assertNotNull(savedMessage.getAttachments());
     assertEquals(1, savedMessage.getAttachments().size());
-    Attachment attached = (Attachment) savedMessage.getAttachments().iterator()
-        .next();
+    Attachment attached = (Attachment) savedMessage.getAttachments().iterator().next();
     assertNotNull(attached);
     assertEquals(0, attached.getVersion());
     assertNotNull(attached.getId());
@@ -353,8 +350,7 @@ public class TestMessageDao extends
     assertEquals(10000, savedMessage.getAttachmentsSize());
     assertNotNull(savedMessage.getAttachments());
     assertEquals(1, savedMessage.getAttachments().size());
-    Attachment attached = (Attachment) savedMessage.getAttachments().iterator()
-        .next();
+    Attachment attached = (Attachment) savedMessage.getAttachments().iterator().next();
     assertNotNull(attached);
     assertEquals(0, attached.getVersion());
     assertNotNull(attached.getId());
@@ -451,7 +447,7 @@ public class TestMessageDao extends
   public void testDeleteMessageWithAttachmentShared() throws IOException {
     String copyPath = TestMessageChecker.class.getResource("lemonde.html").getPath();
     copyFile(copyPath, attachmentPath + "lemonde2.html");
-    copyFile(copyPath, attachmentPath +  "toto\\lemonde2.html");
+    copyFile(copyPath, attachmentPath + "toto\\lemonde2.html");
     copyFile(copyPath, attachmentPath + "lemonde.html");
 
     Calendar sentDate = Calendar.getInstance();
@@ -500,7 +496,8 @@ public class TestMessageDao extends
 
     Message savedMessage = messageDao.findMessageById(id);
     assertEquals(2, countRowsInTable("SC_MAILINGLIST_MESSAGE"));
-    assertEquals(3, countRowsInTable("SC_MAILINGLIST_ATTACHMENT"));    messageDao.deleteMessage(savedMessage);
+    assertEquals(3, countRowsInTable("SC_MAILINGLIST_ATTACHMENT"));
+    messageDao.deleteMessage(savedMessage);
 
     savedMessage = messageDao.findMessageById(id);
     assertEquals(1, countRowsInTable("SC_MAILINGLIST_MESSAGE"));
@@ -522,7 +519,7 @@ public class TestMessageDao extends
     sentDate.set(Calendar.HOUR_OF_DAY, 9);
     sentDate.set(Calendar.MINUTE, 0);
     sentDate.set(Calendar.SECOND, 0);
-    sentDate.set(Calendar.MILLISECOND,0);
+    sentDate.set(Calendar.MILLISECOND, 0);
     Message message = new Message();
     message.setBody(textEmailContent);
     message.setComponentId("componentId");
@@ -561,7 +558,7 @@ public class TestMessageDao extends
     sentDate.set(Calendar.HOUR_OF_DAY, 9);
     sentDate.set(Calendar.MINUTE, 0);
     sentDate.set(Calendar.SECOND, 0);
-    sentDate.set(Calendar.MILLISECOND,0);
+    sentDate.set(Calendar.MILLISECOND, 0);
     message = new Message();
     message.setBody(textEmailContent);
     message.setComponentId("componentId");
@@ -573,70 +570,68 @@ public class TestMessageDao extends
     message.setTitle("Simple text message 3");
     messageDao.saveMessage(message);
     List messages = messageDao.listAllMessagesOfMailingList("componentId", 0,
-        10, orderByDate);
+            10, orderByDate);
     assertNotNull(messages);
     assertEquals(3, messages.size());
     assertEquals(3, countRowsInTable("SC_MAILINGLIST_MESSAGE"));
     assertEquals(2, countRowsInTable("SC_MAILINGLIST_ATTACHMENT"));
     messages = messageDao.listAllMessagesOfMailingList("componentId", 0, 2,
-        orderByDate);
+            orderByDate);
     assertNotNull(messages);
     assertEquals(2, messages.size());
     messages = messageDao.listAllMessagesOfMailingList("componentId", 1, 2,
-        orderByDate);
+            orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
 
     messages = messageDao.listDisplayableMessagesOfMailingList("componentId",
-        -1, -1, 0, 10, orderByDate);
+            -1, -1, 0, 10, orderByDate);
     assertNotNull(messages);
     assertEquals(2, messages.size());
     messages = messageDao.listDisplayableMessagesOfMailingList("componentId",
-        -1, 2008, 0, 10, orderByDate);
+            -1, 2008, 0, 10, orderByDate);
     assertNotNull(messages);
     assertEquals(2, messages.size());
     messages = messageDao.listDisplayableMessagesOfMailingList("componentId",
-        -1, 2007, 0, 10, orderByDate);
+            -1, 2007, 0, 10, orderByDate);
     assertNotNull(messages);
     assertEquals(0, messages.size());
     messages = messageDao.listDisplayableMessagesOfMailingList("componentId",
-        Calendar.MARCH, 2008, 0, 10, orderByDate);
+            Calendar.MARCH, 2008, 0, 10, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     messages = messageDao.listDisplayableMessagesOfMailingList("componentId",
-        Calendar.FEBRUARY, 2008, 0, 10, orderByDate);
+            Calendar.FEBRUARY, 2008, 0, 10, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     messages = messageDao.listDisplayableMessagesOfMailingList("componentId",
-        -1, -1, 0, 1, orderByDate);
+            -1, -1, 0, 1, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     messages = messageDao.listDisplayableMessagesOfMailingList("componentId",
-        -1, -1, 1, 1, orderByDate);
+            -1, -1, 1, 1, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
 
     messages = messageDao.listUnmoderatedMessagesOfMailingList("componentId",
-        0, 10, orderByDate);
+            0, 10, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     messages = messageDao.listUnmoderatedMessagesOfMailingList("componentId",
-        0, 1, orderByDate);
+            0, 1, orderByDate);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     messages = messageDao.listUnmoderatedMessagesOfMailingList("componentId",
-        1, 1, orderByDate);
+            1, 1, orderByDate);
     assertNotNull(messages);
     assertEquals(0, messages.size());
 
     assertEquals(3, countRowsInTable("SC_MAILINGLIST_MESSAGE"));
     assertEquals(2, countRowsInTable("SC_MAILINGLIST_ATTACHMENT"));
 
-    int unmoderatedMessages = messageDao
-        .listTotalNumberOfUnmoderatedMessages("componentId");
+    int unmoderatedMessages = messageDao.listTotalNumberOfUnmoderatedMessages("componentId");
     assertEquals(1, unmoderatedMessages);
-    int displayabledMessages = messageDao
-        .listTotalNumberOfDisplayableMessages("componentId");
+    int displayabledMessages = messageDao.listTotalNumberOfDisplayableMessages("componentId");
     assertEquals(2, displayabledMessages);
     int totalMessages = messageDao.listTotalNumberOfMessages("componentId");
     assertEquals(3, totalMessages);
@@ -693,7 +688,7 @@ public class TestMessageDao extends
     message.setTitle("Simple text message 3");
     messageDao.saveMessage(message);
     List messages = messageDao.listActivityMessages("componentId", 5,
-        orderByDate);
+            orderByDate);
     assertNotNull(messages);
     assertEquals(2, messages.size());
     assertEquals(3, countRowsInTable("SC_MAILINGLIST_MESSAGE"));
@@ -702,8 +697,7 @@ public class TestMessageDao extends
     assertEquals(textEmailContent, activityMessage.getBody());
     assertEquals("componentId", activityMessage.getComponentId());
     assertEquals(true, activityMessage.isModerated());
-    assertEquals(textEmailContent.substring(0, 200), activityMessage
-        .getSummary());
+    assertEquals(textEmailContent.substring(0, 200), activityMessage.getSummary());
     assertEquals("bart.simpson@ilverpeas.com", activityMessage.getSender());
     assertEquals("0000001747b40c19", activityMessage.getMessageId());
     assertEquals(message1SentDate, activityMessage.getSentDate());
@@ -715,8 +709,7 @@ public class TestMessageDao extends
     assertEquals(textEmailContent, activityMessage.getBody());
     assertEquals("componentId", activityMessage.getComponentId());
     assertEquals(true, activityMessage.isModerated());
-    assertEquals(textEmailContent.substring(0, 200), activityMessage
-        .getSummary());
+    assertEquals(textEmailContent.substring(0, 200), activityMessage.getSummary());
     assertEquals("bart.simpson@ilverpeas.com", activityMessage.getSender());
     assertEquals("0000001747b40c21", activityMessage.getMessageId());
     assertEquals(message3SentDate, activityMessage.getSentDate());
@@ -824,11 +817,11 @@ public class TestMessageDao extends
     message.setContentType("text/plain");
     Attachment attachment = new Attachment();
     attachment.setPath(attachmentPath + "toto" + File.separator
-        + "lemonde.html");
+            + "lemonde.html");
     attachment.setFileName("lemonde.html");
     attachment.setSize(10000);
     copyFile(copyPath, attachmentPath + "toto"
-        + File.separator + "lemonde.html");
+            + File.separator + "lemonde.html");
     message.getAttachments().add(attachment);
     String id1 = messageDao.saveMessage(message);
     assertNotNull(id1);
@@ -850,15 +843,14 @@ public class TestMessageDao extends
     assertNotNull(savedMessage.getAttachments());
     assertEquals(1, savedMessage.getAttachments().size());
     assertEquals("text/plain", savedMessage.getContentType());
-    Attachment attached = (Attachment) savedMessage.getAttachments().iterator()
-        .next();
+    Attachment attached = (Attachment) savedMessage.getAttachments().iterator().next();
     assertNotNull(attached);
     assertEquals(0, attached.getVersion());
     assertNotNull(attached.getId());
     assertEquals(87186, attached.getSize());
     assertEquals("lemonde.html", attached.getFileName());
     assertEquals(attachmentPath + "toto" + File.separator + "lemonde.html",
-        attached.getPath());
+            attached.getPath());
 
     message = new Message();
     message.setBody(textEmailContent);
@@ -872,11 +864,11 @@ public class TestMessageDao extends
 
     attachment = new Attachment();
     attachment.setPath(attachmentPath + "titi" + File.separator
-        + "lemonde.html");
+            + "lemonde.html");
     attachment.setFileName("lemonde.html");
     attachment.setSize(10000);
     copyFile(copyPath, attachmentPath + "titi"
-        + File.separator + "lemonde.html");
+            + File.separator + "lemonde.html");
     message.getAttachments().add(attachment);
     String id2 = messageDao.saveMessage(message);
     assertNotNull(id2);
@@ -904,7 +896,7 @@ public class TestMessageDao extends
     assertEquals(ATT_SIZE, attached.getSize());
     assertEquals("lemonde.html", attached.getFileName());
     assertEquals(attachmentPath + "toto" + File.separator + "lemonde.html",
-        attached.getPath());
+            attached.getPath());
   }
 
   @Override
@@ -915,5 +907,16 @@ public class TestMessageDao extends
     } catch (UtilException e) {
       e.printStackTrace();
     }
+  }
+
+  private static String getAttachmentPath() {
+    Properties props = new Properties();
+    try {
+      props.load(TestMessageDao.class.getClassLoader().getResourceAsStream("maven.properties"));
+    } catch (IOException ex) {
+      Logger.getLogger(TestMessageDao.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return props.getProperty("upload.dir", "c:\\tmp\\uploads") + File.separatorChar + "componentId"
+            + File.separatorChar + "mailId@silverpeas.com" + File.separatorChar;
   }
 }
