@@ -23,43 +23,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.File"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
-<%@ page import="java.lang.Integer"%>
-
-<%@ page import="java.util.*"%>
-<%@ page import="javax.naming.Context,javax.naming.InitialContext,javax.rmi.PortableRemoteObject"%>
-<%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
-
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
-<%@ page import="com.stratelia.webactiv.quizz.control.*"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.util.*"%>
-<%@ page import="com.stratelia.webactiv.util.question.model.Question "%>
-<%@ page import="com.stratelia.webactiv.util.answer.model.Answer "%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.webactiv.util.questionContainer.model.*"%>
-<%@ page import="com.stratelia.webactiv.util.questionContainer.control.*"%>
-<%@ page import="com.stratelia.webactiv.quizz.QuizzException"%>
-<%@ page import="com.silverpeas.util.web.servlet.FileUploadUtil"%>
-<%@ page import="org.apache.commons.fileupload.FileItem"%>
-<%@ page import="com.stratelia.webactiv.quizz.QuestionHelper"%>
-<%@ page import="com.stratelia.webactiv.quizz.QuestionForm"%>
 
 <jsp:useBean id="quizzUnderConstruction" scope="session" class="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail" />
 <jsp:useBean id="questionsVector" scope="session" class="java.util.Vector" />
@@ -154,6 +117,7 @@ List answers = QuestionHelper.extractAnswer(items, form, quizzScc.getComponentId
 file = form.isFile();
 attachmentSuffix = form.getAttachmentSuffix();
 %>
+
 <HTML>
 <HEAD>
 	<TITLE>___/ Silverpeas - Corporate Portal Organizer \__________________________________________</TITLE>

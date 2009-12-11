@@ -29,34 +29,6 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
-
-<%@ page import="java.util.*"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.quizz.control.*"%>
-<%@ page import="com.stratelia.webactiv.util.*"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.questionContainer.model.*"%>
-<%@ page import="com.stratelia.webactiv.util.questionContainer.control.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page import="com.stratelia.webactiv.util.question.model.*"%>
-<%@ page import="com.stratelia.webactiv.util.question.control.*"%>
-<%@ page import="com.stratelia.webactiv.quizz.QuizzException"%>
-
 <%@ include file="checkQuizz.jsp" %>
 <%
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");

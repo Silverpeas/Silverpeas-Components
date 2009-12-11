@@ -28,46 +28,21 @@ response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
-<%@ page import="javax.servlet.*,
-                 com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.File"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
-
-<%@ page import="java.util.*"%>
-<%@ page import="javax.naming.Context,javax.naming.InitialContext,javax.rmi.PortableRemoteObject"%>
-<%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
-<%@ page import="com.stratelia.webactiv.util.*"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.score.model.ScoreDetail"%>
-<%@ page import="com.stratelia.webactiv.util.question.model.Question"%>
-<%@ page import="com.stratelia.webactiv.util.questionResult.model.QuestionResult"%>
-<%@ page import="com.stratelia.webactiv.util.answer.model.Answer"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
-<%@ page import="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader"%>
-<%@ page import="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail"%>
-<%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
-<%@ page import="com.stratelia.webactiv.quizz.QuizzException"%>
-
 
 <jsp:useBean id="quizzUnderConstruction" scope="session" class="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail" />
 <jsp:useBean id="questionsVector" scope="session" class="java.util.Vector" />
 <jsp:useBean id="questionsResponses" scope="session" class="java.util.Hashtable" />
 
 <%@ include file="checkQuizz.jsp" %>
+
+<%
+String    profile     = (String) request.getAttribute("Profile");
+
+String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+
+String exportSrc = m_context + "/util/icons/export.gif";
+String copySrc = m_context + "util/icons/copy.gif";
+%>
 
 <%!
 //Display the quizz header
@@ -739,7 +714,6 @@ if (roundId == null)
 if (participationIdSTR != null)
   session.setAttribute("currentParticipationId", participationIdSTR);
 
-String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 ResourceLocator settings = quizzScc.getSettings();
 
 //Icons
@@ -856,6 +830,24 @@ function sendVote(roundId) {
           document.quizz.submit();
     }
 }
+
+var exportWindow = window;
+
+function Export(url) 
+{
+  windowName = "exportWindow";
+    larg = "740";
+    haut = "600";
+    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+    if (!exportWindow.closed && exportWindow.name == "exportWindow")
+      exportWindow.close();
+    exportWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+}
+
+function clipboardCopy(id) {
+  top.IdleFrame.location.href = '../..<%=quizzScc.getComponentUrl()%>copy?Id='+id;
+}
+
 //-->
 </script>
 </HEAD>
@@ -966,9 +958,18 @@ if (action.equals("ViewQuizz")) {
         if (quizzScc.getNbVoters(quizz.getHeader().getPK().getId())==0||"admin".equals(quizzScc.getUserRoleLevel()))
         {
         	operationPane.addLine(); 
-	  		operationPane.addOperation(m_context + "/util/icons/quizz_to_edit.gif",resources.getString("QuestionUpdate"),"quizzUpdate.jsp?Action=UpdateQuizzHeader&QuizzId="+quizz.getHeader().getPK().getId());
-	  	}
+	  		  operationPane.addOperation(m_context + "/util/icons/quizz_to_edit.gif",resources.getString("QuestionUpdate"),"quizzUpdate.jsp?Action=UpdateQuizzHeader&QuizzId="+quizz.getHeader().getPK().getId());
+	  	  }
 	  	
+        if (profile.equals("admin")) {
+          // export csv
+          String url = "ExportCSV?QuizzId=" + quizz.getHeader().getPK().getId();
+          operationPane.addOperation(exportSrc, resources.getString("GML.export"), "javaScript:onClick=Export('"+url+"')");
+        }
+       
+        // copier
+        operationPane.addOperation(copySrc, resources.getString("GML.copy"), "javaScript:onClick=clipboardCopy('"+quizz.getHeader().getPK().getId()+"')");
+
         out.println(window.printBefore());
         Frame frame = gef.getFrame();
         

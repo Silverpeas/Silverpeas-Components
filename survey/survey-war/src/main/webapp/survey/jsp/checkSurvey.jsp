@@ -56,6 +56,8 @@
 <%@ page import="com.stratelia.webactiv.survey.SurveyException"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
 <%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
+<%@ page import="com.silverpeas.util.web.servlet.FileUploadUtil"%>
+<%@ page import="org.apache.commons.fileupload.FileItem"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.webactiv.util.questionContainer.model.Comment"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
@@ -64,6 +66,9 @@
 <%@ page import="java.util.Collection"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.Vector"%>
+<%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@ page import="com.stratelia.webactiv.quizz.QuestionHelper"%>
+<%@ page import="com.stratelia.webactiv.quizz.QuestionForm"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 

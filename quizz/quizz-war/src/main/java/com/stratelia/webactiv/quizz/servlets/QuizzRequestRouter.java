@@ -23,22 +23,27 @@
  */
 package com.stratelia.webactiv.quizz.servlets;
 
+import java.io.File;
+
 import javax.servlet.http.HttpServletRequest;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.quizz.control.QuizzSessionController;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 public class QuizzRequestRouter extends ComponentRequestRouter {
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for quizz, returns "quizz"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for quizz, returns "quizz"
    */
   public String getSessionControlBeanName() {
     return "quizz";
@@ -46,13 +51,9 @@ public class QuizzRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param mainSessionCtrl
    * @param componentContext
-   * 
    * @return
-   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -64,17 +65,12 @@ public class QuizzRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
-   * @param request
-   *          The entering request. The request rooter need it to get parameters
-   * @return The complete destination URL for a forward (ex :
-   *         "/quizz/jsp/quizz.jsp?flag=user")
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
+   * @param request The entering request. The request rooter need it to get parameters
+   * @return The complete destination URL for a forward (ex : "/quizz/jsp/quizz.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
@@ -83,32 +79,61 @@ public class QuizzRequestRouter extends ComponentRequestRouter {
     QuizzSessionController quizzSC = (QuizzSessionController) componentSC;
     String destination = "";
 
+    String flag = componentSC.getUserRoleLevel();
+    request.setAttribute("Profile", flag);
+
     try {
       boolean profileError = false;
       if (function.startsWith("Main")) {
         // the flag is the best user's profile
-        String flag = componentSC.getUserRoleLevel();
         if ("publisher".equals(flag) || "admin".equals(flag)) {
           destination = "quizzAdmin.jsp";
         } else {
           destination = "quizzUser.jsp";
         }
       } else if (function.startsWith("portlet")) {
-        String flag = componentSC.getUserRoleLevel();
         if ("publisher".equals(flag) || "admin".equals(flag))
           destination = "quizzPortlet.jsp";
         else
           destination = "quizzUserPortlet.jsp";
       } else if (function.startsWith("quizzCreator")) {
-        String flag = componentSC.getUserRoleLevel();
-
         if ("publisher".equals(flag) || "admin".equals(flag)) {
           destination = "quizzCreator.jsp";
         } else {
           profileError = true;
         }
+      } else if (function.equals("ExportCSV")) {
+        String quizzId = request.getParameter("QuizzId");
+        String csvFilename = quizzSC.exportQuizzCSV(quizzId);
+
+        request.setAttribute("CSVFilename", csvFilename);
+        if (StringUtil.isDefined(csvFilename)) {
+          File file = new File(FileRepositoryManager.getTemporaryPath() + csvFilename);
+          request.setAttribute("CSVFileSize", Long.valueOf(file.length()));
+          request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename,
+              csvFilename, "text/csv"));
+          file = null;
+        }
+        destination = "downloadCSV.jsp";
+      } else if (function.equals("copy")) {
+        String quizzId = request.getParameter("Id");
+        try {
+          quizzSC.copySurvey(quizzId);
+        } catch (Exception e) {
+          SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_COPY_FAILED",
+              "function = " + function, e);
+        }
+        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD)
+            + "Idle.jsp?message=REFRESHCLIPBOARD";
+      } else if (function.startsWith("paste")) {
+        try {
+          quizzSC.paste();
+        } catch (Exception e) {
+          SilverTrace.warn("Quizz", "QuizzRequestRouter.getDestination()", "root.EX_CUT_FAILED",
+              "function = " + function, e);
+        }
+        destination = URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp";
       } else if (function.startsWith("searchResult")) {
-        String flag = componentSC.getUserRoleLevel();
         String id = request.getParameter("Id");
 
         SilverTrace.info("Quizz", "QuizzRequestRouter.getDestination()", "",
@@ -142,5 +167,4 @@ public class QuizzRequestRouter extends ComponentRequestRouter {
 
     return destination;
   }
-
 }
