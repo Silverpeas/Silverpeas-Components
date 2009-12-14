@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+
+    Copyright (C) 2000 - 2009 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have recieved a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://repository.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<WAComponent>
+  <name>classifieds</name>
+  <label>Petites annonces - classifieds</label>
+  <description>Les petites annonces seront classées par catégories et type</description>
+  <suite>80 Nouveau composant</suite>
+  <visible>yes</visible>
+  <portlet>no</portlet>
+  <instanceClassName>com.silverpeas.classifieds.ClassifiedsInstanciator</instanceClassName>
+ <Profiles>
+    <Profile name="admin">Gestionnaire</Profile>
+    <Profile name="publisher">Annonceur</Profile>
+  </Profiles>
+  <Parameters>
+		<Parameter>
+            <ParameterName>XMLFormName</ParameterName>
+            <ParameterLabel>Formulaire XML</ParameterLabel>
+            <ParameterValue></ParameterValue>
+	    	<ParameterSize>25</ParameterSize>
+            <ParameterMandatory>N</ParameterMandatory>
+	    	<ParameterUpdatable>always</ParameterUpdatable>
+	    	<ParameterOrder>1</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Nom du formulaire XML associé aux petites annonces</ParameterHelpFr>
+				<ParameterHelpEn>Form XML name attached to classifieds</ParameterHelpEn>
+	    	</ParameterHelp>
+		</Parameter>
+		<Parameter>
+            <ParameterName>searchFields1</ParameterName>
+            <ParameterLabel>Champs recherche 1</ParameterLabel>
+            <ParameterValue></ParameterValue>
+	    	<ParameterSize>25</ParameterSize>
+            <ParameterMandatory>N</ParameterMandatory>
+	    	<ParameterUpdatable>always</ParameterUpdatable>
+	    	<ParameterOrder>2</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Premier champs de recherche</ParameterHelpFr>
+				<ParameterHelpEn>First search fields</ParameterHelpEn>
+	    	</ParameterHelp>
+		</Parameter>
+		<Parameter>
+            <ParameterName>searchFields2</ParameterName>
+            <ParameterLabel>Champs recherche 2</ParameterLabel>
+            <ParameterValue></ParameterValue>
+	    	<ParameterSize>25</ParameterSize>
+            <ParameterMandatory>N</ParameterMandatory>
+	    	<ParameterUpdatable>always</ParameterUpdatable>
+	    	<ParameterOrder>3</ParameterOrder>
+	    	<ParameterHelp>
+				<ParameterHelpFr>Second champs de recherche</ParameterHelpFr>
+				<ParameterHelpEn>Second search fields</ParameterHelpEn>
+	    	</ParameterHelp>
+		</Parameter>
+		<Parameter>
+        <ParameterName>draft</ParameterName>
+        <ParameterLabel>Mode brouillon</ParameterLabel>
+        <ParameterValue>no</ParameterValue>
+        <ParameterMandatory>Y</ParameterMandatory>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterOrder>4</ParameterOrder>
+	    <ParameterHelp>
+			<ParameterHelpFr>Le mode brouillon permet de travailler sur une annonce sans que personne d'autre ne puisse la voir.</ParameterHelpFr>
+			<ParameterHelpEn></ParameterHelpEn>
+	    </ParameterHelp>
+    </Parameter>
+  </Parameters>
+</WAComponent>
