@@ -57,6 +57,10 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
           + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer"
           + "l'homme canon dans la prochaine émission.\nBart";
   private static final String attachmentPath = getAttachmentPath();
+  private static final String COPY_PATH = System.getProperty("basedir") + File.separatorChar + "target" + File.separatorChar
+            + "test-classes" + File.separatorChar + "com" + File.separatorChar + "silverpeas"
+            + File.separatorChar + "mailinglist" + File.separatorChar + "service"
+            + File.separatorChar + "job" + File.separatorChar + "lemonde.html";
   private MessageDao messageDao;
 
   public MessageDao getMessageDao() {
@@ -387,9 +391,8 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
   }
 
   public void testDeleteMessageWithAttachments() throws IOException {
-    String copyPath = TestMessageChecker.class.getResource("lemonde.html").getPath();
-    copyFile(copyPath, attachmentPath + "lemonde2.html");
-    copyFile(copyPath, attachmentPath + "lemonde.html");
+    copyFile(COPY_PATH, attachmentPath + "lemonde2.html");
+    copyFile(COPY_PATH, attachmentPath + "lemonde.html");
 
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
@@ -444,11 +447,10 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     assertFalse(deletedAttachement.exists());
   }
 
-  public void testDeleteMessageWithAttachmentShared() throws IOException {
-    String copyPath = TestMessageChecker.class.getResource("lemonde.html").getPath();
-    copyFile(copyPath, attachmentPath + "lemonde2.html");
-    copyFile(copyPath, attachmentPath + "toto\\lemonde2.html");
-    copyFile(copyPath, attachmentPath + "lemonde.html");
+  public void testDeleteMessageWithAttachmentShared() throws IOException {     
+    copyFile(COPY_PATH, attachmentPath + "lemonde2.html");
+    copyFile(COPY_PATH, attachmentPath + "toto\\lemonde2.html");
+    copyFile(COPY_PATH, attachmentPath + "lemonde.html");
 
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
@@ -802,8 +804,7 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
     }
   }
 
-  public void testCreateMessagesWithSameAttachments() throws IOException {
-    String copyPath = TestMessageChecker.class.getResource("lemonde.html").getPath();
+  public void testCreateMessagesWithSameAttachments() throws IOException {  
     Calendar sentDate = Calendar.getInstance();
     Message message = new Message();
     message.setBody(textEmailContent);
@@ -820,7 +821,7 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
             + "lemonde.html");
     attachment.setFileName("lemonde.html");
     attachment.setSize(10000);
-    copyFile(copyPath, attachmentPath + "toto"
+    copyFile(COPY_PATH, attachmentPath + "toto"
             + File.separator + "lemonde.html");
     message.getAttachments().add(attachment);
     String id1 = messageDao.saveMessage(message);
@@ -867,7 +868,7 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
             + "lemonde.html");
     attachment.setFileName("lemonde.html");
     attachment.setSize(10000);
-    copyFile(copyPath, attachmentPath + "titi"
+    copyFile(COPY_PATH, attachmentPath + "titi"
             + File.separator + "lemonde.html");
     message.getAttachments().add(attachment);
     String id2 = messageDao.saveMessage(message);
@@ -903,20 +904,24 @@ public class TestMessageDao extends AbstractTransactionalDataSourceSpringContext
   protected void onTearDown() throws Exception {
     super.onTearDown();
     try {
-      FileFolderManager.deleteFolder("c:\\tmp\\uploads\\componentId", false);
+      FileFolderManager.deleteFolder(getUploadPath(), false);
     } catch (UtilException e) {
       e.printStackTrace();
     }
   }
 
   private static String getAttachmentPath() {
+    return getUploadPath() + File.separatorChar + "componentId"
+            + File.separatorChar + "mailId@silverpeas.com" + File.separatorChar;
+  }
+
+  private static String getUploadPath() {
     Properties props = new Properties();
     try {
       props.load(TestMessageDao.class.getClassLoader().getResourceAsStream("maven.properties"));
     } catch (IOException ex) {
       Logger.getLogger(TestMessageDao.class.getName()).log(Level.SEVERE, null, ex);
     }
-    return props.getProperty("upload.dir", "c:\\tmp\\uploads") + File.separatorChar + "componentId"
-            + File.separatorChar + "mailId@silverpeas.com" + File.separatorChar;
+    return props.getProperty("upload.dir", "c:\\tmp\\uploads");
   }
 }
