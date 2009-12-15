@@ -30,13 +30,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 
-import org.apache.tools.ant.Project;
-import org.apache.tools.zip.ZipEntry;
-import org.apache.tools.zip.ZipFile;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.webSites.control.WebSitesException;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * Unzip a file.
@@ -78,13 +76,19 @@ public class Expand {
     ZipFile zf = null;
     try {
 
-      zf = new ZipFile(srcF, "Cp437");
+      zf = new ZipFile(srcF);
       ZipEntry ze = null;
 
-      Enumeration entries = zf.getEntries();
+      Enumeration entries = zf.entries();
       while (entries.hasMoreElements()) {
         ze = (ZipEntry) entries.nextElement();
-        File f = new File(dir, Project.translatePath(ze.getName()));
+        String entryName = dir.getAbsolutePath();
+        if(!entryName.endsWith(File.separator) &&  !ze.getName().startsWith(File.separator)) {
+          entryName = entryName + File.separatorChar + ze.getName();
+        } else {
+          entryName  = entryName + ze.getName();
+        }
+        File f = new File(entryName);
         try {
           // create intermediary directories - sometimes zip don't add them
           File dirF = new File(f.getParent());
