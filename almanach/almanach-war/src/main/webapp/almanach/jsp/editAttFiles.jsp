@@ -42,7 +42,7 @@
 	String dateDebutIterationString = DateUtil.date2SQLDate(dateDebutIteration);
 
 	String id = event.getPK().getId();
-	String title = Encode.javaStringToHtmlString(event.getTitle());
+	String title = event.getTitle();
 	if (title.length() > 30) {
 		title = title.substring(0,30) + "....";
 	}

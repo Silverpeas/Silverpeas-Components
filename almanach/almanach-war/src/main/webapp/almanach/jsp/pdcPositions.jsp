@@ -41,7 +41,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	String dateDebutIterationString = DateUtil.date2SQLDate(dateDebutIteration);
 
 	String id = event.getPK().getId();
-	String title = Encode.javaStringToHtmlString(event.getTitle());
+	String title = event.getTitle();
 	if (title.length() > 30) {
 		title = title.substring(0,30) + "....";
 	}
@@ -70,7 +70,7 @@ function openSPWindow(fonction, windowName){
 		BrowseBar browseBar = window.getBrowseBar();
 		browseBar.setDomainName(spaceLabel);
         browseBar.setComponentName(componentLabel, "almanach.jsp");
-        browseBar.setExtraInformation(Encode.javaStringToHtmlString(title));
+        browseBar.setExtraInformation(title);
 
         OperationPane operationPane = window.getOperationPane();
 

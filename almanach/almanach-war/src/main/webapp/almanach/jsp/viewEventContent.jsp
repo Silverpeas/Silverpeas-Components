@@ -55,7 +55,7 @@
 	String description = "";
 	try{
 		event = almanach.getEventDetail(id);
-		title = Encode.javaStringToHtmlString(event.getTitle());
+		title = event.getTitle();
 		if (title.length() > 30) {
 			title = title.substring(0,30) + "....";
 		}
