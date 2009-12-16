@@ -353,9 +353,9 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
       if (isDraftEnabled()) {
         classified.setStatus(ClassifiedDetail.DRAFT);
       } else {
-        if ("admin".equals(profile))
+        if ("admin".equals(profile)) {
           classified.setStatus(ClassifiedDetail.VALID);
-        else {
+        } else {
           classified.setStatus(ClassifiedDetail.TO_VALIDATE);
         }
       }
@@ -412,7 +412,13 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
         }
       }
       getClassifiedsBm().updateClassified(classified, notify);
-    } catch (RemoteException e) {
+      // traitement des abonnements pour les cas de créations de petites annonces par les admin sans
+      // mode brouillon
+      if (!isUpdate && classified.getStatus().equals(ClassifiedDetail.VALID)) {
+        sendSubscriptionsNotification(Integer.toString(classified.getClassifiedId()));
+      }
+
+    } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifedsSessionController.updateClassified()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
