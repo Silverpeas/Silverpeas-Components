@@ -73,31 +73,85 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 	text-align: center;
 }
 
-#search {
+#classifieds #search {
 	width: 50%;
 	margin: auto;
 }
 
-#categories #category1, #categories #category3 {
-	width: 47%;
-	float: left;
-	height: 100px;
-	margin-left: 10px; 
+#classifieds #categories {
+  padding-top: 20px;
+  float: left;
 }
 
-#categories #category2, #categories #category4 {
+#classifieds #categories #categoryleft {
+	width: 47%;
+	float: left;
+	margin-left: 10px;
+	margin-bottom: 10px;
+	position: relative;
+	
+  background-color:#FFFFFF;
+  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+  background-position:right top;
+  background-repeat:no-repeat;
+  border:1px solid #CCCCCC;
+}
+
+#classifieds #categories #categoryright {
 	width: 47%;
 	float: right;
-	height: 100px;
 	margin-right: 10px;
+	margin-bottom: 10px;
+	position: relative;
+	
+	background-color:#FFFFFF;
+  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+  background-position:right top;
+  background-repeat:no-repeat;
+  border:1px solid #CCCCCC;
 }
 
-#infos {
-	width: 100%;
-	margin-left: 5px;
-	margin-right: 5px;
+#classifieds #categories #categoryTitle {
+  background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/milieuBouton.gif);
+  background-repeat:repeat-x;
+  color:#FFFFFF;
+  height:20px;
+  text-align: center;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding-top: 3px;
+  position: relative;
+}
+
+#classifieds #categories #categoryContent {
+  height: 70px;
+  position: relative;
+}
+
+#classifieds #categories #newClassified {
+  float: right;
+  padding: 5px;
+}
+
+#classifieds #categories #categoryContent ul {
+  height: 70px;
+  /*list-style-type: disc;*/
+  margin-left: 10px;
+  list-style-type: inherit;
+  margin-top: 5px;
+}
+
+#classifieds #categories #categoryContent .emptyCategory {
+  float:left;
+  padding:5px;
+}
+
+#classifieds #infos {
+	width: 96%;
+	margin-left: 10px;
 	text-align: center;
 	float: left;
+	padding: 10px;
 }
 
 </style>
@@ -128,7 +182,6 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
     
 	// afficher les critères de tri
 	%>
-	<br/>
 	<FORM Name="classifiedForm" action="SearchClassifieds" Method="POST" ENCTYPE="multipart/form-data">
 		<% if (formSearch != null) { %>
 			<center>
@@ -153,7 +206,7 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 			</center>
 		<% } %>	
 	</FORM>
-
+           
 	<%
 	// affichage des pavés pour les petites annonces par catégorie
 	int nbAffiche = 0;
@@ -162,23 +215,24 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 		<% if (categories != null) {
 			Category category;
 			Iterator itC = categories.iterator();
-			int i=1;
+			String leftOrRight = "left";
 			while (itC.hasNext()) {
 				// pour une catégorie
 				category = (Category) itC.next();
-				String categoryName = category.getValue(); 
-				out.println("<div id=\"category"+i+"\">");
-				out.println(board.printBefore());				
+				String categoryName = category.getValue();
+				out.println("<div id=\"category"+leftOrRight+"\" class=\"category"+category.getKey()+"\">");
+				//out.println(board.printBefore());				
 				nbAffiche = nbAffiche + 1;
 							
 				// affichage des annonces de cette catégorie
 				Collection classifieds = category.getClassifieds();
 				int nbClassifieds = 0;
-				out.println("<span class=\"txtlibform\">"+categoryName+"</span><br/>");
+				out.println("<div id=\"categoryTitle\">"+categoryName+"</div>");
+				out.println("<div id=\"categoryContent\">");
 				if (classifieds == null || classifieds.size() == 0) 
 				{
 					%>
-						<%=resource.getString("classifieds.CategoryEmpty")%><br/>
+						<span class="emptyCategory"><%=resource.getString("classifieds.CategoryEmpty")%></span>
 					<%	
 				}
 				else
@@ -187,35 +241,42 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 					Iterator it = classifieds.iterator();
 					// on ne veut que 5 annonces par catégories
 					int max = 5;
+					out.println("<ul>");
 					while (it.hasNext() && nbClassifieds < max) {
 						classified = (ClassifiedDetail) it.next();
 						nbClassifieds = nbClassifieds + 1;
 						%>
-							<a href="ViewClassified?ClassifiedId=<%=classified.getClassifiedId()%>"><%=classified.getTitle()%></a><br/>
+							<li><a href="ViewClassified?ClassifiedId=<%=classified.getClassifiedId()%>"><%=classified.getTitle()%></a></li>
 						<%
 					}
+					out.println("</ul>");
 				}
+				out.print("</div>");
 				// lien pour la saisie d'une nouvelle annonce
 				%>
-					<a href="NewClassified?FieldKey=<%=category.getKey()%>"><%=resource.getString("classifieds.newClassified")%></a><br/>
+					<div id="newClassified"><a href="NewClassified?FieldKey=<%=category.getKey()%>"><%=resource.getString("classifieds.newClassified")%></a></div>
 				<%
-				out.println(board.printAfter());
+				//out.println(board.printAfter());
 				out.print("</div>");
-				i++;
+				if ("left".equals(leftOrRight))
+				{
+				  leftOrRight = "right";
+				}
+				else
+				{
+				  leftOrRight = "left";
+				}
 			}
 		}%>
+		<!-- affichage des informations legales -->
+    <div id="infos" class="tableBoard">
+      <%=resource.getString("classifieds.infos")%>
+    </div>
 	</div>
 	
-	<!-- affichage des informations legales -->
-	<div id="infos">
-		<%=board.printBefore()%>
-		<center><%=resource.getString("classifieds.infos")%></center>
-		<%=board.printAfter()%>
-	</div>
-	<%    
-	
+	<%
   	out.println(frame.printAfter());
-	out.println(window.printAfter());
+	 out.println(window.printAfter());
 %>
 </div>
 </center>
