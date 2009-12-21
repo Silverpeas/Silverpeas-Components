@@ -58,17 +58,7 @@ function sendData() {
 
 
 </script>
-<style>
-#classifieds {
-	text-align: center;
-}
 
-#search {
-	width: 50%;
-	margin: auto;
-}
-
-</style>
 </head>
 
 <body>
