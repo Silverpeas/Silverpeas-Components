@@ -11,13 +11,11 @@ public class OrganizationalPerson {
 	private String description;//=tooltip
 	private String service;//ou
 	private String tel;//telephone
+	private String color;//couleur de fond
 	private boolean responsable;
+	private boolean firstLevel;
 	private boolean detailed; //si true, on peut cliquer dessus pour voir toutes ses info
 	private Map<String, String> detail;
-	
-	public OrganizationalPerson() {
-		parentId = -1;//root par défaut
-	}
 	
 	public OrganizationalPerson(int id, int parentId, String name, String fonction, String tel,
 		String description, String service, boolean responsable) {
@@ -30,10 +28,16 @@ public class OrganizationalPerson {
 		this.service = service;
 		this.responsable = responsable;
 		this.detailed = true;
+		this.parentId = -1;//root par défaut
+		this.firstLevel = false;//children normal par défaut
+		if(responsable)
+			this.color = "PaleGreen";
+		else
+			this.color = "LightCyan";
 		
 	}
 	
-	public String toString() {
+	public String toString() {//pour debug
 		return "cn = " + this.name + ", service = " + this.service + ", fonction = " + this.fonction;
 	}
 	
@@ -60,6 +64,18 @@ public class OrganizationalPerson {
 	}
 	public String getTel() {
 		return tel;
+	}
+	public String getColor() {
+		return color;
+	}
+	public void setColor(String color) {
+		this.color = color;
+	}
+	public void setFirstLevel(boolean first) {
+		this.firstLevel = first;
+	}
+	public boolean isFirstLevel() {
+		return firstLevel;
 	}
 	public String getDescription() {
 		return description;

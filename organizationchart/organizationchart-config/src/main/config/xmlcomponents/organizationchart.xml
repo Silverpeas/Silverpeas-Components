@@ -177,8 +177,20 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>15</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>libellé du ou des titre(s) des responsable des service (ex : responsable|directeur)</ParameterHelpFr>
-        <ParameterHelpEn>titles label of unit head (ex : manager|boss)</ParameterHelpEn>
+        <ParameterHelpFr>libellé du ou des titre(s) des responsable des service (ex : responsable,directeur)</ParameterHelpFr>
+        <ParameterHelpEn>titles label of unit head (ex : manager,boss)</ParameterHelpEn>
+      </ParameterHelp>
+	</Parameter>
+	<Parameter>
+      <ParameterName>firstLevelLabel</ParameterName>
+      <ParameterLabel>titre des assistants ou adjoints</ParameterLabel>
+      <ParameterValue>assistant,adjoint</ParameterValue>
+      <ParameterMandatory>F</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>16</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>libellé du ou des titre(s) des assistants</ParameterHelpFr>
+        <ParameterHelpEn>titles label of assistant (ex : assistant)</ParameterHelpEn>
       </ParameterHelp>
 	</Parameter>
 	<Parameter>
@@ -187,7 +199,7 @@
       <ParameterValue></ParameterValue>
       <ParameterMandatory>F</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>16</ParameterOrder>
+      <ParameterOrder>17</ParameterOrder>
       <ParameterHelp>
         <ParameterHelpFr>nom de l'attribut indiquant si la personne est active (attribut booléen)</ParameterHelpFr>
         <ParameterHelpEn>name of the indicating attribute if the person is active (boolean attribut)</ParameterHelpEn>

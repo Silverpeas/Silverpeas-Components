@@ -21,8 +21,10 @@
         <view:board>
           <c:out value="${error}"/>
          <table align="center">
-         	<tr><td><A href="javascript:;" onClick="mytree.closeAll();">tout réduire</A>
-         	</td></tr>
+         	<tr>
+         	<td align="left"><A href="javascript:;" onClick="mytree.closeAll();">tout réduire</A></td>
+         	<td align="right"><A href="javascript:;" onClick="mytree.resizeon(-2);">retour à la racine</A></td>
+         	</tr>
          	<tr><td>
 	    	<script type="text/javascript">
 	    		mytree = new dTree('mytree');
@@ -37,7 +39,12 @@
 		      				<c:otherwise>''</c:otherwise>
 		      			</c:choose>
 						,'<c:out value="${child.description}"/>', 
-		      			'popup', '', '', true);
+		      			'popup', '', '', true, 
+		      			<c:choose>
+	      					<c:when test="${child.firstLevel}">true</c:when>
+	      					<c:otherwise>false</c:otherwise>
+			      		</c:choose>
+		      			, '<c:out value="${child.color}"/>');
 				</c:forEach>
 				
 				document.write(mytree); 

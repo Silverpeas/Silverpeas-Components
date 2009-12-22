@@ -1,6 +1,7 @@
 package com.silverpeas.components.organizationchart.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -32,6 +33,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 	public static final String PARAM_LDAP_ATT_DESC = "ldapAttDesc";
 	public static final String PARAM_LDAP_ATT_TEL = "ldapAttTel";
 	public static final String PARAM_RESPONSABLE_LABEL = "responsableLabel";
+	public static final String PARAM_FIRSTLEVEL_LABEL = "firstLevelLabel";
 	public static final String PARAM_LDAP_ATT_ACTIF = "ldapAttActif";
 	
 	private static final String LIB_TEL = "Tel : ";
@@ -45,6 +47,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 	private String LDAP_ATT_DESC;
 	private String LDAP_ATT_TEL;
 	private String[] RESPONSABLE_LABEL;
+	private String[] FIRSTLEVEL_LABEL;
 	private String LDAP_ATT_ACTIF;
 	
 	private OrganizationController controller;
@@ -53,7 +56,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 	public OrganizationalPerson[] getOrganizationChart(String componentId) {
 		SilverTrace.info("organizationchart", "OrganizationChartLdapServiceImpl.getOrganizationChart()", "root.MSG_GEN_ENTER_METHOD", "componentId=" + componentId);
 		Hashtable<String, String> env = initEnv(componentId);
-		List<OrganizationalPerson> listPerson = new ArrayList<OrganizationalPerson>();
+		Map<String, OrganizationalPerson> mapPerson = new HashMap<String, OrganizationalPerson>();
 		try {
 		DirContext ctx = new InitialDirContext(env);
 		SearchControls ctls = new SearchControls();
@@ -74,7 +77,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 					if(isActif(attrs)) {
 						OrganizationalPerson pers = createPerson(i, attrs, 
 								entry.getNameInNamespace(), listResponsable);
-						listPerson.add(pers);
+						mapPerson.put(pers.getName() + pers.getId(), pers);
 						i++;
 					}
 				}
@@ -105,7 +108,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 			
 			//détermination du chef de chaque personne
 			List<OrganizationalPerson> listService = new ArrayList<OrganizationalPerson>();
-			for (Iterator<OrganizationalPerson> it = listPerson.iterator() ; it.hasNext() ; ){
+			for (Iterator<OrganizationalPerson> it = mapPerson.values().iterator() ; it.hasNext() ; ){
 			    OrganizationalPerson pers = it.next();
 			    if(pers.isResponsable()) {
 			    	if(listOu.containsKey(pers.getService())) {
@@ -116,7 +119,9 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 			    	i = setResponsable(pers, pers.getService(), i, listOu, listResponsable, listService);
 			    } 
 			}
-			listPerson.addAll(listService);
+			for(OrganizationalPerson pers : listService) {
+				mapPerson.put(pers.getName() + pers.getId(), pers);
+			}
 		} catch(Exception ex) {
 			ctx.close();
 			ex.printStackTrace();
@@ -132,10 +137,18 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 					"organizationChart.ldap.conection.error", e);
 			return null;
 		}
+		
+		//classement alphabétique
 		OrganizationalPerson[] arrayPerson = null;
-		if(listPerson.size() > 0) {
-			arrayPerson = new OrganizationalPerson[listPerson.size()];
-			listPerson.toArray(arrayPerson);
+		if(mapPerson.size() > 0) {
+			arrayPerson = new OrganizationalPerson[mapPerson.size()];
+			List<String> keys = new ArrayList<String>(mapPerson.keySet());
+			Collections.sort(keys);
+			int i = 0;
+			for(String id : keys){
+			      OrganizationalPerson pers = mapPerson.get(id);
+			      arrayPerson[i++] = pers;
+			}
 		}
 		return arrayPerson;
 	}
@@ -174,7 +187,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 		String fonction = getAttributValue(title);
 		boolean responsable = false;
 		for(String label : RESPONSABLE_LABEL) {
-			if(fonction != null && label != null && fonction.contains(label)) {
+			if(fonction != null && label != null && fonction.toLowerCase().contains(label)) {
 				responsable = true;
 				fonction = service;
 				listResponsable.put(fonction, id);
@@ -185,6 +198,13 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 		Attribute tel = attrs.get(LDAP_ATT_TEL);
 		OrganizationalPerson pers = new OrganizationalPerson(id, -1, 
 				getAttributValue(cn), fonction, getLibTel(tel), getAttributValue(desc), service, responsable);
+		for(String label : FIRSTLEVEL_LABEL) {
+			if(fonction != null && label != null && !label.isEmpty() && fonction.toLowerCase().contains(label)) {
+				pers.setColor("Khaki");
+				pers.setFirstLevel(true);
+				break;
+			}
+		}
 		NamingEnumeration<?> attributs = attrs.getAll();
 		Map<String, String> details = new HashMap<String, String>();
 		try {
@@ -289,7 +309,9 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 		LDAP_ATT_DESC = controller.getComponentParameterValue(componentId, PARAM_LDAP_ATT_DESC);//"description";
 		LDAP_ATT_TEL = controller.getComponentParameterValue(componentId, PARAM_LDAP_ATT_TEL);//telephoneNumber
 		String resp = controller.getComponentParameterValue(componentId, PARAM_RESPONSABLE_LABEL);
-		RESPONSABLE_LABEL = resp.split(",");
+		RESPONSABLE_LABEL = resp.toLowerCase().split(",");
+		String firstLevel = controller.getComponentParameterValue(componentId, PARAM_FIRSTLEVEL_LABEL);
+		FIRSTLEVEL_LABEL = firstLevel.toLowerCase().split(",");
 		LDAP_ATT_ACTIF = controller.getComponentParameterValue(componentId, PARAM_LDAP_ATT_ACTIF);
 		if(LDAP_ATT_ACTIF == null || LDAP_ATT_ACTIF.isEmpty())
 			LDAP_ATT_ACTIF = null;
