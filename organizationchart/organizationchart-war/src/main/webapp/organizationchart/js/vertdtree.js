@@ -118,7 +118,7 @@ dTree.prototype.resizeon = function(index) {
 		var str = '<table border=0 cellpadding=0 cellspacing=0 >';
 		str += '	<tr>';
 		str += '	<td valign=top align=center >';
-		str += this.node(curNode, index);
+		str += this.node(curNode, index, curNode.pid);
 		str += '	</td>';
 		str += '	</tr>';
 		str += '	</table>';
@@ -205,7 +205,7 @@ dTree.prototype.addNode = function(pNode) {
 			if(pNode._childrenFL ==1)
 				str += 'width="50%"';
 			str += '>';
-			str += this.node(curNode, n);
+			str += this.node(curNode, n, this.root.id);
 			str += '	</td>';
 			if(pNode._childrenFL ==1 && pNode._children > 1) {
 				str += '	<td valign=top align=center width="1%" ';
@@ -275,7 +275,7 @@ dTree.prototype.addNode = function(pNode) {
 			}
 			
 			str += '	<td valign=top align=center >';
-			str += this.node(curNode, n);
+			str += this.node(curNode, n, this.root.id);
 			str += '	</td>';
 			if (curNode._ls) {
 				if(childsIndex > 6) {
@@ -294,12 +294,12 @@ dTree.prototype.addNode = function(pNode) {
 };
 
 // Creates the node icon, url and text
-dTree.prototype.node = function(node, nodeId) {
+dTree.prototype.node = function(node, nodeId, rootId) {
 	var str = '<div class="dTreeNode" style="white-space:nowrap">';
 	str += '<table border="0" cellpadding="0" cellspacing="0" width="100%" >';
 	str += '<tr>';
 	str += '	<td align="center" width="52%" ';
-	if (this.root.id != node.pid) {
+	if (rootId != node.pid) {
 		if(this.config.useLines) {
 			if(node._isOnly) {
 				str += '';	
@@ -316,7 +316,7 @@ dTree.prototype.node = function(node, nodeId) {
 	str += '	</td>';
 	str += '	<td valign="top" style="padding-top:0px;" align="center" width="1%" >';
 	
-	if (this.root.id != node.pid) {/// if this node isn't a first lever node
+	if (rootId != node.pid) {/// if this node isn't a first lever node
 		str += '<img src="';
 		if(this.config.useLines) {
 			if(node._isOnly)
@@ -336,7 +336,7 @@ dTree.prototype.node = function(node, nodeId) {
 	str += '	</td>';
 	str += '	<td align="center" width="52%" ';
 
-	if (this.root.id != node.pid) {
+	if (rootId != node.pid) {
 		if(this.config.useLines) {
 			if(node._isOnly)
 				str += ' ';
