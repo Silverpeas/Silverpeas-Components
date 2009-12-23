@@ -26,6 +26,8 @@ package com.stratelia.webactiv.almanach.control.ejb;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -846,16 +848,14 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
     Iterator<?> itPeriod;
     Period recurrencePeriod;
     String idEvent;
-    EventDetail evtDetail;
-    EventDetail copy;
-    Collection events = new ArrayList();
+    List<EventDetail> events = new ArrayList<EventDetail>();
     while (itVEvent.hasNext()) {
       eventIcal4jCalendar = (VEvent) itVEvent.next();
       idEvent = eventIcal4jCalendar.getProperties().getProperty(Property.UID)
           .getValue();
 
       // Récupère l'événement
-      evtDetail = getEventDetail(new EventPK(idEvent, spaceId, instanceId));
+      EventDetail evtDetail = getEventDetail(new EventPK(idEvent, spaceId, instanceId));
 
       periodList = eventIcal4jCalendar.calculateRecurrenceSet(monthPeriod);
       itPeriod = periodList.iterator();
@@ -863,7 +863,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
         recurrencePeriod = (Period) itPeriod.next();
 
         // Modification des dates de l'EventDetail
-        copy = new EventDetail(evtDetail.getNameDescription(), evtDetail
+        EventDetail copy = new EventDetail(evtDetail.getNameDescription(), evtDetail
             .getPK(), evtDetail.getPriority(), evtDetail.getTitle(), evtDetail
             .getStartHour(), evtDetail.getEndHour(), evtDetail.getPlace(),
             evtDetail.getEventUrl());
