@@ -44,8 +44,10 @@ public class OrganizationChartProcessor {
 					List<String> details = new ArrayList<String>();
 					for (Map.Entry<String, String> det : persDetail.entrySet()){
 					    String lib = organizationchartSC.getLibelleAttribut(det.getKey());
-					    if(lib != null) 
-					    	details.add(lib + " : " + det.getValue());
+					    if(lib != null) { 
+					    	details.add(lib + " : ");
+					    	details.add(det.getValue());
+					    }
 					}
 					String[] dets = new String[details.size()];
 					details.toArray(dets);

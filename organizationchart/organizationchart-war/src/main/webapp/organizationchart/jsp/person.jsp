@@ -15,10 +15,17 @@
       <view:frame>
         <view:board>
           <c:out value="${error}"/>
-         <table align="center">
+         <table align="center"><tr>
+         	<c:set var="i" value="${0}"/>
          	<c:forEach var="child" items="${person}">
-	    	  		<tr><td><c:out value="${child}"/></td></tr>
+	    	  	<td align="left"><c:out value="${child}"/>&nbsp;&nbsp;</td>
+	    	  	<c:if test="${i == 1}">
+	    	  		</tr><tr>
+	    	  		<c:set var="i" value="${-1}"/>
+	    	  	</c:if>	
+	    	  	<c:set var="i" value="${i + 1}" />
 			</c:forEach>
+			</tr>
 		  </table>
         </view:board>
       </view:frame>
