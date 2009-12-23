@@ -38,3 +38,18 @@
 	
 	border-top-width:thin;border-top-style:dotted;border-top-color:Gray;
 }
+
+.resp
+{
+	background-color:PaleGreen;
+}
+
+.assist
+{
+	background-color:Khaki;
+}
+
+.empl
+{
+	background-color:LightCyan;
+}

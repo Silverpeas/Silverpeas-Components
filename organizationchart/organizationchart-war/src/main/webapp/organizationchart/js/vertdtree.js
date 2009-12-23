@@ -10,7 +10,7 @@
 |--------------------------------------------------*/
 
 // Node object
-function Node(id, pid, name, url, title, target, icon, iconOpen, open, firstLevel, backgroundcolor) {
+function Node(id, pid, name, url, title, target, icon, iconOpen, open, firstLevel, style) {
 	this.id = id;
 	this.pid = pid;
 	this.name = name;
@@ -20,7 +20,7 @@ function Node(id, pid, name, url, title, target, icon, iconOpen, open, firstLeve
 	this.icon = icon;
 	this.iconOpen = iconOpen;
 	this.firstLevel = firstLevel;
-	this.backgroundColor = backgroundcolor;
+	this.style = style;
 	this._io = open || false;
 	this._is = false; // if this node is selected or not
 	this._ls = false; // is this node is the last sibling
@@ -80,9 +80,9 @@ function dTree(objName) {
 };
 
 // Adds a new node to the node array
-dTree.prototype.add = function(id, pid, name, url, title, target, icon, iconOpen, open, firstLevel, backgroungcolor) {
+dTree.prototype.add = function(id, pid, name, url, title, target, icon, iconOpen, open, firstLevel, style) {
 	this.aNodes[this.aNodes.length] = new Node(id, pid, '&nbsp;'+name+'&nbsp;', url, title, target, 
-			icon, iconOpen, open, firstLevel, backgroungcolor);
+			icon, iconOpen, open, firstLevel, style);
 };
 
 // Open/close all nodes
@@ -109,15 +109,16 @@ dTree.prototype.toString = function() {
 };
 
 // resize the tree on a node
-dTree.prototype.resizeon = function(id) {
-	if(id == -2) {
+dTree.prototype.resizeon = function(index) {
+	//-2 pour revenir à la racine
+	if(index == -2) {
 		document.getElementById(this.obj).innerHTML = this.addNode(this.root);
 	} else {
-		var curNode = this.aNodes[id];
+		var curNode = this.aNodes[index];
 		var str = '<table border=0 cellpadding=0 cellspacing=0 >';
 		str += '	<tr>';
 		str += '	<td valign=top align=center >';
-		str += this.node(curNode, id);
+		str += this.node(curNode, index);
 		str += '	</td>';
 		str += '	</tr>';
 		str += '	</table>';
@@ -354,7 +355,7 @@ dTree.prototype.node = function(node, nodeId) {
 	str += '<tr>';
 	str += '	<td align="center" colspan="3"> <table><tr>';
 	str += '	<td align="center" style="border-width:1px;border-style:solid;border-color:Gray;" >';
-	str += '<table border=0 bordercolor=blue cellpadding="0" cellspacing="0" style="background-color:'+node.backgroundColor+'">';
+	str += '<table border=0 bordercolor=blue cellpadding="0" cellspacing="0" class="'+node.style +'">';
 	str += '<tr><td valign=top align=center>' + this.indent(node, nodeId);
 
 	if (this.config.useIcons) {

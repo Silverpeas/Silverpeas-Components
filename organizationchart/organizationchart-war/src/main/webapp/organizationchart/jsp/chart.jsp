@@ -5,12 +5,12 @@
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <html>
   <head>
+	<link type="text/css" href="<c:url value="/organizationchart/css/dtree.css" />" rel="StyleSheet"/>
     <view:looknfeel />
     <script type="text/javascript">
     var organizationchartPath = '<%=request.getContextPath()%>/organizationchart/';
-    </script>"
+    </script>
     <script type="text/javascript" src="<c:url value="/organizationchart/js/vertdtree.js" />" ></script>
-    <link type="text/css" href="<c:url value="/organizationchart/css/dtree.css" />" rel="StyleSheet"/>
   </head>
   <fmt:setLocale value="${sessionScope[sessionController].language}" />
   <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -44,7 +44,7 @@
 	      					<c:when test="${child.firstLevel}">true</c:when>
 	      					<c:otherwise>false</c:otherwise>
 			      		</c:choose>
-		      			, '<c:out value="${child.color}"/>');
+		      			, '<c:out value="${child.style}"/>');
 				</c:forEach>
 				
 				document.write(mytree); 

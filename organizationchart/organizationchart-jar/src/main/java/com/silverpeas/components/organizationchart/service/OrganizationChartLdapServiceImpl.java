@@ -200,7 +200,6 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
 				getAttributValue(cn), fonction, getLibTel(tel), getAttributValue(desc), service, responsable);
 		for(String label : FIRSTLEVEL_LABEL) {
 			if(fonction != null && label != null && !label.isEmpty() && fonction.toLowerCase().contains(label)) {
-				pers.setColor("Khaki");
 				pers.setFirstLevel(true);
 				break;
 			}
