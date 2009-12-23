@@ -839,11 +839,11 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
     ComponentList componentList = calendarAlmanach
         .getComponents(Component.VEVENT);
-    Iterator itVEvent = componentList.iterator();
+    Iterator<?> itVEvent = componentList.iterator();
 
     VEvent eventIcal4jCalendar;
     PeriodList periodList;
-    Iterator itPeriod;
+    Iterator<?> itPeriod;
     Period recurrencePeriod;
     String idEvent;
     EventDetail evtDetail;
@@ -876,6 +876,18 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
         events.add(copy);
       }
     }
+	//Tri des Event par ordre de Date de début croissante
+	Collections.sort(events, new Comparator<EventDetail>()
+	{
+	  public int compare(EventDetail event1, EventDetail event2)
+	  {
+	    return (event1.getStartDate().compareTo(event2.getStartDate()));
+	  }
+	  public boolean equals(EventDetail o)
+	  {
+	    return false;
+	  }
+	});
     return events;
   }
 
