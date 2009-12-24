@@ -71,6 +71,20 @@
 				<ParameterHelpEn />
 			</ParameterHelp>
 		</Parameter>
+		<Parameter>
+			<ParameterName>isInternalLink</ParameterName>
+			<ParameterLabel>Il s'agit d'un lien interne</ParameterLabel>
+			<ParameterValue>no</ParameterValue>
+			<ParameterMandatory>Y</ParameterMandatory>
+			<ParameterType>checkbox</ParameterType>
+			<ParameterUpdatable>Always</ParameterUpdatable>
+			<ParameterHelp>
+				<ParameterHelpFr>Cocher cette case s'il s'agit d'un lien interne :
+					le lien sera alors analysé pour ne garder que le partie concernant
+					Silverpeas</ParameterHelpFr>
+				<ParameterHelpEn></ParameterHelpEn>
+			</ParameterHelp>
+		</Parameter>
 		<!--
 			<Parameter> <ParameterName>sso</ParameterName>
 			<ParameterLabel>SSO</ParameterLabel>

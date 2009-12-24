@@ -36,6 +36,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.hyperlink.control.HyperlinkSessionController;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 public class HyperlinkRequestRouter extends ComponentRequestRouter {
 
@@ -55,27 +56,30 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter {
 
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
-    ComponentSessionController component =
-        (ComponentSessionController) new HyperlinkSessionController(
-            mainSessionCtrl, context);
+    ComponentSessionController component = (ComponentSessionController) new HyperlinkSessionController(
+        mainSessionCtrl, context);
     return component;
   }
 
   /**
-   * This method has to be implemented in the component request rooter class. returns the session
-   * control bean name to be put in the request object ex : for almanach, returns "almanach"
+   * This method has to be implemented in the component request rooter class.
+   * returns the session control bean name to be put in the request object ex :
+   * for almanach, returns "almanach"
    */
   public String getSessionControlBeanName() {
     return "hyperlinkScc";
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to compute a
-   * destination page
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * This method has to be implemented by the component request rooter it has to
+   * compute a destination page
+   * 
+   * @param function
+   *          The entering request function (ex : "Main.jsp")
+   * @param componentSC
+   *          The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
+   *         "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
@@ -105,12 +109,12 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter {
       String urlParameter = hyperlinkSCC.getComponentParameterValue("URL");
       String sso = hyperlinkSCC.getComponentParameterValue("SSO");
 
-      if (urlParameter != null && !urlParameter.equals("")) {
-        if (urlParameter.startsWith("www"))
-          destination = "http://" + urlParameter;
-        else
-          destination = urlParameter;
+      String internalLinkParameter = hyperlinkSCC.getComponentParameterValue("isInternalLink"); 
+      boolean isInternalLink = ( (StringUtil.isDefined(internalLinkParameter)) && (internalLinkParameter.equals("yes")) );
 
+      if (urlParameter != null && !urlParameter.equals("")) {
+        destination = parseDestination(urlParameter, isInternalLink, request);
+        
         if ("yes".equalsIgnoreCase(sso)) {
           request
               .setAttribute("Login", hyperlinkSCC.getUserDetail().getLogin());
@@ -132,19 +136,19 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter {
           try {
             destination = this.getParsedDestination(destination, s_sUserLogin,
                 URLEncoder.encode(hyperlinkSCC.getUserDetail().getLogin(),
-                ENCODING));
+                    ENCODING));
             destination = this.getParsedDestination(destination, s_sUserEmail,
                 URLEncoder.encode(hyperlinkSCC.getUserDetail().geteMail(),
-                ENCODING));
+                    ENCODING));
             destination = this.getParsedDestination(destination,
                 s_sUserFirstName, URLEncoder.encode(hyperlinkSCC
-                .getUserDetail().getFirstName(), ENCODING));
+                    .getUserDetail().getFirstName(), ENCODING));
             destination = this.getParsedDestination(destination,
                 s_sUserLastName, URLEncoder.encode(hyperlinkSCC.getUserDetail()
-                .getLastName(), ENCODING));
+                    .getLastName(), ENCODING));
             destination = this.getParsedDestination(destination,
                 s_sUserFullName, URLEncoder.encode(hyperlinkSCC.getUserDetail()
-                .getDisplayedName(), ENCODING));
+                    .getDisplayedName(), ENCODING));
             destination = this.getParsedDestination(destination, s_sUserId,
                 URLEncoder.encode(hyperlinkSCC.getUserId(), ENCODING));
             destination = this.getParsedDestination(destination, s_sSessionId,
@@ -157,10 +161,10 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter {
               HttpSession session = request.getSession(false);
               destination = this.getParsedDestination(destination,
                   s_sUserPassword, URLEncoder.encode((String) session
-                  .getAttribute("Silverpeas_pwdForHyperlink"), ENCODING));
+                      .getAttribute("Silverpeas_pwdForHyperlink"), ENCODING));
               destination = this.getParsedDestination(destination,
                   s_sUserEncodedPassword, URLEncoder.encode(hyperlinkSCC
-                  .getUserFull().getPassword(), ENCODING));
+                      .getUserFull().getPassword(), ENCODING));
             } else {
               destination = this.getParsedDestination(destination,
                   s_sUserPassword, URLEncoder.encode("??????", ENCODING));
@@ -185,6 +189,54 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter {
     return destination;
   }
 
+  /**
+   * Parse destination to manage Silverpeas internal links
+   * 
+   * @param urlParameter      the target URL as mentioned in instance parameter
+   * @param isInternalLink    flag to indicate if the URL is insternal or not
+   * @param request       the HTTP servlet request
+   * 
+   * @return  the computed destination
+   */
+  private String parseDestination(String urlParameter, boolean isInternalLink, HttpServletRequest request) {
+    String destination = null;
+    
+    
+    /*
+     * Special case : www, just add http://
+     */
+    if(urlParameter.startsWith("www")) {
+      destination = "http://" + urlParameter;
+    }
+    
+    /*
+     * Http://xxxx url
+     */
+    else {
+      /*
+       * internal link : must retain only uri
+       */
+      if (isInternalLink) {
+        String applicationURL = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+        if (applicationURL.charAt(applicationURL.length()-1) == '/') {
+          applicationURL = applicationURL.substring(0, applicationURL.length()-1);
+        }
+        String requestURL = request.getRequestURL().toString();
+        String pertinentURL = urlParameter.substring( urlParameter.indexOf(applicationURL));
+        destination = requestURL.substring(0, requestURL.indexOf(applicationURL)) + pertinentURL;
+      }
+      
+      /*
+       * external link : nothing to do
+       */
+      else {
+        destination = urlParameter;
+      }
+    }
+
+    return destination;
+  }
+  
   private String getParsedDestination(String sDestination, String sKeyword,
       String sValue) {
     SilverTrace.info("hyperlink",
