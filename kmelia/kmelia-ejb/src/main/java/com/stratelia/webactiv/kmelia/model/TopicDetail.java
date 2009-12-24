@@ -35,7 +35,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * This object contains elements which are displayed in a kmelia Topic
- * 
  * @author Nicolas Eysseric
  * @version 1.0
  */
@@ -51,14 +50,13 @@ public class TopicDetail extends Object implements java.io.Serializable {
   private Collection publicationDetails;
 
   /**
-   * A int collection which contains the number of publication containing under
-   * each sub topics of the topics
+   * A int collection which contains the number of publication containing under each sub topics of
+   * the topics
    */
   private Collection nbPubByTopic;
 
   /**
    * Construct an empty TopicDetail
-   * 
    * @since 1.0
    */
   public TopicDetail() {
@@ -67,7 +65,6 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Create a new TopicDetail
-   * 
    * @since 1.0
    */
   public TopicDetail(Collection path, NodeDetail nodeDetail,
@@ -77,7 +74,6 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Create a new TopicDetail
-   * 
    * @since 1.0
    */
   private void init(Collection path, NodeDetail nodeDetail,
@@ -90,7 +86,6 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Get the path
-   * 
    * @return the path
    * @since 1.0
    */
@@ -100,7 +95,6 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Get the Topic nodePK
-   * 
    * @return the Topic nodePK
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @since 1.0
@@ -111,7 +105,6 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Get the detail of this topic
-   * 
    * @return the detail of this topic
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
@@ -121,11 +114,8 @@ public class TopicDetail extends Object implements java.io.Serializable {
   }
 
   /**
-   * Get a PublicationDetail collection containing all the publications in this
-   * topic
-   * 
-   * @return a PublicationDetail collection containing all the publications in
-   *         this topic
+   * Get a PublicationDetail collection containing all the publications in this topic
+   * @return a PublicationDetail collection containing all the publications in this topic
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
    * @see java.util.Collection
    * @since 1.0
@@ -135,11 +125,8 @@ public class TopicDetail extends Object implements java.io.Serializable {
   }
 
   /**
-   * Get a int collection containing the number of publications of each sub
-   * topics
-   * 
-   * @return a int collection containing the number of publications of each sub
-   *         topics
+   * Get a int collection containing the number of publications of each sub topics
+   * @return a int collection containing the number of publications of each sub topics
    * @see java.util.Collection
    * @since 1.0
    */
@@ -149,9 +136,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Set the path
-   * 
-   * @param path
-   *          a NodeDetail Collection
+   * @param path a NodeDetail Collection
    * @since 1.0
    */
   public void setPath(Collection path) {
@@ -160,9 +145,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Set the detail of this topic
-   * 
-   * @param nd
-   *          the topic NodeDetail
+   * @param nd the topic NodeDetail
    * @since 1.0
    */
   public void setNodeDetail(NodeDetail nd) {
@@ -171,9 +154,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Set the publication details of each publication containing in this topic
-   * 
-   * @param pd
-   *          a PublicationDetail Collection
+   * @param pd a PublicationDetail Collection
    * @since 1.0
    */
   public void setPublicationDetails(Collection pd) {
@@ -182,9 +163,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
 
   /**
    * Set the number of publications in each sub topics
-   * 
-   * @param nbPubByTopic
-   *          a int Collection
+   * @param nbPubByTopic a int Collection
    * @since 1.0
    */
   public void setNbPubByTopic(Collection nbPubByTopic) {

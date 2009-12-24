@@ -44,60 +44,58 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
 
-  public void execute(UpdateChainHelperContext uchc)
-	{
-		KmeliaSessionController kmeliaScc = uchc.getKmeliaScc();
+  public void execute(UpdateChainHelperContext uchc) {
+    KmeliaSessionController kmeliaScc = uchc.getKmeliaScc();
 
-		// récupération des données
-		PublicationDetail pubDetail = uchc.getPubDetail();
+    // récupération des données
+    PublicationDetail pubDetail = uchc.getPubDetail();
 
-		// Recherche du service et du matricule de l'utilisateur
+    // Recherche du service et du matricule de l'utilisateur
 
-		String userName = pubDetail.getName();
-		String lastName = getField("lastname", userName);
-		String firstName = getField("firstname", userName);
-		String service = getField("service", userName);
-		String matricule = getField("matricule", userName);
+    String userName = pubDetail.getName();
+    String lastName = getField("lastname", userName);
+    String firstName = getField("firstname", userName);
+    String service = getField("service", userName);
+    String matricule = getField("matricule", userName);
 
-		// associer le service au node
-		String[] topics = new String[1];
-		List<NodeDetail> allTopics = uchc.getAllTopics();
-		Iterator<NodeDetail> it = allTopics.iterator();
-		while (it.hasNext())
-		{
-			NodeDetail node = it.next();
-			if (node.getName().toUpperCase().equals(service.toUpperCase()))
-				// enregistrer
-				topics[0] = node.getId() + "," + node.getNodePK().getInstanceId();
-		}
-		uchc.setTopics(topics);
+    // associer le service au node
+    String[] topics = new String[1];
+    List<NodeDetail> allTopics = uchc.getAllTopics();
+    Iterator<NodeDetail> it = allTopics.iterator();
+    while (it.hasNext()) {
+      NodeDetail node = it.next();
+      if (node.getName().toUpperCase().equals(service.toUpperCase()))
+        // enregistrer
+        topics[0] = node.getId() + "," + node.getNodePK().getInstanceId();
+    }
+    uchc.setTopics(topics);
 
-		//Maj Publication
-		pubDetail.setName(matricule + " " + lastName.toUpperCase() + " " + firstName.toUpperCase());
-		String newDescription = pubDetail.getDescription().concat(" ").concat(pubDetail.getKeywords());
-		pubDetail.setDescription(newDescription);
-		String keywords = kmeliaScc.getComponentLabel();
-		pubDetail.setKeywords(keywords);
+    // Maj Publication
+    pubDetail.setName(matricule + " " + lastName.toUpperCase() + " " + firstName.toUpperCase());
+    String newDescription = pubDetail.getDescription().concat(" ").concat(pubDetail.getKeywords());
+    pubDetail.setDescription(newDescription);
+    String keywords = kmeliaScc.getComponentLabel();
+    pubDetail.setKeywords(keywords);
 
-		uchc.setPubDetail(pubDetail);
+    uchc.setPubDetail(pubDetail);
 
-        //Classer la publication sur le service
-        String positionLabel = service;
-        int silverObjectId = kmeliaScc.getSilverObjectId(pubDetail.getId());
-		try {
-			List axisValues = kmeliaScc.getPdcBm().getAxisValuesByName(positionLabel);
-			for (int i = 0; i < axisValues.size(); i++)
-			{
-				com.stratelia.silverpeas.pdc.model.Value axisValue			=	(com.stratelia.silverpeas.pdc.model.Value) axisValues.get(i);
-				String selectedPosition = axisValue.getTreeId()+"|"+axisValue.getFullPath();
-				ClassifyPosition position = buildPosition(null, selectedPosition);
-				kmeliaScc.getPdcBm().addPosition(silverObjectId, position, kmeliaScc.getComponentId(), false);
-			}
-		} catch (PdcException pde)
-		{
-			pde.printStackTrace();
-		}
-	}
+    // Classer la publication sur le service
+    String positionLabel = service;
+    int silverObjectId = kmeliaScc.getSilverObjectId(pubDetail.getId());
+    try {
+      List axisValues = kmeliaScc.getPdcBm().getAxisValuesByName(positionLabel);
+      for (int i = 0; i < axisValues.size(); i++) {
+        com.stratelia.silverpeas.pdc.model.Value axisValue =
+            (com.stratelia.silverpeas.pdc.model.Value) axisValues.get(i);
+        String selectedPosition = axisValue.getTreeId() + "|" + axisValue.getFullPath();
+        ClassifyPosition position = buildPosition(null, selectedPosition);
+        kmeliaScc.getPdcBm().addPosition(silverObjectId, position, kmeliaScc.getComponentId(),
+            false);
+      }
+    } catch (PdcException pde) {
+      pde.printStackTrace();
+    }
+  }
 
   private String getField(String field, String userName) {
     Connection con = getConnection();

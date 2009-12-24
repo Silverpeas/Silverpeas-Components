@@ -112,8 +112,8 @@ public class KmeliaSecurity implements ComponentSecurity {
 
     if (objectType != null
         && ("Publication".equalsIgnoreCase(objectType)
-            || objectType.startsWith("Attachment") || objectType
-            .startsWith("Version"))) {
+        || objectType.startsWith("Attachment") || objectType
+        .startsWith("Version"))) {
       PublicationPK pk = new PublicationPK(objectId, componentId);
 
       // First, check if publication is available
@@ -164,8 +164,8 @@ public class KmeliaSecurity implements ComponentSecurity {
     boolean objectAvailable = false;
     if (objectType != null
         && ("Publication".equalsIgnoreCase(objectType)
-            || objectType.startsWith("Attachment") || objectType
-            .startsWith("Version"))) {
+        || objectType.startsWith("Attachment") || objectType
+        .startsWith("Version"))) {
       objectAvailable = isPublicationAvailable(new PublicationPK(objectId,
           componentId), userId);
     } else if ("Node".equalsIgnoreCase(objectType)) {
@@ -199,7 +199,7 @@ public class KmeliaSecurity implements ComponentSecurity {
       } catch (Exception e) {
         SilverTrace.info("kmelia", "KmeliaSecurity.isPublicationAvailable",
             "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", "PubId = "
-                + pk.toString());
+            + pk.toString());
         objectAvailable = false;
       }
 
@@ -306,7 +306,7 @@ public class KmeliaSecurity implements ComponentSecurity {
       try {
         PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-                PublicationBmHome.class);
+            PublicationBmHome.class);
         publicationBm = publicationBmHome.create();
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.getPublicationBm()",

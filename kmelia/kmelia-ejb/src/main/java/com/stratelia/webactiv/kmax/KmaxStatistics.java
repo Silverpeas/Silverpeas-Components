@@ -45,8 +45,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class KmaxStatistics implements ComponentStatisticsInterface {
@@ -55,13 +53,9 @@ public class KmaxStatistics implements ComponentStatisticsInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param spaceId
    * @param componentId
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getVolume(String spaceId, String componentId)
@@ -84,10 +78,7 @@ public class KmaxStatistics implements ComponentStatisticsInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private PublicationBm getPublicationBm() {
@@ -106,15 +97,10 @@ public class KmaxStatistics implements ComponentStatisticsInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param spaceId
    * @param componentId
-   * 
    * @return
-   * 
    * @throws RemoteException
-   * 
    * @see
    */
   public Collection getPublications(String spaceId, String componentId)

@@ -28,7 +28,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * This object contains elements which are displayed in a kmelia Topic
- * 
  * @author Nicolas Eysseric
  * @version 1.0
  */
@@ -42,7 +41,6 @@ public class UserPublication extends Object implements java.io.Serializable {
 
   /**
    * Construct an empty TopicDetail
-   * 
    * @since 1.0
    */
   public UserPublication() {
@@ -51,7 +49,6 @@ public class UserPublication extends Object implements java.io.Serializable {
 
   /**
    * Create a new TopicDetail
-   * 
    * @since 1.0
    */
   public UserPublication(UserDetail owner, PublicationDetail publicationDetail) {
@@ -60,7 +57,6 @@ public class UserPublication extends Object implements java.io.Serializable {
 
   /**
    * Create a new TopicDetail
-   * 
    * @since 1.0
    */
   private void init(UserDetail owner, PublicationDetail publicationDetail) {
@@ -70,7 +66,6 @@ public class UserPublication extends Object implements java.io.Serializable {
 
   /**
    * Get the path
-   * 
    * @return the path
    * @since 1.0
    */
@@ -80,7 +75,6 @@ public class UserPublication extends Object implements java.io.Serializable {
 
   /**
    * Get the Topic nodePK
-   * 
    * @return the Topic nodePK
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @since 1.0
@@ -91,9 +85,7 @@ public class UserPublication extends Object implements java.io.Serializable {
 
   /**
    * Set the path
-   * 
-   * @param path
-   *          a NodeDetail Collection
+   * @param path a NodeDetail Collection
    * @since 1.0
    */
   public void setOwner(UserDetail ud) {
@@ -102,9 +94,7 @@ public class UserPublication extends Object implements java.io.Serializable {
 
   /**
    * Set the detail of this topic
-   * 
-   * @param nd
-   *          the topic NodeDetail
+   * @param nd the topic NodeDetail
    * @since 1.0
    */
   public void setPublication(PublicationDetail pub) {

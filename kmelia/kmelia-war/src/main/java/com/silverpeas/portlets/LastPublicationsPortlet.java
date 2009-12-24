@@ -42,15 +42,14 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.kmelia.KmeliaTransversal;
 
-public class LastPublicationsPortlet extends GenericPortlet implements
-    FormNames {
+public class LastPublicationsPortlet extends GenericPortlet implements FormNames {
 
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
     PortletSession session = request.getPortletSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
         .getAttribute("SilverSessionController",
-            PortletSession.APPLICATION_SCOPE);
+        PortletSession.APPLICATION_SCOPE);
 
     String spaceId = (String) session.getAttribute(
         "Silverpeas_Portlet_SpaceId", PortletSession.APPLICATION_SCOPE);
@@ -124,8 +123,8 @@ public class LastPublicationsPortlet extends GenericPortlet implements
   }
 
   /*
-   * Process the "finished" action for the edit page. Set the "url" to the value
-   * specified in the edit page.
+   * Process the "finished" action for the edit page. Set the "url" to the value specified in the
+   * edit page.
    */
   private void processEditFinishedAction(ActionRequest request,
       ActionResponse response) throws PortletException {

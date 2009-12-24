@@ -227,15 +227,13 @@ class Callback extends HTMLEditorKit.ParserCallback {
       }
     }
     /*
-     * doesn't work with chapter... else if ( t.equals(t.CENTER) ) { paragraph =
-     * new Paragraph(); paragraph.setAlignment(Paragraph.ALIGN_CENTER); } else
-     * if ( t.equals(t.P) ) { attribute = a.getAttribute( HTML.Attribute.ALIGN
-     * ); if ( attribute != null ) { attribute_value = attribute.toString();
-     * System.out.println("Try to create PARAGRAPH with " + attribute_value); if
-     * ( "center".equals(attribute_value) ) { paragraph = new Paragraph();
-     * paragraph.setAlignment(Paragraph.ALIGN_CENTER); } else if (
-     * "right".equals(attribute_value) ) { paragraph = new Paragraph();
-     * paragraph.setAlignment(Paragraph.ALIGN_RIGHT); } else if (
+     * doesn't work with chapter... else if ( t.equals(t.CENTER) ) { paragraph = new Paragraph();
+     * paragraph.setAlignment(Paragraph.ALIGN_CENTER); } else if ( t.equals(t.P) ) { attribute =
+     * a.getAttribute( HTML.Attribute.ALIGN ); if ( attribute != null ) { attribute_value =
+     * attribute.toString(); System.out.println("Try to create PARAGRAPH with " + attribute_value);
+     * if ( "center".equals(attribute_value) ) { paragraph = new Paragraph();
+     * paragraph.setAlignment(Paragraph.ALIGN_CENTER); } else if ( "right".equals(attribute_value) )
+     * { paragraph = new Paragraph(); paragraph.setAlignment(Paragraph.ALIGN_RIGHT); } else if (
      * "left".equals(attribute_value) ) { paragraph = new Paragraph();
      * paragraph.setAlignment(Paragraph.ALIGN_LEFT); } } }
      */
@@ -347,9 +345,8 @@ class Callback extends HTMLEditorKit.ParserCallback {
 
   private String escapeChars(String text) throws KmeliaRuntimeException {
     /*
-     * int pos = text.indexOf('\n'); while ( pos >= 0 ) { text =
-     * text.substring(0, pos) + text.substring(pos+1); pos = text.indexOf('\n');
-     * }
+     * int pos = text.indexOf('\n'); while ( pos >= 0 ) { text = text.substring(0, pos) +
+     * text.substring(pos+1); pos = text.indexOf('\n'); }
      */
     int pos = text.indexOf('\r');
     while (pos >= 0) {

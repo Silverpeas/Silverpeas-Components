@@ -29,7 +29,6 @@ import com.stratelia.webactiv.util.publication.model.CompletePublication;
 
 /**
  * This object contains elements which are displayed in a kmelia Topic
- * 
  * @author Nicolas Eysseric
  * @version 1.0
  */

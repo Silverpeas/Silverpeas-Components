@@ -41,7 +41,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * @author neysseri
- * 
  */
 public class KmeliaCallBack extends CallBack {
 
@@ -52,30 +51,29 @@ public class KmeliaCallBack extends CallBack {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int,
-   * int, java.lang.String, java.lang.Object)
+   * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int, int,
+   * java.lang.String, java.lang.Object)
    */
   public void doInvoke(int action, int iParam, String componentId,
       Object extraParam) {
     SilverTrace.info("kmelia", "KmeliaCallback.doInvoke()",
         "root.MSG_GEN_ENTER_METHOD", "action = " + action + ", iParam = "
-            + iParam + ", componentId = " + componentId + ", extraParam = "
-            + extraParam.toString());
+        + iParam + ", componentId = " + componentId + ", extraParam = "
+        + extraParam.toString());
 
     if (iParam == -1) {
       SilverTrace.info("kmelia", "KmeliaCallback.doInvoke()",
           "root.MSG_GEN_PARAM_VALUE",
           "userId is null. Callback stopped ! action = " + action
-              + ", componentId = " + componentId + ", extraParam = "
-              + extraParam.toString());
+          + ", componentId = " + componentId + ", extraParam = "
+          + extraParam.toString());
       return;
     }
 
     if (componentId != null
         && (componentId.startsWith("kmelia")
-            || componentId.startsWith("toolbox") || componentId
-            .startsWith("kmax"))) {
+        || componentId.startsWith("toolbox") || componentId
+        .startsWith("kmax"))) {
       try {
         // extraction userId
         String sUserId = Integer.toString(iParam);
@@ -110,7 +108,6 @@ public class KmeliaCallBack extends CallBack {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#subscribe()
    */
   public void subscribe() {
@@ -132,7 +129,8 @@ public class KmeliaCallBack extends CallBack {
 
   private boolean isPublicationModified(String pubId, int action) {
     if (!pubId.startsWith("Node")
-        && (action == CallBackManager.ACTION_ON_WYSIWYG
+        &&
+        (action == CallBackManager.ACTION_ON_WYSIWYG
             || action == CallBackManager.ACTION_ATTACHMENT_ADD
             || action == CallBackManager.ACTION_ATTACHMENT_UPDATE
             || action == CallBackManager.ACTION_ATTACHMENT_REMOVE

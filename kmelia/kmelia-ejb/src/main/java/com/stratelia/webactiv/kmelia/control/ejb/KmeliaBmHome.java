@@ -38,13 +38,9 @@ public interface KmeliaBmHome extends EJBHome {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @throws CreateException
    * @throws RemoteException
-   * 
    * @see
    */
   public KmeliaBm create() throws RemoteException, CreateException;

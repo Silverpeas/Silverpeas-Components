@@ -27,8 +27,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class KmaxException extends SilverpeasException {
   /**
-   * --------------------------------------------------------------------------
-   * constructors constructors
+   * -------------------------------------------------------------------------- constructors
+   * constructors
    */
   public KmaxException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
@@ -50,8 +50,7 @@ public class KmaxException extends SilverpeasException {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * getModule getModule
+   * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
     return "kmax";

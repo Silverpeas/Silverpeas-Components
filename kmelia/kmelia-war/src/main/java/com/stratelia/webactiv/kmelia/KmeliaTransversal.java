@@ -74,7 +74,7 @@ public class KmeliaTransversal implements PublicationHelper {
   public List getPublications(String spaceId, int nbPublis) {
     SilverTrace.debug("kmelia", "KmeliaTransversal.getPublications()",
         "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + ", nbPublis = "
-            + nbPublis);
+        + nbPublis);
     List componentIds = new ArrayList();
     if (!StringUtil.isDefined(spaceId)) {
       String[] cIds = getOrganizationControl().getComponentIdsForUser(userId,
@@ -104,8 +104,8 @@ public class KmeliaTransversal implements PublicationHelper {
 
     SilverTrace
         .debug("kmelia", "KmeliaTransversal.getPublications()",
-            "root.MSG_GEN_PARAM_VALUE", "componentIds = "
-                + componentIds.toString());
+        "root.MSG_GEN_PARAM_VALUE", "componentIds = "
+        + componentIds.toString());
 
     List publicationPKs = null;
     try {

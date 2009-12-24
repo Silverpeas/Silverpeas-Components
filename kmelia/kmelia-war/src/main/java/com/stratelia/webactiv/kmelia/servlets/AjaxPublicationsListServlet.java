@@ -111,7 +111,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
       SilverTrace.info("kmelia", "AjaxPublicationsListServlet.doPost",
           "root.MSG_GEN_PARAM_VALUE", "Request parameters = "
-              + req.getQueryString());
+          + req.getQueryString());
 
       TopicDetail currentTopic = null;
       boolean sortAllowed = true;
@@ -169,7 +169,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         writer.write("<tr>");
         writer.write("<td>"
             + EncodeHelper.escapeXml(resources
-                .getString("GML.ForbiddenAccessContent")) + "</td>");
+            .getString("GML.ForbiddenAccessContent")) + "</td>");
         writer.write("</tr>");
         writer.write("</table>");
         writer.write(board.printAfter());
@@ -297,7 +297,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             // visibles
             if (currentUserId.equals(pub.getUpdaterId())
                 || ((kmeliaScc.isCoWritingEnable() && kmeliaScc
-                    .isDraftVisibleWithCoWriting()) && !profile.equals("user"))) {
+                .isDraftVisibleWithCoWriting()) && !profile.equals("user"))) {
               pubColor = "gray";
               pubState = resources.getString("PubStateDraft");
             }
@@ -333,7 +333,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         } else {
           if (pub.getImage() != null
               && new Boolean(resources.getSetting("isVignetteVisible"))
-                  .booleanValue()) {
+              .booleanValue()) {
             out.write("<td valign=\"top\" align=\"right\" width=\"80\">");
             String height = resources.getSetting("vignetteHeight");
             String width = resources.getSetting("vignetteWidth");
@@ -358,7 +358,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             .write("<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr valign=\"middle\">");
         out
             .write("<td width=\"1\" valign=\"top\">&#8226;&#160;</td><td><a name=\""
-                + pub.getPK().getId() + "\"></a>");
+            + pub.getPK().getId() + "\"></a>");
         if (linksAllowed)
           out.write("<font color=\"" + pubColor
               + "\"><a href=\"javascript:onClick=publicationGoTo('"
@@ -377,12 +377,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         else if (showImportance)
           out.write("<nobr>"
               + displayImportance(new Integer(pub.getImportance()).intValue(),
-                  5, fullStarSrc, emptyStarSrc, out) + "</nobr>");
+              5, fullStarSrc, emptyStarSrc, out) + "</nobr>");
         out.write("</td>");
         out.write("</tr>");
         out
             .write("<tr><td width=\"1\">&#160;</td><td colspan=\"2\"><font color=\""
-                + pubColor + "\">");
+            + pubColor + "\">");
         if (kmeliaScc.showUserNameInList())
           out.write(getUserName(userPub, kmeliaScc) + " - ");
         out.write(resources.getOutputDate(pub.getUpdateDate()));
@@ -404,10 +404,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               + linkIcon
               + "\" border=\"0\" align=\"absmiddle\" alt=\""
               + EncodeHelper.escapeXml(resources
-                  .getString("kmelia.CopyPublicationLink"))
+              .getString("kmelia.CopyPublicationLink"))
               + "\" title=\""
               + EncodeHelper.escapeXml(resources
-                  .getString("kmelia.CopyPublicationLink")) + "\"/></a>");
+              .getString("kmelia.CopyPublicationLink")) + "\"/></a>");
         }
 
         if (StringUtil.isDefined(description) && !description.equals(name)) {
@@ -442,7 +442,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     } // End if
     else if (showNoPublisMessage
         && (kmeliaScc.getNbPublicationsOnRoot() != 0 || !currentTopicId
-            .equals("0"))) {
+        .equals("0"))) {
       out.write(board.printBefore());
       out
           .write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" align=\"center\">");
@@ -474,8 +474,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         + EncodeHelper.escapeXml(resources.getString("DateAsc")) + "</option>");
     out
         .write("<option value=\"2\">"
-            + EncodeHelper.escapeXml(resources.getString("DateDesc"))
-            + "</option>");
+        + EncodeHelper.escapeXml(resources.getString("DateDesc"))
+        + "</option>");
     out.write("<option value=\"0\">"
         + EncodeHelper.escapeXml(resources.getString("PubAuteur"))
         + "</option>");
@@ -485,8 +485,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           + "</option>");
     out
         .write("<option value=\"4\">"
-            + EncodeHelper.escapeXml(resources.getString("PubTitre"))
-            + "</option>");
+        + EncodeHelper.escapeXml(resources.getString("PubTitre"))
+        + "</option>");
     out.write("</select>");
     out.write("&#160;");
   }
@@ -502,7 +502,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     if (nbPubs > 1)
       out
           .write(EncodeHelper
-              .escapeXml(resources.getString("GML.publications")));
+          .escapeXml(resources.getString("GML.publications")));
     else
       out.write(EncodeHelper.escapeXml(resources.getString("GML.publication")));
     out.write("</td>");
@@ -531,7 +531,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     String userName = "";
     if (updater != null
         && (updater.getFirstName().length() > 0 || updater.getLastName()
-            .length() > 0))
+        .length() > 0))
       userName = updater.getDisplayedName();
     else
       userName = kmeliaScc.getString("kmelia.UnknownUser");
@@ -612,7 +612,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
         link = "<A href=\""
             + EncodeHelper.escapeXml(attachmentDetail
-                .getAttachmentURLToMemorize(userId, nodeId))
+            .getAttachmentURLToMemorize(userId, nodeId))
             + "\" target=\"_blank\">";
         result.append("<TR><TD valign=\"top\">");
         // Add doc type icon
@@ -636,10 +636,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               + linkIcon
               + "\" border=\"0\" valign=\"absmiddle\" alt=\""
               + EncodeHelper.escapeXml(resources
-                  .getString("toolbox.CopyFileLink"))
+              .getString("toolbox.CopyFileLink"))
               + "\" title=\""
               + EncodeHelper.escapeXml(resources
-                  .getString("toolbox.CopyFileLink"))
+              .getString("toolbox.CopyFileLink"))
               + "\" target=\"_blank\"/></a>");
         }
 
@@ -661,7 +661,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         if (!"no".equals(resources.getSetting("showDownloadEstimation")))
           result.append(" / ").append(
               EncodeHelper.escapeXml(attachmentDetail
-                  .getAttachmentDownloadEstimation())).append(" / ").append(
+              .getAttachmentDownloadEstimation())).append(" / ").append(
               resources.getOutputDate(attachmentDetail.getCreationDate()));
 
         result.append("</i>");
@@ -671,7 +671,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             && !"no".equals(resources.getSetting("showInfo")))
           result.append("<BR/>").append(
               EncodeHelper.javaStringToHtmlParagraphe(EncodeHelper
-                  .escapeXml(info)));
+              .escapeXml(info)));
 
         result.append("</TD></TR>");
       }

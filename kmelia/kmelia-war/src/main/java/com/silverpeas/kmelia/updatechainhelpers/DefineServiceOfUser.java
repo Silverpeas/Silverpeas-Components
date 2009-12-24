@@ -39,32 +39,29 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 public class DefineServiceOfUser extends UpdateChainHelperImpl {
 
-  public void execute(UpdateChainHelperContext uchc)
-	{
-		// récupération des données
-		PublicationDetail pubDetail = uchc.getPubDetail();
-		List<String> nodes = new ArrayList<String>();
+  public void execute(UpdateChainHelperContext uchc) {
+    // récupération des données
+    PublicationDetail pubDetail = uchc.getPubDetail();
+    List<String> nodes = new ArrayList<String>();
 
-		// Recherche du service de l'utilisateur
-		String service = "";
-		String userName = pubDetail.getName();
-		service = getUserService(userName);
+    // Recherche du service de l'utilisateur
+    String service = "";
+    String userName = pubDetail.getName();
+    service = getUserService(userName);
 
-		// associer le service au node
-		String[] topics = new String[1];
-		List<NodeDetail> allTopics = uchc.getAllTopics();
-		Iterator<NodeDetail> it = allTopics.iterator();
-		while (it.hasNext())
-		{
-			NodeDetail node = it.next();
-			if (node.getName().equals(service))
-			{
-				// enregistrer
-				topics[0] = node.getId() + "," + node.getNodePK().getInstanceId();
-			}
-		}
-		uchc.setTopics(topics);
-	}
+    // associer le service au node
+    String[] topics = new String[1];
+    List<NodeDetail> allTopics = uchc.getAllTopics();
+    Iterator<NodeDetail> it = allTopics.iterator();
+    while (it.hasNext()) {
+      NodeDetail node = it.next();
+      if (node.getName().equals(service)) {
+        // enregistrer
+        topics[0] = node.getId() + "," + node.getNodePK().getInstanceId();
+      }
+    }
+    uchc.setTopics(topics);
+  }
 
   private String getUserService(String userName) {
     Connection con = getConnection();

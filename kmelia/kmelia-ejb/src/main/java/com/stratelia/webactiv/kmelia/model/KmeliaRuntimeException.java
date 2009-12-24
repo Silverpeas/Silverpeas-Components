@@ -28,8 +28,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 public class KmeliaRuntimeException extends SilverpeasRuntimeException {
 
   /**
-   * --------------------------------------------------------------------------
-   * constructors constructors
+   * -------------------------------------------------------------------------- constructors
+   * constructors
    */
   public KmeliaRuntimeException(String callingClass, int errorLevel,
       String message) {
@@ -38,13 +38,10 @@ public class KmeliaRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
-   * 
    * @see
    */
   public KmeliaRuntimeException(String callingClass, int errorLevel,
@@ -54,13 +51,10 @@ public class KmeliaRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param nested
-   * 
    * @see
    */
   public KmeliaRuntimeException(String callingClass, int errorLevel,
@@ -70,14 +64,11 @@ public class KmeliaRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param callingClass
    * @param errorLevel
    * @param message
    * @param extraParams
    * @param nested
-   * 
    * @see
    */
   public KmeliaRuntimeException(String callingClass, int errorLevel,
@@ -87,10 +78,7 @@ public class KmeliaRuntimeException extends SilverpeasRuntimeException {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getModule() {

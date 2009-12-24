@@ -155,7 +155,7 @@ public class PdfGenerator extends PdfPageEventHelper {
       publicationDetail = currentPublication.getPublicationDetail();
       String fileName = FileRepositoryManager.getTemporaryPath(
           publicationDetail.getPK().getSpace(), publicationDetail.getPK()
-              .getComponentName())
+          .getComponentName())
           + namePdf;
       publiContentLanguage = kmeliaSessionController.getCurrentLanguage();
       try {
@@ -211,7 +211,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   /**
    * @see com.lowagie.text.pdf.PdfPageEventHelper#onOpenDocument(com.lowagie.text.pdf.PdfWriter,
-   *      com.lowagie.text.Document)
+   * com.lowagie.text.Document)
    */
   public void onOpenDocument(PdfWriter writer, Document document) {
     // initialization of the header table
@@ -232,7 +232,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     Phrase p = new Phrase();
     Chunk ck = new Chunk(
         publicationDetail.getName(publiContentLanguage) + "\n", new Font(
-            Font.HELVETICA, 12, Font.BOLD));
+        Font.HELVETICA, 12, Font.BOLD));
     p.add(ck);
 
     if (kmeliaSessionController.isPublicationIdDisplayed()) {
@@ -279,7 +279,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   /**
    * @see com.lowagie.text.pdf.PdfPageEventHelper#onEndPage(com.lowagie.text.pdf.PdfWriter,
-   *      com.lowagie.text.Document)
+   * com.lowagie.text.Document)
    */
   public void onEndPage(PdfWriter writer, Document document) {
     PdfContentByte cb = writer.getDirectContent();
@@ -314,7 +314,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   /**
    * @see com.lowagie.text.pdf.PdfPageEventHelper#onCloseDocument(com.lowagie.text.pdf.PdfWriter,
-   *      com.lowagie.text.Document)
+   * com.lowagie.text.Document)
    */
   public void onCloseDocument(PdfWriter writer, Document document) {
     pdfTemplate.beginText();
@@ -560,8 +560,8 @@ public class PdfGenerator extends PdfPageEventHelper {
       addRowLinkToTable(tbl, new String[] {
           message.getString("Link") + " :",
           serverURL
-              + URLManager.getSimpleURL(URLManager.URL_PUBLI, publicationDetail
-                  .getPK().getId()) }, new Color[] { Color.BLACK, Color.BLUE },
+          + URLManager.getSimpleURL(URLManager.URL_PUBLI, publicationDetail
+          .getPK().getId()) }, new Color[] { Color.BLACK, Color.BLUE },
           false, true);
     }
 
@@ -575,9 +575,9 @@ public class PdfGenerator extends PdfPageEventHelper {
             language);
         String vignette_url = serverURL
             + FileServerUtils.getUrl("useless", publicationDetail.getPK()
-                .getComponentName(), "vignette", publicationDetail.getImage(),
-                publicationDetail.getImageMimeType(), publicationSettings
-                    .getString("imagesSubDirectory"));
+            .getComponentName(), "vignette", publicationDetail.getImage(),
+            publicationDetail.getImageMimeType(), publicationSettings
+            .getString("imagesSubDirectory"));
         vignette_url = vignette_url.replaceAll("/FileServer",
             "/OnlineFileServer");
         try {
@@ -650,7 +650,7 @@ public class PdfGenerator extends PdfPageEventHelper {
       if (publicationDetail.getValidateDate() != null) {
         validatorDate += " ("
             + DateUtil.getOutputDate(publicationDetail.getValidateDate(),
-                language) + ")";
+            language) + ")";
       }
       addRowToTable(tbl, null, new String[] {
           message.getString("kmelia.Valideur") + " :", validatorDate }, false,
@@ -700,7 +700,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     addRowToTable(tbl2, new String[] {
         message.getString("PubDateCreation") + " :",
         DateUtil.getOutputDate(publicationDetail.getCreationDate(), language)
-            + " " + message.getString("kmelia.By") + " " + creatorName,
+        + " " + message.getString("kmelia.By") + " " + creatorName,
         messageUpdatedDate, sUpdated });
 
     String beginDate = "";
@@ -856,7 +856,6 @@ public class PdfGenerator extends PdfPageEventHelper {
   }
 
   /**
-   * 
    * @param documentPdf
    * @throws DocumentException
    * @throws RemoteException
@@ -900,8 +899,7 @@ public class PdfGenerator extends PdfPageEventHelper {
               .next();
 
           /*
-           * Solution 1 : affichage de la dernière version (publique ou
-           * privée)
+           * Solution 1 : affichage de la dernière version (publique ou privée)
            */
           is_reader = isUserReader(document, user_id, versioningUtil);
           if (versioningUtil.isWriter(document, user_id) || is_reader
@@ -924,7 +922,7 @@ public class PdfGenerator extends PdfPageEventHelper {
                     if (user.isApproval()) {
                       creatorOrValidators += kmeliaSessionController
                           .getOrganizationController().getUserDetail(
-                              new Integer(user.getUserId()).toString())
+                          new Integer(user.getUserId()).toString())
                           .getDisplayedName()
                           + ", ";
                     }
@@ -936,15 +934,15 @@ public class PdfGenerator extends PdfPageEventHelper {
                 } else {// Autres cas
                   creatorOrValidators = kmeliaSessionController
                       .getOrganizationController().getUserDetail(
-                          new Integer(document_version.getAuthorId())
-                              .toString()).getDisplayedName();
+                      new Integer(document_version.getAuthorId())
+                      .toString()).getDisplayedName();
                 }
                 addRowToTable(tbl, null, new String[] {
                     document_version.getLogicalName(),
                     document.getName(),
                     document.getDescription(),
                     document_version.getMajorNumber() + "."
-                        + document_version.getMinorNumber(), creation_date,
+                    + document_version.getMinorNumber(), creation_date,
                     creatorOrValidators }, true, false);
               } else {
                 addRowToTable(tbl, null, new String[] {
@@ -954,9 +952,9 @@ public class PdfGenerator extends PdfPageEventHelper {
                     "",
                     creation_date,
                     kmeliaSessionController.getOrganizationController()
-                        .getUserDetail(
-                            new Integer(document.getOwnerId()).toString())
-                        .getDisplayedName() }, true, false);
+                    .getUserDetail(
+                    new Integer(document.getOwnerId()).toString())
+                    .getDisplayedName() }, true, false);
               }
             }
           }
@@ -990,7 +988,7 @@ public class PdfGenerator extends PdfPageEventHelper {
               attachmentDetail.getInfo(publiContentLanguage),
               attachmentDetail.getAttachmentFileSize(publiContentLanguage),
               DateUtil.getOutputDate(attachmentDetail
-                  .getCreationDate(publiContentLanguage), language) }, true,
+              .getCreationDate(publiContentLanguage), language) }, true,
               false);
         }
 
@@ -1014,7 +1012,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     String userName = "";
     if (updater != null
         && (updater.getFirstName().length() > 0 || updater.getLastName()
-            .length() > 0)) {
+        .length() > 0)) {
       userName = updater.getFirstName() + " " + updater.getLastName();
     } else {
       userName = message.getString("kmelia.UnknownUser");
@@ -1029,10 +1027,8 @@ public class PdfGenerator extends PdfPageEventHelper {
         .getInfoLinkList();
     if (targets != null && targets.size() > 0) {
       /*
-       * Paragraph title = new
-       * Paragraph("\n"+message.getString("PubReferenceeParAuteur")+" : ", new
-       * Font(Font.HELVETICA, 10, Font.BOLD, new Color(0, 0, 0)));
-       * document.add(title);
+       * Paragraph title = new Paragraph("\n"+message.getString("PubReferenceeParAuteur")+" : ", new
+       * Font(Font.HELVETICA, 10, Font.BOLD, new Color(0, 0, 0))); document.add(title);
        */
       Table tblHeader = addHearderToSection(message.getString(
           "PubReferenceeParAuteur").toUpperCase());
@@ -1075,7 +1071,7 @@ public class PdfGenerator extends PdfPageEventHelper {
                 FontFactory.HELVETICA_BOLD, 10, Font.UNDERLINE, Color.BLUE));
             permalinkPubli.setAnchor(new URL(serverURL
                 + URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getPK()
-                    .getId())));
+                .getId())));
             permalinkStar = new Phrase();
             permalinkStar.add(permalinkPubli);
 
@@ -1127,13 +1123,11 @@ public class PdfGenerator extends PdfPageEventHelper {
       throws DocumentException, RemoteException, ParseException {
     Vector comments = CommentController.getAllComments(new CommentPK(
         publicationDetail.getPK().getId(), null, kmeliaSessionController
-            .getComponentId()));
+        .getComponentId()));
     if (comments != null && comments.size() > 0) {
       /*
-       * Paragraph title = new
-       * Paragraph("\n"+message.getString("Comments")+" : ", new
-       * Font(Font.HELVETICA, 10, Font.BOLD, new Color(0, 0, 0)));
-       * document.add(title);
+       * Paragraph title = new Paragraph("\n"+message.getString("Comments")+" : ", new
+       * Font(Font.HELVETICA, 10, Font.BOLD, new Color(0, 0, 0))); document.add(title);
        */
 
       Table tblHeader = addHearderToSection(message.getString("Comments")
@@ -1176,13 +1170,8 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   /**
    * Cette methode construit un hyperlien a partir d'un nom et de son lien
-   * 
-   * @param unit
-   *          - un objet contenant un nom et un lien. Cette valeur ne doit pas
-   *          etre nulle
-   * @param isLinked
-   *          - vrai si l'on souhaite un hyperlien faux si l'on ne veut que du
-   *          texte
+   * @param unit - un objet contenant un nom et un lien. Cette valeur ne doit pas etre nulle
+   * @param isLinked - vrai si l'on souhaite un hyperlien faux si l'on ne veut que du texte
    * @return le texte en dur ou au format hypelien
    */
   private static String linkedNode(Value unit, boolean isLinked) {
@@ -1201,14 +1190,10 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   /**
    * Cette methode construit le chemin complet tronque pour acceder a une valeur
-   * 
-   * @param list
-   *          - un objet contenant une liste de liste(nom+url). Cette valeur ne
-   *          doit pas etre nulle
-   * @param completPath
-   *          - le chemin que l'on veut tronquer
-   * @param withLastValue
-   *          - on garde ou non la valeur selectionnee
+   * @param list - un objet contenant une liste de liste(nom+url). Cette valeur ne doit pas etre
+   * nulle
+   * @param completPath - le chemin que l'on veut tronquer
+   * @param withLastValue - on garde ou non la valeur selectionnee
    * @return completPath - le chemin fabrique
    */
   private static String troncatePath(String completPath, java.util.List list,
@@ -1239,17 +1224,11 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   /**
    * Cette methode construit le chemin complet pour acceder a une valeur
-   * 
-   * @param list
-   *          - un objet contenant une liste de liste(nom+url). Cette valeur ne
-   *          doit pas etre nulle
-   * @param isLinked
-   *          - vrai si l'on souhaite un hyperlien faux si l'on ne veut que du
-   *          texte
-   * @param withLastNode
-   *          - 0 si l'on veut afficher le chemin complet de la valeur
-   *          selectionnee. 1 si l'on ne souhaite afficher que le chemin complet
-   *          sans la valeur selectionnee
+   * @param list - un objet contenant une liste de liste(nom+url). Cette valeur ne doit pas etre
+   * nulle
+   * @param isLinked - vrai si l'on souhaite un hyperlien faux si l'on ne veut que du texte
+   * @param withLastNode - 0 si l'on veut afficher le chemin complet de la valeur selectionnee. 1 si
+   * l'on ne souhaite afficher que le chemin complet sans la valeur selectionnee
    * @return completPath - le chemin fabrique
    */
   private static String buildCompletPath(java.util.List list, boolean isLinked,
@@ -1296,10 +1275,8 @@ public class PdfGenerator extends PdfPageEventHelper {
         kmeliaSessionController.getComponentId());
     if (listPositions != null && listPositions.size() > 0) {
       /*
-       * Paragraph title = new
-       * Paragraph("\n"+generalMessage.getString("GML.PDC")+" : ", new
-       * Font(Font.HELVETICA, 10, Font.BOLD, new Color(0, 0, 0)));
-       * document.add(title);
+       * Paragraph title = new Paragraph("\n"+generalMessage.getString("GML.PDC")+" : ", new
+       * Font(Font.HELVETICA, 10, Font.BOLD, new Color(0, 0, 0))); document.add(title);
        */
       Table tblHeader = addHearderToSection(generalMessage.getString("GML.PDC")
           .toUpperCase());
@@ -1497,8 +1474,9 @@ public class PdfGenerator extends PdfPageEventHelper {
         if (!isInteger(infoId)) {
           document.add(tblHeader);
 
-          PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
-              .getPublicationTemplate(componentId + ":" + infoId);
+          PublicationTemplateImpl pubTemplate =
+              (PublicationTemplateImpl) PublicationTemplateManager
+                  .getPublicationTemplate(componentId + ":" + infoId);
 
           Form formView = pubTemplate.getViewForm();
 

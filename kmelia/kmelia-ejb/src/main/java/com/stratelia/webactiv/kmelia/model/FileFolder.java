@@ -59,10 +59,7 @@ public class FileFolder extends Object implements java.io.Serializable {
 
   /**
    * Constructor declaration
-   * 
-   * 
    * @param path
-   * 
    * @see
    */
   public FileFolder(String path) {
@@ -80,7 +77,7 @@ public class FileFolder extends Object implements java.io.Serializable {
 
       SilverTrace.debug("kmelia", "FileFolder.FileFolder()",
           "root.MSG_GEN_PARAM_VALUE", "isExists " + f.exists() + " isFile="
-              + f.isFile());
+          + f.isFile());
       if (f.exists()) {
         this.name = f.getName();
         String[] children_name = f.list();
@@ -109,10 +106,7 @@ public class FileFolder extends Object implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getFiles() {
@@ -121,10 +115,7 @@ public class FileFolder extends Object implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public Collection getFolders() {
@@ -133,10 +124,7 @@ public class FileFolder extends Object implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getName() {
@@ -145,10 +133,7 @@ public class FileFolder extends Object implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public String getPath() {
@@ -157,10 +142,7 @@ public class FileFolder extends Object implements java.io.Serializable {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   public ArrayList getChildren() {

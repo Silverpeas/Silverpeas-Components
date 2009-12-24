@@ -44,11 +44,9 @@ import com.stratelia.webactiv.publication.PublicationInstanciator;
 import com.stratelia.webactiv.util.DateUtil;
 
 /**
- * 
  * @author nesseric
  */
-public class KmeliaInstanciator extends SQLRequest implements
-    ComponentsInstanciatorIntf {
+public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
   /** Creates new KmeliaInstanciator */
   public KmeliaInstanciator() {

@@ -47,19 +47,13 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 /**
  * The kmelia implementation of ContentInterface.
  */
-public class KmeliaContentManager implements ContentInterface,
-    java.io.Serializable {
+public class KmeliaContentManager implements ContentInterface, java.io.Serializable {
   /**
    * Find all the SilverContent with the given list of SilverContentId
-   * 
-   * @param ids
-   *          list of silverContentId to retrieve
-   * @param peasId
-   *          the id of the instance
-   * @param userId
-   *          the id of the user who wants to retrieve silverContent
-   * @param userRoles
-   *          the roles of the user
+   * @param ids list of silverContentId to retrieve
+   * @param peasId the id of the instance
+   * @param userId the id of the user who wants to retrieve silverContent
+   * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
   public List getSilverContentById(List ids, String peasId, String userId,
@@ -85,13 +79,9 @@ public class KmeliaContentManager implements ContentInterface,
 
   /**
    * add a new content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param pubDetail
-   *          the content to register
-   * @param userId
-   *          the creator of the content
+   * @param con a Connection
+   * @param pubDetail the content to register
+   * @param userId the creator of the content
    * @return the unique silverObjectId which identified the new content
    */
   public int createSilverContent(Connection con, PublicationDetail pubDetail,
@@ -100,19 +90,16 @@ public class KmeliaContentManager implements ContentInterface,
         .getBeginDate(), pubDetail.getEndDate(), isVisible(pubDetail));
     SilverTrace.info("kmelia", "KmeliaContentManager.createSilverContent()",
         "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-            + scv.toString());
+        + scv.toString());
     return getContentManager().addSilverContent(con, pubDetail.getPK().getId(),
         pubDetail.getPK().getComponentName(), userId, scv);
   }
 
   /**
-   * update the visibility attributes of the content. Here, the type of content
-   * is a PublicationDetail
-   * 
-   * @param pubDetail
-   *          the content
-   * @param silverObjectId
-   *          the unique identifier of the content
+   * update the visibility attributes of the content. Here, the type of content is a
+   * PublicationDetail
+   * @param pubDetail the content
+   * @param silverObjectId the unique identifier of the content
    */
   public void updateSilverContentVisibility(PublicationDetail pubDetail)
       throws ContentManagerException {
@@ -132,13 +119,10 @@ public class KmeliaContentManager implements ContentInterface,
   }
 
   /**
-   * update the visibility attributes of the content. Here, the type of content
-   * is a PublicationDetail
-   * 
-   * @param pubDetail
-   *          the content
-   * @param silverObjectId
-   *          the unique identifier of the content
+   * update the visibility attributes of the content. Here, the type of content is a
+   * PublicationDetail
+   * @param pubDetail the content
+   * @param silverObjectId the unique identifier of the content
    */
   public void updateSilverContentVisibility(PublicationDetail pubDetail,
       boolean isVisible) throws ContentManagerException {
@@ -149,17 +133,14 @@ public class KmeliaContentManager implements ContentInterface,
     SilverTrace.info("kmelia",
         "KmeliaContentManager.updateSilverContentVisibility()",
         "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-            + scv.toString());
+        + scv.toString());
     updateSilverContentVisibility(scv, pubDetail, silverContentId);
   }
 
   /**
    * delete a content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param pubPK
-   *          the identifiant of the content to unregister
+   * @param con a Connection
+   * @param pubPK the identifiant of the content to unregister
    */
   public void deleteSilverContent(Connection con, PublicationPK pubPK)
       throws ContentManagerException {
@@ -168,7 +149,7 @@ public class KmeliaContentManager implements ContentInterface,
     if (contentId != -1) {
       SilverTrace.info("kmelia", "KmeliaContentManager.deleteSilverContent()",
           "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId()
-              + ", contentId = " + contentId);
+          + ", contentId = " + contentId);
       getContentManager().removeSilverContent(con, contentId,
           pubPK.getComponentName());
     }
@@ -180,11 +161,8 @@ public class KmeliaContentManager implements ContentInterface,
 
   /**
    * return a list of publicationPK according to a list of silverContentId
-   * 
-   * @param idList
-   *          a list of silverContentId
-   * @param peasId
-   *          the id of the instance
+   * @param idList a list of silverContentId
+   * @param peasId the id of the instance
    * @return a list of publicationPK
    */
   private ArrayList makePKArray(List idList, String peasId) {
@@ -210,9 +188,7 @@ public class KmeliaContentManager implements ContentInterface,
 
   /**
    * return a list of silverContent according to a list of publicationPK
-   * 
-   * @param ids
-   *          a list of publicationPK
+   * @param ids a list of publicationPK
    * @return a list of publicationDetail
    */
   private List getHeaders(List ids, String componentId, String userId) {
@@ -256,7 +232,7 @@ public class KmeliaContentManager implements ContentInterface,
       try {
         PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-                PublicationBmHome.class);
+            PublicationBmHome.class);
         currentPublicationBm = publicationBmHome.create();
       } catch (Exception e) {
         throw new KmeliaRuntimeException(

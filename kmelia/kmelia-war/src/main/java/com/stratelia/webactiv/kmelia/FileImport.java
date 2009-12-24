@@ -47,9 +47,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * Class for unitary and massive import
- * 
  * @author dlesimple
- * 
  */
 public class FileImport {
 
@@ -99,9 +97,7 @@ public class FileImport {
 
   /**
    * Import a single file for a unique publication
-   * 
    * @return ArrayList of PublicationDetail
-   * 
    */
   public ArrayList importFile() {
     ArrayList publicationDetails = new ArrayList();
@@ -118,9 +114,7 @@ public class FileImport {
 
   /**
    * Import a zip file for a unique publication with attachments
-   * 
-   * @param KmeliaSessionController
-   *          kmeliaScc
+   * @param KmeliaSessionController kmeliaScc
    * @return ArrayList of PublicationsDetails
    */
   public ArrayList importFiles() {
@@ -138,13 +132,13 @@ public class FileImport {
       String tempFolderPath = FileRepositoryManager.getAbsolutePath(kmeliaScc
           .getComponentId())
           + GeneralPropertiesManager.getGeneralResourceLocator().getString(
-              "RepositoryTypeTemp") + File.separator + tempFolderName;
+          "RepositoryTypeTemp") + File.separator + tempFolderName;
       // Create folder if necessary
       if (!new File(tempFolderPath).exists())
         FileRepositoryManager.createAbsolutePath(kmeliaScc.getComponentId(),
             GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                "RepositoryTypeTemp")
-                + File.separator + tempFolderName);
+            "RepositoryTypeTemp")
+            + File.separator + tempFolderName);
 
       // Extraction of the files
       SilverTrace.info("kmelia", "FileImport.importFiles()",
@@ -152,7 +146,7 @@ public class FileImport {
       ZipManager.extract(fileUploaded, new File(tempFolderPath));
       SilverTrace.info("kmelia", "FileImport.importFiles()",
           "root.MSG_GEN_PARAM_VALUE", "tempFolderPath.getPath() = "
-              + new File(tempFolderPath).getPath());
+          + new File(tempFolderPath).getPath());
 
       // Get files of the concerned upload directory
       File[] filesExtracted = new File(tempFolderPath + File.separator)
@@ -160,7 +154,7 @@ public class FileImport {
 
       SilverTrace.info("kmelia", "FileImport.importFiles()",
           "root.MSG_GEN_PARAM_VALUE", "nb filesExtracted = "
-              + filesExtracted.length);
+          + filesExtracted.length);
 
       // Create publication
       PublicationDetail publicationDetail = processImportFile(
@@ -181,7 +175,6 @@ public class FileImport {
 
   /**
    * Import a zip file for a publication per file in zip
-   * 
    * @return List of PublicationsDetail
    */
   public ArrayList importFilesMultiPubli() {
@@ -197,19 +190,19 @@ public class FileImport {
       String tempFolderPath = FileRepositoryManager.getAbsolutePath(kmeliaScc
           .getComponentId())
           + GeneralPropertiesManager.getGeneralResourceLocator().getString(
-              "RepositoryTypeTemp") + File.separator + tempFolderName;
+          "RepositoryTypeTemp") + File.separator + tempFolderName;
       // Create folder if necessary
       if (!new File(tempFolderPath).exists())
         FileRepositoryManager.createAbsolutePath(kmeliaScc.getComponentId(),
             GeneralPropertiesManager.getGeneralResourceLocator().getString(
-                "RepositoryTypeTemp")
-                + File.separator + tempFolderName);
+            "RepositoryTypeTemp")
+            + File.separator + tempFolderName);
 
       // Extraction of the files
       ZipManager.extract(fileUploaded, new File(tempFolderPath));
       SilverTrace.info("kmelia", "FileImport.importFilesMultiPubli()",
           "root.MSG_GEN_PARAM_VALUE", "tempFolderPath.getPath() = "
-              + new File(tempFolderPath).getPath());
+          + new File(tempFolderPath).getPath());
 
       // Get files of the concerned upload directory
       File[] filesExtracted = new File(tempFolderPath + File.separator)
@@ -217,8 +210,8 @@ public class FileImport {
 
       SilverTrace.info("kmelia", "FileImport.importFilesMultiPubli()",
           "root.MSG_GEN_PARAM_VALUE", "nb filesExtracted = "
-              + filesExtracted.length + " File="
-              + fileUploaded.getAbsolutePath());
+          + filesExtracted.length + " File="
+          + fileUploaded.getAbsolutePath());
 
       for (int i = 0; i < filesExtracted.length; i++) {
         File[] fileToProcess = new File[1];
@@ -243,7 +236,6 @@ public class FileImport {
 
   /**
    * Convert File into a publication with an attachment
-   * 
    * @param attachmentIE
    * @param versioningIE
    * @param fileToProcess
@@ -292,7 +284,7 @@ public class FileImport {
           SilverTrace.info("kmelia", "FileImport.processImportFile()",
               "root.MSG_GEN_PARAM_VALUE",
               "filesExtracted[i].getPath() versioning = "
-                  + filesToProcess[i].getAbsolutePath());
+              + filesToProcess[i].getAbsolutePath());
           attDetail.setAuthor(userDetail.getId());
           attDetail.setInstanceId(componentId);
           attDetail.setPK(new AttachmentPK(componentId));
@@ -300,7 +292,7 @@ public class FileImport {
           SilverTrace.info("kmelia", "FileImport.processImportFile()",
               "root.MSG_GEN_PARAM_VALUE",
               "versioningIE.getVersioningPath(componentId) = "
-                  + versioningIE.getVersioningPath(componentId));
+              + versioningIE.getVersioningPath(componentId));
 
           String filePath = filesToProcess[i].getAbsolutePath();
           if (MSdpManager.isSummaryInformation(filePath)) {
@@ -314,7 +306,7 @@ public class FileImport {
             attachments, versioningIE.getVersioningPath(componentId));
         SilverTrace.info("kmelia", "FileImport.processImportFile()",
             "root.MSG_GEN_PARAM_VALUE", "copiedAttachments.size() = "
-                + copiedAttachments);
+            + copiedAttachments);
         versioningIE.importDocuments(pubDetailToCreate.getId(), componentId,
             copiedAttachments, new Integer(userDetail.getId()).intValue(),
             versionType, KmeliaHelper.isIndexable(pubDetailToCreate));
@@ -325,7 +317,7 @@ public class FileImport {
           SilverTrace.info("kmelia", "FileImport.processImportFile()",
               "root.MSG_GEN_PARAM_VALUE",
               "filesExtracted[i].getPath() Non versionning = "
-                  + filesToProcess[i].getAbsolutePath());
+              + filesToProcess[i].getAbsolutePath());
           attDetail.setPhysicalName(filesToProcess[i].getAbsolutePath());
           attDetail.setAuthor(userDetail.getId());
 
@@ -339,7 +331,7 @@ public class FileImport {
         }
         attachmentIE.importAttachments(pubDetailToCreate.getId(), componentId,
             attachments, userDetail.getId(), KmeliaHelper
-                .isIndexable(pubDetailToCreate));
+            .isIndexable(pubDetailToCreate));
       }
     } catch (Exception ex) {
       SilverTrace.error("kmelia", "FileImport.processImportFile()",
@@ -350,14 +342,13 @@ public class FileImport {
 
   /**
    * Return a Publication Detail (filled by the Office properties if possible)
-   * 
    * @param file
    * @return PublicationDetail
    */
   private PublicationDetail getPublicationDetail(File file) {
     SilverTrace.info("kmelia", "FileImport.getPublicationDetail()",
         "root.MSG_GEN_PARAM_VALUE", "fileName = " + file.getName()
-            + " filepath=" + file.getAbsolutePath());
+        + " filepath=" + file.getAbsolutePath());
     String pubName = formatNameFile(file.getName());
     String description = formatNameFile(file.getName());
     String author = "";
@@ -372,14 +363,12 @@ public class FileImport {
     }
     PublicationDetail publicationDetail = new PublicationDetail(null,
         pubName/* nom */, description/* description */, new Date()/*
-                                                                   * date de
-                                                                   * création
+                                                                   * date de création
                                                                    */,
         new Date()/* date de début de validité */, null/*
-                                                          * date de fin de
-                                                          * validité
+                                                          * date de fin de validité
                                                           */, kmeliaScc
-            .getUserDetail().getId()/* id user */, "1"/* importance */,
+        .getUserDetail().getId()/* id user */, "1"/* importance */,
         null/* version de la publication */, keywords/* keywords */, content,
         null, author);
     if (kmeliaScc.isAuthorUsed())
@@ -389,7 +378,6 @@ public class FileImport {
 
   /**
    * Format file name without extension
-   * 
    * @param fileName
    * @return fileName formatted
    */
@@ -402,11 +390,8 @@ public class FileImport {
 
   /**
    * Get the title of the document
-   * 
-   * @param file
-   *          Office File
-   * @param value
-   *          Name of the field
+   * @param file Office File
+   * @param value Name of the field
    * @return Title
    */
   private String getOfficeTitle(String file, String value) {
@@ -421,7 +406,6 @@ public class FileImport {
 
   /**
    * Get the subject of the document
-   * 
    * @param file
    * @param value
    * @return Subject
@@ -438,7 +422,6 @@ public class FileImport {
 
   /**
    * Get the author of the document
-   * 
    * @param file
    * @param value
    * @return Author name
@@ -455,7 +438,6 @@ public class FileImport {
 
   /**
    * Get the keywords of the document
-   * 
    * @param file
    * @param value
    * @return

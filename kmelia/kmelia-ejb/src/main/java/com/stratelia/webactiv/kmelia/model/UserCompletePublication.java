@@ -28,12 +28,10 @@ import com.stratelia.webactiv.util.publication.model.CompletePublication;
 
 /**
  * This object contains elements which are displayed in a kmelia Topic
- * 
  * @author Nicolas Eysseric
  * @version 1.0
  */
-public class UserCompletePublication extends Object implements
-    java.io.Serializable {
+public class UserCompletePublication extends Object implements java.io.Serializable {
 
   /**  */
   private UserDetail owner;
@@ -45,7 +43,6 @@ public class UserCompletePublication extends Object implements
 
   /**
    * Construct an empty TopicDetail
-   * 
    * @since 1.0
    */
   public UserCompletePublication() {
@@ -54,7 +51,6 @@ public class UserCompletePublication extends Object implements
 
   /**
    * Create a new TopicDetail
-   * 
    * @since 1.0
    */
   public UserCompletePublication(UserDetail owner,
@@ -64,7 +60,6 @@ public class UserCompletePublication extends Object implements
 
   /**
    * Create a new TopicDetail
-   * 
    * @since 1.0
    */
   private void init(UserDetail owner, CompletePublication publication) {
@@ -74,7 +69,6 @@ public class UserCompletePublication extends Object implements
 
   /**
    * Get the path
-   * 
    * @return the path
    * @since 1.0
    */
@@ -84,7 +78,6 @@ public class UserCompletePublication extends Object implements
 
   /**
    * Get the Topic nodePK
-   * 
    * @return the Topic nodePK
    * @see com.stratelia.webactiv.util.node.model.NodePK
    * @since 1.0
@@ -95,9 +88,7 @@ public class UserCompletePublication extends Object implements
 
   /**
    * Set the path
-   * 
-   * @param path
-   *          a NodeDetail Collection
+   * @param path a NodeDetail Collection
    * @since 1.0
    */
   public void setOwner(UserDetail ud) {
@@ -106,9 +97,7 @@ public class UserCompletePublication extends Object implements
 
   /**
    * Set the detail of this topic
-   * 
-   * @param nd
-   *          the topic NodeDetail
+   * @param nd the topic NodeDetail
    * @since 1.0
    */
   public void setPublication(CompletePublication pub) {

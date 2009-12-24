@@ -35,7 +35,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 /**
  * @author neysseri
- * 
  */
 public class KmeliaHelper implements Serializable {
 
