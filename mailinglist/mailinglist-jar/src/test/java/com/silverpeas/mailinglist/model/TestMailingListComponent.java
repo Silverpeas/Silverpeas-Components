@@ -169,6 +169,7 @@ public class TestMailingListComponent extends
   @SuppressWarnings("unchecked")
   public void testOnMessage() throws Exception {
     Message message = ServicesFactory.getMessageService().getMessage("700");
+    message.setContentType("text/plain; charset=\"UTF-8\"");
     MessageEvent event = new MessageEvent();
     event.addMessage(message);
     component.onMessage(event);
@@ -268,6 +269,8 @@ public class TestMailingListComponent extends
     assertFalse(list.isModerated());
     assertTrue(list.isNotify());
     Message message = ServicesFactory.getMessageService().getMessage("701");
+    assertEquals(textEmailContent, message.getBody());
+    message.setContentType("text/plain; charset=\"UTF-8\"");
     MessageEvent event = new MessageEvent();
     event.addMessage(message);
     componentNotModerated.onMessage(event);
@@ -340,6 +343,7 @@ public class TestMailingListComponent extends
     MimeMessage alert = (MimeMessage) inbox.iterator().next();
     assertNotNull(alert);
     assertEquals(subject, alert.getSubject());
+    assertEquals("text/plain; charset=\"UTF-8\"", alert.getContentType());
     assertEquals(textEmailContent, alert.getContent());
   }
 

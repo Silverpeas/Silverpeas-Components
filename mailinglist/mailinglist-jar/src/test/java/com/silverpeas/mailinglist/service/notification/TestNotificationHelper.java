@@ -144,6 +144,7 @@ public class TestNotificationHelper extends
 
   public void testNotifyExternals() throws Exception {
     Message message = ServicesFactory.getMessageService().getMessage("700");
+    message.setContentType("text/plain; charset=\"UTF-8\"");
     assertNotNull(message);
     MailingList list = ServicesFactory.getMailingListService().findMailingList(
         "100");
