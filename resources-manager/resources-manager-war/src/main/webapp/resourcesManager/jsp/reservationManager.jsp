@@ -252,17 +252,15 @@ buttonPane.addButton(cancelButton);
 	<%if (reservation != null) 
 	{
 		//out.println(reservationId);
-		%><input type="HIDDEN" name="reservationId" value=<%=reservationId%>>
+		%><input type="HIDDEN" name="reservationId" value="<%=reservationId%>"/>
   <%}%>
 </TABLE>
 </form>
 
-<div id="listResourceProblem" />
+<div id="listResourceProblem"></div>
 
 <SCRIPT>document.createForm.evenement.focus();</SCRIPT>
 <%
-
-
 out.println(board.printAfter());
 out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
 out.println(frame.printAfter());

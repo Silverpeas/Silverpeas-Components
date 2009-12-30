@@ -29,12 +29,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class ResourcesManagerDAO {
@@ -58,14 +58,15 @@ public class ResourcesManagerDAO {
     String description = rs.getString("description");
     CategoryDetail category = new CategoryDetail(Integer.toString(id),
         instanceId, name, creationDate, updateDate, bookable, form, Integer
-            .toString(responsibleId), Integer.toString(createrId), Integer
-            .toString(updaterId), description);
+        .toString(responsibleId), Integer.toString(createrId), Integer
+        .toString(updaterId), description);
     return category;
   }
 
   public static int createCategory(Connection con, CategoryDetail category)
       throws SQLException {
-    String query = "INSERT INTO SC_Resources_Category (id, instanceId, name, creationdate, updatedate, bookable, form, responsibleid, createrid, updaterid, description) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+    String query =
+        "INSERT INTO SC_Resources_Category (id, instanceId, name, creationdate, updatedate, bookable, form, responsibleid, createrid, updaterid, description) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
     PreparedStatement prepStmt = null;
     String instanceId = category.getInstanceId();
     String name = category.getName();
@@ -109,7 +110,8 @@ public class ResourcesManagerDAO {
 
   public static void updateCategory(Connection con, CategoryDetail category)
       throws SQLException {
-    String query = "UPDATE SC_Resources_Category SET instanceId=?, name=?, updatedate=?, bookable=?, form=?, responsibleid=?, updaterid=?, description=? WHERE id=?";
+    String query =
+        "UPDATE SC_Resources_Category SET instanceId=?, name=?, updatedate=?, bookable=?, form=?, responsibleid=?, updaterid=?, description=? WHERE id=?";
     PreparedStatement prepStmt = null;
     // on récupère les informations de ContactDetail
     String id = category.getId();
@@ -144,9 +146,9 @@ public class ResourcesManagerDAO {
     }
   }
 
-  public static ArrayList getCategories(Connection con, String instanceId)
+  public static List<CategoryDetail> getCategories(Connection con, String instanceId)
       throws SQLException {
-    ArrayList list = null;
+    List<CategoryDetail> list = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
@@ -156,7 +158,7 @@ public class ResourcesManagerDAO {
       prepStmt.setString(1, instanceId);
 
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<CategoryDetail>();
       while (rs.next()) {
         CategoryDetail category = resultSetToCategoryDetail(rs);
         list.add(category);
@@ -176,7 +178,7 @@ public class ResourcesManagerDAO {
     try {
 
       prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, new Integer(id).intValue());
+      prepStmt.setInt(1, Integer.parseInt(id));
       rs = prepStmt.executeQuery();
       if (rs.next())
         category = resultSetToCategoryDetail(rs);
@@ -188,12 +190,11 @@ public class ResourcesManagerDAO {
 
   public static void deleteCategory(Connection con, String id)
       throws SQLException {
-    // deleteResourceFromCategory(con,id);
     PreparedStatement prepStmt = null;
     String query = "DELETE FROM SC_Resources_Category WHERE ID=?";
     try {
       prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, new Integer(id).intValue());
+      prepStmt.setInt(1, Integer.parseInt(id));
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
@@ -222,14 +223,15 @@ public class ResourcesManagerDAO {
 
     ResourceDetail resource = new ResourceDetail(Integer.toString(id),
         categoryId, name, creationDate, updateDate, description, Integer
-            .toString(responsibleId), Integer.toString(createrId), Integer
-            .toString(updaterId), instanceId, book);
+        .toString(responsibleId), Integer.toString(createrId), Integer
+        .toString(updaterId), instanceId, book);
     return resource;
   }
 
   public static String createResource(Connection con, ResourceDetail resource)
       throws SQLException {
-    String query = "INSERT INTO SC_Resources_Resource (id, instanceId, categoryId, name, creationdate, updatedate, bookable, responsibleid, createrid, updaterid, description) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+    String query =
+        "INSERT INTO SC_Resources_Resource (id, instanceId, categoryId, name, creationdate, updatedate, bookable, responsibleid, createrid, updaterid, description) VALUES (?,?,?,?,?,?,?,?,?,?,?)";
     PreparedStatement prepStmt = null;
     String instanceId = resource.getInstanceId();
     String name = resource.getName();
@@ -271,7 +273,8 @@ public class ResourcesManagerDAO {
 
   public static void updateResource(Connection con, ResourceDetail resource)
       throws SQLException {
-    String query = "UPDATE SC_Resources_Resource SET instanceId=?, name=?, updatedate=?, bookable=?, responsibleid=?, updaterid=?, description=?, categoryid=? WHERE id=?";
+    String query =
+        "UPDATE SC_Resources_Resource SET instanceId=?, name=?, updatedate=?, bookable=?, responsibleid=?, updaterid=?, description=?, categoryid=? WHERE id=?";
     PreparedStatement prepStmt = null;
 
     String id = resource.getId();
@@ -307,13 +310,14 @@ public class ResourcesManagerDAO {
     }
   }
 
-  public static List getResourcesByCategory(Connection con, String categoryId)
+  public static List<ResourceDetail> getResourcesByCategory(Connection con, String categoryId)
       throws SQLException {
-    List list = null;
+    List<ResourceDetail> list = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
 
-    String query = "select id,name,creationDate,updateDate,bookable,responsibleId,createrId,updaterId,description,categoryid from SC_Resources_Resource where categoryid = ?";
+    String query =
+        "select id,name,creationDate,updateDate,bookable,responsibleId,createrId,updaterId,description,categoryid from SC_Resources_Resource where categoryid = ?";
     try {
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(categoryId));
@@ -362,10 +366,10 @@ public class ResourcesManagerDAO {
 
   public static void deleteResourceFromCategory(Connection con,
       String idCategory) throws SQLException {
-    List listOfResources = getResourcesByCategory(con, idCategory);
+    List<ResourceDetail> listOfResources = getResourcesByCategory(con, idCategory);
     try {
       for (int i = 0; i < listOfResources.size(); i++) {
-        ResourceDetail resource = (ResourceDetail) listOfResources.get(i);
+        ResourceDetail resource = listOfResources.get(i);
         String idResource = resource.getId();
         deleteResource(con, idResource);
       }
@@ -417,7 +421,7 @@ public class ResourcesManagerDAO {
     return reservation;
   }
 
-  private static ArrayList returnArrayListofReservationResource(ResultSet rs)
+  private static List<ResourceDetail> returnArrayListofReservationResource(ResultSet rs)
       throws SQLException {
     int id;
     String instanceId = "";
@@ -429,7 +433,7 @@ public class ResourcesManagerDAO {
     int responsibleId = 0;
     int createrId = 0;
     int updaterId = 0;
-    ArrayList list = new ArrayList();
+    List<ResourceDetail> list = new ArrayList<ResourceDetail>();
     boolean book = false;
     while (rs.next()) {
       id = rs.getInt("id");
@@ -447,7 +451,7 @@ public class ResourcesManagerDAO {
       ResourceDetail resource = new ResourceDetail(Integer.toString(id),
           Integer.toString(categoryId), name, creationDate, updateDate,
           description, Integer.toString(responsibleId), Integer
-              .toString(createrId), Integer.toString(updaterId), instanceId,
+          .toString(createrId), Integer.toString(updaterId), instanceId,
           book);
       list.add(resource);
     }
@@ -457,7 +461,8 @@ public class ResourcesManagerDAO {
   public static String saveReservation(Connection con,
       ReservationDetail reservation, String listReservationCurrent)
       throws SQLException {
-    String query = "INSERT INTO SC_Resources_Reservation (id, instanceId, evenement, userId, creationdate, updatedate, begindate, enddate, reason, place) VALUES (?,?,?,?,?,?,?,?,?,?)";
+    String query =
+        "INSERT INTO SC_Resources_Reservation (id, instanceId, evenement, userId, creationdate, updatedate, begindate, enddate, reason, place) VALUES (?,?,?,?,?,?,?,?,?,?)";
     PreparedStatement prepStmt = null;
     // on récupère les informations de ReservationDetail
     String instanceId = reservation.getInstanceId();
@@ -508,7 +513,8 @@ public class ResourcesManagerDAO {
 
   public static void insertIntoReservedResource(Connection con,
       int idReservation, String idResource) throws SQLException {
-    String query = "INSERT INTO SC_Resources_ReservedResource (reservationId,resourceId) VALUES (?,?)";
+    String query =
+        "INSERT INTO SC_Resources_ReservedResource (reservationId,resourceId) VALUES (?,?)";
     PreparedStatement prepStmt = null;
     int resourceId = Integer.parseInt(idResource);
     try {
@@ -531,7 +537,8 @@ public class ResourcesManagerDAO {
     // ?<=C.enddate) OR (?<=C.begindate AND
     // C.enddate<=?))) ORDER BY D.id";
     PreparedStatement prepStmt = null;
-    String query = "Select id from SC_Resources_Reservation A, SC_Resources_ReservedResource B where B.resourceId=? AND B.reservationId=A.id AND ((A.begindate<? AND ?<A.enddate) OR (A.begindate<? AND ?<A.enddate) OR (?<=A.begindate AND A.enddate<=?))";
+    String query =
+        "Select id from SC_Resources_Reservation A, SC_Resources_ReservedResource B where B.resourceId=? AND B.reservationId=A.id AND ((A.begindate<? AND ?<A.enddate) OR (A.begindate<? AND ?<A.enddate) OR (?<=A.begindate AND A.enddate<=?))";
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(query);
@@ -552,13 +559,14 @@ public class ResourcesManagerDAO {
     return reservationIdProblem;
   }
 
-  public static ArrayList getResourcesReservable(Connection con,
+  public static List<ResourceReservableDetail> getResourcesReservable(Connection con,
       String instanceId, Date startDate, Date endDate) throws SQLException,
       ParseException {
-    ArrayList list = null;
+    List<ResourceReservableDetail> list = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    String query = "Select A.id, D.id, A.name, D.name from SC_Resources_Resource A, SC_Resources_Category D where A.instanceId = ? AND D.instanceId = ? AND A.categoryId = D.id AND A.bookable=1 AND D.bookable=1 ORDER BY D.id";
+    String query =
+        "Select A.id, D.id, A.name, D.name from SC_Resources_Resource A, SC_Resources_Category D where A.instanceId = ? AND D.instanceId = ? AND A.categoryId = D.id AND A.bookable=1 AND D.bookable=1 ORDER BY D.id";
     int categoryId;
     int resourceId;
     String categoryName = "";
@@ -568,7 +576,7 @@ public class ResourcesManagerDAO {
       prepStmt.setString(1, instanceId);
       prepStmt.setString(2, instanceId);
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<ResourceReservableDetail>();
       while (rs.next()) {
         resourceId = rs.getInt(1);
         categoryId = rs.getInt(2);
@@ -594,10 +602,10 @@ public class ResourcesManagerDAO {
     return list;
   }
 
-  public static ArrayList verificationReservation(Connection con,
+  public static List<ResourceDetail> verificationReservation(Connection con,
       String instanceId, String listeReservation, Date startDate, Date endDate)
       throws SQLException, ParseException {
-    ArrayList listeResourcesEverReserved = new ArrayList();
+    List<ResourceDetail> listeResourcesEverReserved = new ArrayList<ResourceDetail>();
     if (listeReservation != null) {
       StringTokenizer tokenizer = new StringTokenizer(listeReservation, ",");
       while (tokenizer.hasMoreTokens()) {
@@ -619,21 +627,16 @@ public class ResourcesManagerDAO {
   }
 
   /***
-   * Renvoie 0 si tout va bien Renvoie l'id de la réservation si une ressource
-   * qu'on veut réservée ne peut l être à cause d'une réservation déjà faite
+   * Renvoie 0 si tout va bien Renvoie l'id de la réservation si une ressource qu'on veut réservée
+   * ne peut l être à cause d'une réservation déjà faite
    **/
 
   public static int IdReservationProblem(Connection con, int resourceId,
       Date startDate, Date endDate) throws SQLException {
-    int reservationIdProblem = 0; // Select B.resourceId from
-    // SC_Resources_ReservedResource B,
-    // SC_Resources_Reservation C where
-    // B.reservationId = C.Id AND ((C.begindate<?
-    // AND ?<C.enddate) OR (C.begindate<=? AND
-    // ?<=C.enddate) OR (?<=C.begindate AND
-    // C.enddate<=?))) ORDER BY D.id";
+    int reservationIdProblem = 0;
     PreparedStatement prepStmt = null;
-    String query = "Select id from SC_Resources_Reservation A, SC_Resources_ReservedResource B where B.resourceId=? AND B.reservationId=A.id AND ((A.begindate<? AND ?<A.enddate) OR (A.begindate<? AND ?<A.enddate) OR (?<A.begindate AND A.enddate<?))";
+    String query =
+        "Select id from SC_Resources_Reservation A, SC_Resources_ReservedResource B where B.resourceId=? AND B.reservationId=A.id AND ((A.begindate<? AND ?<A.enddate) OR (A.begindate<? AND ?<A.enddate) OR (?<A.begindate AND A.enddate<?))";
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(query);
@@ -654,10 +657,10 @@ public class ResourcesManagerDAO {
     return reservationIdProblem;
   }
 
-  public static ArrayList verificationNewDateReservation(Connection con,
+  public static List<ResourceDetail> verificationNewDateReservation(Connection con,
       String instanceId, String listeReservation, Date startDate, Date endDate,
       String reservationId) throws SQLException, ParseException {
-    ArrayList listeResourcesEverReserved = new ArrayList();
+    List<ResourceDetail> listeResourcesEverReserved = new ArrayList<ResourceDetail>();
     if (listeReservation != null) {
       StringTokenizer tokenizer = new StringTokenizer(listeReservation, ",");
       while (tokenizer.hasMoreTokens()) {
@@ -679,8 +682,8 @@ public class ResourcesManagerDAO {
   }
 
   /***
-   * Renvoie 0 si tout va bien Renvoie l'id de la réservation si une ressource
-   * qu'on veut réservée ne peut l être à cause d'une réservation déjà faite
+   * Renvoie 0 si tout va bien Renvoie l'id de la réservation si une ressource qu'on veut réservée
+   * ne peut l être à cause d'une réservation déjà faite
    **/
 
   public static int IdReservationDateProblem(Connection con, int resourceId,
@@ -688,7 +691,8 @@ public class ResourcesManagerDAO {
     int reservationIdProblem = 0;
     int idReservation = Integer.parseInt(reservationId);
     PreparedStatement prepStmt = null;
-    String query = "Select id from SC_Resources_Reservation A, SC_Resources_ReservedResource B where B.resourceId=? AND B.reservationId!=? AND B.reservationId=A.id AND ((A.begindate<? AND ?<A.enddate) OR (A.begindate<? AND ?<A.enddate) OR (?<=A.begindate AND A.enddate<=?))";
+    String query =
+        "Select id from SC_Resources_Reservation A, SC_Resources_ReservedResource B where B.resourceId=? AND B.reservationId!=? AND B.reservationId=A.id AND ((A.begindate<? AND ?<A.enddate) OR (A.begindate<? AND ?<A.enddate) OR (?<=A.begindate AND A.enddate<=?))";
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(query);
@@ -710,12 +714,13 @@ public class ResourcesManagerDAO {
     return reservationIdProblem;
   }
 
-  public static ArrayList getReservationUser(Connection con, String instanceId,
+  public static List<ReservationDetail> getReservationUser(Connection con, String instanceId,
       String userId) throws SQLException, ParseException {
-    ArrayList list = null;
+    List<ReservationDetail> list = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    String query = "select id,evenement,creationDate,updateDate,begindate,enddate,reason,place from SC_Resources_Reservation where instanceId=? AND userId=?";
+    String query =
+        "select id,evenement,creationDate,updateDate,begindate,enddate,reason,place from SC_Resources_Reservation where instanceId=? AND userId=?";
     int id;
     String evenement = "";
     Date creationDate;
@@ -732,7 +737,7 @@ public class ResourcesManagerDAO {
       prepStmt.setInt(2, idUser);
 
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<ReservationDetail>();
       while (rs.next()) {
         id = rs.getInt("id");
         evenement = rs.getString("evenement");
@@ -753,12 +758,13 @@ public class ResourcesManagerDAO {
     return list;
   }
 
-  public static ArrayList getReservations(Connection con, String instanceId)
+  public static List<ReservationDetail> getReservations(Connection con, String instanceId)
       throws SQLException, ParseException {
-    ArrayList list = null;
+    List<ReservationDetail> list = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    String query = "select id,evenement,creationDate,updateDate,begindate,enddate,reason,place,userId from SC_Resources_Reservation where instanceId=?";
+    String query =
+        "select id,evenement,creationDate,updateDate,begindate,enddate,reason,place,userId from SC_Resources_Reservation where instanceId=?";
     int id;
     String evenement = "";
     Date creationDate;
@@ -773,7 +779,7 @@ public class ResourcesManagerDAO {
       prepStmt.setString(1, instanceId);
 
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<ReservationDetail>();
       while (rs.next()) {
         id = rs.getInt("id");
         evenement = rs.getString("evenement");
@@ -795,13 +801,14 @@ public class ResourcesManagerDAO {
     return list;
   }
 
-  public static ArrayList getResourcesofReservation(Connection con,
+  public static List<ResourceDetail> getResourcesofReservation(Connection con,
       String instanceId, String reservationId) throws SQLException,
       ParseException {
-    ArrayList list = null;
+    List<ResourceDetail> list = null;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    String query = "select A.id, A.categoryid, A.name, A.creationdate, A.updatedate, A.bookable, A.responsibleid, A.createrid, A.updaterid, A.description from SC_Resources_Resource A, SC_Resources_ReservedResource B where A.id=B.resourceId AND B.reservationId=? AND A.instanceId=?";
+    String query =
+        "select A.id, A.categoryid, A.name, A.creationdate, A.updatedate, A.bookable, A.responsibleid, A.createrid, A.updaterid, A.description from SC_Resources_Resource A, SC_Resources_ReservedResource B where A.id=B.resourceId AND B.reservationId=? AND A.instanceId=?";
     int idReservation = Integer.parseInt(reservationId);
     try {
       prepStmt = con.prepareStatement(query);
@@ -820,7 +827,8 @@ public class ResourcesManagerDAO {
       String instanceId, String reservationId) throws SQLException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    String query = "select id,evenement,creationDate,updateDate,begindate,enddate,reason,userId,place from SC_Resources_Reservation where instanceId=? AND id=?";
+    String query =
+        "select id,evenement,creationDate,updateDate,begindate,enddate,reason,userId,place from SC_Resources_Reservation where instanceId=? AND id=?";
     int idReservation = Integer.parseInt(reservationId);
     ReservationDetail reservation = null;
     try {
@@ -837,15 +845,16 @@ public class ResourcesManagerDAO {
     return reservation;
   }
 
-  public static ArrayList getMonthReservation(Connection con,
+  public static List<ReservationDetail> getMonthReservation(Connection con,
       String instanceId, Date monthDate, String userId, String language)
       throws SQLException, ParseException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList list = null;
-    Date monthBegin = FirstEndDayOfMonth(monthDate, "01", language);
-    Date monthEnd = FirstEndDayOfMonth(monthDate, "30", language);
-    String query = "select id,evenement,creationDate,updateDate,begindate,enddate,reason,place,userId from SC_Resources_Reservation where instanceId=? AND userId=? AND ((?<=begindate AND begindate<=?) OR (?<=enddate AND enddate<=?) OR (begindate<=? AND ?<=enddate)) ";
+    List<ReservationDetail> list = null;
+    Date monthBegin = getFirstDateOfMonth(monthDate);
+    Date monthEnd = getEndDateOfMonth(monthDate);
+    String query =
+        "select id,evenement,creationDate,updateDate,begindate,enddate,reason,place,userId from SC_Resources_Reservation where instanceId=? AND userId=? AND ((?<=begindate AND begindate<=?) OR (?<=enddate AND enddate<=?) OR (begindate<=? AND ?<=enddate)) ";
     int idUser = Integer.parseInt(userId);
     try {
       prepStmt = con.prepareStatement(query);
@@ -858,7 +867,7 @@ public class ResourcesManagerDAO {
       prepStmt.setString(7, Long.toString(monthBegin.getTime()));
       prepStmt.setString(8, Long.toString(monthEnd.getTime()));
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<ReservationDetail>();
       while (rs.next()) {
         ReservationDetail reservation = returnReservationDetail(rs, instanceId);
         list.add(reservation);
@@ -869,15 +878,41 @@ public class ResourcesManagerDAO {
     return list;
   }
 
-  public static ArrayList getMonthReservationOfCategory(Connection con,
-      String instanceId, Date monthDate, String userId, String language,
-      String idCategory) throws SQLException, ParseException {
+  private static Date getFirstDateOfMonth(Date date) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(date);
+    calendar.set(Calendar.DATE, 1);
+    calendar.set(Calendar.HOUR_OF_DAY, 0);
+    calendar.set(Calendar.MINUTE, 0);
+    calendar.set(Calendar.SECOND, 0);
+    calendar.set(Calendar.MILLISECOND, 0);
+
+    return calendar.getTime();
+  }
+
+  private static Date getEndDateOfMonth(Date date) {
+    Calendar calendar = Calendar.getInstance();
+    calendar.setTime(date);
+    calendar.set(Calendar.DATE, calendar.getMaximum(Calendar.DATE));
+    calendar.set(Calendar.HOUR_OF_DAY, 23);
+    calendar.set(Calendar.MINUTE, 59);
+    calendar.set(Calendar.SECOND, 59);
+    calendar.set(Calendar.MILLISECOND, 59);
+
+    return calendar.getTime();
+  }
+
+  public static List<ReservationDetail> getMonthReservationOfCategory(Connection con,
+      String instanceId,
+      Date monthDate, String userId, String language, String idCategory) throws SQLException,
+      ParseException {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList list = null;
-    Date monthBegin = FirstEndDayOfMonth(monthDate, "01", language);
-    Date monthEnd = FirstEndDayOfMonth(monthDate, "30", language);
-    String query = "select A.id,A.evenement,A.creationDate,A.updateDate,A.begindate,A.enddate,A.reason,A.place,A.userId from SC_Resources_Reservation A, SC_Resources_Resource B, SC_Resources_ReservedResource C where A.instanceId=? AND B.categoryid=? AND B.id=C.resourceId AND C.reservationId=A.id AND ((?<=A.begindate AND A.begindate<=?) OR (?<=A.enddate AND A.enddate<=?) OR (A.begindate<=? AND ?<=A.enddate)) ";
+    List<ReservationDetail> list = null;
+    Date monthBegin = getFirstDateOfMonth(monthDate);
+    Date monthEnd = getEndDateOfMonth(monthDate);
+    String query =
+        "select A.id,A.evenement,A.creationDate,A.updateDate,A.begindate,A.enddate,A.reason,A.place,A.userId from SC_Resources_Reservation A, SC_Resources_Resource B, SC_Resources_ReservedResource C where A.instanceId=? AND B.categoryid=? AND B.id=C.resourceId AND C.reservationId=A.id AND ((?<=A.begindate AND A.begindate<=?) OR (?<=A.enddate AND A.enddate<=?) OR (A.begindate<=? AND ?<=A.enddate)) ";
     int categoryId = Integer.parseInt(idCategory);
     try {
       prepStmt = con.prepareStatement(query);
@@ -890,10 +925,10 @@ public class ResourcesManagerDAO {
       prepStmt.setString(7, Long.toString(monthBegin.getTime()));
       prepStmt.setString(8, Long.toString(monthEnd.getTime()));
       rs = prepStmt.executeQuery();
-      list = new ArrayList();
+      list = new ArrayList<ReservationDetail>();
       while (rs.next()) {
         ReservationDetail reservation = returnReservationDetail(rs, instanceId);
-        ArrayList listResourcesReserved = getResourcesofReservation(con,
+        List<ResourceDetail> listResourcesReserved = getResourcesofReservation(con,
             instanceId, reservation.getId());
         reservation.setListResourcesReserved(listResourcesReserved);
         list.add(reservation);
@@ -951,12 +986,11 @@ public class ResourcesManagerDAO {
   public static void updateIntoReservation(Connection con,
       ReservationDetail reservationCourante) throws SQLException {
     PreparedStatement prepStmt = null;
-    String query = "UPDATE SC_Resources_Reservation SET evenement=?, userId=?, updatedate=?, begindate=?, enddate=?, reason=?, place=? WHERE id=? and instanceId=?";
+    String query =
+        "UPDATE SC_Resources_Reservation SET evenement=?, updatedate=?, begindate=?, enddate=?, reason=?, place=? WHERE id=? and instanceId=?";
     // on récupère les informations de ReservationDetail
     String instanceId = reservationCourante.getInstanceId();
     String evenement = reservationCourante.getEvent();
-    String userId = reservationCourante.getUserId();
-    int idUser = Integer.parseInt(userId);
     Date updatedate = new Date();
     Date begindate = reservationCourante.getBeginDate();
     Date enddate = reservationCourante.getEndDate();
@@ -968,32 +1002,17 @@ public class ResourcesManagerDAO {
       // Preparation de la requête
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, evenement);
-      prepStmt.setInt(2, idUser);
-      prepStmt.setString(3, Long.toString(updatedate.getTime()));
-      prepStmt.setString(4, Long.toString(begindate.getTime()));
-      prepStmt.setString(5, Long.toString(enddate.getTime()));
-      prepStmt.setString(6, reason);
-      prepStmt.setString(7, place);
-      prepStmt.setInt(8, reservationId);
-      prepStmt.setString(9, instanceId);
+      prepStmt.setString(2, Long.toString(updatedate.getTime()));
+      prepStmt.setString(3, Long.toString(begindate.getTime()));
+      prepStmt.setString(4, Long.toString(enddate.getTime()));
+      prepStmt.setString(5, reason);
+      prepStmt.setString(6, place);
+      prepStmt.setInt(7, reservationId);
+      prepStmt.setString(8, instanceId);
       prepStmt.executeUpdate();
     } finally {
       DBUtil.close(prepStmt);
     }
   }
 
-  private static Date FirstEndDayOfMonth(Date myDate, String newDay,
-      String language) throws ParseException {
-    String newDate = DateUtil.getOutputDate(myDate, language);
-    if (language.equals("en")) {
-      String newDateBegin = newDate.substring(0, 3);
-      String newDateEnd = newDate.substring(5, newDate.length());
-      newDate = newDateBegin + newDay + newDateEnd;
-    } else if (language.equals("fr")) {
-      newDate = newDate.substring(2, newDate.length());
-      newDate = newDay + newDate;
-    }
-    Date dateNew = DateUtil.stringToDate(newDate, "00:00", language);
-    return dateNew;
-  }
 }

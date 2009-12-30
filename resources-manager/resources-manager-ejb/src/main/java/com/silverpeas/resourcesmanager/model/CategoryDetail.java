@@ -24,11 +24,12 @@
 package com.silverpeas.resourcesmanager.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class CategoryDetail implements Serializable {
 
+  private static final long serialVersionUID = 1L;
   private String id;
   private String instanceId;
   private String name;
@@ -40,7 +41,7 @@ public class CategoryDetail implements Serializable {
   private String createrId;
   private String updaterId;
   private String description;
-  private ArrayList resources;
+  private List<ResourceDetail> resources;
 
   public boolean getBookable() {
     return bookable;
@@ -90,11 +91,11 @@ public class CategoryDetail implements Serializable {
     this.name = name;
   }
 
-  public ArrayList getResources() {
+  public List<ResourceDetail> getResources() {
     return resources;
   }
 
-  public void setResources(ArrayList resources) {
+  public void setResources(List<ResourceDetail> resources) {
     this.resources = resources;
   }
 
@@ -117,7 +118,7 @@ public class CategoryDetail implements Serializable {
   public CategoryDetail(String id, String instanceId, String name,
       Date creationDate, Date updateDate, boolean bookable, String form,
       String responsibleId, String createrId, String updaterId,
-      String description, ArrayList resources) {
+      String description, List<ResourceDetail> resources) {
     super();
     this.id = id;
     this.instanceId = instanceId;

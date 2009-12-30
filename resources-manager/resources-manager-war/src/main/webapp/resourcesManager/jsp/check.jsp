@@ -64,7 +64,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.*"%>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
@@ -89,17 +88,12 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="java.util.*"%>
 <%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.almanach.control.*"%>
-<%@ page import="com.stratelia.webactiv.almanach.control.ejb.*"%>
-<%@ page import="com.stratelia.webactiv.almanach.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 <%@ page import="com.stratelia.webactiv.util.exception.*"%>
 
 <%@ page import="com.silverpeas.util.*"%>
-
-
 
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");

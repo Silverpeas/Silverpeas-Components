@@ -24,11 +24,12 @@
 package com.silverpeas.resourcesmanager.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class ReservationDetail implements Serializable {
 
+  private static final long serialVersionUID = 1L;
   private String id;
   private String event;
   private Date beginDate;
@@ -39,7 +40,7 @@ public class ReservationDetail implements Serializable {
   private Date creationDate;
   private Date updateDate;
   private String instanceId;
-  private ArrayList listResourcesReserved;
+  private List<ResourceDetail> listResourcesReserved;
 
   private String userName;
 
@@ -51,11 +52,11 @@ public class ReservationDetail implements Serializable {
     this.userName = userName;
   }
 
-  public ArrayList getListResourcesReserved() {
+  public List<ResourceDetail> getListResourcesReserved() {
     return listResourcesReserved;
   }
 
-  public void setListResourcesReserved(ArrayList listResourcesReserved) {
+  public void setListResourcesReserved(List<ResourceDetail> listResourcesReserved) {
     this.listResourcesReserved = listResourcesReserved;
   }
 

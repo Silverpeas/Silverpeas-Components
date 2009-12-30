@@ -39,7 +39,7 @@ public class ResourcesManagerInstanciator implements ComponentsInstanciatorIntf 
     SilverTrace.info("resourcesManager",
         "ResourcesManagerInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId ="
-            + userId);
+        + userId);
 
     // insert your code here !
 
@@ -52,7 +52,7 @@ public class ResourcesManagerInstanciator implements ComponentsInstanciatorIntf 
     SilverTrace.info("resourcesManager",
         "ResourcesManagerInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
         "space = " + spaceId + ", componentId = " + componentId + ", userId ="
-            + userId);
+        + userId);
 
     // insert your code here !
 

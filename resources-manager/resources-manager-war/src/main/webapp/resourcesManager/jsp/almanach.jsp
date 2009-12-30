@@ -81,6 +81,7 @@ String flag = (String)request.getAttribute("Profile");
 	    evt.setEndHour(minuteHourDateEnd);
 	    evt.setPlace(maReservation.getPlace());
 	    evt.setInstanceId(componentId);
+	    evt.setTooltip(resource.getString("resourcesManager.bookedBy")+resourcesManagerSC.getUserDetail(maReservation.getUserId()).getDisplayedName());
 	    monthC.addEvent(evt);
 	}
   }
@@ -114,7 +115,6 @@ String flag = (String)request.getAttribute("Profile");
 					  String categoryId = myResource.getCategoryId();
 					  // on affiche les ressources de la réservation qui possèdent la même categoryId que la catégorie sélectionnée 
 					  if(categoryId.equals(objectView)){
-						  //System.out.println("la resource associée à l evenement est : "+resourceName);
 						  // si idResourceFromRR est nulle aucune resource n'a été séléctionnée
 						  // donc on affiche toutes les ressources de la catégorie
 						  if(idResourceFromRR == null){
@@ -123,6 +123,7 @@ String flag = (String)request.getAttribute("Profile");
 							  evt.setEndHour(minuteHourDateEnd);
 							  evt.setPlace(maReservation.getPlace());
 							  evt.setInstanceId(componentId);
+							  evt.setTooltip(resource.getString("resourcesManager.bookedBy")+resourcesManagerSC.getUserDetail(maReservation.getUserId()).getDisplayedName());
 							  monthC.addEvent(evt);
 						  }
 						  // sinon on affiche seulement ce qui correspon a la ressource sélectionnée
@@ -132,8 +133,8 @@ String flag = (String)request.getAttribute("Profile");
 							  evt.setEndHour(minuteHourDateEnd);
 							  evt.setPlace(maReservation.getPlace());
 							  evt.setInstanceId(componentId);
+							  evt.setTooltip(resource.getString("resourcesManager.bookedBy")+resourcesManagerSC.getUserDetail(maReservation.getUserId()).getDisplayedName());
 							  monthC.addEvent(evt);		
-							  
 						  }
 					  }
 				  }
@@ -149,6 +150,7 @@ String flag = (String)request.getAttribute("Profile");
 <HEAD>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
 <script language="JavaScript">
 
 function nextMonth(object)
@@ -235,6 +237,7 @@ out.println(gef.getLookStyleSheet());
 %>
 </HEAD>
 <BODY id="resourcesManager">
+<div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 <% 
 	String selectUserLab = resource.getString("resourcesManager.selectUser");
 	String link = "javascript:SP_openWindow('SelectValidator','selectUser',800,600,'');";
@@ -245,11 +248,10 @@ out.println(gef.getLookStyleSheet());
 	if(!flag.equals("user")){
 		operationPane.addOperation(resource.getIcon("resourcesManager.createReservation"), resource.getString("resourcesManager.creerReservation"),"NewReservation");
 		operationPane.addOperation(resource.getIcon("resourcesManager.viewMyReservations"), resource.getString("resourcesManager.Reservation"),"Calendar?objectView="+personalReservation);
+		operationPane.addOperation(resource.getIcon("resourcesManager.viewUserReservation"), resource.getString("resourcesManager.viewUserReservation"), "javascript:onClick=viewOtherPlanning()");
 		if(flag.equals("admin")){
 			operationPane.addLine();
 			operationPane.addOperation(resource.getIcon("resourcesManager.gererCategorie"), resource.getString("resourcesManager.gererCategorieRessource"),"ViewCategories");
-			operationPane.addLine();
-			operationPane.addOperation(resource.getIcon("resourcesManager.viewUserReservation"), resource.getString("resourcesManager.viewUserReservation"), "javascript:onClick=viewOtherPlanning()");
 		}
 	}
   	out.println(window.printBefore());
@@ -335,7 +337,7 @@ out.println(gef.getLookStyleSheet());
               <table cellpadding=0 cellspacing=1 border=0 width="100%" >
                 <tr> 
                   <td class=intfdcolor><a href="javascript:onClick=previousMonth('<%=objectView%>')" onFocus="this.blur()"><img src="<%=resource.getIcon("resourcesManager.arrLeft")%>" border="0"></a></td>
-                  <td class=intfdcolor align=center nowrap width="100%" height="24"><span class="txtnav"><%=resource.getString("mois" + resourcesManagerSC.getCurrentDay().get(Calendar.MONTH))%> <%=String.valueOf(resourcesManagerSC.getCurrentDay().get(Calendar.YEAR))%></span></td>
+                  <td class=intfdcolor align=center nowrap width="100%" height="24"><span class="txtnav"><%=resource.getString("GML.mois" + resourcesManagerSC.getCurrentDay().get(Calendar.MONTH))%> <%=String.valueOf(resourcesManagerSC.getCurrentDay().get(Calendar.YEAR))%></span></td>
                   <td class=intfdcolor><a href="javascript:onClick=nextMonth('<%=objectView%>')" onFocus="this.blur()"><img src="<%=resource.getIcon("resourcesManager.arrRight")%>" border="0"></a></td>
                 </tr>
               </table>

@@ -28,6 +28,8 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.fileupload.FileItem;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
@@ -41,6 +43,7 @@ import com.silverpeas.resourcesmanager.control.ResourcesManagerSessionController
 import com.silverpeas.resourcesmanager.model.CategoryDetail;
 import com.silverpeas.resourcesmanager.model.ReservationDetail;
 import com.silverpeas.resourcesmanager.model.ResourceDetail;
+import com.silverpeas.resourcesmanager.model.ResourceReservableDetail;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -53,10 +56,12 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendar;
 
 public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = 1L;
+
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   public String getSessionControlBeanName() {
     return "ResourcesManager";
@@ -64,13 +69,9 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   *
-   *
    * @param mainSessionCtrl
    * @param componentContext
-   *
    * @return
-   *
    * @see
    */
   public ComponentSessionController createComponentSessionController(
@@ -95,7 +96,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
     return category;
   }
 
-  private ResourceDetail request2ResourceDetail(List items) {
+  private ResourceDetail request2ResourceDetail(List<FileItem> items) {
     String name = FileUploadUtil.getParameter(items, "SPRM_name");
     String bookable = FileUploadUtil.getParameter(items, "SPRM_bookable");
     String responsible = FileUploadUtil.getParameter(items, "SPRM_responsible");
@@ -140,15 +141,12 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   *
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
@@ -158,7 +156,8 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
     // String responsibleId;
 
     String destination = "";
-    ResourcesManagerSessionController resourcesManagerSC = (ResourcesManagerSessionController) componentSC;
+    ResourcesManagerSessionController resourcesManagerSC =
+        (ResourcesManagerSessionController) componentSC;
     request.setAttribute("rsc", resourcesManagerSC);
     String flag = getFlag(resourcesManagerSC.getUserRoles());
     String userId = resourcesManagerSC.getUserId();
@@ -171,7 +170,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
       }
       /*********** Gestion des catégories ******************/
       else if (function.equals("NewCategory")) {
-        List listTemplates = PublicationTemplateManager
+        List<PublicationTemplate> listTemplates = PublicationTemplateManager
             .getPublicationTemplates();
 
         request.setAttribute("listTemplates", listTemplates);
@@ -184,7 +183,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("EditCategory")) {
         categoryId = request.getParameter("id");
         CategoryDetail category = resourcesManagerSC.getCategory(categoryId);
-        List listTemplates = PublicationTemplateManager
+        List<PublicationTemplate> listTemplates = PublicationTemplateManager
             .getPublicationTemplates();
 
         request.setAttribute("listTemplates", listTemplates);
@@ -196,7 +195,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         resourcesManagerSC.updateCategory(category);
         destination = getDestination("ViewCategories", componentSC, request);
       } else if (function.equals("ViewCategories")) {
-        List list = resourcesManagerSC.getCategories();
+        List<CategoryDetail> list = resourcesManagerSC.getCategories();
         request.setAttribute("categories", list);
         destination = root + "categories.jsp";
       } else if (function.equals("DeleteCategory")) {
@@ -208,7 +207,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
       else if (function.equals("NewResource")) {
         // categorie pré-séléctionnée
         categoryId = request.getParameter("categoryId");
-        List list = resourcesManagerSC.getCategories();
+        List<CategoryDetail> list = resourcesManagerSC.getCategories();
         request.setAttribute("listCategories", list);
         request.setAttribute("categoryId", categoryId);
 
@@ -219,7 +218,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         destination = root + "resourceManager.jsp";
       } else if (function.equals("SaveResource")) {
         // récupération des données saisies dans le formulaire
-        List items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
 
         ResourceDetail resource = request2ResourceDetail(items);
         String idResource = resourcesManagerSC.createResource(resource);
@@ -235,7 +234,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         ResourceDetail resource = resourcesManagerSC.getResource(resourceId);
 
         // on récupère l'ensemble des catégories pour la liste déroulante
-        List list = resourcesManagerSC.getCategories();
+        List<CategoryDetail> list = resourcesManagerSC.getCategories();
         request.setAttribute("listCategories", list);
 
         request.setAttribute("categoryId", resource.getCategoryId());
@@ -248,7 +247,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         destination = root + "resourceManager.jsp";
       } else if (function.equals("ModifyResource")) {
         // récupération des données saisies dans le formulaire
-        List items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
 
         ResourceDetail resource = request2ResourceDetail(items);
         resourcesManagerSC.updateResource(resource);
@@ -264,8 +263,8 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         } else if (request.getParameter("id") != null) {
           categoryId = (String) request.getParameter("id");
         }
-        List list = resourcesManagerSC.getResourcesByCategory(categoryId);
-        List listcategories = resourcesManagerSC.getCategories();
+        List<ResourceDetail> list = resourcesManagerSC.getResourcesByCategory(categoryId);
+        List<CategoryDetail> listcategories = resourcesManagerSC.getCategories();
         request.setAttribute("listCategories", listcategories);
         request.setAttribute("list", list);
         request.setAttribute("categoryId", categoryId);
@@ -331,11 +330,10 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         } else if (request.getAttribute("reservationId") != null) {
           idReservation = (String) request.getAttribute("reservationId");
         }
-        List maListResourcesReservable = null;
         ReservationDetail reservation = null;
-        List listResourcesProblem = (List) request
+        List<ResourceDetail> listResourcesProblem = (List<ResourceDetail>) request
             .getAttribute("listeResourcesProblem");
-        List listResourceEverReserved = null;
+        List<ResourceDetail> listResourceEverReserved = null;
         // si listResourcesProblem c'est qu'il n y a pas eu de problème
         // d'enregistrement
         if ((listResourcesProblem == null)) {
@@ -349,14 +347,14 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
           SilverTrace.info("resourcesManager",
               "ResourcesManagerRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "dans le if,idReservation="
-                  + idReservation);
+              + idReservation);
           listResourceEverReserved = resourcesManagerSC
               .getResourcesofReservation(idReservation);
           if (listResourceEverReserved != null) {
             // boucle permettant de supprimer les réservations déjà réservées
             // qui posent problème, car elles ont déjà été réservées
             for (int i = 0; i < listResourceEverReserved.size(); i++) {
-              ResourceDetail resourceReserved = (ResourceDetail) listResourceEverReserved
+              ResourceDetail resourceReserved = listResourceEverReserved
                   .get(i);
               if (listResourcesProblem != null) {
                 for (int j = 0; j < listResourcesProblem.size(); j++) {
@@ -373,12 +371,13 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         }
         int nbCategories = resourcesManagerSC.getCategories().size();
         reservation = resourcesManagerSC.getReservationCourante();
-        maListResourcesReservable = resourcesManagerSC.getResourcesReservable(
+        List<ResourceReservableDetail> maListResourcesReservable =
+            resourcesManagerSC.getResourcesReservable(
             reservation.getBeginDate(), reservation.getEndDate());
         SilverTrace.info("resourcesManager",
             "ResourcesManagerRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "listResourcesReservable="
-                + maListResourcesReservable.size());
+            + maListResourcesReservable.size());
         // on envoie l'id de la réservation et l'ensemble des resources
         // associées à celles -ci
         request.setAttribute("idReservation", idReservation);
@@ -407,10 +406,10 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         if (idModifiedReservation != null) {
           // on vérifie que les nouvelles ressources que l'on veut réserver ne
           // sont pas déjà prises.
-          List listeResourcesProblemeReservationTotal = resourcesManagerSC
+          List<ResourceDetail> listeResourcesProblemeReservationTotal = resourcesManagerSC
               .getResourcesProblemDate(listeReservation, resourcesManagerSC
-                  .getBeginDateReservation(), resourcesManagerSC
-                  .getEndDateReservation(), idModifiedReservation);
+              .getBeginDateReservation(), resourcesManagerSC
+              .getEndDateReservation(), idModifiedReservation);
           if (listeResourcesProblemeReservationTotal.isEmpty()) {
             resourcesManagerSC.updateReservation(idModifiedReservation,
                 listeReservation);
@@ -424,7 +423,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
           }
         } else {
           resourcesManagerSC.setListReservationCurrent(listeReservation);
-          List listeResourcesProblem = resourcesManagerSC
+          List<ResourceDetail> listeResourcesProblem = resourcesManagerSC
               .verificationReservation(listeReservation);
           if (listeResourcesProblem.isEmpty()) {
             resourcesManagerSC.saveReservation();
@@ -452,8 +451,6 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         // on envoie la réservation de l'id et la liste des ressources associées
         // ainsi que la liste qui posent problème quand on change les dates
         request.setAttribute("reservation", reservation);
-        // request.setAttribute("listResourceEverReserved",
-        // listResourceEverReserved);
         request.setAttribute("listResourcesProblem", listResourcesProblem);
         destination = root + "reservationManager.jsp";
       } else if (function.equals("ViewReservation")) {
@@ -469,7 +466,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         }
         ReservationDetail reservation = resourcesManagerSC
             .getReservation(reservationId);
-        List listResourcesofReservation = resourcesManagerSC
+        List<ResourceDetail> listResourcesofReservation = resourcesManagerSC
             .getResourcesofReservation(reservationId);
         request.setAttribute("listResourcesofReservation",
             listResourcesofReservation);
@@ -477,7 +474,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         request.setAttribute("reservation", reservation);
         destination = root + "viewReservation.jsp";
       } else if (function.equals("ViewReservations")) {
-        List listOfReservation = resourcesManagerSC.getReservationUser();
+        List<ReservationDetail> listOfReservation = resourcesManagerSC.getReservationUser();
         request.setAttribute("listOfReservation", listOfReservation);
         destination = root + "viewReservations.jsp";
       } else if (function.equals("DeleteReservation")) {
@@ -487,15 +484,11 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         // destination = root + "almanach.jsp";
       } else if (function.equals("Calendar")) {
         /***
-         * on regarde soit : ses réservations -> myObjectView = myReservation
-         * les réservations d'une autre personne -> myObjectView =
-         * PlanningOtherUser le planning d'une catégorie -> myObjectView = l'id
-         * de la catégorie le planning d'une ressource -> myObjectView = l'id de
-         * la catégorie myObjectView représente ce qu'on est en train de
-         * visualiser, il est nul à l'initialisation.
-         *
-         * idUser sert à savoir l'id de la personne dont on regarde le
-         * calandrier
+         * on regarde soit : ses réservations -> myObjectView = myReservation les réservations d'une
+         * autre personne -> myObjectView = PlanningOtherUser le planning d'une catégorie ->
+         * myObjectView = l'id de la catégorie le planning d'une ressource -> myObjectView = l'id de
+         * la catégorie myObjectView représente ce qu'on est en train de visualiser, il est nul à
+         * l'initialisation. idUser sert à savoir l'id de la personne dont on regarde le calandrier
          */
         String myObjectView = null;
         if (request.getParameter("objectView") != null)
@@ -508,9 +501,9 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         if ((myObjectView != null) && (!myObjectView.equals("myReservation"))
             && (!myObjectView.equals("PlanningOtherUser"))
             && (!myObjectView.equals("viewUser"))) {
-          List listReservationsOfCategory = resourcesManagerSC
+          List<ReservationDetail> listReservationsOfCategory = resourcesManagerSC
               .getMonthReservationOfCategory(myObjectView);
-          List listResourcesofCategory = resourcesManagerSC
+          List<ResourceDetail> listResourcesofCategory = resourcesManagerSC
               .getResourcesByCategory(myObjectView);
           if (StringUtil.isDefined(request.getParameter("resourceId"))) {
             request.setAttribute("resourceId", request
@@ -525,7 +518,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         // si userId = null on regarde ses réservations, sinon on regarde les
         // réservations de cette personne
         else {
-          List listOfReservation = null;
+          List<ReservationDetail> listOfReservation = null;
           if ((myObjectView != null)
               && (myObjectView.equals("PlanningOtherUser"))) {
             // on récupère les réservations de l'utilisateur, ainsi que son nom
@@ -548,7 +541,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         }
         // initialisation d'un MonthCalendar du viewgenerator
         MonthCalendar monthC = resourcesManagerSC.getMonthCalendar();
-        List listOfCategories = resourcesManagerSC.getCategories();
+        List<CategoryDetail> listOfCategories = resourcesManagerSC.getCategories();
         request.setAttribute("idUser", idUser);
         request.setAttribute("listOfCategories", listOfCategories);
         request.setAttribute("idCategory", myObjectView);
@@ -656,7 +649,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
           xmlFormName);
       PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
           .getPublicationTemplate(resourcesManagerSC.getComponentId() + ":"
-              + xmlFormShortName, xmlFormName);
+          + xmlFormShortName, xmlFormName);
 
       // création du formulaire et du DataRecord
       Form formUpdate = pubTemplate.getUpdateForm();
@@ -695,7 +688,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
     // création du PublicationTemplate
     PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
         .getPublicationTemplate(resourcesManagerSC.getComponentId() + ":"
-            + xmlFormShortName, xmlFormName);
+        + xmlFormShortName, xmlFormName);
     // récupération des données
     Form formView = pubTemplate.getViewForm();
     RecordSet recordSet = pubTemplate.getRecordSet();
@@ -717,7 +710,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
   }
 
   private void updateXMLForm(
-      ResourcesManagerSessionController resourcesManagerSC, List items)
+      ResourcesManagerSessionController resourcesManagerSC, List<FileItem> items)
       throws Exception {
     // récupération de l’objet et du nom du formulaire
     String idResource = resourcesManagerSC.getResourceIdForResource();
@@ -732,7 +725,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
       // récupération des données du formulaire (via le DataRecord)
       PublicationTemplate pub = PublicationTemplateManager
           .getPublicationTemplate(resourcesManagerSC.getComponentId() + ":"
-              + xmlFormShortName);
+          + xmlFormShortName);
       RecordSet set = pub.getRecordSet();
       Form form = pub.getUpdateForm();
       DataRecord data = set.getRecord(idResource);

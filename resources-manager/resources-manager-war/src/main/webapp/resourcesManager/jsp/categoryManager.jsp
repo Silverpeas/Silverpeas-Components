@@ -63,7 +63,7 @@ function validerNom(){
 
 function verification(){
 	if(document.getElementById("name").value == 0 )
-		alert('<%=Encode.javaStringToJsString(resource.getString("resourcesManager.formulaireErreur")+" 1 "+ resource.getString("GML.error") +":"+ "\n" + "-" + "'" + resource.getString("GML.name")+ "'"+ " " + resource.getString("resourcesManager.renseigmentObligatoire"))%>');
+		alert('<%=EncodeHelper.javaStringToJsString(resource.getString("resourcesManager.formulaireErreur")+" 1 "+ resource.getString("GML.error") +":"+ "\n" + "-" + "'" + resource.getString("GML.name")+ "'"+ " " + resource.getString("resourcesManager.renseigmentObligatoire"))%>');
 	else
 		document.createForm.submit();
 }
@@ -75,7 +75,7 @@ function verification(){
 <%
 browseBar.setDomainName(spaceLabel);
 browseBar.setComponentName(componentLabel,"Main");
-String chemin = "<a href=\"ViewCategories\">" + Encode.javaStringToHtmlString(resource.getString("resourcesManager.categorie"))+"</a>";
+String chemin = "<a href=\"ViewCategories\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.categorie"))+"</a>";
 browseBar.setPath(chemin);
 browseBar.setExtraInformation(resource.getString("resourcesManager.creercategorie"));	
 
@@ -95,10 +95,9 @@ buttonPane.addButton(cancelButton);
 <TABLE width="100%" cellpadding="3" border="0">
 	
 	<form NAME="createForm" method="post" action="<% if(category == null){ %>SaveCategory<%}else{%>ModifyCategory<%}%>">
-	<input type="hidden" name="responsible" value="0">
 	<tr>
 		<TD class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.name")%> : </TD>
-		<TD width="100%"><input type="text" name="name" size="60" maxlength="50" id="name" onChange="validerNom()" value="<%=name%>" >&nbsp;<span id="validationNom" style="color:red"></span><IMG src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5" border="0"></TD>	
+		<TD width="100%"><input type="text" name="name" size="60" maxlength="50" id="name" onChange="validerNom()" value="<%=name%>" ><input type="hidden" name="responsible" value="0"/>&nbsp;<span id="validationNom" style="color:red"></span><IMG src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5" border="0"></TD>	
 	</tr>
 	
 	<tr>
@@ -142,15 +141,15 @@ buttonPane.addButton(cancelButton);
 		<td colspan="2">( <img border="0" src=<%=resource.getIcon("resourcesManager.obligatoire")%> width="5" height="5"> : <%=resource.getString("GML.requiredField")%> )</td>
 	</tr>
 	<%if (category != null) {
-		%><input type="HIDDEN" name="id" value=<%=id%>>
+		%><input type="HIDDEN" name="id" value="<%=id%>"/>
 	<%}%>
-	<SCRIPT>document.createForm.name.focus();</SCRIPT>
 </TABLE>
 <%
 out.println(board.printAfter());
-out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+out.println("<BR><center>"+buttonPane.print()+"</center><BR/>");
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
+<SCRIPT>document.createForm.name.focus();</SCRIPT>
 </body>
 </html>

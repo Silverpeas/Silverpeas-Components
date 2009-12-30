@@ -25,11 +25,13 @@ package com.silverpeas.resourcesmanager.model;
 
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class ResourcesManagerRuntimeException extends
-    SilverpeasRuntimeException {
+public class ResourcesManagerRuntimeException extends SilverpeasRuntimeException {
+
+  private static final long serialVersionUID = 1L;
+
   /**
-   * --------------------------------------------------------------------------
-   * constructors constructors
+   * -------------------------------------------------------------------------- constructors
+   * constructors
    */
   public ResourcesManagerRuntimeException(String callingClass, int errorLevel,
       String message) {
@@ -52,8 +54,7 @@ public class ResourcesManagerRuntimeException extends
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * getModule getModule
+   * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
     return "ResourcesManager";

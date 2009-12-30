@@ -197,7 +197,7 @@ buttonPane.addButton(cancelButton);
 	</tr>
 		<!-- <input type="HIDDEN" name="idcategory" value=<%=idcategory%> > -->
 		<%if (details != null){ %>
-			<input type="HIDDEN" name="SPRM_resourceId" value=<%=resourceId%> >
+			<input type="HIDDEN" name="SPRM_resourceId" value="<%=resourceId%>"/>
 		<%}%>
 			
 </TABLE>

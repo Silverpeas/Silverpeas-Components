@@ -47,14 +47,14 @@ browseBar.setDomainName(spaceLabel);
 browseBar.setComponentName(componentLabel,"Main");
 if(provenance.equals("resources")){
 	// on vient de resources
-	String chemin = "<a href=\"ViewCategories\">" + Encode.javaStringToHtmlString(resource.getString("resourcesManager.listCategorie"))+"</a>";
-	String chemin2 ="<a href=\"ViewResources?id="+ idCategory + "\">" + Encode.javaStringToHtmlString(resource.getString("resourcesManager.categorie"))+"</a>";
+	String chemin = "<a href=\"ViewCategories\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.listCategorie"))+"</a>";
+	String chemin2 ="<a href=\"ViewResources?id="+ idCategory + "\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.categorie"))+"</a>";
 	chemin = chemin + " > " + chemin2;
 	browseBar.setPath(chemin);
 }
 else if (provenance.equals("reservation")){
 	// on vient du récapitulatif de la réservation
-	String chemin ="<a href=\"ViewReservation\">" + Encode.javaStringToHtmlString(resource.getString("resourcesManager.recapitulatifReservation"))+"</a>";
+	String chemin ="<a href=\"ViewReservation\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.recapitulatifReservation"))+"</a>";
 	browseBar.setPath(chemin);
 }
 browseBar.setExtraInformation(resource.getString("resourcesManager.informationResource") + " " + myResource.getName());

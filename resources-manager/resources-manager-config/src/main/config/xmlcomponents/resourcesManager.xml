@@ -27,7 +27,7 @@
 
 <WAComponent>
   <name>resourcesManager</name>
-  <label>Gestion de ressources (Béta)</label>
+  <label>Gestion de ressources</label>
   <description>Ce composant permet de gérer ses ressources matérielles et de les réserver</description>
   <suite>02 Gestion Collaborative</suite>
   <visible>yes</visible>

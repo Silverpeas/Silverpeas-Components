@@ -44,7 +44,7 @@
 	
 	String name=maResource.getName();
 	String responsibleId=maResource.getResponsibleId();
-	String description=Encode.javaStringToHtmlParagraphe(maResource.getDescription());
+	String description=EncodeHelper.javaStringToHtmlParagraphe(maResource.getDescription());
 	boolean bookable=maResource.getBookable();
 	String resourceId=maResource.getId();
 	Button cancelButton = null;
@@ -55,8 +55,8 @@
 	if(provenance.equals("resources")){
 		// on vient de resources
 		cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourListeResource"), "ViewResources?id="+idcategory,false);
-		String chemin = "<a href=\"ViewCategories\">" + Encode.javaStringToHtmlString(resource.getString("resourcesManager.listCategorie"))+"</a>";
-		String chemin2 ="<a href=\"ViewResources?id="+ idcategory + "\">" + Encode.javaStringToHtmlString(resource.getString("resourcesManager.categorie"))+"</a>";
+		String chemin = "<a href=\"ViewCategories\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.listCategorie"))+"</a>";
+		String chemin2 ="<a href=\"ViewResources?id="+ idcategory + "\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.categorie"))+"</a>";
 		chemin = chemin + " > " + chemin2;
 		browseBar.setPath(chemin);
 	}
@@ -68,7 +68,7 @@
 	else if (provenance.equals("reservation")){
 		// on vient du récapitulatif de la réservation
 		cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourReservation"), "ViewReservation",false);
-		String chemin ="<a href=\"ViewReservation\">" + Encode.javaStringToHtmlString(resource.getString("resourcesManager.recapitulatifReservation"))+"</a>";
+		String chemin ="<a href=\"ViewReservation\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.recapitulatifReservation"))+"</a>";
 		browseBar.setPath(chemin);
 	}
 	browseBar.setExtraInformation(resource.getString("resourcesManager.informationResource") + " " + name);
@@ -148,7 +148,7 @@ buttonPane.addButton(cancelButton);
 				%>
 			</td>
 		</tr>-->
-		<input type="HIDDEN" name="resourceId" value=<%=resourceId%> >
+		<input type="HIDDEN" name="resourceId" value="<%=resourceId%>"/>
 	</TABLE>
 	<%out.println(board.printAfter()); %>
 	

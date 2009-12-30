@@ -38,6 +38,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.resourcesmanager.model.CategoryDetail;
 import com.silverpeas.resourcesmanager.model.ReservationDetail;
 import com.silverpeas.resourcesmanager.model.ResourceDetail;
+import com.silverpeas.resourcesmanager.model.ResourceReservableDetail;
 import com.silverpeas.resourcesmanager.model.ResourcesManagerDAO;
 import com.silverpeas.resourcesmanager.model.ResourcesManagerRuntimeException;
 import com.silverpeas.util.StringUtil;
@@ -55,6 +56,8 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
  * @author
  */
 public class ResourcesManagerBmEJB implements SessionBean {
+
+  private static final long serialVersionUID = 1L;
 
   public void ejbCreate() {
     // not implemented
@@ -90,23 +93,20 @@ public class ResourcesManagerBmEJB implements SessionBean {
           SilverpeasRuntimeException.ERROR,
           "resourcesManager.EX_CREATE_CATEGORY", e);
     } finally {
-      // fermer la connexion
       fermerCon(con);
     }
   }
 
-  public List getCategories(String instanceId) {
+  public List<CategoryDetail> getCategories(String instanceId) {
     Connection con = initCon();
     try {
-      List list = ResourcesManagerDAO.getCategories(con, instanceId);
-      return list;
+      return ResourcesManagerDAO.getCategories(con, instanceId);
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException(
           "ResourcesManagerBmEJB.getCategories()",
           SilverpeasRuntimeException.ERROR,
           "resourcesManager.EX_GET_CATEGORIES", e);
     } finally {
-      // fermer la connexion
       fermerCon(con);
     }
   }
@@ -114,8 +114,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
   public CategoryDetail getCategory(String id) {
     Connection con = initCon();
     try {
-      CategoryDetail category = ResourcesManagerDAO.getCategory(con, id);
-      return category;
+      return ResourcesManagerDAO.getCategory(con, id);
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException(
           "ResourcesManagerBmEJB.getCategory()",
@@ -145,10 +144,10 @@ public class ResourcesManagerBmEJB implements SessionBean {
     Connection con = initCon();
     try {
       // First delete all resources of category
-      List resources = getResourcesByCategory(id);
+      List<ResourceDetail> resources = getResourcesByCategory(id);
       ResourceDetail resource;
       for (int r = 0; r < resources.size(); r++) {
-        resource = (ResourceDetail) resources.get(r);
+        resource = resources.get(r);
 
         ResourcesManagerDAO.deleteResource(con, resource.getId());
         deleteIndex("Resource", resource.getId(), componentId);
@@ -217,11 +216,10 @@ public class ResourcesManagerBmEJB implements SessionBean {
     }
   }
 
-  public List getResourcesByCategory(String categoryId) {
+  public List<ResourceDetail> getResourcesByCategory(String categoryId) {
     Connection con = initCon();
     try {
-      List list = ResourcesManagerDAO.getResourcesByCategory(con, categoryId);
-      return list;
+      return ResourcesManagerDAO.getResourcesByCategory(con, categoryId);
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException(
           "ResourcesManagerBmEJB.getResourcesByCategory()",
@@ -247,13 +245,12 @@ public class ResourcesManagerBmEJB implements SessionBean {
     }
   }
 
-  public List getResourcesReservable(String instanceId, Date startDate,
+  public List<ResourceReservableDetail> getResourcesReservable(String instanceId, Date startDate,
       Date endDate) {
     Connection con = initCon();
     try {
-      List list = ResourcesManagerDAO.getResourcesReservable(con, instanceId,
+      return ResourcesManagerDAO.getResourcesReservable(con, instanceId,
           startDate, endDate);
-      return list;
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException(
           "ResourcesManagerBmEJB.getResourcesReservable()",
@@ -264,12 +261,11 @@ public class ResourcesManagerBmEJB implements SessionBean {
     }
   }
 
-  public List getResourcesofReservation(String instanceId, String reservationId) {
+  public List<ResourceDetail> getResourcesofReservation(String instanceId, String reservationId) {
     Connection con = initCon();
     try {
-      List list = ResourcesManagerDAO.getResourcesofReservation(con,
+      return ResourcesManagerDAO.getResourcesofReservation(con,
           instanceId, reservationId);
-      return list;
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException(
           "ResourcesManagerBmEJB.getResourcesofReservation()",
@@ -316,13 +312,12 @@ public class ResourcesManagerBmEJB implements SessionBean {
     }
   }
 
-  public List verificationReservation(String instanceId,
+  public List<ResourceDetail> verificationReservation(String instanceId,
       String listeReservation, Date startDate, Date endDate) {
     Connection con = initCon();
     try {
-      List list = ResourcesManagerDAO.verificationReservation(con, instanceId,
+      return ResourcesManagerDAO.verificationReservation(con, instanceId,
           listeReservation, startDate, endDate);
-      return list;
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException(
           "ResourcesManagerBmEJB.verificationReservation()",
@@ -333,14 +328,13 @@ public class ResourcesManagerBmEJB implements SessionBean {
     }
   }
 
-  public List verificationNewDateReservation(String instanceId,
+  public List<ResourceDetail> verificationNewDateReservation(String instanceId,
       String listeReservation, Date startDate, Date endDate,
       String reservationId) {
     Connection con = initCon();
     try {
-      List list = ResourcesManagerDAO.verificationNewDateReservation(con,
+      return ResourcesManagerDAO.verificationNewDateReservation(con,
           instanceId, listeReservation, startDate, endDate, reservationId);
-      return list;
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException(
           "ResourcesManagerBmEJB.verificationNewDateReservation()",
@@ -351,7 +345,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
     }
   }
 
-  public List getReservationUser(String instanceId, String userId) {
+  public List<ReservationDetail> getReservationUser(String instanceId, String userId) {
     Connection con = initCon();
     try {
       return ResourcesManagerDAO.getReservationUser(con, instanceId, userId);
@@ -365,7 +359,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
     }
   }
 
-  public List getReservations(String instanceId) {
+  public List<ReservationDetail> getReservations(String instanceId) {
     Connection con = initCon();
     try {
       return ResourcesManagerDAO.getReservations(con, instanceId);
@@ -410,7 +404,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
     }
   }
 
-  public List getMonthReservation(String instanceId, Date monthDate,
+  public List<ReservationDetail> getMonthReservation(String instanceId, Date monthDate,
       String userId, String language) {
     Connection con = initCon();
     try {
@@ -426,7 +420,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
     }
   }
 
-  public List getMonthReservationOfCategory(String instanceId, Date monthDate,
+  public List<ReservationDetail> getMonthReservationOfCategory(String instanceId, Date monthDate,
       String userId, String language, String idCategory) {
     Connection con = initCon();
     try {
@@ -518,7 +512,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
             try {
               pubTemplate = PublicationTemplateManager
                   .getPublicationTemplate(resource.getInstanceId() + ":"
-                      + xmlFormShortName);
+                  + xmlFormShortName);
               RecordSet set = pubTemplate.getRecordSet();
               set.indexRecord(resource.getId(), xmlFormName, indexEntry);
             } catch (Exception e) {
@@ -561,12 +555,11 @@ public class ResourcesManagerBmEJB implements SessionBean {
   }
 
   public void indexResourceManager(String instanceId) {
-    List listOfReservation = getReservations(instanceId);
+    List<ReservationDetail> listOfReservation = getReservations(instanceId);
     if (listOfReservation != null) {
-      Iterator it = listOfReservation.iterator();
+      Iterator<ReservationDetail> it = listOfReservation.iterator();
       while (it.hasNext()) {
-        // on récupère chaque réservation
-        ReservationDetail reservation = (ReservationDetail) it.next();
+        ReservationDetail reservation = it.next();
         try {
           createIndex(reservation);
         } catch (Exception e) {

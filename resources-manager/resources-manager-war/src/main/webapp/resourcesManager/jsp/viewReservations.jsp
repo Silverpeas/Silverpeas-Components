@@ -60,7 +60,7 @@ ArrayCellText arrayCellText4;
 	
 	</script>	
 	</head>
-	<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+	<body>
 
 	<%
 		browseBar.setDomainName(spaceLabel);

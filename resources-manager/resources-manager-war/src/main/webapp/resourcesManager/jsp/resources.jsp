@@ -67,7 +67,7 @@ ArrayCellText arrayCellText2;
 		browseBar.setDomainName(spaceLabel);
 		browseBar.setComponentName(componentLabel,"Main");
 		
-		String chemin = "<a href=\"ViewCategories\">" + Encode.javaStringToHtmlString(resource.getString("resourcesManager.listCategorie"))+"</a>";
+		String chemin = "<a href=\"ViewCategories\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.listCategorie"))+"</a>";
 		browseBar.setExtraInformation(resource.getString("resourcesManager.gererresource") + " " + categoryName);	
 		browseBar.setPath(chemin);
 

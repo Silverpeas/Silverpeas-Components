@@ -36,7 +36,7 @@ String reservationId = (String)request.getAttribute("reservationId");
 ReservationDetail maReservation = (ReservationDetail)request.getAttribute("reservation");
 String event = maReservation.getEvent();
 String place = maReservation.getPlace();
-String reason = Encode.javaStringToHtmlParagraphe(maReservation.getReason());
+String reason = EncodeHelper.javaStringToHtmlParagraphe(maReservation.getReason());
 String dateEnd = resource.getOutputDateAndHour(maReservation.getEndDate());
 String dateBegin = resource.getOutputDateAndHour(maReservation.getBeginDate());
 String minuteHourDateBegin = DateUtil.getFormattedTime(maReservation.getBeginDate());
@@ -69,7 +69,8 @@ buttonPane.addButton(cancelButton);
 	<body id="resourcesManager">
 
 	<%
-	if (!flag.equals("user")){
+	if ("admin".equals(flag) || ("publisher".equals(flag) && maReservation.getUserId().equals(resourcesManagerSC.getUserId())))
+	{
 		operationPane.addOperation(resource.getIcon("resourcesManager.updateBig"), resource.getString("resourcesManager.modifierReservation"),"EditReservation?id="+reservationId);
 		operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("resourcesManager.basketDelete"), resource.getString("resourcesManager.supprimerReservation"),"javascript:deleteReservation();");
@@ -101,8 +102,16 @@ buttonPane.addButton(cancelButton);
 				<td><%=dateEnd%></td>
 				</tr>
 				<tr>
-					<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.user") %> :</td>
+					<td class="txtlibform" nowrap="nowrap"><%=resource.getString("resourcesManager.bookedBy") %> :</td>
 					<td><%=maReservation.getUserName()%></td>
+				</tr>
+				<tr>
+					<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.creationDate") %> :</td>
+					<td><%=resource.getOutputDateAndHour(maReservation.getCreationDate())%></td>
+				</tr>
+				<tr>
+					<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.updateDate") %> :</td>
+					<td><%=resource.getOutputDateAndHour(maReservation.getUpdateDate())%></td>
 				</tr>
 				<tr>
 				<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.raisonReservation"));%> :</td> 

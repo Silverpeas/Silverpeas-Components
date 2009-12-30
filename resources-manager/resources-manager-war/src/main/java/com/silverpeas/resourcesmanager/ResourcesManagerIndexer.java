@@ -39,7 +39,7 @@ public class ResourcesManagerIndexer implements ComponentIndexerInterface {
       ComponentContext context) throws Exception {
     SilverTrace.info("resourcesManager", "ResourcesManagerIndexer.index()",
         "root.MSG_GEN_PARAM_VALUE", "index, context.getCurrentComponentId() = "
-            + context.getCurrentComponentId());
+        + context.getCurrentComponentId());
     getResourceManagerBm()
         .indexResourceManager(context.getCurrentComponentId());
   }
@@ -49,7 +49,7 @@ public class ResourcesManagerIndexer implements ComponentIndexerInterface {
     try {
       ResourcesManagerBmHome resourceManagerBmHome = (ResourcesManagerBmHome) EJBUtilitaire
           .getEJBObjectRef("ejb/ResourcesManagerBm",
-              ResourcesManagerBmHome.class);
+          ResourcesManagerBmHome.class);
       resourceManagerBm = resourceManagerBmHome.create();
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException(

@@ -50,12 +50,12 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendar;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendarWA1;
 
-public class ResourcesManagerSessionController extends
-    AbstractComponentSessionController {
+public class ResourcesManagerSessionController extends AbstractComponentSessionController {
   private ReservationDetail reservationCourante;
   private Calendar currentDay = Calendar.getInstance();
-  private List resourceReserved = new ArrayList();
-  private List listReservableResource;
+  private List<ResourceReservableDetail> resourceReserved =
+      new ArrayList<ResourceReservableDetail>();
+  private List<ResourceReservableDetail> listReservableResource;
   private Date beginDateReservation;
   private Date endDateReservation;
   private String listReservationCurrent;
@@ -153,13 +153,8 @@ public class ResourcesManagerSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   *
-   *
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
-   *
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public ResourcesManagerSessionController(
@@ -201,7 +196,7 @@ public class ResourcesManagerSessionController extends
 
   }
 
-  public List getCategories() {
+  public List<CategoryDetail> getCategories() {
     try {
       return getResourcesManagerBm().getCategories(getComponentId());
     } catch (RemoteException e) {
@@ -283,7 +278,7 @@ public class ResourcesManagerSessionController extends
     }
   }
 
-  public List getResourcesByCategory(String categoryId) {
+  public List<ResourceDetail> getResourcesByCategory(String categoryId) {
     try {
       return getResourcesManagerBm().getResourcesByCategory(categoryId);
     } catch (RemoteException e) {
@@ -293,8 +288,8 @@ public class ResourcesManagerSessionController extends
     }
   }
 
-  public List getResourcesReservable(Date startDate, Date endDate) {
-    List listeResources = new ArrayList();
+  public List<ResourceReservableDetail> getResourcesReservable(Date startDate, Date endDate) {
+    List<ResourceReservableDetail> listeResources = new ArrayList<ResourceReservableDetail>();
 
     try {
       listeResources = getResourcesManagerBm().getResourcesReservable(
@@ -308,7 +303,7 @@ public class ResourcesManagerSessionController extends
     }
   }
 
-  public List getResourcesofReservation(String reservationId) {
+  public List<ResourceDetail> getResourcesofReservation(String reservationId) {
     try {
       return getResourcesManagerBm().getResourcesofReservation(
           getComponentId(), reservationId);
@@ -339,7 +334,7 @@ public class ResourcesManagerSessionController extends
     }
   }
 
-  public List verificationReservation(String listeReservation) {
+  public List<ResourceDetail> verificationReservation(String listeReservation) {
     try {
       return getResourcesManagerBm().verificationReservation(getComponentId(),
           listeReservation, beginDateReservation, endDateReservation);
@@ -350,12 +345,12 @@ public class ResourcesManagerSessionController extends
     }
   }
 
-  public List getResourcesProblemDate(String listeReservation, Date beginDate,
+  public List<ResourceDetail> getResourcesProblemDate(String listeReservation, Date beginDate,
       Date endDate, String reservationId) {
     try {
       return getResourcesManagerBm()
           .verificationNewDateReservation(getComponentId(), listeReservation,
-              beginDate, endDate, reservationId);
+          beginDate, endDate, reservationId);
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
           "ResourcesManagerSessionController.getResourcesProblemDate()",
@@ -363,13 +358,10 @@ public class ResourcesManagerSessionController extends
     }
   }
 
-  public List getReservationUser() {
+  public List<ReservationDetail> getReservationUser() {
     try {
-      String idUser = getUserId();
-      String idComponent = getComponentId();
-      List list = getResourcesManagerBm().getReservationUser(idComponent,
-          idUser);
-      return list;
+      return getResourcesManagerBm().getReservationUser(getComponentId(),
+          getUserId());
     } catch (RemoteException e) {
       throw new ResourcesManagerRuntimeException(
           "ResourcesManagerSessionController.getReservationUser()",
@@ -419,7 +411,7 @@ public class ResourcesManagerSessionController extends
     try {
       ResourcesManagerBmHome resourcesmanagerBmHome = (ResourcesManagerBmHome) EJBUtilitaire
           .getEJBObjectRef("ejb/ResourcesManagerBm",
-              ResourcesManagerBmHome.class);
+          ResourcesManagerBmHome.class);
       resourcesmanagerBm = resourcesmanagerBmHome.create();
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException(
@@ -437,11 +429,11 @@ public class ResourcesManagerSessionController extends
     this.reservationCourante = reservationCourante;
   }
 
-  public ArrayList getResourcesReservable() {
-    return (ArrayList) listReservableResource;
+  public List<ResourceReservableDetail> getResourcesReservable() {
+    return listReservableResource;
   }
 
-  public void setResourcesReservable(ArrayList listReservableResource) {
+  public void setResourcesReservable(List<ResourceReservableDetail> listReservableResource) {
     this.listReservableResource = listReservableResource;
   }
 
@@ -461,7 +453,7 @@ public class ResourcesManagerSessionController extends
     this.endDateReservation = endDateReservation;
   }
 
-  public List getResourceReserved() {
+  public List<ResourceReservableDetail> getResourceReserved() {
     return resourceReserved;
   }
 
@@ -512,7 +504,7 @@ public class ResourcesManagerSessionController extends
     currentDay = Calendar.getInstance();
   }
 
-  public List getMonthReservation() {
+  public List<ReservationDetail> getMonthReservation() {
     try {
       return getResourcesManagerBm().getMonthReservation(getComponentId(),
           getCurrentDay().getTime(), getUserId(), getLanguage());
@@ -523,7 +515,7 @@ public class ResourcesManagerSessionController extends
     }
   }
 
-  public List getMonthReservation(String idUser) {
+  public List<ReservationDetail> getMonthReservation(String idUser) {
     try {
       return getResourcesManagerBm().getMonthReservation(getComponentId(),
           this.getCurrentDay().getTime(), idUser, this.getLanguage());
@@ -534,7 +526,7 @@ public class ResourcesManagerSessionController extends
     }
   }
 
-  public List getMonthReservationOfCategory(String idCategory) {
+  public List<ReservationDetail> getMonthReservationOfCategory(String idCategory) {
     try {
       return getResourcesManagerBm().getMonthReservationOfCategory(
           getComponentId(), getCurrentDay().getTime(), getUserId(),
@@ -580,7 +572,7 @@ public class ResourcesManagerSessionController extends
     // Add extra params
     SelectionUsersGroups sug = new SelectionUsersGroups();
     sug.setComponentId(getComponentId());
-    ArrayList profiles = new ArrayList();
+    ArrayList<String> profiles = new ArrayList<String>();
     profiles.add("publisher");
     profiles.add("admin");
     sug.setProfileNames(profiles);
@@ -593,7 +585,7 @@ public class ResourcesManagerSessionController extends
         .getString("ApplicationURL");
     PairObject hostComponentName = new PairObject(
         getString("resourcesManager.accueil"), m_context
-            + "/RresourcesManager/jsp/Main");
+        + "/RresourcesManager/jsp/Main");
     PairObject[] hostPath = new PairObject[1];
     hostPath[0] = new PairObject(getString("resourcesManager.otherPlanning"),
         m_context + URLManager.getURL(null, getComponentId()) + "Main");

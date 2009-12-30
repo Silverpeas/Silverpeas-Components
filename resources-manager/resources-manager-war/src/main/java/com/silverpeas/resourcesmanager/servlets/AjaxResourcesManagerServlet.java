@@ -43,6 +43,8 @@ import com.stratelia.webactiv.util.DateUtil;
 
 public class AjaxResourcesManagerServlet extends HttpServlet {
 
+  private static final long serialVersionUID = 1L;
+
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     doPost(req, res);
@@ -54,7 +56,8 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
 
     String componentId = (String) req.getParameter("ComponentId");
 
-    ResourcesManagerSessionController resourcesManagerSC = (ResourcesManagerSessionController) session
+    ResourcesManagerSessionController resourcesManagerSC =
+        (ResourcesManagerSessionController) session
         .getAttribute("Silverpeas_" + "ResourcesManager" + "_" + componentId);
 
     if (resourcesManagerSC != null) {
@@ -68,7 +71,7 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
         String endDate = req.getParameter("endDate");
         String endHour = req.getParameter("endHour");
 
-        List listResourceEverReserved = resourcesManagerSC
+        List<ResourceDetail> listResourceEverReserved = resourcesManagerSC
             .getResourcesofReservation(reservationId);
         String listResource = "";
         for (int i = 0; i < listResourceEverReserved.size(); i++) {
@@ -85,7 +88,7 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
             resourcesManagerSC.getLanguage());
         Date dateFin = DateUtil.stringToDate(endDate, endHour,
             resourcesManagerSC.getLanguage());
-        List listResources = resourcesManagerSC.getResourcesProblemDate(
+        List<ResourceDetail> listResources = resourcesManagerSC.getResourcesProblemDate(
             listResource, dateDebut, dateFin, reservationId);
         String listResourceName = "";
         for (int i = 0; i < listResources.size(); i++) {
@@ -105,14 +108,11 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
           listResourceName = resourcesManagerSC
               .getString("resourcesManager.resourceUnReservable")
               + listResourceName;
-        /*
-         * else listResourceName = "";
-         */
 
         SilverTrace
             .info("resourcesManager", "AjaxResourcesManagerServlet",
-                "root.MSG_GEN_PARAM_VALUE", "listResourceName= "
-                    + listResourceName);
+            "root.MSG_GEN_PARAM_VALUE", "listResourceName= "
+            + listResourceName);
         res.setContentType("text/xml");
         res.setHeader("charset", "UTF-8");
 

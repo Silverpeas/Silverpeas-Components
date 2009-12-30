@@ -40,7 +40,7 @@ List 			listResourceEverReserved 	= (List) request.getAttribute("listResourceEve
 String 				idModifiedReservation 		= (String)request.getAttribute("idReservation");
 
 String evenement = reservation.getEvent();
-String raison = Encode.javaStringToHtmlParagraphe(reservation.getReason());
+String raison = EncodeHelper.javaStringToHtmlParagraphe(reservation.getReason());
 String lieu = reservation.getPlace();
 
 int tableTab = (nbCategories*37)+10;
