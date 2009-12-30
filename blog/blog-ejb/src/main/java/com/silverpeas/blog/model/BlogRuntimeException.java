@@ -27,8 +27,8 @@ import com.stratelia.webactiv.util.exception.*;
 
 public class BlogRuntimeException extends SilverpeasRuntimeException {
   /**
-   * --------------------------------------------------------------------------
-   * constructors constructors
+   * -------------------------------------------------------------------------- constructors
+   * constructors
    */
   public BlogRuntimeException(String callingClass, int errorLevel,
       String message) {
@@ -51,8 +51,7 @@ public class BlogRuntimeException extends SilverpeasRuntimeException {
   }
 
   /**
-   * --------------------------------------------------------------------------
-   * getModule getModule
+   * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
     return "Blog";

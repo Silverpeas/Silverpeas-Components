@@ -26,6 +26,9 @@ package com.silverpeas.blog.model;
 import java.io.Serializable;
 
 public class Archive implements Serializable {
+
+  private static final long serialVersionUID = 1L;
+
   private String name;
   private String monthId; // between 0 and 11
   private String year;
@@ -82,4 +85,12 @@ public class Archive implements Serializable {
     this.monthId = monthId;
   }
 
+  @Override
+  public boolean equals(Object arg0) {
+    if (arg0 == null || !(arg0 instanceof Archive))
+      return false;
+    Archive archive = (Archive) arg0;
+    return archive.getYear().equals(this.getYear()) &&
+        archive.getMonthId().equals(this.getMonthId());
+  }
 }

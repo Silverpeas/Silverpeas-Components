@@ -43,23 +43,22 @@ public class BlogCallBack extends CallBack {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int,
-   * int, java.lang.String, java.lang.Object)
+   * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int, int,
+   * java.lang.String, java.lang.Object)
    */
   public void doInvoke(int action, int iParam, String componentId,
       Object extraParam) {
     SilverTrace.info("blog", "BlogCallback.doInvoke()",
         "root.MSG_GEN_ENTER_METHOD", "action = " + action + ", iParam = "
-            + iParam + ", componentId = " + componentId + ", extraParam = "
-            + extraParam.toString());
+        + iParam + ", componentId = " + componentId + ", extraParam = "
+        + extraParam.toString());
 
     if (iParam == -1) {
       SilverTrace.info("blog", "BlogCallback.doInvoke()",
           "root.MSG_GEN_PARAM_VALUE",
           "userId is null. Callback stopped ! action = " + action
-              + ", componentId = " + componentId + ", extraParam = "
-              + extraParam.toString());
+          + ", componentId = " + componentId + ", extraParam = "
+          + extraParam.toString());
       return;
     }
 
@@ -85,7 +84,6 @@ public class BlogCallBack extends CallBack {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#subscribe()
    */
   public void subscribe() {

@@ -46,7 +46,7 @@ public class BlogInstanciator implements ComponentsInstanciatorIntf {
       String userId) throws InstanciationException {
     SilverTrace.info("blog", "BlogInstanciator.create()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-            + componentId + ", userId =" + userId);
+        + componentId + ", userId =" + userId);
 
     // create publication component
     PublicationInstanciator pub = new PublicationInstanciator(
@@ -69,7 +69,7 @@ public class BlogInstanciator implements ComponentsInstanciatorIntf {
       String userId) throws InstanciationException {
     SilverTrace.info("blog", "BlogInstanciator.delete()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-            + componentId + ", userId =" + userId);
+        + componentId + ", userId =" + userId);
 
     // delete posts
     PublicationInstanciator pub = new PublicationInstanciator(
@@ -97,9 +97,10 @@ public class BlogInstanciator implements ComponentsInstanciatorIntf {
       String userId) throws InstanciationException {
     String query = null;
     String creationDate = DateUtil.today2SQLDate();
-    query = "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, nodeCreatorId, "
-        + "nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)	"
-        + "VALUES (0, 'Accueil Catégories', 'Racine Catégories', ? , ? , '/0', 1, -1,'','Visible',?)";
+    query =
+        "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, nodeCreatorId, "
+            + "nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)	"
+            + "VALUES (0, 'Accueil Catégories', 'Racine Catégories', ? , ? , '/0', 1, -1,'','Visible',?)";
 
     PreparedStatement prepStmt = null;
     try {
@@ -122,9 +123,10 @@ public class BlogInstanciator implements ComponentsInstanciatorIntf {
       String userId) throws InstanciationException {
     String query = null;
     String creationDate = DateUtil.today2SQLDate();
-    query = "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, nodeCreatorId, "
-        + "nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)	"
-        + "VALUES (1, 'Accueil Archives', 'Racine Archives', ? , ? , '/0', 1, -1,'','Visible',?)";
+    query =
+        "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, nodeCreatorId, "
+            + "nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)	"
+            + "VALUES (1, 'Accueil Archives', 'Racine Archives', ? , ? , '/0', 1, -1,'','Visible',?)";
 
     PreparedStatement prepStmt = null;
     try {
