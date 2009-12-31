@@ -584,5 +584,18 @@
 			<ParameterHelpEn>This feature allows to activate file sharing with persons who have no access to the portal</ParameterHelpEn>
 	   	</ParameterHelp>
     </Parameter>
+    <Parameter>
+        <ParameterName>attachmentsInPubList</ParameterName>
+        <ParameterLabel>Fichiers joints listés</ParameterLabel>
+        <ParameterValue>no</ParameterValue>
+        <ParameterMandatory>Y</ParameterMandatory>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterOrder>38</ParameterOrder>
+	   	<ParameterHelp>
+			<ParameterHelpFr>Ce paramètre permet d'afficher directement dans la liste des publications les fichiers joints à chaque publication.</ParameterHelpFr>
+			<ParameterHelpEn>This feature allows to display the attached files to each publications directly in the publications list.</ParameterHelpEn>
+	   	</ParameterHelp>
+    </Parameter>
   </Parameters>
 </WAComponent>
