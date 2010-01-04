@@ -33,15 +33,16 @@
 	Boolean		isUsePdc		= (Boolean) request.getAttribute("IsUsePdc");
 	UserDetail  updater			= (UserDetail) request.getAttribute("Updater");
 	
+	
 	// déclaration des variables :
-	String 		title			= "";
-	String 		postId			= "";
-	String 		categoryId		= "";
-	String 		creationDate	= resource.getOutputDate(new Date());
-	String 		creatorId		= "";
-	String 		creatorName 	= userName;
-	Date		dateEvent		= new Date();
-	String 		updateDate		= null;
+	String 		         title			  = "";
+	String 		         postId			  = "";
+	String 		         categoryId		= "";
+	String 		         creationDate	= resource.getOutputDate(new Date());
+	String 		         creatorId		= "";
+	String 		         creatorName 	= userName;
+	Date		           dateEvent		= new Date();
+	String 		         updateDate		= null;
 	
 	String 		action 			= "CreatePost";	
 	
@@ -62,6 +63,8 @@
 
 	}
 	
+	String configFile = SilverpeasSettings.readString(new ResourceLocator("com.silverpeas.blog.settings.blogSettings", "fr"), "configFile", URLManager.getApplicationURL() + "/wysiwyg/jsp/javaScript/myconfig.js");
+	
 	// déclaration des boutons
 	Button validateButton 	= (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
 	Button cancelButton 	= (Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
@@ -77,6 +80,7 @@
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
+		<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 		<script language="javascript">
 			
 			// fonctions de contrôle des zones du formulaire avant validation
@@ -125,10 +129,11 @@
 				hauteur = "200";
 				SP_openWindow(chemin,"calendrierAlmanach",largeur,hauteur,"");
 			}
+	        
 		</script>
 		
 		</head>
-<body id="blog" onLoad="javascript:document.postForm.Title.focus();">
+<body id="blog">
 <div id="<%=instanceId %>">
 <%
 	TabbedPane tabbedPane = gef.getTabbedPane();
@@ -169,7 +174,7 @@
 				<option value="">-------------------------------</option>
 				<%
 				if (categories != null)
-	      		{
+	      {
 					String selected = "";
 	      			Iterator it = (Iterator) categories.iterator();
 	      			while (it.hasNext()) 
@@ -182,7 +187,7 @@
 	      				<%
 	      				selected = "";
 			  		}
-	      		}
+	      }
 				%>
 			</select>
 	  	</TD>
@@ -199,8 +204,8 @@
 			</tr>
 		<% } %>
 	<tr><td colspan="2">( <img border="0" src=<%=resource.getIcon("blog.obligatoire")%> width="5" height="5"/> : <%=resource.getString("GML.requiredField")%> )</td></tr>
-
   </form>
+  
 </table>
 <% 
 	out.println(board.printAfter());

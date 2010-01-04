@@ -95,6 +95,7 @@ public class BlogRequestRouter extends ComponentRequestRouter {
 
     // paramètres généraux
     request.setAttribute("Profile", getFlag(blogSC.getUserRoles()));
+    request.setAttribute("settings", blogSC.getSettings());
 
     try {
       if (function.startsWith("Main")) {
@@ -141,6 +142,9 @@ public class BlogRequestRouter extends ComponentRequestRouter {
         destination = getDestination("ViewContent", blogSC, request);
       } else if (function.equals("EditPost")) {
         String postId = request.getParameter("PostId");
+        if (postId == null || postId.length() == 0 || "null".equals(postId)) {
+          postId = (String) request.getAttribute("PostId");
+        }
         PostDetail post = blogSC.getPost(postId);
         request.setAttribute("Post", post);
         request.setAttribute("UserName", blogSC.getUserDetail(post.getPublication().getCreatorId())
@@ -148,7 +152,6 @@ public class BlogRequestRouter extends ComponentRequestRouter {
         request.setAttribute("AllCategories", blogSC.getAllCategories());
         request.setAttribute("IsUsePdc", blogSC.isPdcUsed());
         request.setAttribute("Updater", blogSC.getUserDetail(post.getPublication().getUpdaterId()));
-
         // appel de la page de modification
         destination = rootDest + "postManager.jsp";
       } else if (function.equals("UpdatePost")) {
@@ -393,6 +396,9 @@ public class BlogRequestRouter extends ComponentRequestRouter {
         // ajout aux abonnements
         blogSC.addSubscription("0");
         destination = getDestination("Main", blogSC, request);
+      } else if (function.equals("UpdateFooter")) {
+        // mise à jour du pied de page
+        destination = rootDest + "footer.jsp";
       } else {
         destination = rootDest + function;
       }

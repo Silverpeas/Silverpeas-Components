@@ -38,6 +38,7 @@ String		rssURL		= (String) request.getAttribute("RSSUrl");
 List		events		= (List) request.getAttribute("Events");
 String 		dateCal		= (String) request.getAttribute("DateCalendar");
 Boolean		isUsePdc	= (Boolean) request.getAttribute("IsUsePdc");
+String footer = (String) request.getAttribute("Footer");
 
 String 		word 		= "";
 Date 	   dateCalendar	= new Date(dateCal);
@@ -79,115 +80,103 @@ function addSubscription()
 
 <body id="blog">
 <div id="<%=instanceId %>">
-<table width="100%" border="0" align="center" cellpadding="0" cellspacing="0" class="blog">
-	<tr>
-    	<td colspan="3" id="bandeau" align="center"><a href="<%="Main"%>"><%=componentLabel%></a></td>
-    	<td align="left" rowspan="3" valign="top">
-    	<% if ("admin".equals(profile)) { %>
-    		<% if (isPdcUsed) { %>
-				&nbsp;<a href="<%="javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+instanceId+"','utilizationPdc1')"%>"><img src="<%=resource.getIcon("blog.pdcUtilizationSrc")%>" border="0" alt="<%=resource.getString("GML.PDCParam")%>" title="<%=resource.getString("GML.PDCParam")%>"/></a><br/>
-			<% } %>
-			&nbsp;<a href="<%="NewPost"%>"><img src="<%=resource.getIcon("blog.addPost")%>" border="0" alt="<%=resource.getString("blog.newPost")%>" title="<%=resource.getString("blog.newPost")%>"/></a>
-		<% } %>
-		<% if (!isUserGuest) { %>
-			&nbsp;<a href="<%="javascript:onClick=addSubscription()"%>"><img src="<%=resource.getIcon("blog.addSubscription")%>" border="0" alt="<%=resource.getString("blog.addSubscription")%>" title="<%=resource.getString("blog.addSubscription")%>"/></a>
-		<% } %>
-		</td>
-  	</tr>
-  	<tr>
-  		<td colspan="3">&nbsp;</td>
-	</tr>
-  	<tr>
-    	<td valign="top" class="colonneGauche">
-	    	<table width="100%" border="0" cellspacing="0" cellpadding="0">
-		      	<%
-		      	Iterator it = (Iterator) posts.iterator();
-		      	if (!it.hasNext())
-		      	{
-		      		out.println("&nbsp;");
-		      	}
-				java.util.Calendar cal = GregorianCalendar.getInstance();
-		  		while (it.hasNext()) 
-		  		{
-		  			PostDetail post = (PostDetail) it.next();
-		  			String categoryId = "";
-	  				if (post.getCategory() != null)
-		  				categoryId = post.getCategory().getNodePK().getId();
-		  			String postId = post.getPublication().getPK().getId();
-		  			String link	= post.getPermalink();
-					%>
-					<!--Debut d'un ticket-->
-				    <tr>
-				       	<td>
-				       		<a href="<%="ViewPost?PostId=" + postId%>" class="titreTicket"><%=post.getPublication().getName()%></a>
-						<%	if ( link != null && !link.equals("")) {	%>
-							<a href=<%=link%> ><img src=<%=resource.getIcon("blog.link")%> border="0" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>' ></a>
-						<%	}	%>
-				       	</td>
-				    </tr>
-				    <tr>
-					<%
-						cal.setTime(post.getDateEvent());
-						String day = resource.getString("GML.jour"+cal.get(java.util.Calendar.DAY_OF_WEEK));
-					%>
-				    	<td class="infoTicket"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></td>
-				    </tr>
-				    <tr>
-				    	<td>&nbsp;</td>
-				    </tr>
-				    <tr>
-					    <td>
-				        <%
-				        	out.flush();
-			        		getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+postId+"&ComponentId="+instanceId).include(request, response);
-			        	%>
-			        	</td>
-					</tr>
-					<tr>
-				    	<td>&nbsp;</td>
-				    </tr>
-				    <tr>
-				    	<td>
-							<span class="versCommentaires">
-								<a href="<%="ViewPost?PostId=" + postId%>" class="versCommentaires">&gt;&gt; <%=resource.getString("blog.comments")%></a> (<%=post.getNbComments()%>) 
-							</span>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-							<%
-							if (!categoryId.equals(""))
-							{  %>
-								<a href="<%="PostByCategory?CategoryId="+categoryId%>" class="versTopic">&gt;&gt; <%=post.getCategory().getName()%> </a>
-							<% } %>
-							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-							<span class="versCommentaires"> 
-								<% // date de création et de modification %>
-								<%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> <%=resource.getString("GML.by")%> <%=post.getCreatorName() %>
-								<% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId())) 
-								   {
-									UserDetail updater = m_MainSessionCtrl.getOrganizationController().getUserDetail(post.getPublication().getUpdaterId());
-									String updaterName = "Unknown";
-									if (updater != null)
-										updaterName = updater.getDisplayedName();
-								%>
-									 - <%=resource.getString("GML.updateDate")%> <%=resource.getOutputDate(post.getPublication().getUpdateDate())%> <%=resource.getString("GML.by")%> <%=updaterName %>
-								<% } %>
-							</span>
-						</td>
-				    </tr>
-				    <!--Fin du ticket-->
-				    <tr>
-				    	<td class="separateur">&nbsp;</td>
-				   	</tr>
-				    <%
-		  		}
-		  	 %>
-			</table>
-		</td>
-		<td>&nbsp;&nbsp;</td>
-		<td valign="top" class="colonneDroite">
-			<%@ include file="colonneDroite.jsp.inc" %>
-		</td>
-	</tr>
-</table>
+  <div id="blogContainer">
+    <div id="bandeau"><a href="<%="Main"%>"><%=componentLabel%></a></div>
+    <div id="backHomeBlog"><a href="<%="Main"%>"><%=resource.getString("blog.accueil")%></a></div>
+    <div id="postsList">
+        <%
+        Iterator it = (Iterator) posts.iterator();
+            
+        java.util.Calendar cal = GregorianCalendar.getInstance();
+          while (it.hasNext()) 
+          {
+            PostDetail post = (PostDetail) it.next();
+            String categoryId = "";
+            if (post.getCategory() != null)
+              categoryId = post.getCategory().getNodePK().getId();
+            String postId = post.getPublication().getPK().getId();
+            String link = post.getPermalink();
+          %>
+          <!--Debut d'un ticket-->
+          <div id="post<%=postId%>" class="post">
+            <div class="titreTicket">
+              <a href="<%="ViewPost?PostId=" + postId%>" class="titreTicket"><%=post.getPublication().getName()%></a>
+				        <%  if ( link != null && !link.equals("")) {  %>
+				          <a href=<%=link%> ><img src=<%=resource.getIcon("blog.link")%> border="0" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>' ></a>
+				        <%  } %>
+            </div>
+            <%
+              cal.setTime(post.getDateEvent());
+              String day = resource.getString("GML.jour"+cal.get(java.util.Calendar.DAY_OF_WEEK));
+           %>
+           <div class="infoTicket"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></div>
+           <div class="contentTicket">
+             <%
+               out.flush();
+               getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+postId+"&ComponentId="+instanceId).include(request, response);
+             %>
+           </div>
+
+           <div class="footerTicket">
+             <span class="versCommentaires">
+                <a href="<%="ViewPost?PostId=" + postId%>" class="versCommentaires">&gt;&gt; <%=resource.getString("blog.comments")%></a> (<%=post.getNbComments()%>) 
+             </span>
+
+              <span class="categoryTicket">
+              <%
+              if (!categoryId.equals(""))
+              {  %>
+                &nbsp;|&nbsp;
+                <a href="<%="PostByCategory?CategoryId="+categoryId%>" class="versTopic">&gt;&gt; <%=post.getCategory().getName()%> </a>
+              <% } %>
+              </span>
+              <span class="creatorTicket"> 
+              &nbsp;|&nbsp;
+                <% // date de création et de modification %>
+                <%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> <%=resource.getString("GML.by")%> <%=post.getCreatorName() %>
+                <% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId())) 
+                   {
+                  UserDetail updater = m_MainSessionCtrl.getOrganizationController().getUserDetail(post.getPublication().getUpdaterId());
+                  String updaterName = "Unknown";
+                  if (updater != null)
+                    updaterName = updater.getDisplayedName();
+                %>
+                   - <%=resource.getString("GML.updateDate")%> <%=resource.getOutputDate(post.getPublication().getUpdateDate())%> <%=resource.getString("GML.by")%> <%=updaterName %>
+                <% } %>
+              </span>
+           </div>
+            <div class="separateur" ></div>
+        </div>
+        <!--Fin du ticket-->  
+       
+        <% 
+        }
+        %>  
+    </div>
+    <div id="navBlog">
+      <%
+      String myOperations = "";
+      // ajouter les opérations dans cette chaine et la passer à afficher dans la colonneDroite.jsp.inc
+      if ("admin".equals(profile)) { 
+        if (isPdcUsed) { 
+          myOperations += "<a href=\"javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+instanceId+"','utilizationPdc1')\">"+resource.getString("GML.PDCParam")+"</a><br/>";
+        } 
+        myOperations += "<a href=\"NewPost\">"+resource.getString("blog.newPost")+"</a><br/>";
+        myOperations += "<a href=\"UpdateFooter\">"+resource.getString("blog.updateFooter")+"</a><br/>";
+      } 
+      if (!isUserGuest) { 
+        myOperations += "<a href=\"javascript:onClick=addSubscription()\">"+resource.getString("blog.addSubscription")+"</a><br/>";
+      } 
+      %>
+      <%@ include file="colonneDroite.jsp.inc" %>
+    </div>
+    <div id="footer">
+      <%
+        out.flush();
+        getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+instanceId+"&ComponentId="+instanceId).include(request, response);
+      %>      
+    </div>
+  </div>
 </div>
 
 <form name="subscriptionForm" action="AddSubscription" Method="POST">

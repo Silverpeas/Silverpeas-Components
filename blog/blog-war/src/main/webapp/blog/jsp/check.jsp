@@ -74,6 +74,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.calendar.Calendar"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.MainSessionController"%>
+<%@ page import="com.stratelia.silverpeas.util.SilverpeasSettings"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
@@ -84,6 +85,8 @@ MainSessionController 	m_MainSessionCtrl 	= (MainSessionController) session.getA
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 ResourcesWrapper resource = (ResourcesWrapper)request.getAttribute("resources");
+ResourceLocator settings = (ResourceLocator) request.getAttribute("settings");
+
 Window window = gef.getWindow();
 BrowseBar browseBar = window.getBrowseBar();
 OperationPane operationPane = window.getOperationPane();
