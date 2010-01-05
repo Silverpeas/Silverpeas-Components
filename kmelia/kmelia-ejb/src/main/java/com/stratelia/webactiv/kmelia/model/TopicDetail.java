@@ -40,48 +40,43 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
  */
 public class TopicDetail extends Object implements java.io.Serializable {
 
+  private static final long serialVersionUID = 1L;
+
   /** A NodeDetail collection representing the path from leaf to root */
-  private Collection path;
+  private Collection<NodeDetail> path;
 
   /** the informations of the Topic are in this object */
   private NodeDetail nodeDetail;
 
   /** A NodeDetail collection representing the path from leaf to root */
-  private Collection publicationDetails;
-
-  /**
-   * A int collection which contains the number of publication containing under each sub topics of
-   * the topics
-   */
-  private Collection nbPubByTopic;
+  private Collection<UserPublication> publicationDetails;
 
   /**
    * Construct an empty TopicDetail
    * @since 1.0
    */
   public TopicDetail() {
-    init(null, null, null, null);
+    init(null, null, null);
   }
 
   /**
    * Create a new TopicDetail
    * @since 1.0
    */
-  public TopicDetail(Collection path, NodeDetail nodeDetail,
-      Collection pubDetails, Collection nbPubByTopic) {
-    init(path, nodeDetail, pubDetails, nbPubByTopic);
+  public TopicDetail(Collection<NodeDetail> path, NodeDetail nodeDetail,
+      Collection<UserPublication> pubDetails) {
+    init(path, nodeDetail, pubDetails);
   }
 
   /**
    * Create a new TopicDetail
    * @since 1.0
    */
-  private void init(Collection path, NodeDetail nodeDetail,
-      Collection pubDetails, Collection nbPubByTopic) {
+  private void init(Collection<NodeDetail> path, NodeDetail nodeDetail,
+      Collection<UserPublication> pubDetails) {
     this.path = path;
     this.nodeDetail = nodeDetail;
     this.publicationDetails = pubDetails;
-    this.nbPubByTopic = nbPubByTopic;
   }
 
   /**
@@ -89,7 +84,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
    * @return the path
    * @since 1.0
    */
-  public Collection getPath() {
+  public Collection<NodeDetail> getPath() {
     return this.path;
   }
 
@@ -120,18 +115,8 @@ public class TopicDetail extends Object implements java.io.Serializable {
    * @see java.util.Collection
    * @since 1.0
    */
-  public Collection getPublicationDetails() {
+  public Collection<UserPublication> getPublicationDetails() {
     return this.publicationDetails;
-  }
-
-  /**
-   * Get a int collection containing the number of publications of each sub topics
-   * @return a int collection containing the number of publications of each sub topics
-   * @see java.util.Collection
-   * @since 1.0
-   */
-  public Collection getNbPubByTopic() {
-    return this.nbPubByTopic;
   }
 
   /**
@@ -139,7 +124,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
    * @param path a NodeDetail Collection
    * @since 1.0
    */
-  public void setPath(Collection path) {
+  public void setPath(Collection<NodeDetail> path) {
     this.path = path;
   }
 
@@ -157,28 +142,19 @@ public class TopicDetail extends Object implements java.io.Serializable {
    * @param pd a PublicationDetail Collection
    * @since 1.0
    */
-  public void setPublicationDetails(Collection pd) {
+  public void setPublicationDetails(Collection<UserPublication> pd) {
     this.publicationDetails = pd;
   }
 
-  /**
-   * Set the number of publications in each sub topics
-   * @param nbPubByTopic a int Collection
-   * @since 1.0
-   */
-  public void setNbPubByTopic(Collection nbPubByTopic) {
-    this.nbPubByTopic = nbPubByTopic;
-  }
-
-  public List getValidPublications() {
+  public List<UserPublication> getValidPublications() {
     return getValidPublications(null);
   }
 
-  public List getValidPublications(PublicationPK pubPKToExclude) {
+  public List<UserPublication> getValidPublications(PublicationPK pubPKToExclude) {
     UserPublication userPub;
     PublicationDetail pub;
-    List validPublications = new ArrayList();
-    Iterator iterator = publicationDetails.iterator();
+    List<UserPublication> validPublications = new ArrayList<UserPublication>();
+    Iterator<UserPublication> iterator = publicationDetails.iterator();
     while (iterator.hasNext()) {
       userPub = (UserPublication) iterator.next();
       pub = userPub.getPublication();

@@ -81,12 +81,12 @@ public class PublicationImport {
     this.componentId = componentId;
   }
 
-  public void importPublications(ArrayList publiParamsList,
-      ArrayList formParamsList, String language, String xmlFormName,
+  public void importPublications(List<Map<String, String>> publiParamsList,
+      List<Map<String, String>> formParamsList, String language, String xmlFormName,
       String discrimatingParameterName, String userProfile)
       throws RemoteException {
     for (int i = 0, n = publiParamsList.size(); i < n; i++) {
-      importPublication((Map) publiParamsList.get(i), (Map) formParamsList
+      importPublication(publiParamsList.get(i), formParamsList
           .get(i), language, xmlFormName, discrimatingParameterName,
           userProfile);
     }
@@ -104,7 +104,7 @@ public class PublicationImport {
    * @return True if the publication is created, false if it is updated.
    * @throws RemoteException
    */
-  public boolean importPublication(Map publiParams, Map formParams,
+  public boolean importPublication(Map<String, String> publiParams, Map<String, String> formParams,
       String language, String xmlFormName, String discrimatingParameterName,
       String userProfile) throws RemoteException {
     PublicationDetail pubDetail = null;
@@ -180,7 +180,7 @@ public class PublicationImport {
       context.setObjectId(pubId);
       context.setContentLanguage(language);
 
-      List items = new ArrayList();
+      List<InternalFileItem> items = new ArrayList<InternalFileItem>();
       String[] fieldNames = data.getFieldNames();
       String fieldName;
       String fieldValue;
@@ -210,8 +210,7 @@ public class PublicationImport {
   public List getPublicationXmlFields(String publicationId) {
     PublicationPK pubPK = new PublicationPK(publicationId, spaceId, componentId);
     PublicationDetail pubDetail = kmeliaBm.getPublicationDetail(pubPK);
-    List fields = pubDetail.getXmlFields();
-    return fields;
+    return pubDetail.getXmlFields();
   }
 
   /**
@@ -220,23 +219,23 @@ public class PublicationImport {
    * @return A publication detail containing the parameters given as parameters.
    * @throws Exception
    */
-  private PublicationDetail getPublicationDetail(Map parameters, String language)
+  private PublicationDetail getPublicationDetail(Map<String, String> parameters, String language)
       throws Exception {
-    String id = (String) parameters.get("PubId");
-    String status = (String) parameters.get("Status");
-    String name = (String) parameters.get("Name");
-    String description = (String) parameters.get("Description");
-    String keywords = (String) parameters.get("Keywords");
-    String beginDate = (String) parameters.get("BeginDate");
-    String endDate = (String) parameters.get("EndDate");
-    String version = (String) parameters.get("Version");
-    String importance = (String) parameters.get("Importance");
-    String beginHour = (String) parameters.get("BeginHour");
-    String endHour = (String) parameters.get("EndHour");
-    String author = (String) parameters.get("Author");
-    String validatorId = (String) parameters.get("ValideurId");
-    String tempId = (String) parameters.get("TempId");
-    String infoId = (String) parameters.get("InfoId");
+    String id = parameters.get("PubId");
+    String status = parameters.get("Status");
+    String name = parameters.get("Name");
+    String description = parameters.get("Description");
+    String keywords = parameters.get("Keywords");
+    String beginDate = parameters.get("BeginDate");
+    String endDate = parameters.get("EndDate");
+    String version = parameters.get("Version");
+    String importance = parameters.get("Importance");
+    String beginHour = parameters.get("BeginHour");
+    String endHour = parameters.get("EndHour");
+    String author = parameters.get("Author");
+    String validatorId = parameters.get("ValideurId");
+    String tempId = parameters.get("TempId");
+    String infoId = parameters.get("InfoId");
 
     Date jBeginDate = null;
     Date jEndDate = null;
@@ -317,7 +316,7 @@ public class PublicationImport {
     query.setSearchingUser(userId);
     query.addSpaceComponentPair(spaceId, componentId);
 
-    Hashtable newXmlQuery = new Hashtable();
+    Hashtable<String, String> newXmlQuery = new Hashtable<String, String>();
     newXmlQuery.put(xmlFormName + "$$" + fieldName, fieldValue);
     query.setXmlQuery(newXmlQuery);
 
@@ -359,19 +358,19 @@ public class PublicationImport {
     return nodePK.getId();
   }
 
-  public Collection getPublicationsSpecificValues(String componentId,
+  public Collection<String> getPublicationsSpecificValues(String componentId,
       String xmlFormName, String fieldName) throws RemoteException {
     PublicationBm publicationBm = kmeliaBm.getPublicationBm();
-    Collection publications = publicationBm
+    Collection<PublicationDetail> publications = publicationBm
         .getAllPublications(new PublicationPK("useless", componentId));
-    ArrayList result = new ArrayList();
-    Iterator iter = publications.iterator();
+    List<String> result = new ArrayList<String>();
+    Iterator<PublicationDetail> iter = publications.iterator();
     PublicationDetail publication = null;
     String fieldValue;
-    Collection fatherPKs;
+    Collection<NodePK> fatherPKs;
     NodePK fatherPK;
     while (iter.hasNext()) {
-      publication = (PublicationDetail) iter.next();
+      publication = iter.next();
       if (publication.getInfoId().equals(xmlFormName)) {
         fatherPKs = publicationBm.getAllFatherPK(publication.getPK());
         if (!fatherPKs.isEmpty()) {
@@ -436,11 +435,9 @@ public class PublicationImport {
     attDetail.setTitle(title);
     attDetail.setInfo(info);
     attDetail.setCreationDate(creationDate);
-    boolean updateLogicalName = true;
     if (logicalName != null) {
       // force
       attDetail.setLogicalName(logicalName);
-      updateLogicalName = false;
     }
 
     attachmentIE.importAttachment(publicationId, componentId, attDetail,
@@ -453,22 +450,22 @@ public class PublicationImport {
    * @return A publication detail containing the parameters given as parameters.
    * @throws Exception
    */
-  private void updatePublicationDetail(PublicationDetail pubDetail, Map parameters, String language)
+  private void updatePublicationDetail(PublicationDetail pubDetail, Map<String, String> parameters, String language)
       throws Exception {
-    String status = (String) parameters.get("Status");
-    String name = (String) parameters.get("Name");
-    String description = (String) parameters.get("Description");
-    String keywords = (String) parameters.get("Keywords");
-    String beginDate = (String) parameters.get("BeginDate");
-    String endDate = (String) parameters.get("EndDate");
-    String version = (String) parameters.get("Version");
-    String importance = (String) parameters.get("Importance");
-    String beginHour = (String) parameters.get("BeginHour");
-    String endHour = (String) parameters.get("EndHour");
-    String author = (String) parameters.get("Author");
-    String validatorId = (String) parameters.get("ValideurId");
-    String tempId = (String) parameters.get("TempId");
-    String infoId = (String) parameters.get("InfoId");
+    String status = parameters.get("Status");
+    String name = parameters.get("Name");
+    String description = parameters.get("Description");
+    String keywords = parameters.get("Keywords");
+    String beginDate = parameters.get("BeginDate");
+    String endDate = parameters.get("EndDate");
+    String version = parameters.get("Version");
+    String importance = parameters.get("Importance");
+    String beginHour = parameters.get("BeginHour");
+    String endHour = parameters.get("EndHour");
+    String author = parameters.get("Author");
+    String validatorId = parameters.get("ValideurId");
+    String tempId = parameters.get("TempId");
+    String infoId = parameters.get("InfoId");
 
     Date jBeginDate = null;
     Date jEndDate = null;

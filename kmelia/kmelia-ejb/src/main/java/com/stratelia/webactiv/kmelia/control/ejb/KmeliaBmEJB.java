@@ -140,6 +140,8 @@ import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
  */
 public class KmeliaBmEJB implements SessionBean {
 
+  private static final long serialVersionUID = 1L;
+
   public KmeliaBmEJB() {
   }
 
@@ -365,8 +367,8 @@ public class KmeliaBmEJB implements SessionBean {
       boolean isRightsOnTopicsUsed) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.goTo()",
         "root.MSG_GEN_ENTER_METHOD");
-    Collection newPath = new ArrayList();
-    Collection pubDetails = null;
+    Collection<NodeDetail> newPath = new ArrayList<NodeDetail>();
+    Collection<PublicationDetail> pubDetails = null;
     NodeDetail nodeDetail = null;
     NodeBm nodeBm = getNodeBm();
     PublicationBm pubBm = getPublicationBm();
@@ -387,14 +389,14 @@ public class KmeliaBmEJB implements SessionBean {
           nodeDetail.setUserRole("noRights");
         }
 
-        List children = (List) nodeDetail.getChildrenDetails();
+        List<NodeDetail> children = (List<NodeDetail>) nodeDetail.getChildrenDetails();
 
-        List availableChildren = new ArrayList();
+        List<NodeDetail> availableChildren = new ArrayList<NodeDetail>();
 
         NodeDetail child = null;
         String childId = null;
         for (int c = 0; c < children.size(); c++) {
-          child = (NodeDetail) children.get(c);
+          child = children.get(c);
           childId = child.getNodePK().getId();
           if (childId.equals("1") || childId.equals("2") || !child.haveRights()) {
             availableChildren.add(child);
@@ -406,12 +408,12 @@ public class KmeliaBmEJB implements SessionBean {
               availableChildren.add(child);
             } else {
               // check if at least one descendant is available
-              Iterator descendants = getNodeBm().getDescendantDetails(child)
+              Iterator<NodeDetail> descendants = getNodeBm().getDescendantDetails(child)
                   .iterator();
               NodeDetail descendant = null;
               boolean childAllowed = false;
               while (!childAllowed && descendants.hasNext()) {
-                descendant = (NodeDetail) descendants.next();
+                descendant = descendants.next();
                 if (descendant.getRightsDependsOn() == rightsDependsOn) {
                   // same rights of father (which is not
                   // available)
@@ -490,11 +492,11 @@ public class KmeliaBmEJB implements SessionBean {
               PublicationDetail.VALID, nbPublisOnRoot, "1");
           if (isRightsOnTopicsUsed) {
             // The list of publications must be filtered
-            List filteredList = new ArrayList();
-            Iterator it = pubDetails.iterator();
+            List<PublicationDetail> filteredList = new ArrayList<PublicationDetail>();
+            Iterator<PublicationDetail> it = pubDetails.iterator();
             KmeliaSecurity security = new KmeliaSecurity();
             while (it.hasNext()) {
-              PublicationDetail pubDetail = (PublicationDetail) it.next();
+              PublicationDetail pubDetail = it.next();
               if (security.isObjectAvailable(pk.getInstanceId(), userId,
                   pubDetail.getPK().getId(), "Publication")) {
                 filteredList.add(pubDetail);
@@ -545,13 +547,13 @@ public class KmeliaBmEJB implements SessionBean {
 
     // set the currentTopic and return it
     return new TopicDetail(newPath, nodeDetail,
-        pubDetails2userPubs(pubDetails), null);
+        pubDetails2userPubs(pubDetails));
   }
 
-  private Collection getPathFromAToZ(NodeDetail nd) {
-    Collection newPath = new ArrayList();
+  private Collection<NodeDetail> getPathFromAToZ(NodeDetail nd) {
+    Collection<NodeDetail> newPath = new ArrayList<NodeDetail>();
     try {
-      List pathInReverse = (List) getNodeBm().getPath(nd.getNodePK());
+      List<NodeDetail> pathInReverse = (List<NodeDetail>) getNodeBm().getPath(nd.getNodePK());
       // reverse the path from root to leaf
       for (int i = pathInReverse.size() - 1; i >= 0; i--) {
         newPath.add(pathInReverse.get(i));
@@ -631,16 +633,16 @@ public class KmeliaBmEJB implements SessionBean {
     return pk;
   }
 
-  private String displayPath(Collection path, int beforeAfter, String language) {
+  private String displayPath(Collection<NodeDetail> path, int beforeAfter, String language) {
     String pathString = new String();
     int nbItemInPath = path.size();
-    Iterator iterator = path.iterator();
+    Iterator<NodeDetail> iterator = path.iterator();
     boolean alreadyCut = false;
     int nb = 0;
 
     NodeDetail nodeInPath = null;
     while (iterator.hasNext()) {
-      nodeInPath = (NodeDetail) iterator.next();
+      nodeInPath = iterator.next();
       if ((nb <= beforeAfter) || (nb + beforeAfter >= nbItemInPath - 1)) {
         pathString = nodeInPath.getName(language) + " " + pathString;
         if (iterator.hasNext()) {
@@ -733,7 +735,7 @@ public class KmeliaBmEJB implements SessionBean {
         notifMetaData.addUserRecipients(users);
       } else if (alertType.equals("Publisher")) {
         // Get the list of all publishers and admin
-        List profileNames = new ArrayList();
+        List<String> profileNames = new ArrayList<String>();
         profileNames.add("admin");
         profileNames.add("publisher");
         profileNames.add("writer");
@@ -744,7 +746,7 @@ public class KmeliaBmEJB implements SessionBean {
         notifMetaData.addUserRecipients(users);
       }
     } else {
-      List profileNames = new ArrayList();
+      List<String> profileNames = new ArrayList<String>();
       profileNames.add("admin");
       profileNames.add("publisher");
       profileNames.add("writer");
@@ -850,23 +852,23 @@ public class KmeliaBmEJB implements SessionBean {
 
     try {
       // get all nodes which will be deleted
-      Collection nodesToDelete = nodeBm.getDescendantPKs(pkToDelete);
+      Collection<NodePK> nodesToDelete = nodeBm.getDescendantPKs(pkToDelete);
       nodesToDelete.add(pkToDelete);
       SilverTrace.info("kmelia", "KmeliaBmEJB.deleteTopic()",
           "root.MSG_GEN_PARAM_VALUE", "nodesToDelete = "
           + nodesToDelete.toString());
 
-      Iterator itPub = null;
-      Collection pubsToCheck = null; // contains all PubPKs concerned by
+      Iterator<PublicationPK> itPub = null;
+      Collection<PublicationPK> pubsToCheck = null; // contains all PubPKs concerned by
       // the delete
       NodePK oneNodeToDelete = null; // current node to delete
-      Collection pubFathers = null; // contains all fatherPKs to a given
+      Collection<NodePK> pubFathers = null; // contains all fatherPKs to a given
       // publication
       PublicationPK onePubToCheck = null; // current pub to check
-      Iterator itNode = nodesToDelete.iterator();
-      List aliases = new ArrayList();
+      Iterator<NodePK> itNode = nodesToDelete.iterator();
+      List<Alias> aliases = new ArrayList<Alias>();
       while (itNode.hasNext()) {
-        oneNodeToDelete = (NodePK) itNode.next();
+        oneNodeToDelete = itNode.next();
         // get pubs linked to current node (includes alias)
         pubsToCheck = pubBm.getPubPKsInFatherPK(oneNodeToDelete);
         itPub = pubsToCheck.iterator();
@@ -923,9 +925,9 @@ public class KmeliaBmEJB implements SessionBean {
         "root.MSG_GEN_ENTER_METHOD", "way = " + way + ", subTopicPK = "
         + subTopicPK.toString());
 
-    List subTopics = null;
+    List<NodeDetail> subTopics = null;
     try {
-      subTopics = (List) getNodeBm().getChildrenDetails(fatherPK);
+      subTopics = (List<NodeDetail>) getNodeBm().getChildrenDetails(fatherPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.changeSubTopicsOrder()",
           SilverpeasRuntimeException.ERROR,
@@ -954,7 +956,7 @@ public class KmeliaBmEJB implements SessionBean {
       indexOfTopic = getIndexOfNode(subTopicPK.getId(), subTopics);
 
       // get the node to move
-      NodeDetail node2move = (NodeDetail) subTopics.get(indexOfTopic);
+      NodeDetail node2move = subTopics.get(indexOfTopic);
 
       // remove the node to move
       subTopics.remove(indexOfTopic);
@@ -986,14 +988,14 @@ public class KmeliaBmEJB implements SessionBean {
     }
   }
 
-  private int getIndexOfNode(String nodeId, List nodes) {
+  private int getIndexOfNode(String nodeId, List<NodeDetail> nodes) {
     SilverTrace.debug("kmelia", "KmeliaBmEJB.getIndexOfNode()",
         "root.MSG_GEN_ENTER_METHOD", "nodeId = " + nodeId);
     NodeDetail node = null;
     int index = 0;
     if (nodes != null) {
       for (int i = 0; i < nodes.size(); i++) {
-        node = (NodeDetail) nodes.get(i);
+        node = nodes.get(i);
         if (nodeId.equals(node.getNodePK().getId())) {
           SilverTrace.debug("kmelia", "KmeliaBmEJB.getIndexOfNode()",
               "root.MSG_GEN_EXIT_METHOD", "index = " + index);
@@ -1018,9 +1020,9 @@ public class KmeliaBmEJB implements SessionBean {
         nodeDetail = getNodeBm().getHeader(nodePK);
         changeTopicStatus(newStatus, nodeDetail);
       } else {
-        List subTree = (List) getNodeBm().getSubTree(nodePK);
+        List<NodeDetail> subTree = (List<NodeDetail>) getNodeBm().getSubTree(nodePK);
         for (int i = 0; i < subTree.size(); i++) {
-          nodeDetail = (NodeDetail) subTree.get(i);
+          nodeDetail = subTree.get(i);
           changeTopicStatus(newStatus, nodeDetail);
         }
       }
@@ -1040,9 +1042,9 @@ public class KmeliaBmEJB implements SessionBean {
     SilverTrace.info("kmelia", "KmeliaBmEJB.sortSubTopics()",
         "root.MSG_GEN_ENTER_METHOD", "fatherPK = " + fatherPK.toString());
 
-    List subTopics = null;
+    List<NodeDetail> subTopics = null;
     try {
-      subTopics = (List) getNodeBm().getChildrenDetails(fatherPK);
+      subTopics = (List<NodeDetail>) getNodeBm().getChildrenDetails(fatherPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.sortSubTopics()",
           SilverpeasRuntimeException.ERROR,
@@ -1054,7 +1056,7 @@ public class KmeliaBmEJB implements SessionBean {
       NodeDetail nodeDetail = null;
       // for each node, change the order and store it
       for (int i = 0; i < subTopics.size(); i++) {
-        nodeDetail = (NodeDetail) subTopics.get(i);
+        nodeDetail = subTopics.get(i);
         SilverTrace.info("kmelia", "KmeliaBmEJB.sortSubTopics()",
             "root.MSG_GEN_PARAM_VALUE", "updating Node : nodeId = "
             + nodeDetail.getNodePK().getId() + ", order = " + i);
@@ -1088,20 +1090,20 @@ public class KmeliaBmEJB implements SessionBean {
     }
   }
 
-  public List getTreeview(NodePK nodePK, String profile,
+  public List<NodeDetail> getTreeview(NodePK nodePK, String profile,
       boolean coWritingEnable, boolean draftVisibleWithCoWriting,
       String userId, boolean displayNb, boolean isRightsOnTopicsUsed) {
     String instanceId = nodePK.getInstanceId();
     try {
-      List tree = getNodeBm().getSubTree(nodePK);
+      List<NodeDetail> tree = getNodeBm().getSubTree(nodePK);
 
-      List allowedTree = new ArrayList();
+      List<NodeDetail> allowedTree = new ArrayList<NodeDetail>();
       OrganizationController orga = getOrganizationController();
       if (isRightsOnTopicsUsed) {
         // filter allowed nodes
         NodeDetail node2Check = null;
         for (int t = 0; tree != null && t < tree.size(); t++) {
-          node2Check = (NodeDetail) tree.get(t);
+          node2Check = tree.get(t);
           if (!node2Check.haveRights()) {
             allowedTree.add(node2Check);
 
@@ -1124,12 +1126,12 @@ public class KmeliaBmEJB implements SessionBean {
               allowedTree.add(node2Check);
             } else {
               // check if at least one descendant is available
-              Iterator descendants = getNodeBm().getDescendantDetails(
+              Iterator<NodeDetail> descendants = getNodeBm().getDescendantDetails(
                   node2Check).iterator();
               NodeDetail descendant = null;
               boolean node2CheckAllowed = false;
               while (!node2CheckAllowed && descendants.hasNext()) {
-                descendant = (NodeDetail) descendants.next();
+                descendant = descendants.next();
                 if (descendant.getRightsDependsOn() == rightsDependsOn) {
                   // same rights of father (which is not
                   // available)
@@ -1191,9 +1193,9 @@ public class KmeliaBmEJB implements SessionBean {
             checkVisibility = true;
             statusSubQuery +=
                 "P.pubStatus = 'Valid' OR (P.pubStatus = 'Draft' AND P.pubUpdaterId = '"
-                    + userId
-                    + "') OR (P.pubStatus = 'Unvalidate' AND P.pubUpdaterId = '"
-                    + userId + "') ";
+                + userId
+                + "') OR (P.pubStatus = 'Unvalidate' AND P.pubUpdaterId = '"
+                + userId + "') ";
           }
           statusSubQuery += "OR (P.pubStatus = 'ToValidate' AND P.pubUpdaterId = '"
               + userId + "') ";
@@ -1215,12 +1217,12 @@ public class KmeliaBmEJB implements SessionBean {
           statusSubQuery += ")";
         }
 
-        Hashtable distribution = getPublicationBm().getDistribution(
+        Hashtable<String, Integer> distribution = getPublicationBm().getDistribution(
             nodePK.getInstanceId(), statusSubQuery, checkVisibility);
 
         NodeDetail node = null;
         for (int t = 0; t < allowedTree.size(); t++) {
-          node = (NodeDetail) allowedTree.get(t);
+          node = allowedTree.get(t);
           node.setNbObjects(getNbPublis(node, distribution, allowedTree));
         }
       }
@@ -1232,18 +1234,18 @@ public class KmeliaBmEJB implements SessionBean {
     }
   }
 
-  private int getNbPublis(NodeDetail node, Hashtable distribution,
-      List allowedNodes) {
+  private int getNbPublis(NodeDetail node, Hashtable<String, Integer> distribution,
+      List<NodeDetail> allowedNodes) {
     SilverTrace.debug("kmelia", "KmeliaBmEJB.getNbPublis()",
         "root.MSG_GEN_ENTER_METHOD", "node = " + node.getNodePK().toString());
     int result = 0;
     // String nodeFullPath = node.getPath()+node.getNodePK().getId()+"/";
-    Enumeration nodePaths = distribution.keys();
+    Enumeration<String> nodePaths = distribution.keys();
     String nodePath = null;
     Integer nb = null;
 
     while (nodePaths.hasMoreElements()) {
-      nodePath = (String) nodePaths.nextElement();
+      nodePath = nodePaths.nextElement();
       // SilverTrace.debug("kmelia","KmeliaBmEJB.getNbPublis()",
       // "root.MSG_GEN_PARAM_VALUE", "nodePath = "+nodePath);
       if (isNodeAllowed(nodePath, allowedNodes)
@@ -1258,9 +1260,9 @@ public class KmeliaBmEJB implements SessionBean {
     return result;
   }
 
-  private List tempAllowedNodes = new ArrayList();
+  private List<String> tempAllowedNodes = new ArrayList<String>();
 
-  private boolean isNodeAllowed(String nodePath, List allowedNodes) {
+  private boolean isNodeAllowed(String nodePath, List<NodeDetail> allowedNodes) {
     if (tempAllowedNodes.contains(nodePath)) {
       return true;
     }
@@ -1276,9 +1278,6 @@ public class KmeliaBmEJB implements SessionBean {
       }
     }
 
-    // SilverTrace.debug("kmelia","KmeliaBmEJB.isNodeAllowed()",
-    // "root.MSG_GEN_PARAM_VALUE",
-    // "nodePath = "+nodePath+", return false ! ");
     return false;
   }
 
@@ -1296,18 +1295,18 @@ public class KmeliaBmEJB implements SessionBean {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
-  public Collection getSubscriptionList(String userId, String componentId) {
+  public Collection<Collection<NodeDetail>> getSubscriptionList(String userId, String componentId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getSubscriptionList()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      Collection list = getSubscribeBm().getUserSubscribePKsByComponent(userId,
+      Collection<NodePK> list = getSubscribeBm().getUserSubscribePKsByComponent(userId,
           componentId);
-      Collection detailedList = new ArrayList();
-      Iterator i = list.iterator();
+      Collection<Collection<NodeDetail>> detailedList = new ArrayList<Collection<NodeDetail>>();
+      Iterator<NodePK> i = list.iterator();
       // For each favorite, get the path from root to favorite
       while (i.hasNext()) {
-        NodePK pk = (NodePK) i.next();
-        Collection path = getNodeBm().getPath(pk);
+        NodePK pk = i.next();
+        Collection<NodeDetail> path = getNodeBm().getPath(pk);
         detailedList.add(path);
       }
       SilverTrace.info("kmelia", "KmeliaBmEJB.getSubscriptionList()",
@@ -1398,10 +1397,10 @@ public class KmeliaBmEJB implements SessionBean {
    */
   public boolean checkSubscription(NodePK topicPK, String userId) {
     try {
-      Collection subscriptions = getSubscribeBm()
+      Collection<NodePK> subscriptions = getSubscribeBm()
           .getUserSubscribePKsByComponent(userId, topicPK.getInstanceId());
-      for (Iterator iterator = subscriptions.iterator(); iterator.hasNext();) {
-        NodePK nodePK = (NodePK) iterator.next();
+      for (Iterator<NodePK> iterator = subscriptions.iterator(); iterator.hasNext();) {
+        NodePK nodePK = iterator.next();
         if (topicPK.getId().equals(nodePK.getId())) {
           return false;
         }
@@ -1418,17 +1417,17 @@ public class KmeliaBmEJB implements SessionBean {
   /**************************************************************************************/
   /* Interface - Gestion des publications */
   /**************************************************************************************/
-  private Collection pubDetails2userPubs(Collection pubDetails) {
-    Iterator iterator = pubDetails.iterator();
+  private Collection<UserPublication> pubDetails2userPubs(Collection<PublicationDetail> pubDetails) {
+    Iterator<PublicationDetail> iterator = pubDetails.iterator();
     String[] users = new String[pubDetails.size()];
     int i = 0;
     while (iterator.hasNext()) {
-      users[i] = ((PublicationDetail) iterator.next()).getCreatorId();
+      users[i] = (iterator.next()).getCreatorId();
       i++;
     }
     OrganizationController orga = getOrganizationController();
     UserDetail[] userDetails = orga.getUserDetails(users);
-    ArrayList list = new ArrayList();
+    List<UserPublication> list = new ArrayList<UserPublication>();
     iterator = pubDetails.iterator();
     i = 0;
     UserPublication uPub = null;
@@ -1469,10 +1468,10 @@ public class KmeliaBmEJB implements SessionBean {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
-  public Collection getPathList(PublicationPK pubPK) {
+  public Collection<Collection<NodeDetail>> getPathList(PublicationPK pubPK) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPathList()",
         "root.MSG_GEN_ENTER_METHOD");
-    Collection fatherPKs = null;
+    Collection<NodePK> fatherPKs = null;
     try {
       // get all nodePK whick contains this publication
       fatherPKs = getPublicationBm().getAllFatherPK(pubPK);
@@ -1482,13 +1481,13 @@ public class KmeliaBmEJB implements SessionBean {
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_LES_EMPLACEMENTS_DE_LA_PUBLICATION", e);
     }
     try {
-      ArrayList pathList = new ArrayList();
+      List<Collection<NodeDetail>> pathList = new ArrayList<Collection<NodeDetail>>();
       if (fatherPKs != null) {
-        Iterator i = fatherPKs.iterator();
+        Iterator<NodePK> i = fatherPKs.iterator();
         // For each topic, get the path to it
         while (i.hasNext()) {
-          NodePK pk = (NodePK) i.next();
-          Collection path = getNodeBm().getAnotherPath(pk);
+          NodePK pk = i.next();
+          Collection<NodeDetail> path = getNodeBm().getAnotherPath(pk);
           // add this path
           pathList.add(path);
         }
@@ -1524,14 +1523,13 @@ public class KmeliaBmEJB implements SessionBean {
       pubPK = getPublicationBm().createPublication(pubDetail);
       pubDetail.getPK().setId(pubPK.getId());
 
+      // register the new publication as a new content to content manager
+      createSilverContent(pubDetail, pubDetail.getCreatorId());
       // add this publication to the current topic
       addPublicationToTopic(pubPK, fatherPK, true);
 
       // creates todos for publishers
       this.createTodosForPublication(pubDetail, true);
-
-      // register the new publication as a new content to content manager
-      createSilverContent(con, pubDetail, pubDetail.getCreatorId());
 
       // alert supervisors
       sendAlertToSupervisors(fatherPK, pubDetail);
@@ -1616,7 +1614,7 @@ public class KmeliaBmEJB implements SessionBean {
     String oldStatus = pubDetail.getStatus();
     String newStatus = oldStatus;
 
-    List fathers = (List) getPublicationFathers(pubDetail.getPK());
+    List<NodePK> fathers = (List<NodePK>) getPublicationFathers(pubDetail.getPK());
 
     if (pubDetail.isStatusMustBeChecked()) {
       if (PublicationDetail.DRAFT.equals(oldStatus)
@@ -1626,13 +1624,14 @@ public class KmeliaBmEJB implements SessionBean {
       } else {
         newStatus = PublicationDetail.TO_VALIDATE;
 
-        // String profile =
-        // KmeliaHelper.getProfile(getOrganizationController().getUserProfiles(pubDetail.getUpdaterId(),
-        // pubDetail.getPK().getInstanceId()));
-        String profile = getProfile(pubDetail.getUpdaterId(), (NodePK) fathers
-            .get(0));
-        if ("supervisor".equals(profile) || "publisher".equals(profile)
-            || "admin".equals(profile)) {
+        NodePK nodePK = new NodePK("unknown", pubDetail.getPK().getInstanceId());
+        if (fathers != null && fathers.size() > 0) {
+          nodePK = (NodePK) fathers.get(0);
+        }
+
+        String profile = getProfile(pubDetail.getUpdaterId(), nodePK);
+        if ("supervisor".equals(profile) || KmeliaHelper.ROLE_PUBLISHER.equals(profile) ||
+            KmeliaHelper.ROLE_ADMIN.equals(profile)) {
           newStatus = PublicationDetail.VALID;
           pubDetail.setValidatorId(pubDetail.getUpdaterId());
         }
@@ -1715,7 +1714,7 @@ public class KmeliaBmEJB implements SessionBean {
         + ", pubId = " + pubId);
 
     // paste versioning documents attached to publication
-    List documents = getVersioningBm().getDocuments(new ForeignPK(pubPKFrom));
+    List<Document> documents = getVersioningBm().getDocuments(new ForeignPK(pubPKFrom));
 
     SilverTrace.info("kmelia", "KmeliaBmEJB.pasteDocuments()",
         "root.MSG_GEN_PARAM_VALUE", documents.size() + " to paste");
@@ -1727,9 +1726,9 @@ public class KmeliaBmEJB implements SessionBean {
     ForeignPK pubPK = new ForeignPK(pubId, pubPKFrom.getInstanceId());
 
     // change the list of workers
-    ArrayList workers = new ArrayList();
+    List<Worker> workers = new ArrayList<Worker>();
     if (documents.size() > 0) {
-      List workingProfiles = new ArrayList();
+      List<String> workingProfiles = new ArrayList<String>();
       workingProfiles.add("writer");
       workingProfiles.add("publisher");
       workingProfiles.add("admin");
@@ -1748,7 +1747,7 @@ public class KmeliaBmEJB implements SessionBean {
 
     // paste each document
     Document document = null;
-    List versions = null;
+    List<DocumentVersion> versions = null;
     DocumentVersion version = null;
     for (int d = 0; d < documents.size(); d++) {
       document = (Document) documents.get(d);
@@ -1772,7 +1771,7 @@ public class KmeliaBmEJB implements SessionBean {
       document.setForeignKey(pubPK);
       document.setStatus(Document.STATUS_CHECKINED);
       document.setLastCheckOutDate(new Date());
-      document.setWorkList(workers);
+      document.setWorkList((ArrayList<Worker>) workers);
 
       if (pathTo == null) {
         pathTo = versioningUtil.createPath("useless",
@@ -1914,18 +1913,18 @@ public class KmeliaBmEJB implements SessionBean {
         CoordinatePK coordinatePK = new CoordinatePK("unknown", pubPK
             .getSpaceId(), pubPK.getComponentName());
         PublicationBm pubBm = getPublicationBm();
-        Collection fatherPKs = pubBm.getAllFatherPK(pubPK);
+        Collection<NodePK> fatherPKs = pubBm.getAllFatherPK(pubPK);
         // delete publication coordinates
-        Iterator it = fatherPKs.iterator();
-        ArrayList coordinates = new ArrayList();
+        Iterator<NodePK> it = fatherPKs.iterator();
+        List<String> coordinates = new ArrayList<String>();
         SilverTrace.info("kmelia", "KmeliaBmEJB.sendPublicationToBasket()",
             "root.MSG_GEN_PARAM_VALUE", "fatherPKs" + fatherPKs);
         while (it.hasNext()) {
-          String coordinateId = ((NodePK) it.next()).getId();
+          String coordinateId = (it.next()).getId();
           coordinates.add(coordinateId);
         }
         if (coordinates.size() > 0) {
-          getCoordinatesBm().deleteCoordinates(coordinatePK, coordinates);
+          getCoordinatesBm().deleteCoordinates(coordinatePK, (ArrayList<String>) coordinates);
         }
       }
 
@@ -1971,7 +1970,7 @@ public class KmeliaBmEJB implements SessionBean {
 
     if (!isACreation) {
       try {
-        Collection fathers = getPublicationBm().getAllFatherPK(pubPK);
+        Collection<NodePK> fathers = getPublicationBm().getAllFatherPK(pubPK);
         if (isPublicationInBasket(pubPK, fathers)) {
           getPublicationBm().removeFather(pubPK, new NodePK("1", fatherPK));
 
@@ -2024,16 +2023,16 @@ public class KmeliaBmEJB implements SessionBean {
     return isPublicationInBasket(pubPK, null);
   }
 
-  private boolean isPublicationInBasket(PublicationPK pubPK, Collection fathers)
+  private boolean isPublicationInBasket(PublicationPK pubPK, Collection<NodePK> fathers)
       throws RemoteException {
     if (fathers == null) {
       fathers = getPublicationBm().getAllFatherPK(pubPK);
     }
 
     if (fathers.size() == 1) {
-      Iterator iterator = fathers.iterator();
+      Iterator<NodePK> iterator = fathers.iterator();
       if (iterator.hasNext()) {
-        NodePK pk = (NodePK) iterator.next();
+        NodePK pk = iterator.next();
         if (pk.getId().equals("1")) {
           return true;
         }
@@ -2047,10 +2046,10 @@ public class KmeliaBmEJB implements SessionBean {
     // We alert subscribers only if publication is Valid
     if (PublicationDetail.VALID.equals(pubDetail.getStatus())) {
       // topic subscriptions
-      ArrayList fathers = (ArrayList) getPublicationFathers(pubDetail.getPK());
+      List<NodePK> fathers = (ArrayList<NodePK>) getPublicationFathers(pubDetail.getPK());
       if (fathers != null) {
         for (int i = 0; i < fathers.size(); i++) {
-          oneFather = (NodePK) fathers.get(i);
+          oneFather = fathers.get(i);
           sendSubscriptionsNotification(oneFather, pubDetail);
         }
       }
@@ -2059,14 +2058,14 @@ public class KmeliaBmEJB implements SessionBean {
       try {
         int silverObjectId = getSilverObjectId(pubDetail.getPK());
 
-        List positions = getPdcBm().getPositions(silverObjectId,
+        List<ClassifyPosition> positions = getPdcBm().getPositions(silverObjectId,
             pubDetail.getPK().getInstanceId());
 
         PdcSubscriptionUtil pdc = new PdcSubscriptionUtil();
 
         ClassifyPosition position = null;
         for (int p = 0; positions != null && p < positions.size(); p++) {
-          position = (ClassifyPosition) positions.get(p);
+          position = positions.get(p);
           pdc.checkSubscriptions(position.getValues(), pubDetail.getPK()
               .getInstanceId(), silverObjectId);
         }
@@ -2083,7 +2082,7 @@ public class KmeliaBmEJB implements SessionBean {
       PublicationDetail pubDetail) {
     // send email alerts
     try {
-      Collection path = null;
+      Collection<NodeDetail> path = null;
       if (!"kmax".equals(pubDetail.getInstanceId())) {
         try {
           path = getNodeBm().getPath(fatherPK);
@@ -2096,29 +2095,29 @@ public class KmeliaBmEJB implements SessionBean {
       }
 
       // build a Collection of nodePK which are the ascendants of fatherPK
-      ArrayList descendantPKs = new ArrayList();
+      List<NodePK> descendantPKs = new ArrayList<NodePK>();
       if (path != null) {
-        Iterator it = path.iterator();
+        Iterator<NodeDetail> it = path.iterator();
         NodePK nodePK = null;
         while (it.hasNext()) {
-          nodePK = ((NodeDetail) it.next()).getNodePK();
+          nodePK = (it.next()).getNodePK();
           descendantPKs.add(nodePK);
         }
       }
 
-      Collection subscriberIds = getSubscribeBm().getNodeSubscriberDetails(
+      Collection<String> subscriberIds = getSubscribeBm().getNodeSubscriberDetails(
           descendantPKs);
 
       OrganizationController orgaController = getOrganizationController();
       if (subscriberIds != null && subscriberIds.size() > 0) {
         // get only subscribers who have sufficient rights to read
         // pubDetail
-        Iterator it = subscriberIds.iterator();
+        Iterator<String> it = subscriberIds.iterator();
         String userId = null;
         NodeDetail node = getNodeHeader(fatherPK);
-        List newSubscribers = new ArrayList();
+        List<String> newSubscribers = new ArrayList<String>();
         while (it.hasNext()) {
-          userId = (String) it.next();
+          userId = it.next();
 
           if (orgaController.isComponentAvailable(fatherPK.getInstanceId(),
               userId)) {
@@ -2150,7 +2149,7 @@ public class KmeliaBmEJB implements SessionBean {
               NotificationParameters.NORMAL, subject, body);
           notifMetaData.addLanguage("en", subject_en, body_en);
 
-          notifMetaData.setUserRecipients(new Vector(newSubscribers));
+          notifMetaData.setUserRecipients(new Vector<String>(newSubscribers));
           notifMetaData.setLink(getPublicationUrl(pubDetail));
           notifMetaData.setComponentId(fatherPK.getInstanceId());
           notifyUsers(notifMetaData, pubDetail.getUpdaterId());
@@ -2194,7 +2193,7 @@ public class KmeliaBmEJB implements SessionBean {
     SilverTrace.info("kmelia", "KmeliaBmEJB.deletePublicationFromTopic()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      Collection pubFathers = getPublicationBm().getAllFatherPK(pubPK);
+      Collection<NodePK> pubFathers = getPublicationBm().getAllFatherPK(pubPK);
       if (pubFathers.size() >= 2) {
         getPublicationBm().removeFather(pubPK, fatherPK);
       } else {
@@ -2237,7 +2236,7 @@ public class KmeliaBmEJB implements SessionBean {
    * @see com.stratelia.webactiv.util.publication.info.model.ModelDetail
    * @since 1.0
    */
-  public Collection getAllModels() {
+  public Collection<ModelDetail> getAllModels() {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAllModels()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -2368,7 +2367,7 @@ public class KmeliaBmEJB implements SessionBean {
         "root.MSG_GEN_EXIT_METHOD");
   }
 
-  public void deleteInfoLinks(PublicationPK pubPK, List pubIds) {
+  public void deleteInfoLinks(PublicationPK pubPK, List<String> pubIds) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.deleteInfoLinks()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId() + ", pubIds = "
         + pubIds.toString());
@@ -2440,7 +2439,7 @@ public class KmeliaBmEJB implements SessionBean {
           .getCompletePublication(pubPK);
 
       // retrieve attachments
-      List attachments = (List) getAttachments(pubPK);
+      List<AttachmentDetail> attachments = (List<AttachmentDetail>) getAttachments(pubPK);
 
       // retrieve pdc positions of publication
       List pdcPositions = getPdcBm().getPositions(getSilverObjectId(pubPK),
@@ -2462,18 +2461,18 @@ public class KmeliaBmEJB implements SessionBean {
         "root.MSG_GEN_ENTER_METHOD");
     TopicDetail fatherDetail = null;
     // fetch one of the publication fathers
-    Collection fathers = getPublicationFathers(pubPK);
+    Collection<NodePK> fathers = getPublicationFathers(pubPK);
     NodePK fatherPK = new NodePK("0", pubPK); // By default --> Root
     if (fathers != null) {
-      Iterator it = fathers.iterator();
+      Iterator<NodePK> it = fathers.iterator();
       if (!isRightsOnTopicsUsed) {
         if (it.hasNext()) {
-          fatherPK = (NodePK) it.next();
+          fatherPK = it.next();
         }
       } else {
         NodeDetail allowedFather = null;
         while (allowedFather == null && it.hasNext()) {
-          fatherPK = (NodePK) it.next();
+          fatherPK = it.next();
           NodeDetail father = getNodeHeader(fatherPK);
           if (!father.haveRights()
               || getOrganizationController().isObjectAvailable(
@@ -2496,29 +2495,27 @@ public class KmeliaBmEJB implements SessionBean {
     return fatherDetail;
   }
 
-  public Collection getPublicationFathers(PublicationPK pubPK) {
+  public Collection<NodePK> getPublicationFathers(PublicationPK pubPK) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
-    Collection fathers = null;
     try {
-      fathers = getPublicationBm().getAllFatherPK(pubPK);
+      return getPublicationBm().getAllFatherPK(pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getPublicationFathers()",
           SilverpeasRuntimeException.ERROR,
           "kmelia.EX_IMPOSSIBLE_DOBTENIR_UN_PERE_DE_LA_PUBLICATION", e);
     }
-    return fathers;
   }
 
-  public Collection getPublicationDetails(Collection publicationIds,
+  public Collection<PublicationDetail> getPublicationDetails(Collection<String> publicationIds,
       String componentId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationDetails()",
         "root.MSG_GEN_ENTER_METHOD");
-    Collection publications = null;
-    ArrayList publicationPKs = new ArrayList();
-    Iterator iterator = publicationIds.iterator();
+    Collection<PublicationDetail> publications = null;
+    List<PublicationPK> publicationPKs = new ArrayList<PublicationPK>();
+    Iterator<String> iterator = publicationIds.iterator();
     while (iterator.hasNext()) {
-      PublicationPK pubPK = new PublicationPK((String) iterator.next(),
+      PublicationPK pubPK = new PublicationPK(iterator.next(),
           componentId);
       publicationPKs.add(pubPK);
     }
@@ -2542,18 +2539,34 @@ public class KmeliaBmEJB implements SessionBean {
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
    * @since 1.0
    */
-  public Collection getPublications(Collection publicationIds,
-      String componentId) {
-    SilverTrace.info("kmelia", "KmeliaBmEJB.getPublications()",
-        "root.MSG_GEN_ENTER_METHOD");
-    Collection publications = getPublicationDetails(publicationIds, componentId);
+  public Collection<UserPublication> getPublications(Collection<String> publicationIds,
+      String componentId, String userId,
+      boolean isRightsOnTopicsUsed) {
+    SilverTrace.info("kmelia", "KmeliaBmEJB.getPublications()", "root.MSG_GEN_ENTER_METHOD");
+
+    List<String> allowedPublicationIds = new ArrayList<String>(publicationIds);
+    if (isRightsOnTopicsUsed) {
+      KmeliaSecurity security = new KmeliaSecurity();
+      allowedPublicationIds.clear();
+
+      String pubId;
+      Iterator<String> it = publicationIds.iterator();
+      while (it.hasNext()) {
+        pubId = it.next();
+        if (security.isObjectAvailable(componentId, userId, pubId, "Publication")) {
+          allowedPublicationIds.add(pubId);
+        }
+      }
+    }
+    Collection<PublicationDetail> publications =
+        getPublicationDetails(allowedPublicationIds, componentId);
     return pubDetails2userPubs(publications);
   }
 
-  public List getPublicationsToValidate(String componentId) {
+  public List<UserPublication> getPublicationsToValidate(String componentId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsToValidate()",
         "root.MSG_GEN_ENTER_METHOD");
-    Collection publications = null;
+    Collection<PublicationDetail> publications = null;
     PublicationPK pubPK = new PublicationPK("useless", componentId);
     try {
       publications = getPublicationBm().getPublicationsByStatus(
@@ -2566,7 +2579,7 @@ public class KmeliaBmEJB implements SessionBean {
     }
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsToValidate()",
         "root.MSG_GEN_EXIT_METHOD");
-    return (List) pubDetails2userPubs(publications);
+    return (List<UserPublication>) pubDetails2userPubs(publications);
   }
 
   private void sendValidationNotification(NodePK fatherPK,
@@ -2658,7 +2671,7 @@ public class KmeliaBmEJB implements SessionBean {
     String htmlPath = "";
     if (nodePK != null) {
       try {
-        List path = (List) getNodeBm().getPath(nodePK);
+        List<NodeDetail> path = (List<NodeDetail>) getNodeBm().getPath(nodePK);
         if (path.size() > 0) {
           // remove root topic "Accueil"
           path.remove(path.size() - 1);
@@ -2678,12 +2691,12 @@ public class KmeliaBmEJB implements SessionBean {
 
   private String getSpacesPath(String componentId, String language) {
     String spacesPath = "";
-    List spaces = getOrganizationController().getSpacePathToComponent(
+    List<SpaceInst> spaces = getOrganizationController().getSpacePathToComponent(
         componentId);
-    Iterator iSpaces = spaces.iterator();
+    Iterator<SpaceInst> iSpaces = spaces.iterator();
     SpaceInst spaceInst = null;
     while (iSpaces.hasNext()) {
-      spaceInst = (SpaceInst) iSpaces.next();
+      spaceInst = iSpaces.next();
       spacesPath += spaceInst.getName(language);
       spacesPath += " > ";
     }
@@ -2714,7 +2727,7 @@ public class KmeliaBmEJB implements SessionBean {
             NotificationParameters.NORMAL, subject, body);
         notifMetaData.addLanguage("en", subject_en, body_en);
 
-        List roles = new ArrayList();
+        List<String> roles = new ArrayList<String>();
         roles.add("supervisor");
         String[] supervisors = getOrganizationController()
             .getUsersIdsByRoleNames(pubDetail.getPK().getInstanceId(), roles);
@@ -2752,7 +2765,7 @@ public class KmeliaBmEJB implements SessionBean {
     return message.getString("kmelia.SupervisorNotifSubject");
   }
 
-  public List getAllValidators(PublicationPK pubPK, int validationType)
+  public List<String> getAllValidators(PublicationPK pubPK, int validationType)
       throws RemoteException {
     SilverTrace.debug("kmelia", "KmeliaBmEJB.getAllValidators",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId()
@@ -2770,7 +2783,7 @@ public class KmeliaBmEJB implements SessionBean {
         "root.MSG_GEN_PARAM_VALUE", "validationType = " + validationType);
 
     // get all users who have to validate
-    List allValidators = new ArrayList();
+    List<String> allValidators = new ArrayList<String>();
     if (validationType == KmeliaHelper.VALIDATION_TARGET_N
         || validationType == KmeliaHelper.VALIDATION_TARGET_1) {
       PublicationDetail publi = getPublicationBm().getDetail(pubPK);
@@ -2785,7 +2798,7 @@ public class KmeliaBmEJB implements SessionBean {
     if (allValidators.isEmpty()) {
       // It's not a targeted validation or it is but no validators has
       // been selected !
-      List roles = new ArrayList();
+      List<String> roles = new ArrayList<String>();
       roles.add("admin");
       roles.add("publisher");
 
@@ -2794,7 +2807,7 @@ public class KmeliaBmEJB implements SessionBean {
             .getUsersIdsByRoleNames(pubPK.getInstanceId(), roles)));
       } else {
         // get admin and publishers of all nodes where publication is
-        List nodePKs = (List) getPublicationFathers(pubPK);
+        List<NodePK> nodePKs = (List<NodePK>) getPublicationFathers(pubPK);
         NodePK nodePK = null;
         NodeDetail node = null;
         boolean oneNodeIsPublic = false;
@@ -2827,22 +2840,22 @@ public class KmeliaBmEJB implements SessionBean {
 
   private boolean isValidationComplete(PublicationPK pubPK, int validationType)
       throws RemoteException {
-    List steps = getPublicationBm().getValidationSteps(pubPK);
+    List<ValidationStep> steps = getPublicationBm().getValidationSteps(pubPK);
 
     // get users who have already validate
-    List stepUserIds = new ArrayList();
+    List<String> stepUserIds = new ArrayList<String>();
     for (int s = 0; s < steps.size(); s++) {
-      stepUserIds.add(((ValidationStep) steps.get(s)).getUserId());
+      stepUserIds.add((steps.get(s)).getUserId());
     }
 
     // get all users who have to validate
-    List allValidators = getAllValidators(pubPK, validationType);
+    List<String> allValidators = getAllValidators(pubPK, validationType);
 
     // check if all users have validate
     boolean validationOK = true;
     String validatorId = null;
     for (int i = 0; validationOK && i < allValidators.size(); i++) {
-      validatorId = (String) allValidators.get(i);
+      validatorId = allValidators.get(i);
       validationOK = stepUserIds.contains(validatorId);
     }
 
@@ -3076,14 +3089,14 @@ public class KmeliaBmEJB implements SessionBean {
 
           if (memInfoId != null && !"0".equals(memInfoId)) {
             // il existait déjà un contenu
-            set.merge(cloneId, pubPK.getId());
+            set.merge(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId());
           } else {
             // il n'y avait pas encore de contenu
             PublicationTemplateManager.addDynamicPublicationTemplate(tempPK
                 .getInstanceId()
                 + ":" + xmlFormShortName, xmlFormShortName + ".xml");
 
-            set.clone(cloneId, pubPK.getId());
+            set.clone(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId());
           }
         }
       }
@@ -3151,10 +3164,10 @@ public class KmeliaBmEJB implements SessionBean {
         getPublicationBm().setDetail(currentPubDetail);
 
         // we have to alert publication's last updater
-        ArrayList fathers = (ArrayList) getPublicationFathers(pubPK);
+        List<NodePK> fathers = (List<NodePK>) getPublicationFathers(pubPK);
         NodePK oneFather = null;
         if (fathers != null && fathers.size() > 0) {
-          oneFather = (NodePK) fathers.get(0);
+          oneFather = fathers.get(0);
         }
         sendValidationNotification(oneFather, clone, refusalMotive, userId);
       } else {
@@ -3172,10 +3185,10 @@ public class KmeliaBmEJB implements SessionBean {
         updateSilverContentVisibility(currentPubDetail);
 
         // we have to alert publication's creator
-        ArrayList fathers = (ArrayList) getPublicationFathers(pubPK);
+        List<NodePK> fathers = (List<NodePK>) getPublicationFathers(pubPK);
         NodePK oneFather = null;
         if (fathers != null && fathers.size() > 0) {
-          oneFather = (NodePK) fathers.get(0);
+          oneFather = fathers.get(0);
         }
         sendValidationNotification(oneFather, currentPubDetail, refusalMotive,
             userId);
@@ -3482,7 +3495,7 @@ public class KmeliaBmEJB implements SessionBean {
   }
 
   private void indexPublications(PublicationPK pubPK) {
-    Collection pubs = null;
+    Collection<PublicationDetail> pubs = null;
     try {
       pubs = getPublicationBm().getAllPublications(pubPK);
     } catch (Exception e) {
@@ -3492,24 +3505,24 @@ public class KmeliaBmEJB implements SessionBean {
     }
 
     if (pubs != null) {
-      Iterator it = pubs.iterator();
+      Iterator<PublicationDetail> it = pubs.iterator();
       PublicationDetail pub = null;
       while (it.hasNext()) {
-        pub = (PublicationDetail) it.next();
+        pub = it.next();
 
         try {
           pubPK = pub.getPK();
-          List pubFathers = null;
+          List<NodePK> pubFathers = null;
           // index only valid publications
           if (pub.getStatus() != null
               && pub.getStatus().equalsIgnoreCase(PublicationDetail.VALID)) {
-            pubFathers = (List) getPublicationBm().getAllFatherPK(pubPK);
+            pubFathers = (List<NodePK>) getPublicationBm().getAllFatherPK(pubPK);
             // index only valid publications which are not only in
             // dz or basket
             if (pubFathers.size() >= 2) {
               indexPublication(pubPK);
             } else if (pubFathers.size() == 1) {
-              NodePK nodePK = (NodePK) pubFathers.get(0);
+              NodePK nodePK = pubFathers.get(0);
               // index the valid publication if it is not in the
               // basket
               if (!nodePK.getId().equals("1")) {
@@ -3538,14 +3551,14 @@ public class KmeliaBmEJB implements SessionBean {
   }
 
   private void indexTopics(NodePK nodePK) {
-    Collection nodes = null;
+    Collection<NodeDetail> nodes = null;
     try {
       nodes = getNodeBm().getAllNodes(nodePK);
       if (nodes != null) {
-        Iterator it = nodes.iterator();
+        Iterator<NodeDetail> it = nodes.iterator();
         NodeDetail node = null;
         while (it.hasNext()) {
-          node = (NodeDetail) it.next();
+          node = it.next();
           if (!node.getNodePK().getId().equals("0")
               && !node.getNodePK().getId().equals("1")
               && !node.getNodePK().getId().equals("2")) {
@@ -3576,7 +3589,7 @@ public class KmeliaBmEJB implements SessionBean {
     }
     if (PublicationDetail.TO_VALIDATE.equals(pubDetail.getStatus())
         || PublicationDetail.TO_VALIDATE.equals(pubDetail.getCloneStatus())) {
-      List validators = getAllValidators(pubDetail.getPK(), -1);
+      List<String> validators = getAllValidators(pubDetail.getPK(), -1);
       String[] users = (String[]) validators.toArray(new String[validators
           .size()]);
 
@@ -3600,7 +3613,7 @@ public class KmeliaBmEJB implements SessionBean {
     todo.setName(message.getString("ToValidateShort") + " : "
         + pubDetail.getName());
 
-    Vector attendees = new Vector();
+    Vector<Attendee> attendees = new Vector<Attendee>();
     for (int i = 0; i < users.length; i++) {
       if (users[i] != null) {
         attendees.add(new Attendee(users[i]));
@@ -3762,7 +3775,7 @@ public class KmeliaBmEJB implements SessionBean {
           pubPK.getId(), pubPK.getInstanceId());
       if (silverObjectId == -1) {
         pubDetail = getPublicationDetail(pubPK);
-        silverObjectId = createSilverContent(null, pubDetail, pubDetail
+        silverObjectId = createSilverContent(pubDetail, pubDetail
             .getCreatorId());
       }
     } catch (Exception e) {
@@ -3773,17 +3786,18 @@ public class KmeliaBmEJB implements SessionBean {
     return silverObjectId;
   }
 
-  private int createSilverContent(Connection con, PublicationDetail pubDetail,
-      String creatorId) {
-    SilverTrace.info("kmelia", "KmeliaBmEJB.createSilverContent()",
-        "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubDetail.getPK().getId());
+  private int createSilverContent(PublicationDetail pubDetail, String creatorId) {
+    SilverTrace.info("kmelia", "KmeliaBmEJB.createSilverContent()", "root.MSG_GEN_ENTER_METHOD",
+        "pubId = " + pubDetail.getPK().getId());
+    Connection con = null;
     try {
-      return getKmeliaContentManager().createSilverContent(con, pubDetail,
-          creatorId);
+      con = getConnection();
+      return getKmeliaContentManager().createSilverContent(con, pubDetail, creatorId);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.createSilverContent()",
-          SilverpeasRuntimeException.ERROR,
-          "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+          SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+    } finally {
+      freeConnection(con);
     }
   }
 
@@ -3842,7 +3856,7 @@ public class KmeliaBmEJB implements SessionBean {
   /**************************************************************************************/
   /* Interface - Fichiers joints */
   /**************************************************************************************/
-  public Collection getAttachments(PublicationPK pubPK) {
+  public Collection<AttachmentDetail> getAttachments(PublicationPK pubPK) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getAttachments()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId());
     String ctx = "Images";
@@ -3853,7 +3867,7 @@ public class KmeliaBmEJB implements SessionBean {
     Connection con = null;
     try {
       con = getConnection();
-      Collection attachmentList = AttachmentController
+      Collection<AttachmentDetail> attachmentList = AttachmentController
           .searchAttachmentByPKAndContext(foreignKey, ctx, con);
       SilverTrace.info("kmelia", "KmeliaBmEJB.getAttachments()",
           "root.MSG_GEN_PARAM_VALUE", "attachmentList.size() = "
@@ -4057,11 +4071,10 @@ public class KmeliaBmEJB implements SessionBean {
     }
   }
 
-  public Collection getModelUsed(String instanceId) {
+  public Collection<String> getModelUsed(String instanceId) {
     Connection con = getConnection();
-    Collection result = null;
     try {
-      result = ModelDAO.getModelUsed(con, instanceId);
+      return ModelDAO.getModelUsed(con, instanceId);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getModelUsed()",
           SilverpeasRuntimeException.ERROR,
@@ -4070,7 +4083,6 @@ public class KmeliaBmEJB implements SessionBean {
       // fermer la connexion
       freeConnection(con);
     }
-    return result;
   }
 
   /**************************************************************************************/
@@ -4080,7 +4092,7 @@ public class KmeliaBmEJB implements SessionBean {
   /**************************************************************************************/
   /* Kmax - Axis */
   /**************************************************************************************/
-  public List getAxis(String componentId) {
+  public List<NodeDetail> getAxis(String componentId) {
     ResourceLocator nodeSettings = new ResourceLocator(
         "com.stratelia.webactiv.util.node.nodeSettings", "");
     String sortField = nodeSettings.getString("sortField", "nodepath");
@@ -4089,12 +4101,12 @@ public class KmeliaBmEJB implements SessionBean {
         "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId
         + " sortField=" + sortField + " sortOrder=" + sortOrder);
 
-    List axis = new ArrayList();
+    List<NodeDetail> axis = new ArrayList<NodeDetail>();
     try {
-      List headers = getAxisHeaders(componentId);
+      List<NodeDetail> headers = getAxisHeaders(componentId);
       NodeDetail header = null;
       for (int h = 0; h < headers.size(); h++) {
-        header = (NodeDetail) headers.get(h);
+        header = headers.get(h);
         // Do not get hidden nodes (Basket and unclassified)
         if (!NodeDetail.STATUS_INVISIBLE.equals(header.getStatus())) // get
         // content
@@ -4114,8 +4126,8 @@ public class KmeliaBmEJB implements SessionBean {
     return axis;
   }
 
-  public List getAxisHeaders(String componentId) {
-    List axisHeaders = null;
+  public List<NodeDetail> getAxisHeaders(String componentId) {
+    List<NodeDetail> axisHeaders = null;
     try {
       axisHeaders = getNodeBm().getHeadersByLevel(
           new NodePK("useless", componentId), 2);
@@ -4168,18 +4180,18 @@ public class KmeliaBmEJB implements SessionBean {
     PublicationPK pubPK = new PublicationPK("useless");
 
     CoordinatePK coordinatePK = new CoordinatePK("useless", pkToDelete);
-    ArrayList fatherIds = new ArrayList();
-    Collection coordinateIds = null;
+    List<String> fatherIds = new ArrayList<String>();
+    Collection<String> coordinateIds = null;
     // Delete the axis
     try {
       // delete publicationFathers
       if (getAxisHeaders(componentId).size() == 1) {
         coordinateIds = getCoordinatesBm().getCoordinateIdsByNodeId(
             coordinatePK, axisId);
-        Iterator coordinateIdsIt = coordinateIds.iterator();
+        Iterator<String> coordinateIdsIt = coordinateIds.iterator();
         String coordinateId = "";
         while (coordinateIdsIt.hasNext()) {
-          coordinateId = (String) coordinateIdsIt.next();
+          coordinateId = coordinateIdsIt.next();
           fatherIds.add(coordinateId);
         }
         if (fatherIds.size() > 0) {
@@ -4187,12 +4199,12 @@ public class KmeliaBmEJB implements SessionBean {
         }
       }
       // delete coordinate which contains subComponents of this component
-      Collection subComponents = getNodeBm().getDescendantDetails(pkToDelete);
-      Iterator it = subComponents.iterator();
-      ArrayList points = new ArrayList();
+      Collection<NodeDetail> subComponents = getNodeBm().getDescendantDetails(pkToDelete);
+      Iterator<NodeDetail> it = subComponents.iterator();
+      List<NodePK> points = new ArrayList<NodePK>();
       points.add(pkToDelete);
       while (it.hasNext()) {
-        points.add(((NodeDetail) it.next()).getNodePK());
+        points.add((it.next()).getNodePK());
       }
       removeCoordinatesByPoints(points, componentId);
       // delete axis
@@ -4204,19 +4216,19 @@ public class KmeliaBmEJB implements SessionBean {
     }
   }
 
-  private void removeCoordinatesByPoints(ArrayList nodePKs, String componentId) {
-    Iterator it = nodePKs.iterator();
-    ArrayList coordinatePoints = new ArrayList();
+  private void removeCoordinatesByPoints(List<NodePK> nodePKs, String componentId) {
+    Iterator<NodePK> it = nodePKs.iterator();
+    List<String> coordinatePoints = new ArrayList<String>();
     String nodeId = "";
     while (it.hasNext()) {
-      nodeId = ((NodePK) it.next()).getId();
+      nodeId = (it.next()).getId();
       coordinatePoints.add(nodeId);
     }
     CoordinatePK coordinatePK = new CoordinatePK("useless", "useless",
         componentId);
     try {
       getCoordinatesBm().deleteCoordinatesByPoints(coordinatePK,
-          coordinatePoints);
+          (ArrayList<String>) coordinatePoints);
     } catch (Exception e) {
       throw new KmaxRuntimeException("KmeliaBmEJB.removeCoordinatesByPoints()",
           SilverpeasRuntimeException.ERROR,
@@ -4282,12 +4294,12 @@ public class KmeliaBmEJB implements SessionBean {
     // Delete the axis
     try {
       // delete coordinate which contains subPositions of this position
-      Collection subComponents = getNodeBm().getDescendantDetails(pkToDelete);
-      Iterator it = subComponents.iterator();
-      ArrayList points = new ArrayList();
+      Collection<NodeDetail> subComponents = getNodeBm().getDescendantDetails(pkToDelete);
+      Iterator<NodeDetail> it = subComponents.iterator();
+      List<NodePK> points = new ArrayList<NodePK>();
       points.add(pkToDelete);
       while (it.hasNext()) {
-        points.add(((NodeDetail) it.next()).getNodePK());
+        points.add((it.next()).getNodePK());
       }
       removeCoordinatesByPoints(points, componentId);
       // delete component
@@ -4299,13 +4311,13 @@ public class KmeliaBmEJB implements SessionBean {
     }
   }
 
-  public Collection getPath(String id, String componentId) {
-    Collection newPath = new ArrayList();
+  public Collection<NodeDetail> getPath(String id, String componentId) {
+    Collection<NodeDetail> newPath = new ArrayList<NodeDetail>();
     NodePK nodePK = new NodePK(id, componentId);
     // compute path from a to z
     NodeBm nodeBm = getNodeBm();
     try {
-      List pathInReverse = (List) nodeBm.getPath(nodePK);
+      List<NodeDetail> pathInReverse = (List<NodeDetail>) nodeBm.getPath(nodePK);
       // reverse the path from root to leaf
       for (int i = pathInReverse.size() - 1; i >= 0; i--) {
         newPath.add(pathInReverse.get(i));
@@ -4318,12 +4330,12 @@ public class KmeliaBmEJB implements SessionBean {
     return newPath;
   }
 
-  public Collection getKmaxPathList(PublicationPK pubPK) {
+  public Collection<Coordinate> getKmaxPathList(PublicationPK pubPK) {
     SilverTrace.info("kmax", "KmeliaBmEJB.getKmaxPathList()",
         "root.MSG_GEN_ENTER_METHOD");
-    Collection coordinates = null;
+    Collection<Coordinate> coordinates = null;
     try {
-      coordinates = (ArrayList) getPublicationCoordinates(pubPK.getId(), pubPK
+      coordinates = getPublicationCoordinates(pubPK.getId(), pubPK
           .getInstanceId());
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getKmaxPathList()",
@@ -4336,35 +4348,35 @@ public class KmeliaBmEJB implements SessionBean {
   /**************************************************************************************/
   /* Kmax - Search */
   /**************************************************************************************/
-  public Collection search(ArrayList combination, String componentId) {
-    Collection publications = searchPublications(combination, componentId);
+  public Collection<UserPublication> search(List<String> combination, String componentId) {
+    Collection<PublicationDetail> publications = searchPublications(combination, componentId);
     if (publications == null) {
-      return new ArrayList();
+      return new ArrayList<UserPublication>();
     } else {
       return pubDetails2userPubs(publications);
     }
   }
 
-  public Collection search(ArrayList combination, int nbDays, String componentId) {
-    Collection publications = searchPublications(combination, componentId);
+  public Collection<UserPublication> search(List<String> combination, int nbDays, String componentId) {
+    Collection<PublicationDetail> publications = searchPublications(combination, componentId);
     SilverTrace.info("kmax", "KmeliaBmEjb.search()",
         "root.MSG_GEN_PARAM_VALUE", "publications = " + publications);
     return pubDetails2userPubs(filterPublicationsByBeginDate(publications,
         nbDays));
   }
 
-  private Collection searchPublications(ArrayList combination,
+  private Collection<PublicationDetail> searchPublications(List<String> combination,
       String componentId) {
     PublicationPK pk = new PublicationPK("useless", componentId);
     CoordinatePK coordinatePK = new CoordinatePK("unknown", pk);
-    Collection publications = null;
-    Collection coordinates = null;
+    Collection<PublicationDetail> publications = null;
+    Collection<NodePK> coordinates = null;
     try {
       // Remove node "Toutes catégories" (level == 2) from combination
       int nodeLevel = 0;
       String axisValue = "";
       for (int i = 0; i < combination.size(); i++) {
-        axisValue = (String) combination.get(i);
+        axisValue = combination.get(i);
         StringTokenizer st = new StringTokenizer(axisValue, "/");
         nodeLevel = st.countTokens();
         // if node is level 2, it represents "Toutes Catégories"
@@ -4382,11 +4394,11 @@ public class KmeliaBmEJB implements SessionBean {
       } else {
         if (combination != null && combination.size() > 0) {
           coordinates = getCoordinatesBm().getCoordinatesByFatherPaths(
-              combination, coordinatePK);
+              (ArrayList<String>) combination, coordinatePK);
         }
         if (coordinates.size() > 0) {
           publications = getPublicationBm().getDetailsByFatherIds(
-              (ArrayList) coordinates, pk, false);
+              (ArrayList<NodePK>) coordinates, pk, false);
         }
       }
     } catch (Exception e) {
@@ -4397,9 +4409,9 @@ public class KmeliaBmEJB implements SessionBean {
     return publications;
   }
 
-  public Collection getUnbalancedPublications(String componentId) {
+  public Collection<UserPublication> getUnbalancedPublications(String componentId) {
     PublicationPK pk = new PublicationPK("useless", componentId);
-    Collection publications = null;
+    Collection<PublicationDetail> publications = null;
     try {
       publications = getPublicationBm().getOrphanPublications(pk);
     } catch (Exception e) {
@@ -4411,9 +4423,10 @@ public class KmeliaBmEJB implements SessionBean {
     return pubDetails2userPubs(publications);
   }
 
-  private Collection filterPublicationsByBeginDate(Collection publications,
+  private Collection<PublicationDetail> filterPublicationsByBeginDate(
+      Collection<PublicationDetail> publications,
       int nbDays) {
-    ArrayList pubOK = new ArrayList();
+    List<PublicationDetail> pubOK = new ArrayList<PublicationDetail>();
     if (publications != null) {
       Calendar rightNow = Calendar.getInstance();
       if (nbDays == 0) {
@@ -4421,11 +4434,11 @@ public class KmeliaBmEJB implements SessionBean {
       }
       rightNow.add(Calendar.DATE, 0 - nbDays);
       Date day = rightNow.getTime();
-      Iterator it = publications.iterator();
+      Iterator<PublicationDetail> it = publications.iterator();
       PublicationDetail pub = null;
       Date dateToCompare = null;
       while (it.hasNext()) {
-        pub = (PublicationDetail) it.next();
+        pub = it.next();
         if (pub.getBeginDate() != null) {
           dateToCompare = pub.getBeginDate();
         } else {
@@ -4449,12 +4462,12 @@ public class KmeliaBmEJB implements SessionBean {
   }
 
   private void indexAxis(String componentId) {
-    Collection nodes = null;
+    Collection<NodeDetail> nodes = null;
     NodePK nodePK = new NodePK("useless", componentId);
     try {
       nodes = getNodeBm().getAllNodes(nodePK);
       if (nodes != null) {
-        Iterator it = nodes.iterator();
+        Iterator<NodeDetail> it = nodes.iterator();
         NodeDetail node = null;
         while (it.hasNext()) {
           node = (NodeDetail) it.next();
@@ -4503,7 +4516,7 @@ public class KmeliaBmEJB implements SessionBean {
     return userCompletePublication;
   }
 
-  public Collection getPublicationCoordinates(String pubId, String componentId) {
+  public Collection<Coordinate> getPublicationCoordinates(String pubId, String componentId) {
     SilverTrace.info("kmax", "KmeliaBmEjb.getPublicationCoordinates()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -4514,7 +4527,7 @@ public class KmeliaBmEJB implements SessionBean {
     }
   }
 
-  public void addPublicationToCombination(String pubId, ArrayList combination,
+  public void addPublicationToCombination(String pubId, List<String> combination,
       String componentId) {
     SilverTrace.info("kmax", "KmeliaBmEJB.addPublicationToCombination()",
         "root.MSG_GEN_PARAM_VALUE", "combination =" + combination.toString());
@@ -4522,7 +4535,7 @@ public class KmeliaBmEJB implements SessionBean {
     CoordinatePK coordinatePK = new CoordinatePK("unknown", pubPK);
     try {
       NodeBm nodeBm = getNodeBm();
-      Collection coordinates = getPublicationCoordinates(pubId, componentId);
+      Collection<Coordinate> coordinates = getPublicationCoordinates(pubId, componentId);
 
       if (!checkCombination(coordinates, combination)) {
         return;
@@ -4530,24 +4543,24 @@ public class KmeliaBmEJB implements SessionBean {
 
       NodeDetail nodeDetail = null;
       // enrich combination by get ancestors
-      Iterator it = combination.iterator();
-      ArrayList allnodes = new ArrayList();
+      Iterator<String> it = combination.iterator();
+      List<CoordinatePoint> allnodes = new ArrayList<CoordinatePoint>();
       CoordinatePoint point = null;
       String anscestorId = "";
       int nodeLevel;
       int i = 1;
       while (it.hasNext()) {
-        String nodeId = (String) it.next();
+        String nodeId = it.next();
         NodePK nodePK = new NodePK(nodeId, componentId);
         SilverTrace.info("kmax", "KmeliaBmEjb.addPublicationToCombination()",
             "root.MSG_GEN_PARAM_VALUE", "avant nodeBm.getPath() ! i = " + i);
-        Collection path = nodeBm.getPath(nodePK);
+        Collection<NodeDetail> path = nodeBm.getPath(nodePK);
         SilverTrace.info("kmax", "KmeliaBmEjb.addPublicationToCombination()",
             "root.MSG_GEN_PARAM_VALUE", "path for nodeId " + nodeId + " = "
             + path.toString());
-        Iterator pathIt = path.iterator();
+        Iterator<NodeDetail> pathIt = path.iterator();
         while (pathIt.hasNext()) {
-          nodeDetail = (NodeDetail) pathIt.next();
+          nodeDetail = pathIt.next();
           anscestorId = nodeDetail.getNodePK().getId();
           nodeLevel = nodeDetail.getLevel();
           if (!anscestorId.equals("0")) {
@@ -4564,7 +4577,7 @@ public class KmeliaBmEJB implements SessionBean {
         i++;
       }
       int coordinateId = getCoordinatesBm().addCoordinate(coordinatePK,
-          allnodes);
+          (ArrayList<CoordinatePoint>) allnodes);
       getPublicationBm().addFather(pubPK,
           new NodePK(new Integer(coordinateId).toString(), pubPK));
     } catch (Exception e) {
@@ -4575,11 +4588,11 @@ public class KmeliaBmEJB implements SessionBean {
     }
   }
 
-  protected boolean checkCombination(Collection coordinates,
-      ArrayList combination) {
-    for (Iterator iter = coordinates.iterator(); iter.hasNext();) {
-      Coordinate coordinate = (Coordinate) iter.next();
-      Collection points = coordinate.getCoordinatePoints();
+  protected boolean checkCombination(Collection<Coordinate> coordinates,
+      List<String> combination) {
+    for (Iterator<Coordinate> iter = coordinates.iterator(); iter.hasNext();) {
+      Coordinate coordinate = iter.next();
+      Collection<CoordinatePoint> points = coordinate.getCoordinatePoints();
 
       if (points.size() <= 0) {
         continue;
@@ -4587,8 +4600,8 @@ public class KmeliaBmEJB implements SessionBean {
 
       boolean matchFound = false;
 
-      for (Iterator pIter = points.iterator(); pIter.hasNext();) {
-        CoordinatePoint point = (CoordinatePoint) pIter.next();
+      for (Iterator<CoordinatePoint> pIter = points.iterator(); pIter.hasNext();) {
+        CoordinatePoint point = pIter.next();
         if (!checkPoint(point, combination)) {
           matchFound = false;
           break;
@@ -4603,9 +4616,9 @@ public class KmeliaBmEJB implements SessionBean {
     return true;
   }
 
-  protected boolean checkPoint(CoordinatePoint point, ArrayList combination) {
+  protected boolean checkPoint(CoordinatePoint point, List<String> combination) {
     for (int i = 0; i < combination.size(); i++) {
-      String intVal = (String) combination.get(i);
+      String intVal = combination.get(i);
       if (Integer.parseInt(intVal) == point.getNodeId()) {
         return true;
       }
@@ -4635,9 +4648,9 @@ public class KmeliaBmEJB implements SessionBean {
       // remove publication fathers
       getPublicationBm().removeFather(pubPK, fatherPK);
       // remove coordinate
-      ArrayList coordinateIds = new ArrayList();
+      List<String> coordinateIds = new ArrayList<String>();
       coordinateIds.add(combinationId);
-      getCoordinatesBm().deleteCoordinates(coordinatePK, coordinateIds);
+      getCoordinatesBm().deleteCoordinates(coordinatePK, (ArrayList) coordinateIds);
     } catch (Exception e) {
       throw new KmaxRuntimeException(
           "KmeliaBmEjb.deletePublicationFromCombination()",
@@ -4670,7 +4683,7 @@ public class KmeliaBmEJB implements SessionBean {
       this.createTodosForPublication(pubDetail, true);
 
       // register the new publication as a new content to content manager
-      createSilverContent(con, pubDetail, pubDetail.getCreatorId());
+      createSilverContent(pubDetail, pubDetail.getCreatorId());
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.createKmaxPublication()",
           SilverpeasRuntimeException.ERROR,
@@ -4686,7 +4699,7 @@ public class KmeliaBmEJB implements SessionBean {
   /************************************************************************************************/
   /** Alias management */
   /************************************************************************************************/
-  public Collection getAlias(PublicationPK pubPK) {
+  public Collection<Alias> getAlias(PublicationPK pubPK) {
     try {
       return getPublicationBm().getAlias(pubPK);
     } catch (Exception e) {
@@ -4696,17 +4709,17 @@ public class KmeliaBmEJB implements SessionBean {
     }
   }
 
-  public void setAlias(PublicationPK pubPK, List alias) {
-    List oldAliases = (List) getAlias(pubPK);
+  public void setAlias(PublicationPK pubPK, List<Alias> alias) {
+    List<Alias> oldAliases = (List<Alias>) getAlias(pubPK);
 
-    List newAliases = new ArrayList();
-    List remAliases = new ArrayList();
-    List stayAliases = new ArrayList();
+    List<Alias> newAliases = new ArrayList<Alias>();
+    List<Alias> remAliases = new ArrayList<Alias>();
+    List<Alias> stayAliases = new ArrayList<Alias>();
 
     // Compute the remove list
     Alias a = null;
     for (int nI = 0; nI < oldAliases.size(); nI++) {
-      a = (Alias) oldAliases.get(nI);
+      a = oldAliases.get(nI);
       if (alias.indexOf(a) == -1) {
         remAliases.add(a);
       }
@@ -4727,9 +4740,17 @@ public class KmeliaBmEJB implements SessionBean {
 
       getPublicationBm().removeAlias(pubPK, remAliases);
     } catch (RemoteException e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.setAlias()",
-          SilverpeasRuntimeException.ERROR,
+      throw new KmeliaRuntimeException("KmeliaBmEJB.setAlias()", SilverpeasRuntimeException.ERROR,
           "kmelia.EX_IMPOSSIBLE_DENREGISTRER_LES_ALIAS_DE_PUBLICATION", e);
+    }
+
+    // Send subscriptions to aliases subscribers
+    PublicationDetail pubDetail = getPublicationDetail(pubPK);
+    for (int i = 0; i < newAliases.size(); i++) {
+      a = (Alias) newAliases.get(i);
+      pubDetail.getPK().setComponentName(a.getInstanceId()); // Change the instanceId to make the
+      // right URL
+      sendSubscriptionsNotification(new NodePK(a.getId(), a.getInstanceId()), pubDetail);
     }
   }
 
@@ -4793,10 +4814,6 @@ public class KmeliaBmEJB implements SessionBean {
               newVersion);
           document.setPk(documentPK);
 
-          // DocumentVersion version =
-          // getVersioningBm().addDocumentVersion(document,
-          // newVersion);
-
           if (newVersion.getType() == DocumentVersion.TYPE_PUBLIC_VERSION) {
             CallBackManager.invoke(CallBackManager.ACTION_VERSIONING_UPDATE,
                 newVersion.getAuthorId(), document.getForeignKey()
@@ -4856,7 +4873,8 @@ public class KmeliaBmEJB implements SessionBean {
    * @throws RemoteException
    */
   public boolean importPublication(String componentId, String topicId,
-      String spaceId, String userId, Map publiParams, Map formParams,
+      String spaceId, String userId, Map<String, String> publiParams,
+      Map<String, String> formParams,
       String language, String xmlFormName, String discrimatingParameterName,
       String userProfile) throws RemoteException {
     PublicationImport publicationImport = new PublicationImport(this,
@@ -4866,8 +4884,8 @@ public class KmeliaBmEJB implements SessionBean {
   }
 
   public void importPublications(String componentId, String topicId,
-      String spaceId, String userId, ArrayList publiParamsList,
-      ArrayList formParamsList, String language, String xmlFormName,
+      String spaceId, String userId, List<Map<String, String>> publiParamsList,
+      List<Map<String, String>> formParamsList, String language, String xmlFormName,
       String discrimatingParameterName, String userProfile)
       throws RemoteException {
     PublicationImport publicationImport = new PublicationImport(this,
@@ -4933,7 +4951,7 @@ public class KmeliaBmEJB implements SessionBean {
     AttachmentController.deleteAttachment(attachmentDetail);
   }
 
-  public Collection getPublicationsSpecificValues(String componentId,
+  public Collection<String> getPublicationsSpecificValues(String componentId,
       String xmlFormName, String fieldName) throws RemoteException {
     PublicationImport publicationImport = new PublicationImport(this,
         componentId);

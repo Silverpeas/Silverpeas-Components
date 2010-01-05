@@ -38,6 +38,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
  */
 public class KmeliaHelper implements Serializable {
 
+  private static final long serialVersionUID = 1L;
   public static final int PUBLICATION_HEADER = 0;
   public static final int PUBLICATION_CONTENT = 1;
 
@@ -45,6 +46,10 @@ public class KmeliaHelper implements Serializable {
   public static final int VALIDATION_TARGET_1 = 1;
   public static final int VALIDATION_TARGET_N = 2;
   public static final int VALIDATION_COLLEGIATE = 3;
+  public static final String ROLE_ADMIN = "admin";
+  public static final String ROLE_PUBLISHER = "publisher";
+  public static final String ROLE_WRITER = "writer";
+  public static final String ROLE_READER = "user";
 
   public KmeliaHelper() {
   }

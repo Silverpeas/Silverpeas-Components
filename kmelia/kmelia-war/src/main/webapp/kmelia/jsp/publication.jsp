@@ -374,6 +374,10 @@ function zipPublication()
         	operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers()");
         }
         operationPane.addOperation(exportSrc, resources.getString("kmelia.DownloadPublication"), "javaScript:zipPublication()");
+        if (!toolboxMode)
+   		{
+   			operationPane.addOperation(pdfSrc, resources.getString("GML.generatePDF"), "javascript:generatePdf()");
+   		}
 		operationPane.addLine();
 		if (isOwner) {
 			if (!"supervisor".equals(profile))
@@ -382,31 +386,31 @@ function zipPublication()
 				{
                 	operationPane.addOperation(deletePubliSrc, resources.getString("GML.delete"), "javaScript:pubDeleteConfirm()");
                 }
+				operationPane.addOperation("#", "Ajouter un fichier", "javaScript:AddAttachment()");
 				
-				if (kmeliaScc.isDraftEnabled())
+				if (kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone())
 				{
 					if ("Draft".equals(pubDetail.getStatus()))
 						operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"), "javaScript:pubDraftOut()");
 					else
 						operationPane.addOperation(pubDraftInSrc, resources.getString("PubDraftIn"), "javaScript:pubDraftIn()");
-					operationPane.addLine();
 				}
+				operationPane.addLine();
             }
 		}
-		if (!toolboxMode)
-		{
-			operationPane.addOperation(pdfSrc, resources.getString("GML.generatePDF"), "javascript:generatePdf()");
-		}
+		
 		if (!kmaxMode)
 		{
-			operationPane.addLine();
         	operationPane.addOperation(resources.getIcon("kmelia.copy"), resources.getString("GML.copy"), "javaScript:clipboardCopy()");
         	if (isOwner)
         		operationPane.addOperation(resources.getIcon("kmelia.cut"), resources.getString("GML.cut"), "javaScript:clipboardCut()");
 		}
         if (!toolboxMode && isOwner) {
             if (profile.equals("admin") || profile.equals("publisher") || isWriterApproval) {
-							if ("ToValidate".equals(pubDetail.getStatus())) {
+							/*if ("Valid".equals(pubDetail.getStatus())) {
+								operationPane.addLine();
+								operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate()");
+							} else*/ if ("ToValidate".equals(pubDetail.getStatus())) {
 								if (validation == null)
 								{
 									operationPane.addLine();
@@ -564,10 +568,14 @@ function zipPublication()
 			try
 			{
 				out.flush();
+				boolean	indexIt 	= kmeliaScc.isIndexable(pubDetail);
+				String	pIndexIt	= "0";
+				if (indexIt)
+					pIndexIt = "1";
 				if (kmeliaScc.isVersionControlled(componentId))
-					getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+id+"&ComponentId="+componentId+"&Alias="+alias+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Profile="+kmeliaScc.getProfile()+"&NodeId="+kmeliaScc.getSessionTopic().getNodePK().getId()+"&TopicRightsEnabled="+kmeliaScc.isRightsOnTopicsEnabled()+"&VersionningFileRightsMode="+kmeliaScc.getVersionningFileRightsMode()).include(request, response);
+					getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+id+"&ComponentId="+componentId+"&Alias="+alias+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Profile="+kmeliaScc.getProfile()+"&NodeId="+kmeliaScc.getSessionTopic().getNodePK().getId()+"&TopicRightsEnabled="+kmeliaScc.isRightsOnTopicsEnabled()+"&VersionningFileRightsMode="+kmeliaScc.getVersionningFileRightsMode()+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewPublication&IndexIt="+pIndexIt).include(request, response);
 				else
-					getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+id+"&ComponentId="+componentId+"&Alias="+alias+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Language="+language).include(request, response);
+					getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+id+"&ComponentId="+componentId+"&Alias="+alias+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Language="+language+"&Profile="+kmeliaScc.getProfile()+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewPublication&IndexIt="+pIndexIt).include(request, response);
 			}
 			catch (Exception e)
 			{

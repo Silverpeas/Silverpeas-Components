@@ -94,6 +94,7 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 	String 					action 			= (String) request.getAttribute("Action");
 	String 					checkPath 		= (String) request.getAttribute("CheckPath");
 	UserCompletePublication userPubComplete = (UserCompletePublication) request.getAttribute("Publication");
+	String					visiblePubId	= (String) request.getAttribute("VisiblePublicationId");
 	
 	if (action == null)
 		action = "ViewClone";
@@ -126,6 +127,7 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 	outDraftSrc			= m_context + "/util/icons/visible.gif";
 	validateSrc			= m_context + "/util/icons/ok.gif";
 	refusedSrc			= m_context + "/util/icons/wrong.gif";
+	pubDraftOutSrc		= m_context + "/util/icons/publicationDraftOut.gif";
 
 	String screenMessage = "";
 
@@ -284,6 +286,16 @@ function viewPublicVersions(docId) {
     publicVersionsWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
 }
 
+function pubDraftOut() {
+	if (<%=kmeliaScc.isDraftOutAllowed()%>)
+	{
+		location.href = "<%=routerUrl%>DraftOut?From=ViewPublication";
+	}
+	else
+	{
+		window.alert("<%=kmeliaScc.getString("kmelia.PdcClassificationMandatory")%>");
+	}
+}
 </script>
 </HEAD>
 
@@ -304,17 +316,21 @@ function viewPublicVersions(docId) {
 
         //operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:onClick=goToOperationInAnotherWindow('ToAlertUser', '"+id+"', 'ViewAlert')");
 		//operationPane.addLine();
-		if (isOwner) {
 			if (!"supervisor".equals(profile))
 			{
                 operationPane.addOperation(deletePubliSrc, resources.getString("kmelia.DeleteClone"), "javaScript:deleteCloneConfirm();");
-                //operationPane.addLine();
+                if (kmeliaScc.isDraftEnabled())
+				{
+					if ("Draft".equals(pubDetail.getStatus()))
+					{
+						operationPane.addLine();
+						operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"), "javaScript:pubDraftOut()");
+					}
             }
 		}
 		//operationPane.addOperation(pdfSrc, resources.getString("GML.generatePDF"), "javascript:generatePdf('"+id+"')");
         //operationPane.addLine();
         //operationPane.addOperation(clipboardCopySrc, resources.getString("GML.copy"), "javaScript:clipboardCopy()");
-        if (isOwner) {
             if (profile.equals("admin") || profile.equals("publisher")) {
 				if ("Valid".equals(pubDetail.getStatus())) {
 					operationPane.addLine();
@@ -330,7 +346,6 @@ function viewPublicVersions(docId) {
             	operationPane.addLine();
 				operationPane.addOperation(pubUnvalidateSrc, resources.getString("kmelia.PubSuspend"), "javaScript:pubSuspend('"+id+"')");
             }
-        }
         out.println(window.printBefore());
 
         displayAllOperations(id, kmeliaScc, gef, "ViewClone", resources, out);
@@ -429,7 +444,7 @@ function viewPublicVersions(docId) {
 			{
 				out.flush();									
 				if (kmeliaScc.isVersionControlled())
-					getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+id+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()).include(request, response);
+					getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+visiblePubId+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()).include(request, response);
 				else
 					getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+id+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()).include(request, response);
 			}

@@ -357,8 +357,8 @@ public interface KmeliaBm extends EJBObject {
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
    * @since 1.0
    */
-  public Collection getPublications(Collection publicationIds,
-      String componentId) throws RemoteException;
+  public Collection getPublications(Collection publicationIds, String componentId, String userId,
+      boolean isRightsOnTopicsUsed) throws RemoteException;
 
   public List getPublicationsToValidate(String componentId)
       throws RemoteException;
@@ -573,7 +573,7 @@ public interface KmeliaBm extends EJBObject {
    * @return Collection of publication
    * @throws RemoteException
    */
-  public Collection search(ArrayList combination, String componentId)
+  public Collection search(List<String> combination, String componentId)
       throws RemoteException;
 
   /**
@@ -583,7 +583,7 @@ public interface KmeliaBm extends EJBObject {
    * @return Collection of publication
    * @throws RemoteException
    */
-  public Collection search(ArrayList combination, int nbDays, String componentId)
+  public Collection search(List<String> combination, int nbDays, String componentId)
       throws RemoteException;
 
   /**
@@ -628,7 +628,7 @@ public interface KmeliaBm extends EJBObject {
    * @return
    * @throws RemoteException
    */
-  public void addPublicationToCombination(String pubId, ArrayList combination,
+  public void addPublicationToCombination(String pubId, List<String> combination,
       String componentId) throws RemoteException;
 
   /**
