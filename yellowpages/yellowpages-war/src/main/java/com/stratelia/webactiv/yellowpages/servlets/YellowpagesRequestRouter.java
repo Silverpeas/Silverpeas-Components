@@ -453,7 +453,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             modelId = scc.getCurrentTopic().getNodeDetail().getModelId();
           }
 
-          if (modelId.endsWith(".xml")) {
+          if (StringUtil.isDefined(modelId)&& modelId.endsWith(".xml")) {
             String xmlFormName = modelId;
             String xmlFormShortName = xmlFormName.substring(xmlFormName
                 .indexOf("/") + 1, xmlFormName.indexOf("."));

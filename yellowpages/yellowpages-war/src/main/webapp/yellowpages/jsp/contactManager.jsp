@@ -225,12 +225,12 @@ function autoSubmit(){
 /* Add */
 if (action.equals("Add")) {
 	//Ajout du contact
-	firstName = (String) request.getParameter("FirstName");
-	lastName = (String) request.getParameter("LastName");
-	email = (String) request.getParameter("Email");
-	phone = (String) request.getParameter("Phone");
-	fax = (String) request.getParameter("Fax");
-	userId = (String) request.getParameter("UserId");
+	firstName = request.getParameter("FirstName");
+	lastName = request.getParameter("LastName");
+	email = request.getParameter("Email");
+	phone = request.getParameter("Phone");
+	fax = request.getParameter("Fax");
+	userId = request.getParameter("UserId");
 
 	if (! userId.equals("")) {
 	  contactDetail = new ContactDetail("X",firstName, lastName, email, phone, fax, userId, null, null);
@@ -242,7 +242,7 @@ if (action.equals("Add")) {
   userContactComplete = yellowpagesScc.getCompleteContact(newContactId);
   yellowpagesScc.setCurrentContact(userContactComplete);
 
-  boolean useModel = yellowpagesScc.getCurrentTopic().getNodeDetail().getId() != ROOT_TOPIC;
+  boolean useModel = StringUtil.isDefined(yellowpagesScc.getCurrentTopic().getNodeDetail().getModelId());
 	if (useModel)
 	{
 		%><BODY onload = "autoSubmit()"><%
