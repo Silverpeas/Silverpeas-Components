@@ -99,7 +99,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
     YellowpagesSessionController scc = (YellowpagesSessionController) componentSC;
 
     String destination = "";
-    String rootDestination = "/yellowPages/jsp/";
+    String rootDestination = "/yellowpages/jsp/";
 
     try {
 
