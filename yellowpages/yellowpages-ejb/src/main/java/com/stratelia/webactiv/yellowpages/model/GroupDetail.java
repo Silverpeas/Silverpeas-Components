@@ -37,8 +37,8 @@ public class GroupDetail extends Group implements java.io.Serializable {
   private static final long serialVersionUID = 1L;
 
   private int totalUsers = 0;
-  private List users = new ArrayList();
-  private List subGroups = new ArrayList();
+  private List<UserDetail> users = new ArrayList<UserDetail>();
+  private List<GroupDetail> subGroups = new ArrayList<GroupDetail>();
 
   public GroupDetail(Group group) {
     super(group);
@@ -60,11 +60,11 @@ public class GroupDetail extends Group implements java.io.Serializable {
     }
   }
 
-  public List getSubGroups() {
+  public List<GroupDetail> getSubGroups() {
     return subGroups;
   }
 
-  public List getUsers() {
+  public List<UserDetail> getUsers() {
     return users;
   }
 

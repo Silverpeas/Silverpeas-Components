@@ -29,11 +29,13 @@ import java.util.List;
 
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
+import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.util.contact.model.ContactPK;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserCompleteContact;
+import com.stratelia.webactiv.yellowpages.model.UserContact;
 
 /**
  * This is the Yellowpages EJB-tier controller of the MVC. It is implemented as
@@ -80,7 +82,7 @@ public interface YellowpagesBmSkeleton {
    */
   public TopicDetail goTo(String id) throws RemoteException;
 
-  public List getTree() throws RemoteException;
+  public List<NodeDetail> getTree() throws RemoteException;
 
   /**
    * Add a subtopic to a topic - If a subtopic of same name already exists a
@@ -220,7 +222,7 @@ public interface YellowpagesBmSkeleton {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public Collection getPathList(String pubId) throws RemoteException;
+  public Collection<NodeDetail> getPathList(String pubId) throws RemoteException;
 
   /**
    * Create a new Contact (only the header - parameters) to the current Topic
@@ -372,25 +374,25 @@ public interface YellowpagesBmSkeleton {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public Collection getContacts(Collection contactIds) throws RemoteException;
+  public Collection<UserContact> getContacts(Collection<String> contactIds) throws RemoteException;
 
-  public Collection getContactDetailsByLastName(ContactPK pk, String query)
+  public Collection<ContactDetail> getContactDetailsByLastName(ContactPK pk, String query)
       throws RemoteException;
 
-  public Collection getContactDetailsByLastNameOrFirstName(ContactPK pk,
+  public Collection<ContactDetail> getContactDetailsByLastNameOrFirstName(ContactPK pk,
       String query) throws RemoteException;
 
-  public Collection getContactDetailsByLastNameAndFirstName(ContactPK pk,
+  public Collection<ContactDetail> getContactDetailsByLastNameAndFirstName(ContactPK pk,
       String lastName, String firstName) throws RemoteException;
 
-  public Collection getContactFathers(String pubId) throws RemoteException;
+  public Collection<NodePK> getContactFathers(String pubId) throws RemoteException;
 
-  public Collection getAllContactDetails(NodePK nodePK) throws RemoteException;
+  public Collection<ContactFatherDetail> getAllContactDetails(NodePK nodePK) throws RemoteException;
 
   public boolean isDescendant(String descId, String nodeId)
       throws RemoteException;
 
-  public List getGroupIds(String nodeId) throws RemoteException;
+  public List<String> getGroupIds(String nodeId) throws RemoteException;
 
   public void addGroup(String groupId) throws RemoteException;
 
@@ -399,6 +401,6 @@ public interface YellowpagesBmSkeleton {
   public void addModelUsed(String[] models, String instanceId)
       throws RemoteException;
 
-  public Collection getModelUsed(String instanceId) throws RemoteException;
+  public Collection<String> getModelUsed(String instanceId) throws RemoteException;
 
 }

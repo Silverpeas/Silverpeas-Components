@@ -84,11 +84,11 @@ public class YellowpagesSessionController extends
   private String path = null;
   private String owner = "false";
   private String profile; // admin || publisher || user
-  private List groupPath = new ArrayList();
+  private List<GroupDetail> groupPath = new ArrayList<GroupDetail>();
   private boolean portletMode = false;
-  private Collection currentContacts = null;
-  private Collection currentFullUsers = null; // liste de UserFull
-  private Collection currentCompleteUsers = null;
+  private Collection<ContactFatherDetail> currentContacts = null;
+  private Collection<UserFull> currentFullUsers = null; // liste de UserFull
+  private Collection<UserCompleteContact> currentCompleteUsers = null;
   private String currentTypeSearch;
   private String currentSearchCriteria;
   public static String GroupReferentielPrefix = "group_";
@@ -320,7 +320,7 @@ public class YellowpagesSessionController extends
     }
   }
 
-  public List getGroupPath() {
+  public List<GroupDetail> getGroupPath() {
     return groupPath;
   }
 
@@ -328,7 +328,7 @@ public class YellowpagesSessionController extends
     groupPath.clear();
   }
 
-  public synchronized List getTree() throws RemoteException {
+  public synchronized List<NodeDetail> getTree() throws RemoteException {
     try {
       return kscEjb.getTree();
     } catch (NoSuchObjectException nsoe) {
@@ -419,21 +419,21 @@ public class YellowpagesSessionController extends
     this.currentCompleteUsers = null;
   }
 
-  private synchronized Collection setCurrentFullCompleteUsers()
+  private synchronized Collection<ContactFatherDetail> setCurrentFullCompleteUsers()
       throws RemoteException {// tous les contacts � la racine
     try {
       // racine
       TopicDetail rootTopic = getTopic("0");
-      Collection contacts = getAllContactDetails(rootTopic.getNodePK());
+      Collection<ContactFatherDetail> contacts = getAllContactDetails(rootTopic.getNodePK());
 
       if (this.currentFullUsers == null || this.currentCompleteUsers == null) {
 
-        Iterator itContact = contacts.iterator();
+        Iterator<ContactFatherDetail> itContact = contacts.iterator();
         ContactFatherDetail contact;
         UserFull userFull;
-        ArrayList listUserFull = new ArrayList();
+        ArrayList<UserFull> listUserFull = new ArrayList<UserFull>();
         UserCompleteContact userComplete;
-        ArrayList listUserComplete = new ArrayList();
+        ArrayList<UserCompleteContact> listUserComplete = new ArrayList<UserCompleteContact>();
         while (itContact.hasNext()) {
           contact = (ContactFatherDetail) itContact.next();
           if (contact.getNodeId() != null
@@ -469,22 +469,22 @@ public class YellowpagesSessionController extends
     }
   }
 
-  public synchronized Collection getAllContactDetails(NodePK fatherPK)
+  public synchronized Collection<ContactFatherDetail> getAllContactDetails(NodePK fatherPK)
       throws RemoteException {
     try {
-      Collection contacts = kscEjb.getAllContactDetails(fatherPK);
+      Collection<ContactFatherDetail> contacts = kscEjb.getAllContactDetails(fatherPK);
       if (contacts != null) {
         // contacts.addAll(getAllUsers(fatherPK.getId()));
 
         // get users from groups
-        List tree = getNodeBm().getSubTree(
+        List<NodeDetail> tree = getNodeBm().getSubTree(
             new NodePK(fatherPK.getId(), getComponentId()));
         for (int t = 0; tree != null && t < tree.size(); t++) {
-          NodeDetail node = (NodeDetail) tree.get(t);
+          NodeDetail node = tree.get(t);
           contacts.addAll(getAllUsers(node.getNodePK().getId()));
         }
       } else {
-        contacts = new ArrayList(getAllUsers(fatherPK.getId()));
+        contacts = new ArrayList<ContactFatherDetail>(getAllUsers(fatherPK.getId()));
       }
 
       return contacts;
@@ -494,7 +494,7 @@ public class YellowpagesSessionController extends
     }
   }
 
-  public synchronized Collection getPathList(String contactId)
+  public synchronized Collection<NodeDetail> getPathList(String contactId)
       throws RemoteException {
     try {
       return kscEjb.getPathList(contactId);
@@ -618,7 +618,7 @@ public class YellowpagesSessionController extends
     }
   }
 
-  public synchronized Collection getContactFathers(String contactId)
+  public synchronized Collection<NodePK> getContactFathers(String contactId)
       throws RemoteException {
     try {
       return kscEjb.getContactFathers(contactId);
@@ -632,9 +632,9 @@ public class YellowpagesSessionController extends
       throws RemoteException {
     String fatherId;
     try {
-      Collection fathers = kscEjb.getContactFathers(contactId);
+      Collection<NodePK> fathers = kscEjb.getContactFathers(contactId);
       if (fathers != null) {
-        Iterator it = fathers.iterator();
+        Iterator<NodePK> it = fathers.iterator();
         while (it.hasNext()) {
           fatherId = ((NodePK) it.next()).getId();
           deleteContactFromTopic(contactId, fatherId);
@@ -661,7 +661,7 @@ public class YellowpagesSessionController extends
   /* Yellowpages - Gestion des Liens */
   /**************************************************************************************/
   // return a ContactDetail collection
-  public synchronized Collection getContacts(Collection targetIds)
+  public synchronized Collection<UserContact> getContacts(Collection<String> targetIds)
       throws RemoteException {
     try {
       return kscEjb.getContacts(targetIds);
@@ -819,10 +819,10 @@ public class YellowpagesSessionController extends
     }
   }
 
-  public List getAllUsers(String nodeId) throws RemoteException {
-    List users = new ArrayList();
+  public List<ContactFatherDetail> getAllUsers(String nodeId) throws RemoteException {
+    List<ContactFatherDetail> users = new ArrayList<ContactFatherDetail>();
 
-    List groupIds = kscEjb.getGroupIds(nodeId);
+    List<String> groupIds = kscEjb.getGroupIds(nodeId);
 
     String groupId = null;
     for (int g = 0; g < groupIds.size(); g++) {
@@ -833,10 +833,10 @@ public class YellowpagesSessionController extends
     return users;
   }
 
-  public List getAllUserDetails(String nodeId) throws RemoteException {
-    List users = new ArrayList();
+  public List<UserDetail> getAllUserDetails(String nodeId) throws RemoteException {
+    List<UserDetail> users = new ArrayList<UserDetail>();
 
-    List groupIds = kscEjb.getGroupIds(nodeId);
+    List<String> groupIds = kscEjb.getGroupIds(nodeId);
 
     String groupId = null;
     for (int g = 0; g < groupIds.size(); g++) {
@@ -851,8 +851,8 @@ public class YellowpagesSessionController extends
     return users;
   }
 
-  public List getAllUsersOfGroup(String groupId) throws RemoteException {
-    List users = new ArrayList();
+  public List<ContactFatherDetail> getAllUsersOfGroup(String groupId) throws RemoteException {
+    List<ContactFatherDetail> users = new ArrayList<ContactFatherDetail>();
 
     GroupDetail groupDetail = getGroup(groupId);
     UserDetail[] userDetails = getOrganizationController()
@@ -868,7 +868,7 @@ public class YellowpagesSessionController extends
       }
     }
 
-    List sousGroupes = groupDetail.getSubGroups();
+    List<GroupDetail> sousGroupes = groupDetail.getSubGroups();
     GroupDetail sousGroupe;
     for (int i = 0; i < sousGroupes.size(); i++) {
       sousGroupe = (GroupDetail) sousGroupes.get(i);
@@ -948,10 +948,10 @@ public class YellowpagesSessionController extends
    * @param query
    * @return list of UserFull
    */
-  private List searchFullUsers(String query) {
+  private List<UserFull> searchFullUsers(String query) {
     query = query.toLowerCase();
-    Iterator it = this.currentFullUsers.iterator();
-    List result = new ArrayList();
+    Iterator<UserFull> it = this.currentFullUsers.iterator();
+    List<UserFull> result = new ArrayList<UserFull>();
     UserFull userFull;
     String[] infosPropertiesNames;
     String infoValue;
@@ -986,11 +986,11 @@ public class YellowpagesSessionController extends
    * @throws PublicationTemplateException
    * @throws FormException
    */
-  private List searchCompleteUsers(String query)
+  private List<UserCompleteContact> searchCompleteUsers(String query)
       throws PublicationTemplateException, FormException {
     query = query.toLowerCase();
-    Iterator it = this.currentCompleteUsers.iterator();
-    List result = new ArrayList();
+    Iterator<UserCompleteContact> it = this.currentCompleteUsers.iterator();
+    List<UserCompleteContact> result = new ArrayList<UserCompleteContact>();
     UserCompleteContact userComplete;
 
     String xmlFormName;
@@ -1065,15 +1065,15 @@ public class YellowpagesSessionController extends
    * @throws FormException
    * @throws PublicationTemplateException
    */
-  public List search(String typeSearch, String query) throws RemoteException,
+  public List<ContactFatherDetail> search(String typeSearch, String query) throws RemoteException,
       PublicationTemplateException, FormException {
-    List result = new ArrayList();
+    List<ContactFatherDetail> result = new ArrayList<ContactFatherDetail>();
 
     query = query.trim();
 
     if (!"All".equals(typeSearch)) {// typeSearch = LastName || FirstName ||
                                     // LastNameFirstName
-      // Recherche sur nom et/ou pr�nom
+      // Recherche sur nom et/ou prénom
 
       String nom = null;
       String prenom = null;
@@ -1084,12 +1084,12 @@ public class YellowpagesSessionController extends
       } else if ("FirstName".equals(typeSearch)) {
         nom = "*";
         prenom = query;
-      } else if ("LastNameFirstName".equals(typeSearch)) {// nom et/ou pr�nom
+      } else if ("LastNameFirstName".equals(typeSearch)) {// nom et/ou prénom
         indexEspace = query.indexOf(" ");
         if (indexEspace == -1) { // seulement recherche sur le nom, on cherchera
-                                 // sur le pr�nom apr�s
+                                 // sur le prénom aprés
           nom = query;
-        } else { // recherche sur le nom et le pr�nom
+        } else { // recherche sur le nom et le prénom
           nom = query.substring(0, indexEspace);
           prenom = query.substring(indexEspace);
           prenom = prenom.trim();
@@ -1122,7 +1122,7 @@ public class YellowpagesSessionController extends
                                                                         // recherche
                                                                         // sur
                                                                         // le
-                                                                        // pr�nom
+                                                                        // prénom
         modelUser.setLastName(null);
         if (query.endsWith("*") || query.endsWith("%")) {
           query = query.substring(0, query.length() - 1);
@@ -1150,8 +1150,8 @@ public class YellowpagesSessionController extends
 
       // filter users who are in the component
       TopicDetail rootTopic = getTopic("0");
-      Collection contactsUser = getAllContactDetails(rootTopic.getNodePK());
-      Iterator iterator = contactsUser.iterator();
+      Collection<ContactFatherDetail> contactsUser = getAllContactDetails(rootTopic.getNodePK());
+      Iterator<ContactFatherDetail> iterator = contactsUser.iterator();
       ContactFatherDetail contactFather;
       ContactDetail contact;
       String userId;
@@ -1172,19 +1172,19 @@ public class YellowpagesSessionController extends
       }
 
       // 2 - Look for contacts
-      List contacts = new ArrayList();
+      List<ContactDetail> contacts = new ArrayList<ContactDetail>();
       if ("LastName".equals(typeSearch)) {
-        contacts = (List) kscEjb.getContactDetailsByLastName(new ContactPK(
+        contacts = (List<ContactDetail>) kscEjb.getContactDetailsByLastName(new ContactPK(
             "useless", "useless", getComponentId()), nom);
       } else if ("FirstName".equals(typeSearch)) {
-        contacts = (List) kscEjb.getContactDetailsByLastNameAndFirstName(
+        contacts = (List<ContactDetail>) kscEjb.getContactDetailsByLastNameAndFirstName(
             new ContactPK("useless", "useless", getComponentId()), nom, prenom);
       } else if ("LastNameFirstName".equals(typeSearch)) {
         if (prenom == null) {// nom ou pr�nom
-          contacts = (List) kscEjb.getContactDetailsByLastNameOrFirstName(
+          contacts = (List<ContactDetail>) kscEjb.getContactDetailsByLastNameOrFirstName(
               new ContactPK("useless", "useless", getComponentId()), nom);
         } else {// nom et pr�nom
-          contacts = (List) kscEjb.getContactDetailsByLastNameAndFirstName(
+          contacts = (List<ContactDetail>) kscEjb.getContactDetailsByLastNameAndFirstName(
               new ContactPK("useless", "useless", getComponentId()), nom,
               prenom);
         }
@@ -1196,19 +1196,19 @@ public class YellowpagesSessionController extends
       // Recherche sur tous les champs
 
       // initialise les listes en session
-      Collection contactsUser = setCurrentFullCompleteUsers();
+      Collection<ContactFatherDetail> contactsUser = setCurrentFullCompleteUsers();
 
       // 1 - Look for user in Silverpeas groups
-      List listFullUsers = searchFullUsers(query);
+      List<UserFull> listFullUsers = searchFullUsers(query);
 
       // 2 - Look for contacts
-      List listCompleteUsers = searchCompleteUsers(query);
+      List<UserCompleteContact> listCompleteUsers = searchCompleteUsers(query);
 
-      Iterator iterator = contactsUser.iterator();
+      Iterator<ContactFatherDetail> iterator = contactsUser.iterator();
       ContactFatherDetail contactFather;
-      Iterator itUserFull;
+      Iterator<UserFull> itUserFull;
       UserFull userFull;
-      Iterator itUserComplete;
+      Iterator<UserCompleteContact> itUserComplete;
       UserCompleteContact userComplete;
       while (iterator.hasNext()) {
         contactFather = (ContactFatherDetail) iterator.next();
@@ -1219,7 +1219,7 @@ public class YellowpagesSessionController extends
                                                                       // de type
                                                                       // user
                                                                       // appartenant
-                                                                      // � un
+                                                                      // à un
                                                                       // groupe
                                                                       // Silverpeas
           itUserFull = listFullUsers.iterator();
@@ -1248,16 +1248,16 @@ public class YellowpagesSessionController extends
     return result;
   }
 
-  public List getListContactFather(List contacts,
+  public List<ContactFatherDetail> getListContactFather(List<ContactDetail> contacts,
       boolean retourneUserReferentiel) throws RemoteException { // en
                                                                 // param�tre
                                                                 // une liste de
                                                                 // ContactDetail
-    List result = new ArrayList();
+    List<ContactFatherDetail> result = new ArrayList<ContactFatherDetail>();
     ContactFatherDetail contactFather;
     if (contacts != null) {
       ContactDetail contact;
-      Iterator iteratorFathers;
+      Iterator<NodePK> iteratorFathers;
       NodePK nodePK;
       String nodeName;
 
@@ -1311,11 +1311,11 @@ public class YellowpagesSessionController extends
     }
   }
 
-  public Collection getCurrentContacts() {
+  public Collection<ContactFatherDetail> getCurrentContacts() {
     return currentContacts;
   }
 
-  public void setCurrentContacts(Collection currentContacts) {
+  public void setCurrentContacts(Collection<ContactFatherDetail> currentContacts) {
     this.currentContacts = currentContacts;
   }
 
@@ -1358,8 +1358,8 @@ public class YellowpagesSessionController extends
     }
   }
 
-  public Collection getModelUsed() {
-    Collection result = null;
+  public Collection<String> getModelUsed() {
+    Collection<String> result = null;
     try {
       result = getKSCEJB().getModelUsed(getComponentId());
     } catch (RemoteException e) {
@@ -1376,8 +1376,8 @@ public class YellowpagesSessionController extends
         "YellowpagesSessionControl.deleteBasketContent",
         "root.MSG_ENTER_METHOD");
     TopicDetail td = getCurrentTopic();
-    Collection pds = td.getContactDetails();
-    Iterator ipds = pds.iterator();
+    Collection<UserContact> pds = td.getContactDetails();
+    Iterator<UserContact> ipds = pds.iterator();
 
     SilverTrace.info("yellowpages",
         "YellowpagesSessionControl.deleteBasketContent",

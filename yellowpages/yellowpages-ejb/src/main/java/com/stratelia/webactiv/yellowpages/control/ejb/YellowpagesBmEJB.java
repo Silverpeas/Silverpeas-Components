@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.yellowpages.control.ejb;
 
-import com.silverpeas.formTemplate.dao.ModelDAO;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -36,8 +35,8 @@ import java.util.List;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
+import com.silverpeas.formTemplate.dao.ModelDAO;
 import com.silverpeas.util.StringUtil;
-
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -47,7 +46,6 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.contact.control.ContactBm;
 import com.stratelia.webactiv.util.contact.control.ContactBmHome;
@@ -80,6 +78,10 @@ import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
  */
 public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
   private SessionContext sc;
   private TopicDetail currentTopic;
   private UserCompleteContact currentContact;
@@ -169,15 +171,15 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     return currentContactBm;
   }
 
-  private ArrayList getRecursiveNbContact(NodeDetail nodeDetail)
+  private ArrayList<Integer> getRecursiveNbContact(NodeDetail nodeDetail)
       throws RemoteException {
-    ArrayList nbContactsByTopic = new ArrayList();
+    ArrayList<Integer> nbContactsByTopic = new ArrayList<Integer>();
 
-    Collection childrenPKs = nodeDetail.getChildrenDetails();
+    Collection<NodeDetail> childrenPKs = nodeDetail.getChildrenDetails();
     if (childrenPKs != null) {
       // get groups
       // add groups to nodeDetail.childrens
-      List groupIds = getGroupIds(nodeDetail.getNodePK().getId());
+      List<String> groupIds = getGroupIds(nodeDetail.getNodePK().getId());
       String groupId = null;
       Group group = null;
       NodeDetail nodeGroup = null;
@@ -193,16 +195,16 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         }
       }
 
-      Iterator iterator = childrenPKs.iterator();
+      Iterator<NodeDetail> iterator = childrenPKs.iterator();
       NodeDetail child;
       NodePK childPK;
       String childPath;
       int nbContacts = 0;
-      ArrayList nbContactsBySubTopic = new ArrayList();
-      Iterator itSub;
+      ArrayList<Integer> nbContactsBySubTopic = new ArrayList<Integer>();
+      Iterator<Integer> itSub;
       int nbSubContact = 0;
       while (iterator.hasNext()) {
-        child = (NodeDetail) iterator.next();
+        child = iterator.next();
         childPK = child.getNodePK();
         if (!childPK.getId().startsWith("group_")) // rubrique
         {
@@ -246,10 +248,10 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   public TopicDetail goTo(String id) {
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.goTo()",
         "root.MSG_GEN_ENTER_METHOD");
-    Collection newPath = new ArrayList();
-    Collection contactDetails = null;
+    Collection<NodeDetail> newPath = new ArrayList<NodeDetail>();
+    Collection<ContactDetail> contactDetails = null;
     NodeDetail nodeDetail = null;
-    ArrayList contactDetailsR = new ArrayList();
+    ArrayList<ContactDetail> contactDetailsR = new ArrayList<ContactDetail>();
     try {
       NodeBm nodeBm = getNodeBm();
       ContactBm contactBm = getContactBm();
@@ -270,7 +272,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       }
 
       if (contactDetails != null) {
-        Iterator it = contactDetails.iterator();
+        Iterator<ContactDetail> it = contactDetails.iterator();
         OrganizationController orga = getOrganizationController();
         while (it.hasNext()) {
           ContactDetail contactDetail = (ContactDetail) it.next();
@@ -309,7 +311,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         newPath = getNewPath(nodeDetail);
       }
 
-      ArrayList nbContactsByTopic = getRecursiveNbContact(nodeDetail);
+      ArrayList<Integer> nbContactsByTopic = getRecursiveNbContact(nodeDetail);
 
       this.currentTopic = new TopicDetail(newPath, nodeDetail,
           contactDetails2userPubs(contactDetailsR), nbContactsByTopic);
@@ -324,11 +326,11 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     return this.currentTopic;
   }
 
-  private Collection getPathFromAToZ(NodeDetail nd) {
-    Collection newPath = new ArrayList();
+  private Collection<NodeDetail> getPathFromAToZ(NodeDetail nd) {
+    Collection<NodeDetail> newPath = new ArrayList<NodeDetail>();
     try {
       NodeBm nodeBm = getNodeBm();
-      List pathInReverse = (List) nodeBm.getPath(nd.getNodePK());
+      List<NodeDetail> pathInReverse = (List<NodeDetail>) nodeBm.getPath(nd.getNodePK());
       // reverse the path from root to leaf
       for (int i = pathInReverse.size() - 1; i >= 0; i--) {
         newPath.add(pathInReverse.get(i));
@@ -355,17 +357,17 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  private Collection getNewPath(NodeDetail nd) {
+  private Collection<NodeDetail> getNewPath(NodeDetail nd) {
 
     NodeDetail n;
-    Collection currentPath = currentTopic.getPath();
-    Collection newPath = new ArrayList();
-    Iterator iterator = currentPath.iterator();
+    Collection<NodeDetail> currentPath = currentTopic.getPath();
+    Collection<NodeDetail> newPath = new ArrayList<NodeDetail>();
+    Iterator<NodeDetail> iterator = currentPath.iterator();
     boolean find = false;
 
     // find = true if nd is in the path of the currentTopic
     while (iterator.hasNext() && !(find)) {
-      n = (NodeDetail) iterator.next();
+      n = iterator.next();
       if (n.getNodePK().getId().equals(nd.getNodePK().getId())) {
         find = true;
       }
@@ -384,7 +386,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       } else {
         try {
           NodeBm nodeBm = getNodeBm();
-          List pathInReverse = (List) nodeBm.getPath(nd.getNodePK());
+          List<NodeDetail> pathInReverse = (List<NodeDetail>) nodeBm.getPath(nd.getNodePK());
           // reverse the path from root to leaf
           for (int i = pathInReverse.size() - 1; i >= 0; i--) {
             newPath.add(pathInReverse.get(i));
@@ -412,14 +414,14 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
-  private Collection cutPath(Collection currentPath, NodeDetail nd) {
+  private Collection<NodeDetail> cutPath(Collection<NodeDetail> currentPath, NodeDetail nd) {
     NodeDetail n;
-    Iterator iterator = currentPath.iterator();
+    Iterator<NodeDetail> iterator = currentPath.iterator();
     boolean find = false;
-    Collection resultPath = new ArrayList();
+    Collection<NodeDetail> resultPath = new ArrayList<NodeDetail>();
 
     while (iterator.hasNext() && !(find)) {
-      n = (NodeDetail) iterator.next();
+      n = iterator.next();
       resultPath.add(n);
       if (n.getNodePK().getId().equals(nd.getNodePK().getId())) {
         find = true;
@@ -432,9 +434,9 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     }
   }
 
-  public List getTree() {
-    List tree = null;
-    List result = new ArrayList();
+  public List<NodeDetail> getTree() {
+    List<NodeDetail> tree = null;
+    List<NodeDetail> result = new ArrayList<NodeDetail>();
     Connection con = null;
     try {
       tree = getNodeBm().getSubTree(new NodePK("0", space, componentId));
@@ -448,13 +450,13 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         node = (NodeDetail) tree.get(n);
         result.add(node);
         // pour chaque node, recuperer les groupes associes
-        List groupIds = (List) GroupDAO.getGroupIds(con, node.getNodePK()
+        List<String> groupIds = (List<String>) GroupDAO.getGroupIds(con, node.getNodePK()
             .getId(), componentId);
         String groupId = null;
         Group group = null;
-        Iterator gIterator = groupIds.iterator();
+        Iterator<String> gIterator = groupIds.iterator();
         while (gIterator.hasNext()) {
-          groupId = (String) gIterator.next();
+          groupId = gIterator.next();
           group = getOrganizationController().getGroup(groupId);
           result = addGroup(result, group, node.getLevel() + 1);
         }
@@ -470,7 +472,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     return result;
   }
 
-  public List addGroup(List tree, Group group, int level) {
+  public List<NodeDetail> addGroup(List<NodeDetail> tree, Group group, int level) {
     if (group != null) {
       NodeDetail nGroup = new NodeDetail();
       nGroup.setName(group.getName());
@@ -675,11 +677,11 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   }
 
   public NodeDetail getSubTopicDetail(String subTopicId) {
-    Collection subTopics = currentTopic.getNodeDetail().getChildrenDetails();
-    Iterator iterator = subTopics.iterator();
+    Collection<NodeDetail> subTopics = currentTopic.getNodeDetail().getChildrenDetails();
+    Iterator<NodeDetail> iterator = subTopics.iterator();
     NodeDetail subTopic = null;
     while (iterator.hasNext()) {
-      subTopic = (NodeDetail) iterator.next();
+      subTopic = iterator.next();
       if (subTopic.getNodePK().getId().equals(subTopicId)) {
         return subTopic;
       }
@@ -702,11 +704,11 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     boolean isDesc = false;
     try {
       NodeBm nodeBm = getNodeBm();
-      Collection descendants = nodeBm.getDescendantPKs(nodePK);
+      Collection<NodePK> descendants = nodeBm.getDescendantPKs(nodePK);
       if (descendants != null) {
-        Iterator it = descendants.iterator();
+        Iterator<NodePK> it = descendants.iterator();
         while (it.hasNext()) {
-          NodePK descPK = (NodePK) it.next();
+          NodePK descPK = it.next();
           if (descPK.getId().equals(descId)) {
             isDesc = true;
           }
@@ -769,8 +771,8 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   /**************************************************************************************/
   /* Interface - Gestion des contacts */
   /**************************************************************************************/
-  private Collection contactDetails2userPubs(Collection contactDetails) {
-    Iterator iterator = contactDetails.iterator();
+  private Collection<UserContact> contactDetails2userPubs(Collection<ContactDetail> contactDetails) {
+    Iterator<ContactDetail> iterator = contactDetails.iterator();
     String[] users = new String[contactDetails.size()];
     int i = 0;
     while (iterator.hasNext()) {
@@ -779,7 +781,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     }
     OrganizationController orga = getOrganizationController();
     UserDetail[] userDetails = orga.getUserDetails(users);
-    ArrayList list = new ArrayList();
+    ArrayList<UserContact> list = new ArrayList<UserContact>();
     iterator = contactDetails.iterator();
     i = 0;
     while (iterator.hasNext()) {
@@ -869,12 +871,12 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     }
   }
 
-  public Collection getContactDetailsByLastName(ContactPK pk, String query) {
+  public Collection<ContactDetail> getContactDetailsByLastName(ContactPK pk, String query) {
     SilverTrace.info("yellowpages",
         "YellowpagesBmEJB.getContactDetailsByLastName()",
         "root.MSG_GEN_ENTER_METHOD", "query = " + query);
 
-    Collection contactDetails = null;
+    Collection<ContactDetail> contactDetails = null;
     try {
       contactDetails = getContactBm().getDetailsByLastName(pk, query);
     } catch (Exception e) {
@@ -885,13 +887,13 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     return contactDetails;
   }
 
-  public Collection getContactDetailsByLastNameOrFirstName(ContactPK pk,
+  public Collection<ContactDetail> getContactDetailsByLastNameOrFirstName(ContactPK pk,
       String query) {
     SilverTrace.info("yellowpages",
         "YellowpagesBmEJB.getContactDetailsByLastNameOrFirstName()",
         "root.MSG_GEN_ENTER_METHOD", "query = " + query);
 
-    Collection contactDetails = null;
+    Collection<ContactDetail> contactDetails = null;
     try {
       contactDetails = getContactBm()
           .getDetailsByLastNameOrFirstName(pk, query);
@@ -903,14 +905,14 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     return contactDetails;
   }
 
-  public Collection getContactDetailsByLastNameAndFirstName(ContactPK pk,
+  public Collection<ContactDetail> getContactDetailsByLastNameAndFirstName(ContactPK pk,
       String lastName, String firstName) {
     SilverTrace.info("yellowpages",
         "YellowpagesBmEJB.getContactDetailsByLastNameAndFirstName()",
         "root.MSG_GEN_ENTER_METHOD", "lastName = " + lastName
             + ", firstName = " + firstName);
 
-    Collection contactDetails = null;
+    Collection<ContactDetail> contactDetails = null;
     try {
       contactDetails = getContactBm().getDetailsByLastNameAndFirstName(pk,
           lastName, firstName);
@@ -922,19 +924,19 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     return contactDetails;
   }
 
-  public Collection getAllContactDetails(NodePK nodePK) {
+  public Collection<ContactFatherDetail> getAllContactDetails(NodePK nodePK) {
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.getAllContactDetails()",
         "root.MSG_GEN_ENTER_METHOD");
-    Collection contactDetails = null;
-    Collection nodePKs = null;
-    ArrayList nodePKsWithout12 = new ArrayList();
-    ArrayList contactDetailsR = new ArrayList();
+    Collection<ContactFatherDetail> contactDetails = null;
+    Collection<NodePK> nodePKs = null;
+    ArrayList<NodePK> nodePKsWithout12 = new ArrayList<NodePK>();
+    ArrayList<ContactFatherDetail> contactDetailsR = new ArrayList<ContactFatherDetail>();
     try {
       nodePKs = getNodeBm().getDescendantPKs(nodePK);
       nodePKsWithout12.add(nodePK);
-      Iterator itNode = nodePKs.iterator();
+      Iterator<NodePK> itNode = nodePKs.iterator();
       while (itNode.hasNext()) {
-        NodePK pk = (NodePK) itNode.next();
+        NodePK pk = itNode.next();
         if ((!pk.getId().equals("1")) && (!pk.getId().equals("2"))) {
           nodePKsWithout12.add(pk);
         }
@@ -943,10 +945,9 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       contactDetails = getContactBm().getDetailsByFatherPKs(nodePKsWithout12,
           pk, nodePK);
       if (contactDetails != null) {
-        Iterator it = contactDetails.iterator();
+        Iterator<ContactFatherDetail> it = contactDetails.iterator();
         while (it.hasNext()) {
-          ContactFatherDetail contactFatherDetail = (ContactFatherDetail) it
-              .next();
+          ContactFatherDetail contactFatherDetail = it.next();
           ContactDetail contactDetail = contactFatherDetail.getContactDetail();
           if (contactDetail.getUserId() != null) // contact de type user
                                                  // Silverpeas
@@ -999,10 +1000,10 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public Collection getPathList(String ContactId) {
+  public Collection<NodeDetail> getPathList(String ContactId) {
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.getPathList()",
         "root.MSG_GEN_ENTER_METHOD");
-    Collection fatherPKs = null;
+    Collection<NodePK> fatherPKs = null;
     ContactPK contactPK = new ContactPK(ContactId, this.space, this.componentId);
     try {
       ContactBm contactBm = getContactBm();
@@ -1017,11 +1018,11 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       NodeBm nodeBm = getNodeBm();
       ArrayList pathList = new ArrayList();
       if (fatherPKs != null) {
-        Iterator i = fatherPKs.iterator();
+        Iterator<NodePK> i = fatherPKs.iterator();
         // For each topic, get the path to it
         while (i.hasNext()) {
-          NodePK pk = (NodePK) i.next();
-          Collection path = nodeBm.getAnotherPath(pk);
+          NodePK pk = i.next();
+          Collection<NodeDetail> path = nodeBm.getAnotherPath(pk);
           // add this path
           pathList.add(path);
         }
@@ -1104,10 +1105,10 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       getContactBm().setDetail(contactDetail);
       ContactPK contactPK = contactDetail.getPK();
       String fatherId = "2";
-      Collection fathers = getContactBm().getAllFatherPK(contactPK);
-      Iterator it = fathers.iterator();
+      Collection<NodePK> fathers = getContactBm().getAllFatherPK(contactPK);
+      Iterator<NodePK> it = fathers.iterator();
       if (it.hasNext()) {
-        fatherId = ((NodePK) it.next()).getId();
+        fatherId = (it.next()).getId();
       }
 
       if (fatherId.equals("2") || fatherId.equals("1")) {
@@ -1249,11 +1250,11 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     // add contact to topic
     try {
       ContactBm contactBm = getContactBm();
-      Collection fathers = contactBm.getAllFatherPK(contactPK);
+      Collection<NodePK> fathers = contactBm.getAllFatherPK(contactPK);
       if (fathers.size() == 1) {
-        Iterator iterator = fathers.iterator();
+        Iterator<NodePK> iterator = fathers.iterator();
         if (iterator.hasNext()) {
-          NodePK pk = (NodePK) iterator.next();
+          NodePK pk = iterator.next();
           if (pk.getId().equals("1")) {
             contactBm.removeFather(contactPK, pk);
           }
@@ -1487,12 +1488,12 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     TopicDetail fatherDetail = null;
     try {
       // fetch one of the contact fathers
-      Collection fathers = getContactBm().getAllFatherPK(contactPK);
+      Collection<NodePK> fathers = getContactBm().getAllFatherPK(contactPK);
       String fatherId = "2"; // By default --> DZ
       if (fathers != null) {
-        Iterator it = fathers.iterator();
+        Iterator<NodePK> it = fathers.iterator();
         if (it.hasNext()) {
-          fatherId = ((NodePK) it.next()).getId();
+          fatherId = (it.next()).getId();
         }
       }
       fatherDetail = this.goTo(fatherId);
@@ -1520,13 +1521,13 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  public Collection getContacts(Collection contactIds) {
+  public Collection<UserContact> getContacts(Collection<String> contactIds) {
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.getContacts()",
         "root.MSG_GEN_ENTER_METHOD");
-    Collection contacts = null;
-    ArrayList contactPKs = new ArrayList();
-    Iterator iterator = contactIds.iterator();
-    ArrayList contactDetailsR = new ArrayList();
+    Collection<ContactDetail> contacts = null;
+    ArrayList<ContactPK> contactPKs = new ArrayList<ContactPK>();
+    Iterator<String> iterator = contactIds.iterator();
+    ArrayList<ContactDetail> contactDetailsR = new ArrayList<ContactDetail>();
     while (iterator.hasNext()) {
       ContactPK contactPK = new ContactPK(((String) iterator.next()),
           this.space, this.componentId);
@@ -1536,9 +1537,9 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     try {
       contacts = getContactBm().getContacts(contactPKs);
       if (contacts != null) {
-        Iterator it = contacts.iterator();
+        Iterator<ContactDetail> it = contacts.iterator();
         while (it.hasNext()) {
-          ContactDetail contactDetail = (ContactDetail) it.next();
+          ContactDetail contactDetail = it.next();
           if (contactDetail.getUserId() != null) // contact de type user
                                                  // Silverpeas
           {
@@ -1577,7 +1578,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     return contactDetails2userPubs(contactDetailsR);
   }
 
-  public Collection getContactFathers(String ContactId) {
+  public Collection<NodePK> getContactFathers(String ContactId) {
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.getContactFathers()",
         "root.MSG_GEN_ENTER_METHOD", "ContactId = " + ContactId);
     ContactPK contactPK = new ContactPK(ContactId, this.space, this.componentId);
@@ -1595,10 +1596,10 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   public void unreferenceOrphanContacts(ContactPK contactPK) {
     try {
       ContactBm contactBm = getContactBm();
-      Collection orphanContacts = contactBm.getOrphanContacts(contactPK);
-      Iterator i = orphanContacts.iterator();
+      Collection<ContactDetail> orphanContacts = contactBm.getOrphanContacts(contactPK);
+      Iterator<ContactDetail> i = orphanContacts.iterator();
       while (i.hasNext()) {
-        ContactDetail contactDetail = (ContactDetail) i.next();
+        ContactDetail contactDetail = i.next();
         // add link between this contact and the basket topic
         contactBm.addFather(contactDetail.getPK(), basketPK);
         deleteIndex(contactDetail.getPK());
@@ -1651,10 +1652,10 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         "root.MSG_GEN_EXIT_METHOD");
   }
 
-  public List getGroupIds(String id) {
+  public List<String> getGroupIds(String id) {
     Connection con = getConnection();
     try {
-      return (List) GroupDAO.getGroupIds(con, id, componentId);
+      return (List<String>) GroupDAO.getGroupIds(con, id, componentId);
     } catch (Exception e) {
       throw new YellowpagesRuntimeException("YellowpagesBmEJB.addGroup()",
           SilverpeasRuntimeException.ERROR,
@@ -1734,9 +1735,9 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     }
   }
 
-  public Collection getModelUsed(String instanceId) {
+  public Collection<String> getModelUsed(String instanceId) {
     Connection con = getConnection();
-    Collection result = null;
+    Collection<String> result = null;
     try {
       result = ModelDAO.getModelUsed(con, instanceId);
     } catch (Exception e) {

@@ -34,9 +34,9 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class GroupDAO {
-  public static Collection getGroupIds(Connection con, String fatherId,
+  public static Collection<String> getGroupIds(Connection con, String fatherId,
       String instanceId) throws SQLException {
-    ArrayList groupIds = new ArrayList();
+    ArrayList<String> groupIds = new ArrayList<String>();
 
     String query = "select groupId from SC_Contact_GroupFather where fatherId = ? and instanceId = ? ";
     PreparedStatement prepStmt = null;

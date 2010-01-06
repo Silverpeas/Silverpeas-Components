@@ -30,9 +30,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
@@ -42,6 +40,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -49,6 +48,7 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
+import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.yellowpages.control.YellowpagesSessionController;
 import com.stratelia.webactiv.yellowpages.model.GroupDetail;
@@ -63,30 +63,27 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
 
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    ComponentSessionController component = (ComponentSessionController) new YellowpagesSessionController(
-        mainSessionCtrl, componentContext);
+    ComponentSessionController component =
+        (ComponentSessionController) new YellowpagesSessionController(
+            mainSessionCtrl, componentContext);
     return component;
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   public String getSessionControlBeanName() {
     return "yellowpagesScc";
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
@@ -115,7 +112,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         String action = request.getParameter("Action");
 
         TopicDetail currentTopic = null;
-        Collection contacts = null;
+        Collection<ContactFatherDetail> contacts = null;
         if (id == null || (id != null && !id.startsWith("group_"))) {
           String rootId = "0";
           if (id == null) {
@@ -140,7 +137,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             scc.setCurrentTopic(currentTopic);
 
             if (id.equals("0") && action == null) {// racine : affiche les
-                                                   // contacts courants
+              // contacts courants
               contacts = scc.getCurrentContacts();
               request.setAttribute("TypeSearch", scc.getCurrentTypeSearch());
               request.setAttribute("SearchCriteria", scc
@@ -154,7 +151,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
 
         } else {
           id = id.substring(id.indexOf("_") + 1, id.length()); // remove
-                                                               // "group_"
+          // "group_"
           GroupDetail group = scc.getGroup(id);
 
           request.setAttribute("Group", group);
@@ -220,13 +217,13 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         String type = request.getParameter("Type");
 
         if (type.equals("Contact")) { // un contact peut-être dans plusieurs
-                                      // noeuds de l'annuaire
+          // noeuds de l'annuaire
           TopicDetail currentTopic = scc.getTopic("0");
           scc.setCurrentTopic(currentTopic);
 
           ContactDetail contactDetail = scc.getContactDetail(id);
 
-          List listContact = new ArrayList();
+          List<ContactDetail> listContact = new ArrayList<ContactDetail>();
           listContact.add(contactDetail);
 
           request.setAttribute("Contacts", scc.getListContactFather(
@@ -246,14 +243,14 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         scc.setCurrentTopic(currentTopic);
 
         String typeSearch = request.getParameter("Action"); // All || LastName
-                                                            // || FirstName ||
-                                                            // LastNameFirstName
+        // || FirstName ||
+        // LastNameFirstName
         String searchCriteria = request.getParameter("SearchCriteria");
 
         scc.setCurrentTypeSearch(typeSearch);
         scc.setCurrentSearchCriteria(searchCriteria);
 
-        List searchResults = scc.search(typeSearch, searchCriteria);
+        List<ContactFatherDetail> searchResults = scc.search(typeSearch, searchCriteria);
 
         scc.setCurrentContacts(searchResults);
 
@@ -268,7 +265,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
       }
 
       else if (function.equals("PrintList")) {
-        Collection contacts = scc.getCurrentContacts();
+        Collection<ContactFatherDetail> contacts = scc.getCurrentContacts();
         TopicDetail currentTopic = scc.getCurrentTopic();
 
         request.setAttribute("Contacts", contacts);
@@ -295,8 +292,9 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             PublicationTemplateManager.addDynamicPublicationTemplate(scc
                 .getComponentId()
                 + ":" + xmlFormShortName, xmlFormName);
-            PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
-                .getPublicationTemplate(scc.getComponentId() + ":"
+            PublicationTemplateImpl pubTemplate =
+                (PublicationTemplateImpl) PublicationTemplateManager
+                    .getPublicationTemplate(scc.getComponentId() + ":"
                     + xmlFormShortName, xmlFormName);
 
             // création du formulaire et du DataRecord
@@ -351,7 +349,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         destination = getDestination("topicManager", scc, request);
       } else if (function.equals("ModelUsed")) {
         try {
-          List templates = PublicationTemplateManager.getPublicationTemplates();
+          List<PublicationTemplate> templates = PublicationTemplateManager.getPublicationTemplates();
           request.setAttribute("XMLForms", templates);
         } catch (Exception e) {
           SilverTrace.info("yellowPages",
@@ -359,7 +357,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
               "root.MSG_GEN_PARAM_VALUE", "", e);
         }
 
-        Collection modelUsed = scc.getModelUsed();
+        Collection<String> modelUsed = scc.getModelUsed();
         request.setAttribute("ModelUsed", modelUsed);
 
         destination = rootDestination + "modelUsedList.jsp";
@@ -379,25 +377,25 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         destination = getDestination("topicManager", scc, request);
       } else if (function.startsWith("modelManager")) {
         // récupération des données saisies dans le formulaire
-        List items = getRequestItems(request);
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
 
-        String action = getParameterValue(items, "Action", "");
-        String contactId = getParameterValue(items, "ContactId", "");
-        String modelId = getParameterValue(items, "ModelId", ""); // Id Node de
-                                                                  // rubrique ou
-                                                                  // Id de
-                                                                  // contact
+        String action = FileUploadUtil.getParameter(items, "Action", "");
+        String contactId = FileUploadUtil.getParameter(items, "ContactId", "");
+        String modelId = FileUploadUtil.getParameter(items, "ModelId", ""); // Id Node de
+        // rubrique ou
+        // Id de
+        // contact
 
         if ("ModelChoice".equals(action)) {
           // List listTemplate =
           // PublicationTemplateManager.getPublicationTemplates();
-          List listTemplates = new ArrayList();
-          ArrayList usedTemplates = new ArrayList(scc.getModelUsed());
+          List<PublicationTemplate> listTemplates = new ArrayList<PublicationTemplate>();
+          ArrayList<String> usedTemplates = new ArrayList<String>(scc.getModelUsed());
           try {
-            List allTemplates = PublicationTemplateManager
+            List<PublicationTemplate> allTemplates = PublicationTemplateManager
                 .getPublicationTemplates();
             PublicationTemplate xmlForm;
-            Iterator iterator = allTemplates.iterator();
+            Iterator<PublicationTemplate> iterator = allTemplates.iterator();
             while (iterator.hasNext()) {
               xmlForm = (PublicationTemplate) iterator.next();
               if (usedTemplates.contains(xmlForm.getFileName()))
@@ -427,8 +425,9 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             PublicationTemplateManager.addDynamicPublicationTemplate(scc
                 .getComponentId()
                 + ":" + xmlFormShortName, xmlFormName);
-            PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
-                .getPublicationTemplate(scc.getComponentId() + ":"
+            PublicationTemplateImpl pubTemplate =
+                (PublicationTemplateImpl) PublicationTemplateManager
+                    .getPublicationTemplate(scc.getComponentId() + ":"
                     + xmlFormShortName, xmlFormName);
 
             // création du formulaire et du DataRecord
@@ -453,7 +452,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             modelId = scc.getCurrentTopic().getNodeDetail().getModelId();
           }
 
-          if (StringUtil.isDefined(modelId)&& modelId.endsWith(".xml")) {
+          if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
             String xmlFormName = modelId;
             String xmlFormShortName = xmlFormName.substring(xmlFormName
                 .indexOf("/") + 1, xmlFormName.indexOf("."));
@@ -461,8 +460,9 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             PublicationTemplateManager.addDynamicPublicationTemplate(scc
                 .getComponentId()
                 + ":" + xmlFormShortName, xmlFormName);
-            PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
-                .getPublicationTemplate(scc.getComponentId() + ":"
+            PublicationTemplateImpl pubTemplate =
+                (PublicationTemplateImpl) PublicationTemplateManager
+                    .getPublicationTemplate(scc.getComponentId() + ":"
                     + xmlFormShortName, xmlFormName);
 
             // création du formulaire et du DataRecord
@@ -485,7 +485,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             request.setAttribute("PagesContext", context);
           }
         } else if ("Add".equals(action)) { // met à jour le choix de formulaire
-                                           // XML
+          // XML
           if (StringUtil.isDefined(modelId)) {
             String xmlFormName = modelId;
             String xmlFormShortName = xmlFormName.substring(xmlFormName
@@ -494,7 +494,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             // récupération des données du formulaire (via le DataRecord)
             PublicationTemplate pubTemplate = PublicationTemplateManager
                 .getPublicationTemplate(scc.getComponentId() + ":"
-                    + xmlFormShortName);
+                + xmlFormShortName);
             Form formUpdate = pubTemplate.getUpdateForm();
             RecordSet recordSet = pubTemplate.getRecordSet();
             DataRecord data = recordSet.getRecord(contactId);
@@ -536,25 +536,6 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         "YellowpagesRequestRooter.getDestination()",
         "root.MSG_GEN_EXIT_METHOD", "destination = " + destination);
     return destination;
-  }
-
-  private List getRequestItems(HttpServletRequest request)
-      throws FileUploadException {
-    DiskFileUpload dfu = new DiskFileUpload();
-    List items = dfu.parseRequest(request);
-    return items;
-  }
-
-  private String getParameterValue(List items, String parameterName,
-      String defaultValue) {
-    FileItem item;
-    Iterator iter = items.iterator();
-    while (iter.hasNext()) {
-      item = (FileItem) iter.next();
-      if (item.isFormField() && parameterName.equals(item.getFieldName()))
-        return item.getString();
-    }
-    return defaultValue;
   }
 
 }
