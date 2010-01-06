@@ -85,7 +85,6 @@ import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -113,13 +112,13 @@ public class GallerySessionController extends AbstractComponentSessionController
   private boolean viewAllPhoto = false;
   private String currentOrderId = "0";
 
-  private Collection listSelected = new ArrayList();
+  private Collection<String> listSelected = new ArrayList<String>();
   private boolean isViewNotVisible = false;
 
   // gestion de la recherche par mot clé
   private String searchKeyWord = "";
-  private Collection searchResultListPhotos = new ArrayList();
-  private Collection restrictedListPhotos = new ArrayList();
+  private Collection<PhotoDetail> searchResultListPhotos = new ArrayList<PhotoDetail>();
+  private Collection<PhotoDetail> restrictedListPhotos = new ArrayList<PhotoDetail>();
   private boolean isSearchResult = false;
   private QueryDescription query = new QueryDescription();
   private SearchContext pdcSearchContext;
@@ -139,7 +138,7 @@ public class GallerySessionController extends AbstractComponentSessionController
   private AdminController m_AdminCtrl = null;
 
   // panier en cours
-  private List basket = new ArrayList(); // liste des photos mise dans le panier
+  private List<String> basket = new ArrayList<String>(); // liste des photos mise dans le panier
 
   /**
    * Standard Session Controller Constructeur
@@ -187,8 +186,8 @@ public class GallerySessionController extends AbstractComponentSessionController
     }
   }
 
-  public Collection getDernieres() {
-    Collection photos = null;
+  public Collection<PhotoDetail> getDernieres() {
+    Collection<PhotoDetail> photos = null;
     // va rechercher les dernières photos du composant
     try {
       photos = getGalleryBm().getDernieres(getComponentId(), viewAllPhoto);
@@ -248,10 +247,10 @@ public class GallerySessionController extends AbstractComponentSessionController
     try {
       album = getGalleryBm().getAlbum(nodePK, viewAllPhoto);
       // ajout des métadonnées sur les photos
-      Collection photos = album.getPhotos();
-      Iterator it = photos.iterator();
+      Collection<PhotoDetail> photos = album.getPhotos();
+      Iterator<PhotoDetail> it = photos.iterator();
       while (it.hasNext()) {
-        PhotoDetail photo = (PhotoDetail) it.next();
+        PhotoDetail photo = it.next();
         try {
           ImageHelper.setMetaData(photo, getMetadataSettings(), getMetadataResources());
         } catch (Exception e) {
@@ -266,14 +265,14 @@ public class GallerySessionController extends AbstractComponentSessionController
     return album;
   }
 
-  public Collection getNotVisible() {
-    Collection photos = new ArrayList();
+  public Collection<PhotoDetail> getNotVisible() {
+    Collection<PhotoDetail> photos = new ArrayList<PhotoDetail>();
     try {
       photos = getGalleryBm().getNotVisible(getComponentId());
       // ajout des métadonnées sur les photos
-      Iterator it = photos.iterator();
+      Iterator<PhotoDetail> it = photos.iterator();
       while (it.hasNext()) {
-        PhotoDetail photo = (PhotoDetail) it.next();
+        PhotoDetail photo = it.next();
         try {
           ImageHelper.setMetaData(photo, getMetadataSettings(), getMetadataResources());
         } catch (Exception e) {
@@ -289,7 +288,7 @@ public class GallerySessionController extends AbstractComponentSessionController
     }
   }
 
-  public Collection getAllAlbums() {
+  public Collection<AlbumDetail> getAllAlbums() {
     try {
       return getGalleryBm().getAllAlbums(getComponentId());
     } catch (Exception e) {
@@ -382,7 +381,7 @@ public class GallerySessionController extends AbstractComponentSessionController
 
     // Mise à jour de l'album courant
     // String albumId = photo.getAlbumId();
-    Collection albumIds = getGalleryBm().getPathList(photo.getPhotoPK().getInstanceId(),
+    Collection<String> albumIds = getGalleryBm().getPathList(photo.getPhotoPK().getInstanceId(),
         photo.getId());
     SilverTrace.info("gallery", "GallerySessionController.getPhoto", "root.MSG_GEN_PARAM_VALUE",
         "albumIds = " + albumIds + ", currentAlbumId =  " + getCurrentAlbumId());
@@ -391,9 +390,9 @@ public class GallerySessionController extends AbstractComponentSessionController
     boolean inAlbum = false;
     boolean first = true;
     String firstAlbumId = "";
-    Iterator it = albumIds.iterator();
+    Iterator<String> it = albumIds.iterator();
     while (it.hasNext()) {
-      String albumId = (String) it.next();
+      String albumId = it.next();
       SilverTrace.info("gallery", "GallerySessionController.getPhoto", "root.MSG_GEN_PARAM_VALUE",
           "albumId = " + albumId);
       if (first) {
@@ -409,7 +408,7 @@ public class GallerySessionController extends AbstractComponentSessionController
     SilverTrace.info("gallery", "GallerySessionController.getPhoto", "root.MSG_GEN_PARAM_VALUE",
         "currentAlbumId fin = " + currentAlbumId);
     // mise à jour du rang de la photo courante
-    List photos = (List) currentAlbum.getPhotos();
+    List<PhotoDetail> photos = (List<PhotoDetail>) currentAlbum.getPhotos();
     rang = photos.indexOf(photo);
 
     return photo;
@@ -420,7 +419,7 @@ public class GallerySessionController extends AbstractComponentSessionController
     try {
       // rechercher le rang de la photo précédente
       int rangPrevious = rang - 1;
-      List photos = (List) currentAlbum.getPhotos();
+      List<PhotoDetail> photos = (List<PhotoDetail>) currentAlbum.getPhotos();
       photo = (PhotoDetail) photos.get(rangPrevious);
       // ajout des metadata depuis le fichier des properties
       try {
@@ -444,7 +443,7 @@ public class GallerySessionController extends AbstractComponentSessionController
     try {
       // rechercher le rang de la photo précédente
       int rangNext = rang + 1;
-      List photos = (List) currentAlbum.getPhotos();
+      List<PhotoDetail> photos = (List<PhotoDetail>) currentAlbum.getPhotos();
       photo = (PhotoDetail) photos.get(rangNext);
       // ajout des metadata depuis le fichier des properties
       try {
@@ -468,7 +467,7 @@ public class GallerySessionController extends AbstractComponentSessionController
     String photoId = null;
     try {
       // rechercher le rang de la photo précédente
-      List photos = (List) currentAlbum.getPhotos();
+      List<PhotoDetail> photos = (List<PhotoDetail>) currentAlbum.getPhotos();
       photo = (PhotoDetail) photos.get(rang);
       photoId = photo.getPhotoPK().getId();
     } catch (Exception e) {
@@ -558,13 +557,13 @@ public class GallerySessionController extends AbstractComponentSessionController
   public void sortPhotos() {
     if (tri.equals("CreationDateAsc")) {
       GSCCreationDateComparatorAsc comparateur = new GSCCreationDateComparatorAsc();
-      Collections.sort((List) currentAlbum.getPhotos(), comparateur);
+      Collections.sort((List<PhotoDetail>) currentAlbum.getPhotos(), comparateur);
     } else if (tri.equals("CreationDateDesc")) {
       GSCCreationDateComparatorDesc comparateur = new GSCCreationDateComparatorDesc();
-      Collections.sort((List) currentAlbum.getPhotos(), comparateur);
+      Collections.sort((List<PhotoDetail>) currentAlbum.getPhotos(), comparateur);
     } else if (tri.equals("Size")) {
       GSCSizeComparatorAsc comparateur = new GSCSizeComparatorAsc();
-      Collections.sort((List) currentAlbum.getPhotos(), comparateur);
+      Collections.sort((List<PhotoDetail>) currentAlbum.getPhotos(), comparateur);
     }
 
     else if (tri.equals("Title")) {
@@ -579,21 +578,21 @@ public class GallerySessionController extends AbstractComponentSessionController
   public void sortPhotosSearch() {
     if (tri.equals("CreationDateAsc")) {
       GSCCreationDateComparatorAsc comparateur = new GSCCreationDateComparatorAsc();
-      Collections.sort((List) getRestrictedListPhotos(), comparateur);
+      Collections.sort((List<PhotoDetail>) getRestrictedListPhotos(), comparateur);
     } else if (tri.equals("CreationDateDesc")) {
       GSCCreationDateComparatorDesc comparateur = new GSCCreationDateComparatorDesc();
-      Collections.sort((List) getRestrictedListPhotos(), comparateur);
+      Collections.sort((List<PhotoDetail>) getRestrictedListPhotos(), comparateur);
     } else if (tri.equals("Size")) {
       GSCSizeComparatorAsc comparateur = new GSCSizeComparatorAsc();
-      Collections.sort((List) getRestrictedListPhotos(), comparateur);
+      Collections.sort((List<PhotoDetail>) getRestrictedListPhotos(), comparateur);
     }
 
     else if (tri.equals("Title")) {
       GSCTitleComparatorAsc comparateur = new GSCTitleComparatorAsc();
-      Collections.sort((List) getRestrictedListPhotos(), comparateur);
+      Collections.sort((List<PhotoDetail>) getRestrictedListPhotos(), comparateur);
     } else if (tri.equals("Author")) {
       GSCAuthorComparatorAsc comparateur = new GSCAuthorComparatorAsc();
-      Collections.sort((List) getRestrictedListPhotos(), comparateur);
+      Collections.sort((List<PhotoDetail>) getRestrictedListPhotos(), comparateur);
     }
   }
 
@@ -636,8 +635,8 @@ public class GallerySessionController extends AbstractComponentSessionController
     return galleryBm;
   }
 
-  public Collection getPath(NodePK nodePK) {
-    Collection path = null;
+  public Collection<NodeDetail> getPath(NodePK nodePK) {
+    Collection<NodeDetail> path = null;
     try {
       path = getGalleryBm().getPath(nodePK);
     } catch (RemoteException e) {
@@ -647,17 +646,11 @@ public class GallerySessionController extends AbstractComponentSessionController
     return path;
   }
 
-  public Collection getPath() {
+  public Collection<NodeDetail> getPath() {
     return getPath(new NodePK(getCurrentAlbumId(), getComponentId()));
   }
 
-  /*
-   * public Collection getPathPhoto(String photoId) { String albumId =
-   * getPhoto(photoId).getAlbumId(); NodePK nodePK = getAlbum(albumId).getNodePK(); return
-   * getPath(nodePK); }
-   */
-
-  public synchronized Collection getPathList(String photoId) {
+  public synchronized Collection<String> getPathList(String photoId) {
     try {
       return getGalleryBm().getPathList(getComponentId(), photoId);
     } catch (RemoteException e) {
@@ -813,58 +806,24 @@ public class GallerySessionController extends AbstractComponentSessionController
     sel.resetAll();
     sel.setHostSpaceName(getSpaceLabel()); // set nom de l'espace pour browsebar
     sel.setHostComponentId(getComponentId()); // set id du composant pour appel
-    // selectionPeas (extra param
-    // permettant de filtrer les users
+    // selectionPeas (extra param permettant de filtrer les users
     // ayant acces au composant)
     PairObject hostComponentName = new PairObject(getComponentLabel(), null); // set
-    // nom
-    // du
-    // composant
-    // pour
-    // browsebar
-    // (PairObject(nom_composant,
-    // lien_vers_composant))
-    // NB
-    // :
-    // seul
-    // le
-    // 1er
-    // element
-    // est
-    // actuellement
-    // utilisé
-    // (alertUserPeas
-    // est
-    // toujours
-    // présenté
-    // en
-    // popup
-    // =>
-    // pas
-    // de
-    // lien
-    // sur
-    // nom
-    // du
-    // composant)
+    // nom du composant pour browsebar (PairObject(nom_composant, lien_vers_composant))
+    // NB : seul le 1er element est actuellement utilisé  (alertUserPeas est toujours
+    // présenté en popup => pas de lien sur nom du composant)
     sel.setHostComponentName(hostComponentName);
     SilverTrace.debug("gallery", "GallerySessionController.initAlertUser()",
         "root.MSG_GEN_PARAM_VALUE", "name = " + hostComponentName + " componentId="
             + getComponentId());
     sel.setNotificationMetaData(getAlertNotificationMetaData(photoId)); // set
-    // NotificationMetaData
-    // contenant
-    // les
-    // informations
-    // à
-    // notifier
-    // fin initialisation de AlertUser
-    // l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
+    // NotificationMetaData contenant les informations à notifier fin initialisation de 
+    // AlertUser l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
     return AlertUser.getAlertUserURL();
   }
 
-  public Collection search(QueryDescription query) {
-    Collection result = new ArrayList();
+  public Collection<PhotoDetail> search(QueryDescription query) {
+    Collection<PhotoDetail> result = new ArrayList<PhotoDetail>();
     try {
       query.setSearchingUser(getUserId());
       query.addComponent(getComponentId());
@@ -990,7 +949,7 @@ public class GallerySessionController extends AbstractComponentSessionController
     this.viewAllPhoto = viewAllPhoto;
   }
 
-  public Collection getListSelected() {
+  public Collection<String> getListSelected() {
     // restitution de la collection des photos selectionnées
     SilverTrace.info("gallery", "GallerySessionControler.getListSelected()", "",
         "listSelected (taille) = (" + listSelected.size() + ") " + listSelected.toString());
@@ -1001,19 +960,19 @@ public class GallerySessionController extends AbstractComponentSessionController
     listSelected.clear();
   }
 
-  public Collection getRestrictedListPhotos() {
+  public Collection<PhotoDetail> getRestrictedListPhotos() {
     return restrictedListPhotos;
   }
 
-  public void setRestrictedListPhotos(Collection restrictedListPhotos) {
+  public void setRestrictedListPhotos(Collection<PhotoDetail> restrictedListPhotos) {
     this.restrictedListPhotos = restrictedListPhotos;
   }
 
-  public Collection getSearchResultListPhotos() {
+  public Collection<PhotoDetail> getSearchResultListPhotos() {
     return searchResultListPhotos;
   }
 
-  public void setSearchResultListPhotos(Collection searchResultListPhotos) {
+  public void setSearchResultListPhotos(Collection<PhotoDetail> searchResultListPhotos) {
     this.searchResultListPhotos = searchResultListPhotos;
   }
 
@@ -1061,18 +1020,18 @@ public class GallerySessionController extends AbstractComponentSessionController
     }
   }
 
-  public void copySelectedPhoto(Collection photoIds) throws RemoteException {
-    Iterator itPhoto = photoIds.iterator();
+  public void copySelectedPhoto(Collection<String> photoIds) throws RemoteException {
+    Iterator<String> itPhoto = photoIds.iterator();
     while (itPhoto.hasNext()) {
-      String photoId = (String) itPhoto.next();
+      String photoId = itPhoto.next();
       copyImage(photoId);
     }
   }
 
-  public void cutSelectedPhoto(Collection photoIds) throws RemoteException {
-    Iterator itPhoto = photoIds.iterator();
+  public void cutSelectedPhoto(Collection<String> photoIds) throws RemoteException {
+    Iterator<String> itPhoto = photoIds.iterator();
     while (itPhoto.hasNext()) {
-      String photoId = (String) itPhoto.next();
+      String photoId = itPhoto.next();
       cutImage(photoId);
     }
   }
@@ -1120,10 +1079,10 @@ public class GallerySessionController extends AbstractComponentSessionController
     try {
       SilverTrace.info("gallery", "GalleryRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
           "clipboard = " + getClipboardName() + " count=" + getClipboardCount());
-      Collection clipObjects = getClipboardSelectedObjects();
-      Iterator clipObjectIterator = clipObjects.iterator();
+      Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
+      Iterator<ClipboardSelection> clipObjectIterator = clipObjects.iterator();
       while (clipObjectIterator.hasNext()) {
-        ClipboardSelection clipObject = (ClipboardSelection) clipObjectIterator.next();
+        ClipboardSelection clipObject = clipObjectIterator.next();
         if (clipObject != null) {
           if (clipObject.isDataFlavorSupported(PhotoSelection.PhotoDetailFlavor)) {
             PhotoDetail photo = (PhotoDetail) clipObject
@@ -1159,7 +1118,7 @@ public class GallerySessionController extends AbstractComponentSessionController
     SilverTrace.info("gallery", "GalleryRequestRooter.pasteAlbum()", "root.MSG_GEN_PARAM_VALUE",
         " ENTREE albumToPaste = " + albumToPaste.getId() + " father = " + father.getId());
 
-    List treeToPaste = getNodeBm().getSubTree(nodeToPastePK);
+    List<NodeDetail> treeToPaste = getNodeBm().getSubTree(nodeToPastePK);
 
     if (isCutted) {
       // move node and subtree
@@ -1200,7 +1159,7 @@ public class GallerySessionController extends AbstractComponentSessionController
 
       nodePK = getNodeBm().createNode(album, father);
 
-      List nodeIdsToPaste = new ArrayList();
+      List<NodePK> nodeIdsToPaste = new ArrayList<NodePK>();
       NodeDetail oneNodeToPaste = null;
       for (int i = 0; i < treeToPaste.size(); i++) {
         oneNodeToPaste = (NodeDetail) treeToPaste.get(i);
@@ -1212,9 +1171,9 @@ public class GallerySessionController extends AbstractComponentSessionController
       pasteImagesOfAlbum(nodeToPastePK, nodePK, false, nodeIdsToPaste);
 
       if (albumToPaste.getChildrenDetails() != null) {
-        Iterator it = (Iterator) albumToPaste.getChildrenDetails().iterator();
+        Iterator<NodeDetail> it = albumToPaste.getChildrenDetails().iterator();
         while (it != null && it.hasNext()) {
-          NodeDetail unNode = (NodeDetail) it.next();
+          NodeDetail unNode = it.next();
           AlbumDetail unAlbum = new AlbumDetail(unNode);
           if (unAlbum != null)
             pasteAlbum(unAlbum, album, isCutted);
@@ -1224,11 +1183,11 @@ public class GallerySessionController extends AbstractComponentSessionController
   }
 
   public ProfileInst getAlbumProfile(String role, String topicId) {
-    List profiles = new ArrayList();
+    List<ProfileInst> profiles = new ArrayList<ProfileInst>();
     // List profiles = getAdmin().getProfilesByObject(topicId,
     // getComponentId());
     for (int p = 0; profiles != null && p < profiles.size(); p++) {
-      ProfileInst profile = (ProfileInst) profiles.get(p);
+      ProfileInst profile = profiles.get(p);
       if (profile.getName().equals(role))
         return profile;
     }
@@ -1245,13 +1204,13 @@ public class GallerySessionController extends AbstractComponentSessionController
     return m_AdminCtrl;
   }
 
-  private void pasteImagesOfAlbum(NodePK fromPK, NodePK toPK, boolean isCutted, List nodePKsToPaste)
+  private void pasteImagesOfAlbum(NodePK fromPK, NodePK toPK, boolean isCutted, List<NodePK> nodePKsToPaste)
       throws RemoteException {
-    Collection photos = getGalleryBm().getAllPhoto(fromPK, viewAllPhoto);
-    Iterator itPhotos = photos.iterator();
+    Collection<PhotoDetail> photos = getGalleryBm().getAllPhoto(fromPK, viewAllPhoto);
+    Iterator<PhotoDetail> itPhotos = photos.iterator();
     PhotoDetail photo = null;
     while (itPhotos.hasNext()) {
-      photo = (PhotoDetail) itPhotos.next();
+      photo = itPhotos.next();
       SilverTrace.info("gallery", "GalleryRequestRooter.pasteAlbum()", "root.MSG_GEN_PARAM_VALUE",
           "photo = " + photo.toString() + " toPK = " + toPK.toString());
       pastePhoto(photo, isCutted, toPK, nodePKsToPaste);
@@ -1263,7 +1222,7 @@ public class GallerySessionController extends AbstractComponentSessionController
 
   }
 
-  private void pastePhoto(PhotoDetail photo, boolean isCutted, NodePK nodePK, List nodePKsToPaste) {
+  private void pastePhoto(PhotoDetail photo, boolean isCutted, NodePK nodePK, List<NodePK> nodePKsToPaste) {
     try {
       String fromId = photo.getPhotoPK().getId();
       String fromComponentId = photo.getPhotoPK().getInstanceId();
@@ -1360,7 +1319,7 @@ public class GallerySessionController extends AbstractComponentSessionController
           // dupliquer la photo dans un autre composant
           id = createImage(fromPhotoPK, photo, nodePK.getId());
 
-          List fatherPKs = (List) getGalleryBm().getPathList(getComponentId(),
+          List<String> fatherPKs = (List<String>) getGalleryBm().getPathList(getComponentId(),
               photo.getPhotoPK().getId());
           if (nodePKsToPaste != null) {
             fatherPKs.removeAll(nodePKsToPaste);
@@ -1412,17 +1371,10 @@ public class GallerySessionController extends AbstractComponentSessionController
 
         // force the update
         getGalleryBm().updatePhoto(photo);
-
         goToAlbum(nodePK.getId());
 
       }
-    } catch (PdcException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (FormException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    } catch (IOException e) {
+    } catch (Exception e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
     }
@@ -1568,7 +1520,7 @@ public class GallerySessionController extends AbstractComponentSessionController
   }
 
   public void createBasket() throws RemoteException {
-    basket = new ArrayList();
+    basket = new ArrayList<String>();
   }
 
   public void addToBasket() throws RemoteException {
@@ -1589,9 +1541,9 @@ public class GallerySessionController extends AbstractComponentSessionController
 
   public void deleteToBasket() throws RemoteException {
     // suppression dans le panier
-    Iterator it = listSelected.iterator();
+    Iterator<String> it = listSelected.iterator();
     while (it.hasNext()) {
-      String photoId = (String) it.next();
+      String photoId = it.next();
       // rechercher la photo dans le panier et la supprimer
       basket.remove(photoId);
 
@@ -1608,17 +1560,17 @@ public class GallerySessionController extends AbstractComponentSessionController
     basket.clear();
   }
 
-  public List getBasketListPhotos() throws RemoteException {
+  public List<String> getBasketListPhotos() throws RemoteException {
     return basket;
   }
 
   public Order getOrder(String orderId) throws RemoteException {
     Order order = getGalleryBm().getOrder(orderId, getComponentId());
-    List rows = order.getRows();
-    List newRows = new ArrayList();
-    Iterator it = rows.iterator();
+    List<OrderRow> rows = order.getRows();
+    List<OrderRow> newRows = new ArrayList<OrderRow>();
+    Iterator<OrderRow> it = rows.iterator();
     while (it.hasNext()) {
-      OrderRow row = (OrderRow) it.next();
+      OrderRow row = it.next();
       String photoId = Integer.toString(row.getPhotoId());
       PhotoDetail photo = getPhoto(photoId);
       row.setPhoto(photo);
@@ -1646,10 +1598,10 @@ public class GallerySessionController extends AbstractComponentSessionController
 
   public void updateOrderRow(String orderId, String photoId) throws RemoteException {
     Order order = getOrder(orderId);
-    List rows = order.getRows();
-    Iterator it = rows.iterator();
+    List<OrderRow> rows = order.getRows();
+    Iterator<OrderRow> it = rows.iterator();
     while (it.hasNext()) {
-      OrderRow row = (OrderRow) it.next();
+      OrderRow row = it.next();
       if (row.getPhotoId() == Integer.parseInt(photoId)) {
         // on est sur la bonne ligne, mettre à jour
         row.setDownloadDecision("T");
@@ -1661,10 +1613,10 @@ public class GallerySessionController extends AbstractComponentSessionController
   public String getUrl(String orderId, String photoId) throws RemoteException {
     String url = "";
     Order order = getOrder(orderId);
-    List rows = order.getRows();
-    Iterator it = rows.iterator();
+    List<OrderRow> rows = order.getRows();
+    Iterator<OrderRow> it = rows.iterator();
     while (it.hasNext()) {
-      OrderRow row = (OrderRow) it.next();
+      OrderRow row = it.next();
       if (row.getPhotoId() == Integer.parseInt(photoId)) {
         // on est sur la bonne ligne
         PhotoDetail photo = getPhoto(Integer.toString(row.getPhotoId()));
@@ -1699,8 +1651,8 @@ public class GallerySessionController extends AbstractComponentSessionController
     return Integer.toString(getOrder(orderId).getUserId()).equals(getUserId());
   }
 
-  public List getMetaDataKeys() {
-    List metaDatas = new ArrayList();
+  public List<MetaData> getMetaDataKeys() {
+    List<MetaData> metaDatas = new ArrayList<MetaData>();
 
     // lire le fichier des properties
     // passer les metadata EXIF
@@ -1739,11 +1691,11 @@ public class GallerySessionController extends AbstractComponentSessionController
         metaData.setLabel(label);
 
         // rechercher sa valeur dans la query (résultat de la recherche)
-        List metadataValue = query.getMultiFieldQuery();
+        List<FieldDescription> metadataValue = query.getMultiFieldQuery();
         if (metadataValue != null) {
-          Iterator it = metadataValue.iterator();
+          Iterator<FieldDescription> it = metadataValue.iterator();
           while (it.hasNext()) {
-            FieldDescription field = (FieldDescription) it.next();
+            FieldDescription field = it.next();
             if (field.getFieldName().equals("IPTC_" + metaData.getProperty()))
               metaData.setValue(field.getContent());
 
@@ -1764,11 +1716,11 @@ public class GallerySessionController extends AbstractComponentSessionController
     getGalleryBm().updateOrder(order);
   }
 
-  public List getAllOrders() throws RemoteException {
+  public List<Order> getAllOrders() throws RemoteException {
     return getGalleryBm().getAllOrders("-1", getComponentId());
   }
 
-  public List getOrdersByUser() throws RemoteException {
+  public List<Order> getOrdersByUser() throws RemoteException {
     return getGalleryBm().getAllOrders(getUserId(), getComponentId());
   }
 

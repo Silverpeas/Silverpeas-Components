@@ -86,11 +86,16 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
  */
 public class GalleryBmEJB implements SessionBean {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
   public AlbumDetail getAlbum(NodePK nodePK, boolean viewAllPhoto) {
     try {
       AlbumDetail album = new AlbumDetail(getNodeBm().getDetail(nodePK));
       // récupération des photos
-      Collection photos = getAllPhoto(nodePK, viewAllPhoto);
+      Collection<PhotoDetail> photos = getAllPhoto(nodePK, viewAllPhoto);
       // ajout des photos à l'album
       album.setPhotos(photos);
       return album;
@@ -100,10 +105,10 @@ public class GalleryBmEJB implements SessionBean {
     }
   }
 
-  public Collection getAllAlbums(String instanceId) {
+  public Collection<NodeDetail> getAllAlbums(String instanceId) {
     try {
       NodePK nodePK = new NodePK("0", instanceId);
-      Collection albums = getNodeBm().getSubTree(nodePK);
+      Collection<NodeDetail> albums = getNodeBm().getSubTree(nodePK);
       return albums;
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllAlbum()",
@@ -147,11 +152,11 @@ public class GalleryBmEJB implements SessionBean {
     // suppression des photos de l'album
     deleteAllPhotos(nodePK);
     // recherche des sous albums
-    Collection childrens = getNodeBm().getChildrenDetails(nodePK);
+    Collection<NodeDetail> childrens = getNodeBm().getChildrenDetails(nodePK);
     if (childrens != null) {
-      Iterator itChild = childrens.iterator();
+      Iterator<NodeDetail> itChild = childrens.iterator();
       while (itChild.hasNext()) {
-        NodeDetail node = (NodeDetail) itChild.next();
+        NodeDetail node = itChild.next();
         // suppression des photos du sous album
         NodePK nodePkChild = node.getNodePK();
         deletePhotosAlbum(nodePkChild);
@@ -160,11 +165,11 @@ public class GalleryBmEJB implements SessionBean {
   }
 
   private void deleteAllPhotos(NodePK nodePK) {
-    Collection photos = getAllPhoto(nodePK, true);
+    Collection<PhotoDetail> photos = getAllPhoto(nodePK, true);
     if (photos != null) {
-      Iterator it = photos.iterator();
+      Iterator<PhotoDetail> it = photos.iterator();
       while (it.hasNext()) {
-        PhotoDetail photo = (PhotoDetail) it.next();
+        PhotoDetail photo = it.next();
         PhotoPK photoPK = photo.getPhotoPK();
         deletePhoto(photoPK);
       }
@@ -199,10 +204,10 @@ public class GalleryBmEJB implements SessionBean {
     }
   }
 
-  public Collection getAllPhotos(String instanceId) {
+  public Collection<PhotoDetail> getAllPhotos(String instanceId) {
     Connection con = initCon();
     try {
-      Collection photos = PhotoDAO.getAllPhotos(con, instanceId);
+      Collection<PhotoDetail> photos = PhotoDAO.getAllPhotos(con, instanceId);
       return photos;
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotos()",
@@ -213,12 +218,12 @@ public class GalleryBmEJB implements SessionBean {
     }
   }
 
-  public Collection getAllPhoto(NodePK nodePK, boolean viewAllPhoto) {
+  public Collection<PhotoDetail> getAllPhoto(NodePK nodePK, boolean viewAllPhoto) {
     Connection con = initCon();
     try {
       String albumId = nodePK.getId();
       String instanceId = nodePK.getInstanceId();
-      Collection photos = PhotoDAO.getAllPhoto(con, albumId, instanceId,
+      Collection<PhotoDetail> photos = PhotoDAO.getAllPhoto(con, albumId, instanceId,
           viewAllPhoto);
 
       return photos;
@@ -231,10 +236,10 @@ public class GalleryBmEJB implements SessionBean {
     }
   }
 
-  public Collection getNotVisible(String instanceId) {
+  public Collection<PhotoDetail> getNotVisible(String instanceId) {
     Connection con = initCon();
     try {
-      Collection photos = PhotoDAO.getPhotoNotVisible(con, instanceId);
+      Collection<PhotoDetail> photos = PhotoDAO.getPhotoNotVisible(con, instanceId);
 
       return photos;
     } catch (Exception e) {
@@ -321,10 +326,10 @@ public class GalleryBmEJB implements SessionBean {
     }
   }
 
-  public Collection getDernieres(String instanceId, boolean viewAllPhoto) {
+  public Collection<PhotoDetail> getDernieres(String instanceId, boolean viewAllPhoto) {
     Connection con = initCon();
     try {
-      Collection photos = PhotoDAO.getDernieres(con, instanceId, viewAllPhoto);
+      Collection<PhotoDetail> photos = PhotoDAO.getDernieres(con, instanceId, viewAllPhoto);
       return photos;
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhoto()",
@@ -358,8 +363,8 @@ public class GalleryBmEJB implements SessionBean {
     return con;
   }
 
-  public Collection getPath(NodePK nodePK) {
-    Collection path;
+  public Collection<NodeDetail> getPath(NodePK nodePK) {
+    Collection<NodeDetail> path;
     try {
       path = getNodeBm().getPath(nodePK);
     } catch (Exception e) {
@@ -369,7 +374,7 @@ public class GalleryBmEJB implements SessionBean {
     return path;
   }
 
-  public Collection getPathList(String instanceId, String photoId) {
+  public Collection<String> getPathList(String instanceId, String photoId) {
     Connection con = initCon();
     try {
       return PhotoDAO.getPathList(con, instanceId, photoId);
@@ -430,7 +435,7 @@ public class GalleryBmEJB implements SessionBean {
   public String getHTMLNodePath(NodePK nodePK) {
     String htmlPath = "";
     try {
-      List path = (List) getPath(nodePK);
+      List<NodeDetail> path = (List<NodeDetail>) getPath(nodePK);
       if (path.size() > 0)
         path.remove(path.size() - 1);
       htmlPath = getSpacesPath(nodePK.getInstanceId())
@@ -447,9 +452,9 @@ public class GalleryBmEJB implements SessionBean {
 
   private String getSpacesPath(String componentId) {
     String spacesPath = "";
-    List spaces = getOrganizationController().getSpacePathToComponent(
+    List<SpaceInst> spaces = getOrganizationController().getSpacePathToComponent(
         componentId);
-    Iterator iSpaces = spaces.iterator();
+    Iterator<SpaceInst> iSpaces = spaces.iterator();
     SpaceInst spaceInst = null;
     while (iSpaces.hasNext()) {
       spaceInst = (SpaceInst) iSpaces.next();
@@ -473,16 +478,16 @@ public class GalleryBmEJB implements SessionBean {
     return orga;
   }
 
-  private String displayPath(Collection path, int beforeAfter) {
+  private String displayPath(Collection<NodeDetail> path, int beforeAfter) {
     String pathString = new String();
     int nbItemInPath = path.size();
-    Iterator iterator = path.iterator();
+    Iterator<NodeDetail> iterator = path.iterator();
     boolean alreadyCut = false;
     int nb = 0;
 
     NodeDetail nodeInPath = null;
     while (iterator.hasNext()) {
-      nodeInPath = (NodeDetail) iterator.next();
+      nodeInPath = iterator.next();
       if ((nb <= beforeAfter) || (nb + beforeAfter >= nbItemInPath - 1)) {
         pathString = nodeInPath.getName() + " " + pathString;
         if (iterator.hasNext())
@@ -503,12 +508,12 @@ public class GalleryBmEJB implements SessionBean {
         "com.silverpeas.gallery.settings.metadataSettings", "fr");
 
     // parcourir tous les albums
-    Collection albums = getAllAlbums(instanceId);
+    Collection<NodeDetail> albums = getAllAlbums(instanceId);
     if (albums != null) {
-      Iterator it = albums.iterator();
+      Iterator<NodeDetail> it = albums.iterator();
       while (it.hasNext()) {
         // pour chaque album, parcourir toutes les photos
-        NodeDetail album = (NodeDetail) it.next();
+        NodeDetail album = it.next();
 
         // indexation de l'album
         try {
@@ -518,11 +523,11 @@ public class GalleryBmEJB implements SessionBean {
               SilverpeasRuntimeException.ERROR, "gallery.MSG_INDEXALBUM", e);
         }
 
-        Collection photos = getAllPhoto(album.getNodePK(), true);
+        Collection<PhotoDetail> photos = getAllPhoto(album.getNodePK(), true);
         if (photos != null) {
-          Iterator itP = photos.iterator();
+          Iterator<PhotoDetail> itP = photos.iterator();
           while (itP.hasNext()) {
-            PhotoDetail photo = (PhotoDetail) itP.next();
+            PhotoDetail photo = itP.next();
             // ajout des métadata pour les indéxer
             try {
               ImageHelper.setMetaData(photo, metadataSettings);
@@ -572,10 +577,10 @@ public class GalleryBmEJB implements SessionBean {
       // récupération des méta données pour les indéxer
       String metaDataStr = "";
       MetaData metaData;
-      Collection properties = photo.getMetaDataProperties();
-      Iterator it = properties.iterator();
+      Collection<String> properties = photo.getMetaDataProperties();
+      Iterator<String> it = properties.iterator();
       while (it.hasNext()) {
-        String property = (String) it.next();
+        String property = (it.next());
         metaData = photo.getMetaData(property);
         String value = metaData.getValue();
         metaDataStr = metaDataStr + " " + value;
@@ -677,8 +682,8 @@ public class GalleryBmEJB implements SessionBean {
     }
   }
 
-  public Collection search(QueryDescription query) {
-    Collection photos = new ArrayList();
+  public Collection<PhotoDetail> search(QueryDescription query) {
+    Collection<PhotoDetail> photos = new ArrayList<PhotoDetail>();
     MatchingIndexEntry[] result = null;
     try {
       SearchEngineBm searchEngineBm = getSearchEngineBm();
@@ -709,7 +714,7 @@ public class GalleryBmEJB implements SessionBean {
     return photos;
   }
 
-  public Collection getAllPhotoEndVisible(int nbDays) {
+  public Collection<PhotoDetail> getAllPhotoEndVisible(int nbDays) {
     Connection con = initCon();
     try {
       return PhotoDAO.getAllPhotoEndVisible(con, nbDays);
@@ -741,7 +746,7 @@ public class GalleryBmEJB implements SessionBean {
     }
   }
 
-  public String createOrder(Collection basket, String userId, String componentId) {
+  public String createOrder(Collection<String> basket, String userId, String componentId) {
     Connection con = initCon();
     try {
       return OrderDAO.createOrder(con, basket, userId, componentId);
@@ -754,7 +759,7 @@ public class GalleryBmEJB implements SessionBean {
     }
   }
 
-  public List getAllOrders(String userId, String instanceId) {
+  public List<Order> getAllOrders(String userId, String instanceId) {
     Connection con = initCon();
     try {
       return OrderDAO.getAllOrders(con, userId, instanceId);
@@ -809,7 +814,7 @@ public class GalleryBmEJB implements SessionBean {
     }
   }
 
-  public Collection getAllOrderToDelete(int nbDays) {
+  public Collection<Order> getAllOrderToDelete(int nbDays) {
     Connection con = initCon();
     try {
       return OrderDAO.getAllOrdersToDelete(con, nbDays);

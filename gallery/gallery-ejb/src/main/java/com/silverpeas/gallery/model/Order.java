@@ -34,7 +34,7 @@ public class Order {
   private Date creationDate;
   private int processUserId;
   private Date processDate;
-  private List rows; // List of OrderRow
+  private List<OrderRow> rows; // List of OrderRow
 
   public Order(int userId, String instanceId, Date creationDate) {
     setUserId(userId);
@@ -110,11 +110,11 @@ public class Order {
     this.processDate = processDate;
   }
 
-  public List getRows() {
+  public List<OrderRow> getRows() {
     return rows;
   }
 
-  public void setRows(List rows) {
+  public void setRows(List<OrderRow> rows) {
     this.rows = rows;
   }
 

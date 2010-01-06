@@ -68,10 +68,10 @@ public class PhotoDAO {
     return photo;
   }
 
-  public static Collection getAllPhoto(Connection con, String albumId,
+  public static Collection<PhotoDetail> getAllPhoto(Connection con, String albumId,
       String instanceId, boolean viewAllPhoto) throws SQLException {
     // récupérer toutes les photos d'un album
-    ArrayList listPhoto = null;
+    ArrayList<PhotoDetail> listPhoto = null;
     Date today = new Date();
 
     String query = "select * from SC_Gallery_Photo P, SC_Gallery_Path A "
@@ -83,7 +83,7 @@ public class PhotoDAO {
       prepStmt.setInt(1, Integer.parseInt(albumId));
       prepStmt.setString(2, instanceId);
       rs = prepStmt.executeQuery();
-      listPhoto = new ArrayList();
+      listPhoto = new ArrayList<PhotoDetail>();
       while (rs.next()) {
         PhotoDetail photo = recupPhoto(rs);
         if (viewAllPhoto || isVisible(photo, today))
@@ -96,10 +96,10 @@ public class PhotoDAO {
     return listPhoto;
   }
 
-  public static Collection getPhotoNotVisible(Connection con, String instanceId)
+  public static Collection<PhotoDetail> getPhotoNotVisible(Connection con, String instanceId)
       throws SQLException {
     // récupérer les photos qui ne sont plus visibles pour l'instance
-    ArrayList listPhoto = null;
+    ArrayList<PhotoDetail> listPhoto = null;
     Date today = new Date();
     String dateToday = DateUtil.date2SQLDate(today);
 
@@ -113,7 +113,7 @@ public class PhotoDAO {
       prepStmt.setString(2, dateToday);
       prepStmt.setString(3, dateToday);
       rs = prepStmt.executeQuery();
-      listPhoto = new ArrayList();
+      listPhoto = new ArrayList<PhotoDetail>();
       while (rs.next()) {
         PhotoDetail photo = recupPhoto(rs);
         listPhoto.add(photo);
@@ -125,10 +125,10 @@ public class PhotoDAO {
     return listPhoto;
   }
 
-  public static Collection getAllPhotos(Connection con, String instanceId)
+  public static Collection<PhotoDetail> getAllPhotos(Connection con, String instanceId)
       throws SQLException {
     // récupérer toutes les photos de l'instance
-    ArrayList listPhoto = null;
+    ArrayList<PhotoDetail> listPhoto = null;
 
     String query = "select * from SC_Gallery_Photo where instanceId = ? ";
     PreparedStatement prepStmt = null;
@@ -137,7 +137,7 @@ public class PhotoDAO {
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
       rs = prepStmt.executeQuery();
-      listPhoto = new ArrayList();
+      listPhoto = new ArrayList<PhotoDetail>();
       while (rs.next()) {
         PhotoDetail photo = recupPhoto(rs);
         listPhoto.add(photo);
@@ -149,11 +149,11 @@ public class PhotoDAO {
     return listPhoto;
   }
 
-  public static Collection getAllPhotoEndVisible(Connection con, int nbDays)
+  public static Collection<PhotoDetail> getAllPhotoEndVisible(Connection con, int nbDays)
       throws SQLException {
     // récupérer toutes les photos de l'instance ayant une date de visibilité
     // arrivant à terme dans 'nbDays' jours
-    ArrayList listPhoto = null;
+    ArrayList<PhotoDetail> listPhoto = null;
 
     // calcul de la date de fin de visibilité
     Calendar calendar = Calendar.getInstance(Locale.FRENCH);
@@ -172,7 +172,7 @@ public class PhotoDAO {
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, dateLimite);
       rs = prepStmt.executeQuery();
-      listPhoto = new ArrayList();
+      listPhoto = new ArrayList<PhotoDetail>();
       while (rs.next()) {
         PhotoDetail photo = recupPhoto(rs);
         listPhoto.add(photo);
@@ -191,7 +191,7 @@ public class PhotoDAO {
     String id = "";
     PreparedStatement prepStmt = null;
     try {
-      int newId = DBUtil.getNextId(con, "SC_Gallery_Photo", "photoId");
+      int newId = DBUtil.getNextId("SC_Gallery_Photo", "photoId");
       id = new Integer(newId).toString();
       // création de la requete
       String query = "insert into SC_Gallery_Photo (photoId,title,description,sizeH,sizeL,creationDate,updateDate,vueDate"
@@ -215,7 +215,7 @@ public class PhotoDAO {
     String id = "";
     PreparedStatement prepStmt = null;
     try {
-      int newId = DBUtil.getNextId(con, "SC_Gallery_Path", "photoId");
+      int newId = DBUtil.getNextId("SC_Gallery_Path", "photoId");
       id = new Integer(newId).toString();
       // création de la requete
       String query = "insert into SC_Gallery_Path (photoId, nodeId, instanceId) values (?,?,?)";
@@ -270,10 +270,10 @@ public class PhotoDAO {
     }
   }
 
-  public static Collection getDernieres(Connection con, String instanceId,
+  public static Collection<PhotoDetail> getDernieres(Connection con, String instanceId,
       boolean viewAllPhoto) throws SQLException {
     // récupérer toutes les photos d'un album
-    ArrayList listPhoto = null;
+    ArrayList<PhotoDetail> listPhoto = null;
     Date today = new Date();
 
     String query = "select * from SC_Gallery_Photo where instanceId = ? order by creationDate desc,photoId desc";
@@ -283,7 +283,7 @@ public class PhotoDAO {
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
       rs = prepStmt.executeQuery();
-      listPhoto = new ArrayList();
+      listPhoto = new ArrayList<PhotoDetail>();
       while (rs.next()) {
         PhotoDetail photo = recupPhoto(rs);
         if (viewAllPhoto || isVisible(photo, today))
@@ -322,10 +322,10 @@ public class PhotoDAO {
     return result;
   }
 
-  public static Collection getPathList(Connection con, String instanceId,
+  public static Collection<String> getPathList(Connection con, String instanceId,
       String photoId) throws SQLException {
     // récupérer la liste des emplacements de la photo
-    ArrayList listPath = null;
+    ArrayList<String> listPath = null;
 
     String query = "select N.NodeId from SC_Gallery_Path P, SB_Node_Node N "
         + "where P.PhotoId = ? and N.nodeId = P.NodeId and P.instanceId = ? and N.instanceId = P.instanceId ";
@@ -336,7 +336,7 @@ public class PhotoDAO {
       prepStmt.setInt(1, Integer.parseInt(photoId));
       prepStmt.setString(2, instanceId);
       rs = prepStmt.executeQuery();
-      listPath = new ArrayList();
+      listPath = new ArrayList<String>();
       while (rs.next()) {
         int nodeId = rs.getInt(1);
         listPath.add(Integer.toString(nodeId));

@@ -44,7 +44,7 @@ import com.stratelia.webactiv.util.exception.UtilException;
 
 public class OrderDAO {
 
-  public static String createOrder(Connection con, Collection basket,
+  public static String createOrder(Connection con, Collection<String> basket,
       String userId, String instanceId) throws SQLException, UtilException {
     // Création d'une commande
     String id = "";
@@ -65,9 +65,9 @@ public class OrderDAO {
       prepStmt.executeUpdate();
 
       // 2. création des lignes de la demande
-      Iterator it = basket.iterator();
+      Iterator<String> it = basket.iterator();
       while (it.hasNext()) {
-        String photoId = (String) it.next();
+        String photoId = it.next();
         addPhoto(con, photoId, id, instanceId);
       }
     } finally {
@@ -77,10 +77,10 @@ public class OrderDAO {
     return id;
   }
 
-  public static List getAllPhotos(Connection con, String orderId)
+  public static List<OrderRow> getAllPhotos(Connection con, String orderId)
       throws SQLException {
     // récupérer toutes les photos de la demande
-    ArrayList listPhoto = null;
+    ArrayList<OrderRow> listPhoto = null;
 
     String query = "select photoId, instanceId, downloadDate, downloadDecision  from SC_Gallery_OrderDetail where orderId = ? ";
     PreparedStatement prepStmt = null;
@@ -89,7 +89,7 @@ public class OrderDAO {
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(orderId));
       rs = prepStmt.executeQuery();
-      listPhoto = new ArrayList();
+      listPhoto = new ArrayList<OrderRow>();
       while (rs.next()) {
         String photoId = rs.getString(1);
         String instanceId = rs.getString(2);
@@ -129,8 +129,8 @@ public class OrderDAO {
       prepStmt.executeUpdate();
 
       // pour chaque ligne
-      List rows = order.getRows();
-      Iterator it = rows.iterator();
+      List<OrderRow> rows = order.getRows();
+      Iterator<OrderRow> it = rows.iterator();
       while (it.hasNext()) {
         OrderRow row = (OrderRow) it.next();
         query = "update SC_Gallery_OrderDetail set downloadDecision = ? where orderId = ? and photoId = ? ";
@@ -186,10 +186,10 @@ public class OrderDAO {
     }
   }
 
-  public static List getAllOrders(Connection con, String userId,
+  public static List<Order> getAllOrders(Connection con, String userId,
       String instanceId) throws SQLException {
     // récupérer toutes les demandes de l'utilisateur sur cette instance
-    ArrayList listOrder = null;
+    ArrayList<Order> listOrder = null;
 
     boolean allUsers = false;
     if (userId.equals("-1"))
@@ -207,7 +207,7 @@ public class OrderDAO {
         prepStmt.setInt(2, Integer.parseInt(userId));
 
       rs = prepStmt.executeQuery();
-      listOrder = new ArrayList();
+      listOrder = new ArrayList<Order>();
       while (rs.next()) {
         int orderId = rs.getInt(1);
 
@@ -325,10 +325,10 @@ public class OrderDAO {
     return downloadDate;
   }
 
-  public static List getAllOrdersToDelete(Connection con, int nbDays)
+  public static List<Order> getAllOrdersToDelete(Connection con, int nbDays)
       throws SQLException {
     // récupérer toutes les demandes arrivant à échéance
-    ArrayList listOrder = null;
+    ArrayList<Order> listOrder = null;
 
     // calcul de la date de fin
     Calendar calendar = Calendar.getInstance(Locale.FRENCH);
@@ -345,7 +345,7 @@ public class OrderDAO {
       prepStmt.setString(1, Long.toString(date.getTime()));
 
       rs = prepStmt.executeQuery();
-      listOrder = new ArrayList();
+      listOrder = new ArrayList<Order>();
       while (rs.next()) {
         int orderId = rs.getInt(1);
 
@@ -400,11 +400,11 @@ public class OrderDAO {
       prepStmt.executeUpdate();
 
       // TODO : supprimer les lignes
-      Collection photos = getAllPhotos(con, orderId);
+      Collection<OrderRow> photos = getAllPhotos(con, orderId);
       if (photos != null) {
-        Iterator it = photos.iterator();
+        Iterator<OrderRow> it = photos.iterator();
         while (it.hasNext()) {
-          OrderRow row = (OrderRow) it.next();
+          OrderRow row = it.next();
           deletePhotoByOrder(con, orderId, Integer.toString(row.getPhotoId()));
         }
       }

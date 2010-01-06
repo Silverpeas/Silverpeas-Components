@@ -32,10 +32,13 @@ import java.util.Iterator;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
 
 public class PhotoDetail implements SilverContentInterface, Serializable {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
   PhotoPK photoPK;
   String title;
   String description;
@@ -59,7 +62,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   Date beginDate;
   Date endDate;
   String permalink;
-  Hashtable metaData = new Hashtable();
+  Hashtable<String, MetaData> metaData = new Hashtable<String, MetaData>();
   String keyWord;
   Date beginDownloadDate;
   Date endDownloadDate;
@@ -381,7 +384,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
     return (MetaData) metaData.get(property);
   }
 
-  public Collection getMetaDataProperties() {
+  public Collection<String> getMetaDataProperties() {
     return metaData.keySet();
   }
 

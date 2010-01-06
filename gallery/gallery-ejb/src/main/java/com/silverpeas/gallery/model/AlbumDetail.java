@@ -28,7 +28,11 @@ import java.util.Collection;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 
 public class AlbumDetail extends NodeDetail {
-  private Collection photos;
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+  private Collection<PhotoDetail> photos;
   private String permalink = null;
 
   public AlbumDetail(NodeDetail node) {
@@ -46,11 +50,11 @@ public class AlbumDetail extends NodeDetail {
     setOrder(node.getOrder());
   }
 
-  public Collection getPhotos() {
+  public Collection<PhotoDetail> getPhotos() {
     return photos;
   }
 
-  public void setPhotos(Collection photos) {
+  public void setPhotos(Collection<PhotoDetail> photos) {
     this.photos = photos;
   }
 

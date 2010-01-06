@@ -37,6 +37,7 @@ import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
@@ -54,7 +55,7 @@ public interface GalleryBm extends EJBObject {
 
   public void deleteAlbum(NodePK nodePK) throws RemoteException;
 
-  public Collection getAllAlbums(String instanceId) throws RemoteException;
+  public Collection<AlbumDetail> getAllAlbums(String instanceId) throws RemoteException;
 
   public void setPhotoPath(String photoId, String[] albums, String instanceId)
       throws RemoteException;
@@ -65,10 +66,10 @@ public interface GalleryBm extends EJBObject {
   // les photos ...
   public PhotoDetail getPhoto(PhotoPK photoPK) throws RemoteException;
 
-  public Collection getAllPhoto(NodePK nodePK, boolean viewAllPhoto)
+  public Collection<PhotoDetail> getAllPhoto(NodePK nodePK, boolean viewAllPhoto)
       throws RemoteException;
 
-  public Collection getAllPhotos(String instanceId) throws RemoteException;
+  public Collection<PhotoDetail> getAllPhotos(String instanceId) throws RemoteException;
 
   public String createPhoto(PhotoDetail photo, String albumId)
       throws RemoteException;
@@ -77,20 +78,19 @@ public interface GalleryBm extends EJBObject {
 
   public void deletePhoto(PhotoPK photoPK) throws RemoteException;
 
-  public Collection getDernieres(String instanceId, boolean viewAllPhoto)
-      throws RemoteException;
+  public Collection<PhotoDetail> getDernieres(String instanceId, boolean viewAllPhoto) throws RemoteException;
 
-  public Collection getAllPhotoEndVisible(int nbDays) throws RemoteException;
+  public Collection<PhotoDetail> getAllPhotoEndVisible(int nbDays) throws RemoteException;
 
   public void notifyUsers(NotificationMetaData notifMetaData, String senderId,
       String instanceId) throws RemoteException;
 
-  public Collection getNotVisible(String instanceId) throws RemoteException;
+  public Collection<PhotoDetail> getNotVisible(String instanceId) throws RemoteException;
 
   // ...
-  public Collection getPath(NodePK nodePK) throws RemoteException;
+  public Collection<NodeDetail> getPath(NodePK nodePK) throws RemoteException;
 
-  public Collection getPathList(String instanceId, String photoId)
+  public Collection<String> getPathList(String instanceId, String photoId)
       throws RemoteException;
 
   public String getHTMLNodePath(NodePK nodePK) throws RemoteException;
@@ -103,16 +103,16 @@ public interface GalleryBm extends EJBObject {
 
   public int getSilverObjectId(PhotoPK photoPK) throws RemoteException;
 
-  public Collection search(QueryDescription query) throws RemoteException;
+  public Collection<PhotoDetail> search(QueryDescription query) throws RemoteException;
 
   // les demandes
-  public String createOrder(Collection basket, String userId, String instanceId)
+  public String createOrder(Collection<String> basket, String userId, String instanceId)
       throws RemoteException;
 
   public Order getOrder(String orderId, String instanceId)
       throws RemoteException;
 
-  public List getAllOrders(String userId, String instanceId)
+  public List<Order> getAllOrders(String userId, String instanceId)
       throws RemoteException;
 
   // public List getPhotosOrder(String orderId) throws RemoteException;
@@ -123,7 +123,7 @@ public interface GalleryBm extends EJBObject {
 
   public void updateOrder(Order order) throws RemoteException;
 
-  public Collection getAllOrderToDelete(int nbDays) throws RemoteException;
+  public Collection<Order> getAllOrderToDelete(int nbDays) throws RemoteException;
 
   public void deleteOrder(String orderId) throws RemoteException;
 
