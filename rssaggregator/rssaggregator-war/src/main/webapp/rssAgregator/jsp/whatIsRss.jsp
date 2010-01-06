@@ -41,7 +41,7 @@ var addChannelWindow = window;
 
 function addChannel() {
     windowName = "addChannelWindow";
-	larg = "550";
+	larg = "600";
 	haut = "350";
     windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
     if (!addChannelWindow.closed && addChannelWindow.name== "addChannelWindow")
