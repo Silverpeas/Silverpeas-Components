@@ -47,10 +47,16 @@
 %>
 <table CELLPADDING=5 WIDTH="100%">
 
-		<!-- AFFICHAGE de la photo -->
-      	<td> 
-			<IMG SRC="<%=url%>">
-		</td>
+  <% if (StringUtil.isDefined(url)) { %>
+  <!-- AFFICHAGE de la photo -->
+    <td> 
+      <IMG SRC="<%=url%>">
+    </td>
+  <%} else { %>
+    <td>
+      <%= resource.getString("gallery.alreadyDownloaded") %>
+    </td>
+  <% } %>
 
 </table>
 <% 

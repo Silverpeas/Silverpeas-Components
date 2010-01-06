@@ -1671,8 +1671,10 @@ public class GallerySessionController extends AbstractComponentSessionController
         String nomRep = getSettings().getString("imagesSubDirectory") + photoId;
         String download = row.getDownloadDecision();
 
-        // par defaut photo sans watermark
-        String title = Encode.javaStringToHtmlString(photo.getImageName());
+        if (!download.equals("T")) {
+          // la photo n'a pas déjà été téléchargée
+          // par defaut photo sans watermark
+          String title = Encode.javaStringToHtmlString(photo.getImageName());
         if (download.equals("DW")) {
           // demande avec Watermark
           title = photoId + "_watermark.jpg";
@@ -1687,6 +1689,7 @@ public class GallerySessionController extends AbstractComponentSessionController
         }
         url = FileServerUtils.getUrl(getSpaceId(), getComponentId(), URLEncoder.encode(title),
             photo.getImageMimeType(), nomRep);
+      }
       }
     }
     return url;
