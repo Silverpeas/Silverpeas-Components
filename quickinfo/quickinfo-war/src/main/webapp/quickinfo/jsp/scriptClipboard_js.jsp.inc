@@ -63,12 +63,7 @@ function isCorrectForm() {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.title")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
            errorNb++; 
         }
-	
-     	if (!isValidTextArea(document.quickInfoEditForm.Description)) {
-     		errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.description")%>' <%=resources.getString("ContainsTooLargeText")+resources.getString("NbMaxTextArea")+resources.getString("Characters")%>\n";
-           	errorNb++; 
-	}  	  	
-       
+	       
         if (! isWhitespace(beginDate)) {
         	if (isCorrectDate(yearBegin, monthBegin, dayBegin)==false) {
                 	errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("dateDebut")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
