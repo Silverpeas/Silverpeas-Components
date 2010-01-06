@@ -1,5 +1,4 @@
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator,
-                 java.util.ArrayList"%>
+<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.CompletePublication"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
@@ -76,7 +75,7 @@ public void displayAllOperations(String id, KmeliaSessionController kmeliaScc, G
       if (id.length()>0)
           enabled = true;
 
-      ArrayList invisibleTabs = kmeliaScc.getInvisibleTabs();
+      List invisibleTabs = kmeliaScc.getInvisibleTabs();
       
       int i = 0;
       TabbedPane tabbedPane = gef.getTabbedPane(2);
@@ -116,8 +115,12 @@ public void displayAllOperations(String id, KmeliaSessionController kmeliaScc, G
        	  tabbedPane.addTab(resources.getString("Model")+decoration, "javaScript:onClick=goToOperation('"+routerUrl+"ToPubliContent', '"+id+"', 'ModelUpdateView')", action.equals("ModelUpdateView") || action.equals("NewModel") || action.equals("ModelChoice"), enabled, row);
       }
       if (invisibleTabs.indexOf(kmeliaScc.TAB_ATTACHMENTS) == -1) {
+          if (kmeliaScc.getComponentId().startsWith("toolbox"))
+          {
           i++;
+          	decoration = "";
           tabbedPane.addTab(resources.getString("GML.attachments")+decoration, "javaScript:onClick=goToOperation('"+routerUrl+"ViewAttachments', '"+id+"', 'ViewAttachments')", action.equals("ViewAttachments"), enabled, row);
+          }
       }
       if (invisibleTabs.indexOf(kmeliaScc.TAB_SEE_ALSO) == -1 && !kmaxMode) {
           i++;
@@ -181,7 +184,7 @@ void displayUserOperations(String id, KmeliaSessionController kmeliaScc, Graphic
       if (id.length()>0)
           enabled = true;
 
-      ArrayList invisibleTabs = kmeliaScc.getInvisibleTabs();
+      List invisibleTabs = kmeliaScc.getInvisibleTabs();
       TabbedPane tabbedPane = gef.getTabbedPane();
       tabbedPane.addTab(resources.getString("GML.publication"), routerUrl+"ViewPublication?PubId="+id, action.equals("View") || action.equals("ViewPublication"), enabled);
       if (invisibleTabs.indexOf(kmeliaScc.TAB_SEE_ALSO) == -1 && !kmaxMode) {
@@ -223,7 +226,7 @@ void displayWizardOperations(String wizardRow, String id, KmeliaSessionControlle
       if (numRow >= 4)
       	enabledPdc = true;
 	  	
-      ArrayList invisibleTabs = kmeliaScc.getInvisibleTabs();
+      List invisibleTabs = kmeliaScc.getInvisibleTabs();
      
       int row = 2;
       int i = 0;
@@ -255,7 +258,7 @@ void displayWizardOperations(String wizardRow, String id, KmeliaSessionControlle
 
 public void displayOnNewOperations(KmeliaSessionController kmeliaScc, GraphicElementFactory gef, String action, JspWriter out) throws IOException {
       displayJavascriptAndFormToOperations(kmeliaScc, out);
-      ArrayList invisibleTabs = kmeliaScc.getInvisibleTabs();
+      List invisibleTabs = kmeliaScc.getInvisibleTabs();
 
       TabbedPane tabbedPane = gef.getTabbedPane();
       if (invisibleTabs.indexOf(kmeliaScc.TAB_HEADER) == -1) {

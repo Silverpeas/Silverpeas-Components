@@ -37,7 +37,9 @@ import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.webactiv.kmelia.model.FullPublication;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.kmelia.model.UserCompletePublication;
+import com.stratelia.webactiv.kmelia.model.UserPublication;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -45,6 +47,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
+import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
@@ -144,7 +147,7 @@ public interface KmeliaBm extends EJBObject {
   public void sortSubTopics(NodePK fatherPK, boolean recursive,
       String[] criteria) throws RemoteException;
 
-  public List getTreeview(NodePK nodePK, String profile,
+  public List<NodeDetail> getTreeview(NodePK nodePK, String profile,
       boolean coWritingEnable, boolean draftVisibleWithCoWriting,
       String userId, boolean displayNb, boolean isRightsOnTopicsUsed)
       throws RemoteException;
@@ -158,7 +161,7 @@ public interface KmeliaBm extends EJBObject {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
-  public Collection getSubscriptionList(String userId, String componentId)
+  public Collection<Collection<NodeDetail>> getSubscriptionList(String userId, String componentId)
       throws RemoteException;
 
   /**
@@ -197,9 +200,9 @@ public interface KmeliaBm extends EJBObject {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
-  public Collection getPathList(PublicationPK pubPK) throws RemoteException;
+  public Collection<Collection<NodeDetail>> getPathList(PublicationPK pubPK) throws RemoteException;
 
-  public Collection getPublicationFathers(PublicationPK pubPK)
+  public Collection<NodePK> getPublicationFathers(PublicationPK pubPK)
       throws RemoteException;
 
   /**
@@ -272,7 +275,7 @@ public interface KmeliaBm extends EJBObject {
    * @see com.stratelia.webactiv.util.publication.info.model.ModelDetail
    * @since 1.0
    */
-  public Collection getAllModels() throws RemoteException;
+  public Collection<ModelDetail> getAllModels() throws RemoteException;
 
   /**
    * Return the detail of a model
@@ -324,7 +327,7 @@ public interface KmeliaBm extends EJBObject {
   public void updateInfoDetail(PublicationPK pubPK, InfoDetail infos)
       throws RemoteException;
 
-  public void deleteInfoLinks(PublicationPK pubPK, List pubIds)
+  public void deleteInfoLinks(PublicationPK pubPK, List<String> pubIds)
       throws RemoteException;
 
   /**
@@ -347,7 +350,7 @@ public interface KmeliaBm extends EJBObject {
       boolean isTreeStructureUsed, String userId, boolean isRightsOnTopicsUsed)
       throws RemoteException;
 
-  public Collection getPublicationDetails(Collection publicationIds,
+  public Collection<PublicationDetail> getPublicationDetails(Collection<String> publicationIds,
       String componentId) throws RemoteException;
 
   /**
@@ -357,13 +360,13 @@ public interface KmeliaBm extends EJBObject {
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
    * @since 1.0
    */
-  public Collection getPublications(Collection publicationIds, String componentId, String userId,
+  public Collection<UserPublication> getPublications(Collection<String> publicationIds, String componentId, String userId,
       boolean isRightsOnTopicsUsed) throws RemoteException;
 
-  public List getPublicationsToValidate(String componentId)
+  public List<UserPublication> getPublicationsToValidate(String componentId)
       throws RemoteException;
 
-  public List getAllValidators(PublicationPK pubPK, int validationType)
+  public List<String> getAllValidators(PublicationPK pubPK, int validationType)
       throws RemoteException;
 
   public boolean validatePublication(PublicationPK pubPK, String userId,
@@ -451,14 +454,14 @@ public interface KmeliaBm extends EJBObject {
   /* Interface - Fichiers joints */
   /**************************************************************************************/
 
-  public Collection getAttachments(PublicationPK pubPK) throws RemoteException;
+  public Collection<AttachmentDetail> getAttachments(PublicationPK pubPK) throws RemoteException;
 
   public String getWysiwyg(PublicationPK pubPK) throws RemoteException;
 
   public void addModelUsed(String[] models, String instanceId)
       throws RemoteException;
 
-  public Collection getModelUsed(String instanceId) throws RemoteException;
+  public Collection<String> getModelUsed(String instanceId) throws RemoteException;
 
   /**************************************************************************************/
   /**************************************************************************************/
@@ -474,7 +477,7 @@ public interface KmeliaBm extends EJBObject {
    * @return List of Axis
    * @throws RemoteException
    */
-  public List getAxis(String componentId) throws RemoteException;
+  public List<NodeDetail> getAxis(String componentId) throws RemoteException;
 
   /**
    * Get list of Axis Headers
@@ -482,7 +485,7 @@ public interface KmeliaBm extends EJBObject {
    * @return List of Axis Headers
    * @throws RemoteException
    */
-  public List getAxisHeaders(String componentId) throws RemoteException;
+  public List<NodeDetail> getAxisHeaders(String componentId) throws RemoteException;
 
   /**
    * Add an axis
@@ -559,7 +562,7 @@ public interface KmeliaBm extends EJBObject {
    * @return
    * @throws RemoteException
    */
-  public Collection getPath(String positionId, String componentId)
+  public Collection<NodeDetail> getPath(String positionId, String componentId)
       throws RemoteException;
 
   /**************************************************************************************/
@@ -573,7 +576,7 @@ public interface KmeliaBm extends EJBObject {
    * @return Collection of publication
    * @throws RemoteException
    */
-  public Collection search(List<String> combination, String componentId)
+  public Collection<UserPublication> search(List<String> combination, String componentId)
       throws RemoteException;
 
   /**
@@ -583,7 +586,7 @@ public interface KmeliaBm extends EJBObject {
    * @return Collection of publication
    * @throws RemoteException
    */
-  public Collection search(List<String> combination, int nbDays, String componentId)
+  public Collection<UserPublication> search(List<String> combination, int nbDays, String componentId)
       throws RemoteException;
 
   /**
@@ -592,7 +595,7 @@ public interface KmeliaBm extends EJBObject {
    * @return Collection of publication
    * @throws RemoteException
    */
-  public Collection getUnbalancedPublications(String componentId)
+  public Collection<UserPublication> getUnbalancedPublications(String componentId)
       throws RemoteException;
 
   /**************************************************************************************/
@@ -619,7 +622,7 @@ public interface KmeliaBm extends EJBObject {
    * @return UserCompletePublication
    * @throws RemoteException
    */
-  public Collection getPublicationCoordinates(String pubId, String componentId)
+  public Collection<Coordinate> getPublicationCoordinates(String pubId, String componentId)
       throws RemoteException;
 
   /**
@@ -658,22 +661,23 @@ public interface KmeliaBm extends EJBObject {
   public void deleteCoordinates(CoordinatePK coordinatePK, ArrayList coordinates)
       throws RemoteException;
 
-  public Collection getAlias(PublicationPK pubPK) throws RemoteException;
+  public Collection<Alias> getAlias(PublicationPK pubPK) throws RemoteException;
 
-  public void setAlias(PublicationPK pubPK, List alias) throws RemoteException;
+  public void setAlias(PublicationPK pubPK, List<Alias> alias) throws RemoteException;
 
   public void addAttachmentToPublication(PublicationPK pubPK, String userId,
       String filename, String description, byte[] contents)
       throws RemoteException;
 
-  public boolean importPublication(String instanceId, String topicId,
-      String spaceId, String userId, Map publiParams, Map formParams,
+  public boolean importPublication(String componentId, String topicId,
+      String spaceId, String userId, Map<String, String> publiParams,
+      Map<String, String> formParams,
       String language, String xmlFormName, String discrimatingParameterName,
       String userProfile) throws RemoteException;
 
   public void importPublications(String componentId, String topicId,
-      String spaceId, String userId, ArrayList publiParamsList,
-      ArrayList formParamsList, String language, String xmlFormName,
+      String spaceId, String userId, List<Map<String, String>> publiParamsList,
+      List<Map<String, String>> formParamsList, String language, String xmlFormName,
       String discrimatingParameterName, String userProfile)
       throws RemoteException;
 
@@ -694,7 +698,7 @@ public interface KmeliaBm extends EJBObject {
   public void deleteAttachment(AttachmentDetail attachmentDetail)
       throws RemoteException;
 
-  public Collection getPublicationsSpecificValues(String componentId,
+  public Collection<String> getPublicationsSpecificValues(String componentId,
       String xmlFormName, String fieldName) throws RemoteException;
 
   public void draftInPublication(String componentId, String xmlFormName,
