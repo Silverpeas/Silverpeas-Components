@@ -36,6 +36,10 @@ import de.nava.informa.impl.basic.Channel;
  * 
  */
 public class SPChannel extends SilverpeasBean implements Serializable {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
   private String instanceId;
   private String url;
   private int nbDisplayedItems = 100;

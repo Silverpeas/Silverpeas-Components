@@ -81,9 +81,9 @@ public class RssAgregatorSessionController extends
    * Extract rss files informations (channels and items). Return a list of
    * Channel.
    */
-  public List getAvailableChannels() throws RssAgregatorException {
-    List channelsFromDB = getRssBm().getChannels(getComponentId());
-    ArrayList channels = new ArrayList();
+  public List<SPChannel> getAvailableChannels() throws RssAgregatorException {
+    List<SPChannel> channelsFromDB = getRssBm().getChannels(getComponentId());
+    ArrayList<SPChannel> channels = new ArrayList<SPChannel>();
     SPChannel channel = null;
     SPChannelPK channelPK = null;
 
@@ -104,9 +104,9 @@ public class RssAgregatorSessionController extends
    * Extract rss files informations (channels and items). Return a list of
    * Channel.
    */
-  public List getChannelsContent() throws RssAgregatorException {
-    List channelsFromDB = getRssBm().getChannels(getComponentId());
-    ArrayList channels = new ArrayList();
+  public List<SPChannel> getChannelsContent() throws RssAgregatorException {
+    List<SPChannel> channelsFromDB = getRssBm().getChannels(getComponentId());
+    ArrayList<SPChannel> channels = new ArrayList<SPChannel>();
     SPChannel channel = null;
     Channel rssChannel = null;
     SPChannelPK channelPK = null;

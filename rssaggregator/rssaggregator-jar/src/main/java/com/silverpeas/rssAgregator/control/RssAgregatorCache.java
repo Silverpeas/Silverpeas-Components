@@ -40,9 +40,9 @@ public class RssAgregatorCache {
   // instance of RssAgregatorCache singleton
   private static RssAgregatorCache instance = null;
   // content of cache
-  private Hashtable cache = new Hashtable();
+  private Hashtable<SPChannelPK, SPChannel> cache = new Hashtable<SPChannelPK, SPChannel>();
   // informations about cache refresh
-  private Hashtable cacheNextRefresh = new Hashtable();
+  private Hashtable<SPChannelPK, Long> cacheNextRefresh = new Hashtable<SPChannelPK, Long>();
 
   /**
    * Default constructor

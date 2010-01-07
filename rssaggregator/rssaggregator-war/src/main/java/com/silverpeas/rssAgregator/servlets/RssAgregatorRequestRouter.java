@@ -58,7 +58,7 @@ public class RssAgregatorRequestRouter extends ComponentRequestRouter {
 
     try {
       if (function.startsWith("Main") || function.equals("portlet")) {
-        List channels = rssAgregatorSC.getAvailableChannels();
+        List<SPChannel> channels = rssAgregatorSC.getAvailableChannels();
 
         if (function.startsWith("Main"))
           request.setAttribute("Role", role);

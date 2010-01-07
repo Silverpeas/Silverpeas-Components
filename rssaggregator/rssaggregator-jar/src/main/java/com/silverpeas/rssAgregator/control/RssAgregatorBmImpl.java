@@ -87,11 +87,11 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
    * com.silverpeas.rssAgregator.control.RssAgregatorBm#getChannels(java.lang
    * .String)
    */
-  public List getChannels(String instanceId) throws RssAgregatorException {
-    List channels = null;
+  public List<SPChannel> getChannels(String instanceId) throws RssAgregatorException {
+    List<SPChannel> channels = null;
     try {
       SPChannelPK pk = new SPChannelPK("useless", instanceId);
-      channels = (List) getDAO().findByWhereClause(pk,
+      channels = (List<SPChannel>) getDAO().findByWhereClause(pk,
           "instanceId = '" + instanceId + "' ORDER BY id");
     } catch (PersistenceException pe) {
       throw new RssAgregatorException("RssAgregatorBmImpl.getChannels()",
