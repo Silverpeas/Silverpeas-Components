@@ -32,6 +32,7 @@ public class ConnecteurJDBCConnectionInfoDetail extends SilverpeasBean {
   private String login = "";
   private String password = "";
   private String SQLreq = "";
+  private String instanceId = "";
   private int rowLimit;
 
   // getters
@@ -87,4 +88,8 @@ public class ConnecteurJDBCConnectionInfoDetail extends SilverpeasBean {
   public void setRowLimit(int rowLimit) {
     this.rowLimit = rowLimit;
   }
+  
+  public void setInstanceId(String componentId) {
+    this.instanceId = componentId;
+    }
 }
