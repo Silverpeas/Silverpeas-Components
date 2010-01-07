@@ -68,8 +68,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="java.util.Date"%>
 <%@ page import="java.io.File"%>
-<%@ page import="com.oreilly.servlet.MultipartRequest"%>
-<%@ page import="com.oreilly.servlet.multipart.*"%>
 <%@ page import="com.stratelia.webactiv.util.DBUtil"%>
 <%@ page import="java.io.PrintWriter"%>
 <%@ page import="java.io.IOException"%>
