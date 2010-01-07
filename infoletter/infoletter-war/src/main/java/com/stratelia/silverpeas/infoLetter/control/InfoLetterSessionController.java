@@ -267,9 +267,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     int i = 0;
     pk.setId(String.valueOf(ilp.getLetterId()));
     InfoLetter il = dataInterface.getInfoLetter(pk);
-    String sTitle = "Nouvelle parution de la Lettre : " + il.getName();
-    String sContent = "Une nouvelle parution vient de sortir pour la Lettre Informative " + il.
-        getName();
+	String sTitle = getString("infoLetter.emailSubject") + ilp.getName();
+	String sContent = getString("infoLetter.emailContent") + ilp.getName();
 
     Vector v = dataInterface.getInternalSuscribers(pk);
     Vector groups = (Vector) v.elementAt(0);
@@ -324,8 +323,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
       // Corps et sujet du message
       InfoLetter il = dataInterface.getInfoLetter(letterPK);
-      String subject = "Nouvelle parution de la Lettre : " + il.getName();
-
+      String subject = getString("infoLetter.emailSubject") + ilp.getName();
+		
       // Email du publieur
       String from = getUserDetail().geteMail();
 
