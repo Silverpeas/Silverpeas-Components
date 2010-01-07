@@ -46,6 +46,26 @@
     <description>no description</description>
     <servlet-class>com.stratelia.webactiv.kmelia.servlets.AliasFileServer</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>JSONServlet</servlet-name>
+    <display-name>JSONServlet</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.kmelia.servlets.JSONServlet</servlet-class>
+  </servlet>
+  <servlet>
+    <servlet-name>KmeliaAjaxServlet</servlet-name>
+    <display-name>KmeliaAjaxServlet</display-name>
+    <description>no description</description>
+    <servlet-class>com.stratelia.webactiv.kmelia.servlets.AjaxServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>KmeliaAjaxServlet</servlet-name>
+    <url-pattern>/KmeliaAJAXServlet/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>JSONServlet</servlet-name>
+    <url-pattern>/KmeliaJSONServlet/*</url-pattern>
+  </servlet-mapping>
   <servlet-mapping>
     <servlet-name>KmeliaRequestRouter</servlet-name>
     <url-pattern>/Rkmelia/*</url-pattern>

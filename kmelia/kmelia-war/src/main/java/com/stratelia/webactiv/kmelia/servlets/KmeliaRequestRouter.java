@@ -363,8 +363,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         if (StringUtil.isDefined(isLink))
           request.setAttribute("IsLink", new Boolean(true));
 
-        request.setAttribute("Path", kmelia.getSessionPathString());
-        request.setAttribute("PathLinked", kmelia.getSessionPath());
+        String topicId = request.getParameter("Id");
+        List<NodeDetail> path = kmelia.getTopicPath(topicId);
+        request.setAttribute("Path", displayPath(path, false, 3, kmelia.getCurrentLanguage()));
+        request.setAttribute("PathLinked", displayPath(path, true, 3, kmelia.getCurrentLanguage()));
         request.setAttribute("Translation", kmelia.getCurrentLanguage());
         request.setAttribute("PopupDisplay", new Boolean(true));
         request
@@ -387,8 +389,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         NodeDetail node = kmelia.getSubTopicDetail(id);
 
         request.setAttribute("NodeDetail", node);
-        request.setAttribute("Path", kmelia.getSessionPathString());
-        request.setAttribute("PathLinked", kmelia.getSessionPath());
+
+        List<NodeDetail> path = kmelia.getTopicPath(id);
+        request.setAttribute("Path", displayPath(path, false, 3, kmelia.getCurrentLanguage()));
+        request.setAttribute("PathLinked", displayPath(path, true, 3, kmelia.getCurrentLanguage()));
         request.setAttribute("Translation", kmelia.getCurrentLanguage());
         request.setAttribute("PopupDisplay", new Boolean(true));
         request
@@ -552,7 +556,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
               "&Profile=" + kmelia.getProfile();
         } else {
           List<String> publicationLanguages = kmelia.getPublicationLanguages(); // languages of
-                                                                                // publication
+          // publication
           // header and attachments
           if (publicationLanguages.contains(kmelia.getCurrentLanguage()))
             request.setAttribute("ContentLanguage", kmelia.getCurrentLanguage());

@@ -1508,9 +1508,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     setSessionPublicationsList(publications);
   }
 
-  public synchronized List<UserPublication> orderPubsToValidate(int sortType)
+  public synchronized void orderPubsToValidate(int sortType)
       throws RemoteException {
-    return sort(getKmeliaBm().getPublicationsToValidate(getComponentId()), sortType);
+    List<UserPublication> publications = sort(getKmeliaBm().getPublicationsToValidate(getComponentId()), sortType);
+    setSessionPublicationsList(publications);
   }
 
   private List<UserPublication> sort(Collection<UserPublication> publications, int sortType) {
@@ -1667,8 +1668,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       throws RemoteException {
     Collection<PublicationDetail> result =
         getKmeliaBm().getPublicationBm().getDetailsByFatherIdsAndStatus((ArrayList) fatherIds,
-            pubPK,
-            "P.pubUpdateDate desc, P.pubId desc", PublicationDetail.VALID);
+        pubPK,
+        "P.pubUpdateDate desc, P.pubId desc", PublicationDetail.VALID);
     SilverTrace.info("kmelia", "KmeliaSessionController.getAllPublicationsByTopic()",
         "root.MSG_PARAM_VALUE", "publis=" + result.toString());
     return result;
@@ -2214,10 +2215,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         // Document creation
         document =
             new Document(new DocumentPK(-1, "useless", getComponentId()), getPublicationPK(pubId),
-                attachment.getLogicalName(), attachment.getInfo(), 0,
-                Integer.parseInt(getUserId()), new Date(), "", getComponentId(),
-                (ArrayList<Worker>) workers,
-                new ArrayList(), 0, 0);
+            attachment.getLogicalName(), attachment.getInfo(), 0,
+            Integer.parseInt(getUserId()), new Date(), "", getComponentId(),
+            (ArrayList<Worker>) workers,
+            new ArrayList(), 0, 0);
 
         // Version creation
         version =
@@ -3109,9 +3110,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       return getPersonalization().getDragAndDropStatus();
     } catch (NoSuchObjectException nsoe) {
       initPersonalization();
-      return getPersonalization().getDragAndDropStatus() &&
-          "yes".equals(getSettings().getString("massiveDragAndDropAllowed")) &&
-          isMassiveDragAndDropAllowed();
+      return getPersonalization().getDragAndDropStatus();
     }
   }
 

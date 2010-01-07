@@ -360,7 +360,8 @@ public interface KmeliaBm extends EJBObject {
    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
    * @since 1.0
    */
-  public Collection<UserPublication> getPublications(Collection<String> publicationIds, String componentId, String userId,
+  public Collection<UserPublication> getPublications(Collection<String> publicationIds,
+      String componentId, String userId,
       boolean isRightsOnTopicsUsed) throws RemoteException;
 
   public List<UserPublication> getPublicationsToValidate(String componentId)

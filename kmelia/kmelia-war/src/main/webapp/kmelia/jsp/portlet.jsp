@@ -97,7 +97,6 @@ ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.kmelia.se
 <script type="text/javascript" src="<%=m_context%>/util/ajax/prototype.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/ajax/rico.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/ajax/ricoAjax.js"></script>
-<script type="text/javascript" src="javaScript/spacesInURL.js"></script>
 <Script language="JavaScript1.2">
 function topicGoTo(id) {
     document.topicDetailForm.Action.value = "Search";

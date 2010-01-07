@@ -1211,7 +1211,8 @@ public class KmeliaBmEJB implements SessionBean {
             }
             statusSubQuery +=
                 "P.pubStatus IN ('Valid','ToValidate') OR (P.pubStatus = 'Draft' AND P.pubUpdaterId = '"
-                    + userId + "') ";
+                    +
+                    userId + "') ";
           }
           statusSubQuery += "OR P.pubUpdaterId = '" + userId + "'";
           statusSubQuery += ")";

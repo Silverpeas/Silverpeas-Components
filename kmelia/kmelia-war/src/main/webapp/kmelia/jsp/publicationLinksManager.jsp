@@ -74,7 +74,6 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/ajax/prototype.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/ajax/rico.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/ajax/ricoAjax.js"></script>
-<script type="text/javascript" src="javaScript/spacesInURL.js"></script>
 <Script language="JavaScript">
 function topicGoTo(id) {
     document.pubChooseLinkForm.Action.value = "Search";

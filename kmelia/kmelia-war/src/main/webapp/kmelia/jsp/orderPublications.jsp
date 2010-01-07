@@ -81,7 +81,7 @@ function topicGoTo(id)
 <view:frame>
 <view:board>
 <img src="<%=resources.getIcon("kmelia.info")%>" align="absmiddle"/> <%=resources.getString("kmelia.OrderPublicationsHelp")%><br/><br/>
-<center><%=gef.getFormButton(resources.getString("kmelia.OrderPublicationsSave"), "javascript:sendData()", false).print() %></center> 
+<center><%=gef.getFormButton(resources.getString("kmelia.SortItemsSave"), "javascript:sendData()", false).print() %></center> 
 </view:board>
 <br/>
 <view:board>

@@ -58,6 +58,14 @@ function showApplet(divId)
 	}
 }
 
+function reloadApplets()
+{
+	$("#appletDragAndDrop").remove();
+	$("#appletDragAndDropDraft").remove();
+	dNdLoaded = false;
+	dNdVisible = false;	
+}
+
 function loadApplet(divId, targetURL, message, properties, max_upload, pathJreInstaller)
 {
 	var divDND = document.getElementById(divId);

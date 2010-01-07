@@ -64,6 +64,9 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
  * @author
  */
 public class AliasFileServer extends HttpServlet {
+
+  private static final long serialVersionUID = 1L;
+
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     doPost(req, res);
@@ -134,14 +137,14 @@ public class AliasFileServer extends HttpServlet {
       PublicationPK pubPK = new PublicationPK(filePublicationId,
           fileComponentId);
 
-      List aliases = (List) getPublicationBm().getAlias(pubPK);
+      List<Alias> aliases = (List<Alias>) getPublicationBm().getAlias(pubPK);
 
       // check if user have rights to see alias files
       Alias alias;
       boolean rightsOK = false;
       KmeliaSecurity security = new KmeliaSecurity();
       for (int a = 0; !rightsOK && a < aliases.size(); a++) {
-        alias = (Alias) aliases.get(a);
+        alias = aliases.get(a);
         if (!contextComponentId.equals(alias.getInstanceId())) {
           // it's an alias
           // Check if user is allowed to see topic's content
