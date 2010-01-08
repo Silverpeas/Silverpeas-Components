@@ -34,10 +34,8 @@ import com.stratelia.webactiv.beans.admin.instance.control.InstanciationExceptio
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de
- * recuperer rapidement et simplement des donnees du systeme d'information de
- * l'entreprise.
- * 
+ * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de recuperer
+ * rapidement et simplement des donnees du systeme d'information de l'entreprise.
  * @author Eric BURGEL
  * @version 1.0
  */
@@ -57,22 +55,17 @@ public class ConnecteurJDBCInstanciator extends SQLRequest implements
 
   /**
    * Delete some rows of an instance of a forum.
-   * 
-   * @param con
-   *          (Connection) the connection to the data base
-   * @param spaceId
-   *          (String) the id of a the space where the component exist.
-   * @param componentId
-   *          (String) the instance id of the Silverpeas component forum.
-   * @param userId
-   *          (String) the owner of the component
+   * @param con (Connection) the connection to the data base
+   * @param spaceId (String) the id of a the space where the component exist.
+   * @param componentId (String) the instance id of the Silverpeas component forum.
+   * @param userId (String) the owner of the component
    */
   public void delete(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
     SilverTrace
         .info("connecteurJDBC", "ConnecteurJDBCInstanciator.delete()",
-            "connecteurJDBC.MSG_DELETE_CALLED_FOR_SPACE_ID", "spaceId : "
-                + spaceId);
+        "connecteurJDBC.MSG_DELETE_CALLED_FOR_SPACE_ID", "spaceId : "
+        + spaceId);
 
     // read the property file which contains all SQL queries to delete rows
     setDeleteQueries();
@@ -82,13 +75,9 @@ public class ConnecteurJDBCInstanciator extends SQLRequest implements
 
   /**
    * Delete all data of one forum instance from the forum table.
-   * 
-   * @param con
-   *          (Connection) the connection to the data base
-   * @param componentId
-   *          (String) the instance id of the Silverpeas component forum.
-   * @param suffixName
-   *          (String) the suffixe of a Forum table
+   * @param con (Connection) the connection to the data base
+   * @param componentId (String) the instance id of the Silverpeas component forum.
+   * @param suffixName (String) the suffixe of a Forum table
    */
   private void deleteDataOfInstance(Connection con, String componentId,
       String suffixName) throws InstanciationException {
@@ -108,7 +97,7 @@ public class ConnecteurJDBCInstanciator extends SQLRequest implements
           "connecteurJDBCInstanciator.deleteDataOfInstance()",
           SilverpeasException.ERROR,
           "connecteurJDBC.EX_DELETE_DATA_OF_INSTANCE_FAIL", "componentId : "
-              + componentId + "delete query = " + deleteQuery, se);
+          + componentId + "delete query = " + deleteQuery, se);
       throw ie;
     } finally {
       try {
@@ -118,7 +107,7 @@ public class ConnecteurJDBCInstanciator extends SQLRequest implements
             "connecteurJDBCInstanciator.deleteDataOfInstance()",
             SilverpeasException.ERROR,
             "connecteurJDBC.EX_CLOSE_STATEMENT_FAIL", "componentId : "
-                + componentId + "delete query = " + deleteQuery,
+            + componentId + "delete query = " + deleteQuery,
             err_closeStatement);
         throw ie;
       }

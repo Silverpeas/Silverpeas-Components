@@ -32,7 +32,7 @@ import com.stratelia.webactiv.persistence.PersistenceException;
 
 public interface ConnecteurJDBCBmBusinessSkeleton {
 
-  public Collection getConnectionList(ConnecteurJDBCConnectionInfoPK pk)
+  public Collection<ConnecteurJDBCConnectionInfoDetail> getConnectionList(ConnecteurJDBCConnectionInfoPK pk)
       throws RemoteException, PersistenceException;
 
   public void removeConnection(ConnecteurJDBCConnectionInfoPK pk)

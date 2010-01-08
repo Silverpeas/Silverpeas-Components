@@ -26,16 +26,19 @@ package com.stratelia.silverpeas.connecteurJDBC.control;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de
- * recuperer rapidement et simplement des donnees du systeme d'information de
- * l'entreprise. 
- * 
+ * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de recuperer
+ * rapidement et simplement des donnees du systeme d'information de l'entreprise.
  * @author Eric BURGEL
  * @version 1.0
  * @modified by Mohammed Hguig
  */
 
 public class ConnecteurJDBCException extends SilverpeasException {
+
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
 
   public ConnecteurJDBCException(String callingClass, int errorLevel,
       String message) {

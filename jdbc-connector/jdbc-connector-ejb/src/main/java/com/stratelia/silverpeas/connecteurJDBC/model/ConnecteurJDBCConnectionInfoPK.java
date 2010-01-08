@@ -31,8 +31,12 @@ public class ConnecteurJDBCConnectionInfoPK extends WAPrimaryKey implements
     Serializable {
 
   /**
-   * Constructor which set only the id
    * 
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
+   * Constructor which set only the id
    * @since 1.0
    */
   public ConnecteurJDBCConnectionInfoPK(String id) {
@@ -40,9 +44,7 @@ public class ConnecteurJDBCConnectionInfoPK extends WAPrimaryKey implements
   }
 
   /**
-   * Constructor which set the id The WAPrimaryKey provides space and component
-   * name
-   * 
+   * Constructor which set the id The WAPrimaryKey provides space and component name
    * @since 1.0
    */
   public ConnecteurJDBCConnectionInfoPK(String id, String space,
@@ -51,9 +53,7 @@ public class ConnecteurJDBCConnectionInfoPK extends WAPrimaryKey implements
   }
 
   /**
-   * Constructor which set the id The WAPrimaryKey provides space and component
-   * name
-   * 
+   * Constructor which set the id The WAPrimaryKey provides space and component name
    * @since 1.0
    */
   public ConnecteurJDBCConnectionInfoPK(String id, WAPrimaryKey pk) {
@@ -62,7 +62,6 @@ public class ConnecteurJDBCConnectionInfoPK extends WAPrimaryKey implements
 
   /**
    * Return the object root table name
-   * 
    * @return the root table name of the object
    * @since 1.0
    */
@@ -76,10 +75,8 @@ public class ConnecteurJDBCConnectionInfoPK extends WAPrimaryKey implements
 
   /**
    * Check if an another object is equal to this object
-   * 
    * @return true if other is equals to this object
-   * @param other
-   *          the object to compare to this NodePK
+   * @param other the object to compare to this NodePK
    * @since 1.0
    */
   public boolean equals(Object other) {
@@ -88,12 +85,11 @@ public class ConnecteurJDBCConnectionInfoPK extends WAPrimaryKey implements
     return (id.equals(((ConnecteurJDBCConnectionInfoPK) other).getId()))
         && (space.equals(((ConnecteurJDBCConnectionInfoPK) other).getSpace()))
         && (componentName.equals(((ConnecteurJDBCConnectionInfoPK) other)
-            .getComponentName()));
+        .getComponentName()));
   }
 
   /**
    * Returns a hash code for the key
-   * 
    * @return A hash code for this object
    */
   public int hashCode() {

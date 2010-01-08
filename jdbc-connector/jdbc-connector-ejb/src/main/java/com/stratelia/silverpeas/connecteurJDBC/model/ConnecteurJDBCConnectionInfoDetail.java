@@ -27,6 +27,10 @@ import com.stratelia.webactiv.persistence.SilverpeasBean;
 
 public class ConnecteurJDBCConnectionInfoDetail extends SilverpeasBean {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
   private String JDBCdriverName = "";
   private String JDBCurl = "";
   private String login = "";
@@ -88,8 +92,8 @@ public class ConnecteurJDBCConnectionInfoDetail extends SilverpeasBean {
   public void setRowLimit(int rowLimit) {
     this.rowLimit = rowLimit;
   }
-  
+
   public void setInstanceId(String componentId) {
     this.instanceId = componentId;
-    }
+  }
 }

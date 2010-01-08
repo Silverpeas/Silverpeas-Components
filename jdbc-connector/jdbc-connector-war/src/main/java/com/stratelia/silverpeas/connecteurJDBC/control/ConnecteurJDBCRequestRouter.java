@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
+ ---*/
 
 package com.stratelia.silverpeas.connecteurJDBC.control;
 
@@ -37,64 +37,57 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
- * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de
- * recuperer rapidement et simplement des donnees du systeme d'information de
- * l'entreprise. 
+ * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de recuperer
+ * rapidement et simplement des donnees du systeme d'information de l'entreprise.
  */
 
 public class ConnecteurJDBCRequestRouter extends ComponentRequestRouter {
 
   /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
    * Method declaration
-   * 
-   * 
    * @param mainSessionCtrl
    * @param componentContext
-   * 
    * @return
-   * 
    * @throws ConnecteurJDBCRuntimeException
-   * 
    * @see
    */
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext)
       throws ConnecteurJDBCRuntimeException {
-    ComponentSessionController component = (ComponentSessionController) new ConnecteurJDBCSessionController(
-        mainSessionCtrl, componentContext);
+    ComponentSessionController component =
+        (ComponentSessionController) new ConnecteurJDBCSessionController(
+            mainSessionCtrl, componentContext);
 
     return component;
   }
 
   /**
    * getSessionControlBeanName
-   * 
    * @return the component name, must begin with lowercase.
    */
   public String getSessionControlBeanName() {
 
     /**
      * This method has to be implemented in the component request rooter class.
-     * 
-     * @returns the session control bean name. ex : for almanach, returns
-     *          "almanach"
+     * @returns the session control bean name. ex : for almanach, returns "almanach"
      */
     return "connecteurJDBC";
   }
 
   /**
-   * The rooter compute a destination page given : the function called by the
-   * client, the current state of the component (embbeded in the session
-   * controleur) and parameters from the request object.
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
-   * @param request
-   *          current http request
+   * The rooter compute a destination page given : the function called by the client, the current
+   * state of the component (embbeded in the session controleur) and parameters from the request
+   * object.
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
+   * @param request current http request
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {

@@ -39,7 +39,12 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 public class ConnecteurJDBCBmEJB implements ConnecteurJDBCBmBusinessSkeleton,
     SessionBean {
 
-  public Collection getConnectionList(ConnecteurJDBCConnectionInfoPK pk)
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
+  public Collection<ConnecteurJDBCConnectionInfoDetail> getConnectionList(ConnecteurJDBCConnectionInfoPK pk)
       throws RemoteException, PersistenceException {
     SilverpeasBeanDAO dao = SilverpeasBeanDAOFactory
         .getDAO("com.stratelia.silverpeas.connecteurJDBC.model.ConnecteurJDBCConnectionInfoDetail");

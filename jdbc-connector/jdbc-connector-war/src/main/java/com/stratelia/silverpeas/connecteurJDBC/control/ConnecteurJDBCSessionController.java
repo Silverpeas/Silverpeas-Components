@@ -59,10 +59,8 @@ import com.stratelia.webactiv.util.XMLConfigurationStore;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de
- * recuperer rapidement et simplement des donnees du systeme d'information de
- * l'entreprise.
- * 
+ * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de recuperer
+ * rapidement et simplement des donnees du systeme d'information de l'entreprise.
  */
 
 public class ConnecteurJDBCSessionController extends
@@ -88,7 +86,7 @@ public class ConnecteurJDBCSessionController extends
 
   private String[] driversNames;
   private String[] driversDisplayNames;
-  private Vector driversUrls;
+  private Vector<Object> driversUrls;
   private String[] driversClassNames;
   private String[] driversDescriptions;
   private String[] tableNames = null;
@@ -107,7 +105,6 @@ public class ConnecteurJDBCSessionController extends
 
   /**
    * Constructeur
-   * 
    */
   public ConnecteurJDBCSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) throws ConnecteurJDBCRuntimeException {
@@ -122,7 +119,7 @@ public class ConnecteurJDBCSessionController extends
       try {
         ConnecteurJDBCBmHome connecteurJDBCEjbHome = (ConnecteurJDBCBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.CONNECTEURJDBC_EJBHOME,
-                ConnecteurJDBCBmHome.class);
+            ConnecteurJDBCBmHome.class);
         connecteurJDBCEjb = connecteurJDBCEjbHome.create();
 
       } catch (Exception e) {
@@ -139,7 +136,7 @@ public class ConnecteurJDBCSessionController extends
       try {
         SearchEngineBmHome home = (SearchEngineBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.SEARCHBM_EJBHOME,
-                SearchEngineBmHome.class);
+            SearchEngineBmHome.class);
         this.searchEngineEjb = home.create();
       } catch (Exception e) {
         throw new ConnecteurJDBCException(
@@ -162,18 +159,18 @@ public class ConnecteurJDBCSessionController extends
       try {
         // load and return the current jdbc settings for the component
         ConnecteurJDBCBm connecteurJDBCBm = getConnecteurJDBCBm();
-        Collection c = connecteurJDBCBm
+        Collection<ConnecteurJDBCConnectionInfoDetail> c = connecteurJDBCBm
             .getConnectionList(new ConnecteurJDBCConnectionInfoPK("",
-                getSpaceId(), getComponentId()));
+            getSpaceId(), getComponentId()));
         if (c.size() > 1)
           throw new ConnecteurJDBCRuntimeException(
               "connecteurJDBCSessionControl.initConnecteur()",
               SilverpeasException.FATAL,
               "connecteurJDBC.EX_THERE_MUST_BE_ONLY_ONE_CONECTION");
 
-        Iterator i = c.iterator();
+        Iterator<ConnecteurJDBCConnectionInfoDetail> i = c.iterator();
         if (i.hasNext()) {
-          connecteurJDBCDetail = (ConnecteurJDBCConnectionInfoDetail) i.next();
+          connecteurJDBCDetail = i.next();
         }
       } catch (Exception e) {
         throw new ConnecteurJDBCRuntimeException(
@@ -222,7 +219,7 @@ public class ConnecteurJDBCSessionController extends
         SilverTrace.warn("connecteurJDBC",
             "ConnecteurJDBCSessionControl.startConnection()",
             "connecteurJDBC.MSG_CONNECTION_NOT_STARTED", "request : "
-                + getSQLreq(), e);
+            + getSQLreq(), e);
       }
     }
 
@@ -251,7 +248,7 @@ public class ConnecteurJDBCSessionController extends
         SilverTrace.warn("connecteurJDBC",
             "ConnecteurJDBCSessionControl.startConnection()",
             "connecteurJDBC.MSG_CONNECTION_NOT_STARTED", "request : "
-                + getSQLreq(), e);
+            + getSQLreq(), e);
       }
     }
 
@@ -313,7 +310,7 @@ public class ConnecteurJDBCSessionController extends
    */
   public String[] getTableNames() throws ConnecteurJDBCException {
     startConnection();
-    Vector tableVector = new Vector();
+    Vector<String> tableVector = new Vector<String>();
     try {
       tables_rs = dbMetaData.getTables(null, null, null, null);
       tables_rsmd = tables_rs.getMetaData();
@@ -356,7 +353,7 @@ public class ConnecteurJDBCSessionController extends
   public String[] getColumnNames(String tableName)
       throws ConnecteurJDBCException {
     ResultSet table_rs = getTable(tableName);
-    Vector columnVector = new Vector();
+    Vector<String> columnVector = new Vector<String>();
     try {
       while (table_rs.next()) {
         columnVector.addElement(table_rs.getString("COLUMN_NAME"));
@@ -365,7 +362,7 @@ public class ConnecteurJDBCSessionController extends
       throw new ConnecteurJDBCException(
           "connecteurJDBCSessionControl.getTable()", SilverpeasException.ERROR,
           "connecteurJDBC.EX_GET_COLUMNS_NAMES_FAIL", "from table : "
-              + tableName, e);
+          + tableName, e);
     }
     int n = columnVector.size();
     columnNames = new String[n];
@@ -428,8 +425,7 @@ public class ConnecteurJDBCSessionController extends
   }
 
   /**
-   * get the column selected to restrict the request results in the page
-   * connecteurJDBC.jsp
+   * get the column selected to restrict the request results in the page connecteurJDBC.jsp
    */
   public String getColumnReq() {
     return columnReq;
@@ -457,8 +453,7 @@ public class ConnecteurJDBCSessionController extends
   }
 
   /**
-   * get the value with wich a column is compared to restrict the sql request
-   * results
+   * get the value with wich a column is compared to restrict the sql request results
    */
   public String getColumnValue() {
     return columnValue;
@@ -570,7 +565,7 @@ public class ConnecteurJDBCSessionController extends
     return (connecteurJDBCDetail != null);
   }
 
-  // setters (� utiliser via les jsp)
+  // setters (à utiliser via les jsp)
   public void setJDBCdriverName(String JDBCdriverName)
       throws ConnecteurJDBCException {
 
@@ -699,7 +694,7 @@ public class ConnecteurJDBCSessionController extends
       SilverTrace.info("connecteurJDBC",
           "ConnecteurJDBCSessionController.searchDriverIndice()",
           "connecteurJDBC.MSG_DRIVER_NAME", "driver n�" + i + "="
-              + driversNames[i]);
+          + driversNames[i]);
       i++;
     }
     return (i);
@@ -714,7 +709,7 @@ public class ConnecteurJDBCSessionController extends
     SilverTrace.info("connecteurJDBC",
         "ConnecteurJDBCSessionControl.registerAndInstanciateDriver()",
         "root.MSG_GEN_PARAM_VALUE", "driversClassNames.length="
-            + driversClassNames.length);
+        + driversClassNames.length);
 
     String driverClass = driversClassNames[searchDriverIndice(driverName)];
 
@@ -736,7 +731,7 @@ public class ConnecteurJDBCSessionController extends
       driversDisplayNames = new String[driversNames.length];
       driversClassNames = new String[driversNames.length];
       driversDescriptions = new String[driversNames.length];
-      driversUrls = new Vector();
+      driversUrls = new Vector<Object>();
       for (int j = 0; j < driversNames.length; j++) {
         SilverTrace.info("connecteurJDBC",
             "ConnecteurJDBCSessionControl.loadDrivers()",
@@ -761,21 +756,21 @@ public class ConnecteurJDBCSessionController extends
     }
   }
 
-  public Collection getDriversDescriptions() {
+  public Collection<String> getDriversDescriptions() {
     return (Arrays.asList(driversDescriptions));
   }
 
-  public Collection getAvailableDriversNames() {
+  public Collection<String> getAvailableDriversNames() {
     return (Arrays.asList(driversNames));
   }
 
   // returns available drivers names
-  public Collection getAvailableDriversDisplayNames() {
+  public Collection<String> getAvailableDriversDisplayNames() {
     return (Arrays.asList(driversDisplayNames));
   }
 
   // returns jdbc urls for driver
-  public Collection getJDBCUrlsForDriver(String driverName) {
+  public Collection<String> getJDBCUrlsForDriver(String driverName) {
     String[] str = (String[]) driversUrls
         .elementAt(searchDriverIndice(driverName));
     return (Arrays.asList(str));
@@ -846,10 +841,10 @@ public class ConnecteurJDBCSessionController extends
         if (driverName == null || driverName.length() == 0) {
           SilverTrace
               .info("connecteurJDBC",
-                  "ConnecteurJDBCSessionControl.getDriver()",
-                  "root.MSG_GEN_PARAM_VALUE",
-                  "driverName undefined ! default one used instead = "
-                      + driverName);
+              "ConnecteurJDBCSessionControl.getDriver()",
+              "root.MSG_GEN_PARAM_VALUE",
+              "driverName undefined ! default one used instead = "
+              + driverName);
           driverName = driversNames[0];
         }
         driver = registerAndInstanciateDriver(driverName);
@@ -876,7 +871,7 @@ public class ConnecteurJDBCSessionController extends
         SilverTrace.warn("connecteurJDBC",
             "ConnecteurJDBCSessionControl.checkConnection()",
             "connecteurJDBC.MSG_CHECK_CONNECTION_FAIL", "login : " + login
-                + "password : " + password + "JDBCurl : " + JDBCurl, e);
+            + "password : " + password + "JDBCurl : " + JDBCurl, e);
         return (SilverTrace.getTraceMessage(
             "connecteurJDBC.MSG_CHECK_CONNECTION_FAIL", getLanguage()));
       } finally {
@@ -929,9 +924,9 @@ public class ConnecteurJDBCSessionController extends
     } catch (MissingResourceException e) {
       SilverTrace
           .warn("connecteurJDBC",
-              "ConnecteurJDBCSessionControl.checkConnection()",
-              "connecteurJDBC.MSG_MISSING_MESSAGE_ERROR", "request : "
-                  + request, e);
+          "ConnecteurJDBCSessionControl.checkConnection()",
+          "connecteurJDBC.MSG_MISSING_MESSAGE_ERROR", "request : "
+          + request, e);
       return "can't find error Message";
     }
     return (null);
