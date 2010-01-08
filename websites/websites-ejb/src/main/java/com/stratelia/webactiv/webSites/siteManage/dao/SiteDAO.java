@@ -60,7 +60,6 @@ public class SiteDAO {
   private String TableIconsName;
   private String TableSiteIconsName;
   private String TablePublicationName;
-  // CBO : REMOVE private String TablePublicationFatherName;
 
   private String prefixTableName;
   private String componentId;
@@ -72,7 +71,6 @@ public class SiteDAO {
     TableIconsName = "SC_WebSites_Icons";
     TableSiteIconsName = "SC_WebSites_SiteIcons";
     TablePublicationName = "SB_Publication_Publi";
-    // CBO : REMOVE TablePublicationFatherName = "SB_Publication_PubliFather";
   }
 
   /* DBConnection methods */
@@ -92,15 +90,10 @@ public class SiteDAO {
   /**
    * getIdPublication
    */
-  // CBO : UPDATE
-  // public Collection getAllPublication(String idSite) throws SQLException,
-  // UtilException
   public String getIdPublication(String idSite) throws SQLException,
       UtilException {
     try {
       dbConnection = openConnection();
-      // CBO : UPDATE
-      // return (DAOgetAllPublication(idSite));
       return (DAOgetIdPublication(idSite));
     } finally {
       closeConnection(dbConnection);
@@ -110,7 +103,7 @@ public class SiteDAO {
   /**
    * getAllWebSite
    */
-  public Collection getAllWebSite() throws SQLException, UtilException {
+  public Collection<SiteDetail> getAllWebSite() throws SQLException, UtilException {
     try {
       dbConnection = openConnection();
       return (DAOgetAllWebSite());
@@ -134,7 +127,7 @@ public class SiteDAO {
   /**
    * getWebSites
    */
-  public List getWebSites(List ids) throws SQLException, UtilException {
+  public List<SiteDetail> getWebSites(List<String> ids) throws SQLException, UtilException {
     try {
       dbConnection = openConnection();
       return (DAOgetWebSites(ids));
@@ -146,7 +139,7 @@ public class SiteDAO {
   /**
    * getIcons
    */
-  public Collection getIcons(SitePK pk) throws SQLException, UtilException {
+  public Collection<IconDetail> getIcons(SitePK pk) throws SQLException, UtilException {
     try {
       dbConnection = openConnection();
       return (DAOgetIcons(pk));
@@ -170,7 +163,7 @@ public class SiteDAO {
   /**
    * getAllIcons
    */
-  public Collection getAllIcons() throws SQLException, UtilException {
+  public Collection<IconDetail> getAllIcons() throws SQLException, UtilException {
     try {
       dbConnection = openConnection();
       return (DAOgetAllIcons());
@@ -195,7 +188,7 @@ public class SiteDAO {
   /**
    * associateIcons
    */
-  public void associateIcons(String id, Collection liste) throws SQLException,
+  public void associateIcons(String id, Collection<String> liste) throws SQLException,
       UtilException {
     try {
       dbConnection = openConnection();
@@ -208,7 +201,7 @@ public class SiteDAO {
   /**
    * publish
    */
-  public void publish(Collection liste) throws SQLException, UtilException {
+  public void publish(Collection<String> liste) throws SQLException, UtilException {
     try {
       dbConnection = openConnection();
       DAOpublish(liste);
@@ -220,7 +213,7 @@ public class SiteDAO {
   /**
    * dePublish
    */
-  public void dePublish(Collection liste) throws SQLException, UtilException {
+  public void dePublish(Collection<String> liste) throws SQLException, UtilException {
     try {
       dbConnection = openConnection();
       DAOdePublish(liste);
@@ -232,7 +225,7 @@ public class SiteDAO {
   /**
    * deleteWebSites
    */
-  public void deleteWebSites(Collection liste) throws SQLException,
+  public void deleteWebSites(Collection<String> liste) throws SQLException,
       UtilException {
     try {
       dbConnection = openConnection();
@@ -242,7 +235,6 @@ public class SiteDAO {
     }
   }
 
-  // CBO : ADD
   /**
    * deleteWebSites
    */
@@ -261,12 +253,7 @@ public class SiteDAO {
   /**
    * DAOgetIdPublication
    */
-  // CBO : UPDATE
-  // private Collection DAOgetAllPublication(String idSite) throws SQLException
   private String DAOgetIdPublication(String idSite) throws SQLException {
-
-    // CBO : REMOVE ArrayList thePubList = new ArrayList();
-    // CBO : REMOVE ArrayList theTmpPubList = new ArrayList();
     String idPub = null;
 
     String queryStr1 = "select pubId from " + TablePublicationName
@@ -280,52 +267,25 @@ public class SiteDAO {
           "root.MSG_GEN_PARAM_VALUE", "queryStr1 = " + queryStr1);
 
       rs1 = stmt.executeQuery(queryStr1);
-
-      // CBO : UPDATE
-      // while (rs1.next())
       if (rs1.next()) {
         idPub = Integer.toString(rs1.getInt(1));
-
-        // CBO : REMOVE
-        /*
-         * if (!theTmpPubList.contains(idPub)) theTmpPubList.add(idPub);
-         */
       }
     } finally {
       DBUtil.close(rs1);
     }
-
-    // CBO : REMOVE
-    /*
-     * try { int j = 0; String id = ""; while (j < theTmpPubList.size()) { id =
-     * (String) theTmpPubList.get(j); queryStr1 = "select * from " +
-     * TablePublicationFatherName + " where pubId = " + id;
-     * SilverTrace.info("webSites", "SiteDAO.DAOgetAllPublication()",
-     * "root.MSG_GEN_PARAM_VALUE", "queryStrl = " + queryStr1);
-     * 
-     * if (stmt == null) stmt = dbConnection.createStatement(); rs1 =
-     * stmt.executeQuery(queryStr1); if (rs1.next()) thePubList.add(id); j++; }
-     * } finally { DBUtil.close(rs1, stmt); }
-     */
-
-    // CBO : UPDATE
-    // return thePubList;
     return idPub;
   }
 
   /**
    * DAOgetAllWebSite
    */
-  private Collection DAOgetAllWebSite() throws SQLException {
+  private Collection<SiteDetail> DAOgetAllWebSite() throws SQLException {
 
-    ArrayList theSiteList = new ArrayList();
+    ArrayList<SiteDetail> theSiteList = new ArrayList<SiteDetail>();
 
     Statement stmt = null;
     ResultSet rs1 = null;
 
-    // CBO : UPDATE
-    // String queryStr1 = "SELECT * FROM " + TableSiteName +
-    // " where instanceId = '" + componentId + "'";
     String queryStr1 = "SELECT siteId, siteName, siteDescription, sitePage, siteType, siteAuthor, "
         + "siteDate, siteState, popup FROM "
         + TableSiteName
@@ -357,8 +317,6 @@ public class SiteDAO {
         date = rs1.getString(7);
         state = rs1.getInt(8);
 
-        // CBO : UPDATE
-        // popup = rs1.getInt(10);
         popup = rs1.getInt(9);
 
         SiteDetail sitedetail = new SiteDetail(idSite, name, description, page,
@@ -380,10 +338,6 @@ public class SiteDAO {
     SiteDetail sitedetail;
     Statement stmt = null;
     ResultSet rs1 = null;
-
-    // CBO : UPDATE
-    // String queryStr1 = "select * from " + TableSiteName + " where siteId = "
-    // + pk.getId();
     String queryStr1 = "select siteId, siteName, siteDescription, sitePage, siteType, siteAuthor, "
         + "siteDate, siteState, popup from "
         + TableSiteName
@@ -409,8 +363,6 @@ public class SiteDAO {
       String date = rs1.getString(7);
       int state = rs1.getInt(8);
 
-      // CBO : UPDATE
-      // int popup = rs1.getInt(10);
       int popup = rs1.getInt(9);
 
       sitedetail = new SiteDetail(idSite, name, description, page, type,
@@ -422,8 +374,8 @@ public class SiteDAO {
     return sitedetail;
   }
 
-  private List DAOgetWebSites(List ids) throws SQLException {
-    ArrayList theSiteList = new ArrayList();
+  private List<SiteDetail> DAOgetWebSites(List<String> ids) throws SQLException {
+    ArrayList<SiteDetail> theSiteList = new ArrayList<SiteDetail>();
     Statement stmt = null;
     ResultSet rs = null;
     int i = 0;
@@ -436,16 +388,14 @@ public class SiteDAO {
           param = " siteId = ";
         else
           param = " or siteId = ";
-        id = (String) ids.get(j);
+        id = ids.get(j);
         paramBuffer.append(param).append(id);
       }
       if (ids.size() > 0) {
         StringBuffer queryStr1 = new StringBuffer();
-        // CBO : UPDATE
-        // queryStr1.append("select *");
         queryStr1
             .append("select siteId, siteName, siteDescription, sitePage, siteType, siteAuthor, "
-                + "siteDate, siteState, popup");
+            + "siteDate, siteState, popup");
 
         queryStr1.append(" from ").append(TableSiteName);
         queryStr1.append(" where").append("(").append(paramBuffer).append(")");
@@ -477,7 +427,6 @@ public class SiteDAO {
           author = rs.getString(i++);
           date = rs.getString(i++);
           state = rs.getInt(i++);
-          // CBO : REMOVE i++;
           popup = rs.getInt(i++);
           theSiteList.add(new SiteDetail(idSite, name, description, page, type,
               author, date, state, popup));
@@ -492,8 +441,8 @@ public class SiteDAO {
   /**
    * DAOgetIcons
    */
-  private Collection DAOgetIcons(SitePK pk) throws SQLException {
-    ArrayList resultat = new ArrayList();
+  private Collection<IconDetail> DAOgetIcons(SitePK pk) throws SQLException {
+    ArrayList<IconDetail> resultat = new ArrayList<IconDetail>();
     IconDetail icondetail;
     Statement stmt = null;
     ResultSet rs1 = null;
@@ -501,7 +450,7 @@ public class SiteDAO {
     queryStr1.append("select ").append(TableIconsName).append(".iconsId, ")
         .append(TableIconsName).append(".iconsName, ").append(TableIconsName)
         .append(".iconsDescription, ").append(TableIconsName).append(
-            ".iconsAddress");
+        ".iconsAddress");
     queryStr1.append(" from ").append(TableSiteIconsName).append(", ").append(
         TableIconsName);
     queryStr1.append(" where ").append(TableSiteIconsName).append(".siteId = ")
@@ -546,14 +495,12 @@ public class SiteDAO {
   /**
    * DAOgetAllIcons
    */
-  private Collection DAOgetAllIcons() throws SQLException {
-    ArrayList resultat = new ArrayList();
+  private Collection<IconDetail> DAOgetAllIcons() throws SQLException {
+    ArrayList<IconDetail> resultat = new ArrayList<IconDetail>();
     IconDetail icondetail;
     Statement stmt = null;
     ResultSet rs1 = null;
 
-    // CBO : UPDATE
-    // String queryStr1 = "SELECT * FROM " + TableIconsName;
     String queryStr1 = "SELECT iconsId, iconsName, iconsDescription, iconsAddress FROM "
         + TableIconsName;
 
@@ -599,21 +546,10 @@ public class SiteDAO {
       stmt.setInt(1, new Integer(site.getSitePK().getId()).intValue());
       stmt.setString(2, site.getName());
       stmt.setString(3, site.getDescription());
-
-      // CBO : UPDATE
-      // stmt.setString(4, site.getPage());
       stmt.setString(4, site.getContent());
-
       stmt.setInt(5, site.getType());
-
-      // CBO : UPDATE
-      // stmt.setString(6, site.getAuthor());
       stmt.setString(6, site.getCreatorId());
-
-      // CBO : UPDATE
-      // stmt.setString(7, site.getDate().trim());
       stmt.setString(7, DateUtil.date2SQLDate(site.getCreationDate()));
-
       stmt.setInt(8, site.getState());
       stmt.setString(9, componentId); // insert the instanceId
       stmt.setInt(10, site.getPopup());
@@ -622,7 +558,7 @@ public class SiteDAO {
       if (resultCount != 1)
         SilverTrace.error("webSites", "SiteDAO.DAOcreateWebSite()",
             "webSites.EX_RECORD_INSERTION_PROBLEM", "query = " + queryStr
-                + "resultCount = " + resultCount);
+            + "resultCount = " + resultCount);
     } finally {
       DBUtil.close(stmt);
     }
@@ -631,7 +567,7 @@ public class SiteDAO {
   /**
    * DAOassociateIcons
    */
-  private void DAOassociateIcons(String id, Collection liste)
+  private void DAOassociateIcons(String id, Collection<String> liste)
       throws SQLException {
 
     String queryStr = "INSERT INTO " + TableSiteIconsName + " VALUES (?,?)";
@@ -641,18 +577,18 @@ public class SiteDAO {
       stmt = dbConnection.prepareStatement(queryStr);
       stmt.setInt(1, new Integer(id).intValue());
       String idIcon = "";
-      Iterator i = liste.iterator();
+      Iterator<String> i = liste.iterator();
       while (i.hasNext()) {
-        idIcon = (String) i.next();
+        idIcon = i.next();
         stmt.setInt(2, new Integer(idIcon).intValue());
         SilverTrace.info("webSites", "SiteDAO.DAOassociateIcons()",
             "root.MSG_GEN_PARAM_VALUE", "queryStr= " + queryStr + ", idSite= "
-                + id + ", idIcon= " + idIcon + " instanceId= " + componentId);
+            + id + ", idIcon= " + idIcon + " instanceId= " + componentId);
         int resultCount = stmt.executeUpdate();
         if (resultCount != 1) {
           SilverTrace.error("webSites", "SiteDAO.DAOassociateIcons()",
               "webSites.EX_RECORD_INSERTION_PROBLEM", "query = " + queryStr
-                  + "resultCount = " + resultCount);
+              + "resultCount = " + resultCount);
         }
       }
     } finally {
@@ -677,12 +613,12 @@ public class SiteDAO {
 
       SilverTrace.info("webSites", "SiteDAO.DAOpublishDepublishSite()",
           "root.MSG_GEN_PARAM_VALUE", "queryStr = " + queryStr + ", idSite= "
-              + id);
+          + id);
       int resultCount = stmt.executeUpdate();
       if (resultCount != 1)
         SilverTrace.error("webSites", "SiteDAO.DAOpublishDepublishSite()",
             "webSites.EX_RECORD_UPDATE_PROBLEM", "query = " + queryStr
-                + "resultCount = " + resultCount);
+            + "resultCount = " + resultCount);
     } finally {
       DBUtil.close(stmt);
     }
@@ -691,20 +627,20 @@ public class SiteDAO {
   /**
    * DAOpublish
    */
-  private void DAOpublish(Collection liste) throws SQLException {
-    Iterator i = liste.iterator();
+  private void DAOpublish(Collection<String> liste) throws SQLException {
+    Iterator<String> i = liste.iterator();
     while (i.hasNext()) {
-      DAOpublishDepublishSite((String) i.next(), 1);
+      DAOpublishDepublishSite(i.next(), 1);
     }
   }
 
   /**
    * DAOdePublish
    */
-  private void DAOdePublish(Collection liste) throws SQLException {
-    Iterator i = liste.iterator();
+  private void DAOdePublish(Collection<String> liste) throws SQLException {
+    Iterator<String> i = liste.iterator();
     while (i.hasNext()) {
-      DAOpublishDepublishSite((String) i.next(), 0);
+      DAOpublishDepublishSite(i.next(), 0);
     }
   }
 
@@ -718,7 +654,7 @@ public class SiteDAO {
 
     SilverTrace.info("webSites", "SiteDAO.DAOdeleteAssociateIcons()",
         "root.MSG_GEN_PARAM_VALUE", "queryStr = " + deleteStr + ", idSite= "
-            + pk.getId());
+        + pk.getId());
     PreparedStatement prepStmt = null;
 
     try {
@@ -741,7 +677,7 @@ public class SiteDAO {
 
     SilverTrace.info("webSites", "SiteDAO.DAOdeleteWebSite()",
         "root.MSG_GEN_PARAM_VALUE", "deleteStr= " + deleteStr + ", idSite= "
-            + pk.getId());
+        + pk.getId());
     PreparedStatement prepStmt = null;
     try {
       prepStmt = dbConnection.prepareStatement(deleteStr);
@@ -750,7 +686,7 @@ public class SiteDAO {
       if (resultCount != 1)
         SilverTrace.error("webSites", "SiteDAO.DAOdeleteWebSite()",
             "webSites.EX_RECORD_DELETE_PROBLEM", "deleteStr = " + deleteStr
-                + ", resultCount = " + resultCount);
+            + ", resultCount = " + resultCount);
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -759,12 +695,12 @@ public class SiteDAO {
   /**
    * DAOdeleteWebSites
    */
-  private void DAOdeleteWebSites(Collection liste) throws SQLException {
-    ArrayList array = new ArrayList(liste);
+  private void DAOdeleteWebSites(Collection<String> liste) throws SQLException {
+    ArrayList<String> array = new ArrayList<String>(liste);
     int i = 0;
     String id = "";
     while (i < array.size()) {
-      id = (String) array.get(i);
+      id = array.get(i);
       SilverTrace.info("webSites", "SiteDAO.DAOdeleteWebSites()",
           "root.MSG_GEN_PARAM_VALUE", "id = " + id);
       SitePK s = new SitePK(id, prefixTableName, componentId);
@@ -773,7 +709,6 @@ public class SiteDAO {
     }
   }
 
-  // CBO : ADD
   /**
    * DAOupdateWebSite
    */
@@ -787,7 +722,7 @@ public class SiteDAO {
 
     SilverTrace.info("webSites", "SiteDAO.DAOupdateWebSite()",
         "root.MSG_GEN_PARAM_VALUE", "updateStr= " + updateStr + ", Site= "
-            + description.toString());
+        + description.toString());
     PreparedStatement prepStmt = null;
     try {
       int i = 1;
@@ -807,8 +742,8 @@ public class SiteDAO {
       if (resultCount != 1)
         SilverTrace.error("webSites", "SiteDAO.DAOupdateWebSite()",
             "webSites.webSites.EX_RECORD_UPDATE_PROBLEM", "updateStr = "
-                + updateStr + ", Site= " + description.toString()
-                + ", resultCount = " + resultCount);
+            + updateStr + ", Site= " + description.toString()
+            + ", resultCount = " + resultCount);
     } finally {
       DBUtil.close(prepStmt);
     }

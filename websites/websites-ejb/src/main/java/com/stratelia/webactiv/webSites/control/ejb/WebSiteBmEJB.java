@@ -66,6 +66,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.webSites.WebSitesContentManager;
 import com.stratelia.webactiv.webSites.siteManage.dao.SiteDAO;
 import com.stratelia.webactiv.webSites.siteManage.model.FolderDetail;
+import com.stratelia.webactiv.webSites.siteManage.model.IconDetail;
 import com.stratelia.webactiv.webSites.siteManage.model.SiteDetail;
 import com.stratelia.webactiv.webSites.siteManage.model.SitePK;
 import com.stratelia.webactiv.webSites.siteManage.model.WebSitesRuntimeException;
@@ -76,6 +77,10 @@ import com.stratelia.webactiv.webSites.siteManage.model.WebSitesRuntimeException
 
 public class WebSiteBmEJB implements SessionBean {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
   /*-------------- Attributs ------------------*/
   private String prefixTableName; /* nom du prefix table Name : WA3 */
   private String componentId = null; /* id du composant : bookmark32 */
@@ -204,10 +209,10 @@ public class WebSiteBmEJB implements SessionBean {
    */
   public FolderDetail goTo(String id) {
 
-    Collection newPath = new ArrayList();
-    Collection pubDetails = null;
+    Collection<NodeDetail> newPath = new ArrayList<NodeDetail>();
+    Collection<PublicationDetail> pubDetails = null;
     NodeDetail nodeDetail = null;
-    Collection childrenPKs = null;
+    Collection<NodeDetail> childrenPKs = null;
     int nbPub = 0;
 
     NodeBm nodeBm = getNodeBm();
@@ -251,11 +256,11 @@ public class WebSiteBmEJB implements SessionBean {
     // First, get the childrenPKs of current topic
     childrenPKs = nodeDetail.getChildrenDetails();
 
-    ArrayList nbPubByTopic = new ArrayList();
-    Iterator iterator = childrenPKs.iterator();
+    ArrayList<Integer> nbPubByTopic = new ArrayList<Integer>();
+    Iterator<NodeDetail> iterator = childrenPKs.iterator();
     // For each child, get the publication number associated to it
     while (iterator.hasNext()) {
-      NodeDetail child = (NodeDetail) iterator.next();
+      NodeDetail child = iterator.next();
       NodePK childPK = child.getNodePK();
       String childPath = child.getPath();
       try {
@@ -286,11 +291,11 @@ public class WebSiteBmEJB implements SessionBean {
    * @see
    * @since 1.0
    */
-  private Collection getPathFromAToZ(NodeDetail nd) {
-    Collection newPath = new ArrayList();
+  private Collection<NodeDetail> getPathFromAToZ(NodeDetail nd) {
+    Collection<NodeDetail> newPath = new ArrayList<NodeDetail>();
     NodeBm nodeBm = getNodeBm();
     try {
-      List pathInReverse = (List) nodeBm.getPath(nd.getNodePK());
+      List<NodeDetail> pathInReverse = (List<NodeDetail>) nodeBm.getPath(nd.getNodePK());
       // reverse the path from root to leaf
       for (int i = pathInReverse.size() - 1; i >= 0; i--)
         newPath.add(pathInReverse.get(i));
@@ -314,17 +319,17 @@ public class WebSiteBmEJB implements SessionBean {
    * @exception java.sql.SQLException
    * @since 1.0
    */
-  private Collection getNewPath(NodeDetail nd) {
+  private Collection<NodeDetail> getNewPath(NodeDetail nd) {
 
     NodeDetail n;
-    Collection currentPath = currentFolder.getPath();
-    Collection newPath = new ArrayList();
-    Iterator iterator = currentPath.iterator();
+    Collection<NodeDetail> currentPath = currentFolder.getPath();
+    Collection<NodeDetail> newPath = new ArrayList<NodeDetail>();
+    Iterator<NodeDetail> iterator = currentPath.iterator();
     boolean find = false;
 
     // find = true if nd is in the path of the currentTopic
     while (iterator.hasNext() && !(find)) {
-      n = (NodeDetail) iterator.next();
+      n = iterator.next();
       if (n.getNodePK().getId().equals(nd.getNodePK().getId()))
         find = true;
     }
@@ -343,7 +348,7 @@ public class WebSiteBmEJB implements SessionBean {
         // compute path from a to z
         NodeBm nodeBm = getNodeBm();
         try {
-          List pathInReverse = (List) nodeBm.getPath(nd.getNodePK());
+          List<NodeDetail> pathInReverse = (List<NodeDetail>) nodeBm.getPath(nd.getNodePK());
           // reverse the path from root to leaf
           for (int i = pathInReverse.size() - 1; i >= 0; i--)
             newPath.add(pathInReverse.get(i));
@@ -369,14 +374,14 @@ public class WebSiteBmEJB implements SessionBean {
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
-  private Collection cutPath(Collection currentPath, NodeDetail nd) {
+  private Collection<NodeDetail> cutPath(Collection<NodeDetail> currentPath, NodeDetail nd) {
     NodeDetail n;
-    Iterator iterator = currentPath.iterator();
+    Iterator<NodeDetail> iterator = currentPath.iterator();
     boolean find = false;
-    Collection resultPath = new ArrayList();
+    Collection<NodeDetail> resultPath = new ArrayList<NodeDetail>();
 
     while (iterator.hasNext() && !(find)) {
-      n = (NodeDetail) iterator.next();
+      n = iterator.next();
       resultPath.add(n);
       if (n.getNodePK().getId().equals(nd.getNodePK().getId()))
         find = true;
@@ -486,11 +491,11 @@ public class WebSiteBmEJB implements SessionBean {
    * @since 1.0
    */
   public NodeDetail getFolderDetail(String subTopicId) {
-    Collection subTopics = currentFolder.getNodeDetail().getChildrenDetails();
-    Iterator iterator = subTopics.iterator();
+    Collection<NodeDetail> subTopics = currentFolder.getNodeDetail().getChildrenDetails();
+    Iterator<NodeDetail> iterator = subTopics.iterator();
     NodeDetail subTopic = null;
     while (iterator.hasNext()) {
-      subTopic = (NodeDetail) iterator.next();
+      subTopic = iterator.next();
       if (subTopic.getNodePK().getId().equals(subTopicId)) {
         return subTopic;
       }
@@ -523,68 +528,31 @@ public class WebSiteBmEJB implements SessionBean {
     NodePK pkToDelete = new NodePK(topicId, this.prefixTableName,
         this.componentId);
 
-    // Fictive publication to obtain the correct tableName
-    // CBO : REMOVE PublicationPK pubPK = new PublicationPK("unknown",
-    // this.prefixTableName, this.componentId);
-
     PublicationBm pubBm = getPublicationBm();
     NodeBm nodeBm = getNodeBm();
 
-    // cherche les sites de ce theme pour les depublier
-    // CBO : REMOVE
-    /*
-     * try { Collection pubDetails = pubBm.getDetailsByFatherPK(pkToDelete);
-     * ArrayList siteToDepublish = new ArrayList(); Iterator it =
-     * pubDetails.iterator();
-     * 
-     * while (it.hasNext()) { PublicationDetail pub = (PublicationDetail)
-     * it.next(); String idPub = pub.getVersion(); siteToDepublish.add(idPub); }
-     * 
-     * try { SiteDAO dao = new SiteDAO(prefixTableName, componentId);
-     * dao.dePublish(siteToDepublish); }catch (SQLException se) { throw new
-     * WebSitesRuntimeException("WebSiteBmEJB.deleteFolder()",
-     * SilverpeasRuntimeException.ERROR, "root.EX_RECORD_UPDATE_FAILED", se); }
-     * } catch (Exception re) { throw new
-     * WebSitesRuntimeException("WebSiteBmEJB.deleteFolder()",
-     * SilverpeasRuntimeException.ERROR,
-     * "webSites.EX_GET_PUBLICATION_DETAIL_FAILED", "pubPK = " +
-     * pubPK.toString(), re); }
-     */
-
     try {
       // get all nodes which will be deleted
-      Collection nodesToDelete = nodeBm.getDescendantPKs(pkToDelete);
+      Collection<NodePK> nodesToDelete = nodeBm.getDescendantPKs(pkToDelete);
       nodesToDelete.add(pkToDelete);
 
-      Iterator itPub = null;
-      Collection pubsToCheck = null; // contains all PubPKs concerned by the
+      Iterator<PublicationPK> itPub = null;
+      Collection<PublicationPK> pubsToCheck = null; // contains all PubPKs concerned by the
       // delete
       NodePK oneNodeToDelete = null; // current node to delete
-      // CBO : REMOVE Collection pubFathers = null; //contains all fatherPKs to
       // a given publication
       PublicationPK onePubToCheck = null; // current pub to check
-      Iterator itNode = nodesToDelete.iterator();
+      Iterator<NodePK> itNode = nodesToDelete.iterator();
       while (itNode.hasNext()) {
-        oneNodeToDelete = (NodePK) itNode.next();
+        oneNodeToDelete = itNode.next();
         // get pubs linked to current node
         pubsToCheck = pubBm.getPubPKsInFatherPK(oneNodeToDelete);
         itPub = pubsToCheck.iterator();
         // check each pub contained in current node
         while (itPub.hasNext()) {
-          onePubToCheck = (PublicationPK) itPub.next();
+          onePubToCheck = itPub.next();
+        pubBm.removeFather(onePubToCheck, oneNodeToDelete);
 
-          // CBO : UPDATE
-          // get fathers of the pub
-          /*
-           * pubFathers = pubBm.getAllFatherPK(onePubToCheck); if
-           * (pubFathers.size() >= 2) { //the pub have got many fathers //delete
-           * only the link between pub and current node
-           * pubBm.removeFather(onePubToCheck, oneNodeToDelete); } else { //the
-           * pub have got only one father //delete all links... so endDate is
-           * changed pubBm.removePublication(onePubToCheck); }
-           */
-          pubBm.removeFather(onePubToCheck, oneNodeToDelete);
-          // CBO : FIN UPDATE
         }
       }
 
@@ -603,15 +571,14 @@ public class WebSiteBmEJB implements SessionBean {
    * @param nodes
    * @return
    */
-  // CBO : ADD
-  private int getIndexOfNode(String nodeId, List nodes) {
+   private int getIndexOfNode(String nodeId, List<NodeDetail> nodes) {
     SilverTrace.debug("webSites", "WebSiteBmEJB.getIndexOfNode()",
         "root.MSG_GEN_ENTER_METHOD", "nodeId = " + nodeId);
     NodeDetail node = null;
     int index = 0;
     if (nodes != null) {
       for (int i = 0; i < nodes.size(); i++) {
-        node = (NodeDetail) nodes.get(i);
+        node = nodes.get(i);
         if (nodeId.equals(node.getNodePK().getId())) {
           SilverTrace.debug("webSites", "WebSiteBmEJB.getIndexOfNode()",
               "root.MSG_GEN_EXIT_METHOD", "index = " + index);
@@ -625,7 +592,6 @@ public class WebSiteBmEJB implements SessionBean {
     return index;
   }
 
-  // CBO : ADD
   /**
    * @param way
    * @param topicPK
@@ -636,9 +602,9 @@ public class WebSiteBmEJB implements SessionBean {
         "root.MSG_GEN_ENTER_METHOD", "way = " + way + ", topicPK = "
             + topicPK.toString());
 
-    List subTopics = null;
+    List<NodeDetail> subTopics = null;
     try {
-      subTopics = (List) getNodeBm().getChildrenDetails(fatherPK);
+      subTopics = (List<NodeDetail>) getNodeBm().getChildrenDetails(fatherPK);
     } catch (Exception e) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.changeTopicsOrder()",
           SilverpeasRuntimeException.ERROR,
@@ -724,17 +690,11 @@ public class WebSiteBmEJB implements SessionBean {
     PublicationPK pubPK = null;
     pubDetail.getPK().setSpace(this.prefixTableName);
     pubDetail.getPK().setComponentName(this.componentId);
-    // CBO : REMOVE pubDetail.setCreationDate(new Date());
-    // CBO : REMOVE pubDetail.setCreatorId(currentUser.getId());
     PublicationBm pubBm = getPublicationBm();
     try {
       // create the publication
       pubPK = pubBm.createPublication(pubDetail);
       pubDetail.getPK().setId(pubPK.getId());
-
-      // add this publication to the current topic
-      // CBO : REMOVE addPublicationToTopic(pubPK.getId(),
-      // currentFolder.getNodePK().getId());
     } catch (Exception re) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.createPublication()",
           SilverpeasRuntimeException.ERROR,
@@ -807,7 +767,6 @@ public class WebSiteBmEJB implements SessionBean {
    * @see
    * @since 1.0
    */
-  // CBO : UPDATE
   // private void addPublicationToTopic(String pubId, String fatherId) {
   public void addPublicationToTopic(String pubId, String fatherId) {
     SilverTrace.info("webSites", "WebSiteBmEJB.addPublicationToTopic()",
@@ -830,7 +789,6 @@ public class WebSiteBmEJB implements SessionBean {
     }
   }
 
-  // CBO : ADD
   public void removePublicationToTopic(String pubId, String fatherId) {
     SilverTrace.info("webSites", "WebSiteBmEJB.removePublicationToTopic()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -852,69 +810,18 @@ public class WebSiteBmEJB implements SessionBean {
     }
   }
 
-  /**
-   * 
-   * Utilise dans createPublication
-   * 
-   * @param
-   * @param
-   * @return
-   * @see
-   * @since 1.0
-   */
-  // CBO : REMOVE
-  /*
-   * public void updateInfoDetail(String pubId, InfoDetail infos) {
-   * SilverTrace.info("webSites", "WebSiteBmEJB.updateInfoDetail()",
-   * "root.MSG_GEN_ENTER_METHOD"); PublicationBm pubBm = getPublicationBm(); try
-   * { PublicationPK pubPK = new PublicationPK(pubId,
-   * currentFolder.getNodeDetail().getNodePK()); pubBm.updateInfoDetail(pubPK,
-   * infos); } catch (Exception re) { throw new
-   * WebSitesRuntimeException("WebSiteBmEJB.updateInfoDetail()",
-   * SilverpeasRuntimeException.ERROR,
-   * "webSites.EX_PUBLICATION_INFOS_UPDATE_FAILED", "pubId = " +
-   * pubId.toString(), re); } }
-   */
-
-  /**
-   * 
-   * Utilise dans goTo
-   * 
-   * @param
-   * @param
-   * @return
-   * @see
-   * @since 1.0
-   */
-  // CBO : UPDATE
-  /*
-   * public FolderDetail getPublicationFather(String pubId) {
-   * SilverTrace.info("webSites", "WebSiteBmEJB.getPublicationFather()",
-   * "root.MSG_GEN_ENTER_METHOD"); PublicationPK pubPK = new
-   * PublicationPK(pubId, this.prefixTableName, this.componentId); PublicationBm
-   * pubBm = getPublicationBm(); FolderDetail fatherDetail = null; try { //fetch
-   * one of the publication fathers Collection fathers =
-   * pubBm.getAllFatherPK(pubPK); String fatherId = "2"; //By default --> DZ if
-   * (fathers != null) { Iterator it = fathers.iterator(); if (it.hasNext()) {
-   * fatherId = ((NodePK) it.next()).getId(); } } fatherDetail =
-   * this.goTo(fatherId); } catch (Exception re) { throw new
-   * WebSitesRuntimeException("WebSiteBmEJB.getPublicationFather()",
-   * SilverpeasRuntimeException.ERROR,
-   * "webSites.EX_GET_PUBLICATION_FATHER_FAILED", "pubId = " + pubId.toString(),
-   * re); } return fatherDetail; }
-   */
 
   /**
    * @param pubId
    * @return
    */
-  public Collection getAllFatherPK(String pubId) {
+  public Collection<NodePK> getAllFatherPK(String pubId) {
     SilverTrace.info("webSites", "WebSiteBmEJB.getAllFatherPK()",
         "root.MSG_GEN_ENTER_METHOD");
     PublicationPK pubPK = new PublicationPK(pubId, this.prefixTableName,
         this.componentId);
     PublicationBm pubBm = getPublicationBm();
-    Collection listFatherPK = null;
+    Collection<NodePK> listFatherPK = null;
     try {
       listFatherPK = pubBm.getAllFatherPK(pubPK);
     } catch (Exception re) {
@@ -926,50 +833,33 @@ public class WebSiteBmEJB implements SessionBean {
     return listFatherPK;
   }
 
-  // CBO : FIN UPDATE
-
   /**
    * getIdPublication
    */
-  // CBO : UPDATE
-  // public Collection getAllPublication(String idSite) {
   public String getIdPublication(String idSite) {
     SilverTrace.info("webSites", "WebSiteBmEJB.getIdPublication()",
         "root.MSG_GEN_ENTER_METHOD");
-    // CBO : UPDATE
-    // Collection thePubList = null;
     String idPub = null;
     try {
       SiteDAO dao = new SiteDAO(prefixTableName, componentId);
-      // CBO : UPDATE
-      // thePubList = dao.getAllPublication(idSite);
-      idPub = dao.getIdPublication(idSite);
+       idPub = dao.getIdPublication(idSite);
     } catch (Exception e) {
-      // CBO : UPDATE
-      /*
-       * throw new WebSitesRuntimeException("WebSiteBmEJB.getAllPublication()",
-       * SilverpeasRuntimeException.ERROR,
-       * "webSites.EX_GET_PUBLICATIONS_FAILED", "idSite = " +idSite, e);
-       */
       throw new WebSitesRuntimeException("WebSiteBmEJB.getIdPublication()",
           SilverpeasRuntimeException.ERROR,
           "webSites.EX_GET_PUBLICATION_FAILED", "idSite = " + idSite, e);
     }
-    // CBO : UPDATE
-    // return thePubList;
     return idPub;
   }
 
-  // CBO : ADD
-  public void updateClassification(String pubId, ArrayList arrayTopic) {
+  public void updateClassification(String pubId, ArrayList<String> arrayTopic) {
     SilverTrace.info("webSites", "WebSiteBmEJB.updateClassification()",
         "root.MSG_GEN_ENTER_METHOD");
     PublicationPK pubPK = new PublicationPK(pubId, this.prefixTableName,
         this.componentId);
     PublicationBm pubBm = getPublicationBm();
-    Collection oldFathersColl;
+    Collection<NodePK> oldFathersColl;
     try {
-      oldFathersColl = (Collection) pubBm.getAllFatherPK(pubPK);
+      oldFathersColl = (Collection<NodePK>) pubBm.getAllFatherPK(pubPK);
     } catch (RemoteException e1) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.updateClassification()",
           SilverpeasRuntimeException.ERROR,
@@ -977,15 +867,15 @@ public class WebSiteBmEJB implements SessionBean {
               + pubPK.toString(), e1);
     }
 
-    List oldFathers = new ArrayList(); // List of NodePK
-    List newFathers = new ArrayList(); // List of NodePK
-    Collection remFathers = new ArrayList(); // Collection of idNode
+    List<NodePK> oldFathers = new ArrayList<NodePK>(); // List of NodePK
+    List<NodePK> newFathers = new ArrayList<NodePK>(); // List of NodePK
+    Collection<String> remFathers = new ArrayList<String>(); // Collection of idNode
 
     // Compute the remove list
     NodePK nodePK = null;
-    Iterator it = oldFathersColl.iterator();
+    Iterator<NodePK> it = oldFathersColl.iterator();
     while (it.hasNext()) {
-      nodePK = (NodePK) it.next();
+      nodePK = it.next();
       if (arrayTopic.indexOf(nodePK.getId()) == -1)
         remFathers.add(nodePK.getId());
       oldFathers.add(nodePK);
@@ -994,7 +884,7 @@ public class WebSiteBmEJB implements SessionBean {
     // Compute the add and stay list
     String idNode = null;
     for (int nI = 0; nI < arrayTopic.size(); nI++) {
-      idNode = (String) arrayTopic.get(nI);
+      idNode = arrayTopic.get(nI);
       nodePK = new NodePK(idNode, this.prefixTableName, this.componentId);
       if (oldFathers.indexOf(nodePK) == -1)
         newFathers.add(nodePK);
@@ -1046,18 +936,16 @@ public class WebSiteBmEJB implements SessionBean {
     }
   }
 
-  // CBO : FIN ADD
-
-  /***********************************************************************************************/
+   /***********************************************************************************************/
   // Gestion des sites
 
   /**
    * getAllWebSite
    */
-  public Collection getAllWebSite() {
+  public Collection<SiteDetail> getAllWebSite() {
     SilverTrace.info("webSites", "WebSiteBmEJB.getAllWebSite()",
         "root.MSG_GEN_ENTER_METHOD");
-    Collection theSiteList = null;
+    Collection<SiteDetail> theSiteList = null;
     try {
       SiteDAO dao = new SiteDAO(prefixTableName, componentId);
       theSiteList = dao.getAllWebSite();
@@ -1090,7 +978,7 @@ public class WebSiteBmEJB implements SessionBean {
    * @param ids
    * @return
    */
-  public List getWebSites(List ids) {
+  public List<SiteDetail> getWebSites(List<String> ids) {
     SilverTrace.info("webSites", "WebSiteBmEJB.getWebSites()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -1106,7 +994,7 @@ public class WebSiteBmEJB implements SessionBean {
   /**
    * getIcons
    */
-  public Collection getIcons(String id) {
+  public Collection<IconDetail> getIcons(String id) {
     SilverTrace.info("webSites", "WebSiteBmEJB.getIcons()",
         "root.MSG_GEN_ENTER_METHOD");
     SitePK pk = new SitePK(id, prefixTableName, componentId);
@@ -1138,7 +1026,7 @@ public class WebSiteBmEJB implements SessionBean {
   /**
    * getAllIcons
    */
-  public Collection getAllIcons() {
+  public Collection<IconDetail> getAllIcons() {
     SilverTrace.info("webSites", "WebSiteBmEJB.getAllIcons()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -1154,8 +1042,6 @@ public class WebSiteBmEJB implements SessionBean {
   /**
    * createWebSite
    */
-  // CBO : UPDATE
-  // public void createWebSite(SiteDetail description) {
   public String createWebSite(SiteDetail description) {
     SilverTrace.info("webSites", "WebSiteBmEJB.createWebSite()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -1164,7 +1050,6 @@ public class WebSiteBmEJB implements SessionBean {
       SiteDAO dao = new SiteDAO(prefixTableName, componentId);
       dao.createWebSite(description);
 
-      // CBO : ADD
       String pubPk = createPublication(description);
 
       // register the new publication as a new content to content manager
@@ -1172,7 +1057,6 @@ public class WebSiteBmEJB implements SessionBean {
       createSilverContent(con, description, currentUser.getId(),
           prefixTableName, componentId);
 
-      // CBO : ADD
       return pubPk;
     } catch (Exception e) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.createWebSite()",
@@ -1187,7 +1071,7 @@ public class WebSiteBmEJB implements SessionBean {
   /**
    * associateIcons
    */
-  public void associateIcons(String id, Collection liste) {
+  public void associateIcons(String id, Collection<String> liste) {
     SilverTrace.info("webSites", "WebSiteBmEJB.associateIcons()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -1203,7 +1087,7 @@ public class WebSiteBmEJB implements SessionBean {
   /**
    * publish
    */
-  public void publish(Collection liste) {
+  public void publish(Collection<String> liste) {
     SilverTrace.info("webSites", "WebSiteBmEJB.publish()",
         "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
@@ -1213,9 +1097,9 @@ public class WebSiteBmEJB implements SessionBean {
 
       // register the new publication as a new content to content manager
       con = getConnection(); // connection usefull for content service
-      Iterator i = liste.iterator();
+      Iterator<String> i = liste.iterator();
       while (i.hasNext()) {
-        String siteId = (String) i.next();
+        String siteId = i.next();
         SiteDetail siteDetail = getWebSite(siteId);
         updateSilverContentVisibility(siteDetail, prefixTableName, componentId);
       }
@@ -1230,7 +1114,7 @@ public class WebSiteBmEJB implements SessionBean {
   /**
    * dePublish
    */
-  public void dePublish(Collection liste) {
+  public void dePublish(Collection<String> liste) {
     SilverTrace.info("webSites", "WebSiteBmEJB.dePublish()",
         "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
@@ -1240,9 +1124,9 @@ public class WebSiteBmEJB implements SessionBean {
 
       // register the new publication as a new content to content manager
       con = getConnection(); // connection usefull for content service
-      Iterator i = liste.iterator();
+      Iterator<String> i = liste.iterator();
       while (i.hasNext()) {
-        String siteId = (String) i.next();
+        String siteId = i.next();
         SiteDetail siteDetail = getWebSite(siteId);
         updateSilverContentVisibility(siteDetail, prefixTableName, componentId);
       }
@@ -1257,7 +1141,7 @@ public class WebSiteBmEJB implements SessionBean {
   /**
    * deleteWebSites
    */
-  public void deleteWebSites(Collection liste) {
+  public void deleteWebSites(Collection<String> liste) {
     SilverTrace.info("webSites", "WebSiteBmEJB.deleteWebSites()",
         "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
@@ -1267,9 +1151,9 @@ public class WebSiteBmEJB implements SessionBean {
 
       // register the new publication as a new content to content manager
       con = getConnection(); // connection usefull for content service
-      Iterator i = liste.iterator();
+      Iterator<String> i = liste.iterator();
       while (i.hasNext()) {
-        String siteId = (String) i.next();
+        String siteId = i.next();
         SitePK sitePK = new SitePK(siteId, prefixTableName, componentId);
         SilverTrace.info("webSites", "WebSiteBmEJB.deleteWebSites()",
             "root.MSG_GEN_PARAM_VALUE", "siteId =" + siteId);
@@ -1288,25 +1172,12 @@ public class WebSiteBmEJB implements SessionBean {
     }
   }
 
-  // CBO : REMOVE
-  /*
-   * public void deleteWebSitesFromUpdate(Collection liste) {
-   * SilverTrace.info("webSites", "WebSiteBmEJB.deleteWebSitesFromUpdate()",
-   * "root.MSG_GEN_ENTER_METHOD"); Connection con = null; try { SiteDAO dao =
-   * new SiteDAO(prefixTableName, componentId); dao.deleteWebSites(liste); }
-   * catch (Exception e) { throw new
-   * WebSitesRuntimeException("WebSiteBmEJB.deleteWebSitesFromUpdate()",
-   * SilverpeasRuntimeException.ERROR, "webSites.EX_DELETE_WEBSITES_FAILED", e);
-   * } finally { freeConnection(con); } SilverTrace.info("webSites",
-   * "WebSiteBmEJB.deleteWebSitesFromUpdate()", "root.MSG_GEN_EXIT_METHOD"); }
-   */
-
   public void index() {
     try {
       // index all topics
       NodePK rootPK = new NodePK("0", "useless", componentId);
-      List tree = getNodeBm().getSubTree(rootPK);
-      Iterator itNode = tree.iterator();
+      List<NodeDetail> tree = getNodeBm().getSubTree(rootPK);
+      Iterator<NodeDetail> itNode = tree.iterator();
       NodeDetail node = null;
       while (itNode.hasNext()) {
         node = (NodeDetail) itNode.next();
@@ -1315,11 +1186,11 @@ public class WebSiteBmEJB implements SessionBean {
 
       // index all publications
       PublicationPK pubPK = new PublicationPK("useless", "useless", componentId);
-      Collection publications = getPublicationBm().getAllPublications(pubPK);
-      Iterator itPub = publications.iterator();
+      Collection<PublicationDetail> publications = getPublicationBm().getAllPublications(pubPK);
+      Iterator<PublicationDetail> itPub = publications.iterator();
       PublicationDetail pub = null;
       while (itPub.hasNext()) {
-        pub = (PublicationDetail) itPub.next();
+        pub = itPub.next();
         getPublicationBm().createIndex(pub);
       }
     } catch (Exception e) {
@@ -1329,7 +1200,6 @@ public class WebSiteBmEJB implements SessionBean {
     }
   }
 
-  // CBO : ADD
   /**
    * updateWebSite
    */

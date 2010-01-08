@@ -39,22 +39,23 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.webSites.control.ejb.WebSiteBm;
 import com.stratelia.webactiv.webSites.control.ejb.WebSiteBmHome;
+import com.stratelia.webactiv.webSites.siteManage.model.SiteDetail;
 
 
 public class WebSitesStatistics implements ComponentStatisticsInterface {
 
   private WebSiteBm webSiteEjb = null;
 
-  public Collection getVolume(String spaceId, String componentId)
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    ArrayList myArrayList = new ArrayList();
-    Collection c = getWebSites(spaceId, componentId);
-    Iterator iter = c.iterator();
+    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
+    Collection<SiteDetail> c = getWebSites(spaceId, componentId);
+    Iterator<SiteDetail> iter = c.iterator();
     while (iter.hasNext()) {
       iter.next();
 
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-      // ATTENTION getAuthor ne renvoie pas l'id mais Nom+Pr�nom
+      // ATTENTION getAuthor ne renvoie pas l'id mais Nom+Prénom
       // myCouple.setUserId(detail.getAuthor());
       myCouple.setUserId("-2"); // unknown userId
       myCouple.setCountVolume(1);
@@ -77,12 +78,12 @@ public class WebSitesStatistics implements ComponentStatisticsInterface {
     return webSiteEjb;
   }
 
-  public Collection getWebSites(String spaceId, String componentId)
+  public Collection<SiteDetail> getWebSites(String spaceId, String componentId)
       throws RemoteException {
     getWebSiteEjb().setPrefixTableName(spaceId);
     getWebSiteEjb().setComponentId(componentId);
 
-    Collection result = getWebSiteEjb().getAllWebSite();
+    Collection<SiteDetail> result = getWebSiteEjb().getAllWebSite();
     return result;
   }
 }

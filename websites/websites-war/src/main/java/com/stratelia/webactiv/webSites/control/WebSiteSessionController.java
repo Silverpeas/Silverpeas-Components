@@ -67,6 +67,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.webSites.control.ejb.WebSiteBm;
 import com.stratelia.webactiv.webSites.control.ejb.WebSiteBmHome;
 import com.stratelia.webactiv.webSites.siteManage.model.FolderDetail;
+import com.stratelia.webactiv.webSites.siteManage.model.IconDetail;
 import com.stratelia.webactiv.webSites.siteManage.model.SiteDetail;
 import com.stratelia.webactiv.webSites.siteManage.util.Expand;
 
@@ -79,15 +80,8 @@ public class WebSiteSessionController extends
 
   // Session objects
   private FolderDetail sessionTopic = null;
-  // CBO : REMOVE private UserCompletePublication sessionPublication = null;
-  // CBO : REMOVE private String sessionPath = null;
-  // CBO : REMOVE private FolderDetail sessionTopicToLink = null;
-  // CBO : REMOVE private boolean sessionOwner = false;
   private NotificationSender notifSender = null;
-
-  // CBO : ADD
   private SiteDetail sessionSite = null;
-
   private String siteName;
 
   public final static String TAB_PDC = "tabPdc";
@@ -99,13 +93,9 @@ public class WebSiteSessionController extends
    */
   public WebSiteSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
-    // CBO : UPDATE
-    // super(mainSessionCtrl, componentContext,
-    // "com.stratelia.webactiv.webSites.multilang.webSiteBundle");
-    super(mainSessionCtrl, componentContext,
+     super(mainSessionCtrl, componentContext,
         "com.stratelia.webactiv.webSites.multilang.webSiteBundle", null,
         "com.stratelia.webactiv.webSites.settings.webSiteSettings");
-    // CBO : REMOVE checkAuthorsAndDates();
     initEJB();
   }
 
@@ -117,13 +107,7 @@ public class WebSiteSessionController extends
     webSiteEjb = null;
     removeSessionTopic();
 
-    // CBO : ADD
     removeSessionSite();
-
-    // CBO : REMOVE removeSessionTopicToLink();
-    // CBO : REMOVE removeSessionPublication();
-    // CBO : REMOVE removeSessionPath();
-    // CBO : REMOVE removeSessionOwner();
 
     // 2 - Init EJB used by this SessionController
     try {
@@ -212,72 +196,25 @@ public class WebSiteSessionController extends
     this.sessionTopic = topicDetail;
   }
 
-  // CBO : ADD
   public synchronized void setSessionSite(SiteDetail siteDetail) {
     this.sessionSite = siteDetail;
   }
-
-  // CBO : REMOVE
-  /*
-   * public synchronized void setSessionTopicToLink(FolderDetail topicDetail) {
-   * this.sessionTopicToLink = topicDetail; }
-   *
-   * public synchronized void setSessionPublication(UserCompletePublication
-   * pubDetail) { this.sessionPublication = pubDetail; }
-   *
-   * public synchronized void setSessionPath(String path) { this.sessionPath =
-   * path; }
-   *
-   * public synchronized void setSessionOwner(boolean owner) { this.sessionOwner
-   * = owner; }
-   */
-  // CBO : FIN REMOVE
 
   public synchronized FolderDetail getSessionTopic() {
     return this.sessionTopic;
   }
 
-  // CBO : ADD
-  public synchronized SiteDetail getSessionSite() {
+   public synchronized SiteDetail getSessionSite() {
     return this.sessionSite;
   }
-
-  // CBO : REMOVE
-  /*
-   * public synchronized FolderDetail getSessionTopicToLink() { return
-   * this.sessionTopicToLink; }
-   *
-   * public synchronized UserCompletePublication getSessionPublication() {
-   * return this.sessionPublication; }
-   *
-   * public synchronized String getSessionPath() { return this.sessionPath; }
-   *
-   * public synchronized boolean getSessionOwner() { return this.sessionOwner; }
-   */
-  // CBO : FIN REMOVE
 
   public synchronized void removeSessionTopic() {
     setSessionTopic(null);
   }
 
-  // CBO : ADD
   public synchronized void removeSessionSite() {
     setSessionSite(null);
   }
-
-  // CBO : REMOVE
-  /*
-   * public synchronized void removeSessionTopicToLink() {
-   * setSessionTopicToLink(null); }
-   *
-   * public synchronized void removeSessionPublication() {
-   * setSessionPublication(null); }
-   *
-   * public synchronized void removeSessionPath() { setSessionPath(null); }
-   *
-   * public synchronized void removeSessionOwner() { setSessionOwner(false); }
-   */
-  // CBO : FIN REMOVE
 
   public NotificationSender getNotificationSender() {
     if (notifSender == null)
@@ -396,7 +333,6 @@ public class WebSiteSessionController extends
     }
   }
 
-  // CBO : ADD
   /**
    * @param way
    * @param topicId
@@ -425,26 +361,6 @@ public class WebSiteSessionController extends
     }
   }
 
-  // CBO : REMOVE
-  /*
-   * public synchronized String createPublication(PublicationDetail pubDetail)
-   * throws WebSitesException { try { return
-   * webSiteEjb.createPublication(pubDetail); } catch (NoSuchObjectException
-   * nsoe) { initEJB(); return createPublication(pubDetail); } catch
-   * (RemoteException re) { throw new WebSitesException(
-   * "WebSiteSessionController.createPublication()", SilverpeasException.ERROR,
-   * "root.EX_CREATE_PUBLICATION_FAILED", "pubDetail = " + pubDetail.toString(),
-   * re); } }
-   *
-   * public synchronized void updatePublication(PublicationDetail pubDetail)
-   * throws WebSitesException { try { webSiteEjb.updatePublication(pubDetail); }
-   * catch (NoSuchObjectException nsoe) { initEJB();
-   * updatePublication(pubDetail); } catch (RemoteException re) { throw new
-   * WebSitesException( "WebSiteSessionController.updatePublication()",
-   * SilverpeasException.ERROR, "root.EX_UPDATE_PUBLICATION_FAILED",
-   * "pubDetail = " + pubDetail.toString(), re); } }
-   */
-
   public synchronized void deletePublication(String pubId)
       throws WebSitesException {
     try {
@@ -460,28 +376,7 @@ public class WebSiteSessionController extends
     }
   }
 
-  // CBO : REMOVE
-  /*
-   * public synchronized void updateInfoDetail(String pubId, InfoDetail infos)
-   * throws WebSitesException { try { webSiteEjb.updateInfoDetail(pubId, infos);
-   * } catch (NoSuchObjectException nsoe) { initEJB(); updateInfoDetail(pubId,
-   * infos); } catch (RemoteException re) { throw new WebSitesException(
-   * "WebSiteSessionController.updateInfoDetail()", SilverpeasException.ERROR,
-   * "webSites.EX_PUBLICATION_INFOS_UPDATE_FAILED", "pubId = " + pubId +
-   * " , infos = " + infos.toString(), re); } }
-   */
-
-  // CBO : UPDATE
-  /*
-   * public synchronized FolderDetail getPublicationFather(String pubId) throws
-   * WebSitesException { try { return webSiteEjb.getPublicationFather(pubId); }
-   * catch (NoSuchObjectException nsoe) { initEJB(); return
-   * getPublicationFather(pubId); } catch (RemoteException re) { throw new
-   * WebSitesException( "WebSiteSessionController.getPublicationFather()",
-   * SilverpeasException.ERROR, "webSites.EX_GET_PUBLICATION_FATHER_FAILED",
-   * "pubId = " + pubId, re); } }
-   */
-  public synchronized Collection getAllFatherPK(String pubId)
+  public synchronized Collection<NodePK> getAllFatherPK(String pubId)
       throws WebSitesException {
     try {
       return webSiteEjb.getAllFatherPK(pubId);
@@ -496,7 +391,6 @@ public class WebSiteSessionController extends
     }
   }
 
-  // CBO : ADD
   public synchronized void addPublicationToFolder(String pubId, String folderId)
       throws WebSitesException {
     try {
@@ -529,26 +423,17 @@ public class WebSiteSessionController extends
     }
   }
 
-  // CBO : FIN ADD
-
   /**
    * @param siteId
    * @return
    * @throws WebSitesException
    */
-  // CBO : UPDATE
-  // public synchronized Collection getAllPublication(String siteId) throws
-  // WebSitesException
   public synchronized String getIdPublication(String siteId)
       throws WebSitesException {
     try {
-      // CBO : UPDATE
-      // return webSiteEjb.getAllPublication(siteId);
       return webSiteEjb.getIdPublication(siteId);
     } catch (NoSuchObjectException nsoe) {
       initEJB();
-      // CBO : UPDATE
-      // return getAllPublication(siteId);
       return getIdPublication(siteId);
     } catch (RemoteException re) {
       throw new WebSitesException(
@@ -557,8 +442,6 @@ public class WebSiteSessionController extends
           "siteId =" + siteId, re);
     }
   }
-
-  // CBO : ADD
 
   /**
    * @param pubId
@@ -589,7 +472,7 @@ public class WebSiteSessionController extends
   /**
    * getAllWebSite
    */
-  public synchronized Collection getAllWebSite() throws WebSitesException {
+  public synchronized Collection<SiteDetail> getAllWebSite() throws WebSitesException {
     try {
       return webSiteEjb.getAllWebSite();
     } catch (NoSuchObjectException nsoe) {
@@ -621,7 +504,7 @@ public class WebSiteSessionController extends
   /**
    * getIcons
    */
-  public synchronized Collection getIcons(String id) throws WebSitesException {
+  public synchronized Collection<IconDetail> getIcons(String id) throws WebSitesException {
     try {
       return webSiteEjb.getIcons(id);
     } catch (NoSuchObjectException nsoe) {
@@ -652,7 +535,7 @@ public class WebSiteSessionController extends
   /**
    * getAllIcons
    */
-  public synchronized Collection getAllIcons() throws WebSitesException {
+  public synchronized Collection<IconDetail> getAllIcons() throws WebSitesException {
     try {
       return webSiteEjb.getAllIcons();
     } catch (NoSuchObjectException nsoe) {
@@ -667,7 +550,7 @@ public class WebSiteSessionController extends
   /**
    * getAllSubFolder
    */
-  public synchronized Collection getAllSubFolder(String chemin)
+  public synchronized Collection<File> getAllSubFolder(String chemin)
       throws WebSitesException {
     /*
      * chemin du repertoire =
@@ -685,7 +568,7 @@ public class WebSiteSessionController extends
   /**
    * getAllFile
    */
-  public synchronized Collection getAllFile(String chemin)
+  public synchronized Collection<File> getAllFile(String chemin)
       throws WebSitesException {
     /*
      * chemin du repertoire =
@@ -703,7 +586,7 @@ public class WebSiteSessionController extends
   /**
    * getAllImages
    */
-  public synchronized Collection getAllImages(String chemin)
+  public synchronized Collection<File> getAllImages(String chemin)
       throws WebSitesException {
     /*
      * chemin du repertoire =
@@ -721,7 +604,7 @@ public class WebSiteSessionController extends
   /**
    * getAllWebPages2
    */
-  public synchronized Collection getAllWebPages2(String chemin)
+  public synchronized Collection<File> getAllWebPages2(String chemin)
       throws WebSitesException {
     /*
      * chemin du repertoire =
@@ -739,18 +622,10 @@ public class WebSiteSessionController extends
   /**
    * createWebSite
    */
-  // CBO : UPDATE
-  // public synchronized void createWebSite(SiteDetail description) throws
-  // WebSitesException
   public synchronized String createWebSite(SiteDetail description)
       throws WebSitesException {
     try {
-      // CBO : UPDATE
-      // description.setAuthor(getUserId());
       description.setCreatorId(getUserId());
-
-      // CBO : UPDATE
-      // description.setDate(DateUtil.today2SQLDate());
       description.setCreationDate(new Date());
 
       return webSiteEjb.createWebSite(description);
@@ -768,7 +643,7 @@ public class WebSiteSessionController extends
   /**
    * AssociateIcons
    */
-  public synchronized void associateIcons(String id, Collection listeIcones)
+  public synchronized void associateIcons(String id, Collection<String> listeIcones)
       throws WebSitesException {
     try {
       webSiteEjb.associateIcons(id, listeIcones);
@@ -786,7 +661,7 @@ public class WebSiteSessionController extends
   /**
    * publish
    */
-  public synchronized void publish(Collection listeSite)
+  public synchronized void publish(Collection<String> listeSite)
       throws WebSitesException {
     /* Collection d'id de site */
     try {
@@ -805,7 +680,7 @@ public class WebSiteSessionController extends
   /**
    * dePublish
    */
-  public synchronized void dePublish(Collection listeSite)
+  public synchronized void dePublish(Collection<String> listeSite)
       throws WebSitesException {
     /* Collection d'id de site */
     try {
@@ -913,7 +788,7 @@ public class WebSiteSessionController extends
   /**
    * deleteWebSites
    */
-  public synchronized void deleteWebSites(Collection liste)
+  public synchronized void deleteWebSites(Collection<String> liste)
       throws WebSitesException {
     try {
       webSiteEjb.deleteWebSites(liste);
@@ -928,22 +803,10 @@ public class WebSiteSessionController extends
     }
   }
 
-  // CBO : REMOVE
-  /*
-   * public synchronized void deleteWebSitesFromUpdate(Collection liste) throws
-   * WebSitesException { try { webSiteEjb.deleteWebSitesFromUpdate(liste); }
-   * catch (NoSuchObjectException nsoe) { initEJB();
-   * deleteWebSitesFromUpdate(liste); } catch (RemoteException re) { throw new
-   * WebSitesException
-   * ("WebSiteSessionController.deleteWebSitesFromUpdate()",SilverpeasException
-   * .ERROR,"webSites.EX_DELETE_WEBSITES_FAILED",re); } }
-   */
-
   /**
    * @param description
    * @throws WebSitesException
    */
-  // CBO : ADD
   public synchronized void updateWebSite(SiteDetail description)
       throws WebSitesException {
     try {
@@ -951,14 +814,9 @@ public class WebSiteSessionController extends
       description.setCreationDate(new Date());
 
       webSiteEjb.updateWebSite(description);
-
-      // CBO : UPDATE
-      // Collection publi =
-      // webSiteEjb.getAllPublication(description.getSitePK().getId());
       String pubId = webSiteEjb.getIdPublication(description.getSitePK()
           .getId());
 
-      // CBO : REMOVE String pubId = (String) publi.iterator().next();
       PublicationPK pubPk = new PublicationPK(pubId, getSpaceId(),
           getComponentId());
       description.setPk(pubPk);
@@ -1135,7 +993,7 @@ public class WebSiteSessionController extends
         + " : \n" + date;
 
     try {
-      List profileNames = new ArrayList();
+      List<String> profileNames = new ArrayList<String>();
       profileNames.add("Admin");
       profileNames.add("Publisher");
       String[] users = getOrganizationController().getUsersIdsByRoleNames(
@@ -1187,21 +1045,12 @@ public class WebSiteSessionController extends
    * @param arrayTopic
    * @throws WebSitesException
    */
-  // CBO : ADD
-  public void updateClassification(String idSite, ArrayList arrayTopic)
+  public void updateClassification(String idSite, ArrayList<String> arrayTopic)
       throws WebSitesException {
     try {
-      // CBO : UPDATE
-      /*
-       * Collection listPubli = webSiteEjb.getAllPublication(idSite);//un seul
-       * résultat if(listPubli != null) {
-       * webSiteEjb.updateClassification((String) listPubli.iterator().next(),
-       * arrayTopic); }
-       */
       String idPub = webSiteEjb.getIdPublication(idSite);
       webSiteEjb.updateClassification(idPub, arrayTopic);
 
-      // CBO : FIN UPDATE
     } catch (NoSuchObjectException nsoe) {
       initEJB();
       updateClassification(idSite, arrayTopic);

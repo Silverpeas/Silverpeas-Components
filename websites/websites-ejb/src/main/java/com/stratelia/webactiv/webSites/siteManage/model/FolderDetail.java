@@ -27,42 +27,48 @@ import java.util.Collection;
 
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 public class FolderDetail extends Object implements java.io.Serializable {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
   /** A NodeDetail collection representing the path from leaf to root */
-  private Collection path;
+  private Collection<NodeDetail> path;
 
   /** the informations of the Topic are in this object */
   private NodeDetail nodeDetail;
 
   /** A NodeDetail collection representing the path from leaf to root */
-  private Collection publicationDetails;
+  private Collection<PublicationDetail> publicationDetails;
 
   /**
    * A int collection which contains the number of publication containing under
    * each sub topics of the topics
    */
-  private Collection nbPubByTopic;
+  private Collection<Integer> nbPubByTopic;
 
   public FolderDetail() {
     init(null, null, null, null);
   }
 
-  public FolderDetail(Collection path, NodeDetail nodeDetail,
-      Collection pubDetails, Collection nbPubByTopic) {
+  public FolderDetail(Collection<NodeDetail> path, NodeDetail nodeDetail,
+      Collection<PublicationDetail> pubDetails, Collection<Integer> nbPubByTopic) {
     init(path, nodeDetail, pubDetails, nbPubByTopic);
   }
 
-  private void init(Collection path, NodeDetail nodeDetail,
-      Collection pubDetails, Collection nbPubByTopic) {
+  private void init(Collection<NodeDetail> path, NodeDetail nodeDetail,
+      Collection<PublicationDetail> pubDetails, Collection<Integer> nbPubByTopic) {
     this.path = path;
     this.nodeDetail = nodeDetail;
     this.publicationDetails = pubDetails;
     this.nbPubByTopic = nbPubByTopic;
   }
 
-  public Collection getPath() {
+  public Collection<NodeDetail> getPath() {
     return this.path;
   }
 
@@ -74,15 +80,15 @@ public class FolderDetail extends Object implements java.io.Serializable {
     return this.nodeDetail;
   }
 
-  public Collection getPublicationDetails() {
+  public Collection<PublicationDetail> getPublicationDetails() {
     return this.publicationDetails;
   }
 
-  public Collection getNbPubByTopic() {
+  public Collection<Integer> getNbPubByTopic() {
     return this.nbPubByTopic;
   }
 
-  public void setPath(Collection path) {
+  public void setPath(Collection<NodeDetail> path) {
     this.path = path;
   }
 
@@ -90,11 +96,11 @@ public class FolderDetail extends Object implements java.io.Serializable {
     this.nodeDetail = nd;
   }
 
-  public void setPublicationDetails(Collection pd) {
+  public void setPublicationDetails(Collection<PublicationDetail> pd) {
     this.publicationDetails = pd;
   }
 
-  public void setNbPubByTopic(Collection nbPubByTopic) {
+  public void setNbPubByTopic(Collection<Integer> nbPubByTopic) {
     this.nbPubByTopic = nbPubByTopic;
   }
 }

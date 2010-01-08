@@ -50,6 +50,7 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.webSites.siteManage.model.FolderDetail;
+import com.stratelia.webactiv.webSites.siteManage.model.IconDetail;
 import com.stratelia.webactiv.webSites.siteManage.model.SiteDetail;
 
 public interface WebSiteBm extends EJBObject {
@@ -85,11 +86,9 @@ public interface WebSiteBm extends EJBObject {
   public String createPublication(PublicationDetail pubDetail)
       throws RemoteException;
 
-  // CBO : ADD
   public void addPublicationToTopic(String pubId, String fatherId)
       throws RemoteException;
 
-  // CBO : ADD
   public void removePublicationToTopic(String pubId, String fatherId)
       throws RemoteException;
 
@@ -98,60 +97,43 @@ public interface WebSiteBm extends EJBObject {
 
   public void deletePublication(String pubId) throws RemoteException;
 
-  // CBO : REMOVE public void updateInfoDetail(String pubId, InfoDetail infos)
-  // throws RemoteException;
+  public Collection<NodePK> getAllFatherPK(String pubId) throws RemoteException;
 
-  // CBO : UPDATE
-  // public FolderDetail getPublicationFather(String pubId) throws
-  // RemoteException;
-  public Collection getAllFatherPK(String pubId) throws RemoteException;
-
-  // CBO : UPDATE
-  // public Collection getAllPublication(String idSite) throws RemoteException;
   public String getIdPublication(String idSite) throws RemoteException;
 
-  // CBO : ADD
-  public void updateClassification(String pubId, ArrayList arrayTopic)
+  public void updateClassification(String pubId, ArrayList<String> arrayTopic)
       throws RemoteException;
 
   public void changePubsOrder(String pubId, NodePK nodePK, int direction)
       throws RemoteException;
 
-  // CbO : FIN ADD
-
   /* gestion des sites */
-  public Collection getAllWebSite() throws RemoteException;
+  public Collection<SiteDetail> getAllWebSite() throws RemoteException;
 
   public SiteDetail getWebSite(String id) throws RemoteException;
 
-  public List getWebSites(List ids) throws RemoteException;
+  public List<SiteDetail> getWebSites(List<String> ids) throws RemoteException;
 
-  public Collection getIcons(String id) throws RemoteException;
+  public Collection<IconDetail> getIcons(String id) throws RemoteException;
 
   public String getNextId() throws RemoteException;
 
-  public Collection getAllIcons() throws RemoteException;
+  public Collection<IconDetail> getAllIcons() throws RemoteException;
 
-  // CBO : UPDATE
-  // public void createWebSite(SiteDetail description) throws RemoteException;
   public String createWebSite(SiteDetail description) throws RemoteException;
 
-  public void associateIcons(String id, Collection liste)
+  public void associateIcons(String id, Collection<String> liste)
       throws RemoteException;
 
-  public void publish(Collection liste) throws RemoteException;
+  public void publish(Collection<String> liste) throws RemoteException;
 
-  public void dePublish(Collection liste) throws RemoteException;
+  public void dePublish(Collection<String> liste) throws RemoteException;
 
-  public void deleteWebSites(Collection liste) throws RemoteException;
-
-  // CBO : REMOVE public void deleteWebSitesFromUpdate(Collection liste) throws
-  // RemoteException;
+  public void deleteWebSites(Collection<String> liste) throws RemoteException;
 
   public int getSilverObjectId(String id) throws RemoteException;
 
   public void index() throws RemoteException;
 
-  // CBO : ADD
   public void updateWebSite(SiteDetail description) throws RemoteException;
 }

@@ -79,9 +79,9 @@ public class Expand {
       zf = new ZipFile(srcF);
       ZipEntry ze = null;
 
-      Enumeration entries = zf.entries();
+      Enumeration<ZipEntry> entries = (Enumeration<ZipEntry>) zf.entries();
       while (entries.hasMoreElements()) {
-        ze = (ZipEntry) entries.nextElement();
+        ze = entries.nextElement();
         String entryName = dir.getAbsolutePath();
         if(!entryName.endsWith(File.separator) &&  !ze.getName().startsWith(File.separator)) {
           entryName = entryName + File.separatorChar + ze.getName();
