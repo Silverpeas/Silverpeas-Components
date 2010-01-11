@@ -32,13 +32,13 @@ import java.util.List;
 import javax.ejb.EJBException;
 import javax.ejb.RemoveException;
 
+import org.apache.commons.fileupload.FileItem;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
-import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.ForeignPK;
@@ -63,6 +63,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
+import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -264,7 +265,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
   public void initNavigationForPublication(String pubId)
       throws NewsEditoException {
     try {
-      Collection result = publicationBm.getAllFatherPK(new PublicationPK(pubId,
+      Collection<NodePK> result = publicationBm.getAllFatherPK(new PublicationPK(pubId,
           getSpaceId(), getComponentId()));
 
       if (result.size() > 2) // 1 -> article normal, 2->article apparaissant
@@ -274,8 +275,8 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
             "Cette publication a plus de deux noeud pere, mais "
             + result.size());
       }
-      Iterator i = result.iterator();
-      NodePK titlePK = (NodePK) i.next();
+      Iterator<NodePK> i = result.iterator();
+      NodePK titlePK = i.next();
 
       if (nodeBm.getHeader(titlePK).getFatherPK().getId().equals("0")
           && (i.hasNext())) {
@@ -334,10 +335,10 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
    * getArchiveList() This method returns all the newsPaper present in the space (the items are
    * ordered by creation date)
    */
-  public Collection getArchiveList() throws NewsEditoException {
+  public Collection<NodeDetail> getArchiveList() throws NewsEditoException {
     SilverTrace.info("NewsEdito", "NewsEditoSessionControl.getArchiveList",
         "NewsEdito.MSG_ENTRY_METHOD");
-    Collection result;
+    Collection<NodeDetail> result;
     NodePK pk = new NodePK(root, getSpaceId(), getComponentId());
 
     try {
@@ -359,18 +360,18 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
   public void selectFirstArchive() throws NewsEditoException {
     SilverTrace.info("NewsEdito", "NewsEditoSessionControl.selectFirstArchive",
         "NewsEdito.MSG_ENTRY_METHOD");
-    Collection result;
+    Collection<NodeDetail> result;
     NodePK pk = new NodePK(root, getSpaceId(), getComponentId());
 
     try {
       result = nodeBm.getFrequentlyAskedChildrenDetails(pk);
-      Iterator i = result.iterator();
+      Iterator<NodeDetail> i = result.iterator();
 
       String bestDate = null;
       String firstArchiveId = null;
 
       while (i.hasNext()) {
-        NodeDetail node = (NodeDetail) i.next();
+        NodeDetail node = i.next();
 
         if ((bestDate == null)
             || ((node.getCreationDate() != null) && (node.getCreationDate()
@@ -395,18 +396,18 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
     SilverTrace.info("NewsEdito",
         "NewsEditoSessionControl.selectFirstOnLineArchive",
         "NewsEdito.MSG_ENTRY_METHOD");
-    Collection result;
+    Collection<NodeDetail> result;
     NodePK pk = new NodePK(root, getSpaceId(), getComponentId());
 
     try {
       result = nodeBm.getFrequentlyAskedChildrenDetails(pk);
-      Iterator i = result.iterator();
+      Iterator<NodeDetail> i = result.iterator();
 
       String bestDate = null;
       String firstArchiveId = null;
 
       while (i.hasNext()) {
-        NodeDetail node = (NodeDetail) i.next();
+        NodeDetail node = i.next();
 
         if ((node.getStatus() != null) && (node.getStatus().equals("onLine"))) {
           if ((bestDate == null)
@@ -434,35 +435,36 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
    * @throws NewsEditoException
    * @see
    */
-  public Collection getArchiveUsage(String fatherId) throws NewsEditoException {
+  public Collection<StatisticResultDetail> getArchiveUsage(String fatherId)
+      throws NewsEditoException {
     try {
       if (fatherId == null)
         fatherId = root;
       if (fatherId.length() == 0)
         fatherId = root;
 
-      Collection statList = new ArrayList();
+      Collection<StatisticResultDetail> statList = new ArrayList<StatisticResultDetail>();
 
       NodePK pk = new NodePK(fatherId, getSpaceId(), getComponentId());
       NodeDetail nd = nodeBm.getDetail(pk);
 
       // récupération de la liste de toutes les rubriques (les nodes)
-      Collection archiveList = nd.getChildrenDetails();
-      Iterator i = archiveList.iterator();
+      Collection<NodeDetail> archiveList = nd.getChildrenDetails();
+      Iterator<NodeDetail> i = archiveList.iterator();
       while (i.hasNext()) {
-        NodeDetail nodeDetail = (NodeDetail) i.next();
+        NodeDetail nodeDetail = i.next();
 
         // récupérer par rubrique, la liste de tous les articles (publications)
-        Collection publications = publicationBm.getDetailsByFatherPK(nodeDetail
+        Collection<PublicationDetail> publications = publicationBm.getDetailsByFatherPK(nodeDetail
             .getNodePK());
 
         // pour chaque liste d'articles (rubrique), compter le nombre de
         // lectures
         int accessByNode = 0;
-        Iterator it = publications.iterator();
+        Iterator<PublicationDetail> it = publications.iterator();
         while (it.hasNext()) {
           // ajouter le nombre d'accès à chaque publication
-          PublicationDetail pub = (PublicationDetail) it.next();
+          PublicationDetail pub = it.next();
           ForeignPK foreignPK = new ForeignPK(pub.getPK().getId(), pub
               .getInstanceId());
           int accessByPub = statisticBm.getCount(foreignPK, 1, "Publication");
@@ -542,7 +544,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
   /**
    * Manipulation des publications
    */
-  public Collection getTitlePublicationDetails() throws NewsEditoException {
+  public Collection<PublicationDetail> getTitlePublicationDetails() throws NewsEditoException {
     SilverTrace.info("NewsEdito",
         "NewsEditoSessionControl.getTitlePublicationDetails",
         "NewsEdito.MSG_ENTRY_METHOD");
@@ -550,7 +552,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
       return null;
     }
     try {
-      Collection result = publicationBm.getDetailsByFatherPK(new NodePK(
+      Collection<PublicationDetail> result = publicationBm.getDetailsByFatherPK(new NodePK(
           getTitleId(), getSpaceId(), getComponentId()));
 
       return result;
@@ -565,7 +567,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
   /**
    * for editorials
    */
-  public Collection getArchivePublicationDetails() throws NewsEditoException {
+  public Collection<PublicationDetail> getArchivePublicationDetails() throws NewsEditoException {
     SilverTrace.info("NewsEdito",
         "NewsEditoSessionControl.getArchivePublicationDetails",
         "NewsEdito.MSG_ENTRY_METHOD");
@@ -573,7 +575,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
       return null;
     }
     try {
-      Collection result = publicationBm.getDetailsByFatherPK(new NodePK(
+      Collection<PublicationDetail> result = publicationBm.getDetailsByFatherPK(new NodePK(
           getArchiveId(), getSpaceId(), getComponentId()));
 
       return result;
@@ -742,7 +744,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
         "NewsEditoSessionControl.getPublicationTitleDetail",
         "NewsEdito.MSG_ENTRY_METHOD");
     try {
-      Collection result = publicationBm.getAllFatherPK(new PublicationPK(
+      Collection<NodePK> result = publicationBm.getAllFatherPK(new PublicationPK(
           publicationId, getSpaceId(), getComponentId()));
 
       if (result.size() > 2) // 1 -> article normal, 2->article apparaissant
@@ -755,12 +757,12 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
         // EJBException("Cette publication a plus de deux noeud pere, mais " +
         // result.size() );
       }
-      Iterator i = result.iterator();
-      NodePK titlePK = (NodePK) i.next();
+      Iterator<NodePK> i = result.iterator();
+      NodePK titlePK = i.next();
 
       if (nodeBm.getHeader(titlePK).getFatherPK().getId().equals("0")
           && (i.hasNext())) {
-        titlePK = (NodePK) i.next();
+        titlePK = i.next();
       }
 
       NodeDetail finalResult = nodeBm.getHeader(titlePK);
@@ -825,7 +827,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
    * @throws NewsEditoException
    * @see
    */
-  public Collection getAllModels() throws NewsEditoException {
+  public Collection<ModelDetail> getAllModels() throws NewsEditoException {
     SilverTrace.info("NewsEdito", "NewsEditoSessionControl.getAllModels",
         "NewsEdito.MSG_ENTRY_METHOD");
     try {
@@ -895,7 +897,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
     }
   }
 
-  public void updateXMLForm(List items, String name) throws NewsEditoException {
+  public void updateXMLForm(List<FileItem> items, String name) throws NewsEditoException {
     try {
       PublicationDetail pubDetail = publicationBm.getDetail(new PublicationPK(
           getPublicationId(), getSpaceId(), getComponentId()));
@@ -997,30 +999,30 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
       if (nodeBm.getHeader(titlePK).getFatherPK().getId().equals("0")) // cas de
       // l'archive
       {
-        Collection subList = nodeBm.getDetail(titlePK).getChildrenDetails();
-        Iterator i = subList.iterator();
+        Collection<NodeDetail> subList = nodeBm.getDetail(titlePK).getChildrenDetails();
+        Iterator<NodeDetail> i = subList.iterator();
 
         while (i.hasNext()) {
-          NodeDetail subTitleDetail = (NodeDetail) i.next();
-          Collection pubList = publicationBm
+          NodeDetail subTitleDetail = i.next();
+          Collection<PublicationDetail> pubList = publicationBm
               .getDetailsByFatherPK(subTitleDetail.getNodePK());
-          Iterator j = pubList.iterator();
+          Iterator<PublicationDetail> j = pubList.iterator();
 
           while (j.hasNext()) {
 
-            publicationBm.removePublication(((PublicationDetail) j.next())
+            publicationBm.removePublication((j.next())
                 .getPK());
           }
         }
 
       } else // cas du titre
       {
-        Collection pubList = publicationBm.getDetailsByFatherPK(titlePK);
-        Iterator j = pubList.iterator();
+        Collection<PublicationDetail> pubList = publicationBm.getDetailsByFatherPK(titlePK);
+        Iterator<PublicationDetail> j = pubList.iterator();
 
         while (j.hasNext()) {
 
-          publicationBm.removePublication(((PublicationDetail) j.next())
+          publicationBm.removePublication((j.next())
               .getPK());
         }
       }
@@ -1200,19 +1202,13 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
     SilverTrace.info("NewsEdito", "NewsEditoSessionControl.getFavoritList",
         "NewsEdito.MSG_ENTRY_METHOD");
     try {
-      // NEWD DLE
-      // Collection list =
-      // favoritBm.getFavoritNodePKsBySpaceAndComponent(getUserId(),
-      // getSpaceId(), getComponentId());
-      Collection list = favoritBm.getFavoritNodePKsByComponent(getUserId(),
+      Collection<NodePK> list = favoritBm.getFavoritNodePKsByComponent(getUserId(),
           getComponentId());
-      // NEWF DLE
-      // return list;
       Collection detailedList = new ArrayList();
-      Iterator i = list.iterator();
+      Iterator<NodePK> i = list.iterator();
 
       while (i.hasNext()) {
-        NodePK pk = (NodePK) i.next();
+        NodePK pk = i.next();
         Collection path = nodeBm.getPath(pk);
 
         detailedList.add(path);
@@ -1273,7 +1269,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
         PdfGenerator.generateArchive(name, root, publicationBm, getLanguage());
       } else {
-        ArrayList completePubList = new ArrayList();
+        ArrayList<CompletePublication> completePubList = new ArrayList<CompletePublication>();
 
         for (int i = 0; i < pubList.length; i++) {
           try {
@@ -1353,10 +1349,10 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
   public void index() throws RemoteException, NewsEditoException {
     // recuperation des archives
-    Collection archives = getArchiveList();
+    Collection<NodeDetail> archives = getArchiveList();
     NodeDetail archive = null;
-    for (Iterator i = archives.iterator(); i.hasNext();) {
-      archive = (NodeDetail) i.next();
+    for (Iterator<NodeDetail> i = archives.iterator(); i.hasNext();) {
+      archive = i.next();
       nodeBm.createIndex(archive);
 
       setArchiveId(archive.getNodePK().getId());
@@ -1365,16 +1361,16 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
       if (archive.getChildrenDetails() != null) {
         // parcours des titres
         NodeDetail title = null;
-        for (Iterator j = archive.getChildrenDetails().iterator(); j.hasNext();) {
-          title = (NodeDetail) j.next();
+        for (Iterator<NodeDetail> j = archive.getChildrenDetails().iterator(); j.hasNext();) {
+          title = j.next();
           nodeBm.createIndex(title);
 
           setTitleId(title.getNodePK().getId());
 
-          Collection publications = getTitlePublicationDetails();
+          Collection<PublicationDetail> publications = getTitlePublicationDetails();
           PublicationDetail detail = null;
-          for (Iterator l = publications.iterator(); l.hasNext();) {
-            detail = (PublicationDetail) l.next();
+          for (Iterator<PublicationDetail> l = publications.iterator(); l.hasNext();) {
+            detail = l.next();
             publicationBm.createIndex(detail.getPK());
           }
         }

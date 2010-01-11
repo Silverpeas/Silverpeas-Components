@@ -29,6 +29,11 @@ public class CreateNewsEditoException extends NewsEditoException {
   // constructors
 
   /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
    * Constructor which calls the super constructor
    * @param callingClass (String) the name of the module which catchs the Exception
    * @param errorLevel (int) the level error of the exception

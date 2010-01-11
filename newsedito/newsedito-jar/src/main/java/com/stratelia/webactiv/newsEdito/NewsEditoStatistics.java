@@ -49,14 +49,14 @@ public class NewsEditoStatistics implements ComponentStatisticsInterface {
 
   private NodeBm nodeBm = null;
 
-  public Collection getVolume(String spaceId, String componentId)
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    ArrayList myArrayList = new ArrayList();
-    Collection c = getElements(spaceId, componentId);
-    Iterator iter = c.iterator();
+    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
+    Collection<NodeDetail> c = getElements(spaceId, componentId);
+    Iterator<NodeDetail> iter = c.iterator();
 
     while (iter.hasNext()) {
-      NodeDetail detail = (NodeDetail) iter.next();
+      NodeDetail detail = iter.next();
 
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
 
@@ -80,10 +80,10 @@ public class NewsEditoStatistics implements ComponentStatisticsInterface {
     return nodeBm;
   }
 
-  private Collection getElements(String spaceId, String componentId)
+  private Collection<NodeDetail> getElements(String spaceId, String componentId)
       throws Exception {
     // recuperation des journaux
-    Collection archives = getNodeBm().getFrequentlyAskedChildrenDetails(
+    Collection<NodeDetail> archives = getNodeBm().getFrequentlyAskedChildrenDetails(
         new NodePK("0", spaceId, componentId));
     return archives;
   }

@@ -32,7 +32,6 @@ import java.util.List;
 import javax.ejb.EJBException;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileUploadException;
 
@@ -41,20 +40,19 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
-
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.clipboard.control.ejb.ClipboardBm;
 import com.stratelia.webactiv.newsEdito.NewsEditoException;
 import com.stratelia.webactiv.newsEdito.control.NewsEditoSessionController;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
@@ -68,6 +66,11 @@ import com.stratelia.webactiv.util.publication.model.PublicationSelection;
 public class NewsEditoRequestRouter extends ComponentRequestRouter {
 
   /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
+  /**
    * This method creates a NewsEditoSessionController instance
    * @param mainSessionCtrl The MainSessionController instance
    * @param context Context of current component instance
@@ -78,7 +81,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
       MainSessionController mainSessionCtrl, ComponentContext context) {
     ComponentSessionController component =
         (ComponentSessionController) new NewsEditoSessionController(
-            mainSessionCtrl, context);
+        mainSessionCtrl, context);
     return component;
   }
 
@@ -139,10 +142,8 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
       destination = rootDest + "publicationEdit.jsp?flag=" + flag;
     } else if (function.equals("UpdatePublication")) {
       String flag = componentSC.getUserRoleLevel();
-      PublicationDetail pubDetail;
 
       try {
-        pubDetail = newsEdito.getCompletePublication().getPublicationDetail();
         // pour le formulaire XML
         setXMLForm(request, newsEdito, null);
       } catch (Exception e) {
@@ -181,16 +182,9 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
       destination = rootDest + "publishNews.jsp?flag=" + flag;
     }
 
-    /*
-     * else if (function.startsWith("GoToFavorite")) { // initialisation de isConsulting inutile
-     * String flag = componentSC.getUserRoleLevel(); String favoriteId =
-     * request.getParameter("FavoriteId"); destination = rootDest +
-     * "newsEdito.jsp?Action=SelectTitle&TitleId=" + favoriteId + "&flag=" + flag; }
-     */
-
     else if (function.equals("ListModels")) {
       try {
-        List listModels = PublicationTemplateManager.getPublicationTemplates();
+        List<PublicationTemplate> listModels = PublicationTemplateManager.getPublicationTemplates();
         request.setAttribute("ListModels", listModels);
       } catch (PublicationTemplateException e) {
         SilverTrace.warn("NewsEdito", "NewsEditoRequestRooter.getDestination",
@@ -213,9 +207,10 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
     } else if (function.equals("ReallyUpdatePublication")) {
       try {
         // mise à jour de l'entête de la publication
-        List items = getRequestItems(request);
-        String name = getParameterValue(items, "Name");
-        String description = getParameterValue(items, "Description");
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
+
+        String name = FileUploadUtil.getParameter(items, "Name");
+        String description = FileUploadUtil.getParameter(items, "Description");
         newsEdito.updatePublication(name, description);
 
         // mise à jour du formulaire
@@ -227,7 +222,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
       destination = getDestination("publication", newsEdito, request);
     } else if (function.equals("UpdateXMLForm")) {
       try {
-        List items = getRequestItems(request);
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
         updateXmlForm(items, newsEdito);
       } catch (Exception e) {
         SilverTrace.warn("NewsEdito", "NewsEditoRequestRooter.getDestination",
@@ -290,11 +285,11 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
       try {
         NewsEditoSessionController news = (NewsEditoSessionController) componentSC;
         String titleId = news.getTitleId();
-        Collection clipObjects = news.getClipboardSelectedObjects();
-        Iterator clipObjectIterator = clipObjects.iterator();
+        Collection<ClipboardSelection> clipObjects = news.getClipboardSelectedObjects();
+        Iterator<ClipboardSelection> clipObjectIterator = clipObjects.iterator();
 
         while (clipObjectIterator.hasNext()) {
-          ClipboardSelection clipObject = (ClipboardSelection) clipObjectIterator
+          ClipboardSelection clipObject = clipObjectIterator
               .next();
           if (clipObject != null) {
             if (clipObject
@@ -336,7 +331,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
     return destination;
   }
 
-  private void updateXmlForm(List items, NewsEditoSessionController newsEdito)
+  private void updateXmlForm(List<FileItem> items, NewsEditoSessionController newsEdito)
       throws FileUploadException, NewsEditoException, RemoteException,
       PublicationTemplateException, FormException {
     PublicationDetail pubDetail = newsEdito.getCompletePublication()
@@ -347,7 +342,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
     // Is it the creation of the content or an update ?
     String infoId = pubDetail.getInfoId();
     if (infoId == null || "0".equals(infoId)) {
-      String xmlFormName = getParameterValue(items, "XmlFormName");
+      String xmlFormName = FileUploadUtil.getParameter(items, "XmlFormName");
 
       // The publication have no content
       // We have to register xmlForm to publication
@@ -452,21 +447,4 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
     }
   }
 
-  private List getRequestItems(HttpServletRequest request)
-      throws FileUploadException {
-    DiskFileUpload dfu = new DiskFileUpload();
-    List items = dfu.parseRequest(request);
-    return items;
-  }
-
-  private String getParameterValue(List items, String parameterName) {
-    Iterator iter = items.iterator();
-    while (iter.hasNext()) {
-      FileItem item = (FileItem) iter.next();
-      if (item.isFormField() && parameterName.equals(item.getFieldName())) {
-        return item.getString();
-      }
-    }
-    return null;
-  }
 }

@@ -48,7 +48,6 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Section;
 import com.lowagie.text.pdf.PdfWriter;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.newsEdito.NewsEditoException;
 import com.stratelia.webactiv.util.DateUtil;
@@ -142,12 +141,12 @@ public class PdfGenerator {
    * @throws NewsEditoException
    * @see
    */
-  public static void generatePubList(String name, Collection completePubList,
+  public static void generatePubList(String name, Collection<CompletePublication> completePubList,
       String langue) throws NewsEditoException {
     SilverTrace.info("NewsEdito", "PdfGenerator.generatePubList",
         "NewsEdito.MSG_ENTRY_METHOD", "Pdf name = " + name);
     try {
-      CompletePublication first = (CompletePublication) completePubList
+      CompletePublication first = completePubList
           .iterator().next();
       String fileName = FileRepositoryManager.getTemporaryPath(first
           .getPublicationDetail().getPK().getSpace(), first
@@ -186,10 +185,10 @@ public class PdfGenerator {
           titleFont);
       Chapter chapter = new Chapter(cTitle, 1);
 
-      Iterator i = completePubList.iterator();
+      Iterator<CompletePublication> i = completePubList.iterator();
       CompletePublication complete = null;
       while (i.hasNext()) {
-        complete = (CompletePublication) i.next();
+        complete = i.next();
 
         addPublication(chapter, complete);
       }
@@ -284,8 +283,6 @@ public class PdfGenerator {
 
       masterTitle.setAlignment(Element.ALIGN_CENTER);
 
-      // java.text.SimpleDateFormat formatter = new
-      // java.text.SimpleDateFormat(message.getString("dateFormat"));
       Font secondFont = new Font(Font.HELVETICA, 20, Font.NORMAL, new Color(0,
           0, 0));
       Paragraph secondTitle = new Paragraph(message.getString("editeLe") + " "
@@ -315,14 +312,14 @@ public class PdfGenerator {
     SilverTrace.info("NewsEdito", "PdfGenerator.addMasterTable",
         "NewsEdito.MSG_ENTRY_METHOD");
     try {
-      Collection list = nodeDetail.getChildrenDetails();
+      Collection<NodeDetail> list = nodeDetail.getChildrenDetails();
 
-      Iterator i = list.iterator();
+      Iterator<NodeDetail> i = list.iterator();
 
       int titleCount = 1;
       NodeDetail title = null;
       while (i.hasNext()) {
-        title = (NodeDetail) i.next();
+        title = i.next();
 
         addTitle(document, title, titleCount, publicationBm);
         titleCount++;
@@ -351,13 +348,6 @@ public class PdfGenerator {
     // we define some fonts
     Font titleFont = new Font(Font.HELVETICA, 24, Font.NORMAL, new Color(255,
         255, 255));
-
-    // Font titleFont = new Font(Font.HELVETICA, 20, Font.NORMAL, new Color(0,
-    // 0, 255));
-    // Paragraph sTitle = new Paragraph(title.getName(), titleFont);
-    // Section section = title.addSection(sTitle, 2);
-    // if (title.getDescription() != null)
-    // section.add(new Paragraph(title.getDescription()));
 
     Paragraph cTitle = new Paragraph(title.getName(), titleFont);
     Chapter chapter = new Chapter(cTitle, titleCount);
@@ -388,13 +378,13 @@ public class PdfGenerator {
   public static void addPublications(Section section, NodeDetail title,
       PublicationBm publicationBm) throws NewsEditoException {
     try {
-      Collection pubList = publicationBm
+      Collection<PublicationDetail> pubList = publicationBm
           .getDetailsByFatherPK(title.getNodePK());
-      Iterator i = pubList.iterator();
+      Iterator<PublicationDetail> i = pubList.iterator();
       PublicationDetail detail = null;
       CompletePublication complete = null;
       while (i.hasNext()) {
-        detail = (PublicationDetail) i.next();
+        detail = i.next();
         complete = publicationBm.getCompletePublication(detail.getPK());
 
         addPublication(section, complete);
@@ -430,9 +420,9 @@ public class PdfGenerator {
           && (complete.getModelDetail() != null)) {
         String toParse = complete.getModelDetail().getHtmlDisplayer();
 
-        Iterator textIterator = complete.getInfoDetail().getInfoTextList()
+        Iterator<InfoTextDetail> textIterator = complete.getInfoDetail().getInfoTextList()
             .iterator();
-        Iterator imageIterator = complete.getInfoDetail().getInfoImageList()
+        Iterator<InfoImageDetail> imageIterator = complete.getInfoDetail().getInfoImageList()
             .iterator();
 
         int posit = toParse.indexOf("%WA");
@@ -447,7 +437,7 @@ public class PdfGenerator {
           }
           if (toParse.startsWith("%WATXTDATA%")) {
             if (textIterator.hasNext()) {
-              textDetail = (InfoTextDetail) textIterator.next();
+              textDetail = textIterator.next();
               text = new Paragraph(textDetail.getContent());
 
               subsection.add(text);
@@ -455,14 +445,7 @@ public class PdfGenerator {
             toParse = toParse.substring(11);
           } else if (toParse.startsWith("%WAIMGDATA%")) {
             if (imageIterator.hasNext()) {
-              imageDetail = (InfoImageDetail) imageIterator.next();
-              /*
-               * tk = Toolkit.getDefaultToolkit(); img = tk.getImage(FileRepositoryManager
-               * .getAbsolutePath(imageDetail.getPK().getSpace(),
-               * imageDetail.getPK().getComponentName()) + getImagePath() + File.separator +
-               * imageDetail.getPhysicalName()); waImage = new WAImage(img);
-               */
-
+              imageDetail = imageIterator.next();
               String imagePath = FileRepositoryManager
                   .getAbsolutePath(imageDetail.getPK().getComponentName())
                   + getImagePath()
@@ -505,9 +488,9 @@ public class PdfGenerator {
     try {
       ResourceLocator message = new ResourceLocator(
           "com.stratelia.webactiv.newsEdito.multilang.newsEditoBundle", langue);
-      Collection pubList = publicationBm.getDetailsByFatherPK(archiveDetail
+      Collection<PublicationDetail> pubList = publicationBm.getDetailsByFatherPK(archiveDetail
           .getNodePK());
-      Iterator i = pubList.iterator();
+      Iterator<PublicationDetail> i = pubList.iterator();
 
       if (i.hasNext()) {
         try {
@@ -529,7 +512,7 @@ public class PdfGenerator {
           Image img = null;
           while (i.hasNext()) {
 
-            detail = (PublicationDetail) i.next();
+            detail = i.next();
             name = new Paragraph(detail.getName(), publicationFont);
             subsection = chapter.addSection(name, 0);
 
@@ -556,8 +539,7 @@ public class PdfGenerator {
               if (img == null) {
                 SilverTrace.info("NewsEdito", "PdfGenerator.addEditorial",
                     "NewsEdito.MSG_CANNOT_RETRIEVE_IMAGE");
-              }
-              else {
+              } else {
                 subsection.add(img);
               }
             }
