@@ -48,6 +48,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Section;
 import com.lowagie.text.pdf.PdfWriter;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.newsEdito.NewsEditoException;
 import com.stratelia.webactiv.util.DateUtil;
@@ -540,24 +541,27 @@ public class PdfGenerator {
             }
             if (detail.getImage() != null) {
 
-              String imagePath = FileRepositoryManager.getAbsolutePath(detail
-                  .getPK().getComponentName())
-                  + getImagePath() + File.separator + detail.getImage();
-              SilverTrace.info("NewsEdito", "PDFGenerator.addEditorial",
-                  "root.MSG_PARAM_VALUE", "imagePath = " + imagePath);
-              img = Image.getInstance(imagePath);
-
+              String imagePath =
+                  FileRepositoryManager.getAbsolutePath(detail.getPK().getComponentName()) +
+                  getImagePath() + File.separator + detail.getImage();
+              try {
+                SilverTrace.info("NewsEdito", "PDFGenerator.addEditorial", "root.MSG_PARAM_VALUE",
+                    "imagePath = " + imagePath);
+                img = Image.getInstance(imagePath);
+              } catch (Exception e) {
+                SilverTrace.info("NewsEdito", "PDFGenerator.addEditorial",
+                    "NewsEdito.MSG_CANNOT_RETRIEVE_IMAGE",
+                    "imagePath = " + imagePath);
+              }
               if (img == null) {
                 SilverTrace.info("NewsEdito", "PdfGenerator.addEditorial",
                     "NewsEdito.MSG_CANNOT_RETRIEVE_IMAGE");
               }
-
-              subsection.add(img);
-
+              else {
+                subsection.add(img);
+              }
             }
-
           }
-
           document.add(chapter);
 
         } catch (DocumentException de) {
