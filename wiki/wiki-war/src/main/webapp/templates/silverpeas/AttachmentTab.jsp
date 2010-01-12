@@ -33,7 +33,8 @@
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
- <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="silverpeas_icons" />
+<fmt:setLocale value="${userLanguage}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="silverpeas_icons" />
 <fmt:setBundle basename="templates.default"/>
 
 <%
@@ -95,7 +96,7 @@
            class="wikiform"
               id="deleteAttForm" style="display:none;"
           method="post" accept-charset="<wiki:ContentEncoding />"
-        onsubmit="return(confirm('<fmt:message key="attach.deleteconfirm"/> + Attachment') && Wiki.submitOnce(this) );" >
+        onsubmit="return(confirm('<fmt:message key="attach.deleteconfirm" />') && Wiki.submitOnce(this) );" >
       <input id="delete-all" name="delete-all" type="submit" value="Delete" />
 
     </form>

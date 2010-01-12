@@ -42,7 +42,7 @@
    WikiEngine engine = context.getEngine();
    JSONRPCManager.requestJSON( context );  //FIXME: to be replace by standard mootools lib
    
-   String contextPath = request.getContextPath();
+   String contextPath = request.getContextPath() + "/wiki/jsp";
 
   TemplateManager.addResourceRequest( context, "script",  contextPath + "/scripts/jspwiki-edit.js" );
   TemplateManager.addResourceRequest( context, "script",  contextPath + "/scripts/posteditor.js" );

@@ -46,9 +46,9 @@
 --%>
 <%-- CSS stylesheet --%>
 <link rel="stylesheet" media="screen, projection, print" type="text/css"
-     href="<wiki:Link format='url' templatefile='jspwiki.css'/>"/>
+     href="<c:url value='/templates/silverpeas/jspwiki.css' />"/>
 <%-- put this at the top, to avoid double load when not yet cached --%>
-<link rel="stylesheet" type="text/css" media="print" href="<wiki:Link format='url' templatefile='jspwiki_print.css'/>" />
+<link rel="stylesheet" type="text/css" media="print" href="<c:url value='/templates/silverpeas/jspwiki_print.css' />" />
 <wiki:IncludeResources type="stylesheet"/>
 <wiki:IncludeResources type="inlinecss" />
 

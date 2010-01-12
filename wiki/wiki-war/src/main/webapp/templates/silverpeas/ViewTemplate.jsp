@@ -26,6 +26,7 @@
 <%@ page isELIgnored ="false" %> 
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %>
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <fmt:setLocale value="${userLanguage}"/>
@@ -55,17 +56,20 @@
 </head>
 
 <body class="view">
-
+  <%
+  WikiContext c = WikiContext.findContext(pageContext); %>
+<c:set var="wiki_link_raw"><%=c.getURL(WikiContext.VIEW, "")%></c:set>
+<c:set var="wiki_link" value="${fn:substringBefore(wiki_link_raw, '?') }" />
 <form action="<wiki:Link format='url' context='<%=WikiContext.DELETE%>' />"
 	class="wikiform"
 	id="deleteForm"
 	method="post" accept-charset="<wiki:ContentEncoding />"
-	onsubmit="return( confirm('<fmt:message key="info.confirmdelete"/>') && Wiki.submitOnce(this) );">
+	onsubmit="return( confirm('<fmt:message key="info.confirmdelete" />') && Wiki.submitOnce(this) );">
 	<input type="hidden" name="delete-all" value="1"/>
 </form>
 
 <c:set var="pageName"><wiki:PageName /></c:set>
-<view:browseBar link="#" path="${pageName}" />
+<view:browseBar link="${wiki_link}" path="${pageName}" />
 <%@ include file="PageActionsTop.jsp"%>
 <view:window>
 <div id="wikibody" class="${prefs['orientation']}">

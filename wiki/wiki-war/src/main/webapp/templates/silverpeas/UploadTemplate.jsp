@@ -27,6 +27,7 @@
 <%@ page import="com.ecyrd.jspwiki.*"%>
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki"%>
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*"%>
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
@@ -58,13 +59,16 @@
 </head>
 
 <body>
-<view:browseBar link="#" path="${pageName}" />
+<c:set var="wiki_link_raw"><%=c.getURL(WikiContext.VIEW, "")%></c:set>
+<c:set var="wiki_link" value="${fn:substringBefore(wiki_link_raw, '?') }" />
+<view:browseBar link="${wiki_link}" path="${pageName}" />
+<%@ include file="PageActionsTop.jsp"%>
 <view:window>
   <div id="wikibody" class="${prefs['orientation']}"><wiki:Include page="Header.jsp" />
 
   <div id="content">
 
-  <div id="page"><%@ include file="PageActionsTop.jsp"%> <view:tabs>
+  <div id="page"> <view:tabs>
     <c:set var="tabViewTitle"><%=LocaleSupport.getLocalizedMessage(pageContext,
         "view.tab")%></c:set>
     <c:set var="viewAction" value="<%=c.getURL(WikiContext.VIEW, c.getPage().getName())%>" />
@@ -85,7 +89,7 @@
     <wiki:PageExists>
       <wiki:Include page="AttachmentTab.jsp" />
     </wiki:PageExists>
-  </view:frame> <wiki:Include page="PageActionsBottom.jsp" /></div>
+   <wiki:Include page="PageActionsBottom.jsp" /></view:frame></div>
   <wiki:Include page="Favorites.jsp" />
   <div class="clearbox"></div>
   </div>

@@ -52,13 +52,7 @@
     
     // Extract the user profile and action attributes
     UserManager userMgr = wiki.getUserManager();
-    WikiSession wikiSession = wikiContext.getWikiSession();
-
-    if( request.getParameter(EditorManager.PARA_EDITOR) != null )
-    {
-    	String editor = request.getParameter(EditorManager.PARA_EDITOR);
-    	session.setAttribute(EditorManager.PARA_EDITOR,editor);
-    }
+    WikiSession wikiSession = wikiContext.getWikiSession();    
     // Are we saving the profile?
     if( "saveProfile".equals(request.getParameter("action")) )
     {
@@ -102,11 +96,17 @@
     if( "setAssertedName".equals(request.getParameter("action")) )
     {
         Preferences.reloadPreferences(pageContext);
+        if( request.getParameter(EditorManager.PARA_EDITOR) != null )
+        {
+            String editor = request.getParameter(EditorManager.PARA_EDITOR);
+            session.setAttribute(EditorManager.PARA_EDITOR,editor);
+            ((Preferences) session.getAttribute(Preferences.SESSIONPREFS)).put(EditorManager.PARA_EDITOR, editor);            
+        }
         String assertedName = request.getParameter("assertedName");
         CookieAssertionLoginModule.setUserCookie( response, assertedName );
 
         String redirectPage = request.getParameter( "redirect" );
-        String viewUrl = ( "UserPreferences".equals( redirectPage ) ) ? "Wiki.jsp" : wiki.getViewURL( redirectPage );
+        String viewUrl = ( "UserPreferences".equals( redirectPage )  || !com.silverpeas.util.StringUtil.isDefined( redirectPage ) ) ? "Wiki.jsp" : wiki.getViewURL( redirectPage );
 
         log.info( "Redirecting user to " + viewUrl );
         response.sendRedirect( viewUrl );

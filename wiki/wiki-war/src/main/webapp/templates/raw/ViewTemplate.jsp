@@ -26,6 +26,7 @@
 <%@ page isELIgnored ="false" %> 
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %>
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <fmt:setLocale value="${userLanguage}"/>
@@ -40,7 +41,11 @@
   </head>
   <body>
     <c:set var="pageName"><wiki:PageName /></c:set>
-    <view:browseBar link="#" path="${pageName}" />
+    <%
+      WikiContext c = WikiContext.findContext(pageContext); %>
+    <c:set var="wiki_link_raw"><%=c.getURL(WikiContext.VIEW, "")%></c:set>
+    <c:set var="wiki_link" value="${fn:substringBefore(wiki_link_raw, '?') }" />
+    <view:browseBar link="${wiki_link}" path="${pageName}" />
     <%@ include file="../silverpeas/PageActionsTop.jsp"%>
     <view:window>  
       <pre>

@@ -36,7 +36,6 @@ import com.ecyrd.jspwiki.event.WikiEventManager;
 import com.ecyrd.jspwiki.i18n.SilverpeasWikiInternationalizationManager;
 import com.silverpeas.wiki.control.WikiMultiInstanceManager;
 import com.silverpeas.wiki.control.WikiSessionController;
-import com.silverpeas.wiki.control.model.PageDetail;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -126,6 +125,8 @@ public class WikiRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("template")) {
         destination = "/" + function;
       } else if (function.startsWith("attach")) {
+        destination = "/" + function;
+      }else if (function.startsWith("JSON-RPC")) {
         destination = "/" + function;
       }
     } catch (Exception e) {
