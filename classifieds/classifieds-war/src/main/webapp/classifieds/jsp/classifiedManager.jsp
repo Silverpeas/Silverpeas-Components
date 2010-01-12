@@ -164,7 +164,9 @@ if (formUpdate != null)
 	
 	function setData()
 	{
-		document.classifiedForm.<%=fieldName%>.value = <%=fieldKey%>;
+		<% if (StringUtil.isDefined(fieldName)) { %>
+	      document.classifiedForm.<%=fieldName%>.value = <%=fieldKey%>;
+	    <% } %>
 	}
 	
 </script>
