@@ -37,14 +37,14 @@ public class DataTypeList {
 
   private static final int DEFAULT_CAPACITY = 10;
 
-  private Hashtable dataTypeList;
+  private Hashtable<String, DataType> dataTypeList;
 
   public DataTypeList() {
-    dataTypeList = new Hashtable(DEFAULT_CAPACITY);
+    dataTypeList = new Hashtable<String, DataType>(DEFAULT_CAPACITY);
   }
 
   public DataTypeList(int initialCapacity) {
-    dataTypeList = new Hashtable(initialCapacity);
+    dataTypeList = new Hashtable<String, DataType>(initialCapacity);
   }
 
   public void add(DataType dataType) {
@@ -58,8 +58,8 @@ public class DataTypeList {
   public DataType get(int type) {
     DataType dataType;
     String name;
-    for (Enumeration en = dataTypeList.keys(); en.hasMoreElements();) {
-      name = (String) en.nextElement();
+    for (Enumeration<String> en = dataTypeList.keys(); en.hasMoreElements();) {
+      name = en.nextElement();
       dataType = get(name);
       if (dataType.getSqlType() == type) {
         return dataType;
@@ -73,10 +73,10 @@ public class DataTypeList {
   }
 
   public DataType[] getDataTypes() {
-    ArrayList list = new ArrayList(dataTypeList.size());
+    ArrayList<DataType> list = new ArrayList<DataType>(dataTypeList.size());
     String name;
-    for (Enumeration en = dataTypeList.keys(); en.hasMoreElements();) {
-      name = (String) en.nextElement();
+    for (Enumeration<String> en = dataTypeList.keys(); en.hasMoreElements();) {
+      name = en.nextElement();
       list.add(get(name));
     }
     Collections.sort(list, new DataTypeComparator());

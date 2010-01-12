@@ -34,6 +34,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 public class MyDBConnectionInfoPK extends WAPrimaryKey implements Serializable {
 
+  private static final long serialVersionUID = 1L;
+
   public MyDBConnectionInfoPK(String id) {
     super(id);
   }

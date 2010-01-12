@@ -32,6 +32,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  */
 public class MyDBException extends SilverpeasException {
 
+  private static final long serialVersionUID = 1L;
+
   public MyDBException(String callingClass, int errorLevel, String message,
       Exception nested) {
     super(callingClass, errorLevel, message, nested);

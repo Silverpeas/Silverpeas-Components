@@ -58,13 +58,13 @@ public class TableManager {
   private DbTable table;
   private DbColumn errorColumn;
   private String errorLabel;
-  private ArrayList keywords;
+  private ArrayList<String> keywords;
   private DataTypeList dataTypeList;
   private PrimaryKey primaryKey;
   private UnicityKeys unicityKeys;
   private ForeignKeys foreignKeys;
 
-  public TableManager(int mode, String originPage, ArrayList keywords,
+  public TableManager(int mode, String originPage, ArrayList<String> keywords,
       DataTypeList dataTypeList) {
     this.mode = mode;
     this.originPage = originPage;
@@ -254,6 +254,7 @@ public class TableManager {
    * @return True if the default value of the column corresponds to its data
    *         type.
    */
+  @SuppressWarnings("unchecked")
   private boolean isValidColumnDefaultValue(DbColumn column,
       ResourcesWrapper resources) {
     Class clazz = null;
@@ -422,7 +423,7 @@ public class TableManager {
    * @return The list of SQL queries to call to create the table's unicity keys.
    */
   public String[] getUnicityKeysQueries() {
-    ArrayList queries = new ArrayList();
+    ArrayList<String> queries = new ArrayList<String>();
     StringBuffer querySb;
     UnicityKey unicityKey;
     for (int i = 0, n = unicityKeys.getSize(); i < n; i++) {
@@ -440,7 +441,7 @@ public class TableManager {
    * @return The list of SQL queries to call to create the table's foreign keys.
    */
   public String[] getForeignKeysQueries() {
-    ArrayList queries = new ArrayList();
+    ArrayList<String> queries = new ArrayList<String>();
     StringBuffer querySb;
     ForeignKey foreignKey;
     for (int i = 0, n = foreignKeys.getSize(); i < n; i++) {

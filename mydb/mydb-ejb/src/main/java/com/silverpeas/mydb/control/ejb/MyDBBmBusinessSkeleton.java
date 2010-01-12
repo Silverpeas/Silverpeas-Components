@@ -37,7 +37,7 @@ import com.stratelia.webactiv.persistence.PersistenceException;
  */
 public interface MyDBBmBusinessSkeleton {
 
-  public Collection getConnectionList(MyDBConnectionInfoPK pk)
+  public Collection<MyDBConnectionInfoDetail> getConnectionList(MyDBConnectionInfoPK pk)
       throws RemoteException, PersistenceException;
 
   public void removeConnection(MyDBConnectionInfoPK pk) throws RemoteException,

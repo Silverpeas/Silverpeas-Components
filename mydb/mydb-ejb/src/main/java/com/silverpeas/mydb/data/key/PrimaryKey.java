@@ -39,12 +39,12 @@ public class PrimaryKey {
 
   private DbTable parentTable;
   private String name;
-  private ArrayList columns;
+  private ArrayList<String> columns;
 
   public PrimaryKey(DbTable parentTable) {
     this.parentTable = parentTable;
     this.name = "";
-    columns = new ArrayList();
+    columns = new ArrayList<String>();
   }
 
   public void setName(String name) {
@@ -113,7 +113,7 @@ public class PrimaryKey {
     columns = primaryKey.columns;
   }
 
-  public void update(String name, Map parameterMap) {
+  public void update(String name, Map<String, String[]> parameterMap) {
     setName(name);
     clearColumns();
     if (parameterMap != null) {

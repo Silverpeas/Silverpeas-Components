@@ -31,10 +31,10 @@ import java.util.Comparator;
  * @author Antoine HEDIN
  * 
  */
-public class DataTypeComparator implements Comparator {
+public class DataTypeComparator implements Comparator<DataType> {
 
-  public int compare(Object o1, Object o2) {
-    return ((DataType) o1).getName().compareTo(((DataType) o2).getName());
+  public int compare(DataType o1, DataType o2) {
+    return o1.getName().compareTo(o2.getName());
   }
 
 }

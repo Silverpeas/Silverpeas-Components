@@ -53,7 +53,7 @@
     <param>
       <param-name>JDBCUrls</param-name>
       <param-description>connexion urls</param-description>
-      <param-value>jdbc:inetdae7:localhost?database=Silverpeas</param-value>
+      <param-value>jdbc:inetdae7:localhost?database=SilverpeasV5</param-value>
     </param>
     <param>
       <param-name>DatabaseKeywords</param-name>
@@ -265,7 +265,7 @@
     <param>
       <param-name>JDBCUrls</param-name>
       <param-description>connexion urls</param-description>
-      <param-value>jdbc:inetora:localhost:1521:Silverpeas</param-value>
+      <param-value>jdbc:inetora:localhost:1521:SilverpeasV5</param-value>
     </param>
     <param>
       <param-name>DatabaseKeywords</param-name>
@@ -477,8 +477,7 @@
     <param>
       <param-name>JDBCUrls</param-name>
       <param-description>connexion urls</param-description>
-      <param-value>jdbc:postgresql://localhost:5432/Silverpeas409</param-value>
-      <param-value>jdbc:postgresql://localhost:5432/SilverpeasFNMJ</param-value>
+      <param-value>jdbc:postgresql://localhost:5432/SilverpeasV5</param-value>
     </param>
     <param>
       <param-name>DatabaseKeywords</param-name>

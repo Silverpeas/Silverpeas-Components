@@ -54,7 +54,7 @@ public class DriverManager {
   private String[] driversDisplayNames;
   private String[] driversClassNames;
   private String[] driversDescriptions;
-  private Vector driversUrls;
+  private Vector<String[]> driversUrls;
 
   // Number of available drivers.
   private int driversCount = 0;
@@ -88,7 +88,7 @@ public class DriverManager {
       driversDescriptions = new String[driversCount];
       databaseKeywordsLists = new ArrayList[driversCount];
       dataTypesLists = new DataTypeList[driversCount];
-      driversUrls = new Vector();
+      driversUrls = new Vector<String[]>();
       String rootString;
 
       String[] dataTypesKeys = { "name", "sqlType", "javaType", "length" };

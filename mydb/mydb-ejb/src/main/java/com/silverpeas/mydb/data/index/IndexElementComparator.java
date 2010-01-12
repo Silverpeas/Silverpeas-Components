@@ -31,11 +31,9 @@ import java.util.Comparator;
  * 
  * @author Antoine HEDIN
  */
-public class IndexElementComparator implements Comparator {
+public class IndexElementComparator implements Comparator<IndexElement> {
 
-  public int compare(Object o1, Object o2) {
-    IndexElement element1 = (IndexElement) o1;
-    IndexElement element2 = (IndexElement) o2;
+  public int compare(IndexElement element1, IndexElement element2) {
     if (element1.getIndexName().equals(element2.getIndexName())) {
       return element1.getPosition() - element2.getPosition();
     } else {

@@ -33,11 +33,11 @@ import java.util.ArrayList;
 public class IndexInfo {
 
   private String name;
-  private ArrayList columns;
+  private ArrayList<String> columns;
 
   public IndexInfo(String name) {
     this.name = name;
-    columns = new ArrayList();
+    columns = new ArrayList<String>();
   }
 
   public String getName() {
@@ -49,7 +49,7 @@ public class IndexInfo {
   }
 
   public String getColumn(int index) {
-    return (String) columns.get(index);
+    return columns.get(index);
   }
 
   public int getColumnsCount() {

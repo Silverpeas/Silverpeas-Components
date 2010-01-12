@@ -30,10 +30,10 @@ import java.util.Comparator;
  * 
  * @author Antoine HEDIN
  */
-public class DbColumnComparator implements Comparator {
+public class DbColumnComparator implements Comparator<DbColumn> {
 
-  public int compare(Object o1, Object o2) {
-    return ((DbColumn) o1).getName().compareTo(((DbColumn) o2).getName());
+  public int compare(DbColumn o1, DbColumn o2) {
+    return o1.getName().compareTo(o2.getName());
   }
 
 }

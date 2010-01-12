@@ -58,7 +58,7 @@ public class DbColumn {
   private boolean autoIncrement;
   private String defaultValue;
   private DbForeignKey importedForeignKey;
-  private ArrayList exportedForeignKeys;
+  private ArrayList<DbForeignKey> exportedForeignKeys;
 
   public DbColumn(String name, int dataType, int dataSize, boolean nullable,
       String defaultValue) {
@@ -181,7 +181,7 @@ public class DbColumn {
 
   public void addExportedForeignKey(DbForeignKey exportedForeignKey) {
     if (exportedForeignKeys == null) {
-      exportedForeignKeys = new ArrayList();
+      exportedForeignKeys = new ArrayList<DbForeignKey>();
     }
     exportedForeignKeys.add(exportedForeignKey);
   }

@@ -38,11 +38,11 @@ public class UnicityKey {
   public static final String UNICITY_KEY_PREFIX = "uk_";
 
   private String name;
-  private ArrayList columns;
+  private ArrayList<String> columns;
 
   public UnicityKey(String name) {
     this.name = name;
-    columns = new ArrayList();
+    columns = new ArrayList<String>();
   }
 
   public void setName(String name) {
@@ -54,7 +54,7 @@ public class UnicityKey {
   }
 
   public String getColumn(int index) {
-    return (String) columns.get(index);
+    return columns.get(index);
   }
 
   public void addColumn(String column) {
@@ -95,7 +95,7 @@ public class UnicityKey {
     return columns.contains(column);
   }
 
-  public void update(Map parameterMap, DbTable parentTable) {
+  public void update(Map<String, String[]> parameterMap, DbTable parentTable) {
     clearColumns();
     if (parameterMap != null) {
       String[] columnsNames = parentTable.getColumnsNames();

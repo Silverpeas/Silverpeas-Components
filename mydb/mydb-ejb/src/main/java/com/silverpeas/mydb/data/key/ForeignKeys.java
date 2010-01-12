@@ -40,11 +40,11 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
  */
 public class ForeignKeys {
 
-  private ArrayList foreignKeys;
+  private ArrayList<ForeignKey> foreignKeys;
   private DbTable parentTable;
 
   public ForeignKeys(DbTable parentTable) {
-    foreignKeys = new ArrayList();
+    foreignKeys = new ArrayList<ForeignKey>();
     this.parentTable = parentTable;
   }
 
@@ -69,7 +69,7 @@ public class ForeignKeys {
   }
 
   public ForeignKey[] getList(String columnName) {
-    ArrayList list = new ArrayList();
+    ArrayList<ForeignKey> list = new ArrayList<ForeignKey>();
     ForeignKey foreignKey;
     for (int i = 0, n = getSize(); i < n; i++) {
       foreignKey = get(i);
@@ -83,7 +83,7 @@ public class ForeignKeys {
   public String getConstraintName() {
     String tableName = parentTable.getName();
     if (StringUtil.isDefined(tableName)) {
-      ArrayList uKeys = new ArrayList();
+      ArrayList<String> uKeys = new ArrayList<String>();
       for (int i = 0, n = getSize(); i < n; i++) {
         uKeys.add(get(i).getName());
       }
@@ -136,7 +136,7 @@ public class ForeignKeys {
 
   public ForeignKeyError[] getErrors(DataTypeList dataTypeList,
       ResourcesWrapper resources) {
-    ArrayList errors = new ArrayList();
+    ArrayList<ForeignKeyError> errors = new ArrayList<ForeignKeyError>();
     String label;
     String columnName;
     DbColumn column;

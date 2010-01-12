@@ -53,6 +53,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 public class MyDBRequestRouter extends ComponentRequestRouter implements
     MyDBConstants {
 
+  private static final long serialVersionUID = 1L;
+
   /**
    * @return The session control bean name.
    */
@@ -261,6 +263,7 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
    * @throws MyDBException
    * @throws FormException
    */
+  @SuppressWarnings("unchecked")
   private String getUpdateLineDestination(HttpServletRequest request,
       MyDBSessionController myDBSC) throws MyDBException, FormException {
     final String command = request.getParameter("command");
@@ -495,6 +498,7 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
    * @return The destination corresponding to the current primary key operation.
    * @throws MyDBException
    */
+  @SuppressWarnings("unchecked")
   private String getUpdateTablePrimaryKeyDestination(
       HttpServletRequest request, MyDBSessionController myDBSC)
       throws MyDBException {
@@ -532,6 +536,7 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
    * @return The destination corresponding to the current unicity key operation.
    * @throws MyDBException
    */
+  @SuppressWarnings("unchecked")
   private String getUpdateTableUnicityKeyDestination(
       HttpServletRequest request, MyDBSessionController myDBSC)
       throws MyDBException {

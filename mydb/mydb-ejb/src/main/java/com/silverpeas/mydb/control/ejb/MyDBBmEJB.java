@@ -44,10 +44,11 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
  */
 public class MyDBBmEJB implements MyDBBmBusinessSkeleton, SessionBean {
 
+  private static final long serialVersionUID = -3635064500545742524L;
   private static final String BEAN_NAME = MyDBConnectionInfoDetail.class
       .getName();
 
-  public Collection getConnectionList(MyDBConnectionInfoPK pk)
+  public Collection<MyDBConnectionInfoDetail> getConnectionList(MyDBConnectionInfoPK pk)
       throws RemoteException, PersistenceException {
     return SilverpeasBeanDAOFactory.getDAO(BEAN_NAME).findByWhereClause(pk,
         "instanceId = " + "'" + pk.getComponentName() + "'");

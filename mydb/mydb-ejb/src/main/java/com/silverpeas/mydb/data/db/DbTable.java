@@ -37,17 +37,17 @@ public class DbTable {
 
   private String name;
   private PrimaryKey primaryKey;
-  private ArrayList columns;
-  private ArrayList lines;
+  private ArrayList<DbColumn> columns;
+  private ArrayList<DbLine> lines;
   private int lineIndex;
 
-  private Hashtable columnsIndexes;
+  private Hashtable<String, Integer> columnsIndexes;
 
   public DbTable(String name) {
     this.name = name;
-    columns = new ArrayList();
-    columnsIndexes = new Hashtable();
-    lines = new ArrayList();
+    columns = new ArrayList<DbColumn>();
+    columnsIndexes = new Hashtable<String, Integer>();
+    lines = new ArrayList<DbLine>();
     primaryKey = new PrimaryKey(this);
     lineIndex = -1;
   }
@@ -82,15 +82,15 @@ public class DbTable {
   }
 
   public DbColumn getColumn(int index) {
-    return (DbColumn) columns.get(index);
+    return columns.get(index);
   }
 
   public DbColumn getColumn(String name) {
-    return (DbColumn) columns.get(getColumnIndex(name));
+    return columns.get(getColumnIndex(name));
   }
 
   public int getColumnIndex(String name) {
-    return ((Integer) columnsIndexes.get(name)).intValue();
+    return (columnsIndexes.get(name)).intValue();
   }
 
   public void removeColumn(int index) {
@@ -114,14 +114,14 @@ public class DbTable {
     final int columnsCount = columns.size();
     String[] result = new String[columnsCount];
     for (int i = 0; i < columnsCount; i++) {
-      result[i] = ((DbColumn) columns.get(i)).getName();
+      result[i] = (columns.get(i)).getName();
     }
     return result;
   }
 
   public String[] getColumnsNames(boolean autoIncrementFilter) {
     if (autoIncrementFilter) {
-      ArrayList columnsNamesList = new ArrayList();
+      ArrayList<String> columnsNamesList = new ArrayList<String>();
       final int columnsCount = columns.size();
       DbColumn dbColumn;
       for (int i = 0; i < columnsCount; i++) {
@@ -142,10 +142,10 @@ public class DbTable {
   }
 
   public DbColumn[] getColumnsWithExportedForeignKeys() {
-    ArrayList resultList = new ArrayList();
+    ArrayList<DbColumn> resultList = new ArrayList<DbColumn>();
     DbColumn column;
     for (int i = 0, n = columns.size(); i < n; i++) {
-      column = (DbColumn) columns.get(i);
+      column = columns.get(i);
       if (column.hasExportedForeignKeys()) {
         resultList.add(column);
       }
@@ -158,11 +158,11 @@ public class DbTable {
   }
 
   public String[][] getForeignKeyColumnsNames(String keyName) {
-    ArrayList columnsNames = new ArrayList();
+    ArrayList<String[]> columnsNames = new ArrayList<String[]>();
     DbColumn column;
     DbForeignKey foreignKey;
     for (int i = 0, n = columns.size(); i < n; i++) {
-      column = (DbColumn) columns.get(i);
+      column = columns.get(i);
       if (column.hasImportedForeignKey()) {
         foreignKey = column.getImportedForeignKey();
         if (foreignKey.getKeyName().equals(keyName)) {

@@ -38,12 +38,12 @@ import com.silverpeas.mydb.data.db.DbColumnComparator;
  */
 public class IndexList {
 
-  private ArrayList indexInfos;
-  private ArrayList columns;
+  private ArrayList<IndexInfo> indexInfos;
+  private ArrayList<DbColumn> columns;
 
   public IndexList() {
-    indexInfos = new ArrayList();
-    columns = new ArrayList();
+    indexInfos = new ArrayList<IndexInfo>();
+    columns = new ArrayList<DbColumn>();
   }
 
   public void addIndexInfo(IndexInfo indexInfo) {
@@ -51,7 +51,7 @@ public class IndexList {
   }
 
   public IndexInfo getIndexInfo(int index) {
-    return (IndexInfo) indexInfos.get(index);
+    return indexInfos.get(index);
   }
 
   public IndexInfo getIndexInfo(String name) {
@@ -91,7 +91,7 @@ public class IndexList {
   }
 
   public DbColumn getColumn(int index) {
-    return (DbColumn) columns.get(index);
+    return columns.get(index);
   }
 
   public DbColumn getColumn(String name) {
@@ -132,7 +132,7 @@ public class IndexList {
     int columnsNamesCount;
     DbColumn column;
     boolean keepIndexInfo;
-    Hashtable keptColumnsNames = new Hashtable();
+    Hashtable<String, String> keptColumnsNames = new Hashtable<String, String>();
     for (int i = (getIndexInfosCount() - 1); i >= 0; i--) {
       indexInfo = getIndexInfo(i);
       columnsNames = indexInfo.getColumns();

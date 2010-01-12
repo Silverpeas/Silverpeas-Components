@@ -33,10 +33,10 @@ import java.util.Hashtable;
  */
 public class DbLine {
 
-  private Hashtable dataList;
+  private Hashtable<String, String> dataList;
 
   public DbLine() {
-    dataList = new Hashtable();
+    dataList = new Hashtable<String, String>();
   }
 
   public void addData(String columnName, String value) {
@@ -51,8 +51,8 @@ public class DbLine {
     String[][] result = new String[dataList.size()][2];
     String key;
     int i = 0;
-    for (Enumeration en = dataList.keys(); en.hasMoreElements();) {
-      key = (String) en.nextElement();
+    for (Enumeration<String> en = dataList.keys(); en.hasMoreElements();) {
+      key = en.nextElement();
       result[i][0] = key;
       result[i][1] = getData(key);
       i++;

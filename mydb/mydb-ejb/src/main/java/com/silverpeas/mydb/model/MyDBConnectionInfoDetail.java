@@ -32,11 +32,13 @@ import com.stratelia.webactiv.persistence.SilverpeasBean;
  */
 public class MyDBConnectionInfoDetail extends SilverpeasBean {
 
+  private static final long serialVersionUID = 1L;
   private String jdbcDriverName = "";
   private String jdbcUrl = "";
   private String login = "";
   private String password = "";
   private String tableName = "";
+  private String instanceId = "";
   private int rowLimit;
 
   public String getJdbcDriverName() {
@@ -77,6 +79,12 @@ public class MyDBConnectionInfoDetail extends SilverpeasBean {
 
   public void setTableName(String tableName) {
     this.tableName = tableName;
+  }
+  
+  public void setInstanceId(String instanceId)
+  {
+    getPK().setComponentName(instanceId);
+    this.instanceId = instanceId;
   }
 
   public String getInstanceId() {

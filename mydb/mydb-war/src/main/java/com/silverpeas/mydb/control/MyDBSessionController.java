@@ -209,16 +209,16 @@ public class MyDBSessionController extends AbstractComponentSessionController {
       try {
         // load and return the current jdbc settings for the component
         MyDBBm myDBBm = getMyDBBm();
-        Collection c = myDBBm.getConnectionList(new MyDBConnectionInfoPK("",
+        Collection<MyDBConnectionInfoDetail> c = myDBBm.getConnectionList(new MyDBConnectionInfoPK("",
             getSpaceId(), getComponentId()));
         if (c.size() > 1) {
           throw new MyDBRuntimeException("myDBSessionController.initMyDB()",
               SilverpeasException.FATAL, "myDB.EX_MUST_BE_ONLY_ONE_CONNECTION");
         }
 
-        Iterator i = c.iterator();
+        Iterator<MyDBConnectionInfoDetail> i = c.iterator();
         if (i.hasNext()) {
-          myDBDetail = (MyDBConnectionInfoDetail) i.next();
+          myDBDetail = i.next();
         }
       } catch (Exception e) {
         SilverTrace.error("myDB", "myDBSessionController.initMyDB()",
@@ -302,7 +302,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
    */
   public void initTableManager(int mode, String originPage) {
     String driverName = getJdbcDriverName();
-    ArrayList keywords = driverManager
+    ArrayList<String> keywords = driverManager
         .getDatabaseKeywordsListForDriver(driverName);
     DataTypeList dataTypeList = driverManager
         .getDataTypeListForDriver(driverName);
@@ -494,7 +494,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
    * @return The list of tables names available in database.
    */
   public String[] getTableNames() {
-    Vector tableVector = new Vector();
+    Vector<String> tableVector = new Vector<String>();
     startConnection();
     if (connection == null) {
       SilverTrace.warn("myDB", "MyDBSessionController.getTableNames()",
@@ -709,7 +709,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
           DatabaseMetaData dbMetaData = connection.getMetaData();
           ResultSet rs = dbMetaData.getIndexInfo(null, null, tableName, false,
               false);
-          ArrayList indexElements = new ArrayList();
+          ArrayList<IndexElement> indexElements = new ArrayList<IndexElement>();
           String indexName;
           String columnName;
           short position;
@@ -730,7 +730,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
           IndexElement indexElement;
           String name;
           for (int i = 0, n = indexElements.size(); i < n; i++) {
-            indexElement = (IndexElement) indexElements.get(i);
+            indexElement = indexElements.get(i);
             name = indexElement.getIndexName();
             if (!indexList.containsIndexInfo(name)) {
               indexList.addIndexInfo(new IndexInfo(name));
@@ -1101,7 +1101,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
    * @param parameterMap
    *          The map which contains the record's describing data.
    */
-  public void initFormParameters(Map parameterMap) {
+  public void initFormParameters(Map<String, String[]> parameterMap) {
     DbColumn[] columns = dbTable.getColumns();
     final int n = columns.length;
     formParameters = new String[n][2];
@@ -1115,7 +1115,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
       if (parameterMap != null) {
         fieldKey = FormManager.FIELD_PREFIX + columnName;
         if (parameterMap.containsKey(fieldKey)) {
-          value = ((String[]) parameterMap.get(fieldKey))[0];
+          value = (parameterMap.get(fieldKey))[0];
           if (value == null || value.length() == 0) {
             value = null;
           }

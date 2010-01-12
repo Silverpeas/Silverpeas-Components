@@ -34,11 +34,11 @@ import com.silverpeas.mydb.data.db.DbTable;
  */
 public class UnicityKeys {
 
-  private ArrayList unicityKeys;
+  private ArrayList<UnicityKey> unicityKeys;
   private DbTable parentTable;
 
   public UnicityKeys(DbTable parentTable) {
-    unicityKeys = new ArrayList();
+    unicityKeys = new ArrayList<UnicityKey>();
     this.parentTable = parentTable;
   }
 
@@ -59,13 +59,13 @@ public class UnicityKeys {
   }
 
   public UnicityKey get(int index) {
-    return (UnicityKey) unicityKeys.get(index);
+    return unicityKeys.get(index);
   }
 
   public String getConstraintName() {
     String tableName = parentTable.getName();
     if (tableName.length() > 0) {
-      ArrayList uKeys = new ArrayList();
+      ArrayList<String> uKeys = new ArrayList<String>();
       for (int i = 0, n = getSize(); i < n; i++) {
         uKeys.add(get(i).getName());
       }
