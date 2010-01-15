@@ -27,13 +27,10 @@ import java.util.Comparator;
 
 import com.silverpeas.gallery.model.PhotoDetail;
 
-public class GSCCreationDateComparatorAsc implements Comparator {
+public class GSCCreationDateComparatorAsc implements Comparator<PhotoDetail> {
   static public GSCCreationDateComparatorAsc comparator = new GSCCreationDateComparatorAsc();
 
-  public int compare(Object o1, Object o2) {
-    PhotoDetail photo1 = (PhotoDetail) o1;
-    PhotoDetail photo2 = (PhotoDetail) o2;
-
+  public int compare(PhotoDetail photo1, PhotoDetail photo2) {
     int compareResult = photo1.getCreationDate().compareTo(
         photo2.getCreationDate());
     if (compareResult == 0) {

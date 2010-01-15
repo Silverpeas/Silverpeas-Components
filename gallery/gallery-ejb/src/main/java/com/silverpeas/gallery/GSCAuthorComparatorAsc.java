@@ -27,14 +27,11 @@ import java.util.Comparator;
 
 import com.silverpeas.gallery.model.PhotoDetail;
 
-public class GSCAuthorComparatorAsc implements Comparator {
+public class GSCAuthorComparatorAsc implements Comparator<PhotoDetail> {
   static public GSCAuthorComparatorAsc comparator = new GSCAuthorComparatorAsc();
 
   @Override
-  public int compare(Object o1, Object o2) {
-    PhotoDetail photo1 = (PhotoDetail) o1;
-    PhotoDetail photo2 = (PhotoDetail) o2;
-
+  public int compare(PhotoDetail photo1, PhotoDetail photo2) {
     if (photo1.getAuthor() == null)
       return 1;
     if (photo2.getAuthor() == null)

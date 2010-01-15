@@ -42,7 +42,6 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.node.model.NodeRuntimeException;
 
 public class GalleryInstanciator implements ComponentsInstanciatorIntf {
 
@@ -53,7 +52,7 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
       String userId) throws InstanciationException {
     SilverTrace.info("gallery", "GalleryInstanciator.create()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-            + componentId + ", userId =" + userId);
+        + componentId + ", userId =" + userId);
 
     // create node component
     NodeInstanciator node = new NodeInstanciator("com.silverpeas.gallery");
@@ -71,7 +70,7 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
       String userId) throws InstanciationException {
     SilverTrace.info("gallery", "GalleryInstanciator.delete()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-            + componentId + ", userId =" + userId);
+        + componentId + ", userId =" + userId);
 
     // supression de tous les albums
     try {
@@ -88,9 +87,10 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
       throws InstanciationException {
     String query = null;
     String creationDate = DateUtil.today2SQLDate();
-    query = "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, nodeCreatorId, "
-        + "nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)	"
-        + "VALUES (0, 'Accueil', 'La Racine', ? , ? , '/', 1, -1,'','Visible',?)";
+    query =
+        "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, nodeCreatorId, "
+            + "nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)	"
+            + "VALUES (0, 'Accueil', 'La Racine', ? , ? , '/', 1, -1,'','Visible',?)";
 
     PreparedStatement prepStmt = null;
     try {
@@ -112,9 +112,10 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
       throws InstanciationException {
     String query = null;
     String creationDate = DateUtil.today2SQLDate();
-    query = "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, nodeCreatorId, "
-        + "nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)"
-        + "VALUES (?, 'Mon Album',' ', ? , ? , ? , 2, 0, '', 'Invisible',?)";
+    query =
+        "INSERT INTO SB_Node_Node(nodeId, nodeName, nodeDescription, nodeCreationDate, nodeCreatorId, "
+            + "nodePath, nodeLevelNumber, nodeFatherId, modelId, nodeStatus, instanceId)"
+            + "VALUES (?, 'Mon Album',' ', ? , ? , ? , 2, 0, '', 'Invisible',?)";
 
     PreparedStatement prepStmt = null;
     try {

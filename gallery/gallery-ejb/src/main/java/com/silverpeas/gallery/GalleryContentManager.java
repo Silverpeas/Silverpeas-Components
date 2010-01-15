@@ -45,25 +45,22 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 /**
  * The gallery implementation of ContentInterface.
  */
-public class GalleryContentManager implements ContentInterface,
-    java.io.Serializable {
+public class GalleryContentManager implements ContentInterface, java.io.Serializable {
+
+  private static final long serialVersionUID = 1L;
+
   /**
    * Find all the SilverContent with the given list of SilverContentId
-   * 
-   * @param ids
-   *          list of silverContentId to retrieve
-   * @param peasId
-   *          the id of the instance
-   * @param userId
-   *          the id of the user who wants to retrieve silverContent
-   * @param userRoles
-   *          the roles of the user
+   * @param ids list of silverContentId to retrieve
+   * @param peasId the id of the instance
+   * @param userId the id of the user who wants to retrieve silverContent
+   * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
-  public List getSilverContentById(List ids, String peasId, String userId,
+  public List<PhotoDetail> getSilverContentById(List ids, String peasId, String userId,
       List userRoles) {
     if (getContentManager() == null)
-      return new ArrayList();
+      return new ArrayList<PhotoDetail>();
 
     return getHeaders(makePKArray(ids, peasId));
   }
@@ -83,13 +80,9 @@ public class GalleryContentManager implements ContentInterface,
 
   /**
    * add a new content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param photoDetail
-   *          the content to register
-   * @param userId
-   *          the creator of the content
+   * @param con a Connection
+   * @param photoDetail the content to register
+   * @param userId the creator of the content
    * @return the unique silverObjectId which identified the new content
    */
   public int createSilverContent(Connection con, PhotoDetail photoDetail,
@@ -107,11 +100,8 @@ public class GalleryContentManager implements ContentInterface,
 
   /**
    * delete a content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param photoPK
-   *          the identifiant of the content to unregister
+   * @param con a Connection
+   * @param photoPK the identifiant of the content to unregister
    */
   public void deleteSilverContent(Connection con, PhotoPK photoPK)
       throws ContentManagerException {
@@ -121,7 +111,7 @@ public class GalleryContentManager implements ContentInterface,
       SilverTrace.info("gallery",
           "GalleryContentManager.deleteSilverContent()",
           "root.MSG_GEN_ENTER_METHOD", "photoId = " + photoPK.getId()
-              + ", contentId = " + contentId);
+          + ", contentId = " + contentId);
       getContentManager().removeSilverContent(con, contentId,
           photoPK.getComponentName());
     }
@@ -129,21 +119,18 @@ public class GalleryContentManager implements ContentInterface,
 
   /**
    * return a list of photoPK according to a list of silverContentId
-   * 
-   * @param idList
-   *          a list of silverContentId
-   * @param peasId
-   *          the id of the instance
+   * @param idList a list of silverContentId
+   * @param peasId the id of the instance
    * @return a list of PhotoPK
    */
-  private ArrayList makePKArray(List idList, String peasId) {
-    ArrayList pks = new ArrayList();
+  private ArrayList<PhotoPK> makePKArray(List<Integer> idList, String peasId) {
+    ArrayList<PhotoPK> pks = new ArrayList<PhotoPK>();
     PhotoPK photoPK = null;
-    Iterator iter = idList.iterator();
+    Iterator<Integer> iter = idList.iterator();
     String id = null;
     // for each silverContentId, we get the corresponding photoId
     while (iter.hasNext()) {
-      int contentId = ((Integer) iter.next()).intValue();
+      int contentId = (iter.next()).intValue();
       try {
         id = getContentManager().getInternalContentId(contentId);
         photoPK = new PhotoPK(id, peasId);
@@ -159,22 +146,20 @@ public class GalleryContentManager implements ContentInterface,
 
   /**
    * return a list of silverContent according to a list of photoPK
-   * 
-   * @param ids
-   *          a list of photoPK
+   * @param ids a list of photoPK
    * @return a list of photoDetail
    */
-  private List getHeaders(List ids) {
+  private List<PhotoDetail> getHeaders(List<PhotoPK> ids) {
     PhotoDetail photo = null;
-    ArrayList headers = new ArrayList();
+    ArrayList<PhotoDetail> headers = new ArrayList<PhotoDetail>();
 
     // création de la liste "headers" avec toutes les photos (format
     // PhotoDetail)
     // en fonction de la liste "ids" des photos (format PhotoPK)
     if (ids != null) {
-      Iterator it = ids.iterator();
+      Iterator<PhotoPK> it = ids.iterator();
       while (it.hasNext()) {
-        PhotoPK photoPK = (PhotoPK) it.next();
+        PhotoPK photoPK = it.next();
         try {
           photo = getGalleryBm().getPhoto(photoPK);
         } catch (RemoteException e) {

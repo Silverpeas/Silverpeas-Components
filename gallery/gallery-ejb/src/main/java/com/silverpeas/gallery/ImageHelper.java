@@ -81,7 +81,6 @@ public class ImageHelper {
 
   /**
    * In case of unit upload
-   *
    * @param photo
    * @param image
    * @param subDirectory
@@ -138,7 +137,6 @@ public class ImageHelper {
 
   /**
    * In case of drag And Drop upload
-   *
    * @param photo
    * @param image
    * @throws Exception
@@ -150,7 +148,6 @@ public class ImageHelper {
     String mimeType = null;
     long size = 0;
     String dir = null;
-    String type = null;
     String photoId = photo.getPhotoPK().getId();
     String instanceId = photo.getPhotoPK().getInstanceId();
 
@@ -166,8 +163,6 @@ public class ImageHelper {
       if (name != null) {
         name = name.substring(name.lastIndexOf(File.separator) + 1, name
             .length());
-        // name = replaceSpecialChars(name);
-        type = FileRepositoryManager.getFileExtension(name);
         if (isImage(name)) {
           String subDirectory = gallerySettings.getString("imagesSubDirectory");
 
@@ -327,7 +322,7 @@ public class ImageHelper {
             SilverTrace.debug("gallery",
                 "GallerySessionController.addMetaData()",
                 "root.MSG_GEN_ENTER_METHOD", "METADATA EXIF label = " + label
-                    + " value = " + value);
+                + " value = " + value);
 
           }
           // lecture de la property suivante
@@ -373,7 +368,7 @@ public class ImageHelper {
             SilverTrace.debug("gallery",
                 "GallerySessionController.addMetaData()",
                 "root.MSG_GEN_ENTER_METHOD", "METADATA IPTC label = " + label
-                    + " value = " + value);
+                + " value = " + value);
           }
 
           // lecture de la property suivante
@@ -635,7 +630,7 @@ public class ImageHelper {
     Graphics2D g = (Graphics2D) outputBuf.getGraphics();
     g
         .drawImage(inputBuf, 0, 0, (int) inputBufWidth, (int) inputBufHeight,
-            null);
+        null);
 
     // opacité du texte de 50%
     AlphaComposite alpha = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
@@ -726,7 +721,7 @@ public class ImageHelper {
     } catch (Exception e) {
       SilverTrace.error("gallery", "ImageHelper.pasteImage",
           "root.MSG_GEN_PARAM_VALUE", "Unable to create dir : "
-              + toAbsolutePath + nameRep, e);
+          + toAbsolutePath + nameRep, e);
     }
 
     // copier et renommer chaque image présente dans le répertoire d'origine
@@ -778,7 +773,7 @@ public class ImageHelper {
       } catch (Exception e) {
         SilverTrace.error("gallery", "ImageHelper.pasteFile",
             "root.MSG_GEN_PARAM_VALUE", "Unable to copy file : fromImage = "
-                + fromImage + ", toImage = " + toImage, e);
+            + fromImage + ", toImage = " + toImage, e);
       }
     }
   }

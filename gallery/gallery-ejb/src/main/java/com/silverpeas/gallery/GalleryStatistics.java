@@ -39,14 +39,14 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class GalleryStatistics implements ComponentStatisticsInterface {
 
-  public Collection getVolume(String spaceId, String componentId)
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    ArrayList myArrayList = new ArrayList();
+    ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
 
-    Collection photos = getGalleryBm().getAllPhotos(componentId);
-    Iterator iter = photos.iterator();
+    Collection<PhotoDetail> photos = getGalleryBm().getAllPhotos(componentId);
+    Iterator<PhotoDetail> iter = photos.iterator();
     while (iter.hasNext()) {
-      PhotoDetail photo = (PhotoDetail) iter.next();
+      PhotoDetail photo = iter.next();
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
       myCouple.setUserId(photo.getCreatorId());
       myCouple.setCountVolume(1);
