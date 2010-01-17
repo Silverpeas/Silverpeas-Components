@@ -485,10 +485,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("StartDiaporama")) {
         String debut = request.getParameter("Debut");
         int rang;
-        if ("ok".equals(debut))
+        if ("ok".equals(debut)) {
           rang = 0;
-        else
+        } else {
           rang = gallerySC.getRang();
+        }
         List<PhotoDetail> photos = (List<PhotoDetail>) gallerySC.goToAlbum().getPhotos();
         request.setAttribute("Photos", photos);
         request.setAttribute("Rang", new Integer(rang));
@@ -1571,7 +1572,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
 
     FileItem file = getUploadedFile(parameters, "WAIMGVAR0");
     String name = file.getName();
-    if (!name.equals(null) && !name.equals("")) {
+    if (StringUtil.isDefined(name)) {
       // suppression du répertoire contenant les anciennes photos
       FileRepositoryManager.deleteAbsolutePath(null, gallerySC.getComponentId(), gallerySC
           .getSettings().getString("imagesSubDirectory") +
