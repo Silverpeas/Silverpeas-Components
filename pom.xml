@@ -100,6 +100,7 @@
     <module>newsedito</module>
     <module>kmelia</module>
     <module>organizationchart</module>
+    <module>classifieds</module>
   </modules>
   
 </project>
