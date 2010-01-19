@@ -60,6 +60,5 @@
   </wiki:PageExists>
 
   <wiki:NoSuchPage><fmt:message key="actions.notcreated"/></wiki:NoSuchPage>
-  <div class="clearbox"/>
 </div>
 </wiki:CheckRequestContext>

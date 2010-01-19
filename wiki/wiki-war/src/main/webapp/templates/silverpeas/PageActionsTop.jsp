@@ -33,7 +33,7 @@
 <fmt:setBundle basename="templates.default" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" var="wikiMessages" />
 <view:operationPane>
-  <wiki:CheckRequestContext context='view|info|diff|upload'>
+  <wiki:CheckRequestContext context='view|comment|info|diff|upload'>
     <wiki:Permission permission="edit">
       <wiki:PageType type="page">
         <fmt:message key="actions.edit" var="editAltText" />
@@ -58,10 +58,21 @@
     </wiki:Permission>
   </wiki:CheckRequestContext>
 
+  <wiki:CheckRequestContext context='edit|info|diff|upload|comment|preview|prefs'>
+    <fmt:message key="view.tab" var="viewPageLabel" />
+    <fmt:message key="view.tab.title" var="viewAltText" bundle="${wikiMessages}" />
+    <fmt:message key="wiki.icons.viewPage" var="viewIconPath" bundle="${icons}" />
+    <%WikiContext viewContext = WikiContext.findContext(pageContext);%>
+    <c:url var="viewIcon" value="${deleteIconPath}" />
+    <c:set var="viewAction" value="<%=viewContext.getURL(WikiContext.VIEW, viewContext.getPage().getName())%>" />
+    <view:operation altText="${viewAltText}" icon="${viewIcon}" action="${viewAction}" />
+  </wiki:CheckRequestContext>
+
+
   <%-- more actions dropdown -- converted to popup by javascript 
        so all basic actions are accessible even if js is not avail --%>
 
-  <wiki:CheckRequestContext context='view|info|diff|upload'>
+  <wiki:CheckRequestContext context='view|info|edit|diff|upload'>
     <wiki:PageExists>
       <wiki:Permission permission="comment">
         <wiki:PageType type="page">
@@ -88,16 +99,18 @@
     </wiki:PageExists>
   </wiki:CheckRequestContext>
 
-  <wiki:Permission permission="delete">
-    <c:set var="deleteAllButtonLabel">
-      <fmt:message key='info.delete.submit' />
-    </c:set>
-    <fmt:message key="wiki.icons.commentPage" var="deleteIconPath" bundle="${icons}" />
-    <c:url var="deleteIcon" value="${deleteIconPath}" />
-    <view:operation altText="${deleteAllButtonLabel}" icon="${deleteIcon}" action="javascript:document.forms['deleteForm'].submit()" />
-  </wiki:Permission>
-
-  <wiki:CheckRequestContext context='view|info|diff|upload|edit|comment|preview'>
+  <wiki:CheckRequestContext context='view|edit|info|diff|upload|comment|preview'>
+    <wiki:Permission permission="delete">
+      <c:set var="deleteAllButtonLabel">
+        <fmt:message key='info.delete.submit' />
+      </c:set>
+      <fmt:message key="wiki.icons.commentPage" var="deleteIconPath" bundle="${icons}" />
+      <c:url var="deleteIcon" value="${deleteIconPath}" />
+      <view:operation altText="${deleteAllButtonLabel}" icon="${deleteIcon}" action="javascript:document.forms['deleteForm'].submit()" />
+    </wiki:Permission>
+  </wiki:CheckRequestContext>
+      
+  <wiki:CheckRequestContext context='view|info|diff|upload|comment|preview'>
     <fmt:message key="actions.rawpage" var="rawpageAltText" />
     <fmt:message key="wiki.icons.rawPage" var="rawIconPath" bundle="${icons}" />
     <c:url var="rawIcon" value="${rawIconPath}" />
@@ -107,23 +120,19 @@
       </wiki:Link>
     </c:set>
     <view:operation altText="${rawpageAltText}" icon="${rawIcon}" action="${rawpageLink}" />
-    
+
     <fmt:message key="prefs.tab" var="prefsPageLabel" />
     <fmt:message key="prefs.tab.title" var="prefsAltText" bundle="${wikiMessages}" /> 
     <fmt:message key="wiki.icons.prefsPage" var="prefsIconPath" bundle="${icons}" />
     <c:url var="prefsIcon" value="${prefsIconPath}" />
-     <%WikiContext myPrefsContext = WikiContext.findContext(pageContext);%>
+    <%WikiContext myPrefsContext = WikiContext.findContext(pageContext);%>
     <c:set var="prefsAction" value="<%=myPrefsContext.getURL(WikiContext.PREFS, myPrefsContext.getPage().getName())%>" />
     <view:operation altText="${prefsAltText}" icon="${prefsIcon}" action="${prefsAction}" />
   </wiki:CheckRequestContext>
 
-  <wiki:CheckRequestContext context='edit|info|diff|upload|comment|preview|prefs'>
-    <fmt:message key="view.tab" var="viewPageLabel" />
-    <fmt:message key="view.tab.title" var="viewAltText" bundle="${wikiMessages}" /> 
-    <fmt:message key="wiki.icons.viewPage" var="viewIconPath" bundle="${icons}" />
-    <%WikiContext viewContext = WikiContext.findContext(pageContext);%>
-    <c:url var="viewIcon" value="${deleteIconPath}" />
-    <c:set var="viewAction" value="<%=viewContext.getURL(WikiContext.VIEW, viewContext.getPage().getName())%>" />
-    <view:operation altText="${viewAltText}" icon="${viewIcon}" action="${viewAction}" />   
+  <wiki:CheckRequestContext context='edit'>
+    <fmt:message key="edit.tab.help" var="tabHelpTitle" bundle="${wikiMessages}" />
+    <c:set var="helpAction" value="<%=c.getURL(WikiContext.VIEW, "EditPageHelp")%>" />
+    <view:operation altText="${tabHelpTitle}" icon="${viewIcon}" action="javascript: showHelp();" />
   </wiki:CheckRequestContext>
 </view:operationPane>

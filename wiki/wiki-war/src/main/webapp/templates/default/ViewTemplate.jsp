@@ -31,47 +31,40 @@
 
 <html id="top" xmlns="http://www.w3.org/1999/xhtml">
 
-<head>
-  <title>
-    <fmt:message key="view.title.view">
-      <fmt:param><wiki:Variable var="ApplicationName" /></fmt:param>
-      <fmt:param><wiki:PageName /></fmt:param>
-    </fmt:message>
-  </title>
-  <wiki:Include page="commonheader.jsp"/>
-  <wiki:CheckVersion mode="notlatest">
-    <meta name="robots" content="noindex,nofollow" />
-  </wiki:CheckVersion>
-  <wiki:CheckRequestContext context="diff|info">
-    <meta name="robots" content="noindex,nofollow" />
-  </wiki:CheckRequestContext>
-  <wiki:CheckRequestContext context="!view">
-    <meta name="robots" content="noindex,follow" />
-  </wiki:CheckRequestContext>
-</head>
+  <head>
+    <title>
+      <fmt:message key="view.title.view">
+        <fmt:param><wiki:Variable var="ApplicationName" /></fmt:param>
+        <fmt:param><wiki:PageName /></fmt:param>
+      </fmt:message>
+    </title>
+    <wiki:Include page="commonheader.jsp"/>
+    <wiki:CheckVersion mode="notlatest">
+      <meta name="robots" content="noindex,nofollow" />
+    </wiki:CheckVersion>
+    <wiki:CheckRequestContext context="diff|info">
+      <meta name="robots" content="noindex,nofollow" />
+    </wiki:CheckRequestContext>
+    <wiki:CheckRequestContext context="!view">
+      <meta name="robots" content="noindex,follow" />
+    </wiki:CheckRequestContext>
+  </head>
 
-<body class="view">
+  <body class="view">
 
-<div id="wikibody" class="${prefs['orientation']}">
+    <div id="wikibody" class="${prefs['orientation']}">
 
-  <wiki:Include page="Header.jsp" />
-
-  <div id="content">
-
-    <div id="page">
-      <wiki:Include page="PageActionsTop.jsp"/>
-      <wiki:Content/>
-      <wiki:Include page="PageActionsBottom.jsp"/>
+      <wiki:Include page="Header.jsp" />
+      <div id="content">
+        <div id="page">
+          <wiki:Include page="PageActionsTop.jsp"/>
+          <wiki:Content/>
+          <wiki:Include page="PageActionsBottom.jsp"/>
+        </div>
+        <wiki:Include page="Favorites.jsp"/>
+        <div class="clearbox"></div>
+      </div>
     </div>
-
-    <wiki:Include page="Favorites.jsp"/>
-
-	<div class="clearbox"></div>
-  </div>
-
-  <wiki:Include page="Footer.jsp" />
-
-</div>
-
-</body>
+    <wiki:Include page="Footer.jsp" />
+  </body>
 </html>

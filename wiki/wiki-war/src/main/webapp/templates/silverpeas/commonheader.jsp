@@ -74,7 +74,7 @@
 Wiki.init({
 	'BaseUrl': '<wiki:BaseURL />',
 	'PageUrl': '<wiki:Link format="url" absolute="true" page="#$%"/>', /* unusual pagename */
-	'TemplateDir': '<wiki:Link format="url" templatefile=""/>',
+	'TemplateDir': '<%=  WikiContext.findContext(pageContext).getURL( WikiContext.NONE, "templates/silverpeas/")%>',
 	'PageName': '<wiki:Variable var="pagename" />',/* pagename without blanks */
 	'UserName': '<wiki:UserName />', 
 	'JsonUrl' : '<%=  WikiContext.findContext(pageContext).getURL( WikiContext.NONE, "JSON-RPC" ) %>'
@@ -95,9 +95,9 @@ Wiki.init({
  %>
  <link rel="start"  href="<wiki:LinkTo format='url' page='<%=frontpage%>' />"
     title="Front page" />
-<link rel="alternate stylesheet" type="text/css" href="<wiki:Link format='url' templatefile='jspwiki_print.css'/>"
+<link rel="alternate stylesheet" type="text/css" href="<c:url value='/templates/silverpeas/jspwiki_print.css' />"
     title="Print friendly" />
-<link rel="alternate stylesheet" type="text/css" href="<wiki:Link format='url' templatefile='jspwiki.css'/>"
+<link rel="alternate stylesheet" type="text/css" href="<c:url value='/templates/silverpeas/jspwiki.css' />"
     title="Standard" />
 <link rel="icon" type="image/png" href="<wiki:Link format='url' jsp='images/favicon.png'/>" />
 
