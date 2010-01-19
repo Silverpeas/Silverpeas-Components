@@ -126,7 +126,7 @@ public class WikiRequestRouter extends ComponentRequestRouter {
         destination = "/" + function;
       } else if (function.startsWith("attach")) {
         destination = "/" + function;
-      }else if (function.startsWith("JSON-RPC")) {
+      } else if (function.startsWith("JSON-RPC")) {
         destination = "/" + function;
       }
     } catch (Exception e) {

@@ -107,7 +107,7 @@ public class WikiInstanciator implements ComponentsInstanciatorIntf {
       WikiException {
     ZipInputStream zipFile =
         new ZipInputStream(this.getClass().getClassLoader().getResourceAsStream(
-            "pages.zip"));
+        "pages.zip"));
     ZipEntry page = zipFile.getNextEntry();
     while (page != null) {
       String pageName = page.getName();

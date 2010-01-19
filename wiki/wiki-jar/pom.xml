@@ -45,8 +45,7 @@
     </dependency>
     <dependency>
       <groupId>com.ecyrd.jspwiki</groupId>
-      <artifactId>jspwiki</artifactId>
-      <classifier>silverpeas</classifier>
+      <artifactId>jspwiki_silverpeas</artifactId>
     </dependency>
     <dependency>
       <groupId>jaxen</groupId>
