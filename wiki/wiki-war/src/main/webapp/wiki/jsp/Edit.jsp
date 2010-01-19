@@ -245,7 +245,7 @@
         if( htmlText != null ) session.setAttribute( EditorManager.REQ_EDITEDTEXT, text );
 
         session.setAttribute("changenote", changenote != null ? changenote : "" );
-        response.sendRedirect( wiki.getURL(WikiContext.PREVIEW,pagereq,null,false) );
+        response.sendRedirect( wiki.getURL(WikiContext.PREVIEW,pagereq,null,true) );
         return;
     }
     else if( cancel != null )
