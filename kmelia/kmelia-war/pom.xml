@@ -7,7 +7,7 @@
     <version>1.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
-	
+
   <groupId>com.silverpeas.components.kmelia</groupId>
   <artifactId>kmelia-war</artifactId>
   <packaging>war</packaging>
@@ -121,10 +121,9 @@
       <artifactId>xstream</artifactId>
     </dependency>
     <dependency>
-    	<groupId>com.metaparadigm</groupId>
-    	<artifactId>json-rpc</artifactId>
-    	<type>jar</type>
-    	<scope>compile</scope>
+      <groupId>com.metaparadigm</groupId>
+      <artifactId>json-rpc</artifactId>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
