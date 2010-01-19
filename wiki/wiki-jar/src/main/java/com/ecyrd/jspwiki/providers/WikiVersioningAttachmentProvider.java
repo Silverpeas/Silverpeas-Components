@@ -43,6 +43,7 @@ import com.ecyrd.jspwiki.WikiProvider;
 import com.ecyrd.jspwiki.attachment.Attachment;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.versioning.VersioningIndexer;
 import com.silverpeas.wiki.control.WikiException;
 import com.silverpeas.wiki.control.WikiMultiInstanceManager;
@@ -357,13 +358,23 @@ public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider 
       PageDetail page = pageDAO.getPage(att.getParentName(), instanceId);
       Date creationDate = new Date();
       String logicalName = att.getFileName();
+      if (!StringUtil.isDefined(logicalName)) {
+        throw new ProviderException("empty.uploaded.file");
+      }
       String path = indexer.createPath(null, instanceId);
       String physicalName = new Long(creationDate.getTime()).toString() + "."
           + FileRepositoryManager.getFileExtension(logicalName);
       java.io.File f = new java.io.File(path + physicalName);
       String author = (String) att.getAttribute("userId");
       FileUtil.writeFile(f, data);
+      if (f.length() <= 0) {
+        f.delete();
+        throw new ProviderException("empty.uploaded.file");
+      }
       String mimeType = FileUtil.getMimeType(logicalName);
+      if (mimeType == null) {
+        mimeType = FileUtil.DEFAULT_MIME_TYPE;
+      }
       // int user_id = Integer.parseInt(userId);
       ForeignPK pubForeignKey = new ForeignPK("" + page.getId(), instanceId);
       int userId = Integer.parseInt(author);
