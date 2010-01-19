@@ -262,7 +262,7 @@
         }
         
         session.setAttribute(EditorManager.REQ_EDITEDTEXT, commentText);
-        response.sendRedirect( TextUtil.replaceString( wiki.getURL(WikiContext.PREVIEW, pagereq, "action=comment", false),"&amp;","&") );
+        response.sendRedirect( TextUtil.replaceString( wiki.getURL(WikiContext.PREVIEW, pagereq, "action=comment", true),"&amp;","&") );
         return;
     }
     else if( cancel != null )
