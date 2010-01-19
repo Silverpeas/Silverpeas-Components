@@ -50,6 +50,7 @@ import org.apache.log4j.Logger;
 import com.ecyrd.jspwiki.TextUtil;
 import com.ecyrd.jspwiki.WikiContext;
 import com.ecyrd.jspwiki.WikiEngine;
+import com.ecyrd.jspwiki.WikiException;
 import com.ecyrd.jspwiki.WikiPage;
 import com.ecyrd.jspwiki.WikiProvider;
 import com.ecyrd.jspwiki.WikiSession;
@@ -82,34 +83,25 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
  * @since 1.9.45.
  */
 public class AttachmentServlet extends WebdavServlet {
+
   private static final int BUFFER_SIZE = 8192;
-
   private static final long serialVersionUID = 3257282552187531320L;
-
   private WikiEngine m_engine;
   static Logger log = Logger.getLogger(AttachmentServlet.class.getName());
-
   private static final String HDR_VERSION = "version";
   // private static final String HDR_NAME = "page";
-
   /** Default expiry period is 1 day */
   protected static final long DEFAULT_EXPIRY = 1 * 24 * 60 * 60 * 1000;
-
   private String m_tmpDir;
-
   private DavProvider m_attachmentProvider;
-
   /**
    * The maximum size that an attachment can be.
    */
   private int m_maxSize = Integer.MAX_VALUE;
-
   /**
    * List of attachment types which are allowed
    */
-
   private String[] m_allowedPatterns;
-
   private String[] m_forbiddenPatterns;
 
   //
@@ -117,7 +109,6 @@ public class AttachmentServlet extends WebdavServlet {
   // Used to handle the RFC date format = Sat, 13 Apr 2002 13:23:01 GMT
   //
   // private final DateFormat rfcDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
-
   /**
    * Initializes the servlet from WikiEngine properties. {@inheritDoc}
    */
@@ -139,46 +130,51 @@ public class AttachmentServlet extends WebdavServlet {
         AttachmentManager.PROP_ALLOWEDEXTENSIONS,
         null);
 
-    if (allowed != null && allowed.length() > 0)
+    if (allowed != null && allowed.length() > 0) {
       m_allowedPatterns = allowed.toLowerCase().split("\\s");
-    else
+    } else {
       m_allowedPatterns = new String[0];
+    }
 
     String forbidden = TextUtil.getStringProperty(props,
         AttachmentManager.PROP_FORDBIDDENEXTENSIONS,
         null);
 
-    if (forbidden != null && forbidden.length() > 0)
+    if (forbidden != null && forbidden.length() > 0) {
       m_forbiddenPatterns = forbidden.toLowerCase().split("\\s");
-    else
+    } else {
       m_forbiddenPatterns = new String[0];
+    }
 
     File f = new File(m_tmpDir);
     if (!f.exists()) {
       f.mkdirs();
     } else if (!f.isDirectory()) {
-      log.fatal("A file already exists where the temporary dir is supposed to be: " + m_tmpDir +
-          ".  Please remove it.");
+      log.fatal("A file already exists where the temporary dir is supposed to be: " + m_tmpDir
+          + ".  Please remove it.");
     }
 
-    log.debug("UploadServlet initialized. Using " +
-        m_tmpDir + " for temporary storage.");
+    log.debug("UploadServlet initialized. Using "
+        + m_tmpDir + " for temporary storage.");
   }
 
   private boolean isTypeAllowed(String name) {
-    if (name == null || name.length() == 0)
+    if (name == null || name.length() == 0) {
       return false;
+    }
 
     name = name.toLowerCase();
 
     for (int i = 0; i < m_forbiddenPatterns.length; i++) {
-      if (name.endsWith(m_forbiddenPatterns[i]) && m_forbiddenPatterns[i].length() > 0)
+      if (name.endsWith(m_forbiddenPatterns[i]) && m_forbiddenPatterns[i].length() > 0) {
         return false;
+      }
     }
 
     for (int i = 0; i < m_allowedPatterns.length; i++) {
-      if (name.endsWith(m_allowedPatterns[i]) && m_allowedPatterns[i].length() > 0)
+      if (name.endsWith(m_allowedPatterns[i]) && m_allowedPatterns[i].length() > 0) {
         return true;
+      }
     }
 
     return m_allowedPatterns.length == 0;
@@ -207,7 +203,6 @@ public class AttachmentServlet extends WebdavServlet {
    * @param req The servlet request
    * @param res The servlet response
    */
-
   protected void doOptions(HttpServletRequest req, HttpServletResponse res) {
     res.setHeader("DAV", "1"); // We support only Class 1
     res.setHeader("Allow", "GET, PUT, POST, OPTIONS, PROPFIND, PROPPATCH, MOVE, COPY, DELETE");
@@ -218,7 +213,6 @@ public class AttachmentServlet extends WebdavServlet {
    * Serves a GET with two parameters: 'wikiname' specifying the wikiname of the attachment,
    * 'version' specifying the version indicator. {@inheritDoc}
    */
-
   // FIXME: Messages would need to be localized somehow.
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws IOException, ServletException {
@@ -309,22 +303,23 @@ public class AttachmentServlet extends WebdavServlet {
         }
         result.close();
         System.out.println("Attachment file is c:/tmp/result/" + att.getFileName());
-        System.out.println("Attachment " + att.getFileName() + " sent to " + req.getRemoteUser() +
-            " on " + req.getRemoteAddr());
+        System.out.println("Attachment " + att.getFileName() + " sent to " + req.getRemoteUser()
+            + " on " + req.getRemoteAddr());
         if (log.isDebugEnabled()) {
           msg =
-              "Attachment " + att.getFileName() + " sent to " + req.getRemoteUser() + " on " +
-                  req.getRemoteAddr();
+              "Attachment " + att.getFileName() + " sent to " + req.getRemoteUser() + " on "
+              + req.getRemoteAddr();
           log.debug(msg);
         }
-        if (nextPage != null)
+        if (nextPage != null) {
           res.sendRedirect(nextPage);
+        }
 
         return;
       }
 
-      msg = "Attachment '" + page + "', version " + ver +
-          " does not exist.";
+      msg = "Attachment '" + page + "', version " + ver
+          + " does not exist.";
 
       log.info(msg);
       res.sendError(HttpServletResponse.SC_NOT_FOUND,
@@ -437,10 +432,10 @@ public class AttachmentServlet extends WebdavServlet {
   public void doPut(HttpServletRequest req, HttpServletResponse res)
       throws IOException, ServletException {
     String errorPage = m_engine.getURL(WikiContext.ERROR, "", null, false); // If something bad
-                                                                            // happened, Upload
-                                                                            // should be able to
-                                                                            // take care of most
-                                                                            // stuff
+    // happened, Upload
+    // should be able to
+    // take care of most
+    // stuff
 
     String p = new String(req.getPathInfo().getBytes("ISO-8859-1"), "UTF-8");
     DavPath path = new DavPath(p);
@@ -463,10 +458,11 @@ public class AttachmentServlet extends WebdavServlet {
           changeNote,
           req.getContentLength());
 
-      if (created)
+      if (created) {
         res.sendError(HttpServletResponse.SC_CREATED);
-      else
+      } else {
         res.sendError(HttpServletResponse.SC_OK);
+      }
     } catch (ProviderException e) {
       res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
           e.getMessage());
@@ -479,7 +475,6 @@ public class AttachmentServlet extends WebdavServlet {
   /**
    * Validates the next page to be on the same server as this webapp. Fixes [JSPWIKI-46].
    */
-
   private String validateNextPage(String nextPage, String errorPage) {
     if (nextPage.indexOf("://") != -1) {
       // It's an absolute link, so unless it starts with our address, we'll
@@ -509,10 +504,10 @@ public class AttachmentServlet extends WebdavServlet {
     String msg = "";
     String attName = "(unknown)";
     String errorPage = m_engine.getURL(WikiContext.ERROR, "", null, false); // If something bad
-                                                                            // happened, Upload
-                                                                            // should be able to
-                                                                            // take care of most
-                                                                            // stuff
+    // happened, Upload
+    // should be able to
+    // take care of most
+    // stuff
     String nextPage = errorPage;
 
     String progressId = req.getParameter("progressid");
@@ -554,8 +549,9 @@ public class AttachmentServlet extends WebdavServlet {
             wikipage = item.getString("UTF-8");
             int x = wikipage.indexOf("/");
 
-            if (x != -1)
+            if (x != -1) {
               wikipage = wikipage.substring(0, x);
+            }
           } else if (item.getFieldName().equals("changenote")) {
             changeNote = item.getString("UTF-8");
           } else if (item.getFieldName().equals("nextpage")) {
@@ -566,8 +562,9 @@ public class AttachmentServlet extends WebdavServlet {
         }
       }
 
-      if (actualFile == null)
+      if (actualFile == null) {
         throw new RedirectException("Broken file upload", errorPage);
+      }
 
       //
       // FIXME: Unfortunately, with Apache fileupload we will get the form fields in
@@ -638,20 +635,19 @@ public class AttachmentServlet extends WebdavServlet {
       IOException, ProviderException {
     boolean created = false;
 
-    /*
-     * try { filename = AttachmentManager.validateFileName( filename ); } catch( WikiException e ) {
-     * // this is a kludge, the exception that is caught here contains the i18n key // here we have
-     * the context available, so we can internationalize it properly : throw new
-     * RedirectException(context.getBundle( InternationalizationManager.CORE_BUNDLE ).getString(
-     * e.getMessage() ), errorPage ); }
-     */
+    try {
+      filename = validateFileName(filename);
+    } catch (WikiException e) {
+      // this is a kludge, the exception that is caught here contains the i18n key
+      // here we have the context available, so we can internationalize it properly :
+      throw new RedirectException(context.getBundle(InternationalizationManager.CORE_BUNDLE).
+          getString(e.getMessage()), errorPage);
+    }
 
     //
     // FIXME: This has the unfortunate side effect that it will receive the
     // contents. But we can't figure out the page to redirect to
     // before we receive the file, due to the stupid constructor of MultipartRequest.
-    //
-
     if (!context.hasAdminPermissions()) {
       if (contentLength > m_maxSize) {
         // FIXME: Does not delete the received files.
@@ -696,10 +692,9 @@ public class AttachmentServlet extends WebdavServlet {
       created = true;
     }
     att.setSize(contentLength);
-    att.setAttribute("userId", ((ComponentSessionController) context
-        .getHttpRequest().getSession().getAttribute(
-        "Silverpeas_Wiki_" + WikiMultiInstanceManager.getComponentId()))
-        .getUserId());
+    att.setAttribute("userId", ((ComponentSessionController) context.getHttpRequest().getSession().
+        getAttribute(
+        "Silverpeas_Wiki_" + WikiMultiInstanceManager.getComponentId())).getUserId());
     //
     // Check if we're allowed to do this?
     //
@@ -720,12 +715,12 @@ public class AttachmentServlet extends WebdavServlet {
       } catch (ProviderException pe) {
         // this is a kludge, the exception that is caught here contains the i18n key
         // here we have the context available, so we can internationalize it properly :
-        throw new ProviderException(context.getBundle(InternationalizationManager.CORE_BUNDLE)
-            .getString(pe.getMessage()));
+        throw new ProviderException(context.getBundle(InternationalizationManager.CORE_BUNDLE).
+            getString(pe.getMessage()));
       }
 
-      log.info("User " + user + " uploaded attachment to " + parentPage +
-          " called " + filename + ", size " + att.getSize());
+      log.info("User " + user + " uploaded attachment to " + parentPage
+          + " called " + filename + ", size " + att.getSize());
     } else {
       throw new RedirectException("No permission to upload a file",
           errorPage);
@@ -741,6 +736,7 @@ public class AttachmentServlet extends WebdavServlet {
   private static class UploadListener
       extends ProgressItem
       implements ProgressListener {
+
     public long m_currentBytes;
     public long m_totalBytes;
     public String m_uid;
@@ -755,4 +751,51 @@ public class AttachmentServlet extends WebdavServlet {
     }
   }
 
+  /**
+   * Validates the filename and makes sure it is legal. It trims and splits and replaces bad
+   * characters.
+   * @param filename
+   * @return A validated name with annoying characters replaced.
+   * @throws WikiException If the filename is not legal (e.g. empty)
+   */
+  static String validateFileName(String filename)
+      throws WikiException {
+    if (filename == null || filename.trim().length() == 0) {
+      log.error("Empty file name given.");
+
+      // the caller should catch the exception and use the exception text as an i18n key
+      throw new WikiException("attach.empty.file");
+    }
+
+    //
+    // Should help with IE 5.22 on OSX
+    //
+    filename = filename.trim();
+
+    // If file name ends with .jsp or .jspf, the user is being naughty!
+    if (filename.toLowerCase().endsWith(".jsp") || filename.toLowerCase().endsWith(".jspf")) {
+      log.info("Attempt to upload a file with a .jsp/.jspf extension.  In certain cases this"
+          + " can trigger unwanted security side effects, so we're preventing it.");
+      //
+      // the caller should catch the exception and use the exception text as an i18n key
+      throw new WikiException("attach.unwanted.file");
+    }
+
+    //
+    // Some browser send the full path info with the filename, so we need
+    // to remove it here by simply splitting along slashes and then taking the path.
+    //
+
+    String[] splitpath = filename.split("[/\\\\]");
+    filename = splitpath[splitpath.length - 1];
+
+    //
+    // Remove any characters that might be a problem. Most
+    // importantly - characters that might stop processing
+    // of the URL.
+    //
+    filename = org.apache.commons.lang.StringUtils.replaceChars(filename, "#?\"'", "____");
+
+    return filename;
+  }
 }
