@@ -172,7 +172,9 @@ public class SilverpeasVersioningFileProvider implements WikiPageProvider, Versi
       } else {
         PageDetail pageDetail = pageDAO.getPage(page.getName(),
             WikiMultiInstanceManager.getComponentId());
-        pageId = pageDetail.getId();
+        if(pageDetail != null ) { //We are in the sandbox
+           pageId = pageDetail.getId();
+        }       
       }
     } catch (WikiException e) {
       SilverTrace.error("wiki", "WikiVersioningFileProvider.putPageText()",
