@@ -55,6 +55,7 @@ public class SilverpeasVersioningFileProvider implements WikiPageProvider, Versi
   /**
    * {@inheritDoc}
    */
+  @Override
   public void initialize(WikiEngine engine, Properties properties)
       throws NoRequiredPropertyException, IOException {
     this.props = new Properties(properties);
