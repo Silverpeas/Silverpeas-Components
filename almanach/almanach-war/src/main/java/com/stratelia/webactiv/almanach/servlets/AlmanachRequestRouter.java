@@ -454,6 +454,8 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
           if (periodicityUntilDate != null && periodicityUntilDate.length() > 0) {
             periodicity.setUntilDatePeriod(DateUtil.stringToDate(
                 periodicityUntilDate, almanach.getLanguage()));
+          } else {
+            periodicity.setUntilDatePeriod(null);
           }
         } else {// update -> pas de périodicité
           periodicity = null;
