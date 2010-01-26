@@ -24,6 +24,8 @@
 package com.stratelia.webactiv.almanach.control.ejb;
 
 import java.sql.Connection;
+
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,15 +46,15 @@ import net.fortuna.ical4j.model.Period;
 import net.fortuna.ical4j.model.PeriodList;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.Recur;
+import net.fortuna.ical4j.model.TimeZone;
+import net.fortuna.ical4j.model.TimeZoneRegistry;
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.WeekDay;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.Description;
-import net.fortuna.ical4j.model.property.DtEnd;
-import net.fortuna.ical4j.model.property.DtStart;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
-import net.fortuna.ical4j.model.property.Summary;
 import net.fortuna.ical4j.model.property.Uid;
 
 import com.silverpeas.util.StringUtil;
@@ -74,6 +76,7 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
@@ -615,6 +618,10 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
     Calendar calendarAlmanach = new Calendar();
     calendarAlmanach.getProperties().add(CalScale.GREGORIAN);
+    
+    TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+    ResourceLocator almanachSettings = new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings","");
+    TimeZone localTimeZone = registry.getTimeZone(almanachSettings.getString("almanach.timezone"));
 
     // transformation des événements (EventDetail) en VEvent du Calendar ical4j
     EventDetail evtDetail;
@@ -631,10 +638,9 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
     VEvent eventIcal4jCalendar;
     Uid uid;
     // RecurrenceId recurrenceid;
-    DtStart dtStart;
+    DateTime dtStart;
     Periodicity periodicity;
-    DtEnd dtEnd;
-    Summary summary;
+    DateTime dtEnd;
     Description description;
 
     while (itEvent.hasNext()) {
@@ -668,7 +674,12 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
         }
       }
 
-      eventIcal4jCalendar = new VEvent();
+      dtStart = new DateTime(calStartDate.getTime());
+      dtStart.setTimeZone(localTimeZone);
+      dtEnd = new DateTime(calEndDate.getTime());
+      dtEnd.setTimeZone(localTimeZone);
+      eventIcal4jCalendar = new VEvent(dtStart, dtEnd, title);
+      
       /*
        * if(eventFatherId != null && eventFatherId.length()>0) { //Occurence
        * spécifique d'un événement récurrent uid = new Uid(eventFatherId);
@@ -678,12 +689,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
       uid = new Uid(eventId);
       /* } */
       eventIcal4jCalendar.getProperties().add(uid);
-      dtStart = new DtStart(new Date(calStartDate.getTime()));
-      eventIcal4jCalendar.getProperties().add(dtStart);
-      dtEnd = new DtEnd(new Date(calEndDate.getTime()));
-      eventIcal4jCalendar.getProperties().add(dtEnd);
-      summary = new Summary(title);
-      eventIcal4jCalendar.getProperties().add(summary);
+      
       description = new Description(descriptionWysiwyg);
       eventIcal4jCalendar.getProperties().add(description);
 
