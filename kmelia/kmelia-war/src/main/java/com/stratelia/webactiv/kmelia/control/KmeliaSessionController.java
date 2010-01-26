@@ -1510,7 +1510,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public synchronized void orderPubsToValidate(int sortType)
       throws RemoteException {
-    List<UserPublication> publications = sort(getKmeliaBm().getPublicationsToValidate(getComponentId()), sortType);
+    List<UserPublication> publications =
+        sort(getKmeliaBm().getPublicationsToValidate(getComponentId()), sortType);
     setSessionPublicationsList(publications);
   }
 

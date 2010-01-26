@@ -30,38 +30,23 @@
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
-
 <%@ page import="java.util.*"%>
-<%@ page import="javax.naming.Context,javax.naming.InitialContext,javax.rmi.PortableRemoteObject"%>
 
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodePK"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.DBUtil"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="kmax_axisReport.jsp" %>
-
-<%!
-  //Icons
-  String axisAddSrc;
-  String subscriptionAddSrc;
-  String subscriptionSrc;
-  String favoriteAddSrc;
-  String favoriteSrc;
-  String publicationAddSrc;
-  String publicationSrc;
-  String mandatoryFieldSrc;
-%>
 
 <% 
 String id = "";
@@ -73,19 +58,20 @@ String childId = "";
 String profile = "admin";
 
 //Récupération des paramètres
-String action 		= (String) request.getParameter("Action");
+String action 		= request.getParameter("Action");
 String translation 	= (String) request.getAttribute("Language");
 
 //Icons
-axisAddSrc = m_context + "/util/icons/kmax_to_add.gif";
-publicationSrc = m_context + "/util/icons/publication.gif";
-mandatoryFieldSrc = m_context + "/util/icons/mandatoryField.gif";
+String axisAddSrc = m_context + "/util/icons/kmax_to_add.gif";
+String publicationSrc = m_context + "/util/icons/publication.gif";
+String mandatoryFieldSrc = m_context + "/util/icons/mandatoryField.gif";
 
 //Mise a jour de l'espace
 if (action == null) {
 	action = "KmaxViewAxis";
 }
 %>
+
 
 <HTML>
 <HEAD>
@@ -111,7 +97,7 @@ function closeWindows() {
 function axisAdd() {
     url = "kmax_addAxis.jsp";
     windowName = "axisAddWindow";
-	larg = "500";
+	larg = "600";
 	haut = "250";
     windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
     if (!axisAddWindow.closed && axisAddWindow.name == "axisAddWindow")
@@ -196,7 +182,7 @@ function positionManage(selectObject) {
 function addPositionToPosition(axisId) {
     url = "kmax_addPositionToPosition.jsp?Action=KmaxView&AxisId="+axisId+"&Translation=<%=translation%>";
     windowName = "componentAddWindow";
-	larg = "500";
+	larg = "600";
 	haut = "250";
     windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
     if (!componentAddWindow.closed && componentAddWindow.name == "componentAddWindow")
@@ -207,7 +193,7 @@ function addPositionToPosition(axisId) {
 function addPositionToAxis(axisId) {
     url = "kmax_addPositionToAxis.jsp?AxisId="+axisId+"&Translation=<%=translation%>";
     windowName = "componentAddWindow";
-	larg = "500";
+	larg = "600";
 	haut = "250";	
     windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
     if (!componentAddWindow.closed && componentAddWindow.name == "componentAddWindow")
@@ -345,8 +331,8 @@ String codeJSForTranslation(NodeDetail nodeDetail)
 	while (codes.hasNext())
 	{
 		lang = (String) codes.next();
-		result += "var name_"+lang+" = \""+Encode.javaStringToJsString(nodeDetail.getName(lang))+"\";\n";
-		result += "var desc_"+lang+" = \""+Encode.javaStringToJsString(nodeDetail.getDescription(lang))+"\";\n";
+		result += "var name_"+lang+" = \""+EncodeHelper.javaStringToJsString(nodeDetail.getName(lang))+"\";\n";
+		result += "var desc_"+lang+" = \""+EncodeHelper.javaStringToJsString(nodeDetail.getDescription(lang))+"\";\n";
 	}
 	result += "\n</script>";
 	return result;

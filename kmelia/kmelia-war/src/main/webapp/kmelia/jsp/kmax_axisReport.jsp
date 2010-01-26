@@ -32,7 +32,7 @@
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
+<%@ page import="java.util.*"%>
 <%@ page import="java.beans.*"%>
 
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail, java.util.Collection, java.util.Iterator"%>
@@ -115,7 +115,7 @@ String getTimeAxis(KmeliaSessionController kmeliaScc, ResourceLocator timeSettin
     return axis.toString();
 }
 
-ArrayList getAxis(KmeliaSessionController kmeliaScc, boolean axisLinked, ArrayList combination, String translation) throws CreateException, SQLException, NamingException, RemoteException, FinderException {
+List getAxis(KmeliaSessionController kmeliaScc, boolean axisLinked, List combination, String translation) throws CreateException, SQLException, NamingException, RemoteException, FinderException {
       List list = kmeliaScc.getAxis();
       Iterator iterator = list.iterator();
       ArrayList axisList = new ArrayList();
@@ -188,7 +188,7 @@ ArrayList getAxis(KmeliaSessionController kmeliaScc, boolean axisLinked, ArrayLi
       return axisList;
 }
 
-String displayAxisCombinationToUsers(KmeliaSessionController kmeliaScc, GraphicElementFactory gef, ArrayList combination, String timeCriteria, String translation) throws CreateException, SQLException, NamingException, RemoteException, FinderException {
+String displayAxisCombinationToUsers(KmeliaSessionController kmeliaScc, GraphicElementFactory gef, List combination, String timeCriteria, String translation) throws CreateException, SQLException, NamingException, RemoteException, FinderException {
     String result = displayAxis(kmeliaScc, gef, false, true, combination, timeCriteria, kmeliaScc.isTimeAxisUsed(), null, translation);
     return result;
 }
@@ -200,7 +200,7 @@ String displayAxisToUsers(KmeliaSessionController kmeliaScc, GraphicElementFacto
 
 String displayAxisToPublish(KmeliaSessionController kmeliaScc, GraphicElementFactory gef, String translation) throws CreateException, SQLException, NamingException, RemoteException, FinderException {
 	String result;
-	ArrayList currentCombination = new ArrayList();
+	List currentCombination = new ArrayList();
 	if (kmeliaScc.getCurrentCombination() != null)
 		currentCombination = kmeliaScc.getCurrentCombination();
     result = displayAxis(kmeliaScc, gef, false, true, currentCombination, null, false, null, translation);
@@ -212,9 +212,9 @@ String displayAxisToAdmins(KmeliaSessionController kmeliaScc, GraphicElementFact
     return result;
 }
 
-String displayAxis(KmeliaSessionController kmeliaScc, GraphicElementFactory gef, boolean axisLinked, boolean searchEnabled, ArrayList combination,  String timeCriteriaValue, boolean timeAxisEnabled, String explaination, String translation) throws CreateException, SQLException, NamingException, RemoteException, FinderException {
+String displayAxis(KmeliaSessionController kmeliaScc, GraphicElementFactory gef, boolean axisLinked, boolean searchEnabled, List combination,  String timeCriteriaValue, boolean timeAxisEnabled, String explaination, String translation) throws CreateException, SQLException, NamingException, RemoteException, FinderException {
     StringBuffer result = new StringBuffer(1000);
-    ArrayList axisList = getAxis(kmeliaScc, axisLinked, combination, translation);
+    List axisList = getAxis(kmeliaScc, axisLinked, combination, translation);
     
     if (timeAxisEnabled && axisList.size() > 0) {
         //get the time axis

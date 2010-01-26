@@ -1658,6 +1658,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
         destination =
             rootDestination + "kmax.jsp?Action=KmaxViewUnbalanced&Profile=" + kmelia.getProfile();
+      } else if (function.equals("KmaxViewBasket")) {
+        TopicDetail basket = kmelia.getTopic("1");
+        List<UserPublication> publications = (List<UserPublication>) basket.getPublicationDetails();
+        kmelia.setSessionPublicationsList(publications);
+        kmelia.orderPubs();
+
+        destination =
+            rootDestination + "kmax.jsp?Action=KmaxViewBasket&Profile=" + kmelia.getProfile();
+
+      } else if (function.equals("KmaxViewToValidate")) {
+        destination =
+            rootDestination + "kmax.jsp?Action=KmaxViewToValidate&Profile=" + kmelia.getProfile();
       } else if (function.equals("KmaxSearch")) {
         String axisValuesStr = request.getParameter("SearchCombination");
         if (!StringUtil.isDefined(axisValuesStr))

@@ -30,52 +30,35 @@
 <%@ page import="java.io.IOException"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
-
 <%@ page import="java.util.*"%>
-<%@ page import="javax.naming.Context,javax.naming.InitialContext,javax.rmi.PortableRemoteObject"%>
 
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodePK"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.navigationList.NavigationList"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
 
 <%@ include file="checkKmelia.jsp" %>
-<%@ include file="publicationsList.jsp.inc" %>
 <%@ include file="kmax_axisReport.jsp" %>
-<%@ include file="tabManager.jsp.inc" %>
-
-<%!
-  String publicationAddSrc;
-  String publicationSrc;
-  String fullStarSrc;
-  String emptyStarSrc;
-  String unbalancedSrc;
-  String topicBasketSrc;
-  String pubToValidateSrc;
-%>
 
 <% 
 //Récupération des paramètres
-String 	action 		= (String) request.getParameter("Action");
-String 	profile 	= (String) request.getParameter("Profile");
+String 	action 		= request.getParameter("Action");
+String 	profile 	= request.getParameter("Profile");
 String 	translation = (String) request.getAttribute("Language");
 
 //Icons
-publicationAddSrc 	= m_context + "/util/icons/publicationAdd.gif";
-publicationSrc 		= m_context + "/util/icons/publication.gif";
-fullStarSrc 		= m_context + "/util/icons/starFilled.gif";
-emptyStarSrc 		= m_context + "/util/icons/starEmpty.gif";
-unbalancedSrc 		= m_context + "/util/icons/kmelia_declassified.gif";
-topicBasketSrc		= m_context + "/util/icons/pubTrash.gif";
-pubToValidateSrc	= m_context + "/util/icons/publicationstoValidate.gif";
+String publicationAddSrc 	= m_context + "/util/icons/publicationAdd.gif";
+String publicationSrc 		= m_context + "/util/icons/publication.gif";
+String fullStarSrc 			= m_context + "/util/icons/starFilled.gif";
+String emptyStarSrc 		= m_context + "/util/icons/starEmpty.gif";
+String unbalancedSrc 		= m_context + "/util/icons/kmelia_declassified.gif";
+String topicBasketSrc		= m_context + "/util/icons/pubTrash.gif";
+String pubToValidateSrc		= m_context + "/util/icons/publicationstoValidate.gif";
 String exportComponentSrc	= m_context + "/util/icons/exportComponent.gif";
 
 ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", kmeliaScc.getLanguage());
@@ -91,9 +74,7 @@ if (action == null) {
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<script type="text/javascript" src="<%=m_context%>/util/ajax/prototype.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/ajax/rico.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/ajax/ricoAjax.js"></script>
+<script type="text/javascript" src="<%=m_context %>/attachment/jsp/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <Script language="JavaScript1.2">
@@ -164,30 +145,47 @@ function viewUnbalanced() {
 }
 
 function viewBasket() {
-  document.managerForm.Id.value = "1";
-  document.managerForm.action = "GoToTopic";
+  document.managerForm.action = "KmaxViewBasket";
   document.managerForm.submit();
+}
+
+function viewToValidate() {
+	document.managerForm.action = "KmaxViewToValidate";
+	document.managerForm.submit();
 }
 
 function doPagination(index)
 {
-	ajaxEngine.sendRequest('refreshPubList','ElementId=pubList',"ComponentId=<%=componentId%>","Index="+index);
-	return;
+	var ieFix = new Date().getTime();
+	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',IEFix:ieFix}, 
+			function(data){
+				$('#pubList').html(data);
+			},"html");
 }
 
 function sortGoTo(selectedIndex) {
 	if (selectedIndex != 0 && selectedIndex != 1) {
 		var sort = document.publicationsForm.sortBy[selectedIndex].value;
-		ajaxEngine.sendRequest('refreshPubList','ElementId=pubList',"ComponentId=<%=componentId%>","Index=0","Sort="+sort);
+		var ieFix = new Date().getTime();
+		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:0,Sort:sort,ComponentId:'<%=componentId%>',IEFix:ieFix}, 
+			function(data){
+				$('#pubList').html(data);
+			},"html");
 		return;
 	}
 }
 
 function init()
 {
-	ajaxEngine.registerRequest('refreshPubList', '<%=m_context%>/RAjaxPublicationsListServlet/dummy');
-	ajaxEngine.registerAjaxElement('pubList');
-	ajaxEngine.sendRequest('refreshPubList','ElementId=pubList',"ComponentId=<%=componentId%>");
+	var toValidate = "0";
+	<% if ("KmaxViewToValidate".equals(action)) { %>
+		toValidate = "1";
+	<% } %>
+	var ieFix = new Date().getTime();
+	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:0,ComponentId:'<%=componentId%>',ToValidate:toValidate,IEFix:ieFix}, 
+			function(data){
+				$('#pubList').html(data);
+			},"html");
 }
 
 function exportComponent()
@@ -228,7 +226,7 @@ if (action.equals("KmaxView")) {
 		
 		if (profile.equals("admin") || profile.equals("publisher")) {
 	    	operationPane.addLine();
-	        operationPane.addOperation(pubToValidateSrc, kmeliaScc.getString("ToValidate"), "ViewPublicationsToValidate");
+	        operationPane.addOperation(pubToValidateSrc, kmeliaScc.getString("ToValidate"), "javascript:onClick=viewToValidate()");
 	    }
 
 	    if (profile.equals("admin") && "yes".equals(settings.getString("kmax.exportComponentAllowed")) && kmeliaScc.isExportComponentAllowed())
@@ -260,8 +258,7 @@ if (action.equals("KmaxView")) {
 
     browseBar.setI18N("KmaxSearchResult", translation);
 
-    Collection publications = kmeliaScc.getSessionPublicationsList();
-	ArrayList combination = kmeliaScc.getSessionCombination();
+	List combination = kmeliaScc.getSessionCombination();
 	String timeCriteria = kmeliaScc.getSessionTimeCriteria();
 		  
     //Display operations by profile
@@ -316,12 +313,17 @@ if (action.equals("KmaxView")) {
       out.println(frame.printAfter());
       out.println(window.printAfter());
 
-} else if (action.equals("KmaxViewUnbalanced")) {
+} else if ("KmaxViewUnbalanced".equals(action) || "KmaxViewBasket".equals(action) || "KmaxViewToValidate".equals(action)) {
 	  
-	browseBar.setI18N("KmaxViewUnbalanced", translation);
-
-	Collection publications = kmeliaScc.getSessionPublicationsList();
-	ArrayList combination = new ArrayList();
+  	if ("KmaxViewUnbalanced".equals(action)) {
+  		browseBar.setExtraInformation(kmeliaScc.getString("PubDeclassified"));
+  	} else if ("KmaxViewBasket".equals(action)) {
+  	  	browseBar.setExtraInformation(kmeliaScc.getString("PubBasket"));
+  	} else {
+  	  	browseBar.setExtraInformation(kmeliaScc.getString("ToValidate"));
+  	}
+  	  
+	browseBar.setI18N(action, translation);
 
 	Frame frame = gef.getFrame();
 	out.println(window.printBefore());
@@ -340,19 +342,19 @@ if (action.equals("KmaxView")) {
 }
 %>
 <form name="managerForm" action="KmaxAxisManager" method="Post">
-	<input type="hidden" name="AxisId">
-	<input type="hidden" name="AxisName">
-	<input type="hidden" name="AxisDescription">
-	<input type="hidden" name="ComponentId">
-	<input type="hidden" name="ComponentName">
-	<input type="hidden" name="ComponentDescription">
-	<input type="hidden" name="SearchCombination">
-	<input type="hidden" name="TimeCriteria">
-	<input type="hidden" name="Id">
+	<input type="hidden" name="AxisId"/>
+	<input type="hidden" name="AxisName"/>
+	<input type="hidden" name="AxisDescription"/>
+	<input type="hidden" name="ComponentId"/>
+	<input type="hidden" name="ComponentName"/>
+	<input type="hidden" name="ComponentDescription"/>
+	<input type="hidden" name="SearchCombination"/>
+	<input type="hidden" name="TimeCriteria"/>
+	<input type="hidden" name="Id"/>
 </form>
 
 <FORM NAME="pubForm" METHOD="POST">
-	<input type="hidden" name="PubId">
+	<input type="hidden" name="PubId"/>
 </FORM>
 
 </BODY>
