@@ -64,7 +64,7 @@
 			description = event.getWysiwyg();
 		}
 		else if (StringUtil.isDefined(event.getDescription())) {
-			description = Encode.javaStringToHtmlParagraphe(event.getDescription());
+			description = EncodeHelper.javaStringToHtmlParagraphe(event.getDescription());
 		}
 	} catch(AlmanachPrivateException ace){
 		request.setAttribute("error", ace);
@@ -133,7 +133,7 @@ function goToNotify(url)
 <table CELLPADDING=5 width="100%">
 		<tr> 
       <td nowrap class="txtlibform" width="20%"><%=resources.getString("GML.name")%> :</td>
-      <td><%=Encode.javaStringToHtmlString(event.getTitle())%></td>
+      <td><%=EncodeHelper.javaStringToHtmlString(event.getTitle())%></td>
     </tr>
     <tr> 
       <td nowrap class="txtlibform" valign="top"><%=resources.getString("GML.description")%> :</td>
@@ -144,7 +144,7 @@ function goToNotify(url)
       <td><%=resources.getOutputDate(dateDebutIteration)%>
 	  <%if (event.getStartHour() != null && event.getStartHour().length() != 0) {%>
 	  	<%=almanach.getString("ToHour")%> 
-		<%=Encode.javaStringToHtmlString(event.getStartHour())%>
+		<%=EncodeHelper.javaStringToHtmlString(event.getStartHour())%>
 	  <%}%>
 	  </td>
     </tr>
@@ -153,13 +153,13 @@ function goToNotify(url)
       <td><%=resources.getOutputDate(dateFinIteration)%>
 	  <%if (event.getEndHour() != null && event.getEndHour().length() != 0) {%>
 		   	<%=almanach.getString("ToHour")%> 
-			<%=Encode.javaStringToHtmlString(event.getEndHour())%>
+			<%=EncodeHelper.javaStringToHtmlString(event.getEndHour())%>
 		  <%}%>
 	  </td>
     </tr>   
     <tr> 
     	<td nowrap class="txtlibform"><%=almanach.getString("lieuEvenement")%> :</td>
-      	<td><%=Encode.javaStringToHtmlString(event.getPlace())%></td>
+      	<td><%=EncodeHelper.javaStringToHtmlString(event.getPlace())%></td>
     </tr>
     <tr> 
     	<td nowrap class="txtlibform"><%=almanach.getString("urlEvenement")%> :</td>
@@ -169,7 +169,7 @@ function goToNotify(url)
     			eventURL = "http://"+eventURL;
     		%>
     		<td>
-    		<a href="<%=Encode.javaStringToHtmlString(eventURL)%>" target="_blank"><%=Encode.javaStringToHtmlString(event.getEventUrl())%></a>
+    		<a href="<%=EncodeHelper.javaStringToHtmlString(eventURL)%>" target="_blank"><%=EncodeHelper.javaStringToHtmlString(event.getEventUrl())%></a>
 			</td>
 		<%}%>
     </tr>

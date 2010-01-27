@@ -165,14 +165,14 @@ out.println(graphicFactory.getLookStyleSheet());
 					<%}%>
 					<td width="61%"><span class="txtnote">
 					<%
-					String title = Encode.javaStringToHtmlString(event.getTitle());
+					String title = EncodeHelper.javaStringToHtmlString(event.getTitle());
 					String description = null;
 					
 					if (StringUtil.isDefined(event.getWysiwyg())) {
 						description = event.getWysiwyg();
 					}
 				    else if (StringUtil.isDefined(event.getDescription())) {
-		      			 description = Encode.javaStringToHtmlParagraphe(event.getDescription());
+		      			 description = EncodeHelper.javaStringToHtmlParagraphe(event.getDescription());
 					}
 					
 					if (almanach.isAgregationUsed()) 

@@ -48,7 +48,7 @@
 		description = event.getWysiwyg();
 	}
 	else if (StringUtil.isDefined(event.getDescription())) {
-		description = Encode.javaStringToHtmlParagraphe(event.getDescription());
+		description = EncodeHelper.javaStringToHtmlParagraphe(event.getDescription());
 	}
 
 	String day = "";
@@ -152,7 +152,7 @@ function editDate(jsFunction)
 
 function eventDeleteConfirm(t, id)
 {
-    if (window.confirm("<%=Encode.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> '" + t + "' ?")){
+    if (window.confirm("<%=EncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> '" + t + "' ?")){
     	<% if (event.getPeriodicity() != null ) { %>
     		displayBoxOnDelete();
     	<% } else { %>
@@ -353,7 +353,7 @@ function displayBoxOnUpdate()
 	out.print("var confirmBox = '");
 	out.print("<table><tr><td align=\"center\"><br/>"+resources.getString("eventsToUpdate"));
 	out.print("<br/><br/>");
-	out.print(Encode.javaStringToJsString("<center>"+buttonPane.print()+"</center>"));
+	out.print(EncodeHelper.javaStringToJsString("<center>"+buttonPane.print()+"</center>"));
 	out.println("</td></tr></table>';");
 %>
 	
@@ -371,7 +371,7 @@ function displayBoxOnDelete()
 	out.print("var confirmBox = '");
 	out.print("<table><tr><td align=\"center\"><br/>"+resources.getString("eventsToDelete"));
 	out.print("<br/><br/>");
-	out.print(Encode.javaStringToJsString("<center>"+buttonPane.print()+"</center>"));
+	out.print(EncodeHelper.javaStringToJsString("<center>"+buttonPane.print()+"</center>"));
 	out.println("</td></tr></table>';");
 %>
 	displayStaticMessage(confirmBox, false);
@@ -384,14 +384,14 @@ function sendEventData() {
     		var unity = document.eventForm.Unity.value;
     		if (unity != '0')
     		{
-	    		var oldTitle = '<%=Encode.javaStringToJsString(event.getTitle())%>';
+	    		var oldTitle = '<%=EncodeHelper.javaStringToJsString(event.getTitle())%>';
 	    		var title = stripInitialWhitespace(document.eventForm.Title.value);
 	    		if (oldTitle != title)
 	    		{
 	    			isChanged = 1;
 	    		}
 
-	    		var oldDesc = '<%=Encode.javaStringToJsString(description)%>';				
+	    		var oldDesc = '<%=EncodeHelper.javaStringToJsString(description)%>';				
 				var desc = oEditor.GetXHTML(true);
 	    		if (oldDesc != desc)
 	    		{
@@ -426,14 +426,14 @@ function sendEventData() {
 	    			isChanged = 1;
 	    		}
 	    		
-	    		var oldPlace = '<%=event.getPlace()%>';
+	    		var oldPlace = '<%=EncodeHelper.javaStringToJsString(event.getPlace())%>';
 	    		var place = stripInitialWhitespace(document.eventForm.Place.value);
 	    		if (oldPlace != place)
 	    		{
 	    			isChanged = 1;
 	    		}
 	    		
-	    		var oldEventURL = '<%=event.getEventUrl()%>';
+	    		var oldEventURL = '<%=EncodeHelper.javaStringToJsString(event.getEventUrl())%>';
 	    		var eventURL = stripInitialWhitespace(document.eventForm.EventUrl.value);
 	    		if (oldEventURL != eventURL)
 	    		{
@@ -585,7 +585,7 @@ function sendEvent(mainAction, action) {
 	browseBar.setComponentName(componentLabel, "almanach.jsp");
 	browseBar.setExtraInformation(title);
 
-    operationPane.addOperation(m_context + "/util/icons/almanach_to_del.gif", almanach.getString("supprimerEvenement"), "javascript:onClick=eventDeleteConfirm('" + Encode.javaStringToJsString(title) + "','" + id +"')");
+    operationPane.addOperation(m_context + "/util/icons/almanach_to_del.gif", almanach.getString("supprimerEvenement"), "javascript:onClick=eventDeleteConfirm('" + EncodeHelper.javaStringToJsString(title) + "','" + id +"')");
     out.println(window.printBefore());
 
 	tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+dateDebutIterationString, false);
@@ -602,10 +602,10 @@ function sendEvent(mainAction, action) {
 <table CELLPADDING="5" WIDTH="100%">
 <FORM name="eventForm" action="ReallyUpdateEvent" method="POST">
 	    
-	  <tr align=center> 
+	  <tr> 
         <td nowrap valign="baseline" class="txtlibform"><%=resources.getString("GML.name")%> :</td>
         <td align=left><input type="text" name="Title" size="60" maxlength="<%=DBUtil.TextFieldLength%>"		
-					<%if (event.getTitle()!=null) out.print("value=\""+ Encode.javaStringToHtmlString(event.getTitle()) + "\"");%>>
+					<%if (event.getTitle()!=null) out.print("value=\""+ EncodeHelper.javaStringToHtmlString(event.getTitle()) + "\"");%>>
             &nbsp;<img src="icons/cube-rouge.gif" width="5" height="5">
         </td>
 	    </tr>
@@ -645,13 +645,13 @@ function sendEvent(mainAction, action) {
 		<tr>
         	<td nowrap class="txtlibform"><%=almanach.getString("lieuEvenement")%> :</td>
         	<td align=left><input type="text" name="Place" size="60" maxlength="<%=DBUtil.TextFieldLength%>" 
-						<%if (event.getPlace()!=null) out.print("value=\""+ Encode.javaStringToHtmlString(event.getPlace()) + "\"");%>>
+						<%if (event.getPlace()!=null) out.print("value=\""+ EncodeHelper.javaStringToHtmlString(event.getPlace()) + "\"");%>>
 					</td>
         </tr>
         <tr> 
         	<td nowrap class="txtlibform"><%=almanach.getString("urlEvenement")%> :</td>
         	<td align=left><input type="text" name="EventUrl" size="60" maxlength="<%=DBUtil.TextFieldLength%>" 
-			<%if (event.getEventUrl()!=null) out.print("value=\""+ Encode.javaStringToHtmlString(event.getEventUrl()) + "\"");%>></td>
+			<%if (event.getEventUrl()!=null) out.print("value=\""+ EncodeHelper.javaStringToHtmlString(event.getEventUrl()) + "\"");%>></td>
         </tr>                    
         <tr>
           <td nowrap class="txtlibform"><%=resources.getString("GML.priority")%> :</td>

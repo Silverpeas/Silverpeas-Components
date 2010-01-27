@@ -44,6 +44,7 @@
 <%@ page import="com.stratelia.webactiv.almanach.model.*"%>
 <%@ page import="com.stratelia.webactiv.util.*"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>
 <%@ page import="com.stratelia.webactiv.util.exception.*"%>
