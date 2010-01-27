@@ -568,6 +568,10 @@ public class ProjectManagerSessionController extends
   public TaskDetail getCurrentProject() {
     return currentProject;
   }
+  
+  public void setCurrentProject(TaskDetail currentProject) {
+    this.currentProject = currentProject;
+  }
 
   public Date getEndDateOfCurrentProjet() throws RemoteException {
     TaskDetail mostDistantTask = getProjectManagerBm().getMostDistantTask(

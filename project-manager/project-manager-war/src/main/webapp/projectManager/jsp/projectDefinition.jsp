@@ -149,7 +149,7 @@ out.println(window.printBefore());
 if (project != null)
 {
 	TabbedPane tabbedPane = gef.getTabbedPane();
-	tabbedPane.addTab(resource.getString("projectManager.Projet"), "#", true);
+	tabbedPane.addTab(resource.getString("projectManager.Projet"), "ToProject", true);
 	tabbedPane.addTab(resource.getString("projectManager.Taches"), "Main", false);
 	tabbedPane.addTab(resource.getString("GML.attachments"), "ToAttachments", false);
 	tabbedPane.addTab(resource.getString("projectManager.Commentaires"), "ToComments", false);

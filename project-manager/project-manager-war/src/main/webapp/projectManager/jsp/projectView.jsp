@@ -54,7 +54,7 @@ browseBar.setExtraInformation(resource.getString("projectManager.DefinirProjet")
 out.println(window.printBefore());
 
 TabbedPane tabbedPane = gef.getTabbedPane();
-tabbedPane.addTab(resource.getString("projectManager.Projet"), "#", true);
+tabbedPane.addTab(resource.getString("projectManager.Projet"), "ToProject", true);
 tabbedPane.addTab(resource.getString("projectManager.Taches"), "Main", false);
 tabbedPane.addTab(resource.getString("projectManager.Commentaires"), "ToComments", false);
 tabbedPane.addTab(resource.getString("projectManager.Gantt"), "ToGantt", false);

@@ -119,16 +119,6 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
         TaskDetail project = projectManagerSC.getCurrentProject();
         project.setDateFin(projectManagerSC.getEndDateOfCurrentProjet());
 
-        // Verify if the project Manager has changed
-        ArrayList profileNames = new ArrayList();
-        profileNames.add("admin");
-        String[] projectManagerIds = projectManagerSC
-            .getOrganizationController().getUsersIdsByRoleNames(
-                projectManagerSC.getComponentId(), profileNames);
-        if (projectManagerIds.length > 0) {
-          project.setOrganisateurId(projectManagerIds[0]);
-          projectManagerSC.updateCurrentProject();
-        }
         projectManagerSC.enrichirTask(project);
         request.setAttribute("Project", project);
 
@@ -690,6 +680,8 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
     project.setDescription(request.getParameter("Description"));
     project.setDateDebut(projectManagerSC.uiDate2Date(request
         .getParameter("DateDebut")));
+    
+    projectManagerSC.setCurrentProject(project);
 
     projectManagerSC.updateCurrentProject();
   }
