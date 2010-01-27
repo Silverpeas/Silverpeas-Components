@@ -177,11 +177,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           destination = getDestination("GoToCurrentTopic", kmelia, request);
       }
 
-      else if (function.equals("ViewPublicationsToValidate")) {
-        String flag = kmelia.getProfile();
-        destination = rootDestination + "publicationsToValidate.jsp?Profile=" + flag;
-      }
-
       else if (function.equals("GoToDirectory")) {
         String topicId = request.getParameter("Id");
 

@@ -277,7 +277,7 @@ if (action.equals("KmaxView")) {
 			
 			if (profile.equals("admin") || profile.equals("publisher")) {
 		    	operationPane.addLine();
-		        operationPane.addOperation(pubToValidateSrc, kmeliaScc.getString("ToValidate"), "ViewPublicationsToValidate");
+		        operationPane.addOperation(pubToValidateSrc, kmeliaScc.getString("ToValidate"), "javascript:onClick=viewToValidate()");
 		    }
 			if (profile.equals("admin") && "yes".equals(settings.getString("kmax.exportComponentAllowed")) && kmeliaScc.isExportComponentAllowed())
 			{
