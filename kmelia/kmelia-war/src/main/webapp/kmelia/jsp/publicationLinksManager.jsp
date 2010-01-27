@@ -71,9 +71,7 @@ topicSrc = m_context + "/util/icons/folder.gif";
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<script type="text/javascript" src="<%=m_context%>/util/ajax/prototype.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/ajax/rico.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/ajax/ricoAjax.js"></script>
+<script type="text/javascript" src="<%=m_context %>/attachment/jsp/jquery-1.3.2.min.js"></script>
 <Script language="JavaScript">
 function topicGoTo(id) {
     document.pubChooseLinkForm.Action.value = "Search";
@@ -116,8 +114,12 @@ function doPagination(index)
 {
 	var  selectItems 	= getSelectedOjects();
 	var  notSelectItems = getNotSelectedOjects();
-	
-	ajaxEngine.sendRequest('refreshPubList','ElementId=pubList',"ComponentId=<%=componentId%>",'ToLink=1',"Index="+index,"SelectedIds="+selectItems,"NotSelectedIds="+notSelectItems);
+
+	var ieFix = new Date().getTime();
+	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',ToLink:1,SelectedIds:selectItems,NotSelectedIds:notSelectItems,IEFix:ieFix}, 
+			function(data){
+				$('#pubList').html(data);
+			},"html");
 }
 
 function setPubsAsLinks(nb) {
@@ -138,11 +140,14 @@ function closeAndReturn(pubId) {
 
 function init()
 {
-	ajaxEngine.registerRequest('refreshPubList', '<%=m_context%>/RAjaxPublicationsListServlet/dummy');
+	var  selectItems 	= "";
+	var  notSelectItems = "";
 	
-	ajaxEngine.registerAjaxElement('pubList');
-	
-	ajaxEngine.sendRequest('refreshPubList','ElementId=pubList',"ComponentId=<%=componentId%>",'ToLink=1','SelectedIds=','NotSelectedIds=');
+	var ieFix = new Date().getTime();
+	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {ComponentId:'<%=componentId%>',ToLink:1,SelectedIds:selectItems,NotSelectedIds:notSelectItems,IEFix:ieFix}, 
+			function(data){
+				$('#pubList').html(data);
+			},"html");
 }
 </script>
 </HEAD>
@@ -192,16 +197,16 @@ function init()
 		  if (!reference.equals("")){
 		  	out.println(reference);
 		  }
-		  out.println("<div id=\"pubList\"/>");
+		  out.println("<br/><div id=\"pubList\"/>");
 
     out.println(frame.printMiddle());
 
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(closeButton);
 	
-	String bodyPart ="<br><center>";
+	String bodyPart ="<br/><center>";
 	bodyPart += buttonPane.print();
-	bodyPart +="</center><br>";
+	bodyPart +="</center><br/>";
 
 	out.println(bodyPart);
  
@@ -209,13 +214,13 @@ function init()
     out.println(window.printAfter()); 
 %>
 <FORM Name="pubChooseLinkForm" ACTION="publicationLinksManager.jsp" METHOD="POST">
-      <input type="hidden" name="Action">
-      <input type="hidden" name="TopicId" value="<%=currentTopicToLink.getNodeDetail().getNodePK().getId()%>">
-      <input type="hidden" name="PubId" value="<%=pubId%>">
-      <input type="hidden" name="SelectedPubIds">
-      <input type="hidden" name="Index">
-      <input type="hidden" name="SelectedIds">
-      <input type="hidden" name="NotSelectedIds">
+      <input type="hidden" name="Action"/>
+      <input type="hidden" name="TopicId" value="<%=currentTopicToLink.getNodeDetail().getNodePK().getId()%>"/>
+      <input type="hidden" name="PubId" value="<%=pubId%>"/>
+      <input type="hidden" name="SelectedPubIds"/>
+      <input type="hidden" name="Index"/>
+      <input type="hidden" name="SelectedIds"/>
+      <input type="hidden" name="NotSelectedIds"/>
 </FORM>
 </BODY>
 </HTML>

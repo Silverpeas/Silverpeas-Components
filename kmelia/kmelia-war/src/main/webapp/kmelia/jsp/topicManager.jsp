@@ -261,6 +261,7 @@ function updateChain()
 }
 
 function topicAdd(topicId, isLinked) {
+	alert("topicAdd : topicId = "+topicId);
 	if (!topicWindow.closed && topicWindow.name== "topicAddWindow")
 		topicWindow.close();
     var url = "ToAddTopic?Id="+topicId+"&Translation=<%=translation%>";
@@ -1031,6 +1032,7 @@ function loadNodeData(node, fnLoadComplete)  {
 	*/
 	function onTriggerContextMenu(p_oEvent) 
 	{
+    	//alert("onTriggerContextMenu : enter");
 	    var oTarget = this.contextEventTarget;
 	
 	    /*
@@ -1046,67 +1048,83 @@ function loadNodeData(node, fnLoadComplete)  {
 	    //get profile to display more or less context actions
 		$.getJSON("<%=m_context%>/KmeliaJSONServlet?Id="+oCurrentTextNode.labelElId+"&Action=GetTopic&ComponentId=<%=componentId%>&Language=<%=language%>&IEFix="+new Date().getTime(),
 				function(data){
-					var profile = data[0].role;
-					var parentProfile =  oCurrentTextNode.parent.data.role;
-					if (profile == "user")
+					try
 					{
-						if (parentProfile != "admin")
+						var profile = data[0].role;
+						var parentProfile =  oCurrentTextNode.parent.data.role;
+						if (profile == "user")
 						{
-							//do not show the menu
-							oContextMenu.cfg.setProperty("visible", false);
-						}
-						else
-						{
-							oContextMenu.getItem(0).cfg.setProperty("disabled", true);
-							oContextMenu.getItem(1).cfg.setProperty("disabled", false);
-							oContextMenu.getItem(2).cfg.setProperty("disabled", false);
-							oContextMenu.getItem(3).cfg.setProperty("disabled", true);
-							
-							oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
-							oContextMenu.getItem(1,1).cfg.setProperty("disabled", true);
-							oContextMenu.getItem(2,1).cfg.setProperty("disabled", true);
-						}
-					}
-					else
-					{
-						var isTopicManagementDelegated = <%=kmeliaScc.isTopicManagementDelegated()%>;
-						var userId = "<%=kmeliaScc.getUserId()%>";
-						var creatorId = data[0].creatorId;
-						if (isTopicManagementDelegated && profile != "admin")
-						{
-							if (creatorId != userId)
+							if (parentProfile != "admin")
 							{
 								//do not show the menu
 								oContextMenu.cfg.setProperty("visible", false);
 							}
-							else if (creatorId == userId)
+							else
 							{
+								oContextMenu.getItem(0).cfg.setProperty("disabled", true);
+								oContextMenu.getItem(1).cfg.setProperty("disabled", false);
+								oContextMenu.getItem(2).cfg.setProperty("disabled", false);
+								oContextMenu.getItem(3).cfg.setProperty("disabled", true);
+								
 								oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
 								oContextMenu.getItem(1,1).cfg.setProperty("disabled", true);
 								oContextMenu.getItem(2,1).cfg.setProperty("disabled", true);
-
-								oContextMenu.getItem(0,2).cfg.setProperty("disabled", true);
-								oContextMenu.getItem(1,2).cfg.setProperty("disabled", true);
 							}
 						}
 						else
 						{
-							if (profile != "admin")
+							var isTopicManagementDelegated = <%=kmeliaScc.isTopicManagementDelegated()%>;
+							var userId = "<%=kmeliaScc.getUserId()%>";
+							var creatorId = data[0].creatorId;
+							if (isTopicManagementDelegated && profile != "admin")
 							{
-								//do not show the menu
-								oContextMenu.cfg.setProperty("visible", false);
+								if (creatorId != userId)
+								{
+									//do not show the menu
+									oContextMenu.cfg.setProperty("visible", false);
+								}
+								else if (creatorId == userId)
+								{
+									oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
+									oContextMenu.getItem(1,1).cfg.setProperty("disabled", true);
+									oContextMenu.getItem(2,1).cfg.setProperty("disabled", true);
+	
+									oContextMenu.getItem(0,2).cfg.setProperty("disabled", true);
+									oContextMenu.getItem(1,2).cfg.setProperty("disabled", true);
+								}
+							}
+							else
+							{
+								if (profile != "admin")
+								{
+									//do not show the menu
+									oContextMenu.cfg.setProperty("visible", false);
+								}
 							}
 						}
-					}
-					if (data[0].status == "Invisible")
-					{
-						oContextMenu.getItem(1,2).cfg.setProperty("text", "<%=kmeliaScc.getString("TopicInvisible2Visible")%>");
-					}
-					else
-					{
-						oContextMenu.getItem(1,2).cfg.setProperty("text", "<%=kmeliaScc.getString("TopicVisible2Invisible")%>");
+	
+						<% if (kmeliaScc.isOrientedWebContent()) { %>
+							if (data[0].status == "Invisible")
+							{
+								oContextMenu.getItem(1,2).cfg.setProperty("text", "<%=kmeliaScc.getString("TopicInvisible2Visible")%>");
+							}
+							else
+							{
+								oContextMenu.getItem(1,2).cfg.setProperty("text", "<%=kmeliaScc.getString("TopicVisible2Invisible")%>");
+							}
+						<% } %>
+					} catch (e) {
+						//do nothing
+						//alert(e);
 					}
 				});
+	}
+
+	function onTriggerRootContextMenu(p_oEvent) 
+	{
+	    <% if (!"admin".equals(kmeliaScc.getUserTopicProfile("0"))) { %>
+	    	this.cancel();
+	    <% } %>
 	}
 
 	/*
@@ -1175,8 +1193,8 @@ function loadNodeData(node, fnLoadComplete)  {
 	var oRootContextMenu = new YAHOO.widget.ContextMenu(
 		    "rootcontextmenu",
 		    {
-		        trigger: "ygtvtableel1",
-				hideDelay: 100,
+		    	trigger: "ygtvtableel1",
+			    hideDelay: 100,
 	        	effect: { 
                 	effect: YAHOO.widget.ContainerEffect.FADE,
                 	duration: 0.30
@@ -1198,15 +1216,15 @@ function loadNodeData(node, fnLoadComplete)  {
 		    	] 
 		    }
 		);
-
+	
 	/*
 	     Subscribe to the "contextmenu" event for the element(s)
 	     specified as the "trigger" for the ContextMenu instance.
 	*/
 	oBasketContextMenu.subscribe("triggerContextMenu", onTriggerContextMenu);
 	oValidateContextMenu.subscribe("triggerContextMenu", onTriggerContextMenu);
-	oRootContextMenu.subscribe("triggerContextMenu", onTriggerContextMenu);
 	oContextMenu.subscribe("triggerContextMenu", onTriggerContextMenu);
+	oRootContextMenu.subscribe("triggerContextMenu", onTriggerRootContextMenu);
 
 	YAHOO.util.Event.addListener("mytreecontextmenu", "mouseout", oContextMenu.hide);
 
@@ -1481,9 +1499,6 @@ function closeMessage()
 {
 	messageObj.close();	
 }
-
-//Add an onDOMReady handler to build the tree when the document is ready
-Event.onDOMReady(initTree('<%=id%>'));
 </script>
 <script>
 (function() {
@@ -1492,7 +1507,13 @@ Event.onDOMReady(initTree('<%=id%>'));
         col1 = null
         col2 = null;
 
+  	//Add an onDOMReady handler to build the tree and the resize bar when the document is ready
     Event.onDOMReady(function() {
+
+        //build the tree
+    	initTree('<%=id%>');
+
+    	//build resize bar
         //var size = parseInt(Dom.getStyle('pg', 'width'), 10);
         var size = getWidth() - 57;
         col1 = Dom.get('treeDiv1');

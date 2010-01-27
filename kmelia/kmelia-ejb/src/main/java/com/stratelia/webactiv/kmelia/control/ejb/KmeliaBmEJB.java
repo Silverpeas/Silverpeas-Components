@@ -1251,7 +1251,7 @@ public class KmeliaBmEJB implements SessionBean {
       // "root.MSG_GEN_PARAM_VALUE", "nodePath = "+nodePath);
       if (isNodeAllowed(nodePath, allowedNodes)
           && nodePath.startsWith(node.getFullPath())
-          && !getLastNodeId(nodePath).equals("1")) {
+      /* && !getLastNodeId(nodePath).equals("1") */) {
         nb = (Integer) distribution.get(nodePath);
         if (nb != null) {
           result += nb.intValue();

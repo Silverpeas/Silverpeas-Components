@@ -37,6 +37,7 @@ String		rightsDependsOn = (String) request.getAttribute("RightsDependsOn");
 Boolean		popup			= (Boolean) request.getAttribute("PopupDisplay");
 Boolean		isLinked		= (Boolean) request.getAttribute("IsLink");
 boolean 	notificationAllowed = ((Boolean) request.getAttribute("NotificationAllowed")).booleanValue();
+NodeDetail  parent			= (NodeDetail) request.getAttribute("Parent");
 
 boolean useRightsOnTopics = (profiles != null);
 
@@ -160,12 +161,11 @@ function isCorrectForm() {
 <TABLE CELLPADDING="5" WIDTH="100%">
   	<TR><TD class="txtlibform"><%=resources.getString("TopicPath")%> :</TD>
       <TD valign="top"><%=path%></TD>
-
+    </TR>
 	<%=I18NHelper.getFormLine(resources, null, kmeliaScc.getLanguage())%>
-
   	<TR>
   		<TD class="txtlibform"><%=resources.getString("TopicTitle")%> :</TD>
-      	<TD><input type="text" name="Name" size="60" maxlength="60"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/></TD>
+      	<TD><input type="text" name="Name" size="60" maxlength="60"/><input type="hidden" name="ParentId" value="<%=parent.getId()%>"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/></TD>
     </TR>
     <% if (isLinked != null && isLinked.booleanValue()) { %>
     	<TR>

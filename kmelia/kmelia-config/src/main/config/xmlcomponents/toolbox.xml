@@ -196,19 +196,6 @@
 			<ParameterHelpEn></ParameterHelpEn>
 	    </ParameterHelp>
     </Parameter>
-    <Parameter>
-        <ParameterName>sortedTopics</ParameterName>
-        <ParameterLabel>Thèmes ordonnés</ParameterLabel>
-        <ParameterValue>yes</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterUpdatable>always</ParameterUpdatable>
-	    <ParameterOrder>14</ParameterOrder>
-	    <ParameterHelp>
-			<ParameterHelpFr>Ce paramètre permet d'ordonner les thèmes</ParameterHelpFr>
-			<ParameterHelpEn></ParameterHelpEn>
-	    </ParameterHelp>
-    </Parameter>
      <Parameter>
         <ParameterName>delegatedTopicManagement</ParameterName>
         <ParameterLabel>Gestion déléguée des thèmes</ParameterLabel>

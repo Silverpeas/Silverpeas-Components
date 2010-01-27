@@ -371,6 +371,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         request.setAttribute("PopupDisplay", new Boolean(true));
         request
             .setAttribute("NotificationAllowed", Boolean.valueOf(kmelia.isNotificationAllowed()));
+        request.setAttribute("Parent", kmelia.getNodeHeader(topicId));
 
         if (kmelia.isRightsOnTopicsEnabled()) {
           request.setAttribute("PopupDisplay", new Boolean(false));
@@ -423,6 +424,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           alertType = "None";
         String rightsUsed = request.getParameter("RightsUsed");
         String path = request.getParameter("Path");
+        String parentId = request.getParameter("ParentId");
 
         NodeDetail topic = new NodeDetail("-1", name, description, null, null, null, "0", "X");
         I18NHelper.setI18NInfo(topic, request);
@@ -443,7 +445,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           topic.setRightsDependsOn(rightsDependsOn);
         }
 
-        NodePK nodePK = kmelia.addSubTopic(topic, alertType);
+        NodePK nodePK = kmelia.addSubTopic(topic, alertType, parentId);
 
         if (kmelia.isRightsOnTopicsEnabled()) {
           if (rightsDependsOn == 0) {

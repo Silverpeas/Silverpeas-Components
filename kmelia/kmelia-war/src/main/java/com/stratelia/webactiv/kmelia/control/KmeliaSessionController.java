@@ -880,12 +880,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return getKmeliaBm().getSubTopicDetail(getNodePK(subTopicId));
   }
 
-  public synchronized NodePK addSubTopic(NodeDetail nd, String alertType) throws RemoteException {
+  public synchronized NodePK addSubTopic(NodeDetail nd, String alertType, String parentId)
+      throws RemoteException {
     nd.getNodePK().setSpace(getSpaceId());
     nd.getNodePK().setComponentName(getComponentId());
     nd.setCreatorId(getUserId());
     // nd.setLanguage(getLanguage());
-    return getKmeliaBm().addSubTopic(getSessionTopic().getNodePK(), nd, alertType);
+    return getKmeliaBm().addSubTopic(getNodePK(parentId), nd, alertType);
   }
 
   public synchronized void deleteTopic(String topicId) throws RemoteException {
