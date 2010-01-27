@@ -1,0 +1,3 @@
+ALTER TABLE SC_Almanach_Event 
+ALTER COLUMN eventName DROP NOT NULL
+;
