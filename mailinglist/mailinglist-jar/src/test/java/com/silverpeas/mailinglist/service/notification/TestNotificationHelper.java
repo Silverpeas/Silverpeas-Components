@@ -75,6 +75,7 @@ public class TestNotificationHelper extends
     this.notificationHelper = notificationHelper;
   }
 
+  @Override
   protected String[] getConfigLocations() {
     return new String[] { "spring-checker.xml", "spring-notification.xml",
         "spring-hibernate.xml", "spring-datasource.xml" };

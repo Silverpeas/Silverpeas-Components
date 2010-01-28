@@ -62,6 +62,7 @@ public class MailSender implements Runnable {
     this.externalUsers = new ArrayList<ExternalUser>(externalUsers);
   }
 
+  @Override
   public void run() {
     synchronized (this) {
       try {
@@ -79,7 +80,11 @@ public class MailSender implements Runnable {
         "mailinglist.notification.external.sending", mail.getSubject());
     Transport transport = null;
     try {
-      transport = session.getTransport("smtp");
+      if(config.isSecure()) {
+        transport = session.getTransport("smtps");
+      }else {
+        transport = session.getTransport("smtp");
+      }
       if (config.isAuthenticate()) {
         transport.connect(config.getServer(), config.getPort(), config
             .getUsername(), config.getPassword());

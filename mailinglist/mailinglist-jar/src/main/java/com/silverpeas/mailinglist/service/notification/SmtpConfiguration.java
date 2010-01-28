@@ -37,9 +37,12 @@ public class SmtpConfiguration {
 
   private String server;
 
+  private boolean secure;
+
   private int port;
 
   private boolean authenticate;
+
 
   public String getUsername() {
     return username;
@@ -79,5 +82,13 @@ public class SmtpConfiguration {
 
   public void setAuthenticate(boolean authenticate) {
     this.authenticate = authenticate;
+  }
+
+  public boolean isSecure() {
+    return secure;
+  }
+
+  public void setSecure(boolean secure) {
+    this.secure = secure;
   }
 }

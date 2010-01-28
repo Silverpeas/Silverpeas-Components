@@ -56,6 +56,7 @@
     <property name="username" value="${SMTPUser}" />
     <property name="password" value="${SMTPPwd}" />
     <property name="authenticate" value="${SMTPAuthentication}" />
+    <property name="secure" value="${SMTPSecure}" />
   </bean>
 
   <bean id="calendarBm" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
