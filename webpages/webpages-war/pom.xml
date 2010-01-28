@@ -4,21 +4,21 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>webpages</artifactId>
-    <version>1.0-RC1</version>
+    <version>1.0-RC2-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.webpages</groupId>
   <artifactId>webpages-war</artifactId>
   <packaging>war</packaging>
-  <version>1.0-RC1</version>
+  <version>1.0-RC2-SNAPSHOT</version>
   <name>webpages Webapp</name>
 
   <dependencies>
     <dependency>
       <groupId>com.silverpeas.components.webpages</groupId>
       <artifactId>webpages-jar</artifactId>
-      <version>1.0-RC1</version>
+      <version>1.0-RC2-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
