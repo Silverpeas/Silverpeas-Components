@@ -4,7 +4,7 @@
   <parent>    
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <relativePath>../parent/pom.xml</relativePath>
   </parent>
 
@@ -26,7 +26,7 @@
   <name>Components</name>
 
   <properties>
-    <core.version>1.0-SNAPSHOT</core.version>
+    <core.version>1.0-RC1</core.version>
   </properties>
   
   <build>
