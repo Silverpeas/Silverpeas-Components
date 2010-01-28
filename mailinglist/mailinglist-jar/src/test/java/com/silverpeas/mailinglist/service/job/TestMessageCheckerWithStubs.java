@@ -160,7 +160,7 @@ public class TestMessageCheckerWithStubs extends AbstractSingleSpringContextTest
     assertEquals(textEmailContent, message.getBody());
     assertEquals(textEmailContent.substring(0, 200), message.getSummary());
     assertEquals(sentDate1.getTime(), message.getSentDate().getTime());
-    assertEquals(92536, message.getAttachmentsSize());
+    assertTrue(message.getAttachmentsSize() > 0l);
     assertEquals(1, message.getAttachments().size());
     String path = MessageFormat.format(theSimpsonsAttachmentPath,
         new String[]{messageChecker.getMailProcessor().replaceSpecialChars(
