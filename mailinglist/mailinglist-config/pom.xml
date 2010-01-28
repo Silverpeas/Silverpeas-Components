@@ -4,14 +4,14 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>mailinglist</artifactId>
-    <version>1.0-RC1</version>
+    <version>1.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.mailinglist</groupId>
   <artifactId>mailinglist-config</artifactId>
   <packaging>pom</packaging>
-  <version>1.0-RC1</version>
+  <version>1.0-SNAPSHOT</version>
   <name>Configuration mailinglist</name>
 
   <build>
