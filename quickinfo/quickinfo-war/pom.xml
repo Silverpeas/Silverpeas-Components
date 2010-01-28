@@ -29,7 +29,7 @@
     <dependency>
       <groupId>com.silverpeas.components.quickinfo</groupId>
       <artifactId>quickinfo-jar</artifactId>
-      <version>${parent.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

@@ -11,7 +11,7 @@
   <groupId>com.silverpeas.components.forums</groupId>
   <artifactId>forums-war</artifactId>
   <packaging>war</packaging>
-  <version>${parent.version}</version>
+  <version>${project.parent.version}</version>
   <name>forums Webapp</name>
 
   <dependencies>
@@ -25,7 +25,7 @@
       <groupId>com.silverpeas.components.forums</groupId>
       <artifactId>forums-ejb</artifactId>
       <classifier>client</classifier>
-      <version>${parent.version}</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
