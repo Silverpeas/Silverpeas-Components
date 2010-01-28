@@ -4,14 +4,14 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>whitepages</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-RC1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.whitepages</groupId>
   <artifactId>whitepages-jar</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0-RC1</version>
   <name>Lib whitepages</name>
 	
   <dependencies>

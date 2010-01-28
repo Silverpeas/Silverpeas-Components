@@ -4,12 +4,12 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>components</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-RC1</version>
   </parent>
   
   <groupId>com.silverpeas.components</groupId>
   <artifactId>silvercrawler</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0-RC1</version>
   <packaging>pom</packaging>
   <name>silvercrawler Component</name>
   <modules>

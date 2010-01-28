@@ -4,14 +4,14 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>forums</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-RC1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.forums</groupId>
   <artifactId>forums-war</artifactId>
   <packaging>war</packaging>
-  <version>${project.parent.version}</version>
+  <version>1.0-RC1</version>
   <name>forums Webapp</name>
 
   <dependencies>
