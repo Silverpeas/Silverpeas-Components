@@ -366,8 +366,8 @@ public class FileImport {
                                                                    * date de création
                                                                    */,
         new Date()/* date de début de validité */, null/*
-                                                          * date de fin de validité
-                                                          */, kmeliaScc
+                                                        * date de fin de validité
+                                                        */, kmeliaScc
         .getUserDetail().getId()/* id user */, "1"/* importance */,
         null/* version de la publication */, keywords/* keywords */, content,
         null, author);

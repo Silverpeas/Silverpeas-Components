@@ -1476,7 +1476,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
           PublicationTemplateImpl pubTemplate =
               (PublicationTemplateImpl) PublicationTemplateManager
-                  .getPublicationTemplate(componentId + ":" + infoId);
+              .getPublicationTemplate(componentId + ":" + infoId);
 
           Form formView = pubTemplate.getViewForm();
 

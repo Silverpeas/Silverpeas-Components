@@ -71,7 +71,7 @@ public class JdbcFieldDisplayer {
     String password = null;
     String query = null;
     String valueFieldType = "1"; // valeurs possibles 1 = choix restreint à la liste ou 2 = saisie
-                                 // libre, par défaut 1
+    // libre, par défaut 1
     int size = 30;
     for (int i = 0; i < parameters.size(); i++) {
       FieldParameter param = parameters.get(i);
@@ -116,23 +116,23 @@ public class JdbcFieldDisplayer {
           GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
       int zindex =
           (fieldsContext.getLastFieldIndex() - new Integer(fieldsContext.getCurrentFieldIndex())
-              .intValue()) * 9000;
+          .intValue()) * 9000;
 
       html +=
           "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + m_context +
-              "/util/yui/fonts/fonts-min.css\" />\n";
+          "/util/yui/fonts/fonts-min.css\" />\n";
       html +=
           "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + m_context +
-              "/util/yui/autocomplete/assets/skins/sam/autocomplete.css\" />\n";
+          "/util/yui/autocomplete/assets/skins/sam/autocomplete.css\" />\n";
       html +=
           "<script type=\"text/javascript\" src=\"" + m_context +
-              "/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>\n";
+          "/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>\n";
       html +=
           "<script type=\"text/javascript\" src=\"" + m_context +
-              "/util/yui/animation/animation-min.js\"></script>\n";
+          "/util/yui/animation/animation-min.js\"></script>\n";
       html +=
           "<script type=\"text/javascript\" src=\"" + m_context +
-              "/util/yui/autocomplete/autocomplete-min.js\"></script>\n";
+          "/util/yui/autocomplete/autocomplete-min.js\"></script>\n";
       html += "<style type=\"text/css\">\n";
 
       html += "	#listAutocomplete" + fieldName + " {\n";
@@ -142,7 +142,7 @@ public class JdbcFieldDisplayer {
       html += "	#listAutocomplete" + fieldName + " {\n";
       html +=
           "		z-index:" + zindex +
-              "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n";
+          "; /* z-index needed on top instance for ie & sf absolute inside relative issue */\n";
       html += "	}\n";
       html += "	#" + fieldName + " {\n";
       html += "		_position:absolute; /* abs pos needed for ie quirks */\n";
@@ -152,7 +152,7 @@ public class JdbcFieldDisplayer {
       html += "<div id=\"listAutocomplete" + fieldName + "\">\n";
       html +=
           "<input id=\"" + fieldName + "\" size=\"" + size + "\" name=\"" + fieldName +
-              "\" type=\"text\"";
+          "\" type=\"text\"";
       if (value != null) {
         html += " value=\"" + value + "\"";
       }
@@ -181,17 +181,17 @@ public class JdbcFieldDisplayer {
       html += "<script type=\"text/javascript\">\n";
       html +=
           "	this.oACDS" + fieldName + " = new YAHOO.widget.DS_JSArray(listArray" + fieldName +
-              ");\n";
+          ");\n";
       html +=
           "	this.oAutoComp" + fieldName + " = new YAHOO.widget.AutoComplete('" + fieldName +
-              "','container" + fieldName + "', this.oACDS" + fieldName + ");\n";
+          "','container" + fieldName + "', this.oACDS" + fieldName + ");\n";
       html += "	this.oAutoComp" + fieldName + ".prehighlightClassName = \"yui-ac-prehighlight\";\n";
       html += "	this.oAutoComp" + fieldName + ".typeAhead = true;\n";
       html += "	this.oAutoComp" + fieldName + ".useShadow = true;\n";
       html += "	this.oAutoComp" + fieldName + ".minQueryLength = 0;\n";
 
       if ("1".equals(valueFieldType)) {// valeurs possibles 1 = choix restreint à la liste ou 2 =
-                                       // saisie libre, par défaut 1
+        // saisie libre, par défaut 1
         html += "	this.oAutoComp" + fieldName + ".forceSelection = true;\n";
       }
 
@@ -208,26 +208,26 @@ public class JdbcFieldDisplayer {
         String sizeMandatory = new Integer(size / 2 + 1).toString();
         html +=
             "<img src=\"" + mandatoryImg +
-                "\" width=\"5\" height=\"5\" border=\"0\" style=\"position:absolute;left:" +
-                sizeMandatory + "em;top:5px\">\n";
+            "\" width=\"5\" height=\"5\" border=\"0\" style=\"position:absolute;left:" +
+            sizeMandatory + "em;top:5px\">\n";
       }
 
     } else {
       if ("1".equals(valueFieldType)) {// valeurs possibles 1 = choix restreint à la liste ou 2 =
-                                       // saisie libre, par défaut 1
+        // saisie libre, par défaut 1
         html += "<SELECT name=\"" + EncodeHelper.javaStringToHtmlString(fieldName) + "\"";
         html += " >\n";
         html += "</SELECT>\n";
       } else {
         html +=
             "<input type=\"text\" size=\"" + size + "\" name=\"" +
-                EncodeHelper.javaStringToHtmlString(fieldName) + "\"";
+            EncodeHelper.javaStringToHtmlString(fieldName) + "\"";
         html += " >\n";
       }
       if (mandatory) {
         html +=
             "&nbsp;<img src=\"" + mandatoryImg +
-                "\" width=\"5\" height=\"5\" border=\"0\">&nbsp;\n";
+            "\" width=\"5\" height=\"5\" border=\"0\">&nbsp;\n";
       }
     }
 

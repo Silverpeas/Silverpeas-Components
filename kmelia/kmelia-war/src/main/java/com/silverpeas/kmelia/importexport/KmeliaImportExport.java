@@ -145,14 +145,14 @@ public class KmeliaImportExport extends GEDImportExport {
   }
 
   /**
-   * Méthode ajoutant un thème à un thème déja existant. Si le thème à ajouter existe lui
-   * aussi (par exemple avec un même ID), il n'est pas modifié et la méthode ne fait rien et ne
-   * lève aucune exception.
+   * Méthode ajoutant un thème à un thème déja existant. Si le thème à ajouter existe lui aussi (par
+   * exemple avec un même ID), il n'est pas modifié et la méthode ne fait rien et ne lève aucune
+   * exception.
    * @param nodeDetail le détail du noeud à ajouter.
    * @param topicId l'identifiant du noeud parent, ou 0 pour désigner le noeud racine.
    * @param unitReport le rapport d'import unitaire.
-   * @return un objet clé primaire du nouveau thème créé ou du thème déjà existant (thème de
-   * même identifiant non modifié).
+   * @return un objet clé primaire du nouveau thème créé ou du thème déjà existant (thème de même
+   * identifiant non modifié).
    * @throws ImportExportException en cas d'anomalie lors de la création du noeud.
    * @see com.silverpeas.importExport.control.GEDImportExport#addSubTopicToTopic(com.stratelia.webactiv.util.node.model.NodeDetail,
    * int, com.silverpeas.importExport.report.UnitReport)
@@ -203,9 +203,9 @@ public class KmeliaImportExport extends GEDImportExport {
   }
 
   /**
-   * Méthode ajoutant un thème à un thème déja existant. Si le thème à ajouter existe lui
-   * aussi (par exemple avec un même ID), il n'est pas modifié et la méthode ne fait rien et ne
-   * lève aucune exception.
+   * Méthode ajoutant un thème à un thème déja existant. Si le thème à ajouter existe lui aussi (par
+   * exemple avec un même ID), il n'est pas modifié et la méthode ne fait rien et ne lève aucune
+   * exception.
    * @param nodeDetail l'objet node correspondant au thème à créer.
    * @param topicId l'ID du thème dans lequel créer le nouveau thème.
    * @return un objet clé primaire du nouveau thème créé.

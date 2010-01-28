@@ -450,7 +450,8 @@ public class PublicationImport {
    * @return A publication detail containing the parameters given as parameters.
    * @throws Exception
    */
-  private void updatePublicationDetail(PublicationDetail pubDetail, Map<String, String> parameters, String language)
+  private void updatePublicationDetail(PublicationDetail pubDetail, Map<String, String> parameters,
+      String language)
       throws Exception {
     String status = parameters.get("Status");
     String name = parameters.get("Name");
