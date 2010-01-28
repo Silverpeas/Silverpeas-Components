@@ -52,13 +52,8 @@ public class WebPagesSessionController extends
     AbstractComponentSessionController {
   /**
    * Standard Session Controller Constructeur
-   *
-   *
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
-   *
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public WebPagesSessionController(MainSessionController mainSessionCtrl,
@@ -70,7 +65,6 @@ public class WebPagesSessionController extends
 
   /**
    * Méthode récupérant le role le plus élevé du user
-   *
    * @return le role
    */
   public String getProfile() {
@@ -116,18 +110,19 @@ public class WebPagesSessionController extends
   }
 
   public void index() {
-    // try {
-    // WysiwygController.createIndex(this.getSpaceId(),this.getComponentId(),this.getComponentId(),this.getComponentLabel(),this.getComponentLabel(),null,null,this.getUserId());
-    // }
-    // catch(WysiwygException ex) {
-    // }
+    try {
+      String content = WysiwygController.load(getComponentId(), getComponentId(), null);
+      WysiwygController.updateFileAndAttachment(content, getSpaceId(), getComponentId(),
+          getComponentId(), getUserId());
+    } catch (WysiwygException ex) {
+    }
   }
 
   /**************************************************************************************/
   /* webPages - Gestion des abonnements */
   /**************************************************************************************/
-  public synchronized Collection getSubscriptionList() throws RemoteException {
-    return this.getSubscriptionList(getUserId(), getComponentId());
+  public synchronized Collection<NodeDetail> getSubscriptionList() throws RemoteException {
+    return getSubscriptionList(getUserId(), getComponentId());
   }
 
   public synchronized void removeSubscription(String topicId)
@@ -146,26 +141,24 @@ public class WebPagesSessionController extends
   /**************************************************************************************/
   /**
    * Subscriptions - get the subscription list of the current user
-   *
    * @return a Path Collection - it's a Collection of NodeDetail collection
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
    */
-  public Collection getSubscriptionList(String userId, String componentId) {
+  public Collection<NodeDetail> getSubscriptionList(String userId, String componentId) {
     SilverTrace.info("webPages",
         "WebPagesSessionController.getSubscriptionList()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      Collection list = getSubscribeBm().getUserSubscribePKsByComponent(userId,
+      Collection<NodePK> list = getSubscribeBm().getUserSubscribePKsByComponent(userId,
           componentId);
-      Collection detailedList = new ArrayList();
-      Iterator i = list.iterator();
+      Collection<NodeDetail> detailedList = new ArrayList<NodeDetail>();
+      Iterator<NodePK> i = list.iterator();
       // For each favorite, get the path from root to favorite
       while (i.hasNext()) {
-        NodePK pk = (NodePK) i.next();
+        NodePK pk = i.next();
         NodeDetail nodeDetail = new NodeDetail();
         nodeDetail.setNodePK(pk);
-        // Collection path = getNodeBm().getPath(pk);
         detailedList.add(nodeDetail);
       }
       SilverTrace.info("webPages",
@@ -181,11 +174,8 @@ public class WebPagesSessionController extends
   }
 
   /**
-   * Subscriptions - remove a subscription to the subscription list of the
-   * current user
-   *
-   * @param topicId
-   *          the subscribe topic Id to remove
+   * Subscriptions - remove a subscription to the subscription list of the current user
+   * @param topicId the subscribe topic Id to remove
    * @since 1.0
    */
   public void removeSubscriptionToCurrentUser(NodePK topicPK, String userId) {
@@ -226,9 +216,7 @@ public class WebPagesSessionController extends
 
   /**
    * Subscriptions - add a subscription
-   *
-   * @param topicId
-   *          the subscription topic Id to add
+   * @param topicId the subscription topic Id to add
    * @since 1.0
    */
   public void addSubscription(NodePK topicPK, String userId) {
@@ -251,15 +239,14 @@ public class WebPagesSessionController extends
   }
 
   /**
-   * @return true if this topic does not exists in user subscriptions and can be
-   *         added to them.
+   * @return true if this topic does not exists in user subscriptions and can be added to them.
    */
   public boolean checkSubscription(NodePK topicPK, String userId) {
     try {
-      Collection subscriptions = getSubscribeBm()
+      Collection<NodePK> subscriptions = getSubscribeBm()
           .getUserSubscribePKsByComponent(userId, topicPK.getInstanceId());
-      for (Iterator iterator = subscriptions.iterator(); iterator.hasNext();) {
-        NodePK nodePK = (NodePK) iterator.next();
+      for (Iterator<NodePK> iterator = subscriptions.iterator(); iterator.hasNext();) {
+        NodePK nodePK = iterator.next();
         if (topicPK.getId().equals(nodePK.getId())) {
           return false;
         }
@@ -291,7 +278,6 @@ public class WebPagesSessionController extends
 
   /**
    * Return boolean if subscription is used for this instance
-   *
    * @return boolean
    */
   public boolean isSubscriptionUsed() {

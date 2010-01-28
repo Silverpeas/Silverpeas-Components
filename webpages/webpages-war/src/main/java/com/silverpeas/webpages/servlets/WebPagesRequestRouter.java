@@ -37,6 +37,8 @@ import com.silverpeas.webpages.control.*;
  * 
  */
 public class WebPagesRequestRouter extends ComponentRequestRouter {
+  
+  private static final long serialVersionUID = -707071668797781762L;
   private final static String USER = "user";
 
   /**

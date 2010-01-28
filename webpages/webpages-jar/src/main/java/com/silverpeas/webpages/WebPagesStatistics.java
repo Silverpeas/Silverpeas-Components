@@ -31,9 +31,9 @@ import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInte
 import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
 
 public class WebPagesStatistics implements ComponentStatisticsInterface {
-  public Collection getVolume(String spaceId, String componentId)
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    List myArrayList = new ArrayList();
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
 
     UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
     myCouple.setUserId("-2"); // unknown userId
