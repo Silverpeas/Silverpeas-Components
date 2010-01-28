@@ -46,8 +46,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
 <%@ page import="com.stratelia.webactiv.webSites.control.WebSiteSessionController"%>
 <%@ page import="java.io.File"%>
-<%@ page import="com.oreilly.servlet.multipart.*"%>
-<%@ page import="com.oreilly.servlet.MultipartRequest"%>
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
 <%@ page import="javax.servlet.jsp.*"%>
@@ -65,63 +63,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="checkScc.jsp" %>
 
 <% 
-//CBO : REMOVE 
-/*<jsp:useBean id="thePath" scope="session" class="java.lang.String"/>
-<jsp:useBean id="prems" scope="session" class="java.lang.String"/>*/
-
-
 	//CBO : ADD
 	String thePath = (String) request.getParameter("path");
 	Boolean uploadOk = (Boolean) request.getAttribute("UploadOk");
 
-    //CBO : REMOVE String language;
-    //CBO : REMOVE FilePart filePart;
-    //CBO : REMOVE boolean uploadFile = false;
-    //CBO : REMOVEboolean uploadOk = true;
-
-    //CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
     //Icons
     String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
-    //CBO : REMOVE
-/*	try {
-         if (! ((String) session.getValue("prems")).equals("premiere fois")) { /* deuxieme fois */
-/*                SilverpeasMultipartParser mp = new SilverpeasMultipartParser(request);
-                Part part;
-                while ((part = mp.readNextPart()) != null) {
-                    String name = part.getName();
-                    if (part.isParam()) {
-                        SilverpeasParamPart paramPart = (SilverpeasParamPart) part;
-                    }
-                    else if (part.isFile()) {
-                        filePart = (FilePart) part;
-                        /* creation du fichier sur le serveur */
-/*                        String fichierName = filePart.getFileName();
-                        String type = fichierName.substring(fichierName.lastIndexOf(".")+1, fichierName.length());
-
-                        File fichier = new File(thePath, fichierName);
-                        long size = filePart.writeTo(fichier);
-
-						//CBO : UPDATE
-                        /*if (size <= 0) 
-							uploadOk = false;*/
- /*                       if (size > 0) {
-							uploadOk = true;
-						}
-
-                        if (! uploadOk) {//le fichier n'est pas bon, on supprime le fichier
-							scc.deleteFile(thePath+"/"+fichierName);
-						}
-		                else uploadFile = true;
-                   } //partFile
-               } //ferme le while
-         }
-   }
-   catch(Exception e) {
-        SilverTrace.warn("websites", "JSPuploadFile", "webSites.EXE_UPLOAD_FILE_FAILED",null, e);
-   }
-   finally {   
-*/
-//CBO : FIN REMOVE
 %>          
       <!-- uploadFile -->
       <HTML>
@@ -134,14 +81,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	  <% out.println(gef.getLookStyleSheet()); %>
       <Script language="JavaScript">
       <%
-			//CBO : UPDATE
-			/*if (! uploadFile && ! uploadOk) {
-				out.println("alert(\""+resources.getString("FileToUploadNotCorrect")+"\");");
-			}
-			else if (uploadFile && uploadOk) {
-				out.println("window.opener.location.replace(\"design.jsp?Action=view&path="+thePath+"\");");
-						out.println("window.close();");
-			}*/
 			if (uploadOk != null && uploadOk.equals(Boolean.FALSE)) {
 				out.println("alert(\""+resources.getString("FileToUploadNotCorrect")+"\");");
 			}
@@ -149,7 +88,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 				out.println("window.opener.location.replace(\"design.jsp?Action=view&path="+thePath+"\");");
 				out.println("window.close();");
 			}
-			//CBO : FIN UPDATE
        %>
        
 		function isCorrect(nom) {
@@ -175,13 +113,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 				alert("<%=resources.getString("GML.theField")%> '<%=resources.getString("FichierUpload")%>' <%=resources.getString("GML.MustBeFilled")%>");
 			} else {
 
-				//CBO : REMOVE
-                /*var indexSlash = file.lastIndexOf("\\");
-				var cheminFile = file.substring(0, indexSlash);
-
-				if (cheminFile == "") 
-                    alert("<%=resources.getString("ErreurFichierUpload")%>");
-                else {*/
 				var indexPoint = file.lastIndexOf(".");
 				
 				//CBO : ADD
@@ -190,16 +121,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 				} else {
 
 					//CBO : UPDATE
-					//var nomFile = file.substring(indexSlash + 1, indexPoint);
 					var nomFile = file.substring(0, indexPoint);
 
 					if (! isCorrect(nomFile)) {// verif caractères speciaux contenus dans le nom du fichier
 						alert("<%=resources.getString("NameFile")%> <%=resources.getString("MustNotContainSpecialChar")%>\n<%=Encode.javaStringToJsString(resources.getString("Char7"))%>\n");
 					}
 					else {
-						<%
-							//CBO : REMOVE session.putValue("prems", "deuxieme fois");
-						%>
 						document.descriptionFile.submit(); 
 					} 
                 } 
@@ -212,11 +139,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
       <%
         Window window = gef.getWindow();
         BrowseBar browseBar = window.getBrowseBar();
-		//CBO : UPDATE
-		//browseBar.setDomainName(scc.getSpaceLabel());
 		browseBar.setDomainName(spaceLabel);
-        //CBO : UPDATE
-		//browseBar.setComponentName(scc.getComponentLabel());
 		browseBar.setComponentName(componentLabel);
         browseBar.setPath(resources.getString("UploadTitle"));
     
@@ -234,10 +157,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
       
 
      <TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>      
-	 <!--CBO : UPDATE -->
-	 <!--<FORM NAME="descriptionFile" ACTION="uploadFile.jsp" METHOD="POST" ENCTYPE="multipart/form-data">-->
 		 <FORM NAME="descriptionFile" ACTION="EffectiveUploadFile" METHOD="POST" ENCTYPE="multipart/form-data">
-		<!-- CBO : ADD -->
 		 <input type="hidden" name="path" value="<%=thePath%>">
 	    <TR>
 	        <TD class="txtlibform"><%=resources.getString("FichierUpload")%> : </TD>
@@ -269,6 +189,3 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
  %>
       </BODY>       
       </HTML>
-<% 
-//CBO : REMOVE }
-%>
