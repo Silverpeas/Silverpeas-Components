@@ -3630,6 +3630,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           // - déplacer versioning
           // - déplacer commentaires
           // - deplacer pdc
+          // - déplacer les statistiques
 
           boolean indexIt = KmeliaHelper.isIndexable(publi);
 
@@ -3762,6 +3763,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
           if (indexIt)
             getPublicationBm().createIndex(toPubPK);
+
+          // move statistics
+          getStatisticBm().moveStat(toForeignPK, 1, "Publication");
+
         }
       } else {
         // paste vignette
