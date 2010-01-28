@@ -4,14 +4,14 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>process-manager</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0-RC1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.process-manager</groupId>
   <artifactId>process-manager-war</artifactId>
   <packaging>war</packaging>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0-RC1</version>
   <name>process-manager Webapp</name>
 
   <dependencies>
