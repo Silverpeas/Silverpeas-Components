@@ -261,7 +261,7 @@ function updateChain()
 }
 
 function topicAdd(topicId, isLinked) {
-	alert("topicAdd : topicId = "+topicId);
+	//alert("topicAdd : topicId = "+topicId);
 	if (!topicWindow.closed && topicWindow.name== "topicAddWindow")
 		topicWindow.close();
     var url = "ToAddTopic?Id="+topicId+"&Translation=<%=translation%>";
@@ -481,7 +481,7 @@ function getWidth() {
         operationPane.addOperation(importFilesSrc, kmeliaScc.getString("kmelia.ImportFiles"), "javascript:onClick=importFiles()");
         operationPane.addOperation(resources.getIcon("kmelia.sortPublications"), kmeliaScc.getString("kmelia.OrderPublications"), "ToOrderPublications");
         operationPane.addOperation(resources.getIcon("kmelia.updateByChain"), kmeliaScc.getString("kmelia.updateByChain"), "javascript:onClick=updateChain()");
-        operationPane.addOperation(resources.getIcon("kmelia.paste"), resources.getString("GML.paste"), "javascript:onClick=paste()");
+        operationPane.addOperation(resources.getIcon("kmelia.paste"), resources.getString("GML.paste"), "javascript:onClick=pasteFromOperations()");
     	operationPane.addLine();
     	operationPane.addOperation(subscriptionAddSrc, resources.getString("SubscriptionsAdd"), "javascript:onClick=addSubscription()");
       	operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(namePath))+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(description))+"','"+urlTopic+"')");
@@ -604,7 +604,7 @@ function initTree(id)
 	//will be generated as needed by the dynamic loader.
 	oTreeView.render();
 
-	currentNodeId = id;
+	setCurrentNodeId(id);
 
 	//let the time to tree to be loaded !
 	setTimeout("displayTopicContent("+id+")", 500);
@@ -628,12 +628,12 @@ function initTree(id)
 	
 		$("#ygtvcontentel"+currentNodeIndex).css({'font-weight':'normal'});
 
-		currentNodeId = oArgs.node.data.id;
+		setCurrentNodeId(oArgs.node.data.id);
 		currentNodeIndex = oArgs.node.index;
 
 		$("#ygtvcontentel"+currentNodeIndex).css({'font-weight':'bold'});
 
-		displayTopicContent(currentNodeId);
+		displayTopicContent(getCurrentNodeId());
 	});
 
 	//display topic's name editor
@@ -659,6 +659,12 @@ function initTree(id)
 function getCurrentNodeId()
 {
 	return currentNodeId;
+}
+
+function setCurrentNodeId(id)
+{
+	//alert("setCurrentNodeId : id = "+id);
+	currentNodeId = id;
 }
 
 function loadNodeData(node, fnLoadComplete)  {
@@ -907,11 +913,6 @@ function loadNodeData(node, fnLoadComplete)  {
 		top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>cut?Object=Node&Id='+oCurrentTextNode.labelElId;
 	}
 
-	function paste()
-	{
-		pasteNode(getCurrentNodeId());
-	}
-
 	function topicWysiwyg()
 	{
 		closeWindows();
@@ -956,15 +957,24 @@ function loadNodeData(node, fnLoadComplete)  {
 				});
 	}
 
+	function pasteFromOperations()
+	{
+		//alert("paste : currentNodeId = "+getCurrentNodeId());
+		pasteNode(getCurrentNodeId());
+	}
+
+	function pasteFromTree()
+	{
+		pasteNode(oCurrentTextNode.labelElId);
+	}
+
 	function pasteNode(id)
 	{
 		displayStaticMessage();
 
-		//if (id != "undefined")
-			//oCurrentTextNode = oTreeView.getNodeByProperty("labelElId", id);
-		
+		//alert("pasteNode : id = "+id);	
 		//prepare URL for XHR request:
-        var sUrl = "<%=m_context%>/KmeliaJSONServlet?Action=Paste&ComponentId=<%=componentId%>&Language=<%=language%>&Id="+oCurrentTextNode.labelElId+"&IEFix="+new Date().getTime();
+        var sUrl = "<%=m_context%>/KmeliaJSONServlet?Action=Paste&ComponentId=<%=componentId%>&Language=<%=language%>&Id="+id+"&IEFix="+new Date().getTime();
         
         //prepare our callback object
         var callback = {
@@ -1002,7 +1012,7 @@ function loadNodeData(node, fnLoadComplete)  {
 
 				displayPublications(oCurrentTextNode.labelElId);*/
 				
-				reloadPage(oCurrentTextNode.labelElId);
+				reloadPage(id);
 
 				closeMessage();
             },
@@ -1152,7 +1162,7 @@ function loadNodeData(node, fnLoadComplete)  {
 	            [
 		            { text: "<%=resources.getString("GML.copy")%>", onclick: { fn: copyNode } },
 	            	{ text: "<%=resources.getString("GML.cut")%>", onclick: { fn: cutNode } },
-	            	{ text: "<%=resources.getString("GML.paste")%>", onclick: { fn: pasteNode } }
+	            	{ text: "<%=resources.getString("GML.paste")%>", onclick: { fn: pasteFromTree } }
 	    		],
 	    		[
 		    		<% if (kmeliaScc.isOrientedWebContent()) { %>
@@ -1242,7 +1252,7 @@ function loadNodeData(node, fnLoadComplete)  {
 
 			try
 			{
-				currentNodeId = node.data.id;
+				setCurrentNodeId(node.data.id);
 				currentNodeIndex = node.index;
 				$("#ygtvcontentel"+currentNodeIndex).css({'font-weight':'bold'});
 			}
@@ -1488,7 +1498,7 @@ messageObj.setShadowOffset(5);	// Large shadow
 
 function displayStaticMessage()
 {
-	messageObj.setHtmlContent("<center><table><tr><td align=\"center\" class=\"txtnote\"><%=resources.getString("JSPP.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align=\"center\"><img src=\"<%=resources.getIcon("JSPP.inProgress")%>\"/></td></tr></table></center>");
+	messageObj.setHtmlContent("<center><table><tr><td align=\"center\" class=\"txtnote\"><%=resources.getString("kmelia.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align=\"center\"><img src=\"<%=resources.getIcon("kmelia.progress")%>\"/></td></tr></table></center>");
 	messageObj.setSize(300,100);
 	messageObj.setCssClassMessageBox(false);
 	messageObj.setShadowDivVisible(true);	// Disable shadow for these boxes	
