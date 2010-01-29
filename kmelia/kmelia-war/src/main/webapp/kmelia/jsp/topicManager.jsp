@@ -1132,6 +1132,19 @@ function loadNodeData(node, fnLoadComplete)  {
 
 	function onTriggerRootContextMenu(p_oEvent) 
 	{
+		//alert("onTriggerContextMenu : enter");
+	    var oTarget = this.contextEventTarget;
+	
+	    /*
+	         Get the TextNode instance that that triggered the
+	         display of the ContextMenu instance.
+	    */			
+	    oCurrentTextNode = oTreeView.getNodeByElement(oTarget);
+	    if (!oCurrentTextNode) {
+	        // Cancel the display of the ContextMenu instance.
+	        this.cancel();
+	    }
+	    
 	    <% if (!"admin".equals(kmeliaScc.getUserTopicProfile("0"))) { %>
 	    	this.cancel();
 	    <% } %>
@@ -1216,7 +1229,7 @@ function loadNodeData(node, fnLoadComplete)  {
 		   		            { text: "<%=resources.getString("kmelia.SortTopics")%>", onclick: { fn: sortTopics } }
 		   		        ],
 		   	            [
-		   		            { text: "<%=resources.getString("GML.paste")%>", onclick: { fn: pasteNode } }
+		   		            { text: "<%=resources.getString("GML.paste")%>", onclick: { fn: pasteFromTree } }
 		   	    		]
 		   	    		<% if (kmeliaScc.isOrientedWebContent() || kmeliaScc.isWysiwygOnTopicsEnabled()) { %>
 		   	    		,[
