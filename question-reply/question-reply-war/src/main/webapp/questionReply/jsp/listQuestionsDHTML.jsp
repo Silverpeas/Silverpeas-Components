@@ -317,6 +317,10 @@ window.onload = initShowHideContent;
 		if (existToClose)
 			operationPane.addOperation(resource.getIcon("questionReply.cloreQ"), resource.getString("questionReply.cloreQs"), "javascript:onClick=Closes();");	
 	}
+	operationPane.addLine();
+  operationPane.addOperation(resource.getIcon("questionReply.export"), resource.getString("questionReply.export") , "javascript:onClick=openSPWindow('Export','export')");
+  
+
    	
 	out.println(window.printBefore());  
 	out.println(frame.printBefore());	

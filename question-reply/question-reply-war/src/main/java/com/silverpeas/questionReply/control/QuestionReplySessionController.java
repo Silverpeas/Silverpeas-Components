@@ -23,17 +23,27 @@
  */
 package com.silverpeas.questionReply.control;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 
+import com.silverpeas.attachment.importExport.AttachmentImportExport;
+import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Category;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Recipient;
 import com.silverpeas.questionReply.model.Reply;
+import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.ZipManager;
 import com.silverpeas.whitePages.control.CardManager;
 import com.silverpeas.whitePages.model.Card;
 import com.stratelia.silverpeas.containerManager.ContainerContext;
@@ -49,20 +59,28 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.util.viewGenerator.html.Encode;
 
 public class QuestionReplySessionController extends
     AbstractComponentSessionController {
@@ -99,9 +117,9 @@ public class QuestionReplySessionController extends
     return questions;
   }
 
-  public Collection getQuestionsByCategory(String categoryId)
+  public Collection<Question> getQuestionsByCategory(String categoryId)
       throws QuestionReplyException {
-    Collection questions = getQuestionManager().getAllQuestionsByCategory(
+    Collection<Question> questions = getQuestionManager().getAllQuestionsByCategory(
         getComponentId(), categoryId);
     return questions;
   }
@@ -113,8 +131,8 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Recupère la question et ses réponses selon le profil de l'utilisateur
-   * courant, ainsi que ses destinataires met la question en session
+   * Recupère la question et ses réponses selon le profil de l'utilisateur courant, ainsi que ses
+   * destinataires met la question en session
    */
   public Question getQuestion(long questionId) throws QuestionReplyException {
     Question question = getQuestionManager().getQuestion(questionId);
@@ -172,8 +190,8 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Retourne une nouvelle question (instanceId, creatorId, creationDate) met la
-   * question en session : newQuestion
+   * Retourne une nouvelle question (instanceId, creatorId, creationDate) met la question en session
+   * : newQuestion
    */
   public Question getNewQuestion() {
     Question question = new Question(getUserId(), getComponentId());
@@ -224,8 +242,8 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Retourne une nouvelle réponse (questionId, creatorId, creationDate) pour la
-   * questionCourante met la question en session : newReply
+   * Retourne une nouvelle réponse (questionId, creatorId, creationDate) pour la questionCourante
+   * met la question en session : newReply
    */
   public Reply getNewReply() {
     Reply reply;
@@ -269,8 +287,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * enregistre la nouvelle réponse de la question courante met en session la
-   * question modifiée
+   * enregistre la nouvelle réponse de la question courante met en session la question modifiée
    */
   public void saveNewReply() throws QuestionReplyException {
     WAPrimaryKey pk = newReply.getPK();
@@ -300,9 +317,8 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Modifie la réponse courante => supprime la réponse publique =>
-   * deletePublicReplies() => crée une nouvelle réponse publique et privée met à
-   * jour en session la question courante
+   * Modifie la réponse courante => supprime la réponse publique => deletePublicReplies() => crée
+   * une nouvelle réponse publique et privée met à jour en session la question courante
    */
   public void updateCurrentReplyOLD(String title, String content)
       throws QuestionReplyException {
@@ -334,16 +350,15 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Supprime une liste de questions selon le profil de l'utilisateur courant
-   * i.e. suppression de toutes les réponses publiques ou privées des questions
+   * Supprime une liste de questions selon le profil de l'utilisateur courant i.e. suppression de
+   * toutes les réponses publiques ou privées des questions
    */
   public void deleteQuestions(Collection questionsIds)
       throws QuestionReplyException {
     try {
       getQuestionManager().deleteQuestionAndReplies(questionsIds);
       /*
-       * if (userProfil.equals("publisher"))
-       * deletePrivateQuestions(questionsIds); else if
+       * if (userProfil.equals("publisher")) deletePrivateQuestions(questionsIds); else if
        * ((userProfil.equals("writer")) || (userProfil.equals("admin")))
        * deletePublicQuestions(questionsIds);
        */
@@ -356,13 +371,11 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Supprime une liste de reponses selon le profil de l'utilisateur courant
-   * i.e. suppression des réponses publiques ou privées si ReplyNumber =0 et que
-   * la question est close, la question sera supprimée => reSetCurrentQuestion
-   * appel de deletePublicReplies ou deletePrivateReplies si le nombre de R
-   * publiques ou privées restantes est egal à 0 et que la question est close,
-   * la question n'est plus visible => reSetCurrentQuestion sinon met en session
-   * la question
+   * Supprime une liste de reponses selon le profil de l'utilisateur courant i.e. suppression des
+   * réponses publiques ou privées si ReplyNumber =0 et que la question est close, la question sera
+   * supprimée => reSetCurrentQuestion appel de deletePublicReplies ou deletePrivateReplies si le
+   * nombre de R publiques ou privées restantes est egal à 0 et que la question est close, la
+   * question n'est plus visible => reSetCurrentQuestion sinon met en session la question
    */
   public void deleteReplies(Collection replyIds) throws QuestionReplyException {
     try {
@@ -411,8 +424,8 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Clos une question si replyNumber = 0, la question sera supprimée =>
-   * reSetCurrentQuestion sinon met en session la question
+   * Clos une question si replyNumber = 0, la question sera supprimée => reSetCurrentQuestion sinon
+   * met en session la question
    */
   public void closeQuestion(long questionId) throws QuestionReplyException {
     Collection questionIds = new ArrayList();
@@ -420,8 +433,8 @@ public class QuestionReplySessionController extends
     getQuestionManager().closeQuestions(questionIds);
     /*
      * if ((getCurrentQuestion().getReplyNumber() ==
-     * 0)||(getCurrentQuestion().getPublicReplyNumber() == 0))
-     * reSetCurrentQuestion(); else getCurrentQuestion().setStatus(2);
+     * 0)||(getCurrentQuestion().getPublicReplyNumber() == 0)) reSetCurrentQuestion(); else
+     * getCurrentQuestion().setStatus(2);
      */
   }
 
@@ -436,8 +449,7 @@ public class QuestionReplySessionController extends
    * getQuestionManager().updateQuestionRepliesPublicStatus()
    */
   /*
-   * private void deletePublicQuestions(Collection questionsIds) throws
-   * QuestionReplyException {
+   * private void deletePublicQuestions(Collection questionsIds) throws QuestionReplyException {
    * getQuestionManager().updateQuestionRepliesPublicStatus(questionsIds); }
    */
   /*
@@ -445,14 +457,12 @@ public class QuestionReplySessionController extends
    * getQuestionManager().updateQuestionRepliesPrivateStatus()
    */
   /*
-   * private void deletePrivateQuestions(Collection questionsIds) throws
-   * QuestionReplyException {
+   * private void deletePrivateQuestions(Collection questionsIds) throws QuestionReplyException {
    * getQuestionManager().updateQuestionRepliesPrivateStatus(questionsIds); }
    */
   /*
-   * Supprime les réponses publiques =>
-   * getQuestionManager().updateRepliesPublicStatus() retourne le nombre de
-   * réponses publiques restantes
+   * Supprime les réponses publiques => getQuestionManager().updateRepliesPublicStatus() retourne le
+   * nombre de réponses publiques restantes
    */
   private int deletePublicReplies(Collection replyIds)
       throws QuestionReplyException {
@@ -462,9 +472,8 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Supprime les réponses privées =>
-   * getQuestionManager().updateRepliesPrivateStatus() retourne le nombre de
-   * réponses privées restantes
+   * Supprime les réponses privées => getQuestionManager().updateRepliesPrivateStatus() retourne le
+   * nombre de réponses privées restantes
    */
   private int deletePrivateReplies(Collection replyIds)
       throws QuestionReplyException {
@@ -474,18 +483,16 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Retourne la liste des questions de l'utilisateur de rôle User i.e. liste
-   * des questions avec réponses publiques =>
-   * getQuestionManager().getPublicQuestions()
+   * Retourne la liste des questions de l'utilisateur de rôle User i.e. liste des questions avec
+   * réponses publiques => getQuestionManager().getPublicQuestions()
    */
   private Collection getUserQuestions() throws QuestionReplyException {
     return getQuestionManager().getPublicQuestions(getComponentId());
   }
 
   /*
-   * Retourne la liste des questions de l'utilisateur de rôle Writer (expert)
-   * i.e. liste des questions dont il est le destinataire non close =>
-   * getQuestionManager().getReceiveQuestions()
+   * Retourne la liste des questions de l'utilisateur de rôle Writer (expert) i.e. liste des
+   * questions dont il est le destinataire non close => getQuestionManager().getReceiveQuestions()
    */
   private Collection getWriterQuestions() throws QuestionReplyException {
     return getQuestionManager().getReceiveQuestions(getUserId(),
@@ -493,18 +500,17 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Retourne la liste des questions de l'utilisateur de rôle Publisher
-   * (demandeur) i.e. liste des questions dont il est l'auteur non close ou
-   * close avec réponses privées => getQuestionManager().getSendQuestions()
+   * Retourne la liste des questions de l'utilisateur de rôle Publisher (demandeur) i.e. liste des
+   * questions dont il est l'auteur non close ou close avec réponses privées =>
+   * getQuestionManager().getSendQuestions()
    */
   private Collection getPublisherQuestions() throws QuestionReplyException {
     return getQuestionManager().getSendQuestions(getUserId(), getComponentId());
   }
 
   /*
-   * Retourne la liste des questions de l'utilisateur de rôle Admin (animateur)
-   * i.e. liste des questions non close ou close avec réponses publiques =>
-   * getQuestionManager().getQuestions()
+   * Retourne la liste des questions de l'utilisateur de rôle Admin (animateur) i.e. liste des
+   * questions non close ou close avec réponses publiques => getQuestionManager().getQuestions()
    */
   private Collection getAdminQuestions() throws QuestionReplyException {
     return getQuestionManager().getQuestions(getComponentId());
@@ -566,8 +572,8 @@ public class QuestionReplySessionController extends
   }
 
   /**
-   * Redefinition method de abstractComponentSessionController car 4 rôles
-   * Return the highest user's role (admin, publisher or user)
+   * Redefinition method de abstractComponentSessionController car 4 rôles Return the highest user's
+   * role (admin, publisher or user)
    */
   public String getUserRoleLevel() {
     String[] profiles = getUserRoles();
@@ -619,7 +625,7 @@ public class QuestionReplySessionController extends
 
       position = (ContainerPositionInterface) containerContext
           .getSilverContentIdSearchContext(new Integer(
-              getCurrentQuestionContentId()).intValue(), getComponentId());
+          getCurrentQuestionContentId()).intValue(), getComponentId());
     } catch (Exception e) {
       throw new QuestionReplyException(
           "QuestionReplySessionController.getCurrentQuestionWriters()",
@@ -652,8 +658,8 @@ public class QuestionReplySessionController extends
         + "/RquestionReply/" + getComponentId() + "/Main");
     PairObject hostPath1 = new PairObject(getCurrentQuestion().getTitle(),
         "/RquestionReply/" + getComponentId()
-            + "/ConsultQuestionQuery?questionId="
-            + ((IdPK) getCurrentQuestion().getPK()).getId());
+        + "/ConsultQuestionQuery?questionId="
+        + ((IdPK) getCurrentQuestion().getPK()).getId());
     // NEWF DLE
     PairObject[] hostPath = { hostPath1 };
 
@@ -761,8 +767,7 @@ public class QuestionReplySessionController extends
   }
 
   /*
-   * Récupère la liste des experts du domaine de la question qui ne sont pas
-   * déjà destinataires
+   * Récupère la liste des experts du domaine de la question qui ne sont pas déjà destinataires
    */
   public Collection getCurrentQuestionAvailableWriters()
       throws QuestionReplyException {
@@ -896,8 +901,8 @@ public class QuestionReplySessionController extends
 
         contentId = ""
             + contentManager.getSilverContentId(
-                currentQuestion.getPK().getId(), currentQuestion
-                    .getInstanceId());
+            currentQuestion.getPK().getId(), currentQuestion
+            .getInstanceId());
       } catch (ContentManagerException ignored) {
         SilverTrace.error("questionReply", "QuestionReplySessionController",
             "questionReply.EX_UNKNOWN_CONTENT_MANAGER", ignored);
@@ -1015,6 +1020,339 @@ public class QuestionReplySessionController extends
           SilverpeasRuntimeException.ERROR,
           "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
     }
+  }
+
+  public ExportReport export(ResourcesWrapper resource) throws QuestionReplyException,
+      ParseException {
+
+    StringBuffer sb = new StringBuffer("exportFAQ");
+    Date date = new Date();
+    SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH'H'mm'm'ss's'");
+    String dateFormatee = dateFormat.format(date);
+    sb.append("_").append(dateFormatee);
+    sb.append("_").append(getUserDetail().getId());
+    ExportReport exportReport = new ExportReport();
+    // Stockage de la date de démarage de l'export dans l'objet rapport
+    exportReport.setDateDebut(new Date());
+    String thisExportDir = sb.toString();
+
+    // Création du dossier d'export exportFAQ_aaaa-mm-jj-hhHmmmsss_userId.zip
+    String tempDir = FileRepositoryManager.getTemporaryPath();
+    File fileExportDir = new File(tempDir + thisExportDir);
+    if (!fileExportDir.exists()) {
+      try {
+        FileFolderManager.createFolder(fileExportDir);
+      } catch (UtilException ex) {
+        throw new QuestionReplyException("QuestionReplySessionController.export()",
+            SilverpeasRuntimeException.ERROR,
+            "root.MSG_FOLDER_NOT_CREATE", ex);
+      }
+    }
+
+    // création du dossier "files"
+    String dir = tempDir + thisExportDir;
+    String nameForFiles = "files";
+    File forFiles = new File(dir + File.separator + nameForFiles);
+    try {
+      FileFolderManager.createFolder(forFiles);
+    } catch (UtilException ex) {
+      throw new QuestionReplyException("QuestionReplySessionController.export()",
+          SilverpeasRuntimeException.ERROR,
+          "root.MSG_FOLDER_NOT_CREATE", ex);
+    }
+
+    // intégrer la css du disque dans "files"
+    ResourceLocator settings =
+        new ResourceLocator("com.silverpeas.questionReply.settings.questionReplySettings", "");
+    try {
+      String chemin = (settings.getString("mappingDir"));
+      if (chemin.startsWith("file:")) {
+        chemin = chemin.substring(8);
+      }
+      Collection files = FileFolderManager.getAllFile(chemin);
+      Iterator itFiles = files.iterator();
+      while (itFiles.hasNext()) {
+        File file = (File) itFiles.next();
+        File newFile =
+            new File(dir + File.separator + nameForFiles + File.separator + file.getName());
+        FileRepositoryManager.copyFile(file.getPath(), newFile.getPath());
+      }
+    } catch (Exception ex) {
+      throw new QuestionReplyException("QuestionReplySessionController.export()",
+          SilverpeasRuntimeException.ERROR,
+          "QuestionReply.EX_CANT_COPY_FILE", ex);
+    }
+
+    // création du fichier html
+    File fileHTML = new File(dir + File.separator + thisExportDir + ".html");
+    FileWriter fileWriter = null;
+    try {
+      fileHTML.createNewFile();
+      fileWriter = new FileWriter(fileHTML.getPath());
+      fileWriter.write(toHTML(fileHTML, resource));
+    } catch (IOException ex) {
+      throw new QuestionReplyException("QuestionReplySessioncontroller.export()",
+          SilverpeasRuntimeException.ERROR,
+          "QuestionReply.MSG_CAN_WRITE_FILE", ex);
+    } finally {
+      try {
+        fileWriter.close();
+      } catch (Exception ex) {
+      }
+    }
+
+    // Création du zip
+    try {
+      String zipFileName = fileExportDir.getName() + ".zip";
+      long zipFileSize = ZipManager.compressPathToZip(fileExportDir.getPath(), tempDir
+          + zipFileName);
+      exportReport.setZipFileName(zipFileName);
+      exportReport.setZipFileSize(zipFileSize);
+      exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName, zipFileName,
+          "application/zip"));
+    } catch (Exception ex) {
+      throw new QuestionReplyException("QuestionReplySessioncontroller.export()",
+          SilverpeasRuntimeException.ERROR,
+          "QuestionReply.MSG_CAN_CREATE_ZIP", ex);
+    }
+    // Stockage de la date de fin de l'export dans l'objet rapport
+    exportReport.setDateFin(new Date());
+    return exportReport;
+  }
+
+  public String toHTML(File file, ResourcesWrapper resource) throws QuestionReplyException,
+      ParseException {
+    String fileName = file.getName();
+    StringBuilder sb = new StringBuilder();
+
+    sb.append("<HTML>\n");
+    sb.append("<HEAD>\n");
+
+    sb.append("<TITLE>").append(fileName).append("</TITLE>\n");
+    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\n");
+    sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"files/ExportFAQ.css\">\n");
+    sb.append("\n");
+    sb.append(addFunction());
+    sb.append("\n");
+    sb.append("</HEAD>\n");
+
+    sb.append("<BODY>\n");
+    sb.append("\n");
+    sb.append(addBody(resource, file));
+    sb.append("\n");
+    sb.append("</BODY>\n");
+    sb.append("</HTML>\n");
+
+    return sb.toString();
+  }
+
+  public String addFunction() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("<script language=\"javascript\">\n");
+    sb.append("function showHideAnswer() { \n");
+    sb.append("  var numericID = this.id.replace(/[^\\d]/g,'');\n");
+    sb.append("  var obj = document.getElementById('a' + numericID);\n");
+    sb.append("  if(obj.style.display=='block'){\n");
+    sb.append("    obj.style.display='none';\n");
+    sb.append("  }else{\n");
+    sb.append("    obj.style.display='block';\n");
+    sb.append("  }   \n");
+    sb.append("}\n");
+
+    sb.append("function initShowHideContent()\n");
+    sb.append("{\n");
+    sb.append("  var divs = document.getElementsByTagName('div');\n");
+    sb.append("  for(var no=0;no<divs.length;no++)\n");
+    sb.append("  {\n");
+    sb.append("    if(divs[no].className=='question')\n");
+    sb.append("    {\n");
+    sb.append("      divs[no].onclick = showHideAnswer;\n");
+    sb.append("    }\n");
+    sb.append("  }\n");
+    sb.append("}\n");
+
+    sb.append("window.onload = initShowHideContent;\n");
+    sb.append("</script>\n");
+    return sb.toString();
+  }
+
+  public String addBody(ResourcesWrapper resource, File file) throws QuestionReplyException,
+      ParseException {
+    StringBuilder sb = new StringBuilder();
+    sb.append("<table width=\"100%\">\n");
+    Collection<NodeDetail> categories = getAllCategories();
+    Iterator<NodeDetail> itC = categories.iterator();
+    while (itC.hasNext()) {
+      NodeDetail category = itC.next();
+      String categoryId = Integer.toString(category.getId());
+      // titre de la catégorie
+      sb.append("<tr>\n");
+      sb.append("<td class=\"titreCateg\" width=\"91%\">").append(category.getName()).append(
+          "</td>\n");
+      sb.append("</tr>\n");
+      // contenu de la catégorie
+      sb.append("<tr>\n");
+      sb.append("<td colspan=\"2\">\n");
+      Collection<Question> questions = getQuestionsByCategory(categoryId);
+      Iterator<Question> itQ = questions.iterator();
+      while (itQ.hasNext()) {
+        Question question = itQ.next();
+        String questionId = question.getPK().getId();
+        String qId = "q" + questionId;
+        sb
+            .append("<table class=\"question\" width=\"98%\" align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n");
+        sb.append("<tr>\n");
+        sb.append("<td>\n");
+        sb.append("<table width=\"100%\" cellpadding=\"0\" cellspacing=\"2\">\n");
+        sb.append("<tr>\n");
+        sb.append("<td></td>\n");
+        sb.append("<td class=\"titreQuestionReponse\" width=\"100%\">\n");
+        sb.append("<div id=").append(qId).append(" class=\"question\">");
+        sb.append(EncodeHelper.javaStringToHtmlParagraphe(question.getTitle()));
+        sb.append("</div>\n");
+        sb.append("</td>\n");
+        sb.append("</tr>\n");
+        sb.append("<tr>\n");
+        sb.append("<td colspan=\"2\">\n");
+        sb.append("<span class=\"txtBaseline\">");
+        sb.append("Question de").append(question.readCreatorName()).append(" - ").append(
+            resource.getOutputDate(question.getCreationDate()));
+        sb.append("</span>\n");
+        sb.append("</td>\n");
+        sb.append("</tr>\n");
+        sb.append("</table>\n");
+        sb.append("</td>\n");
+        sb.append("</tr>\n");
+        sb.append("</table>\n");
+
+        // affichage des réponses
+        String aId = "a" + questionId;
+        Collection replies = question.readReplies();
+        Iterator itR = replies.iterator();
+        boolean existe = false;
+        if (itR.hasNext())
+          existe = true;
+        existe = true;
+        if (existe) {
+          sb.append("<table width=\"98%\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\">\n");
+          sb.append("<tr>\n");
+          sb.append("<td class=\"answers\">\n");
+          sb.append("<div id=").append(aId).append(" class=\"answer\">\n");
+          // contenu de la question
+          sb.append("<table>\n");
+          sb.append("<tr>\n");
+          sb.append("<td>");
+          sb.append(EncodeHelper.javaStringToHtmlParagraphe(question.getContent()));
+          sb.append("</td>\n");
+          sb.append("</tr>\n");
+          sb.append("</table>\n");
+        }
+        while (itR.hasNext()) {
+          Reply reply = (Reply) itR.next();
+          sb.append("<br>\n");
+          sb.append("<center>\n");
+          sb
+              .append("<table class=\"tableBoard\" width=\"98%\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">\n");
+          sb.append("<tr>\n");
+          sb.append("<td nowrap=\"nowrap\">\n");
+          sb.append("<table width=\"100%\" cellpadding=\"0\" cellspacing=\"2\">\n");
+          sb.append("<tr>\n");
+          sb.append("<td class=\"titreQuestionReponse\" width=\"100%\">\n");
+          sb.append(" <span class=\"titreQuestionReponse\">").append(EncodeHelper.javaStringToHtmlParagraphe(reply.getTitle())).append(
+              "</span>\n");
+          sb.append("</td>\n");
+          sb.append("</tr>\n");
+          sb.append("</table>\n");
+          sb.append("<br>\n");
+          sb.append("<table>\n");
+          sb.append("<tr>\n");
+          sb.append("<td width=\"90%\">");
+          sb.append(EncodeHelper.javaStringToHtmlParagraphe(reply.getContent()));
+          sb.append("</td>\n");
+
+          // récupération des fichiers joints : copie de ces fichiers dans le dossier "files"
+          AttachmentImportExport attachmentIE = new AttachmentImportExport();
+          Vector<AttachmentDetail> attachments = null;
+          try {
+            String filePath = file.getParentFile().getPath() + File.separator + "files";
+            String relativeFilePath = file.getParentFile().getPath();
+            WAPrimaryKey replyPk = reply.getPK();
+            replyPk.setComponentName(question.getInstanceId());
+            attachments = attachmentIE.getAttachments(replyPk, filePath, relativeFilePath, null);
+          } catch (Exception ex) {
+            // En cas d"objet non trouvé: pas d'exception gérée par le système
+            throw new QuestionReplyException("QuestionReplySessioncontroller.export()",
+                0, "root.EX_CANT_GET_ATTACHMENTS", ex);
+          }
+
+          if (attachments != null && attachments.size() > 0) {
+            // les fichiers joints : création du lien dans la page
+            sb.append("<td valign=\"top\" align=\"left\">\n");
+            sb.append("<a name=\"attachments\"></a>\n");
+            sb.append("<td valign=\"top\" align=\"left\">\n");
+            sb.append("<center>\n");
+            sb
+                .append("<table class=\"tableBoard\" width=\"98%\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">\n");
+            sb.append("<tr>\n");
+            sb.append("<td nowrap=\"nowrap\">\n");
+            sb.append("<table width=\"150\">\n");
+
+            Iterator<AttachmentDetail> it = attachments.iterator();
+            // pour chaque fichier
+            while (it.hasNext()) {
+              AttachmentDetail attachment = it.next();
+              // attachment
+              sb.append("<tr>\n");
+              sb.append("<td align=\"center\"></td>\n");
+              sb.append("</tr>\n");
+              sb.append("<tr>\n");
+              sb.append("<td valign=\"top\">\n");
+              sb.append("<nobr>\n");
+              sb.append("<a href=\"files/");
+              sb.append(attachment.getLogicalName());
+              sb.append("\" target=\"_blank\">");
+              sb.append(attachment.getLogicalName());
+              sb.append("</a>\n");
+              sb.append("</nobr>\n");
+              sb.append("<br>\n");
+              sb.append(attachment.getAttachmentFileSize(attachment.getLanguage())).append("  ");
+              sb.append(attachment.getAttachmentDownloadEstimation(attachment.getLanguage()));
+              sb.append("</td>\n");
+              sb.append("</tr>\n");
+            }
+            sb.append("</table>\n");
+            sb.append("</td>\n");
+            sb.append("</tr>\n");
+            sb.append("</table>\n");
+            sb.append("</center>\n");
+            sb.append("</td>\n");
+          }
+          sb.append("</tr>\n");
+          sb.append("</table>\n");
+          sb.append("<br>\n");
+          sb.append("<span class=\"txtBaseline\">");
+          sb.append("Réponse de ").append(reply.readCreatorName()).append(" - ").append(
+              resource.getOutputDate(reply.getCreationDate()));
+          sb.append("</span>\n");
+          sb.append("</td>\n");
+          sb.append("</tr>\n");
+          sb.append("</table>\n");
+          sb.append("</center>\n");
+
+        }
+        if (existe) {
+          sb.append("<br>\n");
+          sb.append("</div>\n");
+          sb.append("</td>\n");
+          sb.append("</tr>\n");
+          sb.append("</table>\n");
+        }
+      }
+      sb.append("</td>\n");
+      sb.append("</tr>\n");
+    }
+    sb.append("</table>\n");
+    return sb.toString();
   }
 
   public boolean isVersionControlled() {

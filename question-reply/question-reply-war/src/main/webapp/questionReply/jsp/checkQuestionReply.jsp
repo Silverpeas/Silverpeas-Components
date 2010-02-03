@@ -70,6 +70,7 @@
 <%@ page import="com.stratelia.silverpeas.containerManager.*"%>
 
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
+<%@ page import="com.silverpeas.importExport.report.ExportReport"%>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%

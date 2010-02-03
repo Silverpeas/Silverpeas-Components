@@ -1,0 +1,64 @@
+/*************************************
+Redefinition des style de balises HTML
+*************************************/
+
+TD { 
+	font-family: "Verdana", "Arial", sans-serif; 
+	font-size: 10px
+}
+
+A { 
+	font-family: "Verdana", "Arial", sans-serif; 
+	font-size: 10px; 
+	text-decoration: none; 
+	color: #000000
+}
+
+
+/***************************************
+Definition des class de style Silverpeas
+***************************************/
+
+.question{
+	cursor:pointer;		
+	background-color:#B3BFD1;	
+}
+
+.answer{
+	padding:3px;
+	display:none;	
+}
+
+.answers{
+	border-left: solid; 
+	border-right: solid;
+	border-width: 1px;
+	border-color: #B3BFD1;   
+	background-color: #EDEDED;
+}
+
+.titreCateg{
+	padding:5px;
+	font-size: 11px;
+	font-weight: bold;
+	background-image: url(/silverpeas/questionReply/jsp/icons/fondCateg.gif);
+	background-repeat: repeat-x;
+}
+
+.titreQuestionReponse {
+
+}
+
+.txtBaseline { 
+	font-size: 10px; color: #666666
+}
+
+.tableBoard {
+	border-style: solid;
+	border-width: 1px;
+	border-color: #CCCCCC;
+	background-color: #FFFFFF;
+	background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondBoard.jpg);
+	background-repeat: no-repeat;
+	background-position: right top;
+}

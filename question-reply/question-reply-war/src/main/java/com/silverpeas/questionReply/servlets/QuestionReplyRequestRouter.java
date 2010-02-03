@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
----*/
+ ---*/
 
 package com.silverpeas.questionReply.servlets;
 
@@ -31,6 +31,7 @@ import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.questionReply.control.QuestionReplySessionController;
 import com.silverpeas.questionReply.model.Category;
 import com.silverpeas.questionReply.model.Question;
@@ -41,20 +42,19 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 
 /**
  * Class declaration
- *
- *
  * @author
  */
 public class QuestionReplyRequestRouter extends ComponentRequestRouter {
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for questionReply, returns "questionReply"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for questionReply, returns
+   * "questionReply"
    */
   public String getSessionControlBeanName() {
     return "questionReply";
@@ -62,18 +62,15 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
 
   /**
    * Method declaration
-   *
-   *
    * @param mainSessionCtrl
    * @param componentContext
-   *
    * @return
-   *
    * @see
    */
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    ComponentSessionController component = (ComponentSessionController) new QuestionReplySessionController(
+    ComponentSessionController component =
+        (ComponentSessionController) new QuestionReplySessionController(
         mainSessionCtrl, componentContext,
         "com.silverpeas.questionReply.multilang.questionReplyBundle",
         "com.silverpeas.questionReply.settings.questionReplyIcons");
@@ -82,12 +79,9 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * Extract the container context from the request and save it in the session
-   * controller.
-   *
-   * If this context is null then get the last one from the session controller.
-   *
-   * So the containerContext is the same in the request and the session.
+   * Extract the container context from the request and save it in the session controller. If this
+   * context is null then get the last one from the session controller. So the containerContext is
+   * the same in the request and the session.
    */
   private void resetContainerContext(QuestionReplySessionController scc,
       HttpServletRequest request) {
@@ -121,17 +115,13 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   *
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
-   * @param request
-   *          The entering request. The request rooter need it to get parameters
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
+   * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
-   *         "/questionReply/jsp/questionReply.jsp?flag=user")
+   * "/questionReply/jsp/questionReply.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
@@ -158,13 +148,11 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         request.setAttribute("questions", allQuestions);
 
         /*
-         * if (flag.equals("user")) { // pour le lecteur on affiche les
-         * questions et les réponses sous forme de liste DHTML destination =
-         * "/questionReply/jsp/listQuestionsDHTML.jsp"; } else { // pour les
-         * autres on affiche les questions dans un tableau
-         * request.setAttribute("Flag",flag); request.setAttribute("UserId",
-         * scc.getUserId()); destination =
-         * "/questionReply/jsp/listQuestions.jsp"; }
+         * if (flag.equals("user")) { // pour le lecteur on affiche les questions et les réponses
+         * sous forme de liste DHTML destination = "/questionReply/jsp/listQuestionsDHTML.jsp"; }
+         * else { // pour les autres on affiche les questions dans un tableau
+         * request.setAttribute("Flag",flag); request.setAttribute("UserId", scc.getUserId());
+         * destination = "/questionReply/jsp/listQuestions.jsp"; }
          */
         request.setAttribute("Flag", flag);
         request.setAttribute("UserId", scc.getUserId());
@@ -203,11 +191,10 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
           destination = "/admin/jsp/errorpage.jsp";
       } else if (function.equals("ConsultReceiveQuestions")) {
         /*
-         * scc.setUserProfil(); flag = scc.getUserProfil();
-         * if((flag.equals("admin")) || (flag.equals("writer"))||
-         * (flag.equals("publisher"))) destination =
-         * getDestination("MainQuestions", componentSC, request); else
-         * destination = "/admin/jsp/errorpage.jsp";
+         * scc.setUserProfil(); flag = scc.getUserProfil(); if((flag.equals("admin")) ||
+         * (flag.equals("writer"))|| (flag.equals("publisher"))) destination =
+         * getDestination("MainQuestions", componentSC, request); else destination =
+         * "/admin/jsp/errorpage.jsp";
          */
         destination = getDestination("Main", componentSC, request);
       } else if (function.equals("MainPDC")) {
@@ -264,11 +251,10 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
           scc.closeQuestion(new Long(request.getParameter("QuestionId"))
               .longValue());
           /*
-           * if (flag.equals("admin")) { if (scc.getCurrentQuestion()== null)
-           * destination = getDestination("Main", componentSC, request); else
-           * destination = getDestination("ConsultQuestion", componentSC,
-           * request); } else destination = getDestination("Main", componentSC,
-           * request);
+           * if (flag.equals("admin")) { if (scc.getCurrentQuestion()== null) destination =
+           * getDestination("Main", componentSC, request); else destination =
+           * getDestination("ConsultQuestion", componentSC, request); } else destination =
+           * getDestination("Main", componentSC, request);
            */
           destination = getDestination("Main", componentSC, request);
         } else
@@ -290,8 +276,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         scc.setCurrentQuestion(question);
         /*
          * if (request.getParameter("questionId") != null) scc.getQuestion(new
-         * Long(request.getParameter("questionId")).longValue()); else
-         * scc.getQuestion(new
+         * Long(request.getParameter("questionId")).longValue()); else scc.getQuestion(new
          * Long((String)request.getAttribute("questionId")).longValue());
          */
         // destination = getDestination("ConsultQuestion", componentSC,
@@ -313,31 +298,27 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         destination = "/questionReply/jsp/consultQuestion.jsp";
 
         /*
-         * if(flag.equals("admin")) destination =
-         * "/questionReply/jsp/consultQAdmin.jsp"; else if(flag.equals("user"))
-         * destination = "/questionReply/jsp/consultQUser.jsp"; else
+         * if(flag.equals("admin")) destination = "/questionReply/jsp/consultQAdmin.jsp"; else
+         * if(flag.equals("user")) destination = "/questionReply/jsp/consultQUser.jsp"; else
          * if(flag.equals("publisher")) { if
-         * (scc.getCurrentQuestion().getCreatorId().equals(scc.getUserId())){//
-         * le publisher est l'auteur de la question, if (question.getStatus() ==
-         * 2 && question.getPrivateReplyNumber() == 0) {// le publisher est un
-         * simple user scc.setUserProfil("user"); flag = scc.getUserProfil();
-         * destination = getDestination("ConsultQuestion", componentSC,
-         * request); } else destination =
-         * "/questionReply/jsp/consultQPublisher.jsp"; } else // le publisher
-         * est un simple user { scc.setUserProfil("user"); flag =
-         * scc.getUserProfil(); destination = getDestination("ConsultQuestion",
-         * componentSC, request); } } else if(flag.equals("writer")) {
-         * Collection recipients = scc.getCurrentQuestion().readRecipients();
-         * boolean isRecipient = false; String userId = scc.getUserId(); if
-         * (recipients != null) { Iterator it = recipients.iterator(); while
+         * (scc.getCurrentQuestion().getCreatorId().equals(scc.getUserId())){// le publisher est
+         * l'auteur de la question, if (question.getStatus() == 2 &&
+         * question.getPrivateReplyNumber() == 0) {// le publisher est un simple user
+         * scc.setUserProfil("user"); flag = scc.getUserProfil(); destination =
+         * getDestination("ConsultQuestion", componentSC, request); } else destination =
+         * "/questionReply/jsp/consultQPublisher.jsp"; } else // le publisher est un simple user {
+         * scc.setUserProfil("user"); flag = scc.getUserProfil(); destination =
+         * getDestination("ConsultQuestion", componentSC, request); } } else
+         * if(flag.equals("writer")) { Collection recipients =
+         * scc.getCurrentQuestion().readRecipients(); boolean isRecipient = false; String userId =
+         * scc.getUserId(); if (recipients != null) { Iterator it = recipients.iterator(); while
          * (it.hasNext()) { Recipient recipient = (Recipient) it.next(); if
-         * (recipient.getUserId().equals(userId)) isRecipient = true; } } if
-         * (isRecipient) // le writer est destinataire de la question
-         * destination = "/questionReply/jsp/consultQExpert.jsp"; else // le
-         * writer est potentiellement un publisher {
-         * scc.setUserProfil("publisher"); flag = scc.getUserProfil();
-         * destination = getDestination("ConsultQuestion", componentSC,
-         * request); } } else destination = "/admin/jsp/errorpage.jsp";
+         * (recipient.getUserId().equals(userId)) isRecipient = true; } } if (isRecipient) // le
+         * writer est destinataire de la question destination =
+         * "/questionReply/jsp/consultQExpert.jsp"; else // le writer est potentiellement un
+         * publisher { scc.setUserProfil("publisher"); flag = scc.getUserProfil(); destination =
+         * getDestination("ConsultQuestion", componentSC, request); } } else destination =
+         * "/admin/jsp/errorpage.jsp";
          */
       } else if (function.equals("UpdateQ")) {
         // mettre à jour la question courante
@@ -367,9 +348,8 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
           }
           scc.deleteReplies(listToDelete);
           /*
-           * if (scc.getCurrentQuestion()== null) destination =
-           * getDestination("Main", componentSC, request); else destination =
-           * getDestination("ConsultQuestion", componentSC, request);
+           * if (scc.getCurrentQuestion()== null) destination = getDestination("Main", componentSC,
+           * request); else destination = getDestination("ConsultQuestion", componentSC, request);
            */
           destination = getDestination("Main", componentSC, request);
         } else
@@ -402,11 +382,9 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         /*
          * if((flag.equals("admin")) || (flag.equals("writer"))) {
          * scc.updateCurrentQuestion(request.getParameter("title"),
-         * request.getParameter("content"));
-         * //request.setAttribute("urlToReload", "ConsultQuestion");
-         * request.setAttribute("urlToReload", "Main"); destination =
-         * "/questionReply/jsp/closeWindow.jsp"; } else destination =
-         * "/admin/jsp/errorpage.jsp";
+         * request.getParameter("content")); //request.setAttribute("urlToReload",
+         * "ConsultQuestion"); request.setAttribute("urlToReload", "Main"); destination =
+         * "/questionReply/jsp/closeWindow.jsp"; } else destination = "/admin/jsp/errorpage.jsp";
          */
         scc.updateCurrentQuestion(request.getParameter("title"), request
             .getParameter("content"), request.getParameter("CategoryId"));
@@ -448,15 +426,12 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
           destination = "/admin/jsp/errorpage.jsp";
       } else if (function.equals("EffectiveCreateR")) {
         /*
-         * if((flag.equals("admin")) || (flag.equals("writer"))) { int
-         * publicReply = new
-         * Integer(request.getParameter("publicReply")).intValue(); // 0 =
-         * private, 1 = public
-         * scc.setNewReplyContent(request.getParameter("title"),
-         * request.getParameter("content"), publicReply, 1); scc.saveNewReply();
-         * request.setAttribute("urlToReload", "ConsultQuestion"); destination =
-         * "/questionReply/jsp/closeWindow.jsp"; } else destination =
-         * "/admin/jsp/errorpage.jsp";
+         * if((flag.equals("admin")) || (flag.equals("writer"))) { int publicReply = new
+         * Integer(request.getParameter("publicReply")).intValue(); // 0 = private, 1 = public
+         * scc.setNewReplyContent(request.getParameter("title"), request.getParameter("content"),
+         * publicReply, 1); scc.saveNewReply(); request.setAttribute("urlToReload",
+         * "ConsultQuestion"); destination = "/questionReply/jsp/closeWindow.jsp"; } else
+         * destination = "/admin/jsp/errorpage.jsp";
          */
         int publicReply = new Integer(request.getParameter("publicReply"))
             .intValue(); // 0 = private, 1 = public
@@ -473,8 +448,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         /*
          * if((flag.equals("admin")) || (flag.equals("writer"))) {
          * request.setAttribute("reply",scc.getCurrentReply()); destination =
-         * "/questionReply/jsp/updateR.jsp"; } else destination =
-         * "/admin/jsp/errorpage.jsp";
+         * "/questionReply/jsp/updateR.jsp"; } else destination = "/admin/jsp/errorpage.jsp";
          */
         request.setAttribute("reply", scc.getCurrentReply());
         destination = "/questionReply/jsp/updateR.jsp";
@@ -490,10 +464,9 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("EffectiveUpdateR")) {
         /*
          * if((flag.equals("admin")) || (flag.equals("writer"))) {
-         * scc.updateCurrentReply(request.getParameter("title"),
-         * request.getParameter("content")); request.setAttribute("urlToReload",
-         * "ConsultReply"); destination = "/questionReply/jsp/closeWindow.jsp";
-         * } else destination = "/admin/jsp/errorpage.jsp";
+         * scc.updateCurrentReply(request.getParameter("title"), request.getParameter("content"));
+         * request.setAttribute("urlToReload", "ConsultReply"); destination =
+         * "/questionReply/jsp/closeWindow.jsp"; } else destination = "/admin/jsp/errorpage.jsp";
          */
         scc.updateCurrentReply(request.getParameter("title"), request
             .getParameter("content"));
@@ -518,12 +491,10 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
           destination = "/admin/jsp/errorpage.jsp";
       } else if (function.equals("CreateQueryQR")) {
         /*
-         * scc.setUserProfil(); flag = scc.getUserProfil();
-         * if((flag.equals("admin")) || (flag.equals("writer"))) {
-         * request.setAttribute("question", scc.getNewQuestion());
+         * scc.setUserProfil(); flag = scc.getUserProfil(); if((flag.equals("admin")) ||
+         * (flag.equals("writer"))) { request.setAttribute("question", scc.getNewQuestion());
          * request.setAttribute("reply", scc.getNewReply()); destination =
-         * "/questionReply/jsp/addQR.jsp"; } else destination =
-         * "/admin/jsp/errorpage.jsp";
+         * "/questionReply/jsp/addQR.jsp"; } else destination = "/admin/jsp/errorpage.jsp";
          */
         request.setAttribute("question", scc.getNewQuestion());
         request.setAttribute("reply", scc.getNewReply());
@@ -652,7 +623,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
           SilverTrace.info("questionReply",
               "QuestionReplyRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "questionId = " + questionId
-                  + " replyId = " + id);
+              + " replyId = " + id);
 
           destination = getDestination("Main", scc, request);
         } else if (type.startsWith("Publication")) {
@@ -664,12 +635,17 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
           SilverTrace.info("questionReply",
               "QuestionReplyRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "questionId = " + questionId
-                  + " replyId = " + id);
+              + " replyId = " + id);
 
           destination = getDestination("Main", scc, request);
         } else {
           destination = getDestination("Main", scc, request);
         }
+      } else if (function.equals("Export")) {
+        ResourcesWrapper resource = (ResourcesWrapper) request.getAttribute("resources");
+        ExportReport report = scc.export(resource);
+        request.setAttribute("ExportReport", report);
+        destination = "/questionReply/jsp/downloadZip.jsp";
       } else if (function.startsWith("portlet")) {
         scc.setUserProfil();
         Collection allQuestions = scc.getAllQuestions();
