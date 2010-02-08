@@ -127,6 +127,7 @@
 		cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "GoToCurrentAlbum", false);
 	
 %>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 		<head>
 		<%
@@ -571,7 +572,7 @@ function hideTip() {
 					{
 						%>
 						<br/>
-						<table border="0" CELLPADDING="5">
+						<table align="left" border="0" CELLPADDING="5">
 						<%
 						Iterator it = (Iterator) metaDataKeys.iterator();
 						while (it.hasNext())
@@ -586,7 +587,7 @@ function hideTip() {
 								mdValue = resource.getOutputDateAndHour(metaData.getDateValue());
 							// affichage
 							%>
-								<tr>
+								<tr align="left">
 									<td class="txtlibform" nowrap valign="top"><%=mdLabel%> :</td>
 									<td><%=mdValue%></td>
 								</tr>
@@ -604,8 +605,8 @@ function hideTip() {
 	</td>
 	<td> 
 		<%=board.printBefore()%>		
-		<table>
-			<tr>
+		<table align="left">
+			<tr align="left">
 				<td class="txtlibform"> <%=resource.getString("gallery.photo")%> :</td>
 		      	<td><input type="file" name="WAIMGVAR0" size="60">
 		      		<% if (vignette_url == null) { %>
@@ -613,28 +614,28 @@ function hideTip() {
 		      		<% } %>
 		      	</td>
 			</tr> 			
-			<tr>
+			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("gallery.nomFic")%> :</td>
 				<td class="txtlibform"><%=nameFile%></td>
 			</tr>
-			<tr>
+			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("GML.title")%> :</td>
 				<TD><input type="text" name="<%=ParameterNames.ImageTitle%>" size="60" maxlength="150" value="<%=Encode.javaStringToHtmlString(title)%>">
 					<input type="hidden" name="PhotoId" value="<%=photoId%>"> </td>
 			</tr>
-			<tr>
+			<tr align="left">
 				<td class="txtlibform"> <%=resource.getString("GML.description")%> :</td>
 				<TD><input type="text" name="<%=ParameterNames.ImageDescription%>" size="60" maxlength="150" value="<%=Encode.javaStringToHtmlString(description)%>" ></TD>
 			</tr>
-			<tr>
+			<tr align="left">
 				<td class="txtlibform"> <%=resource.getString("GML.author")%> :</td>
 				<TD><input type="text" name="<%=ParameterNames.ImageAuthor%>" size="60" maxlength="150" value="<%=Encode.javaStringToHtmlString(author)%>" ></TD>
 			</tr>
-			<tr>
+			<tr align="left">
 				<td class="txtlibform"> <%=resource.getString("gallery.keyWord")%> :</td>
 				<TD><input type="text" name="<%=ParameterNames.ImageKeyWord%>" size="60" maxlength="150" value="<%=Encode.javaStringToHtmlString(keyWord)%>" ></TD>
 			</tr>
-			<tr>
+			<tr align="left">
 				<td class="txtlibform"> <%=resource.getString("gallery.download")%> :</td>
 				<%
 					String downloadCheck = "";
@@ -643,28 +644,28 @@ function hideTip() {
 				%>
 			    <td><input type="checkbox" name="<%=ParameterNames.ImageDownload%>" value="true" <%=downloadCheck%>></td>
 			</tr>
-			<tr>
+			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("gallery.beginDownloadDate")%> :</td>
 				<TD><input type="text" name="<%=ParameterNames.ImageBeginDownloadDate%>" size="12" maxlength="10" value=<%=beginDownloadDate%>>&nbsp;</TD>
 			</tr>
-			<tr>
+			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("gallery.endDownloadDate")%> :</td>
 				<TD><input type="text" name="<%=ParameterNames.ImageEndDownloadDate%>" size="12" maxlength="10" value=<%=endDownloadDate%>>&nbsp;</TD>
 			</tr>
-			<tr>
+			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("gallery.beginDate")%> :</td>
 				<TD><input type="text" name="<%=ParameterNames.ImageBeginDate%>" size="12" maxlength="10" value=<%=beginDate%>>&nbsp;</TD>
 			</tr>
-			<tr>
+			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("gallery.endDate")%> :</td>
 				<TD><input type="text" name="<%=ParameterNames.ImageEndDate%>" size="12" maxlength="10" value=<%=endDate%>>&nbsp;</TD>
 			</tr>
-			<tr>
+			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("gallery.creationDate")%> :</td>
 				<TD><%=creationDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=creatorName%></TD>
 			</tr>
 			<% if (updateDate != null && updateName != null) { %>
-				<tr>
+				<tr align="left">
 					<td class="txtlibform"><%=resource.getString("gallery.updateDate")%> :</td>
 					<TD><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=updateName%></TD>
 				</tr>
@@ -676,7 +677,7 @@ function hideTip() {
 	  				<%=board.printBefore()%>
 					<!-- AFFICHAGE du formulaire -->
 					<table>
-					<tr>
+					<tr align="left">
 						<td>
 							<% 
 								formUpdate.display(out, context, data); 

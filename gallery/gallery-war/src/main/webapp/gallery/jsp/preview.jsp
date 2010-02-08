@@ -94,7 +94,7 @@
 	
 	Board board	= gef.getBoard();
 %>
-
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
 <%
@@ -246,36 +246,36 @@ function goToNotify(url)
 	<tr>
 		<td align="center">
 			<%=board.printBefore()%>
-			<table border="0" CELLPADDING="5">
+			<table align="left" border="0" CELLPADDING="5">
 				<!-- AFFICHAGE des données de la photo -->
 				<%	if ( link != null && !link.equals("")) {	%>
-					<tr>
+					<tr align="left">
 						<td class="txtlibform" nowrap><%=resource.getString("gallery.permalink")%> :</td>
 						<td><a href=<%=link%> ><img src=<%=resource.getIcon("gallery.link")%> border="0" alt='<%=resource.getString("gallery.CopyPhotoLink")%>' title='<%=resource.getString("gallery.CopyPhotoLink")%>' ></a></td>
 					</tr>
 				<%	}	
 				if ( title != null && !title.equals(name)) {	%>
-					<tr>
+					<tr align="left">
 						<td class="txtlibform" nowrap><%=resource.getString("GML.title")%> :</td>
 						<td><%=title%></td>
 					</tr>
 				<%	}	
 				if ( description != null && !description.equals("") ) {	%>
-					<tr>
+					<tr align="left">
 						<td class="txtlibform" nowrap><%=resource.getString("GML.description")%> :</td>
 						<td><%=description%></td>
 					</tr>
 				<%	}	
 						if (linkDownload || photo.isDownloadable()) 
 						{ %>
-						<tr>
+						<tr align="left">
 							<td class="txtlibform" nowrap><%=resource.getString("gallery.originale")%> :</td>
 							<td><a href="<%=lien%>" target=_blank><%=Encode.javaStringToHtmlString(resource.getString("gallery.telecharger"))%></a></td>
 						</tr>
 						
 						<% if (!lienWatermark.equals(""))
 							{%>
-						<tr>
+						<tr align="left">
 							<td class="txtlibform" nowrap><%=resource.getString("gallery.originaleWatermark")%> :</td>
 							<td><a href="<%=lienWatermark%>" target=_blank><%=Encode.javaStringToHtmlString(resource.getString("gallery.telecharger"))%></a></td>
 						</tr>
@@ -283,7 +283,7 @@ function goToNotify(url)
 						} %>
 						
 						<% if (photo.isDownload() && (photo.getBeginDownloadDate() != null || photo.getEndDownloadDate() != null)) { %>
-						<tr>
+						<tr align="left">
 							<td class="txtlibform" nowrap><%=resource.getString("gallery.beginDownloadDate")%> :</td>
 							<TD><%=beginDownloadDate%>
 							<% if (photo.getEndDownloadDate() != null) { %>
@@ -293,7 +293,7 @@ function goToNotify(url)
 						</tr>
 						<% } %>
 				<% if (photo.getBeginDate() != null || photo.getEndDate() != null) { %>
-					<tr>
+					<tr align="left">
 						<td class="txtlibform" nowrap><%=resource.getString("gallery.beginDate")%> :</td>
 						<TD><%=beginDate%>
 						<% if (photo.getEndDate() != null) { %>
@@ -316,42 +316,42 @@ function goToNotify(url)
 			
 				<% 
 				if ( name != null ) {	%>
-					<tr>
+					<tr align="left">
 						<td class="txtlibform" nowrap><%=resource.getString("gallery.nomFic")%> :</td>
 						<td><%=name%></td>
 					</tr>
 				<%	}
 				if ( size != 0 ) {	%>
-					<tr>
+					<tr align="left">
 						<td class="txtlibform" nowrap><%=resource.getString("gallery.poids")%> :</td>
 						<td><%=FileRepositoryManager.formatFileSize(size)%></td>
 					</tr>
 				<%	}	
 				if ( height != 0 ) {	%>
-					<tr>
+					<tr align="left">
 						<td class="txtlibform" nowrap><%=resource.getString("gallery.taille")%> :</td>
 						<td><%=width%> x <%=height%> <%=resource.getString("gallery.pixels")%> </td>
 					</tr>
 				<%	}
 				if ( author != null && !author.equals("") ) {	%>
-					<tr>
+					<tr align="left">
 						<td class="txtlibform" nowrap><%=resource.getString("GML.author")%> :</td>
 						<td><%=author%></td>
 					</tr>
 				<%	}	%>
-				<tr>
+				<tr align="left">
 					<td class="txtlibform" nowrap><%=resource.getString("gallery.creationDate")%> :</td>
 					<td><%=creationDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=creatorName%></td>
 				</tr>
 				<% if (updateDate != null && updateName != null) { %>
-					<tr>
+					<tr align="left">
 						<td class="txtlibform" nowrap><%=resource.getString("gallery.updateDate")%> :</td>
 						<td><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("gallery.par")%></span>&nbsp;<%=updateName%></td>
 					</tr>
 				<%	} 
 				if ( keyWord != null && !keyWord.equals("") ) 
 				{ %>
-					<tr>
+					<tr align="left">
 					<td class="txtlibform" nowrap><%=resource.getString("gallery.keyWord")%> :</td>
 					<td>
 					<%
@@ -375,7 +375,7 @@ function goToNotify(url)
 					{
 						out.println("<br/>");
 						out.println(board.printBefore());
-						out.println("<table border=\"0\" CELLPADDING=\"5\">");
+						out.println("<table align=\"left\" border=\"0\" CELLPADDING=\"5\">");
 						Iterator it = (Iterator) metaDataKeys.iterator();
 						while (it.hasNext())
 						{
@@ -389,7 +389,7 @@ function goToNotify(url)
 								mdValue = resource.getOutputDateAndHour(metaData.getDateValue());
 							// affichage
 							%>
-								<tr>
+								<tr align="left">
 									<td class="txtlibform" nowrap valign="top"><%=mdLabel%> :</td>
 									<td><%=mdValue%></td>
 								</tr>
@@ -405,9 +405,9 @@ function goToNotify(url)
 					<br/>
 									
 					<%=board.printBefore()%>
-					<table border="0" width="50%">
+					<table align="left" border="0" width="50%">
 					<!-- AFFICHAGE du formulaire -->
-						<tr>
+						<tr align="left">
 							<td colspan="2">
 							<%
 								PagesContext xmlContext = new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, gallerySC.getUserId(), gallerySC.getAlbum(gallerySC.getCurrentAlbumId()).getNodePK().getId());
