@@ -194,7 +194,7 @@ function goToNotify(url)
     out.println(frame.printBefore());
 %>
 <table CELLPADDING=5 WIDTH="100%">
-<FORM Name="photoForm" Method="POST">
+<FORM Name="photoForm" Method="POST" accept-charset="UTF-8">
 	<tr>
 	<!-- AFFICHAGE des boutons de navigation -->
 		<td align="center">

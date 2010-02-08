@@ -360,7 +360,8 @@
     out.println(board.printBefore());
     
 %>
-<FORM Name="photoForm" action="<%=action%>" Method="POST" ENCTYPE="multipart/form-data">
+<FORM Name="photoForm" action="<%=action%>" Method="POST" ENCTYPE="multipart/form-data" accept-charset="UTF-8">
+
 <table CELLPADDING="5" WIDTH="100%">
 	<tr>
 		<td class="txtlibform"> <%=resource.getString("gallery.photo")%> :</td>
