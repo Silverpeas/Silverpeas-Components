@@ -33,8 +33,7 @@ import com.stratelia.webactiv.persistence.IdPK;
 /**
  * The questionReply implementation of SilverContentInterface
  */
-public final class QuestionHeader extends AbstractI18NBean implements
-    SilverContentInterface {
+public final class QuestionHeader extends AbstractI18NBean implements SilverContentInterface {
   private long id;
   private String label;
   private String instanceId;

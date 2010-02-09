@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
+ ---*/
 
 package com.silverpeas.questionReply.control;
 
@@ -108,10 +108,10 @@ public class ExpertPanel extends PanelProvider {
           && (filters[FILTER_FIRSTNAME].length() > 0)) {
         if ((user.getFirstName() == null)
             || (filters[FILTER_FIRSTNAME].length() > user.getFirstName()
-                .length())
+            .length())
             || (!user.getFirstName().substring(0,
-                filters[FILTER_FIRSTNAME].length()).equalsIgnoreCase(
-                filters[FILTER_FIRSTNAME]))) {
+            filters[FILTER_FIRSTNAME].length()).equalsIgnoreCase(
+            filters[FILTER_FIRSTNAME]))) {
           keepit = false;
         }
       }
@@ -121,8 +121,8 @@ public class ExpertPanel extends PanelProvider {
         if ((user.getLastName() == null)
             || (filters[FILTER_LASTNAME].length() > user.getLastName().length())
             || (!user.getLastName().substring(0,
-                filters[FILTER_LASTNAME].length()).equalsIgnoreCase(
-                filters[FILTER_LASTNAME]))) {
+            filters[FILTER_LASTNAME].length()).equalsIgnoreCase(
+            filters[FILTER_LASTNAME]))) {
           keepit = false;
         }
       }
@@ -133,8 +133,10 @@ public class ExpertPanel extends PanelProvider {
     m_Ids = (String[]) ids.toArray(new String[0]);
 
     // Set search tokens values
-    ((PanelSearchEdit) m_SearchTokens[FILTER_FIRSTNAME]).m_Text = getSureString(filters[FILTER_FIRSTNAME]);
-    ((PanelSearchEdit) m_SearchTokens[FILTER_LASTNAME]).m_Text = getSureString(filters[FILTER_LASTNAME]);
+    ((PanelSearchEdit) m_SearchTokens[FILTER_FIRSTNAME]).m_Text =
+        getSureString(filters[FILTER_FIRSTNAME]);
+    ((PanelSearchEdit) m_SearchTokens[FILTER_LASTNAME]).m_Text =
+        getSureString(filters[FILTER_LASTNAME]);
     verifIndexes();
   }
 

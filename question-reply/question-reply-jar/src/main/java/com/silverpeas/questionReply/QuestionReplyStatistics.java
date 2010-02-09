@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
+ ---*/
 
 package com.silverpeas.questionReply;
 
@@ -66,8 +66,6 @@ import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class QuestionReplyStatistics implements ComponentStatisticsInterface {

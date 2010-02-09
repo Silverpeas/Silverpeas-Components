@@ -47,5 +47,9 @@
       <artifactId>whitepages-jar</artifactId>
       <version>1.0-RC2-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+    </dependency>
   </dependencies>
 </project>

@@ -37,8 +37,7 @@ import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciato
 import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public class QuestionReplyInstanciator extends SQLRequest implements
-    ComponentsInstanciatorIntf {
+public class QuestionReplyInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
   /** Creates new QuestionReplyInstanciator */
   public QuestionReplyInstanciator() {
@@ -59,13 +58,9 @@ public class QuestionReplyInstanciator extends SQLRequest implements
 
   /**
    * Delete all data of one website instance from the website table.
-   * 
-   * @param con
-   *          (Connection) the connection to the data base
-   * @param componentId
-   *          (String) the instance id of the Silverpeas component website.
-   * @param suffixName
-   *          (String) the suffixe of a website table
+   * @param con (Connection) the connection to the data base
+   * @param componentId (String) the instance id of the Silverpeas component website.
+   * @param suffixName (String) the suffixe of a website table
    */
   private void deleteDataOfInstance(Connection con, String componentId,
       String suffixName) throws InstanciationException {

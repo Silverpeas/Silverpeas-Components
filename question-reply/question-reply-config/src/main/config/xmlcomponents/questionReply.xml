@@ -53,5 +53,18 @@
          	<ParameterHelpEn></ParameterHelpEn>
 		</ParameterHelp>
 	</Parameter>
+    <Parameter>
+		<ParameterName>sortable</ParameterName>
+		<ParameterLabel>Questions triées par ordre</ParameterLabel>
+		<ParameterType>checkbox</ParameterType>
+		<ParameterValue>no</ParameterValue>
+		<ParameterMandatory>N</ParameterMandatory>
+		<ParameterUpdatable>always</ParameterUpdatable>
+    	<ParameterOrder>2</ParameterOrder>
+		<ParameterHelp>
+         	<ParameterHelpFr>Possibilité de trier les question</ParameterHelpFr>
+         	<ParameterHelpEn>Questions are sortable</ParameterHelpEn>
+		</ParameterHelp>
+	</Parameter>
   </Parameters>
 </WAComponent>

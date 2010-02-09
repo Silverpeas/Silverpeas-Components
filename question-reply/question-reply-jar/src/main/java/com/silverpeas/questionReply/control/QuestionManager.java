@@ -33,8 +33,10 @@ import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Recipient;
 import com.silverpeas.questionReply.model.Reply;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
@@ -47,15 +49,17 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+import java.util.Collections;
+import java.util.List;
 
 public class QuestionManager {
+
   private static QuestionManager instance;
-
-  private SilverpeasBeanDAO Qdao = null;
-  private SilverpeasBeanDAO Rdao = null;
-  private SilverpeasBeanDAO Udao = null;
-
+  private SilverpeasBeanDAO questionDao = null;
+  private SilverpeasBeanDAO replyDao = null;
+  private SilverpeasBeanDAO recipientDao = null;
   private QuestionReplyContentManager contentManager = null;
+  private OrganizationController controller = new OrganizationController();
 
   private QuestionManager() {
   }
@@ -68,35 +72,37 @@ public class QuestionManager {
   }
 
   static public QuestionManager getInstance() {
-    if (instance == null)
+    if (instance == null) {
       instance = new QuestionManager();
+    }
     return instance;
   }
 
   private SilverpeasBeanDAO getQdao() throws PersistenceException {
-    if (Qdao == null)
-      Qdao = SilverpeasBeanDAOFactory
-          .getDAO("com.silverpeas.questionReply.model.Question");
-    return Qdao;
+    if (questionDao == null) {
+      questionDao = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.questionReply.model.Question");
+    }
+    return questionDao;
   }
 
   private SilverpeasBeanDAO getRdao() throws PersistenceException {
-    if (Rdao == null)
-      Rdao = SilverpeasBeanDAOFactory
-          .getDAO("com.silverpeas.questionReply.model.Reply");
-    return Rdao;
+    if (replyDao == null) {
+      replyDao = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.questionReply.model.Reply");
+    }
+    return replyDao;
   }
 
   private SilverpeasBeanDAO getUdao() throws PersistenceException {
-    if (Udao == null)
-      Udao = SilverpeasBeanDAOFactory
-          .getDAO("com.silverpeas.questionReply.model.Recipient");
-    return Udao;
+    if (recipientDao == null) {
+      recipientDao =
+          SilverpeasBeanDAOFactory.getDAO("com.silverpeas.questionReply.model.Recipient");
+    }
+    return recipientDao;
   }
 
   /*
-   * enregistre une question et ses destinataires (attention les destinataires
-   * n'ont pas de questionId)
+   * enregistre une question et ses destinataires (attention les destinataires n'ont pas de
+   * questionId)
    */
   public long createQuestion(Question question) throws QuestionReplyException {
     long idQ = -1;
@@ -170,8 +176,8 @@ public class QuestionManager {
   }
 
   /*
-   * enregistre une réponse à une question => met à jour publicReplyNumber et/ou
-   * privateReplyNumber et replyNumber de la question ainsi que le status à 1
+   * enregistre une réponse à une question => met à jour publicReplyNumber et/ou privateReplyNumber
+   * et replyNumber de la question ainsi que le status à 1
    */
   public long createReply(Reply reply, Question question)
       throws QuestionReplyException {
@@ -184,8 +190,9 @@ public class QuestionManager {
       IdPK pkR = (IdPK) daoR.add(con, reply);
       createReplyIndex(reply);
       idR = pkR.getIdAsLong();
-      if (question.getStatus() == 0)
+      if (question.getStatus() == 0) {
         question.setStatus(1);
+      }
       updateQuestion(con, question);
       succeed = true;
     } catch (UtilException e) {
@@ -315,8 +322,7 @@ public class QuestionManager {
   }
 
   /*
-   * Modifie les destinataires d'une question : deleteRecipients,
-   * createRecipient
+   * Modifie les destinataires d'une question : deleteRecipients, createRecipient
    */
   public void updateQuestionRecipients(Question question)
       throws QuestionReplyException {
@@ -351,10 +357,9 @@ public class QuestionManager {
   }
 
   /*
-   * Affecte le status public à 0 de toutes les réponses d'une liste de
-   * questions : updateReply Affecte le nombre de réponses publiques de la
-   * question à 0 : updateQuestion si question en attente, on a demandé à la
-   * supprimer : deleteQuestion
+   * Affecte le status public à 0 de toutes les réponses d'une liste de questions : updateReply
+   * Affecte le nombre de réponses publiques de la question à 0 : updateQuestion si question en
+   * attente, on a demandé à la supprimer : deleteQuestion
    */
   public void updateQuestionRepliesPublicStatus(Collection questionIds)
       throws QuestionReplyException {
@@ -402,9 +407,8 @@ public class QuestionManager {
   }
 
   /*
-   * Affecte le status private à 0 de toutes les réponses d'une liste de
-   * questions : updateReply Affecte le nombre de réponses privées de la
-   * question à 0 : updateQuestion
+   * Affecte le status private à 0 de toutes les réponses d'une liste de questions : updateReply
+   * Affecte le nombre de réponses privées de la question à 0 : updateQuestion
    */
   public void updateQuestionRepliesPrivateStatus(Collection questionIds)
       throws QuestionReplyException {
@@ -453,9 +457,8 @@ public class QuestionManager {
   }
 
   /*
-   * Affecte le status public à 0 d'une liste de réponses : updateReply
-   * Décremente le nombre de réponses publiques de la question d'autant :
-   * updateQuestion
+   * Affecte le status public à 0 d'une liste de réponses : updateReply Décremente le nombre de
+   * réponses publiques de la question d'autant : updateQuestion
    */
   public void updateRepliesPublicStatus(Collection replyIds, Question question)
       throws QuestionReplyException {
@@ -493,9 +496,8 @@ public class QuestionManager {
   }
 
   /*
-   * Affecte le status private à 0 d'une liste de réponses : updateReply
-   * Décremente le nombre de réponses privées de la question d'autant :
-   * updateQuestion
+   * Affecte le status private à 0 d'une liste de réponses : updateReply Décremente le nombre de
+   * réponses privées de la question d'autant : updateQuestion
    */
   public void updateRepliesPrivateStatus(Collection replyIds, Question question)
       throws QuestionReplyException {
@@ -533,9 +535,9 @@ public class QuestionManager {
   }
 
   /*
-   * Modifie une question => la question est supprimée si publicReplyNumber et
-   * privateReplyNumber sont à 0 et que la question est close => met à jour
-   * publicReplyNumber et/ou privateReplyNumber et replyNumber de la question
+   * Modifie une question => la question est supprimée si publicReplyNumber et privateReplyNumber
+   * sont à 0 et que la question est close => met à jour publicReplyNumber et/ou privateReplyNumber
+   * et replyNumber de la question
    */
   private void updateQuestion(Connection con, Question question)
       throws QuestionReplyException {
@@ -553,8 +555,7 @@ public class QuestionManager {
         createQuestionIndex(question);
 
         question.getPK().setComponentName(question.getInstanceId());
-        getQuestionReplyContentManager()
-            .updateSilverContentVisibility(question);
+        getQuestionReplyContentManager().updateSilverContentVisibility(question);
       }
     } catch (Exception e) {
       throw new QuestionReplyException("QuestionManager.updateQuestion",
@@ -564,9 +565,9 @@ public class QuestionManager {
   }
 
   /*
-   * Modifie une question => la question est supprimée si publicReplyNumber et
-   * privateReplyNumber sont à 0 et que la question est close => met à jour
-   * publicReplyNumber et/ou privateReplyNumber et replyNumber de la question
+   * Modifie une question => la question est supprimée si publicReplyNumber et privateReplyNumber
+   * sont à 0 et que la question est close => met à jour publicReplyNumber et/ou privateReplyNumber
+   * et replyNumber de la question
    */
   public void updateQuestion(Question question) throws QuestionReplyException {
     try {
@@ -582,8 +583,7 @@ public class QuestionManager {
         daoQ.update(question);
         createQuestionIndex(question);
         question.getPK().setComponentName(question.getInstanceId());
-        getQuestionReplyContentManager()
-            .updateSilverContentVisibility(question);
+        getQuestionReplyContentManager().updateSilverContentVisibility(question);
       }
     } catch (Exception e) {
       throw new QuestionReplyException("QuestionManager.updateQuestion",
@@ -593,8 +593,8 @@ public class QuestionManager {
   }
 
   /*
-   * Modifie une réponse => La réponse est supprimée si le status public et le
-   * status private sont à 0
+   * Modifie une réponse => La réponse est supprimée si le status public et le status private sont à
+   * 0
    */
   private void updateReply(Connection con, Reply reply)
       throws QuestionReplyException {
@@ -615,8 +615,8 @@ public class QuestionManager {
   }
 
   /*
-   * Modifie une réponse => La réponse est supprimée si le status public et le
-   * status private sont à 0
+   * Modifie une réponse => La réponse est supprimée si le status public et le status private sont à
+   * 0
    */
   public void updateReply(Reply reply) throws QuestionReplyException {
     try {
@@ -919,7 +919,7 @@ public class QuestionManager {
       IdPK pk = new IdPK();
       replies = daoR.findByWhereClause(pk,
           " privateReply = 1 and questionId = "
-              + new Long(questionId).toString());
+          + new Long(questionId).toString());
     } catch (PersistenceException e) {
       throw new QuestionReplyException(
           "QuestionManager.getQuestionPrivateReplies",
@@ -965,8 +965,8 @@ public class QuestionManager {
   }
 
   /*
-   * Recupère la liste des questions emises par un utilisateur => Q dont il est
-   * l'auteur qui ne sont pas closes ou closes avec réponses privées
+   * Recupère la liste des questions emises par un utilisateur => Q dont il est l'auteur qui ne sont
+   * pas closes ou closes avec réponses privées
    */
   public Collection getSendQuestions(String userId, String instanceId)
       throws QuestionReplyException {
@@ -986,8 +986,8 @@ public class QuestionManager {
   }
 
   /*
-   * Recupère la liste des questions recues par un utilisateur => Q dont il est
-   * le destinataire et qui ne sont pas closes
+   * Recupère la liste des questions recues par un utilisateur => Q dont il est le destinataire et
+   * qui ne sont pas closes
    */
   public Collection getReceiveQuestions(String userId, String instanceId)
       throws QuestionReplyException {
@@ -995,13 +995,14 @@ public class QuestionManager {
     try {
       SilverpeasBeanDAO daoQ = getQdao();
       IdPK pk = new IdPK();
-      questions = daoQ
-          .findByWhereClause(
+      questions =
+          daoQ.findByWhereClause(
               pk,
               " instanceId = '"
-                  + instanceId
-                  + "' and status <> 2 and id IN (select questionId from SC_QuestionReply_Recipient where userId = "
-                  + userId + ")");
+              + instanceId
+              +
+              "' and status <> 2 and id IN (select questionId from SC_QuestionReply_Recipient where userId = "
+              + userId + ")");
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getReceiveQuestions",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_QUESTIONS", "",
@@ -1011,25 +1012,19 @@ public class QuestionManager {
   }
 
   /*
-   * Recupère la liste des questions qui ne sont pas closes ou closes avec
-   * réponses publiques
+   * Recupère la liste des questions qui ne sont pas closes ou closes avec réponses publiques
    */
-  public Collection getQuestions(String instanceId)
+  public Collection<Question> getQuestions(String instanceId)
       throws QuestionReplyException {
-    Collection questions = new ArrayList();
+    Collection<Question> questions = new ArrayList<Question>();
     try {
       SilverpeasBeanDAO daoQ = getQdao();
       IdPK pk = new IdPK();
-      questions = daoQ
-          .findByWhereClause(
-              pk,
-              " instanceId = '"
-                  + instanceId
-                  + "' and  (status <> 2 or publicReplyNumber > 0) order by creationdate desc, id desc");
+      questions = daoQ.findByWhereClause(pk, " instanceId = '" + instanceId
+          + "' and  (status <> 2 or publicReplyNumber > 0) order by creationdate desc, id desc");
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestions",
-          SilverpeasException.ERROR, "questionReply.EX_CANT_GET_QUESTIONS", "",
-          e);
+          SilverpeasException.ERROR, "questionReply.EX_CANT_GET_QUESTIONS", "", e);
     }
     return questions;
   }
@@ -1037,43 +1032,38 @@ public class QuestionManager {
   /*
    * Recupère la liste de toutes les questions avec toutes ses réponses
    */
-  public Collection getAllQuestions(String instanceId)
+  public Collection<Question> getAllQuestions(String instanceId)
       throws QuestionReplyException {
-    Collection questions = new ArrayList();
-    Collection q = getQuestions(instanceId);
-    Iterator it = q.iterator();
-    while (it.hasNext()) {
-      Question question = (Question) it.next();
+    List<Question> questions = new ArrayList<Question>();
+    Collection<Question> allQuestions = getQuestions(instanceId);
+    for (Question question : allQuestions) {
       question = getQuestionAndReplies(Long.parseLong(question.getPK().getId()));
       questions.add(question);
+    }
+    if (isSortable(instanceId)) {
+      Collections.sort(questions, QuestionRegexpComparator.getInstance());
     }
     return questions;
   }
 
-  public Collection getAllQuestionsByCategory(String instanceId,
+  public Collection<Question> getAllQuestionsByCategory(String instanceId,
       String categoryId) throws QuestionReplyException {
-    Collection questions = new ArrayList();
-    Collection q = getQuestions(instanceId);
-    Iterator it = q.iterator();
-    while (it.hasNext()) {
-      Question question = (Question) it.next();
-
-      if ((question.getCategoryId() == null || question.getCategoryId().equals(
-          ""))
-          && categoryId == null) {
+    List<Question> questions = new ArrayList<Question>();
+    Collection<Question> allQuestions = getQuestions(instanceId);
+    for (Question question : allQuestions) {
+      if (!StringUtil.isDefined(question.getCategoryId()) && categoryId == null) {
         // la question est sans catégorie
-        question = getQuestionAndReplies(Long.parseLong(question.getPK()
-            .getId()));
+        question = getQuestionAndReplies(Long.parseLong(question.getPK().getId()));
         questions.add(question);
-      } else if (categoryId != null
-          && (question.getCategoryId() != null && !question.getCategoryId()
-              .equals(""))) {
+      } else if (categoryId != null && StringUtil.isDefined(question.getCategoryId())) {
         if (question.getCategoryId().equals(categoryId)) {
-          question = getQuestionAndReplies(Long.parseLong(question.getPK()
-              .getId()));
+          question = getQuestionAndReplies(Long.parseLong(question.getPK().getId()));
           questions.add(question);
         }
       }
+    }
+    if (isSortable(instanceId)) {
+      Collections.sort(questions, QuestionRegexpComparator.getInstance());
     }
     return questions;
   }
@@ -1163,7 +1153,7 @@ public class QuestionManager {
       IdPK pk = new IdPK();
       Collection replies = daoR.findByWhereClause(pk,
           " publicReply = 1 and questionId = "
-              + new Long(questionId).toString());
+          + new Long(questionId).toString());
       nb = replies.size();
     } catch (PersistenceException e) {
       throw new QuestionReplyException(
@@ -1184,7 +1174,7 @@ public class QuestionManager {
       IdPK pk = new IdPK();
       Collection replies = daoR.findByWhereClause(pk,
           " privateReply = 1 and questionId = "
-              + new Long(questionId).toString());
+          + new Long(questionId).toString());
       nb = replies.size();
     } catch (PersistenceException e) {
       throw new QuestionReplyException(
@@ -1196,7 +1186,7 @@ public class QuestionManager {
 
   private void closeConnection(Connection con, boolean succeed)
       throws QuestionReplyException {
-    if (con != null)
+    if (con != null) {
       try {
         con.close();
       } catch (SQLException e) {
@@ -1204,5 +1194,11 @@ public class QuestionManager {
             SilverpeasException.ERROR,
             "questionReply.EX_CREATE_QUESTION_FAILED", "", e);
       }
+    }
+  }
+
+  protected boolean isSortable(String instanceId) {
+    return StringUtil
+        .getBooleanValue(controller.getComponentParameterValue(instanceId, "sortable"));
   }
 }
