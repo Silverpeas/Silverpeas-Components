@@ -42,8 +42,9 @@
   </tableList>
   <Profiles>
     <Profile name="admin">Gestionnaire</Profile>	
+    <Profile name="publisher">Publieur</Profile>
     <Profile name="userMultiple">Participants multiples</Profile>
-    <Profile name="userClassic">Participants</Profile>
+    <Profile name="user">Participants</Profile>
   </Profiles>
   <Parameters>
 	<Parameter>

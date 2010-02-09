@@ -41,15 +41,26 @@ import com.stratelia.webactiv.survey.control.SurveySessionController;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail;
 
 public class SurveyRequestRouter extends ComponentRequestRouter {
 
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
   public String getFlag(String[] profiles) {
-    String flag = "userClassic";
+    String flag = "user";
     for (int i = 0; i < profiles.length; i++) {
-      if (profiles[i].equals("userMultiple"))
+      if (profiles[i].equals("publisher")) {
         flag = profiles[i];
+      }
+      else if (profiles[i].equals("userMultiple")) {
+        if (!flag.equals("publisher")) {
+          flag = profiles[i];
+        }
+      }
+
       // if admin, return it, we won't find a better profile
       if (profiles[i].equals("admin"))
         return profiles[i];
@@ -128,13 +139,11 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
         surveySC.closeSurvey(surveyId);
 
         // supprimer les participations
-        QuestionContainerDetail survey = surveySC.getSurvey(surveyId);
         surveySC.deleteVotes(surveyId);
       } catch (Exception e) {
         SilverTrace.warn("Survey", "SurveyRequestRouter.getDestination()",
             "root.EX_USERPANEL_FAILED", "function = " + function, e);
       }
-
       destination = rootDest + "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=" + surveyId;
     }
     /*

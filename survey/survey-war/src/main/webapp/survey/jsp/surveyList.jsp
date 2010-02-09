@@ -121,15 +121,15 @@
           if (survey.getPermalink() != null)
             link =
                 "&nbsp;<a href=\"" + survey.getPermalink() + "\"><img src=\"" + linkSrc +
-                    "\" border=\"0\" align=\"bottom\" alt=\"" +
-                    resources.getString("survey.CopySurveyLink") + "\" title=\"" +
-                    resources.getString("survey.CopySurveyLink") + "\"></a>";
+                "\" border=\"0\" align=\"bottom\" alt=\"" +
+                resources.getString("survey.CopySurveyLink") + "\" title=\"" +
+                resources.getString("survey.CopySurveyLink") + "\"></a>";
 
           //arrayLine.addArrayCellLink(survey.getTitle()+link, "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId="+survey.getPK().getId());
           ArrayCellText arrayCellText0 =
               arrayLine
-                  .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
-                      survey.getPK().getId() + "\">" + survey.getTitle() + "</a>" + link);
+              .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
+              survey.getPK().getId() + "\">" + survey.getTitle() + "</a>" + link);
           arrayCellText0.setCompareOn(survey.getTitle());
 
           if (survey.getEndDate() == null)
@@ -177,14 +177,14 @@
           if (survey.getPermalink() != null)
             link =
                 "&nbsp;<a href=\"" + survey.getPermalink() + "\"><img src=\"" + linkSrc +
-                    "\" border=\"0\" align=\"bottom\" alt=\"" +
-                    resources.getString("survey.CopySurveyLink") + "\" title=\"" +
-                    resources.getString("survey.CopySurveyLink") + "\"></a>";
+                "\" border=\"0\" align=\"bottom\" alt=\"" +
+                resources.getString("survey.CopySurveyLink") + "\" title=\"" +
+                resources.getString("survey.CopySurveyLink") + "\"></a>";
 
           ArrayCellText arrayCellText =
               arrayLine
-                  .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
-                      survey.getPK().getId() + "\">" + survey.getTitle() + "</a>" + link);
+              .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
+              survey.getPK().getId() + "\">" + survey.getTitle() + "</a>" + link);
           arrayCellText.setCompareOn(survey.getTitle());
 
           if (survey.getBeginDate() == null)
@@ -263,14 +263,14 @@
           if (survey.getPermalink() != null)
             link =
                 "&nbsp;<a href=\"" + survey.getPermalink() + "\"><img src=\"" + linkSrc +
-                    "\" border=\"0\" align=\"bottom\" alt=\"" +
-                    resources.getString("survey.CopySurveyLink") + "\" title=\"" +
-                    resources.getString("survey.CopySurveyLink") + "\"></a>";
+                "\" border=\"0\" align=\"bottom\" alt=\"" +
+                resources.getString("survey.CopySurveyLink") + "\" title=\"" +
+                resources.getString("survey.CopySurveyLink") + "\"></a>";
 
           ArrayCellText arrayCellText0 =
               arrayLine
-                  .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
-                      survey.getPK().getId() + "\">" + survey.getTitle() + "</a>" + link);
+              .addArrayCellText("<a href=\"surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" +
+              survey.getPK().getId() + "\">" + survey.getTitle() + "</a>" + link);
           arrayCellText0.setCompareOn(survey.getTitle());
 
           if (survey.getEndDate() == null)
@@ -435,7 +435,7 @@ function openSPWindow(fonction, windowName){
     if (profile.equals("admin") && surveyScc.isPdcUsed()) {
       operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDC"),
           "javascript:openSPWindow('" + m_context + "/RpdcUtilization/jsp/Main?ComponentId=" +
-              surveyScc.getComponentId() + "','utilizationPdc1')");
+          surveyScc.getComponentId() + "','utilizationPdc1')");
       operationPane.addLine();
     }
     if (pollingStationMode)
@@ -444,10 +444,8 @@ function openSPWindow(fonction, windowName){
     else
       operationPane.addOperation(addSurveySrc, resources.getString("SurveyNewSurvey"),
           "javaScript:createSurvey()");
-    if ("admin".equals(profile)) {
-      operationPane.addOperation(resources.getIcon("survey.paste"), resources
-          .getString("GML.paste"), "javascript:onClick=clipboardPaste()");
-    }
+    operationPane.addOperation(resources.getIcon("survey.paste"), resources
+        .getString("GML.paste"), "javascript:onClick=clipboardPaste()");
   }
 
   String bodyPart = "";
@@ -474,11 +472,11 @@ function openSPWindow(fonction, windowName){
   if (profile.equals("admin") || profile.equals("publisher"))
     arrayPane =
         buildSurveyArrayToAdmin(gef, surveyScc, view, surveys, resources, request, session,
-            pollingStationMode);
+        pollingStationMode);
   else
     arrayPane =
         buildSurveyArrayToUser(gef, surveyScc, view, surveys, resources, request, session,
-            pollingStationMode);
+        pollingStationMode);
 
   //Récupération du tableau dans le haut du cadre          
   frame.addTop("<center><table cellpadding=0 cellspacing=0 border=0 width='98%'><tr><td>" +
