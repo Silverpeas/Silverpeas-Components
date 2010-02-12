@@ -31,20 +31,28 @@ import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
 import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class MailingListStatistics implements ComponentStatisticsInterface {
 
   @SuppressWarnings("unchecked")
+  @Override
   public Collection getVolume(String spaceId, String componentId)
       throws Exception {
-    MailingList ml = ServicesFactory.getMailingListService().findMailingList(
-        componentId);
-    int totalNumberOfMessages = ServicesFactory.getMessageService()
-        .getTotalNumberOfMessages(ml);
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
     UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
     myCouple.setUserId("-2"); // unknown userId
-    myCouple.setCountVolume(totalNumberOfMessages);
+    MailingList ml = ServicesFactory.getMailingListService().findMailingList(componentId);
+    SilverTrace.debug("mailingList", "MailingListStatistics.getVolume()",
+        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = " + componentId);
+    if(ml != null) {
+      int totalNumberOfMessages = ServicesFactory.getMessageService().getTotalNumberOfMessages(ml);     
+      myCouple.setCountVolume(totalNumberOfMessages);      
+    } else {
+      SilverTrace.warn("mailingList", "MailingListStatistics.getVolume()", "root.MSG_GEN_ENTER_METHOD",
+              "space = " + spaceId + ", componentId = " + componentId  + " doesn't look like a mailinglist");
+      myCouple.setCountVolume(0);
+    }
     myArrayList.add(myCouple);
     return myArrayList;
   }
