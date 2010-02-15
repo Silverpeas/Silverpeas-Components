@@ -254,9 +254,7 @@ public void displayMessageLine(Message message, JspWriter out, ResourceLocator r
 		}
         
 		out.println("  </tr>");
-    }
-    catch (IOException ioe)
-    {
+    } catch (IOException ioe) {
 		SilverTrace.info("forums", "JSPmessagesListManager.displayMessageLine()", "root.EX_NO_MESSAGE", null, ioe);
     }
 }

@@ -417,7 +417,7 @@
             }
 %>
                 </td>
-                <td align="right" class="texteLabelForm" width="250"><a href="<%=ActionUrl.getUrl("viewMessage", call, 1, messageId, forumId, false, true)%>"><%=resource.getString(displayAllMessages ? "forums.displayCurrentMessage" : "forums.displayAllMessages")%></a></td>
+                <td align="right" class="texteLabelForm" width="250"><a href="<%=ActionUrl.getUrl("viewMessage", (StringUtil.isDefined(call)? call : "viewForum"), 1, messageId, forumId, false, true)%>"><%=resource.getString(displayAllMessages ? "forums.displayCurrentMessage" : "forums.displayAllMessages")%></a></td>
             </tr>
         </table><%
 
