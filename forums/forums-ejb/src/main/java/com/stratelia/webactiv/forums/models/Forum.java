@@ -24,14 +24,14 @@
 package com.stratelia.webactiv.forums.models;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Vector;
 
 import com.stratelia.webactiv.forums.forumEntity.ejb.ForumPK;
 
 public class Forum implements Serializable {
-
+  /**
+   * Generated serial version identifier
+   */
+  private static final long serialVersionUID = -2933341803291325081L;
   private int id;
   private String name;
   private String description;

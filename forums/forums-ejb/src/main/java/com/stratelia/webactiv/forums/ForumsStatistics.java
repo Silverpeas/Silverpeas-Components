@@ -29,8 +29,6 @@ package com.stratelia.webactiv.forums;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.Vector;
 
 import javax.ejb.EJBException;
 

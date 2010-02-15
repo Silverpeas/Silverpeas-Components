@@ -123,10 +123,10 @@ public class ForumsDAO {
    * @return The list of forums corresponding to the primary keys (ForumDetail).
    * @throws SQLException An SQL exception.
    */
-  public static Collection selectByForumPKs(Connection con, Collection forumPKs)
+  public static Collection<ForumDetail> selectByForumPKs(Connection con, Collection<ForumPK> forumPKs)
       throws SQLException {
-    ArrayList forumDetails = new ArrayList();
-    Iterator iterator = forumPKs.iterator();
+    ArrayList<ForumDetail> forumDetails = new ArrayList<ForumDetail>();
+    Iterator<ForumPK> iterator = forumPKs.iterator();
     ForumPK forumPK;
     while (iterator.hasNext()) {
       forumPK = (ForumPK) iterator.next();
@@ -141,10 +141,10 @@ public class ForumsDAO {
    * @return The list of forums corresponding to the primary keys (Forum).
    * @throws SQLException An SQL exception.
    */
-  public static Collection getForumsByKeys(Connection con, Collection forumPKs)
+  public static Collection<Forum> getForumsByKeys(Connection con, Collection<ForumPK> forumPKs)
       throws SQLException {
-    ArrayList forums = new ArrayList();
-    Iterator iterator = forumPKs.iterator();
+    ArrayList<Forum> forums = new ArrayList<Forum>();
+    Iterator<ForumPK> iterator = forumPKs.iterator();
     ForumPK forumPK;
     Forum forum;
     while (iterator.hasNext()) {
@@ -163,8 +163,8 @@ public class ForumsDAO {
    * @return The list of messages corresponding to the primary keys (Message).
    * @throws SQLException An SQL exception.
    */
-  public static Collection getMessagesByKeys(Connection con,
-      Collection messagePKs) throws SQLException {
+  public static Collection<Message> getMessagesByKeys(Connection con,
+      Collection<MessagePK> messagePKs) throws SQLException {
     return getMessagesByKeys(con, messagePKs, false);
   }
 
@@ -174,8 +174,8 @@ public class ForumsDAO {
    * @return The list of threads corresponding to the primary keys (Message).
    * @throws SQLException An SQL exception.
    */
-  public static Collection getThreadsByKeys(Connection con,
-      Collection messagePKs) throws SQLException {
+  public static Collection<Message> getThreadsByKeys(Connection con,
+      Collection<MessagePK> messagePKs) throws SQLException {
     return getMessagesByKeys(con, messagePKs, true);
   }
 
@@ -187,10 +187,10 @@ public class ForumsDAO {
    * primary keys (Message).
    * @throws SQLException An SQL exception.
    */
-  private static Collection getMessagesByKeys(Connection con,
-      Collection messagePKs, boolean onlyThreads) throws SQLException {
-    ArrayList messages = new ArrayList();
-    Iterator iterator = messagePKs.iterator();
+  private static Collection<Message> getMessagesByKeys(Connection con,
+      Collection<MessagePK> messagePKs, boolean onlyThreads) throws SQLException {
+    ArrayList<Message> messages = new ArrayList<Message>();
+    Iterator<MessagePK> iterator = messagePKs.iterator();
     MessagePK messagePK;
     Message message;
     while (iterator.hasNext()) {
@@ -227,12 +227,12 @@ public class ForumsDAO {
    * @return The list of forums corresponding to the primary key (Forum).
    * @throws SQLException An SQL exception.
    */
-  public static ArrayList getForumsList(Connection con, ForumPK forumPK)
+  public static ArrayList<Forum> getForumsList(Connection con, ForumPK forumPK)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getForumsList()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + QUERY_GET_FORUMS_LIST);
 
-    ArrayList forums = new ArrayList();
+    ArrayList<Forum> forums = new ArrayList<Forum>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -258,12 +258,12 @@ public class ForumsDAO {
    * @return The list of ids of forums corresponding to the primary key.
    * @throws SQLException An SQL exception.
    */
-  public static ArrayList getForumsIds(Connection con, ForumPK forumPK)
+  public static ArrayList<String> getForumsIds(Connection con, ForumPK forumPK)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getForumsIds()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + QUERY_GET_FORUMS_IDS);
 
-    ArrayList forumsIds = new ArrayList();
+    ArrayList<String> forumsIds = new ArrayList<String>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -308,7 +308,7 @@ public class ForumsDAO {
    * @return The list of forums corresponding to the primary key and the category id.
    * @throws SQLException An SQL exception.
    */
-  public static ArrayList getForumsListByCategory(Connection con,
+  public static ArrayList<Forum> getForumsListByCategory(Connection con,
       ForumPK forumPK, String categoryId) throws SQLException {
     String selectQuery =
         (StringUtil.isDefined(categoryId)
@@ -319,7 +319,7 @@ public class ForumsDAO {
     SilverTrace.info("forums", "ForumsDAO.getForumsListByCategory()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + selectQuery);
 
-    ArrayList forums = new ArrayList();
+    ArrayList<Forum> forums = new ArrayList<Forum>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -349,12 +349,12 @@ public class ForumsDAO {
    * @return The list of ids of forums which parent is the forum corresponding to the primary key.
    * @throws SQLException An SQL exception.
    */
-  public static ArrayList getForumSonsIds(Connection con, ForumPK forumPK)
+  public static ArrayList<String> getForumSonsIds(Connection con, ForumPK forumPK)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getForumSonsIds()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery = " + QUERY_GET_FORUM_SONS);
 
-    ArrayList forumIds = new ArrayList();
+    ArrayList<String> forumIds = new ArrayList<String>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -793,13 +793,13 @@ public class ForumsDAO {
    * @return The list of messages of the forum corresponding to the primary key (Message).
    * @throws SQLException An SQL exception.
    */
-  public static ArrayList getMessagesList(Connection con, ForumPK forumPK)
+  public static ArrayList<Message> getMessagesList(Connection con, ForumPK forumPK)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getMessagesList()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
         + QUERY_GET_MESSAGES_LIST_BY_FORUM);
 
-    ArrayList messages = new ArrayList();
+    ArrayList<Message> messages = new ArrayList<Message>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -837,14 +837,14 @@ public class ForumsDAO {
    * parent message corresponds to the message id (if it is valued).
    * @throws SQLException An SQL exception.
    */
-  public static ArrayList getMessagesIds(Connection con, ForumPK forumPK,
+  public static ArrayList<String> getMessagesIds(Connection con, ForumPK forumPK,
       int messageParentId) throws SQLException {
     String query = (messageParentId != -1 ? QUERY_GET_MESSAGES_IDS_BY_FORUM_AND_MESSAGE
         : QUERY_GET_MESSAGES_IDS_BY_FORUM);
     SilverTrace.info("forums", "ForumsDAO.getMessagesIds()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = " + query);
 
-    ArrayList messagesIds = new ArrayList();
+    ArrayList<String> messagesIds = new ArrayList<String>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -869,7 +869,7 @@ public class ForumsDAO {
    * @return The list of ids of messages of the forum corresponding to the primary key.
    * @throws SQLException An SQL exception.
    */
-  public static ArrayList getMessagesIds(Connection con, ForumPK forumPK)
+  public static ArrayList<String> getMessagesIds(Connection con, ForumPK forumPK)
       throws SQLException {
     return getMessagesIds(con, forumPK, -1);
   }
@@ -880,7 +880,7 @@ public class ForumsDAO {
    * @return The list of ids of threads of the forum corresponding to the primary key.
    * @throws SQLException An SQL exception.
    */
-  public static ArrayList getSubjectsIds(Connection con, ForumPK forumPK)
+  public static ArrayList<String> getSubjectsIds(Connection con, ForumPK forumPK)
       throws SQLException {
     return getMessagesIds(con, forumPK, 0);
   }
@@ -976,7 +976,7 @@ public class ForumsDAO {
   public static int getNbResponses(Connection con, int forumId, int messageId) {
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
-    ArrayList nextMessageIds = new ArrayList();
+    ArrayList<Integer> nextMessageIds = new ArrayList<Integer>();
     try {
       prepStmt = con.prepareStatement(QUERY_GET_NB_RESPONSES);
       prepStmt.setInt(1, forumId);
@@ -1045,9 +1045,9 @@ public class ForumsDAO {
    * @return The last 'count' threads from the forums corresponding to the primary keys.
    * @throws SQLException An SQL exception.
    */
-  public static ArrayList getLastThreads(Connection con, ForumPK[] forumPKs,
+  public static ArrayList<Message> getLastThreads(Connection con, ForumPK[] forumPKs,
       int count) throws SQLException {
-    ArrayList messages = new ArrayList();
+    ArrayList<Message> messages = new ArrayList<Message>();
     if (forumPKs.length > 0) {
       String selectQuery = "SELECT " + MESSAGE_COLUMN_MESSAGE_ID + " FROM "
           + MESSAGE_TABLE + " WHERE " + MESSAGE_COLUMN_MESSAGE_PARENT_ID
@@ -1062,7 +1062,7 @@ public class ForumsDAO {
       SilverTrace.info("forums", "ForumsDAO.getLastTheads()",
           "root.MSG_GEN_PARAM_VALUE", "selectQuery  = " + selectQuery);
 
-      ArrayList messageIds = new ArrayList(count);
+      ArrayList<String> messageIds = new ArrayList<String>(count);
       int messagesCount = 0;
       PreparedStatement selectStmt = null;
       ResultSet rs = null;
@@ -1096,9 +1096,9 @@ public class ForumsDAO {
    * keys.
    * @throws SQLException An SQL exception.
    */
-  public static Collection getNotAnsweredLastThreads(Connection con,
+  public static Collection<Message> getNotAnsweredLastThreads(Connection con,
       ForumPK[] forumPKs, int count) throws SQLException {
-    ArrayList messages = new ArrayList();
+    ArrayList<Message> messages = new ArrayList<Message>();
     if (forumPKs.length > 0) {
       String selectQuery = "SELECT " + MESSAGE_COLUMN_MESSAGE_ID + ", "
           + MESSAGE_COLUMN_FORUM_ID + " FROM " + MESSAGE_TABLE + " WHERE "
@@ -1114,7 +1114,7 @@ public class ForumsDAO {
       SilverTrace.info("forums", "ForumsDAO.getLastTheads()",
           "root.MSG_GEN_PARAM_VALUE", "selectQuery  = " + selectQuery);
 
-      ArrayList messageIds = new ArrayList(count);
+      ArrayList<String> messageIds = new ArrayList<String>(count);
       int messageId;
       int forumId;
       int messagesCount = 0;
@@ -1168,11 +1168,11 @@ public class ForumsDAO {
    * @return The list of ids of messages from the forums corresponding to the instance id.
    * @throws SQLException An SQL exception.
    */
-  public static Collection getLastMessageRSS(Connection con, String instanceId)
+  public static Collection<String> getLastMessageRSS(Connection con, String instanceId)
       throws SQLException {
-    Collection messageIds = new ArrayList();
-    Collection forumIds = getAllForumsByInstanceId(con, instanceId);
-    Iterator it = forumIds.iterator();
+    Collection<String> messageIds = new ArrayList<String>();
+    Collection<Integer> forumIds = getAllForumsByInstanceId(con, instanceId);
+    Iterator<Integer> it = forumIds.iterator();
     int forumId;
     while (it.hasNext()) {
       forumId = ((Integer) it.next()).intValue();
@@ -1191,13 +1191,13 @@ public class ForumsDAO {
    * @return The list of ids of forums corresponding to the instance id.
    * @throws SQLException An SQL exception.
    */
-  private static Collection getAllForumsByInstanceId(Connection con,
+  private static Collection<Integer> getAllForumsByInstanceId(Connection con,
       String instanceId) throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getAllForumsByInstanceId()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
         + QUERY_GET_ALL_FORUMS_BY_INSTANCE_ID);
 
-    Collection forumIds = new ArrayList();
+    Collection<Integer> forumIds = new ArrayList<Integer>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -1225,13 +1225,13 @@ public class ForumsDAO {
    * @return The list of ids of messages from the forum corresponding to the forum id.
    * @throws SQLException An SQL exception.
    */
-  private static Collection getAllMessageByForum(Connection con, int forumId)
+  private static Collection<String> getAllMessageByForum(Connection con, int forumId)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getAllMessageByForum()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
         + QUERY_GET_ALL_MESSAGES_BY_FORUM);
 
-    Collection messageIds = new ArrayList();
+    Collection<String> messageIds = new ArrayList<String>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -1257,7 +1257,7 @@ public class ForumsDAO {
    * @throws SQLException An SQL exception.
    */
   public static Message getLastMessage(Connection con, ForumPK forumPK,
-      List messageParentIds) throws SQLException {
+      List<String> messageParentIds) throws SQLException {
     String selectQuery = "SELECT " + MESSAGE_COLUMN_MESSAGE_ID + " FROM "
         + MESSAGE_TABLE;
 
@@ -2009,7 +2009,7 @@ public class ForumsDAO {
    * keys.
    * @throws SQLException An SQL exception.
    */
-  public static Date getLastVisit(Connection con, String userId, List messageIds)
+  public static Date getLastVisit(Connection con, String userId, List<String> messageIds)
       throws SQLException {
     String selectQuery = "SELECT " + HISTORY_COLUMN_LAST_ACCESS + " FROM "
         + HISTORY_TABLE + " WHERE " + HISTORY_COLUMN_USER_ID + " = ?";

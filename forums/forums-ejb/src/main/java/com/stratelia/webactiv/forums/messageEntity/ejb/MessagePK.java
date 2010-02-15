@@ -31,7 +31,10 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  * @since November 2000
  */
 public class MessagePK extends WAPrimaryKey {
-
+  /**
+   * Generated serial version identifier
+   */
+  private static final long serialVersionUID = 1454596772173738407L;
   private String domain;
 
   public MessagePK(String component, String domain, String id) {

@@ -32,6 +32,10 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 public class ForumPK extends WAPrimaryKey {
 
+  /**
+   * Generated serial version identifier (Serializable class)
+   */
+  private static final long serialVersionUID = -6924058189303890284L;
   private String domain;
 
   public ForumPK(String component, String domain, String id) {

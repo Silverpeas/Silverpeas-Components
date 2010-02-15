@@ -40,6 +40,10 @@ import com.stratelia.silverpeas.contentManager.*;
  * @version 1.0
  */
 public class ForumDetail extends AbstractI18NBean implements SilverContentInterface, Serializable {
+  /**
+   * Generated serial version identifier
+   */
+  private static final long serialVersionUID = 1L;
   private ForumPK pk;
   private String name;
   private String description;

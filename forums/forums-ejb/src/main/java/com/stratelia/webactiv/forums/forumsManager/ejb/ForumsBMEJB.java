@@ -55,6 +55,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.forums.ForumsContentManager;
+import com.stratelia.webactiv.forums.forumEntity.ejb.ForumDetail;
 import com.stratelia.webactiv.forums.forumEntity.ejb.ForumPK;
 import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
 import com.stratelia.webactiv.forums.messageEntity.ejb.MessagePK;
@@ -80,9 +81,11 @@ import com.stratelia.webactiv.util.node.model.NodePK;
  * @since September 2000
  */
 public class ForumsBMEJB implements SessionBean {
+  private static final long serialVersionUID = -6809840977338911593L;
+
   private ForumsContentManager forumsContentManager = null;
 
-  public Collection getForums(Collection forumPKs) {
+  public Collection<ForumDetail> getForums(Collection<ForumPK> forumPKs) {
     Connection con = openConnection();
     try {
       return ForumsDAO.selectByForumPKs(con, forumPKs);
@@ -107,7 +110,7 @@ public class ForumsBMEJB implements SessionBean {
     }
   }
 
-  public Collection getForumsList(Collection forumPKs) {
+  public Collection<Forum> getForumsList(Collection<ForumPK> forumPKs) {
     Connection con = openConnection();
     try {
       return ForumsDAO.getForumsByKeys(con, forumPKs);
@@ -120,7 +123,7 @@ public class ForumsBMEJB implements SessionBean {
     }
   }
 
-  public Collection getThreadsList(Collection messagePKs) {
+  public Collection<Message> getThreadsList(Collection<MessagePK> messagePKs) {
     Connection con = openConnection();
     try {
       return ForumsDAO.getThreadsByKeys(con, messagePKs);
@@ -197,7 +200,7 @@ public class ForumsBMEJB implements SessionBean {
    * @param forumPK
    * @return
    */
-  public ArrayList getForums(ForumPK forumPK) {
+  public ArrayList<Forum> getForums(ForumPK forumPK) {
     Connection con = openConnection();
     try {
       return ForumsDAO.getForumsList(con, forumPK);
@@ -210,7 +213,7 @@ public class ForumsBMEJB implements SessionBean {
     }
   }
 
-  public ArrayList getForumsByCategory(ForumPK forumPK, String categoryId) {
+  public ArrayList<Forum> getForumsByCategory(ForumPK forumPK, String categoryId) {
     Connection con = openConnection();
     SilverTrace.debug("forums", "ForumsBMEJB.getForumsByCategory()", "",
         "categoryId = " + categoryId);
@@ -229,7 +232,7 @@ public class ForumsBMEJB implements SessionBean {
    * @param forumPK
    * @return
    */
-  public ArrayList getForumSonsIds(ForumPK forumPK) {
+  public ArrayList<String> getForumSonsIds(ForumPK forumPK) {
     Connection con = openConnection();
     try {
       return ForumsDAO.getForumSonsIds(con, forumPK);
@@ -250,7 +253,7 @@ public class ForumsBMEJB implements SessionBean {
    * @since 29 Septembre 2000
    */
   public void lockForum(ForumPK forumPK, int level) {
-    ArrayList sonsIds = getForumSonsIds(forumPK);
+    ArrayList<String> sonsIds = getForumSonsIds(forumPK);
     for (int i = 0; i < sonsIds.size(); i++) {
       lockForum(new ForumPK(forumPK.getComponentName(), forumPK.getDomain(),
           (String) sonsIds.get(i)), level);
@@ -275,7 +278,7 @@ public class ForumsBMEJB implements SessionBean {
    * @since 29 Septembre 2000
    */
   public int unlockForum(ForumPK forumPK, int level) {
-    ArrayList sonsIds = getForumSonsIds(forumPK);
+    ArrayList<String> sonsIds = getForumSonsIds(forumPK);
     for (int i = 0; i < sonsIds.size(); i++) {
       unlockForum(new ForumPK(forumPK.getComponentName(), forumPK.getDomain(),
           (String) sonsIds.get(i)), level);
@@ -301,7 +304,7 @@ public class ForumsBMEJB implements SessionBean {
    * @since 3 Octobre 2000
    */
   public void deleteForum(ForumPK forumPK) {
-    ArrayList sonsIds = getForumSonsIds(forumPK);
+    ArrayList<String> sonsIds = getForumSonsIds(forumPK);
     for (int i = 0; i < sonsIds.size(); i++) {
       deleteForum(new ForumPK(forumPK.getComponentName(), forumPK.getDomain(),
           (String) sonsIds.get(i)));
@@ -310,7 +313,7 @@ public class ForumsBMEJB implements SessionBean {
     Connection con = openConnection();
     try {
       // Recuperation des ids de messages
-      ArrayList messagesIds = getMessagesIds(forumPK);
+      ArrayList<String> messagesIds = getMessagesIds(forumPK);
 
       // Suppression du forum et de ses messages
       ForumsDAO.deleteForum(con, forumPK);
@@ -409,7 +412,7 @@ public class ForumsBMEJB implements SessionBean {
    * @param forumPK
    * @return
    */
-  private ArrayList getMessagesList(ForumPK forumPK) {
+  private ArrayList<Message> getMessagesList(ForumPK forumPK) {
     Connection con = openConnection();
     try {
       return ForumsDAO.getMessagesList(con, forumPK);
@@ -422,8 +425,8 @@ public class ForumsBMEJB implements SessionBean {
     }
   }
 
-  public Collection getMessages(ForumPK forumPK) {
-    ArrayList messages = getMessagesList(forumPK);
+  public Collection<Message> getMessages(ForumPK forumPK) {
+    ArrayList<Message> messages = getMessagesList(forumPK);
     String componentId = forumPK.getInstanceId();
     for (int i = 0, n = messages.size(); i < n; i++) {
       Message message = (Message) messages.get(i);
@@ -433,7 +436,7 @@ public class ForumsBMEJB implements SessionBean {
     return messages;
   }
 
-  private ArrayList getSubjectsIds(ForumPK forumPK) {
+  private ArrayList<String> getSubjectsIds(ForumPK forumPK) {
     Connection con = openConnection();
     try {
       return ForumsDAO.getSubjectsIds(con, forumPK);
@@ -446,7 +449,7 @@ public class ForumsBMEJB implements SessionBean {
     }
   }
 
-  private ArrayList getMessagesIds(ForumPK forumPK, int messageParentId) {
+  private ArrayList<String> getMessagesIds(ForumPK forumPK, int messageParentId) {
     Connection con = openConnection();
     try {
       return ForumsDAO.getMessagesIds(con, forumPK, messageParentId);
@@ -459,7 +462,7 @@ public class ForumsBMEJB implements SessionBean {
     }
   }
 
-  private ArrayList getMessagesIds(ForumPK forumPK) {
+  private ArrayList<String> getMessagesIds(ForumPK forumPK) {
     return getMessagesIds(forumPK, -1);
   }
 
@@ -592,7 +595,7 @@ public class ForumsBMEJB implements SessionBean {
    */
   public boolean isNewMessageByForum(String userId, ForumPK forumPK) {
     // liste de tous les sujets du forum
-    ArrayList messagesIds = getSubjectsIds(forumPK);
+    ArrayList<String> messagesIds = getSubjectsIds(forumPK);
     int messageParentId;
     for (int i = 0, n = messagesIds.size(); i < n; i++) {
       // pour ce message on recherche la date de la dernière visite
@@ -1274,7 +1277,7 @@ public class ForumsBMEJB implements SessionBean {
     try {
       // pour cette catégorie, rechercher les forums et mettre '0' dans la
       // catégorie
-      ArrayList forums = getForumsByCategory(new ForumPK(instanceId, null),
+      ArrayList<Forum> forums = getForumsByCategory(new ForumPK(instanceId, null),
           categoryId);
       Forum forum;
       int forumId;
@@ -1328,22 +1331,22 @@ public class ForumsBMEJB implements SessionBean {
     return nodeBm;
   }
 
-  public Collection getLastThreads(ForumPK forumPK, int count) {
+  public Collection<Message> getLastThreads(ForumPK forumPK, int count) {
     return getLastThreads(forumPK, count, false);
   }
 
-  public Collection getNotAnsweredLastThreads(ForumPK forumPK, int count) {
+  public Collection<Message> getNotAnsweredLastThreads(ForumPK forumPK, int count) {
     return getLastThreads(forumPK, count, true);
   }
 
-  private Collection getLastThreads(ForumPK forumPK, int count,
+  private Collection<Message> getLastThreads(ForumPK forumPK, int count,
       boolean notAnswered) {
     Connection con = openConnection();
     try {
       ForumPK[] forumPKs;
       if (forumPK.getId().equals("0")) {
         // Derniers threads des forums du composant.
-        ArrayList forumsIds = ForumsDAO.getForumsIds(con, forumPK);
+        ArrayList<String> forumsIds = ForumsDAO.getForumsIds(con, forumPK);
         int forumsCount = forumsIds.size();
         forumPKs = new ForumPK[forumsCount];
         String componentId = forumPK.getComponentName();
@@ -1457,8 +1460,8 @@ public class ForumsBMEJB implements SessionBean {
     return getTags(tagClouds);
   }
 
-  private String getTags(Collection tagClouds) {
-    Iterator iter = tagClouds.iterator();
+  private String getTags(Collection<TagCloud> tagClouds) {
+    Iterator<TagCloud> iter = tagClouds.iterator();
     StringBuffer sb = new StringBuffer();
     TagCloud tagCloud;
     while (iter.hasNext()) {

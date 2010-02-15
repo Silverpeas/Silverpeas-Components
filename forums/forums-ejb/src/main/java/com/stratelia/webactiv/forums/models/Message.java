@@ -24,16 +24,14 @@
 package com.stratelia.webactiv.forums.models;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.Vector;
 
 import com.stratelia.webactiv.forums.messageEntity.ejb.MessagePK;
 
 public class Message implements Serializable {
 
+  private static final long serialVersionUID = 705520417746270396L;
+  
   private int id;
   private String title;
   private String author;

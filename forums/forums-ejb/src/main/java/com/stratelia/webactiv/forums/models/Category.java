@@ -26,6 +26,11 @@ package com.stratelia.webactiv.forums.models;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 
 public class Category extends NodeDetail {
+  /**
+   * Generated serial version identifier
+   */
+  private static final long serialVersionUID = -5875504427148981736L;
+
   public Category(NodeDetail node) {
     setNodePK(node.getNodePK());
     setName(node.getName());

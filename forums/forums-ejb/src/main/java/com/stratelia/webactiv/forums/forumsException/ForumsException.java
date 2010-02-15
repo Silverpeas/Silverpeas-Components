@@ -31,6 +31,11 @@ import com.stratelia.webactiv.util.exception.*;
 
 public class ForumsException extends SilverpeasException {
 
+  /**
+   * Generated serial version ID (Serializable class)
+   */
+  private static final long serialVersionUID = 7581452403275941687L;
+
   public ForumsException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
