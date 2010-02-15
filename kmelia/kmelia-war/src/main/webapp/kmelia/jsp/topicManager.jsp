@@ -72,9 +72,9 @@ ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.kmelia.se
 //For Drag And Drop
 boolean dragAndDropEnable = kmeliaScc.isDragAndDropEnable();
 
-String sURI = request.getRequestURI();
-String sRequestURL = HttpUtils.getRequestURL(request).toString();
+String sRequestURL = request.getRequestURL().toString();
 String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
+
 String userId = kmeliaScc.getUserId();
 
 ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
@@ -461,7 +461,7 @@ function getWidth() {
         browseBar.setDomainName(kmeliaScc.getSpaceLabel());
         browseBar.setComponentName(kmeliaScc.getComponentLabel(), "Main");
         browseBar.setPath(linkedPathString);
-        browseBar.setI18N("GoToTopic?Id="+id, translation);
+        browseBar.setI18N("GoToCurrentTopic", translation);
         
         // création du nom pour les favoris
         namePath = spaceLabel + " > " + componentLabel;
@@ -484,7 +484,7 @@ function getWidth() {
         operationPane.addOperation(resources.getIcon("kmelia.paste"), resources.getString("GML.paste"), "javascript:onClick=pasteFromOperations()");
     	operationPane.addLine();
     	operationPane.addOperation(subscriptionAddSrc, resources.getString("SubscriptionsAdd"), "javascript:onClick=addSubscription()");
-      	operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(namePath))+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(description))+"','"+urlTopic+"')");
+      	operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(description))+"','"+urlTopic+"')");
 																				
     //Instanciation du cadre avec le view generator
 	Frame frame = gef.getFrame();
@@ -555,7 +555,7 @@ function getWidth() {
 
 <FORM NAME="topicDetailForm" METHOD="POST">
 	<input type="hidden" name="Id" value="<%=id%>">
-	<input type="hidden" name="Path" value="<%=Encode.javaStringToHtmlString(pathString)%>">
+	<input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>">
 	<input type="hidden" name="ChildId">
 	<input type="hidden" name="Status"><input type="hidden" name="Recursive">
 </FORM>
@@ -1055,79 +1055,90 @@ function loadNodeData(node, fnLoadComplete)  {
 	        this.cancel();
 	    }
 
-	    //get profile to display more or less context actions
-		$.getJSON("<%=m_context%>/KmeliaJSONServlet?Id="+oCurrentTextNode.labelElId+"&Action=GetTopic&ComponentId=<%=componentId%>&Language=<%=language%>&IEFix="+new Date().getTime(),
-				function(data){
-					try
-					{
-						var profile = data[0].role;
-						var parentProfile =  oCurrentTextNode.parent.data.role;
-						if (profile == "user")
-						{
-							if (parentProfile != "admin")
+	    if (oCurrentTextNode)
+	    {
+			if (oCurrentTextNode.labelElId == "basket" || oCurrentTextNode.labelElId == "tovalidate")
+			{
+				//do not show the menu
+				oContextMenu.cfg.setProperty("visible", false);
+			}
+			else
+			{
+			    //get profile to display more or less context actions
+				$.getJSON("<%=m_context%>/KmeliaJSONServlet?Id="+oCurrentTextNode.labelElId+"&Action=GetTopic&ComponentId=<%=componentId%>&Language=<%=language%>&IEFix="+new Date().getTime(),
+						function(data){
+							try
 							{
-								//do not show the menu
-								oContextMenu.cfg.setProperty("visible", false);
-							}
-							else
-							{
-								oContextMenu.getItem(0).cfg.setProperty("disabled", true);
-								oContextMenu.getItem(1).cfg.setProperty("disabled", false);
-								oContextMenu.getItem(2).cfg.setProperty("disabled", false);
-								oContextMenu.getItem(3).cfg.setProperty("disabled", true);
-								
-								oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
-								oContextMenu.getItem(1,1).cfg.setProperty("disabled", true);
-								oContextMenu.getItem(2,1).cfg.setProperty("disabled", true);
-							}
-						}
-						else
-						{
-							var isTopicManagementDelegated = <%=kmeliaScc.isTopicManagementDelegated()%>;
-							var userId = "<%=kmeliaScc.getUserId()%>";
-							var creatorId = data[0].creatorId;
-							if (isTopicManagementDelegated && profile != "admin")
-							{
-								if (creatorId != userId)
+								var profile = data[0].role;
+								var parentProfile =  oCurrentTextNode.parent.data.role;
+								if (profile == "user")
 								{
-									//do not show the menu
-									oContextMenu.cfg.setProperty("visible", false);
+									if (parentProfile != "admin")
+									{
+										//do not show the menu
+										oContextMenu.cfg.setProperty("visible", false);
+									}
+									else
+									{
+										oContextMenu.getItem(0).cfg.setProperty("disabled", true);
+										oContextMenu.getItem(1).cfg.setProperty("disabled", false);
+										oContextMenu.getItem(2).cfg.setProperty("disabled", false);
+										oContextMenu.getItem(3).cfg.setProperty("disabled", true);
+										
+										oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
+										oContextMenu.getItem(1,1).cfg.setProperty("disabled", true);
+										oContextMenu.getItem(2,1).cfg.setProperty("disabled", true);
+									}
 								}
-								else if (creatorId == userId)
+								else
 								{
-									oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
-									oContextMenu.getItem(1,1).cfg.setProperty("disabled", true);
-									oContextMenu.getItem(2,1).cfg.setProperty("disabled", true);
-	
-									oContextMenu.getItem(0,2).cfg.setProperty("disabled", true);
-									oContextMenu.getItem(1,2).cfg.setProperty("disabled", true);
+									var isTopicManagementDelegated = <%=kmeliaScc.isTopicManagementDelegated()%>;
+									var userId = "<%=kmeliaScc.getUserId()%>";
+									var creatorId = data[0].creatorId;
+									if (isTopicManagementDelegated && profile != "admin")
+									{
+										if (creatorId != userId)
+										{
+											//do not show the menu
+											oContextMenu.cfg.setProperty("visible", false);
+										}
+										else if (creatorId == userId)
+										{
+											oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
+											oContextMenu.getItem(1,1).cfg.setProperty("disabled", true);
+											oContextMenu.getItem(2,1).cfg.setProperty("disabled", true);
+			
+											oContextMenu.getItem(0,2).cfg.setProperty("disabled", true);
+											oContextMenu.getItem(1,2).cfg.setProperty("disabled", true);
+										}
+									}
+									else
+									{
+										if (profile != "admin")
+										{
+											//do not show the menu
+											oContextMenu.cfg.setProperty("visible", false);
+										}
+									}
 								}
+			
+								<% if (kmeliaScc.isOrientedWebContent()) { %>
+									if (data[0].status == "Invisible")
+									{
+										oContextMenu.getItem(1,2).cfg.setProperty("text", "<%=kmeliaScc.getString("TopicInvisible2Visible")%>");
+									}
+									else
+									{
+										oContextMenu.getItem(1,2).cfg.setProperty("text", "<%=kmeliaScc.getString("TopicVisible2Invisible")%>");
+									}
+								<% } %>
+							} catch (e) {
+								//do nothing
+								//alert(e);
 							}
-							else
-							{
-								if (profile != "admin")
-								{
-									//do not show the menu
-									oContextMenu.cfg.setProperty("visible", false);
-								}
-							}
-						}
-	
-						<% if (kmeliaScc.isOrientedWebContent()) { %>
-							if (data[0].status == "Invisible")
-							{
-								oContextMenu.getItem(1,2).cfg.setProperty("text", "<%=kmeliaScc.getString("TopicInvisible2Visible")%>");
-							}
-							else
-							{
-								oContextMenu.getItem(1,2).cfg.setProperty("text", "<%=kmeliaScc.getString("TopicVisible2Invisible")%>");
-							}
-						<% } %>
-					} catch (e) {
-						//do nothing
-						//alert(e);
-					}
-				});
+						});
+			}
+	    }
 	}
 
 	function onTriggerRootContextMenu(p_oEvent) 

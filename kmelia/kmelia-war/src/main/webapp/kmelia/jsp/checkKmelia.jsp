@@ -110,6 +110,7 @@
 
 <%@ page import="com.silverpeas.util.ForeignPK"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.silverpeas.util.i18n.*"%>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@ page import="com.stratelia.webactiv.util.statistic.model.HistoryByUser"%>
