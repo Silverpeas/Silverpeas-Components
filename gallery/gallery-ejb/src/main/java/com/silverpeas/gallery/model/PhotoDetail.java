@@ -26,8 +26,8 @@ package com.silverpeas.gallery.model;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
@@ -62,7 +62,7 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
   Date beginDate;
   Date endDate;
   String permalink;
-  LinkedHashMap<String, MetaData> metaData = new LinkedHashMap<String, MetaData>();
+  Hashtable<String, MetaData> metaData = new Hashtable<String, MetaData>();
   String keyWord;
   Date beginDownloadDate;
   Date endDownloadDate;
