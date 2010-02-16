@@ -369,7 +369,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           request.setCharacterEncoding("UTF-8");
         }
         List<FileItem> parameters = FileUploadUtil.parseRequest(request);
-        String photoId = createPhoto(parameters, gallerySC);
+        String photoId = createPhoto(parameters, gallerySC, request.getCharacterEncoding());
 
         // check user rights
         if (!gallerySC.isPhotoAdmin(flag, photoId, userId))
@@ -408,9 +408,11 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           request.setCharacterEncoding("UTF-8");
         }
         List<FileItem> parameters = FileUploadUtil.parseRequest(request);
-        String photoId = FileUploadUtil.getParameter(parameters, "PhotoId");
+        String photoId =
+            FileUploadUtil
+                .getParameter(parameters, "PhotoId", null, request.getCharacterEncoding());
         // gallerySC.setCurrentAlbumId(albumId);
-        updateHeaderImage(photoId, parameters, gallerySC);
+        updateHeaderImage(photoId, parameters, gallerySC, request.getCharacterEncoding());
         // retour à la preview
         request.setAttribute("PhotoId", photoId);
         destination = getDestination("PreviewPhoto", gallerySC, request);
@@ -433,8 +435,10 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           request.setCharacterEncoding("UTF-8");
         }
         List<FileItem> parameters = FileUploadUtil.parseRequest(request);
-        String photoId = FileUploadUtil.getParameter(parameters, "PhotoId");
-        updateHeaderImage(photoId, parameters, gallerySC);
+        String photoId =
+            FileUploadUtil
+                .getParameter(parameters, "PhotoId", null, request.getCharacterEncoding());
+        updateHeaderImage(photoId, parameters, gallerySC, request.getCharacterEncoding());
 
         // récupération du formulaire
         updateXMLFormImage(photoId, parameters, gallerySC);
@@ -718,7 +722,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
         if (!StringUtil.isDefined(request.getCharacterEncoding())) {
           request.setCharacterEncoding("UTF-8");
         }
-        updateSelectedPhoto(request, gallerySC, photoIds);
+        updateSelectedPhoto(request, gallerySC, photoIds, request.getCharacterEncoding());
 
         // tout déselectionner
         gallerySC.setSelect(false);
@@ -819,7 +823,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           request.setCharacterEncoding("UTF-8");
         }
         List<FileItem> items = FileUploadUtil.parseRequest(request);
-        String photoId = FileUploadUtil.getParameter(items, "PhotoId");
+        String photoId =
+            FileUploadUtil.getParameter(items, "PhotoId", null, request.getCharacterEncoding());
         // check user rights
         if (!gallerySC.isPhotoAdmin(flag, photoId, userId))
           throw new AccessForbiddenException("GalleryRequestRouter.UpdateXMLForm",
@@ -1027,7 +1032,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
         List<FileItem> items = FileUploadUtil.parseRequest(request);
         QueryDescription query = new QueryDescription();
         // Ajout de la requete classique
-        String word = FileUploadUtil.getParameter(items, "SearchKeyWord");
+        String word =
+            FileUploadUtil.getParameter(items, "SearchKeyWord", null, request
+                .getCharacterEncoding());
         query.setQuery(word);
         gallerySC.setSearchKeyWord(word);
 
@@ -1049,7 +1056,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
 
           PagesContext context =
               new PagesContext("XMLSearchForm", "2", gallerySC.getLanguage(), gallerySC.getUserId());
-
+          context.setEncoding("UTF-8");
           XmlSearchForm searchForm = (XmlSearchForm) template.getSearchForm();
           searchForm.update(items, data, context);
 
@@ -1084,14 +1091,19 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
 
           // ajouter à l'objet query
           if (!iptcField.isDate()) {
-            String value = FileUploadUtil.getParameter(items, property);
+            String value =
+                FileUploadUtil.getParameter(items, property, null, request.getCharacterEncoding());
             if (StringUtil.isDefined(value))
               query.addFieldQuery(new FieldDescription("IPTC_" + property, value, null));
           } else {
             // cas particulier des champs de type date
             // recupere les deux champs
-            String dateBeginStr = FileUploadUtil.getParameter(items, property + "_Begin");
-            String dateEndStr = FileUploadUtil.getParameter(items, property + "_End");
+            String dateBeginStr =
+                FileUploadUtil.getParameter(items, property + "_Begin", null, request
+                    .getCharacterEncoding());
+            String dateEndStr =
+                FileUploadUtil.getParameter(items, property + "_End", null, request
+                    .getCharacterEncoding());
 
             Date dateBegin = null;
             Date dateEnd = null;
@@ -1151,8 +1163,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           } else {
             result =
                 getPhotosBySilverObjectIds(new TreeSet<Integer>(silverObjectIds),
-                    new ContentManager(),
-                    gallerySC);
+                new ContentManager(),
+                gallerySC);
           }
           // mise à jour de la liste des photos résultat de la recherche
           gallerySC.setSearchResultListPhotos(result);
@@ -1389,6 +1401,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
             PagesContext context =
                 new PagesContext("myForm", "0", gallerySC.getLanguage(), false, gallerySC
                 .getComponentId(), gallerySC.getUserId());
+            context.setEncoding("UTF-8");
             context.setObjectId(orderId);
 
             // mise à jour des données saisies
@@ -1652,20 +1665,29 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
     return name;
   }
 
-  private String createPhoto(List<FileItem> parameters, GallerySessionController gallerySC)
+  private String createPhoto(List<FileItem> parameters, GallerySessionController gallerySC,
+      String encoding)
       throws ParseException {
     // récupération des paramètres
-    String title = FileUploadUtil.getParameter(parameters, ParameterNames.ImageTitle);
-    String description = FileUploadUtil.getParameter(parameters, ParameterNames.ImageDescription);
-    String author = FileUploadUtil.getParameter(parameters, ParameterNames.ImageAuthor);
+    String title =
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageTitle, null, encoding);
+    String description =
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageDescription, null, encoding);
+    String author =
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageAuthor, null, encoding);
     FileItem file = getUploadedFile(parameters, "WAIMGVAR0");
     String beginDownloadDate =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDownloadDate);
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDownloadDate, null,
+            encoding);
     String endDownloadDate =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDownloadDate);
-    String beginDate = FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDate);
-    String endDate = FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDate);
-    String keyWord = FileUploadUtil.getParameter(parameters, ParameterNames.ImageKeyWord);
+        FileUploadUtil
+            .getParameter(parameters, ParameterNames.ImageEndDownloadDate, null, encoding);
+    String beginDate =
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDate, null, encoding);
+    String endDate =
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDate, null, encoding);
+    String keyWord =
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageKeyWord, null, encoding);
 
     if (!StringUtil.isDefined(title)) {
       title = extractFileNameFromFilePath(file);
@@ -1679,9 +1701,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
     // récupération des booléens
     boolean download = false;
     boolean albumLabel = false;
-    if ("true".equals(FileUploadUtil.getParameter(parameters, "Download")))
+    if ("true".equals(FileUploadUtil.getParameter(parameters, "Download", null, encoding)))
       download = true;
-    if ("true".equals(FileUploadUtil.getParameter(parameters, "AlbumLabel")))
+    if ("true".equals(FileUploadUtil.getParameter(parameters, "AlbumLabel", null, encoding)))
       albumLabel = true;
     // récupération et transformation des dates de téléchargement
     Date jBeginDownloadDate = null;
@@ -1736,7 +1758,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
   }
 
   private void updateSelectedPhoto(HttpServletRequest request, GallerySessionController gallerySC,
-      Collection<String> photoIds) throws FileUploadException, ParseException,
+      Collection<String> photoIds, String encoding) throws FileUploadException, ParseException,
       PublicationTemplateException, FormException, RemoteException, UtilException {
     // mise à jour des photos selectionnées : traitement par lot
 
@@ -1760,36 +1782,38 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
     }
 
     // 1. Récupération des données de l'entête
-    String title = FileUploadUtil.getParameter(parameters, "Im$Title");
-    String description = FileUploadUtil.getParameter(parameters, "Im$Description");
-    String author = FileUploadUtil.getParameter(parameters, "Im$Author");
-    String beginDownloadDate = FileUploadUtil.getParameter(parameters, "Im$BeginDownloadDate");
+    String title = FileUploadUtil.getParameter(parameters, "Im$Title", null, encoding);
+    String description = FileUploadUtil.getParameter(parameters, "Im$Description", null, encoding);
+    String author = FileUploadUtil.getParameter(parameters, "Im$Author", null, encoding);
+    String beginDownloadDate =
+        FileUploadUtil.getParameter(parameters, "Im$BeginDownloadDate", null, encoding);
     Date jBeginDownloadDate = null;
     if (!beginDownloadDate.equals("")) {
       if (beginDownloadDate != null && !beginDownloadDate.trim().equals(""))
         jBeginDownloadDate = DateUtil.stringToDate(beginDownloadDate, gallerySC.getLanguage());
     }
-    String endDownloadDate = FileUploadUtil.getParameter(parameters, "Im$EndDownloadDate");
+    String endDownloadDate =
+        FileUploadUtil.getParameter(parameters, "Im$EndDownloadDate", null, encoding);
     Date jEndDownloadDate = null;
     if (!endDownloadDate.equals("")) {
       if (endDownloadDate != null && !endDownloadDate.trim().equals(""))
         jEndDownloadDate = DateUtil.stringToDate(endDownloadDate, gallerySC.getLanguage());
     }
-    String beginDate = FileUploadUtil.getParameter(parameters, "Im$BeginDate");
+    String beginDate = FileUploadUtil.getParameter(parameters, "Im$BeginDate", null, encoding);
     Date jBeginDate = null;
     if (!beginDate.equals("")) {
       if (beginDate != null && !beginDate.trim().equals(""))
         jBeginDate = DateUtil.stringToDate(beginDate, gallerySC.getLanguage());
     }
-    String endDate = FileUploadUtil.getParameter(parameters, "Im$EndDate");
+    String endDate = FileUploadUtil.getParameter(parameters, "Im$EndDate", null, encoding);
     Date jEndDate = null;
     if (!endDate.equals("")) {
       if (endDate != null && !endDate.trim().equals(""))
         jEndDate = DateUtil.stringToDate(endDate, gallerySC.getLanguage());
     }
-    String keyWord = FileUploadUtil.getParameter(parameters, "Im$KeyWord");
+    String keyWord = FileUploadUtil.getParameter(parameters, "Im$KeyWord", null, encoding);
     boolean download = false;
-    if ("true".equals(FileUploadUtil.getParameter(parameters, "Im$Download")))
+    if ("true".equals(FileUploadUtil.getParameter(parameters, "Im$Download", null, encoding)))
       download = true;
 
     // 2. Récupération des données du formulaire
@@ -1844,6 +1868,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
             new PagesContext("photoForm", "0", gallerySC.getLanguage(), false, gallerySC
             .getComponentId(), gallerySC.getUserId(), gallerySC.getAlbum(
             gallerySC.getCurrentAlbumId()).getNodePK().getId());
+        context.setEncoding("UTF-8");
         context.setObjectId(photoId);
         context.setUpdatePolicy(PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES);
         form.update(paramForm, data, context);
@@ -1932,6 +1957,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
         new PagesContext("myForm", "0", gallerySC.getLanguage(), false, gallerySC.getComponentId(),
         gallerySC.getUserId(), gallerySC.getAlbum(gallerySC.getCurrentAlbumId()).getNodePK()
         .getId());
+    context.setEncoding("UTF-8");
     context.setObjectId(photo.getId());
 
     // mise à jour des données saisies
@@ -1944,20 +1970,28 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
   }
 
   private void updateHeaderImage(String photoId, List<FileItem> parameters,
-      GallerySessionController gallerySC)
+      GallerySessionController gallerySC, String encoding)
       throws Exception {
     // récupération des paramètres
-    String title = FileUploadUtil.getParameter(parameters, ParameterNames.ImageTitle);
-    String description = FileUploadUtil.getParameter(parameters, ParameterNames.ImageDescription);
-    String author = FileUploadUtil.getParameter(parameters, ParameterNames.ImageAuthor);
+    String title =
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageTitle, null, encoding);
+    String description =
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageDescription, null, encoding);
+    String author =
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageAuthor, null, encoding);
     FileItem file = getUploadedFile(parameters, "WAIMGVAR0");
     String beginDownloadDate =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDownloadDate);
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDownloadDate, null,
+            encoding);
     String endDownloadDate =
-        FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDownloadDate);
-    String beginDate = FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDate);
-    String endDate = FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDate);
-    String keyWord = FileUploadUtil.getParameter(parameters, ParameterNames.ImageKeyWord);
+        FileUploadUtil
+            .getParameter(parameters, ParameterNames.ImageEndDownloadDate, null, encoding);
+    String beginDate =
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDate, null, encoding);
+    String endDate =
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageEndDate, null, encoding);
+    String keyWord =
+        FileUploadUtil.getParameter(parameters, ParameterNames.ImageKeyWord, null, encoding);
     // formatage des paramètres
     if (!StringUtil.isDefined(title)) {
       // le titre est vide
@@ -1975,7 +2009,8 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
       author = null;
     boolean download = false;
     boolean albumLabel = false;
-    if ("true".equals(FileUploadUtil.getParameter(parameters, ParameterNames.ImageDownload)))
+    if ("true".equals(FileUploadUtil.getParameter(parameters, ParameterNames.ImageDownload, null,
+        encoding)))
       download = true;
     // if ("true".equals(getParameterValue(parameters, "AlbumLabel")))
     // albumLabel = true;

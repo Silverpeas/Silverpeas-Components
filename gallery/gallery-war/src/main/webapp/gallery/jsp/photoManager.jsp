@@ -24,10 +24,11 @@
 
 --%>
 
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp" %>
 
 <% 
-	// récupération des paramètres :
+	// rÃ©cupÃ©ration des paramÃ¨tres :
 	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
 	String 		repertoire 		= (String) request.getAttribute("Repertoire");
 	Collection 	path 			= (Collection) request.getAttribute("Path");
@@ -38,7 +39,7 @@
 	String 		XMLFormName		= (String) request.getAttribute("XMLFormName");
 	boolean		showComments	= ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
 
-	// déclaration des variables :
+	// dÃ©claration des variables :
 	String 		photoId 			= "";
 	String 		title 				= "";
 	String 		description 		= "";
@@ -62,7 +63,7 @@
 	String 		beginDate			= "";
 	String 		endDate				= "";
 	
-	// dans le cas d'une mise à jour, récupération des données :
+	// dans le cas d'une mise Ã  jour, rÃ©cupÃ©ration des donnÃ©es :
 	if (photo != null)
 	{
 		photoId 		= new Integer(photo.getPhotoPK().getId()).toString();
@@ -109,7 +110,7 @@
           	endDate = "";
 	}
 	
-	// déclaration des boutons
+	// dÃ©claration des boutons
 	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
 	Button cancelButton;
 	if (action == "UpdatePhoto")
@@ -129,7 +130,7 @@
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 		<script language="javascript">
 	
-			// fonctions de contrôle des zones du formulaire avant validation
+			// fonctions de contrÃ´le des zones du formulaire avant validation
 			function sendData() 
 			{
 				if (isCorrectForm()) 
@@ -183,8 +184,8 @@
 	           		errorMsg+="  - '<%=resource.getString("gallery.photo")%>'  <%=resource.getString("GML.MustBeFilled")%>\n";
 	           		errorNb++;
 		     	}
-		     	// vérifier les dates de début et de fin de période
-		     	// les dates de téléchargements
+		     	// vÃ©rifier les dates de dÃ©but et de fin de pÃ©riode
+		     	// les dates de tÃ©lÃ©chargements
 		     	if (!isWhitespace(beginDownloadDate)) 
 		     	{
 		   			if (beginDownloadDate.replace(re, "OK") != "OK") 
@@ -241,7 +242,7 @@
 			                 }
 			           }
 			     }		
-			     // les dates de visibilité
+			     // les dates de visibilitÃ©
 			     if (!isWhitespace(beginDate)) {
 			   			if (beginDate.replace(re, "OK") != "OK") 
 			   			{
@@ -298,7 +299,7 @@
 				           }
 				     }				
 			     
-		     	// vérifier que le document est bien une image
+		     	// vÃ©rifier que le document est bien une image
 		     	if (file != "")
 		     	{
  					var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;

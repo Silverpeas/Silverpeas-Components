@@ -23,10 +23,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp" %>
 
 <% 
-	// récupération des paramètres :
+	// rÃ©cupÃ©ration des paramÃ¨tres :
 	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
 	Collection 	path 			= (Collection) request.getAttribute("Path");
 	String 		profile			= (String) request.getAttribute("Profile");
@@ -43,11 +45,11 @@
 	boolean 	linkDownload 	= ((Boolean) request.getAttribute("ViewLinkDownload")).booleanValue();
 	boolean 	isBasket	 	= ((Boolean) request.getAttribute("IsBasket")).booleanValue();
 	
-	// paramètres du formulaire
+	// paramÃ¨tres du formulaire
 	Form		xmlForm 		= (Form) request.getAttribute("XMLForm");
 	DataRecord	xmlData			= (DataRecord) request.getAttribute("XMLData");
 	
-	// déclaration des variables :
+	// dÃ©claration des variables :
 	String 		nomRep 				= resource.getSetting("imagesSubDirectory") + photo.getPhotoPK().getId();
 	String 		name 				= "";
 	if (photo.getImageName() != null && !photo.getImageName().equals(""))
@@ -82,10 +84,10 @@
 	String		beginDate			= resource.getOutputDate(photo.getBeginDate());
 	String 		endDate				= resource.getOutputDate(photo.getEndDate());
 	
-	// si le paramètre watermark est actif, récupérer l'image avec le watermark
+	// si le paramÃ¨tre watermark est actif, rÃ©cupÃ©rer l'image avec le watermark
 	if (watermark)
 	{
-		// image avec le watermarkOther pour le téléchargement
+		// image avec le watermarkOther pour le tÃ©lÃ©chargement
 		File fileWatermark = new File(FileRepositoryManager.getAbsolutePath(componentId) + nomRep + File.separator + photo.getId() + "_watermark.jpg");
 		
 		if( fileWatermark.exists() )
@@ -169,7 +171,7 @@ function goToNotify(url)
 		operationPane.addOperation(resource.getIcon("gallery.addPhotoToBasket"),resource.getString("gallery.addPhotoToBasket"),"BasketAddPhoto?PhotoId="+photoId);
 	}
 	
-	// derniers résultat de la recherche
+	// derniers rÃ©sultat de la recherche
 	operationPane.addLine();
     operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString("gallery.lastResult"), "LastResult");
 
@@ -247,7 +249,7 @@ function goToNotify(url)
 		<td align="center">
 			<%=board.printBefore()%>
 			<table align="left" border="0" CELLPADDING="5">
-				<!-- AFFICHAGE des données de la photo -->
+				<!-- AFFICHAGE des donnÃ©es de la photo -->
 				<%	if ( link != null && !link.equals("")) {	%>
 					<tr align="left">
 						<td class="txtlibform" nowrap><%=resource.getString("gallery.permalink")%> :</td>
@@ -368,7 +370,7 @@ function goToNotify(url)
 				<%=board.printAfter()%>
 							
 				<%
-				// AFFICHAGE des métadonnées
+				// AFFICHAGE des mÃ©tadonnÃ©es
 				if (viewMetadata)
 				{	
 					if (metaDataKeys != null && metaDataKeys.size() > 0) 

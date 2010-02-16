@@ -24,10 +24,11 @@
 
 --%>
 
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp" %>
 
 <% 
-	// récupération des paramètres :
+	// rÃ©cupÃ©ration des paramÃ¨tres :
 	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
 	String 		repertoire 		= (String) request.getAttribute("Repertoire");
 	Collection 	path 			= (Collection) request.getAttribute("Path");
@@ -39,11 +40,11 @@
 	Boolean		isUsePdc		= (Boolean) request.getAttribute("IsUsePdc");
 	boolean		showComments	= ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
 	
-	// paramètres pour le formulaire
+	// paramÃ¨tres pour le formulaire
 	Form 			formUpdate 		= (Form) request.getAttribute("Form");
 	DataRecord 		data 			= (DataRecord) request.getAttribute("Data"); 
 	
-	// déclaration des variables :
+	// dÃ©claration des variables :
 	String 		photoId 			= "";
 	String 		title 				= "";
 	String 		description 		= "";
@@ -118,7 +119,7 @@
 		metaDataKeys		= photo.getMetaDataProperties();
 	}
 	
-	// déclaration des boutons
+	// dÃ©claration des boutons
 	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
 	Button cancelButton;
 	if (action == "UpdateInformation")
@@ -140,7 +141,7 @@
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 		<script language="javascript">
 		
-		// fonctions de contrôle des zones des formulaires avant validation
+		// fonctions de contrÃ´le des zones des formulaires avant validation
 			function sendData() 
 			{
 				<% if (formUpdate != null) { %>
@@ -201,8 +202,8 @@
 	           		errorMsg+="  - '<%=resource.getString("gallery.photo")%>'  <%=resource.getString("GML.MustBeFilled")%>\n";
 	           		errorNb++;
 		     	}
-		     	// vérifier les dates de début et de fin de période
-		     	// les dates de téléchargements
+		     	// vÃ©rifier les dates de dÃ©but et de fin de pÃ©riode
+		     	// les dates de tÃ©lÃ©chargements
 		     	if (!isWhitespace(beginDownloadDate)) 
 		     	{
 		   			if (beginDownloadDate.replace(re, "OK") != "OK") 
@@ -259,7 +260,7 @@
 			                 }
 			           }
 			     }		
-			     // les dates de visibilité
+			     // les dates de visibilitÃ©
 			     if (!isWhitespace(beginDate)) {
 			   			if (beginDate.replace(re, "OK") != "OK") 
 			   			{
@@ -316,7 +317,7 @@
 				           }
 				     }				
 			     
-		     	// vérifier que le document est bien une image
+		     	// vÃ©rifier que le document est bien une image
 		     	if (file != "")
 		     	{
  					var verif = /[.][jpg,gif,bmp,tiff,tif,jpeg,png,JPG,GIF,BMP,TIFF,TIF,JPEG,PNG]{3,4}$/;
@@ -565,7 +566,7 @@ function hideTip() {
       		</center>
       		
       	<%
-				// AFFICHAGE des métadonnées
+				// AFFICHAGE des mÃ©tadonnÃ©es
 				if (viewMetadata)
 				{	
 					if (metaDataKeys != null && metaDataKeys.size() > 0) 
