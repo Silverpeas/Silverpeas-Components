@@ -30,8 +30,8 @@
   <context-param>
     <param-name>contextConfigLocation</param-name>
     <param-value>
-      /WEB-INF/spring-hibernate.xml /WEB-INF/spring-notification.xml /WEB-INF/spring-checker.xml
-      /WEB-INF/spring-datasource.xml
+      /WEB-INF/config/spring-hibernate.xml /WEB-INF/config/spring-notification.xml /WEB-INF/config/spring-checker.xml
+      /WEB-INF/config/spring-datasource.xml
     </param-value>
   </context-param>
 
