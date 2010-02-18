@@ -1,0 +1,6 @@
+DROP INDEX IND_Photo
+;
+DROP INDEX IND_Path
+;
+DROP INDEX IND_Order
+;
