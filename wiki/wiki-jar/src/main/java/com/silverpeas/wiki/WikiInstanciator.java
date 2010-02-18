@@ -48,12 +48,12 @@ public class WikiInstanciator implements ComponentsInstanciatorIntf {
   private ClassLoader loader;
 
   public WikiInstanciator() {
-    wikiDAO = new WikiPageDAO();
-    loader = new ConfigurationClassLoader(WikiInstanciator.class.getClassLoader());
+    this(new WikiPageDAO());
   }
 
   public WikiInstanciator(WikiPageDAO dao) {
     wikiDAO = dao;
+    loader = new ConfigurationClassLoader(WikiInstanciator.class.getClassLoader());
   }
 
   @Override
