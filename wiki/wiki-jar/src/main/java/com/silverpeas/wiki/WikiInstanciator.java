@@ -23,6 +23,7 @@
  */
 package com.silverpeas.wiki;
 
+import com.silverpeas.util.ConfigurationClassLoader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -44,9 +45,11 @@ import java.util.zip.ZipInputStream;
 public class WikiInstanciator implements ComponentsInstanciatorIntf {
 
   private WikiPageDAO wikiDAO;
+  private ClassLoader loader;
 
   public WikiInstanciator() {
     wikiDAO = new WikiPageDAO();
+    loader = new ConfigurationClassLoader(WikiInstanciator.class.getClassLoader());
   }
 
   public WikiInstanciator(WikiPageDAO dao) {
@@ -105,9 +108,8 @@ public class WikiInstanciator implements ComponentsInstanciatorIntf {
 
   protected void createPages(File directory, String componentId) throws IOException,
       WikiException {
-    ZipInputStream zipFile =
-        new ZipInputStream(this.getClass().getClassLoader().getResourceAsStream(
-        "pages.zip"));
+
+    ZipInputStream zipFile = new ZipInputStream(loader.getResourceAsStream("pages.zip"));
     ZipEntry page = zipFile.getNextEntry();
     while (page != null) {
       String pageName = page.getName();

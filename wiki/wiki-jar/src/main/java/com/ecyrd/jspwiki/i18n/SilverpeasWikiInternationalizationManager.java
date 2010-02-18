@@ -28,6 +28,7 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 import com.ecyrd.jspwiki.WikiEngine;
+import com.silverpeas.util.FileUtil;
 
 /**
  * Manages all internationalization in JSPWiki.
@@ -74,8 +75,7 @@ public class SilverpeasWikiInternationalizationManager extends Internationalizat
    */
   public ResourceBundle getBundle(String bundle, Locale locale)
       throws MissingResourceException {
-    ResourceBundle b = ResourceBundle.getBundle(bundle, getLocale());
-
+    ResourceBundle b = FileUtil.loadBundle(bundle, getLocale());
     return b;
   }
 
