@@ -224,7 +224,7 @@ function isCorrectForm() {
 			 hasNext = 0;
 		 }
 	 }
-	 //str = resourceId1_pourcentage1,resourceId2_pourcentage2
+	 //str = resourceId0_pourcentage0,resourceId1_pourcentage1,resourceId2_pourcentage2
 	 document.actionForm.allResources.value = str;
      
 	 var errorMsg 			= "";
@@ -352,7 +352,30 @@ function isCorrectForm() {
      return result;
 }
 
+
 function isCorrectFormResponsable() {
+	   var i=0;
+	   var str = "";
+	   //while(document.getElementById("Resource"+i).value != null)
+	   var hasNext = 1;
+	   while (hasNext == 1)
+	   {
+	     try
+	     {
+	       str += document.getElementById("Resource"+i).value;
+	       str += "_";
+	       str += document.getElementById("Charge"+i).value;
+	       str += ",";
+	       i++;
+	     }
+	     catch (e)
+	     {
+	       hasNext = 0;
+	     }
+	   }
+	 //str = resourceId0_pourcentage0,resourceId1_pourcentage1,resourceId2_pourcentage2
+	   document.actionForm.allResources.value = str;
+	   
      var errorMsg 			= "";
      var errorNb 			= 0;
      var consomme			= document.actionForm.Consomme.value;
@@ -490,7 +513,7 @@ function init()
 
 function reloadOccupation(i)
 {
-	//alert('reload '+i);
+	//alert("reload "+i);
 	var userId = document.getElementById("Resource"+i).value;
 	var charge = document.getElementById("Charge"+i).value;
 	var dateDebut = document.getElementById("DateDebut").value;
@@ -514,6 +537,7 @@ function reloadOccupations()
 	while (nomore != 1)
 	{
 		try {
+			//alert("cpt = " + cpt);
 			reloadOccupation(cpt);
 			cpt++;
 			
@@ -526,6 +550,7 @@ function reloadOccupations()
 		} 
 		catch (e) 
 		{
+			//alert("error = " + e);
 			nomore = 1;
 		}
 	}
@@ -709,7 +734,8 @@ out.println(board.printBefore());
     	<% if (isOrganisateur) { %>
 	    	<input type="text" name="DateDebut" id="DateDebut" size="12" maxlength="10" value="<%=dateDebut%>" onBlur="javascript:reloadDateFinAndOccupations();">&nbsp;<img src="<%=resource.getIcon("projectManager.mandatoryField")%>" width="5" height="5" valign="absmiddle">&nbsp;&nbsp;<a href="javascript:onClick=editDate(11)"><img src="<%=resource.getIcon("projectManager.calendrier")%>" border="0" align="absmiddle" alt="<%=resource.getString("GML.viewCalendar")%>"></a>&nbsp;<span class="txtnote"><%=resource.getString("GML.dateFormatExemple")%></span>
 	    <% } else { %>
-    		<%=resource.getOutputDate(task.getDateDebut())%>
+	       <%=resource.getOutputDate(task.getDateDebut())%>
+    		<input type="hidden" id="DateDebut" value="<%=resource.getOutputDate(task.getDateDebut())%>"/>
     	<% } %>
     </TD>
 </TR>
@@ -718,11 +744,9 @@ out.println(board.printBefore());
     <TD>
     	<% if (isOrganisateur) { %>
     		<span id="DisplayDateFin"><%=dateFin%></span>
-    		<!-- <input type="text" name="DF" id="DateFin" size="12" maxlength="10" value="<%=dateFin%>" disabled> -->
     		<input type="hidden" id="HiddenDateFin" name="DateFin" value="<%=dateFin%>"><input type="hidden" name="PreviousId"><input type="hidden" name="Id" value="<%=task.getId()%>">
-    		<!-- &nbsp;&nbsp;<a href="javascript:onClick=processEndDate();"><img src="<%=resource.getIcon("projectManager.refresh")%>"  border=0 valign=absmiddle align="middle" alt="<%=resource.getString("GML.viewCalendar")%>"></a></span> -->
     	<% } else { %>
-    		<%=resource.getOutputDate(task.getDateFin())%>
+    		<span id="DisplayDateFin"><%=resource.getOutputDate(task.getDateFin())%></span>
     	<% } %>
     </TD>
 </TR>
