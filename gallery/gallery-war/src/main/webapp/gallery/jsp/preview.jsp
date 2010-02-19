@@ -44,7 +44,8 @@
 	String 		sizeParam		= (String) request.getAttribute("PreviewSize");
 	boolean 	linkDownload 	= ((Boolean) request.getAttribute("ViewLinkDownload")).booleanValue();
 	boolean 	isBasket	 	= ((Boolean) request.getAttribute("IsBasket")).booleanValue();
-	
+	boolean  isPrivateSearch = ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
+
 	// paramètres du formulaire
 	Form		xmlForm 		= (Form) request.getAttribute("XMLForm");
 	DataRecord	xmlData			= (DataRecord) request.getAttribute("XMLData");
@@ -171,12 +172,13 @@ function goToNotify(url)
 		operationPane.addOperation(resource.getIcon("gallery.addPhotoToBasket"),resource.getString("gallery.addPhotoToBasket"),"BasketAddPhoto?PhotoId="+photoId);
 	}
 	
-	// derniers résultat de la recherche
-	operationPane.addLine();
-    operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString("gallery.lastResult"), "LastResult");
+	if (isPrivateSearch) {
+	   // derniers résultat de la recherche
+	   operationPane.addLine();
+	   operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString("gallery.lastResult"), "LastResult");
+	}
 
-
-   	TabbedPane tabbedPane = gef.getTabbedPane();
+  TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(resource.getString("gallery.photo"), "#", true, false);
 	if (updateAllowed)
 	{

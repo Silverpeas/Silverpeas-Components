@@ -243,6 +243,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           request.setAttribute("IsUsePdc", gallerySC.isUsePdc());
           request.setAttribute("IsBasket", gallerySC.isBasket());
           request.setAttribute("IsOrder", gallerySC.isOrder());
+          request.setAttribute("IsPrivateSearch", gallerySC.isPrivateSearch());
 
           // appel jsp
           destination = rootDest + "viewAlbum.jsp";
@@ -410,7 +411,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
         List<FileItem> parameters = FileUploadUtil.parseRequest(request);
         String photoId =
             FileUploadUtil
-                .getParameter(parameters, "PhotoId", null, request.getCharacterEncoding());
+            .getParameter(parameters, "PhotoId", null, request.getCharacterEncoding());
         // gallerySC.setCurrentAlbumId(albumId);
         updateHeaderImage(photoId, parameters, gallerySC, request.getCharacterEncoding());
         // retour à la preview
@@ -437,7 +438,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
         List<FileItem> parameters = FileUploadUtil.parseRequest(request);
         String photoId =
             FileUploadUtil
-                .getParameter(parameters, "PhotoId", null, request.getCharacterEncoding());
+            .getParameter(parameters, "PhotoId", null, request.getCharacterEncoding());
         updateHeaderImage(photoId, parameters, gallerySC, request.getCharacterEncoding());
 
         // récupération du formulaire
@@ -456,6 +457,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
         if (photoId == null || photoId.length() == 0 || "null".equals(photoId))
           photoId = (String) request.getAttribute("PhotoId");
         PhotoDetail photo = null;
+        request.setAttribute("IsPrivateSearch", gallerySC.isPrivateSearch());
         try {
           photo = gallerySC.getPhoto(photoId);
           request.setAttribute("Rang", new Integer(gallerySC.getRang()));
@@ -1034,7 +1036,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
         // Ajout de la requete classique
         String word =
             FileUploadUtil.getParameter(items, "SearchKeyWord", null, request
-                .getCharacterEncoding());
+            .getCharacterEncoding());
         query.setQuery(word);
         gallerySC.setSearchKeyWord(word);
 
@@ -1100,10 +1102,10 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
             // recupere les deux champs
             String dateBeginStr =
                 FileUploadUtil.getParameter(items, property + "_Begin", null, request
-                    .getCharacterEncoding());
+                .getCharacterEncoding());
             String dateEndStr =
                 FileUploadUtil.getParameter(items, property + "_End", null, request
-                    .getCharacterEncoding());
+                .getCharacterEncoding());
 
             Date dateBegin = null;
             Date dateEnd = null;
@@ -1678,10 +1680,10 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
     FileItem file = getUploadedFile(parameters, "WAIMGVAR0");
     String beginDownloadDate =
         FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDownloadDate, null,
-            encoding);
+        encoding);
     String endDownloadDate =
         FileUploadUtil
-            .getParameter(parameters, ParameterNames.ImageEndDownloadDate, null, encoding);
+        .getParameter(parameters, ParameterNames.ImageEndDownloadDate, null, encoding);
     String beginDate =
         FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDate, null, encoding);
     String endDate =
@@ -1982,10 +1984,10 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
     FileItem file = getUploadedFile(parameters, "WAIMGVAR0");
     String beginDownloadDate =
         FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDownloadDate, null,
-            encoding);
+        encoding);
     String endDownloadDate =
         FileUploadUtil
-            .getParameter(parameters, ParameterNames.ImageEndDownloadDate, null, encoding);
+        .getParameter(parameters, ParameterNames.ImageEndDownloadDate, null, encoding);
     String beginDate =
         FileUploadUtil.getParameter(parameters, ParameterNames.ImageBeginDate, null, encoding);
     String endDate =

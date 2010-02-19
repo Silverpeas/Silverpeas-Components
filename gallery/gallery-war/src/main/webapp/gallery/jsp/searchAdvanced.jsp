@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp" %>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <% 	
@@ -75,7 +76,7 @@ function calendar(elementId) {
     out.println(frame.printBefore());
     
 	%>
-	<form name="searchForm" action="Search" method="POST" onSubmit="javascript:sendData();" ENCTYPE="multipart/form-data">
+	<form name="searchForm" action="Search" method="POST" onSubmit="javascript:sendData();" ENCTYPE="multipart/form-data" accept-charset="UTF-8">
 	
 		<%
  		// affichage de la zone de recherche
@@ -92,7 +93,7 @@ function calendar(elementId) {
 		<%
 		out.println(board.printAfter());
 		 
-		// affichage des données IPTC
+		// affichage des donnÃ©es IPTC
 		// --------------------------
 			 
 		if (metaDataKeys != null && metaDataKeys.size() > 0) 
@@ -105,7 +106,7 @@ function calendar(elementId) {
 			{
 				MetaData metaData = (MetaData) it.next();
 	
-				// extraire les données
+				// extraire les donnÃ©es
 				String property = metaData.getProperty();
 				String metaDataLabel = metaData.getLabel();
 				String metaDataValue = metaData.getValue();

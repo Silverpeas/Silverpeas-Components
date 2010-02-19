@@ -41,6 +41,7 @@
 	boolean			isPdcUsed			= ((Boolean) request.getAttribute("IsUsePdc")).booleanValue();
 	boolean 		isBasket	 		= ((Boolean) request.getAttribute("IsBasket")).booleanValue();
 	boolean 		isGuest		 		= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
+	boolean   isPrivateSearch = ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
 
 	//For Drag And Drop
 	String sRequestURL 		= HttpUtils.getRequestURL(request).toString();
@@ -403,12 +404,14 @@ function uploadCompleted(s)
 		operationPane.addOperation(resource.getIcon("gallery.addFavorite"),resource.getString("gallery.addFavorite"),"javaScript:addFavorite('"+m_sAbsolute+"','"+m_context+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(albumName))+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(albumDescription))+"','"+albumUrl+"')");
 	}
 	
-	// derniers résultat de la recherche
-	operationPane.addLine();
-    operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString("gallery.lastResult"), "LastResult");
-
+	if (isPrivateSearch) {
+	   // derniers résultat de la recherche
+	   operationPane.addLine();
+	   operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString("gallery.lastResult"), "LastResult");
+	}
+	
 	out.println(window.printBefore());
-    out.println(frame.printBefore());
+  out.println(frame.printBefore());
  	
 	
 	// afficher les sous albums

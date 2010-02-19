@@ -23,10 +23,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp"%>
 
 <%
-	// récupération des paramètres :
+	// rÃ©cupÃ©ration des paramÃ¨tres :
 	String 		searchKeyWord 		= (String) request.getAttribute("SearchKeyWord");
 	List 		photos 				= (List) request.getAttribute("Photos");
 	String 		profile 			= (String) request.getAttribute("Profile");
@@ -39,7 +40,7 @@
 	boolean 	isViewNotVisible 	= ((Boolean) request.getAttribute("ViewVisible")).booleanValue();
 	boolean 	isBasket	 		= ((Boolean) request.getAttribute("IsBasket")).booleanValue();
 
-	// déclaration des variables :
+	// dÃ©claration des variables :
 	int nbAffiche = 0;
 	int nbParLigne = 1;
 	int largeurCellule = 0;
@@ -52,7 +53,7 @@
 	Pagination pagination = gef.getPagination(photos.size(), nbPhotosPerPage, firstPhotoIndex);
 	List affPhotos = photos.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
 
-	// création du chemin :
+	// crÃ©ation du chemin :
 	String chemin = " ";
 	if (isViewNotVisible)
 		chemin = resource.getString("gallery.viewNotVisible");
@@ -107,7 +108,7 @@
 	
 	function sendData() 
 	{
-		// envoi des photos sélectionnées pour la modif par lot
+		// envoi des photos sÃ©lectionnÃ©es pour la modif par lot
 		document.photoForm.SelectedIds.value 	= getObjects(true);
 		document.photoForm.NotSelectedIds.value = getObjects(false);
 		
@@ -116,7 +117,7 @@
 	
 	function sendToBasket() 
 	{
-		// envoi des photos sélectionnées dans le panier
+		// envoi des photos sÃ©lectionnÃ©es dans le panier
 		document.photoForm.SelectedIds.value 	= getObjects(true);
 		document.photoForm.NotSelectedIds.value = getObjects(false);
 		document.photoForm.action				= "BasketAddPhotos";
@@ -131,7 +132,7 @@
 			// au moins une checkbox exist
 			var nbBox = boxItems.length;
 			if ( (nbBox == null) && (boxItems.checked == selected) ){
-				// il n'y a qu'une checkbox non selectionnée
+				// il n'y a qu'une checkbox non selectionnÃ©e
 				items += boxItems.value+",";
 			} else{
 				// search not checked boxes 
@@ -170,7 +171,7 @@
 	marginheight="5">
 
 <%
-	// création de la barre de navigation
+	// crÃ©ation de la barre de navigation
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
 	browseBar.setPath(chemin);
@@ -183,13 +184,13 @@
 
 	if ("admin".equals(profile) || "publisher".equals(profile) || "writer".equals(profile)) 
 	{
-		// possibilité de modifier les photos par lot
+		// possibilitÃ© de modifier les photos par lot
 		operationPane.addOperation(resource.getIcon("gallery.updateSelectedPhoto"), resource.getString("gallery.updateSelectedPhoto"),"javascript:onClick=sendData();");
 		operationPane.addOperation(resource.getIcon("gallery.allSelect"), resource.getString("gallery.allSelect"), "AllSelected");
 	}
 	if ("user".equals(profile) && isBasket)
 	{
-		// ajouter les photos sélectionnées au panier
+		// ajouter les photos sÃ©lectionnÃ©es au panier
 		operationPane.addOperation(resource.getIcon("gallery.addToBasketSelectedPhoto"),resource.getString("gallery.addToBasketSelectedPhoto"),"javascript:onClick=sendToBasket();");
 	}
 
@@ -209,9 +210,9 @@
 
 		if (photos.size() > 0) {
 			out.println(board.printBefore());
-			// affichage de l'entête
+			// affichage de l'entÃªte
 %>
-<form name="photoForm" action="EditSelectedPhoto">
+<form name="photoForm" action="EditSelectedPhoto" accept-charset="UTF-8">
 <table width="98%" border="0" cellspacing="0" cellpadding="0"
 	align=center>
 	<input type="hidden" name="SearchKeyWord" value="<%=searchKeyWord%>">
@@ -330,7 +331,7 @@
 													.javaStringToHtmlString(photo
 															.getDescription());
 
-								// on affiche encore sur la même ligne
+								// on affiche encore sur la mÃªme ligne
 		%>
 
 		<%
@@ -352,7 +353,7 @@
 			</tr>
 			<tr>
 				<%
-					//traitement de la case à cocher
+					//traitement de la case Ã  cocher
 											String usedCheck = "";
 											if (selectedIds != null
 													&& selectedIds.contains(idP))
@@ -393,7 +394,7 @@
 				</td>
 			</tr>
 			<%
-				//traitement de la case à cocher
+				//traitement de la case Ã  cocher
 										String usedCheck = "";
 										if (selectedIds != null
 												&& selectedIds.contains(idP))
@@ -407,9 +408,9 @@
 		</td>
 		<%
 			}
-								// affichage du texte à coté de la photo pour le cas de l'affichage en liste
+								// affichage du texte Ã  cotÃ© de la photo pour le cas de l'affichage en liste
 								if (typeAff.equals("3")) {
-									// on affiche les photos en colonne avec les métaData à droite
+									// on affiche les photos en colonne avec les mÃ©taData Ã  droite
 		%>
 		<td valign="middle" align="center">
 		<table border="0" width="10" align="center" cellspacing="1"
@@ -495,10 +496,10 @@
 				<td>
 				<%
 					String keyWord = photo.getKeyWord();
-												// découper la zone keyWord en mots
+												// dÃ©couper la zone keyWord en mots
 												StringTokenizer st = new StringTokenizer(
 														keyWord);
-												// traitement des mots clés
+												// traitement des mots clÃ©s
 												while (st.hasMoreTokens()) {
 													String searchWord = (String) st
 															.nextToken();
@@ -507,7 +508,7 @@
  	}
  								out.println("</td></tr>");
  							}
- 							//traitement de la case à cocher
+ 							//traitement de la case Ã  cocher
  							String usedCheck = "";
  							if (selectedIds != null
  									&& selectedIds.contains(idP))
@@ -525,7 +526,7 @@
 							}
 						}
 
-						// on prépare pour la ligne suivante
+						// on prÃ©pare pour la ligne suivante
 						nbAffiche = 0;
 		%>
 	</tr>
