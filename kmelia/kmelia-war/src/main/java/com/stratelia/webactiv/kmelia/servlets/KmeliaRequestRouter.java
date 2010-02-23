@@ -52,6 +52,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -63,7 +64,6 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
@@ -103,6 +103,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
    * @param context Context of current component instance
    * @return a KmeliaSessionController instance
    */
+  @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
     ComponentSessionController component =
@@ -115,6 +116,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "kmelia";
   }
@@ -128,6 +130,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function, ComponentSessionController componentSC,
       HttpServletRequest request) {
     SilverTrace.info("kmelia", "KmeliaRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
@@ -145,7 +148,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         kmaxMode = true;
         kmelia.isKmaxMode = true;
       }
-      request.setAttribute("KmaxMode", new Boolean(kmaxMode));
+      request.setAttribute("KmaxMode", Boolean.valueOf(kmaxMode));
 
       toolboxMode = KmeliaHelper.isToolbox(kmelia.getComponentId());
 
@@ -189,15 +192,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         }
 
         FileFolder folder = new FileFolder(path);
-
-        /*
-         * String separator = "\\"; if (path.indexOf('/') != -1) separator = "/"; List lPath = new
-         * ArrayList(); StringTokenizer tokenizer = new StringTokenizer(path, separator); while
-         * (tokenizer.hasMoreTokens()) { lPath.add(tokenizer.nextToken()); }
-         */
-
         request.setAttribute("Directory", folder);
-        // request.setAttribute("Path", lPath);
         request.setAttribute("LinkedPathString", kmelia.getSessionPath());
 
         destination = rootDestination + "repository.jsp";
@@ -222,18 +217,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         request.setAttribute("PathString", kmelia.getSessionPathString());
         request.setAttribute("LinkedPathString", kmelia.getSessionPath());
         request.setAttribute("Treeview", kmelia.getTreeview());
-        request.setAttribute("DisplayNBPublis", new Boolean(kmelia.displayNbPublis()));
+        request.setAttribute("DisplayNBPublis", Boolean.valueOf(kmelia.displayNbPublis()));
 
         // rechercher si le theme a un descripteur
-        request.setAttribute("HaveDescriptor", new Boolean(kmelia
+        request.setAttribute("HaveDescriptor", Boolean.valueOf(kmelia
             .isTopicHaveUpdateChainDescriptor()));
 
         if ("noRights".equalsIgnoreCase(currentTopic.getNodeDetail().getUserRole())) {
           destination = rootDestination + "toCrossTopic.jsp";
         } else {
           request.setAttribute("Profile", kmelia.getUserTopicProfile(topicId));
-          request.setAttribute("IsGuest", new Boolean(kmelia.getUserDetail().isAccessGuest()));
-          request.setAttribute("RightsOnTopicsEnabled", new Boolean(kmelia
+          request.setAttribute("IsGuest", Boolean.valueOf(kmelia.getUserDetail().isAccessGuest()));
+          request.setAttribute("RightsOnTopicsEnabled", Boolean.valueOf(kmelia
               .isRightsOnTopicsEnabled()));
 
           request.setAttribute("WysiwygDescription", kmelia.getWysiwygOnTopic());
@@ -356,20 +351,20 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
       else if (function.equals("ToAddTopic")) {
         String isLink = request.getParameter("IsLink");
         if (StringUtil.isDefined(isLink))
-          request.setAttribute("IsLink", new Boolean(true));
+          request.setAttribute("IsLink", Boolean.TRUE);
 
         String topicId = request.getParameter("Id");
         List<NodeDetail> path = kmelia.getTopicPath(topicId);
         request.setAttribute("Path", displayPath(path, false, 3, kmelia.getCurrentLanguage()));
         request.setAttribute("PathLinked", displayPath(path, true, 3, kmelia.getCurrentLanguage()));
         request.setAttribute("Translation", kmelia.getCurrentLanguage());
-        request.setAttribute("PopupDisplay", new Boolean(true));
+        request.setAttribute("PopupDisplay", Boolean.TRUE);
         request
             .setAttribute("NotificationAllowed", Boolean.valueOf(kmelia.isNotificationAllowed()));
         request.setAttribute("Parent", kmelia.getNodeHeader(topicId));
 
         if (kmelia.isRightsOnTopicsEnabled()) {
-          request.setAttribute("PopupDisplay", new Boolean(false));
+          request.setAttribute("PopupDisplay", Boolean.FALSE);
           request.setAttribute("Profiles", kmelia.getTopicProfiles());
 
           // Rights of the component
@@ -390,12 +385,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Path", displayPath(path, false, 3, kmelia.getCurrentLanguage()));
         request.setAttribute("PathLinked", displayPath(path, true, 3, kmelia.getCurrentLanguage()));
         request.setAttribute("Translation", kmelia.getCurrentLanguage());
-        request.setAttribute("PopupDisplay", new Boolean(true));
+        request.setAttribute("PopupDisplay", Boolean.TRUE);
         request
             .setAttribute("NotificationAllowed", Boolean.valueOf(kmelia.isNotificationAllowed()));
 
         if (kmelia.isRightsOnTopicsEnabled()) {
-          request.setAttribute("PopupDisplay", new Boolean(false));
+          request.setAttribute("PopupDisplay", Boolean.FALSE);
           request.setAttribute("Profiles", kmelia.getTopicProfiles(id));
 
           if (node.haveInheritedRights()) {
@@ -568,7 +563,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           request.setAttribute("ValidationType", new Integer(kmelia.getValidationType()));
 
           // check if user is writer with approval right (versioning case)
-          request.setAttribute("WriterApproval", new Boolean(kmelia.isWriterApproval(id)));
+          request.setAttribute("WriterApproval", Boolean.valueOf(kmelia.isWriterApproval(id)));
           request.setAttribute("NotificationAllowed", Boolean.valueOf(kmelia
               .isNotificationAllowed()));
 
@@ -1177,14 +1172,14 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         if (modelUsed.contains("WYSIWYG")) {
           wysiwygValid = true;
         }
-        request.setAttribute("WysiwygValid", new Boolean(wysiwygValid));
+        request.setAttribute("WysiwygValid", Boolean.valueOf(wysiwygValid));
 
         // s'il n'y a pas de modèles selectionnés, les présenter tous
         if (((listModelXml == null) || (listModelXml.isEmpty())) &&
             ((listModelForm == null) || (listModelForm.isEmpty())) && (!wysiwygValid)) {
           request.setAttribute("XMLForms", templates);
           request.setAttribute("DBForms", dbForms);
-          request.setAttribute("WysiwygValid", new Boolean(true));
+          request.setAttribute("WysiwygValid", Boolean.TRUE);
         }
         // put current publication
         request.setAttribute("CurrentPublicationDetail", kmelia.getSessionPublication()
@@ -1284,11 +1279,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         File dir = null;
         InfoDetail infos = null;
         boolean imageTrouble = false;
-
-        ResourceLocator settings =
-            new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
-        boolean runOnUnix = settings.getBoolean("runOnSolaris", false);
-
+        boolean runOnUnix = !FileUtil.isWindows();
         List<FileItem> parameters = FileUploadUtil.parseRequest(request);
         String modelId = FileUploadUtil.getParameter(parameters, "ModelId");
 
@@ -1358,7 +1349,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           kmelia.updateInfoDetail("useless", infos);
 
         if (imageTrouble)
-          request.setAttribute("ImageTrouble", new Boolean(true));
+          request.setAttribute("ImageTrouble", Boolean.TRUE);
 
         String wizard = kmelia.getWizard();
         if (wizard.equals("progress")) {
@@ -1962,18 +1953,16 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         versionType = Integer.parseInt(sVersionType);
 
       String sDraftMode = FileUploadUtil.getParameter(items, "chk_draft");
-      if (StringUtil.isDefined(sDraftMode))
-        draftMode = new Boolean(sDraftMode).booleanValue();
+      if (StringUtil.isDefined(sDraftMode)) {
+        draftMode = StringUtil.getBooleanValue(sDraftMode);
+      }
 
       fileItem = FileUploadUtil.getFile(items, "file_name");
 
       if (fileItem != null) {
         logicalName = fileItem.getName();
         if (logicalName != null) {
-          ResourceLocator settings = new ResourceLocator(
-              "com.stratelia.webactiv.util.attachment.Attachment", "");
-          boolean runOnUnix = SilverpeasSettings.readBoolean(settings,
-              "runOnSolaris", false);
+          boolean runOnUnix = !FileUtil.isWindows();
           if (runOnUnix) {
             logicalName = logicalName.replace('\\', File.separatorChar);
             SilverTrace
@@ -2061,7 +2050,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
             request.setAttribute("ProcessDuration", FileRepositoryManager
                 .formatFileUploadTime(processDuration));
             request.setAttribute("ImportMode", importMode);
-            request.setAttribute("DraftMode", new Boolean(draftMode));
+            request.setAttribute("DraftMode", Boolean.valueOf(draftMode));
             request.setAttribute("Title", importModeTitle);
             destination = routeDestination + "reportImportFiles.jsp";
           } else {
@@ -2129,8 +2118,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
   private String displayPath(Collection<NodeDetail> path, boolean linked, int beforeAfter,
       String translation) {
-    StringBuffer linkedPathString = new StringBuffer();
-    StringBuffer pathString = new StringBuffer();
+    StringBuilder linkedPathString = new StringBuilder();
+    StringBuilder pathString = new StringBuilder();
     int nbItemInPath = path.size();
     Iterator<NodeDetail> iterator = path.iterator();
     boolean alreadyCut = false;

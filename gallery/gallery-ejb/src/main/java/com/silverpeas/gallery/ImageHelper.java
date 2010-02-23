@@ -47,6 +47,7 @@ import com.drew.metadata.iptc.IptcDirectory;
 import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -66,18 +67,21 @@ public class ImageHelper {
 
   public static boolean isImage(String name) {
     String type = FileRepositoryManager.getFileExtension(name);
-    return (type.equalsIgnoreCase("gif") || type.equalsIgnoreCase("jpg")
-        || type.equalsIgnoreCase("bmp") || type.equalsIgnoreCase("tiff")
+    return (isJpeg(type) || type.equalsIgnoreCase("bmp") || type.equalsIgnoreCase("tiff")
         || type.equalsIgnoreCase("jpeg") || type.equalsIgnoreCase("png") || type
         .equalsIgnoreCase("tif"));
   }
 
   public static boolean isValidExtension(String name) {
     String type = FileRepositoryManager.getFileExtension(name);
-    return (type.equalsIgnoreCase("gif") || type.equalsIgnoreCase("jpg")
-        || type.equalsIgnoreCase("tiff") || type.equalsIgnoreCase("jpeg") || type
+    return (isJpeg(type) || type.equalsIgnoreCase("tiff") || type.equalsIgnoreCase("jpeg") || type
         .equalsIgnoreCase("png"));
   }
+
+  public static boolean isJpeg(String type) {
+     return type.equalsIgnoreCase("gif") || type.equalsIgnoreCase("jpg");
+  }
+
 
   /**
    * In case of unit upload
@@ -99,10 +103,7 @@ public class ImageHelper {
     if (image != null) {
       name = image.getName();
       if (name != null) {
-        ResourceLocator settings = new ResourceLocator(
-            "com.stratelia.webactiv.util.attachment.Attachment", "");
-        boolean runOnUnix = settings.getBoolean("runOnSolaris", false);
-
+        boolean runOnUnix = !FileUtil.isWindows();
         if (runOnUnix) {
           name = name.replace('\\', File.separatorChar);
           SilverTrace.info("gallery", "ImageHelper.processImage",
@@ -219,8 +220,7 @@ public class ImageHelper {
       // JPEG
       String nameAuthor = "";
       String nameForWatermark = "";
-      if (StringUtil.isDefined(watermarkHD) && watermark
-          && (type.equalsIgnoreCase("jpg") || type.equalsIgnoreCase("jpeg"))) {
+      if (StringUtil.isDefined(watermarkHD) && watermark && isJpeg(type)) {
         // création d'un duplicata de l'image originale avec intégration du
         // watermark
         String property = watermarkHD;
@@ -236,8 +236,7 @@ public class ImageHelper {
           createWatermark(photo.getId(), nameAuthor, pathFile, dir, percentSize);
         }
       }
-      if (StringUtil.isDefined(watermarkOther) && watermark
-          && (type.equalsIgnoreCase("jpg") || type.equalsIgnoreCase("jpeg"))) {
+      if (StringUtil.isDefined(watermarkOther) && watermark && isJpeg(type)) {
         String property = watermarkOther;
         Metadata metadata = JpegMetadataReader.readMetadata(dir);
         Directory iptcDirectory = metadata.getDirectory(IptcDirectory.class);

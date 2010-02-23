@@ -94,7 +94,7 @@ public class MessageProcessor implements MailingListRoutage {
       case RestRequest.FIND:
         Message message = findMessage(id);
         request.setAttribute(MESSAGE_ATT, message);
-        if (message.getAttachments() != null
+        if (message != null && message.getAttachments() != null
             && !message.getAttachments().isEmpty()) {
           List<DisplayableAttachment> attachments = new ArrayList<DisplayableAttachment>(
               message.getAttachments().size());

@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
 
 package com.silverpeas.gallery.servlets;
 
@@ -31,10 +29,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import com.silverpeas.util.StringUtil;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletConfig;
@@ -42,13 +38,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -62,10 +58,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
  * @author
  */
 public class GalleryInWysiwygRouter extends HttpServlet {
-  HttpSession session;
-
-  PrintWriter out;
-
+  
   public void init(ServletConfig config) {
     try {
       super.init(config);
@@ -107,12 +100,12 @@ public class GalleryInWysiwygRouter extends HttpServlet {
 
       // regarder si on demande l'affichage de l'arborescence ou l'affichage du
       // contenu d'un album
-      if (isDefined(imageId)) {
+      if (StringUtil.isDefined(imageId)) {
         // affichage de l'image
         PhotoDetail image = getGalleryBm().getPhoto(
             new PhotoPK(imageId, componentId));
         displayImage(response, image, size, useOriginal);
-      } else if (!isDefined(albumId)) {
+      } else if (!StringUtil.isDefined(albumId)) {
         // affichage de l'arborescence des albums
         Collection albums = viewAllAlbums(componentId);
         request.setAttribute("Albums", albums);
@@ -169,11 +162,12 @@ public class GalleryInWysiwygRouter extends HttpServlet {
     BufferedInputStream input = null;
 
     String fileName = image.getId() + "_preview.jpg";
-    if (useOriginal)
+    if (useOriginal) {
       fileName = image.getImageName();
-    if (isDefined(size))
+    }
+    if (StringUtil.isDefined(size)) {
       fileName = image.getId() + "_" + size + ".jpg";
-
+    }
     String filePath = FileRepositoryManager.getAbsolutePath(image.getPhotoPK()
         .getInstanceId())
         + "image" + image.getId() + File.separator + fileName;
@@ -227,9 +221,5 @@ public class GalleryInWysiwygRouter extends HttpServlet {
   private OrganizationController getOrganizationController() {
     OrganizationController orga = new OrganizationController();
     return orga;
-  }
-
-  private boolean isDefined(String param) {
-    return (param != null && param.length() > 0 && !"".equals(param));
   }
 }

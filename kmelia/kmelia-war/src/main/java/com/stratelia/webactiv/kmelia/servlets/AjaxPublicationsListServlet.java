@@ -65,15 +65,20 @@ import com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory;
 import com.stratelia.webactiv.util.viewGenerator.html.board.Board;
 import com.stratelia.webactiv.util.viewGenerator.html.pagination.Pagination;
 
+/**
+ * @author ehugonnet
+ */
 public class AjaxPublicationsListServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
 
+  @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     doPost(req, res);
   }
 
+  @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     HttpSession session = req.getSession(true);
@@ -360,8 +365,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           out.write("</td>");
         } else {
           if (pub.getImage() != null
-              && new Boolean(resources.getSetting("isVignetteVisible"))
-              .booleanValue()) {
+              && Boolean.valueOf(resources.getSetting("isVignetteVisible"))) {
             out.write("<td valign=\"top\" align=\"right\" width=\"80\">");
             String height = resources.getSetting("vignetteHeight");
             String width = resources.getSetting("vignetteWidth");
@@ -617,7 +621,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     ForeignPK foreignPK = new ForeignPK(pubDetail.getPK());
     List<Document> documents = versioning.getDocuments(foreignPK);
     Iterator<Document> iterator = documents.iterator();
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     String url = "";
     String title = "";
     String info = "";
@@ -663,7 +667,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       Writer out, ResourcesWrapper resources) throws IOException {
     SilverTrace.info("kmelia", "AjaxPublicationsListServlet.displayAttachments()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubDetail.getPK().getId());
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
 
     // construction d'une AttachmentPK (c'est une foreignKey) � partir de la publication
     AttachmentPK foreignKey =
@@ -715,7 +719,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       ResourcesWrapper resources) throws IOException {
     SilverTrace.info("kmelia", "AjaxPublicationsListServlet.displayFile()",
         "root.MSG_GEN_ENTER_METHOD");
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
 
     String link = "<A href=\"" + EncodeHelper.escapeXml(url) + "\" target=\"_blank\">";
     result.append("<TR><TD valign=\"top\">");
@@ -730,11 +734,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     result.append("</A>");
 
     if (StringUtil.isDefined(permalink)) {
-      result.append("&#160;<a href=\"" + EncodeHelper.escapeXml(permalink) +
-          "\" target=\"_blank\"><img src=\"" + resources.getIcon("kmelia.link") +
-          "\" border=\"0\" valign=\"absmiddle\" alt=\"" +
-          EncodeHelper.escapeXml(resources.getString("toolbox.CopyFileLink")) + "\" title=\"" +
-          EncodeHelper.escapeXml(resources.getString("toolbox.CopyFileLink")) + "\"/></a>");
+      result.append("&#160;<a href=\"").append(EncodeHelper.escapeXml(permalink)).append(
+          "\" target=\"_blank\"><img src=\"").append(resources.getIcon("kmelia.link")).append(
+          "\" border=\"0\" valign=\"absmiddle\" alt=\"").append(EncodeHelper.escapeXml(
+          resources.getString("toolbox.CopyFileLink"))).append("\" title=\"").append(
+          EncodeHelper.escapeXml(resources.getString("toolbox.CopyFileLink"))).append("\"/></a>");
     }
 
     result.append("<br/>");

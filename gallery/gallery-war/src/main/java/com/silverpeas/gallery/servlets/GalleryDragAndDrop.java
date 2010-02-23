@@ -21,9 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
----*/
-
 package com.silverpeas.gallery.servlets;
 
 import java.io.File;
@@ -51,6 +48,7 @@ import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ZipManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -71,10 +69,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
  * @author
  */
 public class GalleryDragAndDrop extends HttpServlet {
-  HttpSession session;
-
-  PrintWriter out;
-
   public void init(ServletConfig config) {
     try {
       super.init(config);
@@ -93,10 +87,7 @@ public class GalleryDragAndDrop extends HttpServlet {
       throws ServletException, IOException {
     SilverTrace.info("gallery", "GalleryDragAndDrop.doPost",
         "root.MSG_GEN_ENTER_METHOD");
-
-    ResourceLocator settings = new ResourceLocator(
-        "com.stratelia.webactiv.util.attachment.Attachment", "");
-    boolean runOnUnix = settings.getBoolean("runOnSolaris", false);
+    boolean runOnUnix = !FileUtil.isWindows();
     SilverTrace.info("gallery", "GalleryDragAndDrop.doPost",
         "root.MSG_GEN_PARAM_VALUE", "runOnUnix = " + runOnUnix);
 

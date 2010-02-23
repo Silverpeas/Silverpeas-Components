@@ -61,6 +61,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.contentManager.ContentManager;
@@ -78,7 +79,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
@@ -1652,11 +1652,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
 
   private String extractFileNameFromFilePath(FileItem file) {
     String name = file.getName();
-
-    ResourceLocator settings =
-        new ResourceLocator("com.stratelia.webactiv.util.attachment.Attachment", "");
-    boolean runOnUnix = settings.getBoolean("runOnSolaris", false);
-
+    boolean runOnUnix = !FileUtil.isWindows();
     if (runOnUnix) {
       name = name.replace('\\', File.separatorChar);
       SilverTrace.info("gallery", "GalleryRequestRouter.createPhoto", "root.MSG_GEN_PARAM_VALUE",
