@@ -455,11 +455,11 @@ public class BlogBmEJB implements SessionBean {
       // rechercher les publications classée
       Collection<String> lastEvents = PostDAO.getAllEvents(con, instanceId);
 
-      Collection<PublicationDetail> publications = getPublicationBm().getPubPKsInFatherPK(pk);
+      Collection<PublicationPK> publications = getPublicationBm().getPubPKsInFatherPK(pk);
       SilverTrace.info("blog", "BlogBmEJB.getPostsByCategory()", "root.MSG_GEN_PARAM_VALUE",
           "nb publications =" + publications.size());
 
-      Object[] allPubs = publications.toArray();
+      PublicationPK[] allPubs = (PublicationPK[]) publications.toArray();
       SilverTrace.info("blog", "BlogBmEJB.getPostsByCategory()", "root.MSG_GEN_PARAM_VALUE",
           "allPubs =" + allPubs.length);
       Iterator<String> itEvent = lastEvents.iterator();
@@ -470,7 +470,7 @@ public class BlogBmEJB implements SessionBean {
           j = allPubs.length - i - 1;
           SilverTrace.info("blog", "BlogBmEJB.getPostsByCategory()", "root.MSG_GEN_PARAM_VALUE",
               "i =" + i + " j = " + j);
-          PublicationPK pubPK = (PublicationPK) allPubs[j];
+          PublicationPK pubPK = allPubs[j];
           SilverTrace.info("blog", "BlogBmEJB.getPostsByCategory()", "root.MSG_GEN_PARAM_VALUE",
               "pubPK =" + pubPK.getId());
           if (pubPK.getId().equals(pubId))
