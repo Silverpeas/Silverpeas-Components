@@ -104,7 +104,7 @@ public void displayAllOperations(String id, KmeliaSessionController kmeliaScc, G
       if (cloneDetail != null)
       {
       		i++;
-      		tabbedPane.addTab(resources.getString("kmelia.ClonePreview")+decoration, routerUrl+"ViewClone?CloneId="+cloneId, action.equals("ViewClone"), enabled, row);
+      		tabbedPane.addTab(resources.getString("kmelia.ClonePreview")+decoration, routerUrl+"ViewClone", action.equals("ViewClone"), enabled, row);
       }
       if (invisibleTabs.indexOf(kmeliaScc.TAB_HEADER) == -1) {
           i++;

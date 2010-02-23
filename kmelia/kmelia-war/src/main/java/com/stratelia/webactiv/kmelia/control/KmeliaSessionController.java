@@ -997,6 +997,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         pubDetail.setIndexOperation(IndexManager.NONE);
       }
 
+      if (getSessionClone() != null) {
+        if (getSessionClone().getId().equals(pubDetail.getId())) {
+          //update the clone, clone stay in same status
+          pubDetail.setStatusMustBeChecked(false);
+        }
+      }
       getKmeliaBm().updatePublication(pubDetail);
     }
     SilverTrace
@@ -1004,11 +1010,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         pubDetail.getId(), getUserDetail().getId(), SilverTrace.SPY_ACTION_UPDATE);
   }
 
-  public boolean isCloneNeeded() {
+  public boolean isCloneNeeded() throws RemoteException {
     String currentStatus =
         getSessionPublication().getPublication().getPublicationDetail().getStatus();
     return (isPublicationAlwaysVisibleEnabled() &&
-        "writer".equals(KmeliaHelper.getProfile(getUserRoles())) && (getSessionClone() == null) && PublicationDetail.VALID
+        "writer".equals(getUserTopicProfile()) && (getSessionClone() == null) && PublicationDetail.VALID
         .equals(currentStatus));
   }
 

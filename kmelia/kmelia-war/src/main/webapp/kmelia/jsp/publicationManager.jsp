@@ -101,10 +101,10 @@ String refusedSrc;
 
 String vignette_url = null;
 
-String profile 		= (String) request.getParameter("Profile");
-String action 		= (String) request.getParameter("Action");
-String id 			= (String) request.getParameter("PubId");
-String checkPath 	= (String) request.getParameter("CheckPath");
+String profile 		= request.getParameter("Profile");
+String action 		= request.getParameter("Action");
+String id 			= request.getParameter("PubId");
+String checkPath 	= request.getParameter("CheckPath");
 String wizard		= (String) request.getAttribute("Wizard");
 String currentLang 	= (String) request.getAttribute("Language");
 
@@ -172,7 +172,10 @@ if (action.equals("UpdateView") || action.equals("ValidateView")) {
 	  userPubComplete = kmeliaScc.getUserCompletePublication(id);
 	  
 	  if (kmeliaScc.getSessionClone() != null)
+	  {
 		  userPubComplete = kmeliaScc.getSessionClone();
+		  id = userPubComplete.getId();
+	  }
 	  
       pubComplete = userPubComplete.getPublication();
       pubDetail = pubComplete.getPublicationDetail();

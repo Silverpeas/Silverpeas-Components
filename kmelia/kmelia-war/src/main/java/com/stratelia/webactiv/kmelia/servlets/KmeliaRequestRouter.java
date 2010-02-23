@@ -711,7 +711,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
         destination = rootDestination + "validationSteps.jsp";
       } else if (function.equals("ValidatePublication")) {
-        // String pubId = (String) request.getParameter("PubId");
         String pubId =
             kmelia.getSessionPublication().getPublication().getPublicationDetail().getPK().getId();
         SilverTrace.debug("kmelia", "KmeliaRequestRooter.getDestination()",
@@ -1086,9 +1085,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           destination = "/RimportExportPeas/jsp/ExportItems";
         }
       } else if (function.equals("ToPubliContent")) {
-        CompletePublication completePublication = kmelia.getSessionPublication().getPublication();
-        if (kmelia.getSessionClone() != null)
-          completePublication = kmelia.getSessionClone().getPublication();
+        CompletePublication completePublication = kmelia.getSessionPubliOrClone().getPublication();
 
         if (completePublication.getModelDetail() != null) {
           destination = getDestination("ToDBModel", kmelia, request);

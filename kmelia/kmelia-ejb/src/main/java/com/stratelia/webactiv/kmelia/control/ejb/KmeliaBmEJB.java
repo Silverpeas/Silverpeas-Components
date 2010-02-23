@@ -1627,7 +1627,7 @@ public class KmeliaBmEJB implements SessionBean {
 
         NodePK nodePK = new NodePK("unknown", pubDetail.getPK().getInstanceId());
         if (fathers != null && fathers.size() > 0) {
-          nodePK = (NodePK) fathers.get(0);
+          nodePK = fathers.get(0);
         }
 
         String profile = getProfile(pubDetail.getUpdaterId(), nodePK);
@@ -1667,32 +1667,42 @@ public class KmeliaBmEJB implements SessionBean {
     SilverTrace.info("kmelia", "KmeliaBmEJB.updatePublication()",
         "root.MSG_GEN_ENTER_METHOD", "updateScope = " + updateScope);
     try {
-      boolean statusChanged = changePublicationStatusOnUpdate(pubDetail);
+      // if pubDetail is a clone
+      boolean isClone = StringUtil.isDefined(pubDetail.getCloneId()) &&
+          !StringUtil.isDefined(pubDetail.getCloneStatus());
+      SilverTrace.info("kmelia", "KmeliaBmEJB.updatePublication()", "root.MSG_GEN_PARAM_VALUE",
+          "This publication is clone ? " + isClone);
+      if (isClone) {
+        //update only updateDate
+        getPublicationBm().setDetail(pubDetail);
+      } else {
+        boolean statusChanged = changePublicationStatusOnUpdate(pubDetail);
 
-      getPublicationBm().setDetail(pubDetail);
-
-      if (!isPublicationInBasket(pubDetail.getPK())) {
-        if (statusChanged) {
-          // creates todos for publishers
-          this.createTodosForPublication(pubDetail, false);
-        }
-
-        updateSilverContentVisibility(pubDetail);
-
-        // la publication a été modifié par un superviseur
-        // le créateur de la publi doit être averti
-        String profile = KmeliaHelper.getProfile(getOrganizationController()
-            .getUserProfiles(pubDetail.getUpdaterId(),
-            pubDetail.getPK().getInstanceId()));
-        if ("supervisor".equals(profile)) {
-          sendModificationAlert(updateScope, pubDetail.getPK());
-        }
-
-        if (statusChanged) {
-          if (KmeliaHelper.isIndexable(pubDetail)) {
-            indexExternalElementsOfPublication(pubDetail);
-          } else {
-            unIndexExternalElementsOfPublication(pubDetail.getPK());
+        getPublicationBm().setDetail(pubDetail);
+  
+        if (!isPublicationInBasket(pubDetail.getPK())) {
+          if (statusChanged) {
+            // creates todos for publishers
+            this.createTodosForPublication(pubDetail, false);
+          }
+  
+          updateSilverContentVisibility(pubDetail);
+  
+          // la publication a été modifié par un superviseur
+          // le créateur de la publi doit être averti
+          String profile = KmeliaHelper.getProfile(getOrganizationController()
+              .getUserProfiles(pubDetail.getUpdaterId(),
+              pubDetail.getPK().getInstanceId()));
+          if ("supervisor".equals(profile)) {
+            sendModificationAlert(updateScope, pubDetail.getPK());
+          }
+  
+          if (statusChanged) {
+            if (KmeliaHelper.isIndexable(pubDetail)) {
+              indexExternalElementsOfPublication(pubDetail);
+            } else {
+              unIndexExternalElementsOfPublication(pubDetail.getPK());
+            }
           }
         }
       }
@@ -2500,7 +2510,38 @@ public class KmeliaBmEJB implements SessionBean {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
     try {
-      return getPublicationBm().getAllFatherPK(pubPK);
+      Collection<NodePK> fathers = getPublicationBm().getAllFatherPK(pubPK);
+      if (fathers == null || fathers.size() == 0) {
+        SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
+            "root.MSG_GEN_PARAM_VALUE", "Following publication have got no fathers : pubPK = " +
+            pubPK.toString());
+        // This publication have got no father !
+        // Check if it's a clone (a clone have got no father ever)
+        boolean alwaysVisibleModeActivated =
+            "yes".equalsIgnoreCase(getOrganizationController().getComponentParameterValue(
+            pubPK.getInstanceId(), "publicationAlwaysVisible"));
+        if (alwaysVisibleModeActivated) {
+          SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
+              "root.MSG_GEN_PARAM_VALUE", "Getting the publication");
+          PublicationDetail publi = getPublicationBm().getDetail(pubPK);
+          if (publi != null) {
+            boolean isClone =
+                StringUtil.isDefined(publi.getCloneId()) &&
+                !StringUtil.isDefined(publi.getCloneStatus());
+            SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
+                "root.MSG_GEN_PARAM_VALUE", "This publication is clone ? " + isClone);
+            if (isClone) {
+              // This publication is a clone
+              // Get fathers from main publication
+              fathers = getPublicationBm().getAllFatherPK(publi.getClonePK());
+              SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationFathers()",
+                  "root.MSG_GEN_PARAM_VALUE",
+                  "Main publication's fathers fetched. # of fathers = " + fathers.size());
+            }
+          }
+        }
+      }
+      return fathers;
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.getPublicationFathers()",
           SilverpeasRuntimeException.ERROR,
@@ -3042,8 +3083,6 @@ public class KmeliaBmEJB implements SessionBean {
           .getCompletePublication(tempPK);
       PublicationDetail tempPubliDetail = tempPubli.getPublicationDetail();
       // le clone devient la publi de référence
-      // currentPubDetail = (PublicationDetail)
-      // tempPubli.getPublicationDetail().clone();
       currentPubDetail = getClone(tempPubliDetail);
 
       currentPubDetail.setPk(pubPK);
@@ -4371,7 +4410,7 @@ public class KmeliaBmEJB implements SessionBean {
     PublicationPK pk = new PublicationPK("useless", componentId);
     CoordinatePK coordinatePK = new CoordinatePK("unknown", pk);
     Collection<PublicationDetail> publications = null;
-    Collection<NodePK> coordinates = null;
+    Collection<String> coordinates = null;
     try {
       // Remove node "Toutes catégories" (level == 2) from combination
       int nodeLevel = 0;
@@ -4398,8 +4437,7 @@ public class KmeliaBmEJB implements SessionBean {
               (ArrayList<String>) combination, coordinatePK);
         }
         if (coordinates.size() > 0) {
-          publications = getPublicationBm().getDetailsByFatherIds(
-              (ArrayList<NodePK>) coordinates, pk, false);
+          publications = getPublicationBm().getDetailsByFatherIds((ArrayList<String>)coordinates, pk, false);
         }
       }
     } catch (Exception e) {
