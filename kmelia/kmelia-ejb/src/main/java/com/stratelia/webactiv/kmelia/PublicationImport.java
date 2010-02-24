@@ -32,12 +32,15 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.fileupload.FileItem;
+
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.fileitem.InternalFileItem;
+import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
@@ -112,8 +115,7 @@ public class PublicationImport {
     String publicationToUpdateId = null;
     if (discrimatingParameterName != null
         && discrimatingParameterName.length() > 0) {
-      String discrimatingParameterValue = (String) formParams
-          .get(discrimatingParameterName);
+      String discrimatingParameterValue = formParams.get(discrimatingParameterName);
       publicationToUpdateId = getPublicationId(xmlFormName,
           discrimatingParameterName, discrimatingParameterValue);
     }
@@ -180,13 +182,13 @@ public class PublicationImport {
       context.setObjectId(pubId);
       context.setContentLanguage(language);
 
-      List<InternalFileItem> items = new ArrayList<InternalFileItem>();
+      List<FileItem> items = new ArrayList<FileItem>();
       String[] fieldNames = data.getFieldNames();
       String fieldName;
       String fieldValue;
       for (int i = 0, n = fieldNames.length; i < n; i++) {
         fieldName = fieldNames[i];
-        fieldValue = (String) formParams.get(fieldName);
+        fieldValue = formParams.get(fieldName);
         fieldValue = (fieldValue == null ? "" : fieldValue);
         items.add(new InternalFileItem(fieldName, fieldValue));
       }
@@ -207,7 +209,7 @@ public class PublicationImport {
     return resultStatus;
   }
 
-  public List getPublicationXmlFields(String publicationId) {
+  public List<XMLField> getPublicationXmlFields(String publicationId) {
     PublicationPK pubPK = new PublicationPK(publicationId, spaceId, componentId);
     PublicationDetail pubDetail = kmeliaBm.getPublicationDetail(pubPK);
     return pubDetail.getXmlFields();

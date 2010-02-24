@@ -47,6 +47,7 @@ import javax.ejb.SessionContext;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.form.importExport.XMLField;
 import com.silverpeas.formTemplate.dao.ModelDAO;
 import com.silverpeas.pdc.ejb.PdcBm;
 import com.silverpeas.pdc.ejb.PdcBmHome;
@@ -4933,7 +4934,7 @@ public class KmeliaBmEJB implements SessionBean {
         language, xmlFormName, discrimatingParameterName, userProfile);
   }
 
-  public List getPublicationXmlFields(String publicationId, String componentId,
+  public List<XMLField> getPublicationXmlFields(String publicationId, String componentId,
       String spaceId, String userId) {
     PublicationImport publicationImport = new PublicationImport(this,
         componentId, null, spaceId, userId);
