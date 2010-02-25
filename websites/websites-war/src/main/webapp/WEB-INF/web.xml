@@ -26,12 +26,9 @@
 -->
 
 <web-app>
-  <display-name>webSites War</display-name>
-  <description>no description</description>
   <servlet>
-    <servlet-name>WebSitesRequestRouter</servlet-name>
     <display-name>WebSitesRequestRouter</display-name>
-    <description>no description</description>
+    <servlet-name>WebSitesRequestRouter</servlet-name>
     <servlet-class>com.stratelia.webactiv.webSites.servlets.WebSitesRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>

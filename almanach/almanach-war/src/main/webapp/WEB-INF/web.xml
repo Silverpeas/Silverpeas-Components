@@ -27,23 +27,20 @@
 
 <web-app>
   <display-name>Almanach War</display-name>
-  <description>no description</description>
+
   <servlet>
-    <servlet-name>AlmanachRequestRouter</servlet-name>
     <display-name>AlmanachRequestRouter</display-name>
-    <description>no description</description>
+    <servlet-name>AlmanachRequestRouter</servlet-name>
     <servlet-class>com.stratelia.webactiv.almanach.servlets.AlmanachRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>GoToEvent</servlet-name>
     <display-name>GoToEvent</display-name>
-    <description>no description</description>
+    <servlet-name>GoToEvent</servlet-name>
     <servlet-class>com.stratelia.webactiv.almanach.servlets.GoToEvent</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>AlmanachRssServlet</servlet-name>
     <display-name>AlmanachRssServlet</display-name>
-    <description>no description</description>
+    <servlet-name>AlmanachRssServlet</servlet-name>    
     <servlet-class>com.stratelia.webactiv.almanach.servlets.AlmanachRssServlet</servlet-class>
   </servlet>
   <servlet-mapping>

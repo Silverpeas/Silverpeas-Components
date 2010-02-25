@@ -27,17 +27,14 @@
 
 <web-app>
   <display-name>resourcesManager War</display-name>
-  <description>no description</description>
   <servlet>
-    <servlet-name>ResourcesManagerRequestRouter</servlet-name>
     <display-name>ResourcesManagerRequestRouter</display-name>
-    <description>no description</description>
+    <servlet-name>ResourcesManagerRequestRouter</servlet-name>
     <servlet-class>com.silverpeas.resourcesmanager.servlets.ResourcesManagerRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>AjaxResourcesManagerServlet</servlet-name>
     <display-name>AjaxResourcesManagerServlet</display-name>
-    <description>no description</description>
+    <servlet-name>AjaxResourcesManagerServlet</servlet-name>
     <servlet-class>com.silverpeas.resourcesmanager.servlets.AjaxResourcesManagerServlet</servlet-class>
   </servlet>
   <servlet-mapping>

@@ -27,23 +27,19 @@
 
 <web-app>
   <display-name>blog War</display-name>
-  <description>no description</description>
   <servlet>
-    <servlet-name>BlogRequestRouter</servlet-name>
     <display-name>BlogRequestRouter</display-name>
-    <description>no description</description>
+    <servlet-name>BlogRequestRouter</servlet-name>
     <servlet-class>com.silverpeas.blog.servlets.BlogRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>BlogRssServlet</servlet-name>
     <display-name>BlogRssServlet</display-name>
-    <description>no description</description>
+    <servlet-name>BlogRssServlet</servlet-name>    
     <servlet-class>com.silverpeas.blog.servlets.BlogRssServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>GoToPost</servlet-name>
     <display-name>GoToPost</display-name>
-    <description>no description</description>
+    <servlet-name>GoToPost</servlet-name>    
     <servlet-class>com.silverpeas.blog.servlets.GoToPost</servlet-class>
   </servlet>
   

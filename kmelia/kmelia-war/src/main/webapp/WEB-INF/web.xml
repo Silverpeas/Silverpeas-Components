@@ -27,35 +27,29 @@
 
 <web-app>
   <display-name>Kmelia War</display-name>
-  <description>no description</description>
   <servlet>
-    <servlet-name>KmeliaRequestRouter</servlet-name>
     <display-name>KmeliaRequestRouter</display-name>
-    <description>no description</description>
+    <servlet-name>KmeliaRequestRouter</servlet-name>
     <servlet-class>com.stratelia.webactiv.kmelia.servlets.KmeliaRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>AjaxPublicationsListServlet</servlet-name>
     <display-name>AjaxPublicationsListServlet</display-name>
-    <description>no description</description>
+    <servlet-name>AjaxPublicationsListServlet</servlet-name>
     <servlet-class>com.stratelia.webactiv.kmelia.servlets.AjaxPublicationsListServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>AliasFileServer</servlet-name>
     <display-name>AliasFileServer</display-name>
-    <description>no description</description>
+    <servlet-name>AliasFileServer</servlet-name>
     <servlet-class>com.stratelia.webactiv.kmelia.servlets.AliasFileServer</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>JSONServlet</servlet-name>
     <display-name>JSONServlet</display-name>
-    <description>no description</description>
+    <servlet-name>JSONServlet</servlet-name>
     <servlet-class>com.stratelia.webactiv.kmelia.servlets.JSONServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>KmeliaAjaxServlet</servlet-name>
     <display-name>KmeliaAjaxServlet</display-name>
-    <description>no description</description>
+    <servlet-name>KmeliaAjaxServlet</servlet-name>
     <servlet-class>com.stratelia.webactiv.kmelia.servlets.AjaxServlet</servlet-class>
   </servlet>
   <servlet-mapping>

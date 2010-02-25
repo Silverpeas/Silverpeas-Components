@@ -27,11 +27,9 @@
 
 <web-app>
   <display-name>Chat War</display-name>
-  <description>no description</description>
   <servlet>
-    <servlet-name>ChatRequestRouter</servlet-name>
     <display-name>ChatRequestRouter</display-name>
-    <description>no description</description>
+    <servlet-name>ChatRequestRouter</servlet-name>
     <servlet-class>com.stratelia.silverpeas.chat.servlets.ChatRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>

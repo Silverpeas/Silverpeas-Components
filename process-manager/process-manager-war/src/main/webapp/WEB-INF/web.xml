@@ -26,12 +26,9 @@
 -->
 
 <web-app>
-  <display-name>ProcessManager War</display-name>
-  <description>no description</description>
   <servlet>
-    <servlet-name>ProcessManagerRequestRouter</servlet-name>
     <display-name>ProcessManagerRequestRouter</display-name>
-    <description>no description</description>
+    <servlet-name>ProcessManagerRequestRouter</servlet-name>
     <servlet-class>com.silverpeas.processManager.servlets.ProcessManagerRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>

@@ -89,8 +89,8 @@
     Now, let's define the XML-RPC interfaces. You probably don't have to touch these. First, we'll define the standard
     XML-RPC interface.
   -->
-  <servlet>  
-    <display-name>WikiRequestRouter</display-name>    
+  <servlet>
+    <display-name>WikiRequestRouter</display-name>
     <servlet-name>WikiRequestRouter</servlet-name>
     <servlet-class>com.silverpeas.wiki.servlets.WikiRequestRouter</servlet-class>
   </servlet>

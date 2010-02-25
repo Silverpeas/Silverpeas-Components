@@ -26,12 +26,9 @@
 -->
 
 <web-app>
-  <display-name>Yellowpages War</display-name>
-  <description>no description</description>
   <servlet>
-    <servlet-name>YellowpagesRequestRouter</servlet-name>
     <display-name>YellowpagesRequestRouter</display-name>
-    <description>no description</description>
+    <servlet-name>YellowpagesRequestRouter</servlet-name>
     <servlet-class>com.stratelia.webactiv.yellowpages.servlets.YellowpagesRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>

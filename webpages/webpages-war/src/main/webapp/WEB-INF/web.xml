@@ -26,12 +26,9 @@
 -->
 
 <web-app>
-  <display-name>webPages War</display-name>
-  <description>no description</description>
   <servlet>
-    <servlet-name>WebPagesRequestRouter</servlet-name>
     <display-name>WebPagesRequestRouter</display-name>
-    <description>no description</description>
+    <servlet-name>WebPagesRequestRouter</servlet-name>
     <servlet-class>com.silverpeas.webpages.servlets.WebPagesRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>

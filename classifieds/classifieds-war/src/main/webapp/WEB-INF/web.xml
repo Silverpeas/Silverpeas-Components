@@ -27,11 +27,9 @@
 
 <web-app>
   <display-name>classifieds War</display-name>
-  <description>no description</description>
   <servlet>
-    <servlet-name>ClassifiedsRequestRouter</servlet-name>
     <display-name>classifiedsRequestRouter</display-name>
-    <description>no description</description>
+    <servlet-name>ClassifiedsRequestRouter</servlet-name>    
     <servlet-class>com.silverpeas.classifieds.servlets.ClassifiedsRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>

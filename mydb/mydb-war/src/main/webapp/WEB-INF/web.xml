@@ -27,11 +27,9 @@
 
 <web-app>
   <display-name>myDB War</display-name>
-  <description>no description</description>
   <servlet>
-    <servlet-name>MyDBRequestRouter</servlet-name>
     <display-name>MyDBRequestRouter</display-name>
-    <description>no description</description>
+    <servlet-name>MyDBRequestRouter</servlet-name>
     <servlet-class>com.silverpeas.mydb.servlets.MyDBRequestRouter</servlet-class>
   </servlet>
   <servlet-mapping>

@@ -26,18 +26,14 @@
 -->
 
 <web-app>
-  <display-name>QuestionReply War</display-name>
-  <description>no description</description>
   <servlet>
-    <servlet-name>QuestionReplyRequestRouter</servlet-name>
     <display-name>QuestionReplyRequestRouter</display-name>
-    <description>no description</description>
+    <servlet-name>QuestionReplyRequestRouter</servlet-name>
     <servlet-class>com.silverpeas.questionReply.servlets.QuestionReplyRequestRouter</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>GoToQuestion</servlet-name>
     <display-name>GoToQuestion</display-name>
-    <description>no description</description>
+    <servlet-name>GoToQuestion</servlet-name>
     <servlet-class>com.silverpeas.questionReply.servlets.GoToQuestion</servlet-class>
   </servlet>
   <servlet-mapping>
