@@ -1334,8 +1334,7 @@ public class ProcessManagerSessionController extends
         HtmlForm htmlForm = new HtmlForm(processModel.getDataFolder()
             .toRecordTemplate(currentRole, getLanguage(), true));
 
-        htmlForm.setFileName("http://" + request.getServerName() + ":"
-            + request.getServerPort() + form.getHTMLFileName());
+        htmlForm.setFileName(form.getHTMLFileName());
         return htmlForm;
       }
     } catch (Exception e) {
