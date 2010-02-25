@@ -4,14 +4,14 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>almanach</artifactId>
-    <version>1.0-RC2-SNAPSHOT</version>
+    <version>1.0-RC2</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.almanach</groupId>
   <artifactId>almanach-ejb</artifactId>
   <packaging>ejb</packaging>
-  <version>1.0-RC2-SNAPSHOT</version>
+  <version>1.0-RC2</version>
   <name>EJB Almanach</name>
 	
   <dependencies>
