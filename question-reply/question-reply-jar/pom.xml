@@ -4,14 +4,14 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>question-reply</artifactId>
-    <version>1.0-RC2</version>
+    <version>1.0-RC3-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.question-reply</groupId>
   <artifactId>question-reply-jar</artifactId>
   <packaging>jar</packaging>
-  <version>1.0-RC2</version>
+  <version>1.0-RC3-SNAPSHOT</version>
   <name>Lib question-reply</name>
 	
   <dependencies>
@@ -45,7 +45,7 @@
     <dependency>
       <groupId>com.silverpeas.components.whitepages</groupId>
       <artifactId>whitepages-jar</artifactId>
-      <version>1.0-RC2</version>
+      <version>1.0-RC3-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>

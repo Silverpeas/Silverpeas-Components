@@ -4,12 +4,12 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>components</artifactId>
-    <version>1.0-RC2</version>
+    <version>1.0-RC3-SNAPSHOT</version>
   </parent>
   
   <groupId>com.silverpeas.components</groupId>
   <artifactId>websites</artifactId>
-  <version>1.0-RC2</version>
+  <version>1.0-RC3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>WebSites Component</name>
   <modules>
