@@ -430,7 +430,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 		</tr></table>
     
 
-	<FORM NAME="orderForm" Method="POST" ENCTYPE="multipart/form-data">
+	<FORM NAME="orderForm" Method="POST" >
 	<input type="hidden" name="SelectedIds">
 	<input type="hidden" name="NotSelectedIds">
 	<input type="hidden" name="OrderId" value="<%=orderId%>">
