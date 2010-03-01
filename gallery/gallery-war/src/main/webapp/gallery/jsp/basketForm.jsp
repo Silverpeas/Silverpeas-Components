@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp" %>
 
 <%
@@ -78,7 +79,7 @@ function B_VALIDER_ONCLICK()
     out.println(board.printBefore());
     
 %>
-<FORM NAME="myForm" METHOD="POST" ACTION="OrderCreate" ENCTYPE="multipart/form-data">
+<FORM NAME="myForm" METHOD="POST" ACTION="OrderCreate" ENCTYPE="multipart/form-data" accept-charset="UTF-8">
 	<% 
 	if (formUpdate != null)
 	{

@@ -23,20 +23,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp" %>
 
 <% 
-	// rÈcupÈration des paramËtres :
+	// r√©cup√©ration des param√®tres :
 	String			profile				= (String) request.getAttribute("Profile");
 	Order			order				= (Order) request.getAttribute("Order");
 	Collection		selectedIds			= (Collection) request.getAttribute("SelectedIds");
 	
-	// paramËtres du formulaire
+	// param√®tres du formulaire
 	Form		xmlForm 		= (Form) request.getAttribute("XMLForm");
 	DataRecord	xmlData			= (DataRecord) request.getAttribute("XMLData");
 
 
-	// dÈclaration des variables :
+	// d√©claration des variables :
 	int 	photoId			= 0;
 	String 	extension		= "_66x50.jpg";
 	String 	extensionAlt 	= "_266x150.jpg";
@@ -251,7 +252,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 				// au moins une checkbox exist
 				var nbBox = boxItems.length;
 				if ( (nbBox == null) && (boxItems.checked == selected) ){
-					// il n'y a qu'une checkbox non selectionnÈe
+					// il n'y a qu'une checkbox non selectionn√©e
 					items += boxItems.value+",";
 				} else{
 					// search not checked boxes 
@@ -345,7 +346,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 </head>
 <body>
 <%
-	// crÈation de la barre de navigation
+	// cr√©ation de la barre de navigation
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
 	String chemin = "<a href=\"OrderViewList\">" + resource.getString("gallery.viewOrderList")+"</a>" + " > " + resource.getString("gallery.order");
@@ -356,12 +357,12 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 	out.println(window.printBefore());
     out.println(frame.printBefore());
     
- 	// dÈclaration des boutons
+ 	// d√©claration des boutons
 	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:updateOrder()", false);
 	Button cancelButton   = (Button) gef.getFormButton(resource.getString("GML.cancel"), "OrderViewList", false);
 	Button returnButton	  = (Button) gef.getFormButton(resource.getString("GML.back"), "OrderViewList", false);
 
-    // entÍte de la demande
+    // ent√™te de la demande
     // --------------------
     Board board	= gef.getBoard();
     
@@ -430,7 +431,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 		</tr></table>
     
 
-	<FORM NAME="orderForm" Method="POST" >
+	<FORM NAME="orderForm" Method="POST" accept-charset="UTF-8">
 	<input type="hidden" name="SelectedIds">
 	<input type="hidden" name="NotSelectedIds">
 	<input type="hidden" name="OrderId" value="<%=orderId%>">
@@ -484,11 +485,11 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 	        indexPhoto++;
 			
 	        
-	        // colonne des choix de tÈlÈchargement
+	        // colonne des choix de t√©l√©chargement
 	        String choix = "";
 	        if ("T".equals(download))
 	        {
-	        	// la photo a ÈtÈ tÈlÈchargÈe
+	        	// la photo a √©t√© t√©l√©charg√©e
 	        	Date dateDownload = row.getDownloadDate();
 	        	
 	        	choix = resource.getString("gallery.downloadDate") + resource.getOutputDateAndHour(dateDownload);
@@ -498,20 +499,20 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 	        {
 	        	if (order.getProcessUserId() != -1)
 	        	{
-	        		// la demande est dÈj‡ traitÈe
+	        		// la demande est d√©j√† trait√©e
 	        		if (("R").equals(download))
 	    			{
-	    				// la photo a ÈtÈ refusÈe
+	    				// la photo a √©t√© refus√©e
 	    				choix = resource.getString("gallery.refused");
 	    			}
 	    			else if (("D").equals(download))
 	    			{
-	    				// la photo est autorisÈe en tÈlÈchargement
+	    				// la photo est autoris√©e en t√©l√©chargement
 	    				choix = resource.getString("gallery.downloadOk");
 	    			}
 	    			else if (("DW").equals(download))
 	    			{
-	    				// la photo est autorisÈe en tÈlÈchargement avec le watermark 
+	    				// la photo est autoris√©e en t√©l√©chargement avec le watermark 
 	    				choix = resource.getString("gallery.downloadWithWatermark");
 	    			}
 	        		viewValid = false;
@@ -538,7 +539,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 	        }
 	        ligne.addArrayCellText(choix);
 	   		
-	  		// case ‡ cocher pour traitement par lot
+	  		// case √† cocher pour traitement par lot
 			//String usedCheck = "";
 			//if (selectedIds != null && selectedIds.contains(Integer.toString(photoId)))
 				//usedCheck = "checked";
@@ -580,29 +581,29 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 	        indexPhoto++;
 	   				
 			// SECOND TELECHARGEMENT AVEC MISE A JOUR
-			// traitement du tÈlÈchargement
+			// traitement du t√©l√©chargement
 	   		String download = resource.getString("gallery.wait");
 			
-	   		// rechercher l'Ètat de la photo
+	   		// rechercher l'√©tat de la photo
 			String downloadDecision = row.getDownloadDecision();
 			if (("R").equals(downloadDecision))
 			{
-				// la photo a ÈtÈ refusÈe
+				// la photo a √©t√© refus√©e
 				download = resource.getString("gallery.refused");
 			}
 			else if (("D").equals(downloadDecision))
 			{
-				// la photo est autorisÈe en tÈlÈchargement
+				// la photo est autoris√©e en t√©l√©chargement
 				download = "<a href=\"OrderDownloadImage?PhotoId="+photoId+"&OrderId="+orderId+"\" target=_blank>"+Encode.javaStringToHtmlString(resource.getString("gallery.telecharger"))+"</a>";
 			}
 			else if (("DW").equals(downloadDecision))
 			{
-				// la photo est autorisÈe en tÈlÈchargement avec le watermark 
+				// la photo est autoris√©e en t√©l√©chargement avec le watermark 
 				download = "<a href=\"OrderDownloadImage?PhotoId="+photoId+"&OrderId="+orderId+"\" target=_blank>"+Encode.javaStringToHtmlString(resource.getString("gallery.telecharger"))+"</a>";
 			}
 			else if (("T").equals(downloadDecision))
 			{
-				// la photo est dÈj‡ tÈlÈchargÈe
+				// la photo est d√©j√† t√©l√©charg√©e
 				Date dateDownload = row.getDownloadDate();
 				if (dateDownload != null)
 					download = resource.getString("gallery.downloadDate") + resource.getOutputDateAndHour(dateDownload);
@@ -610,8 +611,8 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 			
 			ligne.addArrayCellText(download);
 	  		
-			// case ‡ cocher pour traitement par lot
-	  		//traitement de la case ‡ cocher
+			// case √† cocher pour traitement par lot
+	  		//traitement de la case √† cocher
 			//String usedCheck = "";
 			//if (selectedIds != null && selectedIds.contains(Integer.toString(photoId)))
 				//usedCheck = "checked";
