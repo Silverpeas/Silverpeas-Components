@@ -66,7 +66,9 @@ function moderateMessage(){
 <c:url var="deleteIconUrl" value="${deleteMessageIcon}" />
 <c:url var="acceptIconUrl" value="${acceptIcon}" />
 <c:url var="browseBarLink" value="/Rmailinglist/${componentId}/Main" />
-<view:browseBar link="${browseBarLink}" path="${moderationTabTitle}" />
+<view:browseBar>
+	<view:browseBarElt link="" path="${moderationTabTitle}" />
+</view:browseBar>
 <view:operationPane>
   <view:operation altText="${deleteMessageAltText}" icon="${deleteIconUrl}" action="javascript: deleteMessage();" />
   <view:operation altText="${acceptMessageAltText}" icon="${acceptIconUrl}" action="javascript: moderateMessage();" />

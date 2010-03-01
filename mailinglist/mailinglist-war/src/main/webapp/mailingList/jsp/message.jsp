@@ -59,7 +59,7 @@
 </script>
 </head>
 <body>
-<c:url value="/Rmailinglist/${componentId}/Main" var="welcomeUrl" />
+<c:url value="/Rmailinglist/${componentId}/message/${requestScope.currentMessage.id}" var="messageUrl" />
 <c:choose>
   <c:when test="${requestScope.currentFromPath == 'moderation' || requestScope.currentFromPath == 'list' || requestScope.currentFromPath == 'activity'}">
     <c:choose>
@@ -78,11 +78,16 @@
     </c:choose>
     <c:set var="browseBarPath">
       <a href="<c:out value="${browseUrl}"/>"><c:out value="${browseTitle}" /></a>&nbsp;&gt;&nbsp;<c:out value="${requestScope.currentMessage.title}" />
-    </c:set>
-    <view:browseBar link="${welcomeUrl}" path="${browseBarPath}" />
+    </c:set>	 
+    <view:browseBar>
+	  <view:browsebarElt link="${browseUrl}" label="${browseTitle}"  />
+	  <view:browsebarElt link="${messageUrl}" label="${requestScope.currentMessage.title}"  />
+	</view:browseBar>
   </c:when>
   <c:otherwise>
-    <view:browseBar link="${welcomeUrl}" path="${requestScope.currentMessage.title}" />
+   <view:browseBar>
+	  <view:browsebarElt link="${messageUrl}" label="${requestScope.currentMessage.title}"  />
+	</view:browseBar>
   </c:otherwise>
 </c:choose>
 <c:if test="${(requestScope.currentUserIsAdmin || requestScope.currentUserIsModerator) && ! message.moderated}">

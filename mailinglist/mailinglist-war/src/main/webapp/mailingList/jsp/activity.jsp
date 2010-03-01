@@ -60,7 +60,9 @@ function unsubscribe(){
 <fmt:message key="mailingList.tab.list.title" var="listTabTitle" />
 <fmt:message key="mailingList.tab.activity.title" var="activityTabTitle" />
 <c:url var="browseBarLink" value="Main" />
-<view:browseBar link="Main" path="${activityTabTitle}" />
+<view:browseBar>
+  <view:browseBarElt link="Main" label="${activityTabTitle}" />
+</view:browseBar>
 <c:if test="${!requestScope.currentUserIsAdmin &&  !requestScope.currentUserIsModerator}">
   <form name="subscribe" id="subscribe" method="POST" /><c:choose>
     <c:when test="${requestScope.currentUserIsSubscriber}">

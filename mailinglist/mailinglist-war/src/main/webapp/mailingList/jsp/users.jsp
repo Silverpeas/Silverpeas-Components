@@ -62,8 +62,9 @@
 <fmt:message key="mailingList.tab.list.title" var="listTabTitle" />
 <fmt:message key="mailingList.tab.activity.title" var="activityTabTitle" />
 <fmt:message key="mailingList.tab.users.title" var="usersTabTitle" />
-<c:url var="browseBarLink" value="/Rmailinglist/${componentId}/Main" />
-<view:browseBar link="${browseBarLink}" path="${usersTabTitle}" />
+<view:browseBar>
+  <view:browseBarElt label="${usersTabTitle}" link="" />
+</view:browseBar>
 <c:if test="${requestScope.currentUserIsAdmin}">
   <view:operationPane>
     <view:operation altText="${deleteUserAltText}" icon="${deleteUserIconUrl}" action="javascript:deleteUsers();" />

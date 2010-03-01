@@ -54,7 +54,9 @@
 <fmt:message key="mailingList.icons.attachmentSmall" var="attachmentIcon" bundle="${icons}" />
 <fmt:message key="mailingList.tab.list.title" var="listTabTitle" />
 <fmt:message key="mailingList.tab.activity.title" var="activityTabTitle" />
-<view:browseBar link="Main" path="${listTabTitle}" />
+<view:browseBar>
+  <view:browseBarElt link="" label="${listTabTitle}" />
+</view:browseBar>
 <c:if test="${requestScope.currentUserIsAdmin}">
   <fmt:message key="mailingList.icons.message.delete.alt" var="deleteMessageAltText" />
   <fmt:message key="mailingList.icons.message.delete" var="deleteIconPath" bundle="${icons}" />
