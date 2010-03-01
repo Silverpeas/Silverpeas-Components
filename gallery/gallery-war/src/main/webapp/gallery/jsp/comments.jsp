@@ -30,7 +30,7 @@
 	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
 	String 		profile			= (String) request.getAttribute("Profile");
 	String		userId 			= (String) request.getAttribute("UserId");
-	Collection 	path 			= (Collection) request.getAttribute("Path");
+	List  	path 			= (List) request.getAttribute("Path");
 	String 		galleryUrl		= (String) request.getAttribute("Url");
 	Integer		nbCom			= (Integer) request.getAttribute("NbComments");
 	Boolean		isUsePdc		= (Boolean) request.getAttribute("IsUsePdc");
@@ -55,7 +55,7 @@
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
-	browseBar.setPath(displayPath(path));
+	displayPath(path, browseBar);
 
    	TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(resource.getString("gallery.photo"), "PreviewPhoto?PhotoId="+photoId, false);

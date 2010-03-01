@@ -101,31 +101,30 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="com.stratelia.webactiv.util.publication.info.model.ModelDetail"%>
 <%@ page import="com.silverpeas.gallery.model.MetaData"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBarElement"%>
+<%@ page import="java.util.Collections"%>
 
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
 <%!
-	String displayPath(Collection path)
+	String displayPath(Collection path, BrowseBar browseBar)
 	{
 		//création du chemin
 		String chemin = "";
 		boolean suivant = false;
 		if (path != null)
 		{
-			Iterator itPath = (Iterator) path.iterator();
-			while (itPath.hasNext()) 
-			{
-				NodeDetail unAlbum = (NodeDetail) itPath.next();
-				if (unAlbum.getId() != 0)
-				{
-					if (suivant) 
-						chemin = " >> " + chemin;
-					chemin = "<a href=\"ViewAlbum?Id="+ unAlbum.getNodePK().getId() + "\">" + Encode.javaStringToHtmlString(unAlbum.getName())+"</a>" + chemin;
-					if (itPath.hasNext()) 
-				  		suivant = true;
-				}
-			}	
+		  Iterator  itPath    = (Iterator) path.iterator();
+	    
+	    while (itPath.hasNext()) 
+	    {
+	      NodeDetail unAlbum = (NodeDetail) itPath.next();
+	      if (unAlbum.getId() != 0)
+	      {
+	        browseBar.addElement(new BrowseBarElement(unAlbum.getName(), "ViewAlbum?Id="+unAlbum.getNodePK().getId(), unAlbum.getNodePK().getId()));
+	      }
+	    }
 		}
 		return chemin;
 	}

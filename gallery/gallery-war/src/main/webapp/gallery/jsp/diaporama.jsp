@@ -29,7 +29,7 @@
 	// récupération des paramètres :
 	List 		photos	= (List) request.getAttribute("Photos");
 	Integer		rang	= (Integer) request.getAttribute("Rang");
-	Collection 	path 	= (Collection) request.getAttribute("Path");
+	List 	path 	= (List) request.getAttribute("Path");
 	Integer		wait	= (Integer) request.getAttribute("Wait");
 
 	// déclaration des variables :
@@ -145,7 +145,7 @@
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
-	browseBar.setPath(displayPath(path));
+	displayPath(path, browseBar);
 	
    	// fin du diaporama
  	operationPane.addOperation(resource.getIcon("gallery.stopDiaporama"), resource.getString("gallery.diaporama"), "javaScript:endSlideShow();");

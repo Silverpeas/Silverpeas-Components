@@ -30,7 +30,7 @@
 <% 
 	// récupération des paramètres :
 	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
-	Collection 	path 			= (Collection) request.getAttribute("Path");
+	List  	path 			= (List) request.getAttribute("Path");
 	String 		profile			= (String) request.getAttribute("Profile");
 	Integer		rang			= (Integer) request.getAttribute("Rang");
 	Integer		albumSize		= (Integer) request.getAttribute("NbPhotos");
@@ -143,7 +143,7 @@ function goToNotify(url)
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
-	browseBar.setPath(displayPath(path));
+	displayPath(path, browseBar);
 	
 	String url = "ToAlertUser?PhotoId="+photoId;
 	operationPane.addOperation(resource.getIcon("gallery.alert"), resource.getString("GML.notify"), "javaScript:onClick=goToNotify('"+url+"')");

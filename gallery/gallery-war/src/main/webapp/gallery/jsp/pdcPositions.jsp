@@ -31,7 +31,7 @@
 	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
 	String 		profile			= (String) request.getAttribute("Profile");
 	String		userId 			= (String) request.getAttribute("UserId");
-	Collection 	path 			= (Collection) request.getAttribute("Path");
+	List 	path 			= (List) request.getAttribute("Path");
 	Integer		nbCom			= (Integer) request.getAttribute("NbComments");
 	Integer		silverObjetId	= (Integer) request.getAttribute("SilverObjetId");
 	String 		xmlFormName		= (String) request.getAttribute("XMLFormName");
@@ -54,7 +54,7 @@
 	
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
-	browseBar.setPath(displayPath(path));
+	displayPath(path, browseBar);
 	
 	operationPane.addOperation(resource.getIcon("gallery.PDCNewPosition"), resource.getString("GML.PDCNewPosition"), "javascript:openSPWindow('"+m_context+"/RpdcClassify/jsp/NewPosition','newposition')");
 	operationPane.addOperation(resource.getIcon("gallery.PDCDeletePosition"), resource.getString("GML.PDCDeletePosition"), "javascript:getSelectedItems()");

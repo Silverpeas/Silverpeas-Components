@@ -28,14 +28,13 @@
 <% 
 	// récupération des paramètres :
 	AlbumDetail currentAlbum 	= (AlbumDetail) request.getAttribute("CurrentAlbum");
-	Collection 	path 			= (Collection) request.getAttribute("Path");
+	List 	path 			= (List) request.getAttribute("Path");
 	
 	// déclaration des variables :
 	String albumId 		= "";
 	String nom 			= "";
 	String description 	= "";
 	String action 		= "CreateAlbum";
-	String chemin 		= "";
 	
 	// récupération des valeurs si l'album existe
 	if (currentAlbum != null)
@@ -111,7 +110,6 @@
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
-	browseBar.setPath(chemin);
 	
 	Board board	= gef.getBoard();
 	

@@ -636,13 +636,14 @@ public class GallerySessionController extends AbstractComponentSessionController
   }
 
   public Collection<NodeDetail> getPath(NodePK nodePK) {
-    Collection<NodeDetail> path = null;
+    List<NodeDetail> path = null;
     try {
-      path = getGalleryBm().getPath(nodePK);
+      path = (List<NodeDetail>) getGalleryBm().getPath(nodePK);
     } catch (RemoteException e) {
       throw new GalleryRuntimeException("GallerySessionController.getPath()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
+    Collections.reverse(path);
     return path;
   }
 

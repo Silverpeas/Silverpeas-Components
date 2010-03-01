@@ -69,7 +69,7 @@ function B_VALIDER_ONCLICK()
     
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
-    browseBar.setPath(displayPath(path));
+    displayPath(path, browseBar);
 
 	Button cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "BasketView", false);
 	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false);

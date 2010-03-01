@@ -31,7 +31,7 @@
 	// récupération des paramètres :
 	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
 	String 		repertoire 		= (String) request.getAttribute("Repertoire");
-	Collection 	path 			= (Collection) request.getAttribute("Path");
+	List 	path 			= (List) request.getAttribute("Path");
 	String 		userName		= (String) request.getAttribute("UserName");
 	
 	boolean 	viewMetadata	= ((Boolean) request.getAttribute("IsViewMetadata")).booleanValue();
@@ -525,7 +525,7 @@ function hideTip() {
 
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
-	browseBar.setPath(displayPath(path));
+	displayPath(path, browseBar);
 	
 	Board board	= gef.getBoard();
 	

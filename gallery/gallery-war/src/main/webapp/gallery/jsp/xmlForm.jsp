@@ -29,7 +29,7 @@
 Form 			formUpdate 		= (Form) request.getAttribute("Form");
 DataRecord 		data 			= (DataRecord) request.getAttribute("Data"); 
 PhotoDetail	 	photo 			= (PhotoDetail) request.getAttribute("Photo");
-Collection		path 			= (Collection) request.getAttribute("Path");
+List		path 			= (List) request.getAttribute("Path");
 Integer			nbCom			= (Integer) request.getAttribute("NbComments");
 Boolean			isUsePdc		= (Boolean) request.getAttribute("IsUsePdc");
 boolean			showComments	= ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
@@ -62,7 +62,7 @@ function B_VALIDER_ONCLICK()
     
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
-    browseBar.setPath(displayPath(path));
+    displayPath(path, browseBar);
 
 	Button cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "PreviewPhoto?PhotoId="+photoId, false);
 	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false);

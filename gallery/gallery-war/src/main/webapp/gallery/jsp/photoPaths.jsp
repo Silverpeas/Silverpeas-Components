@@ -28,7 +28,7 @@
 <%
 	// récupération des paramètres :
 	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
-	Collection 	path 			= (Collection) request.getAttribute("Path");
+	List 	path 			= (List) request.getAttribute("Path");
 	Integer		nbCom			= (Integer) request.getAttribute("NbComments");
 	Collection 	pathList 		= (Collection) request.getAttribute("PathList");
 	Collection 	albums			= (Collection) request.getAttribute("Albums");
@@ -63,7 +63,7 @@ function sendData()
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
-	browseBar.setPath(displayPath(path));
+	displayPath(path, browseBar);
 
    	TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(resource.getString("gallery.photo"), "PreviewPhoto?PhotoId="+photoId, false);

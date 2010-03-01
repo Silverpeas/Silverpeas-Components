@@ -30,7 +30,7 @@
 	AlbumDetail 	currentAlbum 		= (AlbumDetail) request.getAttribute("CurrentAlbum");
 	String 			userId 				= (String) request.getAttribute("UserId");
 	String 			profile 			= (String) request.getAttribute("Profile");
-	Collection 		path 				= (Collection) request.getAttribute("Path");
+	List 		path 				= (List) request.getAttribute("Path");
 	int				firstPhotoIndex		= ((Integer) request.getAttribute("FirstPhotoIndex")).intValue();
 	int				nbPhotosPerPage		= ((Integer) request.getAttribute("NbPhotosPerPage")).intValue();
 	String 			taille	 			= (String) request.getAttribute("Taille");
@@ -81,27 +81,10 @@
 	List 		affPhotos 	= photos.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
 
 	// création du chemin :
-	String 		chemin 		= "";
 	String 		namePath	= "";
 	boolean 	suivant 	= false;
-	Iterator 	itPath 		= (Iterator) path.iterator();
-	
-	while (itPath.hasNext()) 
-	{
-		NodeDetail unAlbum = (NodeDetail) itPath.next();
-		if (unAlbum.getId() != 0)
-		{
-			if (suivant) 
-			{
-				chemin = " > " + chemin;
-				namePath = " > " + namePath;
-			}
-			chemin = "<a href=\"ViewAlbum?Id="+ unAlbum.getNodePK().getId() + "\">" + Encode.javaStringToHtmlString(unAlbum.getName())+"</a>" + chemin;
-			namePath = unAlbum.getName() + namePath;
-			suivant = itPath.hasNext();
-		}
-	}
-	albumName = spaceLabel + " > " + componentLabel + " > " + namePath; 
+	//Collections.reverse(path);
+	albumName = browseBar.getBreadCrumb();
 			
 	// calcul du nombre de photo par ligne en fonction de la taille
 	if (taille.equals("66x50"))
@@ -129,6 +112,7 @@
 	largeurCellule = 100/nbParLigne;
 	
 %>
+
 
 <html>
 <head>
@@ -342,7 +326,7 @@ function uploadCompleted(s)
 	// création de la barre de navigation
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
-	browseBar.setPath(chemin);
+	displayPath(path, browseBar);
 	
 	if ( "admin".equals(profile) || "publisher".equals(profile))
 	{

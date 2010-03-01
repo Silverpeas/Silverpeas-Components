@@ -28,7 +28,7 @@
 <% 
 	// récupération des paramètres :
 	String 		albumId			= (String) request.getAttribute("AlbumId");
-	Collection 	path 			= (Collection) request.getAttribute("Path");
+	List  	path 			= (List) request.getAttribute("Path");
 	Form 		formUpdate 		= (Form) request.getAttribute("Form");
 	DataRecord	data			= (DataRecord) request.getAttribute("Data");
 	String		searchKeyWord	= (String) request.getAttribute("SearchKeyWord");
@@ -268,7 +268,7 @@
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
-	browseBar.setPath(displayPath(path));
+	displayPath(path, browseBar);
 	
 	Board board	= gef.getBoard();
 	
