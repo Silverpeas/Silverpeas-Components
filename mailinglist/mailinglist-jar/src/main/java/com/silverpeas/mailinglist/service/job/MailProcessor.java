@@ -46,6 +46,7 @@ import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.HtmlCleaner;
 import com.silverpeas.util.MimeTypes;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 
 public class MailProcessor {
@@ -112,6 +113,11 @@ public class MailProcessor {
    */
   public void processBody(String content, String contentType, Message message)
       throws IOException, MessagingException {
+    if(message.getContentType() != null
+            && message.getContentType().indexOf(MimeTypes.HTML_MIME_TYPE) >= 0) {
+      //this is the text-part of an HTMLmultipart message
+      return;
+    }
     message.setContentType(contentType);
     if (contentType == null) {
       message.setContentType(MimeTypes.PLAIN_TEXT_MIME_TYPE);
@@ -121,15 +127,15 @@ public class MailProcessor {
       if (message.getBody().length() > SUMMARY_SIZE) {
         message.setSummary(message.getBody().substring(0, SUMMARY_SIZE));
       } else {
-        message.setSummary(new String(message.getBody()));
+        message.setSummary(message.getBody());
       }
     } else if (message.getContentType().indexOf(MimeTypes.HTML_MIME_TYPE) >= 0) {
       message.setBody(content);
       Reader reader = null;
       try {
-        reader = new StringReader(content);
-        cleaner.parse(reader);
-        message.setSummary(cleaner.getSummary());
+          reader = new StringReader(content);
+          cleaner.parse(reader);
+          message.setSummary(cleaner.getSummary());
       } finally {
         if (reader != null) {
           reader.close();
@@ -141,7 +147,7 @@ public class MailProcessor {
       if (message.getBody().length() > SUMMARY_SIZE) {
         message.setSummary(message.getBody().substring(0, SUMMARY_SIZE));
       } else {
-        message.setSummary(new String(message.getBody()));
+        message.setSummary(message.getBody());
       }
     }
   }
@@ -261,6 +267,8 @@ public class MailProcessor {
       message.setReferenceId(referenceId[0]);
     }
     message.setTitle(mail.getSubject());
+    SilverTrace.info("mailingList", "MailProcessor.prepareMessage()",  "mailinglist.notification.error",
+            "Processing message " + mail.getSubject());
     Object content = mail.getContent();
     if (content instanceof Multipart) {
       processMultipart((Multipart) content, message);
@@ -275,7 +283,7 @@ public class MailProcessor {
       ContentType type = new ContentType(contentType);
       return type.getBaseType();
     } catch (ParseException e) {
-      e.printStackTrace();
+     SilverTrace.error("mailingList", "MailProcessor.extractContentType()", "mailinglist.notification.error", e);
     }
     return contentType;
   }

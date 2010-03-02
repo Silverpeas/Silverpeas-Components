@@ -40,6 +40,7 @@ import com.silverpeas.mailinglist.service.util.HtmlCleaner;
 public class NekoHtmlCleaner implements HtmlCleaner {
   private StringWriter content;
   private XMLParserConfiguration parser;
+  private EntityReplaceWriter writer;
   private int maxSize = 0;
 
   public NekoHtmlCleaner() {
@@ -52,8 +53,8 @@ public class NekoHtmlCleaner implements HtmlCleaner {
     remover.acceptElement("br", null);
     content = new StringWriter();
     
-    Writer writer = new EntityReplaceWriter(content, "UTF-8");
-    XMLDocumentFilter[] filters = {new HTMLTagBalancer(), remover, writer, };
+    writer = new EntityReplaceWriter(content, "UTF-8");
+    XMLDocumentFilter[] filters = {new HTMLTagBalancer(), remover, writer };
     parser = new HTMLConfiguration();
     parser.setProperty("http://cyberneko.org/html/properties/filters", filters);
     parser.setFeature("http://cyberneko.org/html/features/balance-tags/document-fragment", true);
@@ -74,6 +75,8 @@ public class NekoHtmlCleaner implements HtmlCleaner {
 
   @Override
   public void parse(Reader in) throws IOException {
+    content = new StringWriter();
+    writer.setWriter(content);
     XMLInputSource source = new XMLInputSource("-//W3C//DTD HTML 4.01", null,
         null, in, "ISO-8859-1");
     parser.parse(source);    

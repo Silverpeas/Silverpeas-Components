@@ -25,6 +25,7 @@ package com.silverpeas.mailinglist.service.util.neko;
 
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
 import org.cyberneko.html.HTMLEntities;
@@ -47,7 +48,7 @@ public class EntityReplaceWriter extends Writer {
    *          be an official IANA encoding name.
    */
   public EntityReplaceWriter(OutputStream outputStream, String encoding)
-      throws UnsupportedEncodingException {
+          throws UnsupportedEncodingException {
     this(new OutputStreamWriter(outputStream, encoding), encoding);
   }
 
@@ -64,6 +65,7 @@ public class EntityReplaceWriter extends Writer {
     super(writer, encoding);
   }
 
+  @Override
   protected void printEntity(String name) {
     char entity = (char) HTMLEntities.get(name);
     if (Character.isWhitespace(entity) || "nbsp".equalsIgnoreCase(name)) {
@@ -71,5 +73,13 @@ public class EntityReplaceWriter extends Writer {
     }
     super.fPrinter.print(entity);
     super.fPrinter.flush();
+  }
+
+  public void setWriter(java.io.Writer writer) {
+    if (writer instanceof PrintWriter) {
+      super.fPrinter = (PrintWriter) writer;
+    } else {
+      super.fPrinter = new PrintWriter(writer);
+    }
   }
 }
