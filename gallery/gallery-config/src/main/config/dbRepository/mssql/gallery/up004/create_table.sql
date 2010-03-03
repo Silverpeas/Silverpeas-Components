@@ -1,7 +1,7 @@
 ALTER TABLE SC_Gallery_Photo
-ALTER COLUMN imagemimetype TYPE varchar(100)
+ALTER COLUMN imagemimetype varchar(100)
 ;
 
 ALTER TABLE SC_Gallery_Photo
-ALTER COLUMN imagename	   TYPE varchar(255)
+ALTER COLUMN imagename varchar(255)
 ;

@@ -1,11 +1,3 @@
-ALTER TABLE SC_Gallery_Photo
-ALTER COLUMN imagemimetype TYPE varchar(100)
-;
-
-ALTER TABLE SC_Gallery_Photo
-ALTER COLUMN imagename	   TYPE varchar(255)
-;
-
 CREATE TABLE SC_Gallery_Order
 (
 	orderId			int		NOT NULL,
