@@ -29,6 +29,9 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * Thrown by the processManager components.
  */
 public class ProcessManagerException extends SilverpeasException {
+  
+  private static final long serialVersionUID = 4403838459103863944L;
+
   /**
    * Returns the module name (as known by SilverTrace).
    */

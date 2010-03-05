@@ -29,6 +29,8 @@ import com.silverpeas.form.FormException;
 import com.silverpeas.form.fieldType.TextFieldImpl;
 
 public class QuestionRecord implements DataRecord {
+  
+  private static final long serialVersionUID = 4978363746794966549L;
   String content = null;
   String id = null;
   TextFieldImpl contentField = null;

@@ -85,7 +85,7 @@ public class ProcessFilter {
         field = fields[f];
         FieldTemplate folderField = folderTemplate.getFieldTemplate(field
             .getFieldName());
-        Map parameters = folderField.getParameters(lang);
+        Map<String, String> parameters = folderField.getParameters(lang);
         if (parameters != null
             && (parameters.containsKey("values") || parameters
                 .containsKey("keys"))) {
@@ -187,7 +187,7 @@ public class ProcessFilter {
   public DataRecord[] filter(ProcessInstance[] allInstances, String role,
       String lang) throws ProcessManagerException {
     try {
-      List allRecords = new ArrayList();
+      List<DataRecord> allRecords = new ArrayList<DataRecord>();
       for (int i = 0; i < allInstances.length; i++) {
         allRecords.add(allInstances[i].getRowDataRecord(role, lang));
       }
@@ -196,7 +196,7 @@ public class ProcessFilter {
         allRecords = filter.filter(criteria, allRecords);
       }
 
-      return (DataRecord[]) allRecords.toArray(new DataRecord[0]);
+      return allRecords.toArray(new DataRecord[0]);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("ProcessFilter",
           "processFilter.FAIL_TO_USE_CRITERIA_RECORD", e);

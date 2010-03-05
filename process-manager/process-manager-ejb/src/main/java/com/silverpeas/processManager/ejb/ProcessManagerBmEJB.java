@@ -71,6 +71,7 @@ import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 public class ProcessManagerBmEJB implements SessionBean {
 
+  private static final long serialVersionUID = -3111458120777031058L;
   String currentRole = "supervisor";
   ProcessModel processModel = null;
   String userId = null;

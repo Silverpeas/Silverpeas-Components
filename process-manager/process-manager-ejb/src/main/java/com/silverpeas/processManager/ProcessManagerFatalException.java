@@ -29,6 +29,9 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * Thrown when a fatal error occured in a processManager component.
  */
 public class ProcessManagerFatalException extends ProcessManagerException {
+  
+  private static final long serialVersionUID = 2449277163364832687L;
+
   /**
    * Set the caller and the error message
    */
