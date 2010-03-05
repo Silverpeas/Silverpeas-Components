@@ -31,6 +31,7 @@
   <description>Les images sont classées dans des albums. La création des albums est facilitée par la fonction de glisser/déposer.</description>
   <suite>04 Gestion de contenu</suite>
   <visible>yes</visible>
+  <visibleInPersonalSpace>yes</visibleInPersonalSpace>
   <portlet>yes</portlet>
   <instanceClassName>com.silverpeas.gallery.GalleryInstanciator</instanceClassName>
  <Profiles>
@@ -162,6 +163,7 @@
             <ParameterName>comments</ParameterName>
             <ParameterLabel>Commentaires</ParameterLabel>
             <ParameterValue>yes</ParameterValue>
+			<ParameterValueForPersonalSpace>no</ParameterValueForPersonalSpace>
             <ParameterMandatory>Y</ParameterMandatory>
 			<ParameterType>checkbox</ParameterType>
 			<ParameterUpdatable>always</ParameterUpdatable>
@@ -175,6 +177,7 @@
             <ParameterName>privateSearch</ParameterName>
             <ParameterLabel>Moteur de recherche dédié</ParameterLabel>
             <ParameterValue>no</ParameterValue>
+			<ParameterValueForPersonalSpace>yes</ParameterValueForPersonalSpace>
             <ParameterMandatory>N</ParameterMandatory>
 			<ParameterType>checkbox</ParameterType>
 			<ParameterUpdatable>always</ParameterUpdatable>
