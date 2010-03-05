@@ -48,12 +48,9 @@ public final class NamedValue {
     return name.hashCode();
   }
 
-  static Comparator ascendingValues = new Comparator() {
-    public int compare(Object o1, Object o2) {
-      if (o1 instanceof NamedValue && o2 instanceof NamedValue) {
-        return ((NamedValue) o1).value.compareTo(((NamedValue) o2).value);
-      } else
-        throw new ClassCastException();
+  static Comparator<NamedValue> ascendingValues = new Comparator<NamedValue>() {
+    public int compare(NamedValue o1, NamedValue o2) {
+      return o1.value.compareTo(o2.value);
     }
   };
 }

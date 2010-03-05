@@ -44,6 +44,24 @@
        <ParameterLabel>Modèle abstrait</ParameterLabel>
        <ParameterValue>DemandeCongesSimple/DemandeCongesSimple.xml</ParameterValue>
        <ParameterMandatory>Y</ParameterMandatory>
+	   <ParameterOrder>1</ParameterOrder>
+    </Parameter>
+	<Parameter>
+       <ParameterName>exportCSV</ParameterName>
+       <ParameterLabel>Export CSV</ParameterLabel>
+       <ParameterValue>no</ParameterValue>
+       <ParameterMandatory>Y</ParameterMandatory>
+	   <ParameterType>checkbox</ParameterType>
+	   <ParameterUpdatable>always</ParameterUpdatable>
+	   <ParameterOrder>2</ParameterOrder>
+    </Parameter>
+	<Parameter>
+       <ParameterName>fieldsToExport</ParameterName>
+       <ParameterLabel>Champs à exporter</ParameterLabel>
+       <ParameterValue></ParameterValue>
+       <ParameterMandatory>N</ParameterMandatory>
+	   <ParameterUpdatable>always</ParameterUpdatable>
+	   <ParameterOrder>3</ParameterOrder>
     </Parameter>
   </Parameters>
 </WAComponent>

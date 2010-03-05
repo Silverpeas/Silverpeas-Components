@@ -23,15 +23,20 @@
  */
 package com.silverpeas.processManager;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.DataRecordUtil;
 import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
@@ -81,10 +86,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Hashtable;
-import java.util.StringTokenizer;
 
 /**
  * The ProcessManager Session controller
@@ -144,10 +145,9 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Builds a ill session controller. Initialization is skipped and this session
-   * controller can only display the fatal exception.
-   *
-   * Used by the request router when a full session controller can't be built.
+   * Builds a ill session controller. Initialization is skipped and this session controller can only
+   * display the fatal exception. Used by the request router when a full session controller can't be
+   * built.
    */
   public ProcessManagerSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context, ProcessManagerException fatal) {
@@ -160,7 +160,6 @@ public class ProcessManagerSessionController extends
 
   /**
    * Get the creation rights
-   *
    * @return true if user can do the "Creation" action
    */
   public boolean getCreationRights() {
@@ -168,8 +167,7 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Compute the creation rights set creationRight to true if user can do the
-   * "Creation" action
+   * Compute the creation rights set creationRight to true if user can do the "Creation" action
    */
   public void resetCreationRights() {
     creationRights = false;
@@ -187,9 +185,8 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * L'historique peut être filtré. Dans ce cas, les formulaires associés à
-   * chaque état sont visibles uniquement si l'utilisateur courant était un
-   * working user ou un interested user.
+   * L'historique peut être filtré. Dans ce cas, les formulaires associés à chaque état sont
+   * visibles uniquement si l'utilisateur courant était un working user ou un interested user.
    */
   public boolean filterHistory() {
     String parameterValue = this.getComponentParameterValue("filterHistory");
@@ -217,16 +214,11 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Updates the current process instance from the given id and returns the
-   * associated ProcessInstance object.
-   *
-   * If the instanceId parameter is null, updates nothing and returns the
-   * current ProcessInstance.
-   *
-   * Throws ProcessManagerException when the instanceId is unkwown and when the
-   * current user is not allowed to access the instance.
-   *
-   * Doesn't change the current process instance when an error occures.
+   * Updates the current process instance from the given id and returns the associated
+   * ProcessInstance object. If the instanceId parameter is null, updates nothing and returns the
+   * current ProcessInstance. Throws ProcessManagerException when the instanceId is unkwown and when
+   * the current user is not allowed to access the instance. Doesn't change the current process
+   * instance when an error occures.
    */
   public ProcessInstance resetCurrentProcessInstance(String instanceId)
       throws ProcessManagerException {
@@ -296,10 +288,8 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Updates the current process instance list with current filter and returns
-   * this list.
-   *
-   * Doesn't change the current process instance when an error occures.
+   * Updates the current process instance list with current filter and returns this list. Doesn't
+   * change the current process instance when an error occures.
    */
   public DataRecord[] resetCurrentProcessList() throws ProcessManagerException {
     try {
@@ -327,7 +317,7 @@ public class ProcessManagerSessionController extends
     } catch (WorkflowException e) {
       throw new ProcessManagerException("ProcessManagerSessionController",
           "processManager.ERR_GET_ROLENAME_FROM_TODO", "externalTodoId : "
-              + externalTodoId, e);
+          + externalTodoId, e);
     }
   }
 
@@ -342,7 +332,7 @@ public class ProcessManagerSessionController extends
     } catch (WorkflowException e) {
       throw new ProcessManagerException("ProcessManagerSessionController",
           "processManager.ERR_GET_PROCESS_FROM_TODO", "externalTodoId : "
-              + externalTodoId, e);
+          + externalTodoId, e);
     }
   }
 
@@ -460,8 +450,8 @@ public class ProcessManagerSessionController extends
     return false;
   }
 
-  private List getActiveUsers(String stateName) {
-    List activeUsers = new ArrayList();
+  private List<String> getActiveUsers(String stateName) {
+    List<String> activeUsers = new ArrayList<String>();
 
     State state = getState(stateName);
 
@@ -471,15 +461,15 @@ public class ProcessManagerSessionController extends
     return activeUsers;
   }
 
-  public List getUsers(QualifiedUsers qualifiedUsers) {
+  public List<String> getUsers(QualifiedUsers qualifiedUsers) {
     return getUsers(qualifiedUsers, false);
   }
 
-  public List getUsers(QualifiedUsers qualifiedUsers, boolean useCurrentRole) {
-    List users = new ArrayList();
+  public List<String> getUsers(QualifiedUsers qualifiedUsers, boolean useCurrentRole) {
+    List<String> users = new ArrayList<String>();
     RelatedUser[] relatedUsers = qualifiedUsers.getRelatedUsers();
     RelatedUser relatedUser = null;
-    List roles = new ArrayList();
+    List<String> roles = new ArrayList<String>();
     for (int r = 0; r < relatedUsers.length; r++) {
       relatedUser = relatedUsers[r];
 
@@ -487,8 +477,8 @@ public class ProcessManagerSessionController extends
       Participant participant = relatedUser.getParticipant();
       String relation = relatedUser.getRelation();
       /*
-       * if (participant != null && relation == null) role +=
-       * participant.getLabel(currentRole, getLanguage()); else
+       * if (participant != null && relation == null) role += participant.getLabel(currentRole,
+       * getLanguage()); else
        */if (participant != null && relation != null) {
         UserInfo userInfo = userSettings.getUserInfo(relation);
         if (userInfo != null)
@@ -584,7 +574,7 @@ public class ProcessManagerSessionController extends
       String lang = getLanguage();
       Role[] roles = processModel.getRoles();
 
-      List labels = new ArrayList();
+      List<NamedValue> labels = new ArrayList<NamedValue>();
       NamedValue label;
 
       // quadratic search ! but it's ok : the list are about 3 or 4 length.
@@ -606,7 +596,7 @@ public class ProcessManagerSessionController extends
       }
 
       Collections.sort(labels, NamedValue.ascendingValues);
-      userRoleLabels = (NamedValue[]) labels.toArray(new NamedValue[0]);
+      userRoleLabels = labels.toArray(new NamedValue[0]);
     }
 
     return userRoleLabels;
@@ -695,8 +685,7 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Returns the an empty creation record which will be filled with the creation
-   * form.
+   * Returns the an empty creation record which will be filled with the creation form.
    */
   public DataRecord getEmptyCreationRecord() throws ProcessManagerException {
     try {
@@ -723,8 +712,7 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Returns the an empty question record which will be filled with the question
-   * form.
+   * Returns the an empty question record which will be filled with the question form.
    */
   public DataRecord getEmptyQuestionRecord() throws ProcessManagerException {
     return new QuestionRecord("");
@@ -732,9 +720,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * get the question with the given id
-   *
-   * @param questionId
-   *          question id
+   * @param questionId question id
    * @return the found question
    */
   public Question getQuestion(String questionId) {
@@ -750,8 +736,7 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Returns the an empty question record which will be filled with the question
-   * form.
+   * Returns the an empty question record which will be filled with the question form.
    */
   public DataRecord getQuestionRecord(String questionId)
       throws ProcessManagerException {
@@ -853,8 +838,8 @@ public class ProcessManagerSessionController extends
    */
   public void reAssign(DataRecord data) throws ProcessManagerException {
     Actor[] oldUsers = null;
-    Vector oldActors = new Vector();
-    Vector newActors = new Vector();
+    Vector<Actor> oldActors = new Vector<Actor>();
+    Vector<Actor> newActors = new Vector<Actor>();
 
     try {
       WorkflowEngine wfEngine = Workflow.getWorkflowEngine();
@@ -883,7 +868,7 @@ public class ProcessManagerSessionController extends
       wfEngine.reAssignActors(
           (UpdatableProcessInstance) currentProcessInstance,
           (Actor[]) oldActors.toArray(new Actor[0]), (Actor[]) newActors
-              .toArray(new Actor[0]), currentUser);
+          .toArray(new Actor[0]), currentUser);
     } catch (WorkflowException we) {
       throw new ProcessManagerException("ProcessManagerSessionController",
           "processManager.EX_ERR_RE_ASSIGN", we);
@@ -924,11 +909,9 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Search for an hypothetic action of kind "delete", allowed for the current
-   * user with the given role
-   *
-   * @return an array of 2 String { action.name, state.name }, null if no action
-   *         found
+   * Search for an hypothetic action of kind "delete", allowed for the current user with the given
+   * role
+   * @return an array of 2 String { action.name, state.name }, null if no action found
    */
   public String[] getDeleteAction() {
     Task[] tasks = null;
@@ -973,9 +956,7 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Returns the named form (Read only).
-   *
-   * Throws an exception if the form is unknown.
+   * Returns the named form (Read only). Throws an exception if the form is unknown.
    */
   public Form getPresentationForm(String name) throws ProcessManagerException {
     try {
@@ -987,10 +968,8 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Returns the form associated to the named action.
-   *
-   * Returns null if this action has no form. Throws an exception if the action
-   * is unknown.
+   * Returns the form associated to the named action. Returns null if this action has no form.
+   * Throws an exception if the action is unknown.
    */
   public Form getActionForm(String stateName, String actionName)
       throws ProcessManagerException {
@@ -1004,8 +983,8 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Returns a new DataRecord filled whith the folder data and which will be be
-   * completed by the action form.
+   * Returns a new DataRecord filled whith the folder data and which will be be completed by the
+   * action form.
    */
   public DataRecord getActionRecord(String stateName, String actionName)
       throws ProcessManagerException {
@@ -1079,9 +1058,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Lock the current instance for current user and given state
-   *
-   * @param stateName
-   *          state name
+   * @param stateName state name
    */
   public void lock(String stateName) throws ProcessManagerException {
     try {
@@ -1096,9 +1073,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Un-Lock the current instance for current user and given state
-   *
-   * @param stateName
-   *          state name
+   * @param stateName state name
    */
   public void unlock(String stateName) throws ProcessManagerException {
     try {
@@ -1112,9 +1087,7 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Get the list of activities resolved in History Step of current process
-   * instance
-   *
+   * Get the list of activities resolved in History Step of current process instance
    * @return an array of string containing activity names
    */
   public String[] getStepActivities() {
@@ -1167,7 +1140,6 @@ public class ProcessManagerSessionController extends
 
   /**
    * Get the list of actors in History Step of current process instance
-   *
    * @return an array of string containing actors full name
    */
   public String[] getStepActors() {
@@ -1187,7 +1159,6 @@ public class ProcessManagerSessionController extends
 
   /**
    * Get the list of actions in History Step of current process instance
-   *
    * @return an array of string containing actions names
    */
   public String[] getStepActions() {
@@ -1220,7 +1191,6 @@ public class ProcessManagerSessionController extends
 
   /**
    * Get the list of action dates in History Step of current process instance
-   *
    * @return an array of string containing action dates
    */
   public String[] getStepDates() {
@@ -1237,8 +1207,7 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Returns the form used to display the i-th step. Returns null if the step is
-   * unkwown.
+   * Returns the form used to display the i-th step. Returns null if the step is unkwown.
    */
   public Form getStepForm(int index) throws ProcessManagerException {
     HistoryStep[] steps = currentProcessInstance.getHistorySteps();
@@ -1262,8 +1231,7 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Returns the data filled during the i-th step. Returns null if the step is
-   * unkwown.
+   * Returns the data filled during the i-th step. Returns null if the step is unkwown.
    */
   public DataRecord getStepRecord(int index) throws ProcessManagerException {
     HistoryStep[] steps = currentProcessInstance.getHistorySteps();
@@ -1279,7 +1247,7 @@ public class ProcessManagerSessionController extends
               if (((questions[j].getQuestionDate().getTime() - steps[index]
                   .getActionDate().getTime()) < 30000)
                   && ((questions[j].getQuestionDate().getTime() - steps[index]
-                      .getActionDate().getTime()) > 0))
+                  .getActionDate().getTime()) > 0))
                 question = questions[j];
             }
           }
@@ -1297,7 +1265,7 @@ public class ProcessManagerSessionController extends
               if (((questions[j].getResponseDate().getTime() - steps[index]
                   .getActionDate().getTime()) < 30000)
                   && ((questions[j].getResponseDate().getTime() - steps[index]
-                      .getActionDate().getTime()) > 0))
+                  .getActionDate().getTime()) > 0))
                 question = questions[j];
             }
           }
@@ -1358,9 +1326,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Get the label of given action
-   *
-   * @param actionName
-   *          action name
+   * @param actionName action name
    * @return action label
    */
   public String getActionLabel(String actionName) {
@@ -1378,9 +1344,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Get the state with the given name
-   *
-   * @param stateName
-   *          state name
+   * @param stateName state name
    * @return State object
    */
   public State getState(String stateName) {
@@ -1389,9 +1353,7 @@ public class ProcessManagerSessionController extends
 
   /**
    * Get the named action
-   *
-   * @param actionName
-   *          action name
+   * @param actionName action name
    * @return action
    */
   public Action getAction(String actionName) {
@@ -1404,7 +1366,6 @@ public class ProcessManagerSessionController extends
 
   /**
    * Tests if there is some question for current user in current processInstance
-   *
    * @return true if there is one or more question
    */
   public boolean hasPendingQuestions() {
@@ -1447,8 +1408,7 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Returns the an empty date record which will be filled with the user
-   * settings form.
+   * Returns the an empty date record which will be filled with the user settings form.
    */
   public DataRecord getEmptyUserSettingsRecord() throws ProcessManagerException {
     try {
@@ -1460,8 +1420,7 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Returns the an empty data record which will be filled with the user
-   * settings form.
+   * Returns the an empty data record which will be filled with the user settings form.
    */
   public DataRecord getUserSettingsRecord() throws ProcessManagerException {
     try {
@@ -1545,9 +1504,8 @@ public class ProcessManagerSessionController extends
   }
 
   /**
-   * Returns true if : the instance is built from the process model of this
-   * session. the user is allowed to access to this instance with his current
-   * role.
+   * Returns true if : the instance is built from the process model of this session. the user is
+   * allowed to access to this instance with his current role.
    */
   private boolean isAllowed(ProcessInstance instance) {
     return true; // xoxox
@@ -1608,17 +1566,28 @@ public class ProcessManagerSessionController extends
   }
 
   public String exportListAsCSV() throws ProcessManagerException {
+    String fieldsToExport = getComponentParameterValue("fieldsToExport");
+    List<StringBuffer> csvRows;
+    if (StringUtil.isDefined(fieldsToExport)) {
+      csvRows = exportDefinedItemsAsCSV();
+    } else {
+      csvRows = exportAllFolderAsCSV();
+    }
+    return writeCSVFile(csvRows);
+  }
+
+  private List<StringBuffer> exportAllFolderAsCSV() throws ProcessManagerException {
     try {
       DataRecord[] processList = getCurrentProcessList();
       Item[] items = getFolderItems();
       RecordTemplate listHeaders = getProcessListHeaders();
       FieldTemplate[] headers = listHeaders.getFieldTemplates();
 
-      List csvCols = getCSVCols();
+      List<String> csvCols = getCSVCols();
 
       ProcessInstanceRowRecord instance;
       StringBuffer csvRow = new StringBuffer();
-      List csvRows = new ArrayList();
+      List<StringBuffer> csvRows = new ArrayList<StringBuffer>();
       boolean isProcessIdVisible = isProcessIdVisible();
 
       if (isProcessIdVisible)
@@ -1632,15 +1601,14 @@ public class ProcessManagerSessionController extends
         if (i == 0 || i == 1)
           addCSVValue(csvRow, headers[i].getLabel(getLanguage()));
         else {
-          col = (String) csvCols.get(i);
+          col = csvCols.get(i);
           item = (ItemImpl) getItem(items, col);
           addCSVValue(csvRow, item.getLabel(getCurrentRole(), getLanguage()));
         }
       }
       csvRows.add(csvRow);
 
-      for (int i = 0; i < processList.length; i++) // boucle sur tous les
-      // process
+      for (int i = 0; i < processList.length; i++) // boucle sur tous les process
       {
         instance = (ProcessInstanceRowRecord) processList[i];
         if (instance != null) {
@@ -1663,46 +1631,87 @@ public class ProcessManagerSessionController extends
           // add state
           addCSVValue(csvRow, instance.getField(1).getValue(getLanguage()));
 
-          Field field = null;
           String fieldString;
           for (int c = 2; c < csvCols.size(); c++) {
+            String fieldName = csvCols.get(c);
+            fieldString = getFieldValue(instance, items, fieldName);
+            addCSVValue(csvRow, fieldString);
+          }
+          csvRows.add(csvRow);
+        }
+      }
+
+      return csvRows;
+    } catch (FormException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
+
+  private List<StringBuffer> exportDefinedItemsAsCSV() throws ProcessManagerException {
+    try {
+      DataRecord[] processList = getCurrentProcessList();
+      Item[] items = getFolderItems();
+      RecordTemplate listHeaders = getProcessListHeaders();
+      FieldTemplate[] headers = listHeaders.getFieldTemplates();
+      String fieldsToExport = getComponentParameterValue("fieldsToExport");
+
+      List<String> csvCols = new ArrayList<String>();
+      StringTokenizer tokenizer = new StringTokenizer(fieldsToExport, ";");
+      while (tokenizer.hasMoreTokens()) {
+        csvCols.add(tokenizer.nextToken());
+      }
+
+      ProcessInstanceRowRecord instance;
+      StringBuffer csvHeader = new StringBuffer();
+      List<StringBuffer> csvRows = new ArrayList<StringBuffer>();
+      boolean isProcessIdVisible = isProcessIdVisible();
+
+      if (isProcessIdVisible)
+        addCSVValue(csvHeader, "#");
+
+      String col;
+      ItemImpl item;
+      addCSVValue(csvHeader, headers[1].getLabel(getLanguage())); // add state column
+      addCSVValue(csvHeader, headers[0].getLabel(getLanguage())); // add state column
+      for (int i = 0; i < csvCols.size(); i++) {
+        /*
+         * if (i==0 || i==1) addCSVValue(csvHeader, headers[i].getLabel(getLanguage())); else {
+         */
+        col = (String) csvCols.get(i);
+        item = (ItemImpl) getItem(items, col);
+        if (item != null) {
+          addCSVValue(csvHeader, item.getLabel(getCurrentRole(), getLanguage()));
+        } else {
+          addCSVValue(csvHeader, col);
+        }
+        // }
+      }
+      csvRows.add(csvHeader);
+
+      StringBuffer csvRow = new StringBuffer();
+      for (int i = 0; i < processList.length; i++) // boucle sur tous les process
+      {
+        instance = (ProcessInstanceRowRecord) processList[i];
+        if (instance != null) {
+          csvRow = new StringBuffer();
+          if (isProcessIdVisible)
+            addCSVValue(csvRow, instance.getId());
+
+          // add state
+          addCSVValue(csvRow, instance.getField(1).getValue(getLanguage()));
+
+          // add title
+          addCSVValue(csvRow, instance.getField(0).getValue(getLanguage()));
+
+          String fieldString;
+          for (int c = 0; c < csvCols.size(); c++) {
             // field = instance.getField(j);
             String fieldName = (String) csvCols.get(c);
-            try {
-              field = instance.getFullProcessInstance().getField(fieldName);
-              fieldString = field.getValue(getLanguage());
-              if (StringUtil.isDefined(fieldString)
-                  && field.getTypeName().equals(DateField.TYPE)) {
-                addCSVValue(csvRow, fieldString);
-              } else {
-                item = (ItemImpl) getItem(items, fieldName);
-                if (item != null) {
-                  Hashtable keyValuePairs = item.getKeyValuePairs();
-                  if (keyValuePairs != null && keyValuePairs.size() > 0) {
-                    String newValue = "";
-                    if (fieldString.indexOf("##") != -1) {
-                      // Try to display a checkbox list
-                      StringTokenizer tokenizer = new StringTokenizer(
-                          fieldString, "##");
-                      String t = null;
-                      while (tokenizer.hasMoreTokens()) {
-                        t = tokenizer.nextToken();
-
-                        t = (String) keyValuePairs.get(t);
-                        newValue += t;
-
-                        if (tokenizer.hasMoreTokens())
-                          newValue += ", ";
-                      }
-                    } else if (fieldString != null && fieldString.length() > 0) {
-                      newValue = (String) keyValuePairs.get(fieldString);
-                    }
-                    fieldString = newValue;
-                  }
-                }
-              }
-            } catch (WorkflowException we) {
-              fieldString = "";
+            if (fieldName.startsWith("${")) {
+              fieldString = DataRecordUtil.applySubstitution(fieldName, instance, "fr");
+            } else {
+              fieldString = getFieldValue(instance, items, fieldName);
             }
             addCSVValue(csvRow, fieldString);
           }
@@ -1710,14 +1719,53 @@ public class ProcessManagerSessionController extends
         }
       }
 
-      return writeCSVFile(csvRows);
+      return csvRows;
     } catch (FormException e) {
       e.printStackTrace();
       return null;
     }
   }
 
-  private String writeCSVFile(List csvRows) {
+  private String getFieldValue(ProcessInstanceRowRecord instance, Item[] items, String fieldName) {
+    String fieldString = "";
+    try {
+      Field field = instance.getFullProcessInstance().getField(fieldName);
+      fieldString = field.getValue(getLanguage());
+      if (StringUtil.isDefined(fieldString) && field.getTypeName().equals(DateField.TYPE)) {
+        // do nothing
+      } else {
+        ItemImpl item = (ItemImpl) getItem(items, fieldName);
+        if (item != null) {
+          Hashtable<String, String> keyValuePairs = item.getKeyValuePairs();
+          if (keyValuePairs != null && keyValuePairs.size() > 0) {
+            String newValue = "";
+            if (fieldString.indexOf("##") != -1) {
+              // Try to display a checkbox list
+              StringTokenizer tokenizer = new StringTokenizer(fieldString, "##");
+              String t = null;
+              while (tokenizer.hasMoreTokens()) {
+                t = tokenizer.nextToken();
+
+                t = keyValuePairs.get(t);
+                newValue += t;
+
+                if (tokenizer.hasMoreTokens())
+                  newValue += ", ";
+              }
+            } else if (fieldString != null && fieldString.length() > 0) {
+              newValue = keyValuePairs.get(fieldString);
+            }
+            fieldString = newValue;
+          }
+        }
+      }
+    } catch (WorkflowException we) {
+      fieldString = "";
+    }
+    return fieldString;
+  }
+
+  private String writeCSVFile(List<StringBuffer> csvRows) {
     FileOutputStream fileOutput = null;
     String csvFilename = new Date().getTime() + ".csv";
     try {
@@ -1727,7 +1775,7 @@ public class ProcessManagerSessionController extends
 
       StringBuffer csvRow;
       for (int r = 0; r < csvRows.size(); r++) {
-        csvRow = (StringBuffer) csvRows.get(r);
+        csvRow = csvRows.get(r);
         fileOutput.write(csvRow.toString().getBytes());
         fileOutput.write("\n".getBytes());
       }
@@ -1750,8 +1798,8 @@ public class ProcessManagerSessionController extends
     return csvFilename;
   }
 
-  private List getCSVCols() throws ProcessManagerException, FormException {
-    List csvCols = new ArrayList();
+  private List<String> getCSVCols() throws ProcessManagerException, FormException {
+    List<String> csvCols = new ArrayList<String>();
     Item[] items = getFolderItems();
     RecordTemplate listHeaders = getProcessListHeaders();
     FieldTemplate[] headers = listHeaders.getFieldTemplates();
@@ -1793,8 +1841,8 @@ public class ProcessManagerSessionController extends
   private ProcessManagerException fatalException = null;
 
   /**
-   * All the process instance of this work session are built from a same process
-   * model : the processModel.
+   * All the process instance of this work session are built from a same process model : the
+   * processModel.
    */
   private String peasId = null;
   private ProcessModel processModel = null;
