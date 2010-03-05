@@ -30,7 +30,8 @@
   <description>Permet de fédérer et structurer la documentation par répertoires thématiques arborescents. De nombreuses fonctions associées peuvent être activées : forumlaire d'entête XML et méta-données associées, gestion de fichiers joints de formats Office, PDF, html, gestion de version des fichiers joints, gestion d'un workflow multi-étapes de validation / approbation, indexation manuelle sur le Plan de Classement Silverpeas™, contrôle de lecture, gestion de commentaires, abonnement à un dossier ou un fichier, alerte de publication…</description>
   <suite>01 Gestion Documentaire</suite>
   <visible>@ComponentVisibleKMelia@</visible>
-   <portlet>yes</portlet>
+  <visibleInPersonalSpace>yes</visibleInPersonalSpace>
+  <portlet>yes</portlet>
   <instanceClassName>com.stratelia.webactiv.kmelia.KmeliaInstanciator</instanceClassName>
   <tableList>
     <tabletpl>Node</tabletpl>
@@ -135,6 +136,7 @@
         <ParameterName>tabAccessPaths</ParameterName>
         <ParameterLabel>Emplacements Multiples</ParameterLabel>
         <ParameterValue>yes</ParameterValue>
+		<ParameterValueForPersonalSpace>no</ParameterValueForPersonalSpace>
         <ParameterMandatory>Y</ParameterMandatory>
 	    <ParameterType>checkbox</ParameterType>
 	    <ParameterUpdatable>always</ParameterUpdatable>
@@ -144,6 +146,7 @@
         <ParameterName>tabReadersList</ParameterName>
         <ParameterLabel>Contrôles de Lecture</ParameterLabel>
         <ParameterValue>yes</ParameterValue>
+		<ParameterValueForPersonalSpace>no</ParameterValueForPersonalSpace>
         <ParameterMandatory>Y</ParameterMandatory>
 	    <ParameterType>checkbox</ParameterType>
 	    <ParameterUpdatable>always</ParameterUpdatable>
@@ -523,6 +526,7 @@
         <ParameterName>notifications</ParameterName>
         <ParameterLabel>Notifications</ParameterLabel>
         <ParameterValue>yes</ParameterValue>
+		<ParameterValueForPersonalSpace>no</ParameterValueForPersonalSpace>
         <ParameterMandatory>Y</ParameterMandatory>
 	    <ParameterUpdatable>always</ParameterUpdatable>
 	    <ParameterType>checkbox</ParameterType>
@@ -562,6 +566,7 @@
         <ParameterName>useFileSharing</ParameterName>
         <ParameterLabel>Fichiers partageables</ParameterLabel>
         <ParameterValue>no</ParameterValue>
+		<ParameterValueForPersonalSpace>yes</ParameterValueForPersonalSpace>
         <ParameterMandatory>Y</ParameterMandatory>
 	    <ParameterUpdatable>never</ParameterUpdatable>
 	    <ParameterType>checkbox</ParameterType>
