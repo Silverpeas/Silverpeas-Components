@@ -31,7 +31,8 @@
   <description>Permet de créer un annuaire de contact. Un formulaire XML associé décrit l'identité de chaque membre de l'annuaire, ainsi que tout autre caractéristique.</description>
   <suite>02 Gestion Collaborative</suite>
   <visible>@ComponentVisibleYellowPages@</visible>
-   <portlet>yes</portlet>
+  <visibleInPersonalSpace>yes</visibleInPersonalSpace>
+  <portlet>yes</portlet>
   <instanceClassName>com.stratelia.webactiv.yellowpages.YellowpagesInstanciator</instanceClassName>
   <tableList>
     <tabletpl>Node</tabletpl>
