@@ -35,6 +35,12 @@
 
   <SILVERPEAS.domainsp_user id="0" lastname="Administrateur" login="SilverAdmin" password="SPJmYbTN83aEs" passwordvalid="Y" />
 
+  <SILVERPEAS.st_accesslevel id="U" name="User" />
+  <SILVERPEAS.st_accesslevel id="A" name="Administrator" />
+  <SILVERPEAS.st_accesslevel id="G" name="Guest" />
+  <SILVERPEAS.st_accesslevel id="R" name="Removed" />
+  <SILVERPEAS.st_accesslevel id="D" name="DomainManager" />
+
   <SILVERPEAS.st_user id="0" domainid="0" specificid="0" lastname="Administrateur" login="SilverAdmin" accesslevel="A" />
 
   <SILVERPEAS.st_space id="3" name="MGI Coutier" description="''" createdby="0" firstpagetype="1"
