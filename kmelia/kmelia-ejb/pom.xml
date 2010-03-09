@@ -90,5 +90,9 @@
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
+	<dependency>
+      <groupId>com.lowagie</groupId>
+      <artifactId>itext</artifactId>
+    </dependency>
   </dependencies>
 </project>
