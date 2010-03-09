@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -98,7 +98,7 @@
 		</item>
 	</dataFolder>
 
-	<!-- PRESENTATION DES PROCEDURES EN COURS-->
+	<!-- PRESENTATION DES PROCEDURES EN COURS -->
 	<presentation>
 		<title role="Employe">Congés du ${folder.dateDebut} (${folder.debutJourneeOuDemi}) au ${folder.dateFin} (${folder.finJourneeOuDemi})</title>
 		<title role="Responsable">Demande de ${action.Creation.actor}</title>
@@ -189,7 +189,7 @@
 			<consequences>
 				<consequence>
 					<set state="Acceptee"/>
-					<notify message="Merci de valider les congés de ${action.Creation.actor} du ${folder.dateDebut} au ${folder.dateFin}">
+					<notify message="Votre demande de congés du ${folder.dateDebut} au ${folder.dateFin} a été acceptée.">
 						<relatedUser participant="Demandeur"/>
 					</notify>
 				</consequence>
