@@ -25,6 +25,7 @@
 --%>
 <%@ include file="checkKmelia.jsp" %>
 <%@page import="com.stratelia.silverpeas.util.SilverpeasSettings"%>
+<%@page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBarElement"%>
 
 <%
 String		rootId				= "0";
@@ -43,7 +44,6 @@ Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled"
 
 TopicDetail currentTopic 		= (TopicDetail) request.getAttribute("CurrentTopic");
 String 		pathString 			= (String) request.getAttribute("PathString");
-String 		linkedPathString 	= (String) request.getAttribute("LinkedPathString");
 
 String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
 
@@ -458,9 +458,6 @@ function getWidth() {
           
         Window window = gef.getWindow();
         BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setDomainName(kmeliaScc.getSpaceLabel());
-        browseBar.setComponentName(kmeliaScc.getComponentLabel(), "Main");
-        browseBar.setPath(linkedPathString);
         browseBar.setI18N("GoToCurrentTopic", translation);
         
         // création du nom pour les favoris
@@ -1491,17 +1488,17 @@ function loadNodeData(node, fnLoadComplete)  {
                     return;
                 }
 
-                var path = "";
+                //remove topic breadcrumb
+                removeBreadCrumbElements();
+                
                 // The returned data was parsed into an array of objects.
                 for (var i = messages.length-1; i >= 0 ; i--) {
                     var m = messages[i];
-                    if (m.id == 0)
-                        m.name = "<%=componentLabel%>";
-                    path = path + " > "+ "<a href=\"javascript:topicGoTo("+m.id+")\">"+m.name+"</a>";
+                    if (m.id != 0) {
+                    	addBreadCrumbElement("javascript:topicGoTo("+m.id+")", m.name);
+                    }
                 }
                 //alert(path);
-                
-                $("td .browsebar").html("<%=spaceLabel%> "+path);
             },
             
             //timeout -- if more than 7 seconds go by, we'll abort
