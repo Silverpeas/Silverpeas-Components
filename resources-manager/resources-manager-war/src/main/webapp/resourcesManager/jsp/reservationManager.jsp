@@ -78,6 +78,7 @@
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/ajax/prototype.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/ajax/rico.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script language="JavaScript1.2">
 
 function verificationHour(hour){
@@ -131,6 +132,22 @@ function isCorrectForm()
 		errorNb++;
 		errorMsg+="  - '<%=resource.getString("resourcesManager.endHour")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
 	}
+	var dayStartDate = extractDay(document.getElementById("startDate").value, '<%=resourcesManagerSC.getLanguage()%>');
+	var monthStartDate = extractMonth(document.getElementById("startDate").value, '<%=resourcesManagerSC.getLanguage()%>');
+	var yearStartDate = extractYear(document.getElementById("startDate").value, '<%=resourcesManagerSC.getLanguage()%>');
+	if (!isCorrectDate(yearStartDate, monthStartDate, dayStartDate)) {
+		errorNb++;
+		errorMsg+="  - '<%=resource.getString("GML.dateBegin")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
+	}
+
+	var dayEndDate = extractDay(document.getElementById("endDate").value, '<%=resourcesManagerSC.getLanguage()%>');
+	var monthEndDate = extractMonth(document.getElementById("endDate").value, '<%=resourcesManagerSC.getLanguage()%>');
+	var yearEndDate = extractYear(document.getElementById("endDate").value, '<%=resourcesManagerSC.getLanguage()%>');
+	if (!isCorrectDate(yearEndDate, monthEndDate, dayEndDate )) {
+		errorNb++;
+		errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
+	}
+
 	switch(errorNb) 
  	{
     	case 0 :
@@ -152,7 +169,7 @@ function isCorrectForm()
 
 function verification(){
 	if (isCorrectForm()){
-		if(isCorrectDate(document.getElementById("startDate").value,document.getElementById("startHour").value,document.getElementById("endDate").value,document.getElementById("endHour").value))
+		if(isCorrectDateOrder(document.getElementById("startDate").value,document.getElementById("startHour").value,document.getElementById("endDate").value,document.getElementById("endHour").value))
 			document.createForm.submit();
 	}
 }
@@ -183,7 +200,7 @@ function renverseStrDate(dateIn, hourIn) { //procedure renverse date
 	 return(sOut);
 }
 
-function isCorrectDate(DateBegin, HourBegin, DateEnd, HourEnd) { // procedure du bouton vérifier
+function isCorrectDateOrder(DateBegin, HourBegin, DateEnd, HourEnd) { // procedure du bouton vérifier
 if (renverseStrDate(DateBegin,HourBegin) < renverseStrDate(DateEnd,HourEnd))
 	return true;
 else
