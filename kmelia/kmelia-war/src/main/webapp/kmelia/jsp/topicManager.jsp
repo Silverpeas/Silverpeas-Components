@@ -147,16 +147,16 @@ out.println(gef.getLookStyleSheet());
 }
 #treeDiv1 {
 	/*width: 20%;*/
-	height : 100%;
+	height : 500px;
 	float: left;
 	padding-right: 5px; //do not forget to change end minus if this value change !
 	overflow: hidden; 
-	/*border: 1px solid blue;*/
+	border: 1px solid #F2F2F2;
 }
 #rightSide {
 	float: left;
 	margin-left: 30px;
-	height: 100%;
+	/*height: 100%;*/
 	/*width: 675px;*/
 	overflow: hidden;
 	/*border: 1px solid blue;*/
@@ -212,9 +212,13 @@ out.println(gef.getLookStyleSheet());
 	text-align: center;
 }
 
+#ygtv0 {
+	overflow: auto;
+	height: 500px;
+}
+
 .icon-basket { display:block; height: 22px; padding-left: 18px; padding-top: 2px; background: transparent url(icons/treeview/basket.jpg) no-repeat -1px 0px; } 
 .icon-tovalidate { display:block; height: 19px; padding-left: 18px; padding-top: 3px; background: transparent url(<%=m_context%>/util/icons/ok_alpha.gif) no-repeat 0px 2px;}
-
 </style>
 
 <script language="JavaScript1.2">
@@ -430,21 +434,33 @@ function sortGoTo(selectedIndex) {
 }
 
 function getWidth() {
-	  var myWidth = 0, myHeight = 0;
+	  var myWidth = 0;
 	  if( typeof( window.innerWidth ) == 'number' ) {
 	    //Non-IE
 	    myWidth = window.innerWidth;
-	    myHeight = window.innerHeight;
-	  } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+	  } else if( document.documentElement && document.documentElement.clientWidth ) {
 	    //IE 6+ in 'standards compliant mode'
 	    myWidth = document.documentElement.clientWidth;
-	    myHeight = document.documentElement.clientHeight;
-	  } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+	  } else if( document.body && document.body.clientWidth ) {
 	    //IE 4 compatible
 	    myWidth = document.body.clientWidth;
-	    myHeight = document.body.clientHeight;
 	  }
 	  return myWidth;
+}
+
+function getHeight() {
+	  var myHeight = 0;
+	  if( typeof( window.innerWidth ) == 'number' ) {
+	    //Non-IE
+	    myHeight = window.innerHeight;
+	  } else if( document.documentElement && document.documentElement.clientHeight) {
+	    //IE 6+ in 'standards compliant mode'
+	    myHeight = document.documentElement.clientHeight;
+	  } else if( document.body && document.body.clientHeight) {
+	    //IE 4 compatible
+	    myHeight = document.body.clientHeight;
+	  }
+	  return myHeight;
 }
 
 </script>
@@ -1545,7 +1561,6 @@ function closeMessage()
     	initTree('<%=id%>');
 
     	//build resize bar
-        //var size = parseInt(Dom.getStyle('pg', 'width'), 10);
         var size = getWidth() - 57;
         col1 = Dom.get('treeDiv1');
         col2 = Dom.get('rightSide');
@@ -1557,11 +1572,15 @@ function closeMessage()
         });
         resize.on('resize', function(ev) {
             var w = ev.width;
-            Dom.setStyle(col1, 'height', '100%');
             Dom.setStyle(col2, 'width', (size - w - 41) + 'px');
         });
+        resize.resize(null, 250, 250, 0, 0, true);
 
-        resize.resize(null, 200, 200, 0, 0, true);
+        //Resize height of treeview according to window height
+        Dom.setStyle(col1, 'height', getHeight()-120 + 'px');
+
+        var col3 = Dom.get('ygtv0');
+        Dom.setStyle(col3, 'height', getHeight()-120 + 'px');
     });
 })();
 </script>
