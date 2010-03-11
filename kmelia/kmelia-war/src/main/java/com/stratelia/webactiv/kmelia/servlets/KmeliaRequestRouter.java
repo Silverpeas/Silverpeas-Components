@@ -332,11 +332,15 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("GoToFilesTab")) {
         String id = request.getParameter("Id");
         try {
-          UserCompletePublication userPubComplete = kmelia.getUserCompletePublication(id);
-          kmelia.setSessionPublication(userPubComplete);
-          kmelia.setSessionOwner(true);
           processPath(kmelia, id);
-          destination = getDestination("ViewAttachments", kmelia, request);
+          if (toolboxMode) {
+            UserCompletePublication userPubComplete = kmelia.getUserCompletePublication(id);
+            kmelia.setSessionPublication(userPubComplete);
+            kmelia.setSessionOwner(true);
+            destination = getDestination("ViewAttachments", kmelia, request);
+          } else {
+            destination = getDestination("ViewPublication", kmelia, request);
+          }
         } catch (Exception e) {
           destination = getDocumentNotFoundDestination(kmelia, request);
         }
