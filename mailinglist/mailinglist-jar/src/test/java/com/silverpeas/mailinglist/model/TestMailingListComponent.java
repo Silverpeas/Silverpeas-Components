@@ -24,6 +24,7 @@
 package com.silverpeas.mailinglist.model;
 
 import java.io.IOException;
+import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -42,6 +43,7 @@ import org.jvnet.mock_javamail.Mailbox;
 
 import com.mockrunner.mock.jms.MockQueue;
 import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
+import com.silverpeas.mailinglist.PathTestUtil;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
 import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.event.MessageEvent;
@@ -75,7 +77,8 @@ public class TestMailingListComponent extends
     try {
       connection = getConnection();
       DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      FileFolderManager.deleteFolder("c:\\tmp\\uploads\\componentId", false);
+      FileFolderManager.deleteFolder(PathTestUtil.BUILD_PATH + File.separatorChar + "temp"
+              + File.separatorChar + "uploads", false);
     } catch (Exception ex) {
       ex.printStackTrace();
     } finally {
