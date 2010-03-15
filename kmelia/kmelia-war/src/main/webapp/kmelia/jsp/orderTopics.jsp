@@ -64,7 +64,7 @@ li {
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/ui.sortable.js"></script>
 </HEAD>
 <body>
-<view:browseBar link="#" path="${requestScope['Path']}" extraInformations="<%=resources.getString("kmelia.SortTopics")%>"/>
+<view:browseBar extraInformations="<%=resources.getString("kmelia.SortTopics")%>"/>
 <view:window>
 <view:frame>
 <view:board>
