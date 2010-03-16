@@ -36,7 +36,8 @@
 <%@ page errorPage="/Error.jsp" %>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
 <fmt:setLocale value="${userLanguage}"/>
-<fmt:setBundle basename="templates.default"/>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<view:setBundle basename="templates.default"/>
 <%!
   Logger log = Logger.getLogger("JSPWiki");
 %>

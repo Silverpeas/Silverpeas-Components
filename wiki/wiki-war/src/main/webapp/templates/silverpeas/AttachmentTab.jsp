@@ -35,7 +35,7 @@
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <fmt:setLocale value="${userLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="silverpeas_icons" />
-<fmt:setBundle basename="templates.default"/>
+<view:setBundle basename="templates.default"/>
 
 <%
   int MAXATTACHNAMELENGTH = 30;

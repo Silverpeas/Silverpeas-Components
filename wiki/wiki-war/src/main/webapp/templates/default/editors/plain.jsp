@@ -33,7 +33,8 @@
 <%@ page import="com.ecyrd.jspwiki.rpc.json.*" %>
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<fmt:setBundle basename="templates.default"/>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<viewt:setBundle basename="templates.default"/>
 <%--
         This is a plain editor for JSPWiki.
 --%>

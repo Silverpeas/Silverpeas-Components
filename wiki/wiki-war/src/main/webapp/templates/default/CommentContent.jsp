@@ -24,10 +24,11 @@
 
 --%>
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%@ page import="com.ecyrd.jspwiki.*" %>
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
-<fmt:setBundle basename="templates.default"/>
+<view:setBundle basename="templates.default"/>
 <%
   WikiContext c = WikiContext.findContext( pageContext );
   int attCount = c.getEngine().getAttachmentManager().listAttachments(c.getPage()).size();

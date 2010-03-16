@@ -34,7 +34,8 @@
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
 <fmt:setLocale value="${userLanguage}"/>
-<fmt:setBundle basename="templates.default"/>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<view:setBundle basename="templates.default"/>
 <wiki:TabbedSection>
 <wiki:Tab id="findcontent" title='<%=LocaleSupport.getLocalizedMessage(pageContext, "find.tab")%>' accesskey="s">
 

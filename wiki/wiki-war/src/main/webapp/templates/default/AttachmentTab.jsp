@@ -24,13 +24,14 @@
 
 --%>
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%@ page import="com.ecyrd.jspwiki.*" %>
 <%@ page import="com.ecyrd.jspwiki.auth.*" %>
 <%@ page import="com.ecyrd.jspwiki.ui.progress.*" %>
 <%@ page import="com.ecyrd.jspwiki.auth.permissions.*" %>
 <%@ page import="java.security.Permission" %>
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
-<fmt:setBundle basename="templates.default"/>
+<view:setBundle basename="templates.default"/>
 <%
   int MAXATTACHNAMELENGTH = 30;
   WikiContext c = WikiContext.findContext(pageContext);

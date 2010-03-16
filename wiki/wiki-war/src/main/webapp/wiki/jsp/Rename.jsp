@@ -31,7 +31,8 @@
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
 <%@ page import="java.util.*" %>
 <%@ page import="java.text.*" %>
-<fmt:setBundle basename="CoreResources"/>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<view:setBundle basename="CoreResources"/>
 <%!
     Logger log = Logger.getLogger("JSPWiki");
 %>

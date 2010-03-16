@@ -25,6 +25,7 @@
 --%>
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %>
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%@ page import="java.security.Principal" %>
 <%@ page import="java.util.*" %>
 <%@ page import="com.ecyrd.jspwiki.*" %>
@@ -34,7 +35,7 @@
 <%@ page import="org.apache.log4j.*" %>
 <%@ page errorPage="/Error.jsp" %>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
-<fmt:setBundle basename="templates.default"/>
+<view:setBundle basename="templates.default"/>
 <%!
   Logger log = Logger.getLogger("JSPWiki");
 %>

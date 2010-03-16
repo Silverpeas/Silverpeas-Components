@@ -27,8 +27,9 @@
 <%@ page import="com.ecyrd.jspwiki.*" %>
 <%@ page import="com.ecyrd.jspwiki.ui.*" %>
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
-<fmt:setBundle basename="templates.default"/>
+<view:setBundle basename="templates.default"/>
 <%
 	WikiContext context = WikiContext.findContext( pageContext ); 
   TemplateManager.addResourceRequest( context, "script", "scripts/jspwiki-prefs.js" );

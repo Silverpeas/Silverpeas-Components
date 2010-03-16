@@ -38,7 +38,8 @@
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
 <fmt:setLocale value="${userLanguage}"/>
-<fmt:setBundle basename="templates.default"/>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<view:setBundle basename="templates.default"/>
 <%!
   String printWikiGroupPutGroup( Group group, String name, boolean cursor, PageContext pageContext)
   {

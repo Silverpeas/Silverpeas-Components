@@ -27,7 +27,8 @@
 <%@ page import="com.ecyrd.jspwiki.*" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
-<fmt:setBundle basename="templates.default"/>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<view:setBundle basename="templates.default"/>
 <%
   WikiContext c = WikiContext.findContext(pageContext);
   WikiPage wikipage = c.getPage();

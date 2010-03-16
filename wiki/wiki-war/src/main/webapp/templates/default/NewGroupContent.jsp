@@ -33,8 +33,9 @@
 <%@ page import="com.ecyrd.jspwiki.auth.authorize.GroupManager" %>
 <%@ page errorPage="/Error.jsp" %>
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
-<fmt:setBundle basename="templates.default"/>
+<view:setBundle basename="templates.default"/>
 <%
   // Extract the group name and members
   String name = request.getParameter( "group" );

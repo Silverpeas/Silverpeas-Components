@@ -32,7 +32,8 @@
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
 <fmt:setLocale value="${userLanguage}"/>
-<fmt:setBundle basename="templates.default"/>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<view:setBundle basename="templates.default"/>
 <%--
         This is a special editor component for JSPWiki preview storage.
 --%>

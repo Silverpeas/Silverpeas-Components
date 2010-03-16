@@ -33,7 +33,8 @@
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
 <fmt:setLocale value="${userLanguage}"/>
-<fmt:setBundle basename="templates.default"/>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<view:setBundle basename="templates.default"/>
 <%
     String postURL = "";
     WikiContext ctx = WikiContext.findContext( pageContext );

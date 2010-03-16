@@ -32,7 +32,7 @@
 <%@ page import="javax.servlet.jsp.jstl.fmt.*"%>
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <fmt:setLocale value="${userLanguage}" />
-<fmt:setBundle basename="templates.default" />
+<view:setBundle basename="templates.default" />
 <%
   WikiContext c = WikiContext.findContext(pageContext);
   int attCount = c.getEngine().getAttachmentManager().listAttachments(

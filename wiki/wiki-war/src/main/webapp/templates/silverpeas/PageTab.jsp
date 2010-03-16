@@ -29,7 +29,8 @@
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %><%--CHECK why is this needed --%>
 <fmt:setLocale value="${userLanguage}"/>
-<fmt:setBundle basename="templates.default"/>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<viewt:setBundle basename="templates.default"/>
 <%
 	WikiContext c = WikiContext.findContext( pageContext );
    	WikiPage p = c.getPage();

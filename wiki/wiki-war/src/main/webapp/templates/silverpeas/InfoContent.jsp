@@ -33,10 +33,10 @@
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
- <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="silverpeas_icons" />
 <fmt:setLocale value="${userLanguage}"/>
-<fmt:setBundle basename="templates.default"/>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="silverpeas_icons" />
+<view:setBundle basename="templates.default"/>
 <%
   WikiContext c = WikiContext.findContext(pageContext);
   WikiPage wikiPage = c.getPage();

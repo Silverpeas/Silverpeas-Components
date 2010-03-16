@@ -32,7 +32,8 @@
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
 <fmt:setLocale value="${userLanguage}"/>
-<fmt:setBundle basename="templates.default"/>
+<fmt<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<viewsetBundle basename="templates.default"/>
 <% 
   WikiContext c = WikiContext.findContext( pageContext );  
   List history = c.getEngine().getVersionHistory(c.getPage().getName());

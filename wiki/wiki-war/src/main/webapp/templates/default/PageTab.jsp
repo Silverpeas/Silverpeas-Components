@@ -26,8 +26,9 @@
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %>
 <%@ page import="com.ecyrd.jspwiki.*" %>
 <%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %><%--CHECK why is this needed --%>
-<fmt:setBundle basename="templates.default"/>
+<view:setBundle basename="templates.default"/>
 <%
 	WikiContext c = WikiContext.findContext( pageContext );
    	WikiPage p = c.getPage();
