@@ -461,7 +461,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
         String userName = "";
         if (withName) {
           userName = getUserDetail(result.getUserId()).getDisplayedName();
-          users.add(result.getUserId() + "-" + userName);
+          users.add(result.getUserId() + "/" + userName);
         } else {
           users.add(result.getUserId());
         }

@@ -225,7 +225,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
         r += board.printBefore();
         r += "<table border=\"0\" cellpadding=\"2\" width=\"100%\">";
         if (!surveyScc.isPollingStationMode())
-	        r += "<tr><td align=\"center\" colspan=\"2\"><b>"+resources.getString("SurveyCreationQuestion")+" n°"+i+ " / " + nbTotalQuestion +"</b><BR></td></tr>";
+	        r += "<tr><td align=\"center\" colspan=\"2\"><b>"+resources.getString("SurveyCreationQuestion")+" nï¿½"+i+ " / " + nbTotalQuestion +"</b><BR></td></tr>";
         
         r += "<tr><td colspan=\"2\"><img src=\""+m_context+"/util/icons/mandatoryField.gif\" width=\"5\">&nbsp;&nbsp;<B><U>"+Encode.javaStringToHtmlString(question.getLabel())+"</U></B><BR/></td></tr>";
 		
@@ -248,7 +248,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
         {
         	if (style.equals("list"))
             {
-             	// liste déroulante
+             	// liste dï¿½roulante
              	String selectedStr = "";
              	
                 r += "<tr><td><select id=\"answer_"+nbQuestionInPage+"\" name=\"answer_"+nbQuestionInPage+"\" onchange=\"selectAnswer(this.value);\">";
@@ -318,7 +318,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
         return r;
 }
 
-// Prévisualisation
+// Prï¿½visualisation
   String displaySurveyPreview(QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc, ResourcesWrapper resources, ResourceLocator settings) throws SurveyException, ParseException 
   {
         String r = "";
@@ -390,7 +390,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                           {
                           		if (style.equals("list"))
                           		{
-                          			// liste déroulante
+                          			// liste dï¿½roulante
                           			r += "<tr><td><select id=\"answers\" name=\"answers\" onchange=\"selectAnswer(this.value);\">";
                           			
                           			Iterator itA = answers.iterator();
@@ -533,7 +533,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                       {
                        		if (style.equals("list"))
                        		{
-                       			// liste déroulante
+                       			// liste dï¿½roulante
                        			r += "<tr><td><select id=\"answers\" name=\"answers\" onchange=\"selectAnswer(this.value);\">";
                           			
                        			Iterator itA = answers.iterator();
@@ -652,7 +652,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                 		r += "<tr><td class=\"textePetitBold\" nowrap>"+resources.getString("SurveyCreationEndDate")+" :</td><td>"+endDate+"</td></tr>";	
 	                if (!anonymous && !styleView.equals("user"))
 				  	{
-				  		// l'enquête n'est pas anonyme, proposer le choix d'affichage
+				  		// l'enquÃªte n'est pas anonyme, proposer le choix d'affichage
 			           	String selectedStr = "";
 		                r += "<tr><td class=\"textePetitBold\" nowrap>"+resources.getString("survey.choice")+" :</td>";
 	                   	if (choice.equals("D"))
@@ -732,7 +732,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                           Question question = (Question) itQ.next();
                           Collection answers = question.getAnswers();
                           if (!surveyScc.isPollingStationMode())
-								r += "<tr><th align=\"center\" colspan=\"2\" ><b>"+resources.getString("SurveyCreationQuestion")+" n°"+i+"</b></th></tr>";
+								r += "<tr><th align=\"center\" colspan=\"2\" ><b>"+resources.getString("SurveyCreationQuestion")+" nï¿½"+i+"</b></th></tr>";
                           r += "<tr><th colspan=\"2\" align=\"left\"><img src=\""+m_context+"/util/icons/mandatoryField.gif\" width=5>&nbsp;&nbsp;<B><U>"+Encode.javaStringToHtmlString(question.getLabel())+"</U></B></th></tr>";
                           r += " </thead>";
                           r += "<tbody>";
@@ -740,7 +740,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                           String style = question.getStyle(); 
                           if (styleView.equals("user"))
                           {
-                          		// affichage des résults par user
+                          		// affichage des rï¿½sults par user
                           		if (style.equals("open")) 
 		                        {
 		                        	r += displayOpenAnswersToQuestionByUser(userId, false, question.getPK().getId(), surveyScc);
@@ -754,7 +754,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                           {       
 	                          if (!anonymous && choice.equals("D"))
 	                          {
-	 	                      	  // affichage des résultat de façon nominative
+	 	                      	  // affichage des rÃ©sultat de faÃ§on nominative
 		                      	  if (style.equals("open")) 
 		                          {
 		                              r += displayOpenAnswersToQuestionNotAnonymous(question.getPK().getId(), surveyScc);
@@ -926,7 +926,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                     r += "&nbsp;"+percentageForThisAnswer+"%";
                     if (!anonymous && nbSquareForThisAnswer != 0)
                     {
-                    	// l'enquête n'est pas anonyme et le % de réponse n'est pas nul : afficher l'icone pour visualiser les users
+                    	// l'enquï¿½te n'est pas anonyme et le % de rï¿½ponse n'est pas nul : afficher l'icone pour visualiser les users
                        	r += "<a href=\"javaScript:onClick=viewUsers('"+answer.getPK().getId()+"');\"><img src=\"icons/info.gif\" border=\"0\" align=\"absmiddle\" width=\"15\" height=\"15\"></a>";
                     }
                     r += "</td>";
@@ -956,7 +956,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                 {
                 	rang = rang + 1;
                     Answer answer = (Answer) itA.next();
-                    // affichage de la ligne des differentes réponses possibles
+                    // affichage de la ligne des differentes rÃ©ponses possibles
                     r += "<th> "+Encode.javaStringToHtmlString(answer.getLabel())+" </th>";
                     answerValues.put(answer.getPK().getId(), new Integer(rang));
                 }
@@ -969,13 +969,13 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                 while (itU.hasNext())
                 {
                  	String user = (String) itU.next();
-                 	String userId = user.split("-")[0];
-                	String userName = user.split("-")[1];
+                 	String userId = user.split("/")[0];
+                	String userName = user.split("/")[1];
                 	int position = 1;
                 	if (!saveUser.equals(userName))
                 	{
 	                	r += "<tr><td align=\"left\" width=\"40%\" class=\"displayUserName\"><a href=\"javaScript:onClick=viewResultByUser('"+userId+"','"+userName+"');\">"+Encode.javaStringToHtmlString(userName)+"</a></td>";
-	                	// rechercher les réponses pour cet utilisateur
+	                	// rechercher les rÃ©ponses pour cet utilisateur
 	                	String value;
 	                	Collection results = surveyScc.getResultByUser(userId, new ForeignPK(question.getPK()));
 	                	Iterator it = results.iterator();
@@ -987,7 +987,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	                		
 	                		Integer n = (Integer) answerValues.get(value);
 	                		int valueColonne = n.intValue();
-	                		// décaller pour se trouver dans la bonne colonne
+	                		// dÃ©caller pour se trouver dans la bonne colonne
 	                		while (position <= valueColonne)
 	                		{
 		                		if (valueColonne == position)
@@ -997,14 +997,14 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	              				}
 	              				else
 	              				{
-	              					// on décale 
+	              					// on dÃ©cale 
 	              					r += "<td class=\"questionResults-Non\">&nbsp;</td>";
 	              				}
 	              				position = position + 1;
 	              			}
 	                		saveUser = userName;
 	                	}
-	                	// completer la ligne avec des cases à "vide"
+	                	// completer la ligne avec des cases Ã  "vide"
 		              	while (position <= rang)
 		              	{
 		              		r += "<td class=\"questionResults-Non\"> </td>";
@@ -1081,7 +1081,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                             r += "<tr><td class=\"labelAnswer\" >"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR>";
                             r += "<img src=\""+url+"\" border=\"0\" width=\"60%\"></td><td>";
                         }
-                        // mettre en valeur cette réponse si c'est le choix de l'utilisateur
+                        // mettre en valeur cette rï¿½ponse si c'est le choix de l'utilisateur
                         if (resultsByUser.contains(answer.getPK().getId()))
 	  	                	r += "<img src=\""+m_context+"/util/icons/finishedTask.gif\" border=\"0\" valign=\"center\" width=\"15\" height=\"15\">";
                         
