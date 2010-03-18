@@ -54,71 +54,57 @@ public void displayMessageLine(Message message, JspWriter out, ResourceLocator r
     	}
     	int forumId = message.getForumId();
     	boolean isSubscriber = fsc.isSubscriber(messageId, userId);
-        int cellsCount = 0;
-        String cellWidth = (simpleMode ? " width=\"15\"" : "");
-        int lineHeight = ((fsc.isExternal() && reader) ? 16 : 24);
+      int cellsCount = 0;
+      String cellWidth = (simpleMode ? " width=\"15\"" : "");
+      int lineHeight = ((fsc.isExternal() && reader) ? 16 : 24);
+    	// isAutorized : si l'utilisateur est autorisé à modifier le message
+      boolean isAutorized = admin || moderator || userId.equals(author);
     	
-    	out.println("  <tr id=\"msgLine" + messageId + "\" height=\"" + lineHeight + "\">");
-        
-    	// abonnement
-    	out.print("    <td" + cellWidth + ">");
-    	if (isSubscriber) {
-    		out.print("<a href=\"");
-    		out.print(ActionUrl.getUrl(
-                (view ? "viewForum" : "viewMessage"), call, 13, messageId, forumId));
-    		out.print("\"><img src=\"icons/abonn_message.gif\" border=\"0\" alt=\""
-    			+ resource.getString("unsubscribeMessage") + "\" title=\""
-    			+ resource.getString("unsubscribeMessage") + "\"></a>");
-		}
-		else
-		{
-			out.print("&nbsp;");
-		}
-		out.println("</td>");
-		cellsCount++;
+    	
 		
-		out.print("    <td" + cellWidth + ">");
-        /*
-		if (hasChildren)
-		{
-			out.print("<a href=\"");
-			// icone de deploiement
-			if (deployed)
-			{
-				out.print(ActionUrl.getUrl(
-                    (view ? "viewForum" : "viewMessage"), call, 11, messageId, forumId));
-				out.print("\">");
-				//out.print("<img src=\"icons/fo_flechebas.gif\" border=\"0\" width=\"11\" height=\"6\">");
-			}
-			else
-			{
-				out.print(ActionUrl.getUrl(
-                    (view ? "viewForum" : "viewMessage"), call, 10, messageId, forumId));
-				out.print("\"><img src=\"icons/topnav_r.gif\" border=\"0\" width=\"6\" height=\"11\">");
-			}
-			out.print("</a>");
-		}
-        */
 		
-		// rechercher si l'utilisateur a des messages non lus sur ce sujet
-		if (messageParent == 0 && (!fsc.isExternal() || !reader))
-		{
-			boolean isNewMessage = fsc.isNewMessage(userId, forumId, messageId);
-			out.print("<img src=\"icons/" + (isNewMessage ? "buletRed" : "buletColoredGreen") + ".gif\">");
-		}
-		out.println("</td>");
-		cellsCount++;
-		
-		// Titre du message
+    if (STATUS_VALIDATE.equals(message.getStatus()) || (!STATUS_VALIDATE.equals(message.getStatus()) && isAutorized)) {
+      
+	      out.println("  <tr id=\"msgLine" + messageId + "\" height=\"" + lineHeight + "\">");
+	      
+	      // abonnement
+	      out.print("    <td" + cellWidth + ">");
+	      if (isSubscriber) {
+	        out.print("<a href=\"");
+	        out.print(ActionUrl.getUrl(
+	                (view ? "viewForum" : "viewMessage"), call, 13, messageId, forumId));
+	        out.print("\"><img src=\"icons/abonn_message.gif\" border=\"0\" alt=\""
+	          + resource.getString("unsubscribeMessage") + "\" title=\""
+	          + resource.getString("unsubscribeMessage") + "\"></a>");
+		    }
+		    else
+		    {
+		      out.print("&nbsp;");
+		    }
+		    out.println("</td>");
+		    cellsCount++;
+		    
+		    out.print("    <td" + cellWidth + ">");
+		    
+		    // rechercher si l'utilisateur a des messages non lus sur ce sujet
+		    if (messageParent == 0 && (!fsc.isExternal() || !reader))
+		    {
+		      boolean isNewMessage = fsc.isNewMessage(userId, forumId, messageId);
+		      out.print("<img src=\"icons/" + (isNewMessage ? "buletRed" : "buletColoredGreen") + ".gif\">");
+		    }
+		    out.println("</td>");
+    
+        cellsCount++;
+        // Titre du message
         out.print("    <td class=\"txtnote\">");
         out.print("<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\">");
         out.print("<tr>");
         out.print("<td width=\"" + depth * 10 + "\">");
         if (depth > 0)
-		{
-			out.print("<img src=\"icons/1px.gif\" width=\"" + depth * 10 + "\" height=\"1\">");
-		}
-		out.print("</td><td align=\"left\"><a href=\"");
+        {
+          out.print("<img src=\"icons/1px.gif\" width=\"" + depth * 10 + "\" height=\"1\">");
+        }
+        out.print("</td><td align=\"left\"><a href=\"");
         if (fsc.isDisplayAllMessages() && !view)
         {
         	out.print("javascript:scrollMessage('" + messageId + "')");
@@ -128,23 +114,34 @@ public void displayMessageLine(Message message, JspWriter out, ResourceLocator r
         	out.print(ActionUrl.getUrl(
                 "viewMessage", call, 1, messageId, forumId, !simpleMode, false));
         }
-		out.print("\">");
-		out.print("<span><b>");
-		out.print(Encode.javaStringToHtmlString(messageTitle));
-		// Auteur du message
-		out.print("</b>");
-		out.print(simpleMode ? "&nbsp;" : "<br>");
-        out.print("(" + messageAuthor);
-		// Date de Creation
-        out.print("&nbsp;-&nbsp;" + convertDate(message.getDate(), resources));
-		out.print(")");
-		out.println("</span>");
-		out.print("</a>");
+		    out.print("\">");
+        out.print("<span class=\"message_"+message.getStatus()+"\"><b>");
+		    out.print(Encode.javaStringToHtmlString(messageTitle));
+        // Auteur du message
+        out.print("</b>");
+        out.print(simpleMode ? "&nbsp;" : "<br>");
+            out.print("(" + messageAuthor);
+        // Date de Creation
+            out.print("&nbsp;-&nbsp;" + convertDate(message.getDate(), resources));
+        out.print(")");
+            if (message.getStatus().equals(STATUS_FOR_VALIDATION)) {
+              out.println(" - " + resource.getString("toValidate"));
+            }
+            else if (message.getStatus().equals(STATUS_REFUSED)) {
+              out.println(" - " + resource.getString("refused"));
+            }
+        out.println("</span>");
+        cellsCount++;
+        
+        out.print("</a>");
         out.print("</td>");
         out.print("</tr>");
         out.print("</table>");
-		out.println("</td>");
-		cellsCount++;
+        out.println("</td>");
+		  }
+
+		  
+      
         
 		if (!simpleMode)
         {
@@ -203,7 +200,7 @@ public void displayMessageLine(Message message, JspWriter out, ResourceLocator r
         }
 		
 		// Opérations
-		if (userId.equals(author) || admin || moderator)
+		if (isAutorized)
 		{
             int opCellWidth = 40;
             if (depth == 0)
@@ -306,7 +303,7 @@ public void displaySingleMessageList(JspWriter out, ResourceLocator resource, St
         int messagesCount = messages.length;
         if (messagesCount > 0)
         {
-            out.println("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" class=\"contourintfdcolor\">");
+          out.println("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"2\" class=\"contourintfdcolor\">");
         	displayOneMessage(messages, out, resource, userId, currentForumId, admin, moderator,
         		reader, view, messageId, 0, simpleMode, call, fsc, resources);
         	out.println("</table>");

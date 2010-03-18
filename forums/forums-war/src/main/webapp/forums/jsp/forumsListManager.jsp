@@ -118,23 +118,6 @@ public void displayForumLine(Forum forum, ResourcesWrapper resources, JspWriter 
         {
             out.print("<img src=\"icons/1px.gif\" width=\"" + (depth * 10) + "\" height=\"1\">");
         }
-        /*
-        if (hasChildren) {
-            out.print("<a href=\"");
-            out.print(ActionUrl.getUrl((currentPage > 0 ? "viewForum" : "main"), call,
-                (deployed ? 2 : 1), forumId, (currentPage > 0 ? currentPage : -1)));
-            out.print("\">");
-            if (!deployed)
-            {
-                out.print("<img src=\"icons/topnav_r.gif\" width=\"6\" height=\"11\" border=\"0\">");
-            }
-            out.print("</a>");
-        }
-        else
-        {
-            out.print("&nbsp;");
-        }
-        */
         out.println("</td>");
 
         // 2ème colonne : nom et description

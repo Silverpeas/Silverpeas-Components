@@ -2,10 +2,6 @@ var currentMessageId = -1;
 var parentMessageId = -1;
 var oFCKeditor = null;
 
-function editMessage(messageId)
-{
-    window.location.href = "modifyMessage.jsp?params=" + messageId;
-}
 
 function replyMessage(messageId)
 {

@@ -23,6 +23,8 @@
  */
 package com.stratelia.webactiv.servlets;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.util.StringUtil;
@@ -109,17 +111,51 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
       if (StringUtil.isDefined(messageId)) {
         SilverTrace.info("forums", "ForumsRequestRouter",
             "root.MSG_GEN_PARAM_VALUE", "messageId (pour last visite) = "
-            + messageId);
+                + messageId);
         forumsSC.setLastVisit(componentSC.getUserId(), Integer
             .parseInt(messageId));
       }
+      int forumId = 0;
+      String forumIdS = request.getParameter("forumId");
+      if (!StringUtil.isDefined(messageId)) {
+        forumIdS = (String) request.getAttribute("forumId");
+      }
+      if (StringUtil.isDefined(forumIdS)) {
+        forumId = Integer.parseInt(forumIdS);
+      }
+      if (StringUtil.isDefined(messageId)) {
+        Message message = forumsSC.getMessage(Integer.parseInt(messageId));
+        forumId = message.getForumId();
+      }
+      List<String> moderators = forumsSC.getModerators(forumId);
+      String nbModerators = Integer.toString(moderators.size());
+      request.setAttribute("NbModerators", nbModerators);
       destination = ROOT_DEST + "viewMessage.jsp";
-    } else if (function.startsWith("editMessageKeywords")) {
+    }
+
+    else if (function.startsWith("editMessageKeywords")) {
       destination = ROOT_DEST + "editMessageKeywords.jsp";
-    } else if (function.startsWith("editMessage")) {
+    }
+
+    else if (function.startsWith("editMessage")) {
       destination = ROOT_DEST + "editMessage.jsp";
-    } else if (function.startsWith("modifyMessage")) {
+    }
+
+    else if (function.startsWith("modifyMessage")) {
       destination = ROOT_DEST + "modifyMessage.jsp";
+    }
+
+    else if (function.equals("ValidateMessage")) {
+      String messageId = request.getParameter("params");
+      forumsSC.validateMessage(Integer.parseInt(messageId));
+      destination = getDestination("viewMessage", componentSC, request);
+    }
+
+    else if (function.equals("RefuseMessage")) {
+      String messageId = request.getParameter("params");
+      String motive = request.getParameter("Motive");
+      forumsSC.refuseMessage(Integer.parseInt(messageId), motive);
+      destination = getDestination("viewMessage", componentSC, request);
     }
 
     // gestion des catégories

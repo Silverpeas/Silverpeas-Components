@@ -41,6 +41,7 @@ public class Message implements Serializable {
   private String text;
   private String instanceId;
   private MessagePK pk;
+  private String status;
 
   public Message(int id, String title, String author, Date date, int forumId,
       int parentId) {
@@ -56,7 +57,12 @@ public class Message implements Serializable {
       int parentId, String instanceId) {
     this(id, title, author, date, forumId, parentId);
     this.instanceId = instanceId;
-
+  }
+  
+  public Message(int id, String title, String author, Date date, int forumId,
+      int parentId, String instanceId, String status) {
+    this(id, title, author, date, forumId, parentId, instanceId);
+    this.status = status;
   }
 
   public int getId() {
@@ -129,6 +135,14 @@ public class Message implements Serializable {
 
   public void setPk(MessagePK pk) {
     this.pk = pk;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
   }
 
 }

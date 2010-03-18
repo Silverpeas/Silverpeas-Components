@@ -92,38 +92,38 @@ public interface ForumsBM extends EJBObject {
 
   public int getMessageParentId(int messageId) throws RemoteException;
 
-  public Message getLastMessage(ForumPK forumPK) throws RemoteException;
+  public Message getLastMessage(ForumPK forumPK, String status) throws RemoteException;
 
-  public Message getLastMessage(ForumPK forumPK, int messageParentId)
+  public Message getLastMessage(ForumPK forumPK, int messageParentId, String status)
       throws RemoteException;
 
-  public Message getLastMessage(ForumPK forumPK, List messageParentId)
+  public Message getLastMessage(ForumPK forumPK, List messageParentId, String status)
       throws RemoteException;
 
   public Collection getLastMessageRSS(String instanceId, int nbReturned)
       throws RemoteException;
 
-  public int getNbMessages(int forumId, String type) throws RemoteException;
+  public int getNbMessages(int forumId, String type, String status) throws RemoteException;
 
-  public int getAuthorNbMessages(String userId) throws RemoteException;
+  public int getAuthorNbMessages(String userId, String status) throws RemoteException;
 
-  public int getNbResponses(int forumId, int messageId) throws RemoteException;
+  public int getNbResponses(int forumId, int messageId, String status) throws RemoteException;
 
-  public boolean isNewMessageByForum(String userId, ForumPK forumPK)
+  public boolean isNewMessageByForum(String userId, ForumPK forumPK, String status)
       throws RemoteException;
 
-  public boolean isNewMessage(String userId, ForumPK forumPK, int messageId)
+  public boolean isNewMessage(String userId, ForumPK forumPK, int messageId, String status)
       throws RemoteException;
 
   public void setLastVisit(String userId, int messageId) throws RemoteException;
 
   public int createMessage(MessagePK messagePK, String messageTitle,
       String messageAuthor, Date messageCreationdate, int messageForum,
-      int messageParent, String messageText, String keywords)
+      int messageParent, String messageText, String keywords, String status)
       throws RemoteException;
 
   public void updateMessage(MessagePK messagePK, String title, String message,
-      String userId) throws RemoteException;
+      String userId, String status) throws RemoteException;
 
   public void updateMessageKeywords(MessagePK messagePK, String keywords)
       throws RemoteException;
@@ -140,6 +140,8 @@ public interface ForumsBM extends EJBObject {
       throws RemoteException;
 
   public void removeAllModerators(ForumPK forumPK) throws RemoteException;
+
+  public List<String> getModerators(int forumId) throws RemoteException;
 
   public void moveMessage(MessagePK messagePK, ForumPK forumPK)
       throws RemoteException;

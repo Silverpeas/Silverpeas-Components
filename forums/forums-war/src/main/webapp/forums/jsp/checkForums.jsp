@@ -68,6 +68,10 @@
     public static String IMAGE_NOTATION_ON =    "../../util/icons/starFilled.gif";
     public static String IMAGE_NOTATION_EMPTY = "../../util/icons/shim.gif";
     
+    private static final String STATUS_VALIDATE       = "V";
+    private static final String STATUS_FOR_VALIDATION = "A";
+    private static final String STATUS_REFUSED        = "R";
+    
     public int getIntParameter(HttpServletRequest request, String name)
     {
         return getIntParameter(request, name, -1);

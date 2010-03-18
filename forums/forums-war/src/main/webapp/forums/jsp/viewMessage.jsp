@@ -39,6 +39,11 @@
     int action = getIntParameter(request, "action", 1);
     int params = getIntParameter(request, "params");
     int currentMessageId = -1;
+    String nbModeratorsString = (String) request.getAttribute("NbModerators");
+    int nbModerators = 0;
+    if (StringUtil.isDefined(nbModeratorsString)) {
+      nbModerators = Integer.parseInt(nbModeratorsString);
+    }
     
     boolean scrollToMessage = false;
     boolean displayAllMessages = false;
@@ -74,6 +79,7 @@
                 String messageTitle = request.getParameter("messageTitle").trim();
                 String messageText = request.getParameter("messageText").trim();
                 String subscribe = request.getParameter("subscribeMessage");
+                
                 if ((messageTitle.length() > 0) && (messageText.length() > 0))
                 {
                     if (params == -1)
@@ -199,7 +205,8 @@
         Message[] messages = fsc.getMessagesList(folderId, currentMessageId);
         int messagesCount = messages.length;
 %>
-<html>
+
+<%@page import="java.util.List"%><html>
 <head>
     <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><%
@@ -315,6 +322,25 @@
                 document.forms["notationForm"].submit();
             }
         }
+
+        function editMessage(messageId)
+        {
+            window.location.href = "modifyMessage.jsp?params=" + messageId;
+        }
+
+        function valideMessage(messageId)
+        {
+          if (confirm('<%=resource.getString("confirmValideMessage")%>'))
+            {
+            window.location.href = "ValidateMessage?params=" + messageId;
+            }
+        }
+
+        function refuseMessage(messageId)
+        {
+            window.location.href = "refuseMessage.jsp?params=" + messageId;
+        }
+                
     </script>
 </head>
 
@@ -360,6 +386,8 @@
     <center>
         <table class="intfdcolor4" border="0" cellpadding="0" cellspacing="0" width="98%">
             <form name="forumsForm" action="<%=formAction%>" method="post">
+              <input type="hidden" name="type" value="sendNotif" />
+              <input type="hidden" name="forumId" value="<%=forumId%>" />
             <tr class="notationLine">
                 <td align="right"><%
 
@@ -441,6 +469,7 @@
         String author;
         String authorLabel;
         String text;
+        String status;
         boolean isSubscriber;
         boolean hasChildren;
         Hashtable authorNbMessages = new Hashtable();
@@ -452,6 +481,7 @@
             parentId = currentMessage.getParentId();
             author = currentMessage.getAuthor();
             authorLabel = fsc.getAuthorName(author);
+            status = currentMessage.getStatus();
             if (authorLabel == null)
             {
                 authorLabel = resource.getString("inconnu");
@@ -518,23 +548,31 @@
                                                 <span class="texteLabelForm"><%=resource.getString("subscribeMessage")%></span></td>
                                             <td valign="top" align="right">&nbsp;<%
 
-                if (forumActive) 
+            
+            if (forumActive) 
                 {
+              if (userId.equals(author) || isAdmin || isModerator)
+              {
+                if (STATUS_FOR_VALIDATION.equals(status)) {
+                  // afficher les icônes pour valider ou refuser un message
+                  %>
+                    <a href="javascript:valideMessage(<%=currentId%>)"><img
+                      src="<%=context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("valideMessage")%>" title="<%=resource.getString("valideMessage")%>"></a>&nbsp;
+                    <a href="javascript:refuseMessage(<%=currentId%>)"><img
+                      src="<%=context%>/util/icons/wrong.gif" align="middle" border="0" alt="<%=resource.getString("refuseMessage")%>" title="<%=resource.getString("refuseMessage")%>"></a>&nbsp;
+                  <%
+
+                }
 %>
                                                 <a href="javascript:replyMessage(<%=currentId%>)"><img
                                                     src="<%=context%>/util/icons/reply.gif" align="middle" border="0" alt="<%=resource.getString("replyMessage")%>" title="<%=resource.getString("replyMessage")%>"></a>&nbsp;<%
-
-                    //if (!hasChildren)
-                    //{
-                    	if (userId.equals(author) || isAdmin || isModerator)
-                    	{
 %>
                                                 <a href="javascript:editMessage(<%=currentId%>)"><img
                                                     src="<%=context%>/util/icons/update.gif" align="middle" border="0" alt="<%=resource.getString("editMessage")%>" title="<%=resource.getString("editMessage")%>"></a>&nbsp;
                                                 <a href="javascript:deleteMessage(<%=currentId%>, <%=parentId%>, true)"><img
                                                     src="<%=context%>/util/icons/delete.gif" align="middle" border="0" alt="<%=resource.getString("deleteMessage")%>" title="<%=resource.getString("deleteMessage")%>"></a>&nbsp;<%
                         }
-                    //}
+                  
                }
             }
 %>

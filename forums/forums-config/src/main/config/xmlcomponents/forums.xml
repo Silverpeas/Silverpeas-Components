@@ -64,7 +64,7 @@
             <ParameterMandatory>Y</ParameterMandatory>
 	    <ParameterType>checkbox</ParameterType>
 	    <ParameterUpdatable>always</ParameterUpdatable>
-	    <ParameterOrder>1</ParameterOrder>
+	    <ParameterOrder>3</ParameterOrder>
 	    <ParameterHelp>
 		<ParameterHelpFr>Un forum peut contenir d'autres forums</ParameterHelpFr>
 		<ParameterHelpEn></ParameterHelpEn>
@@ -77,9 +77,22 @@
         <ParameterValue>N</ParameterValue>
         <ParameterMandatory>N</ParameterMandatory>
 	    <ParameterUpdatable>always</ParameterUpdatable>
-	    <ParameterOrder>1</ParameterOrder>
+	    <ParameterOrder>4</ParameterOrder>
 	    <ParameterHelp>
 			<ParameterHelpFr>Permet de générer un flux RSS de ces forums.</ParameterHelpFr>
+			<ParameterHelpEn>.</ParameterHelpEn>
+	    </ParameterHelp>
+	</Parameter>
+	<Parameter>
+    	<ParameterName>isValidationActive</ParameterName>
+        <ParameterLabel>Validation</ParameterLabel>
+		<ParameterType>checkbox</ParameterType>
+        <ParameterValue>N</ParameterValue>
+        <ParameterMandatory>Y</ParameterMandatory>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterOrder>5</ParameterOrder>
+	    <ParameterHelp>
+			<ParameterHelpFr>Si ce paramètre est activé, les messages seront soumis à validation par les modérateurs.</ParameterHelpFr>
 			<ParameterHelpEn>.</ParameterHelpEn>
 	    </ParameterHelp>
 	</Parameter>

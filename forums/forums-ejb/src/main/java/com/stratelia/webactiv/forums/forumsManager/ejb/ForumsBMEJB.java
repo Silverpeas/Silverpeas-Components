@@ -466,10 +466,10 @@ public class ForumsBMEJB implements SessionBean {
     return getMessagesIds(forumPK, -1);
   }
 
-  public int getNbMessages(int forumId, String type) {
+  public int getNbMessages(int forumId, String type, String status) {
     Connection con = openConnection();
     try {
-      return ForumsDAO.getNbMessages(con, forumId, type);
+      return ForumsDAO.getNbMessages(con, forumId, type, status);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getNbMessages()",
           SilverpeasRuntimeException.ERROR,
@@ -479,10 +479,10 @@ public class ForumsBMEJB implements SessionBean {
     }
   }
 
-  public int getAuthorNbMessages(String userId) {
+  public int getAuthorNbMessages(String userId, String status) {
     Connection con = openConnection();
     try {
-      return ForumsDAO.getAuthorNbMessages(con, userId);
+      return ForumsDAO.getAuthorNbMessages(con, userId, status);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getAuthorNbMessages()",
           SilverpeasRuntimeException.ERROR,
@@ -492,10 +492,10 @@ public class ForumsBMEJB implements SessionBean {
     }
   }
 
-  public int getNbResponses(int forumId, int messageId) {
+  public int getNbResponses(int forumId, int messageId, String status) {
     Connection con = openConnection();
     try {
-      return ForumsDAO.getNbResponses(con, forumId, messageId);
+      return ForumsDAO.getNbResponses(con, forumId, messageId, status);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getNbResponses()",
           SilverpeasRuntimeException.ERROR,
@@ -512,10 +512,10 @@ public class ForumsBMEJB implements SessionBean {
    * @author sfariello
    * @since
    */
-  public Message getLastMessage(ForumPK forumPK) {
+  public Message getLastMessage(ForumPK forumPK, String status) {
     Connection con = openConnection();
     try {
-      return ForumsDAO.getLastMessage(con, forumPK);
+      return ForumsDAO.getLastMessage(con, forumPK, status);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getLastMessage()",
           SilverpeasRuntimeException.ERROR,
@@ -552,7 +552,7 @@ public class ForumsBMEJB implements SessionBean {
     return messages;
   }
 
-  public Message getLastMessage(ForumPK forumPK, int messageParentId) {
+  public Message getLastMessage(ForumPK forumPK, int messageParentId, String status) {
     Connection con = openConnection();
     try {
       // liste de tous les messages de la discussion
@@ -562,7 +562,7 @@ public class ForumsBMEJB implements SessionBean {
       messagesIds.add(String.valueOf(messageParentId));
 
       // récupération de la date du dernier message du forum
-      return getLastMessage(forumPK, messagesIds);
+      return getLastMessage(forumPK, messagesIds, status);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getLastMessage()",
           SilverpeasRuntimeException.ERROR,
@@ -572,10 +572,10 @@ public class ForumsBMEJB implements SessionBean {
     }
   }
 
-  public Message getLastMessage(ForumPK forumPK, List messageParentIds) {
+  public Message getLastMessage(ForumPK forumPK, List messageParentIds, String status) {
     Connection con = openConnection();
     try {
-      return ForumsDAO.getLastMessage(con, forumPK, messageParentIds);
+      return ForumsDAO.getLastMessage(con, forumPK, messageParentIds, status);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getLastMessage()",
           SilverpeasRuntimeException.ERROR,
@@ -593,7 +593,7 @@ public class ForumsBMEJB implements SessionBean {
    * @author sfariello
    * @since
    */
-  public boolean isNewMessageByForum(String userId, ForumPK forumPK) {
+  public boolean isNewMessageByForum(String userId, ForumPK forumPK, String status) {
     // liste de tous les sujets du forum
     ArrayList<String> messagesIds = getSubjectsIds(forumPK);
     int messageParentId;
@@ -602,7 +602,7 @@ public class ForumsBMEJB implements SessionBean {
       messageParentId = Integer.parseInt((String) messagesIds.get(i));
       SilverTrace.info("forums", "ForumsBMEJB.isNewMessageByForum()",
           "root.MSG_GEN_PARAM_VALUE", "messageParentId = " + messageParentId);
-      if (isNewMessage(userId, forumPK, messageParentId)) {
+      if (isNewMessage(userId, forumPK, messageParentId, status)) {
         return true;
       }
     }
@@ -610,7 +610,7 @@ public class ForumsBMEJB implements SessionBean {
   }
 
   public boolean isNewMessage(String userId, ForumPK forumPK,
-      int messageParentId) {
+      int messageParentId, String status) {
     Connection con = openConnection();
     try {
       // liste de tous les messages de la discussion
@@ -619,13 +619,13 @@ public class ForumsBMEJB implements SessionBean {
       messagesIds.add(String.valueOf(messageParentId));
 
       // récupération de la date du dernier message du forum
-      Message message = getLastMessage(forumPK, messagesIds);
+      Message message = getLastMessage(forumPK, messagesIds, status);
       // date du dernier message de la discussion
       Date dateLastMessageBySubject = (message != null ? message.getDate()
           : null);
       SilverTrace.info("forums", "ForumsBMEJB.isNewMessage()",
           "root.MSG_GEN_PARAM_VALUE", "date du dernier message du sujet = "
-          + dateLastMessageBySubject);
+              + dateLastMessageBySubject);
 
       // recherche sur tous les messages de la date de visite la plus ancienne
       // date de la dernière visite pour un message
@@ -634,7 +634,7 @@ public class ForumsBMEJB implements SessionBean {
       if (dateLastMessageBySubject == null
           || dateLastVisit == null
           || (dateLastMessageBySubject != null && dateLastVisit != null && dateLastVisit
-          .before(dateLastMessageBySubject))) {
+              .before(dateLastMessageBySubject))) {
         // la date de dernière visite de ce message est antérieure à la date du
         // dernier
         // message, il y a donc des réponses non lues pour ce message
@@ -747,11 +747,11 @@ public class ForumsBMEJB implements SessionBean {
    */
   public int createMessage(MessagePK messagePK, String messageTitle,
       String messageAuthor, Date messageCreationdate, int messageForum,
-      int messageParent, String messageText, String keywords) {
+      int messageParent, String messageText, String keywords, String status) {
     Connection con = openConnection();
     try {
       int messageId = ForumsDAO.createMessage(con, messageTitle, messageAuthor,
-          messageCreationdate, messageForum, messageParent);
+          messageCreationdate, messageForum, messageParent, status);
       messagePK.setId(String.valueOf(messageId));
       createIndex(messagePK);
       createTagCloud(messagePK, keywords);
@@ -767,10 +767,10 @@ public class ForumsBMEJB implements SessionBean {
   }
 
   public void updateMessage(MessagePK messagePK, String title, String message,
-      String userId) {
+      String userId, String status) {
     Connection con = openConnection();
     try {
-      ForumsDAO.updateMessage(con, messagePK, title);
+      ForumsDAO.updateMessage(con, messagePK, title, status);
       deleteIndex(messagePK);
       createIndex(messagePK);
       updateWysiwyg(messagePK, message, userId);
@@ -903,6 +903,18 @@ public class ForumsBMEJB implements SessionBean {
       ForumsDAO.removeAllModerators(con, forumPK);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.removeAllModerators()",
+          SilverpeasRuntimeException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
+    } finally {
+      closeConnection(con);
+    }
+  }
+
+  public List<String> getModerators(int forumId) {
+    Connection con = openConnection();
+    try {
+      return ForumsDAO.getModerators(con, forumId);
+    } catch (Exception e) {
+      throw new ForumsRuntimeException("ForumsBmEJB.getModerators()",
           SilverpeasRuntimeException.ERROR, "root.EX_SQL_QUERY_FAILED", e);
     } finally {
       closeConnection(con);
@@ -1493,13 +1505,13 @@ public class ForumsBMEJB implements SessionBean {
   private void deleteNotation(ForumPK forumPK) throws RemoteException {
     getNotationBm().deleteNotation(
         new NotationPK(forumPK.getId(), forumPK.getComponentName(),
-        Notation.TYPE_FORUM));
+            Notation.TYPE_FORUM));
   }
 
   private void deleteNotation(MessagePK messagePK) throws RemoteException {
     getNotationBm().deleteNotation(
         new NotationPK(messagePK.getId(), messagePK.getComponentName(),
-        Notation.TYPE_MESSAGE));
+            Notation.TYPE_MESSAGE));
   }
 
   /**
@@ -1586,7 +1598,7 @@ public class ForumsBMEJB implements SessionBean {
     } catch (WysiwygException e) {
       SilverTrace.error("forums", "ForumsBMEJB.deleteWysiwyg()",
           "componentId = " + messagePK.getComponentName() + " ; messageId = "
-          + messagePK.getId());
+              + messagePK.getId());
     }
   }
 
