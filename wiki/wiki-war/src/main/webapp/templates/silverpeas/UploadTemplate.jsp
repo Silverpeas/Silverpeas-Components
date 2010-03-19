@@ -61,7 +61,9 @@
 <body>
 <c:set var="wiki_link_raw"><%=c.getURL(WikiContext.VIEW, "")%></c:set>
 <c:set var="wiki_link" value="${fn:substringBefore(wiki_link_raw, '?') }" />
-<view:browseBar link="${wiki_link}" path="${pageName}" />
+<view:browseBar>
+  <view:browseBarElt link="${wiki_link}" label="${pageName}" />
+</view:browseBar>
 <%@ include file="PageActionsTop.jsp"%>
 <view:window>
   <div id="wikibody" class="${prefs['orientation']}"><wiki:Include page="Header.jsp" />

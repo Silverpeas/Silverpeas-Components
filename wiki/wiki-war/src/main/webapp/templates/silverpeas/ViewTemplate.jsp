@@ -69,7 +69,9 @@
     </form>
 
     <c:set var="pageName"><wiki:PageName /></c:set>
-    <view:browseBar link="${wiki_link}" path="${pageName}" />
+    <view:browseBar>
+      <view:browseBarElt link="${wiki_link}" label="${pageName}" />
+    </view:browseBar>
     <%@ include file="PageActionsTop.jsp"%>
     <view:window>
       <div id="wikibody" class="${prefs['orientation']}">

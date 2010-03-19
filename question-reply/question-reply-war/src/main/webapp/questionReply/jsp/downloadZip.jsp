@@ -41,7 +41,9 @@
 <view:looknfeel />
 </head>
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<view:browseBar link="" path="${page_title}" />
+<view:browseBar>
+  <view:browseBarElt link="" label="${page_title}" />
+</view:browseBar>
 <view:window>
   <view:frame>
     <view:board>

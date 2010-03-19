@@ -76,7 +76,9 @@ function topicGoTo(id)
 </script>
 </HEAD>
 <body>
-<view:browseBar link="Main" path="${requestScope['Path']}" extraInformations="<%=resources.getString("kmelia.OrderPublications")%>"/>
+<view:browseBar extraInformations="<%=resources.getString("kmelia.OrderPublications")%>">
+  <view:browseBarElt link="Main" label="${requestScope['Path']}" />
+</view:browseBar>
 <view:window>
 <view:frame>
 <view:board>
