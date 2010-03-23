@@ -948,7 +948,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
           destination = getDestination("WizardNext", kmelia, request);
         } else {
-          destination = getDestination("ViewPublication", kmelia, request);
+          StringBuffer requestURI = request.getRequestURL();
+          destination = requestURI.substring(0, requestURI.indexOf("AddPublication"))
+                  + "ViewPublication?PubId=" + newPubId;
         }
       } else if (function.equals("UpdatePublication")) {
         List<FileItem> parameters = FileUploadUtil.parseRequest(request);
