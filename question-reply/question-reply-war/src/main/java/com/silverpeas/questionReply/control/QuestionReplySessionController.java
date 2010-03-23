@@ -431,11 +431,6 @@ public class QuestionReplySessionController extends
     Collection questionIds = new ArrayList();
     questionIds.add(new Long(questionId));
     getQuestionManager().closeQuestions(questionIds);
-    /*
-     * if ((getCurrentQuestion().getReplyNumber() ==
-     * 0)||(getCurrentQuestion().getPublicReplyNumber() == 0)) reSetCurrentQuestion(); else
-     * getCurrentQuestion().setStatus(2);
-     */
   }
 
   public void openQuestion(long questionId) throws QuestionReplyException {
@@ -444,22 +439,7 @@ public class QuestionReplySessionController extends
     getQuestionManager().openQuestions(questionIds);
   }
 
-  /*
-   * Supprime les réponses publiques aux questions =>
-   * getQuestionManager().updateQuestionRepliesPublicStatus()
-   */
-  /*
-   * private void deletePublicQuestions(Collection questionsIds) throws QuestionReplyException {
-   * getQuestionManager().updateQuestionRepliesPublicStatus(questionsIds); }
-   */
-  /*
-   * Supprime les réponses privées aux questions =>
-   * getQuestionManager().updateQuestionRepliesPrivateStatus()
-   */
-  /*
-   * private void deletePrivateQuestions(Collection questionsIds) throws QuestionReplyException {
-   * getQuestionManager().updateQuestionRepliesPrivateStatus(questionsIds); }
-   */
+ 
   /*
    * Supprime les réponses publiques => getQuestionManager().updateRepliesPublicStatus() retourne le
    * nombre de réponses publiques restantes
@@ -640,16 +620,7 @@ public class QuestionReplySessionController extends
     GenericPanel gp = new GenericPanel();
     String context = GeneralPropertiesManager.getGeneralResourceLocator()
         .getString("ApplicationURL");
-    // NEWD DLE
-    // String theURL = context +
-    // "/RquestionReply/"+getSpaceId()+"_"+getComponentId()+"/EffectiveRelaunch";
-    // String cancelURL = context +
-    // "/RquestionReply/"+getSpaceId()+"_"+getComponentId()+"/ConsultQuestionQuery?questionId="+((IdPK)getCurrentQuestion().getPK()).getId();
-    // PairObject hostComponentName = new PairObject(getComponentLabel(),
-    // context + "/RquestionReply/"+getSpaceId()+"_"+getComponentId()+"/Main");
-    // PairObject hostPath1 = new PairObject(getCurrentQuestion().getTitle(),
-    // "/RquestionReply/"+getSpaceId()+"_"+getComponentId()+"/ConsultQuestionQuery?questionId="+((IdPK)getCurrentQuestion().getPK()).getId());
-    String theURL = context + "/RquestionReply/" + getComponentId()
+     String theURL = context + "/RquestionReply/" + getComponentId()
         + "/EffectiveRelaunch";
     String cancelURL = context + "/RquestionReply/" + getComponentId()
         + "/ConsultQuestionQuery?questionId="
@@ -660,7 +631,6 @@ public class QuestionReplySessionController extends
         "/RquestionReply/" + getComponentId()
         + "/ConsultQuestionQuery?questionId="
         + ((IdPK) getCurrentQuestion().getPK()).getId());
-    // NEWF DLE
     PairObject[] hostPath = { hostPath1 };
 
     gp.resetAll();
@@ -1022,10 +992,8 @@ public class QuestionReplySessionController extends
     }
   }
 
-  public ExportReport export(ResourcesWrapper resource) throws QuestionReplyException,
-      ParseException {
-
-    StringBuffer sb = new StringBuffer("exportFAQ");
+  public ExportReport export(ResourcesWrapper resource) throws QuestionReplyException, ParseException {
+    StringBuilder sb = new StringBuilder("exportFAQ");
     Date date = new Date();
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH'H'mm'm'ss's'");
     String dateFormatee = dateFormat.format(date);
@@ -1062,8 +1030,7 @@ public class QuestionReplySessionController extends
     }
 
     // intégrer la css du disque dans "files"
-    ResourceLocator settings =
-        new ResourceLocator("com.silverpeas.questionReply.settings.questionReplySettings", "");
+    ResourceLocator settings = new ResourceLocator("com.silverpeas.importExport.settings.mapping", "");
     try {
       String chemin = (settings.getString("mappingDir"));
       if (chemin.startsWith("file:")) {

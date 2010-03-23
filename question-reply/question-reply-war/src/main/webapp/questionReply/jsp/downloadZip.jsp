@@ -31,7 +31,7 @@
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <fmt:setLocale value="${userLanguage}"/>
 <view:setBundle basename="com.silverpeas.importExportPeas.multilang.importExportPeasBundle"/>
-<view:message key="importExportPeas.Export" var="page_title" />
+<fmt:message key="importExportPeas.Export" var="page_title" />
 
 <%
 	ExportReport report = (ExportReport) request.getAttribute("ExportReport");
