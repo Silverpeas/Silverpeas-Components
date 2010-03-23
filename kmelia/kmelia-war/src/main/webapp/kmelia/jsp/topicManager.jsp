@@ -1084,7 +1084,19 @@ function loadNodeData(node, fnLoadComplete)  {
 							{
 								var profile = data[0].role;
 								var parentProfile =  oCurrentTextNode.parent.data.role;
-								if (profile == "user")
+								if (profile == "admin")
+								{
+									//all actions are enabled
+									oContextMenu.getItem(0).cfg.setProperty("disabled", false);
+									oContextMenu.getItem(1).cfg.setProperty("disabled", false);
+									oContextMenu.getItem(2).cfg.setProperty("disabled", false);
+									oContextMenu.getItem(3).cfg.setProperty("disabled", false);
+									
+									oContextMenu.getItem(0,1).cfg.setProperty("disabled", false);
+									oContextMenu.getItem(1,1).cfg.setProperty("disabled", false);
+									oContextMenu.getItem(2,1).cfg.setProperty("disabled", false);
+								}
+								else if (profile == "user")
 								{
 									if (parentProfile != "admin")
 									{
