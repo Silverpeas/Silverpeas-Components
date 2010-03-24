@@ -439,7 +439,6 @@ public class QuestionReplySessionController extends
     getQuestionManager().openQuestions(questionIds);
   }
 
- 
   /*
    * Supprime les réponses publiques => getQuestionManager().updateRepliesPublicStatus() retourne le
    * nombre de réponses publiques restantes
@@ -620,7 +619,7 @@ public class QuestionReplySessionController extends
     GenericPanel gp = new GenericPanel();
     String context = GeneralPropertiesManager.getGeneralResourceLocator()
         .getString("ApplicationURL");
-     String theURL = context + "/RquestionReply/" + getComponentId()
+    String theURL = context + "/RquestionReply/" + getComponentId()
         + "/EffectiveRelaunch";
     String cancelURL = context + "/RquestionReply/" + getComponentId()
         + "/ConsultQuestionQuery?questionId="
@@ -992,7 +991,8 @@ public class QuestionReplySessionController extends
     }
   }
 
-  public ExportReport export(ResourcesWrapper resource) throws QuestionReplyException, ParseException {
+  public ExportReport export(ResourcesWrapper resource) throws QuestionReplyException,
+      ParseException {
     StringBuilder sb = new StringBuilder("exportFAQ");
     Date date = new Date();
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH'H'mm'm'ss's'");
@@ -1030,7 +1030,8 @@ public class QuestionReplySessionController extends
     }
 
     // intégrer la css du disque dans "files"
-    ResourceLocator settings = new ResourceLocator("com.silverpeas.importExport.settings.mapping", "");
+    ResourceLocator settings =
+        new ResourceLocator("com.silverpeas.questionReply.settings.questionReplySettings", "");
     try {
       String chemin = (settings.getString("mappingDir"));
       if (chemin.startsWith("file:")) {
@@ -1225,7 +1226,8 @@ public class QuestionReplySessionController extends
           sb.append("<table width=\"100%\" cellpadding=\"0\" cellspacing=\"2\">\n");
           sb.append("<tr>\n");
           sb.append("<td class=\"titreQuestionReponse\" width=\"100%\">\n");
-          sb.append(" <span class=\"titreQuestionReponse\">").append(EncodeHelper.javaStringToHtmlParagraphe(reply.getTitle())).append(
+          sb.append(" <span class=\"titreQuestionReponse\">").append(
+              EncodeHelper.javaStringToHtmlParagraphe(reply.getTitle())).append(
               "</span>\n");
           sb.append("</td>\n");
           sb.append("</tr>\n");
