@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2010 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -24,7 +24,8 @@
 
 --%>
 <%@ include file="checkQuickInfo.jsp" %>
-
+<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController" %>
+<%@ page import="com.silverpeas.util.*" %>
 <html>
 <head>
 <title>QuickInfo - User</title>
@@ -37,16 +38,11 @@
 %>
 
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" class="txtlist">
+<body leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" class="txtlist">
 <form name="quickInfoForm" method="post">
   <%
 	Window mainWin = gef.getWindow();
-	BrowseBar browseBar= mainWin.getBrowseBar();
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-
 	Frame maFrame = gef.getFrame();
-
 	OperationPane operationPane = mainWin.getOperationPane();
 
 	// Clipboard
@@ -54,9 +50,7 @@
 
 	out.println(mainWin.printBefore());
 	out.println(maFrame.printBefore());
-  %>
 
-  <%
 	//Collection infos = Les quickInfos visibles
 	Iterator infosI = (Iterator) request.getAttribute("infos");
 
@@ -71,8 +65,18 @@
 		PublicationDetail pub = (PublicationDetail) infosI.next();
 		ArrayLine line = arrayPane.addArrayLine();
 		String st = "<B>" + pub.getName() + "</B>";
-		if (pub.getDescription() != null)
-		   st = st + "<BR>" + Encode.javaStringToHtmlParagraphe(pub.getDescription());
+		UserDetail user = quickinfo.getUserDetail(pub.getUpdaterId());
+		String date = resources.getOutputDate(pub.getBeginDate());
+		if (!StringUtil.isDefined(date))
+		{
+		  date = resources.getOutputDate(pub.getUpdateDate());
+		}
+		st += "<br/>"+user.getDisplayedName()+" - "+date;
+		String description = WysiwygController.load(pub.getPK().getInstanceId(), pub.getPK().getId(), null);
+		if (StringUtil.isDefined(description))
+		{
+		   st = st + "<br/>" + description;
+		}
 		line.addArrayCellText(st);
 		cellText = line.addArrayCellText("<input type=checkbox name='selectItem"+index+"' value='"+pub.getPK().getId()+"'>");
 		cellText.setValignement("top");
