@@ -106,6 +106,7 @@ function closeWindows() {
     if (xmlForms != null)
     {
 	    PublicationTemplate xmlForm;
+	    String thumbnail = "";
 	    iterator = xmlForms.iterator();
 	    while (iterator.hasNext()) {
 	        xmlForm = (PublicationTemplate) iterator.next();
@@ -124,7 +125,13 @@ function closeWindows() {
 			if (used)
 				usedCheck = "checked";
 			
-	        out.println("<TD align=\"center\"><IMG SRC=\""+xmlForm.getThumbnail()+"\" border=\"0\" alt=\""+xmlForm.getDescription()+"\"><BR>"+xmlForm.getName()+"<BR><input type=\"checkbox\" name=\"modelChoice\" value=\""+xmlForm.getFileName()+"\" "+usedCheck+"></TD>");
+			thumbnail = xmlForm.getThumbnail();
+	        if (!StringUtil.isDefined(thumbnail))
+	        {
+	        	thumbnail = PublicationTemplate.DEFAULT_THUMBNAIL;
+	      	}
+			
+	        out.println("<TD align=\"center\"><IMG SRC=\""+thumbnail+"\" border=\"0\" alt=\""+xmlForm.getDescription()+"\"><BR>"+xmlForm.getName()+"<BR><input type=\"checkbox\" name=\"modelChoice\" value=\""+xmlForm.getFileName()+"\" "+usedCheck+"></TD>");
 	    }
 	}
     

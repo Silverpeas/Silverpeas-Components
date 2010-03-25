@@ -157,14 +157,22 @@ function closeWindows() {
     {
 	    PublicationTemplate xmlForm;
 	    iterator = xmlForms.iterator();
+	    String thumbnail = "";
 	    while (iterator.hasNext()) {
 	        xmlForm = (PublicationTemplate) iterator.next();
 	        
 	        if (nb != 0 && nb%3==0)
+	        {
 		        out.println("</TR><TR>");
-		        
+	        }   
 	        nb++;
-	        out.println("<TD align=\"center\"><A href=\"javaScript:goToForm('"+xmlForm.getFileName()+"')\"><IMG SRC=\""+xmlForm.getThumbnail()+"\" border=\"0\" alt=\""+xmlForm.getDescription()+"\"><BR>"+xmlForm.getName()+"</A></TD>");
+	        
+	        thumbnail = xmlForm.getThumbnail();
+	        if (!StringUtil.isDefined(thumbnail))
+	        {
+	          thumbnail = PublicationTemplate.DEFAULT_THUMBNAIL;
+	        }
+	        out.println("<TD align=\"center\"><A href=\"javaScript:goToForm('"+xmlForm.getFileName()+"')\"><IMG SRC=\""+thumbnail+"\" border=\"0\" alt=\""+xmlForm.getDescription()+"\"><BR>"+xmlForm.getName()+"</A></TD>");
 	    }
 	}
     
