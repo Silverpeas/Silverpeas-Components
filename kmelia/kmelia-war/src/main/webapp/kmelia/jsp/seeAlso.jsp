@@ -208,7 +208,13 @@ function closeWindows() {
             String keywords = kmeliaScc.getSessionPublication().getPublication().getPublicationDetail().getKeywords();
             
             SearchEngineBm searchEngine = kmeliaScc.getSearchEngine();
-            QueryDescription query = new QueryDescription(pubName +" "+keywords);
+            String queryStr = pubName+" "+keywords;
+            
+            //'*' or '?' not allowed as first character in WildcardQuery
+            queryStr = queryStr.replace(" ?", " ");
+            queryStr = queryStr.replace(" *", " ");
+            
+            QueryDescription query = new QueryDescription(queryStr);
             query.setSearchingUser(kmeliaScc.getUserDetail().getId());
             query.addSpaceComponentPair(kmeliaScc.getSpaceId(), kmeliaScc.getComponentId());
             MatchingIndexEntry[] result = null;
