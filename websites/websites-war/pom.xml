@@ -4,14 +4,14 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>websites</artifactId>
-    <version>1.0-RC3</version>
+    <version>5.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.websites</groupId>
   <artifactId>websites-war</artifactId>
   <packaging>war</packaging>
-  <version>1.0-RC3</version>
+  <version>5.0-SNAPSHOT</version>
   <name>websites Webapp</name>
 
   <dependencies>
@@ -25,7 +25,7 @@
       <groupId>com.silverpeas.components.websites</groupId>
       <artifactId>websites-ejb</artifactId>
       <classifier>client</classifier>
-      <version>1.0-RC3</version>
+      <version>5.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

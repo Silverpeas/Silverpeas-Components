@@ -4,14 +4,14 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>quickinfo</artifactId>
-    <version>1.0-RC3</version>
+    <version>5.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.quickinfo</groupId>
   <artifactId>quickinfo-war</artifactId>
   <packaging>war</packaging>
-  <version>1.0-RC3</version>
+  <version>5.0-SNAPSHOT</version>
   <name>Quickinfo Webapp</name>
 
   <dependencies>

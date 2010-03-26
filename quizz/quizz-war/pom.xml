@@ -4,14 +4,14 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>quizz</artifactId>
-    <version>1.0-RC3</version>
+    <version>5.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.quizz</groupId>
   <artifactId>quizz-war</artifactId>
   <packaging>war</packaging>
-  <version>1.0-RC3</version>
+  <version>5.0-SNAPSHOT</version>
   <name>quizz Webapp</name>
 
   <dependencies>
@@ -24,7 +24,7 @@
     <dependency>
       <groupId>com.silverpeas.components.quizz</groupId>
       <artifactId>quizz-jar</artifactId>
-      <version>1.0-RC3</version>
+      <version>5.0-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
