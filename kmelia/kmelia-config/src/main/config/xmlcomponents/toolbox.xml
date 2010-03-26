@@ -364,19 +364,6 @@
 		</ParameterHelp>
 	</Parameter>
 	<Parameter>
-		<ParameterName>useTreeview</ParameterName>
-		<ParameterLabel>Explorateur de thèmes</ParameterLabel>
-		<ParameterValue>no</ParameterValue>
-		<ParameterMandatory>Y</ParameterMandatory>
-		<ParameterUpdatable>always</ParameterUpdatable>
-		<ParameterType>checkbox</ParameterType>
-		<ParameterOrder>25</ParameterOrder>
-		<ParameterHelp>
-			<ParameterHelpFr>Affiche l'arborescence des thèmes.</ParameterHelpFr>
-			<ParameterHelpEn>Display a topic treeview.</ParameterHelpEn>
-		</ParameterHelp>
-	</Parameter>
-	<Parameter>
 		<ParameterName>displayNB</ParameterName>
 		<ParameterLabel>Affichage nombre de publications</ParameterLabel>
 		<ParameterValue>no</ParameterValue>
@@ -433,7 +420,7 @@
         <ParameterLabel>Fichiers partageables</ParameterLabel>
         <ParameterValue>no</ParameterValue>
         <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterUpdatable>never</ParameterUpdatable>
+	    <ParameterUpdatable>always</ParameterUpdatable>
 	    <ParameterType>checkbox</ParameterType>
 	    <ParameterOrder>30</ParameterOrder>
 	   	<ParameterHelp>
