@@ -4,14 +4,14 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>websites</artifactId>
-    <version>1.0-RC3-SNAPSHOT</version>
+    <version>1.0-RC3</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.websites</groupId>
   <artifactId>websites-ejb</artifactId>
   <packaging>ejb</packaging>
-  <version>1.0-RC3-SNAPSHOT</version>
+  <version>1.0-RC3</version>
   <name>EJB websites</name>
   
   <dependencies>
