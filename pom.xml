@@ -4,7 +4,7 @@
   <parent>    
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>2.0</version>
+    <version>4.0</version>
   </parent>
 
   <scm>
@@ -31,7 +31,7 @@
   <name>Components</name>
 
   <properties>
-    <core.version>1.0-RC3-SNAPSHOT</core.version>
+    <core.version>1.0-RC3</core.version>
   </properties>
   
   <build>
@@ -59,7 +59,7 @@
           <dependency>
             <groupId>com.silverpeas</groupId>
             <artifactId>assembly-configuration</artifactId>
-            <version>1.0</version>
+            <version>${config.version}</version>
           </dependency>
         </dependencies>
       </plugin>
