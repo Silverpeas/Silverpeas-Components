@@ -522,7 +522,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
         UserCompletePublication userPubComplete = null;
         if (StringUtil.isDefined(id)) {
-          userPubComplete = kmelia.getUserCompletePublication(id);
+          userPubComplete = kmelia.getUserCompletePublication(id, true);
           kmelia.setSessionPublication(userPubComplete);
 
           PublicationDetail pubDetail = userPubComplete.getPublication().getPublicationDetail();
