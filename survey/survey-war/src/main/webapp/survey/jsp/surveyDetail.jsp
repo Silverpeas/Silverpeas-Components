@@ -617,7 +617,7 @@ body {
     	  url = "ViewListResult?AnswerId="+id;
  		    windowName = "usersWindow";
  		    larg = "550";
- 		    haut = "250";
+ 		    haut = "370";
  		    windowParams = "directories=0,menubar=0,toolbar=0,resizable=1,scrollbars=1,alwaysRaised";
  		    if (!usersWindow.closed && usersWindow.name == "usersWindow")
                 usersWindow.close();
@@ -630,7 +630,7 @@ body {
        	url = "ViewAllUsers?SurveyId="+id;
  		    windowName = "usersWindow";
  		    larg = "550";
- 		    haut = "250";
+ 		    haut = "370";
  		    windowParams = "directories=0,menubar=0,toolbar=0,resizable=1,scrollbars=1,alwaysRaised";
  		    if (!usersWindow.closed && usersWindow.name == "usersWindow")
                 usersWindow.close();

@@ -25,12 +25,14 @@
 --%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 
 <%@ include file="checkSurvey.jsp" %>
 
 <%
-	Collection users = (Collection) request.getAttribute("Users"); 
-
+	Collection 	users 		= (Collection) request.getAttribute("Users");
+	String 		surveyId 	= (String) request.getAttribute("SurveyId");
 
 	// déclaration des boutons
 	Button close = (Button) gef.getFormButton(resources.getString("GML.close"), "javaScript:window.close();", false);
@@ -62,26 +64,27 @@
 <% 
 	Window window = gef.getWindow();
 	BrowseBar browseBar = window.getBrowseBar();
-	browseBar.setDomainName(surveyScc.getSpaceLabel());
-	browseBar.setComponentName(surveyScc.getComponentLabel(),"surveyList.jsp");
+	browseBar.setClickable(false);
 	Frame frame = gef.getFrame();
 	
 	out.println(window.printBefore());
 	out.println(frame.printBefore());
 
-	ArrayPane arrayPane = gef.getArrayPane("", "", request, session);
+	ArrayPane arrayPane = gef.getArrayPane("SurveyParticipantsList", "ViewAllUsers?SurveyId="+surveyId, request, session);
 	arrayPane.addArrayColumn(resources.getString("GML.name"));
 	
 	if (users != null)
 	{	
+	  	ArrayCellText cell = null; 
 		Iterator it = users.iterator();
 		while (it.hasNext())
 		{
 			String userId = (String) it.next();
 			UserDetail user = surveyScc.getUserDetail(userId);	
 			ArrayLine ligne = arrayPane.addArrayLine();
-			String url = "<a href=\"javaScript:onClick=viewResultByUser('"+userId+"','"+Encode.javaStringToHtmlString(user.getDisplayedName())+"');\">"+Encode.javaStringToHtmlString(user.getDisplayedName())+"</a>";
-			ligne.addArrayCellText(url);
+			String url = "<a href=\"javaScript:onClick=viewResultByUser('"+userId+"','"+EncodeHelper.javaStringToHtmlString(user.getDisplayedName())+"');\">"+EncodeHelper.javaStringToHtmlString(user.getLastName()+" "+user.getFirstName())+"</a>";
+			cell = ligne.addArrayCellText(url);
+			cell.setCompareOn(user.getLastName()+" "+user.getFirstName());
 		}
 	}
 
@@ -89,10 +92,9 @@
 	
 	ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(close);
-	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-	
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
+	out.print("<BR><center>"+buttonPane.print()+"</center>");
+	out.print(frame.printAfter());
+	out.print(window.printAfter());
 %>
 </body>
 </html>

@@ -225,7 +225,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
         r += board.printBefore();
         r += "<table border=\"0\" cellpadding=\"2\" width=\"100%\">";
         if (!surveyScc.isPollingStationMode())
-	        r += "<tr><td align=\"center\" colspan=\"2\"><b>"+resources.getString("SurveyCreationQuestion")+" n�"+i+ " / " + nbTotalQuestion +"</b><BR></td></tr>";
+	        r += "<tr><td align=\"center\" colspan=\"2\"><b>"+resources.getString("SurveyCreationQuestion")+" n&deg;"+i+ " / " + nbTotalQuestion +"</b><BR></td></tr>";
         
         r += "<tr><td colspan=\"2\"><img src=\""+m_context+"/util/icons/mandatoryField.gif\" width=\"5\">&nbsp;&nbsp;<B><U>"+Encode.javaStringToHtmlString(question.getLabel())+"</U></B><BR/></td></tr>";
 		
@@ -248,7 +248,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
         {
         	if (style.equals("list"))
             {
-             	// liste d�roulante
+             	// liste déroulante
              	String selectedStr = "";
              	
                 r += "<tr><td><select id=\"answer_"+nbQuestionInPage+"\" name=\"answer_"+nbQuestionInPage+"\" onchange=\"selectAnswer(this.value);\">";
@@ -732,7 +732,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                           Question question = (Question) itQ.next();
                           Collection answers = question.getAnswers();
                           if (!surveyScc.isPollingStationMode())
-								r += "<tr><th align=\"center\" colspan=\"2\" ><b>"+resources.getString("SurveyCreationQuestion")+" n�"+i+"</b></th></tr>";
+								r += "<tr><th align=\"center\" colspan=\"2\" ><b>"+resources.getString("SurveyCreationQuestion")+" n&deg;"+i+"</b></th></tr>";
                           r += "<tr><th colspan=\"2\" align=\"left\"><img src=\""+m_context+"/util/icons/mandatoryField.gif\" width=5>&nbsp;&nbsp;<B><U>"+Encode.javaStringToHtmlString(question.getLabel())+"</U></B></th></tr>";
                           r += " </thead>";
                           r += "<tbody>";

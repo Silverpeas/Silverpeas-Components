@@ -172,6 +172,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
             "root.EX_USERPANEL_FAILED", "function = " + function, e);
       }
       request.setAttribute("Users", users);
+      request.setAttribute("SurveyId", surveyId);
       destination = rootDest + "answerResult.jsp";
     } else if (function.equals("UserResult")) {
       String userId = request.getParameter("UserId");
