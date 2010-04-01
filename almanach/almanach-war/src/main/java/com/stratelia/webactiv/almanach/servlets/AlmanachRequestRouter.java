@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.almanach.servlets;
 
-import java.util.Collection;
 import java.util.Iterator;
 
 import javax.servlet.http.HttpServletRequest;
@@ -209,6 +208,9 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
 
         // récupère l'Event et sa périodicité
         EventDetail event = almanach.getCompleteEventDetail(id);
+        
+        //Met en session l'événement courant
+        almanach.setCurrentEvent(event);
 
         if (event.getPeriodicity() != null) {
           String dateIteration = request.getParameter("Date"); // not null (yyyy/MM/jj)
@@ -351,7 +353,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         request.setAttribute("CompleteEvent", event);
 
         // Met en session l'événement courant
-        almanach.setCurrentUpdateEvent(event);
+        almanach.setCurrentEvent(event);
 
         if (flag.equals("publisher") || flag.equals("admin")) {
           destination = "/almanach/jsp/editEvent.jsp";
@@ -562,14 +564,14 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
 
         if ("ReallyDeleteOccurence".equals(action)) {
           // Supprime l'occurence
-          almanach.removeOccurenceEvent(almanach.getCurrentUpdateEvent(),
+          almanach.removeOccurenceEvent(almanach.getCurrentEvent(),
               dateDebutIteration, dateFinIteration);
 
         } else if ("ReallyDelete".equals(action)) {
 
           // Supprime l'événement et toutes les occurences de la série
           almanach
-              .removeEvent(almanach.getCurrentUpdateEvent().getPK().getId());
+              .removeEvent(almanach.getCurrentEvent().getPK().getId());
         }
 
         destination = getDestination("Main", componentSC, request);

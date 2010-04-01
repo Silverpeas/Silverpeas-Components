@@ -366,7 +366,7 @@ function displayBoxOnDelete()
 	buttonPane = graphicFactory.getButtonPane();
 	buttonPane.addButton(graphicFactory.getFormButton(resources.getString("occurenceOnly"), "javascript:onClick=sendEvent('RemoveEvent', 'ReallyDeleteOccurence')", false));
 	buttonPane.addButton(graphicFactory.getFormButton(resources.getString("allEvents"), "javascript:onClick=sendEvent('RemoveEvent', 'ReallyDelete')", false));
-	buttonPane.addButton(graphicFactory.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=cancelEventData()", false));
+	buttonPane.addButton(graphicFactory.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=closeMessage()", false));
 	
 	out.print("var confirmBox = '");
 	out.print("<table><tr><td align=\"center\"><br/>"+resources.getString("eventsToDelete"));

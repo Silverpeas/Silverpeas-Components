@@ -35,10 +35,7 @@
 	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(almanach.getLanguage());
 
 	// récupération du user
-	String user = (String) request.getParameter("flag");
-	if (user == null) {
-		user = "";
-	}
+	String user = request.getParameter("flag");
 	
 	EventDetail event = (EventDetail) request.getAttribute("CompleteEvent");
 	Date dateDebutIteration = (Date) request.getAttribute("DateDebutIteration");
@@ -76,6 +73,9 @@
 <HTML>
 <HEAD>
 <% out.println(graphicFactory.getLookStyleSheet());%>
+<link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
+
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="JavaScript">
 
@@ -91,10 +91,63 @@ function goToNotify(url)
         notifyWindow.close();
     notifyWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
 }
+
+function eventDeleteConfirm(t)
+{
+    if (window.confirm("<%=EncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> '" + t + "' ?")){
+    	<% if (periodicity != null ) { %>
+    		displayBoxOnDelete();
+    	<% } else { %>
+    		sendEvent('RemoveEvent', 'ReallyDelete');
+    	<% } %>
+    }
+}
+
+function sendEvent(mainAction, action) {
+	document.eventForm.action = mainAction;
+	document.eventForm.Action.value = action;
+	document.eventForm.submit();
+}
+
+function displayBoxOnDelete()
+{
+<%
+	ButtonPane buttonPane = graphicFactory.getButtonPane();
+	buttonPane.addButton(graphicFactory.getFormButton(resources.getString("occurenceOnly"), "javascript:onClick=sendEvent('RemoveEvent', 'ReallyDeleteOccurence')", false));
+	buttonPane.addButton(graphicFactory.getFormButton(resources.getString("allEvents"), "javascript:onClick=sendEvent('RemoveEvent', 'ReallyDelete')", false));
+	buttonPane.addButton(graphicFactory.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=closeMessage()", false));
+	
+	out.print("var confirmBox = '");
+	out.print("<table><tr><td align=\"center\"><br/>"+resources.getString("eventsToDelete"));
+	out.print("<br/><br/>");
+	out.print(EncodeHelper.javaStringToJsString("<center>"+buttonPane.print()+"</center>"));
+	out.println("</td></tr></table>';");
+%>
+	displayStaticMessage(confirmBox, false);
+}
+
+messageObj = new DHTML_modalMessage();	// We only create one object of this class
+messageObj.setShadowOffset(5);	// Large shadow
+
+function displayStaticMessage(messageContent,cssClass)
+{
+	messageObj.setHtmlContent(messageContent);
+	messageObj.setSize(500,100);
+	messageObj.setCssClassMessageBox(cssClass);
+	messageObj.setSource(false);	// no html source since we want to use a static message here.
+	messageObj.setShadowDivVisible(false);	// Disable shadow for these boxes	
+	messageObj.display();	
+}
+
+function closeMessage()
+{
+	messageObj.close();	
+}
+
 </script>
 </HEAD>
 <TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
-<BODY MARGINHEIGHT="5" MARGINWIDTH="5" TOPMARGIN="5" LEFTMARGIN="5" bgcolor="#FFFFFF" >
+<BODY MARGINHEIGHT="5" MARGINWIDTH="5" TOPMARGIN="5" LEFTMARGIN="5">
   <% 
     Window 	window 	= graphicFactory.getWindow();
     Frame 	frame	= graphicFactory.getFrame();
@@ -102,16 +155,19 @@ function goToNotify(url)
     OperationPane operationPane = window.getOperationPane();
         
 	BrowseBar browseBar = window.getBrowseBar();
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "almanach.jsp");
 	browseBar.setExtraInformation(title);
 	    
     String url = "ToAlertUser?Id="+id;
     operationPane.addOperation(m_context+"/util/icons/alert.gif", resources.getString("GML.notify"),"javaScript:onClick=goToNotify('"+url+"')") ;
+    if (!"user".equals(user))
+    {
+      operationPane.addLine();
+      operationPane.addOperation(m_context + "/util/icons/almanach_to_del.gif", almanach.getString("supprimerEvenement"), "javascript:onClick=eventDeleteConfirm('" + EncodeHelper.javaStringToJsString(title) + "')");
+    }
 
     out.println(window.printBefore());
     
-    if (!user.equals("user"))
+    if (!"user".equals(user))
     {
     	TabbedPane tabbedPane = graphicFactory.getTabbedPane();
 		tabbedPane.addTab(almanach.getString("evenement"), "viewEventContent.jsp?Id="+id+"&Date="+dateDebutIterationString, true);
@@ -325,7 +381,7 @@ function goToNotify(url)
   </table>
   <%
 		out.println("<br>");
- 		ButtonPane buttonPane = graphicFactory.getButtonPane();
+ 		buttonPane = graphicFactory.getButtonPane();
 		buttonPane.addButton(graphicFactory.getFormButton(resources.getString("GML.back"), "almanach.jsp", false));
 		out.println(buttonPane.print());
 		out.println("<br>");
@@ -333,5 +389,13 @@ function goToNotify(url)
 		out.println(frame.printAfter());				
 		out.println(window.printAfter());
 	%>
+	<form name="eventForm" action="RemoveEvent" method="POST">
+		<input type="hidden" name="Action"/>
+   		<input type="hidden" name="Id" value="<%=id%>"/>
+   		<% if (periodicity != null) { %>
+   			<input type="hidden" name="DateDebutIteration" value="<%=dateDebutIterationString%>"/>
+   			<input type="hidden" name="DateFinIteration" value="<%=DateUtil.date2SQLDate(dateFinIteration)%>"/>
+   		<% } %>
+	</form>
 </BODY>
 </HTML>

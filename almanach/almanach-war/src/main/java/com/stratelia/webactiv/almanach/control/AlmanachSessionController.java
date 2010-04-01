@@ -103,7 +103,7 @@ public class AlmanachSessionController extends
 
   private Calendar currentICal4jCalendar;
 
-  private EventDetail currentUpdateEvent;
+  private EventDetail currentEvent;
 
   private static final String AE_MSG1 = "almanach.ASC_NoSuchFindEvent";
 
@@ -137,12 +137,12 @@ public class AlmanachSessionController extends
     currentDay.setTime(date);
   }
 
-  public EventDetail getCurrentUpdateEvent() {
-    return currentUpdateEvent;
+  public EventDetail getCurrentEvent() {
+    return currentEvent;
   }
 
-  public void setCurrentUpdateEvent(EventDetail currentUpdateEvent) {
-    this.currentUpdateEvent = currentUpdateEvent;
+  public void setCurrentEvent(EventDetail event) {
+    this.currentEvent = event;
   }
 
   public void nextMonth() {
