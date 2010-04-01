@@ -53,6 +53,8 @@ import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalenda
 
 public class AlmanachRequestRouter extends ComponentRequestRouter {
 
+  private static final long serialVersionUID = 1L;
+
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
     return ((ComponentSessionController) new AlmanachSessionController(
@@ -60,9 +62,8 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   public String getSessionControlBeanName() {
     return "almanach";
@@ -70,7 +71,6 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
 
   /**
    * Set almanach settings
-   *
    * @param almanach
    * @param request
    */
@@ -81,17 +81,13 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented by the component request Router it has to
-   * compute a destination page
-   *
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
-   * @param request
-   *          The entering request. The request Router need it to get parameters
+   * This method has to be implemented by the component request Router it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
+   * @param request The entering request. The request Router need it to get parameters
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
@@ -153,17 +149,17 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
 
         ComponentList componentList = calendarAlmanach
             .getComponents(Component.VEVENT);
-        Iterator itVEvent = componentList.iterator();
+        Iterator<VEvent> itVEvent = componentList.iterator();
 
         VEvent eventIcal4jCalendar;
         PeriodList periodList;
-        Iterator itPeriod;
+        Iterator<Period> itPeriod;
         Period recurrencePeriod;
         String idEvent;
         EventDetail evtDetail;
         Event evt;
         while (itVEvent.hasNext()) {
-          eventIcal4jCalendar = (VEvent) itVEvent.next();
+          eventIcal4jCalendar = itVEvent.next();
           idEvent = eventIcal4jCalendar.getProperties().getProperty(
               Property.UID).getValue();
 
@@ -173,7 +169,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
           periodList = eventIcal4jCalendar.calculateRecurrenceSet(monthPeriod);
           itPeriod = periodList.iterator();
           while (itPeriod.hasNext()) {
-            recurrencePeriod = (Period) itPeriod.next();
+            recurrencePeriod = itPeriod.next();
 
             // Construction de l'Event du MonthCalendar (pour affichage)
             evt = new Event(idEvent, evtDetail.getName(), new java.util.Date(
@@ -186,7 +182,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
             if (almanach.isAgregationUsed()) {
               evt
                   .setColor(almanach
-                      .getAlmanachColor(evtDetail.getInstanceId()));
+                  .getAlmanachColor(evtDetail.getInstanceId()));
             }
             evt.setInstanceId(evtDetail.getInstanceId());
             monthC.addEvent(evt);
@@ -210,18 +206,22 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("viewEventContent")) {
         // initialisation de l'objet event
         String id = request.getParameter("Id"); // not null
-        String dateIteration = request.getParameter("Date"); // not null
-        // (yyyy/MM/jj)
 
         // récupère l'Event et sa périodicité
         EventDetail event = almanach.getCompleteEventDetail(id);
 
-        java.util.Calendar calDateIteration = java.util.Calendar.getInstance();
-        calDateIteration.setTime(DateUtil.parse(dateIteration));
-        request.setAttribute("DateDebutIteration", calDateIteration.getTime());
-        calDateIteration
-            .add(java.util.Calendar.DATE, event.getNbDaysDuration());
-        request.setAttribute("DateFinIteration", calDateIteration.getTime());
+        if (event.getPeriodicity() != null) {
+          String dateIteration = request.getParameter("Date"); // not null (yyyy/MM/jj)
+          java.util.Calendar calDateIteration = java.util.Calendar.getInstance();
+          calDateIteration.setTime(DateUtil.parse(dateIteration));
+          request.setAttribute("DateDebutIteration", calDateIteration.getTime());
+          calDateIteration.add(java.util.Calendar.DATE, event.getNbDaysDuration());
+          request.setAttribute("DateFinIteration", calDateIteration.getTime());
+        } else {
+          request.setAttribute("DateDebutIteration", event.getStartDate());
+          request.setAttribute("DateFinIteration", event.getEndDate());
+        }
+
         request.setAttribute("CompleteEvent", event);
 
         destination = "/almanach/jsp/viewEventContent.jsp?flag=" + flag;
@@ -519,8 +519,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
 
         destination = "/almanach/jsp/pdcPositions.jsp";
       } else if (function.startsWith("printAlmanach")) {
-        Collection events = almanach.getListRecurrentEvent();
-        request.setAttribute("ListEvent", events);
+        request.setAttribute("ListEvent", almanach.getListRecurrentEvent());
 
         destination = "/almanach/jsp/printAlmanach.jsp";
       } else if (function.startsWith("EventPdf")) {
