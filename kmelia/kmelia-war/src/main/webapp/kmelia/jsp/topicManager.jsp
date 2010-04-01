@@ -24,6 +24,7 @@
 
 --%>
 <%@ include file="checkKmelia.jsp" %>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.silverpeas.util.SilverpeasSettings"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBarElement"%>
 
@@ -610,7 +611,7 @@ function initTree(id)
 
     root = new YAHOO.widget.TextNode({"id":"0","role":"<%=kmeliaScc.getUserTopicProfile("0")%>"}, oTreeView.getRoot(), true);
 	root.labelElId = "0";
-	root.label = "<%=componentLabel%>";
+	root.label = "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
     root.href = "javascript:displayTopicContent(0)";
 	   		
 	//render tree with these toplevel nodes; all descendants of these nodes
@@ -810,7 +811,7 @@ function loadNodeData(node, fnLoadComplete)  {
             if (nbPublisOnRoot > 0)
             {
             	root.label = root.label + " ("+nbPublisOnRoot+")";
-            	$("#"+root.labelElId).html("<%=componentLabel%> ("+nbPublisOnRoot+")");
+            	$("#"+root.labelElId).html("<%=EncodeHelper.javaStringToJsString(componentLabel)%> ("+nbPublisOnRoot+")");
             	//root.refresh();
             }
 
@@ -1320,7 +1321,7 @@ function loadNodeData(node, fnLoadComplete)  {
 			if (id == "tovalidate")
 			{
 				displayPublicationsToValidate();
-				$("td .browsebar").html("<%=spaceLabel%> > <%=componentLabel%> > <%=resources.getString("ToValidate")%>");
+				$("td .browsebar").html("<%=EncodeHelper.javaStringToJsString(spaceLabel)%> > <%=EncodeHelper.javaStringToJsString(componentLabel)%> > <%=resources.getString("ToValidate")%>");
 			}
 			else
 			{
