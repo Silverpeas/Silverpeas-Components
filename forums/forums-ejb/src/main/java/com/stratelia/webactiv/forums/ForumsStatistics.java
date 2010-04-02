@@ -80,7 +80,7 @@ public class ForumsStatistics implements ComponentStatisticsInterface {
     for (int i = 0, n = forums.size(); i < n; i++) {
       forum = (Forum) forums.get(i);
       UserIdCountVolumeCouple couple = new UserIdCountVolumeCouple();
-      couple.setUserId(forum.getCategory());
+      couple.setUserId(Integer.toString(forum.getId()));
       couple.setCountVolume(1);
       couples.add(couple);
     }
