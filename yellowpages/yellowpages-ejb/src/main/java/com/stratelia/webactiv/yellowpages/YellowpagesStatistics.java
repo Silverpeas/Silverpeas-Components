@@ -29,7 +29,7 @@ package com.stratelia.webactiv.yellowpages;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.EJBException;
 
@@ -40,55 +40,52 @@ import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.node.control.NodeBm;
+import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBm;
 import com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBmHome;
 import com.stratelia.webactiv.yellowpages.model.TopicDetail;
 import com.stratelia.webactiv.yellowpages.model.UserContact;
+import com.stratelia.webactiv.yellowpages.model.YellowpagesRuntimeException;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class YellowpagesStatistics implements ComponentStatisticsInterface {
   private YellowpagesBm kscEjb = null;
+  private NodeBm currentNodeBm = null;
 
   /**
    * Method declaration
-   * 
-   * 
    * @param spaceId
    * @param componentId
-   * 
    * @return
-   * 
    * @throws Exception
-   * 
    * @see
    */
-  public Collection getVolume(String spaceId, String componentId)
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    ArrayList myArrayList = new ArrayList();
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
 
-    Collection c = null;
+    Collection<NodeDetail> nodes = getNodeBm().getAllNodes(new NodePK("useless", componentId));
+    if (nodes != null && !nodes.isEmpty()) {
+      Collection<UserContact> c = getContacts("0", spaceId, componentId);
 
-    c = getContacts("0", spaceId, componentId);
+      if (c == null) {
+        return null;
+      } else {
+        for (UserContact contact : c) {
+          ContactDetail detail = contact.getContact();
+          UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
 
-    if (c == null) {
-      return null;
-    } else {
-      Iterator iter = c.iterator();
-
-      while (iter.hasNext()) {
-        ContactDetail detail = ((UserContact) iter.next()).getContact();
-
-        UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-
-        myCouple.setUserId(detail.getCreatorId());
-        myCouple.setCountVolume(1);
-        myArrayList.add(myCouple);
+          myCouple.setUserId(detail.getCreatorId());
+          myCouple.setCountVolume(1);
+          myArrayList.add(myCouple);
+        }
       }
     }
 
@@ -97,10 +94,7 @@ public class YellowpagesStatistics implements ComponentStatisticsInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @return
-   * 
    * @see
    */
   private YellowpagesBm getYellowpagesBm() {
@@ -108,7 +102,7 @@ public class YellowpagesStatistics implements ComponentStatisticsInterface {
       try {
         YellowpagesBmHome kscEjbHome = (YellowpagesBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.YELLOWPAGESBM_EJBHOME,
-                YellowpagesBmHome.class);
+            YellowpagesBmHome.class);
 
         kscEjb = kscEjbHome.create();
       } catch (Exception e) {
@@ -120,22 +114,17 @@ public class YellowpagesStatistics implements ComponentStatisticsInterface {
 
   /**
    * Method declaration
-   * 
-   * 
    * @param topicId
    * @param spaceId
    * @param componentId
-   * 
    * @return
-   * 
    * @throws Exception
-   * 
    * @see
    */
-  private Collection getContacts(String topicId, String spaceId,
+  private Collection<UserContact> getContacts(String topicId, String spaceId,
       String componentId) throws Exception {
-    Collection c = new ArrayList();
-    if (topicId == null || topicId.startsWith("group_"))
+    Collection<UserContact> c = new ArrayList<UserContact>();
+    if (topicId == null)
       return c;
 
     OrganizationController myOrga = new OrganizationController();
@@ -147,7 +136,9 @@ public class YellowpagesStatistics implements ComponentStatisticsInterface {
         ContactDetail detail = new ContactDetail("useless", "useless",
             "useless", "useless", "useless", "useless", "useless", new Date(),
             "0");
-        c.add(detail);
+        UserContact contact = new UserContact();
+        contact.setContact(detail);
+        c.add(contact);
       }
     } else {
       getYellowpagesBm().setActor(myOrga.getUserDetail("0"));
@@ -163,31 +154,40 @@ public class YellowpagesStatistics implements ComponentStatisticsInterface {
         }
       } catch (Exception ex) {
         topic = null;
-        SilverTrace.error("silverstatistics",
+        SilverTrace.info("silverstatistics",
             "YellowpagesStatistics.getContacts()", "root.MSG_GEN_PARAM_VALUE",
             ex);
       }
       // treatment of the nodes of current topic
       if (topic != null) {
-        Collection subTopics = topic.getNodeDetail().getChildrenDetails();
+        Collection<NodeDetail> subTopics = topic.getNodeDetail().getChildrenDetails();
 
-        if (subTopics != null) {
-          Iterator itNode = subTopics.iterator();
-
-          while (itNode.hasNext()) {
-            NodeDetail node = (NodeDetail) itNode.next();
-
-            if (!(node.getNodePK().getId().equals("0")
-                || node.getNodePK().getId().equals("1") || node.getNodePK()
-                .getId().equals("2"))) {
-              c.addAll(getContacts(node.getNodePK().getId(), spaceId,
-                  componentId));
-            }
+        for (NodeDetail node : subTopics) {
+          if (!(node.getNodePK().getId().equals("0")
+              || node.getNodePK().getId().equals("1") || node.getNodePK()
+              .getId().equals("2"))) {
+            c.addAll(getContacts(node.getNodePK().getId(), spaceId,
+                componentId));
           }
         }
       }
     }
     return c;
+  }
+
+  private NodeBm getNodeBm() {
+    if (currentNodeBm == null) {
+      try {
+        NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+        currentNodeBm = nodeBmHome.create();
+      } catch (Exception re) {
+        throw new YellowpagesRuntimeException("YellowpagesBmEJB.getNodeBm()",
+            SilverpeasRuntimeException.ERROR,
+            "yellowpages.EX_GET_NODEBM_HOME_FAILED", re);
+      }
+    }
+    return currentNodeBm;
   }
 
 }
