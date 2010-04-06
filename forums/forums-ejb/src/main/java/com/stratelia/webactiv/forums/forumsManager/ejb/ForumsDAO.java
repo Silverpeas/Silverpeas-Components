@@ -87,10 +87,10 @@ public class ForumsDAO {
   private static String MESSAGE_COLUMN_STATUS = "status";
   private static String MESSAGE_COLUMNS =
       MESSAGE_COLUMN_MESSAGE_ID + ", "
-          + MESSAGE_COLUMN_MESSAGE_TITLE + ", " + MESSAGE_COLUMN_MESSAGE_AUTHOR
-          + ", " + MESSAGE_COLUMN_FORUM_ID + ", "
-          + MESSAGE_COLUMN_MESSAGE_PARENT_ID + ", " + MESSAGE_COLUMN_MESSAGE_DATE + " , "
-          + MESSAGE_COLUMN_STATUS;
+      + MESSAGE_COLUMN_MESSAGE_TITLE + ", " + MESSAGE_COLUMN_MESSAGE_AUTHOR
+      + ", " + MESSAGE_COLUMN_FORUM_ID + ", "
+      + MESSAGE_COLUMN_MESSAGE_PARENT_ID + ", " + MESSAGE_COLUMN_MESSAGE_DATE + " , "
+      + MESSAGE_COLUMN_STATUS;
 
   // Subscriptions table.
   private static String SUBSCRIPTION_TABLE = "SC_Forums_Subscription";
@@ -316,8 +316,8 @@ public class ForumsDAO {
       ForumPK forumPK, String categoryId) throws SQLException {
     String selectQuery =
         (StringUtil.isDefined(categoryId)
-            ? QUERY_GET_FORUMS_LIST_BY_CATEGORY_WITH_NOT_NULL_CATEGORY
-            : QUERY_GET_FORUMS_LIST_BY_CATEGORY_WITH_NULL_CATEGORY);
+        ? QUERY_GET_FORUMS_LIST_BY_CATEGORY_WITH_NOT_NULL_CATEGORY
+        : QUERY_GET_FORUMS_LIST_BY_CATEGORY_WITH_NULL_CATEGORY);
     SilverTrace.debug("forums", "ForumsDAO.getForumsListByCategory()",
         "root.MSG_GEN_PARAM_VALUE", "categoryId = " + categoryId);
     SilverTrace.info("forums", "ForumsDAO.getForumsListByCategory()",
@@ -484,7 +484,7 @@ public class ForumsDAO {
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getForumParentId()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery = "
-            + QUERY_GET_FORUM_PARENT_ID);
+        + QUERY_GET_FORUM_PARENT_ID);
 
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
@@ -515,7 +515,7 @@ public class ForumsDAO {
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getForumInstanceId()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery = "
-            + QUERY_GET_FORUM_INSTANCE_ID);
+        + QUERY_GET_FORUM_INSTANCE_ID);
 
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
@@ -556,7 +556,7 @@ public class ForumsDAO {
         throw new ForumsRuntimeException("ForumsDAO.getForumCreatorId()",
             SilverpeasRuntimeException.ERROR,
             "root.EX_CANT_LOAD_ENTITY_ATTRIBUTES", "ForumId = " + forumId
-                + " not found in database !");
+            + " not found in database !");
       }
     } finally {
       DBUtil.close(rs, stmt);
@@ -631,7 +631,7 @@ public class ForumsDAO {
       if (forumLocklevel >= level) {
         SilverTrace.info("forums", "ForumsDAO.unlockForum()",
             "root.MSG_GEN_PARAM_VALUE", "Query2 = "
-                + QUERY_UNLOCK_FORUM_SET_ACTIVE);
+            + QUERY_UNLOCK_FORUM_SET_ACTIVE);
 
         declareStmt = con.prepareStatement(QUERY_UNLOCK_FORUM_SET_ACTIVE);
         declareStmt.setInt(1, 1);
@@ -766,7 +766,7 @@ public class ForumsDAO {
     try {
       SilverTrace.info("forums", "ForumsDAO.deleteForum()",
           "root.MSG_GEN_PARAM_VALUE", "deleteQuery  = "
-              + QUERY_DELETE_FORUM_SUBSCRIPTION);
+          + QUERY_DELETE_FORUM_SUBSCRIPTION);
       deleteStmt = con.prepareStatement(QUERY_DELETE_FORUM_SUBSCRIPTION);
       deleteStmt.setInt(1, forumId);
       deleteStmt.executeUpdate();
@@ -801,7 +801,7 @@ public class ForumsDAO {
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getMessagesList()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-            + QUERY_GET_MESSAGES_LIST_BY_FORUM);
+        + QUERY_GET_MESSAGES_LIST_BY_FORUM);
 
     ArrayList<Message> messages = new ArrayList<Message>();
     PreparedStatement selectStmt = null;
@@ -919,7 +919,7 @@ public class ForumsDAO {
         : QUERY_GET_NB_MESSAGES_NOT_SUBJECTS);
     SilverTrace.info("forums", "ForumsDAO.getNbSubjects()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = " + selectQuery
-            + " ; forumId = " + forumId);
+        + " ; forumId = " + forumId);
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -951,7 +951,7 @@ public class ForumsDAO {
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getAuthorNbMessages()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-            + QUERY_GET_AUTHOR_NB_MESSAGES + " ; messageAuthor = " + userId);
+        + QUERY_GET_AUTHOR_NB_MESSAGES + " ; messageAuthor = " + userId);
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -1028,7 +1028,7 @@ public class ForumsDAO {
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getLastMessage()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = " + QUERY_GET_LAST_MESSAGE + " WHERE " +
-            MESSAGE_COLUMN_STATUS + " =  ? ");
+        MESSAGE_COLUMN_STATUS + " =  ? ");
 
     int messageId = -1;
     PreparedStatement selectStmt = null;
@@ -1209,7 +1209,7 @@ public class ForumsDAO {
       String instanceId) throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getAllForumsByInstanceId()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-            + QUERY_GET_ALL_FORUMS_BY_INSTANCE_ID);
+        + QUERY_GET_ALL_FORUMS_BY_INSTANCE_ID);
 
     Collection<Integer> forumIds = new ArrayList<Integer>();
     PreparedStatement selectStmt = null;
@@ -1243,7 +1243,7 @@ public class ForumsDAO {
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getAllMessageByForum()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-            + QUERY_GET_ALL_MESSAGES_BY_FORUM);
+        + QUERY_GET_ALL_MESSAGES_BY_FORUM);
 
     Collection<String> messageIds = new ArrayList<String>();
     PreparedStatement selectStmt = null;
@@ -1348,8 +1348,8 @@ public class ForumsDAO {
       throws SQLException {
     SilverTrace
         .info("forums", "ForumsDAO.getMessageInfos()",
-            "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-                + QUERY_GET_MESSAGE_INFOS);
+        "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
+        + QUERY_GET_MESSAGE_INFOS);
 
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
@@ -1413,8 +1413,8 @@ public class ForumsDAO {
       throws SQLException {
     SilverTrace
         .info("forums", "ForumsDAO.getMessageTitle()",
-            "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-                + QUERY_GET_MESSAGE_TITLE);
+        "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
+        + QUERY_GET_MESSAGE_TITLE);
 
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
@@ -1445,7 +1445,7 @@ public class ForumsDAO {
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getMessageParentId()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-            + QUERY_GET_MESSAGE_PARENT_ID);
+        + QUERY_GET_MESSAGE_PARENT_ID);
 
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
@@ -1550,9 +1550,9 @@ public class ForumsDAO {
 
   private static final String QUERY_UPDATE_MESSAGE =
       "UPDATE " + MESSAGE_TABLE
-          + " SET " + MESSAGE_COLUMN_MESSAGE_TITLE + " = ? , " + MESSAGE_COLUMN_STATUS + " = ? " +
-          " WHERE "
-          + MESSAGE_COLUMN_MESSAGE_ID + " = ?";
+      + " SET " + MESSAGE_COLUMN_MESSAGE_TITLE + " = ? , " + MESSAGE_COLUMN_STATUS + " = ? " +
+      " WHERE "
+      + MESSAGE_COLUMN_MESSAGE_ID + " = ?";
 
   /**
    * Updates the message corresponding to the primary key.
@@ -1597,7 +1597,7 @@ public class ForumsDAO {
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.deleteMessage()",
         "root.MSG_GEN_PARAM_VALUE", "deleteQuery  = "
-            + QUERY_DELETE_MESSAGE_MESSAGE);
+        + QUERY_DELETE_MESSAGE_MESSAGE);
 
     PreparedStatement deleteStmt = null;
     try {
@@ -1661,7 +1661,7 @@ public class ForumsDAO {
       String userId) throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.isModerator()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = " + QUERY_IS_MODERATOR
-            + " ; userId=" + userId);
+        + " ; userId=" + userId);
 
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -1747,7 +1747,7 @@ public class ForumsDAO {
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.removeAllModerators()",
         "root.MSG_GEN_PARAM_VALUE", "deleteQuery  = "
-            + QUERY_REMOVE_ALL_MODERATORS);
+        + QUERY_REMOVE_ALL_MODERATORS);
 
     PreparedStatement deleteStmt = null;
     try {
@@ -1767,7 +1767,7 @@ public class ForumsDAO {
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.getModerators()",
         "root.MSG_GEN_PARAM_VALUE", "query  = "
-            + QUERY_GET_MODERATORS);
+        + QUERY_GET_MODERATORS);
 
     List<String> moderators = new ArrayList<String>();
     String userId = "";
@@ -1775,7 +1775,7 @@ public class ForumsDAO {
     ResultSet rs = null;
     try {
       stmt = con.prepareStatement(QUERY_GET_MODERATORS);
-      stmt.setInt(1, forumId);
+      stmt.setString(1, Integer.toString(forumId));
       rs = stmt.executeQuery();
       while (rs.next()) {
         userId = rs.getString(RIGHTS_COLUMN_USER_ID);
@@ -1851,8 +1851,8 @@ public class ForumsDAO {
       String userId) throws SQLException {
     SilverTrace
         .info("forums", "ForumsDAO.subscribeMessage()",
-            "root.MSG_GEN_PARAM_VALUE", "insertQuery  = "
-                + QUERY_SUBSCRIBE_MESSAGE);
+        "root.MSG_GEN_PARAM_VALUE", "insertQuery  = "
+        + QUERY_SUBSCRIBE_MESSAGE);
 
     PreparedStatement insertStmt = null;
     try {
@@ -1880,7 +1880,7 @@ public class ForumsDAO {
       String userId) throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.unsubscribeMessage()",
         "root.MSG_GEN_PARAM_VALUE", "deleteQuery  = "
-            + QUERY_UNSUBSCRIBE_MESSAGE);
+        + QUERY_UNSUBSCRIBE_MESSAGE);
 
     PreparedStatement deleteStmt = null;
     try {
@@ -1907,7 +1907,7 @@ public class ForumsDAO {
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.removeAllSubscribers()",
         "root.MSG_GEN_PARAM_VALUE", "deleteQuery  = "
-            + QUERY_REMOVE_ALL_SUBSCRIBERS);
+        + QUERY_REMOVE_ALL_SUBSCRIBERS);
 
     PreparedStatement deleteStmt = null;
     try {
@@ -1933,7 +1933,7 @@ public class ForumsDAO {
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.listAllSubscribers()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
-            + QUERY_LIST_ALL_SUBSCRIBERS);
+        + QUERY_LIST_ALL_SUBSCRIBERS);
 
     Vector userIds = new Vector();
     PreparedStatement selectStmt = null;
@@ -2005,7 +2005,7 @@ public class ForumsDAO {
         throw new ForumsRuntimeException("ForumsDAO.getForumDetail()",
             SilverpeasRuntimeException.ERROR,
             "root.EX_CANT_LOAD_ENTITY_ATTRIBUTES", "ForumId = "
-                + forumPK.getId() + " not found in database !");
+            + forumPK.getId() + " not found in database !");
       }
     } finally {
       DBUtil.close(rs, stmt);
@@ -2039,7 +2039,7 @@ public class ForumsDAO {
       if (rs.next()) {
         SilverTrace.info("forums", "ForumsDAO.getLastVisit()",
             "root.MSG_GEN_PARAM_VALUE", " lastAccess  = "
-                + rs.getString("lastAccess") + " today = " + new Date());
+            + rs.getString("lastAccess") + " today = " + new Date());
         return new Date(Long
             .parseLong(rs.getString(HISTORY_COLUMN_LAST_ACCESS)));
       }
@@ -2179,8 +2179,8 @@ public class ForumsDAO {
     } catch (ParseException e) {
       throw new SQLException(
           "ForumsDAO : resultSet2ForumDetail() : internal error : "
-              + "creationDate format unknown for forumPK = " + forumPK + " : "
-              + e.toString());
+          + "creationDate format unknown for forumPK = " + forumPK + " : "
+          + e.toString());
     }
 
     String name = rs.getString(FORUM_COLUMN_FORUM_NAME);
