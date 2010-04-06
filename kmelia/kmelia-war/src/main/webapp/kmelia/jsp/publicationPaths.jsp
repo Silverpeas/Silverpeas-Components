@@ -81,7 +81,7 @@ out.println(gef.getLookStyleSheet());
 	width: 100%;
 	margin-top: 2px;
 	padding: 5px;
-	background-image: url(<%=m_context%>/admin/jsp/icons/silverpeasV4/fondOff.gif);
+	background-image: url(<%=m_context%>/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
 	background-repeat: repeat-x;
 }
 
