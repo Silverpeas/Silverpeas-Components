@@ -48,6 +48,7 @@ import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.kmelia.KmeliaSecurity;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
@@ -198,11 +199,14 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       } else if (currentTopic != null && "0".equals(currentTopic.getNodePK().getId()) &&
           kmeliaSC.getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure()) {
         List<UserPublication> publicationsToDisplay = new ArrayList<UserPublication>();
+        KmeliaSecurity kmeliaSecurity = new KmeliaSecurity();
         Iterator<UserPublication> iterator = currentTopic.getPublicationDetails().iterator();
         UserPublication userPub;
         while (iterator.hasNext()) {
           userPub = iterator.next();
-          if (!kmeliaSC.isPublicationDeleted(userPub.getPublication().getPK().getId()))
+          if (!kmeliaSC.isPublicationDeleted(userPub.getPublication().getPK().getId()) &&
+              kmeliaSecurity.isObjectAvailable(componentId, kmeliaSC.getUserId(), userPub
+              .getPublication().getPK().getId(), "Publication"))
             publicationsToDisplay.add(userPub);
         }
         displayLastPublications(publicationsToDisplay, kmeliaSC, resources, gef, writer);
