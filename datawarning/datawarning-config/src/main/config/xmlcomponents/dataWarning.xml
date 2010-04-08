@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<WAComponent>
+  <name>dataWarning</name>
+  <label>DataWarning</label>
+  <description>DataWarning</description>
+  <suite>80 Nouveau composant</suite>
+  <visible>@ComponentVisibleDataWarning@</visible>
+  <portlet>no</portlet>
+  <instanceClassName>com.silverpeas.dataWarning.DataWarningInstanciator</instanceClassName>
+ <Profiles>
+    <Profile name="admin">Gestionnaire</Profile>
+    <Profile name="publisher">Analyste</Profile>
+    <Profile name="user">Lecteur</Profile>
+  </Profiles>
+</WAComponent>

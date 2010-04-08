@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>DataWarning War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>DataWarningRequestRouter</servlet-name>
+    <display-name>DataWarningRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.dataWarning.servlets.DataWarningRequestRouter</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DataWarningRequestRouter</servlet-name>
+    <url-pattern>/RdataWarning/*</url-pattern>
+  </servlet-mapping>
+</web-app>
