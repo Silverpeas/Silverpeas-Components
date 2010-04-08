@@ -459,7 +459,7 @@ public class BlogBmEJB implements SessionBean {
       SilverTrace.info("blog", "BlogBmEJB.getPostsByCategory()", "root.MSG_GEN_PARAM_VALUE",
           "nb publications =" + publications.size());
 
-      PublicationPK[] allPubs = (PublicationPK[]) publications.toArray();
+      PublicationPK[] allPubs = publications.toArray(new PublicationPK[publications.size()]);
       SilverTrace.info("blog", "BlogBmEJB.getPostsByCategory()", "root.MSG_GEN_PARAM_VALUE",
           "allPubs =" + allPubs.length);
       Iterator<String> itEvent = lastEvents.iterator();
