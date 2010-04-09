@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.servlet.RequestDispatcher;
@@ -58,7 +57,9 @@ import com.stratelia.webactiv.util.node.model.NodePK;
  * @author
  */
 public class GalleryInWysiwygRouter extends HttpServlet {
-  
+
+  private static final long serialVersionUID = 1L;
+
   public void init(ServletConfig config) {
     try {
       super.init(config);
@@ -107,51 +108,47 @@ public class GalleryInWysiwygRouter extends HttpServlet {
         displayImage(response, image, size, useOriginal);
       } else if (!StringUtil.isDefined(albumId)) {
         // affichage de l'arborescence des albums
-        Collection albums = viewAllAlbums(componentId);
-        request.setAttribute("Albums", albums);
+        request.setAttribute("Albums", viewAllAlbums(componentId));
         // appel jsp
         destination = rootDest + "wysiwygAlbums.jsp";
       } else {
         // affichage du contenu d'un album
-        Collection photos = viewPhotosOfAlbum(componentId, albumId);
-        request.setAttribute("Photos", photos);
+        request.setAttribute("Photos", viewPhotosOfAlbum(componentId, albumId));
         // appel jsp
         destination = rootDest + "wysiwygImages.jsp";
       }
-      request.setAttribute("Language", language);
-      RequestDispatcher requestDispatcher = getServletConfig()
-          .getServletContext().getRequestDispatcher(destination);
-      if (requestDispatcher != null)
-        requestDispatcher.forward(request, response);
+      if (StringUtil.isDefined(destination)) {
+        request.setAttribute("Language", language);
+        RequestDispatcher requestDispatcher = getServletConfig()
+            .getServletContext().getRequestDispatcher(destination);
+        if (requestDispatcher != null)
+          requestDispatcher.forward(request, response);
+      }
     }
   }
 
   private Collection viewAllAlbums(String componentId) {
-    Collection albums = new ArrayList();
-
     // récupération des albums de la photothèque
     try {
-      albums = getGalleryBm().getAllAlbums(componentId);
+      return getGalleryBm().getAllAlbums(componentId);
     } catch (Exception e) {
       throw new GalleryRuntimeException(
           "GalleryInWysiwygRouter.viewAllAlbums()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    return albums;
+
   }
 
   private Collection viewPhotosOfAlbum(String componentId, String albumId) {
     // récupération de toutes les photos d'un album
-    Collection photos = new ArrayList();
     try {
       NodePK nodePK = new NodePK(albumId, componentId);
-      photos = getGalleryBm().getAllPhoto(nodePK, false);
+      return getGalleryBm().getAllPhoto(nodePK, false);
     } catch (Exception e) {
       throw new GalleryRuntimeException(
           "GalleryInWysiwygRouter.viewPhotosOfAlbum()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    return photos;
   }
 
   private void displayImage(HttpServletResponse res, PhotoDetail image,
@@ -219,7 +216,6 @@ public class GalleryInWysiwygRouter extends HttpServlet {
   }
 
   private OrganizationController getOrganizationController() {
-    OrganizationController orga = new OrganizationController();
-    return orga;
+    return new OrganizationController();
   }
 }
