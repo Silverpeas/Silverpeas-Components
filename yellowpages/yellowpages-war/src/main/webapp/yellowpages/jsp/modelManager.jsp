@@ -132,7 +132,8 @@ if (action.equals("NewModel")) {
 
 	Form formUpdate    = (Form) request.getAttribute("Form");
 	DataRecord data    = (DataRecord) request.getAttribute("Data"); 
-	PagesContext context = (PagesContext) request.getAttribute("PagesContext"); 
+	PagesContext context = (PagesContext) request.getAttribute("PagesContext");
+	context.setBorderPrinted(true);
 %>
 <HTML>
 <HEAD>
