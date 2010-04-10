@@ -31,7 +31,7 @@
   <name>Components</name>
 
   <properties>
-    <core.version>1.0-RC3</core.version>
+    <core.version>${project.version}</core.version>
   </properties>
   
   <build>
