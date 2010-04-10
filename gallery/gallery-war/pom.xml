@@ -4,14 +4,14 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>gallery</artifactId>
-    <version>5.0-SNAPSHOT</version>
+    <version>5.0</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.gallery</groupId>
   <artifactId>gallery-war</artifactId>
   <packaging>war</packaging>
-  <version>5.0-SNAPSHOT</version>
+  <version>5.0</version>
   <name>gallery Webapp</name>
 
   <dependencies>
@@ -31,7 +31,7 @@
       <groupId>com.silverpeas.components.gallery</groupId>
       <artifactId>gallery-ejb</artifactId>
       <classifier>client</classifier>
-      <version>5.0-SNAPSHOT</version>
+      <version>5.0</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
