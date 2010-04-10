@@ -4,21 +4,21 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>question-reply</artifactId>
-    <version>5.0</version>
+    <version>5.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.question-reply</groupId>
   <artifactId>question-reply-war</artifactId>
   <packaging>war</packaging>
-  <version>5.0</version>
+  <version>5.1-SNAPSHOT</version>
   <name>question-reply Webapp</name>
 
   <dependencies>
     <dependency>
       <groupId>com.silverpeas.components.question-reply</groupId>
       <artifactId>question-reply-jar</artifactId>
-      <version>5.0</version>
+      <version>5.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

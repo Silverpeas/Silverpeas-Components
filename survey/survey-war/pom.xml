@@ -4,21 +4,21 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>survey</artifactId>
-    <version>5.0</version>
+    <version>5.1-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.survey</groupId>
   <artifactId>survey-war</artifactId>
   <packaging>war</packaging>
-  <version>5.0</version>
+  <version>5.1-SNAPSHOT</version>
   <name>survey Webapp</name>
 
   <dependencies>
     <dependency>
       <groupId>com.silverpeas.components.survey</groupId>
       <artifactId>survey-jar</artifactId>
-      <version>5.0</version>
+      <version>5.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

@@ -4,12 +4,12 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>components</artifactId>
-    <version>5.0</version>
+    <version>5.1-SNAPSHOT</version>
   </parent>
   
   <groupId>com.silverpeas.components</groupId>
   <artifactId>almanach</artifactId>
-  <version>5.0</version>
+  <version>5.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>almanach Component</name>
   <modules>
