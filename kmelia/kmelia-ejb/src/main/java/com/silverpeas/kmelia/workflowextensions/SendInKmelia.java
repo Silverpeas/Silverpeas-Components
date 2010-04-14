@@ -42,15 +42,21 @@ import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.DataRecordUtil;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
+import com.silverpeas.form.FormException;
 import com.silverpeas.form.form.XmlForm;
 import com.silverpeas.form.record.GenericFieldTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
+import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.workflow.api.WorkflowException;
 import com.silverpeas.workflow.api.instance.HistoryStep;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
+import com.silverpeas.workflow.api.instance.UpdatableProcessInstance;
 import com.silverpeas.workflow.api.model.Action;
 import com.silverpeas.workflow.api.model.State;
+import com.silverpeas.workflow.api.model.Trigger;
 import com.silverpeas.workflow.external.impl.ExternalActionImpl;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
@@ -83,6 +89,8 @@ public class SendInKmelia extends ExternalActionImpl {
   private String pubTitle = "unknown";
   private String pubDesc = "unknown";
   private String role = "unknown";
+  private String xmlFormName = null;
+  private boolean addPDFHistory = true;
   private OrganizationController orga = null;
   private String userId = null;
 
@@ -96,7 +104,18 @@ public class SendInKmelia extends ExternalActionImpl {
     targetId = getTriggerParameter("targetComponentId").getValue();
     topicId = getTriggerParameter("targetTopicId").getValue();
     pubTitle = getTriggerParameter("pubTitle").getValue();
-    pubDesc = getTriggerParameter("pubDescription").getValue();
+    if (getTriggerParameter("pubDescription") != null) {
+      pubDesc = getTriggerParameter("pubDescription").getValue();
+    }
+    if (getTriggerParameter("xmlFormName") != null) {
+      xmlFormName = getTriggerParameter("xmlFormName").getValue();
+      if (StringUtil.isDefined(xmlFormName) && xmlFormName.lastIndexOf(".xml") != -1) {
+        xmlFormName = xmlFormName.substring(0, xmlFormName.lastIndexOf(".xml"));
+      }
+    }
+    if (getTriggerParameter("addPDFHistory") != null) {
+      addPDFHistory = StringUtil.getBooleanValue(getTriggerParameter("addPDFHistory").getValue());
+    }
 
     // 1 - Create publication
     PublicationPK pubPK = new PublicationPK("0", getTargetId());
@@ -125,6 +144,10 @@ public class SendInKmelia extends ExternalActionImpl {
     PublicationDetail pubDetail =
         new PublicationDetail(pubPK, pubName, desc, now, now, null, userId, 1, null, null, null);
 
+    if (StringUtil.isDefined(xmlFormName)) {
+      pubDetail.setInfoId(xmlFormName);
+    }
+
     KmeliaBm kmelia = getKmeliaBm();
     String pubId = null;
     try {
@@ -135,12 +158,14 @@ public class SendInKmelia extends ExternalActionImpl {
     pubPK.setId(pubId);
 
     // 2 - Attach history as pdf file
-    String fileName = "processHistory_" + getProcessInstance().getInstanceId() + ".pdf";
-    byte[] pdf = generatePDF(getProcessInstance());
-    try {
-      kmelia.addAttachmentToPublication(pubPK, userId, fileName, "", pdf);
-    } catch (RemoteException e) {
-      SilverTrace.error("workflowEngine", "SendInKmelia.execute()", "root.MSG_GEN_ERROR", e);
+    if (addPDFHistory) {
+      String fileName = "processHistory_" + getProcessInstance().getInstanceId() + ".pdf";
+      byte[] pdf = generatePDF(getProcessInstance());
+      try {
+        kmelia.addAttachmentToPublication(pubPK, userId, fileName, "", pdf);
+      } catch (RemoteException e) {
+        SilverTrace.error("workflowEngine", "SendInKmelia.execute()", "root.MSG_GEN_ERROR", e);
+      }
     }
 
     // 3 - Copy all instance attached files to publication
@@ -159,7 +184,46 @@ public class SendInKmelia extends ExternalActionImpl {
           "workflowEngine.CANNOT_UPDATE_PUBLICATION", e);
     }
 
+    // Populate the fields
+    if (StringUtil.isDefined(xmlFormName)) {
+      populateFields(pubId);
+    }
+
     orga = null;
+  }
+
+  public void populateFields(String pubId) {
+    // Get the current instance
+    UpdatableProcessInstance currentProcessInstance =
+        (UpdatableProcessInstance) getProcessInstance();
+    try {
+      PublicationTemplateImpl pubTemplate =
+          (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(targetId +
+          ":" + xmlFormName);
+      DataRecord record = pubTemplate.getRecordSet().getEmptyRecord();
+      record.setId(pubId);
+      for (int i = 0; i < record.getFieldNames().length; i++) {
+        record.getField(record.getFieldNames()[i]).setObjectValue(
+            currentProcessInstance.getField(
+            record.getFieldNames()[i]).getObjectValue());
+      }
+      // Update
+      pubTemplate.getRecordSet().save(record);
+
+    } catch (PublicationTemplateException e) {
+      SilverTrace.error("workflowEngine",
+          "SendInKmelia.populateFields()",
+          "workflowEngine.CANNOT_UPDATE_PUBLICATION", e);
+    } catch (FormException e) {
+      SilverTrace.error("workflowEngine",
+          "SendInKmelia.populateFields()",
+          "workflowEngine.CANNOT_UPDATE_PUBLICATION", e);
+    } catch (WorkflowException e) {
+      SilverTrace.error("workflowEngine",
+          "SendInKmelia.populateFields()",
+          "workflowEngine.CANNOT_UPDATE_PUBLICATION", e);
+    }
+
   }
 
   public Hashtable<String, String> pasteFiles(ForeignPK fromPK, ForeignPK toPK) {
@@ -570,7 +634,11 @@ public class SendInKmelia extends ExternalActionImpl {
           fieldTemplate.setDisplayerName("simpletext");
 
           fieldLabel = fieldTemplate.getLabel("fr");
+
           fieldValue = data.getField(fieldTemplate.getFieldName()).getValue();
+          if (fieldTemplate.getTypeName().equals("date")) {
+            fieldValue = DateUtil.getOutputDate(fieldValue, "fr");
+          }
 
           cell = new PdfPCell(new Phrase(fieldLabel, fontLabel));
           cell.setBorderWidth(0);
