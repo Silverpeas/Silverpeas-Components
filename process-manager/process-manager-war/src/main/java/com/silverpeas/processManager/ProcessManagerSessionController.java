@@ -294,7 +294,7 @@ public class ProcessManagerSessionController extends
   public DataRecord[] resetCurrentProcessList() throws ProcessManagerException {
     try {
       ProcessInstance[] processList = Workflow.getProcessInstanceManager()
-          .getProcessInstances(peasId, currentUser, currentRole);
+          .getProcessInstances(peasId, currentUser, currentRole, getUserRoles());
 
       currentProcessList = getCurrentFilter().filter(processList, currentRole,
           getLanguage());
