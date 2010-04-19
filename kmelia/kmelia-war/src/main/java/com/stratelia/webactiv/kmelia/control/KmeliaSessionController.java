@@ -36,6 +36,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -142,7 +143,6 @@ import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
-import com.stratelia.webactiv.util.publication.info.model.InfoLinkDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.Alias;
@@ -223,8 +223,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   // pagination de la liste des publications
   private int indexOfFirstPubToDisplay = 0;
   private int nbPublicationsPerPage = -1;
-
-  private List<String> publicationsToLink = new ArrayList<String>();
 
   // Assistant de publication
   private String wizard = "none";
@@ -1137,6 +1135,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           set.clone(fromId, fromComponentId, cloneId, fromComponentId);
         }
       }
+      // paste only links, reverseLinks can't be cloned because it'is a new content not referenced
+      // by any publication
+      if (refPubComplete.getLinkList() != null && refPubComplete.getLinkList().size() > 0) {
+        getKmeliaBm().addInfoLinks(clonePK, refPubComplete.getLinkList());
+      }
 
       // paste wysiwyg
       WysiwygController.copy(null, fromComponentId, fromId, null, fromComponentId, cloneId, clone
@@ -1385,8 +1388,29 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     refreshSessionPubliAndClone();
   }
 
-  public void deleteInfoLinks(String pubId, List<String> pubIds) throws RemoteException {
-    getKmeliaBm().deleteInfoLinks(getPublicationPK(pubId), pubIds);
+  /**
+   * removes links between specified publication and other publications contained in links parameter
+   * @param pubId publication which you want removes the external link
+   * @param links list of links to remove
+   * @throws RemoteException
+   */
+  public void deleteInfoLinks(String pubId, List<ForeignPK> links) throws RemoteException {
+    getKmeliaBm().deleteInfoLinks(getPublicationPK(pubId), links);
+
+    // reset current publication
+    UserCompletePublication completPub =
+        getKmeliaBm().getUserCompletePublication(getPublicationPK(pubId), getUserId());
+    setSessionPublication(completPub);
+  }
+
+  /**
+   * adds links between specified publication and other publications contained in links parameter
+   * @param pubId publication which you want removes the external link
+   * @param links list of links to remove
+   * @throws RemoteException
+   */
+  public void addInfoLinks(String pubId, List<ForeignPK> links) throws RemoteException {
+    getKmeliaBm().addInfoLinks(getPublicationPK(pubId), links);
 
     // reset current publication
     UserCompletePublication completPub =
@@ -1401,7 +1425,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public synchronized UserCompletePublication getUserCompletePublication(String pubId,
       boolean processIndex) throws RemoteException {
-    resetPublicationsToLink();
     PublicationPK pubPK = getPublicationPK(pubId);
     // get publication
     UserCompletePublication completPub =
@@ -1812,10 +1835,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   /* KMelia - Gestion des Liens */
   /**************************************************************************************/
   // return a PublicationDetail collection
-  public synchronized Collection getPublications(Collection<String> targetIds)
+  public synchronized Collection getPublications(List<ForeignPK> links)
       throws RemoteException {
-    return getKmeliaBm().getPublications(targetIds, getComponentId(), getUserId(),
-        isRightsOnTopicsEnabled());
+    return getKmeliaBm().getPublications(links, getUserId(),
+        true);
   }
 
   /**************************************************************************************/
@@ -2266,33 +2289,28 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
   }
 
-  public int addPublicationsToLink(String pubId) throws RemoteException {
-    InfoLinkDetail infoLinkDetail = null;
-    List<InfoLinkDetail> infoLinks = new ArrayList<InfoLinkDetail>();
-    String pubIdToLink = null;
-    for (int i = 0; i < publicationsToLink.size(); i++) {
-      pubIdToLink = publicationsToLink.get(i);
-      infoLinkDetail = new InfoLinkDetail(null, "1", null, pubIdToLink);
-      infoLinks.add(infoLinkDetail);
+  /**
+   * adds links between specified publication and other publications contained in links parameter
+   * @param pubId publication which you want removes the external link
+   * @param links list of links to remove
+   * @return the number of links created
+   * @throws RemoteException
+   */
+  public int addPublicationsToLink(String pubId, HashSet<String> list) throws RemoteException {
+    StringTokenizer tokens = null;
+
+    List<ForeignPK> infoLinks = new ArrayList<ForeignPK>();
+    for (String link : list) {
+      tokens = new StringTokenizer(link, "/");
+      infoLinks.add(new ForeignPK(tokens.nextToken(), tokens.nextToken()));
     }
-    InfoDetail infos = new InfoDetail(null, null, null, infoLinks, null);
-    updateInfoDetail(pubId, infos);
-
-    resetPublicationsToLink();
-
+    addInfoLinks(pubId, infoLinks);
     return infoLinks.size();
   }
 
   /**************************************************************************************/
   /* KMelia - Gestion des objets session */
   /**************************************************************************************/
-  public List<String> getPublicationsToLink() {
-    return publicationsToLink;
-  }
-
-  public void resetPublicationsToLink() {
-    publicationsToLink.clear();
-  }
 
   public void setSessionTopic(TopicDetail topicDetail) {
     this.sessionTopic = topicDetail;

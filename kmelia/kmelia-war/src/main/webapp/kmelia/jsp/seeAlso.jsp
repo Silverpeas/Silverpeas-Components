@@ -55,19 +55,25 @@ void displayLinkViewSelection(int selectedId, KmeliaSessionController kmeliaScc,
 	  out.println("<Form name=\"linksViewForm\">");
 	  out.println("<tr><td align=right valign=bottom>");
       out.println("<select name=\"linkView\" onChange=\"javascript:goTo(this.selectedIndex);\">");
+      
+      String choice1 ="";
+      String choice2="";
+      String choice4="";
+      String defaultchoice="";
         if (selectedId == 1) {
-            out.println("<option value=\"LinkAuthorView\" selected>"+kmeliaScc.getString("PubReferenceeParAuteur")+"</option>");
-            out.println("<option value=\"SameSubjectView\">"+kmeliaScc.getString("PubDeMemeSujet")+"</option>");
-            out.println("<option value=\"SameTopicView\">"+kmeliaScc.getString("PubDeMemeTheme")+"</option>");
+          choice1 = "selected";
         } else if (selectedId == 2) {
-            out.println("<option value=\"LinkAuthorView\">"+kmeliaScc.getString("PubReferenceeParAuteur")+"</option>");
-            out.println("<option value=\"SameSubjectView\" selected>"+kmeliaScc.getString("PubDeMemeSujet")+"</option>");
-            out.println("<option value=\"SameTopicView\">"+kmeliaScc.getString("PubDeMemeTheme")+"</option>");
-        } else {
-            out.println("<option value=\"LinkAuthorView\">"+kmeliaScc.getString("PubReferenceeParAuteur")+"</option>");
-            out.println("<option value=\"SameSubjectView\">"+kmeliaScc.getString("PubDeMemeSujet")+"</option>");
-            out.println("<option value=\"SameTopicView\" selected>"+kmeliaScc.getString("PubDeMemeTheme")+"</option>");
-        }
+          choice2="selected";
+        } else if (selectedId == 4){
+          choice4="selected";
+        }else {
+          defaultchoice="selected";
+        }      
+        out.println("<option value=\"LinkAuthorView\" "+choice1 + ">"+kmeliaScc.getString("PubReferenceeParAuteur")+"</option>");
+        out.println("<option value=\"SameSubjectView\" "+choice2 + ">"+kmeliaScc.getString("PubDeMemeSujet")+"</option>");
+        out.println("<option value=\"SameTopicView\" "+defaultchoice + ">"+kmeliaScc.getString("PubDeMemeTheme")+"</option>");
+        out.println("<option value=\"PubReferencedBy\" "+choice4 + ">"+kmeliaScc.getString("PubReferencedBy")+"</option>");
+        
       out.println("</select>");
 	  out.println("</td><td width=80>&nbsp;</td></tr>");
       out.println("</form>");
@@ -189,14 +195,9 @@ function closeWindows() {
         if (action.equals("LinkAuthorView")) {
             displayLinkViewSelection(1, kmeliaScc, out);
                             
-            Collection targets = pubComplete.getInfoDetail().getInfoLinkList();
-            Iterator targetIterator = targets.iterator();
-            ArrayList targetIds = new ArrayList();
-            while (targetIterator.hasNext()) {
-              String targetId = ((InfoLinkDetail) targetIterator.next()).getTargetId();
-              targetIds.add(targetId);
-            }
-            Collection linkedPublications = kmeliaScc.getPublications(targetIds);
+            List  targets = pubComplete.getLinkList();
+            
+            Collection linkedPublications = kmeliaScc.getPublications(targets);
             displaySameSubjectPublications(linkedPublications, resources.getString("PubReferenceeParAuteur"), kmeliaScc, id, isOwner, resources, out);
         } else if (action.equals("SameTopicView")) {
             displayLinkViewSelection(3, kmeliaScc, out);
@@ -225,6 +226,13 @@ function closeWindows() {
 				  throw new KmeliaException("JSPpublicationManager",SilverpeasRuntimeException.ERROR,"root.EX_SEARCH_ENGINE_FAILED", pe);
             }
             displaySearchResults(result, resources.getString("PubDeMemeSujet"), kmeliaScc, id, resources, out);
+        }else if(action.equals("PubReferencedBy")){
+          displayLinkViewSelection(4, kmeliaScc, out);
+          
+          List  targets = pubComplete.getReverseLinkList();
+          
+          Collection referencedPublications = kmeliaScc.getPublications(targets);
+          displaySameSubjectPublications(referencedPublications, resources.getString("PubReferencedBy"), kmeliaScc, id, false, resources, out);
         }
         out.println(frame.printAfter());
         out.println(window.printAfter());

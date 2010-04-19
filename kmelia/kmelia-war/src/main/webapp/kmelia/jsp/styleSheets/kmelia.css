@@ -88,5 +88,35 @@
 	a.disableButtonText {  font-size: 8pt; font-weight: bold; color: #777777; text-decoration: none}
 	select {  font-family: "Verdana", "Arial", "Helvetica", sans-serif; font-size: 10px; font-weight: normal; color: #000000}
 	input   {  font-family: "Verdana", "Arial", "Helvetica", sans-serif; font-size: 10px; font-weight: normal; color: #000000}
-
+	
+ /* Styles :  publication link manager*/
+    .dimensionTable {
+    	height: 500px; 
+    	width: 730px;
+    }
+    .firstTd {
+    	height: 300px; 
+    	width: 250px; 
+    	left: 0px; 
+    	top: 0px;
+    	border-color:grey; 
+    	border-width:1; 
+    	border-style:solid
+    }
+    .secondTd {
+    	border-color:grey; 
+    	border-width:1; 
+    	border-style:solid
+    }
+    .treeDivDisplay {
+     height: 158px; 
+     width: 220px; 
+     left: 0px; 
+     top: 0px;
+    }
+    .publistDisplay {
+    	width: 480px;
+    	overflow: auto;
+    }
+    
 -->

@@ -1,3 +1,4 @@
+
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
 <%@ page import="javax.servlet.jsp.*"%>
@@ -21,6 +22,7 @@
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail "%>
 <%@ page import="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
 <%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
+<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 
 <%!
 
@@ -186,9 +188,9 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
                         out.print("<td valign=\"top\" colspan=\"2\">");
                       	out.print("<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\"><tr valign=\"middle\">");
                       	if (checkboxAllowed)
-                      		out.print("<td align=\"center\"><input type=\"checkbox\" name=\"PubIds\" value=\""+pub.getPK().getId()+"\"></td>");
+                      		out.print("<td align=\"center\"><input type=\"checkbox\" name=\"PubIds\" value=\""+pub.getPK().getId()+"/"+pub.getPK().getInstanceId()+"\"></td>");
 						out.print("<td width=\"1\">&#149;&nbsp;</td><td nowrap>");
-						out.print("<a href=\"javascript:onClick=publicationGoTo('"+pub.getPK().getId()+"')\"><b>"+Encode.javaStringToHtmlString(pub.getName(language))+"</b></a>");
+						out.print("<a href=\""+URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getPK().getId(), pub.getPK().getInstanceId())+"\"><b>"+Encode.javaStringToHtmlString(pub.getName(language))+"</b></a>");
 						out.print("&nbsp;</td><td width=\"100%\">");
 						if (showImportance)
 							out.print(displayImportance(new Integer(pub.getImportance()).intValue(), 5, fullStarSrc, emptyStarSrc, out));

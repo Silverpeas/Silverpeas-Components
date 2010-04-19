@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -36,6 +37,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.silverpeas.kmelia.KmeliaConstants;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -80,10 +83,33 @@ public class AjaxServlet extends HttpServlet {
       result = kmeliaSC.getWysiwygOnTopic(req.getParameter("Id"));
     } else if ("Rename".equals(action)) {
       result = renameTopic(req, kmeliaSC);
+    } else if ("bindToPub".equals(action)) {
+      updatePubsToLink(req, true);
+    } else if ("unbindFromPub".equals(action)) {
+      updatePubsToLink(req, false);
     }
 
     Writer writer = resp.getWriter();
     writer.write(result);
+  }
+
+  private void updatePubsToLink(HttpServletRequest request, boolean isToBind) {
+    if (StringUtil.isDefined(request.getParameter("TopicToLinkId"))) {
+
+      HashSet<String> list =
+          (HashSet) request.getSession().getAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY);
+      if (list == null) {
+        list = new HashSet<String>();
+        request.getSession().setAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY, list);
+      }
+
+      if (isToBind) {
+        list.add(request.getParameter("TopicToLinkId"));
+      } else {
+        list.remove(request.getParameter("TopicToLinkId"));
+      }
+
+    }
   }
 
   private String getAction(HttpServletRequest req) {

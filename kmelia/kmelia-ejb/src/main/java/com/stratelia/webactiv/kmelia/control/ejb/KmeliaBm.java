@@ -33,6 +33,7 @@ import java.util.Map;
 import javax.ejb.EJBObject;
 
 import com.silverpeas.pdc.ejb.PdcBm;
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.webactiv.kmelia.model.FullPublication;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
@@ -327,7 +328,20 @@ public interface KmeliaBm extends EJBObject {
   public void updateInfoDetail(PublicationPK pubPK, InfoDetail infos)
       throws RemoteException;
 
-  public void deleteInfoLinks(PublicationPK pubPK, List<String> pubIds)
+  /**
+   * Updates the publication links
+   * @param pubPK publication identifier which you want to update links
+   * @param links list of publication to link with current.
+   */
+  public void addInfoLinks(PublicationPK pubPK, List<ForeignPK> links) throws RemoteException;
+
+  /**
+   * Removes links between publications and the specified publication
+   * @param pubPK
+   * @param links list of links to remove
+   * @throws RemoteException
+   */
+  public void deleteInfoLinks(PublicationPK pubPK, List<ForeignPK> links)
       throws RemoteException;
 
   /**
@@ -350,18 +364,20 @@ public interface KmeliaBm extends EJBObject {
       boolean isTreeStructureUsed, String userId, boolean isRightsOnTopicsUsed)
       throws RemoteException;
 
-  public Collection<PublicationDetail> getPublicationDetails(Collection<String> publicationIds,
-      String componentId) throws RemoteException;
+  public Collection<PublicationDetail> getPublicationDetails(List<ForeignPK> links)
+      throws RemoteException;
 
   /**
-   * Return a collection of PublicationDetail throught a collection of publication ids
-   * @param publicationIds a collection of publication ids
-   * @return a collection of PublicationDetail
-   * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
+   * gets a list of authorized publications
+   * @param links list of publication defined by his id and component id
+   * @param userId identifier User. allow to check if the publication is accessible for current user
+   * @param isRightsOnTopicsUsed indicates if the right must be checked
+   * @return a collection of UserPublication
+   * @throws RemoteException
    * @since 1.0
    */
-  public Collection<UserPublication> getPublications(Collection<String> publicationIds,
-      String componentId, String userId,
+  public Collection<UserPublication> getPublications(List<ForeignPK> links,
+      String userId,
       boolean isRightsOnTopicsUsed) throws RemoteException;
 
   public List<UserPublication> getPublicationsToValidate(String componentId)

@@ -576,5 +576,18 @@
 			<ParameterHelpEn>This feature allows to display the attached files to each publications directly in the publications list.</ParameterHelpEn>
 	   	</ParameterHelp>
     </Parameter>
+    <Parameter>
+        <ParameterName>publicFiles</ParameterName>
+        <ParameterLabel>Fichiers joints publics</ParameterLabel>
+        <ParameterValue>no</ParameterValue>
+        <ParameterMandatory>N</ParameterMandatory>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterOrder>39</ParameterOrder>
+	   	<ParameterHelp>
+			<ParameterHelpFr>Ce paramètre permet de définir un Theme Tracker comme banque de fichier. Les pièces jointes d'une banque peuvent être insérer dans le corps d'une publication.</ParameterHelpFr>
+			<ParameterHelpEn>This feature allows indicating Theme Tracker as a file storage. The attachment of a file storage can be inserted into the body of a publication.</ParameterHelpEn>
+	   	</ParameterHelp>
+    </Parameter>   
   </Parameters>
 </WAComponent>

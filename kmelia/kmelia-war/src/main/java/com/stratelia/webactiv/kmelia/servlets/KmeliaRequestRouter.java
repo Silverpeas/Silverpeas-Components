@@ -31,6 +31,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -46,6 +47,7 @@ import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.kmelia.updatechainhelpers.UpdateChainHelper;
 import com.silverpeas.kmelia.updatechainhelpers.UpdateChainHelperContext;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
@@ -54,6 +56,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -556,6 +559,15 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           }
           request.setAttribute("Languages", publicationLanguages);
 
+          // see also management
+          Collection<ForeignPK> links = userPubComplete.getPublication().getLinkList();
+          HashSet<String> linkedList = new HashSet<String>();
+          for (ForeignPK link : links) {
+            linkedList.add(link.getId() + "/" + link.getInstanceId());
+          }
+          // put into session the current list of selected publications (see also)
+          request.getSession().setAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY, linkedList);
+
           request.setAttribute("Publication", userPubComplete);
           request.setAttribute("PubId", id);
           request.setAttribute("ValidationStep", kmelia.getValidationStep());
@@ -889,11 +901,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("DeleteSeeAlso")) {
         String[] pubIds = request.getParameterValues("PubIds");
 
-        List<String> infoLinks = new ArrayList<String>();
+        List<ForeignPK> infoLinks = new ArrayList<ForeignPK>();
         String id = null;
-        for (int p = 0; pubIds != null && p < pubIds.length; p++) {
-          id = pubIds[p];
-          infoLinks.add(id);
+        StringTokenizer tokens = null;
+        for (String pubId : pubIds) {
+          tokens = new StringTokenizer(pubId, "/");
+          infoLinks.add(new ForeignPK(tokens.nextToken(), tokens.nextToken()));
         }
 
         if (infoLinks.size() > 0) {
@@ -1062,9 +1075,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         String id = request.getParameter("PubId");
         String topicId = request.getParameter("TopicId");
 
-        processPublicationsToLink(kmelia, request);
+        HashSet<String> list =
+            (HashSet<String>) request.getSession().getAttribute(
+                KmeliaConstants.PUB_TO_LINK_SESSION_KEY);
 
-        int nb = kmelia.addPublicationsToLink(id);
+        int nb = kmelia.addPublicationsToLink(id, list);
 
         request.setAttribute("NbLinks", Integer.toString(nb));
 
@@ -1914,30 +1929,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
     return result;
   }
 
-  private void processPublicationsToLink(KmeliaSessionController kmelia,
-      HttpServletRequest request) {
-    String selectedPubIds = request.getParameter("SelectedIds");
-    String notSelectedPubIds = request.getParameter("NotSelectedIds");
-
-    List<String> publicationsToLink = kmelia.getPublicationsToLink();
-
-    StringTokenizer tokenizer = new StringTokenizer(selectedPubIds, ",");
-    String pubId = null;
-    while (tokenizer.hasMoreTokens()) {
-      pubId = tokenizer.nextToken();
-      if (!publicationsToLink.contains(pubId)) {
-        publicationsToLink.add(pubId);
-      }
-    }
-
-    tokenizer = new StringTokenizer(notSelectedPubIds, ",");
-    while (tokenizer.hasMoreTokens()) {
-      pubId = tokenizer.nextToken();
-      publicationsToLink.remove(pubId);
-    }
-  }
-
-  /**
+/**
    * Process Form Upload for publications import
    * @param kmeliaScc
    * @param request

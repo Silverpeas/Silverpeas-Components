@@ -129,5 +129,21 @@
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>ejb/KmeliaBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>addInfoLinks</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+      <method>
+        <ejb-name>ejb/KmeliaBm</ejb-name>
+        <method-intf>Remote</method-intf>
+        <method-name>deleteInfoLinks</method-name>
+      </method>
+      <trans-attribute>Required</trans-attribute>
+    </container-transaction>
   </assembly-descriptor>
 </ejb-jar>

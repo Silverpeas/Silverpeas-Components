@@ -69,7 +69,6 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
-import com.stratelia.webactiv.util.DateUtil;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
@@ -99,6 +98,7 @@ import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.kmelia.model.UserPublication;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -106,7 +106,6 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.publication.info.model.InfoLinkDetail;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
@@ -1023,8 +1022,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   private static void generateSeeAlso(Document document) throws IOException,
       DocumentException {
-    Collection targets = completePublicationDetail.getInfoDetail()
-        .getInfoLinkList();
+    java.util.List<ForeignPK> targets = completePublicationDetail.getLinkList();
     if (targets != null && targets.size() > 0) {
       /*
        * Paragraph title = new Paragraph("\n"+message.getString("PubReferenceeParAuteur")+" : ", new
@@ -1038,15 +1036,8 @@ public class PdfGenerator extends PdfPageEventHelper {
       list.setListSymbol(new Chunk("\u2022", new Font(Font.HELVETICA, 20,
           Font.BOLD, new Color(0, 0, 0))));
 
-      Iterator targetIterator = targets.iterator();
-      ArrayList targetIds = new ArrayList();
-      String targetId;
-      while (targetIterator.hasNext()) {
-        targetId = ((InfoLinkDetail) targetIterator.next()).getTargetId();
-        targetIds.add(targetId);
-      }
       Collection linkedPublications = kmeliaSessionController
-          .getPublications(targetIds);
+          .getPublications(targets);
       Iterator iterator = linkedPublications.iterator();
       UserPublication userPub;
       PublicationDetail pub;

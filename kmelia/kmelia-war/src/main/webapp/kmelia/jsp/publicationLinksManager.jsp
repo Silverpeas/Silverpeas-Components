@@ -28,109 +28,101 @@ response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
-
+<%@ page import="com.silverpeas.treeMenu.process.TreeHandler"%>
+<%@page import="com.silverpeas.treeMenu.model.MenuConstants"%>
 <%@ include file="checkKmelia.jsp" %>
-<%@ include file="topicReport.jsp.inc" %>
-<%@ include file="publicationsList.jsp.inc" %>
-
-<%!
-  //Icons
-  String folderSrc;
-  String publicationLinkSrc;
-  String publicationSrc;
-  String fullStarSrc;
-  String emptyStarSrc;
-  String topicSrc;
-%>
+<%@ taglib uri="/WEB-INF/menuTree.tld" prefix="menuTree"%>
 
 <% 
-//Récupération des paramètres
-String 	action 			= (String) request.getParameter("Action");
-String 	id 				= (String) request.getParameter("TopicId");
-String 	size 			= (String) request.getAttribute("NbLinks");
-List 	selectedPubIds 	= (List) request.getAttribute("SelectedPubIds");
-String 	reference		= "";
-
 String pubId = kmeliaScc.getSessionPublication().getPublication().getPublicationDetail().getPK().getId();
-
+String pubComponentId = kmeliaScc.getSessionPublication().getPublication().getPublicationDetail().getPK().getComponentName();
 Button closeButton = (Button) gef.getFormButton(resources.getString("GML.close"), "javaScript:closeAndReturn('"+pubId+"');", false);
-
-//Icons
-folderSrc = m_context + "/util/icons/component/kmeliaSmall.gif";
-publicationLinkSrc = m_context + "/util/icons/kmelia_publiArrange.gif";
-publicationSrc = m_context + "/util/icons/publication.gif";
-fullStarSrc = m_context + "/util/icons/starFilled.gif";
-emptyStarSrc = m_context + "/util/icons/starEmpty.gif";
-topicSrc = m_context + "/util/icons/folder.gif";
-
+Button linkButton = (Button) gef.getFormButton(resources.getString("GML.linkTo"), "javaScript:linkTo();", false);
+String closeWindow="";
+if(request.getAttribute("NbLinks")!=null){
+  closeWindow ="onload=\"closeAndReturn('"+pubId+"');\"";
+  
+}
 %>
-
-<HTML>
-<HEAD>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<title><%=resources.getString("GML.popupTitle")%></title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<link rel="stylesheet" type="text/css" href="<%=m_context %>/kmelia/jsp/styleSheets/kmelia.css">
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<script type="text/javascript" src="<%=m_context %>/attachment/jsp/jquery-1.3.2.min.js"></script>
+<%-- load the css and js file used by tree menu --%>
+<menuTree:head displayCssFile="true" displayJavascriptFile="true" displayIconsStyles="true" contextName="<%=m_context%>"></menuTree:head>
+<%-- personalizable Javascript for  YUI treeView menu --%>
+<script type="text/javascript" src="<%=m_context %>/util/javaScript/treeMenu/menu.js"></script>
+
 <Script language="JavaScript">
-function topicGoTo(id) {
-    document.pubChooseLinkForm.Action.value = "Search";
-    document.pubChooseLinkForm.TopicId.value = id;
-    document.pubChooseLinkForm.submit();
-}
-
-function getSelectedOjects()
-{
-	return getObjects(true);
-}
-function getNotSelectedOjects()
-{
-	return getObjects(false);
-}
-
-function getObjects(selected)
-{
-	var  items = "";
-	var boxItems = document.publicationsForm.C1;
-	if (boxItems != null){
-		// au moins une checkbox exist
-		var nbBox = boxItems.length;
-		if ( (nbBox == null) && (boxItems.checked == selected) ){
-			// il n'y a qu'une checkbox non selectionnée
-			items += boxItems.value+",";
-		} else{
-			// search not checked boxes 
-			for (i=0;i<boxItems.length ;i++ ){
-				if (boxItems[i].checked == selected){
-					items += boxItems[i].value+",";
-				}
-			}
-		}
+var context ='<%=m_context %>';
+var currentNodeId;
+var currentNodeIndex;
+var currentComponent;
+var menuType='<%=MenuConstants.SEE_ALSO_MENU_TYPE%>';
+function buildTree() {
+    //create a new tree:
+    tree = new YAHOO.widget.TreeView("treeDiv1");
+    //turn dynamic loading on for entire tree:
+    tree.setDynamicLoad(loadNodeData, 0);
+    //get root node for tree:
+    var root = tree.getRoot();
+   
+    //add child nodes for tree; our top level nodes are  
+   try{
+   var mes = [];
+   mes =YAHOO.lang.JSON.stringify(<%=TreeHandler.ProcessMenu(request,MenuConstants.SEE_ALSO_MENU_TYPE)%>);
+    mes = YAHOO.lang.JSON.parse(mes);
+   }catch(x){
+      alert("JSON Parse failed: "+x);
+	  return;
 	}
-	return items;
+   for (var i=0, j=mes.length; i<j; i++) {
+         var tempNode = new YAHOO.widget.TextNode(mes[i], root, false);
+			tempNode.multiExpand =false;
+    } 
+    //render tree with these toplevel nodes; all descendants of these nodes
+    //will be generated as needed by the dynamic loader.
+    tree.draw();
+    //action when a user click on a node
+    tree.subscribe('clickEvent',function(oArgs) { 
+		currentComponent = oArgs.node.data.componentId;
+		// highlight selected node
+		$("#ygtvcontentel"+currentNodeIndex).css({'font-weight':'normal'});
+		setCurrentNodeId(oArgs.node.data.id);
+		currentNodeIndex = oArgs.node.index;
+		$("#ygtvcontentel"+currentNodeIndex).css({'font-weight':'bold'});
+        //if node is a theme display the publications
+        if(oArgs.node.data.componentId!='undefined' && oArgs.node.data.nodeType=='THEME'){
+            displayPublications(oArgs.node.data.componentId,getCurrentNodeId());
+            //displays the publication localized at the root of a theme tracker
+        }else if (oArgs.node.data.nodeType=='COMPONENT' && oArgs.node.data.id.indexOf('kmelia')==0){
+    		displayPublications(oArgs.node.data.id,"0");
+        }else{
+        	displayHomeMessage();
+        }
+	});
 }
 
-function doPagination(index)
-{
-	var  selectItems 	= getSelectedOjects();
-	var  notSelectItems = getNotSelectedOjects();
 
+function getCurrentNodeId(){
+	return currentNodeId;
+}
+
+function setCurrentNodeId(id){
+	currentNodeId = id;
+}
+
+function doPagination(index){
 	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',ToLink:1,SelectedIds:selectItems,NotSelectedIds:notSelectItems,IEFix:ieFix}, 
+	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {PubId:<%=pubId%>,PubComponentName:'<%=pubComponentId%>',Index:index,ComponentId:currentComponent,ToLink:1,IEFix:ieFix}, 
 			function(data){
 				$('#pubList').html(data);
 			},"html");
-}
-
-function setPubsAsLinks(nb) {
-    var  selectItems 	= getSelectedOjects();
-	var  notSelectItems = getNotSelectedOjects();
-	
-	document.pubChooseLinkForm.SelectedIds.value 		= selectItems;
-	document.pubChooseLinkForm.NotSelectedIds.value 	= notSelectItems;
-	document.pubChooseLinkForm.action					= "AddLinksToPublication";
-    
-    document.pubChooseLinkForm.submit();
 }
 
 function closeAndReturn(pubId) {
@@ -138,90 +130,53 @@ function closeAndReturn(pubId) {
     window.close();
 }
 
-function init()
-{
-	var  selectItems 	= "";
-	var  notSelectItems = "";
-	
+function displayPublications(CompoId,topicId){
 	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {ComponentId:'<%=componentId%>',ToLink:1,SelectedIds:selectItems,NotSelectedIds:notSelectItems,IEFix:ieFix}, 
+	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {PubId:<%=pubId%>,PubComponentName:'<%=pubComponentId%>',ComponentId:CompoId,TopicToLinkId:topicId,ToLink:1,IEFix:ieFix}, 
 			function(data){
 				$('#pubList').html(data);
 			},"html");
 }
-</script>
-</HEAD>
-<BODY onLoad="init()">
-<%
-      if (id == null) {
-	        id = "0";
-	        action = "Search";
-      }
-      if (action.equals("Add")) {
-            reference = "<br><TABLE ALIGN=CENTER CELLPADDING=2 CELLSPACING=0 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor><tr><td>";
-			reference += "<TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH=\"100%\" CLASS=intfdcolor4><tr>";
-			reference += "<td align=center>"+size+"&nbsp;"+kmeliaScc.getString("NPubDeclass")+"</td></tr></table></td></tr></table><br>";
-			action = "Search";
-      } 
-      if (action.equals("Search") || action.equals("OtherPublications")) {
-			TopicDetail currentTopicToLink = null;
-			if (action.equals("Search"))
-			{
-				currentTopicToLink = kmeliaScc.getTopic(id, false);
-				kmeliaScc.setSessionTopicToLink(currentTopicToLink);
-			} else {
-				currentTopicToLink = kmeliaScc.getSessionTopicToLink();
-			}
- 
-            Collection path = currentTopicToLink.getPath();
-            String pathString = displayPath(path, false, 3);
-            String linkedPathString = displayPath(path, true, 3);
-            List validPublications = currentTopicToLink.getValidPublications();
 
-            Window window = gef.getWindow();
+function sendPubId(pubId,checked){
 
-            BrowseBar browseBar = window.getBrowseBar();
-            browseBar.setDomainName(kmeliaScc.getSpaceLabel());
-            browseBar.setComponentName(kmeliaScc.getComponentLabel(), "javascript:onClick=topicGoTo('0')");
-            browseBar.setPath(linkedPathString);
-
-            OperationPane operationPane = window.getOperationPane();
-            operationPane.addOperation(publicationLinkSrc, kmeliaScc.getString("LinkPub"), "javascript:onClick=setPubsAsLinks('"+validPublications.size()+"')");
-
-		  Frame frame = gef.getFrame();
-		  
-          out.println(window.printBefore());
-		  out.println(frame.printBefore());
-
-          displaySessionTopicsToUsers(kmeliaScc, currentTopicToLink, gef, request, session, resources, out);
-		  if (!reference.equals("")){
-		  	out.println(reference);
-		  }
-		  out.println("<br/><div id=\"pubList\"/>");
-
-    out.println(frame.printMiddle());
-
-    ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(closeButton);
+	var action;
 	
-	String bodyPart ="<br/><center>";
-	bodyPart += buttonPane.print();
-	bodyPart +="</center><br/>";
+	if(checked){
+		action="Action=bindToPub";
+	}else{
+		action="Action=unbindFromPub";
+	}
+	var ieFix = new Date().getTime();
+	$.get('<%=m_context%>/KmeliaAJAXServlet?'+action, {TopicToLinkId:pubId,IEFix:ieFix});
+}
 
-	out.println(bodyPart);
- 
-    out.println(frame.printAfter());
-    out.println(window.printAfter()); 
-%>
-<FORM Name="pubChooseLinkForm" ACTION="publicationLinksManager.jsp" METHOD="POST">
-      <input type="hidden" name="Action"/>
-      <input type="hidden" name="TopicId" value="<%=currentTopicToLink.getNodeDetail().getNodePK().getId()%>"/>
-      <input type="hidden" name="PubId" value="<%=pubId%>"/>
-      <input type="hidden" name="SelectedPubIds"/>
-      <input type="hidden" name="Index"/>
-      <input type="hidden" name="SelectedIds"/>
-      <input type="hidden" name="NotSelectedIds"/>
-</FORM>
-</BODY>
-</HTML>
-<% } %>
+function linkTo(){
+	location.href="AddLinksToPublication?PubId=<%=pubId%>"
+}
+
+function displayHomeMessage(){
+	document.getElementById('pubList').innerHTML = '<p align="center" ><%= kmeliaScc.getString("kmelia.linkManager.home.title")%></p> <p align="center"> <br><br><%=kmeliaScc.getString("kmelia.linkManager.home.description") %>';
+}
+
+</script>
+</head>
+<body class="yui-skin-sam" <%=closeWindow%> > 
+<table class="dimensionTable">
+	<tr valign="top" >
+		<td class="firstTd">
+			<div id="treeDiv1" class="treeDivDisplay"> </div>
+		</td>
+		<td class="secondTd">	
+			<div id="pubList" class="publistDisplay"><p align="center" ><%= kmeliaScc.getString("kmelia.linkManager.home.title")%></p> <p align="center"> <br><br><%=kmeliaScc.getString("kmelia.linkManager.home.description") %> </p></div>
+			<div align="center">  
+			<% ButtonPane buttonPane = gef.getButtonPane();
+              buttonPane.addButton(closeButton);
+              buttonPane.addButton(linkButton);
+              out.println(buttonPane.print());%>          
+              </div>
+		</td>
+	</tr>
+</table>
+</body>
+</html>

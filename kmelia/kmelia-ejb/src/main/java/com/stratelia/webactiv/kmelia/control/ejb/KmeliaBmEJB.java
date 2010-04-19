@@ -2388,12 +2388,29 @@ public class KmeliaBmEJB implements SessionBean {
         "root.MSG_GEN_EXIT_METHOD");
   }
 
-  public void deleteInfoLinks(PublicationPK pubPK, List<String> pubIds) {
+  /**
+   * Updates the publication links
+   * @param pubPK publication identifier which you want to update links
+   * @param links list of publication to link with current.
+   */
+  public void addInfoLinks(PublicationPK pubPK, List<ForeignPK> links) {
+    SilverTrace.info("kmelia", "KmeliaBmEJB.addInfoLinks()",
+        "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId() + ", pubIds = "
+        + links.toString());
+    try {
+      getPublicationBm().addLinks(pubPK, links);
+    } catch (Exception e) {
+      throw new KmeliaRuntimeException("KmeliaBmEJB.addInfoLinks()",
+          SilverpeasRuntimeException.ERROR,
+          "kmelia.EX_IMPOSSIBLE_DE_MODIFIER_LE_CONTENU_DU_MODELE", e);
+    }
+  }
+  public void deleteInfoLinks(PublicationPK pubPK, List<ForeignPK> links) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.deleteInfoLinks()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId() + ", pubIds = "
-        + pubIds.toString());
+        + links.toString());
     try {
-      getPublicationBm().deleteInfoLinks(pubPK, pubIds);
+      getPublicationBm().deleteInfoLinks(pubPK, links);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.deleteInfoLinks()",
           SilverpeasRuntimeException.ERROR,
@@ -2559,19 +2576,22 @@ public class KmeliaBmEJB implements SessionBean {
     }
   }
 
-  public Collection<PublicationDetail> getPublicationDetails(Collection<String> publicationIds,
-      String componentId) {
+  /**
+   * gets a list of PublicationDetail corresponding to the links parameter
+   * @param links list of publication (componentID + publicationId)
+   * @return a list of PublicationDetail
+   */
+  public Collection<PublicationDetail> getPublicationDetails(List<ForeignPK> links) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationDetails()",
         "root.MSG_GEN_ENTER_METHOD");
     Collection<PublicationDetail> publications = null;
     List<PublicationPK> publicationPKs = new ArrayList<PublicationPK>();
-    Iterator<String> iterator = publicationIds.iterator();
-    while (iterator.hasNext()) {
-      PublicationPK pubPK = new PublicationPK(iterator.next(),
-          componentId);
+
+    for (ForeignPK link : links) {
+      PublicationPK pubPK = new PublicationPK(link.getId(),
+          link.getInstanceId());
       publicationPKs.add(pubPK);
     }
-
     try {
       publications = getPublicationBm().getPublications(publicationPKs);
     } catch (Exception e) {
@@ -2585,33 +2605,35 @@ public class KmeliaBmEJB implements SessionBean {
   }
 
   /**
-   * Return a collection of PublicationDetail throught a collection of publication ids
-   * @param publicationIds a collection of publication ids
-   * @return a collection of PublicationDetail
-   * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
+   * gets a list of authorized publications
+   * @param links list of publication defined by his id and component id
+   * @param userId identifier User. allow to check if the publication is accessible for current user
+   * @param isRightsOnTopicsUsed indicates if the right must be checked
+   * @return a collection of UserPublication
+   * @throws RemoteException
    * @since 1.0
    */
-  public Collection<UserPublication> getPublications(Collection<String> publicationIds,
-      String componentId, String userId,
+  public Collection<UserPublication> getPublications(List<ForeignPK> links,
+      String userId,
       boolean isRightsOnTopicsUsed) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getPublications()", "root.MSG_GEN_ENTER_METHOD");
-
-    List<String> allowedPublicationIds = new ArrayList<String>(publicationIds);
+    // initialization of the publications list
+    List<ForeignPK> allowedPublicationIds = new ArrayList<ForeignPK>(links);
     if (isRightsOnTopicsUsed) {
       KmeliaSecurity security = new KmeliaSecurity();
       allowedPublicationIds.clear();
 
-      String pubId;
-      Iterator<String> it = publicationIds.iterator();
-      while (it.hasNext()) {
-        pubId = it.next();
-        if (security.isObjectAvailable(componentId, userId, pubId, "Publication")) {
-          allowedPublicationIds.add(pubId);
+      // check if the publication is authorized for current user
+      for (ForeignPK link : links) {
+        PublicationPK pubPK = new PublicationPK(link.getId(),
+            link.getInstanceId());
+        if (security.isObjectAvailable(link.getInstanceId(), userId, link.getId(), "Publication")) {
+          allowedPublicationIds.add(link);
         }
       }
     }
     Collection<PublicationDetail> publications =
-        getPublicationDetails(allowedPublicationIds, componentId);
+        getPublicationDetails(allowedPublicationIds);
     return pubDetails2userPubs(publications);
   }
 
