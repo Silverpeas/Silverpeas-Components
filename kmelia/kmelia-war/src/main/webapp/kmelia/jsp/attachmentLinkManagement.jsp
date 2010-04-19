@@ -154,7 +154,11 @@ function displayHomeMessage(){
 }
 
 function selectAttachment(url,img,label){
-	window.opener.insertAttachmentLink(url,img,label);
+	<%if (request.getParameter("fieldname")!=null){ %>
+		window.opener.insertAttachmentLink<%=request.getParameter("fieldname")%>(url,img,label);
+	<%} else {%>
+		window.opener.insertAttachmentLink(url,img,label);
+	<%} %>	
 	window.close();
 }
 
