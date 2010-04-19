@@ -1707,6 +1707,9 @@ public class KmeliaBmEJB implements SessionBean {
           }
         }
       }
+      // notification pour modification
+      sendSubscriptionsNotification(pubDetail, true);
+
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.updatePublication()",
           SilverpeasRuntimeException.ERROR,
@@ -2025,7 +2028,7 @@ public class KmeliaBmEJB implements SessionBean {
     }
 
     // sendSubscriptionsNotification(fatherPK, pubDetail);
-    sendSubscriptionsNotification(pubDetail);
+    sendSubscriptionsNotification(pubDetail, false);
     SilverTrace.info("kmelia", "KmeliaBmEJB.addPublicationToTopic()",
         "root.MSG_GEN_EXIT_METHOD");
   }
@@ -2053,16 +2056,16 @@ public class KmeliaBmEJB implements SessionBean {
     return false;
   }
 
-  private NodePK sendSubscriptionsNotification(PublicationDetail pubDetail) {
+  private NodePK sendSubscriptionsNotification(PublicationDetail pubDetail, boolean update) {
     NodePK oneFather = null;
     // We alert subscribers only if publication is Valid
-    if (PublicationDetail.VALID.equals(pubDetail.getStatus())) {
+    if (!pubDetail.haveGotClone() && PublicationDetail.VALID.equals(pubDetail.getStatus())) {
       // topic subscriptions
       List<NodePK> fathers = (ArrayList<NodePK>) getPublicationFathers(pubDetail.getPK());
       if (fathers != null) {
         for (int i = 0; i < fathers.size(); i++) {
           oneFather = fathers.get(i);
-          sendSubscriptionsNotification(oneFather, pubDetail);
+          sendSubscriptionsNotification(oneFather, pubDetail, update);
         }
       }
 
@@ -2091,7 +2094,7 @@ public class KmeliaBmEJB implements SessionBean {
   }
 
   private void sendSubscriptionsNotification(NodePK fatherPK,
-      PublicationDetail pubDetail) {
+      PublicationDetail pubDetail, boolean update) {
     // send email alerts
     try {
       Collection<NodeDetail> path = null;
@@ -2150,12 +2153,12 @@ public class KmeliaBmEJB implements SessionBean {
           // french notifications
           String subject = getSubscriptionsNotificationSubject(message);
           String body = getSubscriptionsNotificationBody(pubDetail,
-              getHTMLNodePath(fatherPK, "fr"), message);
+              getHTMLNodePath(fatherPK, "fr"), message, update);
 
           // english notifications
           String subject_en = getSubscriptionsNotificationSubject(message_en);
           String body_en = getSubscriptionsNotificationBody(pubDetail,
-              getHTMLNodePath(fatherPK, "en"), message_en);
+              getHTMLNodePath(fatherPK, "en"), message_en, update);
 
           NotificationMetaData notifMetaData = new NotificationMetaData(
               NotificationParameters.NORMAL, subject, body);
@@ -2175,10 +2178,16 @@ public class KmeliaBmEJB implements SessionBean {
   }
 
   private String getSubscriptionsNotificationBody(PublicationDetail pubDetail,
-      String htmlPath, ResourceLocator message) {
+      String htmlPath, ResourceLocator message, boolean update) {
     StringBuffer messageText = new StringBuffer();
-    messageText.append(message.getString("MailNewPublicationSubscription"))
+    if (update) {
+    messageText.append(message.getString("MailNewPublicationSubscriptionUpdate"))
         .append("\n");
+    }
+    else {
+      messageText.append(message.getString("MailNewPublicationSubscription"))
+      .append("\n");
+    }
     messageText.append(message.getString("PublicationName")).append(" : ")
         .append(pubDetail.getName(message.getLanguage())).append("\n");
     if (StringUtil.isDefined(pubDetail.getDescription(message.getLanguage()))) {
@@ -2193,7 +2202,7 @@ public class KmeliaBmEJB implements SessionBean {
 
   private String getSubscriptionsNotificationSubject(ResourceLocator message) {
     return message.getString("Subscription");
-  }
+   }
 
   /**
    * Delete a path between publication and topic
@@ -2980,7 +2989,7 @@ public class KmeliaBmEJB implements SessionBean {
 
         // the publication has been validated
         // we must alert all subscribers of the different topics
-        NodePK oneFather = sendSubscriptionsNotification(currentPubDetail);
+        NodePK oneFather = sendSubscriptionsNotification(currentPubDetail, false);
 
         // we have to alert publication's creator
         sendValidationNotification(oneFather, currentPubDetail, null, userId);
@@ -3386,7 +3395,7 @@ public class KmeliaBmEJB implements SessionBean {
       indexExternalElementsOfPublication(pubDetail);
 
       // alert subscribers
-      sendSubscriptionsNotification(pubDetail);
+      sendSubscriptionsNotification(pubDetail, false);
 
       // alert supervisors
       if (topicPK != null) {
@@ -4790,7 +4799,7 @@ public class KmeliaBmEJB implements SessionBean {
       a = (Alias) newAliases.get(i);
       pubDetail.getPK().setComponentName(a.getInstanceId()); // Change the instanceId to make the
       // right URL
-      sendSubscriptionsNotification(new NodePK(a.getId(), a.getInstanceId()), pubDetail);
+      sendSubscriptionsNotification(new NodePK(a.getId(), a.getInstanceId()), pubDetail, false);
     }
   }
 
