@@ -38,6 +38,7 @@
       </list>
     </property>
     <property name="searchSystemEnvironment" value="true" />
+    <property name="ignoreUnresolvablePlaceholders" value="true"/>
   </bean>
 
   <bean id="notificationHelper" class="com.silverpeas.mailinglist.service.notification.NotificationHelperImpl">
