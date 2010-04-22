@@ -296,11 +296,26 @@ public class ResourcesManagerBmEJB implements SessionBean {
   }
 
   public void updateReservation(String listReservation,
-      ReservationDetail reservationCourante) {
+      ReservationDetail reservationCourante, boolean updateDate) {
     Connection con = initCon();
     try {
       ResourcesManagerDAO.updateReservation(con, listReservation,
-          reservationCourante);
+          reservationCourante, updateDate);
+      createIndex(reservationCourante);
+    } catch (Exception e) {
+      throw new ResourcesManagerRuntimeException(
+          "ResourcesManagerBmEJB.updateReservation()",
+          SilverpeasRuntimeException.ERROR,
+          "resourcesManager.EX_UPDATE_RESERVATION", e);
+    } finally {
+      fermerCon(con);
+    }
+  }
+
+  public void updateReservation(ReservationDetail reservationCourante) {
+    Connection con = initCon();
+    try {
+      ResourcesManagerDAO.updateReservation(con, reservationCourante);
       createIndex(reservationCourante);
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException(
@@ -420,6 +435,22 @@ public class ResourcesManagerBmEJB implements SessionBean {
     }
   }
 
+  public List<ReservationDetail> getReservationForValidation(String instanceId, Date monthDate,
+      String userId, String language) {
+    Connection con = initCon();
+    try {
+      return ResourcesManagerDAO.getReservationForValidation(con, instanceId, monthDate, userId,
+          language);
+    } catch (Exception e) {
+      throw new ResourcesManagerRuntimeException(
+          "ResourcesManagerBmEJB.getMonthReservation()",
+          SilverpeasRuntimeException.ERROR,
+          "resourcesManager.EX_GET_MONTHLY_RESERVATIONS", e);
+    } finally {
+      fermerCon(con);
+    }
+  }
+
   public List<ReservationDetail> getMonthReservationOfCategory(String instanceId, Date monthDate,
       String userId, String language, String idCategory) {
     Connection con = initCon();
@@ -436,6 +467,21 @@ public class ResourcesManagerBmEJB implements SessionBean {
     }
   }
 
+  public String getStatusResourceOfReservation(String resourceId, String reservationId)
+  {
+    Connection con = initCon();
+    try {
+      return ResourcesManagerDAO.getStatusResourceOfReservation(con, Integer.parseInt(resourceId), Integer.parseInt(reservationId));
+    } catch (Exception e) {
+      throw new ResourcesManagerRuntimeException(
+          "ResourcesManagerBmEJB.getMonthReservationOfCategory()",
+          SilverpeasRuntimeException.ERROR,
+          "resourcesManager.EX_GET_MONTHLY_RESERVATIONS", e);
+    } finally {
+      fermerCon(con);
+    }
+  }
+  
   private Connection initCon() {
     Connection con;
     // initialisation de la connexion
@@ -512,7 +558,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
             try {
               pubTemplate = PublicationTemplateManager
                   .getPublicationTemplate(resource.getInstanceId() + ":"
-                  + xmlFormShortName);
+                      + xmlFormShortName);
               RecordSet set = pubTemplate.getRecordSet();
               set.indexRecord(resource.getId(), xmlFormName, indexEntry);
             } catch (Exception e) {
@@ -569,6 +615,83 @@ public class ResourcesManagerBmEJB implements SessionBean {
               "resourcesManager.MSG_INDEXRESERVATIONS", e);
         }
       }
+    }
+  }
+
+  public void addManager(int resourceId, int managerId) {
+    Connection con = initCon();
+    try {
+      ResourcesManagerDAO.addManager(con, resourceId, managerId);
+    } catch (Exception e) {
+      throw new ResourcesManagerRuntimeException(
+          "ResourcesManagerBmEJB.addManager()",
+          SilverpeasRuntimeException.ERROR,
+          "resourcesManager.EX_ADD_MANAGER", e);
+    } finally {
+      fermerCon(con);
+    }
+  }
+
+  public void addManagers(int resourceId, List<String> managers) {
+    Connection con = initCon();
+    try {
+      ResourcesManagerDAO.removeAllManagers(con, resourceId);
+      Iterator<String> it = managers.iterator();
+      while (it.hasNext()) {
+        String manager = it.next();
+        String managerId = manager.split("/")[0];
+        addManager(resourceId, Integer.parseInt(managerId));
+      }
+    } catch (SQLException e) {
+      throw new ResourcesManagerRuntimeException(
+          "ResourcesManagerBmEJB.addManagers()",
+          SilverpeasRuntimeException.ERROR,
+          "resourcesManager.EX_ADD_MANAGER", e);
+    } finally {
+      fermerCon(con);
+    }
+  }
+
+  public void removeManager(int resourceId, int managerId) {
+    Connection con = initCon();
+    try {
+      ResourcesManagerDAO.removeManager(con, resourceId, managerId);
+    } catch (Exception e) {
+      throw new ResourcesManagerRuntimeException(
+          "ResourcesManagerBmEJB.removeManager()",
+          SilverpeasRuntimeException.ERROR,
+          "resourcesManager.EX_REMOVE_MANAGER", e);
+    } finally {
+      fermerCon(con);
+    }
+  }
+
+  public List<String> getManagers(int resourceId) {
+    Connection con = initCon();
+    try {
+      return ResourcesManagerDAO.getManagers(con, resourceId);
+    } catch (Exception e) {
+      throw new ResourcesManagerRuntimeException(
+          "ResourcesManagerBmEJB.getManagers()",
+          SilverpeasRuntimeException.ERROR,
+          "resourcesManager.EX_GET_MANAGERS", e);
+    } finally {
+      fermerCon(con);
+    }
+  }
+
+  public void updateResourceStatus(String status, int resourceId, int reservationId,
+      String componentId) {
+    Connection con = initCon();
+    try {
+      ResourcesManagerDAO.updateResourceStatus(con, status, resourceId, reservationId, componentId);
+    } catch (Exception e) {
+      throw new ResourcesManagerRuntimeException(
+          "ResourcesManagerBmEJB.updateResourceStatus()",
+          SilverpeasRuntimeException.ERROR,
+          "resourcesManager.EX_UPDATE_RESOURCE", e);
+    } finally {
+      fermerCon(con);
     }
   }
 

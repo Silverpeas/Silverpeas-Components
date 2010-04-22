@@ -95,6 +95,13 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%@ page import="com.silverpeas.util.*"%>
 
+<%!
+
+private static final String STATUS_VALIDATE       = "V";
+private static final String STATUS_FOR_VALIDATION = "A";
+private static final String STATUS_REFUSED        = "R";
+
+%>
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
@@ -109,4 +116,5 @@ String[] browseContext = (String[]) request.getAttribute("browseContext");
 String spaceLabel = browseContext[0];
 String componentLabel = browseContext[1];
 String componentId = browseContext[3];
+
 %>

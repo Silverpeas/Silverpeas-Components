@@ -41,6 +41,8 @@
 	DataRecord	xmlData = (DataRecord) request.getAttribute("XMLData");
 	PagesContext context = (PagesContext) request.getAttribute("context"); 
 	Boolean showComments = (Boolean) request.getAttribute("ShowComments");
+	List managers  = (List) request.getAttribute("Managers");
+	String objectView = request.getParameter("objectView");
 	
 	String name=maResource.getName();
 	String responsibleId=maResource.getResponsibleId();
@@ -54,7 +56,7 @@
 	browseBar.setComponentName(componentLabel,"Main");
 	if(provenance.equals("resources")){
 		// on vient de resources
-		cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourListeResource"), "ViewResources?id="+idcategory,false);
+		cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourListeResource"), "ViewResources?id="+idcategory+"&objectView="+objectView,false);
 		String chemin = "<a href=\"ViewCategories\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.listCategorie"))+"</a>";
 		String chemin2 ="<a href=\"ViewResources?id="+ idcategory + "\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.categorie"))+"</a>";
 		chemin = chemin + " > " + chemin2;
@@ -67,7 +69,7 @@
 	}
 	else if (provenance.equals("reservation")){
 		// on vient du récapitulatif de la réservation
-		cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourReservation"), "ViewReservation",false);
+		cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourReservation"), "ViewReservation?objectView="+objectView,false);
 		String chemin ="<a href=\"ViewReservation\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.recapitulatifReservation"))+"</a>";
 		browseBar.setPath(chemin);
 	}
@@ -148,6 +150,24 @@ buttonPane.addButton(cancelButton);
 				%>
 			</td>
 		</tr>-->
+		<tr>
+		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.responsable"));%> : </TD>
+     
+     <TD id="managers"> 
+      <%
+        
+        String managerNames = "";
+        if (managers != null) {
+          Iterator it = managers.iterator();
+          while(it.hasNext())
+          {
+            UserDetail manager = (UserDetail) it.next();
+            managerNames += manager.getDisplayedName()+"<br/>";
+          }
+        } %>
+        <%=managerNames %>
+      </TD>
+      </tr>
 		<input type="HIDDEN" name="resourceId" value="<%=resourceId%>"/>
 	</TABLE>
 	<%out.println(board.printAfter()); %>

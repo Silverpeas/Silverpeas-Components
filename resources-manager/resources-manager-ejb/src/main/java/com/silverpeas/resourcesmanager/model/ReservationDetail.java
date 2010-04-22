@@ -41,6 +41,7 @@ public class ReservationDetail implements Serializable {
   private Date updateDate;
   private String instanceId;
   private List<ResourceDetail> listResourcesReserved;
+  private String status;
 
   private String userName;
 
@@ -140,6 +141,14 @@ public class ReservationDetail implements Serializable {
     this.reason = reason;
   }
 
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
   public ReservationDetail(String event, Date beginDate, Date endDate,
       String reason, String place) {
     super();
@@ -164,6 +173,23 @@ public class ReservationDetail implements Serializable {
     this.creationDate = creationDate;
     this.updateDate = updateDate;
     this.instanceId = instanceId;
+  }
+
+  public ReservationDetail(String id, String event, Date beginDate,
+      Date endDate, String reason, String place, String userId,
+      Date creationDate, Date updateDate, String instanceId, String status) {
+    super();
+    this.id = id;
+    this.event = event;
+    this.beginDate = beginDate;
+    this.endDate = endDate;
+    this.reason = reason;
+    this.place = place;
+    this.userId = userId;
+    this.creationDate = creationDate;
+    this.updateDate = updateDate;
+    this.instanceId = instanceId;
+    this.status = status;
   }
 
 }

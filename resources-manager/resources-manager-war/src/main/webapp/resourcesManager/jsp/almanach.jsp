@@ -53,6 +53,7 @@ if(objectView == null){
 	objectView = "myReservation";
 }
 
+
 String idResourceFromRR = (String)request.getAttribute("resourceId");
 String personalReservation = "myReservation";
 
@@ -82,6 +83,14 @@ String flag = (String)request.getAttribute("Profile");
 	    evt.setPlace(maReservation.getPlace());
 	    evt.setInstanceId(componentId);
 	    evt.setTooltip(resource.getString("resourcesManager.bookedBy")+resourcesManagerSC.getUserDetail(maReservation.getUserId()).getDisplayedName());
+	    String color = "black";
+	    if (STATUS_FOR_VALIDATION.equals(maReservation.getStatus())) {
+	      color = "red";
+	    }
+	    else if (STATUS_REFUSED.equals(maReservation.getStatus())) {
+	      color = "gray";
+	    }
+	    evt.setColor(color);
 	    monthC.addEvent(evt);
 	}
   }
@@ -219,8 +228,8 @@ function clickDay(day){
 
 function viewEvent(id)
 {
-	<% if((objectView.equals(personalReservation)) || (objectView.equals("PlanningOtherUser"))){%>
-		location.href="ViewReservation?reservationId="+id;
+	<% if(objectView.equals(personalReservation) || objectView.equals("PlanningOtherUser") || objectView.equals("viewForValidation")){%>
+		location.href="ViewReservation?reservationId="+id+"&objectView=<%=objectView%>";
 	<%}else {%>
 		location.href="ViewResource?resourceId="+id+"&provenance=calendar";
 	<%}%>
@@ -249,10 +258,14 @@ out.println(gef.getLookStyleSheet());
 		operationPane.addOperation(resource.getIcon("resourcesManager.createReservation"), resource.getString("resourcesManager.creerReservation"),"NewReservation");
 		operationPane.addOperation(resource.getIcon("resourcesManager.viewMyReservations"), resource.getString("resourcesManager.Reservation"),"Calendar?objectView="+personalReservation);
 		operationPane.addOperation(resource.getIcon("resourcesManager.viewUserReservation"), resource.getString("resourcesManager.viewUserReservation"), "javascript:onClick=viewOtherPlanning()");
-		if(flag.equals("admin")){
+		if(flag.equals("responsable")){
 			operationPane.addLine();
-			operationPane.addOperation(resource.getIcon("resourcesManager.gererCategorie"), resource.getString("resourcesManager.gererCategorieRessource"),"ViewCategories");
+			operationPane.addOperation(resource.getIcon("resourcesManager.viewReservationForValidation"), resource.getString("resourcesManager.viewReservationForValidation"),"Calendar?objectView=viewForValidation");
 		}
+		if(flag.equals("admin")){
+      operationPane.addLine();
+      operationPane.addOperation(resource.getIcon("resourcesManager.gererCategorie"), resource.getString("resourcesManager.gererCategorieRessource"),"ViewCategories");
+    }
 	}
   	out.println(window.printBefore());
 	out.println(frame.printBefore());

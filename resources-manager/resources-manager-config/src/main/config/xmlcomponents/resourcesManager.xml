@@ -35,6 +35,7 @@
   <instanceClassName>com.silverpeas.resourcesmanager.ResourcesManagerInstanciator</instanceClassName>
  <Profiles>
     <Profile name="admin">Gestionnaires</Profile>
+	<Profile name="responsable">Responsables</Profile>
     <Profile name="publisher">Lecteurs</Profile>
     <!-- <Profile name="user">Lecteur</Profile> -->
   </Profiles>

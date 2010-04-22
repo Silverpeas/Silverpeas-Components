@@ -34,6 +34,7 @@
 List listResourcesofReservation = (List)request.getAttribute("listResourcesofReservation");
 String reservationId = (String)request.getAttribute("reservationId");
 ReservationDetail maReservation = (ReservationDetail)request.getAttribute("reservation");
+String objectView = (String) request.getAttribute("objectView");
 String event = maReservation.getEvent();
 String place = maReservation.getPlace();
 String reason = EncodeHelper.javaStringToHtmlParagraphe(maReservation.getReason());
@@ -44,7 +45,7 @@ String minuteHourDateEnd = DateUtil.getFormattedTime(maReservation.getEndDate())
 String flag = (String)request.getAttribute("Profile");
 
 Board	board		 = gef.getBoard();
-Button cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourListeReservation"), "Calendar",false);
+Button cancelButton = gef.getFormButton(resource.getString("resourcesManager.retourListeReservation"), "Calendar?objectView="+objectView,false);
 ButtonPane buttonPane = gef.getButtonPane();
 buttonPane.addButton(cancelButton);
 
@@ -61,9 +62,19 @@ buttonPane.addButton(cancelButton);
 		}
 	}
 	
-	function getResource(resourceId){
-		location.href="ViewResource?resourceId="+resourceId+"&provenance=reservation&reservationId="+<%=maReservation.getId()%>;
+	function getResource(resourceId, objectView){
+		location.href="ViewResource?resourceId="+resourceId+"&provenance=reservation&reservationId="+<%=maReservation.getId()%> + "&objectView=" + objectView;
 	}
+
+	function valideResource(resourceId, objectView) {
+		if(confirm("<%=resource.getString("resourcesManager.confirmValideResource")%>")){
+        location.href="ValidateResource?ResourceId=" + resourceId + "&reservationId=" + <%=reservationId%> + "&objectView=" + objectView;
+        }
+    }
+
+    function refuseResource(resourceId, resourceName, objectView) {
+        window.location.href = "ForRefuseResource?ResourceId=" + resourceId + "&ResourceName=" + resourceName+ "&reservationId=" + <%=reservationId%> + "&objectView=" + objectView;
+    }
 	</script>
 	</head>
 	<body id="resourcesManager">
@@ -81,7 +92,7 @@ buttonPane.addButton(cancelButton);
 				
 		out.println(window.printBefore());
 		out.println(frame.printBefore());
-		%>
+  %>
 <table width="100%">
 	<tr>
 		<td>
@@ -132,14 +143,37 @@ buttonPane.addButton(cancelButton);
 					<td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.resourcesReserved"));%> :</td>
 					<td width="100%"><%
 					for(int i=0;i<listResourcesofReservation.size();i++){
-						ResourceDetail maResource = (ResourceDetail)listResourcesofReservation.get(i);%>
-						<a onClick="getResource(<%=maResource.getId()%>)" style="cursor: pointer;"><%=maResource.getName()%></a><br/>
-					<%}
-				%>
+						ResourceDetail maResource = (ResourceDetail)listResourcesofReservation.get(i);
+						String resourceId = maResource.getId();
+						String resourceName = maResource.getName();%>
+						<%
+						// afficher les icônes de validation et refus si la ressource est en état à valider 
+						// et si l'utilisateur est le responsable de cette ressource
+						String currentUser = resourcesManagerSC.getUserId() ;
+						List managers = maResource.getManagers();
+						if (STATUS_FOR_VALIDATION.equals(maResource.getStatus())) { %>
+             <a style="color:red" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
+	          <% } else if (STATUS_REFUSED.equals(maResource.getStatus())) { %>
+	            <a style="color:grey" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
+	          <% } else {%>
+	            <a style="color:black" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
+	           <% } 
+						if (STATUS_FOR_VALIDATION.equals(maResource.getStatus()) &&  managers != null && managers.contains(currentUser)) { %>
+							<a href="javascript:valideResource(<%=resourceId%>, '<%=objectView%>')">
+							<img src="<%=m_context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("resourcesManager.valideResource")%>" title="<%=resource.getString("resourcesManager.valideResource")%>">
+							</a>&nbsp;
+              <a href="javascript:refuseResource(<%=resourceId%>, '<%=resourceName%>', '<%=objectView%>')">
+              <img src="<%=m_context%>/util/icons/wrong.gif" align="middle" border="0" alt="<%=resource.getString("resourcesManager.refuseResource")%>" title="<%=resource.getString("resourcesManager.refuseResource")%>">
+              </a>&nbsp;
+						<% }  %>
+						<br/>
+				<% } %>
 					</td>
 				</tr>
 			</TABLE>
 			<%out.println(board.printAfter());%>
+			<br/>
+      <%=resource.getString("resourcesManager.explain") %>
 		</td>
 	</tr>
 </table>

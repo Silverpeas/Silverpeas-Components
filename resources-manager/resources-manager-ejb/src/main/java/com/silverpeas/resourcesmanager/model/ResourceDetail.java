@@ -25,6 +25,7 @@ package com.silverpeas.resourcesmanager.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class ResourceDetail implements Serializable {
 
@@ -40,6 +41,9 @@ public class ResourceDetail implements Serializable {
   private String updaterId;
   private String instanceId;
   private boolean bookable;
+  
+  private List<String> managers;
+  private String status;        // pour les ressources associées à une réservation
 
   public boolean getBookable() {
     return bookable;
@@ -129,6 +133,22 @@ public class ResourceDetail implements Serializable {
     this.updaterId = updaterId;
   }
 
+  public List<String> getManagers() {
+    return managers;
+  }
+
+  public void setManagers(List<String> managers) {
+    this.managers = managers;
+  }
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
   public ResourceDetail(String name, String categoryId, boolean bookable) {
     super();
     this.name = name;
@@ -164,6 +184,25 @@ public class ResourceDetail implements Serializable {
     this.bookable = bookable;
   }
 
+  public ResourceDetail(String id, String categoryId, String name,
+      Date creationDate, Date updateDate, String description,
+      String responsibleId, String createrId, String updaterId,
+      String instanceId, boolean bookable, String status) {
+    super();
+    this.id = id;
+    this.categoryId = categoryId;
+    this.name = name;
+    this.creationDate = creationDate;
+    this.updateDate = updateDate;
+    this.description = description;
+    this.responsibleId = responsibleId;
+    this.createrId = createrId;
+    this.updaterId = updaterId;
+    this.instanceId = instanceId;
+    this.bookable = bookable;
+    this.status = status;
+  }
+  
   public ResourceDetail(String id, String categoryId, String name,
       String description, String responsibleId, boolean bookable) {
     super();

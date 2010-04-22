@@ -24,6 +24,7 @@
 package com.silverpeas.resourcesmanager.control.ejb;
 
 import java.rmi.RemoteException;
+import java.sql.Connection;
 import java.util.Date;
 import java.util.List;
 
@@ -85,7 +86,9 @@ public interface ResourcesManagerBm extends EJBObject {
       String reservationId) throws RemoteException;
 
   public void updateReservation(String listReservation,
-      ReservationDetail reservationCourante) throws RemoteException;
+      ReservationDetail reservationCourante, boolean updateDate) throws RemoteException;
+
+  public void updateReservation(ReservationDetail reservationCourante) throws RemoteException;
 
   public List<ResourceDetail> verificationNewDateReservation(String instanceId,
       String listeReservation, Date startDate, Date endDate,
@@ -94,8 +97,25 @@ public interface ResourcesManagerBm extends EJBObject {
   public List<ReservationDetail> getMonthReservation(String instanceId, Date MonthDate,
       String userId, String language) throws RemoteException;
 
+  public List<ReservationDetail> getReservationForValidation(String instanceId, Date MonthDate,
+      String userId, String language) throws RemoteException;
+
   public List<ReservationDetail> getMonthReservationOfCategory(String instanceId, Date MonthDate,
       String userId, String language, String idCategory) throws RemoteException;
 
   public void indexResourceManager(String instanceId) throws RemoteException;
+
+  public void addManager(int resourceId, int managerId) throws RemoteException;
+
+  public void addManagers(int resourceId, List<String> managers) throws RemoteException;
+
+  public void removeManager(int resourceId, int managerId) throws RemoteException;
+
+  public List<String> getManagers(int resourceId) throws RemoteException;
+
+  public String getStatusResourceOfReservation(String resourceId, String reservationId) throws RemoteException;
+  
+  public void updateResourceStatus(String status, int resourceId, int reservationId,
+      String componentId) throws RemoteException;
+
 }

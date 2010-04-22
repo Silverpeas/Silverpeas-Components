@@ -32,10 +32,13 @@
 	String 			idcategory 	= (String) request.getAttribute("categoryId");
 	List 			list 		= (List) request.getAttribute("listCategories");
 	ResourceDetail 	details 	= (ResourceDetail) request.getAttribute("resource");
+	List managers  = (List) request.getAttribute("Managers");
 	
 	Form 			formUpdate  = (Form) request.getAttribute("Form");
 	DataRecord 		data    	= (DataRecord) request.getAttribute("Data"); 
 	String 			xmlFormName = (String) request.getAttribute("XMLFormName");
+	
+	String managerIds = "";
 	
 	PagesContext  context = null;
 	if (formUpdate != null)
@@ -60,7 +63,7 @@
 		resourceId 		= details.getId();
 		name 			= details.getName();
 		bookable 		= details.getBookable();
-		reponsibleId 	= details.getResponsibleId();
+		//reponsibleId 	= details.getResponsibleId();
 		description 	= details.getDescription();
 	}
 	
@@ -79,6 +82,15 @@
 	out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=URLManager.getApplicationURL()%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
+
+<script type="text/javascript" src="<%=m_context%>/util/ajax/prototype.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/ajax/rico.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/ajax/ricoAjax.js"></script>
+
+
 <%
 	if (formUpdate != null)
 	{
@@ -126,6 +138,13 @@ function verification(){
 		document.createForm.submit();
 	}
 }
+
+function selectManagers()
+{
+  var url = "ToSelectManagers?ManagerIds=" + document.getElementById("managerIds").value;
+  var name = "SelectUser";
+  SP_openWindow(url, name, '550', '500','scrollbars=yes, resizable, alwaysRaised');
+}
 </script>
 </head>
 <body>
@@ -137,12 +156,14 @@ if (details == null)
 else
 	browseBar.setPath(resource.getString("resourcesManager.modifierresource"));
 
+operationPane.addOperation(resource.getIcon("resourcesManager.userPanel"), resource.getString("resourcesManager.SelectManagers"), "javascript:selectManagers()");
+
 Board	board		 = gef.getBoard();
 
-tabbedPane.addTab(resource.getString("resourcesManager.resource"), "#", true);
+//tabbedPane.addTab(resource.getString("resourcesManager.resource"), "#", true);
 
 out.println(window.printBefore());
-out.println(tabbedPane.print());
+//out.println(tabbedPane.print());
 out.println(frame.printBefore());
 out.println(board.printBefore());
 
@@ -153,7 +174,6 @@ buttonPane.addButton(cancelButton);
 %>
 <form NAME="createForm" method="post" enctype="multipart/form-data" action="<% if(details == null){ %>SaveResource<%}else{%>ModifyResource<%}%>">
 <TABLE ALIGN="CENTER" CELLPADDING="3" CELLSPACING="0" BORDER="0" WIDTH="100%">
-	<input type="hidden" name="SPRM_responsible" value="0"/>
 	<tr>
 		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.nomcategorie"));%> : </TD>
 		<TD width="100%">
@@ -187,10 +207,26 @@ buttonPane.addButton(cancelButton);
 		<TD><input type="checkbox" name="SPRM_bookable" id="bookable" <% if((details != null) && (bookable == true)){out.println("checked="+"checked");}else{out.println("");}%> /> <label for="bookable"></label>&nbsp;</TD>
 	</tr>
 
-	<!--<tr>
-		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.responsable"));%> : </TD>
-		<TD><input type="text" name="SPRM_responsible" size="60" maxlength="60" value=<% if((details != null) && (reponsibleId != "0")){out.println(reponsibleId);}else{out.println("");}%> >&nbsp;</TD>
-	</tr>-->
+	<tr>
+	   <TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.responsable"));%> : </TD>
+	   
+	   <TD id="managers"> 
+			<%
+		    
+		    String managerNames = "";
+			  if (managers != null) {
+			    Iterator it = managers.iterator();
+			    while(it.hasNext())
+			    {
+			      UserDetail manager = (UserDetail) it.next();
+			      managerIds += manager.getId()+ ",";
+			      managerNames += manager.getDisplayedName()+"<br/>";
+			    }
+			  } %>
+			  <%=managerNames %>
+      </TD>
+      <input type="hidden" name="managerIds" id="managerIds" value="<%=managerIds %>"/>
+  </tr>
 	
 	<tr>
 		<td colspan="2">( <img border="0" src=<%=resource.getIcon("resourcesManager.obligatoire")%> width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</td>
