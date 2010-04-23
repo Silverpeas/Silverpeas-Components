@@ -94,7 +94,12 @@
   String roundId = (String) request.getParameter("RoundId");
   String profile = (String) request.getAttribute("Profile");
   String choice = (String) request.getParameter("Choice");
-
+  
+  boolean participated = true;
+  if (StringUtil.isDefined(request.getParameter("Participated"))) {
+    participated = request.getParameter("Participated").equalsIgnoreCase("true");
+  }
+  
   boolean isParticipationMultipleUsed = surveyScc.isParticipationMultipleUsed();
   boolean isParticipationMultipleAllowedForUser =
       surveyScc.isParticipationMultipleAllowedForUser();
@@ -105,6 +110,8 @@
   String m_context =
       GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
+  
+  
   //Icons
   String topicAddSrc = m_context + "/util/icons/folderAdd.gif";
   String alertSrc = m_context + "/util/icons/alert.gif";
@@ -285,7 +292,7 @@
 
     String surveyPart =
         displaySurvey(survey, gef, m_context, surveyScc, resources, settings, profile,
-            pollingStationMode);
+            pollingStationMode, participated);
 
     // notification
     OperationPane operationPane = window.getOperationPane();
@@ -320,7 +327,7 @@
     browseBar.setExtraInformation(survey.getHeader().getTitle());
 
     String surveyPart =
-        displaySurveyComments(surveyScc, survey, gef, resources, profile, pollingStationMode);
+        displaySurveyComments(surveyScc, survey, gef, resources, profile, pollingStationMode, participated);
 
     window.addBody(surveyPart);
     out.println(window.print());
@@ -488,9 +495,10 @@
     browseBar.setComponentName(surveyScc.getComponentLabel(), "surveyList.jsp?Action=View");
     browseBar.setExtraInformation(survey.getHeader().getTitle());
 
+    participated = false;
     String surveyPart =
         displayQuestions(survey, new Integer(roundId).intValue(), gef, m_context, surveyScc,
-            resources, settings, profile, pollingStationMode);
+            resources, settings, profile, pollingStationMode, participated);
 
     // notification
     OperationPane operationPane = window.getOperationPane();
@@ -689,9 +697,9 @@ body {
       choice = "D";
     String surveyPart =
         displaySurveyResult(choice, survey, gef, m_context, surveyScc, resources, isClosed,
-            settings, frame);
+            settings, frame, participated);
     window.addBody(displayTabs(surveyScc, survey.getHeader().getPK().getId(), gef, action,
-        profile, resources, pollingStationMode).print() +
+        profile, resources, pollingStationMode, participated).print() +
         frame.printBefore() + "<center>" + alreadyVotes + "</center><BR>" + surveyPart);
 
     out.println(window.print());

@@ -2,18 +2,30 @@
 
 <%!
 
-TabbedPane displayTabs(SurveySessionController surveyScc, String surveyId, GraphicElementFactory gef, String action, String profile, ResourcesWrapper resources, boolean pollingStationMode) {
+TabbedPane displayTabs(SurveySessionController surveyScc, String surveyId, GraphicElementFactory gef, String action, String profile, 
+ResourcesWrapper resources, boolean pollingStationMode, boolean participated) {
 	TabbedPane tabbedPane = gef.getTabbedPane();
 	String label = "";
 	if (pollingStationMode)
 		label = resources.getString("PollingStation");
 	else
 		label = resources.getString("Survey");
-	tabbedPane.addTab(label, "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId="+surveyId, action.equals("ViewCurrentQuestions") || action.equals("ViewResult") || action.equals("ViewSurvey"), true);
-	tabbedPane.addTab(resources.getString("survey.Comments"), "surveyDetail.jsp?Action=ViewComments&SurveyId="+surveyId, action.equals("ViewComments"), true);
+	
+	boolean tabValid = action.equals("ViewCurrentQuestions") || action.equals("ViewResult") || action.equals("ViewSurvey");
+	if (!participated) {
+	 tabValid = action.equals("ViewCurrentQuestions") || action.equals("ViewSurvey");
+	}
+	
+	tabbedPane.addTab(label, "surveyDetail.jsp?Action=ViewCurrentQuestions&Participated="+participated+"&SurveyId="+surveyId, tabValid, true);
 
+  if ("admin".equals(profile) && !participated) {
+      tabbedPane.addTab(resources.getString("survey.results"), "surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId, action.equals("ViewResult"), true);
+  }
+	
+	tabbedPane.addTab(resources.getString("survey.Comments"), "surveyDetail.jsp?Action=ViewComments&Participated="+participated+"&SurveyId="+surveyId, action.equals("ViewComments"), true);
+   
 	if (("admin".equals(profile) || "publisher".equals(profile)) && surveyScc.isPdcUsed())
-		tabbedPane.addTab(resources.getString("GML.PDC"), "pdcPositions.jsp?Action=ViewPdcPositions&SurveyId="+surveyId, action.equals("ViewPdcPositions"), true);
+		tabbedPane.addTab(resources.getString("GML.PDC"), "pdcPositions.jsp?Action=ViewPdcPositions&Participated="+participated+"&SurveyId="+surveyId, action.equals("ViewPdcPositions"), true);
 
 	return tabbedPane;
 }
@@ -58,7 +70,8 @@ String displaySurveyHeader(QuestionContainerHeader surveyHeader, SurveySessionCo
         return r;
 }
 
-String displaySurvey(QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc, ResourcesWrapper resources, ResourceLocator settings, String profile, boolean pollingStationMode) throws SurveyException, ParseException {
+String displaySurvey(QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc, 
+ResourcesWrapper resources, ResourceLocator settings, String profile, boolean pollingStationMode, boolean participated) throws SurveyException, ParseException {
 
         String r = "";
         Question question = null;
@@ -68,7 +81,7 @@ String displaySurvey(QuestionContainerDetail survey, GraphicElementFactory gef, 
                 QuestionContainerHeader surveyHeader = survey.getHeader();
                 Collection questions = survey.getQuestions();
 
-				r += displayTabs(surveyScc, surveyHeader.getPK().getId(), gef, "ViewSurvey", profile, resources, pollingStationMode).print();
+				r += displayTabs(surveyScc, surveyHeader.getPK().getId(), gef, "ViewSurvey", profile, resources, pollingStationMode, participated).print();
 
                 //Display the survey header
                 r += displaySurveyHeader(surveyHeader, surveyScc, resources, gef);
@@ -107,7 +120,8 @@ String displaySurvey(QuestionContainerDetail survey, GraphicElementFactory gef, 
         return r;
 }
 
-String displayQuestions(QuestionContainerDetail survey, int roundId, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc, ResourcesWrapper resources, ResourceLocator settings, String profile, boolean pollingStationMode) throws SurveyException, ParseException {
+String displayQuestions(QuestionContainerDetail survey, int roundId, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc, 
+ResourcesWrapper resources, ResourceLocator settings, String profile, boolean pollingStationMode, boolean participated) throws SurveyException, ParseException {
         Board board = gef.getBoard();
         String r = "";
         try{
@@ -133,7 +147,7 @@ String displayQuestions(QuestionContainerDetail survey, int roundId, GraphicElem
                 if (nbQuestionsPerPage >= questions.size())
                     nbQuestions = questions.size();
 
-				r += displayTabs(surveyScc, surveyHeader.getPK().getId(), gef, "ViewSurvey", profile, resources, pollingStationMode).print();
+				r += displayTabs(surveyScc, surveyHeader.getPK().getId(), gef, "ViewSurvey", profile, resources, pollingStationMode, participated).print();
                 r += frame.printBefore();
                 r += "<center>";
                 r += displaySurveyHeader(surveyHeader, surveyScc, resources, gef);
@@ -608,11 +622,16 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
        return r;
   }
 
-  String displaySurveyResult(String choice, QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc, ResourcesWrapper resources, boolean isClosed, ResourceLocator settings, Frame frame) throws SurveyException, ParseException {
-		return displaySurveyResult("unknown", "unknown", "all", null, choice, survey, gef, m_context, surveyScc, resources, isClosed, settings, frame);
+  String displaySurveyResult(String choice, QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, 
+  SurveySessionController surveyScc, ResourcesWrapper resources, boolean isClosed, 
+  ResourceLocator settings, Frame frame, boolean participated) throws SurveyException, ParseException {
+		return displaySurveyResult("unknown", "unknown", "all", null, choice, survey, gef, m_context, surveyScc, resources, isClosed, 
+		settings, frame, participated);
   }
 	
-  String displaySurveyResult(String userName, String userId, String styleView, Collection resultsByUser, String choice, QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc, ResourcesWrapper resources, boolean isClosed, ResourceLocator settings, Frame frame) throws SurveyException, ParseException {
+  String displaySurveyResult(String userName, String userId, String styleView, Collection resultsByUser, String choice, 
+  QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc, 
+  ResourcesWrapper resources, boolean isClosed, ResourceLocator settings, Frame frame, boolean participated) throws SurveyException, ParseException {
         Board board = gef.getBoard();
         String r = "";
         try{
@@ -660,7 +679,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	                	else
 	                		choice = "D";
 	                    r += "<td>";
-	                    r += "<a href=\"surveyDetail.jsp?Action=ViewResult&SurveyId="+surveyId+"&Choice="+choice+"\">";
+	                    r += "<a href=\"surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId+"&Choice="+choice+"\">";
 	                    r += "Afficher la vue "+resources.getString("survey."+choice);
 	                    r +="</a></td></tr>";
 					}
@@ -1096,14 +1115,15 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
         return r;
   }
   
-  String displaySurveyComments(SurveySessionController surveyScc, QuestionContainerDetail survey, GraphicElementFactory gef, ResourcesWrapper resources, String profile, boolean pollingStationMode) throws SurveyException {
+  String displaySurveyComments(SurveySessionController surveyScc, QuestionContainerDetail survey, GraphicElementFactory gef, 
+  ResourcesWrapper resources, String profile, boolean pollingStationMode, boolean participated) throws SurveyException {
 		Board board = gef.getBoard();
 		Frame frame = gef.getFrame();
         String r = "";
         boolean oneComment = false;
         boolean first = true;
         QuestionContainerHeader surveyHeader = survey.getHeader();
-        r += displayTabs(surveyScc, surveyHeader.getPK().getId(), gef, "ViewComments", profile, resources, pollingStationMode).print();
+        r += displayTabs(surveyScc, surveyHeader.getPK().getId(), gef, "ViewComments", profile, resources, pollingStationMode, participated).print();
         r += frame.printBefore();
         try
         {
