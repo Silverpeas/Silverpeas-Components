@@ -141,8 +141,10 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 				// affichage des annonces de cette catégorie
 				Collection classifieds = category.getClassifieds();
 				int nbClassifieds = 0;
-				out.println("<div id=\"categoryTitle\">"+categoryName+"</div>");
-				out.println("<div id=\"categoryContent\">");
+				%>
+				<div id="categoryTitle"><a href="ViewAllClassifiedsByCategory?CategoryName=<%=categoryName%>&FieldKey=<%=category.getKey()%>"><%=categoryName%></a></div>
+				<div id="categoryContent">
+				<%
 				if (classifieds == null || classifieds.size() == 0) 
 				{
 					%>
@@ -166,11 +168,16 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 					out.println("</ul>");
 				}
 				out.print("</div>");
+				
+			  // lien pour la visualisation de toutes les annonces de la catégorie
+        %>
+          <div id="ViewAllClassifiedsByCategory"><a href="ViewAllClassifiedsByCategory?CategoryName=<%=categoryName%>&FieldKey=<%=category.getKey()%>"><%=resource.getString("classifieds.viewAllClassifiedsByCategory")%></a></div>
+        <%
 				// lien pour la saisie d'une nouvelle annonce
 				%>
 					<div id="newClassified"><a href="NewClassified?FieldKey=<%=category.getKey()%>"><%=resource.getString("classifieds.newClassified")%></a></div>
 				<%
-				//out.println(board.printAfter());
+				
 				out.print("</div>");
 				if ("left".equals(leftOrRight))
 				{

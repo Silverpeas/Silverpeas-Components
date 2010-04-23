@@ -185,7 +185,7 @@ public class ClassifiedsBmEJB implements SessionBean {
       fermerCon(con);
     }
   }
-
+  
   public Collection<ClassifiedDetail> getClassifiedsToValidate(String instanceId) {
     Connection con = initCon();
     try {

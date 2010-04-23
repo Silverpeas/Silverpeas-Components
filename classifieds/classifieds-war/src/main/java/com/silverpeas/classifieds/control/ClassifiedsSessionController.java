@@ -177,7 +177,7 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
     }
     return classifieds;
   }
-
+  
   /**
    * get all classifieds to validate for this instance
    * @return a collection of ClassifiedDetail

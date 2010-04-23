@@ -107,7 +107,7 @@ public interface ClassifiedsBm extends EJBObject {
    */
   public Collection<ClassifiedDetail> getClassifiedsByUser(String instanceId, String userId)
       throws RemoteException;
-
+  
   /**
    * get the number of classifieds for an instance corresponding to instanceId
    * @param instanceId : String

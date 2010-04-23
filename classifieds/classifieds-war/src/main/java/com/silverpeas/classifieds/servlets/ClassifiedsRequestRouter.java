@@ -136,8 +136,8 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
               .indexOf("."));
           PublicationTemplateImpl pubTemplate =
               (PublicationTemplateImpl) PublicationTemplateManager
-              .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
-              xmlFormName);
+                  .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
+                      xmlFormName);
           String templateFileName = pubTemplate.getFileName();
           String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
           formUpdate = pubTemplate.getSearchForm();
@@ -162,13 +162,13 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
         // récupérer les petites annonces à valider
         Collection<ClassifiedDetail> classifieds = classifiedsSC.getClassifiedsToValidate();
         request.setAttribute("Classifieds", classifieds);
-
+        request.setAttribute("TitlePath", "classifieds.viewClassifiedToValidate");
         destination = rootDest + "classifieds.jsp";
       } else if (function.equals("ViewMyClassifieds")) {
         // récupérer les petites annonces de l'utilisateur
         Collection<ClassifiedDetail> classifieds = classifiedsSC.getClassifiedsByUser();
         request.setAttribute("Classifieds", classifieds);
-
+        request.setAttribute("TitlePath", "classifieds.myClassifieds");
         destination = rootDest + "classifieds.jsp";
       } else if (function.equals("SearchClassifieds")) {
         List<FileItem> items = getRequestItems(request);
@@ -235,8 +235,8 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
               .indexOf("."));
           PublicationTemplateImpl pubTemplate =
               (PublicationTemplateImpl) PublicationTemplateManager
-              .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
-              xmlFormName);
+                  .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
+                      xmlFormName);
           if (pubTemplate != null) {
             formView = pubTemplate.getViewForm();
             RecordSet recordSet = pubTemplate.getRecordSet();
@@ -266,8 +266,8 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
               .indexOf("."));
           PublicationTemplateImpl pubTemplate =
               (PublicationTemplateImpl) PublicationTemplateManager
-              .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
-              xmlFormName);
+                  .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
+                      xmlFormName);
           formUpdate = pubTemplate.getUpdateForm();
           RecordSet recordSet = pubTemplate.getRecordSet();
           data = recordSet.getEmptyRecord();
@@ -323,8 +323,8 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
               .indexOf("."));
           PublicationTemplateImpl pubTemplate =
               (PublicationTemplateImpl) PublicationTemplateManager
-              .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
-              xmlFormName);
+                  .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
+                      xmlFormName);
           if (pubTemplate != null) {
             formView = pubTemplate.getUpdateForm();
             RecordSet recordSet = pubTemplate.getRecordSet();
@@ -443,8 +443,8 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
               .indexOf("."));
           PublicationTemplateImpl pubTemplate =
               (PublicationTemplateImpl) PublicationTemplateManager
-              .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
-              xmlFormName);
+                  .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
+                      xmlFormName);
           formUpdate = pubTemplate.getSearchForm();
           RecordSet recordSet = pubTemplate.getRecordSet();
           data = recordSet.getEmptyRecord();
@@ -469,6 +469,41 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
         String subscribeId = request.getParameter("SubscribeId");
         classifiedsSC.deleteSubscribe(subscribeId);
         destination = getDestination("ViewMySubscriptions", classifiedsSC, request);
+      } else if (function.equals("ViewAllClassifiedsByCategory")) {
+        String fieldKey = request.getParameter("FieldKey");
+        String categoryName = request.getParameter("CategoryName");
+        String xmlFormName = classifiedsSC.getXMLFormName();
+        Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
+        String xmlFormShortName = null;
+        if (StringUtil.isDefined(xmlFormName)) {
+          xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName
+              .indexOf("."));
+          PublicationTemplateImpl pubTemplate =
+              (PublicationTemplateImpl) PublicationTemplateManager
+                  .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
+                      xmlFormName);
+          String templateFileName = pubTemplate.getFileName();
+          String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
+          String field = classifiedsSC.getSearchFields1();
+          String label = pubTemplate.getRecordTemplate().getFieldTemplate(field).getFieldName();
+          // Ajout des résultats de la recherche dans la catégorie
+          QueryDescription query = new QueryDescription();
+          query.addFieldQuery(new FieldDescription(templateName + "$$" + label, fieldKey, null));
+          String values = (String) pubTemplate.getRecordTemplate().getFieldTemplate(field)
+          .getParameters(classifiedsSC.getLanguage()).get("values");
+          try {
+            classifieds = classifiedsSC.search(query);
+          } catch (Exception e) {
+            classifieds = new ArrayList<ClassifiedDetail>();
+          }
+        } else {
+          classifieds = new ArrayList<ClassifiedDetail>();
+        }
+        request.setAttribute("Classifieds", classifieds);
+        request.setAttribute("TitlePath", "classifieds.viewByCategorie");
+        request.setAttribute("Extra", categoryName);
+        destination = rootDest + "classifieds.jsp";
+
       } else {
         destination = rootDest + function;
       }
@@ -482,13 +517,7 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
     return destination;
   }
 
-  /*
-   * private List<FileItem> getRequestItems(HttpServletRequest request) throws FileUploadException {
-   * DiskFileUpload dfu = new DiskFileUpload(); List<FileItem> items = dfu.parseRequest(request);
-   * return items; }
-   */
-
-  private List<FileItem> getRequestItems(HttpServletRequest request) throws FileUploadException {
+   private List<FileItem> getRequestItems(HttpServletRequest request) throws FileUploadException {
     DiskFileItemFactory factory = new DiskFileItemFactory();
     ServletFileUpload upload = new ServletFileUpload(factory);
     List<FileItem> items = upload.parseRequest(request);

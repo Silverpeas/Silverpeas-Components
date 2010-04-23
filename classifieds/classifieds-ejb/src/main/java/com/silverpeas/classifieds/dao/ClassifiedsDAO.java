@@ -251,7 +251,7 @@ public class ClassifiedsDAO {
     }
     return listClassifieds;
   }
-
+  
   /**
    * get all classifieds to validate for an instance corresponding to instanceId
    * @param con : Connection

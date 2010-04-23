@@ -27,9 +27,16 @@
 
 <% 
 Collection	classifieds		= (Collection) request.getAttribute("Classifieds");
+String      title         = (String) request.getAttribute("TitlePath");
+String      extra         = (String) request.getAttribute("Extra");
+
+if (!StringUtil.isDefined(title)) {
+  title = "classifieds.myClassifieds";
+}
 %>
 
-<html>
+
+<%@page import="com.silverpeas.util.StringUtil"%><html>
 <head>
 <%
 	out.println(gef.getLookStyleSheet());
@@ -52,7 +59,12 @@ function openSPWindow(fonction, windowName){
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
-	browseBar.setPath(resource.getString("classifieds.myClassifieds"));
+	if (StringUtil.isDefined(extra)) {
+	  browseBar.setPath(resource.getString(title) + " '" + extra + "'");
+	}
+	else {
+	 browseBar.setPath(resource.getString(title));
+	}
 	
 	// affichage des options
 	operationPane.addOperation(resource.getIcon("classifieds.addClassified"),resource.getString("classifieds.addClassified"), "NewClassified");
