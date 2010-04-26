@@ -642,6 +642,18 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
   ResourcesWrapper resources, boolean isClosed, ResourceLocator settings, Frame frame, boolean participated) throws SurveyException, ParseException {
         Board board = gef.getBoard();
         String r = "";
+        
+        // rechercher le commentaire de l'utilisateur
+        String userComment = "";
+        Collection comments = survey.getComments();
+        Iterator it = comments.iterator();
+        while (it.hasNext()) {
+          Comment comment = (Comment) it.next();
+          if (userId.equals(comment.getUserId())) {
+            userComment = comment.getComment();
+          }
+        }
+        
         try{
             if (survey != null) {
                 QuestionContainerHeader surveyHeader = survey.getHeader();
@@ -742,7 +754,10 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	            	r += "<center>";
                 	r += board.printBefore();
                 	r += "<table border=\"0\" width=\"100%\">"; 
-                	r += " <tr><td class=\"textePetitBold\" nowrap>"+resources.getString("survey.participation")+" :</td><td width=\"90%\">"+Encode.javaStringToHtmlString(userName)+"</td></tr>";
+                	r += " <tr><td class=\"textePetitBold\" nowrap>"+resources.getString("survey.participation")+" : </td><td width=\"90%\">"+Encode.javaStringToHtmlString(userName)+"</td></tr>";
+	                if (!userComment.equals("")) {
+	                   r += " <tr><td class=\"textePetitBold\" nowrap>"+resources.getString("survey.Comment")+" : </td><td width=\"90%\">"+Encode.javaStringToHtmlString(userComment)+"</td></tr>";
+	                } 
 	                r += "</table>";
 	                r += board.printAfter();
 	                r += "<br/>";
@@ -767,7 +782,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                           String style = question.getStyle(); 
                           if (styleView.equals("user"))
                           {
-                          		// affichage des r�sults par user
+                          		// affichage des résults par user
                           		if (style.equals("open")) 
 		                        {
 		                        	r += displayOpenAnswersToQuestionByUser(userId, false, question.getPK().getId(), surveyScc);
@@ -1108,7 +1123,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                             r += "<tr><td class=\"labelAnswer\" >"+Encode.javaStringToHtmlString(answer.getLabel())+"<BR>";
                             r += "<img src=\""+url+"\" border=\"0\" width=\"60%\"></td><td>";
                         }
-                        // mettre en valeur cette r�ponse si c'est le choix de l'utilisateur
+                        // mettre en valeur cette réponse si c'est le choix de l'utilisateur
                         if (resultsByUser.contains(answer.getPK().getId()))
 	  	                	r += "<img src=\""+m_context+"/util/icons/finishedTask.gif\" border=\"0\" valign=\"center\" width=\"15\" height=\"15\">";
                         
