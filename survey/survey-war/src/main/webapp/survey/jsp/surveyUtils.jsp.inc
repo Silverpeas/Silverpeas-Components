@@ -629,6 +629,14 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 		settings, frame, participated);
   }
 	
+	  String displaySurveyResult(String userName, String userId, String styleView, Collection resultsByUser, String choice, 
+  QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc, 
+  ResourcesWrapper resources, boolean isClosed, ResourceLocator settings, Frame frame) throws SurveyException, ParseException {
+	   return  displaySurveyResult(userName, userId, styleView, resultsByUser, choice, survey, gef, m_context, surveyScc, 
+      resources, isClosed, settings, frame, true);
+	
+	}
+	
   String displaySurveyResult(String userName, String userId, String styleView, Collection resultsByUser, String choice, 
   QuestionContainerDetail survey, GraphicElementFactory gef, String m_context, SurveySessionController surveyScc, 
   ResourcesWrapper resources, boolean isClosed, ResourceLocator settings, Frame frame, boolean participated) throws SurveyException, ParseException {
