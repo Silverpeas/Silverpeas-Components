@@ -4388,4 +4388,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
     return newPath;
   }
+  
+  /**
+   * return the value of component parameter "axisIdGlossary". This paramater indicate the axis of
+   * pdc to use to highlight word in publication content
+   * @return an indentifier of Pdc axis
+   */
+  public String getAxisIdGlossary() {
+     return getComponentParameterValue("axisIdGlossary");
+  }
 }

@@ -37,7 +37,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="com.silverpeas.publicationTemplate.*"%>
 <%@ page import="com.silverpeas.form.*"%>
-
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%!
  //Icons
 String pubValidateSrc;
@@ -61,8 +61,8 @@ String refusedSrc;
   	String author 		= "";
 	
   	ResourceLocator uploadSettings 		= new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", resources.getLanguage());
-  	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());
-  
+  	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());  	
+  	
 	//Récupération des paramètres
 	String 					profile 		= (String) request.getAttribute("Profile");
 	String					alias			= (String) request.getAttribute("IsAlias");
@@ -204,16 +204,23 @@ String refusedSrc;
 			updaterName = updater.getDisplayedName();
 	}
 
+
+	boolean highlightFirst 		= resources.getSetting("highlightFirstOccurence", false);	
 %>
 
 <%@page import="com.stratelia.silverpeas.versioning.model.DocumentPK"%><HTML>
-<HEAD>
+<head>
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<TITLE></TITLE>
+<title></title>
+<link type="text/css" rel="stylesheet" href="<%=m_context%>/kmelia/jsp/styleSheets/pubHighlight.css" >
 <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.qtip-1.0.0-rc3.min.js"></script>
+<script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
+
 <script language="javascript">
 
 var refusalMotiveWindow = window;
@@ -350,8 +357,9 @@ function zipPublication()
 {
 	SP_openWindow("ZipPublication", "ZipPublication", "500", "300", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
 }
+
 </script>
-</HEAD>
+</head>
 <BODY class="yui-skin-sam" onUnload="closeWindows()" onLoad="openSingleAttachment()">
 <% 
         Window window = gef.getWindow();
@@ -518,7 +526,7 @@ function zipPublication()
 		out.println("<TR><TD valign=\"top\" width=\"100%\" id=\"richContent\">");
     	if (WysiwygController.haveGotWysiwyg(spaceId, componentId, id)) {
         	out.flush();
-        	getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+id+"&SpaceId="+spaceId+"&ComponentId="+componentId+"&Language="+language).include(request, response);
+        	getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+id+"&SpaceId="+spaceId+"&ComponentId="+componentId+"&Language="+language+"&axisId="+kmeliaScc.getAxisIdGlossary()+"&onlyFirst="+highlightFirst).include(request, response);
     	} else if (infos != null && model != null) {
        	    displayViewInfoModel(out, model, infos, resources, publicationSettings, m_context);
     	} else {
@@ -532,8 +540,13 @@ function zipPublication()
 					xmlContext.setNodeId(kmeliaScc.getSessionTopic().getNodeDetail().getNodePK().getId());
 				xmlContext.setBorderPrinted(false);
 				xmlContext.setContentLanguage(language);
-				
+				%>
+				<view:highlight axisId="<%=kmeliaScc.getAxisIdGlossary()%>" className="highlight-silver" language="<%=language%>" onlyFirst="<%=highlightFirst%>">
+				<%
 		    	xmlForm.display(out, xmlContext, xmlData);
+				%>
+				</view:highlight>
+				<%
 		    }
     	}
     	out.println("</TD>");
