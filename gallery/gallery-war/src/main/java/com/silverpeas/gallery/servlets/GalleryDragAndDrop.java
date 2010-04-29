@@ -49,7 +49,9 @@ import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.DateUtil;
@@ -69,6 +71,8 @@ import com.stratelia.webactiv.util.node.model.NodePK;
  * @author
  */
 public class GalleryDragAndDrop extends HttpServlet {
+
+  @Override
   public void init(ServletConfig config) {
     try {
       super.init(config);
@@ -78,124 +82,83 @@ public class GalleryDragAndDrop extends HttpServlet {
     }
   }
 
+  @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     doPost(req, res);
   }
 
+  @Override
   public void doPost(HttpServletRequest request, HttpServletResponse res)
       throws ServletException, IOException {
     SilverTrace.info("gallery", "GalleryDragAndDrop.doPost",
         "root.MSG_GEN_ENTER_METHOD");
-    boolean runOnUnix = !FileUtil.isWindows();
-    SilverTrace.info("gallery", "GalleryDragAndDrop.doPost",
-        "root.MSG_GEN_PARAM_VALUE", "runOnUnix = " + runOnUnix);
-
     try {
       String componentId = request.getParameter("ComponentId");
       String albumId = request.getParameter("AlbumId");
       String userId = request.getParameter("UserId");
-      String ignoreFolders = request.getParameter("IgnoreFolders");
-
       SilverTrace.info("gallery", "GalleryDragAndDrop.doPost",
           "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId
-              + " albumId = " + albumId + " userId = " + userId
-              + " ignoreFolders = " + ignoreFolders);
+          + " albumId = " + albumId + " userId = " + userId);
+      String savePath = FileRepositoryManager.getTemporaryPath() + File.separator + userId
+          + new Date().getTime() + File.separator;
 
-      DiskFileUpload dfu = new DiskFileUpload();
-      // maximum size that will be stored in memory
-      dfu.setSizeThreshold(4096);
-
-      String savePath = FileRepositoryManager.getTemporaryPath()
-          + File.separator + userId + new Long(new Date().getTime()).toString()
-          + File.separator;
-
-      List items = dfu.parseRequest(request);
+      List<FileItem> items = FileUploadUtil.parseRequest(request);
 
       String parentPath = getParameterValue(items, "userfile_parent");
       SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
           "root.MSG_GEN_PARAM_VALUE", "parentPath = " + parentPath);
 
-      String fullFileName = null;
       SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
           "root.MSG_GEN_PARAM_VALUE", "debut de la boucle");
 
-      for (int i = 0; i < items.size(); i++) {
-        FileItem item = (FileItem) items.get(i);
-        fullFileName = item.getName();
-        SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
-            "root.MSG_GEN_PARAM_VALUE", "item #" + i + " = "
-                + item.getFieldName() + " - " + fullFileName);
-
-        String fileName = null;
-
-        if (fullFileName != null && parentPath != null
-            && !parentPath.equals("")) {
+      for (FileItem item : items) {
+        if (!item.isFormField()) {
+          String fileName = item.getName();
           SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
-              "root.MSG_GEN_PARAM_VALUE", "item.getName().indexOf(parentPath)"
-                  + fullFileName.indexOf(parentPath) + 1);
-          fileName = fullFileName.substring(fullFileName.indexOf(parentPath)
-              + parentPath.length());
-          SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
-              "root.MSG_GEN_PARAM_VALUE", "fileName = " + fileName);
-          if (fileName != null && runOnUnix) {
+              "root.MSG_GEN_PARAM_VALUE", "item = "
+              + item.getFieldName() + " - " + fileName);
+          if (fileName != null) {
             fileName = fileName.replace('\\', File.separatorChar);
+            fileName = fileName.replace('/', File.separatorChar);
             SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
-                "root.MSG_GEN_PARAM_VALUE", "fileName on Unix = " + fileName);
-          }
-
-          // Création du fichier (et de l'arborescence) sur le serveur
-          if (!savePath.equals("")) {
+                "root.MSG_GEN_PARAM_VALUE", "fileName = " + fileName);
             // modifier le nom avant de l'écrire
-            String extension = FileRepositoryManager.getFileExtension(fileName);
-            String name = fileName.substring(1, fileName.lastIndexOf("."));
-            // String newName = ImageHelper.replaceSpecialChars(name);
-            String newFileName = File.separator.concat(name).concat(".")
-                .concat(extension);
-            File f = new File(savePath + newFileName);
+            File f = new File(savePath + File.separatorChar + fileName);
             File parent = f.getParentFile();
             if (!parent.exists()) {
               parent.mkdirs();
             }
-
             item.write(f);
-
             // Cas du zip
-            if ("zip".equalsIgnoreCase(extension)) {
+            if (FileUtil.ARCHIVE_MIME_TYPE.equals(FileUtil.getMimeType(fileName))) {
               ZipManager.extract(f, parent);
             }
           }
         }
       }
-
       importRepository(new File(savePath), userId, componentId, albumId,
           new ResourceLocator(
-              "com.silverpeas.gallery.settings.gallerySettings", "fr"),
+          "com.silverpeas.gallery.settings.gallerySettings", "fr"),
           new ResourceLocator(
-              "com.silverpeas.gallery.settings.metadataSettings", "fr"));
-
+          "com.silverpeas.gallery.settings.metadataSettings", "fr"));
       FileFolderManager.deleteFolder(savePath);
     } catch (Exception e) {
       SilverTrace.debug("gallery", "GalleryDragAndDrop.doPost.doPost",
           "root.MSG_GEN_PARAM_VALUE", e);
+      res.getOutputStream().println("ERROR");
     }
+    res.getOutputStream().println("SUCCESS");
   }
 
   private void importRepository(File dir, String userId, String componentId,
       String albumId, ResourceLocator settings, ResourceLocator metadataSettings)
       throws Exception {
     OrganizationController orga = new OrganizationController();
-    boolean watermark = "yes".equalsIgnoreCase(orga.getComponentParameterValue(
-        componentId, "watermark"));
-    boolean download = true;
-    if ("no".equalsIgnoreCase(orga.getComponentParameterValue(componentId,
-        "download")))
-      download = false;
-    String watermarkHD = orga.getComponentParameterValue(componentId,
-        "WatermarkHD");
-    String watermarkOther = orga.getComponentParameterValue(componentId,
-        "WatermarkOther");
-
+    boolean watermark = "yes".equalsIgnoreCase(orga.getComponentParameterValue(componentId, "watermark"));
+    boolean download = !"no".equalsIgnoreCase(orga.getComponentParameterValue(componentId, "download"));
+    String watermarkHD = orga.getComponentParameterValue(componentId, "WatermarkHD");
+    String watermarkOther = orga.getComponentParameterValue(componentId, "WatermarkOther");
     importRepository(dir, userId, componentId, albumId, watermark, watermarkHD,
         watermarkOther, download, settings, metadataSettings);
   }
@@ -208,7 +171,7 @@ public class GalleryDragAndDrop extends HttpServlet {
     while (itPathContent.hasNext()) {
       File file = (File) itPathContent.next();
       if (file.isFile()) {
-        if (ImageHelper.isImage(file.getName()))
+        if (ImageHelper.isImage(file.getName())) {
           try {
             createPhoto(file.getName(), userId, componentId, albumId, file,
                 watermark, watermarkHD, watermarkOther, download,
@@ -217,6 +180,7 @@ public class GalleryDragAndDrop extends HttpServlet {
             SilverTrace.info("gallery", "GalleryDragAndDrop.importRepository",
                 "gallery.MSG_NOT_ADD_METADATA", "photo =  " + file.getName());
           }
+        }
       } else if (file.isDirectory()) {
         String newAlbumId = createAlbum(file.getName(), userId, componentId,
             albumId);
@@ -244,15 +208,11 @@ public class GalleryDragAndDrop extends HttpServlet {
   private String createAlbum(String name, String userId, String componentId,
       String fatherId) throws Exception {
     SilverTrace.info("gallery", "GalleryDragAndDrop.createAlbum",
-        "root.MSG_GEN_ENTER_METHOD", "name = " + name + ", fatherId = "
-            + fatherId);
+        "root.MSG_GEN_ENTER_METHOD", "name = " + name + ", fatherId = " + fatherId);
 
     // création de l'album (avec le nom du répertoire) une seule fois
-    AlbumDetail album = null;
-
-    NodeDetail node = new NodeDetail("unknown", name, null, null, null, null,
-        "0", "unknown");
-    album = new AlbumDetail(node);
+    NodeDetail node = new NodeDetail("unknown", name, null, null, null, null, "0", "unknown");
+    AlbumDetail album = new AlbumDetail(node);
     album.setCreationDate(DateUtil.date2SQLDate(new Date()));
     album.setCreatorId(userId);
     album.getNodePK().setComponentName(componentId);
@@ -269,12 +229,11 @@ public class GalleryDragAndDrop extends HttpServlet {
       throws Exception {
     SilverTrace.info("gallery", "GalleryDragAndDrop.createPhoto",
         "root.MSG_GEN_ENTER_METHOD", "name = " + name + ", fatherId = "
-            + albumId);
+        + albumId);
 
     // création de la photo
     PhotoDetail newPhoto = new PhotoDetail(name, null, new Date(), null, null,
         null, download, false);
-
     newPhoto.setAlbumId(albumId);
     newPhoto.setCreatorId(userId);
     PhotoPK pk = new PhotoPK("unknown", componentId);
@@ -292,10 +251,8 @@ public class GalleryDragAndDrop extends HttpServlet {
       SilverTrace.info("gallery", "GalleryDragAndDrop.createPhoto",
           "gallery.MSG_NOT_ADD_METADATA", "photoId =  " + photoId);
     }
-
     // Modification de la photo pour mise à jour dimension
     getGalleryBm().updatePhoto(newPhoto);
-
     return photoId;
   }
 
@@ -313,8 +270,8 @@ public class GalleryDragAndDrop extends HttpServlet {
   private GalleryBm getGalleryBm() {
     GalleryBm galleryBm = null;
     try {
-      GalleryBmHome galleryBmHome = (GalleryBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
+      GalleryBmHome galleryBmHome = (GalleryBmHome) EJBUtilitaire.getEJBObjectRef(
+          JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
       galleryBm = galleryBmHome.create();
     } catch (Exception e) {
       throw new GalleryRuntimeException(
