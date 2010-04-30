@@ -85,31 +85,4 @@
   <SILVERPEAS.st_userrole_user_rel userroleid="302" userid="201" />
   <SILVERPEAS.st_userrole_user_rel userroleid="302" userid="204" />
 
-  <SILVERPEAS.st_userset usersettype="S" usersetid="3" />
-  <SILVERPEAS.st_userset usersettype="I" usersetid="100" />
-  <SILVERPEAS.st_userset usersettype="R" usersetid="300" />
-  <SILVERPEAS.st_userset usersettype="R" usersetid="301" />
-  <SILVERPEAS.st_userset usersettype="R" usersetid="302" />
-
-
-  <SILVERPEAS.st_userset_user_rel usersettype="S" userid="200" usersetid="3" linkscount="1" />
-  <SILVERPEAS.st_userset_user_rel usersettype="S" userid="201" usersetid="3" linkscount="1" />
-  <SILVERPEAS.st_userset_user_rel usersettype="S" userid="202" usersetid="3" linkscount="1" />
-  <SILVERPEAS.st_userset_user_rel usersettype="S" userid="203" usersetid="3" linkscount="1" />
-  <SILVERPEAS.st_userset_user_rel usersettype="S" userid="204" usersetid="3" linkscount="1" />
-  <SILVERPEAS.st_userset_user_rel usersettype="I" userid="200" usersetid="100" linkscount="1" />
-  <SILVERPEAS.st_userset_user_rel usersettype="I" userid="201" usersetid="100" linkscount="1" />
-  <SILVERPEAS.st_userset_user_rel usersettype="I" userid="202" usersetid="100" linkscount="1" />
-  <SILVERPEAS.st_userset_user_rel usersettype="I" userid="203" usersetid="100" linkscount="1" />
-  <SILVERPEAS.st_userset_user_rel usersettype="I" userid="204" usersetid="100" linkscount="1" />
-  <SILVERPEAS.st_userset_user_rel usersettype="R" userid="200" usersetid="300" linkscount="1" />
-  <SILVERPEAS.st_userset_user_rel usersettype="R" userid="201" usersetid="302" linkscount="1" />
-  <SILVERPEAS.st_userset_user_rel usersettype="R" userid="202" usersetid="301" linkscount="1" />
-  <SILVERPEAS.st_userset_user_rel usersettype="R" userid="203" usersetid="301" linkscount="1" />
-  <SILVERPEAS.st_userset_user_rel usersettype="R" userid="204" usersetid="302" linkscount="1" />
-
-  <SILVERPEAS.st_userset_userset_rel supersettype="S" supersetid="3" subsettype="I" subsetid="100" linkscount="1" />
-  <SILVERPEAS.st_userset_userset_rel supersettype="I" supersetid="100" subsettype="R" subsetid="300" linkscount="1" />
-  <SILVERPEAS.st_userset_userset_rel supersettype="I" supersetid="100" subsettype="R" subsetid="301" linkscount="1" />
-  <SILVERPEAS.st_userset_userset_rel supersettype="I" supersetid="100" subsettype="R" subsetid="302" linkscount="1" />
 </dataset>

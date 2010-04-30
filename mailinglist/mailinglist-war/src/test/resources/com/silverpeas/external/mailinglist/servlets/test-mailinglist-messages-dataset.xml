@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -111,38 +111,6 @@
   <st_userrole_user_rel userroleid="59" userid="9" />
   <st_userrole_user_rel userroleid="59" userid="8" />
   <st_userrole_user_rel userroleid="61" userid="11" />
-
-  <st_userset usersettype="S" usersetid="3" />
-  <st_userset usersettype="I" usersetid="45" />
-  <st_userset usersettype="R" usersetid="58" />
-  <st_userset usersettype="R" usersetid="59" />
-  <st_userset usersettype="R" usersetid="61" />
-
-
-  <st_userset_user_rel usersettype="R" usersetid="58" userid="7" linkscount="1" />
-  <st_userset_user_rel usersettype="I" usersetid="45" userid="7" linkscount="1" />
-  <st_userset_user_rel usersettype="S" usersetid="3" userid="7" linkscount="1" />
-  <st_userset_user_rel usersettype="R" usersetid="59" userid="9" linkscount="1" />
-  <st_userset_user_rel usersettype="I" usersetid="45" userid="9" linkscount="1" />
-  <st_userset_user_rel usersettype="S" usersetid="3" userid="9" linkscount="1" />
-  <st_userset_user_rel usersettype="R" usersetid="59" userid="8" linkscount="1" />
-  <st_userset_user_rel usersettype="I" usersetid="45" userid="8" linkscount="1" />
-  <st_userset_user_rel usersettype="S" usersetid="3" userid="8" linkscount="1" />
-  <st_userset_user_rel usersettype="R" usersetid="61" userid="10" linkscount="1" />
-  <st_userset_user_rel usersettype="I" usersetid="45" userid="10" linkscount="1" />
-  <st_userset_user_rel usersettype="S" usersetid="3" userid="10" linkscount="1" />
-  <st_userset_user_rel usersettype="R" usersetid="61" userid="11" linkscount="1" />
-  <st_userset_user_rel usersettype="I" usersetid="45" userid="11" linkscount="1" />
-  <st_userset_user_rel usersettype="S" usersetid="3" userid="11" linkscount="1" />
-
-
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="I" subsetid="45" linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="45" subsettype="R" subsetid="58" linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="R" subsetid="58" linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="45" subsettype="R" subsetid="59" linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="R" subsetid="59" linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="45" subsettype="R" subsetid="61" linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="R" subsetid="61" linkscount="1" />
 
   <!--
     <uniqueid maxid="153" tablename="DomainSP_User"/>

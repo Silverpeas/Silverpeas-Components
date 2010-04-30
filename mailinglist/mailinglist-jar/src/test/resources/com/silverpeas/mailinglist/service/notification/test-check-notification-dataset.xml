@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -148,47 +148,4 @@
   <!-- lisa reader -->
   <st_userrole_user_rel userroleid="322" userid="202" />
 
-  <st_userset usersettype="S" usersetid="3" />
-  <st_userset usersettype="I" usersetid="100" />
-  <st_userset usersettype="I" usersetid="101" />
-  <st_userset usersettype="I" usersetid="102" />
-  <st_userset usersettype="R" usersetid="300" />
-  <st_userset usersettype="R" usersetid="310" />
-  <st_userset usersettype="R" usersetid="320" />
-  <st_userset usersettype="R" usersetid="312" />
-  <st_userset usersettype="R" usersetid="322" />
-
-  <st_userset_user_rel usersettype="S" userid="200" usersetid="3" linkscount="1" />
-  <st_userset_user_rel usersettype="S" userid="201" usersetid="3" linkscount="1" />
-  <st_userset_user_rel usersettype="S" userid="202" usersetid="3" linkscount="1" />
-  <st_userset_user_rel usersettype="I" userid="200" usersetid="100" linkscount="1" />
-  <st_userset_user_rel usersettype="I" userid="200" usersetid="101" linkscount="1" />
-  <st_userset_user_rel usersettype="I" userid="200" usersetid="102" linkscount="1" />
-  <st_userset_user_rel usersettype="I" userid="201" usersetid="100" linkscount="1" />
-  <st_userset_user_rel usersettype="I" userid="201" usersetid="101" linkscount="1" />
-  <st_userset_user_rel usersettype="I" userid="201" usersetid="102" linkscount="1" />
-  <st_userset_user_rel usersettype="I" userid="202" usersetid="100" linkscount="1" />
-  <st_userset_user_rel usersettype="I" userid="202" usersetid="101" linkscount="1" />
-  <st_userset_user_rel usersettype="I" userid="202" usersetid="102" linkscount="1" />
-  <st_userset_user_rel usersettype="R" userid="200" usersetid="300" linkscount="1" />
-  <st_userset_user_rel usersettype="R" userid="200" usersetid="310" linkscount="1" />
-  <st_userset_user_rel usersettype="R" userid="200" usersetid="320" linkscount="1" />
-  <st_userset_user_rel usersettype="R" userid="201" usersetid="312" linkscount="1" />
-  <st_userset_user_rel usersettype="R" userid="202" usersetid="322" linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="I" subsetid="100"
-    linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="I" subsetid="101"
-    linkscount="1" />
-  <st_userset_userset_rel supersettype="S" supersetid="3" subsettype="I" subsetid="102"
-    linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="100" subsettype="R" subsetid="300"
-    linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="101" subsettype="R" subsetid="310"
-    linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="102" subsettype="R" subsetid="320"
-    linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="101" subsettype="R" subsetid="312"
-    linkscount="1" />
-  <st_userset_userset_rel supersettype="I" supersetid="102" subsettype="R" subsetid="322"
-    linkscount="1" />
 </dataset>
