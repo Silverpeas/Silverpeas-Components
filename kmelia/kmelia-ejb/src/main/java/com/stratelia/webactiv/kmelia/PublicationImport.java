@@ -325,7 +325,7 @@ public class PublicationImport {
    * @return The id of the publication corresponding to the XML form name and containing a field
    * named fieldName and valued to fieldValue. Returns null if no publication is found.
    */
-  private String getPublicationId(String xmlFormName, String fieldName,
+  public String getPublicationId(String xmlFormName, String fieldName,
       String fieldValue) {
     QueryDescription query = new QueryDescription("*");
     query.setSearchingUser(userId);
