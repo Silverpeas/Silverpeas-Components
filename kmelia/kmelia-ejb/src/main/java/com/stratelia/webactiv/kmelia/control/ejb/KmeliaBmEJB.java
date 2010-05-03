@@ -1661,10 +1661,14 @@ public class KmeliaBmEJB implements SessionBean {
    * @since 1.0
    */
   public void updatePublication(PublicationDetail pubDetail) {
-    updatePublication(pubDetail, KmeliaHelper.PUBLICATION_HEADER);
+    updatePublication(pubDetail, KmeliaHelper.PUBLICATION_HEADER, false);
   }
+  
+  public void updatePublication(PublicationDetail pubDetail, boolean forceUpdateDate) {
+	    updatePublication(pubDetail, KmeliaHelper.PUBLICATION_HEADER, forceUpdateDate);
+	  }
 
-  private void updatePublication(PublicationDetail pubDetail, int updateScope) {
+  private void updatePublication(PublicationDetail pubDetail, int updateScope, boolean forceUpdateDate) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.updatePublication()",
         "root.MSG_GEN_ENTER_METHOD", "updateScope = " + updateScope);
     try {
@@ -1675,11 +1679,11 @@ public class KmeliaBmEJB implements SessionBean {
           "This publication is clone ? " + isClone);
       if (isClone) {
         //update only updateDate
-        getPublicationBm().setDetail(pubDetail);
+        getPublicationBm().setDetail(pubDetail, forceUpdateDate);
       } else {
         boolean statusChanged = changePublicationStatusOnUpdate(pubDetail);
 
-        getPublicationBm().setDetail(pubDetail);
+        getPublicationBm().setDetail(pubDetail, forceUpdateDate);
   
         if (!isPublicationInBasket(pubDetail.getPK())) {
           if (statusChanged) {
@@ -1851,19 +1855,19 @@ public class KmeliaBmEJB implements SessionBean {
 
   private void updatePublication(PublicationPK pubPK, int updateScope) {
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    updatePublication(pubDetail, updateScope);
+    updatePublication(pubDetail, updateScope, false);
   }
 
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK) {
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    updatePublication(pubDetail, KmeliaHelper.PUBLICATION_CONTENT);
+    updatePublication(pubDetail, KmeliaHelper.PUBLICATION_CONTENT, false);
   }
 
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK,
       String userId) {
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
     pubDetail.setUpdaterId(userId);
-    updatePublication(pubDetail, KmeliaHelper.PUBLICATION_CONTENT);
+    updatePublication(pubDetail, KmeliaHelper.PUBLICATION_CONTENT, false);
   }
 
   /**
@@ -3368,7 +3372,12 @@ public class KmeliaBmEJB implements SessionBean {
    * @since 3.0
    */
   public void draftOutPublication(PublicationPK pubPK, NodePK topicPK,
-      String userProfile) {
+	      String userProfile){
+	  draftOutPublication(pubPK, topicPK, userProfile, false);
+  }
+  
+  public void draftOutPublication(PublicationPK pubPK, NodePK topicPK,
+      String userProfile, boolean forceUpdateDate) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.draftOutPublication()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId());
 
@@ -3408,7 +3417,7 @@ public class KmeliaBmEJB implements SessionBean {
 
       KmeliaHelper.checkIndex(pubDetail);
 
-      getPublicationBm().setDetail(pubDetail);
+      getPublicationBm().setDetail(pubDetail, forceUpdateDate);
 
       // update visibility attribute on PDC
       updateSilverContentVisibility(pubDetail);
@@ -5044,6 +5053,20 @@ public class KmeliaBmEJB implements SessionBean {
         componentId, null, spaceId, userId);
     publicationImport.updatePublicationEndDate(xmlFormName, fieldName,
         fieldValue, endDate);
+  }
+  
+  /**
+   * find a publication imported only by a xml field (old id for example)
+   * @param componentId
+   * @param xmlFormName
+   * @param fieldName
+   * @param fieldValue
+   * @return pubId
+   */
+  public String findPublicationIdBySpecificValue(String componentId, String xmlFormName,
+		  String fieldName, String fieldValue, String topicId, String spaceId, String userId) throws RemoteException {
+	  PublicationImport publicationImport = new PublicationImport(this, componentId, topicId, spaceId, userId);
+	  return publicationImport.getPublicationId(xmlFormName, fieldName, fieldValue);
   }
 
 }

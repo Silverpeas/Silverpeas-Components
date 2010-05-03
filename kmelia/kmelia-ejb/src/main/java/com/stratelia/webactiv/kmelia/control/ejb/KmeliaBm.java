@@ -224,6 +224,9 @@ public interface KmeliaBm extends EJBObject {
    */
   public void updatePublication(PublicationDetail detail)
       throws RemoteException;
+  
+  public void updatePublication(PublicationDetail detail, boolean forceUpdateDate)
+      throws RemoteException;
 
   /**
    * Delete a publication If this publication is in the basket or in the DZ, it's deleted from the
@@ -401,7 +404,10 @@ public interface KmeliaBm extends EJBObject {
    * @since 3.0
    */
   public void draftOutPublication(PublicationPK pubPK, NodePK topicPK,
-      String userProfile) throws RemoteException;
+	      String userProfile) throws RemoteException;
+  
+  public void draftOutPublication(PublicationPK pubPK, NodePK topicPK,
+      String userProfile, boolean forceUpdateDate) throws RemoteException;
 
   /**
    * Change publication status from any state to draft
@@ -725,4 +731,7 @@ public interface KmeliaBm extends EJBObject {
       String userId, String xmlFormName, String fieldName, String fieldValue,
       Date endDate) throws RemoteException;
 
+  public String findPublicationIdBySpecificValue(String componentId, String xmlFormName,
+		  String fieldName, String fieldValue, String topicId, String spaceId, String userId) throws RemoteException;
+  
 }

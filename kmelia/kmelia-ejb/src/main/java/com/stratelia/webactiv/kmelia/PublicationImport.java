@@ -130,7 +130,7 @@ public class PublicationImport {
         pubPK = new PublicationPK(publicationToUpdateId, spaceId, componentId);
         pubDetail = kmeliaBm.getPublicationDetail(pubPK);
         updatePublicationDetail(pubDetail, publiParams, language);
-        updatePublication(pubDetail);
+        updatePublication(pubDetail, true);
       } catch (Exception e) {
         throw new KmeliaRuntimeException(
             "PublicationImport.importPublication()",
@@ -145,7 +145,7 @@ public class PublicationImport {
         createPublication(pubDetail);
 
         pubDetail.setInfoId(xmlFormName);
-        updatePublication(pubDetail);
+        updatePublication(pubDetail, true);
 
         pubPK = pubDetail.getPK();
       } catch (Exception e) {
@@ -196,10 +196,10 @@ public class PublicationImport {
       form.update(items, data, context);
       set.save(data);
 
-      updatePublication(pubDetail);
+      updatePublication(pubDetail, true);
 
       NodePK nodePK = new NodePK(topicId, spaceId, componentId);
-      kmeliaBm.draftOutPublication(pubPK, nodePK, userProfile);
+      kmeliaBm.draftOutPublication(pubPK, nodePK, userProfile, true);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("PublicationImport.importPublication()",
           SilverpeasRuntimeException.ERROR,
@@ -238,24 +238,35 @@ public class PublicationImport {
     String validatorId = parameters.get("ValideurId");
     String tempId = parameters.get("TempId");
     String infoId = parameters.get("InfoId");
+    String creationDate = parameters.get("CreationDate");
+    String updateDate = parameters.get("UpdateDate");
 
     Date jBeginDate = null;
     Date jEndDate = null;
-
+    Date jCreationDate = null;
+    Date jUpdateDate = null;
+    
     if (beginDate != null && !beginDate.trim().equals("")) {
       jBeginDate = DateUtil.stringToDate(beginDate, language);
     }
     if (endDate != null && !endDate.trim().equals("")) {
       jEndDate = DateUtil.stringToDate(endDate, language);
     }
+    if (creationDate != null && !creationDate.trim().equals("")) {
+    	jCreationDate = DateUtil.stringToDate(creationDate, language);
+    }
+    if (updateDate != null && !updateDate.trim().equals("")) {
+    	jUpdateDate = DateUtil.stringToDate(updateDate, language);
+    }
 
     String pubId = (StringUtil.isDefined(id) ? id : "X");
     PublicationDetail pubDetail = new PublicationDetail(pubId, name,
-        description, null, jBeginDate, jEndDate, null, importance, version,
+        description, jCreationDate, jBeginDate, jEndDate, null, importance, version,
         keywords, "", null, author);
     pubDetail.setBeginHour(beginHour);
     pubDetail.setEndHour(endHour);
     pubDetail.setStatus(status);
+    pubDetail.setUpdateDate(jUpdateDate);
 
     if (StringUtil.isDefined(validatorId)) {
       pubDetail.setTargetValidatorId(validatorId);
@@ -281,7 +292,9 @@ public class PublicationImport {
     pubDetail.getPK().setSpace(spaceId);
     pubDetail.getPK().setComponentName(componentId);
     pubDetail.setCreatorId(userId);
-    pubDetail.setCreationDate(new Date());
+    if(pubDetail.getCreationDate() == null){
+    	pubDetail.setCreationDate(new Date());
+    }
 
     NodePK nodePK = new NodePK(topicId, spaceId, componentId);
     String result = kmeliaBm.createPublicationIntoTopic(pubDetail, nodePK);
@@ -295,14 +308,14 @@ public class PublicationImport {
    * @param pubDetail The publication detail.
    * @throws RemoteException
    */
-  private void updatePublication(PublicationDetail pubDetail)
+  private void updatePublication(PublicationDetail pubDetail, boolean forceUpdateDate)
       throws RemoteException {
     pubDetail.getPK().setSpace(spaceId);
     pubDetail.getPK().setComponentName(componentId);
     pubDetail.setUpdaterId(userId);
     pubDetail.setIndexOperation(IndexManager.NONE);
 
-    kmeliaBm.updatePublication(pubDetail);
+    kmeliaBm.updatePublication(pubDetail, forceUpdateDate);
   }
 
   /**
@@ -409,7 +422,7 @@ public class PublicationImport {
     Date publicationEndDate = pubDetail.getEndDate();
     if (publicationEndDate == null || publicationEndDate.after(endDate)) {
       pubDetail.setEndDate(endDate);
-      updatePublication(pubDetail);
+      updatePublication(pubDetail, false);
     }
   }
 
