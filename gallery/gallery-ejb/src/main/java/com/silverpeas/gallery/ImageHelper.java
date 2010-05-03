@@ -23,6 +23,8 @@
  */
 package com.silverpeas.gallery;
 
+import com.drew.imaging.jpeg.JpegProcessingException;
+import com.drew.metadata.MetadataException;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
@@ -33,7 +35,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.StringTokenizer;
+import java.io.UnsupportedEncodingException;
 
 import javax.imageio.ImageIO;
 
@@ -42,46 +44,50 @@ import org.apache.commons.fileupload.FileItem;
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
-import com.drew.metadata.exif.ExifDirectory;
 import com.drew.metadata.iptc.IptcDirectory;
+import com.silverpeas.gallery.image.MetadataExtractor;
 import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import java.util.List;
 
 public class ImageHelper {
 
   static ResourceLocator gallerySettings = new ResourceLocator(
       "com.silverpeas.gallery.settings.gallerySettings", "");
+  static ResourceLocator settings = new ResourceLocator(
+      "com.silverpeas.gallery.settings.metadataSettings", "");
   static final String thumbnailSuffix_small = "_66x50.jpg";
   static final String thumbnailSuffix_medium = "_133x100.jpg";
   static final String thumbnailSuffix_large = "_266x150.jpg";
   static final String previewSuffix = "_preview.jpg";
   static final String thumbnailSuffix_Xlarge = "_600x400.jpg";
   static final String watermarkSuffix = "_watermark.jpg";
+  static final MetadataExtractor extractor = new MetadataExtractor();
 
   public static boolean isImage(String name) {
     String type = FileRepositoryManager.getFileExtension(name);
     return (isJpeg(type) || type.equalsIgnoreCase("bmp") || type.equalsIgnoreCase("tiff")
-        || type.equalsIgnoreCase("jpeg") || type.equalsIgnoreCase("png") || type
-        .equalsIgnoreCase("tif"));
+        || type.equalsIgnoreCase("jpeg") || type.equalsIgnoreCase("png") || type.equalsIgnoreCase(
+        "tif"));
   }
 
   public static boolean isValidExtension(String name) {
     String type = FileRepositoryManager.getFileExtension(name);
-    return (isJpeg(type) || type.equalsIgnoreCase("tiff") || type.equalsIgnoreCase("jpeg") || type
-        .equalsIgnoreCase("png"));
+    return (isJpeg(type) || type.equalsIgnoreCase("tiff") || type.equalsIgnoreCase("jpeg") || type.
+        equalsIgnoreCase("png"));
   }
 
   public static boolean isJpeg(String type) {
-     return type.equalsIgnoreCase("gif") || type.equalsIgnoreCase("jpg");
+    return type.equalsIgnoreCase("gif") || type.equalsIgnoreCase("jpg");
   }
-
 
   /**
    * In case of unit upload
@@ -110,8 +116,7 @@ public class ImageHelper {
               "root.MSG_GEN_PARAM_VALUE", "fileName on Unix = " + name);
         }
 
-        name = name.substring(name.lastIndexOf(File.separator) + 1, name
-            .length());
+        name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());
         // name = replaceSpecialChars(name);
 
         if (isImage(name)) {
@@ -153,17 +158,18 @@ public class ImageHelper {
     String instanceId = photo.getPhotoPK().getInstanceId();
 
     String percent = gallerySettings.getString("percentSizeWatermark");
-    if (!StringUtil.isDefined(percent))
+    if (!StringUtil.isDefined(percent)) {
       percent = "1";
+    }
     int percentSize = new Integer(percent).intValue();
-    if (percentSize <= 0)
+    if (percentSize <= 0) {
       percentSize = 1;
+    }
 
     if (image != null) {
       name = image.getName();
       if (name != null) {
-        name = name.substring(name.lastIndexOf(File.separator) + 1, name
-            .length());
+        name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());
         if (isImage(name)) {
           String subDirectory = gallerySettings.getString("imagesSubDirectory");
 
@@ -199,11 +205,13 @@ public class ImageHelper {
 
     // recherche du paramètre du pourcentage de la taille du watermark
     String percent = gallerySettings.getString("percentSizeWatermark");
-    if (!StringUtil.isDefined(percent))
+    if (!StringUtil.isDefined(percent)) {
       percent = "1";
+    }
     int percentSize = Integer.parseInt(percent);
-    if (percentSize <= 0)
+    if (percentSize <= 0) {
       percentSize = 1;
+    }
 
     if (isValidExtension(name)) {
       // recherche de la taille de l'image
@@ -230,8 +238,9 @@ public class ImageHelper {
         int currentMetadata = new Integer(property).intValue();
         String value = iptcDirectory.getString(currentMetadata);
 
-        if (value != null)
+        if (value != null) {
           nameAuthor = value;
+        }
         if (!nameAuthor.equals("")) {
           createWatermark(photo.getId(), nameAuthor, pathFile, dir, percentSize);
         }
@@ -244,8 +253,9 @@ public class ImageHelper {
         int currentMetadata = new Integer(property).intValue();
         String value = iptcDirectory.getString(currentMetadata);
 
-        if (value != null)
+        if (value != null) {
           nameAuthor = value;
+        }
         if (!nameAuthor.equals("")) {
           nameForWatermark = nameAuthor;
         }
@@ -255,131 +265,35 @@ public class ImageHelper {
     }
   }
 
-  public static void setMetaData(PhotoDetail photo, ResourceLocator settings)
-      throws Exception {
-    setMetaData(photo, settings, null);
+  public static void setMetaData(PhotoDetail photo) throws JpegProcessingException,
+      UnsupportedEncodingException, MetadataException {
+    setMetaData(photo, I18NHelper.defaultLanguage);
   }
 
-  public static void setMetaData(PhotoDetail photo, ResourceLocator settings,
-      ResourceLocator metaDataBundle) throws Exception {
+  public static void setMetaData(PhotoDetail photo, String lang) throws JpegProcessingException,
+      UnsupportedEncodingException, MetadataException {
     String photoId = photo.getPhotoPK().getId();
     String name = photo.getImageName();
     String mimeType = photo.getImageMimeType();
     if ("image/jpeg".equals(mimeType) || "image/pjpeg".equals(mimeType)) {
-      File file = new File(FileRepositoryManager.getAbsolutePath(photo
-          .getInstanceId())
+      File file = new File(FileRepositoryManager.getAbsolutePath(photo.getInstanceId())
           + settings.getString("imagesSubDirectory")
           + photoId
           + File.separator
           + name);
       if (file != null && file.exists()) {
-        // lire le fichier des properties
-        // 1. Traitement des metadata EXIF
-        String property = settings.getString("METADATA_1_TAG");
-        int indice = 1;
-        Metadata metadata = JpegMetadataReader.readMetadata(file);
-        Directory exifDirectory = metadata.getDirectory(ExifDirectory.class);
-        while (property != null && !"".equals(property)) {
-          // récupération de la valeur
-          String label = settings.getString("METADATA_"
-              + Integer.toString(indice) + "_LABEL");
-          if (metaDataBundle != null)
-            label = metaDataBundle.getString(label);
-
-          // rechercher la valeur de la metadata "label"
-          int currentMetadata = new Integer(property).intValue();
-          String value = exifDirectory.getString(currentMetadata);
-          if (value != null) {
-            if (currentMetadata == ExifDirectory.TAG_WIN_AUTHOR
-                || currentMetadata == ExifDirectory.TAG_WIN_COMMENT
-                || currentMetadata == ExifDirectory.TAG_WIN_KEYWORDS
-                || currentMetadata == ExifDirectory.TAG_WIN_SUBJECT
-                || currentMetadata == ExifDirectory.TAG_WIN_TITLE) {
-              // traitement des metadata Windows
-              value = exifDirectory.getString(currentMetadata);
-              value = value.substring(0, value.length() - 3);
-              StringTokenizer tokenizer = new StringTokenizer(value, " ");
-              int count = tokenizer.countTokens() / 2;
-              byte[] bytes = new byte[count];
-              int i = 0;
-              while (tokenizer.hasMoreTokens()) {
-                String token = tokenizer.nextToken();
-                if (!"0".equals(token)) {
-                  byte b = new Byte(token).byteValue();
-                  bytes[i] = b;
-                  i++;
-                }
-              }
-              value = new String(bytes, "ISO-8859-1");
-            }
-            // ajout de cette metadata à la photo
-            MetaData metaData = new MetaData();
-            metaData.setLabel(label);
-            metaData.setProperty(property);
-            metaData.setValue(value);
-            photo.addMetaData(metaData);
-            SilverTrace.debug("gallery",
-                "GallerySessionController.addMetaData()",
-                "root.MSG_GEN_ENTER_METHOD", "METADATA EXIF label = " + label
-                + " value = " + value);
-
-          }
-          // lecture de la property suivante
-          indice = indice + 1;
-          property = settings.getString("METADATA_" + Integer.toString(indice)
-              + "_TAG");
+        List<MetaData> metadata = extractor.extractImageExifMetaData(file, lang);
+        for (MetaData meta : metadata) {
+          photo.addMetaData(meta);
         }
-
-        indice = indice + 1;
-        // indice = 1;
-        // 2. Traitement des metadata IPTC
-        property = settings.getString("IPTC_" + Integer.toString(indice)
-            + "_TAG");
-        metadata = JpegMetadataReader.readMetadata(file);
-        Directory iptcDirectory = metadata.getDirectory(IptcDirectory.class);
-        while (property != null && !"".equals(property)) {
-          // récupération de la valeur
-          String label = settings.getString("IPTC_" + Integer.toString(indice)
-              + "_LABEL");
-          if (metaDataBundle != null)
-            label = metaDataBundle.getString(label);
-
-          // rechercher la valeur de la metadata "label"
-          int currentMetadata = new Integer(property).intValue();
-
-          String value = iptcDirectory.getString(currentMetadata);
-
-          // ajout de cette metadata à la photo
-          if (value != null) {
-            MetaData metaData = new MetaData();
-            metaData.setLabel(label);
-            metaData.setProperty(property);
-            metaData.setValue(value);
-
-            boolean isDate = settings.getBoolean("IPTC_"
-                + Integer.toString(indice) + "_DATE", false);
-            if (isDate) {
-              metaData.setDate(true);
-              metaData.setDateValue(iptcDirectory.getDate(currentMetadata));
-            }
-
-            photo.addMetaData(metaData);
-            SilverTrace.debug("gallery",
-                "GallerySessionController.addMetaData()",
-                "root.MSG_GEN_ENTER_METHOD", "METADATA IPTC label = " + label
-                + " value = " + value);
-          }
-
-          // lecture de la property suivante
-          indice = indice + 1;
-          property = settings.getString("IPTC_" + Integer.toString(indice)
-              + "_TAG");
+        metadata = extractor.extractImageIptcMetaData(file, lang);
+        for (MetaData meta : metadata) {
+          photo.addMetaData(meta);
         }
-        // ordonner les metadatas
-
       }
     }
   }
+  
 
   private static void getDimension(File inputFile, PhotoDetail photo)
       throws IOException {
@@ -399,66 +313,69 @@ public class ImageHelper {
     // on ne redimensionne l'image en preview que si l'image est plus grande que
     // la preview
     int largeWidth = photo.getSizeL();
-    if (photo.getSizeH() > photo.getSizeL())
+    if (photo.getSizeH() > photo.getSizeL()) {
       largeWidth = photo.getSizeH();
-    if (largeWidth > vignetteFile)
+    }
+    if (largeWidth > vignetteFile) {
       redimPhoto(dir, previewFile, vignetteFile, false, nameWatermark, 0);
-    else
+    } else {
       redimPhoto(dir, previewFile, largeWidth, false, nameWatermark, 0);
+    }
 
     dir = new File(previewFile);
 
     // 1/ création de la preview
-    int sizeWatermarkPreview = Integer.parseInt(gallerySettings
-        .getString("sizeWatermark600x400"));
+    int sizeWatermarkPreview = Integer.parseInt(gallerySettings.getString("sizeWatermark600x400"));
     String previewFileWatermark = path + fileId + previewSuffix;
     int previewWidth = 600;
     // on ne redimensionne l'image en preview que si l'image est plus grande que
     // la preview
-    if (photo.getSizeH() > photo.getSizeL())
+    if (photo.getSizeH() > photo.getSizeL()) {
       largeWidth = photo.getSizeH();
-    if (largeWidth > previewWidth)
+    }
+    if (largeWidth > previewWidth) {
       redimPhoto(dir, previewFileWatermark, previewWidth, watermark,
           nameWatermark, sizeWatermarkPreview);
-    else
+    } else {
       redimPhoto(dir, previewFileWatermark, largeWidth, watermark,
           nameWatermark, sizeWatermarkPreview);
+    }
 
     // 2/ création de la vignette 266x150
-    int sizeWatermark266x150 = Integer.parseInt(gallerySettings
-        .getString("sizeWatermark266x150"));
+    int sizeWatermark266x150 = Integer.parseInt(gallerySettings.getString("sizeWatermark266x150"));
     String vignetteFile1 = path + fileId + thumbnailSuffix_large;
     int vignetteWidth1 = 266;
-    if (largeWidth > vignetteWidth1)
+    if (largeWidth > vignetteWidth1) {
       redimPhoto(dir, vignetteFile1, vignetteWidth1, watermark, nameWatermark,
           sizeWatermark266x150);
-    else
+    } else {
       redimPhoto(dir, vignetteFile1, largeWidth, watermark, nameWatermark,
           sizeWatermark266x150);
+    }
 
     // création de la vignette 133x100
-    int sizeWatermark133x100 = Integer.parseInt(gallerySettings
-        .getString("sizeWatermark133x100"));
+    int sizeWatermark133x100 = Integer.parseInt(gallerySettings.getString("sizeWatermark133x100"));
     String vignetteFile2 = path + fileId + thumbnailSuffix_medium;
     int vignetteWidth2 = 133;
-    if (largeWidth > vignetteWidth2)
+    if (largeWidth > vignetteWidth2) {
       redimPhoto(dir, vignetteFile2, vignetteWidth2, watermark, nameWatermark,
           sizeWatermark133x100);
-    else
+    } else {
       redimPhoto(dir, vignetteFile2, largeWidth, watermark, nameWatermark,
           sizeWatermark133x100);
+    }
 
     // création de la vignette 50x66
-    int sizeWatermark50x66 = Integer.parseInt(gallerySettings
-        .getString("sizeWatermark66x50"));
+    int sizeWatermark50x66 = Integer.parseInt(gallerySettings.getString("sizeWatermark66x50"));
     String vignetteFile3 = path + fileId + thumbnailSuffix_small;
     int vignetteWidth3 = 66;
-    if (largeWidth > vignetteWidth3)
+    if (largeWidth > vignetteWidth3) {
       redimPhoto(dir, vignetteFile3, vignetteWidth3, watermark, nameWatermark,
           sizeWatermark50x66);
-    else
+    } else {
       redimPhoto(dir, vignetteFile3, largeWidth, watermark, nameWatermark,
           sizeWatermark50x66);
+    }
   }
 
   public static String[] getWidthAndHeight(String instanceId, String subDir,
@@ -520,8 +437,7 @@ public class ImageHelper {
     int width = Integer.parseInt(widthAndHeight[0]);
     int height = Integer.parseInt(widthAndHeight[1]);
 
-    boolean higherQuality = gallerySettings
-        .getBoolean("UseHigherQuality", true);
+    boolean higherQuality = gallerySettings.getBoolean("UseHigherQuality", true);
 
     BufferedImage scaledImage = getScaledInstance(inputBuf, width, height,
         RenderingHints.VALUE_INTERPOLATION_BICUBIC, higherQuality);
@@ -627,8 +543,7 @@ public class ImageHelper {
     // Ajout du watermark (passage par le graphique pour mettre à jour le
     // buffer)
     Graphics2D g = (Graphics2D) outputBuf.getGraphics();
-    g
-        .drawImage(inputBuf, 0, 0, (int) inputBufWidth, (int) inputBufHeight,
+    g.drawImage(inputBuf, 0, 0, (int) inputBufWidth, (int) inputBufHeight,
         null);
 
     // opacité du texte de 50%
@@ -640,30 +555,42 @@ public class ImageHelper {
 
     // recherche de la taille du watermark en fonction de la taille de la photo
     int size = 8;
-    if (max < 600)
+    if (max < 600) {
       size = 8;
-    if (max >= 600 && max < 750)
+    }
+    if (max >= 600 && max < 750) {
       size = 10;
-    if (max >= 750 && max < 1000)
+    }
+    if (max >= 750 && max < 1000) {
       size = 12;
-    if (max >= 1000 && max < 1250)
+    }
+    if (max >= 1000 && max < 1250) {
       size = 14;
-    if (max >= 1250 && max < 1500)
+    }
+    if (max >= 1250 && max < 1500) {
       size = 16;
-    if (max >= 1500 && max < 1750)
+    }
+    if (max >= 1500 && max < 1750) {
       size = 18;
-    if (max >= 1750 && max < 2000)
+    }
+    if (max >= 1750 && max < 2000) {
       size = 20;
-    if (max >= 2000 && max < 2250)
+    }
+    if (max >= 2000 && max < 2250) {
       size = 22;
-    if (max >= 2250 && max < 2500)
+    }
+    if (max >= 2250 && max < 2500) {
       size = 24;
-    if (max >= 2500 && max < 2750)
+    }
+    if (max >= 2500 && max < 2750) {
       size = 26;
-    if (max >= 2750 && max < 3000)
+    }
+    if (max >= 2750 && max < 3000) {
       size = 28;
-    if (max >= 3000)
+    }
+    if (max >= 3000) {
       size = (int) Math.rint(max * percentSizeWatermark / 100);
+    }
 
     // affichage d'un watermark noir
     g.setColor(Color.BLACK);
@@ -701,10 +628,8 @@ public class ImageHelper {
   public static void pasteImage(PhotoPK fromPK, PhotoDetail image, boolean cut) {
     PhotoPK toPK = image.getPhotoPK();
 
-    String toAbsolutePath = FileRepositoryManager.getAbsolutePath(toPK
-        .getInstanceId());
-    String fromAbsolutePath = FileRepositoryManager.getAbsolutePath(fromPK
-        .getInstanceId());
+    String toAbsolutePath = FileRepositoryManager.getAbsolutePath(toPK.getInstanceId());
+    String fromAbsolutePath = FileRepositoryManager.getAbsolutePath(fromPK.getInstanceId());
 
     String subDirectory = gallerySettings.getString("imagesSubDirectory");
 
@@ -776,5 +701,4 @@ public class ImageHelper {
       }
     }
   }
-
 }

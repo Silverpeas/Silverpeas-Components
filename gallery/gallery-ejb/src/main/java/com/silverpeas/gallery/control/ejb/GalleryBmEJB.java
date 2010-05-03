@@ -255,11 +255,8 @@ public class GalleryBmEJB implements SessionBean {
     Connection con = initCon();
     try {
       String id = PhotoDAO.createPhoto(con, photo);
-
       photo.getPhotoPK().setId(id);
-      ResourceLocator metadataSettings = new ResourceLocator(
-          "com.silverpeas.gallery.settings.metadataSettings", "fr");
-      ImageHelper.setMetaData(photo, metadataSettings);
+      ImageHelper.setMetaData(photo, "fr");
       createIndex(photo);
 
       // creation de l'emplacament
@@ -280,11 +277,8 @@ public class GalleryBmEJB implements SessionBean {
       SilverTrace.info("gallery", "GalleryBmEJB.updatePhoto()",
           "root.MSG_GEN_ENTER_METHOD", "PhotoPK = " + photo.toString());
       PhotoDAO.updatePhoto(con, photo);
-      // ajouter les metadatas pour les indexer
-      ResourceLocator metadataSettings = new ResourceLocator(
-          "com.silverpeas.gallery.settings.metadataSettings", "fr");
-      ImageHelper.setMetaData(photo, metadataSettings);
-      // deleteIndex(photo.getPhotoPK());
+      // ajouter les metadatas pour les indexer      
+      ImageHelper.setMetaData(photo, "fr");
       createIndex(photo);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.updatePhoto()",
@@ -504,9 +498,6 @@ public class GalleryBmEJB implements SessionBean {
   }
 
   public void indexGallery(String instanceId) {
-    ResourceLocator metadataSettings = new ResourceLocator(
-        "com.silverpeas.gallery.settings.metadataSettings", "fr");
-
     // parcourir tous les albums
     Collection<NodeDetail> albums = getAllAlbums(instanceId);
     if (albums != null) {
@@ -530,7 +521,7 @@ public class GalleryBmEJB implements SessionBean {
             PhotoDetail photo = itP.next();
             // ajout des métadata pour les indéxer
             try {
-              ImageHelper.setMetaData(photo, metadataSettings);
+              ImageHelper.setMetaData(photo, "fr");
             } catch (Exception e) {
               SilverTrace.info("gallery", "GalleryBmEJB.indexGallery()",
                   "root.MSG_GEN_ENTER_METHOD",
@@ -894,18 +885,22 @@ public class GalleryBmEJB implements SessionBean {
     // not implemented
   }
 
+  @Override
   public void setSessionContext(SessionContext context) {
     // not implemented
   }
 
+  @Override
   public void ejbRemove() {
     // not implemented
   }
 
+  @Override
   public void ejbActivate() {
     // not implemented
   }
 
+  @Override
   public void ejbPassivate() {
     // not implemented
   }

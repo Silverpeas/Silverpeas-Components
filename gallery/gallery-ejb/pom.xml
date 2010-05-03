@@ -5,13 +5,11 @@
     <groupId>com.silverpeas.components</groupId>
     <artifactId>gallery</artifactId>
     <version>5.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.gallery</groupId>
   <artifactId>gallery-ejb</artifactId>
   <packaging>ejb</packaging>
-  <version>5.1-SNAPSHOT</version>
   <name>EJB gallery</name>
   
   <dependencies>
@@ -64,6 +62,14 @@
       <groupId>com.drewnoakes</groupId>
       <artifactId>metadata-extractor</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
+    </dependency>
+
   </dependencies>
 </project>
 
