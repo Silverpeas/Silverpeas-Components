@@ -55,7 +55,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 			html, body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, textarea, p, blockquote, th, td, img, hr, embed, object {
 				margin:0px;
 				padding:0px;
-				font-family:Arial, Helvetica, sans-serif;
+				font-family:"Verdana","Arial",sans-serif;
 			}
 			
 			body {
@@ -69,7 +69,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 			
 			.questionResults th, .questionResults td, .questionResults tr {
 				padding:5px;
-				font-size:12px;
+				font-size:10px;
 			}
 			
 			.questionResults .questionResults-top th {

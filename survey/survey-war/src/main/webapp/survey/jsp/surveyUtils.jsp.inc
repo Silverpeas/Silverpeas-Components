@@ -753,10 +753,10 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	            {
 	            	r += "<center>";
                 	r += board.printBefore();
-                	r += "<table border=\"0\" width=\"100%\">"; 
+                	r += "<table border=\"0\" cellspacing=\"5\" cellpadding=\"5\" width=\"100%\">"; 
                 	r += " <tr><td class=\"textePetitBold\" nowrap>"+resources.getString("survey.participation")+" : </td><td width=\"90%\">"+Encode.javaStringToHtmlString(userName)+"</td></tr>";
 	                if (!userComment.equals("")) {
-	                   r += " <tr><td class=\"textePetitBold\" nowrap>"+resources.getString("survey.Comment")+" : </td><td width=\"90%\">"+Encode.javaStringToHtmlString(userComment)+"</td></tr>";
+	                   r += " <tr><td class=\"textePetitBold\" nowrap valign=\"top\">"+resources.getString("survey.Comment")+" : </td><td width=\"90%\">"+Encode.javaStringToHtmlParagraphe(userComment)+"</td></tr>";
 	                } 
 	                r += "</table>";
 	                r += board.printAfter();
