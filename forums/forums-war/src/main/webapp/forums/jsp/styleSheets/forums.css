@@ -143,3 +143,11 @@ th {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-
 	cursor: pointer
 }
 -->
+
+.message_A {
+	color: red
+}
+
+.message_R {
+	color: gray
+}
