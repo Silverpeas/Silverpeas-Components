@@ -64,8 +64,8 @@ public class ResourcesManagerDAO {
     String description = rs.getString("description");
     CategoryDetail category = new CategoryDetail(Integer.toString(id),
         instanceId, name, creationDate, updateDate, bookable, form, Integer
-            .toString(responsibleId), Integer.toString(createrId), Integer
-            .toString(updaterId), description);
+        .toString(responsibleId), Integer.toString(createrId), Integer
+        .toString(updaterId), description);
     return category;
   }
 
@@ -73,8 +73,8 @@ public class ResourcesManagerDAO {
       throws SQLException {
     String query =
         "INSERT INTO SC_Resources_Category (id, instanceId, name, creationdate, updatedate," +
-            "bookable, form, responsibleid, createrid, updaterid, description) " +
-            "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+        "bookable, form, responsibleid, createrid, updaterid, description) " +
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
     PreparedStatement prepStmt = null;
     String instanceId = category.getInstanceId();
     String name = category.getName();
@@ -120,7 +120,7 @@ public class ResourcesManagerDAO {
       throws SQLException {
     String query =
         "UPDATE SC_Resources_Category SET instanceId=?, name=?, updatedate=?, bookable=?, " +
-            "form=?, responsibleid=?, updaterid=?, description=? WHERE id=?";
+        "form=?, responsibleid=?, updaterid=?, description=? WHERE id=?";
     PreparedStatement prepStmt = null;
     // on récupère les informations de ContactDetail
     String id = category.getId();
@@ -232,8 +232,8 @@ public class ResourcesManagerDAO {
 
     ResourceDetail resource = new ResourceDetail(Integer.toString(id),
         categoryId, name, creationDate, updateDate, description, Integer
-            .toString(responsibleId), Integer.toString(createrId), Integer
-            .toString(updaterId), instanceId, book);
+        .toString(responsibleId), Integer.toString(createrId), Integer
+        .toString(updaterId), instanceId, book);
     return resource;
   }
 
@@ -241,8 +241,8 @@ public class ResourcesManagerDAO {
       throws SQLException {
     String query =
         "INSERT INTO SC_Resources_Resource (id, instanceId, categoryId, name, " +
-            "creationdate, updatedate, bookable, createrid, updaterid, description) " +
-            "VALUES (?,?,?,?,?,?,?,?,?,?)";
+        "creationdate, updatedate, bookable, createrid, updaterid, description) " +
+        "VALUES (?,?,?,?,?,?,?,?,?,?)";
     PreparedStatement prepStmt = null;
     String instanceId = resource.getInstanceId();
     String name = resource.getName();
@@ -287,7 +287,7 @@ public class ResourcesManagerDAO {
       throws SQLException {
     String query =
         "UPDATE SC_Resources_Resource SET instanceId=?, name=?, updatedate=?, bookable=?, " +
-            "updaterid=?, description=?, categoryid=? WHERE id=?";
+        "updaterid=?, description=?, categoryid=? WHERE id=?";
     PreparedStatement prepStmt = null;
 
     String id = resource.getId();
@@ -329,8 +329,8 @@ public class ResourcesManagerDAO {
 
     String query =
         "select id,name,creationDate,updateDate,bookable,responsibleId," +
-            "createrId,updaterId,description,categoryid " +
-            "from SC_Resources_Resource where categoryid = ?";
+        "createrId,updaterId,description,categoryid " +
+        "from SC_Resources_Resource where categoryid = ?";
     try {
       prepStmt = con.prepareStatement(query);
       prepStmt.setInt(1, Integer.parseInt(categoryId));
@@ -474,7 +474,7 @@ public class ResourcesManagerDAO {
       ResourceDetail resource = new ResourceDetail(Integer.toString(id),
           Integer.toString(categoryId), name, creationDate, updateDate,
           description, Integer.toString(responsibleId), Integer
-              .toString(createrId), Integer.toString(updaterId), instanceId,
+          .toString(createrId), Integer.toString(updaterId), instanceId,
           book, status);
       // TODO : ajouter les managers à la ressource
       List<String> managers = getManagers(con, id);
@@ -489,9 +489,9 @@ public class ResourcesManagerDAO {
       throws SQLException {
     String query =
         "INSERT INTO SC_Resources_Reservation " +
-            "(id, instanceId, evenement, userId, creationdate, updatedate, " +
-            "begindate, enddate, reason, place, status) " +
-            "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
+        "(id, instanceId, evenement, userId, creationdate, updatedate, " +
+        "begindate, enddate, reason, place, status) " +
+        "VALUES (?,?,?,?,?,?,?,?,?,?,?)";
     PreparedStatement prepStmt = null;
     // on récupère les informations de ReservationDetail
     String instanceId = reservation.getInstanceId();
@@ -504,7 +504,6 @@ public class ResourcesManagerDAO {
     Date enddate = reservation.getEndDate();
     String reason = reservation.getReason();
     String place = reservation.getPlace();
-    String status = reservation.getStatus();
     int id;
 
     try {
@@ -615,8 +614,8 @@ public class ResourcesManagerDAO {
     PreparedStatement prepStmt = null;
     String query =
         "Select id from SC_Resources_Reservation A, SC_Resources_ReservedResource B " +
-            "where B.resourceId=? AND B.reservationId=A.id AND ((A.begindate<? AND ?<A.enddate) " +
-            "OR (A.begindate<? AND ?<A.enddate) OR (?<=A.begindate AND A.enddate<=?))";
+        "where B.resourceId=? AND B.reservationId=A.id AND ((A.begindate<? AND ?<A.enddate) " +
+        "OR (A.begindate<? AND ?<A.enddate) OR (?<=A.begindate AND A.enddate<=?))";
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(query);
@@ -645,9 +644,9 @@ public class ResourcesManagerDAO {
     ResultSet rs = null;
     String query =
         "Select A.id, D.id, A.name, D.name " +
-            "from SC_Resources_Resource A, SC_Resources_Category D " +
-            "where A.instanceId = ? AND D.instanceId = ? AND A.categoryId = D.id " +
-            "AND A.bookable=1 AND D.bookable=1 ORDER BY D.id";
+        "from SC_Resources_Resource A, SC_Resources_Category D " +
+        "where A.instanceId = ? AND D.instanceId = ? AND A.categoryId = D.id " +
+        "AND A.bookable=1 AND D.bookable=1 ORDER BY D.id";
     int categoryId;
     int resourceId;
     String categoryName = "";
@@ -718,8 +717,8 @@ public class ResourcesManagerDAO {
     PreparedStatement prepStmt = null;
     String query =
         "Select id from SC_Resources_Reservation A, SC_Resources_ReservedResource B " +
-            "where B.resourceId=? AND B.reservationId=A.id AND ((A.begindate<? AND ?<A.enddate) " +
-            "OR (A.begindate<? AND ?<A.enddate) OR (?<A.begindate AND A.enddate<?))";
+        "where B.resourceId=? AND B.reservationId=A.id AND ((A.begindate<? AND ?<A.enddate) " +
+        "OR (A.begindate<? AND ?<A.enddate) OR (?<A.begindate AND A.enddate<?))";
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(query);
@@ -776,9 +775,9 @@ public class ResourcesManagerDAO {
     PreparedStatement prepStmt = null;
     String query =
         "Select id from SC_Resources_Reservation A, SC_Resources_ReservedResource B " +
-            "where B.resourceId=? AND B.reservationId!=? AND B.reservationId=A.id " +
-            "AND ((A.begindate<? AND ?<A.enddate) OR (A.begindate<? AND ?<A.enddate) " +
-            "OR (?<=A.begindate AND A.enddate<=?))";
+        "where B.resourceId=? AND B.reservationId!=? AND B.reservationId=A.id " +
+        "AND ((A.begindate<? AND ?<A.enddate) OR (A.begindate<? AND ?<A.enddate) " +
+        "OR (?<=A.begindate AND A.enddate<=?))";
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(query);
@@ -807,7 +806,7 @@ public class ResourcesManagerDAO {
     ResultSet rs = null;
     String query =
         "select id,evenement,creationDate,updateDate,begindate,enddate,reason,place " +
-            "from SC_Resources_Reservation where instanceId=? AND userId=?";
+        "from SC_Resources_Reservation where instanceId=? AND userId=?";
     int id;
     String evenement = "";
     Date creationDate;
@@ -852,7 +851,7 @@ public class ResourcesManagerDAO {
     ResultSet rs = null;
     String query =
         "select id,evenement,creationDate,updateDate,begindate,enddate,reason,place,userId " +
-            "from SC_Resources_Reservation where instanceId=?";
+        "from SC_Resources_Reservation where instanceId=?";
     int id;
     String evenement = "";
     Date creationDate;
@@ -897,9 +896,9 @@ public class ResourcesManagerDAO {
     ResultSet rs = null;
     String query =
         "select A.id, A.categoryid, A.name, A.creationdate, A.updatedate, A.bookable, " +
-            "A.responsibleid, A.createrid, A.updaterid, A.description, B.status " +
-            "from SC_Resources_Resource A, SC_Resources_ReservedResource B " +
-            "where A.id=B.resourceId AND B.reservationId=? AND A.instanceId=?";
+        "A.responsibleid, A.createrid, A.updaterid, A.description, B.status " +
+        "from SC_Resources_Resource A, SC_Resources_ReservedResource B " +
+        "where A.id=B.resourceId AND B.reservationId=? AND A.instanceId=?";
     int idReservation = Integer.parseInt(reservationId);
     try {
       prepStmt = con.prepareStatement(query);
@@ -948,9 +947,9 @@ public class ResourcesManagerDAO {
     Date monthEnd = getEndDateOfMonth(monthDate);
     String query =
         "select id,evenement,creationDate,updateDate,begindate,enddate,reason," +
-            "place,userId, status from SC_Resources_Reservation " +
-            "where instanceId=? AND userId=? AND ((?<=begindate AND begindate<=?) " +
-            "OR (?<=enddate AND enddate<=?) OR (begindate<=? AND ?<=enddate)) ";
+        "place,userId, status from SC_Resources_Reservation " +
+        "where instanceId=? AND userId=? AND ((?<=begindate AND begindate<=?) " +
+        "OR (?<=enddate AND enddate<=?) OR (begindate<=? AND ?<=enddate)) ";
     int idUser = Integer.parseInt(userId);
     try {
       prepStmt = con.prepareStatement(query);
@@ -969,7 +968,7 @@ public class ResourcesManagerDAO {
         list.add(reservation);
       }
     } finally {
-      DBUtil.close(prepStmt);
+      DBUtil.close(rs, prepStmt);
     }
     return list;
   }
@@ -984,12 +983,15 @@ public class ResourcesManagerDAO {
     Date monthEnd = getEndDateOfMonth(monthDate);
     // chercher les reservations dont une des ressources est à valider
     List<String> reservationIds = getReservationByUser(con, userId);
+    if (reservationIds == null || reservationIds.isEmpty()) {
+      return new ArrayList<ReservationDetail>();
+    }
     String query =
         "select id,evenement,creationDate,updateDate,begindate,enddate,reason," +
-            "place,userId, status from SC_Resources_Reservation " +
-            "where instanceId=? AND ((?<=begindate AND begindate<=?) " +
-            "OR (?<=enddate AND enddate<=?) OR (begindate<=? AND ?<=enddate)) " +
-            "AND (";
+        "place,userId, status from SC_Resources_Reservation " +
+        "where instanceId=? AND ((?<=begindate AND begindate<=?) " +
+        "OR (?<=enddate AND enddate<=?) OR (begindate<=? AND ?<=enddate)) " +
+        "AND (";
     boolean first = true;
     for (String reservationId : reservationIds) {
       if (!first) {
@@ -997,7 +999,7 @@ public class ResourcesManagerDAO {
       } else {
         first = false;
       }
-      query += "id = ? ";
+      query += "id = '" + reservationId + "' ";
 
     }
     query += ")";
@@ -1011,11 +1013,7 @@ public class ResourcesManagerDAO {
       prepStmt.setString(5, Long.toString(monthEnd.getTime()));
       prepStmt.setString(6, Long.toString(monthBegin.getTime()));
       prepStmt.setString(7, Long.toString(monthEnd.getTime()));
-      int i = 8;
-      for (String reservationId : reservationIds) {
-        prepStmt.setString(i, reservationId);
-        i = i + 1;
-      }
+
       rs = prepStmt.executeQuery();
       list = new ArrayList<ReservationDetail>();
       while (rs.next()) {
@@ -1023,7 +1021,7 @@ public class ResourcesManagerDAO {
         list.add(reservation);
       }
     } finally {
-      DBUtil.close(prepStmt);
+      DBUtil.close(rs, prepStmt);
     }
     return list;
   }
@@ -1036,8 +1034,8 @@ public class ResourcesManagerDAO {
     String reservationId = "";
     String query =
         "select A.reservationId from SC_Resources_ReservedResource A, SC_Resources_Managers B " +
-            "where A.resourceId=B.resourceId AND B.managerId = ? AND A.status = '" +
-            STATUS_FOR_VALIDATION + "'";
+        "where A.resourceId=B.resourceId AND B.managerId = ? AND A.status = '" +
+        STATUS_FOR_VALIDATION + "'";
     int idUser = Integer.parseInt(userId);
     try {
       prepStmt = con.prepareStatement(query);
@@ -1089,11 +1087,11 @@ public class ResourcesManagerDAO {
     Date monthEnd = getEndDateOfMonth(monthDate);
     String query =
         "select A.id,A.evenement,A.creationDate,A.updateDate,A.begindate,A.enddate," +
-            "A.reason,A.place,A.userId, A.status from SC_Resources_Reservation A, " +
-            "SC_Resources_Resource B, SC_Resources_ReservedResource C " +
-            "where A.instanceId=? AND B.categoryid=? AND B.id=C.resourceId " +
-            "AND C.reservationId=A.id AND ((?<=A.begindate AND A.begindate<=?) " +
-            "OR (?<=A.enddate AND A.enddate<=?) OR (A.begindate<=? AND ?<=A.enddate)) ";
+        "A.reason,A.place,A.userId, A.status from SC_Resources_Reservation A, " +
+        "SC_Resources_Resource B, SC_Resources_ReservedResource C " +
+        "where A.instanceId=? AND B.categoryid=? AND B.id=C.resourceId " +
+        "AND C.reservationId=A.id AND ((?<=A.begindate AND A.begindate<=?) " +
+        "OR (?<=A.enddate AND A.enddate<=?) OR (A.begindate<=? AND ?<=A.enddate)) ";
     int categoryId = Integer.parseInt(idCategory);
     try {
       prepStmt = con.prepareStatement(query);
@@ -1115,7 +1113,7 @@ public class ResourcesManagerDAO {
         list.add(reservation);
       }
     } finally {
-      DBUtil.close(prepStmt);
+      DBUtil.close(rs, prepStmt);
     }
     return list;
   }
@@ -1151,7 +1149,7 @@ public class ResourcesManagerDAO {
     if (!updateDate) {
       oldResources =
           getResourcesofReservation(con, reservationCourante.getInstanceId(), reservationCourante
-              .getId());
+          .getId());
     }
     String query = "DELETE FROM SC_Resources_ReservedResource WHERE reservationId=?";
     int reservationId = Integer.parseInt(reservationCourante.getId());
@@ -1211,7 +1209,6 @@ public class ResourcesManagerDAO {
   public static void updateReservation(Connection con, ReservationDetail reservationCourante)
       throws SQLException {
     PreparedStatement prepStmt = null;
-    int reservationId = Integer.parseInt(reservationCourante.getId());
     try {
       String reservationStatus = STATUS_VALIDATE;
       List<ResourceDetail> resources = reservationCourante.getListResourcesReserved();
@@ -1250,8 +1247,8 @@ public class ResourcesManagerDAO {
     PreparedStatement prepStmt = null;
     String query =
         "UPDATE SC_Resources_Reservation SET " +
-            "evenement=?, updatedate=?, begindate=?, enddate=?, reason=?, place=?, status=? " +
-            "WHERE id=? and instanceId=?";
+        "evenement=?, updatedate=?, begindate=?, enddate=?, reason=?, place=?, status=? " +
+        "WHERE id=? and instanceId=?";
     // on récupère les informations de ReservationDetail
     String instanceId = reservationCourante.getInstanceId();
     String evenement = reservationCourante.getEvent();
@@ -1347,7 +1344,7 @@ public class ResourcesManagerDAO {
         managers.add(managerId);
       }
     } finally {
-      DBUtil.close(prepStmt);
+      DBUtil.close(rs, prepStmt);
     }
     return managers;
   }
@@ -1368,7 +1365,7 @@ public class ResourcesManagerDAO {
       DBUtil.close(prepStmt);
     }
   }
-  
+
   public static String getStatusResourceOfReservation(Connection con, int resourceId,
       int reservationId) throws SQLException {
     ResultSet rs = null;
@@ -1386,7 +1383,7 @@ public class ResourcesManagerDAO {
         status = rs.getString("status");
       }
     } finally {
-      DBUtil.close(prepStmt);
+      DBUtil.close(rs, prepStmt);
     }
     return status;
   }

@@ -62,6 +62,7 @@ String currentReservationId = "";
 
 // identifiant du role de l'utilisateur en cours
 String flag = (String)request.getAttribute("Profile");
+boolean isResponsible = ((Boolean) request.getAttribute("IsResponsible")).booleanValue();
   
 //transformation des réservations (ReservationDetail) en Event du MonthCalendar
   if(listOfReservation != null){
@@ -251,21 +252,19 @@ out.println(gef.getLookStyleSheet());
 	String selectUserLab = resource.getString("resourcesManager.selectUser");
 	String link = "javascript:SP_openWindow('SelectValidator','selectUser',800,600,'');";
 	
-  	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel,"Main");
-	browseBar.setPath(resource.getString("resourcesManager.accueil"));
+  	browseBar.setPath(resource.getString("resourcesManager.accueil"));
 	if(!flag.equals("user")){
 		operationPane.addOperation(resource.getIcon("resourcesManager.createReservation"), resource.getString("resourcesManager.creerReservation"),"NewReservation");
 		operationPane.addOperation(resource.getIcon("resourcesManager.viewMyReservations"), resource.getString("resourcesManager.Reservation"),"Calendar?objectView="+personalReservation);
 		operationPane.addOperation(resource.getIcon("resourcesManager.viewUserReservation"), resource.getString("resourcesManager.viewUserReservation"), "javascript:onClick=viewOtherPlanning()");
-		if(flag.equals("responsable")){
+		if(isResponsible){
 			operationPane.addLine();
 			operationPane.addOperation(resource.getIcon("resourcesManager.viewReservationForValidation"), resource.getString("resourcesManager.viewReservationForValidation"),"Calendar?objectView=viewForValidation");
 		}
 		if(flag.equals("admin")){
-      operationPane.addLine();
-      operationPane.addOperation(resource.getIcon("resourcesManager.gererCategorie"), resource.getString("resourcesManager.gererCategorieRessource"),"ViewCategories");
-    }
+      		operationPane.addLine();
+      		operationPane.addOperation(resource.getIcon("resourcesManager.gererCategorie"), resource.getString("resourcesManager.gererCategorieRessource"),"ViewCategories");
+    	}
 	}
   	out.println(window.printBefore());
 	out.println(frame.printBefore());

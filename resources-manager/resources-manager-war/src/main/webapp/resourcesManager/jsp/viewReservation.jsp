@@ -104,12 +104,12 @@ buttonPane.addButton(cancelButton);
 				</tr>
 				
 				<tr>
-				<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.dateDebutReservation"));%> :</td> 
+				<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateBegin"));%> :</td> 
 				<td> <%=dateBegin%></td>
 				</tr>
 				
 				<tr>
-				<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.dateFinReservation"));%> :</TD>
+				<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateEnd"));%> :</TD>
 				<td><%=dateEnd%></td>
 				</tr>
 				<tr>
@@ -173,7 +173,9 @@ buttonPane.addButton(cancelButton);
 			</TABLE>
 			<%out.println(board.printAfter());%>
 			<br/>
-      <%=resource.getString("resourcesManager.explain") %>
+			<% out.println(board.printBefore());%>
+      			<%=resource.getString("resourcesManager.explain") %>
+      		<%out.println(board.printAfter());%>
 		</td>
 	</tr>
 </table>

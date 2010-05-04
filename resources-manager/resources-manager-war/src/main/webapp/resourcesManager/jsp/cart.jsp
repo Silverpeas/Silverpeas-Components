@@ -276,12 +276,12 @@ String idTemoin="";
 	</tr>
 		
 	<tr>
-		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.dateDebutReservation"));%> :</TD>
+		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateBegin"));%> :</TD>
 		<td><%=resource.getOutputDateAndHour(reservation.getBeginDate())%></td>
 	</tr>
 
 	<tr>
-	<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.dateFinReservation"));%> :</td> 
+	<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("GML.dateEnd"));%> :</td> 
 		<td><%=resource.getOutputDateAndHour(reservation.getEndDate())%></td>	
 	</tr>
 

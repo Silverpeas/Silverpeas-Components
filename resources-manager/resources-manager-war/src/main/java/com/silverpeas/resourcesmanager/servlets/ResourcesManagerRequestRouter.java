@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -280,7 +279,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         if (request.getAttribute("id") != null) {
           categoryId = (String) request.getAttribute("id");
         } else if (request.getParameter("id") != null) {
-          categoryId = (String) request.getParameter("id");
+          categoryId = request.getParameter("id");
         }
         List<ResourceDetail> list = resourcesManagerSC.getResourcesByCategory(categoryId);
         List<CategoryDetail> listcategories = resourcesManagerSC.getCategories();
@@ -348,7 +347,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("GetAvailableResources")) {
         String idReservation = null;
         if (request.getParameter("reservationId") != null) {
-          idReservation = (String) request.getParameter("reservationId");
+          idReservation = request.getParameter("reservationId");
         } else if (request.getAttribute("reservationId") != null) {
           idReservation = (String) request.getAttribute("reservationId");
         }
@@ -579,6 +578,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         request.setAttribute("listOfCategories", listOfCategories);
         request.setAttribute("idCategory", myObjectView);
         request.setAttribute("monthC", monthC);
+        request.setAttribute("IsResponsible", resourcesManagerSC.isResponsible());
         destination = root + "almanach.jsp";
       } else if (function.equals("PreviousMonth")) {
         resourcesManagerSC.previousMonth();

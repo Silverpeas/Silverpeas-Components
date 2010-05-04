@@ -147,7 +147,7 @@ function selectManagers()
 }
 </script>
 </head>
-<body>
+<body class="yui-skin-sam">
 <%
 browseBar.setDomainName(spaceLabel);
 browseBar.setComponentName(componentLabel,"Main");
@@ -160,10 +160,7 @@ operationPane.addOperation(resource.getIcon("resourcesManager.userPanel"), resou
 
 Board	board		 = gef.getBoard();
 
-//tabbedPane.addTab(resource.getString("resourcesManager.resource"), "#", true);
-
 out.println(window.printBefore());
-//out.println(tabbedPane.print());
 out.println(frame.printBefore());
 out.println(board.printBefore());
 
@@ -212,7 +209,6 @@ buttonPane.addButton(cancelButton);
 	   
 	   <TD id="managers"> 
 			<%
-		    
 		    String managerNames = "";
 			  if (managers != null) {
 			    Iterator it = managers.iterator();
