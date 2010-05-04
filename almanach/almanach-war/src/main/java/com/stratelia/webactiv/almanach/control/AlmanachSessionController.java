@@ -92,7 +92,6 @@ import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalenda
 import java.util.Hashtable;
 
 /**
- *
  * @author squere
  * @version
  */
@@ -179,7 +178,7 @@ public class AlmanachSessionController extends
 
     SilverTrace.info("almanach", "AlmanachSessionController.getMonthEvents()",
         "root.MSG_GEN_PARAM_VALUE", "# of events after sorting = "
-            + events.size());
+        + events.size());
 
     return (Collection) events;
   }
@@ -233,7 +232,6 @@ public class AlmanachSessionController extends
 
   /**
    * Delete event
-   *
    * @param id
    * @throws AlmanachException
    * @throws RemoteException
@@ -290,7 +288,6 @@ public class AlmanachSessionController extends
 
   /**
    * Delete an occurence of event
-   *
    * @param event
    * @param dateDebutException
    * @param dateFinException
@@ -330,7 +327,7 @@ public class AlmanachSessionController extends
       eventIcal4jCalendar = (VEvent) it.next();
       if (event.getId().equals(
           eventIcal4jCalendar.getProperties().getProperty(Property.UID)
-              .getValue())) {
+          .getValue())) {
         break;
       }
     }
@@ -344,7 +341,6 @@ public class AlmanachSessionController extends
 
   /**
    * Add event
-   *
    * @param event
    * @throws AlmanachBadParamException
    * @throws AlmanachException
@@ -443,7 +439,6 @@ public class AlmanachSessionController extends
 
   /**
    * Update event
-   *
    * @param event
    * @throws AlmanachBadParamException
    * @throws AlmanachException
@@ -517,7 +512,7 @@ public class AlmanachSessionController extends
         eventIcal4jCalendar = (VEvent) it.next();
         if (event.getPK().getId().equals(
             eventIcal4jCalendar.getProperties().getProperty(Property.UID)
-                .getValue())) {
+            .getValue())) {
           ok = true;
         }
       }
@@ -613,24 +608,14 @@ public class AlmanachSessionController extends
   }
 
   /**
-   * build a pdf file representation for the current month.
-   *
-   * @returns the generated pdf file name.
-   */
-  public String buildPdf() {
-    // return AlmanachPdfGenerator.buildPdf(this);
-    return buildPdf(false);
-  }
-
-  /**
    * @param bCompleteMonth
    * @return
    */
-  public String buildPdf(boolean bCompleteMonth) {
+  public String buildPdf(String mode) {
     String name = "almanach" + (new java.util.Date()).getTime() + ".pdf";
 
     try {
-      AlmanachPdfGenerator.buildPdf(name, this, bCompleteMonth);
+      AlmanachPdfGenerator.buildPdf(name, this, mode);
     } catch (AlmanachRuntimeException ex) {
       SilverTrace.warn("almanach", "AlmanachSessionController.buildPdf()",
           "almanach.MSG_BUILD_PDF_FAIL", ex);
@@ -677,10 +662,7 @@ public class AlmanachSessionController extends
 
   /*
    * (non-Javadoc)
-   *
-   * @see
-   * com.stratelia.silverpeas.peasCore.AbstractComponentSessionController#getRSSUrl
-   * ()
+   * @see com.stratelia.silverpeas.peasCore.AbstractComponentSessionController#getRSSUrl ()
    */
   public String getRSSUrl() {
     if (isUseRss())
@@ -719,7 +701,7 @@ public class AlmanachSessionController extends
     SilverTrace.info("almanach",
         "AlmanachSessionController.getAccessibleInstances()",
         "root.MSG_GEN_PARAM_VALUE", "instanceIds=" + instanceIds + " spaceId="
-            + getSpaceId());
+        + getSpaceId());
     List almanachs = null;
     if (instanceIds.length > 1) // exclude this instance
     {
@@ -773,7 +755,6 @@ public class AlmanachSessionController extends
 
   /**
    * Get the color of the almanach
-   *
    * @author dlesimple
    * @param instanceId
    * @return color of almanach
@@ -794,10 +775,8 @@ public class AlmanachSessionController extends
 
   /**
    * Get the others almanachs
-   *
    * @author dlesimple
-   * @return ArrayList of ArrayList (with almanachId, almanachLabel,
-   *         almanachColor)
+   * @return ArrayList of ArrayList (with almanachId, almanachLabel, almanachColor)
    */
   public ArrayList getOthersAlmanachs() {
     boolean inCurrentSpace = false;
@@ -822,7 +801,7 @@ public class AlmanachSessionController extends
     SilverTrace.info("almanach",
         "AlmanachSessionController.getOthersAlmanachs()",
         "root.MSG_GEN_PARAM_VALUE", "instanceIds=" + instanceIds + " spaceId="
-            + getSpaceId());
+        + getSpaceId());
     for (int i = 0; i < instanceIds.length; i++) {
       SilverTrace.info("almanach",
           "AlmanachSessionController.getOthersAlmanachs()",
@@ -843,7 +822,6 @@ public class AlmanachSessionController extends
 
   /**
    * Get agregated almanachs
-   *
    * @author dlesimple
    * @return String[] of almanachIds
    */
@@ -853,7 +831,6 @@ public class AlmanachSessionController extends
 
   /**
    * Return if an almanach is agregated
-   *
    * @author dlesimple
    * @param instanceId
    * @return boolean
@@ -871,10 +848,8 @@ public class AlmanachSessionController extends
 
   /**
    * Set almanachs to be agregated
-   *
    * @author dlesimple
-   * @param String
-   *          [] of instanceIds
+   * @param String [] of instanceIds
    */
   private void setAgregatedAlmanachs(String[] instancesIds) {
     agregatedAlmanachsIds = new String[instancesIds.length];
@@ -884,7 +859,6 @@ public class AlmanachSessionController extends
 
   /**
    * Delete agregated almanachs
-   *
    * @author dlesimple
    */
   private void deleteAgregatedAlmanachs() {
@@ -893,10 +867,8 @@ public class AlmanachSessionController extends
 
   /**
    * Update list of agregated almanachs
-   *
    * @author dlesimple
-   * @param String
-   *          [] of instanceIds
+   * @param String [] of instanceIds
    */
   public void updateAgregatedAlmanachs(String[] instanceIds) {
     if (instanceIds != null) {
@@ -909,10 +881,8 @@ public class AlmanachSessionController extends
 
   /**
    * Get the color of an almanach
-   *
    * @author dlesimple
-   * @param position
-   *          in the array
+   * @param position in the array
    * @return almanachColor
    */
   private String getAlmanachColor(int pos) {
@@ -941,7 +911,7 @@ public class AlmanachSessionController extends
     sel.setHostComponentName(hostComponentName);
     SilverTrace.debug("almanach", "AlmanachSessionController.initAlertUser()",
         "root.MSG_GEN_PARAM_VALUE", "name = " + hostComponentName
-            + " componentId=" + getComponentId());
+        + " componentId=" + getComponentId());
     sel.setNotificationMetaData(getAlertNotificationEvent(eventId));
     // l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
     return AlertUser.getAlertUserURL();
@@ -974,7 +944,7 @@ public class AlmanachSessionController extends
     SilverTrace.debug("almanach",
         "AlamanachSessionController.getAlertNotificationEvent()",
         "root.MSG_GEN_PARAM_VALUE", "message = " + message.toString()
-            + " message_en = " + message_en.toString());
+        + " message_en = " + message_en.toString());
     SilverTrace.debug("almanach",
         "AlamanachSessionController.getAlertNotificationEvent()",
         "root.MSG_GEN_PARAM_VALUE", "sujet = " + subject + " corps = " + body);
@@ -986,7 +956,7 @@ public class AlmanachSessionController extends
     SilverTrace.debug("almanach",
         "AlmanachSessionController.getAlertNotificationEvent()",
         "root.MSG_GEN_PARAM_VALUE", "sujet_en = " + subject_en + " corps_en = "
-            + body_en);
+        + body_en);
 
     // création des notifications
     NotificationMetaData notifMetaData = new NotificationMetaData(
@@ -1080,9 +1050,7 @@ public class AlmanachSessionController extends
   }
 
   /**
-   * Update event occurence (cas particulier de modification d'une occurence
-   * d'événement périodique)
-   *
+   * Update event occurence (cas particulier de modification d'une occurence d'événement périodique)
    * @param event
    * @param dateDebutIteration
    * @param dateFinIteration
@@ -1129,13 +1097,13 @@ public class AlmanachSessionController extends
    * @throws AlmanachException
    * @throws RemoteException
    */
-  public Collection getListRecurrentEvent() throws RemoteException,
+  public Collection getListRecurrentEvent(boolean yearScope) throws RemoteException,
       AlmanachException {
     // Récupère le Calendar ical4j
     Calendar calendarAlmanach = getCurrentICal4jCalendar();
 
     return getAlmanachBm().getListRecurrentEvent(calendarAlmanach,
-        getCurrentDay(), getSpaceId(), getComponentId());
+        getCurrentDay(), getSpaceId(), getComponentId(), yearScope);
 
   }
 }

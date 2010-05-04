@@ -115,12 +115,9 @@ function addEvent(day)
     document.eventForm.submit();
 }
 
-function printPdf(completeMonth) 
+function printPdf(view) 
 {
-    if (completeMonth)
-    	window.open("MonthPdf", "PdfGeneration", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
-    else
-    	window.open("EventPdf", "PdfGeneration", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
+    window.open(view, "PdfGeneration", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
 }
 
 <%	if (almanach.isAgregationUsed()) { %>
@@ -195,11 +192,13 @@ out.println(graphicFactory.getLookStyleSheet());
     	operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+instanceId+"','utilizationPdc1')");
         operationPane.addLine();
    	}
-  	operationPane.addOperation(calendarPdfSrc,almanach.getString("genererPdfMoisComplet"), "javascript:onClick=printPdf(true)");
-  	operationPane.addOperation(pdfSrc,almanach.getString("genererPdfJourEvenement"), "javascript:onClick=printPdf(false)");
+  	operationPane.addOperation(calendarPdfSrc,almanach.getString("genererPdfMoisComplet"), "javascript:onClick=printPdf('"+AlmanachPdfGenerator.PDF_MONTH_ALLDAYS+"')");
+  	operationPane.addOperation(pdfSrc,almanach.getString("genererPdfJourEvenement"), "javascript:onClick=printPdf('"+AlmanachPdfGenerator.PDF_MONTH_EVENTSONLY+"')");
+  	operationPane.addOperation(calendarPdfSrc,almanach.getString("almanach.genererPdfAnnee"), "javascript:onClick=printPdf('"+AlmanachPdfGenerator.PDF_YEAR_EVENTSONLY+"')");
   	operationPane.addOperation(printSrc, resources.getString("GML.print"), "printAlmanach.jsp");
 
   	if (flag.equals("publisher") || flag.equals("admin")) {
+  	  	operationPane.addLine();
     	operationPane.addOperation(addEventSrc, almanach.getString("creerEvenement"), "javascript:onClick=addEvent('')");
 	}
   

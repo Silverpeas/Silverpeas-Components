@@ -25,7 +25,6 @@ package com.stratelia.webactiv.almanach.control.ejb;
 
 import java.sql.Connection;
 
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -92,12 +91,10 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /**
    * Get the events of the month
-   *
    * @author dlesimple
    * @param pk
    * @param date
-   * @param String
-   *          [] of instanceIds
+   * @param String [] of instanceIds
    * @return Collection of Events
    */
   public Collection getMonthEvents(EventPK pk, java.util.Date date,
@@ -128,7 +125,6 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /**
    * Get the events of the month
-   *
    * @author dlesimple
    * @param pk
    * @param date
@@ -140,9 +136,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   *
-   * @see
-   * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
+   * @see com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * getAllEvents(com.stratelia.webactiv.almanach.model.EventPK)
    */
   public Collection getAllEvents(EventPK pk) {
@@ -171,10 +165,8 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /**
    * Get all events
-   *
    * @param pk
-   * @param String
-   *          [] of instanceIds
+   * @param String [] of instanceIds
    * @return Collection of Events
    */
   public Collection getAllEvents(EventPK pk, String[] instanceIds) {
@@ -204,9 +196,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   *
-   * @see
-   * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
+   * @see com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * getEvents(java.util.Collection)
    */
   public Collection getEvents(Collection pks) {
@@ -261,9 +251,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   *
-   * @see
-   * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
+   * @see com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * addEvent(com.stratelia.webactiv.almanach.model.EventDetail)
    */
   public String addEvent(EventDetail event) {
@@ -348,9 +336,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   *
-   * @see
-   * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
+   * @see com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * createIndex(com.stratelia.webactiv.almanach.model.EventDetail)
    */
   public void createIndex(EventDetail detail) {
@@ -374,7 +360,6 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /**
    * Update Index Entry
-   *
    * @param indexEntry
    * @param eventDetail
    * @return FullIndexEntry
@@ -385,7 +370,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
     SilverTrace.info("almanach",
         "AlmanachBmEJB.updateIndexEntryWithWysiwygContent()",
         "root.MSG_GEN_ENTER_METHOD", "indexEntry = " + indexEntry.toString()
-            + ", eventPK = " + eventPK.toString());
+        + ", eventPK = " + eventPK.toString());
     try {
       if (eventPK != null) {
         String wysiwygContent = WysiwygController.load(eventPK.getInstanceId(),
@@ -416,9 +401,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   *
-   * @see
-   * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
+   * @see com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * getNextEvents(java.lang.String, int)
    */
   public Collection getNextEvents(String instanceId, int nbReturned) {
@@ -549,11 +532,8 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   *
-   * @see
-   * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
-   * addPeriodicityException
-   * (com.stratelia.webactiv.almanach.model.PeriodicityException)
+   * @see com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
+   * addPeriodicityException (com.stratelia.webactiv.almanach.model.PeriodicityException)
    */
   public void addPeriodicityException(PeriodicityException periodicityException) {
     SilverTrace.info("almanach", "AlmanachBmEJB.addPeriodicityException()",
@@ -618,9 +598,10 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
     Calendar calendarAlmanach = new Calendar();
     calendarAlmanach.getProperties().add(CalScale.GREGORIAN);
-    
+
     TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
-    ResourceLocator almanachSettings = new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings","");
+    ResourceLocator almanachSettings =
+        new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings", "");
     TimeZone localTimeZone = registry.getTimeZone(almanachSettings.getString("almanach.timezone"));
 
     // transformation des événements (EventDetail) en VEvent du Calendar ical4j
@@ -679,17 +660,17 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
       dtEnd = new DateTime(calEndDate.getTime());
       dtEnd.setTimeZone(localTimeZone);
       eventIcal4jCalendar = new VEvent(dtStart, dtEnd, title);
-      
+
       /*
-       * if(eventFatherId != null && eventFatherId.length()>0) { //Occurence
-       * spécifique d'un événement récurrent uid = new Uid(eventFatherId);
-       * recurrenceid = new RecurrenceId(new Date(calStartDate.getTime()));
-       * eventIcal4jCalendar.getProperties().add(recurrenceid); } else {
+       * if(eventFatherId != null && eventFatherId.length()>0) { //Occurence spécifique d'un
+       * événement récurrent uid = new Uid(eventFatherId); recurrenceid = new RecurrenceId(new
+       * Date(calStartDate.getTime())); eventIcal4jCalendar.getProperties().add(recurrenceid); }
+       * else {
        */
       uid = new Uid(eventId);
       /* } */
       eventIcal4jCalendar.getProperties().add(uid);
-      
+
       description = new Description(descriptionWysiwyg);
       eventIcal4jCalendar.getProperties().add(description);
 
@@ -814,8 +795,8 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
    * @param instanceId
    * @return
    */
-  public Collection getListRecurrentEvent(Calendar calendarAlmanach,
-      java.util.Calendar currentDay, String spaceId, String instanceId) {
+  public Collection<EventDetail> getListRecurrentEvent(Calendar calendarAlmanach,
+      java.util.Calendar currentDay, String spaceId, String instanceId, boolean yearScope) {
     SilverTrace.info("almanach", "AlmanachBmEJB.getListRecurrentEvent()",
         "root.MSG_GEN_ENTER_METHOD");
 
@@ -825,23 +806,41 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
       currentDay = java.util.Calendar.getInstance();
       isYear = true;
     }
-    java.util.Calendar firstDayMonth = currentDay;
+
+    java.util.Calendar firstDayMonth = java.util.Calendar.getInstance();
+    firstDayMonth.set(java.util.Calendar.YEAR, currentDay.get(java.util.Calendar.YEAR));
+    firstDayMonth.set(java.util.Calendar.MONTH, currentDay.get(java.util.Calendar.MONTH));
     firstDayMonth.set(java.util.Calendar.DATE, 1);
     firstDayMonth.set(java.util.Calendar.HOUR_OF_DAY, 0);
     firstDayMonth.set(java.util.Calendar.MINUTE, 0);
     firstDayMonth.set(java.util.Calendar.SECOND, 0);
     firstDayMonth.set(java.util.Calendar.MILLISECOND, 0);
+    if (yearScope) {
+      firstDayMonth.set(java.util.Calendar.MONTH, 0);
+    }
+
+    SilverTrace.info("almanach", "AlmanachBmEJB.getListRecurrentEvent()",
+        "root.MSG_GEN_PARAM_VALUE", "start = " + firstDayMonth.getTime());
+
     java.util.Calendar lastDayMonth = java.util.Calendar.getInstance();
     lastDayMonth.setTime(firstDayMonth.getTime());
-    if (isYear) {
+    if (yearScope) {
       lastDayMonth.add(java.util.Calendar.YEAR, 1);
     } else {
-      lastDayMonth.add(java.util.Calendar.MONTH, 1);
+      if (isYear) {
+        lastDayMonth.add(java.util.Calendar.YEAR, 1);
+      } else {
+        lastDayMonth.add(java.util.Calendar.MONTH, 1);
+      }
     }
     lastDayMonth.set(java.util.Calendar.HOUR_OF_DAY, 0);
     lastDayMonth.set(java.util.Calendar.MINUTE, 0);
     lastDayMonth.set(java.util.Calendar.SECOND, 0);
     lastDayMonth.set(java.util.Calendar.MILLISECOND, 0);
+
+    SilverTrace.info("almanach", "AlmanachBmEJB.getListRecurrentEvent()",
+        "root.MSG_GEN_PARAM_VALUE", "end = " + lastDayMonth.getTime());
+
     Period monthPeriod = new Period(new DateTime(firstDayMonth.getTime()),
         new DateTime(lastDayMonth.getTime()));
 
@@ -882,18 +881,19 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
         events.add(copy);
       }
     }
-	//Tri des Event par ordre de Date de début croissante
-	Collections.sort(events, new Comparator<EventDetail>()
-	{
-	  public int compare(EventDetail event1, EventDetail event2)
-	  {
-	    return (event1.getStartDate().compareTo(event2.getStartDate()));
-	  }
-	  public boolean equals(EventDetail o)
-	  {
-	    return false;
-	  }
-	});
+    // Tri des Event par ordre de Date de début croissante
+    Collections.sort(events, new Comparator<EventDetail>()
+        {
+      public int compare(EventDetail event1, EventDetail event2)
+        {
+        return (event1.getStartDate().compareTo(event2.getStartDate()));
+      }
+
+      public boolean equals(EventDetail o)
+        {
+        return false;
+      }
+    });
     return events;
   }
 
@@ -903,9 +903,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   *
-   * @see
-   * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
+   * @see com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * getSilverObjectId(com.stratelia.webactiv.almanach.model.EventPK)
    */
   public int getSilverObjectId(EventPK eventPK) {
@@ -939,8 +937,8 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
       String creatorId) {
     SilverTrace
         .info("Almanach", "AlmanachBmEJB.createSilverContent()",
-            "root.MSG_GEN_ENTER_METHOD", "eventId = "
-                + eventDetail.getPK().getId());
+        "root.MSG_GEN_ENTER_METHOD", "eventId = "
+        + eventDetail.getPK().getId());
     try {
       return getAlmanachContentManager().createSilverContent(con, eventDetail,
           creatorId);
@@ -996,9 +994,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   *
-   * @see
-   * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
+   * @see com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * getAttachments(com.stratelia.webactiv.almanach.model.EventPK)
    */
   public Collection getAttachments(EventPK eventPK) {
@@ -1017,7 +1013,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
           .searchAttachmentByPKAndContext(foreignKey, ctx, con);
       SilverTrace.info("almanach", "AlmanachBmEJB.getAttachments()",
           "root.MSG_GEN_PARAM_VALUE", "attachmentList.size() = "
-              + attachmentList.size());
+          + attachmentList.size());
       return attachmentList;
     } catch (Exception e) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.getAttachments()",
@@ -1041,9 +1037,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
   /*
    * (non-Javadoc)
-   *
-   * @see
-   * com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
+   * @see com.stratelia.webactiv.almanach.control.ejb.AlmanachBmBusinessSkeleton#
    * getHTMLPath(com.stratelia.webactiv.almanach.model.EventPK)
    */
   public String getHTMLPath(EventPK eventPK) {

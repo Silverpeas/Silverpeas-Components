@@ -61,7 +61,7 @@ public class AlmanachRssServlet extends RssServlet {
 
     Calendar currentDay = GregorianCalendar.getInstance();
     Collection events = getAlmanachBm().getListRecurrentEvent(calendarAlmanach,
-        null, "", instanceId);
+        null, "", instanceId, true);
     if (events != null) {
       Iterator it = events.iterator();
       EventDetail eventDetail;

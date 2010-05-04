@@ -36,12 +36,10 @@ public interface AlmanachBmBusinessSkeleton {
 
   /**
    * Get the events of the month
-   * 
    * @author dlesimple
    * @param pk
    * @param date
-   * @param String
-   *          [] of instanceIds
+   * @param String [] of instanceIds
    * @return Collection of Events
    */
   public Collection getMonthEvents(EventPK pk, java.util.Date date,
@@ -49,7 +47,6 @@ public interface AlmanachBmBusinessSkeleton {
 
   /**
    * Get the events of the month
-   * 
    * @author dlesimple
    * @param pk
    * @param date
@@ -60,18 +57,14 @@ public interface AlmanachBmBusinessSkeleton {
 
   /**
    * this method provide a collection of event
-   * 
-   * @param : EventPk pk, to obtain the space and component @ return:
-   *        java.util.Collection
+   * @param : EventPk pk, to obtain the space and component @ return: java.util.Collection
    */
   public Collection getAllEvents(EventPK pk) throws RemoteException;
 
   /**
    * Get all events of instanceId Almanachs
-   * 
    * @param pk
-   * @param String
-   *          [] of instanceIds
+   * @param String [] of instanceIds
    * @return Collection of Events
    */
   public Collection getAllEvents(EventPK pk, String[] instanceIds)
@@ -126,8 +119,8 @@ public interface AlmanachBmBusinessSkeleton {
   public Calendar getICal4jCalendar(Collection events, String language)
       throws RemoteException;
 
-  public Collection getListRecurrentEvent(Calendar calendarAlmanach,
-      java.util.Calendar currentDay, String spaceId, String instanceId)
+  public Collection<EventDetail> getListRecurrentEvent(Calendar calendarAlmanach,
+      java.util.Calendar currentDay, String spaceId, String instanceId, boolean yearScope)
       throws RemoteException;
 
   public RRule generateRecurrenceRule(Periodicity periodicity)

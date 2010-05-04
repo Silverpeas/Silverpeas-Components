@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
+ ---*/
 
 /*
  * AlmanachPdfGenerator.java
@@ -60,13 +60,17 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
- * 
  * @author squere
  * @version
  */
 public class AlmanachPdfGenerator {
+
+  public static final String PDF_MONTH_ALLDAYS = "PdfMonthAllDays";
+  public static final String PDF_MONTH_EVENTSONLY = "PdfMonthEventsOnly";
+  public static final String PDF_YEAR_EVENTSONLY = "PdfYearEventsOnly";
+
   static public void buildPdf(String name, AlmanachSessionController almanach,
-      boolean bCompleteMonth) throws AlmanachRuntimeException {
+      String mode) throws AlmanachRuntimeException {
     try {
       SilverTrace.info("almanach", "AlmanachPdfGenerator.buildPdf()",
           "root.MSG_GEN_ENTER_METHOD");
@@ -87,13 +91,13 @@ public class AlmanachPdfGenerator {
       document.open();
 
       try {
-        HeaderFooter header = new HeaderFooter(new Phrase(almanach
-            .getString("events")
-            + " "
-            + almanach.getString("mois"
-                + almanach.getCurrentDay().get(Calendar.MONTH))
-            + " "
-            + almanach.getCurrentDay().get(Calendar.YEAR)), false);
+        String sHeader = almanach.getString("events");
+        if (mode.equals(PDF_MONTH_ALLDAYS) || mode.equals(PDF_MONTH_EVENTSONLY)) {
+          sHeader +=
+              " " + almanach.getString("mois" + almanach.getCurrentDay().get(Calendar.MONTH));
+        }
+        sHeader += " " + almanach.getCurrentDay().get(Calendar.YEAR);
+        HeaderFooter header = new HeaderFooter(new Phrase(sHeader), false);
         HeaderFooter footer = new HeaderFooter(new Phrase("Page "), true);
         footer.setAlignment(Element.ALIGN_CENTER);
 
@@ -108,13 +112,13 @@ public class AlmanachPdfGenerator {
         Paragraph cTitle = new Paragraph(almanach.getString("Almanach")
             + " "
             + almanach.getString("mois"
-                + almanach.getCurrentDay().get(Calendar.MONTH)) + " "
+            + almanach.getCurrentDay().get(Calendar.MONTH)) + " "
             + almanach.getCurrentDay().get(Calendar.YEAR), titleFont);
         Chapter chapter = new Chapter(cTitle, 1);
 
-        Collection events = almanach.getListRecurrentEvent();
+        Collection events = almanach.getListRecurrentEvent(mode.equals(PDF_YEAR_EVENTSONLY));
 
-        generateAlmanach(chapter, almanach, events, bCompleteMonth);
+        generateAlmanach(chapter, almanach, events, mode);
 
         document.add(chapter);
       } catch (Exception ex) {
@@ -162,18 +166,31 @@ public class AlmanachPdfGenerator {
   }
 
   private static void generateAlmanach(Chapter chapter,
-      AlmanachSessionController almanach, Collection events,
-      boolean bCompleteMonth) throws AlmanachException {
+      AlmanachSessionController almanach, Collection<EventDetail> events,
+      String mode) throws AlmanachException {
+
+    boolean monthScope =
+        AlmanachPdfGenerator.PDF_MONTH_EVENTSONLY.equals(mode) ||
+        AlmanachPdfGenerator.PDF_MONTH_ALLDAYS.equals(mode);
+    boolean yearScope = AlmanachPdfGenerator.PDF_YEAR_EVENTSONLY.equals(mode);
+
     int currentDay = -1;
     Calendar calendar = Calendar.getInstance();
     calendar.setTime(almanach.getCurrentDay().getTime());
     calendar.set(Calendar.DAY_OF_MONTH, 1);
     int currentMonth = calendar.get(Calendar.MONTH);
+    int currentYear = calendar.get(Calendar.YEAR);
+
+    if (yearScope) {
+      // start from begin of current year
+      calendar.set(Calendar.MONTH, 0);
+    }
 
     // for each day of the current month
-    while (currentMonth == calendar.get(Calendar.MONTH)) {
+    while ((monthScope && currentMonth == calendar.get(Calendar.MONTH)) ||
+        (yearScope && currentYear == calendar.get(Calendar.YEAR))) {
       Section section = null;
-      if (bCompleteMonth) {
+      if (AlmanachPdfGenerator.PDF_MONTH_ALLDAYS.equals(mode)) {
         section = chapter.addSection(generateParagraph(calendar, almanach), 0);
       }
 
@@ -188,8 +205,8 @@ public class AlmanachPdfGenerator {
       String eventTitle = null;
       String startHour = null;
       String endHour = null;
-      for (Iterator i = events.iterator(); i.hasNext();) {
-        event = (EventDetail) i.next();
+      for (Iterator<EventDetail> i = events.iterator(); i.hasNext();) {
+        event = i.next();
         theDay = DateUtil.date2SQLDate(calendar.getTime());
         startDay = DateUtil.date2SQLDate(event.getStartDate());
         startHour = event.getStartHour();
@@ -210,17 +227,16 @@ public class AlmanachPdfGenerator {
         }
 
         if (calendar.get(Calendar.DAY_OF_MONTH) != currentDay) {
-          if (!bCompleteMonth) {
-            section = chapter.addSection(generateParagraph(calendar, almanach),
-                0);
+          if (AlmanachPdfGenerator.PDF_MONTH_EVENTSONLY.equals(mode) ||
+              AlmanachPdfGenerator.PDF_YEAR_EVENTSONLY.equals(mode)) {
+            section = chapter.addSection(generateParagraph(calendar, almanach), 0);
           }
           currentDay = calendar.get(Calendar.DAY_OF_MONTH);
         }
 
         Font textFont;
         if (event.getPriority() == 0) {
-          textFont = new Font(Font.HELVETICA, 10, Font.NORMAL, new Color(0, 0,
-              0));
+          textFont = new Font(Font.HELVETICA, 10, Font.NORMAL, new Color(0, 0, 0));
         } else {
           textFont = new Font(Font.HELVETICA, 10, Font.BOLD, new Color(0, 0, 0));
         }

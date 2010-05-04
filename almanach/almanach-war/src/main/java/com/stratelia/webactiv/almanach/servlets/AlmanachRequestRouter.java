@@ -208,8 +208,8 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
 
         // récupère l'Event et sa périodicité
         EventDetail event = almanach.getCompleteEventDetail(id);
-        
-        //Met en session l'événement courant
+
+        // Met en session l'événement courant
         almanach.setCurrentEvent(event);
 
         if (event.getPeriodicity() != null) {
@@ -521,18 +521,12 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
 
         destination = "/almanach/jsp/pdcPositions.jsp";
       } else if (function.startsWith("printAlmanach")) {
-        request.setAttribute("ListEvent", almanach.getListRecurrentEvent());
+        request.setAttribute("ListEvent", almanach.getListRecurrentEvent(false));
 
         destination = "/almanach/jsp/printAlmanach.jsp";
-      } else if (function.startsWith("EventPdf")) {
+      } else if (function.startsWith("Pdf")) {
         // Recuperation des parametres
-        String fileName = almanach.buildPdf();
-        request.setAttribute("FileName", fileName);
-
-        destination = "/almanach/jsp/pdf.jsp";
-      } else if (function.startsWith("MonthPdf")) {
-        // Recuperation des parametres
-        String fileName = almanach.buildPdf(true);
+        String fileName = almanach.buildPdf(function);
         request.setAttribute("FileName", fileName);
 
         destination = "/almanach/jsp/pdf.jsp";
