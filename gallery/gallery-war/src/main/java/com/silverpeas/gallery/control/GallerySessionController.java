@@ -24,7 +24,6 @@
 package com.silverpeas.gallery.control;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -71,7 +70,6 @@ import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
-import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -252,7 +250,7 @@ public class GallerySessionController extends AbstractComponentSessionController
       while (it.hasNext()) {
         PhotoDetail photo = it.next();
         try {
-          ImageHelper.setMetaData(photo, getMetadataSettings(), getMetadataResources());
+          ImageHelper.setMetaData(photo, getLanguage());
         } catch (Exception e) {
           SilverTrace.info("gallery", "GallerySessionController.getAlbum",
               "gallery.MSG_NOT_ADD_METADATA", "photoId =  " + photo.getId());
@@ -274,7 +272,7 @@ public class GallerySessionController extends AbstractComponentSessionController
       while (it.hasNext()) {
         PhotoDetail photo = it.next();
         try {
-          ImageHelper.setMetaData(photo, getMetadataSettings(), getMetadataResources());
+          ImageHelper.setMetaData(photo, getLanguage());
         } catch (Exception e) {
           SilverTrace.info("gallery", "GallerySessionController.getNotVisible",
               "gallery.MSG_NOT_ADD_METADATA", "photoId =  " + photo.getId());
@@ -373,7 +371,7 @@ public class GallerySessionController extends AbstractComponentSessionController
 
     // ajout des metadata depuis le fichier des properties
     try {
-      ImageHelper.setMetaData(photo, getMetadataSettings(), getMetadataResources());
+      ImageHelper.setMetaData(photo, getLanguage());
     } catch (Exception e) {
       SilverTrace.info("gallery", "GallerySessionController.getPhoto",
           "gallery.MSG_NOT_ADD_METADATA", "photoId =  " + photo.getId());
@@ -423,7 +421,7 @@ public class GallerySessionController extends AbstractComponentSessionController
       photo = (PhotoDetail) photos.get(rangPrevious);
       // ajout des metadata depuis le fichier des properties
       try {
-        ImageHelper.setMetaData(photo, getMetadataSettings(), getMetadataResources());
+        ImageHelper.setMetaData(photo, getLanguage());
       } catch (Exception e) {
         SilverTrace.info("gallery", "GallerySessionController.getPrevious",
             "gallery.MSG_NOT_ADD_METADATA", "photoId =  " + photo.getId());
@@ -447,7 +445,7 @@ public class GallerySessionController extends AbstractComponentSessionController
       photo = (PhotoDetail) photos.get(rangNext);
       // ajout des metadata depuis le fichier des properties
       try {
-        ImageHelper.setMetaData(photo, getMetadataSettings(), getMetadataResources());
+        ImageHelper.setMetaData(photo, getLanguage());
       } catch (Exception e) {
         SilverTrace.info("gallery", "GallerySessionController.getNext",
             "gallery.MSG_NOT_ADD_METADATA", "photoId =  " + photo.getId());
@@ -518,7 +516,7 @@ public class GallerySessionController extends AbstractComponentSessionController
   public void updatePhoto(PhotoDetail photo) {
     try {
       try {
-        ImageHelper.setMetaData(photo, getMetadataSettings(), getMetadataResources());
+        ImageHelper.setMetaData(photo, getLanguage());
       } catch (Exception e) {
         SilverTrace.info("gallery", "GallerySessionController.updatePhoto",
             "gallery.MSG_NOT_ADD_METADATA", "photoId =  " + photo.getId());

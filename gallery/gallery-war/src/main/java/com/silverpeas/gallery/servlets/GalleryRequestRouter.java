@@ -1640,7 +1640,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
 
     // ajout des métadata
     try {
-      ImageHelper.setMetaData(photo, gallerySC.getMetadataSettings());
+      ImageHelper.setMetaData(photo, gallerySC.getLanguage());
     } catch (Exception e) {
       SilverTrace.info("gallery", "GalleryRequestRouter.processPhoto",
           "gallery.MSG_NOT_ADD_METADATA", "photoId =  " + photo.getId());

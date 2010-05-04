@@ -25,7 +25,6 @@ package com.silverpeas.gallery.servlets;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -36,9 +35,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.gallery.ImageHelper;
@@ -49,7 +46,6 @@ import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -137,11 +133,7 @@ public class GalleryDragAndDrop extends HttpServlet {
           }
         }
       }
-      importRepository(new File(savePath), userId, componentId, albumId,
-          new ResourceLocator(
-          "com.silverpeas.gallery.settings.gallerySettings", "fr"),
-          new ResourceLocator(
-          "com.silverpeas.gallery.settings.metadataSettings", "fr"));
+      importRepository(new File(savePath), userId, componentId, albumId);
       FileFolderManager.deleteFolder(savePath);
     } catch (Exception e) {
       SilverTrace.debug("gallery", "GalleryDragAndDrop.doPost.doPost",
@@ -151,8 +143,7 @@ public class GalleryDragAndDrop extends HttpServlet {
     res.getOutputStream().println("SUCCESS");
   }
 
-  private void importRepository(File dir, String userId, String componentId,
-      String albumId, ResourceLocator settings, ResourceLocator metadataSettings)
+  private void importRepository(File dir, String userId, String componentId, String albumId)
       throws Exception {
     OrganizationController orga = new OrganizationController();
     boolean watermark = "yes".equalsIgnoreCase(orga.getComponentParameterValue(componentId, "watermark"));
@@ -160,13 +151,12 @@ public class GalleryDragAndDrop extends HttpServlet {
     String watermarkHD = orga.getComponentParameterValue(componentId, "WatermarkHD");
     String watermarkOther = orga.getComponentParameterValue(componentId, "WatermarkOther");
     importRepository(dir, userId, componentId, albumId, watermark, watermarkHD,
-        watermarkOther, download, settings, metadataSettings);
+        watermarkOther, download);
   }
 
   private void importRepository(File dir, String userId, String componentId,
       String albumId, boolean watermark, String watermarkHD,
-      String watermarkOther, boolean download, ResourceLocator settings,
-      ResourceLocator metadataSettings) throws Exception {
+      String watermarkOther, boolean download) throws Exception {
     Iterator itPathContent = getPathContent(dir);
     while (itPathContent.hasNext()) {
       File file = (File) itPathContent.next();
@@ -174,8 +164,7 @@ public class GalleryDragAndDrop extends HttpServlet {
         if (ImageHelper.isImage(file.getName())) {
           try {
             createPhoto(file.getName(), userId, componentId, albumId, file,
-                watermark, watermarkHD, watermarkOther, download,
-                metadataSettings);
+                watermark, watermarkHD, watermarkOther, download);
           } catch (Exception e) {
             SilverTrace.info("gallery", "GalleryDragAndDrop.importRepository",
                 "gallery.MSG_NOT_ADD_METADATA", "photo =  " + file.getName());
@@ -184,11 +173,9 @@ public class GalleryDragAndDrop extends HttpServlet {
       } else if (file.isDirectory()) {
         String newAlbumId = createAlbum(file.getName(), userId, componentId,
             albumId);
-
         // Traitement récursif spécifique
         importRepository(file.getAbsoluteFile(), userId, componentId,
-            newAlbumId, watermark, watermarkHD, watermarkOther, download,
-            settings, metadataSettings);
+            newAlbumId, watermark, watermarkHD, watermarkOther, download);
       }
     }
   }
@@ -225,7 +212,7 @@ public class GalleryDragAndDrop extends HttpServlet {
 
   private String createPhoto(String name, String userId, String componentId,
       String albumId, File file, boolean watermark, String watermarkHD,
-      String watermarkOther, boolean download, ResourceLocator settings)
+      String watermarkOther, boolean download)
       throws Exception {
     SilverTrace.info("gallery", "GalleryDragAndDrop.createPhoto",
         "root.MSG_GEN_ENTER_METHOD", "name = " + name + ", fatherId = "
@@ -246,7 +233,7 @@ public class GalleryDragAndDrop extends HttpServlet {
     ImageHelper.processImage(newPhoto, file, watermark, watermarkHD,
         watermarkOther);
     try {
-      ImageHelper.setMetaData(newPhoto, settings);
+      ImageHelper.setMetaData(newPhoto, "fr");
     } catch (Exception e) {
       SilverTrace.info("gallery", "GalleryDragAndDrop.createPhoto",
           "gallery.MSG_NOT_ADD_METADATA", "photoId =  " + photoId);
