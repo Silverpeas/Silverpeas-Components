@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import static com.drew.metadata.iptc.IptcDirectory.*;
 
 /**
  *
@@ -171,9 +172,6 @@ public class MetadataExtractor {
       MetadataException {
     return extractImageIptcMetaData(image, I18NHelper.defaultLanguage);
 
-
-
-
   }
 
   public List<MetaData> extractImageIptcMetaData(File image, String lang) throws
@@ -184,10 +182,87 @@ public class MetadataExtractor {
     // lire le fichier des properties
     // 1. Traitement des metadata EXIF
     Metadata metadata = JpegMetadataReader.readMetadata(image);
-    Directory iptcDirectory = metadata.getDirectory(IptcDirectory.class);
+    IptcDirectory iptcDirectory = (IptcDirectory) metadata.getDirectory(IptcDirectory.class);
     for (IptcProperty iptcProperty : imageIptcProperties) {
       // rechercher la valeur de la metadata "label"
-      String value = iptcDirectory.getString(iptcProperty.getProperty());
+      String value = null;
+      switch (iptcProperty.getProperty()) {
+        case TAG_BY_LINE:
+          value = getIptcValue(iptcDirectory, TAG_BY_LINE);
+          break;
+        case TAG_BY_LINE_TITLE:
+          value = getIptcValue(iptcDirectory, TAG_BY_LINE_TITLE);
+          break;
+        case TAG_CAPTION:
+          value = getIptcValue(iptcDirectory, TAG_CAPTION);
+          break;
+        case TAG_CATEGORY:
+          value = getIptcValue(iptcDirectory, TAG_CATEGORY);
+          break;
+        case TAG_CITY:
+          value = getIptcValue(iptcDirectory, TAG_CITY);
+          break;
+        case TAG_COPYRIGHT_NOTICE:
+          value = getIptcValue(iptcDirectory, TAG_COPYRIGHT_NOTICE);
+          break;
+        case TAG_COUNTRY_OR_PRIMARY_LOCATION:
+          value = getIptcValue(iptcDirectory, TAG_COUNTRY_OR_PRIMARY_LOCATION);
+          break;
+        case TAG_CREDIT:
+          value = getIptcValue(iptcDirectory, TAG_CREDIT);
+          break;
+        case TAG_DATE_CREATED:
+          value = getIptcStringValue(iptcDirectory, TAG_DATE_CREATED);
+          break;
+        case TAG_HEADLINE:
+          value = getIptcValue(iptcDirectory, TAG_HEADLINE);
+          break;
+        case TAG_KEYWORDS:
+          value = getIptcStringValue(iptcDirectory, TAG_KEYWORDS);
+          break;
+        case TAG_OBJECT_NAME:
+          value = getIptcValue(iptcDirectory, TAG_OBJECT_NAME);
+          break;
+        case TAG_ORIGINAL_TRANSMISSION_REFERENCE:
+          value = getIptcValue(iptcDirectory, TAG_ORIGINAL_TRANSMISSION_REFERENCE);
+          break;
+        case TAG_ORIGINATING_PROGRAM:
+          value = getIptcValue(iptcDirectory, TAG_ORIGINATING_PROGRAM);
+          break;
+        case TAG_PROVINCE_OR_STATE:
+          value = getIptcValue(iptcDirectory, TAG_PROVINCE_OR_STATE);
+          break;
+        case TAG_RECORD_VERSION:
+          value = getIptcValue(iptcDirectory, TAG_RECORD_VERSION);
+          break;
+        case TAG_RELEASE_DATE:
+          value = getIptcStringValue(iptcDirectory, TAG_RELEASE_DATE);
+          break;
+        case TAG_RELEASE_TIME:
+          value = getIptcValue(iptcDirectory, TAG_RELEASE_TIME);
+          break;
+        case TAG_SOURCE:
+          value = getIptcValue(iptcDirectory, TAG_SOURCE);
+          break;
+        case TAG_SPECIAL_INSTRUCTIONS:
+          value = getIptcValue(iptcDirectory, TAG_SPECIAL_INSTRUCTIONS);
+          break;
+        case TAG_SUPPLEMENTAL_CATEGORIES:
+          value = getIptcValue(iptcDirectory, TAG_SUPPLEMENTAL_CATEGORIES);
+          break;
+        case TAG_TIME_CREATED:
+          value = getIptcValue(iptcDirectory, TAG_TIME_CREATED);
+          break;
+        case TAG_URGENCY:
+          value = getIptcValue(iptcDirectory, TAG_URGENCY);
+          break;
+        case TAG_WRITER:
+          value = getIptcValue(iptcDirectory, TAG_WRITER);
+          break;
+        default:
+          value = getIptcValue(iptcDirectory, iptcProperty.getProperty());
+          break;
+      }
       if (value != null) {
         MetaData metaData = new MetaData();
         metaData.setLabel(iptcProperty.getLabel(lang));
@@ -205,5 +280,23 @@ public class MetadataExtractor {
       }
     }
     return result;
+  }
+
+  private String getIptcValue(IptcDirectory iptcDirectory, int iptcTag) throws
+      UnsupportedEncodingException, MetadataException {
+    if (iptcDirectory.containsTag(iptcTag)) {
+      byte[] data = iptcDirectory.getByteArray(iptcTag);
+      String encoding = StringUtil.detectEncoding(data, "ISO-8859-15");
+      return new String(data, encoding);
+    }
+    return null;
+  }
+
+   private String getIptcStringValue(IptcDirectory iptcDirectory, int iptcTag) throws
+      UnsupportedEncodingException, MetadataException {
+    if (iptcDirectory.containsTag(iptcTag)) {
+      return iptcDirectory.getString(iptcTag);
+    }
+    return null;
   }
 }
