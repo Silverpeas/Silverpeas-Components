@@ -25,7 +25,6 @@ package com.silverpeas.gallery.servlets;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -54,11 +53,11 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import java.util.Arrays;
 
 /**
  * Class declaration
@@ -87,15 +86,15 @@ public class GalleryDragAndDrop extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest request, HttpServletResponse res)
       throws ServletException, IOException {
-    SilverTrace.info("gallery", "GalleryDragAndDrop.doPost",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("gallery", "GalleryDragAndDrop.doPost", "root.MSG_GEN_ENTER_METHOD");
     try {
+      request.setCharacterEncoding("UTF-8");
       String componentId = request.getParameter("ComponentId");
       String albumId = request.getParameter("AlbumId");
       String userId = request.getParameter("UserId");
       SilverTrace.info("gallery", "GalleryDragAndDrop.doPost",
-          "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId
-          + " albumId = " + albumId + " userId = " + userId);
+          "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId + " albumId = "
+          + albumId + " userId = " + userId);
       String savePath = FileRepositoryManager.getTemporaryPath() + File.separator + userId
           + new Date().getTime() + File.separator;
 
@@ -157,9 +156,9 @@ public class GalleryDragAndDrop extends HttpServlet {
   private void importRepository(File dir, String userId, String componentId,
       String albumId, boolean watermark, String watermarkHD,
       String watermarkOther, boolean download) throws Exception {
-    Iterator itPathContent = getPathContent(dir);
+    Iterator<File> itPathContent = getPathContent(dir);
     while (itPathContent.hasNext()) {
-      File file = (File) itPathContent.next();
+      File file = itPathContent.next();
       if (file.isFile()) {
         if (ImageHelper.isImage(file.getName())) {
           try {
@@ -180,16 +179,8 @@ public class GalleryDragAndDrop extends HttpServlet {
     }
   }
 
-  private Iterator getPathContent(File path) {
-    // Récupération du contenu du dossier
-    List listFile = new ArrayList();
-
-    String[] listFileName = path.list();
-    for (int i = 0; i < listFileName.length; i++) {
-      listFile.add(new File(path + File.separator + listFileName[i]));
-    }
-
-    return listFile.iterator();
+  private Iterator<File> getPathContent(File path) {
+    return Arrays.asList(path.listFiles()).iterator();
   }
 
   private String createAlbum(String name, String userId, String componentId,
