@@ -1332,6 +1332,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter
 		request.setAttribute("isAttachmentTabEnable", new Boolean(session.isAttachmentTabEnable()));
 		request.setAttribute("isHistoryTabEnable"	, new Boolean(session.isHistoryTabVisible()));
 		request.setAttribute("isProcessIdVisible"	, new Boolean(session.isProcessIdVisible()));
+    request.setAttribute("isPrintButtonEnabled" , new Boolean(session.isPrintButtonEnabled()));
 	}
 
 	/**

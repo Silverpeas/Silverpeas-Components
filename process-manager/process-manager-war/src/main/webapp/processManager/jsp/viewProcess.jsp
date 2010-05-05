@@ -37,6 +37,7 @@
 	Boolean 					isAttachmentTabEnable 	= (Boolean) request.getAttribute("isAttachmentTabEnable");
 	Boolean 					isHistoryTabEnable 		= (Boolean) request.getAttribute("isHistoryTabEnable");
 	boolean 					isProcessIdVisible 		= ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
+	boolean 					isPrintButtonEnabled 	= (Boolean) request.getAttribute("isPrintButtonEnabled").boolanValue();
 	
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
@@ -46,10 +47,12 @@
 		processId = "#"+process.getInstanceId()+" > ";
 	browseBar.setPath(processId+process.getTitle(currentRole, language));
 	
-	operationPane.addOperation(resource.getIcon("processManager.print"),
+	if (isPrintButtonEnabled)
+	{
+		operationPane.addOperation(resource.getIcon("processManager.print"),
 			resource.getString("processManager.print"),
 			"javascript:printProcess()");
-	
+	}	
 	tabbedPane.addTab(resource.getString("processManager.details"), "", true, false);
 	
 	if ("supervisor".equalsIgnoreCase(currentRole))

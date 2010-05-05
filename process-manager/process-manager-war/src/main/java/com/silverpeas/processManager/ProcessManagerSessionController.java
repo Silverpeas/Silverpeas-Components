@@ -206,6 +206,11 @@ public class ProcessManagerSessionController extends
     return "yes".equalsIgnoreCase(getComponentParameterValue("exportCSV"));
   }
 
+  public boolean isPrintButtonEnabled()
+  {
+    return "yes".equalsIgnoreCase(getComponentParameterValue("printButtonEnabled"));   
+  }
+
   /**
    * Returns the last fatal exception
    */
@@ -1302,7 +1307,7 @@ public class ProcessManagerSessionController extends
         HtmlForm htmlForm = new HtmlForm(processModel.getDataFolder()
             .toRecordTemplate(currentRole, getLanguage(), true));
 
-        htmlForm.setFileName(form.getHTMLFileName());
+        htmlForm.setFileName("http://" + request.getServerName() + ":" + request.getServerPort() + form.getHTMLFileName());
         return htmlForm;
       }
     } catch (Exception e) {
