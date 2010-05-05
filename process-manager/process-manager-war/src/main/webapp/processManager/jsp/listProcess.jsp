@@ -291,7 +291,7 @@ Item getItem(Item[] items, String itemName)
 					if (keyValuePairs != null && keyValuePairs.size() > 0)
 					{
 						String newValue = "";
-						if (fieldString.indexOf("##") != -1)
+						if (fieldString != null && fieldString.indexOf("##") != -1)
 						{
 							//Try to display a checkbox list
 							StringTokenizer tokenizer = new StringTokenizer(fieldString, "##");
