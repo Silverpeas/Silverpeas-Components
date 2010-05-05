@@ -23,6 +23,7 @@
  */
 package com.silverpeas.gallery;
 
+import com.drew.imaging.ImageProcessingException;
 import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.metadata.MetadataException;
 import java.awt.AlphaComposite;
@@ -265,12 +266,12 @@ public class ImageHelper {
     }
   }
 
-  public static void setMetaData(PhotoDetail photo) throws JpegProcessingException,
+  public static void setMetaData(PhotoDetail photo) throws ImageProcessingException,
       UnsupportedEncodingException, MetadataException {
     setMetaData(photo, I18NHelper.defaultLanguage);
   }
 
-  public static void setMetaData(PhotoDetail photo, String lang) throws JpegProcessingException,
+  public static void setMetaData(PhotoDetail photo, String lang) throws ImageProcessingException,
       UnsupportedEncodingException, MetadataException {
     String photoId = photo.getPhotoPK().getId();
     String name = photo.getImageName();

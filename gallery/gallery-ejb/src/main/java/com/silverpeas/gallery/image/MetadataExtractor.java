@@ -23,7 +23,8 @@
  */
 package com.silverpeas.gallery.image;
 
-import com.drew.imaging.jpeg.JpegMetadataReader;
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
 import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
@@ -113,17 +114,17 @@ public class MetadataExtractor {
     return properties;
   }
 
-  public List<MetaData> extractImageExifMetaData(File image) throws JpegProcessingException,
+  public List<MetaData> extractImageExifMetaData(File image) throws ImageProcessingException,
       UnsupportedEncodingException, MetadataException {
     return extractImageExifMetaData(image, I18NHelper.defaultLanguage);
   }
 
   public List<MetaData> extractImageExifMetaData(File image, String lang) throws
-      JpegProcessingException, UnsupportedEncodingException, MetadataException {
+      ImageProcessingException, UnsupportedEncodingException, MetadataException {
     List<MetaData> result = new ArrayList<MetaData>();
     // lire le fichier des properties
     // 1. Traitement des metadata EXIF
-    Metadata metadata = JpegMetadataReader.readMetadata(image);
+    Metadata metadata = ImageMetadataReader.readMetadata(image);
     Directory exifDirectory = metadata.getDirectory(ExifDirectory.class);
     ExifDescriptor descriptor = new ExifDescriptor(exifDirectory);
     String value = null;
@@ -167,7 +168,7 @@ public class MetadataExtractor {
     return result;
   }
 
-  public List<MetaData> extractImageIptcMetaData(File image) throws JpegProcessingException,
+  public List<MetaData> extractImageIptcMetaData(File image) throws ImageProcessingException,
       UnsupportedEncodingException,
       MetadataException {
     return extractImageIptcMetaData(image, I18NHelper.defaultLanguage);
@@ -175,13 +176,12 @@ public class MetadataExtractor {
   }
 
   public List<MetaData> extractImageIptcMetaData(File image, String lang) throws
-      JpegProcessingException,
-      UnsupportedEncodingException,
-      MetadataException {
+      JpegProcessingException, UnsupportedEncodingException, MetadataException,
+      ImageProcessingException {
     List<MetaData> result = new ArrayList<MetaData>();
     // lire le fichier des properties
     // 1. Traitement des metadata EXIF
-    Metadata metadata = JpegMetadataReader.readMetadata(image);
+    Metadata metadata = ImageMetadataReader.readMetadata(image);
     IptcDirectory iptcDirectory = (IptcDirectory) metadata.getDirectory(IptcDirectory.class);
     for (IptcProperty iptcProperty : imageIptcProperties) {
       // rechercher la valeur de la metadata "label"
@@ -287,12 +287,12 @@ public class MetadataExtractor {
     if (iptcDirectory.containsTag(iptcTag)) {
       byte[] data = iptcDirectory.getByteArray(iptcTag);
       String encoding = StringUtil.detectEncoding(data, "ISO-8859-15");
-      return new String(data, encoding);
+      return new String(data, encoding).replace('ý', 'é');
     }
     return null;
   }
 
-   private String getIptcStringValue(IptcDirectory iptcDirectory, int iptcTag) throws
+  private String getIptcStringValue(IptcDirectory iptcDirectory, int iptcTag) throws
       UnsupportedEncodingException, MetadataException {
     if (iptcDirectory.containsTag(iptcTag)) {
       return iptcDirectory.getString(iptcTag);

@@ -75,151 +75,20 @@ public class MetadataExtractorTest {
       MetaData meta = metadata.get(0);
       assertEquals("622", meta.getProperty());
       assertEquals("(IPTC) Crédit", meta.getLabel());
-      assertEquals("Crýdit", meta.getValue());
+      assertEquals("Crédit", meta.getValue());
+
       meta = metadata.get(1);
       assertEquals("634", meta.getProperty());
       assertEquals("Auteur", meta.getLabel());
       assertEquals("Nom de l'auteur : Tag_writer", meta.getValue());
 
-    
-      /*
-       *
-       *
-       *
-       *
-       * IPTC_8_TAG = 622
-      IPTC_8_LABEL = gallery.iptcCredit
-      IPTC_8_SEARCH = true
-      IPTC_8_DATE = false
+      meta = metadata.get(2);
+      assertEquals("592", meta.getProperty());
+      assertEquals("Créateur", meta.getLabel());
+      assertEquals("Nom du créateur : Tag_by_line", meta.getValue());
 
-      IPTC_9_TAG = 634
-      IPTC_9_LABEL = gallery.iptcAuthor
-      IPTC_9_SEARCH = true
-      IPTC_9_DATE = false
 
-      IPTC_10_TAG = 592
-      IPTC_10_LABEL = gallery.iptc592
-      IPTC_10_SEARCH = true
-      IPTC_10_DATE = false
 
-      IPTC_11_TAG = 597
-      IPTC_11_LABEL = gallery.iptc597
-      IPTC_11_SEARCH = true
-      IPTC_11_DATE = false
-
-      IPTC_12_TAG = 632
-      IPTC_12_LABEL = gallery.iptc632
-      IPTC_12_SEARCH = true
-      IPTC_12_DATE = false
-
-      IPTC_13_TAG = 527
-      IPTC_13_LABEL = gallery.iptc527
-      IPTC_13_SEARCH = true
-      IPTC_13_DATE = false
-
-      IPTC_14_TAG = 602
-      IPTC_14_LABEL = gallery.iptc602
-      IPTC_14_SEARCH = true
-      IPTC_14_DATE = false
-
-      IPTC_15_TAG = 628
-      IPTC_15_LABEL = gallery.iptc628
-      IPTC_15_SEARCH = true
-      IPTC_15_DATE = false
-
-      IPTC_16_TAG = 613
-      IPTC_16_LABEL = gallery.iptc613
-      IPTC_16_SEARCH = true
-      IPTC_16_DATE = false
-
-      IPTC_17_TAG = 567
-      IPTC_17_LABEL = gallery.iptc567
-      IPTC_17_SEARCH = true
-      IPTC_17_DATE = true
-
-      IPTC_18_TAG = 617
-      IPTC_18_LABEL = gallery.iptc617
-      IPTC_18_SEARCH = true
-      IPTC_18_DATE = false
-
-      IPTC_19_TAG = 537
-      IPTC_19_LABEL = gallery.iptc537
-      IPTC_19_SEARCH = true
-      IPTC_19_DATE = false
-
-      IPTC_20_TAG = 517
-      IPTC_20_LABEL = gallery.iptc517
-      IPTC_20_SEARCH = true
-      IPTC_20_DATE = false
-
-      IPTC_21_TAG = 615
-      IPTC_21_LABEL = gallery.iptc615
-      IPTC_21_SEARCH = true
-      IPTC_21_DATE = false
-
-      IPTC_22_TAG = 577
-      IPTC_22_LABEL = gallery.iptc577
-      IPTC_22_SEARCH = true
-      IPTC_22_DATE = false
-
-      IPTC_23_TAG = 607
-      IPTC_23_LABEL = gallery.iptc607
-      IPTC_23_SEARCH = true
-      IPTC_23_DATE = false
-
-      IPTC_24_TAG = 512
-      IPTC_24_LABEL = gallery.iptc512
-      IPTC_24_SEARCH = true
-      IPTC_24_DATE = false
-
-      IPTC_25_TAG = 542
-      IPTC_25_LABEL = gallery.iptc542
-      IPTC_25_SEARCH = true
-      IPTC_25_DATE = true
-
-      IPTC_26_TAG = 547
-      IPTC_26_LABEL = gallery.iptc547
-      IPTC_26_SEARCH = true
-      IPTC_26_DATE = false
-
-      IPTC_27_TAG = 627
-      IPTC_27_LABEL = gallery.iptc627
-      IPTC_27_SEARCH = true
-      IPTC_27_DATE = false
-
-      IPTC_28_TAG = 552
-      IPTC_28_LABEL = gallery.iptc552
-      IPTC_28_SEARCH = true
-      IPTC_28_DATE = false
-
-      IPTC_29_TAG = 532
-      IPTC_29_LABEL = gallery.iptc532
-      IPTC_29_SEARCH = true
-      IPTC_29_DATE = false
-
-      IPTC_30_TAG = 572
-      IPTC_30_LABEL = gallery.iptc572
-      IPTC_30_SEARCH = true
-      IPTC_30_DATE = false
-
-      IPTC_31_TAG = 522
-      IPTC_31_LABEL = gallery.iptc522
-      IPTC_31_SEARCH = true
-      IPTC_31_DATE = false
-
-      Instructions spéciales : 	les instructions sp�ciales
-      Titre : 	le titre dans les donn�es IPTC
-      Ref transmission : 	R�f�rence de la transmission
-      Pays : 	Pays
-      Mots clef : 	rouge soleil mer
-      Date de création : 	01/07/2008 00:00
-      Titre du créateur : 	Titre du cr�ateur
-      Créateur : 	Nom du cr�ateur : Tag_by_line
-      Copyright : 	Copyright (IPTC)
-      Source : 	Source
-      (IPTC) Crédit : 	Cr�dit
-      Objet : 	Nom de l'objet
-      Date de sortie : 	31/07/2008 00:00*/
     } catch (Exception ex) {
       ex.printStackTrace();
       fail(ex.getMessage());
