@@ -481,10 +481,10 @@ public interface KmeliaBm extends EJBObject {
 
   public String getWysiwyg(PublicationPK pubPK) throws RemoteException;
 
-  public void addModelUsed(String[] models, String instanceId)
+  public void addModelUsed(String[] models, String instanceId, String nodeId)
       throws RemoteException;
 
-  public Collection<String> getModelUsed(String instanceId) throws RemoteException;
+  public Collection<String> getModelUsed(String instanceId, String nodeId) throws RemoteException;
 
   /**************************************************************************************/
   /**************************************************************************************/

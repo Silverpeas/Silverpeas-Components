@@ -2748,7 +2748,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public void addModelUsed(String[] models) {
     try {
-      getKmeliaBm().addModelUsed(models, getComponentId());
+      String objectId = "0"; // kmax case
+      if (getSessionTopic() != null) {
+        objectId = getSessionTopic().getNodePK().getId();
+      }
+      getKmeliaBm().addModelUsed(models, getComponentId(), objectId);
     } catch (RemoteException e) {
       throw new KmeliaRuntimeException("KmeliaSessionController.addModelUsed()",
           SilverpeasRuntimeException.ERROR, "kmelia.MSG_ERR_GENERAL", e);
@@ -2758,7 +2762,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public Collection<String> getModelUsed() {
     Collection<String> result = null;
     try {
-      result = getKmeliaBm().getModelUsed(getComponentId());
+      String objectId = "0"; // kmax case
+      if (getSessionTopic() != null) {
+        objectId = getSessionTopic().getNodePK().getId();
+      }
+      result = getKmeliaBm().getModelUsed(getComponentId(), objectId);
     } catch (RemoteException e) {
       throw new KmeliaRuntimeException("KmeliaSessionController.getModelUsed()",
           SilverpeasRuntimeException.ERROR, "kmelia.MSG_ERR_GENERAL", e);

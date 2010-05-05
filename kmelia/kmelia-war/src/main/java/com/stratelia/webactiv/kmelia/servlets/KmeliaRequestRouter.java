@@ -1233,10 +1233,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("SelectModel")) {
         Object o = request.getParameterValues("modelChoice");
         if (o != null) {
-          String[] models = (String[]) o;
-          kmelia.addModelUsed(models);
+          kmelia.addModelUsed((String[]) o);
         }
-        destination = getDestination("Main", kmelia, request);
+        destination = getDestination("GoToCurrentTopic", kmelia, request);
       } else if (function.equals("ToWysiwyg")) {
         if (kmelia.isCloneNeeded()) {
           kmelia.clonePublication();

@@ -1394,7 +1394,7 @@ function loadNodeData(node, fnLoadComplete)  {
 			oMenu.getItem(0,0).cfg.setProperty("classname", "operationVisible");
 
 		oMenu.getItem(1,0).cfg.setProperty("classname", "operationHidden"); //templates
-		if (id == "0" && <%=kmeliaScc.isContentEnabled()%> && profile == "admin")
+		if (<%=kmeliaScc.isContentEnabled()%> && profile == "admin")
 			oMenu.getItem(1,0).cfg.setProperty("classname", "operationVisible");
 
 		oMenu.getItem(2,0).cfg.setProperty("classname", "operationHidden"); //export
