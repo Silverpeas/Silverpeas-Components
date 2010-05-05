@@ -106,6 +106,10 @@ import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
+import com.stratelia.webactiv.kmelia.model.PubliAuthorComparatorAsc;
+import com.stratelia.webactiv.kmelia.model.PubliCreationDateComparatorAsc;
+import com.stratelia.webactiv.kmelia.model.PubliImportanceComparatorDesc;
+import com.stratelia.webactiv.kmelia.model.PubliUpdateDateComparatorAsc;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.kmelia.model.Treeview;
 import com.stratelia.webactiv.kmelia.model.UserCompletePublication;
@@ -997,7 +1001,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
       if (getSessionClone() != null) {
         if (getSessionClone().getId().equals(pubDetail.getId())) {
-          //update the clone, clone stay in same status
+          // update the clone, clone stay in same status
           pubDetail.setStatusMustBeChecked(false);
         }
       }
@@ -1466,8 +1470,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public synchronized void orderPubs() throws RemoteException {
-    if (getSortValue() == null)
-      orderPubs(2);
+    if (!StringUtil.isDefined(getSortValue())) {
+      sortValue = "2";
+    }
     orderPubs(Integer.parseInt(getSortValue()));
   }
 
@@ -1546,44 +1551,48 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   private List<UserPublication> sort(Collection<UserPublication> publications, int sortType) {
-    UserPublication pubs[] = new UserPublication[publications.size()];
-    Iterator<UserPublication> iterator = publications.iterator();
-    int p = 0;
-    while (iterator.hasNext()) {
-      pubs[p] = iterator.next();
-      p++;
-    }
-    UserPublication sortedPubs[];
-
+    List<UserPublication> publicationsToSort = new ArrayList<UserPublication>(publications);
     switch (sortType) {
       case 0:
-        sortedPubs = sortByAuthor(pubs);
+        Collections.sort(publicationsToSort, new PubliAuthorComparatorAsc());
         break;
       case 1:
-        sortedPubs = sortByDateAsc(pubs);
+        Collections.sort(publicationsToSort, new PubliUpdateDateComparatorAsc());
         break;
       case 2:
-        sortedPubs = sortByDateDesc(pubs);
+        Collections.sort(publicationsToSort, new PubliUpdateDateComparatorAsc());
+        Collections.reverse(publicationsToSort);
         break;
       case 3:
-        sortedPubs = sortByImportance(pubs);
+        Collections.sort(publicationsToSort, new PubliImportanceComparatorDesc());
         break;
       case 4:
-        sortedPubs = sortByTitle(pubs);
+        UserPublication pubs[] = new UserPublication[publications.size()];
+        Iterator<UserPublication> iterator = publications.iterator();
+        int p = 0;
+        while (iterator.hasNext()) {
+          pubs[p] = iterator.next();
+          p++;
+        }
+        publicationsToSort = sortByTitle(pubs);
+        break;
+      case 5:
+        Collections.sort(publicationsToSort, new PubliCreationDateComparatorAsc());
+        break;
+      case 6:
+        Collections.sort(publicationsToSort, new PubliCreationDateComparatorAsc());
+        Collections.reverse(publicationsToSort);
         break;
       default:
-        sortedPubs = sortByDateDesc(pubs);
+        Collections.sort(publicationsToSort, new PubliUpdateDateComparatorAsc());
+        Collections.reverse(publicationsToSort);
         break;
     }
 
-    List<UserPublication> list = new ArrayList<UserPublication>();
-    for (int i = 0; i < sortedPubs.length; i++) {
-      list.add(sortedPubs[i]);
-    }
-    return list;
+    return publicationsToSort;
   }
 
-  private UserPublication[] sortByTitle(UserPublication[] pubs) {
+  private List<UserPublication> sortByTitle(UserPublication[] pubs) {
     for (int i = pubs.length; --i >= 0;) {
       boolean swapped = false;
       for (int j = 0; j < i; j++) {
@@ -1598,78 +1607,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       if (!swapped)
         break;
     }
-    return pubs;
-  }
-
-  private UserPublication[] sortByImportance(UserPublication[] pubs) {
-    for (int i = pubs.length; --i >= 0;) {
-      boolean swapped = false;
-      for (int j = 0; j < i; j++) {
-        if (pubs[j].getPublication().getImportance() < pubs[j + 1].getPublication().getImportance()) {
-          UserPublication T = pubs[j];
-          pubs[j] = pubs[j + 1];
-          pubs[j + 1] = T;
-          swapped = true;
-        }
-      }
-      if (!swapped)
-        break;
-    }
-    return pubs;
-  }
-
-  private UserPublication[] sortByDateAsc(UserPublication[] pubs) {
-    for (int i = pubs.length; --i >= 0;) {
-      boolean swapped = false;
-      for (int j = 0; j < i; j++) {
-        if (pubs[j].getPublication().getUpdateDate().getTime() > pubs[j + 1].getPublication()
-            .getUpdateDate().getTime()) {
-          UserPublication T = pubs[j];
-          pubs[j] = pubs[j + 1];
-          pubs[j + 1] = T;
-          swapped = true;
-        }
-      }
-      if (!swapped)
-        break;
-    }
-    return pubs;
-  }
-
-  private UserPublication[] sortByDateDesc(UserPublication[] pubs) {
-    for (int i = pubs.length; --i >= 0;) {
-      boolean swapped = false;
-      for (int j = 0; j < i; j++) {
-        if (pubs[j].getPublication().getUpdateDate().getTime() < pubs[j + 1].getPublication()
-            .getUpdateDate().getTime()) {
-          UserPublication T = pubs[j];
-          pubs[j] = pubs[j + 1];
-          pubs[j + 1] = T;
-          swapped = true;
-        }
-      }
-      if (!swapped)
-        break;
-    }
-    return pubs;
-  }
-
-  private UserPublication[] sortByAuthor(UserPublication[] pubs) {
-    for (int i = pubs.length; --i >= 0;) {
-      boolean swapped = false;
-      for (int j = 0; j < i; j++) {
-        if (pubs[j].getOwner().getLastName().compareToIgnoreCase(
-            pubs[j + 1].getOwner().getLastName()) > 0) {
-          UserPublication T = pubs[j];
-          pubs[j] = pubs[j + 1];
-          pubs[j + 1] = T;
-          swapped = true;
-        }
-      }
-      if (!swapped)
-        break;
-    }
-    return pubs;
+    return Arrays.asList(pubs);
   }
 
   public void orderPublications(List<String> sortedPubIds) throws RemoteException {
@@ -4388,13 +4326,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
     return newPath;
   }
-  
+
   /**
    * return the value of component parameter "axisIdGlossary". This paramater indicate the axis of
    * pdc to use to highlight word in publication content
    * @return an indentifier of Pdc axis
    */
   public String getAxisIdGlossary() {
-     return getComponentParameterValue("axisIdGlossary");
+    return getComponentParameterValue("axisIdGlossary");
   }
 }

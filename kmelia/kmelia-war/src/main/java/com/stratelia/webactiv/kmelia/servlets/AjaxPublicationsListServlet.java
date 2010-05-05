@@ -497,7 +497,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           showPubDate = showPubDate && fileStorageShowExtraInfoPub;
         }
         if (showPubDate) {
-          out.write(resources.getOutputDate(pub.getUpdateDate()));
+          if ("5".equals(kmeliaScc.getSortValue()) || "6".equals(kmeliaScc.getSortValue())) {
+            out.write(resources.getOutputDate(pub.getCreationDate()));
+          } else {
+            out.write(resources.getOutputDate(pub.getUpdateDate()));
+          }
         }
 
         // check if he author name must be display
@@ -608,6 +612,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out
         .write("<option value=\"2\">"
         + EncodeHelper.escapeXml(resources.getString("DateDesc"))
+        + "</option>");
+    out.write("<option value=\"5\">"
+        + EncodeHelper.escapeXml(resources.getString("CreateDateAsc")) + "</option>");
+    out
+        .write("<option value=\"6\">"
+        + EncodeHelper.escapeXml(resources.getString("CreateDateDesc"))
         + "</option>");
     out.write("<option value=\"0\">"
         + EncodeHelper.escapeXml(resources.getString("PubAuteur"))
