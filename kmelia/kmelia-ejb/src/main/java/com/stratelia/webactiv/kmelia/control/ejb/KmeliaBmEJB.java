@@ -1551,7 +1551,7 @@ public class KmeliaBmEJB implements SessionBean {
 
   private String getProfile(String userId, NodePK nodePK)
       throws RemoteException {
-    String profile = "user";
+    String profile = null;
     OrganizationController orgCtrl = getOrganizationController();
     if ("yes".equalsIgnoreCase(orgCtrl.getComponentParameterValue(nodePK
         .getInstanceId(), "rightsOnTopics"))) {
@@ -1567,6 +1567,25 @@ public class KmeliaBmEJB implements SessionBean {
     } else {
       profile = KmeliaHelper.getProfile(orgCtrl.getUserProfiles(userId, nodePK
           .getInstanceId()));
+    }
+    return profile;
+  }
+
+  private String getProfileOnPublication(String userId, PublicationPK pubPK) {
+    List<NodePK> fathers = (List<NodePK>) getPublicationFathers(pubPK);
+
+    NodePK nodePK = new NodePK("unknown", pubPK.getInstanceId());
+    if (fathers != null && !fathers.isEmpty()) {
+      nodePK = fathers.get(0);
+    }
+
+    String profile = null;
+    try {
+      profile = getProfile(userId, nodePK);
+    } catch (RemoteException e) {
+      SilverTrace.error("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
+          "kmelia.ERROR_ON_GETTING_PROFILE", "userId = " + userId + ", node = " +
+          nodePK.toString(), e);
     }
     return profile;
   }
@@ -1860,15 +1879,37 @@ public class KmeliaBmEJB implements SessionBean {
   }
 
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK) {
-    PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    updatePublication(pubDetail, KmeliaHelper.PUBLICATION_CONTENT, false);
+    externalElementsOfPublicationHaveChanged(pubPK, null);
   }
 
   public void externalElementsOfPublicationHaveChanged(PublicationPK pubPK,
       String userId) {
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
-    pubDetail.setUpdaterId(userId);
-    updatePublication(pubDetail, KmeliaHelper.PUBLICATION_CONTENT, false);
+    if (StringUtil.isDefined(userId)) {
+      pubDetail.setUpdaterId(userId);
+    }
+
+    // check if related publication is managed by kmelia
+    // test due to really hazardous abusive notifications
+    if (pubDetail.getPK().getInstanceId().startsWith("kmelia") ||
+        pubDetail.getPK().getInstanceId().startsWith("toolbox") ||
+        pubDetail.getPK().getInstanceId().startsWith("kmax")) {
+
+      if (!StringUtil.isDefined(userId)) {
+        updatePublication(pubDetail, KmeliaHelper.PUBLICATION_CONTENT, false);
+      } else {
+        // check if user have sufficient rights to update a publication
+        String profile = getProfileOnPublication(userId, pubDetail.getPK());
+        if ("supervisor".equals(profile) || KmeliaHelper.ROLE_PUBLISHER.equals(profile) ||
+            KmeliaHelper.ROLE_ADMIN.equals(profile) || KmeliaHelper.ROLE_WRITER.equals(profile)) {
+          updatePublication(pubDetail, KmeliaHelper.PUBLICATION_CONTENT, false);
+        } else {
+          SilverTrace.warn("kmelia", "KmeliaBmEJB.externalElementsOfPublicationHaveChanged",
+              "kmelia.PROBLEM_DETECTED", "user " + userId +
+              " is not allowed to update publication " + pubDetail.getPK().toString());
+        }
+      }
+    }
   }
 
   /**
