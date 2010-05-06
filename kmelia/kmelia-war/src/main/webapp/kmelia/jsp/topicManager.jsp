@@ -220,6 +220,12 @@ out.println(gef.getLookStyleSheet());
 
 .icon-basket { display:block; height: 22px; padding-left: 18px; padding-top: 2px; background: transparent url(icons/treeview/basket.jpg) no-repeat -1px 0px; } 
 .icon-tovalidate { display:block; height: 19px; padding-left: 18px; padding-top: 3px; background: transparent url(<%=m_context%>/util/icons/ok_alpha.gif) no-repeat 0px 2px;}
+
+.invisibleTopic {
+	color: #BBB;
+	cursor: pointer;
+	margin-left: 2px;
+}
 </style>
 
 <script language="JavaScript1.2">
@@ -766,6 +772,11 @@ function loadNodeData(node, fnLoadComplete)  {
                         //node's label is only editable if user is admin on parent node
                     	tempNode.editable = true;
                     }
+					<% if (kmeliaScc.isOrientedWebContent()) { %>
+						if (m.status == "Invisible") {
+							tempNode.labelStyle = "invisibleTopic";
+						}
+					<% } %>
                 }
                 if (m.level == "2")
                 {
@@ -963,6 +974,14 @@ function loadNodeData(node, fnLoadComplete)  {
 					if (data == "ok")
 					{
 						oCurrentTextNode.data.status = newStatus;
+						
+						//changing label style according to topic's new status
+						if (newStatus == "Invisible") {
+							oCurrentTextNode.labelStyle = "invisibleTopic";
+						} else {
+							oCurrentTextNode.labelStyle = "ygtvlabel";
+						}
+						oTreeView.draw();
 					}
 					else
 					{
