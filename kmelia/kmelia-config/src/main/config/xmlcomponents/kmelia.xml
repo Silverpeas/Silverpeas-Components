@@ -592,14 +592,13 @@
     <Parameter>
         <ParameterName>axisIdGlossary</ParameterName>
         <ParameterLabel>Lexique</ParameterLabel>
-        <ParameterValue>0</ParameterValue>
 	    <ParameterSize>5</ParameterSize>
         <ParameterMandatory>N</ParameterMandatory>
 	    <ParameterUpdatable>always</ParameterUpdatable>
 	    <ParameterOrder>40</ParameterOrder>
 	   	<ParameterHelp>
 			<ParameterHelpFr>Ce paramètre permet de définir l'identifiant de l'axe du PDC qui sera utilisé comme lexique dans le theme tracker courant. </ParameterHelpFr>
-			<ParameterHelpEn>This feature allows to indicate the identifier of  PDC axis's used as glossary for the current Theme tracker.</ParameterHelpEn>
+			<ParameterHelpEn>This feature allows to indicate the identifier of PDC axis's used as glossary for the current Theme tracker.</ParameterHelpEn>
 	   	</ParameterHelp>
     </Parameter>
   </Parameters>
