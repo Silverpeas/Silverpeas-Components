@@ -23,14 +23,6 @@
  */
 package com.stratelia.webactiv.yellowpages.control;
 
-import com.silverpeas.form.DataRecord;
-import com.silverpeas.form.Field;
-import com.silverpeas.form.FormException;
-import com.silverpeas.form.RecordSet;
-import com.silverpeas.publicationTemplate.PublicationTemplate;
-import com.silverpeas.publicationTemplate.PublicationTemplateException;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.StringUtil;
 import java.rmi.NoSuchObjectException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -41,6 +33,15 @@ import java.util.List;
 
 import javax.ejb.EJBException;
 import javax.ejb.RemoveException;
+
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Field;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -49,6 +50,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.webactiv.beans.admin.CompoSpace;
+import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
@@ -57,6 +59,7 @@ import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.contact.model.CompleteContact;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
 import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
@@ -92,6 +95,7 @@ public class YellowpagesSessionController extends
   private String currentTypeSearch;
   private String currentSearchCriteria;
   public static String GroupReferentielPrefix = "group_";
+  private ResourceLocator domainMultilang;
 
   /** Creates new sessionClientController */
   public YellowpagesSessionController(MainSessionController mainSessionCtrl,
@@ -104,6 +108,12 @@ public class YellowpagesSessionController extends
     // "com.stratelia.webactiv.yellowpages.multilang.yellowpagesBundle");
     initEJB();
     setProfile();
+    String domainId = getSettings().getString("columns.domainId");
+    if (StringUtil.isDefined(domainId)) {
+      Domain domain = getOrganizationController().getDomain(domainId);
+      ResourceLocator domainProperty = new ResourceLocator(domain.getPropFileName(), "");
+      domainMultilang = new ResourceLocator(domainProperty.getString("property.ResourceFile"), "");
+    }
   }
 
   private void initEJB() {
@@ -440,11 +450,11 @@ public class YellowpagesSessionController extends
               && contact.getNodeId().startsWith(
                   YellowpagesSessionController.GroupReferentielPrefix)
               && contact.getContactDetail().getUserId() != null) {// contact de
-                                                                  // type user
-                                                                  // appartenant
-                                                                  // � un
-                                                                  // groupe
-                                                                  // Silverpeas
+            // type user
+            // appartenant
+            // � un
+            // groupe
+            // Silverpeas
             userFull = this.getOrganizationController().getUserFull(
                 contact.getContactDetail().getUserId());
             if (userFull != null) {
@@ -672,9 +682,7 @@ public class YellowpagesSessionController extends
   }
 
   /**
-   * 
    * methods for Users
-   * 
    */
   public UserDetail[] getUserList() {
     return getOrganizationController().getAllUsers();
@@ -714,7 +722,6 @@ public class YellowpagesSessionController extends
   /**************************************************************************************/
   /**
    * Param�tre le userPannel => tous les users, s�lection d'un seul user
-   * 
    * @param
    * @return
    * @throws
@@ -751,7 +758,6 @@ public class YellowpagesSessionController extends
 
   /**
    * Met en session le contact s�lectionn� via le userPanel
-   * 
    * @param
    * @throws
    * @see setCurrentContact
@@ -881,9 +887,7 @@ public class YellowpagesSessionController extends
   private ContactFatherDetail getContactFatherDetail(String userId,
       GroupDetail group) {
     ContactFatherDetail contactFather = null;
-    if ("Yes".equalsIgnoreCase(this.getSettings().getString("showTelNumber"))
-        || "Yes"
-            .equalsIgnoreCase(this.getSettings().getString("showFaxNumber"))) {
+    if (this.getSettings().getString("columns").contains("domain.")) {
       UserFull user = getOrganizationController().getUserFull(userId);
       if (user != null) {
         ContactDetail cUser = new ContactDetail(new ContactPK("fromGroup",
@@ -1072,7 +1076,7 @@ public class YellowpagesSessionController extends
     query = query.trim();
 
     if (!"All".equals(typeSearch)) {// typeSearch = LastName || FirstName ||
-                                    // LastNameFirstName
+      // LastNameFirstName
       // Recherche sur nom et/ou prénom
 
       String nom = null;
@@ -1087,7 +1091,7 @@ public class YellowpagesSessionController extends
       } else if ("LastNameFirstName".equals(typeSearch)) {// nom et/ou prénom
         indexEspace = query.indexOf(" ");
         if (indexEspace == -1) { // seulement recherche sur le nom, on cherchera
-                                 // sur le prénom aprés
+          // sur le prénom aprés
           nom = query;
         } else { // recherche sur le nom et le prénom
           nom = query.substring(0, indexEspace);
@@ -1119,10 +1123,10 @@ public class YellowpagesSessionController extends
           true);
 
       if ("LastNameFirstName".equals(typeSearch) && indexEspace == -1) {// ajout
-                                                                        // recherche
-                                                                        // sur
-                                                                        // le
-                                                                        // prénom
+        // recherche
+        // sur
+        // le
+        // prénom
         modelUser.setLastName(null);
         if (query.endsWith("*") || query.endsWith("%")) {
           query = query.substring(0, query.length() - 1);
@@ -1216,12 +1220,12 @@ public class YellowpagesSessionController extends
             && contactFather.getNodeId().startsWith(
                 YellowpagesSessionController.GroupReferentielPrefix)
             && contactFather.getContactDetail().getUserId() != null) {// contact
-                                                                      // de type
-                                                                      // user
-                                                                      // appartenant
-                                                                      // à un
-                                                                      // groupe
-                                                                      // Silverpeas
+          // de type
+          // user
+          // appartenant
+          // à un
+          // groupe
+          // Silverpeas
           itUserFull = listFullUsers.iterator();
           while (itUserFull.hasNext()) {
             userFull = (UserFull) itUserFull.next();
@@ -1250,9 +1254,9 @@ public class YellowpagesSessionController extends
 
   public List<ContactFatherDetail> getListContactFather(List<ContactDetail> contacts,
       boolean retourneUserReferentiel) throws RemoteException { // en
-                                                                // param�tre
-                                                                // une liste de
-                                                                // ContactDetail
+    // param�tre
+    // une liste de
+    // ContactDetail
     List<ContactFatherDetail> result = new ArrayList<ContactFatherDetail>();
     ContactFatherDetail contactFather;
     if (contacts != null) {
@@ -1345,7 +1349,6 @@ public class YellowpagesSessionController extends
   }
 
   /**
-   * 
    * @param models
    */
   public void addModelUsed(String[] models) {
@@ -1390,5 +1393,39 @@ public class YellowpagesSessionController extends
           "root.MSG_PARAM_VALUE", "Deleting Contact #" + contactId);
       deleteContact(contactId);
     }
+  }
+
+  public List<String> getProperties() {
+    List<String> properties = new ArrayList<String>();
+    String columns = getSettings().getString("columns");
+    String[] nameColumns = columns.split(",");
+    for (String nameProperty : nameColumns) {
+      if (!nameProperty.startsWith("password")) {
+        properties.add(nameProperty);
+      }
+    }
+    return properties;
+  }
+
+  public List<String> getArrayHeaders() {
+    List<String> arrayHeaders = new ArrayList<String>();
+    List<String> properties = getProperties();
+    String nameHeader = "";
+    for (String nameProperty : properties) {
+      if (nameProperty.startsWith("domain.")) {
+        // on recherche une propriété du domaine
+        String property = nameProperty.substring(7);
+        nameHeader = getDomainMultilang().getString(property);
+      } else {
+        // on recherche une propriété classique
+        nameHeader = getMultilang().getString("yellowpages.column." + nameProperty);
+      }
+      arrayHeaders.add(nameHeader);
+    }
+    return arrayHeaders;
+  }
+
+  private ResourceLocator getDomainMultilang() {
+    return domainMultilang;
   }
 }

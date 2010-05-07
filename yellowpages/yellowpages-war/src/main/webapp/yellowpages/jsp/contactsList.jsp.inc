@@ -19,12 +19,12 @@ void displayContactsAdmin(String contactCard, YellowpagesSessionController yello
     ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resources.getString("GML.name"));
     ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resources.getString("GML.surname"));
     ArrayColumn arrayColumn3 = arrayPane.addArrayColumn(resources.getString("GML.eMail"));
-	if ("yes".equalsIgnoreCase(resources.getSetting("showTelNumber")))
+	if (resources.getSetting("columns").contains("phone"))
     {
 		ArrayColumn arrayColumn4 = arrayPane.addArrayColumn(resources.getString("GML.phoneNumber"));
 		arrayColumn4.setSortable(false);
 	}
-    if ("yes".equalsIgnoreCase(resources.getSetting("showFaxNumber")))
+    if (resources.getSetting("columns").contains("fax"))
     {
 	    ArrayColumn arrayColumn5 = arrayPane.addArrayColumn(resources.getString("GML.faxNumber"));
 	    arrayColumn5.setSortable(false);
@@ -46,12 +46,12 @@ void displayContactsAdmin(String contactCard, YellowpagesSessionController yello
         ligne1.addArrayCellLink(Encode.javaStringToHtmlString(contact.getLastName()),"javascript:onClick=contactGoTo('"+contact.getPK().getId()+"')");
         ligne1.addArrayCellText(Encode.javaStringToHtmlString(contact.getFirstName()));
         ligne1.addArrayCellText(Encode.javaStringToHtmlString(contact.getEmail()));
-		if ("Yes".equalsIgnoreCase(resources.getSetting("showTelNumber")))
+		if (resources.getSetting("columns").contains("phone"))
 		{
 			ArrayCellText phoneCell = ligne1.addArrayCellText(Encode.javaStringToHtmlString(contact.getPhone()));
 			phoneCell.setNoWrap(true);
 		}
-		if ("Yes".equalsIgnoreCase(resources.getSetting("showFaxNumber")))
+		if (resources.getSetting("columns").contains("fax"))
 		{
 			ligne1.addArrayCellText(Encode.javaStringToHtmlString(contact.getFax()));
 		}
@@ -72,133 +72,116 @@ void displayContactsAdmin(String contactCard, YellowpagesSessionController yello
     out.println(arrayPane.print());
 
 }
+void displayContactsUser(YellowpagesSessionController yellowpagesScc,
+      Collection contacts, String id, String componentLabel,
+      GraphicElementFactory gef, javax.servlet.ServletRequest request,
+      javax.servlet.http.HttpSession session, ResourcesWrapper resources,
+      JspWriter out)
+      throws IOException {
 
-void displayContactsUser(YellowpagesSessionController yellowpagesScc, Collection contacts, String id, String componentLabel, GraphicElementFactory gef, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, ResourcesWrapper resources, JspWriter out) throws IOException {
+    // fonction initialement dans contactsList.jsp.inc
+    //                            --------------------
 
     Iterator iterator = contacts.iterator();
     int indexLastNameColumn = 1;
 
-	ArrayPane arrayPane = null;
-	if (id != null) {
-			arrayPane = gef.getArrayPane("tableau1", "GoTo?Id="+id, request, session);
-			arrayPane.setVisibleLineNumber(yellowpagesScc.getNbContactPerPage());
-	}
-    else
-    {
-    	arrayPane = gef.getArrayPane("tableau1", "PrintList", request, session);
-    	arrayPane.setVisibleLineNumber(-1);
-    }
-    	
-    if (!"No".equalsIgnoreCase(resources.getSetting("showContactIcon")))
-    {
-	    ArrayColumn arrayColumn0 = arrayPane.addArrayColumn("&nbsp;");
-		arrayColumn0.setSortable(false);
-	    indexLastNameColumn = 2;
-	}
-    arrayPane.addArrayColumn(resources.getString("GML.name"));
-    arrayPane.addArrayColumn(resources.getString("GML.surname"));
-    arrayPane.addArrayColumn(resources.getString("GML.eMail"));
-	if ("Yes".equalsIgnoreCase(resources.getSetting("showTelNumber")))
-	{
-		ArrayColumn arrayColumn1 = arrayPane.addArrayColumn(resources.getString("GML.phoneNumber"));
-		arrayColumn1.setSortable(false);
-	}
-	if ("Yes".equalsIgnoreCase(resources.getSetting("showFaxNumber")))
-	{
-	    ArrayColumn arrayColumn2 = arrayPane.addArrayColumn(resources.getString("GML.faxNumber"));
-	    arrayColumn2.setSortable(false);
-	}
-	if ("Yes".equalsIgnoreCase(resources.getSetting("showTopic","Yes")))
-	{
-    	arrayPane.addArrayColumn(resources.getString("TopicName"));
+    ArrayPane arrayPane = null;
+    if (id != null) {
+      arrayPane = gef.getArrayPane("tableau1", "GoTo?Id=" + id, request,
+          session);
+      arrayPane
+          .setVisibleLineNumber(yellowpagesScc.getNbContactPerPage());
+    } else {
+      arrayPane = gef.getArrayPane("tableau1", "PrintList", request,
+          session);
+      arrayPane.setVisibleLineNumber(-1);
     }
 
-	ContactFatherDetail contactFather = null;
-	ContactDetail contact = null;
-	String nodeName = null;
-	String fatherId = null;
-	String icon = null;
-	String link = null;
-	String firstName = null;
-	String lastName = null;
-	String email = null;
-	String phone = null;
-	String fax = null;
-    while (iterator.hasNext()) 
-    {
-        contactFather 	= (ContactFatherDetail) iterator.next();
-        contact 		= contactFather.getContactDetail();
-        nodeName 		= Encode.javaStringToHtmlString(contactFather.getNodeName());
-        fatherId 		= contactFather.getNodeId();
-        if (fatherId.equals("0"))
-        {
-            nodeName = Encode.javaStringToHtmlString(componentLabel);
+    // recherche des colonnes à afficher
+    List arrayHeaders = yellowpagesScc.getArrayHeaders();
+    Iterator it = arrayHeaders.iterator();
+    while (it.hasNext()) {
+      String nameHeader = (String) it.next();
+      arrayPane.addArrayColumn(nameHeader);
+    }
+
+    ContactFatherDetail contactFather = null;
+    ContactDetail contact = null;
+    UserFull userFull = null;
+    String nodeName = null;
+    String fatherId = null;
+    String icon = null;
+    String link = null;
+    iterator = contacts.iterator();
+    while (iterator.hasNext()) {
+      contactFather = (ContactFatherDetail) iterator.next();
+      contact = contactFather.getContactDetail();
+      userFull = contact.getUserFull();
+      nodeName = Encode.javaStringToHtmlString(contactFather.getNodeName());
+      fatherId = contactFather.getNodeId();
+      if (fatherId.equals("0")) {
+        nodeName = Encode.javaStringToHtmlString(componentLabel);
+      } else if (fatherId.equals("1")) {
+        continue;
+      }
+      
+      // remplissage des lignes
+      ArrayLine ligne = arrayPane.addArrayLine();
+      
+      if ("fromGroup".equals(contact.getPK().getId())) {
+        icon = resources.getIcon("yellowpages.user");
+        link = "javaScript:goToUser('" + contact.getUserId() + "');";
+      } else {
+        icon = resources.getIcon("yellowpages.contact");
+        link = "javascript:onClick=contactGoToUserInTopic('"
+            + contact.getPK().getId() + "','" + fatherId + "')";
+      }
+      IconPane iconPane = gef.getIconPane();
+      Icon carte = iconPane.addIcon();
+      carte.setProperties(icon, "", link);
+      
+      String nameColumn = "";
+      String value = "";
+      List properties = yellowpagesScc.getProperties();
+      Iterator itp = properties.iterator();
+      while (itp.hasNext()) {
+        nameColumn = (String) itp.next();
+        if (nameColumn.startsWith("domain.")) {
+          String property = nameColumn.substring(7);
+          // rechercher la valeur dans UserFull
+          if (userFull != null) {
+            ligne.addArrayCellText(Encode.javaStringToHtmlString(userFull.getValue(property)));
+          }
+        } else {
+          // recherche la valeur dans ContactDetail
+          if (nameColumn.equals("icon")) {
+            ligne.addArrayCellIconPane(iconPane);
+          }
+          else {
+            if (nameColumn.equals("lastname")) {
+              value = contact.getLastName();
+            }
+            if (nameColumn.equals("firstname")) {
+              value = contact.getFirstName();
+            }
+            if (nameColumn.equals("email")) {
+              value = contact.getEmail();
+            }
+            if (nameColumn.equals("phone")) {
+              value = contact.getPhone();
+            }
+            if (nameColumn.equals("fax")) {
+              value = contact.getFax();
+            }
+            ligne.addArrayCellText(Encode.javaStringToHtmlString(value)); 
+          }
         } 
-        else if (fatherId.equals("1"))
-        {
-        	continue;
-        }
-        
-        firstName 	= contact.getFirstName();
-		lastName 	= contact.getLastName();
-		email 		= contact.getEmail();
-		phone 		= contact.getPhone();
-		fax 		= contact.getFax();
-        
-        if ("fromGroup".equals(contact.getPK().getId()))
-        {
-        	icon = resources.getIcon("yellowpages.user");
-        	link = "javaScript:goToUser('"+contact.getUserId()+"');";
-        }
-        else
-        {
-        	icon = resources.getIcon("yellowpages.contact");
-        	link = "javascript:onClick=contactGoToUserInTopic('"+contact.getPK().getId()+"','"+fatherId+"')";
-        }
+      } 
 
-        ArrayLine ligne1 = arrayPane.addArrayLine();
-	    if (!"No".equalsIgnoreCase(resources.getSetting("showContactIcon")))
-	    {
-			IconPane iconPane = gef.getIconPane();
-			Icon carte = iconPane.addIcon();
-			carte.setProperties(icon, "", link);
-			ligne1.addArrayCellIconPane(iconPane);
-		}
-        ArrayCellText arrayCellText1 = ligne1.addArrayCellText("<A HREF=\""+link+"\">"+Encode.javaStringToHtmlString(lastName)+"</A>");
-        ArrayCellText arrayCellText2 = ligne1.addArrayCellText(Encode.javaStringToHtmlString(firstName));
-        ArrayCellText arrayCellText4 = null;
-        if (email==null || "".equals(email))
-        {
-			arrayCellText4 = ligne1.addArrayCellText("");
-		}
-        else
-        {
-			arrayCellText4 = ligne1.addArrayCellText("<a href=mailto:"+email+">"+Encode.javaStringToHtmlString(email)+"</A>");
-		}
-		if ("Yes".equalsIgnoreCase(resources.getSetting("showTelNumber")))
-		{
-			ArrayCellText phoneCell = ligne1.addArrayCellText(Encode.javaStringToHtmlString(phone));
-			phoneCell.setNoWrap(true);
-		}
-		if ("Yes".equalsIgnoreCase(resources.getSetting("showFaxNumber")))
-		{
-			ligne1.addArrayCellText(Encode.javaStringToHtmlString(fax));
-		}
-		if ("Yes".equalsIgnoreCase(resources.getSetting("showTopic","Yes")))
-		{
-        	ArrayCellText arrayCellText3 = ligne1.addArrayCellText(nodeName);
-        	arrayCellText3.setCompareOn((String) (nodeName.toLowerCase()));
-        }
-        arrayCellText1.setCompareOn((String) ((lastName == null)?"":lastName.toLowerCase()));
-        arrayCellText2.setCompareOn((String) ((firstName == null)?"":firstName.toLowerCase()));
-        arrayCellText4.setCompareOn((String) ((email==null)?"":Encode.javaStringToHtmlString(email.toLowerCase())));
-    }   
-    if (arrayPane.getColumnToSort() == 0)
-    {
-		arrayPane.setColumnToSort(indexLastNameColumn);
-	}
+      
+    }
 
-    out.println(arrayPane.print()); 
-}
-
+    out.println(arrayPane.print());
+  }
+  
 %>

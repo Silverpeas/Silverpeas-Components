@@ -252,8 +252,8 @@ if (action.equals("Search")) {
     Window window = gef.getWindow();
     BrowseBar browseBar=window.getBrowseBar();
     browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel);
-	browseBar.setPath(resources.getString("GML.management")+" > "+linkedPathString);
+	  browseBar.setComponentName(componentLabel);
+	  browseBar.setPath(resources.getString("GML.management")+" > "+linkedPathString);
     
     OperationPane operationPane = window.getOperationPane();
     if (profile.equals("admin")) 

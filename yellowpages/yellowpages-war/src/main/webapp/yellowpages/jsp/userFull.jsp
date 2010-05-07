@@ -68,10 +68,10 @@ out.println(board.printBefore());
 </tr>
 <tr>
 	<td valign=baseline align=left class=txtlibform><%=resources.getString("GML.eMail")%> :</td>
-	<td align=left><%=user.geteMail()%></td>
+	<td align=left><a href=mailto:<%=Encode.javaStringToHtmlString(user.geteMail())%>><%=Encode.javaStringToHtmlString(Encode.javaStringToHtmlString(user.geteMail()))%></A></td>
 </tr>
 <%
-	String[] properties = user.getPropertiesNames();
+  String[] properties = user.getPropertiesNames();
 	String property = null;
 	for (int p=0; p<properties.length; p++)
 	{

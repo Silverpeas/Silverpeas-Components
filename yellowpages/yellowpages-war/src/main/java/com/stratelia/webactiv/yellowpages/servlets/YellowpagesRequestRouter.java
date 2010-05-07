@@ -284,7 +284,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
           request.setAttribute("TopicId", topicId);
           String modelId = scc.getTopic(topicId).getNodeDetail().getModelId();
 
-          if (modelId.endsWith(".xml")) {
+          if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
             String xmlFormName = modelId;
             String xmlFormShortName = xmlFormName.substring(xmlFormName
                 .indexOf("/") + 1, xmlFormName.indexOf("."));

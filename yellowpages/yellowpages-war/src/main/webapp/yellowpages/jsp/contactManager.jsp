@@ -57,7 +57,7 @@ void displayUserView(GraphicElementFactory gef, CompleteContact contactComplete,
    out.println("<td align=left>"+Encode.javaStringToHtmlString(detail.getFax())+"</td>");
    out.println("</tr>");
    out.println("<tr><td valign=baseline align=left class=txtlibform>"+resources.getString("GML.eMail")+" :</td>");
-   out.println("<td align=left>"+Encode.javaStringToHtmlString(detail.getEmail())+"</td>");
+   out.println("<td align=left><a href=mailto:"+Encode.javaStringToHtmlString(detail.getEmail())+">"+Encode.javaStringToHtmlString(Encode.javaStringToHtmlString(detail.getEmail()))+"</A></td>");
    out.println("</tr>");
    out.println("</table>");
 }
