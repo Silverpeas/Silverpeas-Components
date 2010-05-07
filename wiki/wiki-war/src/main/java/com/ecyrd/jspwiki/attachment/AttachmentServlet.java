@@ -293,15 +293,12 @@ public class AttachmentServlet extends WebdavServlet {
 
         out = res.getOutputStream();
         in = mgr.getAttachmentStream(context, att);
-        FileOutputStream result = new FileOutputStream("c:/tmp/result/" + att.getFileName());
         int read = 0;
         byte[] buffer = new byte[BUFFER_SIZE];
 
         while ((read = in.read(buffer)) > -1) {
           out.write(buffer, 0, read);
-          result.write(buffer, 0, read);
         }
-        result.close();
         System.out.println("Attachment file is c:/tmp/result/" + att.getFileName());
         System.out.println("Attachment " + att.getFileName() + " sent to " + req.getRemoteUser()
             + " on " + req.getRemoteAddr());
@@ -334,8 +331,7 @@ public class AttachmentServlet extends WebdavServlet {
       // case we just log it.
       //
       try {
-        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-            msg);
+        res.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, msg);
       } catch (IllegalStateException e) {
       }
       return;

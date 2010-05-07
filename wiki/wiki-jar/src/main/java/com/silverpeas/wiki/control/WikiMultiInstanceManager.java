@@ -42,15 +42,14 @@ public class WikiMultiInstanceManager {
 
   private static ThreadLocal<String> componentID = new ThreadLocal<String>();
 
-  public static void setComponentId(String newId, ServletConfig config,
-      HttpServletRequest request) {
-    String oldId = (String) componentID.get();
+  public static void setComponentId(String newId, ServletConfig config, HttpServletRequest request) {
+    String oldId = componentID.get();
     componentID.set(newId);
     manageInstanceChange(oldId, newId, config, request);
   }
 
   public static String getComponentId() {
-    return (String) componentID.get();
+    return componentID.get();
   }
 
   private static void manageInstanceChange(String oldId, String newId,

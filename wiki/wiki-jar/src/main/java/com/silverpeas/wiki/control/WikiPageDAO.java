@@ -95,6 +95,31 @@ public class WikiPageDAO {
     }
   }
 
+  public int getNbOfPages(String instanceId) throws WikiException {
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    Connection con = null;
+    int nbPages = 0;
+    try {
+      con = openConnection();
+      prepStmt = con.prepareStatement("select count(*) as nbpages from " + TABLE_WIKIPAGE
+          + " where instanceId = ?");
+      prepStmt.setString(1, instanceId);
+      prepStmt.executeQuery();
+       rs = prepStmt.executeQuery();
+      if (rs.next()) {
+       nbPages = rs.getInt("nbpages");
+      }
+       return nbPages;
+    } catch (SQLException e) {
+      throw new WikiException("WikiPageDAO.getNbOfPages()",
+          SilverpeasException.ERROR, "root.EX_RECORD_NOT_FOUND", "Wiki id = " + instanceId, e);
+    } finally {
+      DBUtil.close(prepStmt);
+      closeConnection(con);
+    }
+  }
+
   public PageDetail getPage(String pageName, String instanceId)
       throws WikiException {
     PreparedStatement prepStmt = null;

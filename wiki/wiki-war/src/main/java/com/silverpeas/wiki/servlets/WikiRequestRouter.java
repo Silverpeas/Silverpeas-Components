@@ -80,6 +80,7 @@ public class WikiRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
+  @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new WikiSessionController(mainSessionCtrl, componentContext);
@@ -93,6 +94,7 @@ public class WikiRequestRouter extends ComponentRequestRouter {
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     WikiSessionController wikiSC = (WikiSessionController) componentSC;

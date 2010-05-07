@@ -175,15 +175,7 @@ public class WikiBasicAttachmentProvider implements WikiAttachmentProvider {
    */
   private File findAttachmentDir(Attachment att) throws ProviderException {
     File f = new File(findPageDir(att.getParentName()), mangleName(att
-        .getFileName()
-        + ATTDIR_EXTENSION));
-
-    //
-    // Migration code for earlier versions of JSPWiki.
-    // Originally, we used plain filename. Then we realized we need
-    // to urlencode it. Then we realized that we have to use a
-    // postfix to make sure illegal file names are never formed.
-    //
+        .getFileName() + ATTDIR_EXTENSION));
     if (!f.exists()) {
       File oldf = new File(findPageDir(att.getParentName()), mangleName(att
           .getFileName()));
@@ -197,7 +189,6 @@ public class WikiBasicAttachmentProvider implements WikiAttachmentProvider {
         }
       }
     }
-
     return f;
   }
 
