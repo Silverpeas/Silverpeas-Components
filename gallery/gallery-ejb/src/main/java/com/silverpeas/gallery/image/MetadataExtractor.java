@@ -287,7 +287,7 @@ public class MetadataExtractor {
     if (iptcDirectory.containsTag(iptcTag)) {
       byte[] data = iptcDirectory.getByteArray(iptcTag);
       String encoding = StringUtil.detectEncoding(data, "ISO-8859-15");
-      return new String(data, encoding).replace('ý', 'é');
+      return new String(data, encoding);
     }
     return null;
   }
