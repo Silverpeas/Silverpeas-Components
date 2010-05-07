@@ -37,7 +37,7 @@
 	Boolean 					isAttachmentTabEnable 	= (Boolean) request.getAttribute("isAttachmentTabEnable");
 	Boolean 					isHistoryTabEnable 		= (Boolean) request.getAttribute("isHistoryTabEnable");
 	boolean 					isProcessIdVisible 		= ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
-	boolean 					isPrintButtonEnabled 	= (Boolean) request.getAttribute("isPrintButtonEnabled").boolanValue();
+	boolean 					isPrintButtonEnabled 	= ((Boolean) request.getAttribute("isPrintButtonEnabled")).booleanValue();
 	
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
