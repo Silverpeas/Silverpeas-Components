@@ -99,8 +99,8 @@ public class FileImport {
    * Import a single file for a unique publication
    * @return ArrayList of PublicationDetail
    */
-  public ArrayList importFile() {
-    ArrayList publicationDetails = new ArrayList();
+  public ArrayList<PublicationDetail> importFile() {
+    ArrayList<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>();
     // Get files of the concerned upload directory
     File[] filesToProcess = fileUploaded.getParentFile().listFiles();
     // Create publication
@@ -117,10 +117,10 @@ public class FileImport {
    * @param KmeliaSessionController kmeliaScc
    * @return ArrayList of PublicationsDetails
    */
-  public ArrayList importFiles() {
+  public ArrayList<PublicationDetail> importFiles() {
     SilverTrace.info("kmelia", "FileImport.importFiles()",
         "root.MSG_GEN_ENTER_METHOD");
-    ArrayList publicationDetails = new ArrayList();
+    ArrayList<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>();
     int nbFiles = ZipManager.getNbFiles(fileUploaded);
 
     // Name of temp folder: timestamp and userId
@@ -177,10 +177,10 @@ public class FileImport {
    * Import a zip file for a publication per file in zip
    * @return List of PublicationsDetail
    */
-  public ArrayList importFilesMultiPubli() {
+  public ArrayList<PublicationDetail> importFilesMultiPubli() {
     SilverTrace.info("kmelia", "FileImport.importFilesMultiPubli()",
         "root.MSG_GEN_ENTER_METHOD");
-    ArrayList publicationDetails = new ArrayList();
+    ArrayList<PublicationDetail> publicationDetails = new ArrayList<PublicationDetail>();
 
     // Name of temp folder: timestamp and userId
     String tempFolderName = new Long(new Date().getTime()).toString() + "_"
@@ -275,7 +275,7 @@ public class FileImport {
           "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId);
 
       // Add the attachments(s)
-      List attachments = new ArrayList();
+      List<AttachmentDetail> attachments = new ArrayList<AttachmentDetail>();
       if (isVersioningUsed) {
         // Versioning Mode
         for (int i = 0; i < filesToProcess.length; i++) {
@@ -302,7 +302,7 @@ public class FileImport {
           }
           attachments.add(attDetail);
         }
-        List copiedAttachments = attachmentIE.copyFiles(componentId,
+        List<AttachmentDetail> copiedAttachments = attachmentIE.copyFiles(componentId,
             attachments, versioningIE.getVersioningPath(componentId));
         SilverTrace.info("kmelia", "FileImport.processImportFile()",
             "root.MSG_GEN_PARAM_VALUE", "copiedAttachments.size() = "

@@ -42,9 +42,9 @@ public class KmaxIndexer implements ComponentIndexerInterface {
     scc = new KmeliaSessionController(mainSessionCtrl, context);
     scc.indexKmax(scc.getComponentId());
 
-    Iterator it = scc.getAllPublications().iterator();
+    Iterator<PublicationDetail> it = scc.getAllPublications().iterator();
     while (it.hasNext()) {
-      PublicationDetail pd = (PublicationDetail) (it.next());
+      PublicationDetail pd = it.next();
       AttachmentController.attachmentIndexer(pd.getPK());
     }
   }

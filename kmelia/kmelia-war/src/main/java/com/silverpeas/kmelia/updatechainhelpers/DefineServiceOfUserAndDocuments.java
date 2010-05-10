@@ -34,6 +34,7 @@ import java.util.StringTokenizer;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.PdcException;
+import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.DBUtil;
@@ -83,10 +84,9 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
     String positionLabel = service;
     int silverObjectId = kmeliaScc.getSilverObjectId(pubDetail.getId());
     try {
-      List axisValues = kmeliaScc.getPdcBm().getAxisValuesByName(positionLabel);
+      List<Value> axisValues = kmeliaScc.getPdcBm().getAxisValuesByName(positionLabel);
       for (int i = 0; i < axisValues.size(); i++) {
-        com.stratelia.silverpeas.pdc.model.Value axisValue =
-            (com.stratelia.silverpeas.pdc.model.Value) axisValues.get(i);
+        Value axisValue = axisValues.get(i);
         String selectedPosition = axisValue.getTreeId() + "|" + axisValue.getFullPath();
         ClassifyPosition position = buildPosition(null, selectedPosition);
         kmeliaScc.getPdcBm().addPosition(silverObjectId, position, kmeliaScc.getComponentId(),
@@ -154,7 +154,7 @@ public class DefineServiceOfUserAndDocuments extends UpdateChainHelperImpl {
     String axisId = "";
     String valuePath = "";
     ClassifyValue value = null;
-    ArrayList values = new ArrayList();
+    List<ClassifyValue> values = new ArrayList<ClassifyValue>();
     for (; st.hasMoreTokens();) {
       valueInfo = st.nextToken();
       if (valueInfo.length() >= 3) {

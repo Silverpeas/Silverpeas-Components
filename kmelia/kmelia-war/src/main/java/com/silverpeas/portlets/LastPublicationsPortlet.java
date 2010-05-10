@@ -41,6 +41,7 @@ import javax.portlet.ValidatorException;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.kmelia.KmeliaTransversal;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 public class LastPublicationsPortlet extends GenericPortlet implements FormNames {
 
@@ -59,7 +60,7 @@ public class LastPublicationsPortlet extends GenericPortlet implements FormNames
 
     KmeliaTransversal kmeliaTransversal = new KmeliaTransversal(
         m_MainSessionCtrl);
-    List publications = kmeliaTransversal.getPublications(spaceId, nbPublis);
+    List<PublicationDetail> publications = kmeliaTransversal.getPublications(spaceId, nbPublis);
 
     request.setAttribute("Publications", publications);
 
