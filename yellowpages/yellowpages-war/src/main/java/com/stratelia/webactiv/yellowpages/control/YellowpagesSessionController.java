@@ -894,6 +894,7 @@ public class YellowpagesSessionController extends
             null, getComponentId()), user.getFirstName(), user.getLastName(),
             user.geteMail(), user.getValue("phone"), user.getValue("fax"), user
                 .getId(), null, null);
+        cUser.setUserFull(user);
 
         contactFather = new ContactFatherDetail(
             cUser,
