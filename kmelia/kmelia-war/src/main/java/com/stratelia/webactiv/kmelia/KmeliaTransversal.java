@@ -59,36 +59,36 @@ public class KmeliaTransversal implements PublicationHelper {
     userId = mainSC.getUserId();
   }
 
-  public List getPublications() {
+  public List<PublicationDetail> getPublications() {
     return getPublications(null);
   }
 
-  public List getPublications(int nbPublis) {
+  public List<PublicationDetail> getPublications(int nbPublis) {
     return getPublications(null, nbPublis);
   }
 
-  public List getPublications(String spaceId) {
+  public List<PublicationDetail> getPublications(String spaceId) {
     return getPublications(spaceId, -1);
   }
 
-  public List getPublications(String spaceId, int nbPublis) {
+  public List<PublicationDetail> getPublications(String spaceId, int nbPublis) {
     SilverTrace.debug("kmelia", "KmeliaTransversal.getPublications()",
         "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + ", nbPublis = "
         + nbPublis);
-    List componentIds = new ArrayList();
+    List<String> componentIds = new ArrayList<String>();
     if (!StringUtil.isDefined(spaceId)) {
       String[] cIds = getOrganizationControl().getComponentIdsForUser(userId,
           "kmelia");
       for (int c = 0; c < cIds.length; c++) {
-        componentIds.add("kmelia" + cIds[c]);
+        componentIds.add(cIds[c]);
       }
       cIds = getOrganizationControl().getComponentIdsForUser(userId, "toolbox");
       for (int c = 0; c < cIds.length; c++) {
-        componentIds.add("toolbox" + cIds[c]);
+        componentIds.add(cIds[c]);
       }
       cIds = getOrganizationControl().getComponentIdsForUser(userId, "kmax");
       for (int c = 0; c < cIds.length; c++) {
-        componentIds.add("kmax" + cIds[c]);
+        componentIds.add(cIds[c]);
       }
     } else {
       String[] cIds = getOrganizationControl()
@@ -107,33 +107,33 @@ public class KmeliaTransversal implements PublicationHelper {
         "root.MSG_GEN_PARAM_VALUE", "componentIds = "
         + componentIds.toString());
 
-    List publicationPKs = null;
+    List<PublicationPK> publicationPKs = null;
     try {
-      publicationPKs = (List) getPublicationBm().getPublicationPKsByStatus(
+      publicationPKs = (List<PublicationPK>) getPublicationBm().getPublicationPKsByStatus(
           "Valid", componentIds);
     } catch (Exception e) {
       SilverTrace.error("kmelia", "KmeliaTransversal.getPublications()",
           "kmelia.CANT_GET_PUBLICATIONS_PKS", "spaceId = " + spaceId, e);
     }
-    Collection filteredPublicationPKs = filterPublicationPKs(publicationPKs,
+    Collection<PublicationPK> filteredPublicationPKs = filterPublicationPKs(publicationPKs,
         nbPublis);
 
     try {
-      return (List) getPublicationBm().getPublications(filteredPublicationPKs);
+      return (List<PublicationDetail>) getPublicationBm().getPublications(filteredPublicationPKs);
     } catch (RemoteException e) {
       SilverTrace.error("kmelia", "KmeliaTransversal.getPublications()",
           "kmelia.CANT_GET_PUBLICATIONS", "spaceId = " + spaceId, e);
     }
 
-    return new ArrayList();
+    return new ArrayList<PublicationDetail>();
   }
 
-  public List getPublicationsByComponentId(String componentId) {
-    List publications = null;
+  public List<PublicationDetail> getPublicationsByComponentId(String componentId) {
+    List<PublicationDetail> publications = null;
     try {
-      List componentIds = new ArrayList();
+      List<String> componentIds = new ArrayList<String>();
       componentIds.add(componentId);
-      publications = (List) getPublicationBm().getPublicationsByStatus("Valid",
+      publications = (List<PublicationDetail>) getPublicationBm().getPublicationsByStatus("Valid",
           componentIds);
     } catch (Exception e) {
       SilverTrace.error("kmelia",
@@ -143,13 +143,13 @@ public class KmeliaTransversal implements PublicationHelper {
     return filterPublications(publications, -1);
   }
 
-  private List filterPublications(List publications, int nbPublis) {
-    List filteredPublications = new ArrayList();
+  private List<PublicationDetail> filterPublications(List<PublicationDetail> publications, int nbPublis) {
+    List<PublicationDetail> filteredPublications = new ArrayList<PublicationDetail>();
     KmeliaSecurity security = new KmeliaSecurity();
 
     PublicationDetail pub = null;
     for (int p = 0; publications != null && p < publications.size(); p++) {
-      pub = (PublicationDetail) publications.get(p);
+      pub = publications.get(p);
       if (security.isObjectAvailable(pub.getPK().getInstanceId(), userId, pub
           .getPK().getId(), "Publication"))
         filteredPublications.add(pub);
@@ -161,13 +161,13 @@ public class KmeliaTransversal implements PublicationHelper {
     return filteredPublications;
   }
 
-  private List filterPublicationPKs(List publicationPKs, int nbPublis) {
-    List filteredPublicationPKs = new ArrayList();
+  private List<PublicationPK> filterPublicationPKs(List<PublicationPK> publicationPKs, int nbPublis) {
+    List<PublicationPK> filteredPublicationPKs = new ArrayList<PublicationPK>();
     KmeliaSecurity security = new KmeliaSecurity();
 
     PublicationPK pk = null;
     for (int p = 0; publicationPKs != null && p < publicationPKs.size(); p++) {
-      pk = (PublicationPK) publicationPKs.get(p);
+      pk = publicationPKs.get(p);
       if (security.isObjectAvailable(pk.getInstanceId(), userId, pk.getId(),
           "Publication"))
         filteredPublicationPKs.add(pk);
