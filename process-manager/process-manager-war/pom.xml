@@ -5,13 +5,11 @@
     <groupId>com.silverpeas.components</groupId>
     <artifactId>process-manager</artifactId>
     <version>5.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.process-manager</groupId>
   <artifactId>process-manager-war</artifactId>
   <packaging>war</packaging>
-  <version>5.1-SNAPSHOT</version>
   <name>process-manager Webapp</name>
 
   <dependencies>

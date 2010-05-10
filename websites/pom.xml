@@ -9,7 +9,6 @@
   
   <groupId>com.silverpeas.components</groupId>
   <artifactId>websites</artifactId>
-  <version>5.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>WebSites Component</name>
   <modules>

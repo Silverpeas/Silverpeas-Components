@@ -5,20 +5,18 @@
     <groupId>com.silverpeas.components</groupId>
     <artifactId>almanach</artifactId>
     <version>5.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.almanach</groupId>
   <artifactId>almanach-war</artifactId>
   <packaging>war</packaging>
-  <version>5.1-SNAPSHOT</version>
   <name>almanach Webapp</name>
 
   <dependencies>
     <dependency>
       <groupId>com.silverpeas.components.almanach</groupId>
       <artifactId>almanach-ejb</artifactId>
-      <version>5.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>

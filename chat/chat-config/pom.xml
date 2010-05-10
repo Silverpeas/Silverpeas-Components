@@ -5,13 +5,11 @@
     <groupId>com.silverpeas.components</groupId>
     <artifactId>chat</artifactId>
     <version>5.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.chat</groupId>
   <artifactId>chat-config</artifactId>
   <packaging>pom</packaging>
-  <version>5.1-SNAPSHOT</version>
   <name>Configuration chat</name>
 
   <build>

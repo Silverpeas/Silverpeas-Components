@@ -9,7 +9,6 @@
   
   <groupId>com.silverpeas.components</groupId>
   <artifactId>process-manager</artifactId>
-  <version>5.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>process-manager Component</name>
   <modules>

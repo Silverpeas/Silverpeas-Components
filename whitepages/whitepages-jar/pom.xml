@@ -5,13 +5,11 @@
     <groupId>com.silverpeas.components</groupId>
     <artifactId>whitepages</artifactId>
     <version>5.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.whitepages</groupId>
   <artifactId>whitepages-jar</artifactId>
   <packaging>jar</packaging>
-  <version>5.1-SNAPSHOT</version>
   <name>Lib whitepages</name>
 	
   <dependencies>

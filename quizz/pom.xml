@@ -9,7 +9,6 @@
   
   <groupId>com.silverpeas.components</groupId>
   <artifactId>quizz</artifactId>
-  <version>5.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Quizz Component</name>
   

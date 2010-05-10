@@ -5,13 +5,11 @@
     <groupId>com.silverpeas.components</groupId>
     <artifactId>project-manager</artifactId>
     <version>5.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.project-manager</groupId>
   <artifactId>project-manager-ejb</artifactId>
   <packaging>ejb</packaging>
-  <version>5.1-SNAPSHOT</version>
   <name>EJB project-manager</name>
   
   <dependencies>

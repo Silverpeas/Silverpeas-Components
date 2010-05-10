@@ -9,7 +9,6 @@
   
   <groupId>com.silverpeas.components</groupId>
   <artifactId>mydb</artifactId>
-  <version>5.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>MyDB Component</name>
   <modules>

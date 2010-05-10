@@ -5,13 +5,11 @@
     <groupId>com.silverpeas.components</groupId>
     <artifactId>websites</artifactId>
     <version>5.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.websites</groupId>
   <artifactId>websites-war</artifactId>
   <packaging>war</packaging>
-  <version>5.1-SNAPSHOT</version>
   <name>websites Webapp</name>
 
   <dependencies>
@@ -25,7 +23,7 @@
       <groupId>com.silverpeas.components.websites</groupId>
       <artifactId>websites-ejb</artifactId>
       <classifier>client</classifier>
-      <version>5.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

@@ -5,13 +5,11 @@
     <groupId>com.silverpeas.components</groupId>
     <artifactId>webpages</artifactId>
     <version>5.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.webpages</groupId>
   <artifactId>webpages-jar</artifactId>
   <packaging>jar</packaging>
-  <version>5.1-SNAPSHOT</version>
   <name>Lib webpages</name>
 	
   <dependencies>

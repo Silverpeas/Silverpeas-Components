@@ -5,13 +5,11 @@
     <groupId>com.silverpeas.components</groupId>
     <artifactId>websites</artifactId>
     <version>5.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.websites</groupId>
   <artifactId>websites-ejb</artifactId>
   <packaging>ejb</packaging>
-  <version>5.1-SNAPSHOT</version>
   <name>EJB websites</name>
   
   <dependencies>

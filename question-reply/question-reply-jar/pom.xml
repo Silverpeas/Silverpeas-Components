@@ -5,13 +5,11 @@
     <groupId>com.silverpeas.components</groupId>
     <artifactId>question-reply</artifactId>
     <version>5.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.question-reply</groupId>
   <artifactId>question-reply-jar</artifactId>
   <packaging>jar</packaging>
-  <version>5.1-SNAPSHOT</version>
   <name>Lib question-reply</name>
 	
   <dependencies>

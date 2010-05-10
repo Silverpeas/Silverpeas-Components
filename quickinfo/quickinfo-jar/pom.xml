@@ -5,13 +5,11 @@
     <groupId>com.silverpeas.components</groupId>
     <artifactId>quickinfo</artifactId>
     <version>5.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.quickinfo</groupId>
   <artifactId>quickinfo-jar</artifactId>
   <packaging>jar</packaging>
-  <version>5.1-SNAPSHOT</version>
   <name>Lib Quickinfo</name>
 	
   <dependencies>

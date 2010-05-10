@@ -5,13 +5,11 @@
     <groupId>com.silverpeas.components</groupId>
     <artifactId>rssaggregator</artifactId>
     <version>5.1-SNAPSHOT</version>
-    <relativePath>../pom.xml</relativePath>
   </parent>
 	
   <groupId>com.silverpeas.components.rssaggregator</groupId>
   <artifactId>rssaggregator-war</artifactId>
   <packaging>war</packaging>
-  <version>5.1-SNAPSHOT</version>
   <name>rssaggregator Webapp</name>
 
   <dependencies>
@@ -24,7 +22,7 @@
     <dependency>
       <groupId>com.silverpeas.components.rssaggregator</groupId>
       <artifactId>rssaggregator-jar</artifactId>
-      <version>5.1-SNAPSHOT</version>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>
