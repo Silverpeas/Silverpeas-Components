@@ -115,7 +115,7 @@ out.println(board.printAfter());
 				}
                 out.println("<TR>");
                 out.println("<TD><IMG alt=\"\" src=\""+attachmentDetail.getAttachmentIcon()+"\" width=20>&nbsp;");
-				out.println("<A href=\""+attachmentDetail.getAttachmentURL()+"\" target=\"_blank\">");
+				out.println("<A href=\""+m_context+attachmentDetail.getAttachmentURL()+"\" target=\"_blank\">");
 				if (title != null && title.length()>0)
 					out.println(title);
 				else

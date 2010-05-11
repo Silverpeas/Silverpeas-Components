@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="com.stratelia.webactiv.kmelia.model.updatechain.*" %>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
@@ -43,7 +44,7 @@ UserDetail ownerDetail = null;
 CompletePublication pubComplete = null;
 PublicationDetail pubDetail = null;
 
-//Récupération des paramètres
+//Rï¿½cupï¿½ration des paramï¿½tres
 String 				profile 			= (String) request.getAttribute("Profile");
 String 				action 				= (String) request.getAttribute("Action");
 String 				id 					= (String) request.getAttribute("PubId");
@@ -228,7 +229,7 @@ function getObjects(selected)
 		// au moins une checkbox exist
 		var nbBox = boxItems.length;
 		if ( (nbBox == null) && (boxItems.checked == selected) ){
-			// il n'y a qu'une checkbox non selectionnée
+			// il n'y a qu'une checkbox non selectionnï¿½e
 			items += boxItems.value+",";
 		} else{
 			// search not checked boxes
@@ -301,7 +302,7 @@ function last()
 <TABLE>
 <TR>
 	<TD valign="top" WIDTH="50%">
-		<%// affichage de la pièce jointe %>
+		<%// affichage de la piï¿½ce jointe %>
 		<%// ---------------------------- %>
 
 			<%
@@ -325,7 +326,7 @@ function last()
 	<% out.println(board.printAfter()); %>
 	<BR/>
 
-	<%// affichage des données de l'entête %>
+	<%// affichage des donnï¿½es de l'entï¿½te %>
 	<%// --------------------------------- %>
 
 	<% out.println(board.printBefore()); %>

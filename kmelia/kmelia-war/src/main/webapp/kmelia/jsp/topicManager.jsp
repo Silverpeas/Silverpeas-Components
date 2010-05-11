@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="checkKmelia.jsp" %>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.silverpeas.util.SilverpeasSettings"%>
@@ -35,7 +36,7 @@ String		description			= "";
 String		namePath			= "";
 String		urlTopic			= "";
 
-//Récupération des paramètres
+//Rï¿½cupï¿½ration des paramï¿½tres
 String 	profile			= (String) request.getAttribute("Profile");
 List 	treeview 		= (List) request.getAttribute("Treeview");
 String  translation 	= (String) request.getAttribute("Language");
@@ -483,7 +484,7 @@ function getHeight() {
         BrowseBar browseBar = window.getBrowseBar();
         browseBar.setI18N("GoToCurrentTopic", translation);
         
-        // création du nom pour les favoris
+        // crï¿½ation du nom pour les favoris
         namePath = spaceLabel + " > " + componentLabel;
          if (!pathString.equals(""))
         	namePath = namePath + " > " + pathString;
@@ -916,7 +917,7 @@ function loadNodeData(node, fnLoadComplete)  {
 						if (data == "ok")
 						{
 							displayPublications("1");
-							//alert("Corbeille vidée avec succès !");
+							//alert("Corbeille vidï¿½e avec succï¿½s !");
 						}
 						else
 						{
@@ -1359,7 +1360,7 @@ function loadNodeData(node, fnLoadComplete)  {
 		if (id != "0" && id != "1" && id != "tovalidate")
 		{
 			$("#footer").css({'visibility':'visible'});
-			$("#footer").html("Thème créé/modifié par "+node.data.creatorName+" - "+node.data.date+" - <a id=\"topicPermalink\" href=\"#\"><img src=\"<%=resources.getIcon("kmelia.link")%>\"/></a>");
+			$("#footer").html("Thï¿½me crï¿½ï¿½/modifiï¿½ par "+node.data.creatorName+" - "+node.data.date+" - <a id=\"topicPermalink\" href=\"#\"><img src=\"<%=resources.getIcon("kmelia.link")%>\"/></a>");
 			$("#footer #topicPermalink").attr("href", "<%=m_context%>/Topic/"+id+"?ComponentId=<%=componentId%>");
 		}
 		else

@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="com.stratelia.webactiv.util.publication.model.Alias" %>
 <%@ page import="com.stratelia.webactiv.kmelia.model.Treeview" %>
 <%
@@ -35,7 +36,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="tabManager.jsp.inc" %>
 
 <%
-//Récupération des paramètres
+//Rï¿½cupï¿½ration des paramï¿½tres
 String 				wizard				= (String) request.getAttribute("Wizard");
 PublicationDetail 	publication 		= (PublicationDetail) request.getAttribute("Publication");
 Collection			pathList 			= (Collection) request.getAttribute("PathList");
@@ -45,11 +46,11 @@ String				currentLang 		= (String) request.getAttribute("Language");
 List				otherComponents		= (List) request.getAttribute("OtherComponents");
 List				aliases				= (List) request.getAttribute("Aliases");
 
-// déclaration des variables
+// dï¿½claration des variables
 String pubName 	= publication.getName(currentLang);
 String id 		= publication.getPK().getId();
 
-// déclaration des boutons
+// dï¿½claration des boutons
 Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData();", false);
 Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "ViewPublication?PubId="+id, false);
 
@@ -152,7 +153,7 @@ function getObjects(selected)
 		// au moins une checkbox exist
 		var nbBox = boxItems.length;
 		if ( (nbBox == null) && (boxItems.checked == selected) ){
-			// il n'y a qu'une checkbox non selectionnée
+			// il n'y a qu'une checkbox non selectionnï¿½e
 			items += boxItems.value+",";
 		} else{
 			// search not checked boxes 
@@ -248,7 +249,7 @@ function getObjects(selected)
 	    				}
 	    				name = ind + name;	
 	    				
-	    				// recherche si ce thème est dans la liste des alias de la publication
+	    				// recherche si ce thï¿½me est dans la liste des alias de la publication
 						String usedCheck = "";
 	    				Iterator it = pathList.iterator();
 	    				while (it.hasNext()) 
@@ -325,7 +326,7 @@ function getObjects(selected)
 	    	    				}
 	    	    				name = ind + name;
 	    	    				
-	    	    				// recherche si ce thème est dans la liste des thèmes de la publication
+	    	    				// recherche si ce thï¿½me est dans la liste des thï¿½mes de la publication
 	    	    				String aliasDecoration = "&nbsp;";
 	    	    				String checked = "";
 	    	    				Iterator it = aliases.iterator();

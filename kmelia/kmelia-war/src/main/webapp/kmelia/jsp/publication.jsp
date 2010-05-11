@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -63,7 +64,7 @@ String refusedSrc;
   	ResourceLocator uploadSettings 		= new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", resources.getLanguage());
   	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());  	
   	
-	//Récupération des paramètres
+	//Rï¿½cupï¿½ration des paramï¿½tres
 	String 					profile 		= (String) request.getAttribute("Profile");
 	String					alias			= (String) request.getAttribute("IsAlias");
 	String 					action 			= (String) request.getAttribute("Action");
@@ -161,14 +162,14 @@ String refusedSrc;
         	
         	if (!kmeliaScc.isSuppressionOnlyForAdmin() || (profile.equals("admin") && kmeliaScc.isSuppressionOnlyForAdmin()))
         	{
-        		// suppressionAllowed = true car si c'est un rédacteur, c'est le propriétaire de la publication
+        		// suppressionAllowed = true car si c'est un rï¿½dacteur, c'est le propriï¿½taire de la publication
         		suppressionAllowed = true;
         	}
         }
 		else if ( !profile.equals("user") && kmeliaScc.isCoWritingEnable() )
 		{
-			// si publication en co-rédaction, considérer qu'elle appartient aux co-rédacteur au même titre qu'au propriétaire
-			// mais suppressionAllowed = false pour que le co-rédacteur ne puisse pas supprimer la publication
+			// si publication en co-rï¿½daction, considï¿½rer qu'elle appartient aux co-rï¿½dacteur au mï¿½me titre qu'au propriï¿½taire
+			// mais suppressionAllowed = false pour que le co-rï¿½dacteur ne puisse pas supprimer la publication
 			isOwner = true;
 			suppressionAllowed = false;
 		}
@@ -176,7 +177,7 @@ String refusedSrc;
         if (isOwner) {
             kmeliaScc.setSessionOwner(true);
         } else {
-		    //modification pour accéder à l'onglet voir aussi
+		    //modification pour accï¿½der ï¿½ l'onglet voir aussi
             kmeliaScc.setSessionOwner(false);
         }
 	}

@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>
 
@@ -33,7 +34,7 @@
 %>
 
 <%
-//Récupération des paramètres
+//Rï¿½cupï¿½ration des paramï¿½tres
 List 	treeview 		= (List) request.getAttribute("Treeview");
 String  translation 	= (String) request.getAttribute("Language");
 

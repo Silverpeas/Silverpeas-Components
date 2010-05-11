@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="modelUtils.jsp" %>
 <%@ include file="attachmentUtils.jsp" %>
@@ -54,7 +55,7 @@ String outDraftSrc;
 String validateSrc;
 String refusedSrc;
 
-// Fin des déclarations
+// Fin des dï¿½clarations
 %>
 
 <%
@@ -97,7 +98,7 @@ String refusedSrc;
   
   String language = kmeliaScc.getCurrentLanguage();
 
-//Récupération des paramètres
+//Rï¿½cupï¿½ration des paramï¿½tres
 
 String vignette_url = null;
 
@@ -195,14 +196,14 @@ if (action.equals("UpdateView") || action.equals("ValidateView")) {
                 
                 if (!kmeliaScc.isSuppressionOnlyForAdmin() || (profile.equals("admin") && kmeliaScc.isSuppressionOnlyForAdmin()))
                 {
-                	// suppressionAllowed = true car si c'est un rédacteur, c'est le propriétaire de la publication
+                	// suppressionAllowed = true car si c'est un rï¿½dacteur, c'est le propriï¿½taire de la publication
                 	suppressionAllowed = true;
                 }
             }
             else if ( !profile.equals("user") && kmeliaScc.isCoWritingEnable() )
 			{
-				// si publication en co-rédaction, considérer qu'elle appartient aux co-rédacteur au même titre qu'au propriétaire
-				// mais suppressionAllowed = false pour que le co-rédacteur ne puisse pas supprimer la publication
+				// si publication en co-rï¿½daction, considï¿½rer qu'elle appartient aux co-rï¿½dacteur au mï¿½me titre qu'au propriï¿½taire
+				// mais suppressionAllowed = false pour que le co-rï¿½dacteur ne puisse pas supprimer la publication
 				isOwner = true;
 				suppressionAllowed = false;
 			}
@@ -210,7 +211,7 @@ if (action.equals("UpdateView") || action.equals("ValidateView")) {
             if (isOwner) {
 	            kmeliaScc.setSessionOwner(true);
             } else {
-			    //modification pour accéder à l'onglet voir aussi
+			    //modification pour accï¿½der ï¿½ l'onglet voir aussi
                 kmeliaScc.setSessionOwner(false);
             }
       }
@@ -611,7 +612,7 @@ function removeTranslation()
 		        	
 					if (suppressionAllowed)
 					{
-						// les boutons de suppression ne sont accessible qu'au rédacteur de la publication
+						// les boutons de suppression ne sont accessible qu'au rï¿½dacteur de la publication
 						operationPane.addOperation(resources.getIcon("kmelia.cut"), resources.getString("GML.cut"), "javaScript:clipboardCut()");
 						operationPane.addLine();
 						operationPane.addOperation(deletePubliSrc, resources.getString("GML.delete"), "javaScript:pubDeleteConfirm('"+id+"')");

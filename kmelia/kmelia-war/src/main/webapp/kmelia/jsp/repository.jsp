@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="checkKmelia.jsp" %>
 
 <%!
@@ -50,7 +51,7 @@ FileFolder 	folder 				= (FileFolder) request.getAttribute("Directory");
 Collection 	path 				= (Collection) request.getAttribute("Path");
 String		linkedPathString	= (String) request.getAttribute("LinkedPathString");
 
-//création du chemin :
+//crï¿½ation du chemin :
 String 		chemin 		= "";
 if (path != null)
 {
@@ -106,7 +107,7 @@ browseBar.setPath(linkedPathString);
 out.println(window.printBefore());
 out.println(frame.printBefore());
 
-// remplissage de l'ArrayPane avec la liste des sous répertoires
+// remplissage de l'ArrayPane avec la liste des sous rï¿½pertoires
 // -------------------------------------------------------------
 Collection files = folder.getFolders();
 if (files != null && files.size() > 0)

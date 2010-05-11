@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -64,7 +64,7 @@ void displayUserAttachmentsView(PublicationDetail pubDetail, String m_context, J
   String ctx = "Images";
     if ( type == VERSIONING )
     {
-        //construction d'une AttachmentPK (c'est une foreignKey) à partir  de la publication
+        //construction d'une AttachmentPK (c'est une foreignKey) ï¿½ partir  de la publication
         ForeignPK foreignKey = new ForeignPK(pubDetail.getPK());
         String space_id = foreignKey.getSpace();
         String component_id = foreignKey.componentName;
@@ -159,7 +159,7 @@ public boolean isUserReader(Document document, int user_id, VersioningUtil versi
   {
   	//construction du path context
     String ctx = "Images";
-    //construction d'une AttachmentPK (c'est une foreignKey) à partir  de la publication
+    //construction d'une AttachmentPK (c'est une foreignKey) ï¿½ partir  de la publication
     AttachmentPK foreignKey =  new AttachmentPK(pubDetail.getPK().getId(), pubDetail.getPK().getSpace(), pubDetail.getPK().getComponentName());
 
     Collection attachmentList = AttachmentController.searchAttachmentByPKAndContext(foreignKey, ctx);
@@ -181,7 +181,7 @@ public boolean isUserReader(Document document, int user_id, VersioningUtil versi
 				info	= attachmentDetail.getInfo();
         out.println("<TR>");
         out.println("<TD><IMG src=\""+attachmentDetail.getAttachmentIcon()+"\" width=20>&nbsp;");
-				out.println("<A href=\""+attachmentDetail.getAttachmentURL()+"\" target=\"_blank\">");
+				out.println("<A href=\"" + m_context +attachmentDetail.getAttachmentURL()+"\" target=\"_blank\">");
 				if (title != null && title.length()>0)
 					out.print(title);
 				else

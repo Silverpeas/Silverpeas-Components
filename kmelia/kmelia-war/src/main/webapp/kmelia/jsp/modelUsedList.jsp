@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="tabManager.jsp.inc" %>
 
@@ -36,7 +37,7 @@ String linkedPathString = kmeliaScc.getSessionPath();
 //Icons
 String hLineSrc = m_context + "/util/icons/colorPix/1px.gif";
 
-// déclaration des boutons
+// dï¿½claration des boutons
 Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData();", false);
 Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main", false);
 
@@ -90,7 +91,7 @@ function closeWindows() {
 	        out.println("</TR><TR>");
 	        
         nb++;
-        // recherche si le modèle est dans la liste
+        // recherche si le modï¿½le est dans la liste
         boolean used = false;
         if (modelUsed.contains(modelDetail.getId()))
         {
@@ -115,7 +116,7 @@ function closeWindows() {
 		        out.println("</TR><TR>");
 		        
 	        nb++;
-			// recherche si le modèle est dans la liste
+			// recherche si le modï¿½le est dans la liste
 	        boolean used = false;
 	        if (modelUsed.contains(xmlForm.getFileName()))
 	        {
@@ -137,7 +138,7 @@ function closeWindows() {
     
 	if (nb != 0 && nb%3 == 0)
 		out.println("</TR><TR>");
-	// recherche si le modèle est dans la liste
+	// recherche si le modï¿½le est dans la liste
     boolean used = false;
     Iterator it = modelUsed.iterator();
     if (modelUsed.contains("WYSIWYG"))

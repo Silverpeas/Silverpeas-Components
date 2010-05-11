@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.kmelia.control;
 
 import java.io.File;
@@ -4096,7 +4097,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return KmeliaHelper.isToolbox(getComponentId());
   }
 
-  public String getFirstAttachmentURLOfCurrentPublication() throws RemoteException {
+  public String getFirstAttachmentURLOfCurrentPublication(String webContext) throws RemoteException {
     PublicationPK pubPK = getSessionPublication().getPublication().getPublicationDetail().getPK();
     String url = null;
     if (isVersionControlled()) {
@@ -4115,7 +4116,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           AttachmentController.searchAttachmentByPKAndContext(pubPK, "Images");
       if (attachments.size() != 0) {
         AttachmentDetail attachment = attachments.get(0);
-        url = attachment.getAttachmentURL();
+        url = webContext + attachment.getAttachmentURL();
       }
     }
     return url;

@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.kmelia.control.ejb;
 
 import java.rmi.RemoteException;
@@ -224,7 +225,7 @@ public interface KmeliaBm extends EJBObject {
    */
   public void updatePublication(PublicationDetail detail)
       throws RemoteException;
-  
+
   public void updatePublication(PublicationDetail detail, boolean forceUpdateDate)
       throws RemoteException;
 
@@ -404,8 +405,8 @@ public interface KmeliaBm extends EJBObject {
    * @since 3.0
    */
   public void draftOutPublication(PublicationPK pubPK, NodePK topicPK,
-	      String userProfile) throws RemoteException;
-  
+      String userProfile) throws RemoteException;
+
   public void draftOutPublication(PublicationPK pubPK, NodePK topicPK,
       String userProfile, boolean forceUpdateDate) throws RemoteException;
 
@@ -732,6 +733,7 @@ public interface KmeliaBm extends EJBObject {
       Date endDate) throws RemoteException;
 
   public String findPublicationIdBySpecificValue(String componentId, String xmlFormName,
-		  String fieldName, String fieldValue, String topicId, String spaceId, String userId) throws RemoteException;
-  
+      String fieldName, String fieldValue, String topicId, String spaceId, String userId)
+      throws RemoteException;
+
 }

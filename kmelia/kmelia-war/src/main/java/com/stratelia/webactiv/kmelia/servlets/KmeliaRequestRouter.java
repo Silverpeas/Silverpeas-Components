@@ -492,10 +492,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           destination = rootDestination + "closeWindow.jsp";
         }
       } else if (function.equals("DeleteTopic")) {
-        String id = (String) request.getParameter("Id");
-
+        String id = request.getParameter("Id");
         kmelia.deleteTopic(id);
-
         destination = getDestination("GoToCurrentTopic", kmelia, request);
       } else if (function.equals("ViewClone")) {
         PublicationDetail pubDetail =
@@ -606,7 +604,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           if (!alreadyOpened && kmelia.openSingleAttachmentAutomatically()
               && !kmelia.isCurrentPublicationHaveContent()) {
             request.setAttribute("SingleAttachmentURL", kmelia
-                .getFirstAttachmentURLOfCurrentPublication());
+                .getFirstAttachmentURLOfCurrentPublication(request.getContextPath()));
           }
 
           destination = rootDestination + "publication.jsp";
@@ -919,7 +917,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("ImportFilesUpload")) {
         destination = processFormUpload(kmelia, request, rootDestination, true);
       } else if (function.equals("ExportAttachementsToPDF")) {
-        String topicId = (String) request.getParameter("TopicId");
+        String topicId = request.getParameter("TopicId");
         // build an exploitable list by importExportPeas
         SilverTrace.info("kmelia", "KmeliaSessionController.getAllVisiblePublicationsByTopic()",
             "root.MSG_PARAM_VALUE", "topicId =" + topicId);
@@ -1004,7 +1002,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("SelectValidator")) {
         destination = kmelia.initUPToSelectValidator("");
       } else if (function.equals("Comments")) {
-        String id = (String) request.getParameter("PubId");
+        String id = request.getParameter("PubId");
         String flag = kmelia.getProfile();
         if (!kmaxMode) {
           processPath(kmelia, id);
@@ -1077,7 +1075,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
         HashSet<String> list =
             (HashSet<String>) request.getSession().getAttribute(
-                KmeliaConstants.PUB_TO_LINK_SESSION_KEY);
+            KmeliaConstants.PUB_TO_LINK_SESSION_KEY);
 
         int nb = kmelia.addPublicationsToLink(id, list);
 
@@ -1856,8 +1854,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
     }
 
     if (vignetteParams != null) {
-      pubDetail.setImage((String) vignetteParams.get(0));
-      pubDetail.setImageMimeType((String) vignetteParams.get(1));
+      pubDetail.setImage(vignetteParams.get(0));
+      pubDetail.setImageMimeType(vignetteParams.get(1));
     }
 
     pubDetail.setCloneId(tempId);
@@ -1928,7 +1926,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
     return result;
   }
 
-/**
+  /**
    * Process Form Upload for publications import
    * @param kmeliaScc
    * @param request
@@ -2598,7 +2596,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Aliases", aliases);
 
         // url du fichier joint
-        request.setAttribute("FileUrl", kmelia.getFirstAttachmentURLOfCurrentPublication());
+        request.setAttribute("FileUrl", kmelia.getFirstAttachmentURLOfCurrentPublication(request
+            .getContextPath()));
 
         return rootDestination + "updateByChain.jsp";
       }

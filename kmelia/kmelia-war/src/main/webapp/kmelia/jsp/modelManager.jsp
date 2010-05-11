@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="tabManager.jsp.inc" %>
 
@@ -141,7 +142,7 @@ function closeWindows() {
       	operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:onClick=goToOperationInAnotherWindow('ToAlertUser', '"+pubId+"', 'ViewAlert')");
 	  }
 
-      // définition des boutons du wizard
+      // dï¿½finition des boutons du wizard
    	  	Button cancelWButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "ToPubliContent?WizardRow="+wizardRow, false);
     	Button nextButton;
     	if (isEnd)
@@ -180,7 +181,7 @@ function closeWindows() {
       out.println(board.printBefore());
           
 	/***************************************************************************************************************************/
-	/** Affichage du modèle BdD																								  **/
+	/** Affichage du modï¿½le BdD																								  **/
 	/***************************************************************************************************************************/
 	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());
 	
