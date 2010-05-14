@@ -41,10 +41,6 @@
         <jndi-name>ejb/PublicationBm</jndi-name>
       </ejb-ref>
       <ejb-ref>
-        <ejb-ref-name>ejb/ReadingControlBm</ejb-ref-name>
-        <jndi-name>ejb/ReadingControlBm</jndi-name>
-      </ejb-ref>
-      <ejb-ref>
         <ejb-ref-name>ejb/StatisticBm</ejb-ref-name>
         <jndi-name>ejb/StatisticBm</jndi-name>
       </ejb-ref>

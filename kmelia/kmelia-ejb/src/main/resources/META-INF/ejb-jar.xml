@@ -55,13 +55,6 @@
         <ejb-link>ejb/PublicationBm</ejb-link>
       </ejb-ref>
       <ejb-ref>
-        <ejb-ref-name>ejb/ReadingControlBm</ejb-ref-name>
-        <ejb-ref-type>Session</ejb-ref-type>
-        <home>com.stratelia.webactiv.util.readingControl.control.ReadingControlBmHome</home>
-        <remote>com.stratelia.webactiv.util.readingControl.control.ReadingControlBm</remote>
-        <ejb-link>ejb/ReadingControlBm</ejb-link>
-      </ejb-ref>
-      <ejb-ref>
         <ejb-ref-name>ejb/StatisticBm</ejb-ref-name>
         <ejb-ref-type>Session</ejb-ref-type>
         <home>com.stratelia.webactiv.util.statistic.control.StatisticBmHome</home>
