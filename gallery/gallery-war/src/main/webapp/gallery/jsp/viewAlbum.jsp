@@ -44,12 +44,8 @@
 	boolean   isPrivateSearch = ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
 
 	//For Drag And Drop
-	String sRequestURL 		= HttpUtils.getRequestURL(request).toString();
-	String m_sAbsolute 		= sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
+	String m_sAbsolute  = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
 	ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
-	String pathInstallerJre = generalSettings.getString("pathInstallerJre");
-	if (pathInstallerJre != null && !pathInstallerJre.startsWith("http"))
-		pathInstallerJre = m_sAbsolute+pathInstallerJre;
 	
 	String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
 	
@@ -119,8 +115,10 @@
 <%
 	out.println(gef.getLookStyleSheet());
 %>
+<script src="<%=m_context%>/gallery/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
+<script language="javascript" type="text/javascript">
 	var albumWindow = window;
 
 	function addAlbum() {
@@ -278,15 +276,14 @@ function uploadCompleted(s)
 	function showDnD()
 	{
 		var url = "<%=httpServerBase+m_context%>/RgalleryDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&AlbumId=<%=currentAlbum.getNodePK().getId()%>";
-		var message = "<%=httpServerBase%>/weblib/dragAnddrop/Gallery_<%=resource.getLanguage()%>.html";
-		var propFile = "<%=httpServerBase%>/weblib/dragAnddrop/raduploadMulti.properties";
+		var message = "<%=httpServerBase + m_context%>/upload/Gallery_<%=resource.getLanguage()%>.html";
 		
 		<%
 		ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
 		String maximumFileSize 		= uploadSettings.getString("MaximumFileSize", "10000000");
 		String maxFileSizeForApplet = maximumFileSize.substring(0, maximumFileSize.length()-3);
 		%>
-		showHideDragDrop(url,message,propFile,'<%=maxFileSizeForApplet%>','<%=pathInstallerJre%>','<%=resource.getString("GML.DragNDropExpand")%>','<%=resource.getString("GML.DragNDropCollapse")%>');
+		showHideDragDrop(url, message,'<%=maxFileSizeForApplet%>','<%=m_context%>','<%=resource.getString("GML.DragNDropExpand")%>','<%=resource.getString("GML.DragNDropCollapse")%>');
 	}
 	
 	
@@ -319,7 +316,6 @@ function uploadCompleted(s)
 	}
 	
 </script>
-<script src="<%=m_context%>/gallery/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
 </head>
 <body>
 <%

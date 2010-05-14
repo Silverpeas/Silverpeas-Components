@@ -80,10 +80,6 @@ String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.get
 String userId = kmeliaScc.getUserId();
 
 ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
-String pathInstallerJre = generalSettings.getString("pathInstallerJre");
-if (pathInstallerJre != null && !pathInstallerJre.startsWith("http"))
-	pathInstallerJre = m_sAbsolute+pathInstallerJre;
-
 //Example: http://myserver
 String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
 
@@ -104,12 +100,13 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/yui/treeview/treeview-min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/yui/container/container_core-min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/yui/dragdrop/dragdrop-min.js"></script>
-<!--<script type="text/javascript" src="yui/menu/menu-min.js"></script>-->
 <script type="text/javascript" src="<%=m_context%>/util/yui/animation/animation-min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/yui/element/element-min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/yui/resize/resize-min.js"></script>
 
-<script type="text/javascript" src="<%=m_context %>/attachment/jsp/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="<%=m_context %>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
+<script src="<%=m_context%>/kmelia/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
 
 <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
@@ -118,7 +115,7 @@ out.println(gef.getLookStyleSheet());
 <link rel="stylesheet" type="text/css" href="styleSheets/tree.css">
 <link rel="stylesheet" type="text/css" href="<%=m_context%>/util/yui/resize/assets/skins/sam/resize.css" />
 
-<style>
+<style type="text/css" >
 .tableFrame {
 }
 .hautFrame {
@@ -151,7 +148,7 @@ out.println(gef.getLookStyleSheet());
 	/*width: 20%;*/
 	height : 500px;
 	float: left;
-	padding-right: 5px; //do not forget to change end minus if this value change !
+	padding-right: 5px; /*do not forget to change end minus if this value change !*/
 	overflow: hidden; 
 	border: 1px solid #F2F2F2;
 }
@@ -306,9 +303,9 @@ function showDnD()
 	String maximumFileSize 		= uploadSettings.getString("MaximumFileSize", "10000000");
 	String maxFileSizeForApplet = maximumFileSize.substring(0, maximumFileSize.length()-3);
 	if (profile.equals("publisher") || profile.equals("writer")) { %>
-		showHideDragDrop('<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&SessionId=<%=session.getId()%>','<%=httpServerBase%>/weblib/dragAnddrop/ModeNormal_<%=language%>.html','<%=httpServerBase%>/weblib/dragAnddrop/raduploadMulti.properties','<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&Draft=1&SessionId=<%=session.getId()%>','<%=httpServerBase%>/weblib/dragAnddrop/ModeDraft_<%=language%>.html','<%=maxFileSizeForApplet%>','<%=pathInstallerJre%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
+		showHideDragDrop('<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeNormal_<%=language%>.html','<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&Draft=1&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeDraft_<%=language%>.html','<%=maxFileSizeForApplet%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
 	<% } else { %>
-		showHideDragDrop('<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&SessionId=<%=session.getId()%>','<%=httpServerBase%>/weblib/dragAnddrop/ModeNormal_<%=language%>.html','<%=httpServerBase%>/weblib/dragAnddrop/raduploadMulti.properties','<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&Draft=1&SessionId=<%=session.getId()%>','<%=httpServerBase%>/weblib/dragAnddrop/ModeDraft_<%=language%>.html','<%=maxFileSizeForApplet%>','<%=pathInstallerJre%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
+		showHideDragDrop('<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeNormal_<%=language%>.html','<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&Draft=1&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeDraft_<%=language%>.html','<%=maxFileSizeForApplet%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
 	<% } %>
 }
 
@@ -472,7 +469,6 @@ function getHeight() {
 }
 
 </script>
-<script src="<%=m_context%>/kmelia/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
 </HEAD>
 <BODY onUnload="closeWindows()" class="yui-skin-sam">
 <%

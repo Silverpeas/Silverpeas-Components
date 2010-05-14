@@ -55,8 +55,6 @@
 		<%
 			out.println(gef.getLookStyleSheet());
 		%>
-
-		<TITLE>Titre de la fenetre</TITLE>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 		<script language="javascript">
 			// fonctions de contrôle des zones du formulaire avant validation
