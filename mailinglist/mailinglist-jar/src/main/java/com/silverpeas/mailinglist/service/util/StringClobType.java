@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.mailinglist.service.util;
 
 import java.io.IOException;
@@ -34,8 +35,7 @@ import java.sql.Types;
 import org.hibernate.HibernateException;
 import org.hibernate.type.ImmutableType;
 
-public class StringClobType extends ImmutableType{
-
+public class StringClobType extends ImmutableType {
 
   public Object fromStringValue(String value) throws HibernateException {
     return value;
@@ -62,7 +62,7 @@ public class StringClobType extends ImmutableType{
   public void set(PreparedStatement pstmt, Object value, int index)
       throws HibernateException, SQLException {
     StringReader r = new StringReader((String) value);
-    pstmt.setCharacterStream(index, r, ((String) value).length()); 
+    pstmt.setCharacterStream(index, r, ((String) value).length());
 
   }
 
@@ -75,7 +75,7 @@ public class StringClobType extends ImmutableType{
   }
 
   public String getName() {
-    return "string"; 
+    return "string";
   }
 
   @SuppressWarnings("unchecked")

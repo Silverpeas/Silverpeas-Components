@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.mailinglist.service.model.dao;
 
 import java.io.File;
@@ -96,7 +97,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     criteria.setMaxResults(elementsPerPage);
     return criteria.list();
   }
-  
+
   @SuppressWarnings("unchecked")
   public List<Message> listDisplayableMessagesOfMailingList(String componentId,
       final int month, final int year, final int page,
@@ -116,7 +117,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     criteria.setMaxResults(elementsPerPage);
     return criteria.list();
   }
-  
+
   @SuppressWarnings("unchecked")
   public List<Message> listUnmoderatedMessagesOfMailingList(String componentId,
       int page, int elementsPerPage, OrderBy orderBy) {

@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.mailinglist.service.job;
 
 import java.io.BufferedInputStream;
@@ -66,11 +67,8 @@ public class MailProcessor {
 
   /**
    * Processes a part for a multi-part email.
-   * 
-   * @param part
-   *          the part to be processed.
-   * @param message
-   *          the message corresponding to the email.
+   * @param part the part to be processed.
+   * @param message the message corresponding to the email.
    * @throws MessagingException
    * @throws IOException
    */
@@ -101,21 +99,17 @@ public class MailProcessor {
 
   /**
    * Processes the body (text) part of an email.
-   * 
-   * @param part
-   *          the text content of the email.
-   * @param contentType
-   *          the content type for this text.
-   * @param message
-   *          the message corresponding to this part
+   * @param part the text content of the email.
+   * @param contentType the content type for this text.
+   * @param message the message corresponding to this part
    * @throws IOException
    * @throws MessagingException
    */
   public void processBody(String content, String contentType, Message message)
       throws IOException, MessagingException {
-    if(message.getContentType() != null
-            && message.getContentType().indexOf(MimeTypes.HTML_MIME_TYPE) >= 0) {
-      //this is the text-part of an HTMLmultipart message
+    if (message.getContentType() != null
+        && message.getContentType().indexOf(MimeTypes.HTML_MIME_TYPE) >= 0) {
+      // this is the text-part of an HTMLmultipart message
       return;
     }
     message.setContentType(contentType);
@@ -133,9 +127,9 @@ public class MailProcessor {
       message.setBody(content);
       Reader reader = null;
       try {
-          reader = new StringReader(content);
-          cleaner.parse(reader);
-          message.setSummary(cleaner.getSummary());
+        reader = new StringReader(content);
+        cleaner.parse(reader);
+        message.setSummary(cleaner.getSummary());
       } finally {
         if (reader != null) {
           reader.close();
@@ -154,11 +148,8 @@ public class MailProcessor {
 
   /**
    * Replaces special chars.
-   * 
-   * @param toParse
-   *          the String whose chars are to be replaced.
-   * @return the String without its special chars. Empty String if toParse is
-   *         null.
+   * @param toParse the String whose chars are to be replaced.
+   * @return the String without its special chars. Empty String if toParse is null.
    */
   public String replaceSpecialChars(String toParse) {
     if (toParse == null) {
@@ -181,13 +172,9 @@ public class MailProcessor {
 
   /**
    * Saves an attachment as a file, and stores the path in the message.
-   * 
-   * @param part
-   *          the part corresponding to the attachment.
-   * @param componentId
-   *          the id of the mailing list component.
-   * @param messageId
-   *          the id of the message (email id).
+   * @param part the part corresponding to the attachment.
+   * @param componentId the id of the mailing list component.
+   * @param messageId the id of the message (email id).
    * @return the absolute path to the file.
    * @throws IOException
    * @throws MessagingException
@@ -236,13 +223,9 @@ public class MailProcessor {
 
   /**
    * Process an email, extracting attachments and constructing a Message.
-   * 
-   * @param mail
-   *          the email to be processed.
-   * @param mailingList
-   *          the mailing list it is going to be affected to.
-   * @param event
-   *          the event which will be send at the end of all processing.
+   * @param mail the email to be processed.
+   * @param mailingList the mailing list it is going to be affected to.
+   * @param event the event which will be send at the end of all processing.
    * @throws MessagingException
    * @throws IOException
    */
@@ -267,8 +250,9 @@ public class MailProcessor {
       message.setReferenceId(referenceId[0]);
     }
     message.setTitle(mail.getSubject());
-    SilverTrace.info("mailingList", "MailProcessor.prepareMessage()",  "mailinglist.notification.error",
-            "Processing message " + mail.getSubject());
+    SilverTrace.info("mailingList", "MailProcessor.prepareMessage()",
+        "mailinglist.notification.error",
+        "Processing message " + mail.getSubject());
     Object content = mail.getContent();
     if (content instanceof Multipart) {
       processMultipart((Multipart) content, message);
@@ -283,7 +267,8 @@ public class MailProcessor {
       ContentType type = new ContentType(contentType);
       return type.getBaseType();
     } catch (ParseException e) {
-     SilverTrace.error("mailingList", "MailProcessor.extractContentType()", "mailinglist.notification.error", e);
+      SilverTrace.error("mailingList", "MailProcessor.extractContentType()",
+          "mailinglist.notification.error", e);
     }
     return contentType;
   }
@@ -302,11 +287,8 @@ public class MailProcessor {
   }
 
   /**
-   * Analyze the part to check if it is an attachment, a base64 encoded file or
-   * some text.
-   * 
-   * @param part
-   *          the part to be analyzed.
+   * Analyze the part to check if it is an attachment, a base64 encoded file or some text.
+   * @param part the part to be analyzed.
    * @return true if it is some text - false otherwise.
    * @throws MessagingException
    */

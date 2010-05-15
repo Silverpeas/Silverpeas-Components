@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.mailinglist.service.model;
 
 import java.rmi.RemoteException;
@@ -66,9 +67,7 @@ public class MessageServiceImpl implements MessageService {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.mailinglist.service.model.MessageService#saveMessage(com
+   * @see com.silverpeas.mailinglist.service.model.MessageService#saveMessage(com
    * .silverpeas.mailinglist.service.model.beans.Message)
    */
   public String saveMessage(final Message message) {
@@ -87,10 +86,7 @@ public class MessageServiceImpl implements MessageService {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.mailinglist.service.model.MessageService#getMessage(java
-   * .lang.String)
+   * @see com.silverpeas.mailinglist.service.model.MessageService#getMessage(java .lang.String)
    */
   public Message getMessage(final String id) {
     if (id == null) {
@@ -101,23 +97,19 @@ public class MessageServiceImpl implements MessageService {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.mailinglist.service.model.MessageService#listMessages(com
+   * @see com.silverpeas.mailinglist.service.model.MessageService#listMessages(com
    * .silverpeas.mailinglist.service.model.beans.MailingList, int, int)
    */
   public List<Message> listMessages(final MailingList mailingList,
       final int pageNumber, final OrderBy orderBy) {
     return messageDao
         .listAllMessagesOfMailingList(mailingList.getComponentId(), pageNumber,
-            this.elementsPerPage, orderBy);
+        this.elementsPerPage, orderBy);
   }
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.mailinglist.service.model.MessageService#listDisplayableMessages
+   * @see com.silverpeas.mailinglist.service.model.MessageService#listDisplayableMessages
    * (com.silverpeas.mailinglist.service.model.beans.MailingList, int, int)
    */
   public List<Message> listDisplayableMessages(final MailingList mailingList,
@@ -130,9 +122,7 @@ public class MessageServiceImpl implements MessageService {
 
   /*
    * (non-Javadoc)
-   * 
-   * @seecom.silverpeas.mailinglist.service.model.MessageService#
-   * listUnmoderatedeMessages
+   * @seecom.silverpeas.mailinglist.service.model.MessageService# listUnmoderatedeMessages
    * (com.silverpeas.mailinglist.service.model.beans.MailingList, int, int)
    */
   public List<Message> listUnmoderatedeMessages(final MailingList mailingList,
@@ -143,7 +133,6 @@ public class MessageServiceImpl implements MessageService {
 
   /*
    * (non-Javadoc)
-   * 
    * @seecom.silverpeas.mailinglist.service.model.MessageService#
    * getNumberOfPagesForUnmoderatedMessages
    * (com.silverpeas.mailinglist.service.model.beans.MailingList, int)
@@ -157,7 +146,6 @@ public class MessageServiceImpl implements MessageService {
 
   /*
    * (non-Javadoc)
-   * 
    * @seecom.silverpeas.mailinglist.service.model.MessageService#
    * getNumberOfPagesForDisplayableMessages
    * (com.silverpeas.mailinglist.service.model.beans.MailingList, int)
@@ -171,9 +159,7 @@ public class MessageServiceImpl implements MessageService {
 
   /*
    * (non-Javadoc)
-   * 
-   * @seecom.silverpeas.mailinglist.service.model.MessageService#
-   * getNumberOfPagesForAllMessages
+   * @seecom.silverpeas.mailinglist.service.model.MessageService# getNumberOfPagesForAllMessages
    * (com.silverpeas.mailinglist.service.model.beans.MailingList, int)
    */
   public int getNumberOfPagesForAllMessages(final MailingList mailingList) {
@@ -275,6 +261,5 @@ public class MessageServiceImpl implements MessageService {
   public int getTotalNumberOfMessages(MailingList mailingList) {
     return messageDao.listTotalNumberOfMessages(mailingList.getComponentId());
   }
-
 
 }

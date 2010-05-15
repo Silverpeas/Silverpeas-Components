@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.mailinglist.service.job;
 
 import java.io.IOException;
@@ -170,9 +171,7 @@ public class MessageChecker implements SchedulerEventHandler {
 
   /**
    * Adds a new listener to the list of listeners.
-   * 
-   * @param listener
-   *          the listener to be added.
+   * @param listener the listener to be added.
    */
   public void addMessageListener(MessageListener listener) {
     synchronized (this.listeners) {
@@ -182,9 +181,7 @@ public class MessageChecker implements SchedulerEventHandler {
 
   /**
    * Gets the new messages on the Mail Server and processes them.
-   * 
-   * @param date
-   *          the date of the checking.
+   * @param date the date of the checking.
    */
   public void checkNewMessages(Date date) {
     Store mailAccount = null;
@@ -267,15 +264,10 @@ public class MessageChecker implements SchedulerEventHandler {
   }
 
   /**
-   * Process an email, building the events to be send when all email have been
-   * processed.
-   * 
-   * @param mail
-   *          the mail to be processed
-   * @param eventsMap
-   *          the map of MessageEvents
-   * @param listenersByEmail
-   *          the map of MessageListners with their emil address as key
+   * Process an email, building the events to be send when all email have been processed.
+   * @param mail the mail to be processed
+   * @param eventsMap the map of MessageEvents
+   * @param listenersByEmail the map of MessageListners with their emil address as key
    * @throws MessagingException
    * @throws IOException
    */
@@ -302,9 +294,7 @@ public class MessageChecker implements SchedulerEventHandler {
 
   /**
    * Extracts all the recipients of an email.
-   * 
-   * @param mail
-   *          the email whose recipients are extracted.
+   * @param mail the email whose recipients are extracted.
    * @return a list of InternetAdress.
    * @throws MessagingException
    * @see javax.mail.internet.InternetAddress
@@ -335,9 +325,7 @@ public class MessageChecker implements SchedulerEventHandler {
 
   /**
    * Finds all the mailing lists recipients for an email.
-   * 
-   * @param recipients
-   *          the recipients of the email.
+   * @param recipients the recipients of the email.
    * @return the list of mailing lists (as MessageListener) for this email.
    */
   Set<MessageListener> getRecipientMailingLists(Collection<String> recipients,
@@ -356,11 +344,8 @@ public class MessageChecker implements SchedulerEventHandler {
   }
 
   /**
-   * Prepare a map of subscribed email addresses and their corresponding
-   * listeners.
-   * 
-   * @return a map of subscribed email addresses and their corresponding
-   *         listeners.
+   * Prepare a map of subscribed email addresses and their corresponding listeners.
+   * @return a map of subscribed email addresses and their corresponding listeners.
    */
   public Map<String, MessageListener> prepareListeners() {
     Map<String, MessageListener> listenersByEmail = new HashMap<String, MessageListener>(
@@ -379,9 +364,7 @@ public class MessageChecker implements SchedulerEventHandler {
 
   /**
    * Removes a listener from the list of listeners.
-   * 
-   * @param componentId
-   *          the unique id of the component.
+   * @param componentId the unique id of the component.
    */
   public void removeListener(String componentId) {
     synchronized (this.listeners) {
@@ -402,8 +385,8 @@ public class MessageChecker implements SchedulerEventHandler {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
         SilverTrace
             .error("mailingList", "MessageChecker.handleSchedulerEvent",
-                "The job '" + event.getJob().getJobName()
-                    + "' was not successfull");
+            "The job '" + event.getJob().getJobName()
+            + "' was not successfull");
         break;
       case SchedulerEvent.EXECUTION_SUCCESSFULL:
         SilverTrace.debug("mailingList", "MessageChecker.handleSchedulerEvent",
@@ -413,15 +396,15 @@ public class MessageChecker implements SchedulerEventHandler {
         if (this.listeners != null && !this.listeners.isEmpty()) {
           SilverTrace.info("mailingList",
               "MessageChecker.handleSchedulerEvent", "The job '"
-                  + event.getJob().getJobName() + "' executing ....");
+              + event.getJob().getJobName() + "' executing ....");
           this.checkNewMessages(new Date());
           SilverTrace.info("mailingList",
               "MessageChecker.handleSchedulerEvent", "The job '"
-                  + event.getJob().getJobName() + "' done!!");
+              + event.getJob().getJobName() + "' done!!");
         } else {
           SilverTrace.info("mailingList",
               "MessageChecker.handleSchedulerEvent", "The job '"
-                  + event.getJob().getJobName() + "' has no listeners ....");
+              + event.getJob().getJobName() + "' has no listeners ....");
         }
         break;
       default:

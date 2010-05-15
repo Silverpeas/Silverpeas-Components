@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.mailinglist.service.util.neko;
 
 import java.io.OutputStream;
@@ -40,26 +41,20 @@ public class EntityReplaceWriter extends Writer {
 
   /**
    * Constructs a writer filter using the specified output stream and encoding.
-   * 
-   * @param outputStream
-   *          The output stream to write to.
-   * @param encoding
-   *          The encoding to be used for the output. The encoding name should
-   *          be an official IANA encoding name.
+   * @param outputStream The output stream to write to.
+   * @param encoding The encoding to be used for the output. The encoding name should be an official
+   * IANA encoding name.
    */
   public EntityReplaceWriter(OutputStream outputStream, String encoding)
-          throws UnsupportedEncodingException {
+      throws UnsupportedEncodingException {
     this(new OutputStreamWriter(outputStream, encoding), encoding);
   }
 
   /**
    * Constructs a writer filter using the specified Java writer and encoding.
-   * 
-   * @param writer
-   *          The Java writer to write to.
-   * @param encoding
-   *          The encoding to be used for the output. The encoding name should
-   *          be an official IANA encoding name.
+   * @param writer The Java writer to write to.
+   * @param encoding The encoding to be used for the output. The encoding name should be an official
+   * IANA encoding name.
    */
   public EntityReplaceWriter(java.io.Writer writer, String encoding) {
     super(writer, encoding);

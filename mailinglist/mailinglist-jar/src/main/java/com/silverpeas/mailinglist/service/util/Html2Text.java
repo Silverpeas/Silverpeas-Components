@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.mailinglist.service.util;
 
 import java.io.IOException;
@@ -33,12 +34,9 @@ import javax.swing.text.html.parser.ParserDelegator;
 
 /**
  * HTML parser, used to extract text form the HTML.
- * 
  * @author Emmanuel Hugonnet
- * 
  */
-public class Html2Text extends HTMLEditorKit.ParserCallback implements
-    HtmlCleaner {
+public class Html2Text extends HTMLEditorKit.ParserCallback implements HtmlCleaner {
   private StringBuffer texte;
   private boolean register = false;
   private int inScript = 0;
@@ -48,9 +46,7 @@ public class Html2Text extends HTMLEditorKit.ParserCallback implements
 
   /**
    * Constructor.
-   * 
-   * @param maxSize
-   *          the maximum size of the extracted text.
+   * @param maxSize the maximum size of the extracted text.
    */
   public Html2Text() {
   }
@@ -95,7 +91,7 @@ public class Html2Text extends HTMLEditorKit.ParserCallback implements
     if (HTML.Tag.SCRIPT.equals(t)) {
       register = true;
       inScript--;
-      if(inScript < 0) {
+      if (inScript < 0) {
         inScript = 0;
       }
     }
@@ -142,13 +138,13 @@ public class Html2Text extends HTMLEditorKit.ParserCallback implements
       texte.append(' ');
     }
   }
-  
+
   public void handleComment(char[] data, int pos) {
   }
 
   public void handleSimpleTag(HTML.Tag t, MutableAttributeSet a, int pos) {
   }
-  
+
   @Override
   public String getSummary() {
     String buffer = texte.toString();

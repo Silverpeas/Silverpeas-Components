@@ -11,7 +11,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -28,27 +28,27 @@
 <WAComponent>
   <name>mailinglist</name>
   <label>Archivage d'e-mails</label>
-  <description>Ce composant permet d'archiver les emails reçus à une adresse de messagerie donnée. Les messages peuvent être soumis à modération. Grâce au paramètre Diffusion, le composant se transforme en liste de diffusion.</description>
+  <description>Ce composant permet d'archiver les emails reï¿½us ï¿½ une adresse de messagerie donnï¿½e. Les messages peuvent ï¿½tre soumis ï¿½ modï¿½ration. Grï¿½ce au paramï¿½tre Diffusion, le composant se transforme en liste de diffusion.</description>
   <suite>02 Gestion Collaborative</suite>
   <visible>@ComponentVisiblemailingList@</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.silverpeas.mailinglist.MailingListInstanciator</instanceClassName>
   <Profiles>
     <Profile name="admin">Gestionnaires</Profile>
-    <Profile name="moderator">Modérateurs</Profile>
+    <Profile name="moderator">Modï¿½rateurs</Profile>
     <Profile name="reader">Lecteurs</Profile>
   </Profiles>
   <Parameters>
     <Parameter>
       <ParameterName>moderated</ParameterName>
-      <ParameterLabel>Modération</ParameterLabel>
+      <ParameterLabel>Modï¿½ration</ParameterLabel>
       <ParameterValue>no</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterType>checkbox</ParameterType>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>3</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Active/Désactive la modération de la liste de diffusion</ParameterHelpFr>
+        <ParameterHelpFr>Active/Dï¿½sactive la modï¿½ration de la liste de diffusion</ParameterHelpFr>
         <ParameterHelpEn>Activate/Deactivate moderation</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -61,7 +61,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>4</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Indique que tout le monde peut envoyer un message à la liste</ParameterHelpFr>
+        <ParameterHelpFr>Indique que tout le monde peut envoyer un message ï¿½ la liste</ParameterHelpFr>
         <ParameterHelpEn>Authorizes everyone to send a message to the list</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -73,7 +73,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>1</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Adresse email dont les messages seront archivés</ParameterHelpFr>
+        <ParameterHelpFr>Adresse email dont les messages seront archivï¿½s</ParameterHelpFr>
         <ParameterHelpEn>Email address for the mailing list</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -99,7 +99,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>5</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Permet de générer un flux RSS des derniers messages</ParameterHelpFr>
+        <ParameterHelpFr>Permet de gï¿½nï¿½rer un flux RSS des derniers messages</ParameterHelpFr>
         <ParameterHelpEn>.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>

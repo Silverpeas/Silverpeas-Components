@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.mailinglist.control;
 
 import com.silverpeas.mailinglist.service.model.MailingListService;
@@ -28,18 +29,12 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 
-public class MailingListSessionController extends
-    AbstractComponentSessionController {
+public class MailingListSessionController extends AbstractComponentSessionController {
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * 
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
-   * 
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public MailingListSessionController(MainSessionController mainSessionCtrl,
@@ -53,6 +48,6 @@ public class MailingListSessionController extends
     String param = getComponentParameterValue(MailingListService.PARAM_MODERATE);
     return param != null
         && (Boolean.valueOf(param).booleanValue()
-            || "Y".equalsIgnoreCase(param) || "YES".equalsIgnoreCase(param));
+        || "Y".equalsIgnoreCase(param) || "YES".equalsIgnoreCase(param));
   }
 }

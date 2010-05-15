@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.mailinglist.service.model.dao;
 
 import java.util.List;
@@ -28,16 +29,16 @@ import java.util.List;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 
 public interface MailingListDao {
-  
+
   public String createMailingList(MailingList mailingList);
-  
+
   public void updateMailingList(MailingList mailingList);
-  
+
   public void deleteMailingList(MailingList mailingList);
-  
+
   public MailingList findById(String id);
-  
+
   public MailingList findByComponentId(String componentId);
-  
+
   public List<MailingList> listMailingLists();
 }

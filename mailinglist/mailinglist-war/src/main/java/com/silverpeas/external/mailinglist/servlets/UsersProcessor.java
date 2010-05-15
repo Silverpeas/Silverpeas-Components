@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.external.mailinglist.servlets;
 
 import java.util.ArrayList;
@@ -44,59 +45,59 @@ public class UsersProcessor implements MailingListRoutage {
   public static String processUsers(RestRequest rest, HttpServletRequest request) {
     String id = (String) rest.getElements().get(DESTINATION_USERS);
     switch (rest.getAction()) {
-    case RestRequest.DELETE:
-      if (((Boolean) request.getAttribute(IS_USER_ADMIN_ATT)).booleanValue()) {
-        String[] emails = request.getParameterValues(SELECTED_USERS_PARAM);
-        if (emails != null && emails.length > 0) {
-          Set<ExternalUser> users = new HashSet<ExternalUser>(emails.length);
-          for (int i = 0; i < emails.length; i++) {
-            ExternalUser user = new ExternalUser();
-            user.setComponentId(rest.getComponentId());
-            user.setEmail(emails[i]);
-            users.add(user);
-          }
-          ServicesFactory.getMailingListService().removeExternalUsers(
-              rest.getComponentId(), users);
-        } else {
-          if (id != null && !DELETE_ACTION.equalsIgnoreCase(id)
-              && !UPDATE_ACTION.equalsIgnoreCase(id)) {
-            ExternalUser user = new ExternalUser();
-            user.setComponentId(rest.getComponentId());
-            user.setEmail(id);
-            ServicesFactory.getMailingListService().removeExternalUser(
-                rest.getComponentId(), user);
-          }
-        }
-      }
-      break;
-    case RestRequest.CREATE:
-      if (((Boolean) request.getAttribute(IS_USER_ADMIN_ATT)).booleanValue()) {
-        String emails = request.getParameter(USERS_LIST_PARAM);
-        if (emails != null) {
-          StringTokenizer tokenizer = new StringTokenizer(emails, ";", false);
-          Set<ExternalUser> users = new HashSet<ExternalUser>(100);
-          while (tokenizer.hasMoreTokens()) {
-            String email = tokenizer.nextToken();
-            boolean isValid = false;
-            try {
-              isValid = (new InternetAddress(email) != null);
-            } catch (AddressException ex) {
-            }
-            if (email != null && isValid) {
+      case RestRequest.DELETE:
+        if (((Boolean) request.getAttribute(IS_USER_ADMIN_ATT)).booleanValue()) {
+          String[] emails = request.getParameterValues(SELECTED_USERS_PARAM);
+          if (emails != null && emails.length > 0) {
+            Set<ExternalUser> users = new HashSet<ExternalUser>(emails.length);
+            for (int i = 0; i < emails.length; i++) {
               ExternalUser user = new ExternalUser();
               user.setComponentId(rest.getComponentId());
-              user.setEmail(email);
+              user.setEmail(emails[i]);
               users.add(user);
             }
+            ServicesFactory.getMailingListService().removeExternalUsers(
+                rest.getComponentId(), users);
+          } else {
+            if (id != null && !DELETE_ACTION.equalsIgnoreCase(id)
+                && !UPDATE_ACTION.equalsIgnoreCase(id)) {
+              ExternalUser user = new ExternalUser();
+              user.setComponentId(rest.getComponentId());
+              user.setEmail(id);
+              ServicesFactory.getMailingListService().removeExternalUser(
+                  rest.getComponentId(), user);
+            }
           }
-          ServicesFactory.getMailingListService().addExternalUsers(
-              rest.getComponentId(), users);
         }
-      }
-      break;
-    case RestRequest.UPDATE:
-    case RestRequest.FIND:
-    default:
+        break;
+      case RestRequest.CREATE:
+        if (((Boolean) request.getAttribute(IS_USER_ADMIN_ATT)).booleanValue()) {
+          String emails = request.getParameter(USERS_LIST_PARAM);
+          if (emails != null) {
+            StringTokenizer tokenizer = new StringTokenizer(emails, ";", false);
+            Set<ExternalUser> users = new HashSet<ExternalUser>(100);
+            while (tokenizer.hasMoreTokens()) {
+              String email = tokenizer.nextToken();
+              boolean isValid = false;
+              try {
+                isValid = (new InternetAddress(email) != null);
+              } catch (AddressException ex) {
+              }
+              if (email != null && isValid) {
+                ExternalUser user = new ExternalUser();
+                user.setComponentId(rest.getComponentId());
+                user.setEmail(email);
+                users.add(user);
+              }
+            }
+            ServicesFactory.getMailingListService().addExternalUsers(
+                rest.getComponentId(), users);
+          }
+        }
+        break;
+      case RestRequest.UPDATE:
+      case RestRequest.FIND:
+      default:
     }
     return prepareUsersList(request, rest);
   }
@@ -114,7 +115,7 @@ public class UsersProcessor implements MailingListRoutage {
         } catch (NumberFormatException nfex) {
         }
       }
-      List<ExternalUser>  users = new ArrayList<ExternalUser>(list.getExternalSubscribers());
+      List<ExternalUser> users = new ArrayList<ExternalUser>(list.getExternalSubscribers());
       Collections.sort(users);
       int fromIndex = page * ELEMENTS_PER_PAGE;
       int endIndex = fromIndex + ELEMENTS_PER_PAGE;

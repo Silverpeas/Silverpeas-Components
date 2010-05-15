@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.mailinglist.service.event;
 
 import java.util.ArrayList;
@@ -31,30 +32,29 @@ import com.silverpeas.mailinglist.service.model.beans.Message;
 /**
  * Event thrown for listener after checking messages on the mail server.
  * @author Emmanuel Hugonnet
- *
  */
 public class MessageEvent {
-	private final List<Message> messages = new ArrayList<Message>(5);
-	
-	public MessageEvent(){
-	}
-	
-	/**
-	 * Adds a message to the list of messages.
-	 * @param message the message to be added.
-	 */
-	public void addMessage(final Message message) {
-		this.messages.add(message);
-	}
+  private final List<Message> messages = new ArrayList<Message>(5);
 
-	/**
-	 * Returns a list of com.silverpeas.mailinglist.model.Message.
-	 * @return a list of com.silverpeas.mailinglist.model.Message.
-	 * @see com.silverpeas.mailinglist.service.model.beans.Message
-	 */
-    public List<Message> getMessages() {
-    	return this.messages;
-    }
+  public MessageEvent() {
+  }
+
+  /**
+   * Adds a message to the list of messages.
+   * @param message the message to be added.
+   */
+  public void addMessage(final Message message) {
+    this.messages.add(message);
+  }
+
+  /**
+   * Returns a list of com.silverpeas.mailinglist.model.Message.
+   * @return a list of com.silverpeas.mailinglist.model.Message.
+   * @see com.silverpeas.mailinglist.service.model.beans.Message
+   */
+  public List<Message> getMessages() {
+    return this.messages;
+  }
 
   public int hashCode() {
     int prime = 31;
