@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.pdcPeas.control;
 
 import com.stratelia.silverpeas.pdc.control.Pdc;
@@ -32,11 +33,9 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 
 /**
  * A simple wrapper to the userpanel.
- * 
  * @author Didier Wenzek
  */
-public class PdcSearchUserWrapperSessionController extends
-    AbstractComponentSessionController {
+public class PdcSearchUserWrapperSessionController extends AbstractComponentSessionController {
 
   private Pdc m_pdc = null;
 
@@ -50,11 +49,8 @@ public class PdcSearchUserWrapperSessionController extends
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * @param mainSessionCtrl
-   *          The full work session.
-   * @param componentContext
-   *          The context of this component session.
+   * @param mainSessionCtrl The full work session.
+   * @param componentContext The context of this component session.
    */
   public PdcSearchUserWrapperSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {

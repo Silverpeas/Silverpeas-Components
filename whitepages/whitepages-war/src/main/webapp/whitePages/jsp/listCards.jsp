@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="java.util.*"%>
 <%@ page import="com.silverpeas.whitePages.model.*"%>
 <%@ page import="com.silverpeas.whitePages.record.*"%>
@@ -111,7 +112,7 @@ function listCheckedCard(nbCard) {
 
 /*****************************************************************************/
 function B_DELETE_ONCLICK(nbCard) {
-          if (listCheckedCard(nbCard) != "") {   //on a coché au - une fiche
+          if (listCheckedCard(nbCard) != "") {   //on a cochï¿½ au - une fiche
 			if (window.confirm("<%=resource.getString("whitePages.messageSuppressions")%>")) { 
 				document.liste_card.action = "<%=routerUrl%>delete";
 				document.liste_card.submit();
@@ -121,7 +122,7 @@ function B_DELETE_ONCLICK(nbCard) {
 
 /*****************************************************************************/
 function B_HIDE_ONCLICK(nbCard) {    
-          if (listCheckedCard(nbCard) != "") {   //on a coché au - une fiche
+          if (listCheckedCard(nbCard) != "") {   //on a cochï¿½ au - une fiche
 				document.liste_card.action = "<%=routerUrl%>hide";
 				document.liste_card.submit();
 		  }
@@ -129,7 +130,7 @@ function B_HIDE_ONCLICK(nbCard) {
 
 /*****************************************************************************/
 function B_SHOW_ONCLICK(nbCard) {
-          if (listCheckedCard(nbCard) != "") {   //on a coché au - une fiche
+          if (listCheckedCard(nbCard) != "") {   //on a cochï¿½ au - une fiche
 				document.liste_card.action = "<%=routerUrl%>unHide";
 				document.liste_card.submit();
 		  }
@@ -190,7 +191,7 @@ out.println(frame.printBefore());
 						arrayLine.addArrayCellText(email);
 						
 						//icones triables
-						if (card.getHideStatus() == 1) {//masqué
+						if (card.getHideStatus() == 1) {//masquï¿½
 						
 							arrayLine.addArrayCellText(displayIcon(resource.getIcon("whitePages.nonvisible"), resource.getString("whitePages.cache")));
 						}

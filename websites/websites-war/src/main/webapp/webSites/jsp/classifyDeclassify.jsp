@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -86,7 +87,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
             SiteDetail site = (SiteDetail) l.next();
             String id = site.getSitePK().getId();
             SilverTrace.info("websites", "JSPclassifyDeclassify", "root.MSG_GEN_PARAM_VALUE",
-                             "deja publie comparé a : id = "+id);
+                             "deja publie comparï¿½ a : id = "+id);
             if (id.equals(siteId))
                 return true;
           }
@@ -132,7 +133,7 @@ String checkSite=m_context+"/util/icons/ok.gif";
 String addSite=m_context+"/util/icons/webSites_to_add.gif";
 String declass=m_context+"/util/icons/webSites_trash.gif";
 
-//Récupération des paramètres
+//Rï¿½cupï¿½ration des paramï¿½tres
 String action = (String) request.getParameter("Action"); //jamais null
 String id = (String) request.getParameter("TopicId");//jamais null
 String linkedPathString = (String) request.getParameter("Path");//jamais null
@@ -253,7 +254,7 @@ function publicationGoTo(type, theURL, nom){
 	//CBO : REMOVE webSitesCurrentFolder = scc.getSessionTopic();
 	Collection listeSitesPublies = webSitesCurrentFolder.getPublicationDetails();
 	SilverTrace.info("websites", "JSPclassifyDeclassify", "root.MSG_GEN_PARAM_VALUE",
-					 "taille de la liste des sites publiés  = "+listeSitesPublies.size());
+					 "taille de la liste des sites publiï¿½s  = "+listeSitesPublies.size());
 
 	if (listeSitesPublies.size() > 0) {
 		 Iterator k = listeSitesPublies.iterator();
@@ -286,7 +287,7 @@ function publicationGoTo(type, theURL, nom){
     else browseBar.setPath(linkedPathString+" - "+resources.getString("ClasserDeclasser"));
 
 
-    //Les opérations
+    //Les opï¿½rations
     OperationPane operationPane = window.getOperationPane();
     operationPane.addOperation(addSite, resources.getString("AjouterSites"), "javascript:onClick=classify('"+arraySites.size()+"')");
     operationPane.addLine();
@@ -299,7 +300,7 @@ function publicationGoTo(type, theURL, nom){
     ArrayPane arrayPane = gef.getArrayPane("siteList", "classifyDeclassify.jsp?Action=View&TopicId="+id+"&Path="+Encode.javaStringToHtmlString(linkedPathString), request, session);
     arrayPane.setVisibleLineNumber(1000);
     arrayPane.setTitle(resources.getString("ListeSitesNonPubliesTheme"));
-    //Définition des colonnes du tableau
+    //Dï¿½finition des colonnes du tableau
     arrayPane.addArrayColumn(resources.getString("GML.name"));
     arrayPane.addArrayColumn(resources.getString("GML.description"));
     ArrayColumn arrayColumnStatus = arrayPane.addArrayColumn(resources.getString("GML.status"));
@@ -339,7 +340,7 @@ function publicationGoTo(type, theURL, nom){
 	    arrayLine.addArrayCellText(theDescription);
 
 		if (theEtat == 1) {
-			//Ajout de l'icones publié
+			//Ajout de l'icones publiï¿½
 			IconPane iconPanePub1 = gef.getIconPane();
 			Icon checkIcon1 = iconPanePub1.addIcon();
 			checkIcon1.setProperties(checkSite,resources.getString("SitePublie"));
@@ -352,7 +353,7 @@ function publicationGoTo(type, theURL, nom){
 		i++;
 	}
 
-    //Récupération du tableau dans le haut du cadre
+    //Rï¿½cupï¿½ration du tableau dans le haut du cadre
     frame.addTop(arrayPane.print());
 
 	//Le board
@@ -362,7 +363,7 @@ function publicationGoTo(type, theURL, nom){
 
 	if (listeSitesPublies.size() > 0) {
 		liste += "<table border=\"0\">\n";
-		//Récup des sites
+		//Rï¿½cup des sites
 		Iterator j = listeSitesPublies.iterator();
 		while (j.hasNext()) {
 			PublicationDetail sitepublie = (PublicationDetail) j.next();
@@ -390,7 +391,7 @@ function publicationGoTo(type, theURL, nom){
 		board.addBody(liste);
 	}
 
-    //Récupération de la liste des sites dans le cadre
+    //Rï¿½cupï¿½ration de la liste des sites dans le cadre
 	if(listeSitesPublies.size() > 0) {
 		frame.addBottom(board.print());
 	}

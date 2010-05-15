@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.mydb.control;
 
 import java.math.BigDecimal;
@@ -77,7 +78,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * MyDB session control.
- *
  * @author Antoine HEDIN
  */
 public class MyDBSessionController extends AbstractComponentSessionController {
@@ -100,11 +100,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Standard Session Controller Constructor
-   *
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    */
   public MyDBSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -148,13 +145,9 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Update the database filter.
-   *
-   * @param column
-   *          The name of the column.
-   * @param compare
-   *          The symbol which links the column and the value.
-   * @param value
-   *          The value.
+   * @param column The name of the column.
+   * @param compare The symbol which links the column and the value.
+   * @param value The value.
    */
   public void updateDbFilter(String column, String compare, String value) {
     dbFilter = new DbFilter(column, compare, value);
@@ -162,9 +155,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Update the table's name.
-   *
-   * @param tableName
-   *          The new name of the table.
+   * @param tableName The new name of the table.
    * @throws MyDBException
    */
   public void updateTableName(String tableName) throws MyDBException {
@@ -174,8 +165,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * @return True if the actual name of the table corresponds to an existing
-   *         table in database, else return false and reset the table's name.
+   * @return True if the actual name of the table corresponds to an existing table in database, else
+   * return false and reset the table's name.
    */
   public boolean checkTableName() {
     String tableName = getTableName();
@@ -201,7 +192,6 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Initializes the database connection informations.
-   *
    * @throws MyDBRuntimeException
    */
   private void initMyDB() throws MyDBRuntimeException {
@@ -209,8 +199,9 @@ public class MyDBSessionController extends AbstractComponentSessionController {
       try {
         // load and return the current jdbc settings for the component
         MyDBBm myDBBm = getMyDBBm();
-        Collection<MyDBConnectionInfoDetail> c = myDBBm.getConnectionList(new MyDBConnectionInfoPK("",
-            getSpaceId(), getComponentId()));
+        Collection<MyDBConnectionInfoDetail> c =
+            myDBBm.getConnectionList(new MyDBConnectionInfoPK("",
+                getSpaceId(), getComponentId()));
         if (c.size() > 1) {
           throw new MyDBRuntimeException("myDBSessionController.initMyDB()",
               SilverpeasException.FATAL, "myDB.EX_MUST_BE_ONLY_ONE_CONNECTION");
@@ -232,9 +223,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Update the table's name and the corresponding connection information.
-   *
-   * @param tableName
-   *          The new table's name.
+   * @param tableName The new table's name.
    * @throws MyDBException
    */
   public void setTableName(String tableName) throws MyDBException {
@@ -270,7 +259,6 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Loads the connection informations.
-   *
    * @throws MyDBException
    */
   private void newMyDB() throws MyDBException {
@@ -292,13 +280,10 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Initializes the table manager.
-   *
-   * @param mode
-   *          the table mode (creation or modification).
-   * @param originPage
-   *          The origin page. Indeed, table mode can be accessed from the table
-   *          selection page or the table detail page. This information is also
-   *          memorized to go back to the origin page when table mode is left.
+   * @param mode the table mode (creation or modification).
+   * @param originPage The origin page. Indeed, table mode can be accessed from the table selection
+   * page or the table detail page. This information is also memorized to go back to the origin page
+   * when table mode is left.
    */
   public void initTableManager(int mode, String originPage) {
     String driverName = getJdbcDriverName();
@@ -333,18 +318,11 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Updates the database connection informations.
-   *
-   * @param JDBCdriverName
-   *          The name of the driver.
-   * @param JDBCurl
-   *          The URL to access the database.
-   * @param login
-   *          The login to access the database.
-   * @param password
-   *          The password to access the database.
-   * @param rowLimit
-   *          The maximum number of elements to display in a response to a
-   *          database request.
+   * @param JDBCdriverName The name of the driver.
+   * @param JDBCurl The URL to access the database.
+   * @param login The login to access the database.
+   * @param password The password to access the database.
+   * @param rowLimit The maximum number of elements to display in a response to a database request.
    * @throws MyDBException
    */
   public void updateConnection(String JDBCdriverName, String JDBCurl,
@@ -391,7 +369,6 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Updates the database connection informations.
-   *
    * @throws MyDBException
    */
   private void updateMyDB() throws MyDBException {
@@ -447,8 +424,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * Closes the database connection and its associated elements (result set and
-   * prepared statement).
+   * Closes the database connection and its associated elements (result set and prepared statement).
    */
   private void closeConnection() {
     try {
@@ -520,8 +496,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * @return the database table corresponding to the current informations
-   *         (connection, table's name,...).
+   * @return the database table corresponding to the current informations (connection, table's
+   * name,...).
    * @throws MyDBException
    */
   public DbTable getDbTable() throws MyDBException {
@@ -608,7 +584,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
           throw new MyDBException("myDBSessionController.getDbTable()",
               SilverpeasException.ERROR,
               "myDB.EX_CANNOT_GET_TABLE_DESCRIPTION", "TableName : "
-                  + tableName, e);
+              + tableName, e);
         }
         closeConnection();
 
@@ -651,7 +627,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
                   .getString(filterColumn) : null);
               if ((!manualFilter)
                   || ((data != null) && (data.toLowerCase()
-                      .indexOf(filterValue) != -1))) {
+                  .indexOf(filterValue) != -1))) {
                 // A line is added into the table if :
                 // - the filter is not manual (the initial request was completed
                 // with the filter
@@ -669,7 +645,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
                       SilverTrace.warn("myDBSessionController",
                           "MyDBSessionController.getDbTable()",
                           "myDB.MSG_CANNOT_GET_TABLE_LINE", "TableName="
-                              + tableName, e);
+                          + tableName, e);
                     }
                   }
                   dbLine.addData(columnsNames[i], value);
@@ -694,10 +670,9 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * @param tableName
-   *          The table's name.
-   * @return The index informations about the table which allow to determinate
-   *         foreign keys links between the different columns of the table.
+   * @param tableName The table's name.
+   * @return The index informations about the table which allow to determinate foreign keys links
+   * between the different columns of the table.
    * @throws MyDBException
    */
   public IndexList getIndexInfo(String tableName) throws MyDBException {
@@ -764,9 +739,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * @return An error message if the content of the new line enters in conflict
-   *         (respect of primary key) with data already present in database.
-   *         Returns null if no error is detected.
+   * @return An error message if the content of the new line enters in conflict (respect of primary
+   * key) with data already present in database. Returns null if no error is detected.
    */
   public String getLineCreationErrorMessage() {
     if (!dbTable.getPrimaryKey().isEmpty()) {
@@ -826,9 +800,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * @return An error message caused by the line creation attempt which could
-   *         not be anticipated by the method getLineCreationErrorMessage. The
-   *         line is added to the table if no error occurred.
+   * @return An error message caused by the line creation attempt which could not be anticipated by
+   * the method getLineCreationErrorMessage. The line is added to the table if no error occurred.
    */
   public String createDbLine() {
     try {
@@ -875,8 +848,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * @return An error message caused by the line update attempt. The line is
-   *         updated if no error occurred.
+   * @return An error message caused by the line update attempt. The line is updated if no error
+   * occurred.
    */
   public String updateDbData() {
     try {
@@ -937,10 +910,9 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * @return An error message if the content of the line is linked to others
-   *         data by foreign keys and makes the deletion impossible (ex : data
-   *         present in this line and only in this line into the table but
-   *         referenced by an other one).
+   * @return An error message if the content of the line is linked to others data by foreign keys
+   * and makes the deletion impossible (ex : data present in this line and only in this line into
+   * the table but referenced by an other one).
    */
   public String getLineDeletionErrorMessage() {
     dbTable.setLineIndex(lineIndex);
@@ -970,7 +942,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
             query = new StringBuffer(100).append("select ").append(columnName)
                 .append(" from ").append(tableName).append(" where ").append(
-                    columnName).append(" = ?").toString();
+                columnName).append(" = ?").toString();
             prepStmt = connection.prepareStatement(query);
             setValueByType(value, dataType, 1);
             rs = prepStmt.executeQuery();
@@ -1021,9 +993,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * @return An error message caused by the line deletion attempt which could
-   *         not be anticipated by the method getLineDeletionErrorMessage. The
-   *         line is removed if no error occurred.
+   * @return An error message caused by the line deletion attempt which could not be anticipated by
+   * the method getLineDeletionErrorMessage. The line is removed if no error occurred.
    */
   public String deleteDbData() {
     dbTable.setLineIndex(lineIndex);
@@ -1062,14 +1033,10 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * @param consultation
-   *          The flag indicating if data have to be displayed as labels or
-   *          input fields.
-   * @param newRecord
-   *          The flag which indicates if the form describes a new record or a
-   *          record to update.
-   * @param beanName
-   *          Le bean's name.
+   * @param consultation The flag indicating if data have to be displayed as labels or input fields.
+   * @param newRecord The flag which indicates if the form describes a new record or a record to
+   * update.
+   * @param beanName Le bean's name.
    * @return The form describing the record to create/modify.
    * @throws MyDBException
    */
@@ -1081,9 +1048,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * @param newRecord
-   *          The flag which indicated if the form describes a new record or a
-   *          record to update.
+   * @param newRecord The flag which indicated if the form describes a new record or a record to
+   * update.
    * @return A data record representing the record to create/modify.
    * @throws FormException
    */
@@ -1097,9 +1063,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Loads in the form's parameters the values contained into the map.
-   *
-   * @param parameterMap
-   *          The map which contains the record's describing data.
+   * @param parameterMap The map which contains the record's describing data.
    */
   public void initFormParameters(Map<String, String[]> parameterMap) {
     DbColumn[] columns = dbTable.getColumns();
@@ -1133,10 +1097,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * @param key
-   *          The name of the searched parameter.
-   * @return The value associated to the key, null if the key is not found in
-   *         the form's parameters.
+   * @param key The name of the searched parameter.
+   * @return The value associated to the key, null if the key is not found in the form's parameters.
    */
   public String getFormParameter(String key) {
     for (int i = 0, n = formParameters.length; i < n; i++) {
@@ -1148,9 +1110,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * Executes the different queries to create the table corresponding to the
-   * current informations of the controller.
-   *
+   * Executes the different queries to create the table corresponding to the current informations of
+   * the controller.
    * @return True if the creation ended successfully.
    */
   public boolean createTable() {
@@ -1187,9 +1148,8 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * Removes from the database the table corresponding to the current
-   * informations of the controller.
-   *
+   * Removes from the database the table corresponding to the current informations of the
+   * controller.
    * @return True if the deletion ended successfully.
    */
   public boolean dropTable() {
@@ -1217,8 +1177,7 @@ public class MyDBSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * @return A database connection corresponding to JDBC properties of the
-   *         controller.
+   * @return A database connection corresponding to JDBC properties of the controller.
    * @throws SQLException
    */
   private Connection getConnection() throws SQLException {
@@ -1231,13 +1190,9 @@ public class MyDBSessionController extends AbstractComponentSessionController {
 
   /**
    * Completes the statement with the value by respecting its type.
-   *
-   * @param value
-   *          The value to store in database.
-   * @param dataType
-   *          The type of the value.
-   * @param index
-   *          The index of the data in the statement.
+   * @param value The value to store in database.
+   * @param dataType The type of the value.
+   * @param index The index of the data in the statement.
    * @throws NumberFormatException
    * @throws SQLException
    */

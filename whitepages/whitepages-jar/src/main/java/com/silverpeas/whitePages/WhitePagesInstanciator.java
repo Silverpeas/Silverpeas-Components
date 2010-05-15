@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /*
  * WhitePagesInstanciator.java
  *
@@ -39,8 +40,7 @@ import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciato
 import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public class WhitePagesInstanciator extends SQLRequest implements
-    ComponentsInstanciatorIntf {
+public class WhitePagesInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
   /** Creates new WhitePagesInstanciator */
   public WhitePagesInstanciator() {
@@ -82,13 +82,9 @@ public class WhitePagesInstanciator extends SQLRequest implements
 
   /**
    * Delete all data of one website instance from the website table.
-   * 
-   * @param con
-   *          (Connection) the connection to the data base
-   * @param componentId
-   *          (String) the instance id of the Silverpeas component website.
-   * @param suffixName
-   *          (String) the suffixe of a website table
+   * @param con (Connection) the connection to the data base
+   * @param componentId (String) the instance id of the Silverpeas component website.
+   * @param suffixName (String) the suffixe of a website table
    */
   private void deleteDataOfInstance(Connection con, String componentId,
       String suffixName) throws InstanciationException {

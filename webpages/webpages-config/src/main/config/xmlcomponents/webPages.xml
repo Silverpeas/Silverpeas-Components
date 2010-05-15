@@ -11,7 +11,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -28,7 +28,7 @@
 <WAComponent>
   <name>webPages</name>
   <label>Designer de page web - WebPage Designer</label>
-  <description>Permet de créer une page web via un éditeur WYSIWYG</description>
+  <description>Permet de crï¿½er une page web via un ï¿½diteur WYSIWYG</description>
   <suite>04 Gestion de contenu</suite>
   <visible>@ComponentVisiblewebPages@</visible>
   <portlet>yes</portlet>
@@ -47,7 +47,7 @@
 	    <ParameterUpdatable>always</ParameterUpdatable>
 	    <ParameterOrder>1</ParameterOrder>
 	    <ParameterHelp>
-				<ParameterHelpFr>Permet d'envoyer une notification aux utilisateurs abonnés à la page Web.</ParameterHelpFr>
+				<ParameterHelpFr>Permet d'envoyer une notification aux utilisateurs abonnï¿½s ï¿½ la page Web.</ParameterHelpFr>
 				<ParameterHelpEn>Allow to send a notification to the users who have subscribed to the Web page.</ParameterHelpEn>
 	    </ParameterHelp>
 		</Parameter>

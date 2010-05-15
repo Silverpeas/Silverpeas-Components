@@ -11,7 +11,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -27,8 +27,8 @@
 
 <WAComponent>
    <name>quickinfo</name>
-   <label>Actualités - QuickInfo</label>
-   <description>Permet de diffuser des brèves d'information. Les informations sont classées sur le Plan de Classement.</description>
+   <label>Actualitï¿½s - QuickInfo</label>
+   <description>Permet de diffuser des brï¿½ves d'information. Les informations sont classï¿½es sur le Plan de Classement.</description>
    <suite>04 Gestion de contenu</suite>
    <visible>@ComponentVisibleQuickInfo@</visible>
    <portlet>yes</portlet>
@@ -50,7 +50,7 @@
             <ParameterUpdatable>always</ParameterUpdatable>
 	    <ParameterType>checkbox</ParameterType>
 	    <ParameterHelp>
-		<ParameterHelpFr>Les brèves créées au sein de cette instance pourront être classées sur le Plan de Classement</ParameterHelpFr>
+		<ParameterHelpFr>Les brï¿½ves crï¿½ï¿½es au sein de cette instance pourront ï¿½tre classï¿½es sur le Plan de Classement</ParameterHelpFr>
 		<ParameterHelpEn></ParameterHelpEn>
 	    </ParameterHelp>
         </Parameter>

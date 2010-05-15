@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.quickinfo.servlets;
 
 import java.util.ArrayList;
@@ -49,9 +50,8 @@ import com.silverpeas.util.clipboard.ClipboardSelection;
 
 public class QuickInfoRequestRouter extends ComponentRequestRouter {
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for almanach, returns "almanach"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
   public String getSessionControlBeanName() {
     return "quickinfo";
@@ -59,8 +59,9 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
 
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    ComponentSessionController component = (ComponentSessionController) new QuickInfoSessionController(
-        mainSessionCtrl, componentContext);
+    ComponentSessionController component =
+        (ComponentSessionController) new QuickInfoSessionController(
+            mainSessionCtrl, componentContext);
     return component;
   }
 
@@ -74,17 +75,13 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * This method has to be implemented by the component request rooter it has to
-   * compute a destination page
-   * 
-   * @param function
-   *          The entering request function (ex : "Main.jsp")
-   * @param componentSC
-   *          The component Session Control, build and initialised.
-   * @param request
-   *          The entering request. The request rooter need it to get parameters
+   * This method has to be implemented by the component request rooter it has to compute a
+   * destination page
+   * @param function The entering request function (ex : "Main.jsp")
+   * @param componentSC The component Session Control, build and initialised.
+   * @param request The entering request. The request rooter need it to get parameters
    * @return The complete destination URL for a forward (ex :
-   *         "/almanach/jsp/almanach.jsp?flag=user")
+   * "/almanach/jsp/almanach.jsp?flag=user")
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
@@ -265,11 +262,11 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
         destination = URLManager.getURL(URLManager.CMP_CLIPBOARD)
             + "Idle.jsp?message=REFRESHCLIPBOARD";
       } else if (function.startsWith("paste")) {
-          try {
+        try {
           SilverTrace.debug("quickinfo",
               "QuickInfoRequestRouter.getDestination()", "clipboard '"
-                  + componentSC.getClipboardName() + "' count="
-                  + componentSC.getClipboardCount());
+              + componentSC.getClipboardName() + "' count="
+              + componentSC.getClipboardCount());
           Collection clipObjects = componentSC.getClipboardSelectedObjects();
           Iterator clipObjectIterator = clipObjects.iterator();
           while (clipObjectIterator.hasNext()) {
@@ -277,7 +274,7 @@ public class QuickInfoRequestRouter extends ComponentRequestRouter {
                 .next();
             if ((clipObject != null)
                 && (clipObject
-                    .isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor))) {
+                .isDataFlavorSupported(PublicationSelection.PublicationDetailFlavor))) {
               PublicationDetail pubDetail;
               pubDetail = (PublicationDetail) clipObject
                   .getTransferData(PublicationSelection.PublicationDetailFlavor);

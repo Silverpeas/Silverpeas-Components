@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,16 +23,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="java.util.*"%>
 
 <%@ include file="checkQuestionReply.jsp" %>
 
 <%
-	// récupération des paramètres
+	// rï¿½cupï¿½ration des paramï¿½tres
 	String		profil		= (String) request.getAttribute("Flag");
 	String		userId		= (String) request.getAttribute("UserId");
 	Collection 	questions 	= (Collection) request.getAttribute("questions");
-	String		questionId	= (String) request.getAttribute("QuestionId");  // question en cours à ouvrir
+	String		questionId	= (String) request.getAttribute("QuestionId");  // question en cours ï¿½ ouvrir
 	Collection	categories	= (Collection) request.getAttribute("Categories");
 %>
 
@@ -103,7 +104,7 @@ function closeQ(id)
 	}
 }
 
-//réouvrir une question
+//rï¿½ouvrir une question
 function openQ(id)
 {
 	//confirmation de l'ouverture de la question
@@ -115,7 +116,7 @@ function openQ(id)
 	}
 }
 
-// supprimer toutes les questions selectionnées
+// supprimer toutes les questions selectionnï¿½es
 function DeletesAdmin()
 {
 	if (existSelected())
@@ -133,7 +134,7 @@ function DeletesAdmin()
 	}
 }
 
-// clore toutes les questions selectionnées
+// clore toutes les questions selectionnï¿½es
 function Closes()
 {
 	if (existSelect())
@@ -151,7 +152,7 @@ function Closes()
 	}
 }
 
-// controler si toutes les cases cochées sont valides pour l'opération demandée
+// controler si toutes les cases cochï¿½es sont valides pour l'opï¿½ration demandï¿½e
 function existStatusError(status)
 {
 	var err = false;
@@ -204,7 +205,7 @@ function existStatusError(status1, status2)
 	return err;
 }
 
-// recherche s'il y a des questions selectionnées
+// recherche s'il y a des questions selectionnï¿½es
 function existSelect()
 {
 	if (document.forms[0].checkedQuestion != null)
@@ -229,7 +230,7 @@ function existSelect()
 	return false;
 }
 
-// supprimer une réponse
+// supprimer une rï¿½ponse
 function deleteConfirmR(replyId, questionId)
 {
 	//confirmation de suppression de la question
@@ -268,7 +269,7 @@ function initShowHideContent()
 	<% } %>
 }
 
-// dérouler les réponses d'une question dans la liste
+// dï¿½rouler les rï¿½ponses d'une question dans la liste
 function openQuestion(questionId)
 {
 	var obj = document.getElementById('a' + questionId);
@@ -300,7 +301,7 @@ window.onload = initShowHideContent;
 		// gestion du plan de classement
 		operationPane.addOperation(resource.getIcon("questionReply.pdcUtilizationSrc"), resource.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+componentId+"','utilizationPdc1')");
 		operationPane.addLine();
-		// création des catégories
+		// crï¿½ation des catï¿½gories
 		operationPane.addOperation(resource.getIcon("questionReply.createCategory"), resource.getString("questionReply.createCategory") , "NewCategory");
 		operationPane.addLine();
 	}
@@ -327,7 +328,7 @@ window.onload = initShowHideContent;
 %>
 <FORM METHOD="POST" ACTION="">
 <%
-	// lecture des catégories
+	// lecture des catï¿½gories
 	out.println("<table width=\"100%\">");
 	Iterator itC = categories.iterator();
 	while (itC.hasNext())
@@ -336,7 +337,7 @@ window.onload = initShowHideContent;
 		String categoryId = Integer.toString(uneCategory.getId());
 		String nom = uneCategory.getName();
 		String description = uneCategory.getDescription();
-		// affichage de la catégorie 
+		// affichage de la catï¿½gorie 
 		out.println("<tr>");	
 		if (profil.equals("admin"))
 		{
@@ -360,7 +361,7 @@ window.onload = initShowHideContent;
 		
 		out.println("<tr><td colspan=\"2\">");
 		Collection questionsByCategory = scc.getQuestionsByCategory(categoryId);
-		// lecture de toutes les questions de la catégorie
+		// lecture de toutes les questions de la catï¿½gorie
 		//Iterator it = questions.iterator();
 		Iterator it = questionsByCategory.iterator();
 		while(it.hasNext())
@@ -374,7 +375,7 @@ window.onload = initShowHideContent;
 			String link = question._getPermalink();
 			int status = question.getStatus();
 			// recherche si le profil peut modifier la question
-			// le demandeur ne peut modifier que ses questions sans réponse (en attente)
+			// le demandeur ne peut modifier que ses questions sans rï¿½ponse (en attente)
 			boolean updateQ = true;
 			if (profil.equals("publisher") && !question.getCreatorId().equals(userId))
 				updateQ = false;
@@ -387,7 +388,7 @@ window.onload = initShowHideContent;
 			// on n'affiche pas les questions en attente pour les lecteurs
 			if (!profil.equals("user") || (profil.equals("user") && status != 0))
 			{
-				// recherche de l'icone de l'état
+				// recherche de l'icone de l'ï¿½tat
 				String etat = "";
 				if (status == 0)
 					etat = resource.getIcon("questionReply.waiting");
@@ -424,17 +425,17 @@ window.onload = initShowHideContent;
 									// pour les animateurs et les experts :
 									if (!profil.equals("publisher"))
 									{
-										//icône "clore" la question
+										//icï¿½ne "clore" la question
 										if (status == 1)
 										{ %>
 											<a href="javaScript:closeQ('<%=id%>')"><img border="0" src="<%=resource.getIcon("questionReply.close")%>" title='<%=resource.getString("questionReply.cloreQ")%>'/></a>
 										<% }
-										// icône "création" d'une réponse
+										// icï¿½ne "crï¿½ation" d'une rï¿½ponse
 										if (status == 0 || status == 1)
 										{ %>
 											<a href="CreateRQuery?QuestionId=<%=id%>"><img border="0" src="<%=resource.getIcon("questionReply.miniconeReponse")%>" title='<%=resource.getString("questionReply.ajoutR")%>'/></a>
 										<% }
-										// icône "réouvrir" la question
+										// icï¿½ne "rï¿½ouvrir" la question
 										if (status == 2 && profil.equals("admin"))
 										{ %>
 											<a href="javaScript:openQ('<%=id%>')"><img border="0" src="<%=resource.getIcon("questionReply.open")%>" title='<%=resource.getString("questionReply.open")%>'/></a>
@@ -443,7 +444,7 @@ window.onload = initShowHideContent;
 									<a href="UpdateQ?QuestionId=<%=id%>"><img border="0" src="<%=resource.getIcon("questionReply.update")%>" title='<%=resource.getString("questionReply.modifQ")%>'/></a>
 									<a href="javaScript:deleteConfirm('<%=id%>')"><img border="0" src="<%=resource.getIcon("questionReply.delete")%>" title='<%=resource.getString("questionReply.delQ")%>'/></a>
 									<% 
-									// pour les animateurs et les experts, case à cocher pour traitement par lot
+									// pour les animateurs et les experts, case ï¿½ cocher pour traitement par lot
 									if (!profil.equals("publisher"))
 									{ %>
 										<input type="checkbox" name="checkedQuestion" value="<%=id%>">
@@ -463,7 +464,7 @@ window.onload = initShowHideContent;
 				</td></tr></table>
 				<%
 				
-				// affichage des réponses 
+				// affichage des rï¿½ponses 
 				// ----------------------
 				String aId = "a" + id;
 				Collection replies = question.readReplies();
@@ -471,12 +472,12 @@ window.onload = initShowHideContent;
 				boolean existe = false;
 				if (itR.hasNext())
 					existe = true;
-				// MODIF A VALIDER : toujours afficher la zone des réponses, pour avoir une séparation entre les questions
+				// MODIF A VALIDER : toujours afficher la zone des rï¿½ponses, pour avoir une sï¿½paration entre les questions
 				existe = true;
 				// FIN MODIF A VALIDER
 				if (existe)
 				{
-					// il y a au moins une réponse, on peut créer la zone des réponses 
+					// il y a au moins une rï¿½ponse, on peut crï¿½er la zone des rï¿½ponses 
 					%>
 					<table cellpadding="0" cellspacing="0" width="98%" align="center">
 					<tr>
@@ -491,7 +492,7 @@ window.onload = initShowHideContent;
 							<% } 
 				}
 				
-				// lecture de toutes les réponses de la question en cours
+				// lecture de toutes les rï¿½ponses de la question en cours
 				while (itR.hasNext())
 				{
 					Reply reply = (Reply) itR.next();
@@ -501,7 +502,7 @@ window.onload = initShowHideContent;
 					String titleR = reply.getTitle();
 					String idR = reply.getPK().getId();
 					
-					// recherche du type de la réponse (publique ou privée) pour l'icône à afficher
+					// recherche du type de la rï¿½ponse (publique ou privï¿½e) pour l'icï¿½ne ï¿½ afficher
 					int statusR = reply.getPublicReply();
 					String typeReply = "";
 					if (statusR == 1)
@@ -509,7 +510,7 @@ window.onload = initShowHideContent;
 					else
 						typeReply = resource.getIcon("questionReply.miniconeReponse");
 					
-					// dans le cas du demandeur, regarder si la question est la sienne pour afficher ou non les réponses privées
+					// dans le cas du demandeur, regarder si la question est la sienne pour afficher ou non les rï¿½ponses privï¿½es
 					boolean isPublisherQuestion = true;
 					if (profil.equals("publisher") && statusR == 0)
 					{
@@ -521,9 +522,9 @@ window.onload = initShowHideContent;
 	
 					if ( (statusR == 0 && profil.equals("user")) || (!isPublisherQuestion) )
 					{
-						// on n'affiche pas cette réponse privée car :
-						// soit c'est un lecteur (il ne voit jamais les réponses privées)
-						// soit c'est un publieur et ce n'est pas sa question (il ne voit pas les réponses privées des autres demandeurs)
+						// on n'affiche pas cette rï¿½ponse privï¿½e car :
+						// soit c'est un lecteur (il ne voit jamais les rï¿½ponses privï¿½es)
+						// soit c'est un publieur et ce n'est pas sa question (il ne voit pas les rï¿½ponses privï¿½es des autres demandeurs)
 					}
 					else
 					{ 
@@ -581,7 +582,7 @@ window.onload = initShowHideContent;
 						out.println(board.printAfter());
 						out.println("<br>");
 					}
-				} // fin while (lecture des réponses)
+				} // fin while (lecture des rï¿½ponses)
 				if (existe)
 				{ %>
 					</div>
@@ -595,7 +596,7 @@ window.onload = initShowHideContent;
 	}
 
 
-	// les questions sans catégories
+	// les questions sans catï¿½gories
 	Collection questionsByCategory = scc.getQuestionsByCategory(null);
 	if (questionsByCategory != null)
 	{
@@ -604,7 +605,7 @@ window.onload = initShowHideContent;
 		out.println("<td colspan=\"2\" class=\"titreCateg\">"+nom+"</td>");
 		out.println("</tr>");
 		out.println("<tr><td colspan=\"2\">");
-		// lecture de toutes les questions de la catégorie
+		// lecture de toutes les questions de la catï¿½gorie
 		Iterator it = questionsByCategory.iterator();
 		while(it.hasNext())
 		{
@@ -617,7 +618,7 @@ window.onload = initShowHideContent;
 			String link = question._getPermalink();
 			int status = question.getStatus();
 			// recherche si le profil peut modifier la question
-			// le demandeur ne peut modifier que ses questions sans réponse (en attente)
+			// le demandeur ne peut modifier que ses questions sans rï¿½ponse (en attente)
 			boolean updateQ = true;
 			if (profil.equals("publisher") && !question.getCreatorId().equals(userId))
 				updateQ = false;
@@ -630,7 +631,7 @@ window.onload = initShowHideContent;
 			// on n'affiche pas les questions en attente pour les lecteurs
 			if (!profil.equals("user") || (profil.equals("user") && status != 0))
 			{
-				// recherche de l'icone de l'état
+				// recherche de l'icone de l'ï¿½tat
 				String etat = "";
 				if (status == 0)
 					etat = resource.getIcon("questionReply.waiting");
@@ -667,17 +668,17 @@ window.onload = initShowHideContent;
 									// pour les animateurs et les experts :
 									if (!profil.equals("publisher"))
 									{
-										//icône "clore" la question
+										//icï¿½ne "clore" la question
 										if (status == 1)
 										{ %>
 											<a href="javaScript:closeQ('<%=id%>')"><img border="0" src="<%=resource.getIcon("questionReply.close")%>" title='<%=resource.getString("questionReply.cloreQ")%>'/></a>
 										<% }
-										// icône "création" d'une réponse
+										// icï¿½ne "crï¿½ation" d'une rï¿½ponse
 										if (status == 0 || status == 1)
 										{ %>
 											<a href="CreateRQuery?QuestionId=<%=id%>"><img border="0" src="<%=resource.getIcon("questionReply.miniconeReponse")%>" title='<%=resource.getString("questionReply.ajoutR")%>'/></a>
 										<% }
-										// icône "réouvrir" la question
+										// icï¿½ne "rï¿½ouvrir" la question
 										if (status == 2 && profil.equals("admin"))
 										{ %>
 											<a href="javaScript:openQ('<%=id%>')"><img border="0" src="<%=resource.getIcon("questionReply.open")%>" title='<%=resource.getString("questionReply.open")%>'/></a>
@@ -686,7 +687,7 @@ window.onload = initShowHideContent;
 									<a href="UpdateQ?QuestionId=<%=id%>"><img border="0" src="<%=resource.getIcon("questionReply.update")%>" title='<%=resource.getString("questionReply.modifQ")%>'/></a>
 									<a href="javaScript:deleteConfirm('<%=id%>')"><img border="0" src="<%=resource.getIcon("questionReply.delete")%>" title='<%=resource.getString("questionReply.delQ")%>'/></a>
 									<% 
-									// pour les animateurs et les experts, case à cocher pour traitement par lot
+									// pour les animateurs et les experts, case ï¿½ cocher pour traitement par lot
 									if (!profil.equals("publisher"))
 									{ %>
 										<input type="checkbox" name="checkedQuestion" value="<%=id%>">
@@ -706,7 +707,7 @@ window.onload = initShowHideContent;
 				</td></tr></table>
 				<%
 				
-				// affichage des réponses 
+				// affichage des rï¿½ponses 
 				// ----------------------
 				String aId = "a" + id;
 				Collection replies = question.readReplies();
@@ -714,12 +715,12 @@ window.onload = initShowHideContent;
 				boolean existe = false;
 				if (itR.hasNext())
 					existe = true;
-				// MODIF A VALIDER : toujours afficher la zone des réponses, pour avoir une séparation entre les questions
+				// MODIF A VALIDER : toujours afficher la zone des rï¿½ponses, pour avoir une sï¿½paration entre les questions
 				existe = true;
 				// FIN MODIF A VALIDER
 				if (existe)
 				{
-					// il y a au moins une réponse, on peut créer la zone des réponses 
+					// il y a au moins une rï¿½ponse, on peut crï¿½er la zone des rï¿½ponses 
 					%>
 					<table cellpadding="0" cellspacing="0" width="98%" align="center">
 					<tr>
@@ -734,7 +735,7 @@ window.onload = initShowHideContent;
 							<% } 
 				}
 				
-				// lecture de toutes les réponses de la question en cours
+				// lecture de toutes les rï¿½ponses de la question en cours
 				while (itR.hasNext())
 				{
 					Reply reply = (Reply) itR.next();
@@ -744,7 +745,7 @@ window.onload = initShowHideContent;
 					String titleR = reply.getTitle();
 					String idR = reply.getPK().getId();
 					
-					// recherche du type de la réponse (publique ou privée) pour l'icône à afficher
+					// recherche du type de la rï¿½ponse (publique ou privï¿½e) pour l'icï¿½ne ï¿½ afficher
 					int statusR = reply.getPublicReply();
 					String typeReply = "";
 					if (statusR == 1)
@@ -752,7 +753,7 @@ window.onload = initShowHideContent;
 					else
 						typeReply = resource.getIcon("questionReply.miniconeReponse");
 					
-					// dans le cas du demandeur, regarder si la question est la sienne pour afficher ou non les réponses privées
+					// dans le cas du demandeur, regarder si la question est la sienne pour afficher ou non les rï¿½ponses privï¿½es
 					boolean isPublisherQuestion = true;
 					if (profil.equals("publisher") && statusR == 0)
 					{
@@ -764,9 +765,9 @@ window.onload = initShowHideContent;
 	
 					if ( (statusR == 0 && profil.equals("user")) || (!isPublisherQuestion) )
 					{
-						// on n'affiche pas cette réponse privée car :
-						// soit c'est un lecteur (il ne voit jamais les réponses privées)
-						// soit c'est un publieur et ce n'est pas sa question (il ne voit pas les réponses privées des autres demandeurs)
+						// on n'affiche pas cette rï¿½ponse privï¿½e car :
+						// soit c'est un lecteur (il ne voit jamais les rï¿½ponses privï¿½es)
+						// soit c'est un publieur et ce n'est pas sa question (il ne voit pas les rï¿½ponses privï¿½es des autres demandeurs)
 					}
 					else
 					{ 
@@ -824,7 +825,7 @@ window.onload = initShowHideContent;
 						out.println(board.printAfter());
 						out.println("<br>");
 					}
-				} // fin while (lecture des réponses)
+				} // fin while (lecture des rï¿½ponses)
 				if (existe)
 				{ %>
 					</div>

@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.CompletePublication"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
@@ -200,30 +201,30 @@ void displayOperations(String id, CompletePublication pubComplete, ChatSessionCo
 }
 
 void displayBeginFrame(JspWriter out) throws IOException {
-/*out.println("<!-- Cadre extérieur -->");
+/*out.println("<!-- Cadre extï¿½rieur -->");
 out.println("<table class=\"frame\" cellpadding=\"1\" cellspacing=\"1\" border=\"0\" width=\"600\">");
   out.println("<tr>");
     out.println("<td align=\"center\" width=\"600\">");
 
-    out.println("<!-- Cadre intérieur -->");
+    out.println("<!-- Cadre intï¿½rieur -->");
       out.println("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" bgcolor=\"ffffff\">");
         out.println("<tr valign=\"middle\">");
           out.println("<td align=\"center\" width=\"600\">");*/
 
-		out.println("<!-- Cadre extérieur -->");
+		out.println("<!-- Cadre extï¿½rieur -->");
        	out.println("<TABLE CELLPADDING=2 CELLSPACING=0 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor align=\"center\" valign=\"top\">");
        	 out.println("<tr>");
         	out.println("<td>");
 
-          		out.println("<!-- Cadre intérieur -->");
+          		out.println("<!-- Cadre intï¿½rieur -->");
            		out.println("<TABLE CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH=\"100%\" CLASS=intfdcolor4 align=\"center\">");
              		out.println("<tr valign=\"middle\">");
              			 out.println("<td align=\"center\">");
 
 }
 void displayEndFrame(JspWriter out) throws IOException {
-    					 out.println("</TD></TR></TABLE> <!-- Fin cadre intérieur -->");
-   		out.println("</TD></TR></TABLE> <!-- Fin cadre extérieur -->");
+    					 out.println("</TD></TR></TABLE> <!-- Fin cadre intï¿½rieur -->");
+   		out.println("</TD></TR></TABLE> <!-- Fin cadre extï¿½rieur -->");
 }
 
 %>

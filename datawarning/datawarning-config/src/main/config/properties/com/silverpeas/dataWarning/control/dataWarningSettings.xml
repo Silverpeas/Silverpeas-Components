@@ -1,4 +1,30 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+
+    Copyright (C) 2000 - 2009 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://repository.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
 <DataWarning-configuration version="$id">
 	<param>
 	      <param-name>Drivers</param-name>
@@ -14,7 +40,7 @@
 	   <param>
 	      <param-name>DriverName</param-name>
 	      <param-description>name of the driver</param-description>
-	      <param-value>Accès a la base de donnée SILVERPEAS</param-value>
+	      <param-value>Accï¿½s a la base de donnï¿½e SILVERPEAS</param-value>
 	   </param>
 	   <param>
 	      <param-name>ClassName</param-name>
@@ -24,7 +50,7 @@
 	   <param>
 	      <param-name>Description</param-name>
 	      <param-description>description of the driver</param-description>
-	      <param-value>Paramétrage d'accès à la base de donnees Silverpeas</param-value>
+	      <param-value>Paramï¿½trage d'accï¿½s ï¿½ la base de donnees Silverpeas</param-value>
 	   </param>
 	   <param>
 	      <param-name>JDBCUrl</param-name>

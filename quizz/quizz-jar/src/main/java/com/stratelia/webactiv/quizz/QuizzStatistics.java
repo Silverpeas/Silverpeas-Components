@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,8 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
----*/
+ ---*/
 
 package com.stratelia.webactiv.quizz;
 
@@ -44,8 +45,6 @@ import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
 
 /**
  * Class declaration
- * 
- * 
  * @author
  */
 public class QuizzStatistics implements ComponentStatisticsInterface {
@@ -75,7 +74,7 @@ public class QuizzStatistics implements ComponentStatisticsInterface {
       try {
         QuestionContainerBmHome questionContainerBmHome = (QuestionContainerBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.QUESTIONCONTAINERBM_EJBHOME,
-                QuestionContainerBmHome.class);
+            QuestionContainerBmHome.class);
         questionContainerBm = questionContainerBmHome.create();
       } catch (Exception e) {
         throw new EJBException(e);
@@ -88,7 +87,7 @@ public class QuizzStatistics implements ComponentStatisticsInterface {
       throws RemoteException {
     Collection result = getQuestionContainerBm()
         .getNotClosedQuestionContainers(
-            new QuestionContainerPK(null, spaceId, componentId));
+        new QuestionContainerPK(null, spaceId, componentId));
     return result;
   }
 

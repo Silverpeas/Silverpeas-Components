@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.chat;
 
 import jChatBox.Chat.Chatroom;
@@ -44,15 +45,10 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 public class ChatContentManager implements ContentInterface {
   /**
    * Find all the SilverContent with the given list of SilverContentId
-   * 
-   * @param ids
-   *          list of silverContentId to retrieve
-   * @param peasId
-   *          the id of the instance
-   * @param userId
-   *          the id of the user who wants to retrieve silverContent
-   * @param userRoles
-   *          the roles of the user
+   * @param ids list of silverContentId to retrieve
+   * @param peasId the id of the instance
+   * @param userId the id of the user who wants to retrieve silverContent
+   * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
   public List getSilverContentById(List ids, String peasId, String userId,
@@ -78,11 +74,8 @@ public class ChatContentManager implements ContentInterface {
 
   /**
    * add a new content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param chatRoom
-   *          the content to register
+   * @param con a Connection
+   * @param chatRoom the content to register
    * @return the unique silverObjectId which identified the new content
    */
   public int createSilverContent(Connection con, ChatRoomDetail chatRoom)
@@ -90,21 +83,16 @@ public class ChatContentManager implements ContentInterface {
     SilverContentVisibility scv = new SilverContentVisibility();
     SilverTrace.info("chat", "ChatContentManager.createSilverContent()",
         "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-            + scv.toString());
+        + scv.toString());
     return getContentManager().addSilverContent(con, chatRoom.getId(),
         chatRoom.getInstanceId(), chatRoom.getCreatorId(), scv);
   }
 
   /**
    * delete a content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param chatRoomId
-   *          the identifiant of the content to unregister
-   * @param componentId
-   *          the identifiant of the component instance where the content to
-   *          unregister is
+   * @param con a Connection
+   * @param chatRoomId the identifiant of the content to unregister
+   * @param componentId the identifiant of the component instance where the content to unregister is
    */
   public void deleteSilverContent(Connection con, String chatRoomId,
       String componentId) throws ContentManagerException {
@@ -113,16 +101,14 @@ public class ChatContentManager implements ContentInterface {
     if (contentId != -1) {
       SilverTrace.info("chat", "ChatContentManager.deleteSilverContent()",
           "root.MSG_GEN_ENTER_METHOD", "chatRoomId = " + chatRoomId
-              + ", contentId = " + contentId);
+          + ", contentId = " + contentId);
       getContentManager().removeSilverContent(con, contentId, componentId);
     }
   }
 
   /**
    * return a list of room ids according to a list of silverContentId
-   * 
-   * @param idList
-   *          a list of silverContentId
+   * @param idList a list of silverContentId
    * @return a list of String representing room ids
    */
   private ArrayList makePKArray(List idList) {
@@ -147,11 +133,8 @@ public class ChatContentManager implements ContentInterface {
 
   /**
    * return a list of silverContent according to a list of publicationPK
-   * 
-   * @param ids
-   *          a list of room ids
-   * @param peasId
-   *          the component Id
+   * @param ids a list of room ids
+   * @param peasId the component Id
    * @return a list of ChatRoomDetail
    */
   private List getHeaders(List ids, String peasId) {
@@ -170,7 +153,7 @@ public class ChatContentManager implements ContentInterface {
         if (aChatroom != null) {
           roomDetail = new ChatRoomDetail(peasId, String.valueOf(roomId),
               aChatroom.getParams().getName(), aChatroom.getParams()
-                  .getSubject(), null);
+              .getSubject(), null);
           headers.add(roomDetail);
         }
       } catch (jChatBox.Chat.ChatException ex) {

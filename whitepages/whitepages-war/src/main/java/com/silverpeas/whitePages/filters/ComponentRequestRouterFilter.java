@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.whitePages.filters;
 
 import java.io.IOException;
@@ -38,16 +39,12 @@ import javax.servlet.http.HttpSession;
 import com.stratelia.silverpeas.peasCore.URLManager;
 
 /**
- * Le filtre LoginFilter a pour effet de contrôler que l'utilisateur courant n'a
- * pas une fiche à remplir dans une instance de whitePages. Si c'est le cas, 2
- * attributs sont mis en sessions : - RedirectToComponentId : componentId de
- * l'instance pour que le mecanisme de redirection le renvoie sur le composant -
- * - forceCardCreation : componentId de l'instance
- *
- * Le filtre RequestRouterFilter verifie la présence
- *
+ * Le filtre LoginFilter a pour effet de contrôler que l'utilisateur courant n'a pas une fiche à
+ * remplir dans une instance de whitePages. Si c'est le cas, 2 attributs sont mis en sessions : -
+ * RedirectToComponentId : componentId de l'instance pour que le mecanisme de redirection le renvoie
+ * sur le composant - - forceCardCreation : componentId de l'instance Le filtre RequestRouterFilter
+ * verifie la présence
  * @author Ludovic Bertin
- *
  */
 public class ComponentRequestRouterFilter implements Filter {
 
@@ -58,9 +55,8 @@ public class ComponentRequestRouterFilter implements Filter {
 
   /*
    * (non-Javadoc)
-   *
-   * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
-   * javax.servlet.ServletResponse, javax.servlet.FilterChain)
+   * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse,
+   * javax.servlet.FilterChain)
    */
   public void doFilter(ServletRequest request, ServletResponse response,
       FilterChain chain) throws IOException, ServletException {
@@ -103,7 +99,6 @@ public class ComponentRequestRouterFilter implements Filter {
 
   /*
    * (non-Javadoc)
-   *
    * @see javax.servlet.Filter#getFilterConfig()
    */
   public FilterConfig getFilterConfig() {
@@ -112,7 +107,6 @@ public class ComponentRequestRouterFilter implements Filter {
 
   /*
    * (non-Javadoc)
-   *
    * @see javax.servlet.Filter#setFilterConfig(javax.servlet.FilterConfig)
    */
   public void setFilterConfig(FilterConfig arg0) {

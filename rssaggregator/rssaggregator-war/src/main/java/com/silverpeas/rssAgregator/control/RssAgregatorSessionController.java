@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.rssAgregator.control;
 
 import java.io.IOException;
@@ -47,19 +48,13 @@ import de.nava.informa.parsers.FeedParser;
 
 /**
  * Standard Session Controller Constructeur
- * 
  * @author neysseri
  * @since 27/08/2004
- * 
- * @param mainSessionCtrl
- *          The user's profile
- * @param componentContext
- *          The component's profile
- * 
+ * @param mainSessionCtrl The user's profile
+ * @param componentContext The component's profile
  * @see
  */
-public class RssAgregatorSessionController extends
-    AbstractComponentSessionController {
+public class RssAgregatorSessionController extends AbstractComponentSessionController {
   // instance of RssAgregatorCache singleton
   private RssAgregatorCache cache = RssAgregatorCache.getInstance();
   private RssAgregatorBm rssBm = null;
@@ -78,8 +73,7 @@ public class RssAgregatorSessionController extends
   }
 
   /**
-   * Extract rss files informations (channels and items). Return a list of
-   * Channel.
+   * Extract rss files informations (channels and items). Return a list of Channel.
    */
   public List<SPChannel> getAvailableChannels() throws RssAgregatorException {
     List<SPChannel> channelsFromDB = getRssBm().getChannels(getComponentId());
@@ -101,8 +95,7 @@ public class RssAgregatorSessionController extends
   }
 
   /**
-   * Extract rss files informations (channels and items). Return a list of
-   * Channel.
+   * Extract rss files informations (channels and items). Return a list of Channel.
    */
   public List<SPChannel> getChannelsContent() throws RssAgregatorException {
     List<SPChannel> channelsFromDB = getRssBm().getChannels(getComponentId());
@@ -163,7 +156,7 @@ public class RssAgregatorSessionController extends
     SilverTrace.debug("rssAgregator",
         "RssAgregatorSessionController.updateChannel",
         "root.MSG_GEN_PARAM_VALUE", "channelPK = "
-            + currentChannel.getPK().getId());
+        + currentChannel.getPK().getId());
     if (currentChannel != null
         && currentChannel.getPK().getId().equals(channel.getPK().getId())) {
       urlHaveChanged = !currentChannel.getUrl().equals(channel.getUrl());

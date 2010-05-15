@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="check.jsp" %>
 
 <%
@@ -86,18 +87,18 @@ function addChannel() {
 	<table border="0">
 	<tr><td colspan="2" align="center"><b><%=resource.getString("rss.explanation11")%></b></td><td colspan="2" align="center"><b><%=resource.getString("rss.explanation12")%></b></td></tr>
 	<tr><td>Le monde diplomatique</td><td><a href="http://www.monde-diplomatique.fr/recents.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td><td>ZDNet</td><td><a href="http://www.zdnet.fr/feeds/rss/actualites/" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td></tr>
-	<tr><td>Liberation.fr - A la une</td><td><a href="http://www.liberation.fr/rss.php" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td><td>ALL HTML - Le Portail dédié aux Webmasters</td><td><a href="http://www.allhtml.com/news/news.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td></tr>
+	<tr><td>Liberation.fr - A la une</td><td><a href="http://www.liberation.fr/rss.php" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td><td>ALL HTML - Le Portail dï¿½diï¿½ aux Webmasters</td><td><a href="http://www.allhtml.com/news/news.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td></tr>
 	<tr><td>NouvelObs.com : La une </td><td><a href="http://permanent.nouvelobs.com/cgi/rss/permanent_une" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td><td>BRANCHEZ-VOUS.com - Nouvelles Technologies</td><td><a href="http://manchettes.branchez-vous.com/branchez-vous.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td></tr>
-	<tr><td>RTL Info</td><td><a href="http://www.rtl.fr/referencement/rtlinfo.asp" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td><td>Journal du Net Développeurs</td><td><a href="http://developpeur.journaldunet.com/jdnetdev.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td></tr>
+	<tr><td>RTL Info</td><td><a href="http://www.rtl.fr/referencement/rtlinfo.asp" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td><td>Journal du Net Dï¿½veloppeurs</td><td><a href="http://developpeur.journaldunet.com/jdnetdev.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td></tr>
 	<tr><td>Yahoo! News - Top Stories</td><td><a href="http://rss.news.yahoo.com/rss/topstories/" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td><td>NTIC.org</td><td><a href="http://ntic.org/nouvelles/nouvelles_rss.php" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td></tr>
 	
 	<tr><td colspan="2" align="center">&nbsp;</td><td colspan="2" align="center"></td></tr>
 	
 	<tr><td colspan="2" align="center"><b>Sciences</b></td><td colspan="2" align="center"><b>Sport</b></td></tr>
-	<tr><td>Cité des Sciences</td><td><a href="http://www.cite-sciences.fr/rss/sciences_actu_fr_20.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td><td>RTL Sport</td><td><a href="http://www.rtl.fr/referencement/rtlsport.asp" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td></tr>
+	<tr><td>Citï¿½ des Sciences</td><td><a href="http://www.cite-sciences.fr/rss/sciences_actu_fr_20.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td><td>RTL Sport</td><td><a href="http://www.rtl.fr/referencement/rtlsport.asp" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td></tr>
 	<tr><td>Futura-Sciences.com</td><td><a href="http://www.futura-sciences.com/services/rss/actu10.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td><td>Reuters: Sports</td><td><a href="http://www.microsite.reuters.com/rss/sportsNews" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td></tr>
-	<tr><td>Science Actualités : le Biomagazine</td><td><a href="http://www.cite-sciences.fr/rss/biomagazine_fr_20.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td><td>washingtonpost.com - Sports</td><td><a href="http://www.washingtonpost.com/wp-srv/sports/rssheadlines.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td></tr>
-	<tr><td>Science Actualités : le journal de l'astronomie</td><td><a href="http://www.cite-sciences.fr/rss/astro_fr_20.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td><td>Yahoo! Sport - Suite Football Actualités</td><td><a href="http://hyperlinkextractor.free.fr/rssfiles/yahoo_football.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td></tr>
+	<tr><td>Science Actualitï¿½s : le Biomagazine</td><td><a href="http://www.cite-sciences.fr/rss/biomagazine_fr_20.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td><td>washingtonpost.com - Sports</td><td><a href="http://www.washingtonpost.com/wp-srv/sports/rssheadlines.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td></tr>
+	<tr><td>Science Actualitï¿½s : le journal de l'astronomie</td><td><a href="http://www.cite-sciences.fr/rss/astro_fr_20.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td><td>Yahoo! Sport - Suite Football Actualitï¿½s</td><td><a href="http://hyperlinkextractor.free.fr/rssfiles/yahoo_football.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td></tr>
 	<tr><td>BBC News | Science/Nature | World Edition</td><td><a href="http://news.bbc.co.uk/rss/newsonline_world_edition/science/nature/rss091.xml" target=_blank><img src="<%=resource.getIcon("rss.logoRSS")%>" border="0"></a></td><td></td><td></td></tr>
 	</table>
 	</center>

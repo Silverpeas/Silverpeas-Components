@@ -11,7 +11,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -28,7 +28,7 @@
 <WAComponent>
    <name>chat</name>
    <label>Chat</label>
-   <description>Supporte les processus de communication synchrone de type chat. Des salons peuvent être ouverts sur des thèmes variés. Des communications en mode 'privé' sont possibles, au sein d'un chat multi-participants.</description>
+   <description>Supporte les processus de communication synchrone de type chat. Des salons peuvent ï¿½tre ouverts sur des thï¿½mes variï¿½s. Des communications en mode 'privï¿½' sont possibles, au sein d'un chat multi-participants.</description>
    <suite>02 Gestion Collaborative</suite>
    <visible>@ComponentVisibleChat@</visible>
    <portlet>no</portlet>
@@ -50,7 +50,7 @@
 	    <ParameterType>checkbox</ParameterType>
 	    <ParameterUpdatable>always</ParameterUpdatable>
 	    <ParameterHelp>
-		<ParameterHelpFr>Les salons créés au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
+		<ParameterHelpFr>Les salons crï¿½ï¿½s au sein de cette instance pourront ï¿½tre classï¿½s sur le Plan de Classement</ParameterHelpFr>
 		<ParameterHelpEn></ParameterHelpEn>
 	    </ParameterHelp>
         </Parameter>

@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,16 +23,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="java.util.*"%>
 
 <%@ include file="checkQuestionReply.jsp" %>
 
 <%
-	// récupération des paramètres
+	// rï¿½cupï¿½ration des paramï¿½tres
 	String		profil		= (String) request.getAttribute("Flag");
 	String		userId		= (String) request.getAttribute("UserId");
 	Collection 	questions 	= (Collection) request.getAttribute("questions");
-	String		questionId	= (String) request.getAttribute("QuestionId");  // question en cours à ouvrir
+	String		questionId	= (String) request.getAttribute("QuestionId");  // question en cours ï¿½ ouvrir
 	Collection	categories	= (Collection) request.getAttribute("Categories");
 	
 	profil = "user";
@@ -111,7 +112,7 @@ function initShowHideContent()
 	<% } %>
 }
 
-// dérouler les réponses d'une question dans la liste
+// dï¿½rouler les rï¿½ponses d'une question dans la liste
 function openQuestion(questionId)
 {
 	var obj = document.getElementById('a' + questionId);
@@ -135,7 +136,7 @@ window.onload = initShowHideContent;
 %>
 <FORM METHOD="POST" ACTION="">
 <%
-	// lecture des catégories
+	// lecture des catï¿½gories
 	out.println("<table width=\"100%\">");
 	Iterator itC = categories.iterator();
 	while (itC.hasNext())
@@ -144,14 +145,14 @@ window.onload = initShowHideContent;
 		String categoryId = Integer.toString(uneCategory.getId());
 		String nom = uneCategory.getName();
 		String description = uneCategory.getDescription();
-		// affichage de la catégorie 
+		// affichage de la catï¿½gorie 
 		out.println("<tr>");	
 		out.println("<td colspan=\"2\" width=\"91%\" class=\"titreCateg\">"+nom+"</td>");
 		out.println("</tr>");
 		
 		out.println("<tr><td colspan=\"2\">");
 		Collection questionsByCategory = scc.getQuestionsByCategory(categoryId);
-		// lecture de toutes les questions de la catégorie
+		// lecture de toutes les questions de la catï¿½gorie
 		Iterator it = questionsByCategory.iterator();
 		while(it.hasNext())
 		{
@@ -167,7 +168,7 @@ window.onload = initShowHideContent;
 			// on n'affiche pas les questions en attente pour les lecteurs
 			if (!profil.equals("user") || (profil.equals("user") && status != 0))
 			{
-				// recherche de l'icone de l'état
+				// recherche de l'icone de l'ï¿½tat
 				String etat = "";
 				if (status == 0)
 					etat = resource.getIcon("questionReply.waiting");
@@ -207,7 +208,7 @@ window.onload = initShowHideContent;
 				</td></tr></table>
 				<%
 				
-				// affichage des réponses 
+				// affichage des rï¿½ponses 
 				// ----------------------
 				String aId = "a" + id;
 				Collection replies = question.readReplies();
@@ -215,12 +216,12 @@ window.onload = initShowHideContent;
 				boolean existe = false;
 				if (itR.hasNext())
 					existe = true;
-				// MODIF A VALIDER : toujours afficher la zone des réponses, pour avoir une séparation entre les questions
+				// MODIF A VALIDER : toujours afficher la zone des rï¿½ponses, pour avoir une sï¿½paration entre les questions
 				existe = true;
 				// FIN MODIF A VALIDER
 				if (existe)
 				{
-					// il y a au moins une réponse, on peut créer la zone des réponses 
+					// il y a au moins une rï¿½ponse, on peut crï¿½er la zone des rï¿½ponses 
 					%>
 					<table cellpadding="0" cellspacing="0" width="98%" align="center">
 					<tr>
@@ -235,7 +236,7 @@ window.onload = initShowHideContent;
 							<% } 
 				}
 				
-				// lecture de toutes les réponses de la question en cours
+				// lecture de toutes les rï¿½ponses de la question en cours
 				while (itR.hasNext())
 				{
 					Reply reply = (Reply) itR.next();
@@ -245,7 +246,7 @@ window.onload = initShowHideContent;
 					String titleR = reply.getTitle();
 					String idR = reply.getPK().getId();
 					
-					// recherche du type de la réponse (publique ou privée) pour l'icône à afficher
+					// recherche du type de la rï¿½ponse (publique ou privï¿½e) pour l'icï¿½ne ï¿½ afficher
 					int statusR = reply.getPublicReply();
 					String typeReply = "";
 					if (statusR == 1)
@@ -253,7 +254,7 @@ window.onload = initShowHideContent;
 					else
 						typeReply = resource.getIcon("questionReply.miniconeReponse");
 					
-					// dans le cas du demandeur, regarder si la question est la sienne pour afficher ou non les réponses privées
+					// dans le cas du demandeur, regarder si la question est la sienne pour afficher ou non les rï¿½ponses privï¿½es
 					boolean isPublisherQuestion = true;
 					if (profil.equals("publisher") && statusR == 0)
 					{
@@ -265,9 +266,9 @@ window.onload = initShowHideContent;
 	
 					if ( (statusR == 0 && profil.equals("user")) || (!isPublisherQuestion) )
 					{
-						// on n'affiche pas cette réponse privée car :
-						// soit c'est un lecteur (il ne voit jamais les réponses privées)
-						// soit c'est un publieur et ce n'est pas sa question (il ne voit pas les réponses privées des autres demandeurs)
+						// on n'affiche pas cette rï¿½ponse privï¿½e car :
+						// soit c'est un lecteur (il ne voit jamais les rï¿½ponses privï¿½es)
+						// soit c'est un publieur et ce n'est pas sa question (il ne voit pas les rï¿½ponses privï¿½es des autres demandeurs)
 					}
 					else
 					{ 
@@ -304,7 +305,7 @@ window.onload = initShowHideContent;
 						out.println(board.printAfter());
 						out.println("<br>");
 					}
-				} // fin while (lecture des réponses)
+				} // fin while (lecture des rï¿½ponses)
 				if (existe)
 				{ %>
 					</div>
@@ -318,7 +319,7 @@ window.onload = initShowHideContent;
 	}
 
 
-	// les questions sans catégories
+	// les questions sans catï¿½gories
 	Collection questionsByCategory = scc.getQuestionsByCategory(null);
 	if (questionsByCategory != null)
 	{
@@ -327,7 +328,7 @@ window.onload = initShowHideContent;
 		out.println("<td colspan=\"2\" class=\"titreCateg\">"+nom+"</td>");
 		out.println("</tr>");
 		out.println("<tr><td colspan=\"2\">");
-		// lecture de toutes les questions de la catégorie
+		// lecture de toutes les questions de la catï¿½gorie
 		Iterator it = questionsByCategory.iterator();
 		while(it.hasNext())
 		{
@@ -340,12 +341,12 @@ window.onload = initShowHideContent;
 			String link = question._getPermalink();
 			int status = question.getStatus();
 			// recherche si le profil peut modifier la question
-			// le demandeur ne peut modifier que ses questions sans réponse (en attente)
+			// le demandeur ne peut modifier que ses questions sans rï¿½ponse (en attente)
 			
 			// on n'affiche pas les questions en attente pour les lecteurs
 			if (!profil.equals("user") || (profil.equals("user") && status != 0))
 			{
-				// recherche de l'icone de l'état
+				// recherche de l'icone de l'ï¿½tat
 				String etat = "";
 				if (status == 0)
 					etat = resource.getIcon("questionReply.waiting");
@@ -385,7 +386,7 @@ window.onload = initShowHideContent;
 				</td></tr></table>
 				<%
 				
-				// affichage des réponses 
+				// affichage des rï¿½ponses 
 				// ----------------------
 				String aId = "a" + id;
 				Collection replies = question.readReplies();
@@ -393,12 +394,12 @@ window.onload = initShowHideContent;
 				boolean existe = false;
 				if (itR.hasNext())
 					existe = true;
-				// MODIF A VALIDER : toujours afficher la zone des réponses, pour avoir une séparation entre les questions
+				// MODIF A VALIDER : toujours afficher la zone des rï¿½ponses, pour avoir une sï¿½paration entre les questions
 				existe = true;
 				// FIN MODIF A VALIDER
 				if (existe)
 				{
-					// il y a au moins une réponse, on peut créer la zone des réponses 
+					// il y a au moins une rï¿½ponse, on peut crï¿½er la zone des rï¿½ponses 
 					%>
 					<table cellpadding="0" cellspacing="0" width="98%" align="center">
 					<tr>
@@ -413,7 +414,7 @@ window.onload = initShowHideContent;
 							<% } 
 				}
 				
-				// lecture de toutes les réponses de la question en cours
+				// lecture de toutes les rï¿½ponses de la question en cours
 				while (itR.hasNext())
 				{
 					Reply reply = (Reply) itR.next();
@@ -423,7 +424,7 @@ window.onload = initShowHideContent;
 					String titleR = reply.getTitle();
 					String idR = reply.getPK().getId();
 					
-					// recherche du type de la réponse (publique ou privée) pour l'icône à afficher
+					// recherche du type de la rï¿½ponse (publique ou privï¿½e) pour l'icï¿½ne ï¿½ afficher
 					int statusR = reply.getPublicReply();
 					String typeReply = "";
 					if (statusR == 1)
@@ -431,7 +432,7 @@ window.onload = initShowHideContent;
 					else
 						typeReply = resource.getIcon("questionReply.miniconeReponse");
 					
-					// dans le cas du demandeur, regarder si la question est la sienne pour afficher ou non les réponses privées
+					// dans le cas du demandeur, regarder si la question est la sienne pour afficher ou non les rï¿½ponses privï¿½es
 					boolean isPublisherQuestion = true;
 					if (profil.equals("publisher") && statusR == 0)
 					{
@@ -443,9 +444,9 @@ window.onload = initShowHideContent;
 	
 					if ( (statusR == 0 && profil.equals("user")) || (!isPublisherQuestion) )
 					{
-						// on n'affiche pas cette réponse privée car :
-						// soit c'est un lecteur (il ne voit jamais les réponses privées)
-						// soit c'est un publieur et ce n'est pas sa question (il ne voit pas les réponses privées des autres demandeurs)
+						// on n'affiche pas cette rï¿½ponse privï¿½e car :
+						// soit c'est un lecteur (il ne voit jamais les rï¿½ponses privï¿½es)
+						// soit c'est un publieur et ce n'est pas sa question (il ne voit pas les rï¿½ponses privï¿½es des autres demandeurs)
 					}
 					else
 					{ 
@@ -482,7 +483,7 @@ window.onload = initShowHideContent;
 						out.println(board.printAfter());
 						out.println("<br>");
 					}
-				} // fin while (lecture des réponses)
+				} // fin while (lecture des rï¿½ponses)
 				if (existe)
 				{ %>
 					</div>

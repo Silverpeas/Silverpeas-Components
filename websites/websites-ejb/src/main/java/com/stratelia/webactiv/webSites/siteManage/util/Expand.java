@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.webSites.siteManage.util;
 
 import java.io.File;
@@ -38,7 +39,6 @@ import java.util.zip.ZipFile;
 
 /**
  * Unzip a file.
- * 
  * @author costin@dnt.ro
  * @author <a href="mailto:stefan.bodewig@megabit.net">Stefan Bodewig</a>
  */
@@ -49,9 +49,7 @@ public class Expand {
 
   /**
    * Do the work.
-   * 
-   * @exception IOException
-   *              Thrown in unrecoverable error.
+   * @exception IOException Thrown in unrecoverable error.
    */
   // XXX move it to util or tools
   public void execute() throws WebSitesException {
@@ -70,7 +68,6 @@ public class Expand {
 
   /**
    * ExpandFile
-   * 
    */
   private void expandFile(File srcF, File dir) {
     ZipFile zf = null;
@@ -83,10 +80,10 @@ public class Expand {
       while (entries.hasMoreElements()) {
         ze = entries.nextElement();
         String entryName = dir.getAbsolutePath();
-        if(!entryName.endsWith(File.separator) &&  !ze.getName().startsWith(File.separator)) {
+        if (!entryName.endsWith(File.separator) && !ze.getName().startsWith(File.separator)) {
           entryName = entryName + File.separatorChar + ze.getName();
         } else {
-          entryName  = entryName + ze.getName();
+          entryName = entryName + ze.getName();
         }
         File f = new File(entryName);
         try {
@@ -117,7 +114,7 @@ public class Expand {
     } catch (IOException ioe) {
       SilverTrace.warn("webSites", "Expand.expandFile()",
           "webSites.EXE_ERROR_WHILE_EXPANDING_FILE", "sourceFile = "
-              + srcF.getPath(), ioe);
+          + srcF.getPath(), ioe);
     } finally {
       if (zf != null) {
         try {
@@ -131,11 +128,8 @@ public class Expand {
   }
 
   /**
-   * Set the destination directory. File will be unzipped into the destination
-   * directory.
-   * 
-   * @param d
-   *          Path to the directory.
+   * Set the destination directory. File will be unzipped into the destination directory.
+   * @param d Path to the directory.
    */
   public void setDest(File d) {
     this.dest = d;
@@ -143,9 +137,7 @@ public class Expand {
 
   /**
    * Set the path to zip-file.
-   * 
-   * @param s
-   *          Path to zip-file.
+   * @param s Path to zip-file.
    */
   public void setSrc(File s) {
     this.source = s;

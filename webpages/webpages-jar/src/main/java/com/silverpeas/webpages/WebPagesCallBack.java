@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /*
  * Created on 4 avr. 2005
  *
@@ -52,7 +53,6 @@ import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
 
 /**
  * @author dlesimple
- * 
  */
 public class WebPagesCallBack extends CallBack {
 
@@ -63,22 +63,21 @@ public class WebPagesCallBack extends CallBack {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int,
-   * int, java.lang.String, java.lang.Object)
+   * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int, int,
+   * java.lang.String, java.lang.Object)
    */
   public void doInvoke(int action, int iParam, String sParam, Object extraParam) {
     SilverTrace.info("webPages", "WebPagesCallback.doInvoke()",
         "root.MSG_GEN_ENTER_METHOD", "action = " + action + ", iParam = "
-            + iParam + ", sParam = " + sParam + ", extraParam = "
-            + extraParam.toString());
+        + iParam + ", sParam = " + sParam + ", extraParam = "
+        + extraParam.toString());
 
     if (iParam == -1) {
       SilverTrace.info("webPages", "WebPagesCallback.doInvoke()",
           "root.MSG_GEN_PARAM_VALUE",
           "userId is null. Callback stopped ! action = " + action
-              + ", sParam = " + sParam + ", extraParam = "
-              + extraParam.toString());
+          + ", sParam = " + sParam + ", extraParam = "
+          + extraParam.toString());
       return;
     }
 
@@ -106,7 +105,6 @@ public class WebPagesCallBack extends CallBack {
 
   /*
    * (non-Javadoc)
-   * 
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#subscribe()
    */
   public void subscribe() {
@@ -164,7 +162,7 @@ public class WebPagesCallBack extends CallBack {
       SilverTrace.warn("webPages",
           "WebPagesCallback.sendSubscriptionsNotification()",
           "webPages.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "nodeId = "
-              + nodePK.getId(), e);
+          + nodePK.getId(), e);
     }
   }
 

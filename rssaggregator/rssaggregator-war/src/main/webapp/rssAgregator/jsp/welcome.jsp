@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="check.jsp" %>
 
 <%!
@@ -55,7 +56,7 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
               				channelName = channelName.substring(0, 39)+"...";
               			channelImage 	= channel.getImage();
               			if (spChannel.getDisplayImage() == 1 && channelImage != null && channelImage.getLink()!=null && channelImage.getLocation()!=null) {
-              				//test la taille de l'image associé au channel
+              				//test la taille de l'image associï¿½ au channel
               				String sNewHeight = "";
               				String sNewWidth = "";
               				boolean displayImage = false;
@@ -63,7 +64,7 @@ void displayChannel(SPChannel spChannel, SimpleDateFormat dateFormatter, String 
               					displayImage = true;
               				} else if (channelImage.getHeight()>17 && channelImage.getHeight()<40) {
               					displayImage = true;
-              					//les dimensions de l'image doivent être réduites de manière proportionnelles
+              					//les dimensions de l'image doivent ï¿½tre rï¿½duites de maniï¿½re proportionnelles
               					Float height = Float.valueOf(new Integer(channelImage.getHeight()).toString());
               					Float width = Float.valueOf(new Integer(channelImage.getWidth()).toString());
               					Float maxHeight = new Float(18);

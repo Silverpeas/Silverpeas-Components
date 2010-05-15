@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -223,7 +224,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		/* Creer la page principale */
 /*		scc.createFile(currentPath, nomPage, code);
 
-		/* publications : classer le site dans les themes cochés */
+		/* publications : classer le site dans les themes cochï¿½s */
 /*		ArrayList arrayToClassify = new ArrayList();
 		boolean publish = false;
 		i = 0;
@@ -529,7 +530,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         scc.dePublish(arrayToDeClassify);*/
 
 		
-        /* publications : classer le site dans les themes cochés*/
+        /* publications : classer le site dans les themes cochï¿½s*/
 /*        ArrayList arrayToClassify = new ArrayList();
         boolean publish = false;
 
@@ -898,19 +899,19 @@ if (! searchOk) {
 	//Le cadre
 	Frame frame = gef.getFrame();
 
-	//Le tableau des répertoires
+	//Le tableau des rï¿½pertoires
 	ArrayPane arrayPaneRep = gef.getArrayPane("foldersList", "design.jsp?Action=design&path="+currentPath+"&Id="+id, request, session);
 	arrayPaneRep.setVisibleLineNumber(10);
 	arrayPaneRep.setTitle(resources.getString("ListeRepertoires"));
 
-	//Définition des colonnes du tableau
+	//Dï¿½finition des colonnes du tableau
 	ArrayColumn columnName = arrayPaneRep.addArrayColumn(resources.getString("GML.name"));
 	ArrayColumn columnOperation = arrayPaneRep.addArrayColumn(resources.getString("FolderOperations"));
 	columnOperation.setSortable(false);
 
 	String bodyRep = "";
 
-	//Récupération du tableau dans le haut du cadre
+	//Rï¿½cupï¿½ration du tableau dans le haut du cadre
 	// desc site + path
 	bodyRep += "<br><span class=\"txtnav\">"+Encode.javaStringToHtmlString(nomSite)+"</span>";
 	bodyRep += "<span class=\"txtnote\">&nbsp;("+Encode.javaStringToHtmlString(auteur)+" - "+date+")<br>\n";
@@ -951,7 +952,7 @@ if (! searchOk) {
 	arrayPaneFile.setVisibleLineNumber(10);
 	arrayPaneFile.setTitle(resources.getString("ListeFichiers"));
 
-	//Définition des colonnes du tableau
+	//Dï¿½finition des colonnes du tableau
 	ArrayColumn columnNam = arrayPaneFile.addArrayColumn(resources.getString("GML.name"));
 	ArrayColumn columnOp = arrayPaneFile.addArrayColumn(resources.getString("FolderOperations"));
 	columnOp.setSortable(false);
@@ -996,7 +997,7 @@ if (! searchOk) {
 		}
 	}
 
-    //Récupération du tableau dans le bas du cadre
+    //Rï¿½cupï¿½ration du tableau dans le bas du cadre
     String bodyFile = "<br><br>";
     bodyFile+=arrayPaneFile.print();
     bodyFile += "<br><br>";
@@ -1004,7 +1005,7 @@ if (! searchOk) {
     frame.addBottom(bodyFile);
 
 
-    //Les opérations
+    //Les opï¿½rations
     OperationPane operationPane = window.getOperationPane();
     operationPane.addOperation(addFolder,resources.getString("FolderAdd"), "javascript:onClick=folderAdd('"+id+"', '"+Encode.javaStringToJsString(currentPath)+"')");
     operationPane.addLine();

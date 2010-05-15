@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.projectManager.control;
 
 import java.rmi.RemoteException;
@@ -56,8 +57,7 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class ProjectManagerSessionController extends
-    AbstractComponentSessionController {
+public class ProjectManagerSessionController extends AbstractComponentSessionController {
   private ProjectManagerBm projectManagerBm = null;
   private TaskDetail currentTask = null;
   private Boolean projectDefined = null;
@@ -141,7 +141,7 @@ public class ProjectManagerSessionController extends
     SilverTrace.info("projectManager",
         "ProjectManagerSessionController.buildArbo()",
         "root.MSG_GEN_ENTER_METHOD", "arbo.size()=" + arbo.size()
-            + ", actionId = " + task.getId() + ", level = " + level);
+        + ", actionId = " + task.getId() + ", level = " + level);
 
     enrichirTask(task);
 
@@ -157,7 +157,7 @@ public class ProjectManagerSessionController extends
       if (actionMere != null
           && getRole().equals("responsable")
           && actionMere.getResponsableId() == new Integer(getUserId())
-              .intValue()) {
+          .intValue()) {
         task.setDeletionAvailable(true);
         task.setUpdateAvailable(true);
       } else if (getRole().equals("responsable")
@@ -242,8 +242,7 @@ public class ProjectManagerSessionController extends
   }
 
   /**
-   * @param task
-   *          la tache dont on veut calculer la date de fin
+   * @param task la tache dont on veut calculer la date de fin
    * @return la date de fin (= dateDebut + Charge)
    */
   public Date processEndDate(TaskDetail task) throws RemoteException {
@@ -266,11 +265,9 @@ public class ProjectManagerSessionController extends
   }
 
   /**
-   * Vérifie la date de début d'une tâche. Si la date de début est un jour non
-   * travaillé, la date de début sera le prochain jour travaillé.
-   *
-   * @param task
-   *          la tâche dont la date de début doit être vérifiée
+   * Vérifie la date de début d'une tâche. Si la date de début est un jour non travaillé, la date de
+   * début sera le prochain jour travaillé.
+   * @param task la tâche dont la date de début doit être vérifiée
    * @throws RemoteException
    */
   public void checkBeginDate(TaskDetail task) throws RemoteException {
@@ -568,7 +565,7 @@ public class ProjectManagerSessionController extends
   public TaskDetail getCurrentProject() {
     return currentProject;
   }
-  
+
   public void setCurrentProject(TaskDetail currentProject) {
     this.currentProject = currentProject;
   }
@@ -593,11 +590,8 @@ public class ProjectManagerSessionController extends
 
   /**
    * Change le statut de la date
-   *
-   * @param date
-   *          la date
-   * @param nextStatus
-   *          le nouveau statut de la date
+   * @param date la date
+   * @param nextStatus le nouveau statut de la date
    */
   public void changeDateStatus(String date, String nextStatus)
       throws RemoteException, ParseException {
@@ -621,7 +615,7 @@ public class ProjectManagerSessionController extends
     SilverTrace.info("projectManager",
         "ProjectManagerSessionController.changeDayOfWeekStatus()",
         "root.MSG_GEN_ENTER_METHOD", "year=" + year + ", month=" + month
-            + ", day=" + day);
+        + ", day=" + day);
 
     int iMonth = new Integer(month).intValue();
 
@@ -713,7 +707,7 @@ public class ProjectManagerSessionController extends
       try {
         ProjectManagerBmHome projectManagerBmHome = (ProjectManagerBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.PROJECTMANAGERBM_EJBHOME,
-                ProjectManagerBmHome.class);
+            ProjectManagerBmHome.class);
         projectManagerBm = projectManagerBmHome.create();
       } catch (Exception e) {
         throw new ProjectManagerRuntimeException(

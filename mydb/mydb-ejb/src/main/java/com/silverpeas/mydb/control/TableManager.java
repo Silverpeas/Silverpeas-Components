@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.mydb.control;
 
 import java.lang.reflect.Constructor;
@@ -43,9 +44,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 
 /**
- * Manager used to create or modify a database table, not its content but its
- * description. For the moment, only creation mode is managed.
- * 
+ * Manager used to create or modify a database table, not its content but its description. For the
+ * moment, only creation mode is managed.
  * @author Antoine HEDIN
  */
 public class TableManager {
@@ -129,11 +129,8 @@ public class TableManager {
   }
 
   /**
-   * Updates the primary key. Forces the corresponding table's columns to be not
-   * nullable.
-   * 
-   * @param newPrimaryKey
-   *          The reference primary key.
+   * Updates the primary key. Forces the corresponding table's columns to be not nullable.
+   * @param newPrimaryKey The reference primary key.
    */
   public void updatePrimaryKey(PrimaryKey newPrimaryKey) {
     primaryKey.update(newPrimaryKey);
@@ -141,13 +138,10 @@ public class TableManager {
   }
 
   /**
-   * Updates the column corresponding to the column and the index given as
-   * parameters. Updates the keys which reference it.
-   * 
-   * @param column
-   *          The reference column.
-   * @param index
-   *          The index of the column to update.
+   * Updates the column corresponding to the column and the index given as parameters. Updates the
+   * keys which reference it.
+   * @param column The reference column.
+   * @param index The index of the column to update.
    */
   public void updateColumn(DbColumn column, int index) {
     DbColumn columnToUpdate = table.getColumn(index);
@@ -163,16 +157,14 @@ public class TableManager {
     }
     if (column.hasDefaultValue()
         && (foreignKeys.isForeignKey(newColumnName) || unicityKeys
-            .isUnicityKey(newColumnName))) {
+        .isUnicityKey(newColumnName))) {
       table.forceColumnNoDefaultValue(newColumnName);
     }
   }
 
   /**
    * Removes from the table the column corresponding to the index.
-   * 
-   * @param index
-   *          The index of the column to delete.
+   * @param index The index of the column to delete.
    */
   public void removeColumn(int index) {
     String columnName = table.getColumn(index).getName();
@@ -182,13 +174,9 @@ public class TableManager {
   }
 
   /**
-   * Checks if the current table's name is valid. Fills the error label if an
-   * error is detected.
-   * 
-   * @param tableNames
-   *          The other tables names.
-   * @param resources
-   *          The resources wrapper.
+   * Checks if the current table's name is valid. Fills the error label if an error is detected.
+   * @param tableNames The other tables names.
+   * @param resources The resources wrapper.
    * @return True if the current table's name is valid.
    */
   public boolean isValidTableName(String[] tableNames,
@@ -210,17 +198,11 @@ public class TableManager {
   }
 
   /**
-   * Checks if the column is valid. Fills the error label if an error is
-   * detected. The following characteristics of the columns are checked : name,
-   * data type, default value.
-   * 
-   * @param column
-   *          The column to check.
-   * @param resources
-   *          The resources wrapper.
-   * @param exceptedIndex
-   *          The index of the column (to avoid comparing the column with
-   *          itself).
+   * Checks if the column is valid. Fills the error label if an error is detected. The following
+   * characteristics of the columns are checked : name, data type, default value.
+   * @param column The column to check.
+   * @param resources The resources wrapper.
+   * @param exceptedIndex The index of the column (to avoid comparing the column with itself).
    * @return True if the column is valid.
    */
   public boolean isValidColumn(DbColumn column, ResourcesWrapper resources,
@@ -232,10 +214,8 @@ public class TableManager {
   }
 
   /**
-   * @param column
-   *          The column to check.
-   * @param resources
-   *          The resources wrapper.
+   * @param column The column to check.
+   * @param resources The resources wrapper.
    * @return True if the data type of the column has been set.
    */
   private boolean isValidColumnType(DbColumn column, ResourcesWrapper resources) {
@@ -247,12 +227,9 @@ public class TableManager {
   }
 
   /**
-   * @param column
-   *          The column to check.
-   * @param resources
-   *          The resources wrapper.
-   * @return True if the default value of the column corresponds to its data
-   *         type.
+   * @param column The column to check.
+   * @param resources The resources wrapper.
+   * @return True if the default value of the column corresponds to its data type.
    */
   @SuppressWarnings("unchecked")
   private boolean isValidColumnDefaultValue(DbColumn column,
@@ -273,7 +250,7 @@ public class TableManager {
       } catch (Exception e) {
         SilverTrace.warn("myDB", "TableManager.isValidColumnDefaultValue()",
             "myDB.MSG_CANNOT_GET_CONSTRUCTOR_OR_METHOD", "Class="
-                + clazz.getName(), e);
+            + clazz.getName(), e);
       }
       try {
         if (constructor != null) {
@@ -294,14 +271,9 @@ public class TableManager {
    * - the name has to be valorized.<br>
    * - it has to be different from the database keywords.<br>
    * - it must not be the same of an other column or key of the table.
-   * 
-   * @param object
-   *          The object (column or key) to check.
-   * @param resources
-   *          The resources wrapper.
-   * @param index
-   *          The index of the object (to avoid comparing the object with
-   *          itself).
+   * @param object The object (column or key) to check.
+   * @param resources The resources wrapper.
+   * @param index The index of the object (to avoid comparing the object with itself).
    * @return True if the name of the object is valid.
    */
   public boolean isValidKeyName(Object object, ResourcesWrapper resources,
@@ -386,8 +358,7 @@ public class TableManager {
   }
 
   /**
-   * @return The SQL query to call to create the current table (columns and
-   *         primary key).
+   * @return The SQL query to call to create the current table (columns and primary key).
    */
   public String getTableCreationQuery() {
     StringBuffer querySb = new StringBuffer(200).append("CREATE TABLE ")
@@ -459,17 +430,11 @@ public class TableManager {
   }
 
   /**
-   * Updates a column consecutively to an error detected in a foreign key which
-   * references it. The type or the size of the column is so modified to
-   * correspond to the description of the key.
-   * 
-   * @param name
-   *          the column's name.
-   * @param errorType
-   *          The error type.
-   * @param value
-   *          The new value, corresponding to the new type or size of the
-   *          column.
+   * Updates a column consecutively to an error detected in a foreign key which references it. The
+   * type or the size of the column is so modified to correspond to the description of the key.
+   * @param name the column's name.
+   * @param errorType The error type.
+   * @param value The new value, corresponding to the new type or size of the column.
    */
   public void updateColumn(String name, int errorType, String value) {
     DbColumn column = table.getColumn(name);
@@ -488,16 +453,13 @@ public class TableManager {
   }
 
   /**
-   * Each line of the returned table contains informations concerning a column
-   * of the table : - the name of the column - the names of the keys which would
-   * be modified if the column is removed - the names of the keys which would be
-   * removed if the column is removed
-   * 
-   * @return A list of the links which exist between the columns of the table
-   *         and its different keys. This list is used to propose warning
-   *         messages to the user when he decides to delete a column, to inform
-   *         him about the consequences of deleting a column on table's keys
-   *         (modification or deletion of them).
+   * Each line of the returned table contains informations concerning a column of the table : - the
+   * name of the column - the names of the keys which would be modified if the column is removed -
+   * the names of the keys which would be removed if the column is removed
+   * @return A list of the links which exist between the columns of the table and its different keys.
+   * This list is used to propose warning messages to the user when he decides to delete a column,
+   * to inform him about the consequences of deleting a column on table's keys (modification or
+   * deletion of them).
    */
   public String[][] getKeysImpacts() {
     String[] columnsNames = table.getColumnsNames();

@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -31,12 +31,10 @@ import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciato
 import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 
 /**
- * 
  * @author PHiL
  * @version
  */
-public class ChatInstanciator extends Object implements
-    ComponentsInstanciatorIntf {
+public class ChatInstanciator extends Object implements ComponentsInstanciatorIntf {
   public ChatInstanciator() {
   }
 
@@ -44,7 +42,7 @@ public class ChatInstanciator extends Object implements
       String userId) throws InstanciationException {
     SilverTrace.info("chat", "ChatInstanciator.create()",
         "root.MSG_GEN_PARAM_VALUE", "spaceId = " + spaceId
-            + " , componentId = " + componentId);
+        + " , componentId = " + componentId);
   }
 
   public void delete(Connection con, String spaceId, String componentId,
@@ -52,7 +50,7 @@ public class ChatInstanciator extends Object implements
 
     SilverTrace.info("chat", "ChatInstanciator.create()",
         "root.MSG_GEN_PARAM_VALUE", "spaceId = " + spaceId
-            + " , componentId = " + componentId);
+        + " , componentId = " + componentId);
 
     ChatDataAccess chatDAO = new ChatDataAccess(componentId);
 

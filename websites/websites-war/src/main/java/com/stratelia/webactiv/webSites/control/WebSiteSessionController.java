@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /*
  * webSiteSessionController.java
  *
@@ -71,8 +72,7 @@ import com.stratelia.webactiv.webSites.siteManage.model.IconDetail;
 import com.stratelia.webactiv.webSites.siteManage.model.SiteDetail;
 import com.stratelia.webactiv.webSites.siteManage.util.Expand;
 
-public class WebSiteSessionController extends
-    AbstractComponentSessionController {
+public class WebSiteSessionController extends AbstractComponentSessionController {
 
   /*-------------- Attributs ------------------*/
   private WebSiteBm webSiteEjb = null;
@@ -93,7 +93,7 @@ public class WebSiteSessionController extends
    */
   public WebSiteSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
-     super(mainSessionCtrl, componentContext,
+    super(mainSessionCtrl, componentContext,
         "com.stratelia.webactiv.webSites.multilang.webSiteBundle", null,
         "com.stratelia.webactiv.webSites.settings.webSiteSettings");
     initEJB();
@@ -204,7 +204,7 @@ public class WebSiteSessionController extends
     return this.sessionTopic;
   }
 
-   public synchronized SiteDetail getSessionSite() {
+  public synchronized SiteDetail getSessionSite() {
     return this.sessionSite;
   }
 
@@ -262,7 +262,7 @@ public class WebSiteSessionController extends
   /*-------------- Methodes métier de l'interface
   WebSiteSessionController ------------------*/
 
-  /*   ** Gestion des thèmes ** */
+  /*    ** Gestion des thèmes ** */
 
   public synchronized FolderDetail getFolder(String id)
       throws WebSitesException {
@@ -274,7 +274,7 @@ public class WebSiteSessionController extends
     } catch (RemoteException re) {
       throw new WebSitesException("WebSiteSessionController.getFolder()",
           SilverpeasException.ERROR, "webSites.EX_GET_FOLDER_FAILED", "id = "
-              + id, re);
+          + id, re);
     }
   }
 
@@ -344,7 +344,7 @@ public class WebSiteSessionController extends
     webSiteEjb.changeTopicsOrder(way, nodePK, getSessionTopic().getNodePK());
   }
 
-  /*   ** gestion, des publi ** */
+  /*    ** gestion, des publi ** */
 
   public synchronized PublicationDetail getPublicationDetail(String pubId)
       throws WebSitesException {
@@ -403,7 +403,7 @@ public class WebSiteSessionController extends
           "WebSiteSessionController.addPublicationToFolder()",
           SilverpeasException.ERROR,
           "webSites.EX_PUBLICATION_ADD_TO_NODE_FAILED", "pubId = " + pubId
-              + ", folderId = " + folderId, re);
+          + ", folderId = " + folderId, re);
     }
   }
 
@@ -419,7 +419,7 @@ public class WebSiteSessionController extends
           "WebSiteSessionController.removePublicationToFolder()",
           SilverpeasException.ERROR,
           "webSites.EX_PUBLICATION_DELETE_TO_NODE_FAILED", "pubId = " + pubId
-              + ", folderId = " + folderId, re);
+          + ", folderId = " + folderId, re);
     }
   }
 
@@ -453,7 +453,7 @@ public class WebSiteSessionController extends
     webSiteEjb.changePubsOrder(pubId, getSessionTopic().getNodePK(), direction);
   }
 
-  /*   ** Gestion des sites ** */
+  /*    ** Gestion des sites ** */
 
   /**
    * setSiteName
@@ -513,7 +513,7 @@ public class WebSiteSessionController extends
     } catch (RemoteException re) {
       throw new WebSitesException("WebSiteSessionController.getIcons(id)",
           SilverpeasException.ERROR, "webSites.EX_GET_ICONS_FAILED", "siteId ="
-              + id, re);
+          + id, re);
     }
   }
 
@@ -553,8 +553,7 @@ public class WebSiteSessionController extends
   public synchronized Collection<File> getAllSubFolder(String chemin)
       throws WebSitesException {
     /*
-     * chemin du repertoire =
-     * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite
+     * chemin du repertoire = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite
      */
 
     try {
@@ -571,8 +570,7 @@ public class WebSiteSessionController extends
   public synchronized Collection<File> getAllFile(String chemin)
       throws WebSitesException {
     /*
-     * chemin du repertoire =
-     * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite
+     * chemin du repertoire = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite
      */
 
     try {
@@ -589,8 +587,7 @@ public class WebSiteSessionController extends
   public synchronized Collection<File> getAllImages(String chemin)
       throws WebSitesException {
     /*
-     * chemin du repertoire =
-     * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep
+     * chemin du repertoire = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep
      */
 
     try {
@@ -607,8 +604,7 @@ public class WebSiteSessionController extends
   public synchronized Collection<File> getAllWebPages2(String chemin)
       throws WebSitesException {
     /*
-     * chemin du repertoire =
-     * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep
+     * chemin du repertoire = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep
      */
 
     try {
@@ -742,8 +738,7 @@ public class WebSiteSessionController extends
   public synchronized void createFile(String cheminFichier, String nomFichier,
       String contenuFichier) throws WebSitesException {
     /*
-     * cheminFichier =
-     * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep1\\rep2
+     * cheminFichier = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep1\\rep2
      */
     /* nomFichier = index.html */
     /* contenuFichier = code du fichier : "<HTML><TITLE>...." */
@@ -763,14 +758,12 @@ public class WebSiteSessionController extends
       String cheminFichierZip) throws WebSitesException {
     SilverTrace.debug("webSites", "WebSiteSessionController.unzip",
         "root.MSG_GEN_ENTER_METHOD", "cheminDirResultat = " + cheminDirResultat
-            + ", cheminFichierZip = " + cheminFichierZip);
+        + ", cheminFichierZip = " + cheminFichierZip);
     /*
-     * cheminDirResultat =
-     * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite
+     * cheminDirResultat = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite
      */
     /*
-     * cheminFichierZip =
-     * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\toto.zip
+     * cheminFichierZip = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\toto.zip
      */
     try {
       Expand exp = new Expand();
@@ -838,8 +831,7 @@ public class WebSiteSessionController extends
   public synchronized void deleteDirectory(String chemin)
       throws WebSitesException {
     /*
-     * cheminDirResultat =
-     * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite
+     * cheminDirResultat = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite
      */
     boolean result = false;
 
@@ -902,9 +894,7 @@ public class WebSiteSessionController extends
    */
   public synchronized void deleteFile(String chemin) throws WebSitesException {
     /*
-     * chemin =
-     * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\Folder\
-     * \File.html
+     * chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\Folder\ \File.html
      */
     try {
       FileFolderManager.deleteFile(chemin);
@@ -920,9 +910,8 @@ public class WebSiteSessionController extends
   public synchronized String getCode(String cheminFichier, String nomFichier)
       throws WebSitesException {
     /*
-     * cheminFichier =
-     * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\Folder
-     * nomFichier = File.html
+     * cheminFichier = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\Folder nomFichier =
+     * File.html
      */
     try {
       return FileFolderManager.getCode(cheminFichier, nomFichier);

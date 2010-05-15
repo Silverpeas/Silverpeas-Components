@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,8 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
----*/
+ ---*/
 
 package com.silverpeas.whitePages.servlets;
 
@@ -53,9 +54,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 public class WhitePagesRequestRouter extends ComponentRequestRouter {
 
   /**
-   * This method has to be implemented in the component request rooter class.
-   * returns the session control bean name to be put in the request object ex :
-   * for whitePages, returns "whitePages"
+   * This method has to be implemented in the component request rooter class. returns the session
+   * control bean name to be put in the request object ex : for whitePages, returns "whitePages"
    */
   public String getSessionControlBeanName() {
     SilverTrace.info("whitePages",
@@ -65,30 +65,27 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
 
   /*
    * (non-Javadoc)
-   *
    * @seecom.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter#
-   * createComponentSessionController
-   * (com.stratelia.silverpeas.peasCore.MainSessionController,
+   * createComponentSessionController (com.stratelia.silverpeas.peasCore.MainSessionController,
    * com.stratelia.silverpeas.peasCore.ComponentContext)
    */
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     SilverTrace.info("whitePages",
         "WhitePagesRequestRouter.createComponentSessionController()", "", "");
-    ComponentSessionController component = (ComponentSessionController) new WhitePagesSessionController(
-        mainSessionCtrl, componentContext,
-        "com.silverpeas.whitePages.multilang.whitePagesBundle",
-        "com.silverpeas.whitePages.settings.whitePagesIcons");
+    ComponentSessionController component =
+        (ComponentSessionController) new WhitePagesSessionController(
+            mainSessionCtrl, componentContext,
+            "com.silverpeas.whitePages.multilang.whitePagesBundle",
+            "com.silverpeas.whitePages.settings.whitePagesIcons");
 
     return component;
   }
 
   /*
    * (non-Javadoc)
-   *
    * @seecom.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter#
-   * getDestination(java.lang.String,
-   * com.stratelia.silverpeas.peasCore.ComponentSessionController,
+   * getDestination(java.lang.String, com.stratelia.silverpeas.peasCore.ComponentSessionController,
    * javax.servlet.http.HttpServletRequest)
    */
   public String getDestination(String function,
@@ -125,9 +122,8 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
           scc.initCurrentUserCards(); // re init combo des fiches
 
           /*
-           * If user has been redirected to this page, he must create his own
-           * card, so user is redirected to his own card creation (excepted if
-           * card already exists).
+           * If user has been redirected to this page, he must create his own card, so user is
+           * redirected to his own card creation (excepted if card already exists).
            */
           HttpSession session = request.getSession(true);
           if ((session.getAttribute(LoginFilter.ATTRIBUTE_FORCE_CARD_CREATION) != null)) {
@@ -225,8 +221,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
         }
 
         /*
-         * else if user is administrator, the card is for the user he has just
-         * selected...
+         * else if user is administrator, the card is for the user he has just selected...
          */
         else if (flag.equals("admin")) {
           user = scc.getUserDetailSelected();
@@ -307,8 +302,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
         scc.saveCard();
 
         /*
-         * If user has been forced to create his own card and done it, removes
-         * forced redirection.
+         * If user has been forced to create his own card and done it, removes forced redirection.
          */
         // HttpSession session = request.getSession(true);
         // session.removeAttribute(LoginFilter.ATTRIBUTE_FORCE_CARD_CREATION);
@@ -723,12 +717,9 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * Extract the container context from the request and save it in the session
-   * controller.
-   *
-   * If this context is null then get the last one from the session controller.
-   *
-   * So the containerContext is the same in the request and the session.
+   * Extract the container context from the request and save it in the session controller. If this
+   * context is null then get the last one from the session controller. So the containerContext is
+   * the same in the request and the session.
    */
   private void resetContainerContext(WhitePagesSessionController scc,
       HttpServletRequest request) {

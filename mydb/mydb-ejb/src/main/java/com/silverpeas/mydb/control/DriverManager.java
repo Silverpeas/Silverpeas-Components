@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.mydb.control;
 
 import java.io.InputStream;
@@ -39,9 +40,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.XMLConfigurationStore;
 
 /**
- * Database driver manager. All available drivers are described in MyDB setting
- * file.
- * 
+ * Database driver manager. All available drivers are described in MyDB setting file.
  * @author Antoine HEDIN
  */
 public class DriverManager {
@@ -133,8 +132,7 @@ public class DriverManager {
   }
 
   /**
-   * @param driverName
-   *          The name of searched driver.
+   * @param driverName The name of searched driver.
    * @return The driver corresponding to the name given as parameter.
    */
   public Driver getDriver(String driverName) {
@@ -144,9 +142,9 @@ public class DriverManager {
           driverName = driversNames[0];
           SilverTrace
               .info("myDB", "DriverManager.getDriver()",
-                  "myDB.MSG_DRIVER_UNDEFINED",
-                  "driverName undefined ! default one used instead = "
-                      + driverName);
+              "myDB.MSG_DRIVER_UNDEFINED",
+              "driverName undefined ! default one used instead = "
+              + driverName);
         }
         driver = registerAndInstanciateDriver(driverName);
       } catch (Exception e) {
@@ -186,8 +184,7 @@ public class DriverManager {
   }
 
   /**
-   * @param driverName
-   *          The name of the driver.
+   * @param driverName The name of the driver.
    * @return the JDBC URLs corresponding to the name given as parameter.
    */
   public Collection getJdbcUrlsForDriver(String driverName) {
@@ -197,50 +194,40 @@ public class DriverManager {
   }
 
   /**
-   * @param driverName
-   *          The name of the driver.
-   * @return the description of the driver corresponding to the name given as
-   *         parameter.
+   * @param driverName The name of the driver.
+   * @return the description of the driver corresponding to the name given as parameter.
    */
   public String getDescriptionForDriver(String driverName) {
     return driversDescriptions[searchDriverIndex(driverName)];
   }
 
   /**
-   * @param driverName
-   *          The name of the driver.
-   * @return the driver class name of the driver corresponding to the name given
-   *         as parameter.
+   * @param driverName The name of the driver.
+   * @return the driver class name of the driver corresponding to the name given as parameter.
    */
   public String getDriverClassName(String driverName) {
     return driversClassNames[searchDriverIndex(driverName)];
   }
 
   /**
-   * @param driverName
-   *          The name of the driver.
-   * @return the list of keywords of the driver corresponding to the name given
-   *         as parameter.
+   * @param driverName The name of the driver.
+   * @return the list of keywords of the driver corresponding to the name given as parameter.
    */
   public ArrayList getDatabaseKeywordsListForDriver(String driverName) {
     return databaseKeywordsLists[searchDriverIndex(driverName)];
   }
 
   /**
-   * @param driverName
-   *          The name of the driver.
-   * @return the list of data types of the driver corresponding to the name
-   *         given as parameter.
+   * @param driverName The name of the driver.
+   * @return the list of data types of the driver corresponding to the name given as parameter.
    */
   public DataTypeList getDataTypeListForDriver(String driverName) {
     return dataTypesLists[searchDriverIndex(driverName)];
   }
 
   /**
-   * @param driverName
-   *          The name of the driver.
-   * @return An instance of the driver corresponding to the name given as
-   *         parameter.
+   * @param driverName The name of the driver.
+   * @return An instance of the driver corresponding to the name given as parameter.
    * @throws ClassNotFoundException
    * @throws InstantiationException
    * @throws IllegalAccessException
@@ -259,10 +246,8 @@ public class DriverManager {
   }
 
   /**
-   * @param driverName
-   *          The name of the driver.
-   * @return The index of the driver corresponding to the name given as
-   *         parameter.
+   * @param driverName The name of the driver.
+   * @return The index of the driver corresponding to the name given as parameter.
    */
   private int searchDriverIndex(String driverName) {
     SilverTrace.info("myDB", "DriverManager.searchDriverIndex()",

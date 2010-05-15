@@ -11,7 +11,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -27,8 +27,8 @@
 
 <WAComponent>
   <name>questionReply</name>
-  <label>Questions/Réponses - Questions aux experts</label>
-  <description>Permet de gérer la base de connaissance des questions posées par les utilisateurs vers les experts, localiser automatiquement l'expert apte à répondre à une question et gérer la distribution de la réponse vers les utilisateurs.</description>
+  <label>Questions/Rï¿½ponses - Questions aux experts</label>
+  <description>Permet de gï¿½rer la base de connaissance des questions posï¿½es par les utilisateurs vers les experts, localiser automatiquement l'expert apte ï¿½ rï¿½pondre ï¿½ une question et gï¿½rer la distribution de la rï¿½ponse vers les utilisateurs.</description>
   <suite>03 Gestion de la connaissance</suite>
    <portlet>yes</portlet>
   <visible>@ComponentVisibleQuestionReply@</visible>
@@ -42,27 +42,27 @@
   <Parameters>
   	<Parameter>
 		<ParameterName>privateRepliesUsed</ParameterName>
-		<ParameterLabel>Utilisation des réponses privées</ParameterLabel>
+		<ParameterLabel>Utilisation des rï¿½ponses privï¿½es</ParameterLabel>
 		<ParameterType>checkbox</ParameterType>
 		<ParameterValue>no</ParameterValue>
 		<ParameterMandatory>Y</ParameterMandatory>
 		<ParameterUpdatable>always</ParameterUpdatable>
     	<ParameterOrder>1</ParameterOrder>
 		<ParameterHelp>
-         	<ParameterHelpFr>Possibilité de créer des réponses privées</ParameterHelpFr>
+         	<ParameterHelpFr>Possibilitï¿½ de crï¿½er des rï¿½ponses privï¿½es</ParameterHelpFr>
          	<ParameterHelpEn></ParameterHelpEn>
 		</ParameterHelp>
 	</Parameter>
     <Parameter>
 		<ParameterName>sortable</ParameterName>
-		<ParameterLabel>Questions triées par ordre</ParameterLabel>
+		<ParameterLabel>Questions triï¿½es par ordre</ParameterLabel>
 		<ParameterType>checkbox</ParameterType>
 		<ParameterValue>no</ParameterValue>
 		<ParameterMandatory>N</ParameterMandatory>
 		<ParameterUpdatable>always</ParameterUpdatable>
     	<ParameterOrder>2</ParameterOrder>
 		<ParameterHelp>
-         	<ParameterHelpFr>Possibilité de trier les question</ParameterHelpFr>
+         	<ParameterHelpFr>Possibilitï¿½ de trier les question</ParameterHelpFr>
          	<ParameterHelpEn>Questions are sortable</ParameterHelpEn>
 		</ParameterHelp>
 	</Parameter>

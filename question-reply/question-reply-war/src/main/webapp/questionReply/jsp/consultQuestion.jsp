@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="java.util.*"%>
 <%@ page import="com.stratelia.silverpeas.containerManager.*"%>
 
@@ -93,7 +94,7 @@ function deleteConfirm(replyId)
 	out.println(window.printBefore());    
 
 	boolean updateQ = true;
-	// le demandeur ne peut pas modifier les questions qui ne sont pas à lui ou qui n'ont pas de réponses
+	// le demandeur ne peut pas modifier les questions qui ne sont pas ï¿½ lui ou qui n'ont pas de rï¿½ponses
 	if (profil.equals("publisher") && !question.getCreatorId().equals(userId))
 		updateQ = false;
 	else if (profil.equals("publisher"))
@@ -134,7 +135,7 @@ function deleteConfirm(replyId)
 	</tr>
 </table>
 <% out.println(board.printAfter()); 
-// affichage des réponses
+// affichage des rï¿½ponses
 
 	while(it.hasNext())
 	{

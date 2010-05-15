@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /*
  * Created on 25 oct. 2004
  *
@@ -45,7 +46,6 @@ import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
  * @author neysseri
- *
  */
 public class ProjectManagerDAO {
 
@@ -318,7 +318,7 @@ public class ProjectManagerDAO {
         "root.MSG_GEN_PARAM_VALUE", query.toString());
     SilverTrace.info("projectManager", "ProjectManagerDAO.getResources()",
         "root.MSG_GEN_PARAM_VALUE", "taskId = " + taskId + " instanceId = "
-            + instanceId);
+        + instanceId);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -464,10 +464,8 @@ public class ProjectManagerDAO {
   }
 
   /**
-   * @param con
-   *          a Connection to database
-   * @param actionId
-   *          the root of the tree
+   * @param con a Connection to database
+   * @param actionId the root of the tree
    * @return the tree - a List of TaskDetail
    * @throws SQLException
    */
@@ -793,7 +791,7 @@ public class ProjectManagerDAO {
         // les tasks en retard
         sql.append("( dateFin < '")
             .append(ProjectManagerDAO.date2DBDate(today)).append(
-                "' AND avancement = 100 ) ");
+            "' AND avancement = 100 ) ");
       } else {
         // les tasks qui ne sont pas en retard
         sql.append("( dateFin >= '").append(

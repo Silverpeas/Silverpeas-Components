@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.mydb.control;
 
 import java.sql.Types;
@@ -50,7 +51,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * Database record form manager.
- * 
  * @author Antoine HEDIN
  */
 public class FormManager {
@@ -66,21 +66,13 @@ public class FormManager {
   }
 
   /**
-   * @param dbTable
-   *          The table which the record belongs to.
-   * @param resources
-   *          The resources wrapper.
-   * @param consultation
-   *          The flag indicating if data have to be displayed as labels or
-   *          input fields.
-   * @param newRecord
-   *          The flag indicating if the record is a new or a modified one.
-   * @param beanName
-   *          The bean name.
-   * @param componentId
-   *          The component name.
-   * @param method
-   *          The method name.
+   * @param dbTable The table which the record belongs to.
+   * @param resources The resources wrapper.
+   * @param consultation The flag indicating if data have to be displayed as labels or input fields.
+   * @param newRecord The flag indicating if the record is a new or a modified one.
+   * @param beanName The bean name.
+   * @param componentId The component name.
+   * @param method The method name.
    * @return The XML form describing the concerned database record.
    * @throws MyDBException
    */
@@ -97,23 +89,14 @@ public class FormManager {
   }
 
   /**
-   * @param dbTable
-   *          The table which the record belongs to.
-   * @param resources
-   *          The resources wrapper.
-   * @param consultation
-   *          The flag indicating if data have to be displayed as labels or
-   *          input fields.
-   * @param newRecord
-   *          The flag indicating if the record is a new or a modified one.
-   * @param beanName
-   *          The bean name.
-   * @param componentId
-   *          The component name.
-   * @param method
-   *          The method name.
-   * @return The template needed to create the XML form describing the concerned
-   *         database record.
+   * @param dbTable The table which the record belongs to.
+   * @param resources The resources wrapper.
+   * @param consultation The flag indicating if data have to be displayed as labels or input fields.
+   * @param newRecord The flag indicating if the record is a new or a modified one.
+   * @param beanName The bean name.
+   * @param componentId The component name.
+   * @param method The method name.
+   * @return The template needed to create the XML form describing the concerned database record.
    * @throws MyDBException
    */
   public RecordTemplate getRecordTemplate(DbTable dbTable,
@@ -215,8 +198,7 @@ public class FormManager {
   }
 
   /**
-   * @param dbLine
-   *          The database record line.
+   * @param dbLine The database record line.
    * @return The data record corresponding to the line.
    * @throws FormException
    */
@@ -230,8 +212,7 @@ public class FormManager {
   }
 
   /**
-   * @param formParameters
-   *          the names and values of the form parameters.
+   * @param formParameters the names and values of the form parameters.
    * @return The data record corresponding to the database record.
    * @throws FormException
    */
@@ -244,11 +225,8 @@ public class FormManager {
 
   /**
    * Fills the data record fields with the data given as parameters.
-   * 
-   * @param defaultRecord
-   *          The default record.
-   * @param data
-   *          The data used to fill the data record.
+   * @param defaultRecord The default record.
+   * @param data The data used to fill the data record.
    * @throws FormException
    */
   private void fillDataRecord(DataRecord defaultRecord, String[][] data)

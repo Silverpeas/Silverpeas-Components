@@ -11,7 +11,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -28,7 +28,7 @@
 <WAComponent>
    <name>webSites</name>
    <label>Designer de site web - WebSite Designer</label>
-   <description>Idem à l'annuaire de sites. Propose également des services pour créer un site Web, via un éditeur WYSIWYG. Permet enfin de télécharger un site statique.</description>
+   <description>Idem ï¿½ l'annuaire de sites. Propose ï¿½galement des services pour crï¿½er un site Web, via un ï¿½diteur WYSIWYG. Permet enfin de tï¿½lï¿½charger un site statique.</description>
    <suite>04 Gestion de contenu</suite>
    <visible>@ComponentVisibleWebSites@</visible>
    <portlet>yes</portlet>
@@ -50,19 +50,19 @@
 		<ParameterType>checkbox</ParameterType>
 		<ParameterUpdatable>always</ParameterUpdatable>
 		<ParameterHelp>
-			<ParameterHelpFr>Les bookmarks et/ou sites saisis au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
+			<ParameterHelpFr>Les bookmarks et/ou sites saisis au sein de cette instance pourront ï¿½tre classï¿½s sur le Plan de Classement</ParameterHelpFr>
 			<ParameterHelpEn></ParameterHelpEn>
 		</ParameterHelp>
 	</Parameter>
 	<Parameter>
         <ParameterName>sortedTopics</ParameterName>
-        <ParameterLabel>Thèmes / liens ordonnés</ParameterLabel>
+        <ParameterLabel>Thï¿½mes / liens ordonnï¿½s</ParameterLabel>
         <ParameterValue>no</ParameterValue>
         <ParameterMandatory>Y</ParameterMandatory>
 	    <ParameterType>checkbox</ParameterType>
 	    <ParameterUpdatable>always</ParameterUpdatable>
 	    <ParameterHelp>
-			<ParameterHelpFr>Ce paramètre permet d'ordonner les thèmes et les liens</ParameterHelpFr>
+			<ParameterHelpFr>Ce paramï¿½tre permet d'ordonner les thï¿½mes et les liens</ParameterHelpFr>
 			<ParameterHelpEn>This parameter allows to order topics and links</ParameterHelpEn>
 	    </ParameterHelp>
     </Parameter>

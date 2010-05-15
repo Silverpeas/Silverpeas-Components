@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -143,7 +144,7 @@ String downIconSrc=m_context+"/util/icons/arrow/arrowDown.gif";
 String pxSrc=m_context+"/util/viewGenerator/icons/15px.gif";
 //CBO : FIN ADD
 
-//Récupération des paramètres
+//Rï¿½cupï¿½ration des paramï¿½tres
 action = (String) request.getParameter("Action");
 id = (String) request.getParameter("Id");
 //CBO : REMOVE childId = (String) request.getParameter("ChildId");
@@ -660,7 +661,7 @@ function pubUp(pubId) {
 		browseBar.setComponentName(componentLabel, "organize.jsp");
 		browseBar.setPath(linkedPathString);
 
-		//Les opérations
+		//Les opï¿½rations
 		OperationPane operationPane = window.getOperationPane();
 		operationPane.addOperation(addFolder, resources.getString("GML.createTheme") , "javascript:onClick=topicAdd('"+id+"')");
 		operationPane.addOperation(addSite, resources.getString("AjouterSitesTheme"), "javascript:onClick=publicationAdd('"+id+"')");
@@ -679,7 +680,7 @@ function pubUp(pubId) {
 		ArrayPane arrayPane = gef.getArrayPane("foldersList", "organize.jsp?Action=Search&Id="+id, request, session);
 		arrayPane.setVisibleLineNumber(10);
 		arrayPane.setTitle(resources.getString("ListeThemes"));
-		//Définition des colonnes du tableau
+		//Dï¿½finition des colonnes du tableau
 		arrayPane.addArrayColumn(resources.getString("GML.theme"));
 		arrayPane.addArrayColumn(resources.getString("GML.description"));
 		ArrayColumn arrayColumnOp = arrayPane.addArrayColumn(resources.getString("GML.operation"));
@@ -753,19 +754,19 @@ function pubUp(pubId) {
 			}
 		}
 
-		//Récupération du tableau dans le haut du cadre
+		//Rï¿½cupï¿½ration du tableau dans le haut du cadre
 		frame.addTop(arrayPane.print());
 
 		//Board
 		Board board = gef.getBoard();
 
-		//Liste des sites du thème courant
+		//Liste des sites du thï¿½me courant
 		String liste = "";
 
 		if (listeSites.size() > 0) {
 			liste += "<table border=\"0\">\n";
 
-			//Récup des sites
+			//Rï¿½cup des sites
 			Iterator j = listeSites.iterator();
 			
 			//CBO : ADD
@@ -828,7 +829,7 @@ function pubUp(pubId) {
 			board.addBody(liste);
 		}
 
-		//Récupération de la liste des sites dans le cadre
+		//Rï¿½cupï¿½ration de la liste des sites dans le cadre
 		if(listeSites.size() > 0) {
 			frame.addBottom(board.print());
 		}

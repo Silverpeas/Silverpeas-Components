@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="java.util.*"%>
 <%@ page import="com.silverpeas.whitePages.model.*"%>
 <%@ page import="com.silverpeas.whitePages.record.*"%>
@@ -124,7 +125,7 @@ out.println(frame.printBefore());
 						
 			//icones triables
 			if (card.getHideStatus() == 1) 
-			{//masqué
+			{//masquï¿½
 				arrayLine.addArrayCellText(displayIcon(resource.getIcon("whitePages.nonvisible"), resource.getString("whitePages.cache")));
 			}
 			else 

@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -37,7 +37,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 /**
  * @author neysseri
- * 
  */
 public class RssAgregatorBmImpl implements RssAgregatorBm {
 
@@ -48,9 +47,7 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.rssAgregator.control.RssAgregatorBm#addChannel(com.silverpeas
+   * @see com.silverpeas.rssAgregator.control.RssAgregatorBm#addChannel(com.silverpeas
    * .rssAgregator.model.SPChannel)
    */
   public SPChannel addChannel(SPChannel channel) throws RssAgregatorException {
@@ -66,9 +63,7 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.rssAgregator.control.RssAgregatorBm#deleteChannel(com.silverpeas
+   * @see com.silverpeas.rssAgregator.control.RssAgregatorBm#deleteChannel(com.silverpeas
    * .rssAgregator.model.SPChannelPK)
    */
   public void deleteChannel(SPChannelPK channelPK) throws RssAgregatorException {
@@ -82,10 +77,7 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.rssAgregator.control.RssAgregatorBm#getChannels(java.lang
-   * .String)
+   * @see com.silverpeas.rssAgregator.control.RssAgregatorBm#getChannels(java.lang .String)
    */
   public List<SPChannel> getChannels(String instanceId) throws RssAgregatorException {
     List<SPChannel> channels = null;
@@ -113,9 +105,7 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.rssAgregator.control.RssAgregatorBm#updateChannel(com.silverpeas
+   * @see com.silverpeas.rssAgregator.control.RssAgregatorBm#updateChannel(com.silverpeas
    * .rssAgregator.model.SPChannel)
    */
   public void updateChannel(SPChannel channel) throws RssAgregatorException {
@@ -143,9 +133,7 @@ public class RssAgregatorBmImpl implements RssAgregatorBm {
 
   /*
    * (non-Javadoc)
-   * 
-   * @see
-   * com.silverpeas.rssAgregator.control.RssAgregatorBm#getChannel(com.silverpeas
+   * @see com.silverpeas.rssAgregator.control.RssAgregatorBm#getChannel(com.silverpeas
    * .rssAgregator.model.SPChannelPK)
    */
   public SPChannel getChannel(SPChannelPK channelPK)

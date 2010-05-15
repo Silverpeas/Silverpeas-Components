@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.projectManager;
 
 import java.sql.Connection;
@@ -36,7 +37,6 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.attachment.AttachmentInstanciator;
 
 /**
- * 
  * @author neysseric
  */
 public class ProjectManagerInstanciator implements ComponentsInstanciatorIntf {
@@ -51,7 +51,7 @@ public class ProjectManagerInstanciator implements ComponentsInstanciatorIntf {
       String userId) throws InstanciationException {
     SilverTrace.info("projectManager", "ProjectManagerInstanciator.create()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-            + componentId + ", userId =" + userId);
+        + componentId + ", userId =" + userId);
 
     SilverTrace.info("projectManager", "ProjectManagerInstanciator.create()",
         "root.MSG_GEN_EXIT_METHOD");
@@ -61,7 +61,7 @@ public class ProjectManagerInstanciator implements ComponentsInstanciatorIntf {
       String userId) throws InstanciationException {
     SilverTrace.info("projectManager", "ProjectManagerInstanciator.delete()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-            + componentId + ", userId =" + userId);
+        + componentId + ", userId =" + userId);
 
     // delete attachments
     AttachmentInstanciator attachments = new AttachmentInstanciator();

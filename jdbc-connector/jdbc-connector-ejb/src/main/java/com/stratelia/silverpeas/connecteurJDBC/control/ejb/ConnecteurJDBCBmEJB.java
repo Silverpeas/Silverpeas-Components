@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.silverpeas.connecteurJDBC.control.ejb;
 
 import java.rmi.RemoteException;
@@ -36,15 +37,15 @@ import com.stratelia.webactiv.persistence.PersistenceException;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 
-public class ConnecteurJDBCBmEJB implements ConnecteurJDBCBmBusinessSkeleton,
-    SessionBean {
+public class ConnecteurJDBCBmEJB implements ConnecteurJDBCBmBusinessSkeleton, SessionBean {
 
   /**
    * 
    */
   private static final long serialVersionUID = 1L;
 
-  public Collection<ConnecteurJDBCConnectionInfoDetail> getConnectionList(ConnecteurJDBCConnectionInfoPK pk)
+  public Collection<ConnecteurJDBCConnectionInfoDetail> getConnectionList(
+      ConnecteurJDBCConnectionInfoPK pk)
       throws RemoteException, PersistenceException {
     SilverpeasBeanDAO dao = SilverpeasBeanDAOFactory
         .getDAO("com.stratelia.silverpeas.connecteurJDBC.model.ConnecteurJDBCConnectionInfoDetail");

@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.rssAgregator.control;
 
 import java.util.Hashtable;
@@ -67,12 +68,9 @@ public class RssAgregatorCache {
    * Add or replace a content in the cache
    */
   /*
-   * public void addContentToCache(String id, StringBuffer content) { // Store
-   * content informations to cache cache.put(id, content);
-   * 
-   * // Store time of content informations storage long currentTime =
-   * System.currentTimeMillis(); cacheLastRefresh.put(id, new
-   * Long(currentTime)); }
+   * public void addContentToCache(String id, StringBuffer content) { // Store content informations
+   * to cache cache.put(id, content); // Store time of content informations storage long currentTime
+   * = System.currentTimeMillis(); cacheLastRefresh.put(id, new Long(currentTime)); }
    */
 
   /**
@@ -86,12 +84,9 @@ public class RssAgregatorCache {
    * Add or replace a content in the cache
    */
   /*
-   * public void addChannelsToCache(String instanceId, List channels) { // Store
-   * channels to cache cache.put(instanceId, channels);
-   * 
-   * // Store time of content informations storage long currentTime =
-   * System.currentTimeMillis(); cacheNextRefresh.put(instanceId, new
-   * Long(currentTime)); }
+   * public void addChannelsToCache(String instanceId, List channels) { // Store channels to cache
+   * cache.put(instanceId, channels); // Store time of content informations storage long currentTime
+   * = System.currentTimeMillis(); cacheNextRefresh.put(instanceId, new Long(currentTime)); }
    */
 
   /**
@@ -119,13 +114,11 @@ public class RssAgregatorCache {
    * Get a cached content. If content is not cached, return null.
    */
   /*
-   * public StringBuffer getContentFromCache(String id) { return (StringBuffer)
-   * cache.get(id); }
+   * public StringBuffer getContentFromCache(String id) { return (StringBuffer) cache.get(id); }
    */
 
   /**
-   * Return true if a cached content need to be updated or a content is not
-   * cached.
+   * Return true if a cached content need to be updated or a content is not cached.
    */
   public boolean isContentNeedToRefresh(SPChannelPK key) {
     if (cache.get(key) == null) {

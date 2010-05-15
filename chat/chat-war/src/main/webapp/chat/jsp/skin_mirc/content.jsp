@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <!-- Chunk -->
 <%@ page import="jChatBox.Util.*,jChatBox.Chat.*,jChatBox.Chat.Filter.*,java.util.*,java.net.*" %>
 <jsp:useBean id="UserProcessor" class="jChatBox.Service.UserProcessor" scope="application" />
@@ -110,7 +111,7 @@ function auto_quit_chatroom()
 	}
 	else if ( ( banned != null ) && banned.equals("true") )
 	{
-		out.println("alert('Vous avez été banni de ce salon');");
+		out.println("alert('Vous avez ï¿½tï¿½ banni de ce salon');");
 		out.println("location.href='quitChatroom.jsp?action=open';");
 	}
 

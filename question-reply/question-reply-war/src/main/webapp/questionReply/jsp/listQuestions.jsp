@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="java.util.*"%>
 
 <%@ include file="checkQuestionReply.jsp" %>
@@ -273,7 +274,7 @@ function existSelect()
 		String date = resource.getOutputDate(question.getCreationDate());
 		String id = question.getPK().getId();
 		int status = question.getStatus();
-		// récupération du nombre de réponses (suivant le profil)
+		// rï¿½cupï¿½ration du nombre de rï¿½ponses (suivant le profil)
 		int nb = question.getReplyNumber();
 		int nbPublic = question.getPublicReplyNumber();
 		int nbPrive = question.getPrivateReplyNumber();
@@ -294,19 +295,19 @@ function existSelect()
 			ArrayCellText cell0 = arrayLine.addArrayCellText(new Integer(nb).toString());
 			cell0.setCompareOn((Integer) new Integer(nb));
 	
-			//création de la colonne des icônes
+			//crï¿½ation de la colonne des icï¿½nes
 			IconPane iconPane = gef.getIconPane();
 			if (!profil.equals("user"))
 			{
 				if (!profil.equals("publisher"))
 				{
-					// icône "supprimer"
+					// icï¿½ne "supprimer"
 					if (status == 0 || status == 2)
 					{
 						Icon deleteIcon = iconPane.addIcon();
 						deleteIcon.setProperties(resource.getIcon("questionReply.delete"), resource.getString("questionReply.delQ"),"javaScript:deleteConfirm('"+id+"')");
 					}
-					//icône "clore"
+					//icï¿½ne "clore"
 					if (status == 1)
 					{
 						Icon closeIcon = iconPane.addIcon();
@@ -314,7 +315,7 @@ function existSelect()
 					}
 					if (status == 0 || status == 1)
 					{
-						//icône "répondre"
+						//icï¿½ne "rï¿½pondre"
 						Icon repIcon = iconPane.addIcon();
 						repIcon.setProperties(resource.getIcon("questionReply.miniconeReponse"), resource.getString("questionReply.ajoutR"),"CreateRQuery?QuestionId="+ id);
 					}
@@ -325,7 +326,7 @@ function existSelect()
 				}
 				else 
 					// pour le demandeur (publisher)
-					// icône "supprimer" que si la question est la sienne et si elle n'a pas encore de réponses
+					// icï¿½ne "supprimer" que si la question est la sienne et si elle n'a pas encore de rï¿½ponses
 					if (status == 0 && question.getCreatorId().equals(userId))
 					{
 						Icon deleteIcon = iconPane.addIcon();

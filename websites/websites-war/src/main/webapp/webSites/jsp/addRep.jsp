@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
 <%@ page import="javax.servlet.jsp.*"%>
@@ -47,7 +48,7 @@
 <%
 
 
-//Récupération des paramètres
+//Rï¿½cupï¿½ration des paramï¿½tres
 String fatherId = (String) request.getParameter("Id");
 String path = (String) request.getParameter("Path");
 String action = (String) request.getParameter("Action");
@@ -85,10 +86,10 @@ function isCorrect(nom) {
         nom.indexOf("%")>-1 || nom.indexOf("#")>-1 || 
 		nom.indexOf(".")>-1 || 
         nom.indexOf("'")>-1 || 
-		nom.indexOf("²")>-1 || nom.indexOf("é")>-1 || nom.indexOf("è")>-1 || 
-		nom.indexOf("ç")>-1 || nom.indexOf("à")>-1 || nom.indexOf("^")>-1 || 
-		nom.indexOf("ù")>-1 || nom.indexOf("°")>-1 || nom.indexOf("£")>-1 || 
-		nom.indexOf("µ")>-1 || nom.indexOf("§")>-1 || nom.indexOf("¤")>-1 || 
+		nom.indexOf("ï¿½")>-1 || nom.indexOf("ï¿½")>-1 || nom.indexOf("ï¿½")>-1 || 
+		nom.indexOf("ï¿½")>-1 || nom.indexOf("ï¿½")>-1 || nom.indexOf("^")>-1 || 
+		nom.indexOf("ï¿½")>-1 || nom.indexOf("ï¿½")>-1 || nom.indexOf("ï¿½")>-1 || 
+		nom.indexOf("ï¿½")>-1 || nom.indexOf("ï¿½")>-1 || nom.indexOf("ï¿½")>-1 || 
 		nom.indexOf(" ")>-1) {
         return false;
     }
@@ -165,7 +166,7 @@ browseBar.setComponentName(componentLabel);
 	//Le board
 	Board board = gef.getBoard();
 
-    //Début code
+    //Dï¿½but code
     out.println(window.printBefore());
     out.println(frame.printBefore());
 	out.print(board.printBefore());

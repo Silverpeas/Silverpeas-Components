@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,15 +23,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="checkQuestionReply.jsp" %>
 
 <% 
-	// récupération des paramètres :
+	// rï¿½cupï¿½ration des paramï¿½tres :
 	Category 	category		= (Category) request.getAttribute("Category");
 	String 		userName		= (String) request.getAttribute("UserName");
 
 
-	// déclaration des variables :
+	// dï¿½claration des variables :
 	String 		name			= "";
 	String 		description		= "";
 	String 		categoryId		= "";
@@ -40,7 +41,7 @@
 	
 	String 		action 			= "CreateCategory";	
 	
-	// dans le cas d'une mise à jour, récupération des données 
+	// dans le cas d'une mise ï¿½ jour, rï¿½cupï¿½ration des donnï¿½es 
 	if (category != null)
 	{
 		name 			= category.getName();
@@ -51,11 +52,11 @@
 
 	}
 	
-	// déclaration des éléments graphiques
+	// dï¿½claration des ï¿½lï¿½ments graphiques
 	frame = gef.getFrame();
 	window = gef.getWindow();
 	
-	// déclaration des boutons
+	// dï¿½claration des boutons
 	Button validateButton;
 	if (action.equals("CreateCategory"))
 		validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData()", false);
@@ -75,7 +76,7 @@
 	<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 	<script language="javascript">
 	
-	// fonctions de contrôle des zones du formulaire avant validation
+	// fonctions de contrï¿½le des zones du formulaire avant validation
 	function sendData() 
 	{
 		if (isCorrectForm()) 

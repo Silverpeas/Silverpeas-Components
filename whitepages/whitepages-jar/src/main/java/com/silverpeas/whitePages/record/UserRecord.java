@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.whitePages.record;
 
 import com.silverpeas.form.DataRecord;
@@ -46,18 +47,14 @@ public class UserRecord implements DataRecord {
   }
 
   /**
-   * Returns the data record id.
-   * 
-   * The record is known by its external id.
+   * Returns the data record id. The record is known by its external id.
    */
   public String getId() {
     return user.getId();
   }
 
   /**
-   * Gives an id to the record.
-   * 
-   * Caution ! the record is known by its external id.
+   * Gives an id to the record. Caution ! the record is known by its external id.
    */
   public void setId(String id) {
   }
@@ -72,7 +69,6 @@ public class UserRecord implements DataRecord {
 
   /**
    * Returns the named field.
-   * 
    * @throw FormException when the fieldName is unknown.
    */
   public Field getField(String fieldName) throws FormException {
@@ -106,7 +102,6 @@ public class UserRecord implements DataRecord {
 
   /**
    * Returns the field at the index position in the record.
-   * 
    * @throw FormException when the fieldIndex is unknown.
    */
   public Field getField(int fieldIndex) throws FormException {
@@ -125,18 +120,14 @@ public class UserRecord implements DataRecord {
   }
 
   /**
-   * Gets the internal id.
-   * 
-   * May be used only by a package class !
+   * Gets the internal id. May be used only by a package class !
    */
   int getInternalId() {
     return -1;
   }
 
   /**
-   * Sets the internal id.
-   * 
-   * May be used only by a package class !
+   * Sets the internal id. May be used only by a package class !
    */
   void setInternalId(int id) {
   }

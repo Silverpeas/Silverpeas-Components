@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /*
  * WebSiteBmEJB.java
  *
@@ -185,7 +186,7 @@ public class WebSiteBmEJB implements SessionBean {
       try {
         PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-                PublicationBmHome.class);
+            PublicationBmHome.class);
         currentPublicationBm = publicationBmHome.create();
       } catch (Exception re) {
         throw new WebSitesRuntimeException("WebSiteBmEJB.getPublicationBm()",
@@ -196,11 +197,9 @@ public class WebSiteBmEJB implements SessionBean {
     return currentPublicationBm;
   }
 
-  /*   ** Gestion des themes ** */
+  /*    ** Gestion des themes ** */
 
   /**
-   * 
-   * 
    * @param
    * @param
    * @return
@@ -282,9 +281,7 @@ public class WebSiteBmEJB implements SessionBean {
   }
 
   /**
-   * 
    * Utilise dans goTo
-   * 
    * @param
    * @param
    * @return
@@ -309,9 +306,7 @@ public class WebSiteBmEJB implements SessionBean {
 
   /**
    * Return a NodeDetail Collection that represents the path from root to leaf
-   * 
-   * @param nd
-   *          the NodeDetail of the leaf topic
+   * @param nd the NodeDetail of the leaf topic
    * @return a NodeDetail Collection
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @exception javax.ejb.FinderException
@@ -356,7 +351,7 @@ public class WebSiteBmEJB implements SessionBean {
           throw new WebSitesRuntimeException("WebSiteBmEJB.getNewPath()",
               SilverpeasRuntimeException.ERROR,
               "webSites.EX_NODE_GET_NEW_PATH_FAILED", " pk = "
-                  + nd.getNodePK().toString(), re);
+              + nd.getNodePK().toString(), re);
         }
       }
     }
@@ -365,11 +360,8 @@ public class WebSiteBmEJB implements SessionBean {
 
   /**
    * Return a NodeDetail Collection that represents a sub path to nd of the path
-   * 
-   * @param currentPath
-   *          a NodeDetail Collection that represents a path
-   * @param nd
-   *          the NodeDetail of the leaf topic
+   * @param currentPath a NodeDetail Collection that represents a path
+   * @param nd the NodeDetail of the leaf topic
    * @return a NodeDetail Collection
    * @see com.stratelia.webactiv.util.node.model.NodeDetail
    * @since 1.0
@@ -393,9 +385,7 @@ public class WebSiteBmEJB implements SessionBean {
   }
 
   /**
-   * 
    * Utilise dans addFolder
-   * 
    * @param
    * @param
    * @return
@@ -418,8 +408,6 @@ public class WebSiteBmEJB implements SessionBean {
   }
 
   /**
-   * 
-   * 
    * @param
    * @param
    * @return
@@ -452,8 +440,6 @@ public class WebSiteBmEJB implements SessionBean {
   }
 
   /**
-   * 
-   * 
    * @param
    * @param
    * @return
@@ -482,8 +468,6 @@ public class WebSiteBmEJB implements SessionBean {
   }
 
   /**
-   * 
-   * 
    * @param
    * @param
    * @return
@@ -514,8 +498,6 @@ public class WebSiteBmEJB implements SessionBean {
   }
 
   /**
-   * 
-   * 
    * @param
    * @param
    * @return
@@ -551,7 +533,7 @@ public class WebSiteBmEJB implements SessionBean {
         // check each pub contained in current node
         while (itPub.hasNext()) {
           onePubToCheck = itPub.next();
-        pubBm.removeFather(onePubToCheck, oneNodeToDelete);
+          pubBm.removeFather(onePubToCheck, oneNodeToDelete);
 
         }
       }
@@ -571,7 +553,7 @@ public class WebSiteBmEJB implements SessionBean {
    * @param nodes
    * @return
    */
-   private int getIndexOfNode(String nodeId, List<NodeDetail> nodes) {
+  private int getIndexOfNode(String nodeId, List<NodeDetail> nodes) {
     SilverTrace.debug("webSites", "WebSiteBmEJB.getIndexOfNode()",
         "root.MSG_GEN_ENTER_METHOD", "nodeId = " + nodeId);
     NodeDetail node = null;
@@ -600,7 +582,7 @@ public class WebSiteBmEJB implements SessionBean {
   public void changeTopicsOrder(String way, NodePK topicPK, NodePK fatherPK) {
     SilverTrace.info("webSites", "WebSiteBmEJB.changeTopicsOrder()",
         "root.MSG_GEN_ENTER_METHOD", "way = " + way + ", topicPK = "
-            + topicPK.toString());
+        + topicPK.toString());
 
     List<NodeDetail> subTopics = null;
     try {
@@ -634,7 +616,7 @@ public class WebSiteBmEJB implements SessionBean {
 
         SilverTrace.info("webSites", "WebSiteBmEJB.changeTopicsOrder()",
             "root.MSG_GEN_PARAM_VALUE", "updating Node : nodeId = "
-                + nodeDetail.getNodePK().getId() + ", order = " + i);
+            + nodeDetail.getNodePK().getId() + ", order = " + i);
         try {
           nodeDetail.setOrder(i);
           getNodeBm().setDetail(nodeDetail);
@@ -651,8 +633,6 @@ public class WebSiteBmEJB implements SessionBean {
   /******************** Gestion des publications */
 
   /**
-   * 
-   * 
    * @param
    * @param
    * @return
@@ -671,13 +651,11 @@ public class WebSiteBmEJB implements SessionBean {
       throw new WebSitesRuntimeException("WebSiteBmEJB.getPublicationDetail()",
           SilverpeasRuntimeException.ERROR,
           "webSites.EX_GET_PUBLICATION_DETAIL_FAILED", "pubId = "
-              + pubId.toString(), re);
+          + pubId.toString(), re);
     }
   }
 
   /**
-   * 
-   * 
    * @param
    * @param
    * @return
@@ -699,14 +677,12 @@ public class WebSiteBmEJB implements SessionBean {
       throw new WebSitesRuntimeException("WebSiteBmEJB.createPublication()",
           SilverpeasRuntimeException.ERROR,
           "webSites.EX_PUBLICATION_CREATE_FAILED", "pubDetail = "
-              + pubDetail.toString(), re);
+          + pubDetail.toString(), re);
     }
     return pubPK.getId();
   }
 
   /**
-   * 
-   * 
    * @param
    * @param
    * @return
@@ -726,13 +702,11 @@ public class WebSiteBmEJB implements SessionBean {
       throw new WebSitesRuntimeException("WebSiteBmEJB.updatePublication()",
           SilverpeasRuntimeException.ERROR,
           "webSites.EX_PUBLICATION_UPDATE_FAILED", "pubDetail = "
-              + pubDetail.toString(), re);
+          + pubDetail.toString(), re);
     }
   }
 
   /**
-   * 
-   * 
    * @param
    * @param
    * @return
@@ -753,14 +727,12 @@ public class WebSiteBmEJB implements SessionBean {
       throw new WebSitesRuntimeException("WebSiteBmEJB.deletePublication()",
           SilverpeasRuntimeException.ERROR,
           "webSites.EX_PUBLICATION_DELETE_FAILED", "pubPK = "
-              + pubPK.toString(), re);
+          + pubPK.toString(), re);
     }
   }
 
   /**
-   * 
    * Utilise dans createPublication
-   * 
    * @param
    * @param
    * @return
@@ -785,7 +757,7 @@ public class WebSiteBmEJB implements SessionBean {
           "WebSiteBmEJB.addPublicationToTopic()",
           SilverpeasRuntimeException.ERROR,
           "webSites.EX_PUBLICATION_ADD_TO_NODE_FAILED", "pubPK = "
-              + pubPK.toString() + " - fatherPK = " + fatherPK.toString(), re);
+          + pubPK.toString() + " - fatherPK = " + fatherPK.toString(), re);
     }
   }
 
@@ -806,10 +778,9 @@ public class WebSiteBmEJB implements SessionBean {
           "WebSiteBmEJB.removePublicationToTopic()",
           SilverpeasRuntimeException.ERROR,
           "webSites.EX_PUBLICATION_DELETE_TO_NODE_FAILED", "pubPK = "
-              + pubPK.toString() + " - fatherPK = " + fatherPK.toString(), re);
+          + pubPK.toString() + " - fatherPK = " + fatherPK.toString(), re);
     }
   }
-
 
   /**
    * @param pubId
@@ -828,7 +799,7 @@ public class WebSiteBmEJB implements SessionBean {
       throw new WebSitesRuntimeException("WebSiteBmEJB.getAllFatherPK()",
           SilverpeasRuntimeException.ERROR,
           "webSites.EX_GET_PUBLICATION_FATHER_FAILED", "pubId = "
-              + pubId.toString(), re);
+          + pubId.toString(), re);
     }
     return listFatherPK;
   }
@@ -842,7 +813,7 @@ public class WebSiteBmEJB implements SessionBean {
     String idPub = null;
     try {
       SiteDAO dao = new SiteDAO(prefixTableName, componentId);
-       idPub = dao.getIdPublication(idSite);
+      idPub = dao.getIdPublication(idSite);
     } catch (Exception e) {
       throw new WebSitesRuntimeException("WebSiteBmEJB.getIdPublication()",
           SilverpeasRuntimeException.ERROR,
@@ -864,7 +835,7 @@ public class WebSiteBmEJB implements SessionBean {
       throw new WebSitesRuntimeException("WebSiteBmEJB.updateClassification()",
           SilverpeasRuntimeException.ERROR,
           "webSites.EX_GET_PUBLICATION_FATHER_FAILED", "pubPK = "
-              + pubPK.toString(), e1);
+          + pubPK.toString(), e1);
     }
 
     List<NodePK> oldFathers = new ArrayList<NodePK>(); // List of NodePK
@@ -900,7 +871,7 @@ public class WebSiteBmEJB implements SessionBean {
       throw new WebSitesRuntimeException("WebSiteBmEJB.updateClassification()",
           SilverpeasRuntimeException.ERROR,
           "webSites.EX_PUBLICATION_ADD_TO_NODE_FAILED", "pubPK = "
-              + pubPK.toString() + " - nodePK = " + nodePK.toString(), e);
+          + pubPK.toString() + " - nodePK = " + nodePK.toString(), e);
     }
 
     try {
@@ -920,7 +891,7 @@ public class WebSiteBmEJB implements SessionBean {
   public void changePubsOrder(String pubId, NodePK nodePK, int direction) {
     SilverTrace.info("webSites", "WebSiteBmEJB.changePubsOrder()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubId + ", nodePK = "
-            + nodePK.toString() + ", direction = " + direction);
+        + nodePK.toString() + ", direction = " + direction);
 
     PublicationPK pubPK = new PublicationPK(pubId, this.prefixTableName,
         this.componentId);
@@ -932,11 +903,11 @@ public class WebSiteBmEJB implements SessionBean {
       throw new WebSitesRuntimeException("WebSiteBmEJB.changePubsOrder()",
           SilverpeasRuntimeException.ERROR,
           "webSites.EX_PUBLICATION_UPDATE_FAILED", "pubPK = "
-              + pubPK.toString() + " - nodePK = " + nodePK.toString(), e);
+          + pubPK.toString() + " - nodePK = " + nodePK.toString(), e);
     }
   }
 
-   /***********************************************************************************************/
+  /***********************************************************************************************/
   // Gestion des sites
 
   /**
@@ -1062,7 +1033,7 @@ public class WebSiteBmEJB implements SessionBean {
       throw new WebSitesRuntimeException("WebSiteBmEJB.createWebSite()",
           SilverpeasRuntimeException.ERROR,
           "webSites.EX_CREATE_WEBSITE_FAILED", " SiteDetail = "
-              + description.toString(), e);
+          + description.toString(), e);
     } finally {
       freeConnection(con);
     }
@@ -1215,7 +1186,7 @@ public class WebSiteBmEJB implements SessionBean {
       throw new WebSitesRuntimeException("WebSiteBmEJB.updateWebSite()",
           SilverpeasRuntimeException.ERROR,
           "webSites.EX_UPDATE_WEBSITE_FAILED", " SiteDetail = "
-              + description.toString(), e);
+          + description.toString(), e);
     } finally {
       freeConnection(con);
     }
@@ -1250,7 +1221,7 @@ public class WebSiteBmEJB implements SessionBean {
       String creatorId, String prefixTableName, String componentId) {
     SilverTrace.info("webSites", "WebSiteBmEJB.createSilverContent()",
         "root.MSG_GEN_ENTER_METHOD", "siteId = "
-            + siteDetail.getSitePK().getId());
+        + siteDetail.getSitePK().getId());
     try {
       return getWebSitesContentManager().createSilverContent(con, siteDetail,
           "-1", prefixTableName, componentId);

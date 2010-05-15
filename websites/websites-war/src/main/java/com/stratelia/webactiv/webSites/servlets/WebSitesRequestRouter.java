@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.webSites.servlets;
 
 import java.io.File;
@@ -171,7 +172,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     ComponentSessionController component =
         (ComponentSessionController) new WebSiteSessionController(
-            mainSessionCtrl, componentContext);
+        mainSessionCtrl, componentContext);
 
     return component;
   }
@@ -318,7 +319,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
 
         destination =
             "http://" + getMachine(request) + URLManager.getApplicationURL() +
-                "/wysiwyg/jsp/htmlEditor.jsp?";
+            "/wysiwyg/jsp/htmlEditor.jsp?";
         destination += "SpaceId=" + scc.getSpaceId();
 
         destination += "&SpaceName=" + URLEncoder.encode(scc.getSpaceLabel(), "ISO-8859-1");
@@ -331,10 +332,10 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
         destination += "&Path=" + URLEncoder.encode(path, "ISO-8859-1");
         destination +=
             "&ReturnUrl=" +
-                URLEncoder.encode(URLManager.getApplicationURL() +
-                    URLManager.getURL(scc.getSpaceId(), scc.getComponentId()) +
-                    "FromWysiwyg?path=" + path + "&name=" + name + "&nameSite=" + nameSite +
-                    "&profile=" + flag + "&id=" + id, "ISO-8859-1");
+            URLEncoder.encode(URLManager.getApplicationURL() +
+            URLManager.getURL(scc.getSpaceId(), scc.getComponentId()) +
+            "FromWysiwyg?path=" + path + "&name=" + name + "&nameSite=" + nameSite +
+            "&profile=" + flag + "&id=" + id, "ISO-8859-1");
         SilverTrace.info("webSites", "WebSitesRequestRouter.getDestination().ToWysiwyg",
             "root.MSG_GEN_PARAM_VALUE", "destination = " + destination);
       } else if (function.startsWith("FromWysiwyg")) {
@@ -414,7 +415,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
           type = "design";
           complete =
               "&RecupParam=oui&Nom=" + nom + "&Description=" + description + "&Page=" + lapage +
-                  "&ListeIcones=" + listeIcones;
+              "&ListeIcones=" + listeIcones;
         } else {
           destination =
               "/webSites/jsp/modifDesc.jsp?Id=" + id + "&path=" + currentPath + "&type=" + type;
@@ -633,7 +634,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
 
         destination =
             "/webSites/jsp/classifyDeclassify.jsp?Action=" + action + "&TopicId=" + id + "&Path=" +
-                linkedPathString;
+            linkedPathString;
       } else if (function.startsWith("manage.jsp")) {
         String action = (String) request.getParameter("Action");
 
@@ -832,7 +833,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
                                                                   * jamais null
                                                                   */
         String id = (String) request.getParameter("Id"); // jamais null sauf en creation ou en
-                                                         // update de description
+        // update de description
         String currentPath = (String) request.getParameter("path"); /*
                                                                      * = null la premiere fois,
                                                                      * rempli grace au newSite
@@ -912,7 +913,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
 
           currentPath =
               settings.getString("uploadsPath") + settings.getString("Context") + File.separator +
-                  scc.getComponentId() + File.separator + id;
+              scc.getComponentId() + File.separator + id;
 
           currentPath = doubleAntiSlash(currentPath);
 
@@ -1008,7 +1009,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
 
           SiteDetail descriptionSite2 =
               new SiteDetail(id, nomSite, description, nomPage, type, null, null, new Integer(etat)
-                  .intValue(), popup);
+              .intValue(), popup);
 
           if (searchOk) {
 
@@ -1251,7 +1252,7 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
           /* Création du directory */
           String cheminZip =
               scc.getSettings().getString("uploadsPath") + scc.getSettings().getString("Context") +
-                  File.separator + scc.getComponentId() + File.separator + id;
+              File.separator + scc.getComponentId() + File.separator + id;
           File directory = new File(cheminZip);
           if (directory.mkdir()) {
             /* creation du zip sur le serveur */

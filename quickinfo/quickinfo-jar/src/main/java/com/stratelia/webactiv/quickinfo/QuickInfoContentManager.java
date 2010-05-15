@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /**
  * User: Aliaksei_Budnikau
  * Date: Nov 26, 2002
@@ -55,15 +56,10 @@ public class QuickInfoContentManager implements ContentInterface {
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
-   * 
-   * @param ids
-   *          list of silverContentId to retrieve
-   * @param peasId
-   *          the id of the instance
-   * @param userId
-   *          the id of the user who wants to retrieve silverContent
-   * @param userRoles
-   *          the roles of the user
+   * @param ids list of silverContentId to retrieve
+   * @param peasId the id of the instance
+   * @param userId the id of the user who wants to retrieve silverContent
+   * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
   public List getSilverContentById(List ids, String peasId, String userId,
@@ -90,13 +86,9 @@ public class QuickInfoContentManager implements ContentInterface {
 
   /**
    * add a new content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param pubDetail
-   *          the content to register
-   * @param userId
-   *          the creator of the content
+   * @param con a Connection
+   * @param pubDetail the content to register
+   * @param userId the creator of the content
    * @return the unique silverObjectId which identified the new content
    */
   public int createSilverContent(Connection con, PublicationDetail pubDetail,
@@ -111,11 +103,9 @@ public class QuickInfoContentManager implements ContentInterface {
   }
 
   /**
-   * update the visibility attributes of the content. Here, the type of content
-   * is a PublicationDetail
-   * 
-   * @param pubDetail
-   *          the content
+   * update the visibility attributes of the content. Here, the type of content is a
+   * PublicationDetail
+   * @param pubDetail the content
    */
   public void updateSilverContentVisibility(PublicationDetail pubDetail,
       boolean isVisible) throws ContentManagerException {
@@ -137,11 +127,8 @@ public class QuickInfoContentManager implements ContentInterface {
 
   /**
    * delete a content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param pubPK
-   *          the identifiant of the content to unregister
+   * @param con a Connection
+   * @param pubPK the identifiant of the content to unregister
    */
   public void deleteSilverContent(Connection con, PublicationPK pubPK)
       throws ContentManagerException {
@@ -151,7 +138,7 @@ public class QuickInfoContentManager implements ContentInterface {
       SilverTrace.info("quickinfo",
           "QuickInfoContentManager.deleteSilverContent()",
           "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubPK.getId()
-              + ", contentId = " + contentId);
+          + ", contentId = " + contentId);
       getContentManager().removeSilverContent(con, contentId,
           pubPK.getComponentName());
     }
@@ -159,11 +146,8 @@ public class QuickInfoContentManager implements ContentInterface {
 
   /**
    * return a list of publicationPK according to a list of silverContentId
-   * 
-   * @param idList
-   *          a list of silverContentId
-   * @param peasId
-   *          the id of the instance
+   * @param idList a list of silverContentId
+   * @param peasId the id of the instance
    * @return a list of publicationPK
    */
   private ArrayList makePKArray(List idList, String peasId) {
@@ -189,9 +173,7 @@ public class QuickInfoContentManager implements ContentInterface {
 
   /**
    * return a list of silverContent according to a list of publicationPK
-   * 
-   * @param ids
-   *          a list of publicationPK
+   * @param ids a list of publicationPK
    * @return a list of publicationDetail
    */
   private List getHeaders(List ids) {
@@ -216,7 +198,7 @@ public class QuickInfoContentManager implements ContentInterface {
       try {
         PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-                PublicationBmHome.class);
+            PublicationBmHome.class);
         currentPublicationBm = publicationBmHome.create();
       } catch (Exception e) {
         throw new PublicationRuntimeException(

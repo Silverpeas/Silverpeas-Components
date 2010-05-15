@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.quizz;
 
 import java.util.*;
@@ -47,15 +48,10 @@ public class QuizzContentManager implements ContentInterface {
 
   /**
    * Find all the SilverContent with the given list of SilverContentId
-   * 
-   * @param ids
-   *          list of silverContentId to retrieve
-   * @param peasId
-   *          the id of the instance
-   * @param userId
-   *          the id of the user who wants to retrieve silverContent
-   * @param userRoles
-   *          the roles of the user
+   * @param ids list of silverContentId to retrieve
+   * @param peasId the id of the instance
+   * @param userId the id of the user who wants to retrieve silverContent
+   * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
   public List getSilverContentById(List ids, String peasId, String userId,
@@ -68,11 +64,8 @@ public class QuizzContentManager implements ContentInterface {
 
   /**
    * return a list of publicationPK according to a list of silverContentId
-   * 
-   * @param idList
-   *          a list of silverContentId
-   * @param peasId
-   *          the id of the instance
+   * @param idList a list of silverContentId
+   * @param peasId the id of the instance
    * @return a list of publicationPK
    */
   private ArrayList makePKArray(List idList, String peasId) {
@@ -98,9 +91,7 @@ public class QuizzContentManager implements ContentInterface {
 
   /**
    * return a list of silverContent according to a list of publicationPK
-   * 
-   * @param ids
-   *          a list of publicationPK
+   * @param ids a list of publicationPK
    * @return a list of publicationDetail
    */
   private List getHeaders(List ids) {
@@ -137,7 +128,7 @@ public class QuizzContentManager implements ContentInterface {
       try {
         QuestionContainerBmHome questionContainerBmHome = (QuestionContainerBmHome) EJBUtilitaire
             .getEJBObjectRef(JNDINames.QUESTIONCONTAINERBM_EJBHOME,
-                QuestionContainerBmHome.class);
+            QuestionContainerBmHome.class);
 
         this.questionContainerBm = questionContainerBmHome.create();
       } catch (Exception e) {

@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.whitePages.filters;
 
 import java.io.IOException;
@@ -45,16 +46,12 @@ import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 /**
- * Ce filtre a pour effet de contrôler que l'utilisateur courant n'a pas une
- * fiche à remplir dans une instance de whitePages. Si c'est le cas, 2 attributs
- * sont mis en sessions : - RedirectToComponentId : avec le componentId de
- * l'instance pour que le mecanisme de redirection le renvoie sur le composant -
- * FicheNonRemplie : avec le componentId de l'instance pour que le filtre mappé
- * sur tous les routers des composants puisse intercepter au besoin et renvoyer
- * sur la fiche.
- *
+ * Ce filtre a pour effet de contrôler que l'utilisateur courant n'a pas une fiche à remplir dans
+ * une instance de whitePages. Si c'est le cas, 2 attributs sont mis en sessions : -
+ * RedirectToComponentId : avec le componentId de l'instance pour que le mecanisme de redirection le
+ * renvoie sur le composant - FicheNonRemplie : avec le componentId de l'instance pour que le filtre
+ * mappé sur tous les routers des composants puisse intercepter au besoin et renvoyer sur la fiche.
  * @author Ludovic Bertin
- *
  */
 public class LoginFilter implements Filter {
 
@@ -67,9 +64,8 @@ public class LoginFilter implements Filter {
 
   /*
    * (non-Javadoc)
-   *
-   * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest,
-   * javax.servlet.ServletResponse, javax.servlet.FilterChain)
+   * @see javax.servlet.Filter#doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse,
+   * javax.servlet.FilterChain)
    */
   public void doFilter(ServletRequest request, ServletResponse response,
       FilterChain chain) throws IOException, ServletException {
@@ -89,7 +85,7 @@ public class LoginFilter implements Filter {
           "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + session.getId());
       RequestDispatcher dispatcher = request
           .getRequestDispatcher(GeneralPropertiesManager
-              .getGeneralResourceLocator().getString("sessionTimeout"));
+          .getGeneralResourceLocator().getString("sessionTimeout"));
       dispatcher.forward(request, response);
     }
 
@@ -124,8 +120,7 @@ public class LoginFilter implements Filter {
               .equals("yes")));
 
           /*
-           * Redirect user if and only if user is no admin and forcedCardFilling
-           * parameter turned on
+           * Redirect user if and only if user is no admin and forcedCardFilling parameter turned on
            */
           if (isForcedCardFilling && !userIsAdmin) {
             CardManager cardManager = CardManager.getInstance();
@@ -149,7 +144,6 @@ public class LoginFilter implements Filter {
 
   /*
    * (non-Javadoc)
-   *
    * @see javax.servlet.Filter#getFilterConfig()
    */
   public FilterConfig getFilterConfig() {
@@ -158,7 +152,6 @@ public class LoginFilter implements Filter {
 
   /*
    * (non-Javadoc)
-   *
    * @see javax.servlet.Filter#setFilterConfig(javax.servlet.FilterConfig)
    */
   public void setFilterConfig(FilterConfig arg0) {

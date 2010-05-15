@@ -11,7 +11,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -28,7 +28,7 @@
 <WAComponent>
    <name>bookmark</name>
    <label>Annuaire de sites - Bookmark</label>
-   <description>Permet de gérer un référentiel de sites Internet remarquables sur un thème donné.</description>
+   <description>Permet de gï¿½rer un rï¿½fï¿½rentiel de sites Internet remarquables sur un thï¿½me donnï¿½.</description>
    <suite>04 Gestion de contenu</suite>
    <visible>@ComponentVisibleBookmark@</visible>
    <portlet>yes</portlet>
@@ -52,19 +52,19 @@
 		<ParameterType>checkbox</ParameterType>
 		<ParameterUpdatable>always</ParameterUpdatable>
 		<ParameterHelp>
-			<ParameterHelpFr>Les bookmarks saisis au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
+			<ParameterHelpFr>Les bookmarks saisis au sein de cette instance pourront ï¿½tre classï¿½s sur le Plan de Classement</ParameterHelpFr>
 			<ParameterHelpEn></ParameterHelpEn>
 		</ParameterHelp>
 	</Parameter>
 	<Parameter>
         <ParameterName>sortedTopics</ParameterName>
-        <ParameterLabel>Thèmes / liens ordonnés</ParameterLabel>
+        <ParameterLabel>Thï¿½mes / liens ordonnï¿½s</ParameterLabel>
         <ParameterValue>no</ParameterValue>
         <ParameterMandatory>Y</ParameterMandatory>
 	    <ParameterType>checkbox</ParameterType>
 	    <ParameterUpdatable>always</ParameterUpdatable>
 	    <ParameterHelp>
-			<ParameterHelpFr>Ce paramètre permet d'ordonner les thèmes et les liens</ParameterHelpFr>
+			<ParameterHelpFr>Ce paramï¿½tre permet d'ordonner les thï¿½mes et les liens</ParameterHelpFr>
 			<ParameterHelpEn>This parameter allows to order topics and links</ParameterHelpEn>
 	    </ParameterHelp>
     </Parameter>

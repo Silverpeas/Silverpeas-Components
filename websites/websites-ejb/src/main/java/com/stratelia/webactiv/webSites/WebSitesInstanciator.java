@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 /*
  * WebSitesInstanciator.java
  *
@@ -47,9 +48,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
-
-public class WebSitesInstanciator extends SQLRequest implements
-    ComponentsInstanciatorIntf {
+public class WebSitesInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
 
   String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator()
       .getString("ApplicationURL");
@@ -69,7 +68,7 @@ public class WebSitesInstanciator extends SQLRequest implements
       String userId) throws InstanciationException {
     SilverTrace.info("websites", "WebSitesInstanciator.create()",
         "webSites.MSG_CREATE_WITH_SPACE_AND_COMPONENT", "space : " + spaceId
-            + "component : " + componentId);
+        + "component : " + componentId);
 
     // create publication component
     PublicationInstanciator pub = new PublicationInstanciator(
@@ -141,13 +140,9 @@ public class WebSitesInstanciator extends SQLRequest implements
 
   /**
    * Delete all data of one website instance from the website table.
-   * 
-   * @param con
-   *          (Connection) the connection to the data base
-   * @param componentId
-   *          (String) the instance id of the Silverpeas component website.
-   * @param suffixName
-   *          (String) the suffixe of a website table
+   * @param con (Connection) the connection to the data base
+   * @param componentId (String) the instance id of the Silverpeas component website.
+   * @param suffixName (String) the suffixe of a website table
    */
   private void deleteDataOfInstance(Connection con, String componentId,
       String suffixName) throws InstanciationException {

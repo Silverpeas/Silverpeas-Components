@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@ include file="imports.jsp" %>
 <%@ include file="init.jsp.inc" %>
 
@@ -76,7 +77,7 @@ function goto_jsp(jsp, param)
 
   //browse bar
   //BrowseBar browseBar = window.getBrowseBar();
-  //browseBar.setExtraInformation(messages.getString("Données entreprise"));
+  //browseBar.setExtraInformation(messages.getString("Donnï¿½es entreprise"));
   browseBar.setComponentName(connecteurJDBC.getComponentLabel(), "javascript:goto_jsp('Main', '')");
   browseBar.setExtraInformation(connecteurJDBC.getString("titreExecution"));
   

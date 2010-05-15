@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -244,7 +245,7 @@ out.println("}");
     //Le cadre
     Frame frame = gef.getFrame();
 
-       //Début code
+       //Dï¿½but code
        out.println(window.printBefore());
        out.println(frame.printBefore());
 
@@ -255,7 +256,7 @@ out.println("}");
         arrayPane.setVisibleLineNumber(1000);
         arrayPane.setVisibleLineNumber(1000);
         arrayPane.setTitle(resources.getString("ClassificationSite")+" "+site.getName());
-    //Définition des colonnes du tableau
+    //Dï¿½finition des colonnes du tableau
         ArrayColumn arrayColumnTopic = arrayPane.addArrayColumn(resources.getString("NomThemes"));
         arrayColumnTopic.setSortable(false);
         ArrayColumn arrayColumnPub = arrayPane.addArrayColumn(resources.getString("GML.publish"));

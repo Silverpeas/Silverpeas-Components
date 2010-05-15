@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.whitePages.control;
 
 import java.sql.Connection;
@@ -106,7 +107,7 @@ public class WhitePagesContentManager implements ContentInterface {
         card = (Card) cards.get(i);
         headers.add(new CardHeader(new Long(card.getPK().getId()).longValue(),
             card, instanceId, card.getCreationDate(), new Integer(card
-                .getCreatorId()).toString()));
+            .getCreatorId()).toString()));
       }
     } catch (WhitePagesException e) {
       // skip unknown and ill formed id.
@@ -133,13 +134,9 @@ public class WhitePagesContentManager implements ContentInterface {
 
   /**
    * add a new content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param pubDetail
-   *          the content to register
-   * @param userId
-   *          the creator of the content
+   * @param con a Connection
+   * @param pubDetail the content to register
+   * @param userId the creator of the content
    * @return the unique silverObjectId which identified the new content
    */
   public int createSilverContent(Connection con, Card card)
@@ -148,19 +145,16 @@ public class WhitePagesContentManager implements ContentInterface {
     SilverTrace.info("whitePages",
         "WhitePagesContentManager.createSilverContent()",
         "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-            + scv.toString());
+        + scv.toString());
     return getContentManager().addSilverContent(con, card.getPK().getId(),
         card.getInstanceId(), card.getUserId(), scv);
   }
 
   /**
-   * update the visibility attributes of the content. Here, the type of content
-   * is a PublicationDetail
-   * 
-   * @param pubDetail
-   *          the content
-   * @param silverObjectId
-   *          the unique identifier of the content
+   * update the visibility attributes of the content. Here, the type of content is a
+   * PublicationDetail
+   * @param pubDetail the content
+   * @param silverObjectId the unique identifier of the content
    */
   public void updateSilverContentVisibility(Card card)
       throws ContentManagerException {
@@ -170,7 +164,7 @@ public class WhitePagesContentManager implements ContentInterface {
     SilverTrace.info("whitePages",
         "WhitePagesContentManager.updateSilverContentVisibility()",
         "root.MSG_GEN_ENTER_METHOD", "SilverContentVisibility = "
-            + scv.toString());
+        + scv.toString());
     getContentManager().updateSilverContentVisibilityAttributes(scv,
         card.getPK().getComponentName(), silverContentId);
     ClassifyEngine.clearCache();
@@ -178,11 +172,8 @@ public class WhitePagesContentManager implements ContentInterface {
 
   /**
    * delete a content. It is registered to contentManager service
-   * 
-   * @param con
-   *          a Connection
-   * @param pubPK
-   *          the identifiant of the content to unregister
+   * @param con a Connection
+   * @param pubPK the identifiant of the content to unregister
    */
   public void deleteSilverContent(Connection con, IdPK pk)
       throws ContentManagerException {
@@ -191,7 +182,7 @@ public class WhitePagesContentManager implements ContentInterface {
     SilverTrace.info("whitePages",
         "WhitePagesContentManager.deleteSilverContent()",
         "root.MSG_GEN_ENTER_METHOD", "id = " + pk.getId() + ", contentId = "
-            + contentId);
+        + contentId);
     getContentManager().removeSilverContent(con, contentId,
         pk.getComponentName());
   }

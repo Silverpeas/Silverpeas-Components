@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.whitePages.control;
 
 import java.sql.Connection;
@@ -404,11 +405,8 @@ public class CardManager {
 
   /**
    * Get card for a user and instance.
-   * 
-   * @param userId
-   *          user id
-   * @param instanceId
-   *          instance id
+   * @param userId user id
+   * @param instanceId instance id
    * @return the card, null if not found
    * @throws WhitePagesException
    */
@@ -433,10 +431,9 @@ public class CardManager {
   }
 
   /*
-   * public void indexVisibleCards(String instanceId) throws WhitePagesException
-   * { Iterator cards = getVisibleCards(instanceId).iterator(); Card card =
-   * null; while (cards.hasNext()) { card = (Card) cards.next();
-   * indexCard(card); } }
+   * public void indexVisibleCards(String instanceId) throws WhitePagesException { Iterator cards =
+   * getVisibleCards(instanceId).iterator(); Card card = null; while (cards.hasNext()) { card =
+   * (Card) cards.next(); indexCard(card); } }
    */
 
   public void indexCard(Card card) {

@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.whitePages.control;
 
 import java.util.ArrayList;
@@ -65,8 +66,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
-public class WhitePagesSessionController extends
-    AbstractComponentSessionController {
+public class WhitePagesSessionController extends AbstractComponentSessionController {
 
   /*-------------- Attributs ------------------*/
   private CardManager cardManager = null;
@@ -97,20 +97,15 @@ public class WhitePagesSessionController extends
       "com.silverpeas.whitePages.settings.settings", "");
 
   /*
-   * Recherche une fiche Retourne currentCard si son id est le même que celui de
-   * la fiche recherchée Demande au CardManager la fiche sinon Affecte
-   * l'attribut ReadOnly de Card à false si la fiche fait partie de l'instance
-   * (instanceId) Recherche et affecte le cardRecord de la fiche
-   * (getTemplate(currentCard
-   * .getInstanceId()).getRecordset().getRecord(userCardId)) Recherche et
-   * affecte le userRecord de la fiche (userTemplate.getRecord(userCardId))
-   * Affecte le cardViewForm
-   * (getTemplate(currentCard.getInstanceId()).getViewForm()) Affecte le
-   * cardUpdateForm (cardTemplate.getUpdateForm()) Affecte le userForm
-   * (userTemplate.getViewForm()) Appel getWhitePagesCards pour mettre à jour la
-   * liste des fiches inter-instance portant sur le même user Met la fiche en
-   * session puis la retourne
-   *
+   * Recherche une fiche Retourne currentCard si son id est le même que celui de la fiche recherchée
+   * Demande au CardManager la fiche sinon Affecte l'attribut ReadOnly de Card à false si la fiche
+   * fait partie de l'instance (instanceId) Recherche et affecte le cardRecord de la fiche
+   * (getTemplate(currentCard .getInstanceId()).getRecordset().getRecord(userCardId)) Recherche et
+   * affecte le userRecord de la fiche (userTemplate.getRecord(userCardId)) Affecte le cardViewForm
+   * (getTemplate(currentCard.getInstanceId()).getViewForm()) Affecte le cardUpdateForm
+   * (cardTemplate.getUpdateForm()) Affecte le userForm (userTemplate.getViewForm()) Appel
+   * getWhitePagesCards pour mettre à jour la liste des fiches inter-instance portant sur le même
+   * user Met la fiche en session puis la retourne
    * @param userCardId id de la fiche
    */
   public Card getCard(long userCardId) throws WhitePagesException {
@@ -164,18 +159,14 @@ public class WhitePagesSessionController extends
   }
 
   /*
-   * Recherche une fiche en lecture seule pour accès externe ou rôle user
-   * Retourne currentCard si son id est le même que celui de la fiche recherchée
-   * Demande au CardManager la fiche sinon Recherche et affecte le cardRecord de
-   * la fiche
-   * (getTemplate(currentCard.getInstanceId()).getRecordset().getRecord(
-   * userCardId)) Recherche et affecte le userRecord de la fiche
-   * (userTemplate.getRecord(userCardId)) Affecte le cardViewForm
-   * (getTemplate(currentCard.getInstanceId()).getViewForm()) Affecte le
-   * userForm (userTemplate.getViewForm()) Appel getWhitePagesCards pour mettre
-   * à jour la liste des fiches inter-instance portant sur le même user Met la
-   * fiche en session puis la retourne
-   *
+   * Recherche une fiche en lecture seule pour accès externe ou rôle user Retourne currentCard si
+   * son id est le même que celui de la fiche recherchée Demande au CardManager la fiche sinon
+   * Recherche et affecte le cardRecord de la fiche
+   * (getTemplate(currentCard.getInstanceId()).getRecordset().getRecord( userCardId)) Recherche et
+   * affecte le userRecord de la fiche (userTemplate.getRecord(userCardId)) Affecte le cardViewForm
+   * (getTemplate(currentCard.getInstanceId()).getViewForm()) Affecte le userForm
+   * (userTemplate.getViewForm()) Appel getWhitePagesCards pour mettre à jour la liste des fiches
+   * inter-instance portant sur le même user Met la fiche en session puis la retourne
    * @param userCardId id de la fiche
    */
   public Card getCardReadOnly(long userCardId) throws WhitePagesException {
@@ -223,14 +214,11 @@ public class WhitePagesSessionController extends
   }
 
   /*
-   * Recherche une fiche à partir d'un userId (appel de WhitePages à partir d'un
-   * autre composant) Récupère le premier élement de la liste des fiches
-   * inter-instance portant sur le user (getWhitePagesCards) Appel la recherche
-   * fiche (getCardReadOnly) à partir de l'id du premier elèment de
-   * currentUserCards
-   *
+   * Recherche une fiche à partir d'un userId (appel de WhitePages à partir d'un autre composant)
+   * Récupère le premier élement de la liste des fiches inter-instance portant sur le user
+   * (getWhitePagesCards) Appel la recherche fiche (getCardReadOnly) à partir de l'id du premier
+   * elèment de currentUserCards
    * @param userId id d'un user
-   *
    * @return une Card ou NULL
    */
   public Card getUserCard(String userId) throws WhitePagesException {
@@ -248,11 +236,9 @@ public class WhitePagesSessionController extends
   }
 
   /*
-   * Charge la liste des fiches inter-instance portant sur le user (et non
-   * masquées sauf instance courante)et la met en session si le user est
-   * différent du user courant (currentCard.getUserId()) Sinon retourne
-   * currentUserCards (Collection de WhitePagesCard)
-   *
+   * Charge la liste des fiches inter-instance portant sur le user (et non masquées sauf instance
+   * courante)et la met en session si le user est différent du user courant
+   * (currentCard.getUserId()) Sinon retourne currentUserCards (Collection de WhitePagesCard)
    * @param userId id d'un user
    */
   private Collection getHomeWhitePagesCards(String userId)
@@ -268,11 +254,9 @@ public class WhitePagesSessionController extends
   }
 
   /*
-   * Charge la liste des fiches inter-instance portant sur le user (et non
-   * masquées) et la met en session si le user est différent du user courant
-   * (currentCard.getUserId()) Sinon retourne currentUserCards (Collection de
-   * WhitePagesCard)
-   *
+   * Charge la liste des fiches inter-instance portant sur le user (et non masquées) et la met en
+   * session si le user est différent du user courant (currentCard.getUserId()) Sinon retourne
+   * currentUserCards (Collection de WhitePagesCard)
    * @param userId id d'un user
    */
   private Collection getWhitePagesCards(String userId)
@@ -288,11 +272,9 @@ public class WhitePagesSessionController extends
   }
 
   /*
-   * Crée une nouvelle fiche (new Card()) et affecte le UserRecord de la fiche
-   * et le userForm (userTemplate.getViewForm()) Met la fiche en session et la
-   * retourne Ajoute un new WhitePages(" fiche en cours de création " ) à la
-   * liste des fiches
-   *
+   * Crée une nouvelle fiche (new Card()) et affecte le UserRecord de la fiche et le userForm
+   * (userTemplate.getViewForm()) Met la fiche en session et la retourne Ajoute un new
+   * WhitePages(" fiche en cours de création " ) à la liste des fiches
    * @param userDetail détail de l'utilisateur sur lequel porte la fiche
    */
   public Card createCard(UserDetail userDetail) throws WhitePagesException {
@@ -312,9 +294,9 @@ public class WhitePagesSessionController extends
   }
 
   /*
-   * Affecte un DataRecord vide (cardTemplate.getRecordset().getEmptyRecord()),
-   * le cardViewForm (cardTemplate.getViewForm()) et le cardUpdateForm à la
-   * fiche courante Retourne la fiche courante
+   * Affecte un DataRecord vide (cardTemplate.getRecordset().getEmptyRecord()), le cardViewForm
+   * (cardTemplate.getViewForm()) et le cardUpdateForm à la fiche courante Retourne la fiche
+   * courante
    */
   public Card setCardRecord() throws WhitePagesException {
     try {
@@ -337,8 +319,7 @@ public class WhitePagesSessionController extends
   }
 
   /*
-   * Rempli le DataRecord de la fiche courante en cours de création à partir de
-   * la request
+   * Rempli le DataRecord de la fiche courante en cours de création à partir de la request
    */
   public void setCardRecord(HttpServletRequest request)
       throws WhitePagesException {
@@ -390,10 +371,9 @@ public class WhitePagesSessionController extends
 
   /*
    * Enregistre et crée la fiche courante : enregistrement de la fiche
-   * (CardManager.create(currentCard)), recupération de l'id de la fiche créée
-   * (userCardId) et set de l'id de la fiche courante Enregistre les données du
-   * modèle de la fiche : currentCard.readCardRecord().setId(userCardId),
-   * saveCard()
+   * (CardManager.create(currentCard)), recupération de l'id de la fiche créée (userCardId) et set
+   * de l'id de la fiche courante Enregistre les données du modèle de la fiche :
+   * currentCard.readCardRecord().setId(userCardId), saveCard()
    */
   public void insertCard() throws WhitePagesException {
     try {
@@ -443,7 +423,6 @@ public class WhitePagesSessionController extends
 
   /*
    * Liste les fiches de l'annuaire
-   *
    * @return la liste de toutes les fiches de l'annuaire (Collection de Card)
    */
   public Collection getCards() throws WhitePagesException {
@@ -452,9 +431,8 @@ public class WhitePagesSessionController extends
 
   /*
    * Liste les fiches de l'annuaire non masquées
-   *
-   * @return la liste de toutes les fiches de l'annuaire (Collection de Card)
-   * non masquées (hideStatus = 0)
+   * @return la liste de toutes les fiches de l'annuaire (Collection de Card) non masquées
+   * (hideStatus = 0)
    */
   public Collection getVisibleCards() throws WhitePagesException {
     return setUserRecords(getCardManager().getVisibleCards(getComponentId()));
@@ -552,9 +530,7 @@ public class WhitePagesSessionController extends
   }
 
   /*
-   * Supprime une liste de fiches de l'annuaire + liste des cardRecord
-   * correspondant
-   *
+   * Supprime une liste de fiches de l'annuaire + liste des cardRecord correspondant
    * @param userCardIds liste des identifiants des fiches à supprimer
    */
   public void delete(Collection userCardIds) throws WhitePagesException {
@@ -570,7 +546,7 @@ public class WhitePagesSessionController extends
           getCardTemplate().getRecordSet().delete(data);
           SilverTrace.spy("whitePages", "WhitePagesSessionController.delete",
               getSpaceId(), getComponentId(), userCardId, getUserDetail()
-                  .getId(), SilverTrace.SPY_ACTION_DELETE);
+              .getId(), SilverTrace.SPY_ACTION_DELETE);
         }
         getCardManager().delete(userCardIds, getSpaceId());
       }
@@ -587,7 +563,6 @@ public class WhitePagesSessionController extends
 
   /*
    * Masque une liste de fiches de l'annuaire
-   *
    * @param userCardIds liste des identifiants des fiches à masquer
    */
   public void hide(Collection userCardIds) throws WhitePagesException {
@@ -596,7 +571,6 @@ public class WhitePagesSessionController extends
 
   /*
    * De Masque une liste de fiches de l'annuaire
-   *
    * @param userCardIds liste des identifiants des fiches à de masquer
    */
   public void unHide(Collection userCardIds) throws WhitePagesException {
@@ -605,7 +579,6 @@ public class WhitePagesSessionController extends
 
   /*
    * Reverse le statut Masqué d'une liste de fiches de l'annuaire
-   *
    * @param userCardIds liste des identifiants des fiches
    */
   public void reverseHide(Collection userCardIds) throws WhitePagesException {
@@ -615,7 +588,6 @@ public class WhitePagesSessionController extends
 
   /*
    * Indique si un utilisateur possède déjà une fiche dans l'annuaire courant
-   *
    * @param userId l'identifiant d'un utilisateur
    */
   public boolean existCard(String userId) throws WhitePagesException {
@@ -630,8 +602,7 @@ public class WhitePagesSessionController extends
   }
 
   /*
-   * retourne la valeur d'un paramètre affecté lors de l'instanciation pour un
-   * annuaire donné
+   * retourne la valeur d'un paramètre affecté lors de l'instanciation pour un annuaire donné
    */
   private String getParam(String paramName, String instanceId) {
     Admin admin = new Admin();
@@ -640,8 +611,8 @@ public class WhitePagesSessionController extends
 
   /*
    * Retourne le cardTemplate d'un annuaire :
-   * PublicationTemplateManager.getPublicationTemplate(instanceId,
-   * getParam("cardTemplate", instanceId))
+   * PublicationTemplateManager.getPublicationTemplate(instanceId, getParam("cardTemplate",
+   * instanceId))
    */
   private PublicationTemplate getTemplate(String instanceId)
       throws WhitePagesException {
@@ -657,8 +628,8 @@ public class WhitePagesSessionController extends
 
   /*
    * Retourne le userTemplate d'un annuaire :
-   * PublicationTemplateManager.getPublicationTemplate(instanceId,
-   * getParam("userTemplate", instanceId))
+   * PublicationTemplateManager.getPublicationTemplate(instanceId, getParam("userTemplate",
+   * instanceId))
    */
   private UserTemplate getUserTemplate(String instanceId)
       throws WhitePagesException {
@@ -837,7 +808,7 @@ public class WhitePagesSessionController extends
         ContentManager contentManager = new ContentManager();
         contentId = ""
             + contentManager.getSilverContentId(currentCard.getPK().getId(),
-                currentCard.getInstanceId());
+            currentCard.getInstanceId());
       } catch (ContentManagerException ignored) {
         SilverTrace.error("whitePages", "WhitePagesSessionController",
             "whitePages.EX_UNKNOWN_CONTENT_MANAGER", ignored);

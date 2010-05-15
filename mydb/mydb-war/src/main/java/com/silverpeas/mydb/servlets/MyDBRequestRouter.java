@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.mydb.servlets;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,11 +48,9 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 /**
  * MyDB request router.
- * 
  * @author Antoine HEDIN
  */
-public class MyDBRequestRouter extends ComponentRequestRouter implements
-    MyDBConstants {
+public class MyDBRequestRouter extends ComponentRequestRouter implements MyDBConstants {
 
   private static final long serialVersionUID = 1L;
 
@@ -64,11 +63,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
 
   /**
    * Creates a MyDB session control bean.
-   * 
-   * @param mainSessionCtrl
-   *          The main session control.
-   * @param componentContext
-   *          The context of the component.
+   * @param mainSessionCtrl The main session control.
+   * @param componentContext The context of the component.
    * @return The new created MyDB session control.
    */
   public ComponentSessionController createComponentSessionController(
@@ -77,13 +73,10 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
   }
 
   /**
-   * This method has to be implemented by the component request rooter. It has
-   * to compute a destination page.
-   * 
-   * @param function
-   *          The entering request function.
-   * @param componentSC
-   *          The session control component.
+   * This method has to be implemented by the component request rooter. It has to compute a
+   * destination page.
+   * @param function The entering request function.
+   * @param componentSC The session control component.
    * @return The complete destination URL for a forward.
    */
   public String getDestination(String function,
@@ -92,7 +85,7 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
     MyDBSessionController myDBSC = (MyDBSessionController) componentSC;
     SilverTrace.info("myDB", "MyDBRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + myDBSC.getUserId()
-            + ", Function=" + function);
+        + ", Function=" + function);
 
     // User's best role.
     request.setAttribute("userRoleLevel", myDBSC.getUserRoleLevel());
@@ -146,11 +139,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
 
   /**
    * Table selection.
-   * 
-   * @param request
-   *          The HTTP request.
-   * @param myDBSC
-   *          The session control.
+   * @param request The HTTP request.
+   * @param myDBSC The session control.
    * @return The destination corresponding to a table selection.
    * @throws MyDBException
    */
@@ -169,16 +159,11 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
 
   /**
    * Connection setting. The destination depends on the result of the update :<br>
-   * - if the parameters are not correct, returns to the connection setting
-   * page.<br>
-   * - else if the new setting is ok but no default table is found, returns the
-   * page selection page.<br>
+   * - if the parameters are not correct, returns to the connection setting page.<br>
+   * - else if the new setting is ok but no default table is found, returns the page selection page.<br>
    * - else (setting and table ok), returns the table detail page.
-   * 
-   * @param request
-   *          The HTTP request.
-   * @param myDBSC
-   *          The session control.
+   * @param request The HTTP request.
+   * @param myDBSC The session control.
    * @return The destination corresponding to a connection setting update.
    */
   private String getUpdateConnectionDestination(HttpServletRequest request,
@@ -214,11 +199,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
 
   /**
    * Update (modification or deletion) of a database record.
-   * 
-   * @param request
-   *          The HTTP request.
-   * @param myDBSC
-   *          The session control.
+   * @param request The HTTP request.
+   * @param myDBSC The session control.
    * @return The destination corresponding to the record detail page.
    * @throws MyDBException
    * @throws FormException
@@ -252,14 +234,10 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
 
   /**
    * Validation of the update (creation or modification) of a database record.
-   * 
-   * @param request
-   *          The HTTP request.
-   * @param myDBSC
-   *          The session control.
-   * @return The destination corresponding to the validation of the database
-   *         record : the record form if an error is detected, the table detail
-   *         else.
+   * @param request The HTTP request.
+   * @param myDBSC The session control.
+   * @return The destination corresponding to the validation of the database record : the record
+   * form if an error is detected, the table detail else.
    * @throws MyDBException
    * @throws FormException
    */
@@ -290,11 +268,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
 
   /**
    * New record creation.
-   * 
-   * @param request
-   *          The HTTP request.
-   * @param myDBSC
-   *          The session control.
+   * @param request The HTTP request.
+   * @param myDBSC The session control.
    * @return The destination corresponding to a record creation form.
    * @throws MyDBException
    * @throws FormException
@@ -310,11 +285,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
 
   /**
    * Data filter.
-   * 
-   * @param request
-   *          The HTTP request.
-   * @param myDBSC
-   *          The session control.
+   * @param request The HTTP request.
+   * @param myDBSC The session control.
    * @return The destination corresponding to the table filtered detail.
    */
   private String getFilterDestination(HttpServletRequest request,
@@ -327,15 +299,11 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
   }
 
   /**
-   * Table mode : creation or modification of a table. For the moment, only
-   * creation mode is managed.$
-   * 
-   * @param request
-   *          The HTTP request.
-   * @param myDBSC
-   *          The session control.
-   * @return The destination corresponding to the different actions linked to a
-   *         table update.
+   * Table mode : creation or modification of a table. For the moment, only creation mode is
+   * managed.$
+   * @param request The HTTP request.
+   * @param myDBSC The session control.
+   * @return The destination corresponding to the different actions linked to a table update.
    * @throws MyDBException
    */
   private String getUpdateTableDestination(HttpServletRequest request,
@@ -362,7 +330,7 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
       // Validation of the creation/modification of the table.
       if (tableManager.isCreationMode()
           && !tableManager.isValidTableName(myDBSC.getTableNames(), myDBSC
-              .getResources())) {
+          .getResources())) {
         return PAGE_TABLE_UPDATE;
       }
       if (myDBSC.createTable()) {
@@ -394,18 +362,12 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
   }
 
   /**
-   * Creates the objects used to initialize the XML form describing a database
-   * record.
-   * 
-   * @param request
-   *          The HTTP request.
-   * @param myDBSC
-   *          The session control.
-   * @param consultation
-   *          Indicates if data have to be displayed as labels or input fields.
-   * @param newRecord
-   *          Indicates if the form corresponds to a creation or a modification
-   *          of a database record.
+   * Creates the objects used to initialize the XML form describing a database record.
+   * @param request The HTTP request.
+   * @param myDBSC The session control.
+   * @param consultation Indicates if data have to be displayed as labels or input fields.
+   * @param newRecord Indicates if the form corresponds to a creation or a modification of a
+   * database record.
    * @throws MyDBException
    * @throws FormException
    */
@@ -425,11 +387,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
 
   /**
    * Table mode : operation on a column.
-   * 
-   * @param request
-   *          The HTTP request.
-   * @param myDBSC
-   *          The session control.
+   * @param request The HTTP request.
+   * @param myDBSC The session control.
    * @return The destination corresponding to the current column operation.
    * @throws MyDBException
    */
@@ -490,11 +449,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
 
   /**
    * Table mode : operation on a primary key.
-   * 
-   * @param request
-   *          The HTTP request.
-   * @param myDBSC
-   *          The session control.
+   * @param request The HTTP request.
+   * @param myDBSC The session control.
    * @return The destination corresponding to the current primary key operation.
    * @throws MyDBException
    */
@@ -528,11 +484,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
 
   /**
    * Table mode : operation on a unicity key.
-   * 
-   * @param request
-   *          The HTTP request.
-   * @param myDBSC
-   *          The session control.
+   * @param request The HTTP request.
+   * @param myDBSC The session control.
    * @return The destination corresponding to the current unicity key operation.
    * @throws MyDBException
    */
@@ -571,11 +524,8 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
 
   /**
    * Table mode : operation on a foreign key.
-   * 
-   * @param request
-   *          The HTTP request.
-   * @param myDBSC
-   *          The session control.
+   * @param request The HTTP request.
+   * @param myDBSC The session control.
    * @return The destination corresponding to the current foreign key operation.
    * @throws MyDBException
    */
@@ -626,7 +576,7 @@ public class MyDBRequestRouter extends ComponentRequestRouter implements
           foreignTable, foreignColumns);
       if ((!"true".equals(request.getParameter("refreshForeignColumns")))
           && (tableManager.isValidKeyName(currentForeignKey, myDBSC
-              .getResources(), index))) {
+          .getResources(), index))) {
         tableManager.getForeignKeys().update(currentForeignKey, index);
       } else {
         request.setAttribute("foreignKey", currentForeignKey);
