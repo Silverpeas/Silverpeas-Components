@@ -23,8 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ include file="check.jsp" %>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8"%>
+<%@ include file="check.jsp"%>
 
 <%
 Form 			formUpdate 		= (Form) request.getAttribute("Form");
@@ -48,19 +48,32 @@ if (formUpdate != null)
 
 function B_VALIDER_ONCLICK()
 {
-	if (isCorrectForm())
-	{
-		if (!document.myForm.CheckCharte.checked)
+	<% if (formUpdate != null) { %>
+	  if (isCorrectForm())
 		{
-			var errorMsg = "<%=resource.getString("gallery.mesValidCharte")%>";
-			window.alert(errorMsg);
+			if (!document.myForm.CheckCharte.checked)
+			{
+				var errorMsg = "<%=resource.getString("gallery.mesValidCharte")%>";
+				window.alert(errorMsg);
+			}
+			else
+			{
+				document.myForm.submit();
+			}
 		}
-		else
-		{
-			document.myForm.submit();
-		}
-	}
+	  <% } else { %>
+		  if (!document.myForm.CheckCharte.checked)
+	      {
+	        var errorMsg = "<%=resource.getString("gallery.mesValidCharte")%>";
+	        window.alert(errorMsg);
+	      }
+	      else
+	      {
+	        document.myForm.submit();
+	      }
+	  <% } %>
 }
+
 </script>
 </HEAD>
 <BODY>
@@ -79,8 +92,9 @@ function B_VALIDER_ONCLICK()
     out.println(board.printBefore());
     
 %>
-<FORM NAME="myForm" METHOD="POST" ACTION="OrderCreate" ENCTYPE="multipart/form-data" accept-charset="UTF-8">
-	<% 
+<FORM NAME="myForm" METHOD="POST" ACTION="OrderCreate"
+	ENCTYPE="multipart/form-data" accept-charset="UTF-8">
+<% 
 	if (formUpdate != null)
 	{
 		formUpdate.display(out, context, data);
@@ -88,23 +102,30 @@ function B_VALIDER_ONCLICK()
 	
 	if (StringUtil.isDefined(charteUrl))
 	{
-		%>
-		<!--  ajout de la zone de la charte -->
-		<iframe src="<%=charteUrl%>" height="200" width="600" scrolling="auto"></iframe> 
-		<br/>
-		<table>
-			<tr>
-				<td><input type="checkbox" name="CheckCharte"/> </td><td><b><%=resource.getString("gallery.validCharte")%></b></td>
-			</tr>
-		</table>
-	<%} %>	 
+		  %> <!--  ajout de la zone de la charte --> <iframe
+	   src="<%=charteUrl%>" height="200" width="600" scrolling="auto"></iframe>
+			<br />
+			<table>
+				<tr>
+					<td><input type="checkbox" name="CheckCharte" /></td>
+					<td><b><%=resource.getString("gallery.validCharte")%></b></td>
+				</tr>
+			</table>
+			<%} 
+			else {%>
+			   <input type="hidden" name="CheckCharte" checked="checked" />
+			<% } %>
 </form>
 <%
+	if (formUpdate == null && !StringUtil.isDefined(charteUrl)) {
+	  out.println("<center>" + resource.getString("gallery.validOrder")+ "</center>");
+	}
 	out.println(board.printAfter());
 	
 	ButtonPane buttonPane = gef.getButtonPane();
 	buttonPane.addButton(validateButton);
 	buttonPane.addButton(cancelButton);
+	
 	out.println("<br/><center>"+buttonPane.print()+"</center>");
 	
 	out.println(frame.printAfter());
