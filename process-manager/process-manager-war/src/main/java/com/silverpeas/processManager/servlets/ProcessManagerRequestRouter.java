@@ -33,6 +33,8 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.fileupload.FileItem;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
@@ -67,6 +69,9 @@ import java.io.File;
 import java.util.Iterator;
 
 public class ProcessManagerRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = -4758787807784357891L;
+
   /**
    * Returns the name used by the ComponentRequestRequest to store the session controller in the
    * user session.
@@ -138,11 +143,12 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       initHandlers();
   }
 
-  private Map getHandlerMap() {
+  private Map<String, FunctionHandler> getHandlerMap() {
     SilverTrace.info("processManager", "ProcessManagerRequestRouter.getHandlerMap()",
         "root.MSG_GEN_ENTER_METHOD");
-    if (handlerMap == null)
+    if (handlerMap == null) {
       initHandlers();
+    }
 
     return handlerMap;
   }
@@ -150,16 +156,17 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
   /**
    * Map the function name to the function handler
    */
-  static private Map handlerMap = null;
+  static private Map<String, FunctionHandler> handlerMap = null;
 
   /**
    * Inits the function handler
    */
   synchronized private void initHandlers() {
-    if (handlerMap != null)
+    if (handlerMap != null) {
       return;
+    }
 
-    handlerMap = new HashMap();
+    handlerMap = new HashMap<String, FunctionHandler>();
 
     handlerMap.put("Main", listProcessHandler);
     handlerMap.put("listProcess", listProcessHandler);
@@ -199,22 +206,6 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * The listProcess handler for the supervisor.
-   */
-  /*
-   * static private FunctionHandler adminListProcessHandler = new FunctionHandler() { public String
-   * getDestination(String function, ProcessManagerSessionController session, HttpServletRequest
-   * request) throws ProcessManagerException { Item[] items = session.getFolderItems();
-   * request.setAttribute("FolderItems", items); RecordTemplate listHeaders =
-   * session.getProcessListHeaders(); request.setAttribute("listHeaders", listHeaders); DataRecord[]
-   * processList = null; if (request.getAttribute("dontreset") == null) { processList =
-   * session.resetCurrentProcessList(); } else { processList = session.getCurrentProcessList(); }
-   * request.setAttribute("processList", processList);
-   * setProcessFilterAttributes(session,request,session.getCurrentFilter());
-   * setSharedAttributes(session, request); return "/processManager/jsp/admin/listProcess.jsp"; } };
-   */
-
-  /**
    * The removeProcess handler for the supervisor.
    */
   static private FunctionHandler adminRemoveProcessHandler = new FunctionHandler()
@@ -230,27 +221,6 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       return listProcessHandler.getDestination(function, session, request);
     }
   };
-
-  /**
-   * The viewProcess handler for the supervisor
-   */
-  /*
-   * static private FunctionHandler adminViewProcessHandler = new FunctionHandler() { public String
-   * getDestination(String function, ProcessManagerSessionController session, HttpServletRequest
-   * request) throws ProcessManagerException { String processId = request.getParameter("processId");
-   * String force = request.getParameter("force"); ProcessInstance process =
-   * session.resetCurrentProcessInstance(processId); if ( (force==null || !force.equals("true")) &&
-   * (session.hasPendingQuestions()) ) return listQuestionsHandler.getDestination(function, session,
-   * request); com.silverpeas.form.Form form = session.getPresentationForm();
-   * request.setAttribute("form", form); PagesContext context = getFormContext("presentation", "0",
-   * session, true); request.setAttribute("context", context); String[] activeStates =
-   * session.getActiveStates(); request.setAttribute("activeStates", activeStates); String[] roles =
-   * session.getActiveRoles(); request.setAttribute("activeRoles", roles); DataRecord data =
-   * session.getFolderRecord(); request.setAttribute("data", data); String[] deleteAction =
-   * session.getDeleteAction(); if (deleteAction != null) request.setAttribute("deleteAction",
-   * deleteAction); setSharedAttributes(session, request); return
-   * "/processManager/jsp/admin/viewProcess.jsp"; } };
-   */
 
   /**
    * The viewErrors handler for the supervisor
@@ -325,7 +295,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       request.setAttribute("data", data);
 
       try {
-        List items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
         form.update(items, data, context);
         session.reAssign(data);
 
@@ -471,10 +441,6 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       String[] activeStates = session.getActiveStates();
       request.setAttribute("activeStates", activeStates);
 
-      /*
-       * String[] actors = session.getActiveUsers(); request.setAttribute("actors", actors);
-       */
-
       String[] roles = session.getActiveRoles();
       request.setAttribute("activeRoles", roles);
 
@@ -531,10 +497,6 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       String[] activeStates = session.getActiveStates();
       request.setAttribute("activeStates", activeStates);
 
-      /*
-       * String[] actors = session.getActiveUsers(); request.setAttribute("actors", actors);
-       */
-
       String[] roles = session.getActiveRoles();
       request.setAttribute("activeRoles", roles);
 
@@ -583,7 +545,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       request.setAttribute("enlightedStep", strEnlightedStep);
 
       if ("all".equalsIgnoreCase(strEnlightedStep)) {
-        List stepContents = new ArrayList();
+        List<HistoryStepContent> stepContents = new ArrayList<HistoryStepContent>();
         for (int i = 0; i < stepVisibles.length; i++) {
           com.silverpeas.form.Form form = session.getStepForm(i);
           PagesContext context = getFormContext("dummy", "0", session);
@@ -648,21 +610,20 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       DataRecord data = session.getEmptyCreationRecord();
 
       try {
-        List items = FileUploadUtil.parseRequest(request);
-        List attachmentIds = form.update(items, data, context);
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        List<String> attachmentIds = form.update(items, data, context);
         String instanceId = session.createProcessInstance(data);
 
         // Attachment's foreignkey must be set with the just created instanceId
-        String attachmentId = null;
         AttachmentPK attachmentPK = null;
         DocumentPK documentPK = null;
         VersioningUtil versioningUtil = null;
-        for (int a = 0; a < attachmentIds.size(); a++) {
-          attachmentId = (String) attachmentIds.get(a);
+        for (String attachmentId : attachmentIds) {
 
           if (session.isVersionControlled()) {
-            if (versioningUtil == null)
+            if (versioningUtil == null) {
               versioningUtil = new VersioningUtil();
+            }
 
             documentPK =
                 new DocumentPK(Integer.parseInt(attachmentId), "useless", session.getComponentId());
@@ -684,8 +645,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
   /**
    * The listTasks handler
    */
-  static private FunctionHandler listTasksHandler = new FunctionHandler()
-      {
+  static private FunctionHandler listTasksHandler = new FunctionHandler() {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
@@ -778,7 +738,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         throws ProcessManagerException {
 
       try {
-        List items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
 
         String stateName = FileUploadUtil.getParameter(items, "state");
         String actionName = FileUploadUtil.getParameter(items, "action");
@@ -882,7 +842,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         HttpServletRequest request)
         throws ProcessManagerException {
       try {
-        List items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
 
         String stepId = FileUploadUtil.getParameter(items, "stepId");
         String state = FileUploadUtil.getParameter(items, "state");
@@ -953,7 +913,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         HttpServletRequest request)
         throws ProcessManagerException {
       try {
-        List items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
 
         String questionId = FileUploadUtil.getParameter(items, "questionId");
 
@@ -1012,7 +972,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       DataRecord data = session.getEmptyUserSettingsRecord();
 
       try {
-        List items = FileUploadUtil.parseRequest(request);
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
         form.update(items, data, context);
         session.saveUserSettings(data);
 
@@ -1064,7 +1024,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       throws ProcessManagerException {
 
     try {
-      List items = FileUploadUtil.parseRequest(request);
+      List<FileItem> items = FileUploadUtil.parseRequest(request);
 
       String collapse = FileUploadUtil.getParameter(items, "collapse");
 
