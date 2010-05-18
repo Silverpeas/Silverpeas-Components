@@ -1356,7 +1356,7 @@ function loadNodeData(node, fnLoadComplete)  {
 		if (id != "0" && id != "1" && id != "tovalidate")
 		{
 			$("#footer").css({'visibility':'visible'});
-			$("#footer").html("Th�me cr��/modifi� par "+node.data.creatorName+" - "+node.data.date+" - <a id=\"topicPermalink\" href=\"#\"><img src=\"<%=resources.getIcon("kmelia.link")%>\"/></a>");
+			$("#footer").html("<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.topic.info"))%>"+node.data.creatorName+" - "+node.data.date+" - <a id=\"topicPermalink\" href=\"#\"><img src=\"<%=resources.getIcon("kmelia.link")%>\"/></a>");
 			$("#footer #topicPermalink").attr("href", "<%=m_context%>/Topic/"+id+"?ComponentId=<%=componentId%>");
 		}
 		else
