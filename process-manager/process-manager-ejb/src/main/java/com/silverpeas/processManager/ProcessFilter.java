@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.processManager;
 
 import java.util.ArrayList;
@@ -45,8 +46,7 @@ import com.silverpeas.workflow.api.model.State;
  */
 public class ProcessFilter {
   /**
-   * Builds a process filter which can be used to select process intance of a
-   * given process model.
+   * Builds a process filter which can be used to select process intance of a given process model.
    */
   public ProcessFilter(ProcessModel model, String role, String lang)
       throws ProcessManagerException {
@@ -88,7 +88,7 @@ public class ProcessFilter {
         Map<String, String> parameters = folderField.getParameters(lang);
         if (parameters != null
             && (parameters.containsKey("values") || parameters
-                .containsKey("keys"))) {
+            .containsKey("keys"))) {
           filter.addFieldParameter(field.getFieldName(), folderField);
         }
       }
@@ -133,10 +133,8 @@ public class ProcessFilter {
   }
 
   /**
-   * Copy the criteria filled in another context but shared by this filter.
-   *
-   * We ignore all the form exception, since this copy is only done to simplify
-   * the user life.
+   * Copy the criteria filled in another context but shared by this filter. We ignore all the form
+   * exception, since this copy is only done to simplify the user life.
    */
   public void copySharedCriteria(ProcessFilter source) {
     DataRecord copiedCriteria = null;

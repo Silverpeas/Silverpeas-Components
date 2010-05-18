@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.processManager.record;
 
 import com.silverpeas.form.DataRecord;
@@ -36,9 +37,7 @@ public class QuestionTemplate implements RecordTemplate {
   private boolean readonly;
 
   /**
-   * A UserTemplate is built from a language : use addFieldTemplate for each
-   * field.
-   * 
+   * A UserTemplate is built from a language : use addFieldTemplate for each field.
    * @see addFieldTemplate
    */
   public QuestionTemplate(String language, boolean readonly) {
@@ -75,7 +74,6 @@ public class QuestionTemplate implements RecordTemplate {
 
   /**
    * Returns the FieldTemplate of the named field.
-   * 
    * @throw FormException if the field name is unknown.
    */
   public FieldTemplate getFieldTemplate(String fieldName) throws FormException {
@@ -92,7 +90,6 @@ public class QuestionTemplate implements RecordTemplate {
 
   /**
    * Returns the field index of the named field.
-   * 
    * @throw FormException if the field name is unknown.
    */
   public int getFieldIndex(String fieldName) throws FormException {
@@ -110,8 +107,7 @@ public class QuestionTemplate implements RecordTemplate {
   }
 
   /**
-   * Returns true if the data record is built on this template and all the
-   * constraints are ok.
+   * Returns true if the data record is built on this template and all the constraints are ok.
    */
   public boolean checkDataRecord(DataRecord record) {
     try {

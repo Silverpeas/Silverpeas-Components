@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.processManager.servlets;
 
 import java.util.ArrayList;
@@ -221,8 +222,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       String processId = request.getParameter("processId");
 
       session.removeProcess(processId);
@@ -260,8 +260,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       String processId = request.getParameter("processId");
 
       session.resetCurrentProcessInstance(processId);
@@ -282,8 +281,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       String processId = request.getParameter("processId");
 
       session.resetCurrentProcessInstance(processId);
@@ -313,8 +311,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       // Get the associated form
       com.silverpeas.form.Form form = session.getAssignForm();
       request.setAttribute("form", form);
@@ -327,16 +324,13 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       DataRecord data = session.getAssignRecord();
       request.setAttribute("data", data);
 
-      try
-      {
+      try {
         List items = FileUploadUtil.parseRequest(request);
         form.update(items, data, context);
         session.reAssign(data);
 
         return listProcessHandler.getDestination(function, session, request);
-      }
-      catch (Exception e)
-      {
+      } catch (Exception e) {
         throw new ProcessManagerException("ProcessManagerRequestRouter",
             "processManager.ILL_CREATE_FORM", e);
       }
@@ -351,19 +345,14 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
-      if (session.hasUserSettings() && !session.isUserSettingsOK())
-      {
+        throws ProcessManagerException {
+      if (session.hasUserSettings() && !session.isUserSettingsOK()) {
         return editUserSettingsHandler.getDestination(function, session, request);
       }
 
-      if (session.hasUserSettings())
-      {
+      if (session.hasUserSettings()) {
         request.setAttribute("hasUserSettings", "1");
-      }
-      else
-      {
+      } else {
         request.setAttribute("hasUserSettings", "0");
       }
 
@@ -377,12 +366,9 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
 
       DataRecord[] processList = null;
 
-      if (request.getAttribute("dontreset") == null)
-      {
+      if (request.getAttribute("dontreset") == null) {
         processList = session.resetCurrentProcessList();
-      }
-      else
-      {
+      } else {
         processList = session.getCurrentProcessList();
       }
       request.setAttribute("processList", processList);
@@ -401,8 +387,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       request.setAttribute("dontreset", "no, dont");
 
       return listProcessHandler.getDestination(function, session, request);
@@ -417,8 +402,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       String roleName = request.getParameter("role");
       session.resetCurrentRole(roleName);
 
@@ -434,8 +418,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       ProcessFilter filter = session.getCurrentFilter();
       updateProcessFilter(session, request, filter);
 
@@ -451,8 +434,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       String processId = request.getParameter("processId");
 
       if (processId != null)
@@ -471,8 +453,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       String processId = request.getParameter("processId");
       String force = request.getParameter("force");
 
@@ -517,8 +498,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       String type = request.getParameter("Type");
       String todoId = request.getParameter("Id");
 
@@ -529,8 +509,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         return listProcessHandler.getDestination(function, session, request);
 
       String processId = todoId;
-      if (type.equals("com.stratelia.webactiv.calendar.backbone.TodoDetail"))
-      {
+      if (type.equals("com.stratelia.webactiv.calendar.backbone.TodoDetail")) {
         // from todo, todoId is in fact the externalId
         processId = session.getProcessInstanceIdFromExternalTodoId(todoId);
 
@@ -580,8 +559,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       String processId = request.getParameter("processId");
 
       session.resetCurrentProcessInstance(processId);
@@ -604,11 +582,9 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       String strEnlightedStep = request.getParameter("enlightedStep");
       request.setAttribute("enlightedStep", strEnlightedStep);
 
-      if ("all".equalsIgnoreCase(strEnlightedStep))
-      {
+      if ("all".equalsIgnoreCase(strEnlightedStep)) {
         List stepContents = new ArrayList();
-        for (int i = 0; i < stepVisibles.length; i++)
-        {
+        for (int i = 0; i < stepVisibles.length; i++) {
           com.silverpeas.form.Form form = session.getStepForm(i);
           PagesContext context = getFormContext("dummy", "0", session);
           DataRecord data = session.getStepRecord(i);
@@ -617,13 +593,10 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
           stepContents.add(stepContent);
         }
         request.setAttribute("StepsContent", stepContents);
-      }
-      else
-      {
+      } else {
         int enlightedStep = intValue(strEnlightedStep, -1);
 
-        if (enlightedStep != -1)
-        {
+        if (enlightedStep != -1) {
           com.silverpeas.form.Form form = session.getStepForm(enlightedStep);
           request.setAttribute("form", form);
           PagesContext context = getFormContext("dummy", "0", session);
@@ -646,8 +619,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       com.silverpeas.form.Form form = session.getCreationForm();
       request.setAttribute("form", form);
 
@@ -670,14 +642,12 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       com.silverpeas.form.Form form = session.getCreationForm();
       PagesContext context = getFormContext("createForm", "0", session);
       DataRecord data = session.getEmptyCreationRecord();
 
-      try
-      {
+      try {
         List items = FileUploadUtil.parseRequest(request);
         List attachmentIds = form.update(items, data, context);
         String instanceId = session.createProcessInstance(data);
@@ -687,30 +657,24 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         AttachmentPK attachmentPK = null;
         DocumentPK documentPK = null;
         VersioningUtil versioningUtil = null;
-        for (int a = 0; a < attachmentIds.size(); a++)
-        {
+        for (int a = 0; a < attachmentIds.size(); a++) {
           attachmentId = (String) attachmentIds.get(a);
 
-          if (session.isVersionControlled())
-          {
+          if (session.isVersionControlled()) {
             if (versioningUtil == null)
               versioningUtil = new VersioningUtil();
 
             documentPK =
                 new DocumentPK(Integer.parseInt(attachmentId), "useless", session.getComponentId());
             versioningUtil.updateDocumentForeignKey(documentPK, instanceId);
-          }
-          else
-          {
+          } else {
             attachmentPK = new AttachmentPK(attachmentId, "useless", session.getComponentId());
             AttachmentController.updateAttachmentForeignKey(attachmentPK, instanceId);
           }
         }
 
         return listProcessHandler.getDestination(function, session, request);
-      }
-      catch (Exception e)
-      {
+      } catch (Exception e) {
         throw new ProcessManagerException("ProcessManagerRequestRouter",
             "processManager.ILL_CREATE_FORM", e);
       }
@@ -725,28 +689,23 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       String processId = request.getParameter("processId");
 
       ProcessInstance process = session.resetCurrentProcessInstance(processId);
 
-      if (!process.getErrorStatus())
-      {
+      if (!process.getErrorStatus()) {
         Task[] tasks = session.getTasks();
 
-        for (int i = 0; tasks != null && i < tasks.length; i++)
-        {
+        for (int i = 0; tasks != null && i < tasks.length; i++) {
           State state = tasks[i].getState();
           AllowedActions filteredActions = new ActionRefs();
           if (state.getAllowedActionsEx() != null) {
             Iterator<AllowedAction> actions = state.getAllowedActionsEx().iterateAllowedAction();
-            while (actions.hasNext())
-            {
+            while (actions.hasNext()) {
               AllowedAction action = actions.next();
               QualifiedUsers qualifiedUsers = action.getAction().getAllowedUsers();
-              if (session.getUsers(qualifiedUsers, true).contains(session.getUserId()))
-              {
+              if (session.getUsers(qualifiedUsers, true).contains(session.getUserId())) {
                 filteredActions.addAllowedAction(action);
               }
             }
@@ -757,9 +716,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         request.setAttribute("tasks", tasks);
         request.setAttribute("ViewReturn", new Boolean(session.isViewReturn()));
         request.setAttribute("Error", Boolean.FALSE);
-      }
-      else
-      {
+      } else {
         request.setAttribute("Error", Boolean.TRUE);
       }
 
@@ -776,8 +733,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       // Set process instance
       String processId = request.getParameter("processId");
       session.resetCurrentProcessInstance(processId);
@@ -819,11 +775,9 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
 
-      try
-      {
+      try {
         List items = FileUploadUtil.parseRequest(request);
 
         String stateName = FileUploadUtil.getParameter(items, "state");
@@ -833,16 +787,13 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         PagesContext context = getFormContext("actionForm", "0", session);
         DataRecord data = session.getActionRecord(stateName, actionName);
 
-        if (form != null)
-        {
+        if (form != null) {
           form.update(items, data, context);
         }
         session.processAction(stateName, actionName, data);
 
         return listProcessHandler.getDestination(function, session, request);
-      }
-      catch (Exception e)
-      {
+      } catch (Exception e) {
         throw new ProcessManagerException("ProcessManagerRequestRouter",
             "processManager.ILL_CREATE_FORM", e);
       }
@@ -857,8 +808,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       String stateName = request.getParameter("state");
 
       // unlock the process instance
@@ -876,8 +826,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       String stateName = request.getParameter("state");
 
       // unlock the process instance
@@ -895,8 +844,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       String stepId = request.getParameter("stepId");
       request.setAttribute("stepId", stepId);
       request.setAttribute("step", session.getStep(stepId));
@@ -932,10 +880,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
-      try
-      {
+        throws ProcessManagerException {
+      try {
         List items = FileUploadUtil.parseRequest(request);
 
         String stepId = FileUploadUtil.getParameter(items, "stepId");
@@ -949,9 +895,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         session.processQuestion(stepId, state, data);
 
         return listProcessHandler.getDestination(function, session, request);
-      }
-      catch (Exception e)
-      {
+      } catch (Exception e) {
         throw new ProcessManagerException("ProcessManagerRequestRouter",
             "processManager.ILL_CREATE_FORM", e);
       }
@@ -966,8 +910,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       String questionId = request.getParameter("questionId");
       request.setAttribute("question", session.getQuestion(questionId));
 
@@ -1008,10 +951,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
-      try
-      {
+        throws ProcessManagerException {
+      try {
         List items = FileUploadUtil.parseRequest(request);
 
         String questionId = FileUploadUtil.getParameter(items, "questionId");
@@ -1024,9 +965,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         session.processResponse(questionId, responseData);
 
         return listProcessHandler.getDestination(function, session, request);
-      }
-      catch (Exception e)
-      {
+      } catch (Exception e) {
         throw new ProcessManagerException("ProcessManagerRequestRouter",
             "processManager.ILL_CREATE_FORM", e);
       }
@@ -1041,8 +980,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       // Get the user settings form
       com.silverpeas.form.Form form = session.getUserSettingsForm();
       request.setAttribute("form", form);
@@ -1068,22 +1006,18 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       com.silverpeas.form.Form form = session.getUserSettingsForm();
       PagesContext context = getFormContext("userSettingsForm", "0", session);
       DataRecord data = session.getEmptyUserSettingsRecord();
 
-      try
-      {
+      try {
         List items = FileUploadUtil.parseRequest(request);
         form.update(items, data, context);
         session.saveUserSettings(data);
 
         return listProcessHandler.getDestination(function, session, request);
-      }
-      catch (Exception e)
-      {
+      } catch (Exception e) {
         throw new ProcessManagerException("ProcessManagerRequestRouter",
             "processManager.ILL_USERSETTINGS_FORM", e);
       }
@@ -1098,8 +1032,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       String processId = request.getParameter("processId");
 
       session.resetCurrentProcessInstance(processId);
@@ -1182,8 +1115,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       setSharedAttributes(session, request);
       return "/processManager/jsp/printProcessFrameset.jsp";
     }
@@ -1197,8 +1129,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       // Get the print form
       com.silverpeas.form.Form form = session.getPrintForm(request);
       request.setAttribute("form", form);
@@ -1224,8 +1155,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       setSharedAttributes(session, request);
       return "/processManager/jsp/printButtons.jsp";
     }
@@ -1236,13 +1166,11 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     public String getDestination(String function,
         ProcessManagerSessionController session,
         HttpServletRequest request)
-        throws ProcessManagerException
-      {
+        throws ProcessManagerException {
       String csvFilename = session.exportListAsCSV();
 
       request.setAttribute("CSVFilename", csvFilename);
-      if (StringUtil.isDefined(csvFilename))
-      {
+      if (StringUtil.isDefined(csvFilename)) {
         File file = new File(FileRepositoryManager.getTemporaryPath() + csvFilename);
         request.setAttribute("CSVFileSize", Long.valueOf(file.length()));
         request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename,

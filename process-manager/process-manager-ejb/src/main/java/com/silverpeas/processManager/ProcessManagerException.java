@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.processManager;
 
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -29,7 +30,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * Thrown by the processManager components.
  */
 public class ProcessManagerException extends SilverpeasException {
-  
+
   private static final long serialVersionUID = 4403838459103863944L;
 
   /**
@@ -70,18 +71,15 @@ public class ProcessManagerException extends SilverpeasException {
   }
 
   /**
-   * Set the caller, the level and the error message.
-   * 
-   * Used only by the FatalProcessManagerException
+   * Set the caller, the level and the error message. Used only by the FatalProcessManagerException
    */
   protected ProcessManagerException(String caller, int level, String message) {
     super(caller, level, message);
   }
 
   /**
-   * Set the caller, the level, the error message and the nested exception.
-   * 
-   * Used only by the FatalProcessManagerException
+   * Set the caller, the level, the error message and the nested exception. Used only by the
+   * FatalProcessManagerException
    */
   protected ProcessManagerException(String caller, int level, String message,
       Exception nestedException) {
@@ -89,9 +87,8 @@ public class ProcessManagerException extends SilverpeasException {
   }
 
   /**
-   * Set the caller, the level, the error message and infos.
-   * 
-   * Used only by the FatalProcessManagerException
+   * Set the caller, the level, the error message and infos. Used only by the
+   * FatalProcessManagerException
    */
   protected ProcessManagerException(String caller, int level, String message,
       String infos) {
@@ -99,10 +96,8 @@ public class ProcessManagerException extends SilverpeasException {
   }
 
   /**
-   * Set the caller, the level, the error message, infos and the nested
-   * exception.
-   * 
-   * Used only by the FatalProcessManagerException
+   * Set the caller, the level, the error message, infos and the nested exception. Used only by the
+   * FatalProcessManagerException
    */
   protected ProcessManagerException(String caller, int level, String message,
       String infos, Exception nestedException) {

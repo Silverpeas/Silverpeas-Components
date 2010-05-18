@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.processManager.ejb;
 
 import java.io.File;
@@ -76,87 +77,81 @@ public class ProcessManagerBmEJB implements SessionBean {
   ProcessModel processModel = null;
   String userId = null;
 
-  public String createProcess(String componentId, String userId, String fileName, byte[] fileContent)
-	{
-		String instanceId = "unknown";
-		try {
-			processModel = getProcessModel(componentId);
-			this.userId = userId;
-			XmlForm form = (XmlForm) getCreationForm();
-			GenericDataRecord data = (GenericDataRecord) getEmptyCreationRecord();
+  public String createProcess(String componentId, String userId, String fileName, byte[] fileContent) {
+    String instanceId = "unknown";
+    try {
+      processModel = getProcessModel(componentId);
+      this.userId = userId;
+      XmlForm form = (XmlForm) getCreationForm();
+      GenericDataRecord data = (GenericDataRecord) getEmptyCreationRecord();
 
-			PagesContext pagesContext = new PagesContext("creationForm", "0", getLanguage(), true, componentId, userId);
+      PagesContext pagesContext =
+          new PagesContext("creationForm", "0", getLanguage(), true, componentId, userId);
 
-			//versioning used ?
-			OrganizationController controller = new OrganizationController();
-			String paramVersion = controller.getComponentParameterValue(componentId, "versionControl");
-			boolean versioningUsed = (StringUtil.isDefined(paramVersion) && !("no").equals(paramVersion.toLowerCase()));
-			pagesContext.setVersioningUsed(versioningUsed);
+      // versioning used ?
+      OrganizationController controller = new OrganizationController();
+      String paramVersion = controller.getComponentParameterValue(componentId, "versionControl");
+      boolean versioningUsed =
+          (StringUtil.isDefined(paramVersion) && !("no").equals(paramVersion.toLowerCase()));
+      pagesContext.setVersioningUsed(versioningUsed);
 
-			//1 - Populate form data (save file on disk, populate file field)
-			FieldTemplate fieldTemplate;
-			Field field;
-			String attachmentId = null;
-			boolean fileNameInserted = false;
-			boolean fileInserted = false;
-			for (int f=0; f<form.getFieldTemplates().size(); f++)
-			{
-				fieldTemplate = (FieldTemplate) form.getFieldTemplates().get(f);
-				if (!fileNameInserted && fieldTemplate.getTypeName().equals(TextField.TYPE) && fieldTemplate.isMandatory())
-				{
-					field = data.getField(fieldTemplate.getFieldName());
-					field.setValue(fileName);
-					fileNameInserted = true;
-				}
-				else
-				{
-					if (!fileInserted && fieldTemplate.getTypeName().equals(FileField.TYPE))
-					{
-						field = data.getField(fieldTemplate.getFieldName());
-						FileField fileField = (FileField) field;
+      // 1 - Populate form data (save file on disk, populate file field)
+      FieldTemplate fieldTemplate;
+      Field field;
+      String attachmentId = null;
+      boolean fileNameInserted = false;
+      boolean fileInserted = false;
+      for (int f = 0; f < form.getFieldTemplates().size(); f++) {
+        fieldTemplate = (FieldTemplate) form.getFieldTemplates().get(f);
+        if (!fileNameInserted && fieldTemplate.getTypeName().equals(TextField.TYPE) &&
+            fieldTemplate.isMandatory()) {
+          field = data.getField(fieldTemplate.getFieldName());
+          field.setValue(fileName);
+          fileNameInserted = true;
+        } else {
+          if (!fileInserted && fieldTemplate.getTypeName().equals(FileField.TYPE)) {
+            field = data.getField(fieldTemplate.getFieldName());
+            FileField fileField = (FileField) field;
 
-						attachmentId = processUploadedFile(fileContent, fileName, pagesContext);
+            attachmentId = processUploadedFile(fileContent, fileName, pagesContext);
 
-						fileField.setAttachmentId(attachmentId);
+            fileField.setAttachmentId(attachmentId);
 
-						fileInserted = true;
-					}
-				}
-			}
+            fileInserted = true;
+          }
+        }
+      }
 
-			//2 - Create process instance
-			instanceId = createProcessInstance(data);
+      // 2 - Create process instance
+      instanceId = createProcessInstance(data);
 
-			//3 - Update attachment foreignkey
-			//Attachment's foreignkey must be set with the just created instanceId
-			AttachmentPK 	attachmentPK 	= null;
-			DocumentPK		documentPK		= null;
-			VersioningUtil	versioningUtil	= null;
-			List<String> attachmentIds = Arrays.asList(attachmentId);
-			for (int a=0; a<attachmentIds.size(); a++)
-			{
-				attachmentId = (String) attachmentIds.get(a);
+      // 3 - Update attachment foreignkey
+      // Attachment's foreignkey must be set with the just created instanceId
+      AttachmentPK attachmentPK = null;
+      DocumentPK documentPK = null;
+      VersioningUtil versioningUtil = null;
+      List<String> attachmentIds = Arrays.asList(attachmentId);
+      for (int a = 0; a < attachmentIds.size(); a++) {
+        attachmentId = (String) attachmentIds.get(a);
 
-				if (versioningUsed)
-				{
-					if (versioningUtil == null)
-						versioningUtil = new VersioningUtil();
+        if (versioningUsed) {
+          if (versioningUtil == null)
+            versioningUtil = new VersioningUtil();
 
-					documentPK = new DocumentPK(Integer.parseInt(attachmentId), "useless", componentId);
-					versioningUtil.updateDocumentForeignKey(documentPK, instanceId);
-				}
-				else
-				{
-					attachmentPK = new AttachmentPK(attachmentId, "useless", componentId);
-					AttachmentController.updateAttachmentForeignKey(attachmentPK, instanceId);
-				}
-			}
-		} catch (Exception e) {
-			SilverTrace.error("processManager", "ProcessManagerBmEJB.createProcess", "root.MSG_GEN_ERROR", e);
-		}
+          documentPK = new DocumentPK(Integer.parseInt(attachmentId), "useless", componentId);
+          versioningUtil.updateDocumentForeignKey(documentPK, instanceId);
+        } else {
+          attachmentPK = new AttachmentPK(attachmentId, "useless", componentId);
+          AttachmentController.updateAttachmentForeignKey(attachmentPK, instanceId);
+        }
+      }
+    } catch (Exception e) {
+      SilverTrace.error("processManager", "ProcessManagerBmEJB.createProcess",
+          "root.MSG_GEN_ERROR", e);
+    }
 
-		return instanceId;
-	}
+    return instanceId;
+  }
 
   /**
    * Create a new process instance with the filled form.
@@ -190,8 +185,7 @@ public class ProcessManagerBmEJB implements SessionBean {
   }
 
   /**
-   * Returns the an empty creation record which will be filled with the creation
-   * form.
+   * Returns the an empty creation record which will be filled with the creation form.
    */
   private DataRecord getEmptyCreationRecord() throws ProcessManagerException {
     try {
