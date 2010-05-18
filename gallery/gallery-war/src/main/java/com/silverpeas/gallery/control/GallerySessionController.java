@@ -140,11 +140,8 @@ public class GallerySessionController extends AbstractComponentSessionController
 
   /**
    * Standard Session Controller Constructeur
-   * 
-   * @param mainSessionCtrl
-   *          The user's profile
-   * @param componentContext
-   *          The component's profile
+   * @param mainSessionCtrl The user's profile
+   * @param componentContext The component's profile
    * @see
    */
   public GallerySessionController(MainSessionController mainSessionCtrl,
@@ -163,8 +160,13 @@ public class GallerySessionController extends AbstractComponentSessionController
         PublicationTemplateManager.addDynamicPublicationTemplate(getComponentId() + ":"
             + xmlFormShortName, xmlFormName);
       } catch (PublicationTemplateException e) {
-        throw new GalleryRuntimeException("GallerySessionController.super()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+        xmlFormName = null;
+        /*
+         * throw new GalleryRuntimeException("GallerySessionController.super()",
+         * SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+         */
+        SilverTrace.info("gallery", "GallerySessionController()",
+            "root.EX_CANT_GET_REMOTE_OBJECT", "xmlFormName = " + getXMLFormName(), e);
       }
     }
 
@@ -788,6 +790,17 @@ public class GallerySessionController extends AbstractComponentSessionController
 
   public String getXMLFormName() {
     String formName = getComponentParameterValue("XMLFormName");
+    // contrôle du formulaire et retour du nom si convenable
+    if (isDefined(formName)) {
+      try {
+        String xmlFormShortName =
+            formName.substring(formName.indexOf("/") + 1, formName.indexOf("."));
+        PublicationTemplateManager.getPublicationTemplate(getComponentId() +
+            ":" + xmlFormShortName, formName);
+      } catch (PublicationTemplateException e) {
+        formName = null;
+      }
+    }
     return formName;
   }
 
@@ -809,14 +822,14 @@ public class GallerySessionController extends AbstractComponentSessionController
     // ayant acces au composant)
     PairObject hostComponentName = new PairObject(getComponentLabel(), null); // set
     // nom du composant pour browsebar (PairObject(nom_composant, lien_vers_composant))
-    // NB : seul le 1er element est actuellement utilisé  (alertUserPeas est toujours
+    // NB : seul le 1er element est actuellement utilisé (alertUserPeas est toujours
     // présenté en popup => pas de lien sur nom du composant)
     sel.setHostComponentName(hostComponentName);
     SilverTrace.debug("gallery", "GallerySessionController.initAlertUser()",
         "root.MSG_GEN_PARAM_VALUE", "name = " + hostComponentName + " componentId="
             + getComponentId());
     sel.setNotificationMetaData(getAlertNotificationMetaData(photoId)); // set
-    // NotificationMetaData contenant les informations à notifier fin initialisation de 
+    // NotificationMetaData contenant les informations à notifier fin initialisation de
     // AlertUser l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
     return AlertUser.getAlertUserURL();
   }
@@ -1203,7 +1216,8 @@ public class GallerySessionController extends AbstractComponentSessionController
     return m_AdminCtrl;
   }
 
-  private void pasteImagesOfAlbum(NodePK fromPK, NodePK toPK, boolean isCutted, List<NodePK> nodePKsToPaste)
+  private void pasteImagesOfAlbum(NodePK fromPK, NodePK toPK, boolean isCutted,
+      List<NodePK> nodePKsToPaste)
       throws RemoteException {
     Collection<PhotoDetail> photos = getGalleryBm().getAllPhoto(fromPK, viewAllPhoto);
     Iterator<PhotoDetail> itPhotos = photos.iterator();
@@ -1221,7 +1235,8 @@ public class GallerySessionController extends AbstractComponentSessionController
 
   }
 
-  private void pastePhoto(PhotoDetail photo, boolean isCutted, NodePK nodePK, List<NodePK> nodePKsToPaste) {
+  private void pastePhoto(PhotoDetail photo, boolean isCutted, NodePK nodePK,
+      List<NodePK> nodePKsToPaste) {
     try {
       String fromId = photo.getPhotoPK().getId();
       String fromComponentId = photo.getPhotoPK().getInstanceId();
@@ -1280,8 +1295,9 @@ public class GallerySessionController extends AbstractComponentSessionController
               // get xmlContent to paste
               PublicationTemplate pubTemplateFrom = PublicationTemplateManager
                   .getPublicationTemplate(fromComponentId + ":" + xmlFormShortName);
-              IdentifiedRecordTemplate recordTemplateFrom = (IdentifiedRecordTemplate) pubTemplateFrom
-                  .getRecordSet().getRecordTemplate();
+              IdentifiedRecordTemplate recordTemplateFrom =
+                  (IdentifiedRecordTemplate) pubTemplateFrom
+                      .getRecordSet().getRecordTemplate();
 
               PublicationTemplate pubTemplate = PublicationTemplateManager
                   .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
@@ -1351,8 +1367,9 @@ public class GallerySessionController extends AbstractComponentSessionController
             // get xmlContent to paste
             PublicationTemplate pubTemplateFrom = PublicationTemplateManager
                 .getPublicationTemplate(fromComponentId + ":" + xmlFormShortName);
-            IdentifiedRecordTemplate recordTemplateFrom = (IdentifiedRecordTemplate) pubTemplateFrom
-                .getRecordSet().getRecordTemplate();
+            IdentifiedRecordTemplate recordTemplateFrom =
+                (IdentifiedRecordTemplate) pubTemplateFrom
+                    .getRecordSet().getRecordTemplate();
 
             PublicationTemplate pubTemplate = PublicationTemplateManager
                 .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
@@ -1626,21 +1643,21 @@ public class GallerySessionController extends AbstractComponentSessionController
           // la photo n'a pas déjà été téléchargée
           // par defaut photo sans watermark
           String title = Encode.javaStringToHtmlString(photo.getImageName());
-        if (download.equals("DW")) {
-          // demande avec Watermark
-          title = photoId + "_watermark.jpg";
-          // regarder si la photo existe, sinon prendre celle sans watermark
-          String pathFile = FileRepositoryManager.getAbsolutePath(getComponentId()) + nomRep
-              + File.separator;
-          String watermarkFile = pathFile + title;
-          File file = new File(watermarkFile);
-          if (!file.exists()) {
-            title = Encode.javaStringToHtmlString(photo.getImageName());
+          if (download.equals("DW")) {
+            // demande avec Watermark
+            title = photoId + "_watermark.jpg";
+            // regarder si la photo existe, sinon prendre celle sans watermark
+            String pathFile = FileRepositoryManager.getAbsolutePath(getComponentId()) + nomRep
+                + File.separator;
+            String watermarkFile = pathFile + title;
+            File file = new File(watermarkFile);
+            if (!file.exists()) {
+              title = Encode.javaStringToHtmlString(photo.getImageName());
+            }
           }
+          url = FileServerUtils.getUrl(getSpaceId(), getComponentId(), URLEncoder.encode(title),
+              photo.getImageMimeType(), nomRep);
         }
-        url = FileServerUtils.getUrl(getSpaceId(), getComponentId(), URLEncoder.encode(title),
-            photo.getImageMimeType(), nomRep);
-      }
       }
     }
     return url;

@@ -49,6 +49,7 @@ import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.comment.control.CommentController;
 import com.stratelia.silverpeas.comment.ejb.CommentRuntimeException;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -602,8 +603,7 @@ public class GalleryBmEJB implements SessionBean {
           .getComponentParameterValue(photo.getInstanceId(), "XMLFormName");
       SilverTrace.info("gallery", "GalleryBmEJB.createIndex()",
           "root.MSG_GEN_ENTER_METHOD", "xmlFormName = " + xmlFormName);
-      if (xmlFormName != null && !xmlFormName.equals("")
-          && !xmlFormName.equals("null")) {
+      if (StringUtil.isDefined(xmlFormName)) {
         String xmlFormShortName = xmlFormName.substring(xmlFormName
             .indexOf("/") + 1, xmlFormName.indexOf("."));
         PublicationTemplate pubTemplate;
@@ -618,9 +618,11 @@ public class GalleryBmEJB implements SessionBean {
               "root.MSG_GEN_ENTER_METHOD", "indexEntry = "
                   + indexEntry.toString());
         } catch (Exception e) {
-          throw new GalleryRuntimeException("GalleryBmEJB.createIndex()",
+          /*throw new GalleryRuntimeException("GalleryBmEJB.createIndex()",
               SilverpeasRuntimeException.ERROR,
-              "gallery.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e);
+              "gallery.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e); */
+          SilverTrace.info("gallery", "GalleryBmEJB.createIndex()",
+              "root.MSG_GEN_ENTER_METHOD", "xmlFormName = " + xmlFormName);
         }
       }
 
