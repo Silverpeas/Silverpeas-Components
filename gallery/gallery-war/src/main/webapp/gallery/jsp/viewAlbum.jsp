@@ -44,9 +44,8 @@
 	boolean   isPrivateSearch = ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
 
 	//For Drag And Drop
-	String m_sAbsolute  = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + request.getContextPath();
-	ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
-	
+	String m_sAbsolute  = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+	ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();	
 	String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
 	
 	// déclaration des variables :
