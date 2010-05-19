@@ -29,10 +29,10 @@
 	<name>whitePages</name>
 	<label>Annuaire d'experts - Annuaire</label>
 	<description>
-		Permet de crï¿½er un annuaire de compï¿½tences. A chaque expert est
-		associï¿½ un formulaire dï¿½crivant ses domaines d'expertise.
+		Permet de créer un annuaire de compétences. A chaque expert est
+		associé un formulaire décrivant ses domaines d'expertise.
 		L'indexation du CV sur le plan de classement permet de trouver
-		rapidement une compï¿½tence.
+		rapidement une compétence.
 	</description>
 	<suite>03 Gestion de la connaissance</suite>
 	<visible>@ComponentVisibleWhitePages@</visible>
@@ -45,13 +45,13 @@
 	<Parameters>
 		<Parameter>
 			<ParameterName>cardTemplate</ParameterName>
-			<ParameterLabel>Modï¿½le de fiche</ParameterLabel>
+			<ParameterLabel>Modèle de fiche</ParameterLabel>
 			<ParameterValue>whitePages/annuaire.xml</ParameterValue>
 			<ParameterMandatory>Y</ParameterMandatory>
 			<ParameterUpdatable>OnCreationOnly</ParameterUpdatable>
 			<ParameterHelp>
 				<ParameterHelpFr>
-					Modï¿½le xml spï¿½cifique permettant de saisir des
+					Modèle xml spécifique permettant de saisir des
 					informations sur l'expert
 				</ParameterHelpFr>
 				<ParameterHelpEn></ParameterHelpEn>
@@ -60,12 +60,12 @@
 		</Parameter>
 		<Parameter>
 			<ParameterName>userTemplate</ParameterName>
-			<ParameterLabel>Modï¿½le d'identitï¿½</ParameterLabel>
+			<ParameterLabel>Modèle d'identité</ParameterLabel>
 			<ParameterValue>whitePages/annuaire.html</ParameterValue>
 			<ParameterMandatory>Y</ParameterMandatory>
 			<ParameterHelp>
 				<ParameterHelpFr>
-					Fichier html permettant de prï¿½senter les
+					Fichier html permettant de présenter les
 					informations de l'expert
 				</ParameterHelpFr>
 				<ParameterHelpEn></ParameterHelpEn>
@@ -82,8 +82,8 @@
 			<ParameterHelp>
 				<ParameterHelpFr>
 					Active le masquage des mails dans l'IHM. Les
-					notifications envoyï¿½es ï¿½ partir de ce composant
-					auront un expï¿½diteur gï¿½nï¿½rique.
+					notifications envoyées à partir de ce composant
+					auront un expéditeur générique.
 				</ParameterHelpFr>
 				<ParameterHelpEn></ParameterHelpEn>
 			</ParameterHelp>
@@ -97,7 +97,7 @@
 			<ParameterOrder>4</ParameterOrder>
 			<ParameterHelp>
 				<ParameterHelpFr>
-					Si ce paramï¿½tre est activï¿½, l'utilisateur n'aura accï¿½s qu'ï¿½ l'ï¿½cran de crï¿½ation de sa fiche.
+					Si ce paramètre est activé, l'utilisateur n'aura accès qu'à l'écran de création de sa fiche.
 					Le reste du portail lui sera innaccessible tant qu'il n'aura pas rempli sa fiche.
 				</ParameterHelpFr>
 				<ParameterHelpEn></ParameterHelpEn>

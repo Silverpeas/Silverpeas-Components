@@ -28,7 +28,9 @@
 <WAComponent>
   <name>mailinglist</name>
   <label>Archivage d'e-mails</label>
-  <description>Ce composant permet d'archiver les emails reï¿½us ï¿½ une adresse de messagerie donnï¿½e. Les messages peuvent ï¿½tre soumis ï¿½ modï¿½ration. Grï¿½ce au paramï¿½tre Diffusion, le composant se transforme en liste de diffusion.</description>
+  <description>Ce composant permet d'archiver les emails reçus à une adresse de messagerie donnée.
+  Les messages peuvent être soumis à modération. Grâce au paramètre Diffusion, le composant se
+  transforme en liste de diffusion.</description>
   <suite>02 Gestion Collaborative</suite>
   <visible>@ComponentVisiblemailingList@</visible>
   <portlet>yes</portlet>
@@ -41,14 +43,14 @@
   <Parameters>
     <Parameter>
       <ParameterName>moderated</ParameterName>
-      <ParameterLabel>Modï¿½ration</ParameterLabel>
+      <ParameterLabel>Modération</ParameterLabel>
       <ParameterValue>no</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterType>checkbox</ParameterType>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>3</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Active/Dï¿½sactive la modï¿½ration de la liste de diffusion</ParameterHelpFr>
+        <ParameterHelpFr>Active/Désactive la modération de la liste de diffusion</ParameterHelpFr>
         <ParameterHelpEn>Activate/Deactivate moderation</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -61,7 +63,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>4</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Indique que tout le monde peut envoyer un message ï¿½ la liste</ParameterHelpFr>
+        <ParameterHelpFr>Indique que tout le monde peut envoyer un message à la liste</ParameterHelpFr>
         <ParameterHelpEn>Authorizes everyone to send a message to the list</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -73,7 +75,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>1</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Adresse email dont les messages seront archivï¿½s</ParameterHelpFr>
+        <ParameterHelpFr>Adresse email dont les messages seront archivés</ParameterHelpFr>
         <ParameterHelpEn>Email address for the mailing list</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -99,7 +101,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>5</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Permet de gï¿½nï¿½rer un flux RSS des derniers messages</ParameterHelpFr>
+        <ParameterHelpFr>Permet de générer un flux RSS des derniers messages</ParameterHelpFr>
         <ParameterHelpEn>.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>

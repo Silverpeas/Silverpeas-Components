@@ -28,7 +28,8 @@
 <WAComponent>
   <name>myDB</name>
   <label>My DB</label>
-  <description>Permet de consulter, modifier ou supprimer le contenu de donnï¿½es en base et de crï¿½er de nouvelles tables.</description>
+  <description>Permet de consulter, modifier ou supprimer le contenu de données en base et de créer
+  de nouvelles tables.</description>
   <suite>06 Connecteurs</suite>
   <visible>@ComponentVisiblemyDB@</visible>
   <portlet>no</portlet>
