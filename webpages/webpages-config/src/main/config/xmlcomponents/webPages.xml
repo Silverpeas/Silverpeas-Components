@@ -28,7 +28,7 @@
 <WAComponent>
   <name>webPages</name>
   <label>Designer de page web - WebPage Designer</label>
-  <description>Permet de cr�er une page web via un �diteur WYSIWYG</description>
+  <description>Permet de créer une page web via l'éditeur WYSIWYG</description>
   <suite>04 Gestion de contenu</suite>
   <visible>@ComponentVisiblewebPages@</visible>
   <portlet>yes</portlet>
@@ -43,13 +43,13 @@
 			<ParameterLabel>Gestion de l'abonnement</ParameterLabel>
 			<ParameterValue>yes</ParameterValue>
 			<ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterUpdatable>always</ParameterUpdatable>
-	    <ParameterOrder>1</ParameterOrder>
-	    <ParameterHelp>
-				<ParameterHelpFr>Permet d'envoyer une notification aux utilisateurs abonn�s � la page Web.</ParameterHelpFr>
-				<ParameterHelpEn>Allow to send a notification to the users who have subscribed to the Web page.</ParameterHelpEn>
-	    </ParameterHelp>
+		    <ParameterType>checkbox</ParameterType>
+		    <ParameterUpdatable>always</ParameterUpdatable>
+		    <ParameterOrder>1</ParameterOrder>
+		    <ParameterHelp>
+				<ParameterHelpFr>Permet d'envoyer une notification aux utilisateurs abonnés à la page Web</ParameterHelpFr>
+				<ParameterHelpEn>Allows to send a notification to the users who have subscribed to the Web page</ParameterHelpEn>
+	    	</ParameterHelp>
 		</Parameter>
 	</Parameters>
 </WAComponent>

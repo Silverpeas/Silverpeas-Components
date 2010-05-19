@@ -28,7 +28,7 @@
 <WAComponent>
   <name>quizz</name>
   <label>Quiz</label>
-  <description>Permet d'ï¿½valuer la comprï¿½hension ou niveau de connaissance acquis d'un sujet. L'utilisateur peut se faire aider d'indices. Un scoring ï¿½value sa performance.</description>
+  <description>Permet d'évaluer la compréhension ou niveau de connaissance acquis d'un sujet. L'utilisateur peut se faire aider d'indices. Un scoring évalue sa performance.</description>
   <suite>02 Gestion Collaborative</suite>
   <visible>@ComponentVisibleQuizz@</visible>
    <portlet>yes</portlet>
@@ -54,7 +54,7 @@
             <ParameterUpdatable>always</ParameterUpdatable>
 	    <ParameterType>checkbox</ParameterType>
 	    <ParameterHelp>
-		<ParameterHelpFr>Les quizz crï¿½ï¿½s au sein de cette instance pourront ï¿½tre classï¿½s sur le Plan de Classement</ParameterHelpFr>
+		<ParameterHelpFr>Les quizz créés au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
 		<ParameterHelpEn></ParameterHelpEn>
 	    </ParameterHelp>
         </Parameter>

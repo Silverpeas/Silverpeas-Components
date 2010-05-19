@@ -27,8 +27,8 @@
 
 <WAComponent>
    <name>quickinfo</name>
-   <label>Actualit�s - QuickInfo</label>
-   <description>Permet de diffuser des br�ves d'information. Les informations sont class�es sur le Plan de Classement.</description>
+   <label>Actualités - QuickInfo</label>
+   <description>Permet de diffuser des brêves d'information. Les informations sont classées sur le Plan de Classement.</description>
    <suite>04 Gestion de contenu</suite>
    <visible>@ComponentVisibleQuickInfo@</visible>
    <portlet>yes</portlet>
@@ -50,7 +50,7 @@
             <ParameterUpdatable>always</ParameterUpdatable>
 	    <ParameterType>checkbox</ParameterType>
 	    <ParameterHelp>
-		<ParameterHelpFr>Les br�ves cr��es au sein de cette instance pourront �tre class�es sur le Plan de Classement</ParameterHelpFr>
+		<ParameterHelpFr>Les brêves créées au sein de cette instance pourront être classées sur le Plan de Classement</ParameterHelpFr>
 		<ParameterHelpEn></ParameterHelpEn>
 	    </ParameterHelp>
         </Parameter>

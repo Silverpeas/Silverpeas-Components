@@ -27,8 +27,8 @@
 
 <WAComponent>
   <name>questionReply</name>
-  <label>Questions/R�ponses - Questions aux experts</label>
-  <description>Permet de g�rer la base de connaissance des questions pos�es par les utilisateurs vers les experts, localiser automatiquement l'expert apte � r�pondre � une question et g�rer la distribution de la r�ponse vers les utilisateurs.</description>
+  <label>Questions/Réponses - Questions aux experts</label>
+  <description>Permet de gérer la base de connaissances des questions posées par les utilisateurs vers les experts, localiser automatiquement l'expert apte à répondre à une question et gérer la distribution de la réponse vers les utilisateurs.</description>
   <suite>03 Gestion de la connaissance</suite>
    <portlet>yes</portlet>
   <visible>@ComponentVisibleQuestionReply@</visible>
@@ -42,27 +42,27 @@
   <Parameters>
   	<Parameter>
 		<ParameterName>privateRepliesUsed</ParameterName>
-		<ParameterLabel>Utilisation des r�ponses priv�es</ParameterLabel>
+		<ParameterLabel>Utilisation des réponses privées</ParameterLabel>
 		<ParameterType>checkbox</ParameterType>
 		<ParameterValue>no</ParameterValue>
 		<ParameterMandatory>Y</ParameterMandatory>
 		<ParameterUpdatable>always</ParameterUpdatable>
     	<ParameterOrder>1</ParameterOrder>
 		<ParameterHelp>
-         	<ParameterHelpFr>Possibilit� de cr�er des r�ponses priv�es</ParameterHelpFr>
+         	<ParameterHelpFr>Possibilité de créer des réponses privées</ParameterHelpFr>
          	<ParameterHelpEn></ParameterHelpEn>
 		</ParameterHelp>
 	</Parameter>
     <Parameter>
 		<ParameterName>sortable</ParameterName>
-		<ParameterLabel>Questions tri�es par ordre</ParameterLabel>
+		<ParameterLabel>Questions triées par ordre</ParameterLabel>
 		<ParameterType>checkbox</ParameterType>
 		<ParameterValue>no</ParameterValue>
 		<ParameterMandatory>N</ParameterMandatory>
 		<ParameterUpdatable>always</ParameterUpdatable>
     	<ParameterOrder>2</ParameterOrder>
 		<ParameterHelp>
-         	<ParameterHelpFr>Possibilit� de trier les question</ParameterHelpFr>
+         	<ParameterHelpFr>Possibilité de trier les questions</ParameterHelpFr>
          	<ParameterHelpEn>Questions are sortable</ParameterHelpEn>
 		</ParameterHelp>
 	</Parameter>

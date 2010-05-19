@@ -28,7 +28,7 @@
 <WAComponent>
   <name>connecteurJDBC</name>
   <label>Connecteur JDBC</label>
-  <description>Permet d'interroger une base de donn�es et afficher des tableaux d'information. Des requ�tes en langage SQL sont mises � disposition du gestionnaire, qui les traduit en requ�tes directement exploitables en langage naturel.</description>
+  <description>Permet d'interroger une base de données et afficher des tableaux d'information. Des requêtes en langage SQL sont mises à disposition du gestionnaire, qui les traduit en requêtes directement exploitables en langage naturel.</description>
   <suite>06 Connecteurs</suite>
   <visible>@ComponentVisibleConnecteurJDBC@</visible>
   <portlet>yes</portlet>

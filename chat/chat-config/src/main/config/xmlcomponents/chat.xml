@@ -28,7 +28,7 @@
 <WAComponent>
    <name>chat</name>
    <label>Chat</label>
-   <description>Supporte les processus de communication synchrone de type chat. Des salons peuvent �tre ouverts sur des th�mes vari�s. Des communications en mode 'priv�' sont possibles, au sein d'un chat multi-participants.</description>
+   <description>Supporte les processus de communication synchrone de type chat. Des salons peuvent être ouverts sur des thêmes variés. Des communications en mode 'privé' sont possibles, au sein d'un chat multi-participants.</description>
    <suite>02 Gestion Collaborative</suite>
    <visible>@ComponentVisibleChat@</visible>
    <portlet>no</portlet>
@@ -37,9 +37,9 @@
     <tabletpl>Node</tabletpl>
   </tableList>
   <Profiles>
-    <Profile name="admin">Administrateur</Profile>
-    <Profile name="publisher">Animateur</Profile>
-    <Profile name="user">Chatteur</Profile>
+    <Profile name="admin">Administrateurs</Profile>
+    <Profile name="publisher">Animateurs</Profile>
+    <Profile name="user">Chatteurs</Profile>
   </Profiles>
   <Parameters>
 	<Parameter>
@@ -50,7 +50,7 @@
 	    <ParameterType>checkbox</ParameterType>
 	    <ParameterUpdatable>always</ParameterUpdatable>
 	    <ParameterHelp>
-		<ParameterHelpFr>Les salons cr��s au sein de cette instance pourront �tre class�s sur le Plan de Classement</ParameterHelpFr>
+		<ParameterHelpFr>Les salons créés au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
 		<ParameterHelpEn></ParameterHelpEn>
 	    </ParameterHelp>
         </Parameter>
