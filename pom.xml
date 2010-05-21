@@ -89,9 +89,9 @@
     <module>rssaggregator</module>
     <module>mydb</module>
     <module>project-manager</module>
-    <module>websites</module>
-    <module>question-reply</module>
+    <module>websites</module>    
     <module>whitepages</module>
+    <module>question-reply</module>
     <module>webpages</module>
     <module>chat</module>
     <module>mailinglist</module>
