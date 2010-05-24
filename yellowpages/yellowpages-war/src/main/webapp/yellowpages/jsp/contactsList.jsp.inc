@@ -1,4 +1,4 @@
-<%!
+﻿<%!
 
 void displayContactsAdmin(String contactCard, YellowpagesSessionController yellowpagesScc,String profile ,Collection contacts, boolean subtopicsExist, String contactDeleteIcon, GraphicElementFactory gef, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, ResourcesWrapper resources, JspWriter out) throws IOException {
     ContactDetail contact;
@@ -172,6 +172,9 @@ void displayContactsUser(YellowpagesSessionController yellowpagesScc,
             }
             if (nameColumn.equals("fax")) {
               value = contact.getFax();
+            }
+	    if (nameColumn.equals("topic")) {
+              value = nodeName;
             }
             ligne.addArrayCellText(Encode.javaStringToHtmlString(value)); 
           }
