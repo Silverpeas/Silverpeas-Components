@@ -45,6 +45,7 @@ import com.silverpeas.processManager.ProcessManagerSessionController;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.workflow.api.error.WorkflowError;
+import com.silverpeas.workflow.api.instance.HistoryStep;
 import com.silverpeas.workflow.api.instance.ProcessInstance;
 import com.silverpeas.workflow.api.instance.Question;
 import com.silverpeas.workflow.api.model.AllowedAction;
@@ -53,7 +54,9 @@ import com.silverpeas.workflow.api.model.Item;
 import com.silverpeas.workflow.api.model.QualifiedUsers;
 import com.silverpeas.workflow.api.model.State;
 import com.silverpeas.workflow.api.task.Task;
+import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.engine.model.ActionRefs;
+import com.silverpeas.workflow.engine.model.StateImpl;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -451,6 +454,16 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       if (deleteAction != null)
         request.setAttribute("deleteAction", deleteAction);
 
+      List<User> lockingUsers = session.getLockingUsers();
+      if (lockingUsers != null) {
+        request.setAttribute("lockingUsers", lockingUsers);
+        request.setAttribute("isCurrentUserIsLockingUser", session.isCurrentUserIsLockingUser());
+      }
+      else {
+        request.setAttribute("isCurrentUserIsLockingUser", false);
+     }
+      
+
       setSharedAttributes(session, request);
       return "/processManager/jsp/viewProcess.jsp";
     }
@@ -507,6 +520,15 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       if (deleteAction != null)
         request.setAttribute("deleteAction", deleteAction);
 
+      List<User> lockingUsers = session.getLockingUsers();
+      if (lockingUsers != null) {
+        request.setAttribute("lockingUsers", lockingUsers);
+        request.setAttribute("isCurrentUserIsLockingUser", session.isCurrentUserIsLockingUser());
+      }
+      else {
+        request.setAttribute("isCurrentUserIsLockingUser", false);
+      }
+      
       setSharedAttributes(session, request);
       return "/processManager/jsp/viewProcess.jsp";
     }
@@ -591,6 +613,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       DataRecord data = session.getEmptyCreationRecord();
       request.setAttribute("data", data);
 
+      request.setAttribute("isFirstTimeSaved", "yes");
+      
       setSharedAttributes(session, request);
       return "/processManager/jsp/createProcess.jsp";
     }
@@ -612,7 +636,15 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       try {
         List<FileItem> items = FileUploadUtil.parseRequest(request);
         List<String> attachmentIds = form.update(items, data, context);
-        String instanceId = session.createProcessInstance(data);
+        
+        boolean isDraft = StringUtil.getBooleanValue( FileUploadUtil.getParameter(items, "isDraft") );
+        boolean isFirstTimeSaved = StringUtil.getBooleanValue( FileUploadUtil.getParameter(items, "isFirstTimeSaved") );
+        
+        String instanceId = session.createProcessInstance(data, isDraft, isFirstTimeSaved);
+        
+        // launch update again to have a correct object id in wysiwyg
+        context.setObjectId(instanceId);
+        form.update(items, data, context);
 
         // Attachment's foreignkey must be set with the just created instanceId
         AttachmentPK attachmentPK = null;
@@ -653,7 +685,18 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       String processId = request.getParameter("processId");
 
       ProcessInstance process = session.resetCurrentProcessInstance(processId);
+      
+      // checking locking users
+      List<User> lockingUsers = session.getLockingUsers();
+      if ( (!lockingUsers.isEmpty()) && (!session.isCurrentUserIsLockingUser()) ) {
+        return listProcessHandler.getDestination(function, session, request);
+      }
 
+      // check if an action must be resumed
+      if (!lockingUsers.isEmpty()) {
+        return resumeActionHandler.getDestination(function, session, request);
+      }
+      
       if (!process.getErrorStatus()) {
         Task[] tasks = session.getTasks();
 
@@ -686,6 +729,49 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
   };
 
   /**
+   * The resumeAction handler
+   */
+  static private FunctionHandler resumeActionHandler = new FunctionHandler() {
+    public String getDestination(String function,
+        ProcessManagerSessionController session,
+        HttpServletRequest request)
+        throws ProcessManagerException {
+      
+      // retrieve state name and action name
+      HistoryStep savedStep = session.getSavedStep();
+      String stateName = savedStep.getResolvedState();
+      String actionName = savedStep.getAction();
+
+      State state = (stateName==null) ? new StateImpl("") : session.getState(stateName);
+      
+      request.setAttribute("state", state);
+      request.setAttribute("action", session.getAction(actionName));
+
+      // Get the associated form
+      com.silverpeas.form.Form form = session.getActionForm(stateName, actionName);
+      request.setAttribute("form", form);
+
+      // Set the form context
+      PagesContext context = getFormContext("actionForm", "0", session, true);
+      request.setAttribute("context", context);
+
+      // Get the form data
+      DataRecord data = session.getSavedStepRecord(savedStep);
+      request.setAttribute("data", data);
+
+      // Set flag to indicate action record has already been saved as draft
+      request.setAttribute("isFirstTimeSaved", "no");
+      
+      // Set flag to indicate instance is in resuming mode
+      session.setResumingInstance(true);
+
+      // Set global attributes
+      setSharedAttributes(session, request);
+      return "/processManager/jsp/editAction.jsp";
+    }
+  };
+  
+  /**
    * The editAction handler
    */
   static private FunctionHandler editActionHandler = new FunctionHandler()
@@ -717,6 +803,9 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       DataRecord data = session.getActionRecord(stateName, actionName);
       request.setAttribute("data", data);
 
+      // Set flag to indicate action record has never been saved as draft for this step
+      request.setAttribute("isFirstTimeSaved", "yes");
+
       // lock the process instance
       session.lock(stateName);
 
@@ -743,6 +832,9 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         String stateName = FileUploadUtil.getParameter(items, "state");
         String actionName = FileUploadUtil.getParameter(items, "action");
 
+        boolean isDraft = StringUtil.getBooleanValue( FileUploadUtil.getParameter(items, "isDraft") );
+        boolean isFirstTimeSaved = StringUtil.getBooleanValue( FileUploadUtil.getParameter(items, "isFirstTimeSaved") );
+        
         com.silverpeas.form.Form form = session.getActionForm(stateName, actionName);
         PagesContext context = getFormContext("actionForm", "0", session);
         DataRecord data = session.getActionRecord(stateName, actionName);
@@ -750,7 +842,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         if (form != null) {
           form.update(items, data, context);
         }
-        session.processAction(stateName, actionName, data);
+        session.processAction(stateName, actionName, data, isDraft, isFirstTimeSaved);
 
         return listProcessHandler.getDestination(function, session, request);
       } catch (Exception e) {
@@ -1162,6 +1254,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     request.setAttribute("isHistoryTabEnable", new Boolean(session.isHistoryTabVisible()));
     request.setAttribute("isProcessIdVisible", new Boolean(session.isProcessIdVisible()));
     request.setAttribute("isPrintButtonEnabled", new Boolean(session.isPrintButtonEnabled()));
+    request.setAttribute("isSaveButtonEnabled", new Boolean(session.isSaveButtonEnabled()));
   }
 
   /**

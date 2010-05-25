@@ -93,6 +93,7 @@ Item getItem(Item[] items, String itemName)
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context %>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <%
    out.println(gef.getLookStyleSheet());

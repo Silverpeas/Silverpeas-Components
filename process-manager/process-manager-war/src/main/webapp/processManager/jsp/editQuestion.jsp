@@ -54,6 +54,7 @@
 
 <HTML>
 <HEAD>
+<script type="text/javascript" src="<%=m_context %>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <%

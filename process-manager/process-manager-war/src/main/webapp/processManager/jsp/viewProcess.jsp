@@ -27,19 +27,22 @@
 <%@ include file="checkProcessManager.jsp" %>
 
 <%
-	ProcessInstance 			process 				= (ProcessInstance) request.getAttribute("process");
-	com.silverpeas.form.Form 	form 					= (com.silverpeas.form.Form) request.getAttribute("form");
-	PagesContext 				context 				= (PagesContext) request.getAttribute("context");
-	DataRecord 					data 					= (DataRecord) request.getAttribute("data");
-	String[] 					deleteAction 			= (String[]) request.getAttribute("deleteAction");
-	String[] 					activeStates 			= (String[]) request.getAttribute("activeStates");
-	String[] 					activeRoles 			= (String[]) request.getAttribute("activeRoles");
-	Boolean 					isActiveUser 			= (Boolean) request.getAttribute("isActiveUser");
-	Boolean 					isAttachmentTabEnable 	= (Boolean) request.getAttribute("isAttachmentTabEnable");
-	Boolean 					isHistoryTabEnable 		= (Boolean) request.getAttribute("isHistoryTabEnable");
-	boolean 					isProcessIdVisible 		= ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
-	boolean 					isPrintButtonEnabled 	= ((Boolean) request.getAttribute("isPrintButtonEnabled")).booleanValue();
-	
+	ProcessInstance 			process 					= (ProcessInstance) request.getAttribute("process");
+	com.silverpeas.form.Form 	form 						= (com.silverpeas.form.Form) request.getAttribute("form");
+	PagesContext 				context 					= (PagesContext) request.getAttribute("context");
+	DataRecord 					data 						= (DataRecord) request.getAttribute("data");
+	String[] 					deleteAction 				= (String[]) request.getAttribute("deleteAction");
+	String[] 					activeStates 				= (String[]) request.getAttribute("activeStates");
+	String[] 					activeRoles 				= (String[]) request.getAttribute("activeRoles");
+	Boolean 					isActiveUser 				= (Boolean) request.getAttribute("isActiveUser");
+	Boolean 					isAttachmentTabEnable 		= (Boolean) request.getAttribute("isAttachmentTabEnable");
+	Boolean 					isHistoryTabEnable 			= (Boolean) request.getAttribute("isHistoryTabEnable");
+	boolean 					isProcessIdVisible 			= ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
+	boolean 					isPrintButtonEnabled 		= ((Boolean) request.getAttribute("isPrintButtonEnabled")).booleanValue();
+	List	 					lockingUsers 				= ((List) request.getAttribute("lockingUsers"));
+	boolean						hasLockingUsers				= (lockingUsers != null) && (lockingUsers.size()>0);
+	boolean						isCurrentUserIsLockingUser 	= ((Boolean) request.getAttribute("isCurrentUserIsLockingUser")).booleanValue();
+	    
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
 	
@@ -81,7 +84,8 @@
 		
 		if (isAttachmentTabEnable.booleanValue() && isActiveUser != null && isActiveUser.booleanValue())
 			tabbedPane.addTab(resource.getString("processManager.attachments"), "attachmentManager?processId=" + process.getInstanceId(), false, true);
-		tabbedPane.addTab(resource.getString("processManager.actions"), "listTasks", false, true);
+		if (!hasLockingUsers || isCurrentUserIsLockingUser)
+		  tabbedPane.addTab(resource.getString("processManager.actions"), "listTasks", false, true);
 		tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId(), false, true);
 		if (isHistoryTabEnable.booleanValue())
 			tabbedPane.addTab(resource.getString("processManager.history"), "viewHistory?processId=" + process.getInstanceId(), false, true);
@@ -89,9 +93,11 @@
 
 %>
 
-<HTML>
+
+<%@page import="java.util.Iterator"%><HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<script type="text/javascript" src="<%=m_context %>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <%
    out.println(gef.getLookStyleSheet());
@@ -120,7 +126,57 @@ function printProcess()
 	out.println(frame.printBefore());
 %>
 <CENTER>
-<% out.println(board.printBefore()); %>
+
+			<% if (hasLockingUsers) {%>
+			<% out.println(board.printBefore()); %>
+			<table CELLPADDING="0" CELLSPACING="0" BORDER="0" WIDTH="100%">
+				<tr>
+					<td class="intfdcolor" nowrap width="100%">
+						<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5"><span class="txtNav"><%=resource.getString("processManager.actionInProgress") %> </span>
+					</td>
+				</tr>
+			</table>
+			<table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
+				<tr><td><img src="<%=resource.getIcon("processManager.px") %>"></td></tr>
+					<% if (isCurrentUserIsLockingUser) {%>
+							<tr>
+							<td class="textePetitBold">
+							<%=resource.getString("processManager.youHaveAnActionToFinish") %>
+							</td>
+							</tr>
+					<%
+					}
+					else {%>
+							<tr>
+							<td class="textePetitBold">
+								<%=resource.getString("processManager.instanceLockedBy")%>
+								<%
+								Iterator itLockingUsers = lockingUsers.iterator();
+								boolean firstUser = true;
+								while (itLockingUsers.hasNext()) {
+								  if (firstUser) {
+								    firstUser = false;
+								  }
+								  else {
+								    out.print(", ");
+								  }
+								  User lockingUser = (User) itLockingUsers.next();
+								  out.print(lockingUser.getFullName());
+								}
+								%>
+							</td>
+							</tr>
+					<%
+					}
+					%>
+			</table>
+			<% out.println(board.printAfter()); %>
+			<br>
+			<%
+			}
+			%>
+
+			<% out.println(board.printBefore()); %>
 			<table CELLPADDING="0" CELLSPACING="0" BORDER="0" WIDTH="100%">
 				<tr>
 					<td class="intfdcolor" nowrap width="100%">
@@ -129,7 +185,6 @@ function printProcess()
 				</tr>
 			</table>
 			<table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
-				<tr><td><img src="<%=resource.getIcon("processManager.px") %>"></td></tr>
 					<%
 						if (activeStates==null || activeStates.length==0)
 						{

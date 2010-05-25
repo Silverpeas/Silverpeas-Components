@@ -35,6 +35,7 @@
 	   = (com.silverpeas.form.Form) request.getAttribute("form");
    PagesContext context = (PagesContext) request.getAttribute("context");
    DataRecord data = (DataRecord) request.getAttribute("data");
+   String isFirstTimeSaved = (String) request.getAttribute("isFirstTimeSaved");
    
    boolean 		isProcessIdVisible 		= ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
 
@@ -52,6 +53,10 @@
 		"javascript:onClick=B_VALIDER_ONCLICK();",
 		false));
 	buttonPane.addButton((Button) gef.getFormButton(
+		   generalMessage.getString("GML.saveDraft"),
+			"javascript:onClick=B_SAUVEGARDER_ONCLICK();",
+			false));
+	buttonPane.addButton((Button) gef.getFormButton(
 	   generalMessage.getString("GML.cancel"),
 		"javascript:onClick=B_ANNULER_ONCLICK();",
 		false));
@@ -63,6 +68,7 @@
 <%
    out.println(gef.getLookStyleSheet());
 %>
+<script type="text/javascript" src="<%=m_context %>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
@@ -89,6 +95,16 @@
 	function B_ANNULER_ONCLICK() {
 		location.href = "cancelAction?state=<%=state.getName()%>";
 	}
+
+	function B_SAUVEGARDER_ONCLICK()
+	{
+		displayStaticMessage();
+		var field = document.getElementById("isDraft");
+		field.value = "yes";
+		
+    	setTimeout("document.<%=context.getFormName()%>.submit();", 500);
+	}
+	
 </SCRIPT>
 
 </HEAD>
@@ -99,6 +115,8 @@
    out.println(frame.printBefore());
 %>
 <FORM NAME="<%=context.getFormName()%>" METHOD="POST" ACTION="saveAction" ENCTYPE="multipart/form-data">
+<input type="hidden" id="isDraft" name="isDraft" value="No"/>
+<input type="hidden" id="isFirstTimeSaved" name="isFirstTimeSaved" value="<%=isFirstTimeSaved%>"/>
 <CENTER>
 <%
    if (form != null) form.display(out, context, data);
