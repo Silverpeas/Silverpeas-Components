@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="modelUtils.jsp" %>
@@ -181,8 +182,14 @@ if (action.equals("UpdateView") || action.equals("ValidateView")) {
       pubComplete = userPubComplete.getPublication();
       pubDetail = pubComplete.getPublicationDetail();
       pubName = pubDetail.getName(language);
-      if (pubDetail.getImage() != null)
-          vignette_url = FileServer.getUrl("useless", pubDetail.getPK().getComponentName(), "vignette", pubDetail.getImage(), pubDetail.getImageMimeType(), publicationSettings.getString("imagesSubDirectory"));
+      if (pubDetail.getImage() != null) {
+           if (pubDetail.getImage().startsWith("/")) {
+            vignette_url = pubDetail.getImage() +"&Size=266x150";
+          }
+           else {
+             vignette_url = FileServer.getUrl("useless", pubDetail.getPK().getComponentName(), "vignette", pubDetail.getImage(), pubDetail.getImageMimeType(), publicationSettings.getString("imagesSubDirectory"));
+           }
+      }
       ownerDetail = userPubComplete.getOwner();
 
       if (action.equals("ValidateView")) {
@@ -309,16 +316,25 @@ if (action.equals("UpdateView") || action.equals("ValidateView")) {
 validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendPublicationDataToRouter('"+nextAction+"');", false);
 
 %>
+
 <HTML>
 <HEAD>
 <TITLE></TITLE>
 <%
 out.println(gef.getLookStyleSheet());
 %>
+<style type="text/css">
+#thumbnailArea {
+  <% if (vignette_url == null) { %>
+    display: none;
+  <% } %>
+}
+</style>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
 <script language="javascript">
 
 <% if (action.equals("UpdateView")) { %>
@@ -575,6 +591,35 @@ function removeTranslation()
 	document.pubForm.action = "UpdatePublication";
     document.pubForm.submit();
 }
+
+var galleryWindow = window;
+
+function choixGallery(liste)
+{
+  index = liste.selectedIndex;
+  var componentId = liste.options[index].value;
+  if (index != 0)
+  {
+    url = "<%=m_context%>/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=<%=kmeliaScc.getLanguage()%>";
+    windowName = "galleryWindow";
+    larg = "820";
+    haut = "600";
+    windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
+    if (!galleryWindow.closed && galleryWindow.name=="galleryWindow")
+    {
+      galleryWindow.close();
+    }
+    galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+  }
+}
+
+function choixImageInGallery(url)
+{
+	$("#thumbnailArea").css("display", "block");
+  $("#thumbnail").attr("src", url);
+  $("#valueImageGallery").attr("value", url);
+}
+
 </script>
 </HEAD>
 
@@ -730,11 +775,11 @@ function removeTranslation()
       <TD><input type="text" name="Version" value="<%=Encode.javaStringToHtmlString(version)%>" size="5" maxlength="30"></TD></TR>
       <% } %>
   <TR><TD class="txtlibform"><%=resources.getString("PubDateCreation")%></TD>
-      <TD><%=creationDate%>&nbsp;<span class="txtlibform"><%=resources.getString("kmelia.By")%></span>&nbsp;<%=creatorName%></TD></TR>
+      <TD><%=creationDate%>&nbsp;<span class="txtsublibform"><%=resources.getString("kmelia.By")%></span>&nbsp;<%=creatorName%></TD></TR>
 
   <% if (updateDate != null && updateDate.length()>0 && updaterName != null && updaterName.length()>0) { %>
 	  <TR><TD class="txtlibform"><%=resources.getString("PubDateUpdate")%></TD>
-	      <TD><%=updateDate%>&nbsp;<span class="txtlibform"><%=resources.getString("kmelia.By")%></span>&nbsp;<%=updaterName%></TD></TR>
+	      <TD><%=updateDate%>&nbsp;<span class="txtsublibform"><%=resources.getString("kmelia.By")%></span>&nbsp;<%=updaterName%></TD></TR>
   <% } %>
   
   <% if ("writer".equals(profile) && (kmeliaScc.isTargetValidationEnable() || kmeliaScc.isTargetMultiValidationEnable())) {
@@ -759,21 +804,41 @@ function removeTranslation()
   
   <TR><TD class="txtlibform"><%=resources.getString("PubDateDebut")%></TD>
       <TD><input type="text" name="BeginDate" value="<%=beginDate%>" size="12" maxlength="10">
-	  <span class="txtlibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span><input type="text" name="BeginHour" value="<%=beginHour%>" size="5" maxlength="5"> <i>(hh:mm)</i></TD></TR>
+	  <span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span><input type="text" name="BeginHour" value="<%=beginHour%>" size="5" maxlength="5"> <i>(hh:mm)</i></TD></TR>
   <TR><TD class="txtlibform"><%=resources.getString("PubDateFin")%></TD>
       <TD><input type="text" name="EndDate" value="<%=endDate%>" size="12" maxlength="10">
-	  <span class="txtlibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span><input type="text" name="EndHour" value="<%=endHour%>" size="5" maxlength="5"> <i>(hh:mm)</i></TD></TR>
+	  <span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span><input type="text" name="EndHour" value="<%=endHour%>" size="5" maxlength="5"> <i>(hh:mm)</i></TD></TR>
 	<% if (kmeliaMode && new Boolean(settings.getString("isVignetteVisible")).booleanValue()) { %>
   <TR><TD class="txtlibform"><%=resources.getString("Vignette")%></TD>
       <TD>
+        <div id="thumbnailArea">
 				<%
-					if ( vignette_url != null )
-					{
-						out.println("<IMG SRC=" + vignette_url + " height=50>");
-						out.println("<a href=\"DeleteVignette?PubId="+id+"\"><img border=\"0\" src=\""+deleteSrc+"\" alt=\""+resources.getString("VignetteDelete")+"\" title=\""+kmeliaScc.getString("VignetteDelete")+"\"></a>");
-						out.println("<BR>");
-					}
-				%>        <input type="file" name="WAIMGVAR0" size="60">
+						out.println("<IMG SRC=\"" + vignette_url + "\" height=\"50\" id=\"thumbnail\"/>");
+						out.println("<a href=\"DeleteVignette?PubId="+id+"\"><img border=\"0\" src=\""+deleteSrc+"\" alt=\""+resources.getString("VignetteDelete")+"\" title=\""+kmeliaScc.getString("VignetteDelete")+"\"/></a>");
+						out.println("<br/>");
+				%> 
+				</div>
+		    <input type="file" name="WAIMGVAR0" size="40"/>
+		    <%
+		    // liste pour choisir une galerie
+		    List galleries = kmeliaScc.getGalleries();
+        if (galleries != null)
+        {
+          //zone pour le lien vers l'image
+          //out.println("<tr><td></td><td><span id=\"imageGallery\"></span>");
+          out.println("<span class=\"txtsublibform\"> ou </span><input type=\"hidden\" id=\"valueImageGallery\" name=\"valueImageGallery\"/>");
+          
+          out.println(" <select id=\"galleries\" name=\"galleries\" onchange=\"choixGallery(this);this.selectedIndex=0;\"> ");
+          out.println(" <option selected>"+resources.getString("kmelia.galleries")+"</option> ");
+          for(int k=0; k < galleries.size(); k++ ) 
+          {
+            ComponentInstLight gallery = (ComponentInstLight) galleries.get(k);
+            out.println(" <option value=\""+gallery.getId()+"\">"+gallery.getLabel()+"</option> ");
+          }
+          out.println("</select>");
+          //out.println("</td>");
+        }
+        %>
 		</TD>
 	</TR> <%
 	} %>

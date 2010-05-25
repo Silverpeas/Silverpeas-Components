@@ -96,8 +96,10 @@ import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ObjectType;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
@@ -4343,5 +4345,22 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   public String getAxisIdGlossary() {
     return getComponentParameterValue("axisIdGlossary");
+  }
+  
+  public List getGalleries() {
+    List galleries = null;
+    OrganizationController orgaController = new OrganizationController();
+    String[] compoIds = orgaController.getCompoId("gallery");
+    for (int c = 0; c < compoIds.length; c++) {
+      if ("yes".equalsIgnoreCase(orgaController.getComponentParameterValue("gallery" + compoIds[c],
+          "viewInWysiwyg"))) {
+        if (galleries == null)
+          galleries = new ArrayList();
+
+        ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoIds[c]);
+        galleries.add(gallery);
+      }
+    }
+    return galleries;
   }
 }

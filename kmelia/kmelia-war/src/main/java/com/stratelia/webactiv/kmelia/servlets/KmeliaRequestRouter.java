@@ -1923,6 +1923,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         }
       }
     }
+    if (result == null) {
+      // on a pas d'image, regarder s'il y a une provenant de la galerie
+      String nameImageFromGallery = FileUploadUtil.getParameter(parameters, "valueImageGallery");
+      {
+        if (StringUtil.isDefined(nameImageFromGallery))
+        {
+          result = new ArrayList<String>();
+          result.add(nameImageFromGallery);
+          result.add("image/jpeg");
+        }
+      }  
+    }
     return result;
   }
 
