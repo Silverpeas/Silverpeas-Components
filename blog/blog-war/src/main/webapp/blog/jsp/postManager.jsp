@@ -81,7 +81,7 @@
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 		<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
-		<script language="javascript">
+    <script type="text/javascript"  language="javascript">
 			
 			// fonctions de contrôle des zones du formulaire avant validation
 			function sendData() 
@@ -153,12 +153,12 @@
     
 %>
 <table CELLPADDING="5" WIDTH="100%">
-<FORM Name="postForm" action="<%=action%>" Method="POST">
+<form Name="postForm" action="<%=action%>" Method="POST">
 	
 	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.title")%> :</td>
-		<TD><input type="text" name="Title" size="60" maxlength="150" value="<%=title%>"/>
-			<IMG src="<%=resource.getIcon("blog.obligatoire")%>" width="5" height="5" border="0"/>
+		<td><input type="text" name="Title" size="60" maxlength="150" value="<%=title%>"/>
+      <img alt="mandatory"  src="<%=resource.getIcon("blog.obligatoire")%>" width="5" height="5" border="0"/>
 			<input type="hidden" name="PostId" value="<%=postId%>"/>
 			<input type="hidden" name="Langue" value="<%=resource.getLanguage()%>"/></td>
 	</tr>
@@ -195,15 +195,15 @@
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.creationDate")%> :</td>
-		<TD><%=creationDate%>&nbsp;<span class="txtlibform"><%=resource.getString("GML.by")%></span>&nbsp;<%=creatorName%></TD>
+		<td><%=creationDate%>&nbsp;<span class="txtlibform"><%=resource.getString("GML.by")%></span>&nbsp;<%=creatorName%></td>
 	</tr>
-		<% if (updateDate != null) { %>
+		<% if (updateDate != null && updater != null) { %>
 			<tr>
 				<td class="txtlibform"><%=resource.getString("GML.updateDate")%> :</td>
-				<TD><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("GML.by")%></span>&nbsp;<%=updater.getDisplayedName()%></TD>
+				<td><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("GML.by")%></span>&nbsp;<%=updater.getDisplayedName()%></td>
 			</tr>
 		<% } %>
-	<tr><td colspan="2">( <img border="0" src=<%=resource.getIcon("blog.obligatoire")%> width="5" height="5"/> : <%=resource.getString("GML.requiredField")%> )</td></tr>
+    <tr><td colspan="2">( <img alt="mandatory"  border="0" src=<%=resource.getIcon("blog.obligatoire")%> width="5" height="5"/> : <%=resource.getString("GML.requiredField")%> )</td></tr>
   </form>
   
 </table>
@@ -212,7 +212,7 @@
 	ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);
-	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+	out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
  	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
