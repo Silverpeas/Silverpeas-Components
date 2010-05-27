@@ -35,44 +35,51 @@ public class DataWarningDBDrivers extends Object
     static protected Hashtable allDBDrivers = new Hashtable(); // This one is there for optimized research
     static protected DataWarningDBDriver[] sortedDBDrivers = null;
 
-    static 
+    public DataWarningDBDrivers()
     {
-		try
-        {
-			InputStream ConfigFileInputStream;
-			String configFileStr ="settings/dataWarningSettings";
-        	String[] driversUniqueIds;
-
-            ConfigFileInputStream = ResourceLocator.getResourceAsStream(new DataWarningSchedulerTable(),null,configFileStr,".xml");
-			XMLConfigurationStore m_XMLConfig= new XMLConfigurationStore(null,ConfigFileInputStream,"DataWarning-configuration");
-			driversUniqueIds = m_XMLConfig.getValues("Drivers");
-			ConfigFileInputStream.close();
-
-            sortedDBDrivers = new DataWarningDBDriver[driversUniqueIds.length];
-			for(int j=0;j<driversUniqueIds.length;j++)
-			{
-				SilverTrace.info("dataWarning", "DataWarningDBDrivers.static","DataWarning.MSG_DRIVER_NAME","DriverUniqueId="+driversUniqueIds[j]);
-
-				ConfigFileInputStream = ResourceLocator.getResourceAsStream(new DataWarningSchedulerTable(),null,configFileStr,".xml");
-				m_XMLConfig= new XMLConfigurationStore(null,ConfigFileInputStream,driversUniqueIds[j]+"-configuration");
-                sortedDBDrivers[j] = new DataWarningDBDriver(driversUniqueIds[j], m_XMLConfig.getString("DriverName"),m_XMLConfig.getString("ClassName"),m_XMLConfig.getString("Description"),m_XMLConfig.getString("JDBCUrl"));
-                allDBDrivers.put(driversUniqueIds[j],sortedDBDrivers[j]);
-				ConfigFileInputStream.close();
-			}
-		}
-		catch  (Exception e) 
-		{
-			SilverTrace.error("dataWarning", "DataWarningDBDrivers.static", "DataWarning.MSG_load_DRIVERS_FAIL", null, e);
-		}
+      loadDrivers();
     }
 
-    public static DataWarningDBDriver[] getDBDrivers()
+    public void loadDrivers() {
+      try
+      {
+        InputStream configFileInputStream;
+        String configFileStr ="settings/dataWarningSettings";
+        String[] driversUniqueIds;
+    
+    //    configFileInputStream = ResourceLocator.getResourceAsStream(new DataWarningSchedulerTable(),null,configFileStr,".xml");
+        configFileInputStream = ResourceLocator.getResourceAsStream(this,null,configFileStr,".xml");
+    
+        XMLConfigurationStore m_XMLConfig= new XMLConfigurationStore(null,configFileInputStream,"DataWarning-configuration");
+        driversUniqueIds = m_XMLConfig.getValues("Drivers");
+        configFileInputStream.close();
+    
+        sortedDBDrivers = new DataWarningDBDriver[driversUniqueIds.length];
+        for(int j=0;j<driversUniqueIds.length;j++)
+        {
+          SilverTrace.info("dataWarning", "DataWarningDBDrivers.loadDrivers","DataWarning.MSG_DRIVER_NAME","DriverUniqueId="+driversUniqueIds[j]);
+    
+          configFileInputStream = ResourceLocator.getResourceAsStream(this,null,configFileStr,".xml");
+          m_XMLConfig= new XMLConfigurationStore(null,configFileInputStream,driversUniqueIds[j]+"-configuration");
+                  sortedDBDrivers[j] = new DataWarningDBDriver(driversUniqueIds[j], m_XMLConfig.getString("DriverName"),m_XMLConfig.getString("ClassName"),m_XMLConfig.getString("Description"),m_XMLConfig.getString("JDBCUrl"));
+                  allDBDrivers.put(driversUniqueIds[j],sortedDBDrivers[j]);
+          configFileInputStream.close();
+        }
+      }
+      catch  (Exception e) 
+      {
+        SilverTrace.error("dataWarning", "DataWarningDBDrivers.loadDrivers", "DataWarning.MSG_load_DRIVERS_FAIL", null, e);
+      }
+    }
+
+    public DataWarningDBDriver[] getDBDrivers()
 	{
         return sortedDBDrivers;
 	}
 
-    public static DataWarningDBDriver getDBDriver(String driverUniqueId)
+    public DataWarningDBDriver getDBDriver(String driverUniqueId)
     {
+      
         if ((driverUniqueId == null) || (driverUniqueId.length() <= 0))
         {
             return sortedDBDrivers[0];

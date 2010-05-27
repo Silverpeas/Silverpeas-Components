@@ -47,7 +47,8 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
     private int                     queryType = DataWarningQuery.QUERY_TYPE_RESULT;
     private DataWarningScheduler    editedScheduler = null;
     private DataWarning             editedDataWarning = null;
-
+    private DataWarningDBDrivers dataWarningDBDrivers = null;
+    
 	private String currentDBDriver = "";
 
 	private Selection sel;
@@ -77,20 +78,27 @@ public class DataWarningSessionController extends AbstractComponentSessionContro
 			sel = getSelection();
 	}
 
+	public DataWarningDBDrivers getDataWarningDBDrivers()
+	{
+    if (dataWarningDBDrivers == null)
+      dataWarningDBDrivers = new DataWarningDBDrivers();
+    return dataWarningDBDrivers;
+    
+	}
 	public DataWarningDBDriver[] getDBDrivers()
 	{
-		return DataWarningDBDrivers.getDBDrivers();
+		return getDataWarningDBDrivers().getDBDrivers();
 	}
 
-    public void setCurrentDBDriver(String DBDriverUniqueId)
-    {
-        currentDBDriver = DBDriverUniqueId;
-    }
+  public void setCurrentDBDriver(String DBDriverUniqueId)
+  {
+      currentDBDriver = DBDriverUniqueId;
+  }
 
-    public DataWarningDBDriver getCurrentDBDriver()
-    {
-        return DataWarningDBDrivers.getDBDriver(currentDBDriver);
-    }
+  public DataWarningDBDriver getCurrentDBDriver()
+  {
+      return getDataWarningDBDrivers().getDBDriver(currentDBDriver);
+  }
 
 	public String initSelectionPeas() throws DataWarningException
 	{
