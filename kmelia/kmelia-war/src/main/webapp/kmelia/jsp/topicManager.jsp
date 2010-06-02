@@ -80,7 +80,6 @@ String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.get
 String userId = kmeliaScc.getUserId();
 
 ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
-//Example: http://myserver
 String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
 
 %>
