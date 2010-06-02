@@ -57,35 +57,35 @@ import com.stratelia.webactiv.util.exception.UtilException;
 public class ForumsDAO {
 
   // Forums table.
-  private static String FORUM_TABLE = "SC_Forums_Forum";
-  private static String FORUM_COLUMN_FORUM_ID = "forumId";
-  private static String FORUM_COLUMN_FORUM_NAME = "forumName";
-  private static String FORUM_COLUMN_FORUM_DESCRIPTION = "forumDescription";
-  private static String FORUM_COLUMN_FORUM_ACTIVE = "forumActive";
-  private static String FORUM_COLUMN_FORUM_PARENT = "forumParent";
-  private static String FORUM_COLUMN_CATEGORY_ID = "categoryId";
-  private static String FORUM_COLUMN_INSTANCE_ID = "instanceId";
-  private static String FORUM_COLUMN_FORUM_CREATION_DATE = "forumCreationDate";
-  private static String FORUM_COLUMN_FORUM_CREATOR = "forumCreator";
-  private static String FORUM_COLUMN_FORUM_LOCK_LEVEL = "forumLockLevel";
-  private static String FORUM_COLUMN_FORUM_CLOSE_DATE = "forumCloseDate";
+  private static final String FORUM_TABLE = "SC_Forums_Forum";
+  private static final String FORUM_COLUMN_FORUM_ID = "forumId";
+  private static final String FORUM_COLUMN_FORUM_NAME = "forumName";
+  private static final String FORUM_COLUMN_FORUM_DESCRIPTION = "forumDescription";
+  private static final String FORUM_COLUMN_FORUM_ACTIVE = "forumActive";
+  private static final String FORUM_COLUMN_FORUM_PARENT = "forumParent";
+  private static final String FORUM_COLUMN_CATEGORY_ID = "categoryId";
+  private static final String FORUM_COLUMN_INSTANCE_ID = "instanceId";
+  private static final String FORUM_COLUMN_FORUM_CREATION_DATE = "forumCreationDate";
+  private static final String FORUM_COLUMN_FORUM_CREATOR = "forumCreator";
+  private static final String FORUM_COLUMN_FORUM_LOCK_LEVEL = "forumLockLevel";
+  private static final String FORUM_COLUMN_FORUM_CLOSE_DATE = "forumCloseDate";
 
-  private static String FORUM_COLUMNS = FORUM_COLUMN_FORUM_ID + ", "
+  private static final String FORUM_COLUMNS = FORUM_COLUMN_FORUM_ID + ", "
       + FORUM_COLUMN_FORUM_NAME + ", " + FORUM_COLUMN_FORUM_DESCRIPTION + ", "
       + FORUM_COLUMN_FORUM_ACTIVE + ", " + FORUM_COLUMN_FORUM_PARENT + ", "
       + FORUM_COLUMN_CATEGORY_ID + ", " + FORUM_COLUMN_INSTANCE_ID + ", "
       + FORUM_COLUMN_FORUM_CREATION_DATE + ", " + FORUM_COLUMN_FORUM_CREATOR;
 
   // Messages table.
-  private static String MESSAGE_TABLE = "SC_Forums_Message";
-  private static String MESSAGE_COLUMN_MESSAGE_ID = "messageId";
-  private static String MESSAGE_COLUMN_MESSAGE_TITLE = "messageTitle";
-  private static String MESSAGE_COLUMN_MESSAGE_AUTHOR = "messageAuthor";
-  private static String MESSAGE_COLUMN_FORUM_ID = "forumId";
-  private static String MESSAGE_COLUMN_MESSAGE_PARENT_ID = "messageParentId";
-  private static String MESSAGE_COLUMN_MESSAGE_DATE = "messageDate";
-  private static String MESSAGE_COLUMN_STATUS = "status";
-  private static String MESSAGE_COLUMNS =
+  private static final String MESSAGE_TABLE = "SC_Forums_Message";
+  private static final String MESSAGE_COLUMN_MESSAGE_ID = "messageId";
+  private static final String MESSAGE_COLUMN_MESSAGE_TITLE = "messageTitle";
+  private static final String MESSAGE_COLUMN_MESSAGE_AUTHOR = "messageAuthor";
+  private static final String MESSAGE_COLUMN_FORUM_ID = "forumId";
+  private static final String MESSAGE_COLUMN_MESSAGE_PARENT_ID = "messageParentId";
+  private static final String MESSAGE_COLUMN_MESSAGE_DATE = "messageDate";
+  private static final String MESSAGE_COLUMN_STATUS = "status";
+  private static final String MESSAGE_COLUMNS =
       MESSAGE_COLUMN_MESSAGE_ID + ", "
       + MESSAGE_COLUMN_MESSAGE_TITLE + ", " + MESSAGE_COLUMN_MESSAGE_AUTHOR
       + ", " + MESSAGE_COLUMN_FORUM_ID + ", "
@@ -93,25 +93,25 @@ public class ForumsDAO {
       + MESSAGE_COLUMN_STATUS;
 
   // Subscriptions table.
-  private static String SUBSCRIPTION_TABLE = "SC_Forums_Subscription";
-  private static String SUBSCRIPTION_COLUMN_USER_ID = "userId";
-  private static String SUBSCRIPTION_COLUMN_MESSAGE_ID = "messageId";
-  private static String SUBSCRIPTION_COLUMNS = SUBSCRIPTION_COLUMN_USER_ID
+  private static final String SUBSCRIPTION_TABLE = "SC_Forums_Subscription";
+  private static final String SUBSCRIPTION_COLUMN_USER_ID = "userId";
+  private static final String SUBSCRIPTION_COLUMN_MESSAGE_ID = "messageId";
+  private static final String SUBSCRIPTION_COLUMNS = SUBSCRIPTION_COLUMN_USER_ID
       + ", " + SUBSCRIPTION_COLUMN_MESSAGE_ID;
 
   // Rights table.
-  private static String RIGHTS_TABLE = "SC_Forums_Rights";
-  private static String RIGHTS_COLUMN_USER_ID = "userId";
-  private static String RIGHTS_COLUMN_FORUM_ID = "forumId";
-  private static String RIGHTS_COLUMNS = RIGHTS_COLUMN_USER_ID + ", "
+  private static final String RIGHTS_TABLE = "SC_Forums_Rights";
+  private static final String RIGHTS_COLUMN_USER_ID = "userId";
+  private static final String RIGHTS_COLUMN_FORUM_ID = "forumId";
+  private static final String RIGHTS_COLUMNS = RIGHTS_COLUMN_USER_ID + ", "
       + RIGHTS_COLUMN_FORUM_ID;
 
   // History table.
-  private static String HISTORY_TABLE = "SC_Forums_HistoryUser";
-  private static String HISTORY_COLUMN_USER_ID = "userId";
-  private static String HISTORY_COLUMN_MESSAGE_ID = "messageId";
-  private static String HISTORY_COLUMN_LAST_ACCESS = "lastAccess";
-  private static String HISTORY_COLUMNS = HISTORY_COLUMN_USER_ID + ", "
+  private static final String HISTORY_TABLE = "SC_Forums_HistoryUser";
+  private static final String HISTORY_COLUMN_USER_ID = "userId";
+  private static final String HISTORY_COLUMN_MESSAGE_ID = "messageId";
+  private static final String HISTORY_COLUMN_LAST_ACCESS = "lastAccess";
+  private static final String HISTORY_COLUMNS = HISTORY_COLUMN_USER_ID + ", "
       + HISTORY_COLUMN_MESSAGE_ID + ", " + HISTORY_COLUMN_LAST_ACCESS;
 
   /**
