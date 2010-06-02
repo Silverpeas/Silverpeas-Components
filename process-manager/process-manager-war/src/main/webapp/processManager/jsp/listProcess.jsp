@@ -278,6 +278,8 @@ Item getItem(Item[] items, String itemName)
 		{
 			field = instance.getField(j);
 			String fieldString = field.getValue(language);
+			if ("null".equals(fieldString) || fieldString == null)
+				fieldString = "";
 			if (fieldString != null && fieldString.length() > 0 && field.getTypeName().equals(DateField.TYPE))
 			{
 				ArrayCellText arrayCellDate = arrayLine.addArrayCellText(fieldString);
