@@ -64,7 +64,7 @@ String refusedSrc;
   	ResourceLocator uploadSettings 		= new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", resources.getLanguage());
   	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());  	
   	
-	//R�cup�ration des param�tres
+	//Recuperation des parametres
 	String 					profile 		= (String) request.getAttribute("Profile");
 	String					alias			= (String) request.getAttribute("IsAlias");
 	String 					action 			= (String) request.getAttribute("Action");
@@ -470,7 +470,9 @@ function zipPublication()
     	out.println("<TABLE border=\"0\" width=\"98%\" align=center>");
     	out.println("<TR><TD align=\"left\">");
 
-    	out.println("<span class=\"txtnav\"><b>"+pubDetail.getName(language)+"</b></span>");
+    	out.print("<span class=\"txtnav\"><b>");
+    	out.print(EncodeHelper.javaStringToHtmlString(pubDetail.getName(language)));
+    	out.println("</b></span>");
     	
 		if (!"user".equals(profile))
 		{
@@ -484,7 +486,7 @@ function zipPublication()
 				out.println("<img src=\""+refusedSrc+"\" alt=\""+resources.getString("PublicationRefused")+"\" align=\"absmiddle\">");
 		}
     	
-		out.println("<br><b>"+Encode.javaStringToHtmlParagraphe(pubDetail.getDescription(language))+"<b><BR><BR>");
+		out.println("<br><b>"+EncodeHelper.javaStringToHtmlParagraphe(pubDetail.getDescription(language))+"<b><BR><BR>");
 
 		out.println("</td><td valign=top align=\"right\">");
 		
