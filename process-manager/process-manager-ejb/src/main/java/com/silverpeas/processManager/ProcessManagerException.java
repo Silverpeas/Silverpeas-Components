@@ -36,6 +36,7 @@ public class ProcessManagerException extends SilverpeasException {
   /**
    * Returns the module name (as known by SilverTrace).
    */
+  @Override
   public String getModule() {
     return "processManager";
   }

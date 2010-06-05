@@ -24,12 +24,16 @@
 
 package com.silverpeas.processManager;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  * A named value pair.
  */
-public final class NamedValue {
+public final class NamedValue implements Serializable {
+
+  private static final long serialVersionUID = 95974461450918272L;
+
   public final String name;
   public final String value;
 
@@ -51,6 +55,9 @@ public final class NamedValue {
 
   static Comparator<NamedValue> ascendingValues = new Comparator<NamedValue>() {
     public int compare(NamedValue o1, NamedValue o2) {
+      if (o1.value == null) {
+        return (o2.value == null) ? 0 : (-1);
+      }
       return o1.value.compareTo(o2.value);
     }
   };
