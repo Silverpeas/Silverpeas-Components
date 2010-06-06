@@ -23,9 +23,6 @@
  */
 package com.silverpeas.gallery;
 
-import com.drew.imaging.ImageProcessingException;
-import com.drew.imaging.jpeg.JpegProcessingException;
-import com.drew.metadata.MetadataException;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
@@ -42,6 +39,8 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.fileupload.FileItem;
 
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.MetadataException;
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
@@ -295,12 +294,17 @@ public class ImageHelper {
     }
   }
   
-
   private static void getDimension(File inputFile, PhotoDetail photo)
       throws IOException {
+
     BufferedImage inputBuf = ImageIO.read(inputFile);
-    photo.setSizeL(inputBuf.getWidth());
-    photo.setSizeH(inputBuf.getHeight());
+    if (inputBuf == null) {
+      photo.setSizeL(0);
+      photo.setSizeH(0);
+    } else {
+      photo.setSizeL(inputBuf.getWidth());
+      photo.setSizeH(inputBuf.getHeight());
+    }
   }
 
   private static void createVignettes(PhotoDetail photo, String path, File dir,
@@ -381,21 +385,26 @@ public class ImageHelper {
 
   public static String[] getWidthAndHeight(String instanceId, String subDir,
       String imageName, int baseWidth) throws IOException {
+
     String[] directory = new String[1];
     directory[0] = subDir;
 
     File image = new File(FileRepositoryManager.getAbsolutePath(instanceId,
-        directory)
-        + imageName);
+        directory) + imageName);
 
     BufferedImage inputBuf = ImageIO.read(image);
+    if (inputBuf == null) {
+      return new String[]{"0", "0"};
+    }
 
     return getWidthAndHeight(inputBuf, baseWidth);
   }
 
   public static String[] getWidthAndHeight(BufferedImage inputBuf,
       int widthParam) {
+
     String[] result = new String[2];
+
     try {
       // calcul de la taille de la sortie
       double inputBufWidth;
@@ -421,18 +430,24 @@ public class ImageHelper {
 
       result[0] = sWidth.substring(0, sWidth.indexOf("."));
       result[1] = sHeight.substring(0, sHeight.indexOf("."));
+
     } catch (Exception e) {
       result[0] = "60";
       result[1] = "60";
     }
+
     return result;
   }
 
   private static void redimPhoto(File inputFile, String outputFile,
       int widthParam, boolean watermark, String nameWatermark, int sizeWatermark)
       throws IOException {
-    // création du buffer avec l'image d'origine
+
+    // Create buffer and fill it in with the initial image
     BufferedImage inputBuf = ImageIO.read(inputFile);
+    if (inputBuf == null) {
+      return;
+    }
 
     String[] widthAndHeight = getWidthAndHeight(inputBuf, widthParam);
     int width = Integer.parseInt(widthAndHeight[0]);
@@ -478,7 +493,7 @@ public class ImageHelper {
       g.dispose();
     }
 
-    // écriture du buffer sortie dans le fichier "outputFile" sur disque
+    // Ecriture du buffer sortie dans le fichier "outputFile" sur disque
     ImageIO.write(scaledImage, "JPEG", new File(outputFile));
   }
 
@@ -531,16 +546,22 @@ public class ImageHelper {
 
   private static void createWatermark(String fileId, String name, String path,
       File dir, int percentSizeWatermark) throws IOException {
+
     String watermarkFile = path + fileId + "_watermark.jpg";
 
-    // création du buffer avec l'image d'origine
+    // Création du buffer avec l'image d'origine
     BufferedImage inputBuf = ImageIO.read(dir);
+    if (inputBuf == null) {
+      return;
+    }
+
     double inputBufWidth = inputBuf.getWidth();
     double inputBufHeight = inputBuf.getHeight();
 
     // création du buffer a la même taille
     BufferedImage outputBuf = new BufferedImage((int) inputBufWidth,
         (int) inputBufHeight, BufferedImage.TYPE_INT_RGB);
+
     // Ajout du watermark (passage par le graphique pour mettre à jour le
     // buffer)
     Graphics2D g = (Graphics2D) outputBuf.getGraphics();
@@ -621,7 +642,8 @@ public class ImageHelper {
         ((int) inputBufHeight - (int) rect.getHeight()) - size / 2);
 
     g.dispose();
-    // écriture du buffer sortie dans le fichier "outputFile" sur disque
+
+    // Ecriture du buffer sortie dans le fichier "outputFile" sur disque
     File fileWatermark = new File(watermarkFile);
     ImageIO.write(outputBuf, "JPEG", fileWatermark);
   }
