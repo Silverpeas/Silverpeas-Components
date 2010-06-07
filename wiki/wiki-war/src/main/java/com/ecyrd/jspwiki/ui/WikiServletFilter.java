@@ -39,7 +39,9 @@ import com.ecyrd.jspwiki.WikiSession;
 import com.ecyrd.jspwiki.auth.AuthenticationManager;
 import com.ecyrd.jspwiki.auth.SessionMonitor;
 import com.ecyrd.jspwiki.auth.WikiSecurityException;
+import com.ecyrd.jspwiki.auth.authorize.SilverpeasWikiAuthorizer;
 import com.ecyrd.jspwiki.tags.WikiTagBase;
+import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 
 /**
  * Filter that verifies that the {@link com.ecyrd.jspwiki.WikiEngine} is running, and sets the
@@ -56,6 +58,7 @@ import com.ecyrd.jspwiki.tags.WikiTagBase;
 public class WikiServletFilter implements Filter {
   protected static final Logger log = Logger.getLogger(WikiServletFilter.class);
   protected WikiEngine m_engine = null;
+  protected static SilverpeasWebUtil webUtil;
 
   /**
    * Creates a Wiki Servlet Filter.
@@ -72,6 +75,7 @@ public class WikiServletFilter implements Filter {
   public void init(FilterConfig config) throws ServletException {
     ServletContext context = config.getServletContext();
     m_engine = WikiEngine.getInstance(context, null);
+    webUtil = new SilverpeasWebUtil();
   }
 
   /**
@@ -153,9 +157,9 @@ public class WikiServletFilter implements Filter {
     if (!isWrapped(request)) {
       // Prepare the WikiSession
       try {
+        request.setAttribute(SilverpeasWikiAuthorizer.ROLE_ATTR_NAME, webUtil.getRoles(httpRequest));
         m_engine.getAuthenticationManager().login(httpRequest);
-        WikiSession wikiSession = SessionMonitor.getInstance(m_engine).find(
-            httpRequest.getSession());
+        WikiSession wikiSession = SessionMonitor.getInstance(m_engine).find(httpRequest.getSession());
         httpRequest = new WikiRequestWrapper(m_engine, httpRequest);
         if (log.isDebugEnabled()) {
           log.debug("Executed security filters for user="

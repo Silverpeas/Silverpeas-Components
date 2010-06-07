@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page isELIgnored ="false" %> 
+<%@ page isELIgnored ="false" %>
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %>
 <%@ page import="com.ecyrd.jspwiki.*" %>
 <%@ page import="com.ecyrd.jspwiki.auth.*" %>
@@ -73,23 +73,24 @@
 <%-- part 1 : normal wiki pages --%>
 <wiki:PageType type="page">
 
-  <view:tabs>  
+  <view:tabs>
+
 	<c:set var="tabContentTitle"><%=LocaleSupport.getLocalizedMessage(pageContext, "view.tab")%></c:set>
     <c:set var="viewAction" value="<%=c.getURL(WikiContext.VIEW, c.getPage().getName())%>" />
 	<view:tab label="${tabContentTitle}" action="${viewAction}" selected="false" />
-  
+ <wiki:Permission permission="comment">
   <c:set var="tabCommentTitle"><%=LocaleSupport.getLocalizedMessage(pageContext,
                     "comment.tab.addcomment")%></c:set>
     <c:set var="commentAction" value="<%=c.getURL(WikiContext.COMMENT, c.getPage().getName())%>" />
     <view:tab label="${tabCommentTitle}" action="${commentAction}" selected="false" />
-  
+ </wiki:Permission>
 
 	<c:set var="tabAttachTitle"><%=attTitle%></c:set>
     <c:set var="attachAction" value="<%=c.getURL(WikiContext.VIEW, c.getPage().getName())%>" />
       <view:tab label="${tabAttachTitle}" action="${attachAction}&attach=true" selected="false" />
 
       <c:set var="tabInfoTitle"><%=LocaleSupport.getLocalizedMessage(pageContext, "info.tab")%></c:set>
-    <view:tab label="${tabInfoTitle}" action="${'#'}" selected="true" />	
+    <view:tab label="${tabInfoTitle}" action="${'#'}" selected="true" />
   </view:tabs>
   <view:frame>
   <view:board>
@@ -264,7 +265,7 @@
 	<view:tab label="${tabContentTitle}" action="${viewAction}" selected="false" />
 
   <c:set var="tabAttachTitle"><%=LocaleSupport.getLocalizedMessage(pageContext, "info.attachment.tab")%></c:set>
-  <view:tab label="${tabAttachTitle}" action="${'#'}" selected="true" />	
+  <view:tab label="${tabAttachTitle}" action="${'#'}" selected="true" />
 </view:tabs>
 <view:frame>
 

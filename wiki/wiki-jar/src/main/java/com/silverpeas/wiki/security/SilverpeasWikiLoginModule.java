@@ -56,6 +56,7 @@ public class SilverpeasWikiLoginModule extends AbstractLoginModule {
    * @see javax.security.auth.spi.LoginModule#login()
    */
   @SuppressWarnings("unchecked")
+  @Override
   public boolean login() throws LoginException {
     HttpRequestCallback rcb = new HttpRequestCallback();
     AuthorizerCallback acb = new AuthorizerCallback();
