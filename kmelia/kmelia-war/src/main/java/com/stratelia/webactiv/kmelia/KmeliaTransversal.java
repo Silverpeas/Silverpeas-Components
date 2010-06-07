@@ -21,11 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.kmelia;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -72,41 +72,32 @@ public class KmeliaTransversal implements PublicationHelper {
     return getPublications(spaceId, -1);
   }
 
+  @Override
   public List<PublicationDetail> getPublications(String spaceId, int nbPublis) {
     SilverTrace.debug("kmelia", "KmeliaTransversal.getPublications()",
         "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + ", nbPublis = "
         + nbPublis);
     List<String> componentIds = new ArrayList<String>();
     if (!StringUtil.isDefined(spaceId)) {
-      String[] cIds = getOrganizationControl().getComponentIdsForUser(userId,
-          "kmelia");
-      for (int c = 0; c < cIds.length; c++) {
-        componentIds.add(cIds[c]);
-      }
+      String[] cIds = getOrganizationControl().getComponentIdsForUser(userId, "kmelia");
+      componentIds.addAll(Arrays.asList(cIds));
       cIds = getOrganizationControl().getComponentIdsForUser(userId, "toolbox");
-      for (int c = 0; c < cIds.length; c++) {
-        componentIds.add(cIds[c]);
-      }
+      componentIds.addAll(Arrays.asList(cIds));
       cIds = getOrganizationControl().getComponentIdsForUser(userId, "kmax");
-      for (int c = 0; c < cIds.length; c++) {
-        componentIds.add(cIds[c]);
-      }
+      componentIds.addAll(Arrays.asList(cIds));
     } else {
-      String[] cIds = getOrganizationControl()
-          .getAvailCompoIds(spaceId, userId);
+      String[] cIds = getOrganizationControl().getAvailCompoIds(spaceId, userId);
       SilverTrace.debug("kmelia", "KmeliaTransversal.getPublications()",
           "root.MSG_GEN_PARAM_VALUE", "#cIds = " + cIds.length);
-      for (int c = 0; c < cIds.length; c++) {
-        if (cIds[c].startsWith("kmelia") || cIds[c].startsWith("toolbox")
-            || cIds[c].startsWith("kmax"))
-          componentIds.add(cIds[c]);
+      for (String id : cIds) {
+        if (id.startsWith("kmelia") || id.startsWith("toolbox") || id.startsWith("kmax")) {
+          componentIds.add(id);
+        }
       }
     }
 
-    SilverTrace
-        .debug("kmelia", "KmeliaTransversal.getPublications()",
-        "root.MSG_GEN_PARAM_VALUE", "componentIds = "
-        + componentIds.toString());
+    SilverTrace.debug("kmelia", "KmeliaTransversal.getPublications()",
+        "root.MSG_GEN_PARAM_VALUE", "componentIds = "  + componentIds.toString());
 
     List<PublicationPK> publicationPKs = null;
     try {
@@ -152,12 +143,14 @@ public class KmeliaTransversal implements PublicationHelper {
     PublicationDetail pub = null;
     for (int p = 0; publications != null && p < publications.size(); p++) {
       pub = publications.get(p);
-      if (security.isObjectAvailable(pub.getPK().getInstanceId(), userId, pub
-          .getPK().getId(), "Publication"))
+      if (security.isObjectAvailable(pub.getPK().getInstanceId(), userId, pub.getPK().getId(),
+          "Publication")) {
         filteredPublications.add(pub);
+      }
 
-      if (nbPublis != -1 && filteredPublications.size() == nbPublis)
+      if (nbPublis != -1 && filteredPublications.size() == nbPublis) {
         return filteredPublications;
+      }
     }
 
     return filteredPublications;
@@ -171,19 +164,22 @@ public class KmeliaTransversal implements PublicationHelper {
     for (int p = 0; publicationPKs != null && p < publicationPKs.size(); p++) {
       pk = publicationPKs.get(p);
       if (security.isObjectAvailable(pk.getInstanceId(), userId, pk.getId(),
-          "Publication"))
+          "Publication")) {
         filteredPublicationPKs.add(pk);
+      }
 
-      if (nbPublis != -1 && filteredPublicationPKs.size() == nbPublis)
+      if (nbPublis != -1 && filteredPublicationPKs.size() == nbPublis) {
         return filteredPublicationPKs;
+      }
     }
 
     return filteredPublicationPKs;
   }
 
   private OrganizationController getOrganizationControl() {
-    if (organizationControl == null)
+    if (organizationControl == null) {
       organizationControl = new OrganizationController();
+    }
     return organizationControl;
   }
 

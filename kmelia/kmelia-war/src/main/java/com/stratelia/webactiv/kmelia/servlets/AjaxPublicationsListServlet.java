@@ -55,6 +55,7 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.KmeliaSecurity;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
@@ -187,7 +188,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         sortAllowed = false;
         currentTopic = kmeliaSC.getSessionTopic();
         publications = kmeliaSC.getSessionPublicationsList();
-        role = "user";
+        role = SilverpeasRole.user.toString();
       } else if (toValidate) {
         kmeliaSC.orderPubsToValidate(Integer.parseInt(sort));
         publications = kmeliaSC.getSessionPublicationsList();
@@ -203,6 +204,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       }
 
       if (KmeliaHelper.isToolbox(componentId)) {
+        String profile = kmeliaSC.getUserTopicProfile(currentTopic.getNodePK().getId());
+        linksAllowed = !SilverpeasRole.user.isInRole(profile);
       }
 
       subTopics = currentTopic != null && currentTopic.getNodeDetail().getChildrenNumber() > 0;
@@ -347,7 +350,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
         if (pub.getStatus() != null && pub.getStatus().equals("Valid")) {
           if (pub.haveGotClone() && "Clone".equals(pub.getCloneStatus())
-              && !"user".equals(profile)) {
+              && !SilverpeasRole.user.isInRole(profile)) {
             pubColor = "blue";
             pubState = resources.getString("kmelia.UpdateInProgress");
           } else if ("Draft".equals(pub.getCloneStatus())) {
@@ -356,7 +359,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               pubState = resources.getString("PubStateDraft");
             }
           } else if ("ToValidate".equals(pub.getCloneStatus())) {
-            if (profile.equals("admin") || profile.equals("publisher")
+            if (SilverpeasRole.admin.isInRole(profile) || SilverpeasRole.publisher.isInRole(profile)
                 || currentUserId.equals(user.getId())) {
               pubColor = "red";
               pubState = resources.getString("kmelia.PubStateToValidate");
@@ -385,9 +388,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             // visibles
             if (currentUserId.equals(pub.getUpdaterId())
                 ||
-                ((kmeliaScc.isCoWritingEnable() && kmeliaScc.isDraftVisibleWithCoWriting()) && !profile
-                    .
-                    equals("user"))) {
+                ((kmeliaScc.isCoWritingEnable() && kmeliaScc.isDraftVisibleWithCoWriting()) && 
+                  !SilverpeasRole.user.isInRole(profile))) {
               pubColor = "gray";
               pubState = resources.getString("PubStateDraft");
             }
