@@ -635,7 +635,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
 
       try {
         List<FileItem> items = FileUploadUtil.parseRequest(request);
-        List<String> attachmentIds = form.update(items, data, context);
+        List<String> attachmentIds = form.update(items, data, context, false);
         
         boolean isDraft = StringUtil.getBooleanValue( FileUploadUtil.getParameter(items, "isDraft") );
         boolean isFirstTimeSaved = StringUtil.getBooleanValue( FileUploadUtil.getParameter(items, "isFirstTimeSaved") );
@@ -644,7 +644,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         
         // launch update again to have a correct object id in wysiwyg
         context.setObjectId(instanceId);
-        form.update(items, data, context);
+        form.updateWysiwyg(items, data, context);
 
         // Attachment's foreignkey must be set with the just created instanceId
         AttachmentPK attachmentPK = null;
