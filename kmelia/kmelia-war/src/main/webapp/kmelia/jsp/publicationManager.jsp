@@ -354,7 +354,7 @@
       }
 
       function deleteCloneConfirm() {
-        if(window.confirm("<%=Encode.javaStringToJsString(resources.getString("kmelia.ConfirmDeleteClone"))%>")){
+        if(window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.ConfirmDeleteClone"))%>")){
           document.toRouterForm.action = "<%=routerUrl%>DeleteClone";
           document.toRouterForm.submit();
         }
@@ -380,7 +380,7 @@
       <%
          if (!"Valid".equals(pubDetail.getStatus())) {
       %>
-          if (window.confirm("<%=Encode.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>"    ))
+          if (window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>"    ))
               {
                 goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
               }
@@ -501,7 +501,7 @@
                  errorMsg+="  - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
                  errorNb++;
                } else {
-             if (isCorrectDate(yearEnd, monthEn    d, dayEnd)==false) {
+             if (isCorrectDate(yearEnd, monthEnd, dayEnd)==false) {
                    errorMsg+="  - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
                    errorNb++;
                  } else {
@@ -512,7 +512,7 @@
                      }
                    } else {
                      if ((isWhitespace(beginDate) == true) && (isWhitespace(endDate) == false)) {
-                   if (isFutureDate(yearEnd, monthEnd, dayEnd) =    = false) {
+                   if (isFutureDate(yearEnd, monthEnd, dayEnd) == false) {
                          errorMsg+="  - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
                          errorNb++;
                        }
@@ -529,7 +529,7 @@
              switch(errorNb) {
                case 0 :
                  result = true;
-             brea    k;
+             break;
                case 1 :
                  errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
                  window.alert(errorMsg);
@@ -554,9 +554,9 @@
           Iterator codes = pubDetail.getTranslations().keySet().iterator();
           while (codes.hasNext()) {
             lang = (String) codes.next();
-            out.println("var name_" + lang + " = \"" + Encode.javaStringToJsString(pubDetail.getName(lang)) + "\";\n");
-            out.println("var desc_" + lang + " = \"" + Encode.javaStringToJsString(pubDetail.getDescription(lang)) + "\";\n");
-            out.println("var keys_" + lang + " = \"" + Encode.javaStringToJsString(pubDetail.getKeywords(lang)) + "\";\n");
+            out.println("var name_" + lang + " = \"" + EncodeHelper.javaStringToJsString(pubDetail.getName(lang)) + "\";\n");
+            out.println("var desc_" + lang + " = \"" + EncodeHelper.javaStringToJsString(pubDetail.getDescription(lang)) + "\";\n");
+            out.println("var keys_" + lang + " = \"" + EncodeHelper.javaStringToJsString(pubDetail.getKeywords(lang)) + "\";\n");
           }
         }
       %>
@@ -718,12 +718,12 @@
         <% }%>
         <%=I18NHelper.getFormLine(resources, pubDetail, language)%>
       <TR><TD class="txtlibform"><%=resources.getString("PubTitre")%></TD>
-        <TD><input type="text" name="Name" id="pubName" value="<%=Encode.javaStringToHtmlString(name)%>" size="68" maxlength="150">&nbsp;<IMG src="<%=mandatorySrc%>" width="5" height="5" border="0"></TD></TR>
+        <TD><input type="text" name="Name" id="pubName" value="<%=EncodeHelper.javaStringToHtmlString(name)%>" size="68" maxlength="150">&nbsp;<IMG src="<%=mandatorySrc%>" width="5" height="5" border="0"></TD></TR>
 
       <!-- DESCRIPTION -->
       <% if (isFieldDescriptionVisible) {%>
       <TR><TD class="txtlibform" valign="top"><%=resources.getString("PubDescription")%></TD>
-        <TD><TEXTAREA rows="6" cols="65" name="Description" id="pubDesc"><%=Encode.javaStringToHtmlString(description)%></TEXTAREA>
+        <TD><TEXTAREA rows="6" cols="65" name="Description" id="pubDesc"><%=EncodeHelper.javaStringToHtmlString(description)%></TEXTAREA>
           <% if (isFieldDescriptionMandatory) {%>
           <IMG src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
           <% }%>
@@ -732,14 +732,14 @@
 
       <% if (isFieldKeywordsVisible) {%>
       <TR><TD class="txtlibform"><%=resources.getString("PubMotsCles")%></TD>
-        <TD><input type="text" name="Keywords" id="pubKeys" value="<%=Encode.javaStringToHtmlString(keywords)%>" size="68" maxlength="100"></TD></TR>
+        <TD><input type="text" name="Keywords" id="pubKeys" value="<%=EncodeHelper.javaStringToHtmlString(keywords)%>" size="68" maxlength="100"></TD></TR>
           <% }%>
 
       <!-- Author -->
       <% if (kmeliaScc.isAuthorUsed()) {%>
       <TR>
         <TD class="txtlibform"><%=resources.getString("GML.author")%></TD>
-        <TD><input type="text" name="Author" value="<%=Encode.javaStringToHtmlString(author)%>" size="68" maxlength="50"></TD>
+        <TD><input type="text" name="Author" value="<%=EncodeHelper.javaStringToHtmlString(author)%>" size="68" maxlength="50"></TD>
       </TR>
       <% }%>
       <!-- Importance -->
@@ -765,7 +765,7 @@
       <% }%>
       <% if (isFieldVersionVisible) {%>
       <TR><TD class="txtlibform"><%=resources.getString("PubVersion")%></TD>
-        <TD><input type="text" name="Version" value="<%=Encode.javaStringToHtmlString(version)%>" size="5" maxlength="30"></TD></TR>
+        <TD><input type="text" name="Version" value="<%=EncodeHelper.javaStringToHtmlString(version)%>" size="5" maxlength="30"></TD></TR>
           <% }%>
       <TR><TD class="txtlibform"><%=resources.getString("PubDateCreation")%></TD>
         <TD><%=creationDate%>&nbsp;<span class="txtsublibform"><%=resources.getString("kmelia.By")%></span>&nbsp;<%=creatorName%></TD></TR>
