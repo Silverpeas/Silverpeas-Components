@@ -1,0 +1,1 @@
+Publication à valider $publicationName$

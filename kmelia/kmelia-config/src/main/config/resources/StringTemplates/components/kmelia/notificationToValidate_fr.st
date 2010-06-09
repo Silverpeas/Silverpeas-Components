@@ -1,0 +1,1 @@
+Validate publications $publicationName$ 

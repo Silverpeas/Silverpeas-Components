@@ -1,0 +1,1 @@
+ A new theme has been added in the following place $path$
