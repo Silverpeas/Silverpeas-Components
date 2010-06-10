@@ -37,12 +37,13 @@ String		blogUrl		= (String) request.getAttribute("Url");
 String		rssURL		= (String) request.getAttribute("RSSUrl");
 List		events		= (List) request.getAttribute("Events");
 String 		dateCal		= (String) request.getAttribute("DateCalendar");
-Boolean		isUsePdc	= (Boolean) request.getAttribute("IsUsePdc");
+boolean   isPdcUsed	= ((Boolean) request.getAttribute("IsUsePdc")).booleanValue();
 String footer = (String) request.getAttribute("Footer");
+
+boolean   isDraftVisible  = ((Boolean) request.getAttribute("IsDraftVisible")).booleanValue();
 
 String 		word 		= "";
 Date 	   dateCalendar	= new Date(dateCal);
-boolean		isPdcUsed 	= isUsePdc.booleanValue();
 boolean 	isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
 %>
 
@@ -96,11 +97,32 @@ function addSubscription()
               categoryId = post.getCategory().getNodePK().getId();
             String postId = post.getPublication().getPK().getId();
             String link = post.getPermalink();
+          
+          //Debut d'un ticket
+          String titreClass = "titreTicket";
+          String infoClass = "infoTicket";
+          if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)) {
+            titreClass = "titreTicketDraft";
+            infoClass = "infoTicketDraft";
+          }
+          boolean visible = true;
+          if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT) 
+              && !post.getPublication().getCreatorId().equals(userId)) {
+            // le billet en mode brouillon n'est pas visible si ce n'est pas le créateur
+            visible = false;
+            // sauf si le mode "brouillon visible" est actif et que le user est bloggeur
+            if (isDraftVisible && "admin".equals(profile)) {
+              visible = true;
+            }
+          }
+                    
+          
+          if (visible) {
           %>
-          <!--Debut d'un ticket-->
+          
           <div id="post<%=postId%>" class="post">
-            <div class="titreTicket">
-              <a href="<%="ViewPost?PostId=" + postId%>" class="titreTicket"><%=post.getPublication().getName()%></a>
+            <div class="<%=titreClass%>">
+              <a href="<%="ViewPost?PostId=" + postId%>" class="<%=titreClass%>"><%=post.getPublication().getName()%></a>
 				        <%  if ( link != null && !link.equals("")) {  %>
 				          <a href=<%=link%> ><img src=<%=resource.getIcon("blog.link")%> border="0" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>' ></a>
 				        <%  } %>
@@ -109,7 +131,7 @@ function addSubscription()
               cal.setTime(post.getDateEvent());
               String day = resource.getString("GML.jour"+cal.get(java.util.Calendar.DAY_OF_WEEK));
            %>
-           <div class="infoTicket"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></div>
+           <div class="<%=infoClass%>"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></div>
            <div class="contentTicket">
              <%
                out.flush();
@@ -147,10 +169,10 @@ function addSubscription()
            </div>
             <div class="separateur" ></div>
         </div>
-        <!--Fin du ticket-->  
-       
-        <% 
-        }
+         <%
+          // Fin du ticket
+          }
+         }
         %>  
     </div>
     <div id="navBlog">

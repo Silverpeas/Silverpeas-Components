@@ -266,6 +266,9 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 			  // ajouter les opérations dans cette chaine et la passer à afficher dans la colonneDroite.jsp.inc
 			   if ("admin".equals(profile)) {
             myOperations += "<a href=\"EditPost?PostId="+postId+"\">"+resource.getString("blog.updatePost")+"</a><br/>";
+            if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)) {
+              myOperations += "<a href=\"DraftOutPost?PostId="+postId+"\">"+resource.getString("blog.draftOutPost")+"</a><br/>";
+            }
             myOperations += "<a href=\"javascript:onClick=deletePost('"+postId+"')\">"+resource.getString("blog.deletePost")+"</a><br/>";
             myOperations += "<a href=\"javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')\">"+resource.getString("GML.notify")+"</a><br/>";
           } 

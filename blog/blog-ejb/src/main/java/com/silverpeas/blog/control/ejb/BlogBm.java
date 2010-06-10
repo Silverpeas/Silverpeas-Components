@@ -91,4 +91,6 @@ public interface BlogBm extends EJBObject {
 
   public void sendSubscriptionsNotification(NodePK fatherPK, PublicationDetail pubDetail,
       String type, String senderId) throws RemoteException;
+  
+  public void draftOutPost(PostDetail post) throws RemoteException;
 }

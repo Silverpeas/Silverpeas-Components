@@ -102,7 +102,8 @@ public class BlogRequestRouter extends ComponentRequestRouter {
         // récupération des derniers billets par date d'évènements
         Collection<PostDetail> posts = blogSC.lastPosts();
         request.setAttribute("Posts", posts);
-        // récupération des paramètres communs
+
+        // passage des paramètres communs
         setCommonParam(blogSC, request);
 
         // creation d'une liste d'event par rapport aux posts du mois
@@ -113,8 +114,7 @@ public class BlogRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Events", events);
 
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
-        request.setAttribute("IsUsePdc", blogSC.isPdcUsed());
-
+        
         // appel de la page d'accueil
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("NewPost")) {
@@ -350,7 +350,7 @@ public class BlogRequestRouter extends ComponentRequestRouter {
             "posts =" + posts);
         setCommonParam(blogSC, request);
         request.setAttribute("DateCalendar", blogSC.getCurrentBeginDateAsString());
-
+        
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("PdcPositions")) {
         // traitement du plan de classement
@@ -399,6 +399,12 @@ public class BlogRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("UpdateFooter")) {
         // mise à jour du pied de page
         destination = rootDest + "footer.jsp";
+      } else if (function.equals("DraftOutPost")) {
+        // sortir du mode brouillon 
+        String postId = request.getParameter("PostId");
+        blogSC.draftOutPost(postId);
+        request.setAttribute("PostId", postId);
+        destination = getDestination("ViewPost", blogSC, request);
       } else {
         destination = rootDest + function;
       }
@@ -442,5 +448,6 @@ public class BlogRequestRouter extends ComponentRequestRouter {
     request.setAttribute("Url", blogSC.getComponentUrl());
     request.setAttribute("RSSUrl", blogSC.getRSSUrl());
     request.setAttribute("IsUsePdc", blogSC.isPdcUsed());
+    request.setAttribute("IsDraftVisible", blogSC.isDraftVisible());
   }
 }

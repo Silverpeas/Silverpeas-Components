@@ -107,7 +107,7 @@ public class BlogBmEJB implements SessionBean {
     try {
       // Création de la publication
       PublicationDetail pub = post.getPublication();
-      pub.setStatus("Valid");
+      pub.setStatus(PublicationDetail.DRAFT);
       PublicationPK pk = getPublicationBm().createPublication(pub);
 
       // création de la date d'évènement
@@ -120,10 +120,6 @@ public class BlogBmEJB implements SessionBean {
 
       // création du silverContent
       createSilverContent(con, pub, pub.getCreatorId());
-
-      // envoie notification si abonnement
-      sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK()
-          .getInstanceId()), pub, "create", pub.getCreatorId());
 
       return pk.getId();
 
@@ -157,7 +153,7 @@ public class BlogBmEJB implements SessionBean {
           if (orgaController.isComponentAvailable(fatherPK.getInstanceId(), userId)) {
             if (!node.haveRights() ||
                 orgaController.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
-                fatherPK.getInstanceId(), userId))
+                    fatherPK.getInstanceId(), userId))
               newSubscribers.add(userId);
           }
         }
@@ -189,7 +185,7 @@ public class BlogBmEJB implements SessionBean {
     } catch (Exception e) {
       SilverTrace.warn("blog", "BlogBmEJB.sendSubscriptionsNotification()",
           "blog.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "fatherId = " + fatherPK.getId() +
-          ", pubId = " + pubDetail.getPK().getId(), e);
+              ", pubId = " + pubDetail.getPK().getId(), e);
     }
   }
 
@@ -250,8 +246,10 @@ public class BlogBmEJB implements SessionBean {
 
       // envoie notification si abonnement
       PublicationDetail pub = post.getPublication();
-      sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK()
-          .getInstanceId()), pub, "update", pub.getUpdaterId());
+      if (pub.getStatus().equals(PublicationDetail.VALID)) {
+        sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK()
+            .getInstanceId()), pub, "update", pub.getUpdaterId());
+      }
 
     } catch (Exception e) {
       throw new BlogRuntimeException("BlogBmEJB.updatePost()", SilverpeasRuntimeException.ERROR,
@@ -381,7 +379,7 @@ public class BlogBmEJB implements SessionBean {
       Collection<String> lastEvents = PostDAO.getLastEvents(con, instanceId, nbReturned);
 
       Collection<PublicationDetail> publications =
-          getPublicationBm().getPublicationsByStatus("Valid", pubPK);
+          getPublicationBm().getAllPublications(pubPK);
       OrganizationController orgaController = new OrganizationController();
 
       Iterator<String> itEvent = lastEvents.iterator();
@@ -795,8 +793,10 @@ public class BlogBmEJB implements SessionBean {
       getPublicationBm().setDetail(pubDetail);
 
       // envoie notification si abonnement
-      sendSubscriptionsNotification(new NodePK("0", pubPK.getSpaceId(), pubPK.getInstanceId()),
-          pubDetail, "update", pubDetail.getUpdaterId());
+      if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
+        sendSubscriptionsNotification(new NodePK("0", pubPK.getSpaceId(), pubPK.getInstanceId()),
+            pubDetail, "update", pubDetail.getUpdaterId());
+      }
     } catch (RemoteException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -848,12 +848,30 @@ public class BlogBmEJB implements SessionBean {
     }
   }
 
+  public void draftOutPost(PostDetail post) {
+    try {
+      PublicationDetail pub = post.getPublication();
+      pub.setStatus(PublicationDetail.VALID);
+      // Modification de la publi
+      getPublicationBm().setDetail(pub);
+
+      // envoie notification si abonnement
+      if (pub.getStatus().equals(PublicationDetail.VALID)) {
+        sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK()
+              .getInstanceId()), pub, "create", pub.getUpdaterId());
+      }
+    } catch (Exception e) {
+      throw new BlogRuntimeException("BlogBmEJB.draftOutPost()",
+             SilverpeasRuntimeException.ERROR, "blog.EX_CAN_DRAFT_OUT", e);
+    }
+  }
+
   public SubscribeBm getSubscribeBm() {
     SubscribeBm subscribeBm = null;
     try {
       SubscribeBmHome subscribeBmHome =
           (SubscribeBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.SUBSCRIBEBM_EJBHOME,
-          SubscribeBmHome.class);
+              SubscribeBmHome.class);
       subscribeBm = subscribeBmHome.create();
     } catch (Exception e) {
       throw new BlogRuntimeException("BlogBmEJB.getSubscribeBm()",
@@ -867,7 +885,7 @@ public class BlogBmEJB implements SessionBean {
     try {
       PublicationBmHome publicationBmHome =
           (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-          PublicationBmHome.class);
+              PublicationBmHome.class);
       publicationBm = publicationBmHome.create();
     } catch (Exception e) {
       throw new PublicationRuntimeException("BlogBmEJB.getPublicationBm()",
@@ -894,7 +912,7 @@ public class BlogBmEJB implements SessionBean {
     try {
       CommentBmHome commentHome =
           (CommentBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.COMMENT_EJBHOME,
-          CommentBmHome.class);
+              CommentBmHome.class);
       commentBm = commentHome.create();
     } catch (Exception e) {
       throw new CommentRuntimeException("GallerySessionController.getCommentBm()",
@@ -909,7 +927,7 @@ public class BlogBmEJB implements SessionBean {
       try {
         SearchEngineBmHome searchEngineHome =
             (SearchEngineBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.SEARCHBM_EJBHOME,
-            SearchEngineBmHome.class);
+                SearchEngineBmHome.class);
         searchEngineBm = searchEngineHome.create();
       } catch (Exception e) {
         throw new CommentRuntimeException("BlogSessionController.getCommentBm()",

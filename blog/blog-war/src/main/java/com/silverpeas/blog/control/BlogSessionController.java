@@ -183,7 +183,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
       // création du billet
       PublicationDetail pub =
           new PublicationDetail("X", title, "", null, null, null, null, "1", null, null, "", null,
-          "");
+              "");
       pub.getPK().setComponentName(getComponentId());
       pub.setCreatorId(getUserId());
       pub.setCreatorName(getUserDetail(getUserId()).getDisplayedName());
@@ -220,6 +220,17 @@ public class BlogSessionController extends AbstractComponentSessionController {
       throw new BlogRuntimeException("BlogSessionController.updatePost()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_UPDATE_OBJECT", e);
     }
+  }
+
+  public synchronized void draftOutPost(String postId) {
+    try {
+      PostDetail post = getPost(postId);
+      getBlogBm().draftOutPost(post);
+    } catch (RemoteException e) {
+      throw new BlogRuntimeException("BlogSessionController.draftOutPost()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_DRAFT_OUT_OBJECT", e);
+    }
+      
   }
 
   public String initAlertUser(String postId) throws RemoteException {
@@ -496,13 +507,17 @@ public class BlogSessionController extends AbstractComponentSessionController {
     return new Boolean("yes".equalsIgnoreCase(getComponentParameterValue("usePdc")));
   }
 
+  public Boolean isDraftVisible() {
+    return new Boolean("yes".equalsIgnoreCase(getComponentParameterValue("draftVisible")));
+  }
+  
   public int getSilverObjectId(String objectId) {
 
     int silverObjectId = -1;
     try {
       silverObjectId =
           getBlogBm()
-          .getSilverObjectId(new PublicationPK(objectId, getSpaceId(), getComponentId()));
+              .getSilverObjectId(new PublicationPK(objectId, getSpaceId(), getComponentId()));
     } catch (Exception e) {
       SilverTrace.error("blog", "BlogSessionController.getSilverObjectId()",
           "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
@@ -516,7 +531,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
       try {
         CommentBmHome commentHome =
             (CommentBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.COMMENT_EJBHOME,
-            CommentBmHome.class);
+                CommentBmHome.class);
         commentBm = commentHome.create();
       } catch (Exception e) {
         throw new CommentRuntimeException("BlogSessionController.getCommentBm()",
@@ -533,7 +548,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
       try {
         MyLinksBmHome myLinksHome =
             (MyLinksBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.MYLINKSBM_EJBHOME,
-            MyLinksBmHome.class);
+                MyLinksBmHome.class);
         myLinksBm = myLinksHome.create();
       } catch (Exception e) {
         throw new CommentRuntimeException("BlogSessionController.getMyLinksBm()",
