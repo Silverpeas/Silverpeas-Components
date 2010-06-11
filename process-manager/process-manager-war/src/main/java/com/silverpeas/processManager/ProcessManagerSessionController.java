@@ -71,6 +71,7 @@ import com.silverpeas.workflow.api.model.Item;
 import com.silverpeas.workflow.api.model.Participant;
 import com.silverpeas.workflow.api.model.ProcessModel;
 import com.silverpeas.workflow.api.model.QualifiedUsers;
+import com.silverpeas.workflow.api.model.RelatedGroup;
 import com.silverpeas.workflow.api.model.RelatedUser;
 import com.silverpeas.workflow.api.model.Role;
 import com.silverpeas.workflow.api.model.State;
@@ -81,11 +82,11 @@ import com.silverpeas.workflow.api.user.UserInfo;
 import com.silverpeas.workflow.api.user.UserSettings;
 import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowRecord;
 import com.silverpeas.workflow.engine.model.ItemImpl;
-import com.silverpeas.workflow.engine.task.TaskImpl;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -211,22 +212,20 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Print button on an action can be disabled. So it's return the visibility status of that button.
-   * 
    * @return true is print button is visible
    */
   public boolean isPrintButtonEnabled() {
-    return StringUtil.getBooleanValue( getComponentParameterValue("printButtonEnabled") );
+    return StringUtil.getBooleanValue(getComponentParameterValue("printButtonEnabled"));
   }
 
   /**
    * Save button on an action can be disabled. So it's return the visibility status of that button.
-   * 
    * @return true is save button is visible
    */
   public boolean isSaveButtonEnabled() {
-    return StringUtil.getBooleanValue( getComponentParameterValue("saveButtonEnabled") );
+    return StringUtil.getBooleanValue(getComponentParameterValue("saveButtonEnabled"));
   }
-  
+
   /**
    * Returns the last fatal exception
    */
@@ -246,9 +245,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     SilverTrace.info("processManager",
         "ProcessManagerSessionController.resetCurrentProcessInstance()",
         "root.MSG_GEN_ENTER_METHOD", "instanceId = " + instanceId);
-    
+
     this.setResumingInstance(false);
-    
+
     if (instanceId != null) {
       ProcessInstance instance;
 
@@ -313,12 +312,13 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Updates the current process instance list with current filter and returns this list. Doesn't
-   * change the current process instance when an error occures.
+   * change the current process instance when an error occurs.
    */
   public DataRecord[] resetCurrentProcessList() throws ProcessManagerException {
     try {
+      String[] groupIds = getOrganizationController().getAllGroupIdsOfUser(getUserId());
       ProcessInstance[] processList = Workflow.getProcessInstanceManager()
-          .getProcessInstances(peasId, currentUser, currentRole, getUserRoles());
+          .getProcessInstances(peasId, currentUser, currentRole, getUserRoles(), groupIds);
 
       currentProcessList = getCurrentFilter().filter(processList, currentRole,
           getLanguage());
@@ -389,13 +389,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         QualifiedUsers workingUsers = state.getWorkingUsers();
 
         RelatedUser[] relatedUsers = workingUsers.getRelatedUsers();
-        RelatedUser relatedUser = null;
         String role = "";
-        for (int r = 0; r < relatedUsers.length; r++) {
-          relatedUser = relatedUsers[r];
-          if (r != 0)
+        for (RelatedUser relatedUser : relatedUsers) {
+          if (role.length() > 0) {
             role += ", ";
-
+          }
           // Process participants
           Participant participant = relatedUser.getParticipant();
           String relation = relatedUser.getRelation();
@@ -403,10 +401,9 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
             role += participant.getLabel(currentRole, getLanguage());
           else if (participant != null && relation != null) {
             UserInfo userInfo = userSettings.getUserInfo(relation);
-            if (userInfo != null)
+            if (userInfo != null) {
               role += getUserDetail(userInfo.getValue()).getDisplayedName();
-            // role += relatedUser.getFolderItem();//.getLabel(currentRole,
-            // getLanguage());
+            }
           }
 
           // Process folder item
@@ -416,28 +413,44 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
                 .getStringValue();
             if (userId != null) {
               UserDetail user = getUserDetail(userId);
-              if (user != null)
+              if (user != null) {
                 role += user.getDisplayedName();
+              }
             }
           }
         }
 
         UserInRole[] userInRoles = workingUsers.getUserInRoles();
-        UserInRole userInRole = null;
-        for (int u = 0; u < userInRoles.length; u++) {
-          userInRole = userInRoles[u];
-          if (u != 0 || role.length() > 0)
+        for (UserInRole userInRole : userInRoles) {
+          if (role.length() > 0) {
             role += ", ";
+          }
           role += processModel.getRole(userInRole.getRoleName()).getLabel(
               currentRole, getLanguage());
         }
 
+        RelatedGroup[] relatedGroups = workingUsers.getRelatedGroups();
+        for (RelatedGroup relatedGroup : relatedGroups) {
+          if (role.length() > 0) {
+            role += ", ";
+          }
+
+          // Process folder item
+          Item item = relatedGroup.getFolderItem();
+          if (item != null) {
+            String groupId = currentProcessInstance.getField(item.getName())
+                .getStringValue();
+            if (groupId != null) {
+              Group group = getOrganizationController().getGroup(groupId);
+              if (group != null) {
+                role += group.getName();
+              }
+            }
+          }
+        }
+
         roles[i] = role;
-      }
-      /*
-       * catch (FormException fe) { continue; }
-       */
-      catch (WorkflowException ignored) {
+      } catch (WorkflowException ignored) {
         // ignore unknown state
         continue;
       }
@@ -500,10 +513,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       // Process participants
       Participant participant = relatedUser.getParticipant();
       String relation = relatedUser.getRelation();
-      /*
-       * if (participant != null && relation == null) role += participant.getLabel(currentRole,
-       * getLanguage()); else
-       */if (participant != null && relation != null) {
+      if (participant != null && relation != null) {
         UserInfo userInfo = userSettings.getUserInfo(relation);
         if (userInfo != null)
           users.add(userInfo.getValue());
@@ -540,6 +550,25 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         getComponentId(), roles);
     for (int u = 0; u < userIds.length; u++) {
       users.add(userIds[u]);
+    }
+
+    // Process related groups
+    RelatedGroup[] relatedGroups = qualifiedUsers.getRelatedGroups();
+    for (RelatedGroup relatedGroup : relatedGroups) {
+      // Process folder item
+      Item item = relatedGroup.getFolderItem();
+      if (item != null) {
+        try {
+          String groupId = currentProcessInstance.getField(item.getName())
+              .getStringValue();
+          UserDetail[] usersOfGroup = getOrganizationController().getAllUsersOfGroup(groupId);
+          for (UserDetail userOfGroup : usersOfGroup) {
+            users.add(userOfGroup.getId());
+          }
+        } catch (WorkflowException we) {
+          // ignore it.
+        }
+      }
     }
 
     return users;
@@ -904,29 +933,28 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Create a new process instance with the filled form.
-   * 
-   * @param data            the form data
-   * @param isDraft         true if form has just been saved as draft
-   * @param firstTimeSaved  true if form is saved as draft for the first time
+   * @param data the form data
+   * @param isDraft true if form has just been saved as draft
+   * @param firstTimeSaved true if form is saved as draft for the first time
    */
   public String createProcessInstance(DataRecord data, boolean isDraft, boolean firstTimeSaved)
       throws ProcessManagerException {
     try {
       Action creation = processModel.getCreateAction();
-      
+
       GenericEvent event = (isDraft) ? getCreationTask().buildTaskSavedEvent(
           creation.getName(), data) : getCreationTask().buildTaskDoneEvent(
-              creation.getName(), data);
-      
-      // Is a validate or a "save as draft" action ?    
+          creation.getName(), data);
+
+      // Is a validate or a "save as draft" action ?
       if (isDraft) {
         TaskSavedEvent tse = (TaskSavedEvent) event;
         tse.setFirstTimeSaved(firstTimeSaved);
-        Workflow.getWorkflowEngine().process( (TaskSavedEvent) event);
+        Workflow.getWorkflowEngine().process((TaskSavedEvent) event);
       } else {
-        Workflow.getWorkflowEngine().process( (TaskDoneEvent) event);
+        Workflow.getWorkflowEngine().process((TaskDoneEvent) event);
       }
-      
+
       return event.getProcessInstance().getInstanceId();
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
@@ -1038,20 +1066,20 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
   /**
    * Create a new history step instance with the filled form.
    */
-  public void processAction(String stateName, String actionName, DataRecord data, boolean isDraft, boolean isFirstTimeSaved)
+  public void processAction(String stateName, String actionName, DataRecord data, boolean isDraft,
+      boolean isFirstTimeSaved)
       throws ProcessManagerException {
     try {
-     Task task = null;
-         
+      Task task = null;
+
       if (StringUtil.isDefined(stateName)) {
         task = getTask(stateName);
-      }
-      else {
+      } else {
         task = getCreationTask();
         task.setProcessInstance(currentProcessInstance);
       }
 
-      // Is a validate or a "save as draft" action ?    
+      // Is a validate or a "save as draft" action ?
       if (isDraft) {
         TaskSavedEvent tse = task.buildTaskSavedEvent(actionName, data);
         tse.setFirstTimeSaved(isFirstTimeSaved);
@@ -1061,7 +1089,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
         event.setResumingAction(this.isResumingInstance);
         Workflow.getWorkflowEngine().process(event);
       }
-     
+
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
           "processManager.CREATION_PROCESSING_FAILED", e);
@@ -1115,18 +1143,18 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get locking users list
-   * @throws ProcessManagerException 
+   * @throws ProcessManagerException
    */
   public List<User> getLockingUsers() throws ProcessManagerException {
     this.currentUserIsLockingUser = false;
-    
+
     try {
       List<User> lockingUsers = new ArrayList<User>();
       String[] states = currentProcessInstance.getActiveStates();
       if (states != null) {
         for (String stateName : states) {
           User lockingUser = currentProcessInstance.getLockingUser(stateName);
-          if (lockingUser!=null) {
+          if (lockingUser != null) {
             lockingUsers.add(lockingUser);
             if (lockingUser.getUserId().equals(getUserId())) {
               this.currentUserIsLockingUser = true;
@@ -1134,10 +1162,10 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
           }
         }
       }
-      
+
       // special case : instance saved in creation step
       User lockingUser = currentProcessInstance.getLockingUser("");
-      if (lockingUser!=null) {
+      if (lockingUser != null) {
         lockingUsers.add(lockingUser);
         if (lockingUser.getUserId().equals(getUserId())) {
           this.currentUserIsLockingUser = true;
@@ -1151,7 +1179,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     }
 
   }
-  
+
   /**
    * Lock the current instance for current user and given state
    * @param stateName state name
@@ -1304,32 +1332,31 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Get step saved by given user id.
-   * @throws ProcessManagerException 
+   * @throws ProcessManagerException
    */
   public HistoryStep getSavedStep() throws ProcessManagerException {
     try {
       return currentProcessInstance.getSavedStep(getUserId());
     } catch (WorkflowException e) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-      "processManager.EX_GET_SAVED_STEP");
+          "processManager.EX_GET_SAVED_STEP");
     }
   }
-  
+
   /**
    * Get step data record saved.
-   * @throws ProcessManagerException 
-   * @throws ProcessManagerException 
+   * @throws ProcessManagerException
+   * @throws ProcessManagerException
    */
   public DataRecord getSavedStepRecord(HistoryStep savedStep) throws ProcessManagerException {
     try {
       return savedStep.getActionRecord();
     } catch (WorkflowException e) {
       throw new ProcessManagerException("ProcessManagerSessionController",
-      "processManager.EX_GET_SAVED_STEP_DATARECORD");
+          "processManager.EX_GET_SAVED_STEP_DATARECORD");
     }
   }
-  
-  
+
   /**
    * Returns the form used to display the i-th step. Returns null if the step is unkwown.
    */
@@ -1961,8 +1988,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Is current user is part of the locking users for current process instance ?
-   * 
-   * @return  true is current user is part of the locking users for current process instance
+   * @return true is current user is part of the locking users for current process instance
    */
   public boolean isCurrentUserIsLockingUser() {
     return currentUserIsLockingUser;
@@ -2043,6 +2069,5 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Flag to indicate if user is currently resuming a saved instance
    */
   private boolean isResumingInstance = false;
-
 
 }
