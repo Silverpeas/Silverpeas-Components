@@ -49,12 +49,17 @@ Button cancelButton = gef.getFormButton(resource.getString("resourcesManager.ret
 ButtonPane buttonPane = gef.getButtonPane();
 buttonPane.addButton(cancelButton);
 
+boolean isOwner = "admin".equals(flag) || ("publisher".equals(flag) && maReservation.getUserId().equals(resourcesManagerSC.getUserId()));
+String profile = flag;
+if (!isOwner)
+  profile = "user";
 %>
 <html>
 	<head>
 	<%
 		out.println(gef.getLookStyleSheet());
 	%>
+	<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 	<script type='text/javascript'>
 	function deleteReservation(){
 		if(confirm("<%=resource.getString("resourcesManager.suppressionConfirmation")%>")){
@@ -75,16 +80,24 @@ buttonPane.addButton(cancelButton);
     function refuseResource(resourceId, resourceName, objectView) {
         window.location.href = "ForRefuseResource?ResourceId=" + resourceId + "&ResourceName=" + resourceName+ "&reservationId=" + <%=reservationId%> + "&objectView=" + objectView;
     }
+
+    function AddAttachment()
+    {
+      SP_openWindow("/silverpeas/attachment/jsp/addAttFiles.jsp", "test", "600", "240","scrollbars=no, resizable, alwaysRaised");
+    }
+    
 	</script>
 	</head>
 	<body id="resourcesManager">
 
 	<%
-	if ("admin".equals(flag) || ("publisher".equals(flag) && maReservation.getUserId().equals(resourcesManagerSC.getUserId())))
+	if (isOwner)
 	{
 		operationPane.addOperation(resource.getIcon("resourcesManager.updateBig"), resource.getString("resourcesManager.modifierReservation"),"EditReservation?id="+reservationId);
 		operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("resourcesManager.basketDelete"), resource.getString("resourcesManager.supprimerReservation"),"javascript:deleteReservation();");
+		operationPane.addLine();
+		operationPane.addOperation("#", resource.getString("resourcesManager.addFile"), "javaScript:AddAttachment()");
 	}	
 		browseBar.setDomainName(spaceLabel);
 		browseBar.setComponentName(componentLabel,"Main");
@@ -95,7 +108,7 @@ buttonPane.addButton(cancelButton);
   %>
 <table width="100%">
 	<tr>
-		<td>
+		<td valign="top">
 		<% out.println(board.printBefore());%>
 			<TABLE CELLPADDING="3" CELLSPACING="0" BORDER="0" WIDTH="100%">
 				<tr>
@@ -135,47 +148,57 @@ buttonPane.addButton(cancelButton);
 				</tr>
 			</TABLE>
 		<%out.println(board.printAfter());%>
-		</td>
-		<td valign="top">
+		<br/>
 		<% out.println(board.printBefore());%>
-			<TABLE CELLPADDING="3" CELLSPACING="0" BORDER="0" WIDTH="100%">
-				<tr>
-					<td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.resourcesReserved"));%> :</td>
-					<td width="100%"><%
-					for(int i=0;i<listResourcesofReservation.size();i++){
-						ResourceDetail maResource = (ResourceDetail)listResourcesofReservation.get(i);
-						String resourceId = maResource.getId();
-						String resourceName = maResource.getName();%>
-						<%
-						// afficher les icônes de validation et refus si la ressource est en état à valider 
-						// et si l'utilisateur est le responsable de cette ressource
-						String currentUser = resourcesManagerSC.getUserId() ;
-						List managers = maResource.getManagers();
-						if (STATUS_FOR_VALIDATION.equals(maResource.getStatus())) { %>
+      <TABLE CELLPADDING="3" CELLSPACING="0" BORDER="0" WIDTH="100%">
+        
+        <tr>
+          <td class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.resourcesReserved"));%> :</td>
+          <td width="100%"><%
+          for(int i=0;i<listResourcesofReservation.size();i++){
+            ResourceDetail maResource = (ResourceDetail)listResourcesofReservation.get(i);
+            String resourceId = maResource.getId();
+            String resourceName = maResource.getName();%>
+            <%
+            // afficher les icônes de validation et refus si la ressource est en état à valider 
+            // et si l'utilisateur est le responsable de cette ressource
+            String currentUser = resourcesManagerSC.getUserId() ;
+            List managers = maResource.getManagers();
+            if (STATUS_FOR_VALIDATION.equals(maResource.getStatus())) { %>
              <a style="color:red" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
-	          <% } else if (STATUS_REFUSED.equals(maResource.getStatus())) { %>
-	            <a style="color:grey" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
-	          <% } else {%>
-	            <a style="color:black" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
-	           <% } 
-						if (STATUS_FOR_VALIDATION.equals(maResource.getStatus()) &&  managers != null && managers.contains(currentUser)) { %>
-							<a href="javascript:valideResource(<%=resourceId%>, '<%=objectView%>')">
-							<img src="<%=m_context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("resourcesManager.valideResource")%>" title="<%=resource.getString("resourcesManager.valideResource")%>">
-							</a>&nbsp;
+            <% } else if (STATUS_REFUSED.equals(maResource.getStatus())) { %>
+              <a style="color:grey" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
+            <% } else {%>
+              <a style="color:black" href="javascript:getResource(<%=resourceId%>, '<%=objectView%>')"><%=resourceName%></a> 
+             <% } 
+            if (STATUS_FOR_VALIDATION.equals(maResource.getStatus()) &&  managers != null && managers.contains(currentUser)) { %>
+              <a href="javascript:valideResource(<%=resourceId%>, '<%=objectView%>')">
+              <img src="<%=m_context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("resourcesManager.valideResource")%>" title="<%=resource.getString("resourcesManager.valideResource")%>">
+              </a>&nbsp;
               <a href="javascript:refuseResource(<%=resourceId%>, '<%=resourceName%>', '<%=objectView%>')">
               <img src="<%=m_context%>/util/icons/wrong.gif" align="middle" border="0" alt="<%=resource.getString("resourcesManager.refuseResource")%>" title="<%=resource.getString("resourcesManager.refuseResource")%>">
               </a>&nbsp;
-						<% }  %>
-						<br/>
-				<% } %>
-					</td>
-				</tr>
-			</TABLE>
-			<%out.println(board.printAfter());%>
-			<br/>
-			<% out.println(board.printBefore());%>
-      			<%=resource.getString("resourcesManager.explain") %>
-      		<%out.println(board.printAfter());%>
+            <% }  %>
+            <br/>
+        <% } %>
+          </td>
+        </tr>
+      </TABLE>
+      <%out.println(board.printAfter());%>
+      <br/>
+      <% out.println(board.printBefore());%>
+            <%=resource.getString("resourcesManager.explain") %>
+          <%out.println(board.printAfter());%>
+		</td>
+		<td valign="top">
+    <%
+    out.flush();
+    // traitement des fichiers joints
+    getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+reservationId+"&ComponentId="+componentId+"&Alias=&Context=Images&AttachmentPosition=right&ShowIcon=true&ShowTitle=&ShowFileSize=true&ShowDownloadEstimation=&ShowInfo=&UpdateOfficeMode=&Language="+resourcesManagerSC.getLanguage()+"&Profile="+profile+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewReservation?reservationId="+reservationId+"&IndexIt=").include(request, response);
+    %>
+    <br/>      
+		
+       		
 		</td>
 	</tr>
 </table>
