@@ -1097,6 +1097,10 @@ public class AlmanachSessionController extends
    * @throws AlmanachException
    * @throws RemoteException
    */
+  public Collection getListRecurrentEvent() throws RemoteException, AlmanachException {
+    return getListRecurrentEvent(false);
+  }
+
   public Collection getListRecurrentEvent(boolean yearScope) throws RemoteException,
       AlmanachException {
     // Récupère le Calendar ical4j
