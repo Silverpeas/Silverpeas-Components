@@ -30,6 +30,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.ejb.EJBException;
 
@@ -43,32 +44,6 @@ import com.stratelia.webactiv.almanach.model.EventPK;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 
-/*
- * CVS Informations
- *
- * $Id: AlmanachStatistics.java,v 1.3 2004/06/22 16:17:26 neysseri Exp $
- *
- * $Log: AlmanachStatistics.java,v $
- * Revision 1.3  2004/06/22 16:17:26  neysseri
- * implements new SilverContentInterface + nettoyage eclipse
- *
- * Revision 1.2  2002/10/09 08:06:37  neysseri
- * no message
- *
- * Revision 1.1.1.1.6.1  2002/09/27 08:11:42  abudnikau
- * Remove debug
- *
- * Revision 1.1.1.1  2002/08/06 14:47:56  nchaix
- * no message
- *
- * Revision 1.1  2002/04/17 17:14:07  mguillem
- * alimentation des stats de volume
- *
- * Revision 1.1  2002/04/05 16:58:24  mguillem
- * alimentation des stats de volume
- *
- */
-
 /**
  * Class declaration
  * 
@@ -79,13 +54,13 @@ public class AlmanachStatistics implements ComponentStatisticsInterface {
 
   private AlmanachBm almanachBm = null;
 
-  public Collection getVolume(String spaceId, String componentId)
+  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
-    ArrayList myArrayList = new ArrayList();
-    Collection c = getEvents(spaceId, componentId);
-    Iterator iter = c.iterator();
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
+    Collection<EventDetail> c = getEvents(spaceId, componentId);
+    Iterator<EventDetail> iter = c.iterator();
     while (iter.hasNext()) {
-      EventDetail detail = (EventDetail) iter.next();
+      EventDetail detail = iter.next();
 
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
 
@@ -111,7 +86,7 @@ public class AlmanachStatistics implements ComponentStatisticsInterface {
     return almanachBm;
   }
 
-  public Collection getEvents(String spaceId, String componentId)
+  public Collection<EventDetail> getEvents(String spaceId, String componentId)
       throws RemoteException {
     return getAlmanachBm().getAllEvents(new EventPK("", spaceId, componentId));
   }

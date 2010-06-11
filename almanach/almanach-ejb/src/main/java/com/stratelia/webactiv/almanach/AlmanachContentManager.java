@@ -25,6 +25,7 @@ package com.stratelia.webactiv.almanach;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -61,10 +62,11 @@ public class AlmanachContentManager implements ContentInterface {
    *          the roles of the user
    * @return a List of SilverContent
    */
+  @SuppressWarnings("unchecked")
   public List getSilverContentById(List ids, String peasId, String userId,
       List userRoles) {
     if (getContentManager() == null)
-      return new ArrayList();
+      return new ArrayList<EventDetail>();
 
     return getHeaders(makePKArray(ids, peasId), peasId);
   }
@@ -150,14 +152,14 @@ public class AlmanachContentManager implements ContentInterface {
    *          the id of the instance
    * @return a list of almanachPK
    */
-  private ArrayList makePKArray(List idList, String peasId) {
-    ArrayList pks = new ArrayList();
+  private List<EventPK> makePKArray(List<Integer> idList, String peasId) {
+    List<EventPK> pks = new ArrayList<EventPK>();
     EventPK eventPK = null;
-    Iterator iter = idList.iterator();
+    Iterator<Integer> iter = idList.iterator();
     String id = null;
     // for each silverContentId, we get the corresponding almanachId
     while (iter.hasNext()) {
-      int contentId = ((Integer) iter.next()).intValue();
+      int contentId = iter.next().intValue();
       try {
         id = getContentManager().getInternalContentId(contentId);
         eventPK = new EventPK(id, "useless", peasId);
@@ -178,13 +180,11 @@ public class AlmanachContentManager implements ContentInterface {
    *          a list of almanachPK
    * @return a list of EventDetail
    */
-  private List getHeaders(List ids, String peasId) {
-    EventDetail eventDetail = null;
-    ArrayList headers = new ArrayList();
+  private List<EventDetail> getHeaders(List<EventPK> ids, String peasId) {
+    List<EventDetail> headers = new ArrayList<EventDetail>();
     try {
-      ArrayList eventDetails = (ArrayList) getAlmanachBm().getEvents(ids);
-      for (int i = 0; i < eventDetails.size(); i++) {
-        eventDetail = (EventDetail) eventDetails.get(i);
+      Collection<EventDetail> eventDetails = getAlmanachBm().getEvents(ids);
+      for (EventDetail eventDetail : eventDetails) {
         eventDetail.setIconUrl("almanachSmall.gif");
         eventDetail.getPK().setComponentName(peasId);
         headers.add(eventDetail);

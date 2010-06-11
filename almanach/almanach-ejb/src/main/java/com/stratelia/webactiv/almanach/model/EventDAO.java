@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-// TODO : reporter dans CVS (done)
 package com.stratelia.webactiv.almanach.model;
 
 import java.sql.Connection;
@@ -33,9 +32,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 
-import com.stratelia.webactiv.util.*;
-import com.stratelia.silverpeas.silvertrace.*;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DBUtil;
 
 public class EventDAO {
   private static final String COLUMNNAMES = "eventId, eventName, eventDelegatorId, eventStartDay, eventEndDay, eventStartHour, eventEndHour, eventPriority, eventTitle, eventPlace, eventUrl, instanceId";
@@ -137,7 +137,7 @@ public class EventDAO {
     }
   }
 
-  public static Collection getMonthEvents(Connection con, EventPK pk,
+  public static Collection<EventDetail> getMonthEvents(Connection con, EventPK pk,
       java.util.Date date, String[] instanceIds) throws SQLException, Exception {
     ResultSet rs = null;
     Statement selectStmt = null;
@@ -169,7 +169,7 @@ public class EventDAO {
 
       selectStmt = con.createStatement();
       rs = selectStmt.executeQuery(selectQuery);
-      ArrayList list = new ArrayList();
+      List<EventDetail> list = new ArrayList<EventDetail>();
       while (rs.next()) {
         EventDetail event = getEventDetailFromResultSet(rs);
         list.add(event);
@@ -180,7 +180,7 @@ public class EventDAO {
     }
   }
 
-  public static Collection getAllEvents(Connection con, EventPK pk)
+  public static Collection<EventDetail> getAllEvents(Connection con, EventPK pk)
       throws SQLException, Exception {
     ResultSet rs = null;
     Statement selectStmt = null;
@@ -195,7 +195,7 @@ public class EventDAO {
 
       selectStmt = con.createStatement();
       rs = selectStmt.executeQuery(selectQuery);
-      ArrayList list = new ArrayList();
+      List<EventDetail> list = new ArrayList<EventDetail>();
       while (rs.next()) {
         list.add(getEventDetailFromResultSet(rs));
       }
@@ -205,7 +205,7 @@ public class EventDAO {
     }
   }
 
-  public static Collection getAllEvents(Connection con, EventPK pk,
+  public static Collection<EventDetail> getAllEvents(Connection con, EventPK pk,
       String[] instanceIds) throws SQLException, Exception {
     ResultSet rs = null;
     Statement selectStmt = null;
@@ -234,7 +234,7 @@ public class EventDAO {
 
       selectStmt = con.createStatement();
       rs = selectStmt.executeQuery(selectQuery);
-      ArrayList list = new ArrayList();
+      List<EventDetail> list = new ArrayList<EventDetail>();
       while (rs.next()) {
         EventDetail event = getEventDetailFromResultSet(rs);
         list.add(event);
@@ -267,13 +267,13 @@ public class EventDAO {
     return event;
   }
 
-  public static Collection selectByEventPKs(Connection con, Collection eventPKs)
+  public static Collection<EventDetail> selectByEventPKs(Connection con, Collection<EventPK> eventPKs)
       throws SQLException, Exception {
-    ArrayList events = new ArrayList();
-    Iterator iterator = eventPKs.iterator();
+    List<EventDetail> events = new ArrayList<EventDetail>();
+    Iterator<EventPK> iterator = eventPKs.iterator();
 
     while (iterator.hasNext()) {
-      EventPK eventPK = (EventPK) iterator.next();
+      EventPK eventPK = iterator.next();
       EventDetail event = getEventDetail(con, eventPK);
 
       events.add(event);
@@ -302,7 +302,7 @@ public class EventDAO {
     return event;
   }
 
-  public static Collection getNextEvents(Connection con, EventPK pk,
+  public static Collection<EventDetail> getNextEvents(Connection con, EventPK pk,
       int nbReturned) throws SQLException, Exception {
     ResultSet rs = null;
     PreparedStatement prepStmt = null;
@@ -319,7 +319,7 @@ public class EventDAO {
       prepStmt.setString(1, dateFormat.format(new Date()));
 
       rs = prepStmt.executeQuery();
-      ArrayList list = new ArrayList();
+      List<EventDetail> list = new ArrayList<EventDetail>();
       while (rs.next() && nbReturned != 0) {
         list.add(getEventDetailFromResultSet(rs));
         nbReturned--;

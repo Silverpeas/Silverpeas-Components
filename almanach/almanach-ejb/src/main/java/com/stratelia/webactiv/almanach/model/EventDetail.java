@@ -36,6 +36,8 @@ import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 
 public class EventDetail extends AbstractI18NBean implements
     SilverContentInterface, Serializable {
+  
+  private static final long serialVersionUID = 9077018265272108291L;
   private String _name = null;
   private EventPK _pk = null;
   private Date _startDate = null;
@@ -213,7 +215,7 @@ public class EventDetail extends AbstractI18NBean implements
     return getName();
   }
 
-  public Iterator getLanguages() {
+  public Iterator<String> getLanguages() {
     return null;
   }
 

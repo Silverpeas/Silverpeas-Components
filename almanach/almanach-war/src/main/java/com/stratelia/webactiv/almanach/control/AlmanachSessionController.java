@@ -32,6 +32,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -89,7 +90,6 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendar;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendarWA1;
-import java.util.Hashtable;
 
 /**
  * @author squere
@@ -114,10 +114,9 @@ public class AlmanachSessionController extends
 
   private static final String ACCESS_ALL = "0";
   private static final String ACCESS_SPACE = "1";
-  private static final String ACCESS_SPACE_AND_SUBSPACES = "2";
   private static final String ACCESS_NONE = "3";
 
-  private Hashtable colors = null;
+  private Hashtable<String, String> colors = null;
 
   private OrganizationController organizationController = new OrganizationController();
 
@@ -159,11 +158,11 @@ public class AlmanachSessionController extends
   /**
    * @author David Lesimple
    */
-  public Collection getMonthEvents(String[] instanceIds)
+  public Collection<EventDetail> getMonthEvents(String[] instanceIds)
       throws AlmanachException, RemoteException {
     SilverTrace.info("almanach", "AlmanachSessionController.getMonthEvents()",
         "root.MSG_GEN_ENTER_METHOD", "instanceIds=" + instanceIds);
-    List events = (List) getAlmanachBm().getMonthEvents(
+    List<EventDetail> events = (List<EventDetail>) getAlmanachBm().getMonthEvents(
         new EventPK("", getSpaceId(), getComponentId()),
         getCurrentDay().getTime(), instanceIds);
 
@@ -180,7 +179,7 @@ public class AlmanachSessionController extends
         "root.MSG_GEN_PARAM_VALUE", "# of events after sorting = "
         + events.size());
 
-    return (Collection) events;
+    return events;
   }
 
   /**
@@ -188,7 +187,7 @@ public class AlmanachSessionController extends
    * @throws AlmanachException
    * @throws RemoteException
    */
-  public Collection getAllEvents() throws AlmanachException, RemoteException {
+  public Collection<EventDetail> getAllEvents() throws AlmanachException, RemoteException {
     EventPK pk = new EventPK("", getSpaceId(), getComponentId());
     return getAlmanachBm().getAllEvents(pk);
   }
@@ -198,7 +197,7 @@ public class AlmanachSessionController extends
    * @throws AlmanachException
    * @throws RemoteException
    */
-  public Collection getAllEventsAgregation() throws AlmanachException,
+  public Collection<EventDetail> getAllEventsAgregation() throws AlmanachException,
       RemoteException {
     if (isAgregationUsed()) {
       return getAllEvents(getAgregatedAlmanachs());
@@ -207,7 +206,7 @@ public class AlmanachSessionController extends
     }
   }
 
-  private Collection getAllEvents(String[] instanceIds)
+  private Collection<EventDetail> getAllEvents(String[] instanceIds)
       throws AlmanachException, RemoteException {
     EventPK pk = new EventPK("", getSpaceId(), getComponentId());
     return getAlmanachBm().getAllEvents(pk, instanceIds);
@@ -237,6 +236,7 @@ public class AlmanachSessionController extends
    * @throws RemoteException
    * @throws UtilException
    */
+  @SuppressWarnings("unchecked")
   public void removeEvent(String id) throws AlmanachException, RemoteException,
       UtilException {
     SilverTrace.info("almanach", "AlmanachSessionController.removeEvent()",
@@ -271,10 +271,10 @@ public class AlmanachSessionController extends
       this.setCurrentICal4jCalendar(calendarAlmanach);
     }
     ComponentList listCompo = this.getCurrentICal4jCalendar().getComponents();
-    Iterator it = listCompo.iterator();
+    Iterator<VEvent> it = listCompo.iterator();
     VEvent eventIcal4jCalendar = null;
     while (it.hasNext()) {
-      eventIcal4jCalendar = (VEvent) it.next();
+      eventIcal4jCalendar = it.next();
       if (id.equals(eventIcal4jCalendar.getProperties().getProperty(
           Property.UID).getValue())) {
         break;
@@ -295,6 +295,7 @@ public class AlmanachSessionController extends
    * @throws RemoteException
    * @throws AlmanachException
    */
+  @SuppressWarnings("unchecked")
   public void removeOccurenceEvent(EventDetail event,
       String dateDebutException, String dateFinException)
       throws ParseException, RemoteException, AlmanachException {
@@ -321,10 +322,10 @@ public class AlmanachSessionController extends
       this.setCurrentICal4jCalendar(calendarAlmanach);
     }
     ComponentList listCompo = this.getCurrentICal4jCalendar().getComponents();
-    Iterator it = listCompo.iterator();
+    Iterator<VEvent> it = listCompo.iterator();
     VEvent eventIcal4jCalendar = null;
     while (it.hasNext()) {
-      eventIcal4jCalendar = (VEvent) it.next();
+      eventIcal4jCalendar = it.next();
       if (event.getId().equals(
           eventIcal4jCalendar.getProperties().getProperty(Property.UID)
           .getValue())) {
@@ -444,6 +445,7 @@ public class AlmanachSessionController extends
    * @throws AlmanachException
    * @throws RemoteException
    */
+  @SuppressWarnings("unchecked")
   public void updateEvent(EventDetail event) throws AlmanachBadParamException,
       AlmanachException, RemoteException, WysiwygException {
     SilverTrace.info("almanach", "AlmanachSessionController.updateEvent()",
@@ -505,11 +507,11 @@ public class AlmanachSessionController extends
         this.setCurrentICal4jCalendar(calendarAlmanach);
       }
       ComponentList listCompo = this.getCurrentICal4jCalendar().getComponents();
-      Iterator it = listCompo.iterator();
+      Iterator<VEvent> it = listCompo.iterator();
       VEvent eventIcal4jCalendar = null;
       boolean ok = false;
       while (it.hasNext() && !ok) {
-        eventIcal4jCalendar = (VEvent) it.next();
+        eventIcal4jCalendar = it.next();
         if (event.getPK().getId().equals(
             eventIcal4jCalendar.getProperties().getProperty(Property.UID)
             .getValue())) {
@@ -548,8 +550,6 @@ public class AlmanachSessionController extends
           if (periodicity == null) {
 
             // Remove the periodicity and Exceptions
-            getAlmanachBm().removeAllPeriodicityException(
-                periodicity.getPK().getId());
             getAlmanachBm().removePeriodicity(lastPeriodicity);
 
           } else {
@@ -686,7 +686,7 @@ public class AlmanachSessionController extends
       return param;
   }
 
-  public List getAccessibleInstances() {
+  public List<List<String>> getAccessibleInstances() {
     if (getAccessPolicy().equals(ACCESS_NONE))
       return null;
 
@@ -702,14 +702,14 @@ public class AlmanachSessionController extends
         "AlmanachSessionController.getAccessibleInstances()",
         "root.MSG_GEN_PARAM_VALUE", "instanceIds=" + instanceIds + " spaceId="
         + getSpaceId());
-    List almanachs = null;
+    List<List<String>> almanachs = null;
     if (instanceIds.length > 1) // exclude this instance
     {
       for (int i = 0; i < instanceIds.length; i++) {
         SilverTrace.info("almanach",
             "AlmanachSessionController.getAccessibleInstances()",
             "root.MSG_GEN_PARAM_VALUE", "instanceId=" + instanceIds[i]);
-        List almanach = new ArrayList();
+        List<String> almanach = new ArrayList<String>();
 
         ComponentInstLight almanachInst = organizationController
             .getComponentInstLight(instanceIds[i]);
@@ -729,7 +729,7 @@ public class AlmanachSessionController extends
           almanach.add(si.getName());
 
           if (almanachs == null)
-            almanachs = new ArrayList();
+            almanachs = new ArrayList<List<String>>();
 
           almanachs.add(almanach);
         }
@@ -761,11 +761,11 @@ public class AlmanachSessionController extends
    */
   public String getAlmanachColor(String instanceId) {
     if (colors == null) {
-      colors = new Hashtable();
-      ArrayList almanachs = getOthersAlmanachs();
+      colors = new Hashtable<String, String>();
+      ArrayList<List<String>> almanachs = getOthersAlmanachs();
       if (almanachs != null) {
-        for (Iterator iterator = almanachs.iterator(); iterator.hasNext();) {
-          ArrayList almanach = (ArrayList) iterator.next();
+        for (Iterator<List<String>> iterator = almanachs.iterator(); iterator.hasNext();) {
+          List<String> almanach = iterator.next();
           colors.put(almanach.get(0), almanach.get(2));
         }
       }
@@ -778,7 +778,7 @@ public class AlmanachSessionController extends
    * @author dlesimple
    * @return ArrayList of ArrayList (with almanachId, almanachLabel, almanachColor)
    */
-  public ArrayList getOthersAlmanachs() {
+  public ArrayList<List<String>> getOthersAlmanachs() {
     boolean inCurrentSpace = false;
     boolean inAllSpaces = false;
 
@@ -786,7 +786,7 @@ public class AlmanachSessionController extends
         "almanachAgregationMode", ALMANACHS_IN_SUBSPACES);
 
     // Array of almanach(id, label, color)
-    ArrayList almanachs = new ArrayList();
+    ArrayList<List<String>> almanachs = new ArrayList<List<String>>();
     String[] instanceIds = null;
     if (agregationMode.equals(ALMANACHS_IN_SPACE_AND_SUBSPACES))
       inCurrentSpace = true;
@@ -806,7 +806,7 @@ public class AlmanachSessionController extends
       SilverTrace.info("almanach",
           "AlmanachSessionController.getOthersAlmanachs()",
           "root.MSG_GEN_PARAM_VALUE", "instanceId=" + instanceIds[i]);
-      ArrayList almanach = new ArrayList();
+      ArrayList<String> almanach = new ArrayList<String>();
       if (!instanceIds[i].equals(getComponentId())) {
         ComponentInstLight almanachInst = organizationController
             .getComponentInstLight(instanceIds[i]);
@@ -1022,7 +1022,7 @@ public class AlmanachSessionController extends
    * @throws RemoteException
    * @throws AlmanachException
    */
-  public Calendar getICal4jCalendar(Collection events) throws RemoteException,
+  public Calendar getICal4jCalendar(Collection<EventDetail> events) throws RemoteException,
       AlmanachException {
     return getAlmanachBm().getICal4jCalendar(events, getLanguage());
 
@@ -1097,11 +1097,11 @@ public class AlmanachSessionController extends
    * @throws AlmanachException
    * @throws RemoteException
    */
-  public Collection getListRecurrentEvent() throws RemoteException, AlmanachException {
+  public Collection<EventDetail> getListRecurrentEvent() throws RemoteException, AlmanachException {
     return getListRecurrentEvent(false);
   }
 
-  public Collection getListRecurrentEvent(boolean yearScope) throws RemoteException,
+  public Collection<EventDetail> getListRecurrentEvent(boolean yearScope) throws RemoteException,
       AlmanachException {
     // Récupère le Calendar ical4j
     Calendar calendarAlmanach = getCurrentICal4jCalendar();

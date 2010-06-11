@@ -43,31 +43,34 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class AlmanachRssServlet extends RssServlet {
+  
+  private static final long serialVersionUID = -2142983612465351228L;
+
   /*
    * (non-Javadoc)
    *
    * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String,
    * int)
    */
-  public Collection getListElements(String instanceId, int nbReturned)
+  public Collection<EventDetail> getListElements(String instanceId, int nbReturned)
       throws RemoteException {
     // récupération de la liste des 10 prochains événements de l'Almanach
-    Collection result = new ArrayList();
+    Collection<EventDetail> result = new ArrayList<EventDetail>();
 
-    Collection allEvents = getAlmanachBm().getAllEvents(
+    Collection<EventDetail> allEvents = getAlmanachBm().getAllEvents(
         new EventPK("", "", instanceId));
     net.fortuna.ical4j.model.Calendar calendarAlmanach = getAlmanachBm()
         .getICal4jCalendar(allEvents, "fr");
 
     Calendar currentDay = GregorianCalendar.getInstance();
-    Collection events = getAlmanachBm().getListRecurrentEvent(calendarAlmanach,
+    Collection<EventDetail> events = getAlmanachBm().getListRecurrentEvent(calendarAlmanach,
         null, "", instanceId, true);
     if (events != null) {
-      Iterator it = events.iterator();
+      Iterator<EventDetail> it = events.iterator();
       EventDetail eventDetail;
       int nb = 1;
       while (nb <= nbReturned && it.hasNext()) {
-        eventDetail = (EventDetail) it.next();
+        eventDetail = it.next();
         if (eventDetail.getStartDate().after(currentDay.getTime())) {
           result.add(eventDetail);
           nb++;

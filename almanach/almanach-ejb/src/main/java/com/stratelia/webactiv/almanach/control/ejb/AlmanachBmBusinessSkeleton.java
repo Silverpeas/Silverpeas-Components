@@ -31,6 +31,7 @@ import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
 
 import com.stratelia.webactiv.almanach.model.*;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 public interface AlmanachBmBusinessSkeleton {
 
@@ -42,7 +43,7 @@ public interface AlmanachBmBusinessSkeleton {
    * @param String [] of instanceIds
    * @return Collection of Events
    */
-  public Collection getMonthEvents(EventPK pk, java.util.Date date,
+  public Collection<EventDetail> getMonthEvents(EventPK pk, java.util.Date date,
       String[] instanceIds) throws RemoteException;
 
   /**
@@ -52,14 +53,14 @@ public interface AlmanachBmBusinessSkeleton {
    * @param date
    * @return Collection of Events
    */
-  public Collection getMonthEvents(EventPK pk, java.util.Date date)
+  public Collection<EventDetail> getMonthEvents(EventPK pk, java.util.Date date)
       throws RemoteException;
 
   /**
    * this method provide a collection of event
    * @param : EventPk pk, to obtain the space and component @ return: java.util.Collection
    */
-  public Collection getAllEvents(EventPK pk) throws RemoteException;
+  public Collection<EventDetail> getAllEvents(EventPK pk) throws RemoteException;
 
   /**
    * Get all events of instanceId Almanachs
@@ -67,10 +68,10 @@ public interface AlmanachBmBusinessSkeleton {
    * @param String [] of instanceIds
    * @return Collection of Events
    */
-  public Collection getAllEvents(EventPK pk, String[] instanceIds)
+  public Collection<EventDetail> getAllEvents(EventPK pk, String[] instanceIds)
       throws RemoteException;
 
-  public Collection getEvents(Collection pks) throws RemoteException;
+  public Collection<EventDetail> getEvents(Collection<EventPK> pks) throws RemoteException;
 
   /**
    * addEvent() add an event entry in the database
@@ -96,7 +97,7 @@ public interface AlmanachBmBusinessSkeleton {
 
   public void createIndex(EventDetail detail) throws RemoteException;
 
-  public Collection getNextEvents(String instanceId, int nbReturned)
+  public Collection<EventDetail> getNextEvents(String instanceId, int nbReturned)
       throws RemoteException;
 
   public void addPeriodicity(Periodicity periodicity) throws RemoteException;
@@ -110,13 +111,13 @@ public interface AlmanachBmBusinessSkeleton {
   public void addPeriodicityException(PeriodicityException exception)
       throws RemoteException;
 
-  public Collection getListPeriodicityException(String periodicityId)
+  public Collection<PeriodicityException> getListPeriodicityException(String periodicityId)
       throws RemoteException;
 
   public void removeAllPeriodicityException(String periodicityId)
       throws RemoteException;
 
-  public Calendar getICal4jCalendar(Collection events, String language)
+  public Calendar getICal4jCalendar(Collection<EventDetail> events, String language)
       throws RemoteException;
 
   public Collection<EventDetail> getListRecurrentEvent(Calendar calendarAlmanach,
@@ -132,7 +133,7 @@ public interface AlmanachBmBusinessSkeleton {
   /**************************************************************************************/
   /* Interface - Fichiers joints */
   /**************************************************************************************/
-  public Collection getAttachments(EventPK eventPK) throws RemoteException;
+  public Collection<AttachmentDetail> getAttachments(EventPK eventPK) throws RemoteException;
 
   public String getHTMLPath(EventPK eventPK) throws RemoteException;
 }

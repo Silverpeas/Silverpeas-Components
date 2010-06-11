@@ -30,15 +30,14 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.util.DateUtil;
 
-public class EventDetailBeginDateComparatorAsc implements Comparator {
+public class EventDetailBeginDateComparatorAsc implements Comparator<EventDetail> {
   static public EventDetailBeginDateComparatorAsc comparator = new EventDetailBeginDateComparatorAsc();
 
-  public int compare(Object o1, Object o2) {
+  public int compare(EventDetail e1, EventDetail e2) {
     int hour = -1;
     int minutes = -1;
 
     Calendar date1 = Calendar.getInstance();
-    EventDetail e1 = (EventDetail) o1;
     date1.setTime(e1.getStartDate());
 
     String startHour = e1.getStartHour(); // 12:30
@@ -50,7 +49,6 @@ public class EventDetailBeginDateComparatorAsc implements Comparator {
     }
 
     Calendar date2 = Calendar.getInstance();
-    EventDetail e2 = (EventDetail) o2;
     date2.setTime(e2.getStartDate());
     startHour = e2.getStartHour();
     if (StringUtil.isDefined(startHour)) {

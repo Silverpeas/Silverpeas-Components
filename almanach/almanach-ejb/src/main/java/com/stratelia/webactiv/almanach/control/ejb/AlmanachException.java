@@ -31,6 +31,8 @@ import com.stratelia.webactiv.util.exception.*;
 
 public class AlmanachException extends SilverpeasException {
 
+  private static final long serialVersionUID = 4170030551594235164L;
+
   public AlmanachException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }

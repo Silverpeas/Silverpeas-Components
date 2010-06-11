@@ -34,6 +34,8 @@ import com.stratelia.webactiv.util.*;
  */
 public class EventPK extends WAPrimaryKey implements Serializable {
 
+  private static final long serialVersionUID = 7561613372489097714L;
+
   /**
    * Constructor which set only the id
    * 

@@ -29,6 +29,7 @@ import com.stratelia.webactiv.persistence.SilverpeasBean;
 
 public class PeriodicityException extends SilverpeasBean {
 
+  private static final long serialVersionUID = 8352364938259264700L;
   private int periodicityId;
   private Date beginDateException;
   private Date endDateException;

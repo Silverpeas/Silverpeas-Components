@@ -30,6 +30,8 @@ package com.stratelia.webactiv.almanach.control.ejb;
  */
 public class AlmanachPrivateException extends Exception {
 
+  private static final long serialVersionUID = -5975156729556346322L;
+
   /** Creates new AlmanachException */
   public AlmanachPrivateException(String message) {
     super(message);

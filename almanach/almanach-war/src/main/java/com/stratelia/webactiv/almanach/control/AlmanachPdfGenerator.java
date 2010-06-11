@@ -116,7 +116,7 @@ public class AlmanachPdfGenerator {
             + almanach.getCurrentDay().get(Calendar.YEAR), titleFont);
         Chapter chapter = new Chapter(cTitle, 1);
 
-        Collection events = almanach.getListRecurrentEvent(mode.equals(PDF_YEAR_EVENTSONLY));
+        Collection<EventDetail> events = almanach.getListRecurrentEvent(mode.equals(PDF_YEAR_EVENTSONLY));
 
         generateAlmanach(chapter, almanach, events, mode);
 

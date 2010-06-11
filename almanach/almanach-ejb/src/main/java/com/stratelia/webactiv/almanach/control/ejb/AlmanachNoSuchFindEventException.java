@@ -30,6 +30,8 @@ package com.stratelia.webactiv.almanach.control.ejb;
  */
 public class AlmanachNoSuchFindEventException extends AlmanachPrivateException {
 
+  private static final long serialVersionUID = 557278354321554228L;
+
   /** Creates new AlmanachNoSuchFindEvent */
 
   public AlmanachNoSuchFindEventException(String message) {

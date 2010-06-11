@@ -23,17 +23,15 @@
  */
 package com.stratelia.webactiv.almanach;
 
-//import com.stratelia.webactiv.beans.admin.*;
-import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
-import com.stratelia.webactiv.applicationIndexer.control.*;
-import com.stratelia.webactiv.almanach.control.*;
-import com.stratelia.webactiv.almanach.model.*;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import java.util.Iterator;
-import com.stratelia.silverpeas.silvertrace.*;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
+import com.stratelia.webactiv.almanach.model.EventDetail;
+import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 
 public class AlmanachIndexer implements ComponentIndexerInterface {
 
@@ -51,9 +49,9 @@ public class AlmanachIndexer implements ComponentIndexerInterface {
     SilverTrace.info("almanach", "AlmanachIndexer.indexEvents()",
         "root.MSG_GEN_ENTER_METHOD");
 
-    Iterator it = scc.getAllEvents().iterator();
+    Iterator<EventDetail> it = scc.getAllEvents().iterator();
     while (it.hasNext()) {
-      EventDetail event = (EventDetail) (it.next());
+      EventDetail event = it.next();
 
       // index event itself
       scc.indexEvent(event);

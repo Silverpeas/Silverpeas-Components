@@ -38,6 +38,9 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.silverpeas.peasUtil.GoTo;
 
 public class GoToEvent extends GoTo {
+  
+  private static final long serialVersionUID = -3086487345543160152L;
+
   public String getDestination(String eventId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     EventPK eventPK = new EventPK(eventId);

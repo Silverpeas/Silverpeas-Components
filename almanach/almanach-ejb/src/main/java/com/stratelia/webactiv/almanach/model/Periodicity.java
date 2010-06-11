@@ -29,6 +29,7 @@ import com.stratelia.webactiv.persistence.SilverpeasBean;
 
 public class Periodicity extends SilverpeasBean {
 
+  private static final long serialVersionUID = -5666462083577316755L;
   public static final int UNITY_DAY = 1;
   public static final int UNITY_WEEK = 2;
   public static final int UNITY_MONTH = 3;
