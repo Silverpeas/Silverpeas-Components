@@ -395,7 +395,7 @@ function zipPublication()
 				{
                 	operationPane.addOperation(deletePubliSrc, resources.getString("GML.delete"), "javaScript:pubDeleteConfirm()");
                 }
-				operationPane.addOperation("#", "Ajouter un fichier", "javaScript:AddAttachment()");
+				operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javaScript:AddAttachment()");
 				
 				if (kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone())
 				{
