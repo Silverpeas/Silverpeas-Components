@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.silverpeas.components</groupId>
+    <artifactId>formsonline</artifactId>
+    <version>5.2-SNAPSHOT</version>
+  </parent>
+	
+  <groupId>com.silverpeas.components.formsonline</groupId>
+  <artifactId>formsonline-jar</artifactId>
+  <packaging>jar</packaging>
+  <name>Lib formsonline</name>
+	
+  <dependencies>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>lib-core</artifactId>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>formtemplate</artifactId>
+      <version>${core.version}</version>
+      <classifier>client</classifier>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+</project>
