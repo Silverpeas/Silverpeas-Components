@@ -312,11 +312,17 @@ public class ProcessManagerBmEJB implements SessionBean {
         getFieldTemplates()) {
 
       String fieldType = fieldTemplate.getTypeName();
+      // special case : pdc is inserted as a text value
+      if ("pdc".equals(fieldType)) {
+        fieldType = "text";
+      }
       String fieldName = fieldTemplate.getFieldName();
 
-      if (((typeName == null) || fieldType.equals(typeName))
+      if (
+          ((typeName == null) || fieldType.equals(typeName))
           && (fieldName.equals(name) || ((name == null) && fieldTemplate.
-          isMandatory()))) {
+          isMandatory()))
+          ) {
 
         try {
           return data.getField(fieldName);
