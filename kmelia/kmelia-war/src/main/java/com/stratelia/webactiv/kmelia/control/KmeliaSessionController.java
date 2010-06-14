@@ -643,7 +643,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return invisibleTabs;
   }
 
-  @SuppressWarnings("unchecked")
   public String generatePdf(String pubID) {
     SilverTrace.info("kmelia", "KmeliaSessionControl.generatePdf", "root.MSG_ENTRY_METHOD");
     String nameFilePdf = "";
@@ -1604,14 +1603,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         Collections.sort(publicationsToSort, new PubliImportanceComparatorDesc());
         break;
       case 4:
-        UserPublication pubs[] = new UserPublication[publications.size()];
-        Iterator<UserPublication> iterator = publications.iterator();
-        int p = 0;
-        while (iterator.hasNext()) {
-          pubs[p] = iterator.next();
-          p++;
-        }
-        publicationsToSort = sortByTitle(pubs);
+        publicationsToSort = sortByTitle(publicationsToSort);
         break;
       case 5:
         Collections.sort(publicationsToSort, new PubliCreationDateComparatorAsc());
@@ -1619,6 +1611,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       case 6:
         Collections.sort(publicationsToSort, new PubliCreationDateComparatorAsc());
         Collections.reverse(publicationsToSort);
+        break;
+      case 7:
+        publicationsToSort = sortByDescription(publicationsToSort);
         break;
       default:
         Collections.sort(publicationsToSort, new PubliUpdateDateComparatorAsc());
@@ -1629,12 +1624,40 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return publicationsToSort;
   }
 
-  private List<UserPublication> sortByTitle(UserPublication[] pubs) {
+  private List<UserPublication> sortByTitle(List<UserPublication> publications) {
+    UserPublication[] pubs = publications.toArray(new UserPublication[publications.size()]);
     for (int i = pubs.length; --i >= 0;) {
       boolean swapped = false;
       for (int j = 0; j < i; j++) {
         if (pubs[j].getPublication().getName(getCurrentLanguage()).compareToIgnoreCase(
             pubs[j + 1].getPublication().getName(getCurrentLanguage())) > 0) {
+          UserPublication T = pubs[j];
+          pubs[j] = pubs[j + 1];
+          pubs[j + 1] = T;
+          swapped = true;
+        }
+      }
+      if (!swapped) {
+        break;
+      }
+    }
+    return Arrays.asList(pubs);
+  }
+
+  private List<UserPublication> sortByDescription(List<UserPublication> publications) {
+    UserPublication[] pubs = publications.toArray(new UserPublication[publications.size()]);
+    for (int i = pubs.length; --i >= 0;) {
+      boolean swapped = false;
+      for (int j = 0; j < i; j++) {
+        String p1 = pubs[j].getPublication().getDescription(getCurrentLanguage());
+        if (p1 == null) {
+          p1 = "";
+        }
+        String p2 = pubs[j + 1].getPublication().getDescription(getCurrentLanguage());
+        if (p2 == null) {
+          p2 = "";
+        }
+        if (p1.compareToIgnoreCase(p2) > 0) {
           UserPublication T = pubs[j];
           pubs[j] = pubs[j + 1];
           pubs[j + 1] = T;

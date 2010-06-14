@@ -631,28 +631,30 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   void displaySortingListBox(ResourcesWrapper resources, Writer out)
       throws IOException {
-    out.write("<select name=\"sortBy\" onChange=\"javascript:sortGoTo(this.selectedIndex);\">");
+    out.write("<select name=\"sortBy\" id=\"sortingList\" onChange=\"javascript:sortGoTo(this.selectedIndex);\">");
     out.write("<option selected=\"selected\">"
         + EncodeHelper.escapeXml(resources.getString("SortBy")) + "</option>");
     out.write("<option>-------------------------------</option>");
-    out.write("<option value=\"1\">"
+    out.write("<option value=\"1\" id=\"sort1\">"
         + EncodeHelper.escapeXml(resources.getString("DateAsc")) + "</option>");
-    out.write("<option value=\"2\">"
+    out.write("<option value=\"2\" id=\"sort2\">"
         + EncodeHelper.escapeXml(resources.getString("DateDesc"))
         + "</option>");
-    out.write("<option value=\"5\">"
+    out.write("<option value=\"5\" id=\"sort5\">"
         + EncodeHelper.escapeXml(resources.getString("CreateDateAsc")) + "</option>");
-    out.write("<option value=\"6\">"
+    out.write("<option value=\"6\" id=\"sort6\">"
         + EncodeHelper.escapeXml(resources.getString("CreateDateDesc"))
         + "</option>");
-    out.write("<option value=\"0\">"
+    out.write("<option value=\"0\" id=\"sort0\">"
         + EncodeHelper.escapeXml(resources.getString("PubAuteur"))
         + "</option>");
     if (!"no".equals(resources.getSetting("showImportance"))) {
-      out.write("<option value=\"3\">"
+      out.write("<option value=\"3\" id=\"sort3\">"
           + EncodeHelper.escapeXml(resources.getString("PubImportance")) + "</option>");
     }
-    out.write("<option value=\"4\">" + EncodeHelper.escapeXml(resources.getString("PubTitre"))
+    out.write("<option value=\"4\" id=\"sort4\">" + EncodeHelper.escapeXml(resources.getString("PubTitre"))
+        + "</option>");
+    out.write("<option value=\"7\" id=\"sort7\">" + EncodeHelper.escapeXml(resources.getString("PubDescription"))
         + "</option>");
     out.write("</select>");
     out.write("&#160;");
