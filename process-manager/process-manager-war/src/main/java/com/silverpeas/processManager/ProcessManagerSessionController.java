@@ -532,12 +532,21 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       }
     }
 
+    SilverTrace.debug("processManager",
+        "ProcessManagerSessionController.getDestination",
+        "root.MSG_GEN_PARAM_VALUE", "current Role : "+currentRole);
+
     UserInRole[] userInRoles = qualifiedUsers.getUserInRoles();
     UserInRole userInRole = null;
     for (int u = 0; u < userInRoles.length; u++) {
       userInRole = userInRoles[u];
       roles.add(userInRole.getRoleName());
     }
+
+    SilverTrace.debug("processManager",
+        "ProcessManagerSessionController.getDestination",
+        "root.MSG_GEN_PARAM_VALUE", "roles avant élagage : "+roles);
+    
     if (useCurrentRole) {
       if (roles.contains(currentRole)) {
         roles.clear();
@@ -545,7 +554,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       } else {
         roles.clear();
       }
+      SilverTrace.debug("processManager",
+          "ProcessManagerSessionController.getDestination",
+          "root.MSG_GEN_PARAM_VALUE", "roles après élagage : "+roles);
     }
+
     String[] userIds = getOrganizationController().getUsersIdsByRoleNames(
         getComponentId(), roles);
     for (int u = 0; u < userIds.length; u++) {

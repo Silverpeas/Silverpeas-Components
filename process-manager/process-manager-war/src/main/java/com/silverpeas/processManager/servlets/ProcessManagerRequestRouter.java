@@ -708,7 +708,13 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
             while (actions.hasNext()) {
               AllowedAction action = actions.next();
               QualifiedUsers qualifiedUsers = action.getAction().getAllowedUsers();
-              if (session.getUsers(qualifiedUsers, true).contains(session.getUserId())) {
+              
+              List<String> grantedUserIds = session.getUsers(qualifiedUsers, true);
+              SilverTrace.debug("processManager",
+                  "ProcessManagerRequestRouter.getDestination",
+                  "root.MSG_GEN_PARAM_VALUE", "granted user ids for action "+action.getAction().getName()+" : "+grantedUserIds);
+              
+              if (grantedUserIds.contains(session.getUserId())) {
                 filteredActions.addAllowedAction(action);
               }
             }
