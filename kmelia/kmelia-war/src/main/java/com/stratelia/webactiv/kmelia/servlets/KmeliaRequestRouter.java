@@ -54,7 +54,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
@@ -220,6 +219,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         request.setAttribute("LinkedPathString", kmelia.getSessionPath());
         request.setAttribute("Treeview", kmelia.getTreeview());
         request.setAttribute("DisplayNBPublis", Boolean.valueOf(kmelia.displayNbPublis()));
+        request.setAttribute("DisplaySearch", new Boolean(kmelia.isSearchOnTopicsEnabled()));
 
         // rechercher si le theme a un descripteur
         request.setAttribute("HaveDescriptor", Boolean.valueOf(kmelia
@@ -357,8 +357,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
         String topicId = request.getParameter("Id");
         List<NodeDetail> path = kmelia.getTopicPath(topicId);
-        request.setAttribute("Path", displayPath(path, false, 3, kmelia.getCurrentLanguage()));
-        request.setAttribute("PathLinked", displayPath(path, true, 3, kmelia.getCurrentLanguage()));
+        request.setAttribute("Path", kmelia.displayPath(path, false, 3));
+        request.setAttribute("PathLinked", kmelia.displayPath(path, true, 3));
         request.setAttribute("Translation", kmelia.getCurrentLanguage());
         request.setAttribute("PopupDisplay", Boolean.TRUE);
         request
@@ -382,8 +382,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         request.setAttribute("NodeDetail", node);
 
         List<NodeDetail> path = kmelia.getTopicPath(id);
-        request.setAttribute("Path", displayPath(path, false, 3, kmelia.getCurrentLanguage()));
-        request.setAttribute("PathLinked", displayPath(path, true, 3, kmelia.getCurrentLanguage()));
+        request.setAttribute("Path", kmelia.displayPath(path, false, 3));
+        request.setAttribute("PathLinked", kmelia.displayPath(path, true, 3));
         request.setAttribute("Translation", kmelia.getCurrentLanguage());
         request.setAttribute("PopupDisplay", Boolean.TRUE);
         request
@@ -1927,13 +1927,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
       // on a pas d'image, regarder s'il y a une provenant de la galerie
       String nameImageFromGallery = FileUploadUtil.getParameter(parameters, "valueImageGallery");
       {
-        if (StringUtil.isDefined(nameImageFromGallery))
-        {
+        if (StringUtil.isDefined(nameImageFromGallery)) {
           result = new ArrayList<String>();
           result.add(nameImageFromGallery);
           result.add("image/jpeg");
         }
-      }  
+      }
     }
     return result;
   }
@@ -2137,55 +2136,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
     } // publication
 
     Collection<NodeDetail> pathColl = currentTopic.getPath();
-    String linkedPathString = displayPath(pathColl, true, 3, kmeliaSC.getCurrentLanguage());
-    String pathString = displayPath(pathColl, false, 3, kmeliaSC.getCurrentLanguage());
+    String linkedPathString = kmeliaSC.displayPath(pathColl, true, 3);
+    String pathString = kmeliaSC.displayPath(pathColl, false, 3);
     kmeliaSC.setSessionPath(linkedPathString);
     kmeliaSC.setSessionPathString(pathString);
-  }
-
-  private String displayPath(Collection<NodeDetail> path, boolean linked, int beforeAfter,
-      String translation) {
-    StringBuilder linkedPathString = new StringBuilder();
-    StringBuilder pathString = new StringBuilder();
-    int nbItemInPath = path.size();
-    Iterator<NodeDetail> iterator = path.iterator();
-    boolean alreadyCut = false;
-    int i = 0;
-    NodeDetail nodeInPath = null;
-    while (iterator.hasNext()) {
-      nodeInPath = iterator.next();
-      if ((i <= beforeAfter) || (i + beforeAfter >= nbItemInPath - 1)) {
-        if (!nodeInPath.getNodePK().getId().equals("0")) {
-          String nodeName;
-          if (translation != null) {
-            nodeName = nodeInPath.getName(translation);
-          } else {
-            nodeName = nodeInPath.getName();
-          }
-          linkedPathString.append("<a href=\"javascript:onClick=topicGoTo('").append(
-              nodeInPath.getNodePK().getId()).append("')\">").append(
-              EncodeHelper.javaStringToHtmlString(nodeName)).append("</a>");
-          pathString.append(EncodeHelper.javaStringToHtmlString(nodeName));
-          if (iterator.hasNext()) {
-            linkedPathString.append(" > ");
-            pathString.append(" > ");
-          }
-        }
-      } else {
-        if (!alreadyCut) {
-          linkedPathString.append(" ... > ");
-          pathString.append(" ... > ");
-          alreadyCut = true;
-        }
-      }
-      i++;
-    }
-    nodeInPath = null;
-    if (linked) {
-      return linkedPathString.toString();
-    } else {
-      return pathString.toString();
-    }
   }
 
   private void putXMLDisplayerIntoRequest(PublicationDetail pubDetail,

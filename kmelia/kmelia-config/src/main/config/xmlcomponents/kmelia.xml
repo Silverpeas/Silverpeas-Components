@@ -601,5 +601,18 @@
 			<ParameterHelpEn>This feature allows to indicate the identifier of PDC axis's used as glossary for the current Theme tracker.</ParameterHelpEn>
 	   	</ParameterHelp>
     </Parameter>
+    <Parameter>
+        <ParameterName>searchOnTopics</ParameterName>
+        <ParameterLabel>Recherche sur thèmes</ParameterLabel>
+        <ParameterValue>no</ParameterValue>
+        <ParameterMandatory>Y</ParameterMandatory>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterType>checkbox</ParameterType>
+	    <ParameterOrder>41</ParameterOrder>
+	   	<ParameterHelp>
+			<ParameterHelpFr>Ce paramètre permet d'afficher une zone de recherche pour chaque thème.</ParameterHelpFr>
+			<ParameterHelpEn>This feature allows to display a search box in each topic.</ParameterHelpEn>
+	   	</ParameterHelp>
+    </Parameter>
   </Parameters>
 </WAComponent>

@@ -43,6 +43,7 @@ String  translation 	= (String) request.getAttribute("Language");
 boolean	isGuest			= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
 boolean displayNBPublis = ((Boolean) request.getAttribute("DisplayNBPublis")).booleanValue();
 Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled");
+Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
 
 TopicDetail currentTopic 		= (TopicDetail) request.getAttribute("CurrentTopic");
 String 		pathString 			= (String) request.getAttribute("PathString");
@@ -415,11 +416,11 @@ function uploadCompleted(s)
 function doPagination(index)
 {
 	var paramToValidate = "0";
-	if (getCurrentNodeId() == "tovalidate")
-	{
+	if (getCurrentNodeId() == "tovalidate") {
 		paramToValidate = "1";
 	}
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',ToValidate:paramToValidate}, 
+	var topicQuery = getSearchQuery();
+	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',ToValidate:paramToValidate,Query:topicQuery}, 
 							function(data){
 								$('#pubList').html(data);
 							},"html");
@@ -428,8 +429,9 @@ function doPagination(index)
 function sortGoTo(selectedIndex) {
     closeWindows();
 	if (selectedIndex != 0 && selectedIndex != 1) {
+		var topicQuery = getSearchQuery();
 		var sort = document.publicationsForm.sortBy[selectedIndex].value;
-		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:0,Sort:sort,ComponentId:'<%=componentId%>'}, 
+		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:0,Sort:sort,ComponentId:'<%=componentId%>',Query:topicQuery}, 
 							function(data){
 								$('#pubList').html(data);
 							},"html");
@@ -467,9 +469,49 @@ function getHeight() {
 	  return myHeight;
 }
 
+function searchInTopic()
+{
+	var topicQuery = getSearchQuery();
+	if (topicQuery != "" && topicQuery.length > 1) {
+		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:0,Query:topicQuery,ComponentId:'<%=componentId%>'}, 
+				function(data){
+					$('#pubList').html(data);
+				},"html");
+	}
+	return;
+}
+
+function checkSubmitToSearch(ev)
+{
+	var touche = ev.keyCode;
+	if (touche == 13) {
+		searchInTopic();
+	}
+}
+
+function getSearchQuery()
+{
+	var topicQuery = "";
+	if (document.getElementById("topicQuery") != null) {
+		topicQuery = document.getElementById("topicQuery").value;
+	}
+	return topicQuery;
+}
+
+function clearSearchQuery()
+{
+	try {
+		if (document.getElementById("topicQuery") != null) {
+			document.getElementById("topicQuery").value = "";
+		}
+	} catch (e) {
+	}
+}
+
 </script>
 </HEAD>
-<BODY onUnload="closeWindows()" class="yui-skin-sam">
+<BODY id="kmelia" onUnload="closeWindows()" class="yui-skin-sam">
+<div id="<%=componentId %>">
 <%
         namePath = "";
 
@@ -512,6 +554,17 @@ function getHeight() {
 			<div class="yui-g">
 				<div id="treeDiv1"></div>
 				<div id="rightSide">
+					<% if (displaySearch.booleanValue()) { 
+					  	Board board = gef.getBoard();
+						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false);
+						out.println("<div id=\"searchZone\">");
+						out.println(board.printBefore());
+						out.println("<table id=\"searchLine\">");
+						out.println("<tr><td><div id=\"searchLabel\">"+resources.getString("kmelia.SearchInTopics")+"</div>&nbsp;<input type=\"text\" id=\"topicQuery\" size=\"50\" onkeydown=\"checkSubmitToSearch(event)\"/></td><td>"+searchButton.print()+"</td></tr>");
+						out.println("</table>");
+						out.println(board.printAfter());
+						out.println("</div>");
+					} %>
 					<div id="topicDescription"></div>
 				<%
 					  if (dragAndDropEnable)
@@ -1308,7 +1361,7 @@ function loadNodeData(node, fnLoadComplete)  {
 		var node = oTreeView.getNodeByProperty("labelElId", id);
 		//alert(node.data.name);
 		
-		//node.expand();
+		clearSearchQuery();
 		
 		if (id != "1" && id != "tovalidate")
 		{
@@ -1332,6 +1385,7 @@ function loadNodeData(node, fnLoadComplete)  {
 			$("#DnD").css({'display':'none'}); //hide dropzone
 			$("#menutoggle").css({'display':'none'}); //hide operations
 			$("#footer").css({'visibility':'hidden'}); //hide footer
+			$("#searchZone").css({'display':'none'}); //hide search
 
 			if (id == "tovalidate")
 			{
@@ -1349,6 +1403,11 @@ function loadNodeData(node, fnLoadComplete)  {
 			displayPublications(id);
 			displayPath(id);
 			getProfile(id);
+			if (id != "0" || <%=kmeliaScc.getNbPublicationsOnRoot() == 0%>) {
+				$("#searchZone").css({'display':'block'});
+			} else if (<%=kmeliaScc.getNbPublicationsOnRoot() != 0%>) {
+				$("#searchZone").css({'display':'none'}); //hide search
+			}
 		}
 
 		//display topic information
@@ -1609,8 +1668,13 @@ function closeMessage()
 
         var col3 = Dom.get('ygtv0');
         Dom.setStyle(col3, 'height', getHeight()-120 + 'px');
+
+        <% if (displaySearch.booleanValue()) { %>
+    		document.getElementById("topicQuery").focus();
+    	<% } %>
     });
 })();
 </script>
+</div>
 </BODY>
 </HTML>
