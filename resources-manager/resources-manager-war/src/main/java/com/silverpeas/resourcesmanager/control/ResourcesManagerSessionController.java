@@ -458,10 +458,10 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
       String user = orga.getUserDetail(getUserId()).getDisplayedName();
 
       ResourceLocator message =
-          new ResourceLocator("com.silverpeas.resourcesManager.multilang.resourcesManagerBundle",
+          new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
           "fr");
       ResourceLocator message_en =
-          new ResourceLocator("com.silverpeas.resourcesManager.multilang.resourcesManagerBundle",
+          new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
           "en");
 
       StringBuffer messageBody = new StringBuffer();
@@ -889,10 +889,10 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     String user = orga.getUserDetail(getUserId()).getDisplayedName();
 
     ResourceLocator message =
-        new ResourceLocator("com.silverpeas.resourcesManager.multilang.resourcesManagerBundle",
+        new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
         "fr");
     ResourceLocator message_en =
-        new ResourceLocator("com.silverpeas.resourcesManager.multilang.resourcesManagerBundle",
+        new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
         "en");
 
     StringBuffer messageBody = new StringBuffer();
@@ -940,10 +940,10 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     String user = orga.getUserDetail(getUserId()).getDisplayedName();
 
     ResourceLocator message =
-        new ResourceLocator("com.silverpeas.resourcesManager.multilang.resourcesManagerBundle",
+        new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
         "fr");
     ResourceLocator message_en =
-        new ResourceLocator("com.silverpeas.resourcesManager.multilang.resourcesManagerBundle",
+        new ResourceLocator("com.silverpeas.resourcesmanager.multilang.resourcesManagerBundle",
         "en");
 
     ResourceDetail resource = getResource(resourceId);
