@@ -550,7 +550,14 @@
 
             
             if (forumActive) 
-                {
+            {
+	            if (!isReader)
+	            {
+				         %> 
+				          <a href="javascript:replyMessage(<%=currentId%>)"><img
+				           src="<%=context%>/util/icons/reply.gif" align="middle" border="0" alt="<%=resource.getString("replyMessage")%>" title="<%=resource.getString("replyMessage")%>"></a>&nbsp;
+				         <%
+	            }
               if (userId.equals(author) || isAdmin || isModerator)
               {
                 if (STATUS_FOR_VALIDATION.equals(status)) {
@@ -564,14 +571,11 @@
 
                 }
 %>
-                                                <a href="javascript:replyMessage(<%=currentId%>)"><img
-                                                    src="<%=context%>/util/icons/reply.gif" align="middle" border="0" alt="<%=resource.getString("replyMessage")%>" title="<%=resource.getString("replyMessage")%>"></a>&nbsp;<%
-%>
-                                                <a href="javascript:editMessage(<%=currentId%>)"><img
-                                                    src="<%=context%>/util/icons/update.gif" align="middle" border="0" alt="<%=resource.getString("editMessage")%>" title="<%=resource.getString("editMessage")%>"></a>&nbsp;
-                                                <a href="javascript:deleteMessage(<%=currentId%>, <%=parentId%>, true)"><img
-                                                    src="<%=context%>/util/icons/delete.gif" align="middle" border="0" alt="<%=resource.getString("deleteMessage")%>" title="<%=resource.getString("deleteMessage")%>"></a>&nbsp;<%
-                        }
+                 <a href="javascript:editMessage(<%=currentId%>)"><img
+                   src="<%=context%>/util/icons/update.gif" align="middle" border="0" alt="<%=resource.getString("editMessage")%>" title="<%=resource.getString("editMessage")%>"></a>&nbsp;
+                 <a href="javascript:deleteMessage(<%=currentId%>, <%=parentId%>, true)"><img
+                   src="<%=context%>/util/icons/delete.gif" align="middle" border="0" alt="<%=resource.getString("deleteMessage")%>" title="<%=resource.getString("deleteMessage")%>"></a>&nbsp;<%
+                }
                   
                }
             }

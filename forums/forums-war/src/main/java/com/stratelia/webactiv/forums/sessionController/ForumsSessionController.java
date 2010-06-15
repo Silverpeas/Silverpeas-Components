@@ -82,9 +82,9 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
  */
 public class ForumsSessionController extends AbstractComponentSessionController {
 
-  private static final String MAIL_TYPE = "default";
+  public static final String MAIL_TYPE = "default";
 
-  private static final String STAT_TYPE = "ForumMessage";
+  public static final String STAT_TYPE = "ForumMessage";
 
   /** Le Business Manager */
   private ForumsBM forumsBM;
@@ -113,9 +113,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   private String mailType = MAIL_TYPE;
   private boolean resizeFrame = false;
 
-  private static final String STATUS_VALIDATE = "V";
-  private static final String STATUS_FOR_VALIDATION = "A";
-  private static final String STATUS_REFUSED = "R";
+  public static final String STATUS_VALIDATE = "V";
+  public static final String STATUS_FOR_VALIDATION = "A";
+  public static final String STATUS_REFUSED = "R";
 
   // Constructeur
   public ForumsSessionController(MainSessionController mainSessionCtrl,
@@ -126,16 +126,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
     deployedMessages = new Vector();
     deployedForums = new Vector();
-
-    if (forumsBM == null) {
-      try {
-        ForumsBMHome forumsBMHome = (ForumsBMHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBMHome.class);
-        forumsBM = forumsBMHome.create();
-      } catch (Exception e) {
-        throw new EJBException(e.getMessage());
-      }
-    }
   }
 
   public NotificationSender getNotificationSender() {
@@ -147,7 +137,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public Forum[] getForumsList() {
     try {
-      ArrayList forums = forumsBM.getForums(new ForumPK(getComponentId(),
+      List forums = getForumsBM().getForums(new ForumPK(getComponentId(),
           getSpaceId()));
       return (Forum[]) forums.toArray(new Forum[forums.size()]);
     } catch (RemoteException re) {
@@ -163,7 +153,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     Forum[] result = new Forum[0];
     ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId());
     try {
-      ArrayList forums = forumsBM.getForumsByCategory(forumPK, categoryId);
+      List forums = getForumsBM().getForumsByCategory(forumPK, categoryId);
       result = (Forum[]) forums.toArray(new Forum[forums.size()]);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
@@ -176,7 +166,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public Forum getForum(int forumId) {
     try {
-      return forumsBM.getForum(getForumPK(forumId));
+      return getForumsBM().getForum(getForumPK(forumId));
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -184,7 +174,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public String getForumName(int forumId) {
     try {
-      return forumsBM.getForumName(forumId);
+      return getForumsBM().getForumName(forumId);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -192,7 +182,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public boolean isForumActive(int forumId) {
     try {
-      return forumsBM.isForumActive(forumId);
+      return getForumsBM().isForumActive(forumId);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -200,7 +190,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public int getForumParentId(int forumId) {
     try {
-      return forumsBM.getForumParentId(forumId);
+      return getForumsBM().getForumParentId(forumId);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -209,7 +199,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public int[] getForumSonsIds(int forumId) {
     int[] sonsIds = new int[0];
     try {
-      ArrayList ids = forumsBM.getForumSonsIds(getForumPK(forumId));
+      ArrayList ids = getForumsBM().getForumSonsIds(getForumPK(forumId));
       int n = ids.size();
       sonsIds = new int[n];
       for (int i = 0; i < n; i++) {
@@ -223,7 +213,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public int getForumSonsNb(int forumId) {
     try {
-      return forumsBM.getForumSonsIds(getForumPK(forumId)).size();
+      return getForumsBM().getForumSonsIds(getForumPK(forumId)).size();
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -264,7 +254,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId(), String
         .valueOf(id));
     try {
-      forumsBM.lockForum(forumPK, level);
+      getForumsBM().lockForum(forumPK, level);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -274,7 +264,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId(), String
         .valueOf(id));
     try {
-      return forumsBM.unlockForum(forumPK, level);
+      return getForumsBM().unlockForum(forumPK, level);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -303,7 +293,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       if (!StringUtil.isDefined(categoryId)) {
         categoryId = null;
       }
-      return forumsBM.createForum(forumPK, truncateTextField(forumName),
+      return getForumsBM().createForum(forumPK, truncateTextField(forumName),
           truncateTextArea(forumDescription), forumCreator, forumParent,
           categoryId, keywords);
     } catch (RemoteException re) {
@@ -330,7 +320,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       String forumDescription, int forumParent, String categoryId,
       String keywords) {
     try {
-      forumsBM
+      getForumsBM()
           .updateForum(getForumPK(forumId), truncateTextField(forumName),
               truncateTextArea(forumDescription), forumParent, categoryId,
               keywords);
@@ -348,7 +338,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    */
   public void deleteForum(int forumId) {
     try {
-      forumsBM.deleteForum(getForumPK(forumId));
+      getForumsBM().deleteForum(getForumPK(forumId));
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -362,7 +352,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    */
   public void indexForum(int forumId) {
     try {
-      forumsBM.createIndex(getForumPK(forumId));
+      getForumsBM().createIndex(getForumPK(forumId));
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -377,47 +367,46 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    * @author frageade
    * @since 04 Octobre 2000
    */
+  @SuppressWarnings("unchecked")
   public Message[] getMessagesList(int forumId) {
     try {
-      Collection messages = forumsBM.getMessages(getForumPK(forumId));
-      return (Message[]) messages.toArray(new Message[messages.size()]);
+      Collection<Message> messages =
+          (Collection<Message>) getForumsBM().getMessages(getForumPK(forumId));
+      return messages.toArray(new Message[messages.size()]);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
   }
 
   public Message[] getMessagesList(int forumId, int messageId) throws ForumsException {
-    Vector messageList = new Vector();
+    List<Message> messageList = new ArrayList<Message>();
     Message[] messages = getMessagesList(forumId);
     int i = 0;
     boolean parentMessageFound = false;
-    int currentMessageId;
     while (i < messages.length && !parentMessageFound) {
       Message message = messages[i];
-      currentMessageId = message.getId();
-      if (isValidationActive() && (isModerator(getUserId(), forumId) ||
-          (!isModerator(getUserId(), forumId) && getModerators(forumId).size() != 0 && message
-              .getStatus().equals(STATUS_VALIDATE)))) {
-        if (messageId == currentMessageId) {
-          messageList.add(message);
-          parentMessageFound = true;
-        }
+      int currentMessageId = message.getId();
+      parentMessageFound = isVisible(message.getStatus(), forumId) && messageId == currentMessageId;
+      if (parentMessageFound) {
+        messageList.add(message);
       }
       i++;
     }
     fillMessageList(messageList, messages, messageId);
-    return (Message[]) messageList.toArray(new Message[messageList.size()]);
+    return messageList.toArray(new Message[messageList.size()]);
   }
 
-  private void fillMessageList(Vector messageList, Message[] messages,
+  protected boolean isVisible(String status, int forumId) throws ForumsException {
+    return isModerator(getUserId(), forumId) || STATUS_VALIDATE.equals(status);
+  }
+
+  private void fillMessageList(List<Message> messageList, Message[] messages,
       int messageId) throws ForumsException {
     for (int i = 0; i < messages.length; i++) {
       Message message = messages[i];
       int forumId = message.getForumId();
-      if (isValidationActive() &&
-          (isModerator(getUserId(), forumId) || "admin".equals(getUserRoleLevel()) ||
-          (!isModerator(getUserId(), forumId) && getModerators(forumId).size() != 0 && (message
-              .getStatus().equals(STATUS_VALIDATE)) || message.getAuthor().equals(getUserId())))) {
+      if (isVisible(message.getStatus(), forumId) || "admin".equals(getUserRoleLevel()) ||
+          message.getAuthor().equals(getUserId())) {
         if (message.getParentId() == messageId) {
           messageList.add(message);
           fillMessageList(messageList, messages, message.getId());
@@ -439,8 +428,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public Object[] getLastMessage(int forumId, int messageId) {
     try {
-      Message message = (messageId != -1 ? forumsBM.getLastMessage(
-          getForumPK(forumId), messageId, STATUS_VALIDATE) : forumsBM
+      Message message = (messageId != -1 ? getForumsBM().getLastMessage(
+          getForumPK(forumId), messageId, STATUS_VALIDATE) : getForumsBM()
           .getLastMessage(getForumPK(forumId), STATUS_VALIDATE));
       if (message != null) {
         UserDetail user = getUserDetail(message.getAuthor());
@@ -465,7 +454,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    */
   public int getNbSubjects(int forumId) {
     try {
-      return forumsBM.getNbMessages(forumId, typeSubjects, STATUS_VALIDATE);
+      return getForumsBM().getNbMessages(forumId, typeSubjects, STATUS_VALIDATE);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -480,7 +469,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    */
   public int getNbMessages(int forumId) {
     try {
-      return forumsBM.getNbMessages(forumId, typeMessages, STATUS_VALIDATE);
+      return getForumsBM().getNbMessages(forumId, typeMessages, STATUS_VALIDATE);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -488,7 +477,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public int getAuthorNbMessages(String userId) {
     try {
-      return forumsBM.getAuthorNbMessages(userId, STATUS_VALIDATE);
+      return getForumsBM().getAuthorNbMessages(userId, STATUS_VALIDATE);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -496,7 +485,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public int getNbResponses(int forumId, int messageId) {
     try {
-      return forumsBM.getNbResponses(forumId, messageId, STATUS_VALIDATE);
+      return getForumsBM().getNbResponses(forumId, messageId, STATUS_VALIDATE);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -511,7 +500,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    */
   public Message getMessage(int messageId) {
     try {
-      return forumsBM.getMessage(getMessagePK(messageId));
+      return getForumsBM().getMessage(getMessagePK(messageId));
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -519,7 +508,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public String getMessageTitle(int messageId) {
     try {
-      return forumsBM.getMessageTitle(messageId);
+      return getForumsBM().getMessageTitle(messageId);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -527,7 +516,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public int getMessageParentId(int messageId) {
     try {
-      return forumsBM.getMessageParentId(messageId);
+      return getForumsBM().getMessageParentId(messageId);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -559,7 +548,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
         status = STATUS_VALIDATE;
       }
       // creation du message dans la base
-      messageId = forumsBM.createMessage(messagePK, truncateTextField(title),
+      messageId = getForumsBM().createMessage(messagePK, truncateTextField(title),
           author, null, forumId, parentId, text, keywords, status);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
@@ -602,7 +591,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
           status = STATUS_VALIDATE;
         }
       }
-      forumsBM.updateMessage(messagePK, truncateTextField(title), text,
+      getForumsBM().updateMessage(messagePK, truncateTextField(title), text,
           getUserId(), status);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
@@ -627,7 +616,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public void updateMessageKeywords(int messageId, String keywords) {
     try {
-      forumsBM.updateMessageKeywords(getMessagePK(messageId), keywords);
+      getForumsBM().updateMessageKeywords(getMessagePK(messageId), keywords);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -800,7 +789,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    */
   public void indexMessage(int messageId) {
     try {
-      forumsBM.createIndex(getMessagePK(messageId));
+      getForumsBM().createIndex(getMessagePK(messageId));
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -814,7 +803,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
    */
   public void deleteMessage(int messageId) {
     try {
-      forumsBM.deleteMessage(getMessagePK(messageId));
+      getForumsBM().deleteMessage(getMessagePK(messageId));
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -852,10 +841,10 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public boolean isModerator(String userId, int forumId) throws ForumsException {
     boolean result = false;
     try {
-      result = forumsBM.isModerator(userId, getForumPK(forumId));
+      result = getForumsBM().isModerator(userId, getForumPK(forumId));
       int parentId = getForumParentId(forumId);
       while ((!result) && (parentId != 0)) {
-        result = (result || forumsBM.isModerator(userId, getForumPK(parentId)));
+        result = (result || getForumsBM().isModerator(userId, getForumPK(parentId)));
         parentId = getForumParentId(parentId);
       }
     } catch (RemoteException re) {
@@ -866,7 +855,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public void addModerator(int forumId, String userId) {
     try {
-      forumsBM.addModerator(getForumPK(forumId), userId);
+      getForumsBM().addModerator(getForumPK(forumId), userId);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -874,7 +863,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public void removeModerator(int forumId, String userId) {
     try {
-      forumsBM.removeModerator(getForumPK(forumId), userId);
+      getForumsBM().removeModerator(getForumPK(forumId), userId);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -882,7 +871,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public void removeAllModerators(int forumId) {
     try {
-      forumsBM.removeAllModerators(getForumPK(forumId));
+      getForumsBM().removeAllModerators(getForumPK(forumId));
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -890,7 +879,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public List<String> getModerators(int forumId) {
     try {
-      return forumsBM.getModerators(forumId);
+      return getForumsBM().getModerators(forumId);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -902,7 +891,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public void moveMessage(int messageId, int forumId) {
     try {
-      forumsBM.moveMessage(getMessagePK(messageId), getForumPK(forumId));
+      getForumsBM().moveMessage(getMessagePK(messageId), getForumPK(forumId));
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -910,7 +899,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public void subscribeMessage(int messageId, String userId) {
     try {
-      forumsBM.subscribeMessage(getMessagePK(messageId), userId);
+      getForumsBM().subscribeMessage(getMessagePK(messageId), userId);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -918,7 +907,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public void unsubscribeMessage(int messageId, String userId) {
     try {
-      forumsBM.unsubscribeMessage(getMessagePK(messageId), userId);
+      getForumsBM().unsubscribeMessage(getMessagePK(messageId), userId);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -926,7 +915,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public void removeAllSubscribers(int messageId) {
     try {
-      forumsBM.removeAllSubscribers(getMessagePK(messageId));
+      getForumsBM().removeAllSubscribers(getMessagePK(messageId));
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -934,7 +923,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public boolean isSubscriber(int messageId, String userId) {
     try {
-      return forumsBM.isSubscriber(getMessagePK(messageId), userId);
+      return getForumsBM().isSubscriber(getMessagePK(messageId), userId);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -943,10 +932,10 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public Vector listAllSubscribers(int messageId) {
     Vector subscribers = new Vector();
     try {
-      subscribers = forumsBM.listAllSubscribers(getMessagePK(messageId));
+      subscribers = getForumsBM().listAllSubscribers(getMessagePK(messageId));
       int parentId = getMessageParentId(messageId);
       while (parentId != 0) {
-        subscribers.addAll(forumsBM.listAllSubscribers(getMessagePK(parentId)));
+        subscribers.addAll(getForumsBM().listAllSubscribers(getMessagePK(parentId)));
         parentId = getMessageParentId(parentId);
       }
     } catch (RemoteException re) {
@@ -958,7 +947,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public boolean isNewMessageByForum(String userId, int forumId) {
     boolean isNewMessage = false;
     try {
-      isNewMessage = forumsBM.isNewMessageByForum(userId, getForumPK(forumId), STATUS_VALIDATE);
+      isNewMessage =
+          getForumsBM().isNewMessageByForum(userId, getForumPK(forumId), STATUS_VALIDATE);
       SilverTrace.info("forums",
           "ForumsSessionController.isNewMessageByForum()",
           "root.MSG_GEN_PARAM_VALUE", "isNewMessageByForum = " + isNewMessage);
@@ -971,7 +961,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public boolean isNewMessage(String userId, int forumId, int messageId) {
     boolean isNewMessage = false;
     try {
-      isNewMessage = forumsBM.isNewMessage(userId, getForumPK(forumId),
+      isNewMessage = getForumsBM().isNewMessage(userId, getForumPK(forumId),
           messageId, STATUS_VALIDATE);
       SilverTrace.info("forums", "ForumsSessionController.isNewMessage()",
           "root.MSG_GEN_PARAM_VALUE", "isNewMessage = " + isNewMessage);
@@ -983,7 +973,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public void setLastVisit(String userId, int messageId) {
     try {
-      forumsBM.setLastVisit(userId, messageId);
+      getForumsBM().setLastVisit(userId, messageId);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -1034,7 +1024,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public int getSilverObjectId(int objectId) {
     try {
-      return forumsBM.getSilverObjectId(getForumPK(objectId));
+      return getForumsBM().getSilverObjectId(getForumPK(objectId));
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -1042,8 +1032,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public void close() {
     try {
-      if (forumsBM != null) {
-        forumsBM.remove();
+      if (getForumsBM() != null) {
+        getForumsBM().remove();
       }
     } catch (RemoteException e) {
       SilverTrace.error("forums", "ForumsSessionController.close", "", e);
@@ -1054,7 +1044,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public Collection getAllCategories() {
     try {
-      return forumsBM.getAllCategories(getComponentId());
+      return getForumsBM().getAllCategories(getComponentId());
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -1065,7 +1055,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       category.setCreationDate(DateUtil.date2SQLDate(new Date()));
       category.setCreatorId(getUserId());
       category.getNodePK().setComponentName(getComponentId());
-      forumsBM.createCategory(category);
+      getForumsBM().createCategory(category);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -1075,7 +1065,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     try {
       // rechercher la catégorie
       NodePK nodePK = new NodePK(categoryId, getComponentId());
-      return forumsBM.getCategory(nodePK);
+      return getForumsBM().getCategory(nodePK);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -1085,7 +1075,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     try {
       SilverTrace.error("forums", "ForumsSessionController.updateCategory", "",
           "category = " + category.getName());
-      forumsBM.updateCategory(category);
+      getForumsBM().updateCategory(category);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -1095,7 +1085,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     try {
       SilverTrace.error("forums", "ForumsSessionController.deleteCategory", "",
           "categoryId = " + categoryId);
-      forumsBM.deleteCategory(categoryId, getComponentId());
+      getForumsBM().deleteCategory(categoryId, getComponentId());
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -1140,7 +1130,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public String getForumKeywords(int forumId) {
     try {
-      return forumsBM.getForumTags(getForumPK(forumId));
+      return getForumsBM().getForumTags(getForumPK(forumId));
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -1148,7 +1138,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public String getMessageKeywords(int messageId) {
     try {
-      return forumsBM.getMessageTags(getMessagePK(messageId));
+      return getForumsBM().getMessageTags(getMessagePK(messageId));
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -1234,7 +1224,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return publicationBm;
   }
 
-  private StatisticBm getStatisticBm() {
+  protected StatisticBm getStatisticBm() {
     if (statisticBm == null) {
       try {
         StatisticBmHome statisticHome = (StatisticBmHome) EJBUtilitaire
@@ -1251,7 +1241,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     return statisticBm;
   }
 
-  private NotationBm getNotationBm() {
+  protected NotationBm getNotationBm() {
     if (notationBm == null) {
       try {
         NotationBmHome notationHome = (NotationBmHome) EJBUtilitaire
@@ -1264,6 +1254,23 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       }
     }
     return notationBm;
+  }
+
+  protected ForumsBM getForumsBM() {
+    if (forumsBM == null) {
+      try {
+        ForumsBMHome forumsBMHome = (ForumsBMHome) EJBUtilitaire
+            .getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBMHome.class);
+        forumsBM = forumsBMHome.create();
+      } catch (Exception e) {
+        throw new EJBException(e.getMessage());
+      }
+    }
+    return forumsBM;
+  }
+
+  protected void setForumsBM(ForumsBM forumsBM) {
+    this.forumsBM = forumsBM;
   }
 
   private ForumPK getForumPK(int forumId) {
