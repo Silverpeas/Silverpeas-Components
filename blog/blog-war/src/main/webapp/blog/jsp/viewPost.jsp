@@ -163,12 +163,19 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 		<div id="blogContainer">
 		    <div id="bandeau"><a href="<%="Main"%>"><%=componentLabel%></a></div>
 		    <div id="backHomeBlog"><a href="<%="Main"%>"><%=resource.getString("blog.accueil")%></a></div>
-		
-		  <div id="viewPost">
-		   	<div class="titreTicket"><%=post.getPublication().getName()%>
+		<%
+			String blocClass = "viewPost";
+			String status = "";
+          	if (PublicationDetail.DRAFT.equals(post.getPublication().getStatus())) {
+           		blocClass = "viewPostDraft";
+           		status = resource.getString("GML.saveDraft");
+          	}
+         %>
+		  <div id="<%=blocClass%>">
+		   	<div class="titreTicket"><%=post.getPublication().getName()%> <span class="status">(<%=status%>)</span>
 			   	<%if (link != null && !link.equals("")) 
 			   	{	%>
-				  	<a href=<%=link%> ><img src=<%=resource.getIcon("blog.link")%> border="0" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>' ></a>
+				  	<a href=<%=link%> ><img src=<%=resource.getIcon("blog.link")%> border="0" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>' /></a>
 				  <%}	%> 
 				</div>
 				<div class="infoTicket"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></div>
@@ -245,7 +252,7 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 					{ %>
 		          <div id="newComment">
 		              <form Name="commentForm" action="AddComment" Method="POST">	
-			   		    		<span class="infoTicket"><%=resource.getString("blog.addComment")%></span>
+			   		    		<span class="newCommentLabel"><%=resource.getString("blog.addComment")%></span>
 					  				<br/>
 					  				<span><TEXTAREA ROWS="8" COLS="80" name="Message"></TEXTAREA></span>
 		                <input type="hidden" name="PostId" value="<%=postId%>"><input type="hidden" name="CommentId" value="">
@@ -270,7 +277,7 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
               myOperations += "<a href=\"DraftOutPost?PostId="+postId+"\">"+resource.getString("blog.draftOutPost")+"</a><br/>";
             }
             myOperations += "<a href=\"javascript:onClick=deletePost('"+postId+"')\">"+resource.getString("blog.deletePost")+"</a><br/>";
-            myOperations += "<a href=\"javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')\">"+resource.getString("GML.notify")+"</a><br/>";
+            myOperations += "<a href=\"javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')\" id=\"toNotify\">"+resource.getString("GML.notify")+"</a><br/>";
           } 
 			   else if (!isUserGuest) { 
             myOperations += "<a href=\"javaScript:onClick=goToNotify('ToAlertUser?PostId="+postId+"')\">"+resource.getString("GML.notify")+"</a><br/>";

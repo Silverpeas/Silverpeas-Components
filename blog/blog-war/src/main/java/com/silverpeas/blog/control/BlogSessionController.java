@@ -29,7 +29,6 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.Vector;
 
 import com.silverpeas.blog.control.ejb.BlogBm;
@@ -63,6 +62,7 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -183,11 +183,12 @@ public class BlogSessionController extends AbstractComponentSessionController {
       // création du billet
       PublicationDetail pub =
           new PublicationDetail("X", title, "", null, null, null, null, "1", null, null, "", null,
-              "");
+          "");
       pub.getPK().setComponentName(getComponentId());
       pub.setCreatorId(getUserId());
       pub.setCreatorName(getUserDetail(getUserId()).getDisplayedName());
       pub.setCreationDate(new Date());
+      pub.setIndexOperation(IndexManager.NONE);
       SilverTrace.info("blog", "BlogSessionContreller.createPost()", "root.MSG_GEN_PARAM_VALUE",
           "CreatorName=" + pub.getCreatorName());
       PostDetail newPost = new PostDetail(pub, categoryId, dateEvent);
@@ -211,6 +212,10 @@ public class BlogSessionController extends AbstractComponentSessionController {
       pub.setName(title);
       pub.setUpdaterId(getUserId());
 
+      if (PublicationDetail.DRAFT.equals(pub.getStatus())) {
+        pub.setIndexOperation(IndexManager.NONE);
+      }
+
       post.setCategoryId(categoryId);
       post.setDateEvent(dateEvent);
 
@@ -230,7 +235,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
       throw new BlogRuntimeException("BlogSessionController.draftOutPost()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_DRAFT_OUT_OBJECT", e);
     }
-      
+
   }
 
   public String initAlertUser(String postId) throws RemoteException {
@@ -311,9 +316,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
       getBlogBm().deletePost(postId, getComponentId());
       // supprimer les commentaires
       Collection<Comment> comments = getAllComments(postId);
-      Iterator<Comment> it = (Iterator<Comment>) comments.iterator();
-      while (it.hasNext()) {
-        Comment comment = (Comment) it.next();
+      for (Comment comment : comments) {
         CommentPK commentPK = comment.getCommentPK();
         getCommentBm().deleteComment(commentPK);
       }
@@ -510,14 +513,14 @@ public class BlogSessionController extends AbstractComponentSessionController {
   public Boolean isDraftVisible() {
     return new Boolean("yes".equalsIgnoreCase(getComponentParameterValue("draftVisible")));
   }
-  
+
   public int getSilverObjectId(String objectId) {
 
     int silverObjectId = -1;
     try {
       silverObjectId =
           getBlogBm()
-              .getSilverObjectId(new PublicationPK(objectId, getSpaceId(), getComponentId()));
+          .getSilverObjectId(new PublicationPK(objectId, getSpaceId(), getComponentId()));
     } catch (Exception e) {
       SilverTrace.error("blog", "BlogSessionController.getSilverObjectId()",
           "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
@@ -531,7 +534,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
       try {
         CommentBmHome commentHome =
             (CommentBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.COMMENT_EJBHOME,
-                CommentBmHome.class);
+            CommentBmHome.class);
         commentBm = commentHome.create();
       } catch (Exception e) {
         throw new CommentRuntimeException("BlogSessionController.getCommentBm()",
@@ -548,7 +551,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
       try {
         MyLinksBmHome myLinksHome =
             (MyLinksBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.MYLINKSBM_EJBHOME,
-                MyLinksBmHome.class);
+            MyLinksBmHome.class);
         myLinksBm = myLinksHome.create();
       } catch (Exception e) {
         throw new CommentRuntimeException("BlogSessionController.getMyLinksBm()",

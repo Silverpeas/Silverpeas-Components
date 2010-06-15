@@ -99,11 +99,11 @@ function addSubscription()
             String link = post.getPermalink();
           
           //Debut d'un ticket
-          String titreClass = "titreTicket";
-          String infoClass = "infoTicket";
+          String blocClass = "post";
+          String status = "";
           if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)) {
-            titreClass = "titreTicketDraft";
-            infoClass = "infoTicketDraft";
+            blocClass = "postDraft";
+            status = resource.getString("GML.saveDraft");
           }
           boolean visible = true;
           if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT) 
@@ -115,23 +115,22 @@ function addSubscription()
               visible = true;
             }
           }
-                    
-          
+
           if (visible) {
           %>
           
-          <div id="post<%=postId%>" class="post">
-            <div class="<%=titreClass%>">
-              <a href="<%="ViewPost?PostId=" + postId%>" class="<%=titreClass%>"><%=post.getPublication().getName()%></a>
+          <div id="post<%=postId%>" class="<%=blocClass%>">
+            <div class="titreTicket">
+              <a href="<%="ViewPost?PostId=" + postId%>"><%=post.getPublication().getName()%></a> <span class="status">(<%=status%>)</span>
 				        <%  if ( link != null && !link.equals("")) {  %>
-				          <a href=<%=link%> ><img src=<%=resource.getIcon("blog.link")%> border="0" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>' ></a>
+				          <span class="permalink"><a href=<%=link%> ><img src=<%=resource.getIcon("blog.link")%> border="0" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>' ></a></span>
 				        <%  } %>
             </div>
             <%
               cal.setTime(post.getDateEvent());
               String day = resource.getString("GML.jour"+cal.get(java.util.Calendar.DAY_OF_WEEK));
            %>
-           <div class="<%=infoClass%>"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></div>
+           <div class="infoTicket"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></div>
            <div class="contentTicket">
              <%
                out.flush();
@@ -184,10 +183,10 @@ function addSubscription()
           myOperations += "<a href=\"javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+instanceId+"','utilizationPdc1')\">"+resource.getString("GML.PDCParam")+"</a><br/>";
         } 
         myOperations += "<a href=\"NewPost\">"+resource.getString("blog.newPost")+"</a><br/>";
-        myOperations += "<a href=\"UpdateFooter\">"+resource.getString("blog.updateFooter")+"</a><br/>";
+        myOperations += "<a href=\"UpdateFooter\" id=\"toUpdateFooter\">"+resource.getString("blog.updateFooter")+"</a><br/>";
       } 
       if (!isUserGuest) { 
-        myOperations += "<a href=\"javascript:onClick=addSubscription()\">"+resource.getString("blog.addSubscription")+"</a><br/>";
+        myOperations += "<a href=\"javascript:onClick=addSubscription()\" id=\"subscription\">"+resource.getString("blog.addSubscription")+"</a><br/>";
       } 
       %>
       <%@ include file="colonneDroite.jsp.inc" %>

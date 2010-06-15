@@ -72,6 +72,7 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -790,6 +791,11 @@ public class BlogBmEJB implements SessionBean {
     try {
       PublicationDetail pubDetail = getPublicationBm().getDetail(pubPK);
       pubDetail.setUpdaterId(userId);
+      
+      if (PublicationDetail.DRAFT.equals(pubDetail.getStatus())) {
+        pubDetail.setIndexOperation(IndexManager.NONE);
+      }
+      
       getPublicationBm().setDetail(pubDetail);
 
       // envoie notification si abonnement
