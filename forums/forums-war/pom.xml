@@ -77,13 +77,10 @@
       <artifactId>geronimo-j2ee_1.4_spec</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-all</artifactId>
-    </dependency>
-	<dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <scope>compile</scope>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${core.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
