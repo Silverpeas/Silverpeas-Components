@@ -49,10 +49,11 @@ Button cancelButton = gef.getFormButton(resource.getString("resourcesManager.ret
 ButtonPane buttonPane = gef.getButtonPane();
 buttonPane.addButton(cancelButton);
 
-boolean isOwner = "admin".equals(flag) || ("publisher".equals(flag) && maReservation.getUserId().equals(resourcesManagerSC.getUserId()));
-String profile = flag;
-if (!isOwner)
-  profile = "user";
+boolean isOwner = "admin".equals(flag) || maReservation.getUserId().equals(resourcesManagerSC.getUserId());
+String profileForAttachments = "admin";
+if (!isOwner) {
+  profileForAttachments = "user";
+}
 %>
 <html>
 	<head>
@@ -94,10 +95,9 @@ if (!isOwner)
 	if (isOwner)
 	{
 		operationPane.addOperation(resource.getIcon("resourcesManager.updateBig"), resource.getString("resourcesManager.modifierReservation"),"EditReservation?id="+reservationId);
+		operationPane.addOperation("#", resource.getString("resourcesManager.addFile"), "javaScript:AddAttachment()");
 		operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("resourcesManager.basketDelete"), resource.getString("resourcesManager.supprimerReservation"),"javascript:deleteReservation();");
-		operationPane.addLine();
-		operationPane.addOperation("#", resource.getString("resourcesManager.addFile"), "javaScript:AddAttachment()");
 	}	
 		browseBar.setDomainName(spaceLabel);
 		browseBar.setComponentName(componentLabel,"Main");
@@ -194,7 +194,7 @@ if (!isOwner)
     <%
     out.flush();
     // traitement des fichiers joints
-    getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+reservationId+"&ComponentId="+componentId+"&Alias=&Context=Images&AttachmentPosition=right&ShowIcon=true&ShowTitle=&ShowFileSize=true&ShowDownloadEstimation=&ShowInfo=&UpdateOfficeMode=&Language="+resourcesManagerSC.getLanguage()+"&Profile="+profile+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewReservation?reservationId="+reservationId+"&IndexIt=").include(request, response);
+    getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+reservationId+"&ComponentId="+componentId+"&Alias=&Context=Images&AttachmentPosition=right&ShowIcon=true&ShowTitle=&ShowFileSize=true&ShowDownloadEstimation=&ShowInfo=&UpdateOfficeMode=&Language="+resourcesManagerSC.getLanguage()+"&Profile="+profileForAttachments+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewReservation?reservationId="+reservationId+"&IndexIt=").include(request, response);
     %>
     <br/>      
 		
