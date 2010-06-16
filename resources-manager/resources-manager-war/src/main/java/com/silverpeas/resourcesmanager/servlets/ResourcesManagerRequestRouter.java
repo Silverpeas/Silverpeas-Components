@@ -441,7 +441,10 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
             }
             resourcesManagerSC.updateReservation(idModifiedReservation,
                 listeReservation, updateDate);
-            destination = getDestination("Calendar", componentSC, request);
+
+            // redirection vers la réservation
+            request.setAttribute("reservationId", idModifiedReservation);
+            destination = getDestination("ViewReservation", componentSC, request);
           } else {
             request.setAttribute("listeResourcesProblem",
                 listeResourcesProblemeReservationTotal);
@@ -455,7 +458,9 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
               .verificationReservation(listeReservation);
           if (listeResourcesProblem.isEmpty()) {
             resourcesManagerSC.saveReservation();
-            destination = getDestination("Calendar", componentSC, request);
+            request.setAttribute("reservationId", resourcesManagerSC.getReservationCourante()
+                .getId());
+            destination = getDestination("ViewReservation", componentSC, request);
           } else {
             request
                 .setAttribute("listeResourcesProblem", listeResourcesProblem);

@@ -41,10 +41,12 @@ import com.silverpeas.resourcesmanager.model.ResourceDetail;
 import com.silverpeas.resourcesmanager.model.ResourceReservableDetail;
 import com.silverpeas.resourcesmanager.model.ResourcesManagerDAO;
 import com.silverpeas.resourcesmanager.model.ResourcesManagerRuntimeException;
+import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -408,6 +410,10 @@ public class ResourcesManagerBmEJB implements SessionBean {
     Connection con = initCon();
     try {
       deleteIndex(id, "Reservation", componentId);
+      
+      // delete attached file 
+      AttachmentController.deleteAttachmentByCustomerPK(new ForeignPK(id, componentId));
+      
       ResourcesManagerDAO.deleteReservation(con, id);
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException(
@@ -467,11 +473,11 @@ public class ResourcesManagerBmEJB implements SessionBean {
     }
   }
 
-  public String getStatusResourceOfReservation(String resourceId, String reservationId)
-  {
+  public String getStatusResourceOfReservation(String resourceId, String reservationId) {
     Connection con = initCon();
     try {
-      return ResourcesManagerDAO.getStatusResourceOfReservation(con, Integer.parseInt(resourceId), Integer.parseInt(reservationId));
+      return ResourcesManagerDAO.getStatusResourceOfReservation(con, Integer.parseInt(resourceId),
+          Integer.parseInt(reservationId));
     } catch (Exception e) {
       throw new ResourcesManagerRuntimeException(
           "ResourcesManagerBmEJB.getMonthReservationOfCategory()",
@@ -481,7 +487,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
       fermerCon(con);
     }
   }
-  
+
   private Connection initCon() {
     Connection con;
     // initialisation de la connexion
