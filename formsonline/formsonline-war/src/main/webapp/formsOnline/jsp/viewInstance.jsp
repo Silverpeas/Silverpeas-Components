@@ -23,7 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="check.jsp" %>
 
 <%@page import="java.util.List"%>
@@ -50,6 +51,7 @@
 	String backFunction = (String) request.getAttribute("backFunction");
 	String title = (String) request.getAttribute("title");
 	String titleClassName = resource.getSetting("titleClassName");
+	boolean backButtonAdded = false;
 	
 	// cr�ation du context
 	PagesContext  context = new PagesContext
@@ -58,19 +60,15 @@
 	context.setBorderPrinted(false);
 %>
 
-
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<%!	 
-	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang("");
-	%>
-	
+<title></title>
 	<%
 	out.println(gef.getLookStyleSheet());
 	%>
 	<% formView.displayScripts(out, context); %>
 	
-	<script language="Javascript">
+	<script type="text/javascript">
 		function validate() {
 			document.validationForm.decision.value = "validate";
 			document.validationForm.submit();
@@ -82,62 +80,61 @@
 		}
 	</script>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-
-<%
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel);    
-%>	
+<body>
 
 	<%=window.printBefore()%>
-	<%=frame.printBefore()%>
+	<%=board.printBefore()%>
 
-	<span class="<%=titleClassName%>"><%=title%></span>	
+	<span class="<%=titleClassName%>"><%=title%></span>
+	<form>	
 	<% 
 	formView.display(out, context, data); 
 	%>
-	</FORM>
+	</form>
 	
-    <%=frame.printAfter()%>
+    <%=board.printAfter()%>
 
 	<%
 	if (validationMode.equals("active")) {
 		Frame validationFrame = gef.getFrame();
 		Board validationBoard = gef.getBoard();
 	%>
-		<br>
+		<br/>
 	    <%=validationFrame.printBefore()%>
 	    <%=validationBoard.printBefore()%>
-		<FORM NAME="validationForm" ACTION="EffectiveValideForm" METHOD="POST" >
-			<input type="hidden" name="formInstanceId" value="<%=currentFormInstance.getId()%>">
-			<input type="hidden" name="decision" value="">
-		
-			<%=resource.getString("formsOnline.receiverComments")%> : <textarea name="comment" rows="3" cols="35" <%=(currentFormInstance.getState() != FormInstance.STATE_READ) ? "disabled" : "" %>><%=(currentFormInstance.getComments() == null)? "" : currentFormInstance.getComments()%></textarea><BR><BR><BR>
-		</FORM>
+		<form name="validationForm" action="EffectiveValideForm" method="POST">
+			<input type="hidden" name="formInstanceId" value="<%=currentFormInstance.getId()%>"/>
+			<input type="hidden" name="decision" value=""/>
+			<%=resource.getString("formsOnline.receiverComments")%><br/><textarea name="comment" rows="8" cols="80" <%=(currentFormInstance.getState() != FormInstance.STATE_READ) ? "disabled" : "" %>><%=(currentFormInstance.getComments() == null)? "" : currentFormInstance.getComments()%></textarea><br/>
+		</form>
 	    <%=validationBoard.printAfter()%>
 	    <% if (currentFormInstance.getState() == FormInstance.STATE_READ) {
 			Button validate = (Button) gef.getFormButton(resource.getString("formsOnline.validateFormInstance"), "javascript:validate()", false);
 			Button refuse = (Button) gef.getFormButton(resource.getString("formsOnline.refuseFormInstance"), "javascript:refuse()", false);
+			Button back = (Button) gef.getFormButton(resource.getString("GML.back"), backFunction, false);
 			ButtonPane validationButtonPane = gef.getButtonPane();
 			validationButtonPane.addButton(validate);
 			validationButtonPane.addButton(refuse);
+			validationButtonPane.addButton(back);
+			backButtonAdded = true;
 		%>
-			<br>
+			<br/>
 			<center><%=validationButtonPane.print()%></center>
 		<% 
 	    	}	
 	}
 	%>
 	
-	<%    
-	Button back = (Button) gef.getFormButton(generalMessage.getString("GML.back"), backFunction, false);
+	<% if (!backButtonAdded) {
+	Button back = (Button) gef.getFormButton(resource.getString("GML.back"), backFunction, false);
 	ButtonPane buttonPane = gef.getButtonPane();
 	buttonPane.addButton(back);
-	%>
-	<br>
+	 %>
+	<br/>
 	<center>
 	<%=buttonPane.print()%>
 	</center>
+	<% } %>
   	<%=window.printAfter()%>  
 
 </body>

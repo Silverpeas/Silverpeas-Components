@@ -23,7 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="check.jsp" %>
 
 <%@page import="java.util.List"%>
@@ -38,6 +39,7 @@
 <%@page import="com.stratelia.webactiv.beans.admin.Group"%>
 <%@page import="com.silverpeas.form.Form"%>
 <%@page import="com.silverpeas.form.DataRecord"%>
+<%@page import="com.silverpeas.form.PagesContext"%>
 
 <%
 	Form formUpdate    = (Form) request.getAttribute("Form");
@@ -52,12 +54,9 @@
 %>
 
 
-<%@page import="com.silverpeas.form.PagesContext"%><html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<%!	 
-	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang("");
-	%>
-	
+<title></title>
 	<%
 	out.println(gef.getLookStyleSheet());
 	%>
@@ -73,33 +72,28 @@
 		}
 	</script>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-
-<%
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel);    
-%>	
+<body class="yui-skin-sam">
 
 	<%=window.printBefore()%>
 	<%=frame.printBefore()%>
 
-	<FORM NAME="newInstanceForm" METHOD="POST" ACTION="SaveNewInstance" 
-                    ENCTYPE="multipart/form-data">
+	<form name="newInstanceForm" method="POST" action="SaveNewInstance" 
+                    enctype="multipart/form-data">
 	<% 
 	formUpdate.display(out, context, data); 
 	%>
-	</FORM>
+	</form>
 	
     <%=frame.printAfter()%>
 
 	<%    
-	Button cancel = (Button) gef.getFormButton(generalMessage.getString("GML.cancel"), "OutBox", false);
-	Button validate = (Button) gef.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
+	Button cancel = (Button) gef.getFormButton(resource.getString("GML.cancel"), "OutBox", false);
+	Button validate = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
 	ButtonPane buttonPane = gef.getButtonPane();
 	buttonPane.addButton(validate);
 	buttonPane.addButton(cancel);
 	%>
-	<br>
+	<br/>
 	<center>
 	<%=buttonPane.print()%>
 	</center>

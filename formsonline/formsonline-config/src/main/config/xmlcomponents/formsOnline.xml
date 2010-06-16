@@ -28,14 +28,14 @@
 
 <WAComponent>
   <name>formsOnline</name>
-  <label>Forms Online</label>
+  <label>Formulaires en ligne</label>
   <description>Mise en ligne de formulaires</description>
-  <suite>99 Inconnu</suite>
-  <visible>@ComponentVisibleformsOnline@</visible>
+  <suite>80 Nouveau composant</suite>
+  <visible>yes</visible>
   <portlet>no</portlet>
   <instanceClassName>com.silverpeas.formsonline.FormsOnlineInstanciator</instanceClassName>
  <Profiles>
-    <Profile name="Administrator">Gestionnaire</Profile>
-    <Profile name="SenderReceiver">Emetteurs et Rï¿½cepteurs</Profile>
+    <Profile name="Administrator">Gestionnaires</Profile>
+    <Profile name="SenderReceiver">Emetteurs et Récepteurs</Profile>
   </Profiles>
 </WAComponent>

@@ -23,15 +23,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="check.jsp" %>
 
 <%@page import="java.util.List"%>
 <%@page import="com.silverpeas.formsonline.model.FormDetail"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<title></title>
 <%!
 	//icones
 	String iconsPath = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
@@ -39,8 +41,6 @@
 	String Published=iconsPath+"/util/icons/unlock.gif";
 	String Create=iconsPath+"/util/icons/formManager_to_add.gif";
 	String Suppr=iconsPath+"/util/icons/delete.gif";
-	
-	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang("");
 
 	/**
 	 * @param text The string to truncate if its size is greater than the maximum length given as
@@ -71,7 +71,7 @@
 	out.println(gef.getLookStyleSheet());
 %>
 
-	<script language="JavaScript">
+	<script type="text/javascript">
 	    function deleteForm(idModel) {    
 	         if (window.confirm("<%=resource.getString("formsOnline.deleteFormConfirm")%>")) { 
 	            document.deleteForm.formId.value = idModel;
@@ -81,11 +81,11 @@
 	</script>
 
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
 
-<FORM NAME="deleteForm" ACTION="DeleteForm" >
-  <input type="hidden" name="formId">
-</FORM>
+<form name="deleteForm" action="DeleteForm">
+  <input type="hidden" name="formId"/>
+</form>
 
 <%
     List formsList = (List) request.getAttribute("formsList");
@@ -101,9 +101,9 @@
     ArrayPane arrayPane = gef.getArrayPane("Forms", "Main", request, session);
     arrayPane.setVisibleLineNumber(10);
     arrayPane.setTitle(resource.getString("formsOnline.formsList"));
-    arrayPane.addArrayColumn(generalMessage.getString("GML.name"));
-    arrayPane.addArrayColumn(generalMessage.getString("GML.description"));
-    ArrayColumn arrayColumnState = arrayPane.addArrayColumn(generalMessage.getString("GML.operation"));
+    arrayPane.addArrayColumn(resource.getString("GML.name"));
+    arrayPane.addArrayColumn(resource.getString("GML.description"));
+    ArrayColumn arrayColumnState = arrayPane.addArrayColumn(resource.getString("GML.operation"));
     arrayColumnState.setSortable(false);
 
     FormDetail form;

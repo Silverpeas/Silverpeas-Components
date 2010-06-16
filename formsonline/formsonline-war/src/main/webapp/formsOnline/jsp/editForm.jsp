@@ -23,7 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="check.jsp" %>
 
 <%@page import="java.util.List"%>
@@ -36,18 +37,15 @@
 <%@page import="com.stratelia.webactiv.beans.admin.OrganizationController"%>
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@page import="java.text.DateFormat"%>
-<%@page import="java.text.SimpleDateFormat"%><html>
+<%@page import="java.text.SimpleDateFormat"%>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<%!	
-	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang("");
-%>
-
+<title></title>
 <%
 	out.println(gef.getLookStyleSheet());
 %>
-
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="Javascript">
+<script type="text/javascript">
 
 function isCorrectForm() {
      var errorMsg = "";
@@ -59,22 +57,22 @@ function isCorrectForm() {
      var title = stripInitialWhitespace(document.creationForm.title.value);
 	
      if (isWhitespace(name)) {
-           errorMsg+="  - <%=generalMessage.getString("GML.theField")%> '<%=generalMessage.getString("GML.name")%>' <%=generalMessage.getString("GML.MustBeFilled")%>\n";
+           errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
            errorNb++;
      }
 
      if (isWhitespace(description)) {
-         errorMsg+="  - <%=generalMessage.getString("GML.theField")%> '<%=generalMessage.getString("GML.description")%>' <%=generalMessage.getString("GML.MustBeFilled")%>\n";
+         errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("GML.description")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
          errorNb++;
    	 }
 
      if (templateSelectedIndex < 1) {
-         errorMsg+="  - <%=generalMessage.getString("GML.theField")%> '<%=resource.getString("formsOnline.Template")%>' <%=generalMessage.getString("GML.MustBeFilled")%>\n";
+         errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("formsOnline.Template")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
          errorNb++;
      }
    	 
      if (isWhitespace(title)) {
-         errorMsg+="  - <%=generalMessage.getString("GML.theField")%> '<%=generalMessage.getString("GML.title")%>' <%=generalMessage.getString("GML.MustBeFilled")%>\n";
+         errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("GML.title")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
          errorNb++;
      }
 
@@ -83,12 +81,12 @@ function isCorrectForm() {
             result = true;
             break;
         case 1 :
-            errorMsg = "<%=generalMessage.getString("GML.ThisFormContains")%> 1 <%=generalMessage.getString("GML.error")%> : \n" + errorMsg;
+            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
             window.alert(errorMsg);
             result = false;
             break;
         default :
-            errorMsg = "<%=generalMessage.getString("GML.ThisFormContains")%> " + errorNb + " <%=generalMessage.getString("GML.errors")%> :\n" + errorMsg;
+            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
             window.alert(errorMsg);
             result = false;
             break;
@@ -104,10 +102,10 @@ function valider() {
 </script>
 
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
 
 <%
-	DateFormat formatter = new SimpleDateFormat(generalMessage.getString("GML.dateFormat"));
+	DateFormat formatter = new SimpleDateFormat(resource.getString("GML.dateFormat"));
     FormDetail form = (FormDetail) request.getAttribute("currentForm");
 	List templates = (List) request.getAttribute("availableTemplates");
   
@@ -121,7 +119,6 @@ function valider() {
 	    tabbedPane.addTab(resource.getString("formsOnline.Preview"), "Preview", false,1);
 	}
 
-	Board board = gef.getBoard();
 	OrganizationController controller = new OrganizationController();
 	UserDetail userDetail = controller.getUserDetail(form.getCreatorId());
 %>	
@@ -152,23 +149,23 @@ function valider() {
 		</td>
 	</tr>
   	<tr>
-		<td width="30%"><span class="txtlibform"><%=generalMessage.getString("GML.name")%> : </span></td>
+		<td width="30%"><span class="txtlibform"><%=resource.getString("GML.name")%> : </span></td>
         <td colspan="4"><span class="txtlibform"><input type="text" size="40" maxlength="40" name="name" value="<%=form.getName()%>"/></span></td>
 	</tr>			
   	<tr>
-		<td width="30%"><span class="txtlibform"><%=generalMessage.getString("GML.description")%> : </span></td>
+		<td width="30%"><span class="txtlibform"><%=resource.getString("GML.description")%> : </span></td>
         <td colspan="4"><span class="txtlibform"><input type="text" size="80" maxlength="80" name="description" value="<%=form.getDescription()%>"/></span></td>
 	</tr>			
   	<tr>
-		<td width="30%"><span class="txtlibform"><%=generalMessage.getString("GML.date")%> : </span></td>
+		<td width="30%"><span class="txtlibform"><%=resource.getString("GML.date")%> : </span></td>
         <td colspan="4"><span class="txtlibform"><%=formatter.format(form.getCreationDate())%></span></td>
 	</tr>			
    	<tr>
-		<td width="30%"><span class="txtlibform"><%=generalMessage.getString("GML.publisher")%> : </span></td>
+		<td width="30%"><span class="txtlibform"><%=resource.getString("GML.publisher")%> : </span></td>
         <td colspan="4"><span class="txtlibform"><%=userDetail.getDisplayedName()%></span></td>
 	</tr>			
   	<tr>
-		<td width="30%"><span class="txtlibform"><%=generalMessage.getString("GML.title")%> : </span></td>
+		<td width="30%"><span class="txtlibform"><%=resource.getString("GML.title")%> : </span></td>
         <td colspan="4"><span class="txtlibform"><input type="text" size="80" maxlength="200" name="title" value="<%=form.getTitle()%>"/></span></td>
 	</tr>			
 	</table>
@@ -179,10 +176,10 @@ function valider() {
   	<%=window.printAfter()%>  
 <%
     ButtonPane buttonPane = gef.getButtonPane();
-    Button validerButton = (Button) gef.getFormButton(generalMessage.getString("GML.validate"), "javascript:onClick=valider();", false);
+    Button validerButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=valider();", false);
     buttonPane.addButton(validerButton);    
 
-    Button annulerButton = (Button) gef.getFormButton(generalMessage.getString("GML.cancel"), "Main", false);
+    Button annulerButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
     buttonPane.addButton(annulerButton);    
     buttonPane.setHorizontalPosition();
 %>

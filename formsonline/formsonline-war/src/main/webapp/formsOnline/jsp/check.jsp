@@ -73,6 +73,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 	BrowseBar browseBar = window.getBrowseBar();
 	OperationPane operationPane = window.getOperationPane();
 	Frame frame = gef.getFrame();
+	Board board = gef.getBoard();
 	
 	String[] browseContext = (String[]) request.getAttribute("browseContext");
 	String spaceLabel = browseContext[0];

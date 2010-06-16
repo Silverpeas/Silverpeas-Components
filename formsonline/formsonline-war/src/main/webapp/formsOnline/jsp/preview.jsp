@@ -23,7 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="check.jsp" %>
 
 <%@page import="java.util.List"%>
@@ -40,10 +41,6 @@
 <%@page import="com.silverpeas.form.DataRecord"%>
 <%@page import="com.silverpeas.form.PagesContext"%>
 
-<%!	
-	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang("");
-%>
-
 <%
 	Form formUpdate    		= (Form) request.getAttribute("Form");
 	DataRecord data    		= (DataRecord) request.getAttribute("Data"); 
@@ -56,14 +53,14 @@
 	context.setBorderPrinted(false);
 %>
 
-<html>
-
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<title></title>
 <%=gef.getLookStyleSheet()%>
 <% formUpdate.displayScripts(out, context); %>
 </head>
 
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body class="yui-skin-sam">
 
 <%
     browseBar.setDomainName(spaceLabel);
@@ -79,13 +76,13 @@
 	<%=tabbedPane.print()%>
 	<%=frame.printBefore()%>
 
-	<FORM NAME="myForm" METHOD="POST" ACTION="UpdateXMLForm" 
-                    ENCTYPE="multipart/form-data">
+	<form name="myForm" method="POST" action="UpdateXMLForm" 
+                    enctype="multipart/form-data">
 	<span class="<%=titleClassName%>"><%=title%></span>
 	<% 
 	formUpdate.display(out, context, data); 
 	%>
-	</FORM>
+	</form>
 	
     <%=frame.printAfter()%>
   	<%=window.printAfter()%>  

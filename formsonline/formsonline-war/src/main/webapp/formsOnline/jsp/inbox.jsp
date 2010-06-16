@@ -23,7 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="check.jsp" %>
 
 <%@page import="java.util.List"%>
@@ -34,17 +35,16 @@
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@page import="java.text.DateFormat"%>
 <%@page import="java.text.SimpleDateFormat"%>
-<%@page import="com.silverpeas.formsonline.model.FormInstance"%><html>
+<%@page import="com.silverpeas.formsonline.model.FormInstance"%>
 
 <%!
-	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang("");
 	String iconsPath 			= GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 	String iconArchived			= iconsPath+"/util/icons/tofile.gif";
 	String iconDelete			= iconsPath+"/util/icons/formManager_to_del.gif";
 %>
 <%
 	String 					filteredState 	= request.getParameter("filteredState");
-	DateFormat 				formatter 		= new SimpleDateFormat(generalMessage.getString("GML.dateFormat"));
+	DateFormat 				formatter 		= new SimpleDateFormat(resource.getString("GML.dateFormat"));
     List 					availableForms 	= (List) request.getAttribute("availableForms");
 	FormDetail 				choosenForm 	= (FormDetail) request.getAttribute("choosenForm");
 	List					formInstances	= (List) request.getAttribute("formInstances");
@@ -54,11 +54,12 @@
 
 	filteredState = (filteredState == null) ? "" : filteredState;
 %>  
-
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<title></title>
 	<%=gef.getLookStyleSheet()%>
 
-	<script language="JavaScript">
+	<script type="text/javascript">
 	    function removeForm() {    
 	         if (window.confirm("<%=resource.getString("formsOnline.deleteFormConfirm")%>")) { 
 	            document.deleteForm.submit();
@@ -77,14 +78,14 @@
 	</script>
 </head>
 
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
 
-<FORM NAME="refreshForm" ACTION="InBox" >
+<form name="refreshForm" action="InBox" >
 	<input type="hidden" name="filteredState" value="<%=filteredState%>"/>
 	<input type="hidden" name="formId" value="<%=(choosenForm==null) ? "" : String.valueOf(choosenForm.getId())%>"/>
-</FORM>
+</form>
 
-<FORM NAME="deleteForm" ACTION="DeleteFormInstances" >
+<form name="deleteForm" action="DeleteFormInstances" >
 
 <%
     browseBar.setDomainName(spaceLabel);
@@ -97,9 +98,7 @@
     tabbedPane.addTab(resource.getString("formsOnline.outbox"), "OutBox", false,1);
     tabbedPane.addTab(resource.getString("formsOnline.inbox"), "InBox", true,1);
     
-    Board board = gef.getBoard();
-	
-	if (choosenForm != null) {
+    if (choosenForm != null) {
 		operationPane.addOperation(iconDelete,resource.getString("formsOnline.removeFormInstance"), "javascript:removeForm()");
 	}
 %>    
@@ -135,15 +134,15 @@
 			</td>
 		</tr>
 	  	<tr>
-			<td width="30%"><span class="txtlibform"><%=generalMessage.getString("GML.description")%> : </span></td>
+			<td width="30%"><span class="txtlibform"><%=resource.getString("GML.description")%> : </span></td>
 	        <td colspan="4"><span class="txtlibform"><%=choosenForm.getDescription()%></span></td>
 		</tr>			
 <!--  	<tr>
-			<td width="30%"><span class="txtlibform"><%=generalMessage.getString("GML.date")%> : </span></td>
+			<td width="30%"><span class="txtlibform"><%=resource.getString("GML.date")%> : </span></td>
 	        <td colspan="4"><span class="txtlibform"><%=formatter.format(choosenForm.getCreationDate())%></span></td>
 		</tr>			
 	   	<tr>
-			<td width="30%"><span class="txtlibform"><%=generalMessage.getString("GML.publisher")%> : </span></td>
+			<td width="30%"><span class="txtlibform"><%=resource.getString("GML.publisher")%> : </span></td>
 	        <td colspan="4"><span class="txtlibform"><%=userDetail.getDisplayedName()%></span></td>
 		</tr>			
  -->
@@ -157,7 +156,7 @@
     }
     %>
     <%=board.printAfter()%>
-    <br>
+    <br/>
 	
 <%
 if ( choosenForm != null )
@@ -168,7 +167,7 @@ if ( choosenForm != null )
 	ArrayColumn column = arrayPane.addArrayColumn(resource.getString("formsOnline.sendDate"));
 	column.setSortable(false);
 	arrayPane.addArrayColumn(resource.getString("formsOnline.sender"));
-	arrayPane.addArrayColumn(generalMessage.getString("GML.status"));
+	arrayPane.addArrayColumn(resource.getString("GML.status"));
 	arrayPane.addArrayColumn("&nbsp;");
 
 	Iterator itInstances = formInstances.iterator();
@@ -222,7 +221,6 @@ if ( choosenForm != null )
     
     <%=frame.printAfter()%>
     <%=window.printAfter()%>
-</FORM>
-    
+</form>   
 </body>
 </html>

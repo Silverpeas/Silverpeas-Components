@@ -23,7 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ include file="check.jsp" %>
 
 <%@page import="java.util.List"%>
@@ -37,10 +38,10 @@
 <%@page import="java.text.SimpleDateFormat"%>
 <%@page import="com.stratelia.webactiv.beans.admin.Group"%>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<title></title>
 <%!	
-	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang("");
 	ResourceLocator resourceJSPP = new ResourceLocator("com.silverpeas.jobStartPagePeas.settings.jobStartPagePeasIcons", "");
 %>
 
@@ -48,7 +49,7 @@
 	out.println(gef.getLookStyleSheet());
 %>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
 
 <%
     FormDetail form = (FormDetail) request.getAttribute("currentForm");
@@ -67,8 +68,6 @@
     
     operationPane.addOperation(resourceJSPP.getString("JSPP.userManage"), resource.getString("formsOnline.ModifySenders") , "ModifySenders");
     operationPane.addOperation(resourceJSPP.getString("JSPP.userManage"), resource.getString("formsOnline.ModifyReceivers") , "ModifyReceivers");
-    
-    Board board = gef.getBoard();
 %>	
 
 	<%=window.printBefore()%>
@@ -76,20 +75,20 @@
 	<%=frame.printBefore()%>
 
 	<%=board.printBefore()%>
-	<TABLE width="70%" align="center" border="0" cellPadding="0" cellSpacing="0">
-		<TR>
-			<TD colspan="2" class="txttitrecol"><%=resource.getString("formsOnline.senders")%></TD>
-		</TR>
-		<TR>
-			<TD colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=m_context%><%=resourceJSPP.getString("JSPP.px")%>"></TD>
-		</TR>
-		<TR>
-			<TD align="center" class="txttitrecol"><%=generalMessage.getString("GML.type")%></TD>
-			<TD align="center" class="txttitrecol"><%=generalMessage.getString("GML.name")%></TD>
-		</TR>
-		<TR>
-			<TD colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=m_context%><%=resourceJSPP.getString("JSPP.px")%>"></TD>
-		</TR>
+	<table width="70%" align="center" border="0" cellPadding="0" cellSpacing="0">
+		<tr>
+			<td colspan="2" class="txttitrecol"><%=resource.getString("formsOnline.senders")%></td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=m_context%><%=resourceJSPP.getString("JSPP.px")%>" alt=""/></td>
+		</tr>
+		<tr>
+			<td align="center" class="txttitrecol"><%=resource.getString("GML.type")%></td>
+			<td align="center" class="txttitrecol"><%=resource.getString("GML.name")%></td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=m_context%><%=resourceJSPP.getString("JSPP.px")%>" alt=""/></td>
+		</tr>
 		
 		<%
 		// La boucle sur les groupes 
@@ -98,13 +97,13 @@
 		while (groups.hasNext())
 		{
 			group = (Group) groups.next();
-			out.println("<TR>");
+			out.println("<tr>");
 			if (group.isSynchronized())
-				out.println("<TD align=\"center\"><IMG SRC=\""+m_context+resourceJSPP.getString("JSPP.scheduledGroup")+"\"></TD>");
+				out.println("<td align=\"center\"><IMG SRC=\""+m_context+resourceJSPP.getString("JSPP.scheduledGroup")+"\"></td>");
 			else
-				out.println("<TD align=\"center\"><IMG SRC=\""+m_context+resourceJSPP.getString("JSPP.group")+"\"></TD>");
-			out.println("<TD align=\"center\">"+group.getName()+"</TD>");
-			out.println("</TR>");
+				out.println("<td align=\"center\"><IMG SRC=\""+m_context+resourceJSPP.getString("JSPP.group")+"\"></td>");
+			out.println("<td align=\"center\">"+group.getName()+"</td>");
+			out.println("</tr>");
 		}
 		
 		// La boucle sur les users
@@ -113,33 +112,33 @@
 		while (users.hasNext())
 		{
 			user = (UserDetail) users.next();
-			out.println("<TR>");
-			out.println("<TD align=\"center\"><IMG SRC=\""+m_context+resourceJSPP.getString("JSPP.user")+"\"></TD>");
-			out.println("<TD align=\"center\">"+user.getLastName() + " " + user.getFirstName()+"</TD>");
-			out.println("</TR>");
+			out.println("<tr>");
+			out.println("<td align=\"center\"><IMG SRC=\""+m_context+resourceJSPP.getString("JSPP.user")+"\"></td>");
+			out.println("<td align=\"center\">"+user.getLastName() + " " + user.getFirstName()+"</td>");
+			out.println("</tr>");
 		}
 		%>			
-		<TR>
-			<TD colspan="2" align="center" class="intfdcolor"  height="1"><img src="<%=m_context%><%=resourceJSPP.getString("JSPP.px")%>"></TD>
-		</TR>
-	</TABLE>
+		<tr>
+			<td colspan="2" align="center" class="intfdcolor"  height="1"><img src="<%=m_context%><%=resourceJSPP.getString("JSPP.px")%>" alt=""/></td>
+		</tr>
+	</table>
     <%=board.printAfter()%>
-	<br>
+	<br/>
 	<%=board.printBefore()%>
-	<TABLE width="70%" align="center" border="0" cellPadding="0" cellSpacing="0">
-		<TR>
-			<TD colspan="2" class="txttitrecol"><%=resource.getString("formsOnline.receivers")%></TD>
-		</TR>
-		<TR>
-			<TD colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=m_context%><%=resourceJSPP.getString("JSPP.px")%>"></TD>
-		</TR>
-		<TR>
-			<TD align="center" class="txttitrecol"><%=generalMessage.getString("GML.type")%></TD>
-			<TD align="center" class="txttitrecol"><%=generalMessage.getString("GML.name")%></TD>
-		</TR>
-		<TR>
-			<TD colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=m_context%><%=resourceJSPP.getString("JSPP.px")%>"></TD>
-		</TR>
+	<table width="70%" align="center" border="0" cellPadding="0" cellSpacing="0">
+		<tr>
+			<td colspan="2" class="txttitrecol"><%=resource.getString("formsOnline.receivers")%></td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=m_context%><%=resourceJSPP.getString("JSPP.px")%>" alt=""/></td>
+		</tr>
+		<tr>
+			<td align="center" class="txttitrecol"><%=resource.getString("GML.type")%></td>
+			<td align="center" class="txttitrecol"><%=resource.getString("GML.name")%></td>
+		</tr>
+		<tr>
+			<td colspan="2" align="center" class="intfdcolor" height="1"><img src="<%=m_context%><%=resourceJSPP.getString("JSPP.px")%>" alt=""/></td>
+		</tr>
 		
 		<%
 		// La boucle sur les groupes 
@@ -148,13 +147,13 @@
 		while (groups.hasNext())
 		{
 			group = (Group) groups.next();
-			out.println("<TR>");
+			out.println("<tr>");
 			if (group.isSynchronized())
-				out.println("<TD align=\"center\"><IMG SRC=\""+m_context+resourceJSPP.getString("JSPP.scheduledGroup")+"\"></TD>");
+				out.println("<td align=\"center\"><IMG SRC=\""+m_context+resourceJSPP.getString("JSPP.scheduledGroup")+"\"></td>");
 			else
-				out.println("<TD align=\"center\"><IMG SRC=\""+m_context+resourceJSPP.getString("JSPP.group")+"\"></TD>");
-			out.println("<TD align=\"center\">"+group.getName()+"</TD>");
-			out.println("</TR>");
+				out.println("<td align=\"center\"><IMG SRC=\""+m_context+resourceJSPP.getString("JSPP.group")+"\"></td>");
+			out.println("<td align=\"center\">"+group.getName()+"</td>");
+			out.println("</tr>");
 		}
 		
 		// La boucle sur les users
@@ -163,16 +162,16 @@
 		while (users.hasNext())
 		{
 			user = (UserDetail) users.next();
-			out.println("<TR>");
-			out.println("<TD align=\"center\"><IMG SRC=\""+m_context+resourceJSPP.getString("JSPP.user")+"\"></TD>");
-			out.println("<TD align=\"center\">"+user.getLastName() + " " + user.getFirstName()+"</TD>");
-			out.println("</TR>");
+			out.println("<tr>");
+			out.println("<td align=\"center\"><IMG SRC=\""+m_context+resourceJSPP.getString("JSPP.user")+"\"></td>");
+			out.println("<td align=\"center\">"+user.getLastName() + " " + user.getFirstName()+"</td>");
+			out.println("</tr>");
 		}
 		%>			
-		<TR>
-			<TD colspan="2" align="center" class="intfdcolor"  height="1"><img src="<%=m_context%><%=resourceJSPP.getString("JSPP.px")%>"></TD>
-		</TR>
-	</TABLE>
+		<tr>
+			<td colspan="2" align="center" class="intfdcolor"  height="1"><img src="<%=m_context%><%=resourceJSPP.getString("JSPP.px")%>" alt=""/></td>
+		</tr>
+	</table>
 	
     <%=board.printAfter()%>
     <%=frame.printAfter()%>
