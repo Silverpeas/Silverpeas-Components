@@ -24,7 +24,6 @@
 package com.stratelia.webactiv.yellowpages;
 
 import java.util.Collection;
-import java.util.Iterator;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -58,12 +57,9 @@ public class YellowpagesIndexer implements ComponentIndexerInterface {
       indexTopicContacts(topic);
 
       // treatment of the nodes of current topic
-      Collection subTopics = topic.getNodeDetail().getChildrenDetails();
-      Iterator itNode = subTopics.iterator();
+      Collection<NodeDetail> subTopics = topic.getNodeDetail().getChildrenDetails();
       String nodeId = null;
-      NodeDetail node = null;
-      while (itNode.hasNext()) {
-        node = (NodeDetail) itNode.next();
+      for (NodeDetail node : subTopics) {
         nodeId = node.getNodePK().getId();
         indexTopic(nodeId);
       }
@@ -71,10 +67,9 @@ public class YellowpagesIndexer implements ComponentIndexerInterface {
   }
 
   private void indexTopicContacts(TopicDetail topic) throws Exception {
-    Collection contacts = topic.getContactDetails();
-    Iterator itPub = contacts.iterator();
-    while (itPub.hasNext()) {
-      ContactDetail pub = ((UserContact) itPub.next()).getContact();
+    Collection<UserContact> contacts = topic.getContactDetails();
+    for (UserContact contact : contacts) {
+      ContactDetail pub = contact.getContact();
       scc.updateContact(pub);
     }
   }

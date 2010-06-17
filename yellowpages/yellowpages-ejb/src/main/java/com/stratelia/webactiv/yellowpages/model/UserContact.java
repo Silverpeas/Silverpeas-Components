@@ -34,6 +34,8 @@ import com.stratelia.webactiv.util.contact.model.ContactDetail;
  */
 public class UserContact extends Object implements java.io.Serializable {
 
+  private static final long serialVersionUID = 7209945723910986590L;
+
   /**  */
   private UserDetail owner;
 

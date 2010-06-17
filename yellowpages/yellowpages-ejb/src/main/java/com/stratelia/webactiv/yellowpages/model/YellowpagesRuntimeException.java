@@ -34,6 +34,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
  */
 public class YellowpagesRuntimeException extends SilverpeasRuntimeException {
 
+  private static final long serialVersionUID = -5684033042863074906L;
+
   /**
    * --------------------------------------------------------------------------
    * constructors constructors

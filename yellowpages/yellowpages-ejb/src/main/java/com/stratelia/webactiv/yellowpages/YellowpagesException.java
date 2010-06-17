@@ -26,6 +26,9 @@ package com.stratelia.webactiv.yellowpages;
 import com.stratelia.webactiv.util.exception.*;
 
 public class YellowpagesException extends SilverpeasException {
+  
+  private static final long serialVersionUID = -871064868796293299L;
+
   /**
    * --------------------------------------------------------------------------
    * constructors constructors
