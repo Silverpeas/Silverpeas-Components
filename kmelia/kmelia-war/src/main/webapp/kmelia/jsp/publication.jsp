@@ -209,7 +209,7 @@ String refusedSrc;
 	boolean highlightFirst 		= resources.getSetting("highlightFirstOccurence", false);	
 %>
 
-<%@page import="com.stratelia.silverpeas.versioning.model.DocumentPK"%><HTML>
+<%@page import="com.stratelia.silverpeas.versioning.model.DocumentPK"%><html>
 <head>
 <%
 out.println(gef.getLookStyleSheet());
@@ -222,7 +222,7 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.qtip-1.0.0-rc3.min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
 
-<script language="javascript">
+<script type="text/javascript">
 
 var refusalMotiveWindow = window;
 var publicVersionsWindow = window;
@@ -361,7 +361,8 @@ function zipPublication()
 
 </script>
 </head>
-<BODY class="yui-skin-sam" onUnload="closeWindows()" onLoad="openSingleAttachment()">
+<body class="yui-skin-sam" onUnload="closeWindows()" onLoad="openSingleAttachment()" id="<%=componentId %>">
+<div id="preview">
 <% 
         Window window = gef.getWindow();
         Frame frame = gef.getFrame();
@@ -451,7 +452,7 @@ function zipPublication()
     		out.println("<td>"+kmeliaScc.getString("kmelia.HelpPubli")+"</td>");
     		out.println("</tr></table>");
     	    out.println(boardHelp.printAfter());
-    	    out.println("<BR>");
+    	    out.println("<br/>");
     	}
         
         if (screenMessage != null && screenMessage.length()>0)
@@ -467,28 +468,28 @@ function zipPublication()
     /*********************************************************************************************************************/
 		/** Affichage du header de la publication																			**/
 		/*********************************************************************************************************************/
-    	out.println("<TABLE border=\"0\" width=\"98%\" align=center>");
-    	out.println("<TR><TD align=\"left\">");
+    	out.println("<table border=\"0\" width=\"98%\" align=\"center\">");
+    	out.println("<tr><td align=\"left\">");
 
-    	out.print("<span class=\"txtnav\"><b>");
+    	out.print("<span class=\"publiName\">");
     	out.print(EncodeHelper.javaStringToHtmlString(pubDetail.getName(language)));
-    	out.println("</b></span>");
+    	out.println("</span>");
     	
 		if (!"user".equals(profile))
 		{
 			if ("ToValidate".equals(status))
-				out.println("<img src=\""+outDraftSrc+"\" alt=\""+resources.getString("PubStateToValidate")+"\" align=\"absmiddle\">");
+				out.println("<img src=\""+outDraftSrc+"\" alt=\""+resources.getString("PubStateToValidate")+"\" align=\"absmiddle\" id=\"status\"/>");
 			else if ("Draft".equals(status))
-				out.println("<img src=\""+inDraftSrc+"\" alt=\""+resources.getString("PubStateDraft")+"\" align=\"absmiddle\">");
+				out.println("<img src=\""+inDraftSrc+"\" alt=\""+resources.getString("PubStateDraft")+"\" align=\"absmiddle\" id=\"status\"/>");
 			else if ("Valid".equals(status))
-				out.println("<img src=\""+validateSrc+"\" alt=\""+resources.getString("PublicationValidated")+"\" align=\"absmiddle\">");
+				out.println("<img src=\""+validateSrc+"\" alt=\""+resources.getString("PublicationValidated")+"\" align=\"absmiddle\" id=\"status\"/>");
 			else if ("UnValidate".equals(status))
-				out.println("<img src=\""+refusedSrc+"\" alt=\""+resources.getString("PublicationRefused")+"\" align=\"absmiddle\">");
+				out.println("<img src=\""+refusedSrc+"\" alt=\""+resources.getString("PublicationRefused")+"\" align=\"absmiddle\" id=\"status\"/>");
 		}
     	
-		out.println("<br><b>"+EncodeHelper.javaStringToHtmlParagraphe(pubDetail.getDescription(language))+"<b><BR><BR>");
+		out.println("<br/><span class=\"publiDesc\">"+EncodeHelper.javaStringToHtmlParagraphe(pubDetail.getDescription(language))+"</span><br/><br/>");
 
-		out.println("</td><td valign=top align=\"right\">");
+		out.println("</td><td valign=\"top\" align=\"right\">");
 		
 		/*********************************************************************************************************************/
 		/** Affichage des boutons de navigation (next / previous)															**/
@@ -496,11 +497,11 @@ function zipPublication()
 		if (nbPublis.intValue() > 1) {
 	    %>
 			<!-- AFFICHAGE des boutons de navigation -->
-			<table border="0" cellspacing="0" cellpadding="0">
+			<table border="0" cellspacing="0" cellpadding="0" id="pagination">
 				<tr>
 					<td align="center" width="15">
 						<%	if ( !debut ) { %>
-							<a href="PreviousPublication"><img src="<%=resources.getIcon("kmelia.previous")%>" align="middle" border=0 alt="<%=resources.getString("kmelia.previous")%>" title="<%=resources.getString("kmelia.previous")%>"></a>
+							<a href="PreviousPublication"><img src="<%=resources.getIcon("kmelia.previous")%>" align="middle" border="0" alt="<%=resources.getString("kmelia.previous")%>" title="<%=resources.getString("kmelia.previous")%>"/></a>
 						<% } else { %>
 							&nbsp;
 						<% } %>
@@ -510,7 +511,7 @@ function zipPublication()
 				    </td>
 					<td align="center" width="15">
 						<% if ( !fin ) { %>
-							<a href="NextPublication"><img src="<%=resources.getIcon("kmelia.next")%>" align="middle" border=0 alt="<%=resources.getString("kmelia.next")%>" title="<%=resources.getString("kmelia.next")%>"></a>
+							<a href="NextPublication"><img src="<%=resources.getIcon("kmelia.next")%>" align="middle" border="0" alt="<%=resources.getString("kmelia.next")%>" title="<%=resources.getString("kmelia.next")%>"/></a>
 						<% } else { %>
 							&nbsp;
 						<% } %>
@@ -520,13 +521,13 @@ function zipPublication()
 		<%
 		}
 		
-		out.println("</TD></TR></table>");
+		out.println("</td></tr></table>");
 		
 		/*********************************************************************************************************************/
 		/** Affichage du contenu de la publication																			**/
 		/*********************************************************************************************************************/
-		out.println("<TABLE border=\"0\" width=\"98%\" align=\"center\">");
-		out.println("<TR><TD valign=\"top\" width=\"100%\" id=\"richContent\">");
+		out.println("<table border=\"0\" width=\"98%\" align=\"center\">");
+		out.println("<tr><td valign=\"top\" width=\"100%\" id=\"richContent\">");
     	if (WysiwygController.haveGotWysiwyg(spaceId, componentId, id)) {
         	out.flush();
         	getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+id+"&SpaceId="+spaceId+"&ComponentId="+componentId+"&Language="+language+"&axisId="+kmeliaScc.getAxisIdGlossary()+"&onlyFirst="+highlightFirst).include(request, response);
@@ -552,7 +553,7 @@ function zipPublication()
 				<%
 		    }
     	}
-    	out.println("</TD>");
+    	out.println("</td>");
     	
     	/*********************************************************************************************************************/
 		/** Affichage des fichiers joints																					**/
@@ -573,13 +574,13 @@ function zipPublication()
 		boolean showIcon = true;
 		if (infos != null) {
 		    if (!"bottom".equals(resources.getSetting("attachmentPosition"))) {
-				out.println("<TD valign=\"top\" align=\"center\">");
-				out.println("<A NAME=attachments></a>");
+				out.println("<td valign=\"top\" align=\"center\">");
+				out.println("<a name=\"attachments\"></a>");
 		   	}
 		   	else {
-				out.println("</TR><TR>");
-				out.println("<TD valign=\"top\" align=\"left\">");
-				out.println("<A NAME=attachments></a>");
+				out.println("</tr><tr>");
+				out.println("<td valign=\"top\" align=\"left\">");
+				out.println("<a name=\"attachments\"></a>");
 		    }
 			try
 			{
@@ -597,19 +598,19 @@ function zipPublication()
 			{
 				throw new KmeliaException("JSPpublicationManager.displayUserModelAndAttachmentsView()",SilverpeasException.ERROR,"root.EX_DISPLAY_ATTACHMENTS_FAILED", e);
 			}
-			out.println("</TD>");
-		    out.println("</TR>");
+			out.println("</td>");
+		    out.println("</tr>");
 		}
-    	out.println("</TABLE>");
+    	out.println("</table>");
     	
-    	out.println("<CENTER>");
+    	out.println("<center>");
     	out.print("<span class=\"txtBaseline\">");
     	if (kmeliaScc.isAuthorUsed() && pubDetail.getAuthor() != null && !pubDetail.getAuthor().equals(""))
 		{
-			out.print("<BR>");
+			out.print("<br/>");
 			out.print(resources.getString("GML.author")+" : "+pubDetail.getAuthor());
 		}
-    	out.print("<BR>");
+    	out.print("<br/>");
     	    	
 		out.print(creatorName+" - "+resources.getOutputDate(pubDetail.getCreationDate()));
 		if (updaterId != null)
@@ -632,28 +633,29 @@ function zipPublication()
     	}
 		
 		out.print("</span>");
-		out.println("</CENTER>");
+		out.println("</center>");
 		
 		out.flush();
 
         out.println(frame.printAfter());
         out.println(window.printAfter());
 %>
-<FORM NAME="pubForm" ACTION="<%=routerUrl%>publication.jsp" METHOD="POST">
-	<input type="hidden" name="Action">
-	<input type="hidden" name="PubId">
-	<input type="hidden" name="Profile" value="<%=profile%>">
-</FORM>
-<FORM NAME="refusalForm" action="<%=routerUrl%>Unvalidate">
-  	<input type="hidden" name="PubId" value="<%=id%>">
-  	<input type="hidden" name="Motive" value="">
-</FORM>
-<FORM NAME="defermentForm" ACTION="<%=routerUrl%>SuspendPublication" METHOD="POST">
-  	<input type="hidden" name="PubId" value="<%=id%>">
-  	<input type="hidden" name="Motive" value="">
-</FORM>
-<FORM name="toRouterForm">
-	<input type="hidden" name="PubId" value="<%=id%>">
-</FORM>
-</BODY>
-</HTML>
+<form name="pubForm" action="<%=routerUrl%>publication.jsp" method="POST">
+	<input type="hidden" name="Action"/>
+	<input type="hidden" name="PubId"/>
+	<input type="hidden" name="Profile" value="<%=profile%>"/>
+</form>
+<form name="refusalForm" action="<%=routerUrl%>Unvalidate">
+  	<input type="hidden" name="PubId" value="<%=id%>"/>
+  	<input type="hidden" name="Motive" value=""/>
+</form>
+<form name="defermentForm" action="<%=routerUrl%>SuspendPublication" method="POST">
+  	<input type="hidden" name="PubId" value="<%=id%>"/>
+  	<input type="hidden" name="Motive" value=""/>
+</form>
+<form name="toRouterForm">
+	<input type="hidden" name="PubId" value="<%=id%>"/>
+</form>
+</div>
+</body>
+</html>

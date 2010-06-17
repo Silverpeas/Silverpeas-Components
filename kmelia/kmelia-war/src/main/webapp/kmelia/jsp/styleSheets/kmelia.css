@@ -72,3 +72,22 @@
 #sortingList #sort7 {
 	display: none;
 }
+
+#preview .publiName {
+	font-size: 10pt;
+	font-weight: bold;
+	color: #000000
+}
+
+#preview .publiDesc {
+	font-weight: bold;
+}
+
+#preview #pagination {
+	display: block;
+	float: right;
+}
+
+#sortingList {
+	float: right;
+}
