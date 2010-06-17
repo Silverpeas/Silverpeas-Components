@@ -35,6 +35,7 @@
 <%
 String componentId 	= request.getParameter("ComponentId");
 String language 	= request.getParameter("Language");
+String fieldName    = request.getParameter("FieldName");
 
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>
@@ -45,7 +46,11 @@ String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getStrin
 <script language="javascript">
 function selectImage(url)
 {
+<%if(fieldName != null){%>
+    window.opener.choixImageInGallery<%=fieldName%>(url);
+<%}else{%>
 	window.opener.choixImageInGallery(url);
+<%}%>
 	window.close();
 }
 </script>
