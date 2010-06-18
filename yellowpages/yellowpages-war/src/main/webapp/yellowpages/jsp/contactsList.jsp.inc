@@ -1,5 +1,4 @@
-﻿<%!
-
+<%!
 void displayContactsAdmin(String contactCard, YellowpagesSessionController yellowpagesScc,String profile ,Collection contacts, boolean subtopicsExist, String contactDeleteIcon, GraphicElementFactory gef, javax.servlet.ServletRequest request, javax.servlet.http.HttpSession session, ResourcesWrapper resources, JspWriter out) throws IOException {
     ContactDetail contact;
     UserContact userContact;
@@ -79,9 +78,6 @@ void displayContactsUser(YellowpagesSessionController yellowpagesScc,
       JspWriter out)
       throws IOException {
 
-    // fonction initialement dans contactsList.jsp.inc
-    //                            --------------------
-
     Iterator iterator = contacts.iterator();
     int indexLastNameColumn = 1;
 
@@ -97,7 +93,7 @@ void displayContactsUser(YellowpagesSessionController yellowpagesScc,
       arrayPane.setVisibleLineNumber(-1);
     }
 
-    // recherche des colonnes à afficher
+    // recherche des colonnes Ã  afficher
     List arrayHeaders = yellowpagesScc.getArrayHeaders();
     Iterator it = arrayHeaders.iterator();
     while (it.hasNext()) {
@@ -117,7 +113,7 @@ void displayContactsUser(YellowpagesSessionController yellowpagesScc,
       contactFather = (ContactFatherDetail) iterator.next();
       contact = contactFather.getContactDetail();
       userFull = contact.getUserFull();
-      nodeName = Encode.javaStringToHtmlString(contactFather.getNodeName());
+      nodeName = contactFather.getNodeName();
       fatherId = contactFather.getNodeId();
       if (fatherId.equals("0")) {
         nodeName = Encode.javaStringToHtmlString(componentLabel);
