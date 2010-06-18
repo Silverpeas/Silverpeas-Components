@@ -28,12 +28,10 @@
 			response.setHeader("Pragma", "no-cache"); //HTTP 1.0
 			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
-
 <%@ include file="checkYellowpages.jsp"%>
 <%@ include file="contactsList.jsp.inc" %>
-
-
-<%!private String afficheArbo(String idNodeSelected,
+<%!
+private String afficheArbo(String idNodeSelected,
 			YellowpagesSessionController yellowpagesScc, int nbEsp)
 			throws Exception {
 		StringBuffer resultat = new StringBuffer();
@@ -71,7 +69,6 @@
 		return resultat.toString();
 	}
 %>
-
 <%
   Collection contacts = (Collection) request.getAttribute("Contacts");
 			TopicDetail currentTopic = (TopicDetail) request
@@ -98,7 +95,6 @@
 				id = "group_" + group.getId();
 			}
 %>
-
 <HTML>
 <HEAD>
 <%
@@ -221,18 +217,18 @@ function exportCSV(){
 			out.println(board.printBefore());
 %>
 
-<TABLE CELLPADDING=1 CELLSPACING=0 BORDER=0 WIDTH="98%">
-	<FORM NAME="topicDetailForm" action="javaScript:search()" METHOD=POST>
-	<input type="hidden" name="Action"> <input type="hidden"
-		name="Id" value="<%=id%>">
-	<TR>
+<table cellpadding="1" cellspacing="0" border="0" width="98%">
+	<form name="topicDetailForm" action="javaScript:search()" method="post">
+	<input type="hidden" name="Action"/> <input type="hidden"
+		name="Id" value="<%=id%>"/>
+	<tr>
 		<td><!--Recherche-->
-		<TABLE CELLPADDING=5 CELLSPACING=2 BORDER=0 WIDTH="98%">
+		<table cellpadding="5" cellspacing="2" border="0" width="98%">
 			<TR>
-				<TD CLASS=intfdcolor4 NOWRAP>
-				<table cellpadding=0 cellspacing=0 border=0 width="100%">
+				<td class="intfdcolor4" nowrap="nowrap">
+				<table cellpadding="0" cellspacing="0" border="0" width="100%">
 					<tr>
-						<td nowrap valign="middle"><span class="textePetitBold">
+						<td nowrap="nowrap" valign="middle"><span class="textePetitBold">
 						<img src="<%=resources.getIcon("yellowpages.aide")%>"
 							align="absbottom" border="0"
 							onmouseover="return overlib('<%=Encode.javaStringToJsString(resources
@@ -268,9 +264,8 @@ function exportCSV(){
 						<td valign="middle">
 						<%
 						  ButtonPane buttonPane = gef.getButtonPane();
-									buttonPane.addButton((Button) gef.getFormButton("Ok",
-											"javaScript:search()", false));
-									out.println(buttonPane.print());
+						  buttonPane.addButton((Button) gef.getFormButton("Ok", "javaScript:search()", false));
+ 						  out.println(buttonPane.print());
 						%>
 						</td>
 					</tr>
@@ -283,12 +278,12 @@ function exportCSV(){
 		  CompoSpace[] instances = yellowpagesScc.getYellowPagesInstances();
 					if ((instances != null) && (instances.length > 1)) {
 		%>
-		<TD><!--Container--> <!--Accès aux autres annuaires-->
-		<table cellpadding=2 cellspacing=1 border=0 width="100%">
+		<td><!--Container--> <!--Accès aux autres annuaires-->
+		<table cellpadding="2" cellspacing="1" border="0" width="100%" id="otherComponents">
 			<tr>
-				<td align=center nowrap width="100%" height="24"><span
-					class=selectNS> <select name="select2"
-					onChange="window.open(this.options[this.selectedIndex].value,'_self')">
+				<td align="center" nowrap="nowrap" width="100%" height="24"><span
+					class="selectNS"> <select name="select2"
+					onchange="window.open(this.options[this.selectedIndex].value,'_self')">
 					<option selected><%=resources.getString("Access")%></option>
 					<%
 					  for (int i = 0; i < instances.length; i++) {
@@ -321,10 +316,10 @@ function exportCSV(){
 		  }
 		%>
 		<td><!--Accès aux categories-->
-		<table cellpadding=2 cellspacing=1 border=0 width="100%">
+		<table cellpadding="2" cellspacing="1" border="0" width="100%">
 			<tr>
-				<td align=center nowrap width="100%" height="24"><span
-					class=selectNS> <select name="selectTopic"
+				<td align="center" nowrap="nowrap" width="100%" height="24"><span
+					class="selectNS"> <select name="selectTopic"
 					onChange="topicGoToSelected()">
 					<%=afficheArbo(id, yellowpagesScc, 0)%>
 				</select> </span></td>
@@ -353,12 +348,12 @@ function exportCSV(){
 			if (nodeDesc != null && !nodeDesc.equals("")) {
 %>
 <div align="left">&nbsp;&nbsp;<b><%=nodeName%>&nbsp;:&nbsp;</b><%=nodeDesc%></div>
-<br>
+<br/>
 <%
   }
 
 			out.println(board.printAfter());
-			out.println("<br>");
+			out.println("<br/>");
 			displayContactsUser(yellowpagesScc, contacts, id, componentLabel,
 					gef, request, session, resources, out);
 
@@ -366,10 +361,10 @@ function exportCSV(){
 			out.println(window.printAfter());
 %>
 </form>
-<FORM NAME="contactForm" ACTION="contactManager.jsp"
-	target="contactWindow" METHOD="POST"><input type="hidden"
-	name="Action"> <input type="hidden" name="ContactId"> <input
-	type="hidden" name="TopicId"> <input type="hidden" name="Path">
-</FORM>
+<form name="contactForm" action="contactManager.jsp"
+	target="contactWindow" method="POST"><input type="hidden"
+	name="Action"/> <input type="hidden" name="ContactId"/> <input
+	type="hidden" name="TopicId"/> <input type="hidden" name="Path"/>
+</form>
 </body>
-</HTML>
+</html>
