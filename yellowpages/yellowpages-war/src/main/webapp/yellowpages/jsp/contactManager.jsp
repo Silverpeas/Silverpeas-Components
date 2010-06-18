@@ -495,10 +495,11 @@ else if (action.equals("ViewContact")) {
 		PagesContext context = (PagesContext) request.getAttribute("PagesContext"); 
 
 		browseBar.setPath(resources.getString("BBarconsultManager"));
-    operationPane = window.getOperationPane();
+		browseBar.setClickable(false);
+    	operationPane = window.getOperationPane();
 		operationPane.addOperation(resources.getIcon("yellowpages.contactPrint"), resources.getString("GML.print"), "javaScript:window.print();");
 
-    out.println(window.printBefore());
+    	out.println(window.printBefore());
 		out.println(frame.printBefore());
 		out.println(board.printBefore());
 

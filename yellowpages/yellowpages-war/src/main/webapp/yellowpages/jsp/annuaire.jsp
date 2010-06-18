@@ -104,11 +104,9 @@
 <%
   out.println(gef.getLookStyleSheet());
 %>
-<SCRIPT LANGUAGE="JAVASCRIPT"
-	SRC="<%=m_context%>/util/javaScript/animation.js"></SCRIPT>
-<SCRIPT LANGUAGE="JAVASCRIPT"
-	SRC="<%=m_context%>/util/javaScript/overlib.js"></SCRIPT>
-<SCRIPT LANGUAGE="JavaScript">
+<script LANGUAGE="JAVASCRIPT" SRC="<%=m_context%>/util/javaScript/animation.js"></script>
+<script LANGUAGE="JAVASCRIPT" SRC="<%=m_context%>/util/javaScript/overlib.js"></script>
+<script LANGUAGE="JavaScript">
 var printWindow = window;
 var contactWindow = window;
 function printList(){
@@ -183,10 +181,12 @@ function clearCell() {
 	document.topicDetailForm.SearchCriteria.value = ""; //vide la cellule
 }
 
-
-</SCRIPT>
+function exportCSV(){
+	printWindow = SP_openWindow("ExportCSV", "printWindow", '400', '200', 'scrollbars=yes, alwayRaised');
+}
+</script>
 </HEAD>
-<BODY marginwidth=5 marginheight=5 leftmargin=5 topmargin=5>
+<body id="<%=componentId %>">
 <%
   Window window = gef.getWindow();
 
@@ -200,6 +200,8 @@ function clearCell() {
 				operationPane.addOperation(resources
 						.getIcon("yellowpages.printPage"), resources
 						.getString("GML.print"), "javaScript:printList();");
+				
+				operationPane.addOperation("useless", resources.getString("GML.ExportCSV"), "javaScript:exportCSV();");
 			}
 
 			Frame frame = gef.getFrame();
@@ -369,5 +371,5 @@ function clearCell() {
 	name="Action"> <input type="hidden" name="ContactId"> <input
 	type="hidden" name="TopicId"> <input type="hidden" name="Path">
 </FORM>
-</BODY>
+</body>
 </HTML>

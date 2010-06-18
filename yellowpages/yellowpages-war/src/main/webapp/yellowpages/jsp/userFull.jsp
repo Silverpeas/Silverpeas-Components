@@ -54,6 +54,7 @@ BrowseBar browseBar = window.getBrowseBar();
 browseBar.setDomainName(spaceLabel);
 browseBar.setComponentName(componentLabel);
 browseBar.setPath(resources.getString("BBarconsultManager"));
+browseBar.setClickable(false);
 
 out.println(window.printBefore());
 out.println(frame.printBefore());

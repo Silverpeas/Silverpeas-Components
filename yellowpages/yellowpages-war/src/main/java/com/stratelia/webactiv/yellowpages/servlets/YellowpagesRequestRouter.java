@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.yellowpages.servlets;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -47,6 +48,8 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserFull;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.contact.model.ContactDetail;
 import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
@@ -65,7 +68,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     ComponentSessionController component =
         (ComponentSessionController) new YellowpagesSessionController(
-            mainSessionCtrl, componentContext);
+        mainSessionCtrl, componentContext);
     return component;
   }
 
@@ -294,8 +297,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
                 + ":" + xmlFormShortName, xmlFormName);
             PublicationTemplateImpl pubTemplate =
                 (PublicationTemplateImpl) PublicationTemplateManager
-                    .getPublicationTemplate(scc.getComponentId() + ":"
-                    + xmlFormShortName, xmlFormName);
+                .getPublicationTemplate(scc.getComponentId() + ":"
+                + xmlFormShortName, xmlFormName);
 
             // création du formulaire et du DataRecord
             Form formView = pubTemplate.getViewForm();
@@ -349,7 +352,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         destination = getDestination("topicManager", scc, request);
       } else if (function.equals("ModelUsed")) {
         try {
-          List<PublicationTemplate> templates = PublicationTemplateManager.getPublicationTemplates();
+          List<PublicationTemplate> templates =
+              PublicationTemplateManager.getPublicationTemplates();
           request.setAttribute("XMLForms", templates);
         } catch (Exception e) {
           SilverTrace.info("yellowPages",
@@ -427,8 +431,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
                 + ":" + xmlFormShortName, xmlFormName);
             PublicationTemplateImpl pubTemplate =
                 (PublicationTemplateImpl) PublicationTemplateManager
-                    .getPublicationTemplate(scc.getComponentId() + ":"
-                    + xmlFormShortName, xmlFormName);
+                .getPublicationTemplate(scc.getComponentId() + ":"
+                + xmlFormShortName, xmlFormName);
 
             // création du formulaire et du DataRecord
             Form formUpdate = pubTemplate.getUpdateForm();
@@ -462,8 +466,8 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
                 + ":" + xmlFormShortName, xmlFormName);
             PublicationTemplateImpl pubTemplate =
                 (PublicationTemplateImpl) PublicationTemplateManager
-                    .getPublicationTemplate(scc.getComponentId() + ":"
-                    + xmlFormShortName, xmlFormName);
+                .getPublicationTemplate(scc.getComponentId() + ":"
+                + xmlFormShortName, xmlFormName);
 
             // création du formulaire et du DataRecord
             Form formUpdate = pubTemplate.getUpdateForm();
@@ -524,6 +528,18 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         scc.deleteBasketContent();
         // Back to topic
         destination = getDestination("topicManager", scc, request);
+      } else if ("ExportCSV".equals(function)) {
+        String csvFilename = scc.exportAsCSV();
+        request.setAttribute("CSVFilename", csvFilename);
+        if (StringUtil.isDefined(csvFilename)) {
+          File file = new File(FileRepositoryManager.getTemporaryPath() + csvFilename);
+          request.setAttribute("CSVFileSize", Long.valueOf(file.length()));
+          request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename,
+              csvFilename, "text/csv"));
+          file = null;
+        }
+
+        return "/yellowpages/jsp/downloadCSV.jsp";
       } else {
         destination = "/yellowpages/jsp/" + function;
       }
