@@ -91,3 +91,7 @@
 #sortingList {
 	float: right;
 }
+
+#templates .template {
+	text-align: center;
+}

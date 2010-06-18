@@ -96,7 +96,7 @@ function closeWindows() {
 }
 </script>
 </HEAD>
-<BODY onUnload="closeWindows()">
+<BODY onUnload="closeWindows()" id="<%=componentId%>">
 <%
     Window window = gef.getWindow();
     Frame frame = gef.getFrame();
@@ -111,14 +111,15 @@ function closeWindows() {
 
     out.println(window.printBefore());
 
-    if ("progress".equals(wizard))
-    		displayWizardOperations(wizardRow, pubId, kmeliaScc, gef, "ModelChoice", resources, out, kmaxMode);
-    else
-    {
-	    if (isOwner)
+    if ("progress".equals(wizard)) {
+    	displayWizardOperations(wizardRow, pubId, kmeliaScc, gef, "ModelChoice", resources, out, kmaxMode);
+    }
+    else {
+	    if (isOwner) {
 	        displayAllOperations(pubId, kmeliaScc, gef, "ModelChoice", resources, out, kmaxMode);
-	    else
+	    } else {
 	        displayUserOperations(pubId, kmeliaScc, gef, "ModelChoice", resources, out, kmaxMode);
+	    }
     }
     out.println(frame.printBefore());
     
@@ -137,21 +138,21 @@ function closeWindows() {
 	out.println(board.printBefore());
 %>
 
-<TABLE CELLPADDING=5 WIDTH="100%">
-  <TR><TD colspan="3" class="txtnav"><%=resources.getString("ModelChoiceTitle")%></TD></TR>
+<table cellpadding="5" width="100%" id="templates">
+  <tr><td colspan="3" class="txtnav"><%=resources.getString("ModelChoiceTitle")%></td></tr>
 <%
     ModelDetail modelDetail;
     int nb = 0;
-    out.println("<TR>");
+    out.println("<tr>");
     Iterator iterator = dbForms.iterator();
     while (iterator.hasNext()) {
         modelDetail = (ModelDetail) iterator.next();
         
         if (nb != 0 && nb%3==0)
-	        out.println("</TR><TR>");
+	        out.println("</tr><tr>");
 	        
         nb++;
-        out.println("<TD align=\"center\"><A href=\"javaScript:changeModel('"+modelDetail.getId()+"')\"><IMG SRC=\"../../util/icons/model/"+modelDetail.getImageName()+"\" border=\"0\" alt=\""+modelDetail.getDescription()+"\"><BR>"+modelDetail.getName()+"</A></TD>");
+        out.println("<td class=\"template\"><a href=\"javaScript:changeModel('"+modelDetail.getId()+"')\"><img src=\"../../util/icons/model/"+modelDetail.getImageName()+"\" border=\"0\" alt=\""+modelDetail.getDescription()+"\"/><br/>"+modelDetail.getName()+"</a></td>");
     }
     
     if (xmlForms != null)
@@ -164,26 +165,25 @@ function closeWindows() {
 	        
 	        if (nb != 0 && nb%3==0)
 	        {
-		        out.println("</TR><TR>");
+		        out.println("</tr><tr>");
 	        }   
 	        nb++;
 	        
 	        thumbnail = xmlForm.getThumbnail();
-	        if (!StringUtil.isDefined(thumbnail))
-	        {
+	        if (!StringUtil.isDefined(thumbnail)) {
 	          thumbnail = PublicationTemplate.DEFAULT_THUMBNAIL;
 	        }
-	        out.println("<TD align=\"center\"><A href=\"javaScript:goToForm('"+xmlForm.getFileName()+"')\"><IMG SRC=\""+thumbnail+"\" border=\"0\" alt=\""+xmlForm.getDescription()+"\"><BR>"+xmlForm.getName()+"</A></TD>");
+	        out.println("<td class=\"template\"><a href=\"javaScript:goToForm('"+xmlForm.getFileName()+"')\"><img src=\""+thumbnail+"\" border=\"0\" alt=\""+xmlForm.getDescription()+"\"/><br/>"+xmlForm.getName()+"</a></td>");
 	    }
 	}
     
 	if (wysiwygValid)
 	{
 	    if (nb != 0 && nb%3 == 0)
-			out.println("</TR><TR>");
+			out.println("</tr><tr>");
 			
-	    out.println("<TD align=\"center\"><A href=\"javaScript:sendToWysiwyg();\"><IMG SRC=\"../../util/icons/model/wysiwyg.gif\" border=\"0\" alt=\"Wysiwyg\"><BR>WYSIWYG</A></TD>");
-	    out.println("</TR>");
+	    out.println("<td class=\"template\"><a href=\"javaScript:sendToWysiwyg();\"><img src=\"../../util/icons/model/wysiwyg.gif\" border=\"0\" alt=\"Wysiwyg\"/><br/>WYSIWYG</a></td>");
+	    out.println("</tr>");
 	}
 %>
 </TABLE>
@@ -196,22 +196,22 @@ function closeWindows() {
 		buttonPane.addButton(nextButton);
 		buttonPane.addButton(cancelButton);
 		buttonPane.setHorizontalPosition();
-		out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+		out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
 	}
     out.println(frame.printAfter());
 %>
 
-<FORM NAME="modelForm" ACTION="modelManager.jsp" METHOD="POST">
-	<input type="hidden" name="ModelId">
-	<input type="hidden" name="PubId" value="<%=pubId%>">
-	<input type="hidden" name="Action">
-</FORM>
-<form name="toWysiwyg" Action="ToWysiwyg" method="Post">
+<form name="modelForm" action="modelManager.jsp" method="post">
+	<input type="hidden" name="ModelId"/>
+	<input type="hidden" name="PubId" value="<%=pubId%>"/>
+	<input type="hidden" name="Action"/>
 </form>
-<FORM NAME="xmlForm" ACTION="GoToXMLForm" METHOD="POST">
-	<input type="hidden" name="Name">
-	<input type="hidden" name="PubId" value="<%=pubId%>">
-</FORM>
+<form name="toWysiwyg" action="ToWysiwyg" method="post"/>
+</form>
+<form name="xmlForm" action="GoToXMLForm" method="post">
+	<input type="hidden" name="Name"/>
+	<input type="hidden" name="PubId" value="<%=pubId%>"/>
+</form>
 <% out.println(window.printAfter()); %>
 </BODY>
 </HTML>

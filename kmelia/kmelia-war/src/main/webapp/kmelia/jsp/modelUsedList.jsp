@@ -34,16 +34,13 @@ Collection			modelUsed	= (Collection) request.getAttribute("ModelUsed");
 
 String linkedPathString = kmeliaScc.getSessionPath();
 
-//Icons
-String hLineSrc = m_context + "/util/icons/colorPix/1px.gif";
-
 // d�claration des boutons
 Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData();", false);
 Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main", false);
 
 %>
-<HTML>
-<HEAD>
+<html>
+<head>
 <% out.println(gef.getLookStyleSheet()); %>
 <script language="javaScript">
 
@@ -57,8 +54,8 @@ function closeWindows() {
         window.publicationWindow.close();
 }
 </script>
-</HEAD>
-<BODY onUnload="closeWindows()">
+</head>
+<body onUnload="closeWindows()" id="<%=componentId%>">
 <%
     Window window = gef.getWindow();
     Frame frame = gef.getFrame();
@@ -74,21 +71,21 @@ function closeWindows() {
     out.println(frame.printBefore());
     out.println(board.printBefore());
 %>
-<form name="model" action="SelectModel" method="POST">
-<input type="hidden" name="mode">
+<form name="model" action="SelectModel" method="post">
+<input type="hidden" name="mode"/>
 
-<TABLE CELLPADDING=5 WIDTH="100%">
-  <TR><TD colspan="3" class="txtnav"><%=resources.getString("kmelia.ModelList")%></TD></TR>
+<table cellpadding="5" width="100%" id="templates">
+  <tr><td colspan="3" class="txtnav"><%=resources.getString("kmelia.ModelList")%></td></tr>
 <%
     ModelDetail modelDetail;
     int nb = 0;
-    out.println("<TR>");
+    out.println("<tr>");
     Iterator iterator = dbForms.iterator();
     while (iterator.hasNext()) {
         modelDetail = (ModelDetail) iterator.next();
         
         if (nb != 0 && nb%3==0)
-	        out.println("</TR><TR>");
+	        out.println("</tr><tr>");
 	        
         nb++;
         // recherche si le mod�le est dans la liste
@@ -101,7 +98,7 @@ function closeWindows() {
 		if (used)
 			usedCheck = "checked";
 		
-        out.println("<TD align=\"center\"><IMG SRC=\"../../util/icons/model/"+modelDetail.getImageName()+"\" border=\"0\" alt=\""+modelDetail.getDescription()+"\"><BR>"+modelDetail.getName()+"<BR><input type=\"checkbox\" name=\"modelChoice\" value=\""+modelDetail.getId()+"\" "+usedCheck+"></A></TD>");
+        out.println("<td class=\"template\"><img src=\"../../util/icons/model/"+modelDetail.getImageName()+"\" border=\"0\" alt=\""+modelDetail.getDescription()+"\"/><br/>"+modelDetail.getName()+"<br/><input type=\"checkbox\" name=\"modelChoice\" value=\""+modelDetail.getId()+"\" "+usedCheck+"/></a></td>");
     }
     
     if (xmlForms != null)
@@ -113,7 +110,7 @@ function closeWindows() {
 	        xmlForm = (PublicationTemplate) iterator.next();
 	        
 	        if (nb != 0 && nb%3==0)
-		        out.println("</TR><TR>");
+		        out.println("</tr><tr>");
 		        
 	        nb++;
 			// recherche si le mod�le est dans la liste
@@ -132,12 +129,12 @@ function closeWindows() {
 	        	thumbnail = PublicationTemplate.DEFAULT_THUMBNAIL;
 	      	}
 			
-	        out.println("<TD align=\"center\"><IMG SRC=\""+thumbnail+"\" border=\"0\" alt=\""+xmlForm.getDescription()+"\"><BR>"+xmlForm.getName()+"<BR><input type=\"checkbox\" name=\"modelChoice\" value=\""+xmlForm.getFileName()+"\" "+usedCheck+"></TD>");
+	        out.println("<td class=\"template\"><img src=\""+thumbnail+"\" border=\"0\" alt=\""+xmlForm.getDescription()+"\"/><br/>"+xmlForm.getName()+"<br/><input type=\"checkbox\" name=\"modelChoice\" value=\""+xmlForm.getFileName()+"\" "+usedCheck+"/></td>");
 	    }
 	}
     
 	if (nb != 0 && nb%3 == 0)
-		out.println("</TR><TR>");
+		out.println("</tr><tr>");
 	// recherche si le mod�le est dans la liste
     boolean used = false;
     Iterator it = modelUsed.iterator();
@@ -149,23 +146,23 @@ function closeWindows() {
 	if (used)
 		usedCheck = "checked";	
 	
-    out.println("<TD align=\"center\"><IMG SRC=\"../../util/icons/model/wysiwyg.gif\" border=\"0\" alt=\"Wysiwyg\"><BR>WYSIWYG<BR><input type=\"checkbox\" name=\"modelChoice\" value=\"WYSIWYG\" "+usedCheck+"></A></TD>");
-    out.println("</TR>");
+    out.println("<td class=\"template\"><img src=\"../../util/icons/model/wysiwyg.gif\" border=\"0\" alt=\"Wysiwyg\"/><br/>WYSIWYG<br/><input type=\"checkbox\" name=\"modelChoice\" value=\"WYSIWYG\" "+usedCheck+"/></a></td>");
+    out.println("</tr>");
     
 %>
 </form>
 
-</TABLE>
+</table>
 
 <%
 	out.println(board.printAfter());
 	ButtonPane buttonPane = gef.getButtonPane();
 	buttonPane.addButton(validateButton);
 	buttonPane.addButton(cancelButton);
-	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+	out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
     out.println(frame.printAfter());
 %>
 
 <% out.println(window.printAfter()); %>
-</BODY>
-</HTML>
+</body>
+</html>
