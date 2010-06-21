@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2009 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://repository.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<dataset>
+  <sc_projectmanager_tasks id="1000"  mereid="-1" chrono="10" nom="Tache de Test 1"
+ description="Tache de test sans resource" organisateurid="5" responsableid="6"
+ charge="10.5" consomme="2.8" raf="7.7" avancement="27" statut="0" datedebut="2010/05/20"
+ datefin="2100/06/15" codeprojet="Silverpeas" descriptionprojet="Silverpeas est un portail collaboratif"
+ estdecomposee="0" instanceid="projectManager100" path="/1000/" previousid="-1" />
+
+  <sc_projectmanager_tasks id="1001"  mereid="-1" chrono="20" nom="Tache de mon projet"
+ description="Tache de test avec resource" organisateurid="3" responsableid="10"
+ charge="20" consomme="6.9" raf="12.4" avancement="27" statut="0" datedebut="2010/05/20"
+ datefin="2010/06/15" codeprojet="projet_pilote" descriptionprojet="Mon projet"
+ estdecomposee="1" instanceid="projectManager100" path="/1001/" previousid="-1" />
+  <sc_projectmanager_tasks id="1010"  mereid="1001" chrono="5" nom="Sous tache de mon projet 1"
+ description="Tache de test avec resource" organisateurid="3" responsableid="10"
+ charge="10.5" consomme="2.8" raf="7.7" avancement="27" statut="0" datedebut="2010/05/20"
+ datefin="2010/06/15" codeprojet="projet_pilote" descriptionprojet="Mon projet"
+ estdecomposee="0" instanceid="projectManager100" path="/1001/1010" previousid="-1" />
+  <sc_projectmanager_tasks id="1020"  mereid="1001" chrono="5" nom="Sous tache de mon projet 2"
+ description="Tache de test avec resource" organisateurid="4" responsableid="10"
+ charge="9.5" consomme="10" raf="0.0" avancement="27" statut="3" datedebut="2010/05/20"
+ datefin="2010/06/15" codeprojet="projet_pilote" descriptionprojet="Mon projet"
+ estdecomposee="0" instanceid="projectManager100" path="/1001/1020" previousid="-1" />
+
+
+  <sc_projectmanager_resources id="900" taskid="1000" resourceid="50"  charge="10"
+  instanceid="projectManager100" />
+  <sc_projectmanager_resources id="901" taskid="1000" resourceid="30"  charge="5"
+  instanceid="projectManager100" />
+  <sc_projectmanager_resources id="501" taskid="1001" resourceid="3"  charge="10"
+  instanceid="projectManager100" />
+  <sc_projectmanager_resources id="502" taskid="1001" resourceid="5"  charge="10"
+  instanceid="projectManager100" />
+  <sc_projectmanager_resources id="510" taskid="1010" resourceid="3"  charge="3"
+  instanceid="projectManager100" />
+  <sc_projectmanager_resources id="511" taskid="1010" resourceid="5"  charge="7"
+  instanceid="projectManager100" />
+  <sc_projectmanager_resources id="512" taskid="1010" resourceid="8"  charge="3"
+  instanceid="projectManager100" />
+  <sc_projectmanager_resources id="521" taskid="1020" resourceid="5"  charge="7"
+  instanceid="projectManager100" />
+</dataset>

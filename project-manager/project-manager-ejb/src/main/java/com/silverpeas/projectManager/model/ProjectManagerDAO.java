@@ -35,7 +35,6 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -51,15 +50,14 @@ public class ProjectManagerDAO {
 
   // the date format used in database to represent a date
   private static SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
-  private final static String PROJECTMANAGER_TASKS_TABLENAME = "SC_ProjectManager_Tasks";
-  private final static String PROJECTMANAGER_RESOURCES_TABLENAME = "SC_ProjectManager_Resources";
+  private final static String PROJECTMANAGER_TASKS_TABLENAME = "sc_projectmanager_tasks";
+  private final static String PROJECTMANAGER_RESOURCES_TABLENAME = "sc_projectmanager_resources";
 
   private static int getChrono(Connection con, String instanceId)
       throws SQLException {
-    StringBuffer query = new StringBuffer(128);
-    query.append("select max(chrono) ");
-    query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
-    query.append(" where instanceId = ? ");
+    StringBuilder query = new StringBuilder(128);
+    query.append("SELECT MAX(chrono) FROM ").append(PROJECTMANAGER_TASKS_TABLENAME).append(
+        " WHERE instanceId = ? ");
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -82,13 +80,14 @@ public class ProjectManagerDAO {
       throws SQLException, UtilException {
     SilverTrace.debug("projectManager", "ProjectManagerDAO.addTask()",
         "root.MSG_GEN_ENTER_METHOD", task.toString());
-    StringBuffer insertStatement = new StringBuffer(128);
-    insertStatement.append("insert into ").append(
-        PROJECTMANAGER_TASKS_TABLENAME);
-    insertStatement
-        .append(" values ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ?, ?, ? , ? , ? )");
+    StringBuilder insertStatement = new StringBuilder();
+    insertStatement.append("INSERT INTO ").append(PROJECTMANAGER_TASKS_TABLENAME);
+    insertStatement.append("(id, mereid, chrono, nom, description, organisateurid, responsableid, ");
+    insertStatement.append("charge, consomme, raf, avancement, statut, datedebut, datefin, ");
+    insertStatement.append("codeprojet, descriptionprojet, estdecomposee, instanceid, path, ");
+    insertStatement.append("previousid) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ");
+    insertStatement.append("? , ? , ? , ?, ?, ? , ? , ? )");
     PreparedStatement prepStmt = null;
-
     int id = -1;
     try {
       prepStmt = con.prepareStatement(insertStatement.toString());
@@ -96,10 +95,11 @@ public class ProjectManagerDAO {
       id = DBUtil.getNextId(PROJECTMANAGER_TASKS_TABLENAME, "id");
       prepStmt.setInt(1, id);
       prepStmt.setInt(2, task.getMereId());
-      if (task.getMereId() == -1) // Project
+      if (task.getMereId() == -1) {
         prepStmt.setInt(3, 0);
-      else
+      } else {
         prepStmt.setInt(3, getChrono(con, task.getInstanceId()));
+      }
       prepStmt.setString(4, task.getNom());
       prepStmt.setString(5, task.getDescription());
       prepStmt.setInt(6, task.getOrganisateurId());
@@ -110,10 +110,11 @@ public class ProjectManagerDAO {
       prepStmt.setInt(11, task.getAvancement());
       prepStmt.setInt(12, task.getStatut());
       prepStmt.setString(13, date2DBDate(task.getDateDebut()));
-      if (task.getDateFin() != null)
+      if (task.getDateFin() != null) {
         prepStmt.setString(14, date2DBDate(task.getDateFin()));
-      else
+      } else {
         prepStmt.setString(14, "9999/99/99");
+      }
       prepStmt.setString(15, task.getCodeProjet());
       prepStmt.setString(16, task.getDescriptionProjet());
       prepStmt.setInt(17, task.getEstDecomposee());
@@ -143,26 +144,22 @@ public class ProjectManagerDAO {
       throws SQLException, UtilException {
     SilverTrace.debug("projectManager", "ProjectManagerDAO.addResources()",
         "root.MSG_GEN_ENTER_METHOD", resource.toString());
-    StringBuffer insertStatement = new StringBuffer(128);
-    insertStatement.append("insert into ").append(
-        PROJECTMANAGER_RESOURCES_TABLENAME);
-    insertStatement.append(" values ( ? , ? , ? , ? , ? )");
+    StringBuilder insertStatement = new StringBuilder();
+    insertStatement.append("INSERT INTO ").append(PROJECTMANAGER_RESOURCES_TABLENAME);
+    insertStatement.append("(id , taskid, resourceid, charge, instanceid) VALUES ( ? , ? , ? , ? , ? )");
     PreparedStatement prepStmt = null;
-
     int id = -1;
     try {
       prepStmt = con.prepareStatement(insertStatement.toString());
-
       id = DBUtil.getNextId(PROJECTMANAGER_RESOURCES_TABLENAME, "id");
       prepStmt.setInt(1, id);
       prepStmt.setInt(2, resource.getTaskId());
-      // prepStmt.setString(3, resource.getUserId());
       prepStmt.setInt(3, Integer.parseInt(resource.getUserId()));
       prepStmt.setInt(4, resource.getCharge());
       prepStmt.setString(5, resource.getInstanceId());
-
       prepStmt.executeUpdate();
     } finally {
+      DBUtil.close(prepStmt);
     }
     return id;
   }
@@ -172,11 +169,11 @@ public class ProjectManagerDAO {
     SilverTrace.debug("projectManager", "ProjectManagerDAO.updateAction()",
         "root.MSG_GEN_ENTER_METHOD", task.toString());
 
-    StringBuffer updateQuery = new StringBuffer(128);
-    updateQuery.append("update ").append(PROJECTMANAGER_TASKS_TABLENAME);
-    updateQuery
-        .append(" set nom = ? , description = ? , responsableId = ? , charge = ? , consomme = ? , raf = ? , avancement = ? , statut = ? , dateDebut = ? , dateFin = ? , previousId = ? ");
-    updateQuery.append(" where id = ? ");
+    StringBuilder updateQuery = new StringBuilder(128);
+    updateQuery.append("UPDATE ").append(PROJECTMANAGER_TASKS_TABLENAME);
+    updateQuery.append(" SET nom = ? , description = ? , responsableId = ? , charge = ? , ");
+    updateQuery.append("consomme = ? , raf = ? , avancement = ? , statut = ? , dateDebut = ? , ");
+    updateQuery.append("dateFin = ? , previousId = ? WHERE id = ? ");
 
     PreparedStatement prepStmt = null;
 
@@ -191,10 +188,11 @@ public class ProjectManagerDAO {
       prepStmt.setInt(7, task.getAvancement());
       prepStmt.setInt(8, task.getStatut());
       prepStmt.setString(9, date2DBDate(task.getDateDebut()));
-      if (task.getDateFin() != null)
+      if (task.getDateFin() != null) {
         prepStmt.setString(10, date2DBDate(task.getDateFin()));
-      else
+      } else {
         prepStmt.setString(10, "9999/99/99");
+      }
       prepStmt.setInt(11, task.getPreviousTaskId());
 
       prepStmt.setInt(12, task.getId());
@@ -220,7 +218,7 @@ public class ProjectManagerDAO {
 
   public static void deleteAllResources(Connection con, int taskId,
       String instanceId) throws SQLException {
-    StringBuffer deleteStatement = new StringBuffer(128);
+    StringBuilder deleteStatement = new StringBuilder(128);
     deleteStatement.append("delete from ").append(
         PROJECTMANAGER_RESOURCES_TABLENAME).append(
         " where taskId = ? and instanceId = ? ");
@@ -242,7 +240,7 @@ public class ProjectManagerDAO {
         "ProjectManagerDAO.actionEstDecomposee()", "root.MSG_GEN_ENTER_METHOD",
         "id = " + id + ", estDecomposee = " + estDecomposee);
 
-    StringBuffer updateQuery = new StringBuffer(128);
+    StringBuilder updateQuery = new StringBuilder(128);
     updateQuery.append("update ").append(PROJECTMANAGER_TASKS_TABLENAME);
     updateQuery.append(" set estDecomposee = ? ");
     updateQuery.append(" where id = ? ");
@@ -261,7 +259,7 @@ public class ProjectManagerDAO {
   }
 
   public static void removeTask(Connection con, int id) throws SQLException {
-    StringBuffer deleteStatement = new StringBuffer(128);
+    StringBuilder deleteStatement = new StringBuilder(128);
     deleteStatement.append("delete from ").append(
         PROJECTMANAGER_TASKS_TABLENAME).append(" where id = ? ");
     PreparedStatement stmt = null;
@@ -277,12 +275,12 @@ public class ProjectManagerDAO {
 
   public static TaskDetail getTask(Connection con, String id)
       throws SQLException {
-    return getTask(con, new Integer(id).intValue());
+    return getTask(con, Integer.parseInt(id));
   }
 
   public static TaskDetail getTask(Connection con, int id) throws SQLException {
     TaskDetail task = null;
-    StringBuffer query = new StringBuffer(128);
+    StringBuilder query = new StringBuilder(128);
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" where id = ? ");
@@ -297,8 +295,7 @@ public class ProjectManagerDAO {
       if (rs.next()) {
         task = getTaskDetailFromResultset(rs);
         // récupération des resources
-        task
-            .setResources(getResources(con, task.getId(), task.getInstanceId()));
+        task.setResources(getResources(con, task.getId(), task.getInstanceId()));
       }
     } finally {
       DBUtil.close(rs, stmt);
@@ -306,23 +303,20 @@ public class ProjectManagerDAO {
     return task;
   }
 
-  public static Collection getResources(Connection con, int taskId,
+  public static List<TaskResourceDetail> getResources(Connection con, int taskId,
       String instanceId) throws SQLException {
-    Collection resources = new ArrayList();
-    StringBuffer query = new StringBuffer(128);
-    query.append("select * ");
-    query.append("from ").append(PROJECTMANAGER_RESOURCES_TABLENAME);
-    query.append(" where taskId = ?  and instanceId = ? ");
-
+    List<TaskResourceDetail> resources = new ArrayList<TaskResourceDetail>();
+    StringBuilder query = new StringBuilder(128);
+    query.append("SELECT id, taskId, resourceId, charge, instanceId FROM ");
+    query.append(PROJECTMANAGER_RESOURCES_TABLENAME);
+    query.append(" WHERE taskId = ? AND instanceId = ? ");
     SilverTrace.info("projectManager", "ProjectManagerDAO.getResources()",
         "root.MSG_GEN_PARAM_VALUE", query.toString());
     SilverTrace.info("projectManager", "ProjectManagerDAO.getResources()",
         "root.MSG_GEN_PARAM_VALUE", "taskId = " + taskId + " instanceId = "
         + instanceId);
-
     PreparedStatement stmt = null;
     ResultSet rs = null;
-
     try {
       stmt = con.prepareStatement(query.toString());
       stmt.setInt(1, taskId);
@@ -333,27 +327,26 @@ public class ProjectManagerDAO {
         resources.add(resource);
       }
     } finally {
+      DBUtil.close(rs, stmt);
     }
     return resources;
   }
 
-  public static List getAllTasks(Connection con, String instanceId,
+  public static List<TaskDetail> getAllTasks(Connection con, String instanceId,
       Filtre filtre) throws SQLException {
-    List tasks = new ArrayList();
-    StringBuffer query = new StringBuffer(128);
-    query.append("select * ");
-    query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
-    query.append(" where instanceId = ? ");
+    List<TaskDetail> tasks = new ArrayList<TaskDetail>();
+    StringBuilder query = new StringBuilder(128);
+    query.append("SELECT * FROM ").append(PROJECTMANAGER_TASKS_TABLENAME);
+    query.append(" WHERE instanceId = ? ");
     if (filtre != null) {
       String filtreSQL = getSQL(filtre);
-      if (filtreSQL.length() > 0)
-        query.append("and ").append(filtreSQL);
+      if (filtreSQL.length() > 0) {
+        query.append("AND ").append(filtreSQL);
+      }
     }
-    query.append("order by path ASC");
-
+    query.append(" ORDER BY path ASC");
     SilverTrace.info("projectManager", "ProjectManagerDAO.getAllActions()",
         "root.MSG_GEN_PARAM_VALUE", query.toString());
-
     PreparedStatement stmt = null;
     ResultSet rs = null;
 
@@ -363,8 +356,7 @@ public class ProjectManagerDAO {
       rs = stmt.executeQuery();
       while (rs.next()) {
         TaskDetail task = getTaskDetailFromResultset(rs);
-        task
-            .setResources(getResources(con, task.getId(), task.getInstanceId()));
+        task.setResources(getResources(con, task.getId(), task.getInstanceId()));
         tasks.add(task);
       }
     } finally {
@@ -373,20 +365,19 @@ public class ProjectManagerDAO {
     return tasks;
   }
 
-  public static List getTasks(Connection con, int actionId, Filtre filtre,
+  public static List<TaskDetail> getTasks(Connection con, int actionId, Filtre filtre,
       String instanceId) throws SQLException {
-    List tasks = new ArrayList();
-    StringBuffer query = new StringBuffer(128);
-    query.append("select * ");
-    query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
-    query.append(" where mereId = ? ");
-    query.append(" and instanceId = ? ");
+    List<TaskDetail> tasks = new ArrayList<TaskDetail>();
+    StringBuilder query = new StringBuilder(128);
+    query.append("SELECT * FROM ").append(PROJECTMANAGER_TASKS_TABLENAME);
+    query.append(" WHERE mereId = ? AND instanceId = ? ");
     if (filtre != null) {
       String filtreSQL = getSQL(filtre);
-      if (filtreSQL.length() > 0)
-        query.append("and ").append(filtreSQL);
+      if (filtreSQL.length() > 0) {
+        query.append("AND ").append(filtreSQL);
+      }
     }
-    query.append("order by dateDebut ASC");
+    query.append(" ORDER BY dateDebut ASC");
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -398,8 +389,7 @@ public class ProjectManagerDAO {
       rs = stmt.executeQuery();
       while (rs.next()) {
         TaskDetail task = getTaskDetailFromResultset(rs);
-        task
-            .setResources(getResources(con, task.getId(), task.getInstanceId()));
+        task.setResources(getResources(con, task.getId(), task.getInstanceId()));
         tasks.add(task);
       }
     } finally {
@@ -408,14 +398,12 @@ public class ProjectManagerDAO {
     return tasks;
   }
 
-  public static List getNextTasks(Connection con, int taskId)
+  public static List<TaskDetail> getNextTasks(Connection con, int taskId)
       throws SQLException {
-    List tasks = new ArrayList();
-    StringBuffer query = new StringBuffer(128);
-    query.append("select * ");
-    query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
-    query.append(" where previousId = ? ");
-    query.append("order by dateDebut ASC");
+    List<TaskDetail> tasks = new ArrayList<TaskDetail>();
+    StringBuilder query = new StringBuilder(128);
+    query.append("SELECT * FROM ").append(PROJECTMANAGER_TASKS_TABLENAME);
+    query.append(" WHERE previousId = ? ORDER BY dateDebut ASC");
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -426,8 +414,7 @@ public class ProjectManagerDAO {
       rs = stmt.executeQuery();
       while (rs.next()) {
         TaskDetail task = getTaskDetailFromResultset(rs);
-        task
-            .setResources(getResources(con, task.getId(), task.getInstanceId()));
+        task.setResources(getResources(con, task.getId(), task.getInstanceId()));
         tasks.add(task);
       }
     } finally {
@@ -438,7 +425,7 @@ public class ProjectManagerDAO {
 
   public static TaskDetail getMostDistantTask(Connection con,
       String instanceId, int taskId) throws SQLException {
-    StringBuffer query = new StringBuffer(128);
+    StringBuilder query = new StringBuilder(128);
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" where mereId = ? ");
@@ -453,8 +440,7 @@ public class ProjectManagerDAO {
       rs = stmt.executeQuery();
       if (rs.next()) {
         TaskDetail task = getTaskDetailFromResultset(rs);
-        task
-            .setResources(getResources(con, task.getId(), task.getInstanceId()));
+        task.setResources(getResources(con, task.getId(), task.getInstanceId()));
         return task;
       }
     } finally {
@@ -469,9 +455,9 @@ public class ProjectManagerDAO {
    * @return the tree - a List of TaskDetail
    * @throws SQLException
    */
-  public static List getTree(Connection con, int actionId) throws SQLException {
-    List tasks = new ArrayList();
-    StringBuffer query = new StringBuffer(128);
+  public static List<TaskDetail> getTree(Connection con, int actionId) throws SQLException {
+    List<TaskDetail> tasks = new ArrayList<TaskDetail>();
+    StringBuilder query = new StringBuilder(128);
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" where path like '%/").append(actionId).append("/%' ");
@@ -485,8 +471,7 @@ public class ProjectManagerDAO {
       rs = stmt.executeQuery();
       while (rs.next()) {
         TaskDetail task = getTaskDetailFromResultset(rs);
-        task
-            .setResources(getResources(con, task.getId(), task.getInstanceId()));
+        task.setResources(getResources(con, task.getId(), task.getInstanceId()));
         tasks.add(task);
       }
     } finally {
@@ -495,18 +480,19 @@ public class ProjectManagerDAO {
     return tasks;
   }
 
-  public static List getTasksByMotherId(Connection con, String instanceId,
+  public static List<TaskDetail> getTasksByMotherId(Connection con, String instanceId,
       int motherId, Filtre filtre) throws SQLException {
-    List tasks = new ArrayList();
-    StringBuffer query = new StringBuffer(128);
+    List<TaskDetail> tasks = new ArrayList<TaskDetail>();
+    StringBuilder query = new StringBuilder(128);
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" where instanceId = ? ");
     query.append(" and mereId = ? ");
     if (filtre != null) {
       String filtreSQL = getSQL(filtre);
-      if (filtreSQL.length() > 0)
+      if (filtreSQL.length() > 0) {
         query.append("and ").append(filtreSQL);
+      }
     }
     query.append("order by dateDebut ASC");
 
@@ -525,8 +511,7 @@ public class ProjectManagerDAO {
       rs = stmt.executeQuery();
       while (rs.next()) {
         TaskDetail task = getTaskDetailFromResultset(rs);
-        task
-            .setResources(getResources(con, task.getId(), task.getInstanceId()));
+        task.setResources(getResources(con, task.getId(), task.getInstanceId()));
         tasks.add(task);
       }
     } finally {
@@ -535,18 +520,19 @@ public class ProjectManagerDAO {
     return tasks;
   }
 
-  public static List getTasksNotCancelledByMotherId(Connection con,
+  public static List<TaskDetail> getTasksNotCancelledByMotherId(Connection con,
       String instanceId, int motherId, Filtre filtre) throws SQLException {
-    List tasks = new ArrayList();
-    StringBuffer query = new StringBuffer(128);
+    List<TaskDetail> tasks = new ArrayList<TaskDetail>();
+    StringBuilder query = new StringBuilder(128);
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" where instanceId = ? ");
     query.append(" and mereId = ? ");
     if (filtre != null) {
       String filtreSQL = getSQL(filtre);
-      if (filtreSQL.length() > 0)
+      if (filtreSQL.length() > 0) {
         query.append("and ").append(filtreSQL);
+      }
     }
 
     // si on demande toutes les taches quelque soit le statut,
@@ -554,7 +540,7 @@ public class ProjectManagerDAO {
     // car elles n'apparaissent pas dans le diagramme de Gantt
     if (filtre == null || filtre.getStatut() == null
         || filtre.getStatut().equals("-1")) {
-      query.append(" and statut != " + TaskDetail.CANCELLED);
+      query.append(" and statut != ").append(TaskDetail.CANCELLED);
     }
 
     query.append("order by dateDebut ASC");
@@ -574,8 +560,7 @@ public class ProjectManagerDAO {
       rs = stmt.executeQuery();
       while (rs.next()) {
         TaskDetail task = getTaskDetailFromResultset(rs);
-        task
-            .setResources(getResources(con, task.getId(), task.getInstanceId()));
+        task.setResources(getResources(con, task.getId(), task.getInstanceId()));
         tasks.add(task);
       }
     } finally {
@@ -584,10 +569,10 @@ public class ProjectManagerDAO {
     return tasks;
   }
 
-  public static List getTasksByMotherIdAndPreviousId(Connection con,
+  public static List<TaskDetail> getTasksByMotherIdAndPreviousId(Connection con,
       String instanceId, int motherId, int previousId) throws SQLException {
-    List tasks = new ArrayList();
-    StringBuffer query = new StringBuffer(128);
+    List<TaskDetail> tasks = new ArrayList<TaskDetail>();
+    StringBuilder query = new StringBuilder(128);
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" where mereId = ? ");
@@ -611,8 +596,7 @@ public class ProjectManagerDAO {
       rs = stmt.executeQuery();
       while (rs.next()) {
         TaskDetail task = getTaskDetailFromResultset(rs);
-        task
-            .setResources(getResources(con, task.getId(), task.getInstanceId()));
+        task.setResources(getResources(con, task.getId(), task.getInstanceId()));
         tasks.add(task);
       }
     } finally {
@@ -628,23 +612,21 @@ public class ProjectManagerDAO {
 
   public static int getOccupationByUser(Connection con, String userId,
       Date dateDeb, Date dateFin, int excludedTaskId) throws SQLException {
-    StringBuffer query = new StringBuffer(128);
-    query.append("select sum(res.charge) as somme ");
-    query.append("from ").append(PROJECTMANAGER_TASKS_TABLENAME).append(
-        " task, ");
-    query.append(PROJECTMANAGER_RESOURCES_TABLENAME).append(" res");
-    query.append(" where res.taskId = task.id");
-    if (excludedTaskId != -1)
-      query.append(" and task.id <> ?");
-    query
-        .append(" and ((dateDebut <= ? or dateFin <= ?) and (dateDebut >= ? or dateFin >= ?)) and resourceId = ? ");
-    query.append("Group by res.resourceId");
+    StringBuilder query = new StringBuilder();
+    query.append("SELECT SUM(res.charge) AS somme FROM ").append(PROJECTMANAGER_TASKS_TABLENAME);
+    query.append(" task, ").append(PROJECTMANAGER_RESOURCES_TABLENAME).append(" res");
+    query.append(" WHERE res.taskId = task.id");
+    query.append(" AND ((dateDebut <= ? OR dateFin <= ?) AND (dateDebut >= ? OR dateFin >= ?)) AND resourceId = ? ");
+    if (excludedTaskId > -1) {
+      query.append(" AND task.id <> ? ");
+    }
+    query.append("GROUP BY res.resourceId");
 
     SilverTrace.info("projectManager",
-        "ProjectManagerDAO.getTasksByMotherId()", "root.MSG_GEN_ENTER_METHOD",
+        "ProjectManagerDAO.getOccupationByUser()", "root.MSG_GEN_ENTER_METHOD",
         query.toString());
     SilverTrace.info("projectManager",
-        "ProjectManagerDAO.getTasksByMotherId()", "root.MSG_GEN_ENTER_METHOD",
+        "ProjectManagerDAO.getOccupationByUser()", "root.MSG_GEN_ENTER_METHOD",
         "dateDebut < " + dateDeb + " and dateFin > " + dateFin);
 
     PreparedStatement stmt = null;
@@ -652,15 +634,14 @@ public class ProjectManagerDAO {
 
     try {
       stmt = con.prepareStatement(query.toString());
-      int i = 1;
-      if (excludedTaskId != -1)
-        stmt.setInt(i++, excludedTaskId);
-
-      stmt.setString(i++, date2DBDate(dateFin));
-      stmt.setString(i++, date2DBDate(dateFin));
-      stmt.setString(i++, date2DBDate(dateDeb));
-      stmt.setString(i++, date2DBDate(dateDeb));
-      stmt.setString(i++, userId);
+      stmt.setString(1, date2DBDate(dateFin));
+      stmt.setString(2, date2DBDate(dateFin));
+      stmt.setString(3, date2DBDate(dateDeb));
+      stmt.setString(4, date2DBDate(dateDeb));
+      stmt.setInt(5, Integer.parseInt(userId));
+      if (excludedTaskId != -1) {
+        stmt.setInt(6, excludedTaskId);
+      }
 
       rs = stmt.executeQuery();
       if (rs.next()) {
@@ -718,79 +699,87 @@ public class ProjectManagerDAO {
   }
 
   private static String getSQL(Filtre filtre) {
-    StringBuffer sql = new StringBuffer();
+    StringBuilder sql = new StringBuilder();
 
-    if (filtre.getActionFrom() != null && filtre.getActionFrom().length() > 0)
+    if (filtre.getActionFrom() != null && filtre.getActionFrom().length() > 0) {
       sql.append(" chrono >= ").append(filtre.getActionFrom());
+    }
 
     if (filtre.getActionTo() != null && filtre.getActionTo().length() > 0) {
-      if (sql.length() > 0)
+      if (sql.length() > 0) {
         sql.append(" AND ");
+      }
       sql.append(" chrono <= ").append(filtre.getActionTo());
     }
 
     if (filtre.getCodeProjet() != null && filtre.getCodeProjet().length() > 0) {
-      if (sql.length() > 0)
+      if (sql.length() > 0) {
         sql.append(" AND ");
+      }
       sql.append(" codeProjet = ").append(filtre.getCodeProjet());
     }
 
     if (filtre.getDescProjet() != null && filtre.getDescProjet().length() > 0) {
-      if (sql.length() > 0)
+      if (sql.length() > 0) {
         sql.append(" AND ");
-      sql.append(" descriptionProjet like '%").append(filtre.getDescProjet())
-          .append("%' ");
+      }
+      sql.append(" descriptionProjet like '%").append(filtre.getDescProjet()).append("%' ");
     }
 
     if (filtre.getActionNom() != null && filtre.getActionNom().length() > 0) {
-      if (sql.length() > 0)
+      if (sql.length() > 0) {
         sql.append(" AND ");
+      }
       sql.append(" nom like '%").append(filtre.getActionNom()).append("%' ");
     }
 
     if (filtre.getStatut() != null && !filtre.getStatut().equals("-1")) {
-      if (sql.length() > 0)
+      if (sql.length() > 0) {
         sql.append(" AND ");
+      }
       sql.append(" statut = ").append(filtre.getStatut());
     }
 
     if (filtre.getDateDebutFrom() != null) {
-      if (sql.length() > 0)
+      if (sql.length() > 0) {
         sql.append(" AND ");
+      }
       sql.append(" dateDebut >= '").append(
-          ProjectManagerDAO.date2DBDate(filtre.getDateDebutFrom()))
-          .append("' ");
+          ProjectManagerDAO.date2DBDate(filtre.getDateDebutFrom())).append("' ");
     }
 
     if (filtre.getDateDebutTo() != null) {
-      if (sql.length() > 0)
+      if (sql.length() > 0) {
         sql.append(" AND ");
+      }
       sql.append(" dateDebut <= '").append(
           ProjectManagerDAO.date2DBDate(filtre.getDateDebutTo())).append("' ");
     }
 
     if (filtre.getDateFinFrom() != null) {
-      if (sql.length() > 0)
+      if (sql.length() > 0) {
         sql.append(" AND ");
+      }
       sql.append(" dateFin >= '").append(
           ProjectManagerDAO.date2DBDate(filtre.getDateFinFrom())).append("' ");
     }
 
     if (filtre.getDateFinTo() != null) {
-      if (sql.length() > 0)
+      if (sql.length() > 0) {
         sql.append(" AND ");
+      }
       sql.append(" dateFin <= '").append(
           ProjectManagerDAO.date2DBDate(filtre.getDateFinTo())).append("' ");
     }
 
     if (filtre.getRetard() != null && !filtre.getRetard().equals("-1")) {
-      if (sql.length() > 0)
+      if (sql.length() > 0) {
         sql.append(" AND ");
+      }
       Date today = new Date();
       if (filtre.getRetard().equals("1")) {
         // les tasks en retard
-        sql.append("( dateFin < '")
-            .append(ProjectManagerDAO.date2DBDate(today)).append(
+        sql.append("( dateFin < '").append(ProjectManagerDAO.date2DBDate(today)).append(
             "' AND avancement = 100 ) ");
       } else {
         // les tasks qui ne sont pas en retard
@@ -801,8 +790,9 @@ public class ProjectManagerDAO {
     }
 
     if (filtre.getAvancement() != null && !filtre.getAvancement().equals("-1")) {
-      if (sql.length() > 0)
+      if (sql.length() > 0) {
         sql.append(" AND ");
+      }
       if (filtre.getAvancement().equals("1")) {
         // les tasks terminées
         sql.append(" avancement = 100 ");
@@ -814,8 +804,9 @@ public class ProjectManagerDAO {
 
     if (filtre.getResponsableId() != null
         && filtre.getResponsableId().length() > 0) {
-      if (sql.length() > 0)
+      if (sql.length() > 0) {
         sql.append(" AND ");
+      }
       sql.append(" responsableId = ").append(filtre.getResponsableId());
     }
 
@@ -827,7 +818,7 @@ public class ProjectManagerDAO {
     return dbDate;
   }
 
-  private static Date dbDate2Date(String dbDate, String fieldName)
+  public static Date dbDate2Date(String dbDate, String fieldName)
       throws SQLException {
     Date date = null;
     try {

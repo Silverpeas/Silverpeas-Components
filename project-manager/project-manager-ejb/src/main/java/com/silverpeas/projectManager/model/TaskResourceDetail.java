@@ -22,10 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on 25 oct. 2004
- *
- */
 package com.silverpeas.projectManager.model;
 
 import java.io.Serializable;
@@ -38,14 +34,12 @@ public class TaskResourceDetail implements Serializable {
   private int charge;
   private String instanceId;
   private int occupation;
-
   private String userName;
 
   public TaskResourceDetail() {
   }
 
-  public TaskResourceDetail(int id, int taskId, String userId, int charge,
-      String instanceId) {
+  public TaskResourceDetail(int id, int taskId, String userId, int charge, String instanceId) {
     setId(id);
     setTaskId(taskId);
     setUserId(userId);
@@ -53,7 +47,7 @@ public class TaskResourceDetail implements Serializable {
     setInstanceId(instanceId);
   }
 
-  public void setId(int id) {
+  public final void setId(int id) {
     this.id = id;
   }
 
@@ -85,15 +79,16 @@ public class TaskResourceDetail implements Serializable {
     return occupation;
   }
 
-  public void setCharge(int f) {
+  public final void setCharge(int f) {
     charge = f;
   }
 
   public void setCharge(String f) {
-    if (f != null && f.length() > 0)
+    if (f != null && f.length() > 0) {
       charge = new Integer(f).intValue();
-    else
+    } else {
       charge = 0;
+    }
   }
 
   public void setOccupation(int f) {
@@ -101,21 +96,22 @@ public class TaskResourceDetail implements Serializable {
   }
 
   public void setOccupation(String f) {
-    if (f != null && f.length() > 0)
+    if (f != null && f.length() > 0) {
       occupation = new Integer(f).intValue();
-    else
+    } else {
       occupation = 0;
+    }
   }
 
-  public void setTaskId(int i) {
+  public final void setTaskId(int i) {
     taskId = i;
   }
 
-  public void setUserId(String i) {
+  public final void setUserId(String i) {
     userId = i;
   }
 
-  public void setInstanceId(String string) {
+  public final void setInstanceId(String string) {
     instanceId = string;
   }
 
@@ -123,8 +119,9 @@ public class TaskResourceDetail implements Serializable {
     userName = s;
   }
 
+  @Override
   public String toString() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     result.append("TaskResourceDetail {").append("\n");
     result.append("  id = ").append(getId()).append("\n");
     result.append("  taskId = ").append(getTaskId()).append("\n");
@@ -134,5 +131,4 @@ public class TaskResourceDetail implements Serializable {
     result.append("}");
     return result.toString();
   }
-
 }

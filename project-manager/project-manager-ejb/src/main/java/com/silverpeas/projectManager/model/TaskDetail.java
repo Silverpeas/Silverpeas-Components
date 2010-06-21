@@ -21,11 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * Created on 25 oct. 2004
- *
- */
 package com.silverpeas.projectManager.model;
 
 import java.io.Serializable;
@@ -35,6 +30,8 @@ import java.util.Vector;
 
 import com.stratelia.webactiv.calendar.backbone.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author neysseri
@@ -47,7 +44,6 @@ public class TaskDetail implements Serializable {
   public final static int COMPLETE = 3;
   public final static int IN_ALERT = 4;
   public final static int NOT_STARTED = 5;
-
   private int id;
   private int mereId;
   private int chrono;
@@ -67,15 +63,13 @@ public class TaskDetail implements Serializable {
   private String instanceId;
   private String path = "/";
   private int previousTaskId = -1;
-
   // les ressources (Collection de TaskResourceDetail)
   private Collection resources = null;
-
   private String responsableFullName;
   private String organisateurFullName;
   private String uiDateDebut;
   private String uiDateFin;
-  private Vector attachments = null;
+  private List attachments = null;
   private boolean isUnfold = false;
   private int level = 0;
   private boolean updateAvailable = false;
@@ -91,24 +85,24 @@ public class TaskDetail implements Serializable {
       float consomme, float raf, int statut, Date dateDebut, Date dateFin,
       String codeProjet, String descriptionProjet, int estDecomposee,
       String instanceId, String path) {
-    setId(id);
-    setMereId(mereId);
-    setChrono(chrono);
-    setNom(nom);
-    setDescription(description);
-    setOrganisateurId(organisateurId);
-    setResponsableId(responsableId);
-    setCharge(charge);
-    setConsomme(consomme);
-    setRaf(raf);
-    setStatut(statut);
-    setDateDebut(dateDebut);
-    setDateFin(dateFin);
-    setCodeProjet(codeProjet);
-    setDescriptionProjet(descriptionProjet);
-    setEstDecomposee(estDecomposee);
-    setInstanceId(instanceId);
-    setPath(path);
+    this.id = id;
+    this.mereId = mereId;
+    this.chrono = chrono;
+    this.nom = nom;
+    this.description = description;
+    this.organisateurId = organisateurId;
+    this.responsableId = responsableId;
+    this.charge = charge;
+    this.consomme = consomme;
+    this.raf = raf;
+    this.statut = statut;
+    this.dateDebut = dateDebut;
+    this.dateFin = dateFin;
+    this.codeProjet = codeProjet;
+    this.descriptionProjet = descriptionProjet;
+    this.estDecomposee = estDecomposee;
+    this.instanceId = instanceId;
+    this.path = path;
   }
 
   /**
@@ -253,10 +247,11 @@ public class TaskDetail implements Serializable {
   }
 
   public void setCharge(String f) {
-    if (f != null && f.length() > 0)
+    if (f != null && f.length() > 0) {
       charge = new Float(f).floatValue();
-    else
+    } else {
       charge = 0;
+    }
   }
 
   /**
@@ -270,10 +265,11 @@ public class TaskDetail implements Serializable {
    * @param i
    */
   public void setCodeProjet(String i) {
-    if (i != null && i.length() > 0)
+    if (i != null && i.length() > 0) {
       codeProjet = i;
-    else
+    } else {
       codeProjet = "-1";
+    }
   }
 
   /**
@@ -284,10 +280,11 @@ public class TaskDetail implements Serializable {
   }
 
   public void setConsomme(String f) {
-    if (f != null && f.length() > 0)
+    if (f != null && f.length() > 0) {
       consomme = new Float(f).floatValue();
-    else
+    } else {
       consomme = 0;
+    }
   }
 
   /**
@@ -372,10 +369,11 @@ public class TaskDetail implements Serializable {
   }
 
   public void setRaf(String f) {
-    if (f != null && f.length() > 0)
+    if (f != null && f.length() > 0) {
       raf = new Float(f).floatValue();
-    else
+    } else {
       raf = 0;
+    }
   }
 
   /**
@@ -414,7 +412,7 @@ public class TaskDetail implements Serializable {
     todo.setName(getNom());
     todo.setDescription(getDescription());
     todo.setDelegatorId(new Integer(getOrganisateurId()).toString());
-    Attendee attendee = new Attendee(new Integer(getResponsableId()).toString());
+    Attendee attendee = new Attendee(String.valueOf(getResponsableId()));
     if (attendee != null) {
       Vector attendees = new Vector();
       attendees.add(attendee);
@@ -474,28 +472,32 @@ public class TaskDetail implements Serializable {
   }
 
   public String getUiCodeProjet() {
-    if (getCodeProjet().equals("-1"))
+    if (getCodeProjet().equals("-1")) {
       return "";
-    else
+    } else {
       return new Integer(getCodeProjet()).toString();
+    }
   }
 
   public String getUiDescriptionProjet() {
-    if (getDescriptionProjet() == null)
+    if (getDescriptionProjet() == null) {
       return "";
-    else
+    } else {
       return getDescriptionProjet();
+    }
   }
 
   public String getUiDescription() {
-    if (getDescription() == null)
+    if (getDescription() == null) {
       return "";
-    else
+    } else {
       return getDescription();
+    }
   }
 
+  @Override
   public String toString() {
-    StringBuffer result = new StringBuffer();
+    StringBuilder result = new StringBuilder();
     result.append("TaskDetail {").append("\n");
     result.append("  id = ").append(getId()).append("\n");
     result.append("  mereId = ").append(getMereId()).append("\n");
@@ -536,15 +538,15 @@ public class TaskDetail implements Serializable {
   /**
    * @return
    */
-  public Vector getAttachments() {
+  public List getAttachments() {
     return attachments;
   }
 
   /**
    * @param vector
    */
-  public void setAttachments(Collection vector) {
-    attachments = new Vector(vector);
+  public void setAttachments(List vector) {
+    attachments = new ArrayList(vector);
   }
 
   /**
@@ -644,5 +646,4 @@ public class TaskDetail implements Serializable {
   public void setPreviousTaskName(String string) {
     previousTaskName = string;
   }
-
 }
