@@ -296,11 +296,12 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     task.setUiDateFin(date2UIDate(task.getDateFin()));
 
     // mettre les nom des user sur les resources
-    Collection resources = task.getResources();
-    Iterator it = resources.iterator();
+    @SuppressWarnings("unchecked")
+    Collection<TaskResourceDetail> resources = task.getResources();
+    Iterator<TaskResourceDetail> it = resources.iterator();
     while (it.hasNext()) {
-      TaskResourceDetail resource = (TaskResourceDetail) it.next();
-      String userId = new Integer(resource.getUserId()).toString();
+      TaskResourceDetail resource = it.next();
+      String userId = String.valueOf(resource.getUserId());
       UserDetail user = getUserDetail(userId);
       resource.setUserName(getUserFullName(user));
     }
@@ -359,11 +360,11 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return actionMere;
   }
 
-  public Collection getAttachments(int id) {
+  public List getAttachments(int id) {
     return getAttachments(new Integer(id).toString());
   }
 
-  private Collection getAttachments(String id) {
+  private List getAttachments(String id) {
     AttachmentPK foreignKey = new AttachmentPK(id, "useless", getComponentId());
     return AttachmentController
         .searchAttachmentByPKAndContext(foreignKey, null);
