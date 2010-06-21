@@ -38,6 +38,7 @@
 	Boolean 		isActiveUser 			= (Boolean) request.getAttribute("isActiveUser");
 	Boolean 		isAttachmentTabEnable 	= (Boolean) request.getAttribute("isAttachmentTabEnable");
 	boolean 		isProcessIdVisible 		= ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
+  boolean			isReturnEnabled = ((Boolean) request.getAttribute("isReturnEnabled")).booleanValue();
 
 	int   currentStep = -1;
 	if (StringUtil.isDefined(enlightedStep))
@@ -76,7 +77,9 @@
 		if (isAttachmentTabEnable.booleanValue() && isActiveUser != null && isActiveUser.booleanValue())
 			tabbedPane.addTab(resource.getString("processManager.attachments"), "attachmentManager?processId=" + process.getInstanceId(), false, true);
 		tabbedPane.addTab(resource.getString("processManager.actions"), "listTasks", false, true);
-		tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId(), false, true);
+		if (isReturnEnabled) {
+			tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId(), false, true);
+		}
 		tabbedPane.addTab(resource.getString("processManager.history"), "", true, false);
 	}
 	

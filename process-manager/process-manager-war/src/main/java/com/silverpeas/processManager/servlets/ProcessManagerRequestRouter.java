@@ -1261,6 +1261,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     request.setAttribute("isProcessIdVisible", new Boolean(session.isProcessIdVisible()));
     request.setAttribute("isPrintButtonEnabled", new Boolean(session.isPrintButtonEnabled()));
     request.setAttribute("isSaveButtonEnabled", new Boolean(session.isSaveButtonEnabled()));
+    request.setAttribute("isReturnEnabled", new Boolean(session.isViewReturn()));
   }
 
   /**

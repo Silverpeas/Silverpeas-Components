@@ -42,7 +42,8 @@
 	List	 					lockingUsers 				= ((List) request.getAttribute("lockingUsers"));
 	boolean						hasLockingUsers				= (lockingUsers != null) && (lockingUsers.size()>0);
 	boolean						isCurrentUserIsLockingUser 	= ((Boolean) request.getAttribute("isCurrentUserIsLockingUser")).booleanValue();
-	    
+	boolean						isReturnEnabled = ((Boolean) request.getAttribute("isReturnEnabled")).booleanValue();
+	
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
 	
@@ -86,7 +87,10 @@
 			tabbedPane.addTab(resource.getString("processManager.attachments"), "attachmentManager?processId=" + process.getInstanceId(), false, true);
 		if (!hasLockingUsers || isCurrentUserIsLockingUser)
 		  tabbedPane.addTab(resource.getString("processManager.actions"), "listTasks", false, true);
-		tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId(), false, true);
+
+		if (isReturnEnabled) {
+			tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId(), false, true);
+		}
 		if (isHistoryTabEnable.booleanValue())
 			tabbedPane.addTab(resource.getString("processManager.history"), "viewHistory?processId=" + process.getInstanceId(), false, true);
 	}

@@ -30,7 +30,8 @@
 	ProcessInstance 	process 			= (ProcessInstance) request.getAttribute("process");
 	String 				versionning 		= (String) request.getAttribute("isVersionControlled");
 	Boolean 			isHistoryTabEnable 	= (Boolean) request.getAttribute("isHistoryTabEnable");
-	
+	boolean				isReturnEnabled = ((Boolean) request.getAttribute("isReturnEnabled")).booleanValue();
+
 	boolean isVersionControlled = false;
 	if (versionning.equals("1"))
 		isVersionControlled = true;
@@ -42,7 +43,9 @@
 	tabbedPane.addTab(resource.getString("processManager.details"), "viewProcess?processId=" + process.getInstanceId(), false, true);
 	tabbedPane.addTab(resource.getString("processManager.attachments"), "", true, false);
 	tabbedPane.addTab(resource.getString("processManager.actions"), "listTasks", false, true);
-	tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId(), false, true);
+	if (isReturnEnabled) {
+		tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId(), false, true);
+	}
 	if (isHistoryTabEnable.booleanValue())
 		tabbedPane.addTab(resource.getString("processManager.history"), "viewHistory?processId=" + process.getInstanceId(), false, true);
 %>

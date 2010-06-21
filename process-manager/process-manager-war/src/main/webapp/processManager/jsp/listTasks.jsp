@@ -35,7 +35,7 @@
    Boolean 			isInErrorState			= (Boolean) request.getAttribute("Error");
    Boolean 			isHistoryTabEnable 		= (Boolean) request.getAttribute("isHistoryTabEnable");
    boolean 			isProcessIdVisible 		= ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
-   
+   boolean			isReturnEnabled = ((Boolean) request.getAttribute("isReturnEnabled")).booleanValue();
    boolean viewReturn = isViewReturn != null && isViewReturn.booleanValue();
 
 	browseBar.setDomainName(spaceLabel);
@@ -51,7 +51,9 @@
 	if (isAttachmentTabEnable.booleanValue() && isActiveUser != null && isActiveUser.booleanValue())
 		tabbedPane.addTab(resource.getString("processManager.attachments"), "attachmentManager?processId=" + process.getInstanceId(), false, true);
 	tabbedPane.addTab(resource.getString("processManager.actions"), "", true, false);
-	tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId() , false, true);
+	if (isReturnEnabled) {
+		tabbedPane.addTab(resource.getString("processManager.questions"), "listQuestions?processId=" + process.getInstanceId() , false, true);
+	}
 	if (isHistoryTabEnable.booleanValue())
 		tabbedPane.addTab(resource.getString("processManager.history"), "viewHistory?processId=" + process.getInstanceId(), false, true);
 	
