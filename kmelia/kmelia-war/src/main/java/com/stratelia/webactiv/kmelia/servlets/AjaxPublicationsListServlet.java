@@ -294,10 +294,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         kmeliaScc.getLanguage());
     boolean displayLinks = URLManager.displayUniversalLinks();
     boolean showImportance = resources.getSetting("showImportance", true);
-    boolean showNoPublisMessage = resources.getSetting("showNoPublisMessage",
-        true);
-    boolean fileStorageShowExtraInfoPub = resources.getSetting("fileStorageShowExtraInfoPub",
-        false);
+    boolean showNoPublisMessage = resources.getSetting("showNoPublisMessage", true);
+    boolean fileStorageShowExtraInfoPub = resources.getSetting("fileStorageShowExtraInfoPub", false);
     boolean showTopicPathNameinSearchResult =
         resources.getSetting("showTopicPathNameinSearchResult", true);
     String language = kmeliaScc.getCurrentLanguage();
@@ -313,26 +311,15 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     int nbPubsPerPage = kmeliaScc.getNbPublicationsPerPage();
     int firstDisplayedItemIndex = kmeliaScc.getIndexOfFirstPubToDisplay();
     int nbPubs = allPubs.size();
-
     Board board = gef.getBoard();
-    Pagination pagination = gef.getPagination(nbPubs, nbPubsPerPage,
-        firstDisplayedItemIndex);
+    Pagination pagination = gef.getPagination(nbPubs, nbPubsPerPage, firstDisplayedItemIndex);
     List<UserPublication> pubs = allPubs.subList(pagination.getFirstItemIndex(), pagination.
         getLastItemIndex());
-
-    // if (subtopicsExist)
-    // out.write("<BR/>");
-
     out.write("<Form name=\"publicationsForm\">");
-
     if (pubs.size() > 0) {
       out.write(board.printBefore());
-      out
-          .write(
-          "<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">");
-      displayPublicationsListHeader(nbPubs, sortAllowed, pagination, resources,
-          out);
-
+      out.write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">");
+      displayPublicationsListHeader(nbPubs, sortAllowed, pagination, resources, out);
       String linkIcon = resources.getIcon("kmelia.link");
       String pubColor = "";
       String pubState = "";
