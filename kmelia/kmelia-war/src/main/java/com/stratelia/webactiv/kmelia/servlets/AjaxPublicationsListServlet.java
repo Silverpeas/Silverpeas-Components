@@ -295,7 +295,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     boolean displayLinks = URLManager.displayUniversalLinks();
     boolean showImportance = resources.getSetting("showImportance", true);
     boolean showNoPublisMessage = resources.getSetting("showNoPublisMessage", true);
-    boolean fileStorageShowExtraInfoPub = resources.getSetting("fileStorageShowExtraInfoPub", false);
+    boolean fileStorageShowExtraInfoPub =
+        resources.getSetting("fileStorageShowExtraInfoPub", false);
     boolean showTopicPathNameinSearchResult =
         resources.getSetting("showTopicPathNameinSearchResult", true);
     String language = kmeliaScc.getCurrentLanguage();
@@ -318,7 +319,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write("<Form name=\"publicationsForm\">");
     if (pubs.size() > 0) {
       out.write(board.printBefore());
-      out.write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">");
+      out
+          .write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" align=\"center\">");
       displayPublicationsListHeader(nbPubs, sortAllowed, pagination, resources, out);
       String linkIcon = resources.getIcon("kmelia.link");
       String pubColor = "";
@@ -618,7 +620,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   void displaySortingListBox(ResourcesWrapper resources, Writer out)
       throws IOException {
-    out.write("<select name=\"sortBy\" id=\"sortingList\" onChange=\"javascript:sortGoTo(this.selectedIndex);\">");
+    out
+        .write("<select name=\"sortBy\" id=\"sortingList\" onChange=\"javascript:sortGoTo(this.selectedIndex);\">");
     out.write("<option selected=\"selected\">"
         + EncodeHelper.escapeXml(resources.getString("SortBy")) + "</option>");
     out.write("<option>-------------------------------</option>");
@@ -639,9 +642,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write("<option value=\"3\" id=\"sort3\">"
           + EncodeHelper.escapeXml(resources.getString("PubImportance")) + "</option>");
     }
-    out.write("<option value=\"4\" id=\"sort4\">" + EncodeHelper.escapeXml(resources.getString("PubTitre"))
+    out.write("<option value=\"4\" id=\"sort4\">" +
+        EncodeHelper.escapeXml(resources.getString("PubTitre"))
         + "</option>");
-    out.write("<option value=\"7\" id=\"sort7\">" + EncodeHelper.escapeXml(resources.getString("PubDescription"))
+    out.write("<option value=\"7\" id=\"sort7\">" +
+        EncodeHelper.escapeXml(resources.getString("PubDescription"))
         + "</option>");
     out.write("</select>");
     out.write("&#160;");
@@ -767,9 +772,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         downloadTime = versioning.getDownloadEstimation(version.getSize());
         creationDate = version.getCreationDate();
         permalink = URLManager.getSimpleURL(URLManager.URL_DOCUMENT, document.getPk().getId());
-        url =
-            versioning.getDocumentVersionURL(document.getPk().getInstanceId(), logicalName,
-            document.getPk().getId(), version.getPk().getId());
+        url = FileServerUtils.getApplicationContext() +
+            versioning.getDocumentVersionURL(document.getPk().getInstanceId(),
+            logicalName, document.getPk().getId(), version.getPk().getId());
 
         result.append(displayFile(url, title, info, icon, logicalName, size, downloadTime,
             creationDate, permalink, out, resources, linkAttachment));
@@ -1069,7 +1074,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       String topicPathName = spaceLabel + " > " + componentLabel + " > " +
           kmelia.displayPath(kmelia.getKmeliaBm().getPath(firstNodePK.getId(),
           firstNodePK.getInstanceId()), false, 3);
-      writer.write("<div id=\"publiPath\">"+EncodeHelper.escapeXml(topicPathName) + "</div>");
+      writer.write("<div id=\"publiPath\">" + EncodeHelper.escapeXml(topicPathName) + "</div>");
     }
   }
 }
