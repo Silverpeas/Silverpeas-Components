@@ -626,7 +626,7 @@ public class SendInKmelia extends ExternalActionImpl {
             getLanguage());
 
       XmlForm xmlForm = (XmlForm) form;
-      if (xmlForm != null) {
+      if (xmlForm != null && step.getActionRecord() != null) {
         DataRecord data = step.getActionRecord();
         VersioningUtil versioningUtil = new VersioningUtil();
 
