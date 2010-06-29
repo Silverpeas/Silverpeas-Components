@@ -73,14 +73,14 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 Frame frame = graphicFactory.getFrame();
 Window window = graphicFactory.getWindow();
 %>
-<HTML>
-<HEAD>
+<html>
+<head>
 <%
 out.println(graphicFactory.getLookStyleSheet());
 %>
-<TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
+<title><%=generalMessage.getString("GML.popupTitle")%></title>
 <script language="javascript" src="js/globalScript.js"></script>
-<Script language="JavaScript">
+<script language="JavaScript">
 
 function selectDay(day) 
 {
@@ -110,8 +110,8 @@ function previousMonth()
 }
 
 </script>
-</HEAD>
-<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5>
+</head>
+<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5>
 <%
 	out.println(window.printBefore());
 	out.println(frame.printBefore());
@@ -130,76 +130,10 @@ function previousMonth()
 				almanach.getCurrentDay().get(Calendar.YEAR)%></span></td>
                       <td class="intfdcolor3" nowrap align="center"><a href="javascript:onClick=nextMonth()" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('fle-111','','icons/cal_fle-don.gif',1)"><img name="fle-111" border="0" src="icons/cal_fle-doff.gif" width="8" height="14"></a></td>
                     </tr>
-                    <tr> 
-		<%
-		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd");
-		Collection events = almanach.getListRecurrentEvent();
-		Calendar calendar = Calendar.getInstance();
-		int firstDayOfWeek = Integer.parseInt(resources.getString("GML.weekFirstDay"));
-		calendar.set(Calendar.DAY_OF_WEEK, firstDayOfWeek);
-
-		for (int i = 0; i < 7 ; i++) {
-		%>
-                        <td align="center" class="ongletOff"><%=resources.getString("GML.shortJour" + calendar.get(Calendar.DAY_OF_WEEK))%></td>
-		<%
-			calendar.add(Calendar.DATE, 1);
-		}
-		%>
-                    </tr>
-		<%
-		calendar = Calendar.getInstance();
-		calendar.setTime(almanach.getCurrentDay().getTime());
-		calendar.set(Calendar.DAY_OF_MONTH, 1);
-		%>
-		    <tr>
-		<%
-		while (calendar.get(Calendar.DAY_OF_WEEK) != firstDayOfWeek) {
-			%>
-			<td class="intfdcolor4" align="center">&nbsp;</td>
-			<%
-			calendar.add(Calendar.DATE, -1);
-		}
-		calendar.setTime(almanach.getCurrentDay().getTime());
-		calendar.set(Calendar.DAY_OF_MONTH, 1);
-		int currentMonth = calendar.get(Calendar.MONTH);
-		while (currentMonth == calendar.get(Calendar.MONTH)) {
-			String theDay = dateFormat.format(calendar.getTime());
-			String isBusy = "intfdcolor4";
-			String todayColor = "";
-			for (Iterator i = events.iterator(); i.hasNext(); ) {
-				EventDetail event = (EventDetail) i.next();
-				String startDay = dateFormat.format(event.getStartDate());
-
-				if (startDay.compareTo(theDay) > 0) continue;
-				String endDay = startDay;
-				if (event.getEndDate() != null)
-					endDay = dateFormat.format(event.getEndDate());
-				if (endDay.compareTo(theDay) < 0) continue;
-				isBusy = "ongletOff";
-				break;
-			}
-
-			%>
-			<td class="<%=isBusy%>" align="center"><a href="javascript:onClick=selectDay('<%=resources.getInputDate(calendar.getTime())%>')" class="chiffreCalendrier"><%=calendar.get(Calendar.DAY_OF_MONTH)%></a></td>
-			<%
-			calendar.add(Calendar.DATE, 1);
-			if (calendar.get(Calendar.DAY_OF_WEEK) == firstDayOfWeek) {
-				out.println("</tr>");
-				if (currentMonth == calendar.get(Calendar.MONTH)) {
-					out.println("<tr>");
-				}
-			}
-		}
-
-		// fill the line with empty cells
-		while (calendar.get(Calendar.DAY_OF_WEEK) != firstDayOfWeek) {
-			%>
-                        <td class="intfdcolor4" align="center">&nbsp;</td>
-			<%			
-			calendar.add(Calendar.DATE, 1);
-		}
-		%>
-                    </tr>
+                   <%
+                    CalendarDisplayer displayer = new CalendarDisplayer();
+                    out.print(displayer.displayCalendar(almanach, resources));
+                   %>
                   </table>
     </td>
   </tr>

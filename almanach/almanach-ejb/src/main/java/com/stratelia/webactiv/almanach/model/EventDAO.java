@@ -38,8 +38,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
 
 public class EventDAO {
-  private static final String COLUMNNAMES = "eventId, eventName, eventDelegatorId, eventStartDay, eventEndDay, eventStartHour, eventEndHour, eventPriority, eventTitle, eventPlace, eventUrl, instanceId";
 
+  private static final String COLUMNNAMES = "eventId, eventName, eventDelegatorId, eventStartDay, eventEndDay, eventStartHour, eventEndHour, eventPriority, eventTitle, eventPlace, eventUrl, instanceId";
   private static final java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat(
       "yyyy/MM/dd");
 
@@ -100,10 +100,11 @@ public class EventDAO {
       insertStmt.setString(2, "");
       insertStmt.setString(3, event.getDelegatorId());
       insertStmt.setString(4, dateFormat.format(event.getStartDate()));
-      if (event.getEndDate() != null)
+      if (event.getEndDate() != null) {
         insertStmt.setString(5, dateFormat.format(event.getEndDate()));
-      else
+      } else {
         insertStmt.setString(5, null);
+      }
       insertStmt.setString(6, event.getStartHour());
       insertStmt.setString(7, event.getEndHour());
       insertStmt.setInt(8, event.getPriority());
@@ -145,12 +146,15 @@ public class EventDAO {
     if (instanceIds != null) {
       if (instanceIds.length > 0) {
         paramInstanceIds = " and (instanceId='" + pk.getComponentName() + "'";
-        for (int i = 0; i < instanceIds.length; i++)
+        for (int i = 0; i < instanceIds.length; i++) {
           paramInstanceIds += " or instanceId='" + instanceIds[i] + "'";
-      } else
+        }
+      } else {
         paramInstanceIds = " and instanceId='" + pk.getComponentName() + "'";
-    } else
+      }
+    } else {
       paramInstanceIds = " and (instanceId='" + pk.getComponentName() + "'";
+    }
 
     paramInstanceIds += ")";
 
@@ -213,12 +217,15 @@ public class EventDAO {
     if (instanceIds != null) {
       if (instanceIds.length > 0) {
         paramInstanceIds = " (instanceId='" + pk.getComponentName() + "'";
-        for (int i = 0; i < instanceIds.length; i++)
+        for (int i = 0; i < instanceIds.length; i++) {
           paramInstanceIds += " or instanceId='" + instanceIds[i] + "'";
-      } else
+        }
+      } else {
         paramInstanceIds = " instanceId='" + pk.getComponentName() + "'";
-    } else
+      }
+    } else {
       paramInstanceIds = " (instanceId='" + pk.getComponentName() + "'";
+    }
 
     paramInstanceIds += ")";
 
@@ -253,8 +260,9 @@ public class EventDAO {
     event.setDelegatorId(rs.getString(3));
     event.setStartDate(dateFormat.parse(rs.getString(4)));
 
-    if (rs.getString(5) != null)
+    if (rs.getString(5) != null) {
       event.setEndDate(dateFormat.parse(rs.getString(5)));
+    }
 
     event.setStartHour(rs.getString(6));
     event.setEndHour(rs.getString(7));
@@ -267,7 +275,8 @@ public class EventDAO {
     return event;
   }
 
-  public static Collection<EventDetail> selectByEventPKs(Connection con, Collection<EventPK> eventPKs)
+  public static Collection<EventDetail> selectByEventPKs(Connection con,
+      Collection<EventPK> eventPKs)
       throws SQLException, Exception {
     List<EventDetail> events = new ArrayList<EventDetail>();
     Iterator<EventPK> iterator = eventPKs.iterator();
@@ -298,7 +307,6 @@ public class EventDAO {
     } finally {
       DBUtil.close(rs, selectStmt);
     }
-
     return event;
   }
 
@@ -306,18 +314,14 @@ public class EventDAO {
       int nbReturned) throws SQLException, Exception {
     ResultSet rs = null;
     PreparedStatement prepStmt = null;
-
-    String selectQuery = "select distinct " + COLUMNNAMES + " from "
-        + pk.getTableName() + " where instanceId='" + pk.getComponentName()
-        + "'" + " and eventStartDay >= ?" + " order by eventStartDay";
-
+    String selectQuery = "SELECT DISTINCT " + COLUMNNAMES + " FROM "
+        + pk.getTableName() + " WHERE instanceId= ? AND eventStartDay >= ? ORDER BY eventStartDay";
     try {
-      SilverTrace.info("almanach", "EventDAO.getNextEvents()",
-          "almanach.MSG_SQL_REQUEST", "selectRequest = " + selectQuery);
-
+      SilverTrace.info("almanach", "EventDAO.getNextEvents()", "almanach.MSG_SQL_REQUEST",
+          "selectRequest = " + selectQuery);
       prepStmt = con.prepareStatement(selectQuery);
-      prepStmt.setString(1, dateFormat.format(new Date()));
-
+      prepStmt.setString(1, pk.getComponentName());
+      prepStmt.setString(2, dateFormat.format(new Date()));
       rs = prepStmt.executeQuery();
       List<EventDetail> list = new ArrayList<EventDetail>();
       while (rs.next() && nbReturned != 0) {

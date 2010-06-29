@@ -662,10 +662,10 @@ function sendEvent(mainAction, action) {
           <td align=left>
 		  <select name="Unity" size="1" onChange="changeUnity();">
 			<option value="0" <%if (periodicity == null) out.print("selected");%>><%=resources.getString("noPeriodicity")%></option>
-			<option value="1" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNITY_DAY) out.print("selected");%>><%=resources.getString("allDays")%></option>
-			<option value="2" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNITY_WEEK) out.print("selected");%>><%=resources.getString("allWeeks")%></option>
-			<option value="3" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNITY_MONTH) out.print("selected");%>><%=resources.getString("allMonths")%></option>
-			<option value="4" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNITY_YEAR) out.print("selected");%>><%=resources.getString("allYears")%></option>
+			<option value="1" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNIT_DAY) out.print("selected");%>><%=resources.getString("allDays")%></option>
+			<option value="2" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNIT_WEEK) out.print("selected");%>><%=resources.getString("allWeeks")%></option>
+			<option value="3" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNIT_MONTH) out.print("selected");%>><%=resources.getString("allMonths")%></option>
+			<option value="4" <%if (periodicity != null && periodicity.getUnity() == Periodicity.UNIT_YEAR) out.print("selected");%>><%=resources.getString("allYears")%></option>
 		  </select></td>
         </tr>
         <tr>
@@ -678,9 +678,9 @@ function sendEvent(mainAction, action) {
 		  <td align=left>
 			<%
 			if(periodicity == null ||
-				periodicity.getUnity() == Periodicity.UNITY_DAY || 
-				periodicity.getUnity() == Periodicity.UNITY_MONTH ||
-				periodicity.getUnity() == Periodicity.UNITY_YEAR) {
+				periodicity.getUnity() == Periodicity.UNIT_DAY || 
+				periodicity.getUnity() == Periodicity.UNIT_MONTH ||
+				periodicity.getUnity() == Periodicity.UNIT_YEAR) {
 			%>
 				<input type="checkbox" name="WeekDayWeek2" value="2" disabled><%=resources.getString("GML.jour2")%>
 				<input type="checkbox" name="WeekDayWeek3" value="3" disabled><%=resources.getString("GML.jour3")%>
@@ -690,7 +690,7 @@ function sendEvent(mainAction, action) {
 				<input type="checkbox" name="WeekDayWeek7" value="7" disabled><%=resources.getString("GML.jour7")%>
 				<input type="checkbox" name="WeekDayWeek1" value="1" disabled><%=resources.getString("GML.jour1")%>
 			<%
-			} else if(periodicity != null && periodicity.getUnity() == Periodicity.UNITY_WEEK) {
+			} else if(periodicity != null && periodicity.getUnity() == Periodicity.UNIT_WEEK) {
 			%>
 				<input type="checkbox" name="WeekDayWeek2" value="2" <%if(periodicity.getDaysWeekBinary().charAt(0) == '1')  out.print("checked");%>><%=resources.getString("GML.jour2")%>
 				<input type="checkbox" name="WeekDayWeek3" value="3" <%if(periodicity.getDaysWeekBinary().charAt(1) == '1')  out.print("checked");%>><%=resources.getString("GML.jour3")%>
@@ -708,9 +708,9 @@ function sendEvent(mainAction, action) {
 		<tr>
 			<%
 			if(periodicity == null ||
-				periodicity.getUnity() == Periodicity.UNITY_DAY || 
-				periodicity.getUnity() == Periodicity.UNITY_WEEK ||
-				periodicity.getUnity() == Periodicity.UNITY_YEAR) {
+				periodicity.getUnity() == Periodicity.UNIT_DAY || 
+				periodicity.getUnity() == Periodicity.UNIT_WEEK ||
+				periodicity.getUnity() == Periodicity.UNIT_YEAR) {
 			%>
 			  <td nowrap align=right>
 				<input type="radio" name="ChoiceMonth" value="MonthDate" disabled checked onClick="changeChoiceMonth();"><%=resources.getString("choiceDateMonth")%>&nbsp;</td>
@@ -733,7 +733,7 @@ function sendEvent(mainAction, action) {
 				<input type="radio" name="MonthDayWeek" value="1" disabled><%=resources.getString("GML.jour1")%>
 			  </td> 
 			<%
-			}  else if(periodicity != null && periodicity.getUnity() == Periodicity.UNITY_MONTH) {
+			}  else if(periodicity != null && periodicity.getUnity() == Periodicity.UNIT_MONTH) {
 			%>
 			  <td nowrap align=right>
 				<input type="radio" name="ChoiceMonth" value="MonthDate" <%if(periodicity.getNumWeek() == 0) out.print("checked");%> onClick="changeChoiceMonth();"><%=resources.getString("choiceDateMonth")%>&nbsp;</td>
@@ -783,7 +783,7 @@ function sendEvent(mainAction, action) {
 			%>
         </tr>
 		<tr> 
-          <td  nowrap align=right class="txtlibform"><span><%=resources.getString("beginDatePeriodicity")%> :</td>
+          <td  nowrap align=right class="txtlibform"><span><%=resources.getString("beginDatePeriodicity")%> :</span></td>
           <td valign="baseline"> 
             <input type="text" name="PeriodicityStartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" 
 			<% 
@@ -793,7 +793,7 @@ function sendEvent(mainAction, action) {
           </td>
         </tr>
 		<tr> 
-          <td  nowrap align=right class="txtlibform"><span><%=resources.getString("endDatePeriodicity")%> :</td>
+          <td  nowrap align=right class="txtlibform"><span><%=resources.getString("endDatePeriodicity")%> :</span></td>
           <td valign="baseline"> 
             <input type="text" name="PeriodicityUntilDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>"
 			<% 
@@ -802,7 +802,6 @@ function sendEvent(mainAction, action) {
 			<a href="javascript:OnClick=editDate('setPeriodicityUntilDate');"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="Afficher le calendrier" title="Afficher le calendrier" align="absmiddle"></a>&nbsp;<span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span> 
           </td>
         </tr>
-        </td></tr>
         <tr> 
           <td colspan="2" valign="baseline" class="txtnote">(<img src="icons/cube-rouge.gif" width="5" height="5"> =  <%=resources.getString("GML.requiredField")%>)</td>
         </tr>

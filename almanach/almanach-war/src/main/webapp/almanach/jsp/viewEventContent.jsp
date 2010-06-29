@@ -254,13 +254,13 @@ function closeMessage()
 			}
 			else
 			{
-				if (periodicity.getUnity() == Periodicity.UNITY_DAY) {
+				if (periodicity.getUnity() == Periodicity.UNIT_DAY) {
 					out.print(resources.getString("allDays"));
-				} else if (periodicity.getUnity() == Periodicity.UNITY_WEEK) {
+				} else if (periodicity.getUnity() == Periodicity.UNIT_WEEK) {
 					out.print(resources.getString("allWeeks"));
-				} else if (periodicity.getUnity() == Periodicity.UNITY_MONTH) {
+				} else if (periodicity.getUnity() == Periodicity.UNIT_MONTH) {
 					out.print(resources.getString("allMonths"));
-				} else if (periodicity.getUnity() == Periodicity.UNITY_YEAR) {
+				} else if (periodicity.getUnity() == Periodicity.UNIT_YEAR) {
 					out.print(resources.getString("allYears"));
 				}
 			}
@@ -276,7 +276,7 @@ function closeMessage()
 	        </tr>
 			
 			<%
-				if (periodicity.getUnity() == Periodicity.UNITY_WEEK) {
+				if (periodicity.getUnity() == Periodicity.UNIT_WEEK) {
 			%>
 			<tr>
 	          <td nowrap align=right class="txtlibform"><%=resources.getString("choiceDaysWeek")%>&nbsp;:&nbsp;</td>
@@ -312,7 +312,7 @@ function closeMessage()
 			 </td>
 	        </tr>
 			<%
-				} else if (periodicity.getUnity() == Periodicity.UNITY_MONTH) {
+				} else if (periodicity.getUnity() == Periodicity.UNIT_MONTH) {
 					if(periodicity.getDay() > 0) {
 			%>
 			<tr>

@@ -21,35 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * AlmanachSessionController.java
- */
-
 package com.stratelia.webactiv.almanach.control;
-
-import java.rmi.RemoteException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.ejb.RemoveException;
-
-import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.ComponentList;
-import net.fortuna.ical4j.model.Date;
-import net.fortuna.ical4j.model.Property;
-import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.Description;
-import net.fortuna.ical4j.model.property.DtEnd;
-import net.fortuna.ical4j.model.property.DtStart;
-import net.fortuna.ical4j.model.property.ExDate;
-import net.fortuna.ical4j.model.property.RRule;
-import net.fortuna.ical4j.model.property.Summary;
-import net.fortuna.ical4j.model.property.Uid;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.alertUser.AlertUser;
@@ -88,36 +60,53 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendar;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendarWA1;
+import java.rmi.RemoteException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import javax.ejb.RemoveException;
+import net.fortuna.ical4j.model.Component;
+import net.fortuna.ical4j.model.ComponentList;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.Period;
+import net.fortuna.ical4j.model.PeriodList;
+import net.fortuna.ical4j.model.Property;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.property.DtEnd;
+import net.fortuna.ical4j.model.property.DtStart;
+import net.fortuna.ical4j.model.property.ExDate;
+import net.fortuna.ical4j.model.property.RRule;
 
 /**
  * @author squere
  * @version
  */
-public class AlmanachSessionController extends
-    AbstractComponentSessionController {
-  private AlmanachBm almanachBm = null;
-  private java.util.Calendar currentDay = java.util.Calendar.getInstance();
+public class AlmanachSessionController extends AbstractComponentSessionController {
 
-  private Calendar currentICal4jCalendar;
-
+  public AlmanachBm almanachBm = null;
+  private Calendar currentDay = Calendar.getInstance();
+  private net.fortuna.ical4j.model.Calendar currentICal4jCalendar;
   private EventDetail currentEvent;
-
   private static final String AE_MSG1 = "almanach.ASC_NoSuchFindEvent";
-
   // Almanach Agregation
   private String[] agregatedAlmanachsIds = null;
   private static final String ALMANACHS_IN_SUBSPACES = "0";
   private static final String ALMANACHS_IN_SPACE_AND_SUBSPACES = "1";
   private static final String ALL_ALMANACHS = "2";
-
   private static final String ACCESS_ALL = "0";
   private static final String ACCESS_SPACE = "1";
   private static final String ACCESS_NONE = "3";
-
-  private Hashtable<String, String> colors = null;
-
+  private Map<String, String> colors = null;
   private OrganizationController organizationController = new OrganizationController();
 
   public AlmanachSessionController(MainSessionController mainSessionCtrl,
@@ -127,11 +116,11 @@ public class AlmanachSessionController extends
         "com.stratelia.webactiv.almanach.settings.almanachSettings");
   }
 
-  public java.util.Calendar getCurrentDay() {
+  public Calendar getCurrentDay() {
     return currentDay;
   }
 
-  public void setCurrentDay(java.util.Date date) {
+  public void setCurrentDay(Date date) {
     currentDay.setTime(date);
   }
 
@@ -144,18 +133,21 @@ public class AlmanachSessionController extends
   }
 
   public void nextMonth() {
-    currentDay.add(java.util.Calendar.MONTH, 1);
+    currentDay.add(Calendar.MONTH, 1);
   }
 
   public void previousMonth() {
-    currentDay.add(java.util.Calendar.MONTH, -1);
+    currentDay.add(Calendar.MONTH, -1);
   }
 
   public void today() {
-    currentDay = java.util.Calendar.getInstance();
+    currentDay = Calendar.getInstance();
   }
 
   /**
+   * @return 
+   * @throws AlmanachException
+   * @throws RemoteException 
    * @author David Lesimple
    */
   public Collection<EventDetail> getMonthEvents(String[] instanceIds)
@@ -166,10 +158,11 @@ public class AlmanachSessionController extends
         new EventPK("", getSpaceId(), getComponentId()),
         getCurrentDay().getTime(), instanceIds);
 
-    if (events != null)
+    if (events != null) {
       SilverTrace.info("almanach",
           "AlmanachSessionController.getMonthEvents()",
           "root.MSG_GEN_PARAM_VALUE", "# of events = " + events.size());
+    }
 
     // tri
     EventDetailBeginDateComparatorAsc comparateur = new EventDetailBeginDateComparatorAsc();
@@ -223,10 +216,11 @@ public class AlmanachSessionController extends
       AlmanachNoSuchFindEventException, RemoteException {
     EventDetail detail = getAlmanachBm().getEventDetail(
         new EventPK(id, getSpaceId(), getComponentId()));
-    if (detail != null)
+    if (detail != null) {
       return detail;
-    else
+    } else {
       throw new AlmanachNoSuchFindEventException(AE_MSG1);
+    }
   }
 
   /**
@@ -236,38 +230,31 @@ public class AlmanachSessionController extends
    * @throws RemoteException
    * @throws UtilException
    */
-  @SuppressWarnings("unchecked")
-  public void removeEvent(String id) throws AlmanachException, RemoteException,
-      UtilException {
+  public void removeEvent(String id) throws AlmanachException, RemoteException, UtilException {
     SilverTrace.info("almanach", "AlmanachSessionController.removeEvent()",
         "root.MSG_GEN_ENTER_METHOD");
     EventPK pk = new EventPK(id, getSpaceId(), getComponentId());
-
     // remove event from DB
     getAlmanachBm().removeEvent(pk);
-
     // remove attachments from filesystem
     AttachmentController.deleteAttachmentByCustomerPK(pk);
-
     // Delete the Wysiwyg if exists
     if (WysiwygController.haveGotWysiwyg(getSpaceId(), getComponentId(), id)) {
-      FileFolderManager.deleteFile(WysiwygController.getWysiwygPath(
-          getComponentId(), id));
+      FileFolderManager.deleteFile(WysiwygController.getWysiwygPath(getComponentId(), id));
     }
 
     // Remove the periodicity and exceptions
     Periodicity periodicity = getAlmanachBm().getPeriodicity(id);
     if (periodicity != null) {
-      getAlmanachBm()
-          .removeAllPeriodicityException(periodicity.getPK().getId());
+      getAlmanachBm().removeAllPeriodicityException(periodicity.getPK().getId());
       getAlmanachBm().removePeriodicity(periodicity);
     }
 
     // Suppression du VEvent du Calendar ical4j (pour gestion)
     if (this.getCurrentICal4jCalendar() == null) {
       // initialisation d'un Calendar ical4j
-      Calendar calendarAlmanach = this.getICal4jCalendar(this
-          .getAllEventsAgregation());
+      net.fortuna.ical4j.model.Calendar calendarAlmanach = this.getICal4jCalendar(this.
+          getAllEventsAgregation());
       this.setCurrentICal4jCalendar(calendarAlmanach);
     }
     ComponentList listCompo = this.getCurrentICal4jCalendar().getComponents();
@@ -295,7 +282,6 @@ public class AlmanachSessionController extends
    * @throws RemoteException
    * @throws AlmanachException
    */
-  @SuppressWarnings("unchecked")
   public void removeOccurenceEvent(EventDetail event,
       String dateDebutException, String dateFinException)
       throws ParseException, RemoteException, AlmanachException {
@@ -304,10 +290,9 @@ public class AlmanachSessionController extends
         "root.MSG_GEN_ENTER_METHOD");
 
     PeriodicityException periodicityException = new PeriodicityException();
-    periodicityException.setPeriodicityId(new Integer(event.getPeriodicity()
-        .getPK().getId()).intValue());
-    periodicityException.setBeginDateException(DateUtil
-        .parse(dateDebutException));
+    periodicityException.setPeriodicityId(new Integer(event.getPeriodicity().getPK().getId()).
+        intValue());
+    periodicityException.setBeginDateException(DateUtil.parse(dateDebutException));
     periodicityException.setEndDateException(DateUtil.parse(dateFinException));
 
     // add exception periodicity in DB
@@ -317,8 +302,8 @@ public class AlmanachSessionController extends
     // (pour gestion)
     if (this.getCurrentICal4jCalendar() == null) {
       // initialisation d'un Calendar ical4j
-      Calendar calendarAlmanach = this.getICal4jCalendar(this
-          .getAllEventsAgregation());
+      net.fortuna.ical4j.model.Calendar calendarAlmanach = this.getICal4jCalendar(this.
+          getAllEventsAgregation());
       this.setCurrentICal4jCalendar(calendarAlmanach);
     }
     ComponentList listCompo = this.getCurrentICal4jCalendar().getComponents();
@@ -327,16 +312,12 @@ public class AlmanachSessionController extends
     while (it.hasNext()) {
       eventIcal4jCalendar = it.next();
       if (event.getId().equals(
-          eventIcal4jCalendar.getProperties().getProperty(Property.UID)
-          .getValue())) {
+          eventIcal4jCalendar.getProperties().getProperty(Property.UID).getValue())) {
         break;
       }
     }
-    eventIcal4jCalendar.getProperties().add(
-        generateExceptionDate(event.getPeriodicity()));
-
-    SilverTrace.info("almanach",
-        "AlmanachSessionController.removeOccurenceEvent()",
+    eventIcal4jCalendar.getProperties().add(generateExceptionDate(event.getPeriodicity()));
+    SilverTrace.info("almanach", "AlmanachSessionController.removeOccurenceEvent()",
         "root.MSG_GEN_EXIT_METHOD");
   }
 
@@ -348,83 +329,36 @@ public class AlmanachSessionController extends
    * @throws RemoteException
    * @throws WysiwygException
    */
-  public void addEvent(EventDetail event) throws AlmanachBadParamException,
-      AlmanachException, RemoteException, WysiwygException {
+  public void addEvent(EventDetail event) throws AlmanachBadParamException, AlmanachException,
+      RemoteException, WysiwygException {
     SilverTrace.info("almanach", "AlmanachSessionController.addEvent()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
       event.setPK(new EventPK("", getSpaceId(), getComponentId()));
       event.setDelegatorId(getUserId());
-
       // Add the event
       String eventId = getAlmanachBm().addEvent(event);
-
-      java.util.Date startDate = event.getStartDate();
-      String startHour = event.getStartHour();
-      java.util.Date endDate = event.getEndDate();
-      String endHour = event.getEndHour();
-
+      if (event.getPeriodicity() != null) {
+        Periodicity periodicity = event.getPeriodicity();
+        periodicity.setEventId(new Integer(eventId).intValue());
+        // Add the periodicity
+        getAlmanachBm().addPeriodicity(periodicity);      
+      }
+      Date startDate = event.getStartDate();
       // currentDay
       if (startDate != null) {
         getCurrentDay().setTime(startDate);
       }
-
       // Add the wysiwyg content
-      WysiwygController.createFileAndAttachment(event
-          .getDescription(getLanguage()), getSpaceId(), getComponentId(),
-          eventId);
-
-      // Construction du VEvent du Calendar ical4j (pour gestion)
-      java.util.Calendar calStartDate = java.util.Calendar.getInstance();
-      calStartDate.setTime(startDate);
-      if (StringUtil.isDefined(startHour)) {
-        calStartDate.set(java.util.Calendar.HOUR_OF_DAY, DateUtil
-            .extractHour(startHour));
-        calStartDate.set(java.util.Calendar.MINUTE, DateUtil
-            .extractMinutes(startHour));
-      }
-      java.util.Calendar calEndDate = java.util.Calendar.getInstance();
-      calEndDate.setTime(startDate);
-      if (endDate != null) {
-        calEndDate.setTime(endDate);
-        if (StringUtil.isDefined(endHour)) {
-          calEndDate.set(java.util.Calendar.HOUR_OF_DAY, DateUtil
-              .extractHour(endHour));
-          calEndDate.set(java.util.Calendar.MINUTE, DateUtil
-              .extractMinutes(endHour));
-        }
-      }
-
-      VEvent eventIcal4jCalendar = new VEvent();
-      Uid uid = new Uid(eventId);
-      eventIcal4jCalendar.getProperties().add(uid);
-      DtStart dtStart = new DtStart(new Date(calStartDate.getTime()));
-      eventIcal4jCalendar.getProperties().add(dtStart);
-      DtEnd dtEnd = new DtEnd(new Date(calEndDate.getTime()));
-      eventIcal4jCalendar.getProperties().add(dtEnd);
-      Summary summary = new Summary(event.getTitle());
-      eventIcal4jCalendar.getProperties().add(summary);
-      Description description = new Description(event
-          .getDescription(getLanguage()));
-      eventIcal4jCalendar.getProperties().add(description);
-
-      // Périodicité
-      if (event.getPeriodicity() != null) {
-        Periodicity periodicity = event.getPeriodicity();
-        periodicity.setEventId(new Integer(eventId).intValue());
-
-        // Add the periodicity
-        getAlmanachBm().addPeriodicity(periodicity);
-
-        eventIcal4jCalendar.getProperties().add(
-            generateRecurrenceRule(periodicity));
-
-      }
-
+      WysiwygController.createFileAndAttachment(event.getDescription(getLanguage()), getSpaceId(),
+          getComponentId(), eventId);
+      EventDetail savedEvent = getAlmanachBm().getEventDetail(new EventPK(eventId, getSpaceId(),
+          getComponentId()));
+      VEvent eventIcal4jCalendar = savedEvent.icalConversion(null);
       if (this.getCurrentICal4jCalendar() == null) {
         // initialisation d'un Calendar ical4j
-        Calendar calendarAlmanach = this.getICal4jCalendar(this
-            .getAllEventsAgregation());
+        net.fortuna.ical4j.model.Calendar calendarAlmanach = this.getICal4jCalendar(this.
+            getAllEventsAgregation());
         this.setCurrentICal4jCalendar(calendarAlmanach);
       }
       this.getCurrentICal4jCalendar().getComponents().add(eventIcal4jCalendar);
@@ -445,9 +379,8 @@ public class AlmanachSessionController extends
    * @throws AlmanachException
    * @throws RemoteException
    */
-  @SuppressWarnings("unchecked")
-  public void updateEvent(EventDetail event) throws AlmanachBadParamException,
-      AlmanachException, RemoteException, WysiwygException {
+  public void updateEvent(EventDetail event) throws AlmanachBadParamException, AlmanachException,
+      RemoteException, WysiwygException {
     SilverTrace.info("almanach", "AlmanachSessionController.updateEvent()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -457,9 +390,9 @@ public class AlmanachSessionController extends
       // Update event
       getAlmanachBm().updateEvent(event);
 
-      java.util.Date startDate = event.getStartDate();
+      Date startDate = event.getStartDate();
       String startHour = event.getStartHour();
-      java.util.Date endDate = event.getEndDate();
+      Date endDate = event.getEndDate();
       String endHour = event.getEndHour();
 
       // currentDay
@@ -469,41 +402,37 @@ public class AlmanachSessionController extends
 
       // Update the Wysiwyg if exists, create one otherwise
       if (StringUtil.isDefined(event.getWysiwyg())) {
-        WysiwygController.updateFileAndAttachment(event
-            .getDescription(getLanguage()), getSpaceId(), getComponentId(),
+        WysiwygController.updateFileAndAttachment(event.getDescription(getLanguage()), getSpaceId(),
+            getComponentId(),
             event.getId(), getUserId());
       } else {
-        WysiwygController.createFileAndAttachment(event
-            .getDescription(getLanguage()), getSpaceId(), getComponentId(),
+        WysiwygController.createFileAndAttachment(event.getDescription(getLanguage()), getSpaceId(),
+            getComponentId(),
             event.getId());
       }
 
       // Mise à jour du VEvent du Calendar ical4j (pour gestion)
-      java.util.Calendar calStartDate = java.util.Calendar.getInstance();
+      Calendar calStartDate = Calendar.getInstance();
       calStartDate.setTime(startDate);
       if (StringUtil.isDefined(startHour)) {
-        calStartDate.set(java.util.Calendar.HOUR_OF_DAY, DateUtil
-            .extractHour(startHour));
-        calStartDate.set(java.util.Calendar.MINUTE, DateUtil
-            .extractMinutes(startHour));
+        calStartDate.set(Calendar.HOUR_OF_DAY, DateUtil.extractHour(startHour));
+        calStartDate.set(Calendar.MINUTE, DateUtil.extractMinutes(startHour));
       }
-      java.util.Calendar calEndDate = java.util.Calendar.getInstance();
+      Calendar calEndDate = Calendar.getInstance();
       calEndDate.setTime(startDate);
       if (endDate != null) {
         calEndDate.setTime(endDate);
         if (StringUtil.isDefined(endHour)) {
-          calEndDate.set(java.util.Calendar.HOUR_OF_DAY, DateUtil
-              .extractHour(endHour));
-          calEndDate.set(java.util.Calendar.MINUTE, DateUtil
-              .extractMinutes(endHour));
+          calEndDate.set(Calendar.HOUR_OF_DAY, DateUtil.extractHour(endHour));
+          calEndDate.set(Calendar.MINUTE, DateUtil.extractMinutes(endHour));
         }
       }
 
       // retrouve l'event en question
       if (this.getCurrentICal4jCalendar() == null) {
         // initialisation d'un Calendar ical4j
-        Calendar calendarAlmanach = this.getICal4jCalendar(this
-            .getAllEventsAgregation());
+        net.fortuna.ical4j.model.Calendar calendarAlmanach = this.getICal4jCalendar(this.
+            getAllEventsAgregation());
         this.setCurrentICal4jCalendar(calendarAlmanach);
       }
       ComponentList listCompo = this.getCurrentICal4jCalendar().getComponents();
@@ -513,19 +442,17 @@ public class AlmanachSessionController extends
       while (it.hasNext() && !ok) {
         eventIcal4jCalendar = it.next();
         if (event.getPK().getId().equals(
-            eventIcal4jCalendar.getProperties().getProperty(Property.UID)
-            .getValue())) {
+            eventIcal4jCalendar.getProperties().getProperty(Property.UID).getValue())) {
           ok = true;
         }
       }
 
       if (ok) {
-
         eventIcal4jCalendar.getProperties().remove(Property.DTSTART);
-        DtStart dtStart = new DtStart(new Date(calStartDate.getTime()));
+        DtStart dtStart = new DtStart(new net.fortuna.ical4j.model.Date(calStartDate.getTime()));
         eventIcal4jCalendar.getProperties().add(dtStart);
         eventIcal4jCalendar.getProperties().remove(Property.DTEND);
-        DtEnd dtEnd = new DtEnd(new Date(calEndDate.getTime()));
+        DtEnd dtEnd = new DtEnd(new net.fortuna.ical4j.model.Date(calEndDate.getTime()));
         eventIcal4jCalendar.getProperties().add(dtEnd);
 
         // Périodicité
@@ -538,26 +465,18 @@ public class AlmanachSessionController extends
           if (periodicity != null) {
 
             // Add the periodicity
-            periodicity.setEventId(new Integer(event.getPK().getId())
-                .intValue());
+            periodicity.setEventId(new Integer(event.getPK().getId()).intValue());
             getAlmanachBm().addPeriodicity(periodicity);
-
-            eventIcal4jCalendar.getProperties().add(
-                generateRecurrenceRule(periodicity));
-
+            eventIcal4jCalendar.getProperties().add(generateRecurrenceRule(periodicity));
           }
         } else {// lastPeriodicity != null
           if (periodicity == null) {
-
             // Remove the periodicity and Exceptions
             getAlmanachBm().removePeriodicity(lastPeriodicity);
-
           } else {
-
             // Update the periodicity
             periodicity.setPK(lastPeriodicity.getPK());
-            periodicity.setEventId(new Integer(event.getPK().getId())
-                .intValue());
+            periodicity.setEventId(Integer.parseInt(event.getPK().getId()));
             getAlmanachBm().updatePeriodicity(periodicity);
 
             // Mise à jour du VEvent du Calendar ical4j (pour gestion)
@@ -567,8 +486,7 @@ public class AlmanachSessionController extends
         }
       }
     } catch (RemoteException e) {
-      throw new AlmanachRuntimeException(
-          "AlmanachSessionController.addEvent()",
+      throw new AlmanachRuntimeException("AlmanachSessionController.addEvent()",
           SilverpeasRuntimeException.ERROR, "almanach.EXE_UPDATE_EVENT_FAIL", e);
     }
     SilverTrace.info("almanach", "AlmanachSessionController.updateEvent()",
@@ -589,9 +507,7 @@ public class AlmanachSessionController extends
    * @return
    */
   public CompoSpace[] getAlmanachInstances() {
-    CompoSpace[] compoSpaces = getOrganizationController().getCompoForUser(
-        getUserId(), "almanach");
-    return compoSpaces;
+    return getOrganizationController().getCompoForUser(getUserId(), "almanach");
   }
 
   private AlmanachBm getAlmanachBm() throws AlmanachException {
@@ -608,11 +524,12 @@ public class AlmanachSessionController extends
   }
 
   /**
+   * @param mode 
    * @param bCompleteMonth
    * @return
    */
   public String buildPdf(String mode) {
-    String name = "almanach" + (new java.util.Date()).getTime() + ".pdf";
+    String name = "almanach" + (new Date()).getTime() + ".pdf";
 
     try {
       AlmanachPdfGenerator.buildPdf(name, this, mode);
@@ -627,11 +544,13 @@ public class AlmanachSessionController extends
 
   /**
    * return the MonthCalendar Object
+   * @return 
    */
   public MonthCalendar getMonthCalendar() {
     int numbersDays = 7;
-    if (isWeekendNotVisible())
+    if (isWeekendNotVisible()) {
       numbersDays = 5;
+    }
 
     return (new MonthCalendarWA1(getLanguage(), numbersDays));
   }
@@ -664,13 +583,16 @@ public class AlmanachSessionController extends
    * (non-Javadoc)
    * @see com.stratelia.silverpeas.peasCore.AbstractComponentSessionController#getRSSUrl ()
    */
+  @Override
   public String getRSSUrl() {
-    if (isUseRss())
+    if (isUseRss()) {
       return super.getRSSUrl();
+    }
     return null;
   }
 
   /**
+   * @return 
    * @author dlesimple
    */
   public boolean isAgregationUsed() {
@@ -680,57 +602,55 @@ public class AlmanachSessionController extends
 
   private String getAccessPolicy() {
     String param = getComponentParameterValue("directAccess");
-    if (!StringUtil.isDefined(param))
+    if (!StringUtil.isDefined(param)) {
       return ACCESS_ALL;
-    else
-      return param;
+    }
+    return param;
   }
 
   public List<List<String>> getAccessibleInstances() {
-    if (getAccessPolicy().equals(ACCESS_NONE))
+    if (ACCESS_NONE.equals(getAccessPolicy())) {
       return null;
+    }
 
     boolean inCurrentSpace = true;
-    boolean inAllSpaces = getAccessPolicy().equals(ACCESS_ALL);
+    boolean inAllSpaces = ACCESS_ALL.equals(getAccessPolicy());
 
     // Get almanachIds
     String[] instanceIds = organizationController.getAllComponentIdsRecur(
-        getSpaceId(), getUserId(), getComponentRootName(), inCurrentSpace,
-        inAllSpaces);
+        getSpaceId(), getUserId(), getComponentRootName(), inCurrentSpace, inAllSpaces);
 
-    SilverTrace.info("almanach",
-        "AlmanachSessionController.getAccessibleInstances()",
-        "root.MSG_GEN_PARAM_VALUE", "instanceIds=" + instanceIds + " spaceId="
-        + getSpaceId());
+    SilverTrace.info("almanach", "AlmanachSessionController.getAccessibleInstances()",
+        "root.MSG_GEN_PARAM_VALUE", "instanceIds=" + instanceIds + " spaceId=" + getSpaceId());
     List<List<String>> almanachs = null;
     if (instanceIds.length > 1) // exclude this instance
     {
       for (int i = 0; i < instanceIds.length; i++) {
-        SilverTrace.info("almanach",
-            "AlmanachSessionController.getAccessibleInstances()",
+        SilverTrace.info("almanach", "AlmanachSessionController.getAccessibleInstances()",
             "root.MSG_GEN_PARAM_VALUE", "instanceId=" + instanceIds[i]);
         List<String> almanach = new ArrayList<String>();
 
-        ComponentInstLight almanachInst = organizationController
-            .getComponentInstLight(instanceIds[i]);
+        ComponentInstLight almanachInst = organizationController.getComponentInstLight(
+            instanceIds[i]);
 
         boolean keepIt = false;
-        if (getAccessPolicy().equals(ACCESS_SPACE))
+        if (ACCESS_SPACE.equals(getAccessPolicy())) {
           keepIt = almanachInst.getDomainFatherId().equals(getSpaceId());
-        else
+        } else {
           keepIt = true;
+        }
 
         if (keepIt) {
           almanach.add(instanceIds[i]);
           almanach.add(almanachInst.getLabel());
 
-          SpaceInstLight si = organizationController
-              .getSpaceInstLightById(almanachInst.getDomainFatherId());
+          SpaceInstLight si = organizationController.getSpaceInstLightById(almanachInst.
+              getDomainFatherId());
           almanach.add(si.getName());
 
-          if (almanachs == null)
+          if (almanachs == null) {
             almanachs = new ArrayList<List<String>>();
-
+          }
           almanachs.add(almanach);
         }
       }
@@ -747,10 +667,7 @@ public class AlmanachSessionController extends
    */
   public int getSilverObjectId(String objectId)
       throws AlmanachBadParamException, AlmanachException, RemoteException {
-    int silverObjectId = -1;
-    silverObjectId = getAlmanachBm().getSilverObjectId(
-        new EventPK(objectId, getSpaceId(), getComponentId()));
-    return silverObjectId;
+    return getAlmanachBm().getSilverObjectId(new EventPK(objectId, getSpaceId(), getComponentId()));
   }
 
   /**
@@ -788,9 +705,9 @@ public class AlmanachSessionController extends
     // Array of almanach(id, label, color)
     ArrayList<List<String>> almanachs = new ArrayList<List<String>>();
     String[] instanceIds = null;
-    if (agregationMode.equals(ALMANACHS_IN_SPACE_AND_SUBSPACES))
+    if (agregationMode.equals(ALMANACHS_IN_SPACE_AND_SUBSPACES)) {
       inCurrentSpace = true;
-    else if (agregationMode.equals(ALL_ALMANACHS)) {
+    } else if (agregationMode.equals(ALL_ALMANACHS)) {
       inCurrentSpace = true;
       inAllSpaces = true;
     }
@@ -808,15 +725,14 @@ public class AlmanachSessionController extends
           "root.MSG_GEN_PARAM_VALUE", "instanceId=" + instanceIds[i]);
       ArrayList<String> almanach = new ArrayList<String>();
       if (!instanceIds[i].equals(getComponentId())) {
-        ComponentInstLight almanachInst = organizationController
-            .getComponentInstLight(instanceIds[i]);
+        ComponentInstLight almanachInst = organizationController.getComponentInstLight(
+            instanceIds[i]);
         almanach.add(instanceIds[i]);
         almanach.add(almanachInst.getLabel());
         almanach.add(getAlmanachColor(i));
         almanachs.add(almanach);
       }
     }
-
     return almanachs;
   }
 
@@ -839,8 +755,9 @@ public class AlmanachSessionController extends
     boolean isAgregated = false;
     if (agregatedAlmanachsIds != null) {
       for (int i = 0; i < agregatedAlmanachsIds.length && !isAgregated; i++) {
-        if (agregatedAlmanachsIds[i].equals(instanceId))
+        if (agregatedAlmanachsIds[i].equals(instanceId)) {
           isAgregated = true;
+        }
       }
     }
     return isAgregated;
@@ -853,8 +770,9 @@ public class AlmanachSessionController extends
    */
   private void setAgregatedAlmanachs(String[] instancesIds) {
     agregatedAlmanachsIds = new String[instancesIds.length];
-    for (int i = 0; i < instancesIds.length; i++)
+    for (int i = 0; i < instancesIds.length; i++) {
       agregatedAlmanachsIds[i] = instancesIds[i];
+    }
   }
 
   /**
@@ -875,8 +793,9 @@ public class AlmanachSessionController extends
       for (int i = 0; i < instanceIds.length; i++) {
         setAgregatedAlmanachs(instanceIds);
       }
-    } else
+    } else {
       deleteAgregatedAlmanachs();
+    }
   }
 
   /**
@@ -901,8 +820,8 @@ public class AlmanachSessionController extends
    * @throws AlmanachException
    * @throws AlmanachNoSuchFindEventException
    */
-  public String initAlertUser(String eventId) throws RemoteException,
-      AlmanachException, AlmanachNoSuchFindEventException {
+  public String initAlertUser(String eventId) throws RemoteException, AlmanachException,
+      AlmanachNoSuchFindEventException {
     AlertUser sel = getAlertUser();
     sel.resetAll();
     sel.setHostSpaceName(getSpaceLabel());
@@ -918,8 +837,7 @@ public class AlmanachSessionController extends
   }
 
   private synchronized NotificationMetaData getAlertNotificationEvent(
-      String eventId) throws RemoteException, AlmanachException,
-      AlmanachNoSuchFindEventException {
+      String eventId) throws RemoteException, AlmanachException, AlmanachNoSuchFindEventException {
     // création des données ...
     EventPK eventPK = new EventPK(eventId, getSpaceId(), getComponentId());
     String senderName = getUserDetail().getDisplayedName();
@@ -975,13 +893,12 @@ public class AlmanachSessionController extends
 
   private String getNotificationBody(EventDetail eventDetail, String htmlPath,
       ResourceLocator message, String senderName) {
-    StringBuffer messageText = new StringBuffer();
+    StringBuilder messageText = new StringBuilder();
     messageText.append(senderName).append(" ");
     messageText.append(message.getString("notifInfo")).append(" ").append(
         eventDetail.getName()).append(" ");
     messageText.append(message.getString("notifInfo2")).append("\n\n");
-    messageText.append(message.getString("path")).append(" : ")
-        .append(htmlPath);
+    messageText.append(message.getString("path")).append(" : ").append(htmlPath);
     return messageText.toString();
   }
 
@@ -989,10 +906,12 @@ public class AlmanachSessionController extends
     return URLManager.getURL(null, getComponentId()) + eventDetail.getURL();
   }
 
+  @Override
   public void close() {
     try {
-      if (almanachBm != null)
+      if (almanachBm != null) {
         almanachBm.remove();
+      }
     } catch (RemoteException e) {
       SilverTrace.error("almanachSession", "AlmanachSessionController.close",
           "", e);
@@ -1005,14 +924,14 @@ public class AlmanachSessionController extends
   /**
    * @return
    */
-  public Calendar getCurrentICal4jCalendar() {
+  public net.fortuna.ical4j.model.Calendar getCurrentICal4jCalendar() {
     return this.currentICal4jCalendar;
   }
 
   /**
    * @param currentICal4jCalendar
    */
-  public void setCurrentICal4jCalendar(Calendar currentICal4jCalendar) {
+  public void setCurrentICal4jCalendar(net.fortuna.ical4j.model.Calendar currentICal4jCalendar) {
     this.currentICal4jCalendar = currentICal4jCalendar;
   }
 
@@ -1022,7 +941,8 @@ public class AlmanachSessionController extends
    * @throws RemoteException
    * @throws AlmanachException
    */
-  public Calendar getICal4jCalendar(Collection<EventDetail> events) throws RemoteException,
+  public net.fortuna.ical4j.model.Calendar getICal4jCalendar(Collection<EventDetail> events) throws
+      RemoteException,
       AlmanachException {
     return getAlmanachBm().getICal4jCalendar(events, getLanguage());
 
@@ -1036,8 +956,7 @@ public class AlmanachSessionController extends
    * @throws RemoteException
    */
   public EventDetail getCompleteEventDetail(String id)
-      throws AlmanachException, AlmanachNoSuchFindEventException,
-      RemoteException {
+      throws AlmanachException, AlmanachNoSuchFindEventException, RemoteException {
     EventDetail detail = getAlmanachBm().getEventDetail(
         new EventPK(id, getSpaceId(), getComponentId()));
     if (detail != null) {
@@ -1062,8 +981,8 @@ public class AlmanachSessionController extends
    */
   public void updateEventOccurence(EventDetail event,
       String dateDebutIteration, String dateFinIteration)
-      throws AlmanachBadParamException, AlmanachException, RemoteException,
-      WysiwygException, ParseException {
+      throws AlmanachBadParamException, AlmanachException, RemoteException, WysiwygException,
+      ParseException {
     SilverTrace.info("almanach",
         "AlmanachSessionController.updateEventOccurence()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -1104,10 +1023,63 @@ public class AlmanachSessionController extends
   public Collection<EventDetail> getListRecurrentEvent(boolean yearScope) throws RemoteException,
       AlmanachException {
     // Récupère le Calendar ical4j
-    Calendar calendarAlmanach = getCurrentICal4jCalendar();
+    net.fortuna.ical4j.model.Calendar calendarAlmanach = getCurrentICal4jCalendar();
 
     return getAlmanachBm().getListRecurrentEvent(calendarAlmanach,
         getCurrentDay(), getSpaceId(), getComponentId(), yearScope);
 
+  }
+
+  public List<Event> listCurrentMonthEvents() throws AlmanachException,
+      AlmanachNoSuchFindEventException, RemoteException {
+    List<Event> events = new ArrayList<Event>();
+    // transformation des VEvent du Calendar ical4j en Event du MonthCalendar
+    java.util.Calendar firstDayMonth = java.util.Calendar.getInstance();
+    firstDayMonth.set(java.util.Calendar.YEAR, getCurrentDay().get(java.util.Calendar.YEAR));
+    firstDayMonth.set(java.util.Calendar.DAY_OF_MONTH, 1);
+    firstDayMonth.set(java.util.Calendar.MONTH, getCurrentDay().get(java.util.Calendar.MONTH));
+    firstDayMonth.set(java.util.Calendar.HOUR_OF_DAY, 0);
+    firstDayMonth.set(java.util.Calendar.MINUTE, 0);
+    firstDayMonth.set(java.util.Calendar.SECOND, 0);
+    firstDayMonth.set(java.util.Calendar.MILLISECOND, 0);
+    java.util.Calendar lastDayMonth = java.util.Calendar.getInstance();
+    lastDayMonth.set(java.util.Calendar.YEAR, getCurrentDay().get(java.util.Calendar.YEAR));
+    lastDayMonth.set(java.util.Calendar.DAY_OF_MONTH, 1);
+    lastDayMonth.set(java.util.Calendar.MONTH, getCurrentDay().get(java.util.Calendar.MONTH));
+    lastDayMonth.set(java.util.Calendar.HOUR_OF_DAY, 0);
+    lastDayMonth.set(java.util.Calendar.MINUTE, 0);
+    lastDayMonth.set(java.util.Calendar.SECOND, 1);
+    lastDayMonth.set(java.util.Calendar.MILLISECOND, 0);
+    lastDayMonth.add(java.util.Calendar.MONTH, 1);
+    Period monthPeriod = new Period(new DateTime(firstDayMonth.getTime()),
+        new DateTime(lastDayMonth.getTime()));
+
+    ComponentList componentList = this.currentICal4jCalendar.getComponents(Component.VEVENT);
+    Iterator<VEvent> itVEvent = componentList.iterator();
+    while (itVEvent.hasNext()) {
+      VEvent eventIcal4jCalendar = itVEvent.next();
+      String idEvent = eventIcal4jCalendar.getProperties().getProperty(Property.UID).getValue();
+      // Récupère l'événement
+      EventDetail evtDetail = getEventDetail(idEvent);
+      PeriodList periodList = eventIcal4jCalendar.calculateRecurrenceSet(monthPeriod);
+      Iterator<Period> itPeriod = periodList.iterator();
+      while (itPeriod.hasNext()) {
+        Period recurrencePeriod = itPeriod.next();
+        // Construction de l'Event du MonthCalendar (pour affichage)
+        Event evt = new Event(idEvent, evtDetail.getName(), new java.util.Date(
+            recurrencePeriod.getStart().getTime()), new java.util.Date(
+            recurrencePeriod.getEnd().getTime()), evtDetail.getURL(),
+            evtDetail.getPriority());
+        evt.setStartHour(evtDetail.getStartHour());
+        evt.setEndHour(evtDetail.getEndHour());
+        evt.setPlace(evtDetail.getPlace());
+        if (isAgregationUsed()) {
+          evt.setColor(getAlmanachColor(evtDetail.getInstanceId()));
+        }
+        evt.setInstanceId(evtDetail.getInstanceId());
+        events.add(evt);
+      }
+    }
+    return events;
   }
 }

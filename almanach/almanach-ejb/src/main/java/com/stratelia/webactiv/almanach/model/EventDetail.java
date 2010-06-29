@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.almanach.model;
 
+import com.silverpeas.util.StringUtil;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
@@ -33,10 +34,20 @@ import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
+import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.TimeZone;
+import net.fortuna.ical4j.model.TimeZoneRegistry;
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
+import net.fortuna.ical4j.model.component.VEvent;
+import net.fortuna.ical4j.model.property.Description;
+import net.fortuna.ical4j.model.property.ExDate;
+import net.fortuna.ical4j.model.property.Uid;
 
 public class EventDetail extends AbstractI18NBean implements
     SilverContentInterface, Serializable {
-  
+
   private static final long serialVersionUID = 9077018265272108291L;
   private String _name = null;
   private EventPK _pk = null;
@@ -64,8 +75,8 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public EventDetail(EventPK pk, String name) {
-    setPK(pk);
-    setNameDescription(name);
+    this._pk = pk;
+    this._name = name;
   }
 
   public EventDetail(String _name, EventPK _pk, int _priority, String _title,
@@ -201,8 +212,9 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public String getPermalink() {
-    if (URLManager.displayUniversalLinks())
+    if (URLManager.displayUniversalLinks()) {
       return URLManager.getApplicationURL() + "/Event/" + getId();
+    }
 
     return null;
   }
@@ -249,7 +261,50 @@ public class EventDetail extends AbstractI18NBean implements
         nbDaysDuration++;
       }
     }
-
     return nbDaysDuration;
+  }
+
+  public VEvent icalConversion(ExDate exDate) {
+    // Construction du VEvent du Calendar ical4j (pour gestion)
+    Calendar calStartDate = java.util.Calendar.getInstance();
+    calStartDate.setTime(_startDate);
+    if (StringUtil.isDefined(startHour)) {
+      calStartDate.set(java.util.Calendar.HOUR_OF_DAY, DateUtil.extractHour(startHour));
+      calStartDate.set(java.util.Calendar.MINUTE, DateUtil.extractMinutes(startHour));
+    }
+    Calendar calEndDate = java.util.Calendar.getInstance();
+    calEndDate.setTime(_startDate);
+    if (_endDate != null) {
+      calEndDate.setTime(_endDate);
+      if (StringUtil.isDefined(endHour)) {
+        calEndDate.set(java.util.Calendar.HOUR_OF_DAY, DateUtil.extractHour(endHour));
+        calEndDate.set(java.util.Calendar.MINUTE, DateUtil.extractMinutes(endHour));
+      }
+    }
+    TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+    ResourceLocator almanachSettings =
+        new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings", "");
+    TimeZone localTimeZone = registry.getTimeZone(almanachSettings.getString("almanach.timezone"));
+
+    DateTime dtStart = new DateTime(calStartDate.getTime());
+    dtStart.setTimeZone(localTimeZone);
+    DateTime dtEnd = new DateTime(calEndDate.getTime());
+    dtEnd.setTimeZone(localTimeZone);
+    VEvent eventIcal4jCalendar = new VEvent(dtStart, dtEnd, _title);
+
+    if (_pk != null) {
+      Uid uid = new Uid(_pk.getId());
+      eventIcal4jCalendar.getProperties().add(uid);
+    }
+    Description description = new Description(getDescription());
+    eventIcal4jCalendar.getProperties().add(description);
+    if (periodicity != null) {
+      eventIcal4jCalendar.getProperties().add(periodicity.generateRecurrenceRule());
+      // Exceptions de périodicité
+      if (exDate != null) {
+        eventIcal4jCalendar.getProperties().add(exDate);
+      }
+    }
+    return eventIcal4jCalendar;  
   }
 }
