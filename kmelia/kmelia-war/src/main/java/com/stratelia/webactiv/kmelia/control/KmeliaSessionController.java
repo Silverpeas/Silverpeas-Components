@@ -2078,8 +2078,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocuments()",
           "root.MSG_GEN_PARAM_VALUE", "document name = " + document.getName());
 
-      // retrieve all versions of the document
+      // retrieve all versions of the document (from last version to first version)
       versions = getVersioningBm().getDocumentVersions(document.getPk());
+
+      // sort versions (from first version to last version)
+      Collections.reverse(versions);
 
       // retrieve the initial version of the document
       version = versions.get(0);
