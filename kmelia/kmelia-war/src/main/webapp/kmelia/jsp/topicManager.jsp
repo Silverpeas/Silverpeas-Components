@@ -408,8 +408,6 @@ function closeWindows() {
 function uploadCompleted(s)
 {
 	refreshPublications();
-	reloadApplets();
-	showDnD();
 	return true;
 }
 
