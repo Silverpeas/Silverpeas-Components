@@ -359,6 +359,9 @@ function zipPublication()
 	SP_openWindow("ZipPublication", "ZipPublication", "500", "300", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
 }
 
+function reloadPage() {
+	location.href= "<%=routerUrl%>ViewPublication";
+}
 </script>
 </head>
 <body class="yui-skin-sam" onUnload="closeWindows()" onLoad="openSingleAttachment()" id="<%=componentId %>">
