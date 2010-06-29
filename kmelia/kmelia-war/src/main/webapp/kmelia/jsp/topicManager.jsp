@@ -36,7 +36,7 @@ String		description			= "";
 String		namePath			= "";
 String		urlTopic			= "";
 
-//R�cup�ration des param�tres
+//R?cup?ration des param?tres
 String 	profile			= (String) request.getAttribute("Profile");
 List 	treeview 		= (List) request.getAttribute("Treeview");
 String  translation 	= (String) request.getAttribute("Language");
@@ -46,6 +46,7 @@ Boolean rightsOnTopics  = (Boolean) request.getAttribute("RightsOnTopicsEnabled"
 Boolean displaySearch	= (Boolean) request.getAttribute("DisplaySearch");
 
 TopicDetail currentTopic 		= (TopicDetail) request.getAttribute("CurrentTopic");
+
 String 		pathString 			= (String) request.getAttribute("PathString");
 
 String		pubIdToHighlight	= (String) request.getAttribute("PubIdToHighlight"); //used when we have found publication from search (only toolbox)
@@ -149,7 +150,7 @@ out.println(gef.getLookStyleSheet());
 	height : 500px;
 	float: left;
 	padding-right: 5px; /*do not forget to change end minus if this value change !*/
-	overflow: hidden; 
+	overflow: hidden;
 	border: 1px solid #F2F2F2;
 }
 #rightSide {
@@ -216,7 +217,7 @@ out.println(gef.getLookStyleSheet());
 	height: 500px;
 }
 
-.icon-basket { display:block; height: 22px; padding-left: 18px; padding-top: 2px; background: transparent url(icons/treeview/basket.jpg) no-repeat -1px 0px; } 
+.icon-basket { display:block; height: 22px; padding-left: 18px; padding-top: 2px; background: transparent url(icons/treeview/basket.jpg) no-repeat -1px 0px; }
 .icon-tovalidate { display:block; height: 19px; padding-left: 18px; padding-top: 3px; background: transparent url(<%=m_context%>/util/icons/ok_alpha.gif) no-repeat 0px 2px;}
 
 .invisibleTopic {
@@ -283,12 +284,12 @@ function topicAdd(topicId, isLinked) {
 	<% } %>
 }
 
-function topicUpdate(id) 
-{	
+function topicUpdate(id)
+{
 	document.topicDetailForm.ChildId.value = id;
     if (!topicWindow.closed && topicWindow.name== "topicUpdateWindow")
     	topicWindow.close();
-    
+
 	<% if (rightsOnTopics.booleanValue()) { %>
 		location.href = "ToUpdateTopic?Id="+id+"&Translation=<%=translation%>";
 	<% } else { %>
@@ -311,7 +312,7 @@ function showDnD()
 
 <% } %>
 
-function addFavorite(name,description,url) 
+function addFavorite(name,description,url)
 {
 	urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
     windowName = "favoriteWindow";
@@ -377,14 +378,14 @@ function importFiles()
 }
 
 function openExportPDFPopup() {
-	
+
 	chemin = "ExportAttachementsToPDF?TopicId="+getCurrentNodeId();
 	largeur = "700";
 	hauteur = "500";
 	SP_openWindow(chemin, "ExportWindow", largeur, hauteur, "scrollbars=yes, resizable=yes");
-	
+
 }
-	
+
 function openSPWindow(fonction, windowName){
 	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
@@ -418,7 +419,7 @@ function doPagination(index)
 		paramToValidate = "1";
 	}
 	var topicQuery = getSearchQuery();
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',ToValidate:paramToValidate,Query:topicQuery}, 
+	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',ToValidate:paramToValidate,Query:topicQuery},
 							function(data){
 								$('#pubList').html(data);
 							},"html");
@@ -429,7 +430,7 @@ function sortGoTo(selectedIndex) {
 	if (selectedIndex != 0 && selectedIndex != 1) {
 		var topicQuery = getSearchQuery();
 		var sort = document.publicationsForm.sortBy[selectedIndex].value;
-		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:0,Sort:sort,ComponentId:'<%=componentId%>',Query:topicQuery}, 
+		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:0,Sort:sort,ComponentId:'<%=componentId%>',Query:topicQuery},
 							function(data){
 								$('#pubList').html(data);
 							},"html");
@@ -471,7 +472,7 @@ function searchInTopic()
 {
 	var topicQuery = getSearchQuery();
 	if (topicQuery != "" && topicQuery.length > 1) {
-		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:0,Query:topicQuery,ComponentId:'<%=componentId%>'}, 
+		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:0,Query:topicQuery,ComponentId:'<%=componentId%>'},
 				function(data){
 					$('#pubList').html(data);
 				},"html");
@@ -514,12 +515,12 @@ function clearSearchQuery()
         namePath = "";
 
         urlTopic = nodeDetail.getLink();
-          
+
         Window window = gef.getWindow();
         BrowseBar browseBar = window.getBrowseBar();
         browseBar.setI18N("GoToCurrentTopic", translation);
-        
-        // cr�ation du nom pour les favoris
+
+        // cr?ation du nom pour les favoris
         namePath = spaceLabel + " > " + componentLabel;
          if (!pathString.equals(""))
         	namePath = namePath + " > " + pathString;
@@ -541,7 +542,7 @@ function clearSearchQuery()
     	operationPane.addLine();
     	operationPane.addOperation(subscriptionAddSrc, resources.getString("SubscriptionsAdd"), "javascript:onClick=addSubscription()");
       	operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(description))+"','"+urlTopic+"')");
-																				
+
     //Instanciation du cadre avec le view generator
 	Frame frame = gef.getFrame();
 
@@ -552,7 +553,7 @@ function clearSearchQuery()
 			<div class="yui-g">
 				<div id="treeDiv1"></div>
 				<div id="rightSide">
-					<% if (displaySearch.booleanValue()) { 
+					<% if (displaySearch.booleanValue()) {
 					  	Board board = gef.getBoard();
 						Button searchButton = gef.getFormButton(resources.getString("GML.search"), "javascript:onClick=searchInTopic();", false);
 						out.println("<div id=\"searchZone\">");
@@ -566,7 +567,7 @@ function clearSearchQuery()
 					<div id="topicDescription"></div>
 				<%
 					  if (dragAndDropEnable)
-					  { 
+					  {
 						%>
 						<div id="DnD">
 						<table width="98%" cellpadding="0" cellspacing="0"><tr><td align="right">
@@ -614,7 +615,7 @@ function clearSearchQuery()
 				</div>
 			</div>
 			</div>
-	
+
 	<%
 		out.println(frame.printAfter());
 		out.println(window.printAfter());
@@ -646,7 +647,7 @@ function clearSearchQuery()
 //Declarations
 var Dom = YAHOO.util.Dom;
 var Event = YAHOO.util.Event;
-		
+
 var oTreeView;
 var root;
 var currentNodeId;
@@ -657,16 +658,16 @@ function initTree(id)
 {
 	//create a new tree:
     oTreeView = new YAHOO.widget.TreeView("treeDiv1");
-    
+
     //turn dynamic loading on for entire tree:
     oTreeView.setDynamicLoad(loadNodeData, 0);
-    //oTreeView.singleNodeHighlight = true; 
+    //oTreeView.singleNodeHighlight = true;
 
     root = new YAHOO.widget.TextNode({"id":"0","role":"<%=kmeliaScc.getUserTopicProfile("0")%>"}, oTreeView.getRoot(), true);
 	root.labelElId = "0";
 	root.label = "<%=EncodeHelper.javaStringToJsString(componentLabel)%>";
     root.href = "javascript:displayTopicContent(0)";
-	   		
+
 	//render tree with these toplevel nodes; all descendants of these nodes
 	//will be generated as needed by the dynamic loader.
 	oTreeView.render();
@@ -687,12 +688,12 @@ function initTree(id)
 			//currentNodeIndex = node.index;
 			$("#ygtvcontentel"+currentNodeIndex).css({'font-weight':'bold'});
 		}
-		
+
      });
-      
-	oTreeView.subscribe('clickEvent',function(oArgs) { 
+
+	oTreeView.subscribe('clickEvent',function(oArgs) {
 		//alert('Click on node: ' + oArgs.node.label+", id = "+oArgs.node.data.id+", index = "+oArgs.node.index);
-	
+
 		$("#ygtvcontentel"+currentNodeIndex).css({'font-weight':'normal'});
 
 		setCurrentNodeId(oArgs.node.data.id);
@@ -720,7 +721,7 @@ function initTree(id)
 					}
 				});
 	});
-	
+
 }
 
 function getCurrentNodeId()
@@ -735,21 +736,21 @@ function setCurrentNodeId(id)
 }
 
 function loadNodeData(node, fnLoadComplete)  {
-    
+
     //We'll load node data based on what we get back when we
-    //use Connection Manager topass the text label of the 
+    //use Connection Manager topass the text label of the
     //expanding node to the Yahoo!
-    //Search "related suggestions" API.  Here, we're at the 
+    //Search "related suggestions" API.  Here, we're at the
     //first part of the request -- we'll make the request to the
     //server.  In our success handler, we'll build our new children
     //and then return fnLoadComplete back to the tree.
-       
+
     //prepare URL for XHR request:
     var sUrl = "<%=m_context%>/KmeliaJSONServlet?Action=GetSubTopics&ComponentId=<%=componentId%>&Language=<%=language%>&IEFix="+new Date().getTime()+"&Id="+node.labelElId;
-    
+
     //prepare our callback object
     var callback = {
-    
+
         //if our XHR call is successful, we want to make use
         //of the returned data and create child nodes.
         success: function(oResponse) {
@@ -849,9 +850,9 @@ function loadNodeData(node, fnLoadComplete)  {
 					toValidateNode.href = "javascript:displayTopicContent('tovalidate')";
 					toValidateNode.isLeaf = true;
 					toValidateNode.hasIcon = true;
-					toValidateNode.labelStyle = "icon-tovalidate"; 
+					toValidateNode.labelStyle = "icon-tovalidate";
                 }
-				
+
             	//add basket
 	   			basketNode = new YAHOO.widget.TextNode({"id":"1"}, root, false, true);
 	   			basketNode.labelElId = "basket";
@@ -879,7 +880,7 @@ function loadNodeData(node, fnLoadComplete)  {
             //if necessary):
             oResponse.argument.fnLoadComplete();
         },
-        
+
         //if our XHR call is not successful, we want to
         //fire the TreeView callback and let the Tree
         //proceed with its business.
@@ -887,7 +888,7 @@ function loadNodeData(node, fnLoadComplete)  {
             YAHOO.log("Failed to process XHR transaction.", "info", "example");
             oResponse.argument.fnLoadComplete();
         },
-        
+
         //our handlers for the XHR response will need the same
         //argument information we got to loadNodeData, so
         //we'll pass those along:
@@ -895,17 +896,17 @@ function loadNodeData(node, fnLoadComplete)  {
             "node": node,
             "fnLoadComplete": fnLoadComplete
         },
-        
+
         //timeout -- if more than 7 seconds go by, we'll abort
         //the transaction and assume there are no children:
         timeout: 7000
-    };   
+    };
 
-  	//With our callback object ready, it's now time to 
+  	//With our callback object ready, it's now time to
     //make our XHR call using Connection Manager's
     //asyncRequest method:
     YAHOO.util.Connect.asyncRequest('GET', sUrl, callback);
-}   
+}
 
 	var oCurrentTextNode = null;
 
@@ -914,7 +915,7 @@ function loadNodeData(node, fnLoadComplete)  {
 	     that was the target of the "contextmenu" event that
 	     triggered the display of the ContextMenu instance.
 	*/
-	function addNode() 
+	function addNode()
 	{
 		topicAdd(oCurrentTextNode.labelElId, false);
 	}
@@ -926,13 +927,13 @@ function loadNodeData(node, fnLoadComplete)  {
 	*/
 	function editNodeLabel() {
 		topicUpdate(oCurrentTextNode.labelElId);
-	}	
+	}
 
 	/*
 	    Deletes the TextNode that was the target of the "contextmenu"
 	    event that triggered the display of the ContextMenu instance.
 	*/
-	function deleteNode() 
+	function deleteNode()
 	{
 		var nodeId = oCurrentTextNode.labelElId;
 		if(window.confirm("<%=kmeliaScc.getString("ConfirmDeleteTopic")%> '" + oCurrentTextNode.data.name + "' ?"))
@@ -963,7 +964,7 @@ function loadNodeData(node, fnLoadComplete)  {
 						if (data == "ok")
 						{
 							displayPublications("1");
-							//alert("Corbeille vid�e avec succ�s !");
+							//alert("Corbeille vid?e avec succ?s !");
 						}
 						else
 						{
@@ -1001,7 +1002,7 @@ function loadNodeData(node, fnLoadComplete)  {
 		var newStatus = "Visible";
 		if (currentStatus == "Visible")
 			newStatus = "Invisible";
-		
+
 		if (newStatus == 'Invisible')
 		{
 			question = '<%=kmeliaScc.getString("TopicVisible2InvisibleRecursive")%>';
@@ -1021,7 +1022,7 @@ function loadNodeData(node, fnLoadComplete)  {
 					if (data == "ok")
 					{
 						oCurrentTextNode.data.status = newStatus;
-						
+
 						//changing label style according to topic's new status
 						if (newStatus == "Invisible") {
 							oCurrentTextNode.labelStyle = "invisibleTopic";
@@ -1052,13 +1053,13 @@ function loadNodeData(node, fnLoadComplete)  {
 	{
 		displayStaticMessage();
 
-		//alert("pasteNode : id = "+id);	
+		//alert("pasteNode : id = "+id);
 		//prepare URL for XHR request:
         var sUrl = "<%=m_context%>/KmeliaJSONServlet?Action=Paste&ComponentId=<%=componentId%>&Language=<%=language%>&Id="+id+"&IEFix="+new Date().getTime();
-        
+
         //prepare our callback object
         var callback = {
-        
+
             //if our XHR call is successful, we want to make use
             //of the returned data and create child nodes.
             success: function(oResponse) {
@@ -1091,18 +1092,18 @@ function loadNodeData(node, fnLoadComplete)  {
 				oTreeView.draw();
 
 				displayPublications(oCurrentTextNode.labelElId);*/
-				
+
 				reloadPage(id);
 
 				closeMessage();
             },
-            
+
             //timeout -- if more than 7 seconds go by, we'll abort
             //the transaction and assume there are no children:
             timeout: 7000
         };
-        
-        //With our callback object ready, it's now time to 
+
+        //With our callback object ready, it's now time to
         //make our XHR call using Connection Manager's
         //asyncRequest method:
         YAHOO.util.Connect.asyncRequest('GET', sUrl, callback);
@@ -1120,15 +1121,15 @@ function loadNodeData(node, fnLoadComplete)  {
     to set a reference to the TextNode instance that triggered
     the display of the ContextMenu instance.
 	*/
-	function onTriggerContextMenu(p_oEvent) 
+	function onTriggerContextMenu(p_oEvent)
 	{
     	//alert("onTriggerContextMenu : enter");
 	    var oTarget = this.contextEventTarget;
-	
+
 	    /*
 	         Get the TextNode instance that that triggered the
 	         display of the ContextMenu instance.
-	    */			
+	    */
 	    oCurrentTextNode = oTreeView.getNodeByElement(oTarget);
 	    if (!oCurrentTextNode) {
 	        // Cancel the display of the ContextMenu instance.
@@ -1158,7 +1159,7 @@ function loadNodeData(node, fnLoadComplete)  {
 									oContextMenu.getItem(1).cfg.setProperty("disabled", false);
 									oContextMenu.getItem(2).cfg.setProperty("disabled", false);
 									oContextMenu.getItem(3).cfg.setProperty("disabled", false);
-									
+
 									oContextMenu.getItem(0,1).cfg.setProperty("disabled", false);
 									oContextMenu.getItem(1,1).cfg.setProperty("disabled", false);
 									oContextMenu.getItem(2,1).cfg.setProperty("disabled", false);
@@ -1176,7 +1177,7 @@ function loadNodeData(node, fnLoadComplete)  {
 										oContextMenu.getItem(1).cfg.setProperty("disabled", false);
 										oContextMenu.getItem(2).cfg.setProperty("disabled", false);
 										oContextMenu.getItem(3).cfg.setProperty("disabled", true);
-										
+
 										oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
 										oContextMenu.getItem(1,1).cfg.setProperty("disabled", true);
 										oContextMenu.getItem(2,1).cfg.setProperty("disabled", true);
@@ -1199,7 +1200,7 @@ function loadNodeData(node, fnLoadComplete)  {
 											oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
 											oContextMenu.getItem(1,1).cfg.setProperty("disabled", true);
 											oContextMenu.getItem(2,1).cfg.setProperty("disabled", true);
-			
+
 											oContextMenu.getItem(0,2).cfg.setProperty("disabled", true);
 											oContextMenu.getItem(1,2).cfg.setProperty("disabled", true);
 										}
@@ -1213,7 +1214,7 @@ function loadNodeData(node, fnLoadComplete)  {
 										}
 									}
 								}
-			
+
 								<% if (kmeliaScc.isOrientedWebContent()) { %>
 									if (data[0].status == "Invisible")
 									{
@@ -1233,21 +1234,21 @@ function loadNodeData(node, fnLoadComplete)  {
 	    }
 	}
 
-	function onTriggerRootContextMenu(p_oEvent) 
+	function onTriggerRootContextMenu(p_oEvent)
 	{
 		//alert("onTriggerContextMenu : enter");
 	    var oTarget = this.contextEventTarget;
-	
+
 	    /*
 	         Get the TextNode instance that that triggered the
 	         display of the ContextMenu instance.
-	    */			
+	    */
 	    oCurrentTextNode = oTreeView.getNodeByElement(oTarget);
 	    if (!oCurrentTextNode) {
 	        // Cancel the display of the ContextMenu instance.
 	        this.cancel();
 	    }
-	    
+
 	    <% if (!"admin".equals(kmeliaScc.getUserTopicProfile("0"))) { %>
 	    	this.cancel();
 	    <% } %>
@@ -1263,7 +1264,7 @@ function loadNodeData(node, fnLoadComplete)  {
 	    {
 	        trigger: "treeDiv1",
 	        hideDelay: 100,
-	        effect: { 
+	        effect: {
                 effect: YAHOO.widget.ContainerEffect.FADE,
                 duration: 0.30
             },
@@ -1286,7 +1287,7 @@ function loadNodeData(node, fnLoadComplete)  {
 		            	{ text: "<%=kmeliaScc.getString("TopicVisible2Invisible")%>", onclick: { fn: changeTopicStatus } }
 		            <% } else if (kmeliaScc.isWysiwygOnTopicsEnabled()) { %>
 		            	{ text: "<%=kmeliaScc.getString("TopicWysiwyg")%>", onclick: { fn: topicWysiwyg } }
-		            <% } %> 
+		            <% } %>
 	    		]
 	    	]
 	    }
@@ -1297,7 +1298,7 @@ function loadNodeData(node, fnLoadComplete)  {
 		    {
 		        trigger: "basket",
 		        hideDelay: 100,
-		        effect: { 
+		        effect: {
 	                effect: YAHOO.widget.ContainerEffect.FADE,
 	                duration: 0.30
 	            },
@@ -1321,7 +1322,7 @@ function loadNodeData(node, fnLoadComplete)  {
 		    {
 		    	trigger: "ygtvtableel1",
 			    hideDelay: 100,
-	        	effect: { 
+	        	effect: {
                 	effect: YAHOO.widget.ContainerEffect.FADE,
                 	duration: 0.30
             	},
@@ -1339,10 +1340,10 @@ function loadNodeData(node, fnLoadComplete)  {
 		            		{ text: "<%=kmeliaScc.getString("TopicWysiwyg")%>", onclick: { fn: topicWysiwyg } }
 		   	    		]
 		            	<% } %>
-		    	] 
+		    	]
 		    }
 		);
-	
+
 	/*
 	     Subscribe to the "contextmenu" event for the element(s)
 	     specified as the "trigger" for the ContextMenu instance.
@@ -1355,12 +1356,12 @@ function loadNodeData(node, fnLoadComplete)  {
 	YAHOO.util.Event.addListener("mytreecontextmenu", "mouseout", oContextMenu.hide);
 
 	function displayTopicContent(id)
-	{		
+	{
 		var node = oTreeView.getNodeByProperty("labelElId", id);
 		//alert(node.data.name);
-		
+
 		clearSearchQuery();
-		
+
 		if (id != "1" && id != "tovalidate")
 		{
 			//highlight current topic
@@ -1460,7 +1461,7 @@ function loadNodeData(node, fnLoadComplete)  {
 		{
 			$("#menutoggle").css({'display':'block'});
 		}
-		
+
 		oMenu.getItem(0,0).cfg.setProperty("classname", "operationHidden"); //pdc
 		if (id == "0" && <%=kmeliaScc.isPdcUsed()%> && profile == "admin")
 			oMenu.getItem(0,0).cfg.setProperty("classname", "operationVisible");
@@ -1478,7 +1479,7 @@ function loadNodeData(node, fnLoadComplete)  {
 			else
 				oMenu.getItem(2,0).cfg.setProperty("text", "<%=resources.getString("kmelia.ExportTopic")%>");
 		}
-						
+
 		oMenu.getItem(3,0).cfg.setProperty("classname", "operationHidden"); //export PDF
 	 	if (<%=kmeliaScc.isExportComponentAllowed()%> && <%=kmeliaScc.isExportPdfAllowed()%> && (profile == "admin" || profile == "publisher"))
 			oMenu.getItem(3,0).cfg.setProperty("classname", "operationVisible");
@@ -1490,6 +1491,8 @@ function loadNodeData(node, fnLoadComplete)  {
 	 	oMenu.getItem(4,1).cfg.setProperty("classname", "operationHidden"); //sort publis
 	 	oMenu.getItem(5,1).cfg.setProperty("classname", "operationHidden"); //update chain
 	 	oMenu.getItem(6,1).cfg.setProperty("classname", "operationHidden"); //paste
+
+
 	 	if ((id != "0" && id != "1") || (id == "0" && (<%=kmeliaScc.getNbPublicationsOnRoot() == 0%> || <%=!kmeliaScc.isTreeStructure()%>)))
 	 	{
 		 	if (profile != "user")
@@ -1507,12 +1510,15 @@ function loadNodeData(node, fnLoadComplete)  {
 		 	{
 		 		oMenu.getItem(4,1).cfg.setProperty("classname", "operationVisible"); //sort publis
 
-		 		//var node = oTreeView.getNodeByProperty("labelElId", id);
-			 	//if (node.data.updateChain == "true")
-			 		//oMenu.getItem(5,1).cfg.setProperty("classname", "operationVisible"); //update chain
 		 	}
-		 	oMenu.getItem(0,2).cfg.setProperty("classname", "operationVisible"); //subscriptions
-			oMenu.getItem(1,2).cfg.setProperty("classname", "operationVisible"); //favorites
+		var node = oTreeView.getNodeByProperty("labelElId", id);
+		if (node.data.updateChain)
+		{
+			oMenu.getItem(5,1).cfg.setProperty("classname", "operationVisible"); //update chain
+
+		}
+		oMenu.getItem(0,2).cfg.setProperty("classname", "operationVisible"); //subscriptions
+		oMenu.getItem(1,2).cfg.setProperty("classname", "operationVisible"); //favorites
 	 	}
 	}
 
@@ -1532,7 +1538,7 @@ function loadNodeData(node, fnLoadComplete)  {
 		//display publications of topic
 		var pubIdToHighlight = "<%=pubIdToHighlight%>";
 		var ieFix = new Date().getTime();
-		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Id:id,ComponentId:'<%=componentId%>',PubIdToHighlight:pubIdToHighlight,IEFix:ieFix}, 
+		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Id:id,ComponentId:'<%=componentId%>',PubIdToHighlight:pubIdToHighlight,IEFix:ieFix},
 				function(data){
 					$('#pubList').html(data);
 				},"html");
@@ -1542,7 +1548,7 @@ function loadNodeData(node, fnLoadComplete)  {
 	{
 		//display publications to validate
 		var ieFix = new Date().getTime();
-		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {ComponentId:'<%=componentId%>',ToValidate:1,IEFix:ieFix}, 
+		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {ComponentId:'<%=componentId%>',ToValidate:1,IEFix:ieFix},
 				function(data){
 					$('#pubList').html(data);
 				},"html");
@@ -1552,7 +1558,7 @@ function loadNodeData(node, fnLoadComplete)  {
 	{
 		var nodeId = getCurrentNodeId();
 		var ieFix = new Date().getTime();
-		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Id:nodeId,ComponentId:'<%=componentId%>',IEFix:ieFix}, 
+		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Id:nodeId,ComponentId:'<%=componentId%>',IEFix:ieFix},
 				function(data){
 					$('#pubList').html(data);
 				},"html");
@@ -1562,7 +1568,7 @@ function loadNodeData(node, fnLoadComplete)  {
 	{
 		//display rich description of topic
 		var ieFix = new Date().getTime();
-		$.get('<%=m_context%>/KmeliaAJAXServlet', {Id:id,Action:'GetTopicWysiwyg',ComponentId:'<%=componentId%>',IEFix:ieFix}, 
+		$.get('<%=m_context%>/KmeliaAJAXServlet', {Id:id,Action:'GetTopicWysiwyg',ComponentId:'<%=componentId%>',IEFix:ieFix},
 				function(data){
 					$("#topicDescription").html(data);
 				},"html");
@@ -1572,10 +1578,10 @@ function loadNodeData(node, fnLoadComplete)  {
 	{
 		//prepare URL for XHR request:
         var sUrl = "<%=m_context%>/KmeliaJSONServlet?Action=GetPath&ComponentId=<%=componentId%>&Language=<%=language%>&Id="+id+"&IEFix="+new Date().getTime();
-        
+
         //prepare our callback object
         var callback = {
-        
+
             //if our XHR call is successful, we want to make use
             //of the returned data and create child nodes.
             success: function(oResponse) {
@@ -1591,7 +1597,7 @@ function loadNodeData(node, fnLoadComplete)  {
 
                 //remove topic breadcrumb
                 removeBreadCrumbElements();
-                
+
                 // The returned data was parsed into an array of objects.
                 for (var i = messages.length-1; i >= 0 ; i--) {
                     var m = messages[i];
@@ -1601,13 +1607,13 @@ function loadNodeData(node, fnLoadComplete)  {
                 }
                 //alert(path);
             },
-            
+
             //timeout -- if more than 7 seconds go by, we'll abort
             //the transaction and assume there are no children:
             timeout: 7000
         };
-        
-        //With our callback object ready, it's now time to 
+
+        //With our callback object ready, it's now time to
         //make our XHR call using Connection Manager's
         //asyncRequest method:
         YAHOO.util.Connect.asyncRequest('GET', sUrl, callback);
@@ -1623,13 +1629,13 @@ function displayStaticMessage()
 	messageObj.setHtmlContent("<center><table><tr><td align=\"center\" class=\"txtnote\"><%=resources.getString("kmelia.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align=\"center\"><img src=\"<%=resources.getIcon("kmelia.progress")%>\"/></td></tr></table></center>");
 	messageObj.setSize(300,100);
 	messageObj.setCssClassMessageBox(false);
-	messageObj.setShadowDivVisible(true);	// Disable shadow for these boxes	
+	messageObj.setShadowDivVisible(true);	// Disable shadow for these boxes
 	messageObj.display();
 }
 
 function closeMessage()
 {
-	messageObj.close();	
+	messageObj.close();
 }
 </script>
 <script>
