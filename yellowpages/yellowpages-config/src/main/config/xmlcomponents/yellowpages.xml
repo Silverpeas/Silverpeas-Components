@@ -28,7 +28,9 @@
 <WAComponent>
   <name>yellowpages</name>
   <label>Contacts - Annuaire Yellow pages</label>
-  <description>Permet de créer un annuaire de contact. Un formulaire XML associé décrit l'identité de chaque membre de l'annuaire, ainsi que tout autre caractéristique.</description>
+  <description>Permet de créer un annuaire de contact. Un formulaire XML associé décrit l'identité 
+  de chaque membre de l'annuaire, ainsi que tout autre caractéristique.
+  </description>
   <suite>02 Gestion Collaborative</suite>
   <visible>@ComponentVisibleYellowPages@</visible>
   <visibleInPersonalSpace>yes</visibleInPersonalSpace>
@@ -45,11 +47,9 @@
     <tabletpl>InfoImage</tabletpl>
     <tabletpl>InfoLink</tabletpl>
   </tableList>
-<Profiles>
+  <Profiles>
     <Profile name="admin">Gestionnaire</Profile>
     <Profile name="publisher">Publieur</Profile>
     <Profile name="user">Lecteur</Profile>
-</Profiles>
-
-
+  </Profiles>
 </WAComponent>

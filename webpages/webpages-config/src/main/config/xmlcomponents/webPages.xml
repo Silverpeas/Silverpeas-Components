@@ -28,28 +28,28 @@
 <WAComponent>
   <name>webPages</name>
   <label>Designer de page web - WebPage Designer</label>
-  <description>Permet de crÃ©er une page web via l'Ã©diteur WYSIWYG</description>
+  <description>Permet de créer une page web via l'éditeur WYSIWYG</description>
   <suite>04 Gestion de contenu</suite>
   <visible>@ComponentVisiblewebPages@</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.silverpeas.webpages.WebPagesInstanciator</instanceClassName>
- <Profiles>
+  <Profiles>
     <Profile name="publisher">Publieurs</Profile>
     <Profile name="user">Lecteurs</Profile>
   </Profiles>
-	<Parameters>
-		<Parameter>
-			<ParameterName>useSubscription</ParameterName>
-			<ParameterLabel>Gestion de l'abonnement</ParameterLabel>
-			<ParameterValue>yes</ParameterValue>
-			<ParameterMandatory>Y</ParameterMandatory>
-		    <ParameterType>checkbox</ParameterType>
-		    <ParameterUpdatable>always</ParameterUpdatable>
-		    <ParameterOrder>1</ParameterOrder>
-		    <ParameterHelp>
-				<ParameterHelpFr>Permet d'envoyer une notification aux utilisateurs abonnÃ©s Ã  la page Web</ParameterHelpFr>
-				<ParameterHelpEn>Allows to send a notification to the users who have subscribed to the Web page</ParameterHelpEn>
-	    	</ParameterHelp>
-		</Parameter>
-	</Parameters>
+  <Parameters>
+    <Parameter>
+      <ParameterName>useSubscription</ParameterName>
+      <ParameterLabel>Gestion de l'abonnement</ParameterLabel>
+      <ParameterValue>yes</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>1</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Permet d'envoyer une notification aux utilisateurs abonnés à la page Web</ParameterHelpFr>
+        <ParameterHelpEn>Allows to send a notification to the users who have subscribed to the Web page</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+  </Parameters>
 </WAComponent>

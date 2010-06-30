@@ -25,7 +25,6 @@
 
 -->
 
-
 <WAComponent>
   <name>dataWarning</name>
   <label>DataWarning</label>
@@ -34,7 +33,7 @@
   <visible>@ComponentVisibleDataWarning@</visible>
   <portlet>no</portlet>
   <instanceClassName>com.silverpeas.dataWarning.DataWarningInstanciator</instanceClassName>
- <Profiles>
+  <Profiles>
     <Profile name="admin">Gestionnaire</Profile>
     <Profile name="publisher">Analyste</Profile>
     <Profile name="user">Lecteur</Profile>

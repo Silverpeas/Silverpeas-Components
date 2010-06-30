@@ -28,10 +28,11 @@
 <WAComponent>
   <name>survey</name>
   <label>Enquête - QuickSurvey</label>
-  <description>Permet d'organiser des enquêtes d'opinion sur des questions ouvertes ou fermées, à choix multiples.. Une surveillance du niveau de participation et du résultat en cours est possible.</description>
+  <description>Permet d'organiser des enquêtes d'opinion sur des questions ouvertes ou fermées, à 
+  choix multiples.. Une surveillance du niveau de participation et du résultat en cours est possible.</description>
   <suite>02 Gestion Collaborative</suite>
   <visible>@ComponentVisibleSurvey@</visible>
-   <portlet>yes</portlet>
+  <portlet>yes</portlet>
   <instanceClassName>com.stratelia.webactiv.survey.SurveyInstanciator</instanceClassName>
   <tableList>
     <tabletpl>Survey</tabletpl>
@@ -47,30 +48,30 @@
     <Profile name="user">Participants</Profile>
   </Profiles>
   <Parameters>
-	<Parameter>
-        <ParameterName>usePdc</ParameterName>
-        <ParameterLabel>Classification PDC</ParameterLabel>
-        <ParameterValue>no</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterUpdatable>always</ParameterUpdatable>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterHelp>
-			<ParameterHelpFr>Les enquêtes créées au sein de cette instance pourront être classées sur le Plan de Classement</ParameterHelpFr>
-			<ParameterHelpEn>The surveys created in this instance may be classified on the Categorization Plan.</ParameterHelpEn>
-		<ParameterHelpEn></ParameterHelpEn>
-	    </ParameterHelp>
+    <Parameter>
+      <ParameterName>usePdc</ParameterName>
+      <ParameterLabel>Classification PDC</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterHelp>
+        <ParameterHelpFr>Les enquêtes créées au sein de cette instance pourront être classées sur le Plan de Classement</ParameterHelpFr>
+        <ParameterHelpEn>The surveys created in this instance may be classified on the Categorization Plan.</ParameterHelpEn>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
     </Parameter>
-	<Parameter>
-        <ParameterName>useAnonymousMode</ParameterName>
-        <ParameterLabel>Mode anonyme</ParameterLabel>
-        <ParameterValue>no</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterUpdatable>always</ParameterUpdatable>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterHelp>
-			<ParameterHelpFr>Les enquêtes créées au sein de cette instance pourront être répondues de manière anonyme</ParameterHelpFr>
-			<ParameterHelpEn>The surveys created in this instance may be answered by anonymous way.</ParameterHelpEn>
-	    </ParameterHelp>
+    <Parameter>
+      <ParameterName>useAnonymousMode</ParameterName>
+      <ParameterLabel>Mode anonyme</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterHelp>
+        <ParameterHelpFr>Les enquêtes créées au sein de cette instance pourront être répondues de manière anonyme</ParameterHelpFr>
+        <ParameterHelpEn>The surveys created in this instance may be answered by anonymous way.</ParameterHelpEn>
+      </ParameterHelp>
     </Parameter>
   </Parameters>
 </WAComponent>

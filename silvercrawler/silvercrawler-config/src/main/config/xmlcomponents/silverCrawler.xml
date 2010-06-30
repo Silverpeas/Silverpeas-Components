@@ -27,7 +27,8 @@
 <WAComponent>
   <name>silverCrawler</name>
   <label>Silvercrawler</label>
-  <description>Le composant SilverCrawler permet aux utilisateurs de naviguer et/ou rechercher des fichiers directement sur un serveur de fichiers.</description>
+  <description>Le composant SilverCrawler permet aux utilisateurs de naviguer et/ou rechercher des 
+  fichiers directement sur un serveur de fichiers.</description>
   <suite>06 Connecteurs</suite>
   <visible>@ComponentVisiblesilverCrawler@</visible>
   <portlet>yes</portlet>
@@ -59,8 +60,10 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>3</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Taille maximale (en Mo) autorisée lors du téléchargement d'un répertoire. Indiquer 0 pour interdire le téléchargement des répertoires.</ParameterHelpFr>
-        <ParameterHelpEn>Maximum size (in Mo) allowed during directory download. Enter 0 to forbidden directories download.</ParameterHelpEn>
+        <ParameterHelpFr>Taille maximale (en Mo) autorisée lors du téléchargement d'un répertoire. 
+        Indiquer 0 pour interdire le téléchargement des répertoires.</ParameterHelpFr>
+        <ParameterHelpEn>Maximum size (in Mo) allowed during directory download. Enter 0 if you want 
+        to forbid the download of directories.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
     <Parameter>
@@ -72,8 +75,11 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>4</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Si ce paramètre est activé, les fichiers indexés ne seront pas retrouvables par le moteur de recherche général mais uniquement par le moteur de recherche dédié à ce composant.</ParameterHelpFr>
-        <ParameterHelpEn>If this parameter is enabled, indexed files will not be findable by global search engine but only by the dedicated search engine of this component.</ParameterHelpEn>
+        <ParameterHelpFr>Si ce paramètre est activé, les fichiers indexés ne seront pas retrouvables 
+        par le moteur de recherche général mais uniquement par le moteur de recherche dédié à ce 
+        composant.</ParameterHelpFr>
+        <ParameterHelpEn>If this parameter is enabled, indexed files will not be findable by global 
+        search engine but only by the dedicated search engine of this component.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
     <Parameter>

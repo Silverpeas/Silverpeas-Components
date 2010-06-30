@@ -26,13 +26,13 @@
 -->
 
 <WAComponent>
-   <name>chat</name>
-   <label>Chat</label>
-   <description>Supporte les processus de communication synchrone de type chat. Des salons peuvent Ãªtre ouverts sur des thÃªmes variÃ©s. Des communications en mode 'privÃ©' sont possibles, au sein d'un chat multi-participants.</description>
-   <suite>02 Gestion Collaborative</suite>
-   <visible>@ComponentVisibleChat@</visible>
-   <portlet>no</portlet>
-   <instanceClassName>com.stratelia.silverpeas.chat.ChatInstanciator</instanceClassName>
+  <name>chat</name>
+  <label>Chat</label>
+  <description>Supporte les processus de communication synchrone de type chat. Des salons peuvent être ouverts sur des thèmes variés. Des communications en mode 'privé' sont possibles, au sein d'un chat multi-participants.</description>
+  <suite>02 Gestion Collaborative</suite>
+  <visible>@ComponentVisibleChat@</visible>
+  <portlet>no</portlet>
+  <instanceClassName>com.stratelia.silverpeas.chat.ChatInstanciator</instanceClassName>
   <tableList>
     <tabletpl>Node</tabletpl>
   </tableList>
@@ -42,17 +42,17 @@
     <Profile name="user">Chatteurs</Profile>
   </Profiles>
   <Parameters>
-	<Parameter>
-            <ParameterName>usePdc</ParameterName>
-            <ParameterLabel>Classification PDC</ParameterLabel>
-            <ParameterValue>no</ParameterValue>
-            <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterUpdatable>always</ParameterUpdatable>
-	    <ParameterHelp>
-		<ParameterHelpFr>Les salons crÃ©Ã©s au sein de cette instance pourront Ãªtre classÃ©s sur le Plan de Classement</ParameterHelpFr>
-		<ParameterHelpEn></ParameterHelpEn>
-	    </ParameterHelp>
-        </Parameter>
+    <Parameter>
+      <ParameterName>usePdc</ParameterName>
+      <ParameterLabel>Classification PDC</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterHelp>
+        <ParameterHelpFr>Les salons créés au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
   </Parameters>
 </WAComponent>

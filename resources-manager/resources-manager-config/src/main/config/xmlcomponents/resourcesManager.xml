@@ -33,38 +33,38 @@
   <visible>yes</visible>
   <portlet>no</portlet>
   <instanceClassName>com.silverpeas.resourcesmanager.ResourcesManagerInstanciator</instanceClassName>
- <Profiles>
+  <Profiles>
     <Profile name="admin">Gestionnaires</Profile>
-	<Profile name="responsable">Responsables</Profile>
+    <Profile name="responsable">Responsables</Profile>
     <Profile name="publisher">Lecteurs</Profile>
     <!-- <Profile name="user">Lecteur</Profile> -->
   </Profiles>
   <Parameters>
-  		<Parameter>
-        	<ParameterName>comments</ParameterName>
-            <ParameterLabel>Commentaires</ParameterLabel>
-            <ParameterValue>yes</ParameterValue>
-            <ParameterMandatory>Y</ParameterMandatory>
-			<ParameterType>checkbox</ParameterType>
-			<ParameterUpdatable>always</ParameterUpdatable>
-			<ParameterOrder>1</ParameterOrder>
-	    	<ParameterHelp>
-				<ParameterHelpFr>Les lecteurs peuvent laisser des commentaires sur chaque ressource</ParameterHelpFr>
-				<ParameterHelpEn>Readers are able to post comments on each resource</ParameterHelpEn>
-	    	</ParameterHelp>
-        </Parameter>
-        <Parameter>
-            <ParameterName>weekendNotVisible</ParameterName>
-            <ParameterLabel>Masquer les week-end</ParameterLabel>
-			<ParameterOrder>2</ParameterOrder>
-            <ParameterValue>no</ParameterValue>
-            <ParameterMandatory>Y</ParameterMandatory>
-			<ParameterType>checkbox</ParameterType>
-			<ParameterUpdatable>always</ParameterUpdatable>
-			<ParameterHelp>
-				<ParameterHelpFr>Permet d'alléger l'interface et d'optimiser l'affichage du reste de la semaine</ParameterHelpFr>
-				<ParameterHelpEn></ParameterHelpEn>
-			</ParameterHelp>
-        </Parameter>
-   </Parameters>
+    <Parameter>
+      <ParameterName>comments</ParameterName>
+      <ParameterLabel>Commentaires</ParameterLabel>
+      <ParameterValue>yes</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>1</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Les lecteurs peuvent laisser des commentaires sur chaque ressource</ParameterHelpFr>
+        <ParameterHelpEn>Readers are able to post comments on each resource</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>weekendNotVisible</ParameterName>
+      <ParameterLabel>Masquer les week-end</ParameterLabel>
+      <ParameterOrder>2</ParameterOrder>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterHelp>
+        <ParameterHelpFr>Permet d'alléger l'interface et d'optimiser l'affichage du reste de la semaine</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+  </Parameters>
 </WAComponent>

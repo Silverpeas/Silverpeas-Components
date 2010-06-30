@@ -33,62 +33,62 @@
   <visible>yes</visible>
   <portlet>no</portlet>
   <instanceClassName>com.silverpeas.classifieds.ClassifiedsInstanciator</instanceClassName>
- <Profiles>
+  <Profiles>
     <Profile name="admin">Gestionnaire</Profile>
     <Profile name="publisher">Annonceur</Profile>
   </Profiles>
   <Parameters>
-		<Parameter>
-            <ParameterName>XMLFormName</ParameterName>
-            <ParameterLabel>Formulaire XML</ParameterLabel>
-            <ParameterValue></ParameterValue>
-	    	<ParameterSize>25</ParameterSize>
-            <ParameterMandatory>N</ParameterMandatory>
-	    	<ParameterUpdatable>always</ParameterUpdatable>
-	    	<ParameterOrder>1</ParameterOrder>
-	    	<ParameterHelp>
-				<ParameterHelpFr>Nom du formulaire XML associé aux petites annonces</ParameterHelpFr>
-				<ParameterHelpEn>Form XML name attached to classifieds</ParameterHelpEn>
-	    	</ParameterHelp>
-		</Parameter>
-		<Parameter>
-            <ParameterName>searchFields1</ParameterName>
-            <ParameterLabel>Champs recherche 1</ParameterLabel>
-            <ParameterValue></ParameterValue>
-	    	<ParameterSize>25</ParameterSize>
-            <ParameterMandatory>N</ParameterMandatory>
-	    	<ParameterUpdatable>always</ParameterUpdatable>
-	    	<ParameterOrder>2</ParameterOrder>
-	    	<ParameterHelp>
-				<ParameterHelpFr>Premier champs de recherche</ParameterHelpFr>
-				<ParameterHelpEn>First search fields</ParameterHelpEn>
-	    	</ParameterHelp>
-		</Parameter>
-		<Parameter>
-            <ParameterName>searchFields2</ParameterName>
-            <ParameterLabel>Champs recherche 2</ParameterLabel>
-            <ParameterValue></ParameterValue>
-	    	<ParameterSize>25</ParameterSize>
-            <ParameterMandatory>N</ParameterMandatory>
-	    	<ParameterUpdatable>always</ParameterUpdatable>
-	    	<ParameterOrder>3</ParameterOrder>
-	    	<ParameterHelp>
-				<ParameterHelpFr>Second champs de recherche</ParameterHelpFr>
-				<ParameterHelpEn>Second search fields</ParameterHelpEn>
-	    	</ParameterHelp>
-		</Parameter>
-		<Parameter>
-        <ParameterName>draft</ParameterName>
-        <ParameterLabel>Mode brouillon</ParameterLabel>
-        <ParameterValue>no</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterUpdatable>always</ParameterUpdatable>
-	    <ParameterOrder>4</ParameterOrder>
-	    <ParameterHelp>
-			<ParameterHelpFr>Le mode brouillon permet de travailler sur une annonce sans que personne d'autre ne puisse la voir.</ParameterHelpFr>
-			<ParameterHelpEn>Draft mode enables you to work on a classified whilst being invisible to other users.</ParameterHelpEn>
-	    </ParameterHelp>
+    <Parameter>
+      <ParameterName>XMLFormName</ParameterName>
+      <ParameterLabel>Formulaire XML</ParameterLabel>
+      <ParameterValue></ParameterValue>
+      <ParameterSize>25</ParameterSize>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>1</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Nom du formulaire XML associé aux petites annonces</ParameterHelpFr>
+        <ParameterHelpEn>Form XML name attached to classifieds</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>searchFields1</ParameterName>
+      <ParameterLabel>Champs recherche 1</ParameterLabel>
+      <ParameterValue></ParameterValue>
+      <ParameterSize>25</ParameterSize>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>2</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Premier champs de recherche</ParameterHelpFr>
+        <ParameterHelpEn>First search fields</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>searchFields2</ParameterName>
+      <ParameterLabel>Champs recherche 2</ParameterLabel>
+      <ParameterValue></ParameterValue>
+      <ParameterSize>25</ParameterSize>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>3</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Second champs de recherche</ParameterHelpFr>
+        <ParameterHelpEn>Second search fields</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>draft</ParameterName>
+      <ParameterLabel>Mode brouillon</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>4</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Le mode brouillon permet de travailler sur une annonce sans que personne d'autre ne puisse la voir.</ParameterHelpFr>
+        <ParameterHelpEn>Draft mode enables you to work on a classified whilst being invisible to other users.</ParameterHelpEn>
+      </ParameterHelp>
     </Parameter>
   </Parameters>
 </WAComponent>

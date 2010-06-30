@@ -30,14 +30,15 @@
   <label>Archivage d'e-mails</label>
   <description>Ce composant permet d'archiver les emails reçus à une adresse de messagerie donnée.
   Les messages peuvent être soumis à modération. Grâce au paramètre Diffusion, le composant se
-  transforme en liste de diffusion.</description>
+  transforme en liste de diffusion.
+  </description>
   <suite>02 Gestion Collaborative</suite>
   <visible>@ComponentVisiblemailingList@</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.silverpeas.mailinglist.MailingListInstanciator</instanceClassName>
   <Profiles>
     <Profile name="admin">Gestionnaires</Profile>
-    <Profile name="moderator">Modï¿½rateurs</Profile>
+    <Profile name="moderator">Modérateurs</Profile>
     <Profile name="reader">Lecteurs</Profile>
   </Profiles>
   <Parameters>

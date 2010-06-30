@@ -30,7 +30,7 @@
   <description>Processus : Demande de congés simplifiée</description>
   <suite>05 Workflow</suite>
   <visible>yes</visible>
-   <portlet>no</portlet>
+  <portlet>no</portlet>
   <requestRouter>RprocessManager</requestRouter>
   <instanceClassName>com.silverpeas.processManager.ProcessManagerInstanciator</instanceClassName>
   <Profiles>
@@ -40,28 +40,28 @@
   </Profiles>
   <Parameters>
     <Parameter>
-       <ParameterName>XMLFileName</ParameterName>
-       <ParameterLabel>Modèle abstrait</ParameterLabel>
-       <ParameterValue>DemandeCongesSimple/DemandeCongesSimple.xml</ParameterValue>
-       <ParameterMandatory>Y</ParameterMandatory>
-	   <ParameterOrder>1</ParameterOrder>
+      <ParameterName>XMLFileName</ParameterName>
+      <ParameterLabel>Modèle abstrait</ParameterLabel>
+      <ParameterValue>DemandeCongesSimple/DemandeCongesSimple.xml</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterOrder>1</ParameterOrder>
     </Parameter>
-	<Parameter>
-       <ParameterName>exportCSV</ParameterName>
-       <ParameterLabel>Export CSV</ParameterLabel>
-       <ParameterValue>no</ParameterValue>
-       <ParameterMandatory>Y</ParameterMandatory>
-	   <ParameterType>checkbox</ParameterType>
-	   <ParameterUpdatable>always</ParameterUpdatable>
-	   <ParameterOrder>2</ParameterOrder>
+    <Parameter>
+      <ParameterName>exportCSV</ParameterName>
+      <ParameterLabel>Export CSV</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>2</ParameterOrder>
     </Parameter>
-	<Parameter>
-       <ParameterName>fieldsToExport</ParameterName>
-       <ParameterLabel>Champs à exporter</ParameterLabel>
-       <ParameterValue></ParameterValue>
-       <ParameterMandatory>N</ParameterMandatory>
-	   <ParameterUpdatable>always</ParameterUpdatable>
-	   <ParameterOrder>3</ParameterOrder>
+    <Parameter>
+      <ParameterName>fieldsToExport</ParameterName>
+      <ParameterLabel>Champs à exporter</ParameterLabel>
+      <ParameterValue></ParameterValue>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>3</ParameterOrder>
     </Parameter>
   </Parameters>
 </WAComponent>

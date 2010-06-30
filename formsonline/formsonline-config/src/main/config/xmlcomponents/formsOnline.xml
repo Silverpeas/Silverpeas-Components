@@ -25,7 +25,6 @@
 
 -->
 
-
 <WAComponent>
   <name>formsOnline</name>
   <label>Formulaires en ligne</label>
@@ -34,7 +33,7 @@
   <visible>yes</visible>
   <portlet>no</portlet>
   <instanceClassName>com.silverpeas.formsonline.FormsOnlineInstanciator</instanceClassName>
- <Profiles>
+  <Profiles>
     <Profile name="Administrator">Gestionnaires</Profile>
     <Profile name="SenderReceiver">Emetteurs et Récepteurs</Profile>
   </Profiles>

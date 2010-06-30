@@ -28,10 +28,14 @@
 <WAComponent>
   <name>toolbox</name>
   <label>Gestion Documentaire II - Filebox</label>
-  <description>Permet de fédérer et structurer une simple base de fichiers en indiquant des méta données de base (titre, auteur, date). Permet également l' indexation manuelle sur le Plan de Classement Silverpeas™ et l'abonnement.  Deux options d'usage sont possibles : visualisation via le portail Silverpeas™ d'une arborescence de fichiers stockés sur un serveur NT©, ou création d'une base de fichiers sous Silverpeas™.</description>
+  <description>Permet de fédérer et structurer une simple base de fichiers en indiquant des 
+  métadonnées de base (titre, auteur, date). Permet également l'indexation manuelle sur le 
+  Plan de Classement Silverpeas et l'abonnement.  
+  Deux options d'usage sont possibles : visualisation via le portail Silverpeas d'une arborescence 
+  de fichiers stockés sur un serveur NT©, ou création d'une base de fichiers sous Silverpeas.</description>
   <suite>01 Gestion Documentaire</suite>
   <visible>@ComponentVisibleToolbox@</visible>
-   <portlet>yes</portlet>
+  <portlet>yes</portlet>
   <instanceClassName>com.stratelia.webactiv.kmelia.KmeliaInstanciator</instanceClassName>
   <tableList>
     <tabletpl>Node</tabletpl>
@@ -51,31 +55,31 @@
     <Profile name="user">Lecteur</Profile>
   </Profiles>
   <Parameters>
-	<Parameter>
-        <ParameterName>nbPubliPerPage</ParameterName>
-        <ParameterLabel>Nb Publi / Page</ParameterLabel>
-        <ParameterValue></ParameterValue>
-	    <ParameterSize>5</ParameterSize>
-        <ParameterMandatory>N</ParameterMandatory>
-	    <ParameterUpdatable>always</ParameterUpdatable>
-	    <ParameterOrder>2</ParameterOrder>
-	    <ParameterHelp>
-			<ParameterHelpFr>Permet de définir le nombre de publications affichées par page.</ParameterHelpFr>
-			<ParameterHelpEn></ParameterHelpEn>
-	    </ParameterHelp>
-	</Parameter>
-	<Parameter>
-        <ParameterName>isTree</ParameterName>
-        <ParameterLabel>Gestion arborescente</ParameterLabel>
-        <ParameterValue>yes</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterUpdatable>OnCreationOnly</ParameterUpdatable>
-	    <ParameterOrder>3</ParameterOrder>
-	    <ParameterHelp>
-			<ParameterHelpFr>Active l'organisation arborescente de thèmes. Une publication peut être placée dans plusieurs thèmes.</ParameterHelpFr>
-			<ParameterHelpEn></ParameterHelpEn>
-	    </ParameterHelp>
+    <Parameter>
+      <ParameterName>nbPubliPerPage</ParameterName>
+      <ParameterLabel>Nb Publi / Page</ParameterLabel>
+      <ParameterValue></ParameterValue>
+      <ParameterSize>5</ParameterSize>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>2</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Permet de définir le nombre de publications affichées par page.</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>isTree</ParameterName>
+      <ParameterLabel>Gestion arborescente</ParameterLabel>
+      <ParameterValue>yes</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>OnCreationOnly</ParameterUpdatable>
+      <ParameterOrder>3</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Active l'organisation arborescente de thèmes. Une publication peut être placée dans plusieurs thèmes.</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
     </Parameter>
     <!-- <Parameter>
     	<ParameterName>isLink</ParameterName>
@@ -90,343 +94,346 @@
 			<ParameterHelpEn></ParameterHelpEn>
 	    </ParameterHelp>
     </Parameter> -->
-	<Parameter>
-        <ParameterName>usePdc</ParameterName>
-        <ParameterLabel>Classification PDC</ParameterLabel>
-        <ParameterValue>no</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterUpdatable>always</ParameterUpdatable>
-	    <ParameterOrder>3</ParameterOrder>
-	    <ParameterHelp>
-			<ParameterHelpFr>Les documents créés au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
-			<ParameterHelpEn></ParameterHelpEn>
-	    </ParameterHelp>
+    <Parameter>
+      <ParameterName>usePdc</ParameterName>
+      <ParameterLabel>Classification PDC</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>3</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Les documents créés au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
     </Parameter>
     <Parameter>
-        <ParameterName>tabContent</ParameterName>
-        <ParameterLabel>Contenu</ParameterLabel>
-        <ParameterValue>no</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	   	<ParameterUpdatable>never</ParameterUpdatable>
-	    <ParameterOrder>5</ParameterOrder>
-    </Parameter>
-	<Parameter>
-        <ParameterName>tabAttachments</ParameterName>
-        <ParameterLabel>Fichiers Joints</ParameterLabel>
-        <ParameterValue>yes</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterUpdatable>never</ParameterUpdatable>
-	    <ParameterOrder>6</ParameterOrder>
+      <ParameterName>tabContent</ParameterName>
+      <ParameterLabel>Contenu</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>never</ParameterUpdatable>
+      <ParameterOrder>5</ParameterOrder>
     </Parameter>
     <Parameter>
-        <ParameterName>tabSeeAlso</ParameterName>
-        <ParameterLabel>Voir Aussi</ParameterLabel>
-        <ParameterValue>no</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterUpdatable>never</ParameterUpdatable>
-	    <ParameterOrder>7</ParameterOrder>
-    </Parameter>
-	<Parameter>
-        <ParameterName>tabAccessPaths</ParameterName>
-        <ParameterLabel>Emplacements Multiples</ParameterLabel>
-        <ParameterValue>yes</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterUpdatable>always</ParameterUpdatable>
-	    <ParameterOrder>8</ParameterOrder>
-    </Parameter>
-	<Parameter>
-        <ParameterName>tabReadersList</ParameterName>
-        <ParameterLabel>Contrôles de Lecture</ParameterLabel>
-        <ParameterValue>yes</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterUpdatable>always</ParameterUpdatable>
-	    <ParameterOrder>9</ParameterOrder>
+      <ParameterName>tabAttachments</ParameterName>
+      <ParameterLabel>Fichiers Joints</ParameterLabel>
+      <ParameterValue>yes</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>never</ParameterUpdatable>
+      <ParameterOrder>6</ParameterOrder>
     </Parameter>
     <Parameter>
-        <ParameterName>tabComments</ParameterName>
-        <ParameterLabel>Commentaires</ParameterLabel>
-        <ParameterValue>no</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	   	<ParameterUpdatable>never</ParameterUpdatable>
-	    <ParameterOrder>10</ParameterOrder>
+      <ParameterName>tabSeeAlso</ParameterName>
+      <ParameterLabel>Voir Aussi</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>never</ParameterUpdatable>
+      <ParameterOrder>7</ParameterOrder>
     </Parameter>
-	<Parameter>
-        <ParameterName>versionControl</ParameterName>
-        <ParameterLabel>Versioning</ParameterLabel>
-        <ParameterValue>no</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterUpdatable>never</ParameterUpdatable>
-	    <ParameterOrder>11</ParameterOrder>
-	    <ParameterHelp>
-			<ParameterHelpFr>Permet de gérer les versions des fichiers joints. Ce paramêtre n'est modifiable qu'à la création de l'instance</ParameterHelpFr>
-			<ParameterHelpEn></ParameterHelpEn>
-	    </ParameterHelp>
+    <Parameter>
+      <ParameterName>tabAccessPaths</ParameterName>
+      <ParameterLabel>Emplacements Multiples</ParameterLabel>
+      <ParameterValue>yes</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>8</ParameterOrder>
     </Parameter>
-	<Parameter>
-        <ParameterName>draft</ParameterName>
-        <ParameterLabel>Mode brouillon</ParameterLabel>
-        <ParameterValue>no</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterUpdatable>never</ParameterUpdatable>
-	    <ParameterOrder>12</ParameterOrder>
-	    <ParameterHelp>
-			<ParameterHelpFr>Le mode brouillon permet de travailler sur une publication sans que personne d'autre puisse la voir.</ParameterHelpFr>
-			<ParameterHelpEn></ParameterHelpEn>
-	    </ParameterHelp>
+    <Parameter>
+      <ParameterName>tabReadersList</ParameterName>
+      <ParameterLabel>Contrôles de Lecture</ParameterLabel>
+      <ParameterValue>yes</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>9</ParameterOrder>
     </Parameter>
-	<Parameter>
-        <ParameterName>webContent</ParameterName>
-        <ParameterLabel>Orienté contenu Web</ParameterLabel>
-        <ParameterValue>no</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterUpdatable>never</ParameterUpdatable>
-	    <ParameterOrder>13</ParameterOrder>
-	    <ParameterHelp>
-			<ParameterHelpFr>Permet d'activer les fonctions liées à la gestion de contenu web (wysiwyg associé au thème, visibilité des thèmes)</ParameterHelpFr>
-			<ParameterHelpEn></ParameterHelpEn>
-	    </ParameterHelp>
+    <Parameter>
+      <ParameterName>tabComments</ParameterName>
+      <ParameterLabel>Commentaires</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>never</ParameterUpdatable>
+      <ParameterOrder>10</ParameterOrder>
     </Parameter>
-     <Parameter>
-        <ParameterName>delegatedTopicManagement</ParameterName>
-        <ParameterLabel>Gestion déléguée des thèmes</ParameterLabel>
-        <ParameterValue>no</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterUpdatable>never</ParameterUpdatable>
-	    <ParameterOrder>15</ParameterOrder>
-	    <ParameterHelp>
-			<ParameterHelpFr>La gestion des thèmes est déléguée aux publieurs et rédacteurs</ParameterHelpFr>
-			<ParameterHelpEn></ParameterHelpEn>
-	    </ParameterHelp>
+    <Parameter>
+      <ParameterName>versionControl</ParameterName>
+      <ParameterLabel>Versioning</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>never</ParameterUpdatable>
+      <ParameterOrder>11</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Permet de gérer les versions des fichiers joints. Ce paramètre n'est modifiable qu'à la création de l'instance</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
     </Parameter>
-	<Parameter>
-        <ParameterName>useAuthor</ParameterName>
-        <ParameterLabel>Champ Auteur</ParameterLabel>
-        <ParameterValue>no</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterUpdatable>always</ParameterUpdatable>
-	    <ParameterOrder>4</ParameterOrder>
-	    <ParameterHelp>
-			<ParameterHelpFr>Les documents créés au sein de cette instance pourront comporter une champ supplémentaire 'Auteur'.</ParameterHelpFr>
-			<ParameterHelpEn></ParameterHelpEn>
-	    </ParameterHelp>
+    <Parameter>
+      <ParameterName>draft</ParameterName>
+      <ParameterLabel>Mode brouillon</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>never</ParameterUpdatable>
+      <ParameterOrder>12</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Le mode brouillon permet de travailler sur une publication sans que personne d'autre puisse la voir.</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
     </Parameter>
-	<Parameter>
-        <ParameterName>openSingleAttachment</ParameterName>
-        <ParameterLabel>Ouverture directe fichier joint</ParameterLabel>
-        <ParameterValue>no</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterUpdatable>never</ParameterUpdatable>
-	    <ParameterOrder>17</ParameterOrder>
-	    <ParameterHelp>
-			<ParameterHelpFr>Si une publication contient un seul fichier joint alors l'ouverture de la publication déclenche automatiquement l'ouverture du fichier joint.</ParameterHelpFr>
-			<ParameterHelpEn></ParameterHelpEn>
-	    </ParameterHelp>
+    <Parameter>
+      <ParameterName>webContent</ParameterName>
+      <ParameterLabel>Orienté contenu Web</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>never</ParameterUpdatable>
+      <ParameterOrder>13</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Permet d'activer les fonctions liées à la gestion de contenu web (wysiwyg associé au thème, visibilité des thèmes)</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
     </Parameter>
-	<Parameter>
-		<ParameterName>importFiles</ParameterName>
-		<ParameterLabel>Importation de document(s)</ParameterLabel>
-		<ParameterMandatory>Y</ParameterMandatory>
-		<ParameterUpdatable>always</ParameterUpdatable>
-		<ParameterType>select</ParameterType>
-		<ParameterOrder>5</ParameterOrder>
-		<ParameterHelp>
-			<ParameterHelpFr>Valeurs possibles: 0=Non 1=Import unitaire 2=Import massif 3=Import unitaire et massif</ParameterHelpFr>
-			<ParameterHelpEn></ParameterHelpEn>
-		</ParameterHelp>
-		<ParameterOptions>
-			<ParameterOption>
-				<Name>Non</Name>
-				<Value>0</Value>
-			</ParameterOption>
-			<ParameterOption>
-				<Name>Import unitaire</Name>
-				<Value>1</Value>
-			</ParameterOption>
-			<ParameterOption>
-				<Name>Import massif</Name>
-				<Value>2</Value>
-			</ParameterOption>
-			<ParameterOption>
-				<Name>Import unitaire et massif</Name>
-				<Value>3</Value>
-			</ParameterOption>
-		</ParameterOptions>
-	</Parameter>
-	<Parameter>
-		<ParameterName>targetValidation</ParameterName>
-		<ParameterLabel>Validation ciblée</ParameterLabel>
-   		<ParameterValue>no</ParameterValue>
-		<ParameterMandatory>Y</ParameterMandatory>
-		<ParameterUpdatable>never</ParameterUpdatable>
-		<ParameterType>checkbox</ParameterType>
-		<ParameterOrder>20</ParameterOrder>
-		<ParameterHelp>
-			<ParameterHelpFr>La validation ciblée permet aux rédacteurs de choisir le publieur devant valider leurs publications. Ceci permet d'éviter le phénomène de spam auprès des publieurs.</ParameterHelpFr>
-			<ParameterHelpEn>The targeted validation option allows writers to choose which publisher have to validate theirs publications. This avoid spam behaviour.</ParameterHelpEn>
-		</ParameterHelp>
-	</Parameter>
-	<Parameter>
-		<ParameterName>exportComponent</ParameterName>
-		<ParameterLabel>Exportation du composant</ParameterLabel>
+    <Parameter>
+      <ParameterName>delegatedTopicManagement</ParameterName>
+      <ParameterLabel>Gestion déléguée des thèmes</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>never</ParameterUpdatable>
+      <ParameterOrder>15</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>La gestion des thèmes est déléguée aux publieurs et rédacteurs</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>useAuthor</ParameterName>
+      <ParameterLabel>Champ Auteur</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>4</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Les documents créés au sein de cette instance pourront comporter une champ supplémentaire 'Auteur'.</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>openSingleAttachment</ParameterName>
+      <ParameterLabel>Ouverture directe fichier joint</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>never</ParameterUpdatable>
+      <ParameterOrder>17</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Si une publication contient un seul fichier joint alors l'ouverture de la 
+        publication déclenche automatiquement l'ouverture du fichier joint.</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>importFiles</ParameterName>
+      <ParameterLabel>Importation de document(s)</ParameterLabel>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterType>select</ParameterType>
+      <ParameterOrder>5</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Valeurs possibles: 0=Non 1=Import unitaire 2=Import massif 3=Import unitaire et massif</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
+      <ParameterOptions>
+        <ParameterOption>
+          <Name>Non</Name>
+          <Value>0</Value>
+        </ParameterOption>
+        <ParameterOption>
+          <Name>Import unitaire</Name>
+          <Value>1</Value>
+        </ParameterOption>
+        <ParameterOption>
+          <Name>Import massif</Name>
+          <Value>2</Value>
+        </ParameterOption>
+        <ParameterOption>
+          <Name>Import unitaire et massif</Name>
+          <Value>3</Value>
+        </ParameterOption>
+      </ParameterOptions>
+    </Parameter>
+    <Parameter>
+      <ParameterName>targetValidation</ParameterName>
+      <ParameterLabel>Validation ciblée</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterUpdatable>never</ParameterUpdatable>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterOrder>20</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>La validation ciblée permet aux rédacteurs de choisir le publieur devant 
+        valider leurs publications. Ceci permet d'éviter le phénomène de spam auprès des publieurs.</ParameterHelpFr>
+        <ParameterHelpEn>The targeted validation option allows writers to choose which publisher 
+        have to validate theirs publications. This avoid spam behaviour.</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>exportComponent</ParameterName>
+      <ParameterLabel>Exportation du composant</ParameterLabel>
 		<!-- ParameterValue>no</ParameterValue -->
-		<ParameterMandatory>Y</ParameterMandatory>
-		<ParameterUpdatable>always</ParameterUpdatable>
-		<ParameterType>select</ParameterType>
-		<ParameterOrder>21</ParameterOrder>
-		<ParameterHelp>
-			<ParameterHelpFr>Cette fonction permet d'exporter toutes les publications visibles du composant.</ParameterHelpFr>
-			<ParameterHelpEn>This function allow the user to export all the visible publications in the component</ParameterHelpEn>
-		</ParameterHelp>
-		<ParameterOptions>
-			<ParameterOption>
-					<Name>Non</Name>
-					<Value>0</Value>
-			</ParameterOption>
-			<ParameterOption>
-				<Name>Export au format ZIP</Name>
-				<Value>1</Value>
-			</ParameterOption>
-			<ParameterOption>
-				<Name>Export des fichiers PDF</Name>
-				<Value>2</Value>
-			</ParameterOption>
-			<ParameterOption>
-				<Name>Export au format ZIP et des fichiers PDF</Name>
-				<Value>3</Value>
-			</ParameterOption>
-		</ParameterOptions>
-	</Parameter>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterType>select</ParameterType>
+      <ParameterOrder>21</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Cette fonction permet d'exporter toutes les publications visibles du composant.</ParameterHelpFr>
+        <ParameterHelpEn>This function allow the user to export all the visible publications in the component</ParameterHelpEn>
+      </ParameterHelp>
+      <ParameterOptions>
+        <ParameterOption>
+          <Name>Non</Name>
+          <Value>0</Value>
+        </ParameterOption>
+        <ParameterOption>
+          <Name>Export au format ZIP</Name>
+          <Value>1</Value>
+        </ParameterOption>
+        <ParameterOption>
+          <Name>Export des fichiers PDF</Name>
+          <Value>2</Value>
+        </ParameterOption>
+        <ParameterOption>
+          <Name>Export au format ZIP et des fichiers PDF</Name>
+          <Value>3</Value>
+        </ParameterOption>
+      </ParameterOptions>
+    </Parameter>
 
-	<Parameter>
-		<ParameterName>massiveDragAndDrop</ParameterName>
-		<ParameterLabel>Drag And Drop</ParameterLabel>
-		<ParameterValue>no</ParameterValue>
-		<ParameterMandatory>Y</ParameterMandatory>
-		<ParameterUpdatable>always</ParameterUpdatable>
-		<ParameterType>checkbox</ParameterType>
-		<ParameterOrder>7</ParameterOrder>
-		<ParameterHelp>
-			<ParameterHelpFr>Cette fonction permet de créer des thèmes et des publications par glisser/déposer dans une zone de l'écran.</ParameterHelpFr>
-			<ParameterHelpEn>This function allow to the manager to create topics and publications using a simple drag and drop.</ParameterHelpEn>
-		</ParameterHelp>
-	</Parameter>
+    <Parameter>
+      <ParameterName>massiveDragAndDrop</ParameterName>
+      <ParameterLabel>Drag And Drop</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterOrder>7</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Cette fonction permet de créer des thèmes et des publications par glisser/déposer dans une zone de l'écran.</ParameterHelpFr>
+        <ParameterHelpEn>This function allow to the manager to create topics and publications using a simple drag and drop.</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
 	
-	<Parameter>
-		<ParameterName>coWriting</ParameterName>
-		<ParameterLabel>Co Rédaction</ParameterLabel>
-		<ParameterValue>no</ParameterValue>
-		<ParameterMandatory>Y</ParameterMandatory>
-		<ParameterUpdatable>never</ParameterUpdatable>
-		<ParameterType>checkbox</ParameterType>
-		<ParameterOrder>23</ParameterOrder>
-		<ParameterHelp>
-			<ParameterHelpFr>Cette fonction permet à un rédacteur de pouvoir modifier n'importe quelle publication.</ParameterHelpFr>
-			<ParameterHelpEn>This function makes it possible to a writer to modify any publications.</ParameterHelpEn>
-		</ParameterHelp>
-	</Parameter>
-	<Parameter>
-		<ParameterName>publicationAlwaysVisible</ParameterName>
-		<ParameterLabel>Publication toujours visible</ParameterLabel>
-		<ParameterValue>no</ParameterValue>
-		<ParameterMandatory>Y</ParameterMandatory>
-		<ParameterUpdatable>never</ParameterUpdatable>
-		<ParameterType>checkbox</ParameterType>
-		<ParameterOrder>23</ParameterOrder>
-		<ParameterHelp>
-			<ParameterHelpFr>La dernière version validée d'une publication est toujours visible même lorsqu'elle est en attente de validation.</ParameterHelpFr>
-			<ParameterHelpEn>The latest valid version of a publication is always visible even if it is waiting approval.</ParameterHelpEn>
-		</ParameterHelp>
-	</Parameter>
-	<Parameter>
-		<ParameterName>wizardEnabled</ParameterName>
-		<ParameterLabel>Assistant de publication</ParameterLabel>
-		<ParameterValue>no</ParameterValue>
-		<ParameterMandatory>Y</ParameterMandatory>
-		<ParameterUpdatable>never</ParameterUpdatable>
-		<ParameterType>checkbox</ParameterType>
-		<ParameterOrder>24</ParameterOrder>
-		<ParameterHelp>
-			<ParameterHelpFr>Dédié aux utilisateurs débutants, cet assistant permet de créer une publication pas à pas.</ParameterHelpFr>
-			<ParameterHelpEn>For beginners only. This wizard allows the user to create a publication step by step.</ParameterHelpEn>
-		</ParameterHelp>
-	</Parameter>
-	<Parameter>
-		<ParameterName>displayNB</ParameterName>
-		<ParameterLabel>Affichage nombre de publications</ParameterLabel>
-		<ParameterValue>no</ParameterValue>
-		<ParameterMandatory>Y</ParameterMandatory>
-		<ParameterUpdatable>always</ParameterUpdatable>
-		<ParameterType>checkbox</ParameterType>
-		<ParameterOrder>26</ParameterOrder>
-		<ParameterHelp>
-			<ParameterHelpFr>Affiche le nombre de publications par thème</ParameterHelpFr>
-			<ParameterHelpEn>Display the number of publications by topic</ParameterHelpEn>
-		</ParameterHelp>
-	</Parameter>
-	<Parameter>
-		<ParameterName>rightsOnTopics</ParameterName>
-		<ParameterLabel>Droits sur les thèmes</ParameterLabel>
-		<ParameterValue>no</ParameterValue>
-		<ParameterMandatory>Y</ParameterMandatory>
-		<ParameterUpdatable>never</ParameterUpdatable>
-		<ParameterType>checkbox</ParameterType>
-		<ParameterOrder>27</ParameterOrder>
-		<ParameterHelp>
-			<ParameterHelpFr>Permet de définir des droits d'accès au niveau des thèmes</ParameterHelpFr>
-			<ParameterHelpEn>Allow to define rights on topics</ParameterHelpEn>
-		</ParameterHelp>
-	</Parameter>
-	<Parameter>
-        <ParameterName>nbDayForReservation</ParameterName>
-        <ParameterLabel>Gestion des retards</ParameterLabel>
-        <ParameterValue></ParameterValue>
-	    <ParameterSize>5</ParameterSize>
-        <ParameterMandatory>N</ParameterMandatory>
-	    <ParameterUpdatable>always</ParameterUpdatable>
-	    <ParameterOrder>28</ParameterOrder>
-	   	<ParameterHelp>
-			<ParameterHelpFr>Cette option permet de choisir un délais de réservation des fichiers joints et d'en gérer les retards. Ce délais est exprimé en jours et ne tiens pas compte des samedis et dimanches.</ParameterHelpFr>
-			<ParameterHelpEn></ParameterHelpEn>
-	   	</ParameterHelp>
+    <Parameter>
+      <ParameterName>coWriting</ParameterName>
+      <ParameterLabel>Co Rédaction</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterUpdatable>never</ParameterUpdatable>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterOrder>23</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Cette fonction permet à un rédacteur de pouvoir modifier n'importe quelle publication.</ParameterHelpFr>
+        <ParameterHelpEn>This function makes it possible to a writer to modify any publications.</ParameterHelpEn>
+      </ParameterHelp>
     </Parameter>
     <Parameter>
-        <ParameterName>wysiwygOnTopics</ParameterName>
-        <ParameterLabel>Description riche</ParameterLabel>
-        <ParameterValue>no</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterUpdatable>always</ParameterUpdatable>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterOrder>29</ParameterOrder>
-	   	<ParameterHelp>
-			<ParameterHelpFr>Ce paramètre permet de saisir une description Wysiwyg sur un thème qui sera affichée dans le thème</ParameterHelpFr>
-			<ParameterHelpEn>This feature allows to make a rich description of a topic.</ParameterHelpEn>
-	   	</ParameterHelp>
+      <ParameterName>publicationAlwaysVisible</ParameterName>
+      <ParameterLabel>Publication toujours visible</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterUpdatable>never</ParameterUpdatable>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterOrder>23</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>La dernière version validée d'une publication est toujours visible même lorsqu'elle est en attente de validation.</ParameterHelpFr>
+        <ParameterHelpEn>The latest valid version of a publication is always visible even if it is waiting approval.</ParameterHelpEn>
+      </ParameterHelp>
     </Parameter>
-	<Parameter>
-        <ParameterName>useFileSharing</ParameterName>
-        <ParameterLabel>Fichiers partageables</ParameterLabel>
-        <ParameterValue>no</ParameterValue>
-        <ParameterMandatory>Y</ParameterMandatory>
-	    <ParameterUpdatable>always</ParameterUpdatable>
-	    <ParameterType>checkbox</ParameterType>
-	    <ParameterOrder>30</ParameterOrder>
-	   	<ParameterHelp>
-			<ParameterHelpFr>Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail</ParameterHelpFr>
-			<ParameterHelpEn>This feature allows to activate file sharing with persons who have no access to the portal</ParameterHelpEn>
-	   	</ParameterHelp>
+    <Parameter>
+      <ParameterName>wizardEnabled</ParameterName>
+      <ParameterLabel>Assistant de publication</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterUpdatable>never</ParameterUpdatable>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterOrder>24</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Dédié aux utilisateurs débutants, cet assistant permet de créer une publication pas à pas.</ParameterHelpFr>
+        <ParameterHelpEn>For beginners only. This wizard allows the user to create a publication step by step.</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>displayNB</ParameterName>
+      <ParameterLabel>Affichage nombre de publications</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterOrder>26</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Affiche le nombre de publications par thème</ParameterHelpFr>
+        <ParameterHelpEn>Display the number of publications by topic</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>rightsOnTopics</ParameterName>
+      <ParameterLabel>Droits sur les thèmes</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterUpdatable>never</ParameterUpdatable>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterOrder>27</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Permet de définir des droits d'accès au niveau des thèmes</ParameterHelpFr>
+        <ParameterHelpEn>Allow to define rights on topics</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>nbDayForReservation</ParameterName>
+      <ParameterLabel>Gestion des retards</ParameterLabel>
+      <ParameterValue></ParameterValue>
+      <ParameterSize>5</ParameterSize>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>28</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Cette option permet de choisir un délais de réservation des fichiers joints et d'en gérer les retards. Ce délais est exprimé en jours et ne tiens pas compte des samedis et dimanches.</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>wysiwygOnTopics</ParameterName>
+      <ParameterLabel>Description riche</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterOrder>29</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Ce paramètre permet de saisir une description Wysiwyg sur un thème qui sera affichée dans le thème</ParameterHelpFr>
+        <ParameterHelpEn>This feature allows to make a rich description of a topic.</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>useFileSharing</ParameterName>
+      <ParameterLabel>Fichiers partageables</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterOrder>30</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail</ParameterHelpFr>
+        <ParameterHelpEn>This feature allows to activate file sharing with persons who have no access to the portal</ParameterHelpEn>
+      </ParameterHelp>
     </Parameter>
   </Parameters>
 </WAComponent>

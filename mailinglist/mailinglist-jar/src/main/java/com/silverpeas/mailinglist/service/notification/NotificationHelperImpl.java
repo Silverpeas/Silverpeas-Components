@@ -161,6 +161,8 @@ public class NotificationHelperImpl implements NotificationHelper {
     mail.setFrom(new InternetAddress(list.getSubscribedAddress()));
     mail.setSubject(notificationFormatter.formatTitle(message, list.getName(),
         false));
+    mail.setHeader("Precedence", "list");
+    mail.setHeader("List-ID", list.getSubscribedAddress());
     if (!message.getAttachments().isEmpty()) {
       Multipart multiPart = new MimeMultipart();
       for (Attachment attachment : message.getAttachments()) {
@@ -249,7 +251,7 @@ public class NotificationHelperImpl implements NotificationHelper {
     Iterator<InternalGroupSubscriber> iter = list.getGroupSubscribers()
         .iterator();
     while (iter.hasNext()) {
-      result.add(((InternalGroupSubscriber) iter.next()).getExternalId());
+      result.add((iter.next()).getExternalId());
     }
     return result;
   }
@@ -292,8 +294,7 @@ public class NotificationHelperImpl implements NotificationHelper {
     todo.setExternalId("message/" + message.getId() + "?todoId="
         + URLEncoder.encode(todoId, "UTF-8"));
     getCalendarBm().updateToDo(todo);
-    getCalendarBm().setToDoAttendees(todoId,
-        (String[]) userIds.toArray(new String[userIds.size()]));
+    getCalendarBm().setToDoAttendees(todoId, userIds.toArray(new String[userIds.size()]));
   }
 
   @Override

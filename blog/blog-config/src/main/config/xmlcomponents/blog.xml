@@ -33,49 +33,49 @@
   <visible>@ComponentVisibleblog@</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.silverpeas.blog.BlogInstanciator</instanceClassName>
- <Profiles>
+  <Profiles>
     <Profile name="admin">Bloggeur</Profile>
     <Profile name="user">Lecteur</Profile>
   </Profiles>
   <Parameters>
-        <Parameter>
-            <ParameterName>rss</ParameterName>
-            <ParameterLabel>Flux RSS</ParameterLabel>
-			      <ParameterType>checkbox</ParameterType>
-            <ParameterValue>N</ParameterValue>
-            <ParameterMandatory>N</ParameterMandatory>
-			    	<ParameterUpdatable>always</ParameterUpdatable>
-			    	<ParameterOrder>1</ParameterOrder>
-			    	<ParameterHelp>
-						  <ParameterHelpFr>Permet de générer un flux RSS de ce blog.</ParameterHelpFr>
-						  <ParameterHelpEn>.</ParameterHelpEn>
-			    	</ParameterHelp>
-        </Parameter>
-        <Parameter>
-            <ParameterName>usePdc</ParameterName>
-            <ParameterLabel>Classification PDC</ParameterLabel>
-            <ParameterValue>no</ParameterValue>
-            <ParameterMandatory>Y</ParameterMandatory>
-						<ParameterType>checkbox</ParameterType>
-						<ParameterUpdatable>always</ParameterUpdatable>
-						<ParameterOrder>2</ParameterOrder>
-						<ParameterHelp>
-							<ParameterHelpFr>Les billets créés au sein de cette instance pourront être classées sur le Plan de Classement</ParameterHelpFr>
-							<ParameterHelpEn>Post would be classified on PDC</ParameterHelpEn>
-						</ParameterHelp>
-        </Parameter>
-        <Parameter>
-            <ParameterName>draftVisible</ParameterName>
-            <ParameterLabel>Brouillon visible</ParameterLabel>
-            <ParameterType>checkbox</ParameterType>
-            <ParameterValue>no</ParameterValue>
-            <ParameterMandatory>Y</ParameterMandatory>
-            <ParameterUpdatable>always</ParameterUpdatable>
-            <ParameterOrder>3</ParameterOrder>
-            <ParameterHelp>
-              <ParameterHelpFr>Le brouillon sera visible entre bloggeurs.</ParameterHelpFr>
-              <ParameterHelpEn>.</ParameterHelpEn>
-            </ParameterHelp>
-        </Parameter>
+    <Parameter>
+      <ParameterName>rss</ParameterName>
+      <ParameterLabel>Flux RSS</ParameterLabel>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterValue>N</ParameterValue>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>1</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Permet de générer un flux RSS de ce blog.</ParameterHelpFr>
+        <ParameterHelpEn>.</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>usePdc</ParameterName>
+      <ParameterLabel>Classification PDC</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>2</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Les billets créés au sein de cette instance pourront être classées sur le Plan de Classement</ParameterHelpFr>
+        <ParameterHelpEn>Post would be classified on PDC</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
+    <Parameter>
+      <ParameterName>draftVisible</ParameterName>
+      <ParameterLabel>Brouillon visible</ParameterLabel>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>3</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Le brouillon sera visible entre bloggeurs.</ParameterHelpFr>
+        <ParameterHelpEn>.</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
   </Parameters>
 </WAComponent>

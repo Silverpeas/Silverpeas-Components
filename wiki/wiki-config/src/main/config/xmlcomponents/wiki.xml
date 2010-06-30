@@ -28,12 +28,13 @@
 <WAComponent>
   <name>wiki</name>
   <label>Wiki</label>
-  <description>Un wiki rend ses pages web librement modifiables par tous les contributeurs. Un wiki est utilisé pour faciliter l'écriture collaborative de documents avec un minimum de contraintes.</description>
+  <description>Un wiki rend ses pages web librement modifiables par tous les contributeurs. 
+  Un wiki est utilisé pour faciliter l'écriture collaborative de documents avec un minimum de contraintes.</description>
   <suite>04 Gestion de contenu</suite>
   <visible>yes</visible>
   <portlet>no</portlet>
   <instanceClassName>com.silverpeas.wiki.WikiInstanciator</instanceClassName>
- <Profiles>
+  <Profiles>
     <Profile name="admin">Administrateurs</Profile>
     <Profile name="writer">Contributeurs</Profile>
     <Profile name="user">Lecteurs</Profile>
