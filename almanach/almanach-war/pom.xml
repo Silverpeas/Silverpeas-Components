@@ -23,14 +23,14 @@
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>clipboard</artifactId>
-      <version>${project.version}</version>
+      <version>${core.version}</version>
       <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>personalization</artifactId>
-      <version>${project.version}</version>
+      <version>${core.version}</version>
       <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
