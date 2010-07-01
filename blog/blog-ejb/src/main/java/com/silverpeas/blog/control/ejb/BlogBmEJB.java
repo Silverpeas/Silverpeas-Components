@@ -23,21 +23,7 @@
  */
 package com.silverpeas.blog.control.ejb;
 
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Vector;
 
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
 
 import com.silverpeas.blog.BlogContentManager;
 import com.silverpeas.blog.dao.PostDAO;
@@ -46,6 +32,7 @@ import com.silverpeas.blog.model.BlogRuntimeException;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.comment.control.CommentController;
 import com.stratelia.silverpeas.comment.ejb.CommentBm;
 import com.stratelia.silverpeas.comment.ejb.CommentBmHome;
@@ -84,11 +71,24 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
 import com.stratelia.webactiv.util.subscribe.control.SubscribeBm;
 import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
 
 public class BlogBmEJB implements SessionBean {
 
   private static final long serialVersionUID = 1L;
-
   static SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 
   public Date getDateEvent(String pubId) {
@@ -103,27 +103,23 @@ public class BlogBmEJB implements SessionBean {
     }
   }
 
+  /**
+   * 
+   * @param post
+   * @return
+   */
   public String createPost(PostDetail post) {
     Connection con = initCon();
     try {
-      // Création de la publication
       PublicationDetail pub = post.getPublication();
       pub.setStatus(PublicationDetail.DRAFT);
       PublicationPK pk = getPublicationBm().createPublication(pub);
-
-      // création de la date d'évènement
       PostDAO.createDateEvent(con, pk.getId(), post.getDateEvent(), pk.getInstanceId());
-
-      // Affectation de la publi à une categorie
-      if (!(post.getCategoryId().equals("")) && (post.getCategoryId() != null) &&
-          (!post.getCategoryId().equals("null")))
+      if (StringUtil.isDefined(post.getCategoryId())) {
         setCategory(pk, post.getCategoryId());
-
-      // création du silverContent
+      }
       createSilverContent(con, pub, pub.getCreatorId());
-
       return pk.getId();
-
     } catch (Exception e) {
       throw new BlogRuntimeException("BlogBmEJB.createPost()", SilverpeasRuntimeException.ERROR,
           "post.MSG_POST_NOT_CREATE", e);
@@ -136,26 +132,22 @@ public class BlogBmEJB implements SessionBean {
       String type, String senderId) {
     // send email alerts
     try {
-      ArrayList<NodePK> descendantPKs = new ArrayList<NodePK>();
+      List<NodePK> descendantPKs = new ArrayList<NodePK>(1);
       descendantPKs.add(fatherPK);
-
+      @SuppressWarnings("unchecked")
       Collection<String> subscriberIds = getSubscribeBm().getNodeSubscriberDetails(descendantPKs);
-
       OrganizationController orgaController = new OrganizationController();
       if (subscriberIds != null && subscriberIds.size() > 0) {
         // get only subscribers who have sufficient rights to read pubDetail
-        Iterator<String> it = subscriberIds.iterator();
-        String userId = null;
         NodeDetail node = getNodeBm().getHeader(fatherPK);
-        List<String> newSubscribers = new ArrayList<String>();
-        while (it.hasNext()) {
-          userId = it.next();
-
+        List<String> newSubscribers = new ArrayList<String>(subscriberIds.size());
+        for(String userId : subscriberIds) {
           if (orgaController.isComponentAvailable(fatherPK.getInstanceId(), userId)) {
-            if (!node.haveRights() ||
-                orgaController.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
-                    fatherPK.getInstanceId(), userId))
+            if (!node.haveRights()
+                || orgaController.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
+                fatherPK.getInstanceId(), userId)) {
               newSubscribers.add(userId);
+            }
           }
         }
 
@@ -185,14 +177,14 @@ public class BlogBmEJB implements SessionBean {
       }
     } catch (Exception e) {
       SilverTrace.warn("blog", "BlogBmEJB.sendSubscriptionsNotification()",
-          "blog.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "fatherId = " + fatherPK.getId() +
-              ", pubId = " + pubDetail.getPK().getId(), e);
+          "blog.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "fatherId = " + fatherPK.getId()
+          + ", pubId = " + pubDetail.getPK().getId(), e);
     }
   }
 
   public static String getPostUrl(PublicationDetail pubDetail) {
-    return "/Rblog/" + pubDetail.getPK().getInstanceId() + "/searchResult?Type=Publication&Id=" +
-        pubDetail.getPK().getId();
+    return "/Rblog/" + pubDetail.getPK().getInstanceId() + "/searchResult?Type=Publication&Id="
+        + pubDetail.getPK().getId();
   }
 
   private void notifyUsers(NotificationMetaData notifMetaData, String senderId) {
@@ -200,8 +192,9 @@ public class BlogBmEJB implements SessionBean {
     try {
       con = initCon();
       notifMetaData.setConnection(con);
-      if (notifMetaData.getSender() == null || notifMetaData.getSender().length() == 0)
+      if (notifMetaData.getSender() == null || notifMetaData.getSender().length() == 0) {
         notifMetaData.setSender(senderId);
+      }
       NotificationSender notifSender = new NotificationSender(notifMetaData.getComponentId());
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
@@ -214,14 +207,14 @@ public class BlogBmEJB implements SessionBean {
 
   private String getSubscriptionsNotificationBody(PublicationDetail pubDetail,
       ResourceLocator message, String type) {
-    StringBuffer messageText = new StringBuffer();
-    if (type.equals("create")) {
+    StringBuilder messageText = new StringBuilder();
+    if ("create".equals(type)) {
       messageText.append(message.getString("blog.bodySubscriptionCreate"));
-    } else if (type.equals("update")) {
+    } else if ("update".equals(type)) {
       messageText.append(message.getString("blog.bodySubscriptionUpdate"));
-    } else if (type.equals("commentCreate")) {
+    } else if ("commentCreate".equals(type)) {
       messageText.append(message.getString("blog.bodySubscriptionCommentCreate"));
-    } else if (type.equals("commentUpdate")) {
+    } else if ("commentUpdate".equals(type)) {
       messageText.append(message.getString("blog.bodySubscriptionCommentUpdate"));
     }
     messageText.append(" : ").append(pubDetail.getName(message.getLanguage())).append("\n");
@@ -238,9 +231,10 @@ public class BlogBmEJB implements SessionBean {
       getPublicationBm().setDetail(post.getPublication());
 
       // Ajout de la nouvelle category
-      if (!(post.getCategoryId().equals("")) && (post.getCategoryId() != null) &&
-          (!post.getCategoryId().equals("null")))
+      if (!(post.getCategoryId().equals("")) && (post.getCategoryId() != null)
+          && (!post.getCategoryId().equals("null"))) {
         setCategory(post.getPublication().getPK(), post.getCategoryId());
+      }
 
       // modification de la date d'évènement
       PostDAO.updateDateEvent(con, post.getPublication().getPK().getId(), post.getDateEvent());
@@ -248,8 +242,8 @@ public class BlogBmEJB implements SessionBean {
       // envoie notification si abonnement
       PublicationDetail pub = post.getPublication();
       if (pub.getStatus().equals(PublicationDetail.VALID)) {
-        sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK()
-            .getInstanceId()), pub, "update", pub.getUpdaterId());
+        sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().
+            getInstanceId()), pub, "update", pub.getUpdaterId());
       }
 
     } catch (Exception e) {
@@ -343,9 +337,9 @@ public class BlogBmEJB implements SessionBean {
       // la collection des catégories contient en fait une seule catégorie, la récupérer
       Category cat = null;
       if (!allCat.isEmpty()) {
-        Iterator<NodePK> it = (Iterator<NodePK>) allCat.iterator();
-        NodePK nodePK = (NodePK) it.next();
-        cat = (Category) getCategory(nodePK);
+        Iterator<NodePK> it = allCat.iterator();
+        NodePK nodePK = it.next();
+        cat = getCategory(nodePK);
       }
       // rechercher le nombre de commentaire
       CommentPK foreign_pk = new CommentPK(pub.getPK().getId(), null, pub.getPK().getInstanceId());
@@ -378,20 +372,14 @@ public class BlogBmEJB implements SessionBean {
     try {
       // rechercher les publications classée par date d'évènement
       Collection<String> lastEvents = PostDAO.getLastEvents(con, instanceId, nbReturned);
-
       Collection<PublicationDetail> publications =
           getPublicationBm().getAllPublications(pubPK);
       OrganizationController orgaController = new OrganizationController();
-
-      Iterator<String> itEvent = lastEvents.iterator();
-      while (itEvent.hasNext()) {
-        String pubId = (String) itEvent.next();
-        // pour cette publication, rechercher son détail et créer le post correspondant
-        Iterator<PublicationDetail> it = (Iterator<PublicationDetail>) publications.iterator();
-        while (it.hasNext()) {
-          PublicationDetail pub = (PublicationDetail) it.next();
-          if (pub.getPK().getId().equals(pubId))
+      for(String pubId : lastEvents) {
+        for(PublicationDetail pub : publications) {       
+          if (pub.getPK().getId().equals(pubId)) {
             posts.add(getPost(pub, orgaController));
+          }
         }
       }
       return posts;
@@ -426,9 +414,7 @@ public class BlogBmEJB implements SessionBean {
       Collection<PublicationDetail> publications =
           getPublicationBm().getPublicationsByStatus("Valid", pubPK);
       // pour chaque publication, regarder la date
-      Iterator<PublicationDetail> it = (Iterator<PublicationDetail>) publications.iterator();
-      while (it.hasNext()) {
-        PublicationDetail pub = (PublicationDetail) it.next();
+      for( PublicationDetail pub : publications) {
         if (pub.getPK().getId().equals(pubId)) {
           // la publication est plus ancienne
           date = pub.getCreationDate();
@@ -461,9 +447,7 @@ public class BlogBmEJB implements SessionBean {
       PublicationPK[] allPubs = publications.toArray(new PublicationPK[publications.size()]);
       SilverTrace.info("blog", "BlogBmEJB.getPostsByCategory()", "root.MSG_GEN_PARAM_VALUE",
           "allPubs =" + allPubs.length);
-      Iterator<String> itEvent = lastEvents.iterator();
-      while (itEvent.hasNext()) {
-        String pubId = (String) itEvent.next();
+      for(String pubId : lastEvents) {
         int j;
         for (int i = 0; i < allPubs.length; i++) {
           j = allPubs.length - i - 1;
@@ -472,8 +456,9 @@ public class BlogBmEJB implements SessionBean {
           PublicationPK pubPK = allPubs[j];
           SilverTrace.info("blog", "BlogBmEJB.getPostsByCategory()", "root.MSG_GEN_PARAM_VALUE",
               "pubPK =" + pubPK.getId());
-          if (pubPK.getId().equals(pubId))
+          if (pubPK.getId().equals(pubId)) {
             posts.add(getPost(pubPK));
+          }
         }
       }
 
@@ -507,17 +492,14 @@ public class BlogBmEJB implements SessionBean {
       Collection<PublicationDetail> publications =
           getPublicationBm().getPublicationsByStatus("Valid", pubPK);
       OrganizationController orgaController = new OrganizationController();
-      Iterator<String> itEvent = lastEvents.iterator();
-      while (itEvent.hasNext()) {
-        String pubId = (String) itEvent.next();
+      for(String pubId : lastEvents) {
         // pour chaque publication, créer le post correspondant
         SilverTrace.info("blog", "BlogBmEJB.getPostsByArchive()", "root.MSG_GEN_PARAM_VALUE",
             "publications =" + publications.toString());
-        Iterator<PublicationDetail> it = (Iterator<PublicationDetail>) publications.iterator();
-        while (it.hasNext()) {
-          PublicationDetail pub = (PublicationDetail) it.next();
-          if (pub.getPK().getId().equals(pubId))
+       for( PublicationDetail pub : publications) {
+          if (pub.getPK().getId().equals(pubId)) {
             posts.add(getPost(pub, orgaController));
+          }
         }
       }
       SilverTrace.info("blog", "BlogBmEJB.getPostsByArchive()", "root.MSG_GEN_PARAM_VALUE",
@@ -535,16 +517,15 @@ public class BlogBmEJB implements SessionBean {
       String instanceId) {
     Collection<PostDetail> posts = new ArrayList<PostDetail>();
     List<String> postIds = new ArrayList<String>();
-    SilverTrace.info("blog", "BlogBmEJB.getResultSearch()", "root.MSG_GEN_PARAM_VALUE", "word =" +
-        word + " userId = " + userId + " instanceId = " + instanceId);
+    SilverTrace.info("blog", "BlogBmEJB.getResultSearch()", "root.MSG_GEN_PARAM_VALUE", "word ="
+        + word + " userId = " + userId + " instanceId = " + instanceId);
     QueryDescription query = new QueryDescription(word);
     query.setSearchingUser(userId);
     query.addSpaceComponentPair(spaceId, instanceId);
     MatchingIndexEntry[] result = null;
-    SilverTrace.info("blog", "BlogBmEJB.getResultSearch()", "root.MSG_GEN_PARAM_VALUE", "query =" +
-        query.getQuery());
+    SilverTrace.info("blog", "BlogBmEJB.getResultSearch()", "root.MSG_GEN_PARAM_VALUE", "query ="
+        + query.getQuery());
     Connection con = initCon();
-
     try {
       SearchEngineBm searchEngineBm = getSearchEngineBm();
       searchEngineBm.search(query);
@@ -609,10 +590,7 @@ public class BlogBmEJB implements SessionBean {
 
       // recherche des billets sur cette catégorie
       Collection<PostDetail> posts = getPostsByCategory(id, instanceId);
-      Iterator<PostDetail> it = (Iterator<PostDetail>) posts.iterator();
-      while (it.hasNext()) {
-        // suppression de la catégorie pour ces billets
-        PostDetail post = (PostDetail) it.next();
+      for(PostDetail post : posts) {
         getPublicationBm().removeFather(post.getPublication().getPK(), nodePk);
       }
       // suppression de la catégorie
@@ -700,11 +678,7 @@ public class BlogBmEJB implements SessionBean {
     }
 
     if (pubs != null) {
-      Iterator<PublicationDetail> it = pubs.iterator();
-      PublicationDetail pub = null;
-      while (it.hasNext()) {
-        pub = (PublicationDetail) it.next();
-
+      for(PublicationDetail pub : pubs) {
         try {
           indexPublication(pub.getPK());
         } catch (Exception e) {
@@ -729,12 +703,10 @@ public class BlogBmEJB implements SessionBean {
     try {
       nodes = getNodeBm().getAllNodes(nodePK);
       if (nodes != null) {
-        Iterator<NodeDetail> it = nodes.iterator();
-        NodeDetail node = null;
-        while (it.hasNext()) {
-          node = (NodeDetail) it.next();
-          if (!node.getNodePK().getId().equals("0") && !node.getNodePK().getId().equals("1"))
+        for(NodeDetail node : nodes) {
+          if (!node.getNodePK().getId().equals("0") && !node.getNodePK().getId().equals("1")) {
             getNodeBm().createIndex(node);
+          }
         }
       }
     } catch (Exception e) {
@@ -746,8 +718,9 @@ public class BlogBmEJB implements SessionBean {
   public void addSubscription(NodePK topicPK, String userId) {
     SilverTrace.info("blog", "BlogBmEJB.addSubscription()", "root.MSG_GEN_ENTER_METHOD");
 
-    if (!checkSubscription(topicPK, userId))
+    if (!checkSubscription(topicPK, userId)) {
       return;
+    }
 
     try {
       getSubscribeBm().addSubscribe(userId, topicPK);
@@ -760,16 +733,15 @@ public class BlogBmEJB implements SessionBean {
 
   public boolean checkSubscription(NodePK topicPK, String userId) {
     try {
+      @SuppressWarnings("unchecked")
       Collection<NodePK> subscriptions =
           getSubscribeBm().getUserSubscribePKsByComponent(userId, topicPK.getInstanceId());
-      for (Iterator<NodePK> iterator = subscriptions.iterator(); iterator.hasNext();) {
-        NodePK nodePK = iterator.next();
+      for (NodePK nodePK : subscriptions) {
         if (topicPK.getId().equals(nodePK.getId())) {
           return false;
         }
       }
       return true;
-
     } catch (Exception e) {
       throw new BlogRuntimeException("BlogBmEJB.checkSubscription()",
           SilverpeasRuntimeException.ERROR,
@@ -791,11 +763,11 @@ public class BlogBmEJB implements SessionBean {
     try {
       PublicationDetail pubDetail = getPublicationBm().getDetail(pubPK);
       pubDetail.setUpdaterId(userId);
-      
+
       if (PublicationDetail.DRAFT.equals(pubDetail.getStatus())) {
         pubDetail.setIndexOperation(IndexManager.NONE);
       }
-      
+
       getPublicationBm().setDetail(pubDetail);
 
       // envoie notification si abonnement
@@ -863,12 +835,12 @@ public class BlogBmEJB implements SessionBean {
 
       // envoie notification si abonnement
       if (pub.getStatus().equals(PublicationDetail.VALID)) {
-        sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK()
-              .getInstanceId()), pub, "create", pub.getUpdaterId());
+        sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().
+            getInstanceId()), pub, "create", pub.getUpdaterId());
       }
     } catch (Exception e) {
       throw new BlogRuntimeException("BlogBmEJB.draftOutPost()",
-             SilverpeasRuntimeException.ERROR, "blog.EX_CAN_DRAFT_OUT", e);
+          SilverpeasRuntimeException.ERROR, "blog.EX_CAN_DRAFT_OUT", e);
     }
   }
 
@@ -877,7 +849,7 @@ public class BlogBmEJB implements SessionBean {
     try {
       SubscribeBmHome subscribeBmHome =
           (SubscribeBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.SUBSCRIBEBM_EJBHOME,
-              SubscribeBmHome.class);
+          SubscribeBmHome.class);
       subscribeBm = subscribeBmHome.create();
     } catch (Exception e) {
       throw new BlogRuntimeException("BlogBmEJB.getSubscribeBm()",
@@ -891,7 +863,7 @@ public class BlogBmEJB implements SessionBean {
     try {
       PublicationBmHome publicationBmHome =
           (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-              PublicationBmHome.class);
+          PublicationBmHome.class);
       publicationBm = publicationBmHome.create();
     } catch (Exception e) {
       throw new PublicationRuntimeException("BlogBmEJB.getPublicationBm()",
@@ -918,7 +890,7 @@ public class BlogBmEJB implements SessionBean {
     try {
       CommentBmHome commentHome =
           (CommentBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.COMMENT_EJBHOME,
-              CommentBmHome.class);
+          CommentBmHome.class);
       commentBm = commentHome.create();
     } catch (Exception e) {
       throw new CommentRuntimeException("GallerySessionController.getCommentBm()",
@@ -933,7 +905,7 @@ public class BlogBmEJB implements SessionBean {
       try {
         SearchEngineBmHome searchEngineHome =
             (SearchEngineBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.SEARCHBM_EJBHOME,
-                SearchEngineBmHome.class);
+            SearchEngineBmHome.class);
         searchEngineBm = searchEngineHome.create();
       } catch (Exception e) {
         throw new CommentRuntimeException("BlogSessionController.getCommentBm()",
@@ -947,18 +919,22 @@ public class BlogBmEJB implements SessionBean {
     // not implemented
   }
 
+  @Override
   public void setSessionContext(SessionContext context) {
     // not implemented
   }
 
+  @Override
   public void ejbRemove() {
     // not implemented
   }
 
+  @Override
   public void ejbActivate() {
     // not implemented
   }
 
+  @Override
   public void ejbPassivate() {
     // not implemented
   }
