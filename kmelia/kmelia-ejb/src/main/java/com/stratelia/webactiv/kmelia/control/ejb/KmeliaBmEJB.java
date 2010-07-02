@@ -4775,12 +4775,15 @@ public class KmeliaBmEJB implements SessionBean {
 
     // Send subscriptions to aliases subscribers
     PublicationDetail pubDetail = getPublicationDetail(pubPK);
+    String originalComponentId = new String(pubPK.getInstanceId());
     for (int i = 0; i < newAliases.size(); i++) {
       a = (Alias) newAliases.get(i);
       pubDetail.getPK().setComponentName(a.getInstanceId()); // Change the instanceId to make the
       // right URL
       sendSubscriptionsNotification(new NodePK(a.getId(), a.getInstanceId()), pubDetail, false);
     }
+    //restore original primary key 
+    pubDetail.getPK().setComponentName(originalComponentId);
   }
 
   public void addAttachmentToPublication(PublicationPK pubPK, String userId,
