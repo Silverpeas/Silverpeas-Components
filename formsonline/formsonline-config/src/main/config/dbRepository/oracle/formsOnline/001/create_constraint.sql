@@ -6,7 +6,7 @@ ALTER TABLE SC_FormsOnline_Forms ADD
 ;
 
 ALTER TABLE SC_FormsOnline_FormInstances ADD 
-	 CONSTRAINT PK_SC_FormsOnline_FormInstances PRIMARY KEY
+	 CONSTRAINT PK_SC_FormsOL_FormInstances PRIMARY KEY
 	(
 		id
 	)

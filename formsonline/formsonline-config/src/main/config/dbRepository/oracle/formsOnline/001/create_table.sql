@@ -7,9 +7,9 @@ CREATE TABLE SC_FormsOnline_Forms
 	creationDate date NOT NULL,
 	state int NOT NULL,
 	instanceId varchar(80) NOT NULL,
-	alreadyUsed smallint NOT NULL DEFAULT 0,
+	alreadyUsed smallint DEFAULT (0) NOT NULL,
 	creatorId varchar(20) NOT NULL,
-	title varchar(200) NOT NULL DEFAULT ''
+	title varchar(200) DEFAULT '' NOT NULL 
 );
 
 CREATE TABLE SC_FormsOnline_FormInstances
