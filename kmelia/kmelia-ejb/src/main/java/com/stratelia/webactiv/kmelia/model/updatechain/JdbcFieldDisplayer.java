@@ -119,12 +119,66 @@ public class JdbcFieldDisplayer {
           (fieldsContext.getLastFieldIndex() - new Integer(fieldsContext.getCurrentFieldIndex())
           .intValue()) * 9000;
 
+      //Liste des valeurs 
+      html += "<script type=\"text/javascript\">\n";
+      html += "listArray" + fieldName + " = [\n";
+      Iterator itRes = listRes.iterator();
+      String val;
+      while (itRes.hasNext()) {
+        val = (String) itRes.next();
+
+        html += "\"" + EncodeHelper.javaStringToJsString(val) + "\",\n";
+
+      }
+      // supprime dernière virgule inutile
+      html = html.substring(0, html.length() - 1);
+
+      html += "];\n";
+      html += "</script>\n";
+
+      html += "<script type=\"text/javascript\" src=\""+m_context+"/util/yui/yuiloader/yuiloader-min.js\"></script>";
+      html += "<script type=\"text/javascript\">\n";
+      html += "var loader = new YAHOO.util.YUILoader({require: ['fonts', 'autocomplete', 'animation'], base: '"+m_context+"/util/yui/', Optional: false, \n";
+      html += "onSuccess: function(displayList) {\n";
+
+      html +=
+            " this.oACDS" + fieldName + " = new YAHOO.widget.DS_JSArray(listArray" + fieldName +
+            ");\n";
+      html +=
+          " this.oAutoComp" + fieldName + " = new YAHOO.widget.AutoComplete('" + fieldName +
+          "','container" + fieldName + "', this.oACDS" + fieldName + ");\n";
+      html += " this.oAutoComp" + fieldName + ".prehighlightClassName = \"yui-ac-prehighlight\";\n";
+      html += " this.oAutoComp" + fieldName + ".typeAhead = true;\n";
+      html += " this.oAutoComp" + fieldName + ".useIFrame = true;\n";
+      html += " this.oAutoComp" + fieldName + ".useShadow = true;\n";
+      html += " this.oAutoComp" + fieldName + ".minQueryLength = 0;\n";
+
+      if ("1".equals(valueFieldType)) {// valeurs possibles 1 = choix restreint à la liste ou 2 =
+        // saisie libre, par défaut 1
+        html += " this.oAutoComp" + fieldName + ".forceSelection = true;\n";
+      }
+
+      html += " this.oAutoComp" + fieldName + ".textboxFocusEvent.subscribe(function(){\n";
+      html += "   var sInputValue = YAHOO.util.Dom.get('" + fieldName + "').value;\n";
+      html += "   if(sInputValue.length == 0) {\n";
+      html += "     var oSelf = this;\n";
+      html += "     setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n";
+      html += "   }\n";
+      html += " });\n";
+      html += "}\n";
+      
+      html += ",\n";
+      html += "onFailure: function(o)      {\n";
+      html += "alert(\"Error\");\n";
+      html += "}\n";
+      html += "});\n";
+      html += "loader.insert();\n";
+      html += "</script>\n";
+
+      /*
       html +=
           "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + m_context +
           "/util/yui/fonts/fonts-min.css\" />\n";
-      html +=
-          "<link rel=\"stylesheet\" type=\"text/css\" href=\"" + m_context +
-          "/util/yui/autocomplete/assets/skins/sam/autocomplete.css\" />\n";
       html +=
           "<script type=\"text/javascript\" src=\"" + m_context +
           "/util/yui/yahoo-dom-event/yahoo-dom-event.js\"></script>\n";
@@ -133,7 +187,9 @@ public class JdbcFieldDisplayer {
           "/util/yui/animation/animation-min.js\"></script>\n";
       html +=
           "<script type=\"text/javascript\" src=\"" + m_context +
-          "/util/yui/autocomplete/autocomplete-min.js\"></script>\n";
+          "/util/yui/autocomplete/autocomplete-debug.js\"></script>\n";
+*/
+
       html += "<style type=\"text/css\">\n";
 
       html += "	#listAutocomplete" + fieldName + " {\n";
@@ -161,26 +217,12 @@ public class JdbcFieldDisplayer {
       html += "<div id=\"container" + fieldName + "\"/>\n";
       html += "</div>\n";
 
-      html += "<script type=\"text/javascript\">\n";
-      html += "listArray" + fieldName + " = [\n";
 
-      Iterator itRes = listRes.iterator();
-      String val;
-      while (itRes.hasNext()) {
-        val = (String) itRes.next();
+//      html += "<script type=\"text/javascript\">\n";
+/*
+      html += "function displayList() { \n";
 
-        html += "\"" + EncodeHelper.javaStringToJsString(val) + "\",\n";
-
-      }
-
-      // supprime dernière virgule inutile
-      html = html.substring(0, html.length() - 1);
-
-      html += "];\n";
-      html += "</script>\n";
-
-      html += "<script type=\"text/javascript\">\n";
-      html +=
+    html +=
           "	this.oACDS" + fieldName + " = new YAHOO.widget.DS_JSArray(listArray" + fieldName +
           ");\n";
       html +=
@@ -203,8 +245,8 @@ public class JdbcFieldDisplayer {
       html += "			setTimeout(function(){oSelf.sendQuery(sInputValue);},0);\n";
       html += "		}\n";
       html += "	});\n";
-      html += "</script>\n";
-
+      html += "}\n";
+*/
       if (mandatory) {
         String sizeMandatory = new Integer(size / 2 + 1).toString();
         html +=
