@@ -248,7 +248,7 @@ public class TaskDetail implements Serializable {
 
   public void setCharge(String f) {
     if (f != null && f.length() > 0) {
-      charge = new Float(f).floatValue();
+      charge = Float.valueOf(f);
     } else {
       charge = 0;
     }
@@ -281,7 +281,7 @@ public class TaskDetail implements Serializable {
 
   public void setConsomme(String f) {
     if (f != null && f.length() > 0) {
-      consomme = new Float(f).floatValue();
+      consomme = Float.valueOf(f);
     } else {
       consomme = 0;
     }
@@ -358,7 +358,7 @@ public class TaskDetail implements Serializable {
   }
 
   public void setOrganisateurId(String s) {
-    organisateurId = new Integer(s).intValue();
+    organisateurId = Integer.valueOf(s);
   }
 
   /**
@@ -370,7 +370,7 @@ public class TaskDetail implements Serializable {
 
   public void setRaf(String f) {
     if (f != null && f.length() > 0) {
-      raf = new Float(f).floatValue();
+      raf = Float.valueOf(f);
     } else {
       raf = 0;
     }
