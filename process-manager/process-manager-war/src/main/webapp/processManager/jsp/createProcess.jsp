@@ -27,7 +27,7 @@
 <%@ include file="checkProcessManager.jsp" %>
 
 <%
-	boolean isSaveButtonEnabled = (Boolean) request.getAttribute("isSaveButtonEnabled");
+	boolean isSaveButtonEnabled = ((Boolean) request.getAttribute("isSaveButtonEnabled")).booleanValue();
 
    com.silverpeas.form.Form form
 	   = (com.silverpeas.form.Form) request.getAttribute("form");

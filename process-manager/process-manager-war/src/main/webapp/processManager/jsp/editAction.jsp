@@ -27,7 +27,7 @@
 <%@ include file="checkProcessManager.jsp" %>
 
 <%
-	boolean isSaveButtonEnabled = (Boolean) request.getAttribute("isSaveButtonEnabled");
+	boolean isSaveButtonEnabled = ((Boolean) request.getAttribute("isSaveButtonEnabled")).booleanValue();
    ProcessInstance process = (ProcessInstance) request.getAttribute("process");
 	State state = (State) request.getAttribute("state");
 	Action action = (Action) request.getAttribute("action");
