@@ -694,7 +694,12 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
 
       // check if an action must be resumed
       if (!lockingUsers.isEmpty()) {
-        return resumeActionHandler.getDestination(function, session, request);
+        
+        // Detects special case where user has killed his navigator while filling an action form
+        HistoryStep savedStep = session.getSavedStep();
+        if (savedStep != null) {
+          return resumeActionHandler.getDestination(function, session, request);
+        }
       }
       
       if (!process.getErrorStatus()) {

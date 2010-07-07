@@ -27,6 +27,7 @@
 <%@ include file="checkProcessManager.jsp" %>
 
 <%
+	boolean isSaveButtonEnabled = (Boolean) request.getAttribute("isSaveButtonEnabled");
    ProcessInstance process = (ProcessInstance) request.getAttribute("process");
 	State state = (State) request.getAttribute("state");
 	Action action = (Action) request.getAttribute("action");
@@ -52,10 +53,12 @@
 	   generalMessage.getString("GML.validate"),
 		"javascript:onClick=B_VALIDER_ONCLICK();",
 		false));
-	buttonPane.addButton((Button) gef.getFormButton(
-		   generalMessage.getString("GML.saveDraft"),
-			"javascript:onClick=B_SAUVEGARDER_ONCLICK();",
-			false));
+	if (isSaveButtonEnabled) {
+		buttonPane.addButton((Button) gef.getFormButton(
+			   generalMessage.getString("GML.saveDraft"),
+				"javascript:onClick=B_SAUVEGARDER_ONCLICK();",
+				false));
+	}
 	buttonPane.addButton((Button) gef.getFormButton(
 	   generalMessage.getString("GML.cancel"),
 		"javascript:onClick=B_ANNULER_ONCLICK();",
