@@ -1,2 +1,2 @@
-Ihre Veröffentlichung '$publicationName$' ist bestätigt worden.
+Ihre VerÃ¶ffentlichung '$publicationName$' ist bestÃ¤tigt worden.
 Speicherort : $path$ 

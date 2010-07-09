@@ -1,1 +1,1 @@
-Zu genehmigende Veröffentlichungen $publicationName$
+Zu genehmigende VerÃ¶ffentlichungen $publicationName$

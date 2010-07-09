@@ -1,4 +1,4 @@
-Die Veröffentlichung '$publicationName$' ist online verfügbar. 
-Wenn Ihnen der Inhalt dieser Veröffentlichung nicht passt, können Sie sie ändern oder ihre Onlinesetzung rückgängig machen.
+Die VerÃ¶ffentlichung '$publicationName$' ist online verfÃ¼gbar. 
+Wenn Ihnen der Inhalt dieser VerÃ¶ffentlichung nicht passt, kÃ¶nnen Sie sie Ã¤ndern oder ihre Onlinesetzung rÃ¼ckgÃ¤ngig machen.
 
 Speicherort : $path$

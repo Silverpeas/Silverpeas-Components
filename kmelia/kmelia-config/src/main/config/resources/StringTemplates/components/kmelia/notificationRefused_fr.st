@@ -1,2 +1,2 @@
-Votre publication '$publicationName$' a été refusée.
+Votre publication '$publicationName$' a Ã©tÃ© refusÃ©e.
 Motif du refus  : $refusalMotive$

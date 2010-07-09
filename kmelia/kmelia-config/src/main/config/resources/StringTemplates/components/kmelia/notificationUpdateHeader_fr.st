@@ -1,1 +1,1 @@
-L'entête de votre publication "$publicationName$" a été modifiée. 
+L'entÃªte de votre publication "$publicationName$" a Ã©tÃ© modifiÃ©e. 

@@ -1,1 +1,1 @@
-Der Inhalt Ihrer Veröffentlichung "$publicationName$" ist geändert worden.
+Der Inhalt Ihrer VerÃ¶ffentlichung "$publicationName$" ist geÃ¤ndert worden.

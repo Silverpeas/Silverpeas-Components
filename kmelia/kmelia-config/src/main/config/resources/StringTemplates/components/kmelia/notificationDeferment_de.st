@@ -1,3 +1,3 @@
-Die Veröffentlichung "$publicationName$" ist vom Supervisor eingestellt worden. 
-Sie ist in den Zustand "In Erwartung der Bestätigung" zurückversetzt worden.
-Grund für die Ablehnung : $RefusalMotive$.
+Die VerÃ¶ffentlichung "$publicationName$" ist vom Supervisor eingestellt worden. 
+Sie ist in den Zustand "In Erwartung der BestÃ¤tigung" zurÃ¼ckversetzt worden.
+Grund fÃ¼r die Ablehnung : $RefusalMotive$.

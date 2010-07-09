@@ -1,1 +1,1 @@
-Le contenu de votre publication "$publicationName$" a été modifié.
+Le contenu de votre publication "$publicationName$" a Ã©tÃ© modifiÃ©

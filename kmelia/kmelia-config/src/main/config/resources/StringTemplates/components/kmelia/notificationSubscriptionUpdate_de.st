@@ -1,3 +1,3 @@
 In einem Ihrer Abonnemente ist ein Dokument erstellt worden.
-Name der Veröffentlichung : "$publicationName$"
+Name der VerÃ¶ffentlichung : "$publicationName$"
 Speicherort : $path$

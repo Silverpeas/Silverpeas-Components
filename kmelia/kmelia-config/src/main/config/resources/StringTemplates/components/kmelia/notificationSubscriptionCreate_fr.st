@@ -1,3 +1,3 @@
-Un document a été créé dans l'un de vos abonnements. 
+Un document a Ã©tÃ© crÃ©Ã© dans l'un de vos abonnements. 
 Nom de la publication : "$publicationName$"
 Emplacement : $path$

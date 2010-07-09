@@ -1,4 +1,4 @@
-Votre publication '$publicationName$' a été validée.
+Votre publication '$publicationName$' a Ã©tÃ© validÃ©e.
 Emplacement : $path$ 
  
  

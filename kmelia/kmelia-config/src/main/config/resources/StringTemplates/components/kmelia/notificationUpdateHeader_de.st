@@ -1,1 +1,1 @@
-Der Kopf Ihrer Veröffentlichung "$publicationName$" ist geändert worden.
+Der Kopf Ihrer VerÃ¶ffentlichung "$publicationName$" ist geÃ¤ndert worden.
