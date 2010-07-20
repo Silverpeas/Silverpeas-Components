@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.kmelia.control;
 
 import java.awt.Color;
@@ -40,9 +39,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Vector;
 
-import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.text.html.HTMLEditorKit.ParserCallback;
 import javax.swing.text.html.parser.ParserDelegator;
 
 import org.w3c.tidy.Tidy;
@@ -107,10 +105,14 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
+import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import java.util.Vector;
 
 public class PdfGenerator extends PdfPageEventHelper {
+
   /** Current KmeliaSessionController */
   static private KmeliaSessionController kmeliaSessionController = null;
   /** Language */
@@ -135,7 +137,6 @@ public class PdfGenerator extends PdfPageEventHelper {
   static private PdfTemplate pdfTemplate;
   /** The font that will be used. */
   static private BaseFont baseFontHelv;
-
   static private String serverURL;
 
   public static void generate(String namePdf,
@@ -154,8 +155,7 @@ public class PdfGenerator extends PdfPageEventHelper {
       completePublicationDetail = currentPublication;
       publicationDetail = currentPublication.getPublicationDetail();
       String fileName = FileRepositoryManager.getTemporaryPath(
-          publicationDetail.getPK().getSpace(), publicationDetail.getPK()
-          .getComponentName())
+          publicationDetail.getPK().getSpace(), publicationDetail.getPK().getComponentName())
           + namePdf;
       publiContentLanguage = kmeliaSessionController.getCurrentLanguage();
       try {
@@ -182,25 +182,18 @@ public class PdfGenerator extends PdfPageEventHelper {
           new FileOutputStream(fileName));
       pdfWriter.setPageEvent(new PdfGenerator());
       document.open();
-
       // En-Tete
       generateHeaderPage(document);
-
       // Fichiers joints
       generateAttachments(document);
-
       // Voir aussi
       generateSeeAlso(document);
-
       // Plan de classement
       generateCategorization(document);
-
       // Commentaires
       generateComments(document);
-
       // Contenu
       generateContent(document);
-
       document.close();
     } catch (Exception e) {
       throw new KmeliaRuntimeException("PdfGenerator.generate",
@@ -213,6 +206,7 @@ public class PdfGenerator extends PdfPageEventHelper {
    * @see com.lowagie.text.pdf.PdfPageEventHelper#onOpenDocument(com.lowagie.text.pdf.PdfWriter,
    * com.lowagie.text.Document)
    */
+  @Override
   public void onOpenDocument(PdfWriter writer, Document document) {
     // initialization of the header table
     // Paramétrage global logo entete pdf
@@ -281,13 +275,14 @@ public class PdfGenerator extends PdfPageEventHelper {
    * @see com.lowagie.text.pdf.PdfPageEventHelper#onEndPage(com.lowagie.text.pdf.PdfWriter,
    * com.lowagie.text.Document)
    */
+  @Override
   public void onEndPage(PdfWriter writer, Document document) {
     PdfContentByte cb = writer.getDirectContent();
     cb.saveState();
     // write the headertable
     pdfTableHeader.setTotalWidth(document.right() - document.left());
-    pdfTableHeader.writeSelectedRows(0, -1, document.left(), document
-        .getPageSize().getHeight() - 50, cb);
+    pdfTableHeader.writeSelectedRows(0, -1, document.left(), document.getPageSize().getHeight() - 50,
+        cb);
 
     String text = message.getString("editeLe") + " "
         + DateUtil.dateToString(new Date(), language) + " "
@@ -316,6 +311,7 @@ public class PdfGenerator extends PdfPageEventHelper {
    * @see com.lowagie.text.pdf.PdfPageEventHelper#onCloseDocument(com.lowagie.text.pdf.PdfWriter,
    * com.lowagie.text.Document)
    */
+  @Override
   public void onCloseDocument(PdfWriter writer, Document document) {
     pdfTemplate.beginText();
     if (baseFontHelv != null) {
@@ -456,18 +452,15 @@ public class PdfGenerator extends PdfPageEventHelper {
   }
 
   private static void addRowToTable(Table tbl, String[] cells) {
-    Cell cl = null;
-    Chunk chnk;
-    Font font = null;
-
     for (int i = 0; i < cells.length; i++) {
+      Font font;
       if (i == 0 || i == 2) {
         font = new Font(Font.HELVETICA, 10, Font.BOLD);
       } else {
         font = new Font(Font.HELVETICA, 10, Font.NORMAL);
       }
-
-      chnk = new Chunk(cells[i], font);
+      Chunk chnk = new Chunk(cells[i], font);
+      Cell cl = null;
       try {
         cl = new Cell(chnk);
       } catch (Exception ex) {
@@ -479,25 +472,19 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   private static String getTopicPath() throws RemoteException {
     String out = "";
-    Collection pathList = kmeliaSessionController.getPathList(publicationDetail
-        .getPK().getId());
-    Iterator i = pathList.iterator();
-    Collection path;
-    Iterator j;
-    String pathString = "";
-    int nbItemInPath;
+    Collection<Collection<NodeDetail>> pathList = kmeliaSessionController.getPathList(publicationDetail.
+        getPK().getId());
+    Iterator<Collection<NodeDetail>> i = pathList.iterator();
     boolean alreadyCut = false;
-    int nb = 0;
-    NodeDetail nodeInPath;
     while (i.hasNext()) {
-      path = (Collection) i.next();
-      j = path.iterator();
-      pathString = "";
-      nbItemInPath = path.size();
+      Collection<NodeDetail> path = i.next();
+      Iterator<NodeDetail> j = path.iterator();
+      String pathString = "";
+      int nbItemInPath = path.size();
       alreadyCut = false;
-      nb = 0;
+      int nb = 0;
       while (j.hasNext()) {
-        nodeInPath = (NodeDetail) j.next();
+        NodeDetail nodeInPath = j.next();
         if ((nb <= 3) || (nb + 3 >= nbItemInPath - 1)) {
           pathString = nodeInPath.getName() + " " + pathString;
           if (j.hasNext()) {
@@ -519,7 +506,7 @@ public class PdfGenerator extends PdfPageEventHelper {
   private static Table addHearderToSection(String title)
       throws DocumentException {
     Table tblHeader = new Table(1);
-    int headerwidthsHeader[] = { 100 };
+    int headerwidthsHeader[] = {100};
     tblHeader.setWidths(headerwidthsHeader);
     tblHeader.setWidth(100);
     tblHeader.setBorderWidth(0);
@@ -539,29 +526,28 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   private static void generateHeaderPage(Document document)
       throws DocumentException, RemoteException {
-    Table tblHeader = addHearderToSection(message.getString("Header")
-        .toUpperCase());
+    Table tblHeader = addHearderToSection(message.getString("Header").toUpperCase());
     document.add(tblHeader);
 
     Table tbl = new Table(2);
     tbl.setBorderWidth(0);
     tbl.setAlignment(Table.ALIGN_LEFT);
     tbl.setWidth(100);
-    int headerwidths[] = { 25, 75 };
+    int headerwidths[] = {25, 75};
     tbl.setWidths(headerwidths);
 
     // Emplacement
-    addRowToTable(tbl, null, new String[] {
-        message.getString("TopicPath") + " :", getTopicPath() }, false, true);
+    addRowToTable(tbl, null, new String[]{
+          message.getString("TopicPath") + " :", getTopicPath()}, false, true);
 
     // Permalien
     boolean displayLinks = URLManager.displayUniversalLinks();
     if (displayLinks) {
-      addRowLinkToTable(tbl, new String[] {
-          message.getString("Link") + " :",
-          serverURL
-          + URLManager.getSimpleURL(URLManager.URL_PUBLI, publicationDetail
-          .getPK().getId()) }, new Color[] { Color.BLACK, Color.BLUE },
+      addRowLinkToTable(tbl, new String[]{
+            message.getString("Link") + " :",
+            serverURL
+            + URLManager.getSimpleURL(URLManager.URL_PUBLI, publicationDetail.getPK().getId())},
+          new Color[]{Color.BLACK, Color.BLUE},
           false, true);
     }
 
@@ -574,10 +560,10 @@ public class PdfGenerator extends PdfPageEventHelper {
             "com.stratelia.webactiv.util.publication.publicationSettings",
             language);
         String vignette_url = serverURL
-            + FileServerUtils.getUrl("useless", publicationDetail.getPK()
-            .getComponentName(), "vignette", publicationDetail.getImage(),
-            publicationDetail.getImageMimeType(), publicationSettings
-            .getString("imagesSubDirectory"));
+            + FileServerUtils.getUrl("useless", publicationDetail.getPK().getComponentName(),
+            "vignette", publicationDetail.getImage(),
+            publicationDetail.getImageMimeType(),
+            publicationSettings.getString("imagesSubDirectory"));
         vignette_url = vignette_url.replaceAll("/FileServer",
             "/OnlineFileServer");
         try {
@@ -593,11 +579,10 @@ public class PdfGenerator extends PdfPageEventHelper {
 
     // Description : optionnel
     if (kmeliaSessionController.isFieldDescriptionVisible()) {
-      String sDescription = publicationDetail
-          .getDescription(publiContentLanguage);
+      String sDescription = publicationDetail.getDescription(publiContentLanguage);
       if (sDescription != null && sDescription.length() > 0) {
-        addRowToTable(tbl, null, new String[] {
-            message.getString("Description") + " :", sDescription }, false,
+        addRowToTable(tbl, null, new String[]{
+              message.getString("Description") + " :", sDescription}, false,
             true);
       }
     }
@@ -606,8 +591,8 @@ public class PdfGenerator extends PdfPageEventHelper {
     if (kmeliaSessionController.isFieldKeywordsVisible()) {
       String sKeywords = publicationDetail.getKeywords(publiContentLanguage);
       if (sKeywords != null && sKeywords.length() > 0) {
-        addRowToTable(tbl, null, new String[] {
-            message.getString("PubMotsCles") + " :", sKeywords }, false, true);
+        addRowToTable(tbl, null, new String[]{
+              message.getString("PubMotsCles") + " :", sKeywords}, false, true);
       }
     }
 
@@ -615,8 +600,8 @@ public class PdfGenerator extends PdfPageEventHelper {
     if (kmeliaSessionController.isAuthorUsed()) {
       String sAuthor = publicationDetail.getAuthor();
       if (sAuthor != null && sAuthor.length() > 0) {
-        addRowToTable(tbl, null, new String[] {
-            generalMessage.getString("GML.author", language) + " :", sAuthor },
+        addRowToTable(tbl, null, new String[]{
+              generalMessage.getString("GML.author", language) + " :", sAuthor},
             false, true);
       }
     }
@@ -624,8 +609,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     // Importance : optionnel
     if (kmeliaSessionController.isFieldImportanceVisible() && fullStar != null
         && emptyStar != null) {
-      String importance = new Integer(publicationDetail.getImportance())
-          .toString();
+      String importance = new Integer(publicationDetail.getImportance()).toString();
       if (importance.equals("")) {
         importance = "1";
       }
@@ -652,8 +636,8 @@ public class PdfGenerator extends PdfPageEventHelper {
             + DateUtil.getOutputDate(publicationDetail.getValidateDate(),
             language) + ")";
       }
-      addRowToTable(tbl, null, new String[] {
-          message.getString("kmelia.Valideur") + " :", validatorDate }, false,
+      addRowToTable(tbl, null, new String[]{
+            message.getString("kmelia.Valideur") + " :", validatorDate}, false,
           true);
     }
 
@@ -663,13 +647,12 @@ public class PdfGenerator extends PdfPageEventHelper {
     tbl2.setBorderWidth(0);
     tbl2.setAlignment(Table.ALIGN_LEFT);
     tbl2.setWidth(100);
-    int headerwidths2[] = { 25, 30, 15, 30 };
+    int headerwidths2[] = {25, 30, 15, 30};
     tbl2.setWidths(headerwidths2);
 
     String creatorName = "";
-    UserDetail ownerDetail = kmeliaSessionController
-        .getUserCompletePublication(publicationDetail.getPK().getId())
-        .getOwner();
+    UserDetail ownerDetail = kmeliaSessionController.getUserCompletePublication(publicationDetail.
+        getPK().getId()).getOwner();
     if (ownerDetail != null) {
       creatorName = ownerDetail.getDisplayedName();
     } else {
@@ -684,8 +667,7 @@ public class PdfGenerator extends PdfPageEventHelper {
           language);
     }
     String updaterName = null;
-    UserDetail updater = kmeliaSessionController
-        .getUserDetail(publicationDetail.getUpdaterId());
+    UserDetail updater = kmeliaSessionController.getUserDetail(publicationDetail.getUpdaterId());
     if (updater != null) {
       updaterName = updater.getDisplayedName();
     }
@@ -697,11 +679,11 @@ public class PdfGenerator extends PdfPageEventHelper {
           + updaterName;
     }
     // Créé par, Modifiée par
-    addRowToTable(tbl2, new String[] {
-        message.getString("PubDateCreation") + " :",
-        DateUtil.getOutputDate(publicationDetail.getCreationDate(), language)
-        + " " + message.getString("kmelia.By") + " " + creatorName,
-        messageUpdatedDate, sUpdated });
+    addRowToTable(tbl2, new String[]{
+          message.getString("PubDateCreation") + " :",
+          DateUtil.getOutputDate(publicationDetail.getCreationDate(), language)
+          + " " + message.getString("kmelia.By") + " " + creatorName,
+          messageUpdatedDate, sUpdated});
 
     String beginDate = "";
     if (publicationDetail.getBeginDate() != null) {
@@ -730,23 +712,23 @@ public class PdfGenerator extends PdfPageEventHelper {
 
     if (beginDate.length() > 0 && endDate.length() > 0) {
       // Consultable du 'Date' à 'Heure' au 'Date' à 'Heure'
-      addRowToTable(tbl2, new String[] {
-          message.getString("PubDateDebut") + " :",
-          beginDate + " " + message.getString("ToHour") + " " + beginHour,
-          message.getString("PubDateFin") + " :",
-          endDate + " " + message.getString("ToHour") + " " + endHour, "", "" });
+      addRowToTable(tbl2, new String[]{
+            message.getString("PubDateDebut") + " :",
+            beginDate + " " + message.getString("ToHour") + " " + beginHour,
+            message.getString("PubDateFin") + " :",
+            endDate + " " + message.getString("ToHour") + " " + endHour, "", ""});
     } else if (beginDate.length() > 0) {
       // Consultable à partir du 'Date' à 'Heure'
-      addRowToTable(tbl2, new String[] {
-          message.getString("PubDateDebutPdf") + " :",
-          beginDate + " " + message.getString("ToHour") + " " + beginHour, "",
-          "", "", "" });
+      addRowToTable(tbl2, new String[]{
+            message.getString("PubDateDebutPdf") + " :",
+            beginDate + " " + message.getString("ToHour") + " " + beginHour, "",
+            "", "", ""});
     } else if (endDate.length() > 0) {
       // Consultable jusqu'au 'Date' à 'Heure'
-      addRowToTable(tbl2, new String[] {
-          message.getString("PubDateFinPdf") + " :",
-          endDate + " " + message.getString("ToHour") + " " + endHour, "", "",
-          "", "" });
+      addRowToTable(tbl2, new String[]{
+            message.getString("PubDateFinPdf") + " :",
+            endDate + " " + message.getString("ToHour") + " " + endHour, "", "",
+            "", ""});
     }
 
     document.add(tbl2);
@@ -772,17 +754,17 @@ public class PdfGenerator extends PdfPageEventHelper {
 
       // Attachments links
       tbl = new Table(5);
-      int headerwidths[] = { 25, 25, 30, 10, 10 };
+      int headerwidths[] = {25, 25, 30, 10, 10};
       tbl.setWidths(headerwidths);
       tbl.setWidth(100);
       tbl.setBorderWidth(0);
       tbl.setPadding(2);
-      addRowToTable(tbl, header_font, new String[] {
-          messageAttachment.getString("fichier"),
-          messageAttachment.getString("Title"),
-          messageAttachment.getString("Description"),
-          messageAttachment.getString("taille"),
-          messageAttachment.getString("uploadDate") }, Color.LIGHT_GRAY, true);
+      addRowToTable(tbl, header_font, new String[]{
+            messageAttachment.getString("fichier"),
+            messageAttachment.getString("Title"),
+            messageAttachment.getString("Description"),
+            messageAttachment.getString("taille"),
+            messageAttachment.getString("uploadDate")}, Color.LIGHT_GRAY, true);
     } else if ("V".equals(mode)) {
 
       ResourceLocator messageVersioning = new ResourceLocator(
@@ -791,22 +773,22 @@ public class PdfGenerator extends PdfPageEventHelper {
 
       // Versioning links
       tbl = new Table(6);
-      int headerwidths[] = { 20, 15, 20, 10, 15, 20 };
+      int headerwidths[] = {20, 15, 20, 10, 15, 20};
       tbl.setWidths(headerwidths);
       tbl.setWidth(100);
       tbl.setBorderWidth(0);
       tbl.setPadding(2);
-      addRowToTable(tbl, header_font, new String[] {
-          messageAttachment.getString("fichier"), // pas affiché dans
-          // l'interface onglet fichiers
-          // joints
-          messageVersioning.getString("name"),
-          messageAttachment.getString("Description"), // pas affiché dans
-          // l'interface onglet
-          // fichiers joints
-          messageVersioning.getString("version"),
-          messageVersioning.getString("date"),
-          messageVersioning.getString("validator") }, // pas affiché dans
+      addRowToTable(tbl, header_font, new String[]{
+            messageAttachment.getString("fichier"), // pas affiché dans
+            // l'interface onglet fichiers
+            // joints
+            messageVersioning.getString("name"),
+            messageAttachment.getString("Description"), // pas affiché dans
+            // l'interface onglet
+            // fichiers joints
+            messageVersioning.getString("version"),
+            messageVersioning.getString("date"),
+            messageVersioning.getString("validator")}, // pas affiché dans
           // l'interface onglet
           // fichiers joints mais
           // besoin INRA -> si
@@ -825,31 +807,27 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   private static boolean isUserReader(
       com.stratelia.silverpeas.versioning.model.Document document, int user_id,
-      VersioningUtil versioningUtil) /* throws RemoteException */
-  {
+      VersioningUtil versioningUtil) /* throws RemoteException */ {
     try {
       ArrayList readers = document.getReadList();
       ArrayList writers = versioningUtil.getAllNoReader(document);
       com.stratelia.silverpeas.versioning.model.Reader user;
 
       for (int i = 0; readers != null && i < readers.size(); i++) {
-        user = (com.stratelia.silverpeas.versioning.model.Reader) readers
-            .get(i);
+        user = (com.stratelia.silverpeas.versioning.model.Reader) readers.get(i);
         if (user.getUserId() == user_id) {
           return true;
         }
       }
 
       for (int i = 0; writers != null && i < writers.size(); i++) {
-        user = (com.stratelia.silverpeas.versioning.model.Reader) writers
-            .get(i);
+        user = (com.stratelia.silverpeas.versioning.model.Reader) writers.get(i);
         if (user.getUserId() == user_id) {
           return true;
         }
       }
     } catch (Exception e) {
-      SilverTrace.error("kmelia", "PdfGenerator.isUserReader",
-          "root.EX_REMOTE_EXCEPTION", e);
+      SilverTrace.error("kmelia", "PdfGenerator.isUserReader", "root.EX_REMOTE_EXCEPTION", e);
     }
 
     return false;
@@ -862,8 +840,7 @@ public class PdfGenerator extends PdfPageEventHelper {
    */
   private static void generateAttachments(Document documentPdf)
       throws DocumentException, RemoteException {
-    Table tblHeader = addHearderToSection(message.getString("Attachments")
-        .toUpperCase());
+    Table tblHeader = addHearderToSection(message.getString("Attachments").toUpperCase());
 
     Table tbl;
     String idPubli = publicationDetail.getPK().getId();
@@ -883,11 +860,9 @@ public class PdfGenerator extends PdfPageEventHelper {
 
         // En-tete tableau des fichiers attachés
         tbl = addTableAttachments("V");
-
         Iterator documents_iterator = documents.iterator();
         boolean is_reader = false;
-        int user_id = new Integer(kmeliaSessionController.getUserId())
-            .intValue();
+        int user_id = new Integer(kmeliaSessionController.getUserId()).intValue();
         ArrayList versions;
         DocumentVersion document_version = null;
         String creation_date;
@@ -895,8 +870,7 @@ public class PdfGenerator extends PdfPageEventHelper {
         ArrayList users;
         Worker user;
         while (documents_iterator.hasNext()) {
-          document = (com.stratelia.silverpeas.versioning.model.Document) documents_iterator
-              .next();
+          document = (com.stratelia.silverpeas.versioning.model.Document) documents_iterator.next();
 
           /*
            * Solution 1 : affichage de la dernière version (publique ou privée)
@@ -904,13 +878,10 @@ public class PdfGenerator extends PdfPageEventHelper {
           is_reader = isUserReader(document, user_id, versioningUtil);
           if (versioningUtil.isWriter(document, user_id) || is_reader
               || "admin".equals(kmeliaSessionController.getUserRoleLevel())) {
-            versions = versioningUtil.getDocumentFilteredVersions(document
-                .getPk(), user_id);
+            versions = versioningUtil.getDocumentFilteredVersions(document.getPk(), user_id);
             if (versions.size() > 0) {
-              document_version = (DocumentVersion) (versions.get(versions
-                  .size() - 1)); // current version
-              creation_date = DateUtil.dateToString(document
-                  .getLastCheckOutDate(), language);
+              document_version = (DocumentVersion) (versions.get(versions.size() - 1)); // current version
+              creation_date = DateUtil.dateToString(document.getLastCheckOutDate(), language);
 
               if (document_version.getSize() != 0
                   || !"dummy".equals(document_version.getLogicalName())) {
@@ -920,10 +891,9 @@ public class PdfGenerator extends PdfPageEventHelper {
                   for (int i = 0; i < users.size(); i++) {
                     user = (Worker) users.get(i);
                     if (user.isApproval()) {
-                      creatorOrValidators += kmeliaSessionController
-                          .getOrganizationController().getUserDetail(
-                          new Integer(user.getUserId()).toString())
-                          .getDisplayedName()
+                      creatorOrValidators += kmeliaSessionController.getOrganizationController().
+                          getUserDetail(
+                          new Integer(user.getUserId()).toString()).getDisplayedName()
                           + ", ";
                     }
                   }
@@ -932,29 +902,27 @@ public class PdfGenerator extends PdfPageEventHelper {
                         creatorOrValidators.length() - 2);
                   }
                 } else {// Autres cas
-                  creatorOrValidators = kmeliaSessionController
-                      .getOrganizationController().getUserDetail(
-                      new Integer(document_version.getAuthorId())
-                      .toString()).getDisplayedName();
+                  creatorOrValidators = kmeliaSessionController.getOrganizationController().
+                      getUserDetail(
+                      new Integer(document_version.getAuthorId()).toString()).getDisplayedName();
                 }
-                addRowToTable(tbl, null, new String[] {
-                    document_version.getLogicalName(),
-                    document.getName(),
-                    document.getDescription(),
-                    document_version.getMajorNumber() + "."
-                    + document_version.getMinorNumber(), creation_date,
-                    creatorOrValidators }, true, false);
+                addRowToTable(tbl, null, new String[]{
+                      document_version.getLogicalName(),
+                      document.getName(),
+                      document.getDescription(),
+                      document_version.getMajorNumber() + "."
+                      + document_version.getMinorNumber(), creation_date,
+                      creatorOrValidators}, true, false);
               } else {
-                addRowToTable(tbl, null, new String[] {
-                    document_version.getLogicalName(),
-                    document.getName(),
-                    document.getDescription(),
-                    "",
-                    creation_date,
-                    kmeliaSessionController.getOrganizationController()
-                    .getUserDetail(
-                    new Integer(document.getOwnerId()).toString())
-                    .getDisplayedName() }, true, false);
+                addRowToTable(tbl, null, new String[]{
+                      document_version.getLogicalName(),
+                      document.getName(),
+                      document.getDescription(),
+                      "",
+                      creation_date,
+                      kmeliaSessionController.getOrganizationController().getUserDetail(
+                      new Integer(document.getOwnerId()).toString()).getDisplayedName()}, true,
+                    false);
               }
             }
           }
@@ -963,32 +931,29 @@ public class PdfGenerator extends PdfPageEventHelper {
       }
     } else {
       // Attachments links
-
       // liste des fichiers attachés
       // récupération des fichiers attachés à un événement
       // create foreignKey with componentId and customer id
       // use AttachmentPK to build the foreign key of customer object.
       AttachmentPK foreignKey = new AttachmentPK(idPubli, instanceId);
-      Vector vectAttachment = AttachmentController
-          .searchAttachmentByPKAndContext(foreignKey, "Images");
+      Vector<AttachmentDetail> vectAttachment = AttachmentController.searchAttachmentByPKAndContext(
+          foreignKey, "Images");
       if (vectAttachment != null && vectAttachment.size() > 0) {
         // Titre
         documentPdf.add(tblHeader);
-
         // En-tete tableau des fichiers attachés
         tbl = addTableAttachments("A");
 
-        Iterator itAttachment = vectAttachment.iterator();
-        AttachmentDetail attachmentDetail = null;
+        Iterator<AttachmentDetail> itAttachment = vectAttachment.iterator();
         while (itAttachment.hasNext()) {
-          attachmentDetail = (AttachmentDetail) (itAttachment.next());
-          addRowToTable(tbl, null, new String[] {
-              attachmentDetail.getLogicalName(publiContentLanguage),
-              attachmentDetail.getTitle(publiContentLanguage),
-              attachmentDetail.getInfo(publiContentLanguage),
-              attachmentDetail.getAttachmentFileSize(publiContentLanguage),
-              DateUtil.getOutputDate(attachmentDetail
-              .getCreationDate(publiContentLanguage), language) }, true,
+          AttachmentDetail attachmentDetail = (AttachmentDetail) (itAttachment.next());
+          addRowToTable(tbl, null, new String[]{
+                attachmentDetail.getLogicalName(publiContentLanguage),
+                attachmentDetail.getTitle(publiContentLanguage),
+                attachmentDetail.getInfo(publiContentLanguage),
+                attachmentDetail.getAttachmentFileSize(publiContentLanguage),
+                DateUtil.getOutputDate(attachmentDetail.getCreationDate(publiContentLanguage),
+                language)}, true,
               false);
         }
 
@@ -1011,8 +976,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
     String userName = "";
     if (updater != null
-        && (updater.getFirstName().length() > 0 || updater.getLastName()
-        .length() > 0)) {
+        && (updater.getFirstName().length() > 0 || updater.getLastName().length() > 0)) {
       userName = updater.getFirstName() + " " + updater.getLastName();
     } else {
       userName = message.getString("kmelia.UnknownUser");
@@ -1036,9 +1000,7 @@ public class PdfGenerator extends PdfPageEventHelper {
       List list = new List(false, 20);
       list.setListSymbol(new Chunk("\u2022", new Font(Font.HELVETICA, 20,
           Font.BOLD, new Color(0, 0, 0))));
-
-      Collection linkedPublications = kmeliaSessionController
-          .getPublications(targets);
+      Collection linkedPublications = kmeliaSessionController.getPublications(targets);
       Iterator iterator = linkedPublications.iterator();
       UserPublication userPub;
       PublicationDetail pub;
@@ -1062,8 +1024,7 @@ public class PdfGenerator extends PdfPageEventHelper {
                 + pub.getName(publiContentLanguage), FontFactory.getFont(
                 FontFactory.HELVETICA_BOLD, 10, Font.UNDERLINE, Color.BLUE));
             permalinkPubli.setAnchor(new URL(serverURL
-                + URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getPK()
-                .getId())));
+                + URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getPK().getId())));
             permalinkStar = new Phrase();
             permalinkStar.add(permalinkPubli);
 
@@ -1098,8 +1059,8 @@ public class PdfGenerator extends PdfPageEventHelper {
                 FontFactory.HELVETICA, 8)));
             chnk = new Chunk(getUserName(userPub) + " - "
                 + DateUtil.getOutputDate(pub.getUpdateDate(), language) + "\n"
-                + pub.getDescription(publiContentLanguage), FontFactory
-                .getFont(FontFactory.HELVETICA, 8, Font.NORMAL));
+                + pub.getDescription(publiContentLanguage), FontFactory.getFont(
+                FontFactory.HELVETICA, 8, Font.NORMAL));
             subListItem = new ListItem(chnk);
             sublist.add(subListItem);
             list.add(sublist);
@@ -1114,16 +1075,14 @@ public class PdfGenerator extends PdfPageEventHelper {
   private static void generateComments(Document document)
       throws DocumentException, RemoteException, ParseException {
     Vector comments = CommentController.getAllComments(new CommentPK(
-        publicationDetail.getPK().getId(), null, kmeliaSessionController
-        .getComponentId()));
+        publicationDetail.getPK().getId(), null, kmeliaSessionController.getComponentId()));
     if (comments != null && comments.size() > 0) {
       /*
        * Paragraph title = new Paragraph("\n"+message.getString("Comments")+" : ", new
        * Font(Font.HELVETICA, 10, Font.BOLD, new Color(0, 0, 0))); document.add(title);
        */
 
-      Table tblHeader = addHearderToSection(message.getString("Comments")
-          .toUpperCase());
+      Table tblHeader = addHearderToSection(message.getString("Comments").toUpperCase());
       document.add(tblHeader);
 
       ResourceLocator messageComment = new ResourceLocator(
@@ -1133,26 +1092,26 @@ public class PdfGenerator extends PdfPageEventHelper {
       header_font.setColor(new Color(255, 255, 255));
 
       Table tbl = new Table(4);
-      int headerwidths[] = { 25, 55, 20, 20 };
+      int headerwidths[] = {25, 55, 20, 20};
       tbl.setWidths(headerwidths);
       tbl.setWidth(100);
       tbl.setBorderWidth(0);
       tbl.setPadding(2);
-      addRowToTable(tbl, header_font, new String[] {
-          messageComment.getString("author"),
-          messageComment.getString("c_comment"),
-          messageComment.getString("created"),
-          messageComment.getString("modified") }, Color.LIGHT_GRAY, true);
+      addRowToTable(tbl, header_font, new String[]{
+            messageComment.getString("author"),
+            messageComment.getString("c_comment"),
+            messageComment.getString("created"),
+            messageComment.getString("modified")}, Color.LIGHT_GRAY, true);
       tbl.endHeaders();
 
       Comment comment;
       for (int i = 0; i < comments.size(); i++) {
         comment = (Comment) comments.get(i);
 
-        addRowToTable(tbl, null, new String[] { comment.getOwner(),
-            comment.getMessage(),
-            DateUtil.getOutputDate(comment.getCreationDate(), language),
-            DateUtil.getOutputDate(comment.getModificationDate(), language) },
+        addRowToTable(tbl, null, new String[]{comment.getOwner(),
+              comment.getMessage(),
+              DateUtil.getOutputDate(comment.getCreationDate(), language),
+              DateUtil.getOutputDate(comment.getModificationDate(), language)},
             true, false);
       }
 
@@ -1262,16 +1221,15 @@ public class PdfGenerator extends PdfPageEventHelper {
   private static void generateCategorization(Document document)
       throws DocumentException, PdcException {
     PdcBm pdcBm = (PdcBm) new PdcBmImpl();
-    java.util.List listPositions = pdcBm.getPositions(kmeliaSessionController
-        .getSilverObjectId(publicationDetail.getPK().getId()),
+    java.util.List listPositions = pdcBm.getPositions(kmeliaSessionController.getSilverObjectId(publicationDetail.
+        getPK().getId()),
         kmeliaSessionController.getComponentId());
     if (listPositions != null && listPositions.size() > 0) {
       /*
        * Paragraph title = new Paragraph("\n"+generalMessage.getString("GML.PDC")+" : ", new
        * Font(Font.HELVETICA, 10, Font.BOLD, new Color(0, 0, 0))); document.add(title);
        */
-      Table tblHeader = addHearderToSection(generalMessage.getString("GML.PDC")
-          .toUpperCase());
+      Table tblHeader = addHearderToSection(generalMessage.getString("GML.PDC").toUpperCase());
       document.add(tblHeader);
 
       ResourceLocator messagePdc = new ResourceLocator(
@@ -1392,27 +1350,22 @@ public class PdfGenerator extends PdfPageEventHelper {
   }
 
   private static void parseModelHTML(Document document, String text,
-      Iterator textIterator, Iterator imageIterator)
+      Iterator<InfoTextDetail> textIterator, Iterator<InfoImageDetail> imageIterator)
       throws KmeliaRuntimeException {
-    SilverTrace.info("kmelia", "PdfGenerator.parseModelHTML",
-        "root.MSG_ENTRY_METHOD");
-
+    SilverTrace.info("kmelia", "PdfGenerator.parseModelHTML", "root.MSG_ENTRY_METHOD");
     try {
       CharArrayReader html = new CharArrayReader(text.toCharArray());
       ParserDelegator parser = new ParserDelegator();
-      HTMLEditorKit.ParserCallback callbacktablecolumncounter = new CallbackInfoCollector();
+      ParserCallback callbacktablecolumncounter = new CallbackInfoCollector();
       parser.parse(html, callbacktablecolumncounter, true);
-      Vector columns = ((CallbackInfoCollector) callbacktablecolumncounter)
-          .getTableColumnCount();
-
+      java.util.List<String> columns = ((CallbackInfoCollector) callbacktablecolumncounter).
+          getTableColumnCount();
       html = new CharArrayReader(text.toCharArray());
-      HTMLEditorKit.ParserCallback callback = new Callback(document, columns,
-          textIterator, imageIterator);
+      ParserCallback callback = new Callback(document, columns, textIterator, imageIterator);
       parser.parse(html, callback, true);
     } catch (Exception ex) {
       throw new KmeliaRuntimeException("PdfGenerator.parseModelHTML",
-          KmeliaRuntimeException.WARNING,
-          "kmelia.EX_CANNOT_SHOW_PDF_GENERATION", ex);
+          KmeliaRuntimeException.WARNING, "kmelia.EX_CANNOT_SHOW_PDF_GENERATION", ex);
     }
   }
 
@@ -1430,15 +1383,13 @@ public class PdfGenerator extends PdfPageEventHelper {
       FormException {
     // Paragraph title = new Paragraph("\n"+message.getString("Model")+" : ",
     // new Font(Font.HELVETICA, 10, Font.BOLD, new Color(0, 0, 0)));
-    Table tblHeader = addHearderToSection(message.getString("Model")
-        .toUpperCase());
+    Table tblHeader = addHearderToSection(message.getString("Model").toUpperCase());
 
     String componentId = kmeliaSessionController.getComponentId();
     String objectId = publicationDetail.getPK().getId();
 
     // get displayed language
-    String languageToDisplay = publicationDetail
-        .getLanguageToDisplay(publiContentLanguage);
+    String languageToDisplay = publicationDetail.getLanguageToDisplay(publiContentLanguage);
 
     String sWysiwyg = WysiwygController.load(componentId, objectId,
         languageToDisplay);
@@ -1449,16 +1400,12 @@ public class PdfGenerator extends PdfPageEventHelper {
     } else {
       if ((completePublicationDetail.getInfoDetail() != null)
           && (completePublicationDetail.getModelDetail() != null)) {// Modèles
-        // Base de
-        // données
         document.add(tblHeader);
-
-        String toParse = completePublicationDetail.getModelDetail()
-            .getHtmlDisplayer();
-        Iterator textIterator = completePublicationDetail.getInfoDetail()
-            .getInfoTextList().iterator();
-        Iterator imageIterator = completePublicationDetail.getInfoDetail()
-            .getInfoImageList().iterator();
+        String toParse = completePublicationDetail.getModelDetail().getHtmlDisplayer();
+        Iterator<InfoTextDetail> textIterator = completePublicationDetail.getInfoDetail().
+            getInfoTextList().iterator();
+        Iterator<InfoImageDetail> imageIterator = completePublicationDetail.getInfoDetail().
+            getInfoImageList().iterator();
         parseModelHTML(document, toParse, textIterator, imageIterator);
       } else {// Modèles XML
 
@@ -1467,8 +1414,8 @@ public class PdfGenerator extends PdfPageEventHelper {
           document.add(tblHeader);
 
           PublicationTemplateImpl pubTemplate =
-              (PublicationTemplateImpl) PublicationTemplateManager
-              .getPublicationTemplate(componentId + ":" + infoId);
+              (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(
+              componentId + ":" + infoId);
 
           Form formView = pubTemplate.getViewForm();
 
@@ -1486,8 +1433,8 @@ public class PdfGenerator extends PdfPageEventHelper {
           context.setBorderPrinted(false);
           context.setContentLanguage(languageToDisplay);
           context.setUserId(kmeliaSessionController.getUserId());
-          context.setNodeId(kmeliaSessionController.getSessionTopic()
-              .getNodeDetail().getNodePK().getId());
+          context.setNodeId(kmeliaSessionController.getSessionTopic().getNodeDetail().getNodePK().
+              getId());
 
           String htmlResult = formView.toString(context, data);
           parseHTML(document, htmlResult);

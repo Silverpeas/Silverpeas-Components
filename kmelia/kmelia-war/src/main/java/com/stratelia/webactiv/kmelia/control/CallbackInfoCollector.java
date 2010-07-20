@@ -24,31 +24,34 @@
 
 package com.stratelia.webactiv.kmelia.control;
 
-import java.util.Vector;
 
 import javax.swing.text.MutableAttributeSet;
-import javax.swing.text.html.HTML;
+import javax.swing.text.html.HTML.Tag;
 import javax.swing.text.html.HTMLEditorKit;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 class CallbackInfoCollector extends HTMLEditorKit.ParserCallback {
-  private Vector table_columns;
+  private List<String> table_columns;
   private int columns;
   private boolean first_row;
 
   CallbackInfoCollector() {
-    table_columns = new Vector(10);
+    table_columns = new ArrayList<String>(10);
   }
 
-  public Vector getTableColumnCount() {
-    return table_columns;
+  public List<String> getTableColumnCount() {
+    return Collections.unmodifiableList(table_columns);
   }
 
-  public void handleEndTag(HTML.Tag t, int pos) {
-    SilverTrace.info("kmelia", "CallbackInfoCollector.handleEndTag",
-        "root.MSG_ENTRY_METHOD", "t = " + t.toString());
-    if (t.equals(HTML.Tag.TR)) {
+  @Override
+  public void handleEndTag(Tag t, int pos) {
+    SilverTrace.info("kmelia", "CallbackInfoCollector.handleEndTag", "root.MSG_ENTRY_METHOD", 
+        "t = " + t.toString());
+    if (Tag.TR.equals(t)) {
       if (first_row) {
         first_row = false;
         table_columns.add(String.valueOf(columns));
@@ -56,13 +59,14 @@ class CallbackInfoCollector extends HTMLEditorKit.ParserCallback {
     }
   }
 
-  public void handleStartTag(HTML.Tag t, MutableAttributeSet a, int pos) {
-    SilverTrace.info("kmelia", "CallbackInfoCollector.handleStartTag",
-        "root.MSG_ENTRY_METHOD", "t = " + t.toString());
-    if (t.equals(HTML.Tag.TABLE)) {
+  @Override
+  public void handleStartTag(Tag t, MutableAttributeSet a, int pos) {
+    SilverTrace.info("kmelia", "CallbackInfoCollector.handleStartTag", "root.MSG_ENTRY_METHOD", 
+        "t = " + t.toString());
+    if (Tag.TABLE.equals(t)) {
       columns = 0;
       first_row = true;
-    } else if (t.equals(HTML.Tag.TD)) {
+    } else if (Tag.TD.equals(t)) {
       columns++;
     }
   }
