@@ -21,9 +21,9 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.silverpeas.connecteurJDBC.control;
 
+import com.silverpeas.util.StringUtil;
 import java.io.InputStream;
 import java.rmi.RemoteException;
 import java.sql.Connection;
@@ -58,17 +58,17 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.XMLConfigurationStore;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Title: Connecteur JDBC Description: Ce composant a pour objet de permettre de recuperer
  * rapidement et simplement des donnees du systeme d'information de l'entreprise.
  */
-
 public class ConnecteurJDBCSessionController extends AbstractComponentSessionController {
 
   private ConnecteurJDBCBm connecteurJDBCEjb = null;
   private SearchEngineBm searchEngineEjb = null;
-
   private String table = null;
   private String column = null;
   private String selected = null;
@@ -79,32 +79,29 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   private String validreq = "";
   private String fullreq = "";
   private String sort_Type = "";
-
   private boolean connectionOpened = false;
-
   private ConnecteurJDBCConnectionInfoDetail connecteurJDBCDetail = null;
-
   private String[] driversNames;
   private String[] driversDisplayNames;
-  private Vector<Object> driversUrls;
+  private List<Object> driversUrls;
   private String[] driversClassNames;
   private String[] driversDescriptions;
   private String[] tableNames = null;
   private String[] columnNames = null;
-
   ResultSet tables_rs;
   ResultSetMetaData tables_rsmd;
   private Driver driver = null; // current driver
   private ResultSet rs;
   private DatabaseMetaData dbMetaData;
   private int rowNumber; // Current row number
-
   private Vector selectedColumn = new Vector(); // the columns selected in the
 
   // SQL request
-
   /**
    * Constructeur
+   * @param mainSessionCtrl
+   * @param componentContext 
+   * @throws ConnecteurJDBCRuntimeException
    */
   public ConnecteurJDBCSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) throws ConnecteurJDBCRuntimeException {
@@ -114,11 +111,11 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
     initConnecteur();
   }
 
-  private ConnecteurJDBCBm getConnecteurJDBCBm() throws ConnecteurJDBCException {
+  protected ConnecteurJDBCBm getConnecteurJDBCBm() throws ConnecteurJDBCException {
     if ((this.connecteurJDBCEjb == null)) {
       try {
-        ConnecteurJDBCBmHome connecteurJDBCEjbHome = (ConnecteurJDBCBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.CONNECTEURJDBC_EJBHOME,
+        ConnecteurJDBCBmHome connecteurJDBCEjbHome = (ConnecteurJDBCBmHome) EJBUtilitaire.
+            getEJBObjectRef(JNDINames.CONNECTEURJDBC_EJBHOME,
             ConnecteurJDBCBmHome.class);
         connecteurJDBCEjb = connecteurJDBCEjbHome.create();
 
@@ -134,8 +131,8 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   public SearchEngineBm getSearchEngine() throws ConnecteurJDBCException {
     if (this.searchEngineEjb == null) {
       try {
-        SearchEngineBmHome home = (SearchEngineBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.SEARCHBM_EJBHOME,
+        SearchEngineBmHome home = (SearchEngineBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.SEARCHBM_EJBHOME,
             SearchEngineBmHome.class);
         this.searchEngineEjb = home.create();
       } catch (Exception e) {
@@ -153,21 +150,19 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
    * public inteface for the jsp page
    * /***************************************************************
    */
-
   private void initConnecteur() throws ConnecteurJDBCRuntimeException {
-    if (connecteurJDBCDetail == null)
+    if (connecteurJDBCDetail == null) {
       try {
         // load and return the current jdbc settings for the component
         ConnecteurJDBCBm connecteurJDBCBm = getConnecteurJDBCBm();
-        Collection<ConnecteurJDBCConnectionInfoDetail> c = connecteurJDBCBm
-            .getConnectionList(new ConnecteurJDBCConnectionInfoPK("",
-            getSpaceId(), getComponentId()));
-        if (c.size() > 1)
+        Collection<ConnecteurJDBCConnectionInfoDetail> c = connecteurJDBCBm.getConnectionList(
+            new ConnecteurJDBCConnectionInfoPK("", getSpaceId(), getComponentId()));
+        if (c.size() > 1) {
           throw new ConnecteurJDBCRuntimeException(
               "connecteurJDBCSessionControl.initConnecteur()",
               SilverpeasException.FATAL,
               "connecteurJDBC.EX_THERE_MUST_BE_ONLY_ONE_CONECTION");
-
+        }
         Iterator<ConnecteurJDBCConnectionInfoDetail> i = c.iterator();
         if (i.hasNext()) {
           connecteurJDBCDetail = i.next();
@@ -178,13 +173,15 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
             SilverpeasException.FATAL,
             "connecteurJDBC.EX_INIT_CONNECTEUR_FAIL", e);
       }
+    }
   }
 
   public void closeConnection() {
-    if (connectionOpened)
+    if (connectionOpened) {
       try {
-        if (rs != null)
+        if (rs != null) {
           rs.close();
+        }
         connectionOpened = false;
       } catch (SQLException e) {
         SilverTrace.warn("connecteurJDBC",
@@ -192,6 +189,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
             "connecteurJDBC.MSG_CONNECTION_NOT_CLOSED", null, e);
 
       }
+    }
 
   }
 
@@ -210,16 +208,15 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
         Connection con = getDriver().connect(getJDBCurl(), info);
         dbMetaData = con.getMetaData();
         Statement stmt = con.createStatement();
-        if ((temp == null) || (temp.equals(""))) {
+        if (!StringUtil.isDefined(temp)) {
           rs = null;
-        } else
+        } else {
           rs = stmt.executeQuery(temp);
+        }
         connectionOpened = true;
       } catch (SQLException e) {
-        SilverTrace.warn("connecteurJDBC",
-            "ConnecteurJDBCSessionControl.startConnection()",
-            "connecteurJDBC.MSG_CONNECTION_NOT_STARTED", "request : "
-            + getSQLreq(), e);
+        SilverTrace.warn("connecteurJDBC", "ConnecteurJDBCSessionControl.startConnection()",
+            "connecteurJDBC.MSG_CONNECTION_NOT_STARTED", "request : " + getSQLreq(), e);
       }
     }
 
@@ -239,10 +236,11 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
         Connection con = getDriver().connect(getJDBCurl(), info);
         dbMetaData = con.getMetaData();
         Statement stmt = con.createStatement();
-        if ((temp == null) || (temp.equals(""))) {
+        if (!StringUtil.isDefined(temp)) {
           rs = null;
-        } else
+        } else {
           rs = stmt.executeQuery(temp);
+        }
         connectionOpened = true;
       } catch (Exception e) {
         SilverTrace.warn("connecteurJDBC",
@@ -255,7 +253,8 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * set the valide request
+   * set the valid request
+   * @param validreq 
    */
   public void setValidRequest(String validreq) {
     SilverTrace.info("connecteurJDBC",
@@ -265,7 +264,8 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * get the last valide request
+   * get the last valid request
+   * @return 
    */
   public String getLastValidRequest() {
     return validreq;
@@ -285,10 +285,10 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
    * get the full request
    */
   public String getFullRequest() {
-    if (fullreq == null || "".equals(fullreq))
+    if (fullreq == null || "".equals(fullreq)) {
       return getSQLreq();
-    else
-      return fullreq;
+    }
+    return fullreq;
   }
 
   /**
@@ -310,18 +310,15 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
    */
   public String[] getTableNames() throws ConnecteurJDBCException {
     startConnection();
-    Vector<String> tableVector = new Vector<String>();
+    List<String> tableVector = new ArrayList<String>();
     try {
       tables_rs = dbMetaData.getTables(null, null, null, null);
       tables_rsmd = tables_rs.getMetaData();
       while (tables_rs.next()) {
-        tableVector.addElement(tables_rs.getString("TABLE_NAME"));
+        tableVector.add(tables_rs.getString("TABLE_NAME"));
       }
       int n = tableVector.size();
-      tableNames = new String[n];
-      for (int i = 0; i < n; i++) {
-        tableNames[i] = (String) tableVector.elementAt(i);
-      }
+      tableNames = tableVector.toArray(new String[n]);
     } catch (Exception e) {
       throw new ConnecteurJDBCException(
           "connecteurJDBCSessionControl.getTableNames()",
@@ -353,10 +350,10 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   public String[] getColumnNames(String tableName)
       throws ConnecteurJDBCException {
     ResultSet table_rs = getTable(tableName);
-    Vector<String> columnVector = new Vector<String>();
+    List<String> columnVector = new ArrayList<String>();
     try {
       while (table_rs.next()) {
-        columnVector.addElement(table_rs.getString("COLUMN_NAME"));
+        columnVector.add(table_rs.getString("COLUMN_NAME"));
       }
     } catch (SQLException e) {
       throw new ConnecteurJDBCException(
@@ -365,10 +362,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
           + tableName, e);
     }
     int n = columnVector.size();
-    columnNames = new String[n];
-    for (int i = 0; i < n; i++) {
-      columnNames[i] = (String) columnVector.elementAt(i);
-    }
+    columnNames = columnVector.toArray(new String[n]);
     return columnNames;
   }
 
@@ -440,6 +434,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
 
   /**
    * get the symbole of comparison
+   * @return 
    */
   public String getCompare() {
     return compare;
@@ -471,7 +466,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
    */
   public int getColumnCount() {
     int ret = 0;
-    if (rs != null)
+    if (rs != null) {
       try {
         ResultSetMetaData md = rs.getMetaData();
         if (md == null) {
@@ -484,6 +479,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
             "ConnecteurJDBCSessionControl.getColumnCount()",
             "connecteurJDBC.MSG_CANT_GET_Column_Count", null, e);
       }
+    }
     return ret;
   }
 
@@ -492,7 +488,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
    */
   public String getColumnName(int i) {
     String ret = "";
-    if (rs != null)
+    if (rs != null) {
       try {
         ResultSetMetaData md = rs.getMetaData();
         if (md == null) {
@@ -506,6 +502,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
             "connecteurJDBC.MSG_CANT_GET_COLUMN_NAME", "column number : " + i,
             e);
       }
+    }
     return ret;
   }
 
@@ -514,7 +511,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
    */
   public String getColumnType(int i) {
     String ret = "";
-    if (rs != null)
+    if (rs != null) {
       try {
         ResultSetMetaData md = rs.getMetaData();
         if (md == null) {
@@ -528,6 +525,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
             "connecteurJDBC.MSG_CANT_GET_COLUMN_TYPE", "column number : " + i,
             e);
       }
+    }
     return ret;
   }
 
@@ -550,7 +548,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
 
   public String getString(int i) {
     String ret = "";
-    if (rs != null)
+    if (rs != null) {
       try {
         ret = rs.getString(i);
       } catch (SQLException e) {
@@ -558,6 +556,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
             "ConnecteurJDBCSessionControl.getString()",
             "connecteurJDBC.MSG_CANT_GET_COLUMN_VALUE", null, e);
       }
+    }
     return ret;
   }
 
@@ -586,8 +585,9 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
           getSpaceId(), getComponentId()));
       newConnecteur();
     }
-    if (connecteurJDBCDetail != null)
+    if (connecteurJDBCDetail != null) {
       connecteurJDBCDetail.setJDBCurl(JDBCurl);
+    }
     updateConnecteur();
   }
 
@@ -598,8 +598,9 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
           getSpaceId(), getComponentId()));
       newConnecteur();
     }
-    if (connecteurJDBCDetail != null)
+    if (connecteurJDBCDetail != null) {
       connecteurJDBCDetail.setSQLreq(SQLreq);
+    }
     updateConnecteur();
   }
 
@@ -610,8 +611,9 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
           getSpaceId(), getComponentId()));
       newConnecteur();
     }
-    if (connecteurJDBCDetail != null)
+    if (connecteurJDBCDetail != null) {
       connecteurJDBCDetail.setLogin(login);
+    }
     updateConnecteur();
   }
 
@@ -622,8 +624,9 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
           getSpaceId(), getComponentId()));
       newConnecteur();
     }
-    if (connecteurJDBCDetail != null)
+    if (connecteurJDBCDetail != null) {
       connecteurJDBCDetail.setPassword(password);
+    }
     updateConnecteur();
   }
 
@@ -634,55 +637,62 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
           getSpaceId(), getComponentId()));
       newConnecteur();
     }
-    if (connecteurJDBCDetail != null)
+    if (connecteurJDBCDetail != null) {
       connecteurJDBCDetail.setRowLimit(rowLimit);
+    }
     updateConnecteur();
   }
 
   // getters
   public String getJDBCdriverName() {
-    if (connecteurJDBCDetail != null)
+    if (connecteurJDBCDetail != null) {
       return (connecteurJDBCDetail.getJDBCdriverName());
-    else
+    } else {
       return (null);
+    }
   }
 
   public String getJDBCurl() {
-    if (connecteurJDBCDetail != null)
+    if (connecteurJDBCDetail != null) {
       return (connecteurJDBCDetail.getJDBCurl());
-    else
+    } else {
       return (null);
+    }
   }
 
   public String getSQLreq() {
-    if (connecteurJDBCDetail != null)
+    if (connecteurJDBCDetail != null) {
       return (connecteurJDBCDetail.getSQLreq());
-    else
+    } else {
       return (null);
+    }
 
   }
 
   public String getLogin() {
-    if (connecteurJDBCDetail != null)
+    if (connecteurJDBCDetail != null) {
       return (connecteurJDBCDetail.getLogin());
-    else
+    } else {
       return ("");
+    }
 
   }
 
   public String getPassword() {
-    if (connecteurJDBCDetail != null)
+    if (connecteurJDBCDetail != null) {
       return (connecteurJDBCDetail.getPassword());
-    else
+    } else {
       return ("");
+    }
 
   }
 
   public int getRowLimit() {
-    if (connecteurJDBCDetail != null)
+    if (connecteurJDBCDetail != null) {
       return (connecteurJDBCDetail.getRowLimit());
-    else
+    } else {
       return (-1);
+    }
   }
 
   private int searchDriverIndice(String driverName) {
@@ -693,7 +703,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
     while (i < driversNames.length && !driversNames[i].equals(driverName)) {
       SilverTrace.info("connecteurJDBC",
           "ConnecteurJDBCSessionController.searchDriverIndice()",
-          "connecteurJDBC.MSG_DRIVER_NAME", "driver n�" + i + "="
+          "connecteurJDBC.MSG_DRIVER_NAME", "driver n°" + i + "="
           + driversNames[i]);
       i++;
     }
@@ -718,7 +728,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   }
 
   // register existing drivers
-  public void loadDrivers() {
+  public final void loadDrivers() {
     try {
       InputStream m_ConfigFileInputStream;
       String configFileStr = "settings/connecteurJDBCSettings";
@@ -745,7 +755,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
         driversDisplayNames[j] = m_XMLConfig.getString("DriverName");
         driversClassNames[j] = m_XMLConfig.getString("ClassName");
         driversDescriptions[j] = m_XMLConfig.getString("Description");
-        driversUrls.addElement(m_XMLConfig.getValues("JDBCUrls"));
+        driversUrls.add(m_XMLConfig.getValues("JDBCUrls"));
         m_ConfigFileInputStream.close();
       }
 
@@ -771,14 +781,13 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
 
   // returns jdbc urls for driver
   public Collection<String> getJDBCUrlsForDriver(String driverName) {
-    String[] str = (String[]) driversUrls
-        .elementAt(searchDriverIndice(driverName));
+    String[] str = (String[]) driversUrls.get(searchDriverIndice(driverName));
     return (Arrays.asList(str));
   }
 
   // returns description for driver
   public String getDescriptionForDriver(String driverName) {
-    String str = (String) driversDescriptions[searchDriverIndice(driverName)];
+    String str = driversDescriptions[searchDriverIndice(driverName)];
     return (str);
   }
 
@@ -806,7 +815,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   }
 
   private void updateConnecteur() throws ConnecteurJDBCException {
-    if (connecteurJDBCDetail != null)
+    if (connecteurJDBCDetail != null) {
       try {
         // load and return the current jdbc settings for the component
         ConnecteurJDBCBm connecteurJDBCBm = getConnecteurJDBCBm();
@@ -817,21 +826,22 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
             SilverpeasException.FATAL,
             "connecteurJDBC.EX_UPDATE_CONNECTION_FAIL", null, e);
       }
+    }
   }
 
   private void newConnecteur() throws ConnecteurJDBCException {
-    if (connecteurJDBCDetail != null)
+    if (connecteurJDBCDetail != null) {
       try {
         // load and return the current jdbc settings for the component
         ConnecteurJDBCBm connecteurJDBCBm = getConnecteurJDBCBm();
-        connecteurJDBCDetail.setPK(connecteurJDBCBm
-            .addConnection(connecteurJDBCDetail));
+        connecteurJDBCDetail.setPK(connecteurJDBCBm.addConnection(connecteurJDBCDetail));
       } catch (Exception e) {
         throw new ConnecteurJDBCException(
             "connecteurJDBCSessionControl.newConnecteur()",
             SilverpeasException.FATAL, "connecteurJDBC.EX_NEW_CONNECTION_FAIL",
             null, e);
       }
+    }
   }
 
   private Driver getDriver() {
@@ -839,8 +849,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
       try {
         String driverName = connecteurJDBCDetail.getJDBCdriverName();
         if (driverName == null || driverName.length() == 0) {
-          SilverTrace
-              .info("connecteurJDBC",
+          SilverTrace.info("connecteurJDBC",
               "ConnecteurJDBCSessionControl.getDriver()",
               "root.MSG_GEN_PARAM_VALUE",
               "driverName undefined ! default one used instead = "
@@ -895,7 +904,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
     try {
       if ((getDriver() == null) || (getJDBCurl() == null)) {
         return getString("erreurParametresConnectionIncorrects");
-      } else if ((request == null) || (request.trim().equals(""))) {
+      } else if (!StringUtil.isDefined(request)) {
         return getString("erreurRequeteVide");
       } else if (!temp.startsWith("select") && !temp.startsWith("SELECT")) {
         return getString("erreurModifTable");
@@ -909,11 +918,6 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
         } else {
           Statement stmt = con.createStatement();
           rs = stmt.executeQuery(request);
-          // il fallait cliquer deux fois sur consultation c'est pourquoi ce
-          // commentaire!!!!!
-          /*
-           * if (rs!=null) rs.close();
-           */
         }
       }
     } catch (SQLException e) {
@@ -922,8 +926,7 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
           "connecteurJDBC.MSG_CHECK_REQUEST_FAIL", "request : " + request, e);
       return (e.getMessage());
     } catch (MissingResourceException e) {
-      SilverTrace
-          .warn("connecteurJDBC",
+      SilverTrace.warn("connecteurJDBC",
           "ConnecteurJDBCSessionControl.checkConnection()",
           "connecteurJDBC.MSG_MISSING_MESSAGE_ERROR", "request : "
           + request, e);
@@ -934,8 +937,9 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
 
   public void close() {
     try {
-      if (connecteurJDBCEjb != null)
+      if (connecteurJDBCEjb != null) {
         connecteurJDBCEjb.remove();
+      }
     } catch (RemoteException e) {
       SilverTrace.error("connecteurJDBCSession",
           "ConnecteurJDBCSessionController.close", "", e);
@@ -945,8 +949,9 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
     }
 
     try {
-      if (searchEngineEjb != null)
+      if (searchEngineEjb != null) {
         searchEngineEjb.remove();
+      }
     } catch (RemoteException e) {
       SilverTrace.error("connecteurJDBCSession",
           "ConnecteurJDBCSessionController.close", "", e);
@@ -956,5 +961,4 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
     }
 
   }
-
 }
