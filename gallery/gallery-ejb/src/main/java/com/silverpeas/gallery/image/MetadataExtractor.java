@@ -44,12 +44,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import static com.drew.metadata.iptc.IptcDirectory.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author ehugonnet
  */
-public class MetadataExtractor {
+public class MetadataExtractor implements ImageMetadataExtractor {
 
   private ResourceLocator settings;
   private Map<String, ResourceLocator> metaDataBundles;
@@ -114,172 +116,182 @@ public class MetadataExtractor {
     return properties;
   }
 
-  public List<MetaData> extractImageExifMetaData(File image) throws ImageProcessingException,
-      UnsupportedEncodingException, MetadataException {
+  public List<MetaData> extractImageExifMetaData(File image) throws ImageMetadataException,
+      UnsupportedEncodingException {
     return extractImageExifMetaData(image, I18NHelper.defaultLanguage);
   }
 
   public List<MetaData> extractImageExifMetaData(File image, String lang) throws
-      ImageProcessingException, UnsupportedEncodingException, MetadataException {
-    List<MetaData> result = new ArrayList<MetaData>();
-    // lire le fichier des properties
-    // 1. Traitement des metadata EXIF
-    Metadata metadata = ImageMetadataReader.readMetadata(image);
-    Directory exifDirectory = metadata.getDirectory(ExifDirectory.class);
-    ExifDescriptor descriptor = new ExifDescriptor(exifDirectory);
-    String value = null;
-    for (ExifProperty property : imageProperties) {
-      // rechercher la valeur de la metadata "label"
-      int currentMetadata = property.getProperty();
-      switch (currentMetadata) {
-        case ExifDirectory.TAG_WIN_AUTHOR:
-          value = descriptor.getWindowsAuthorDescription();
-          break;
-        case ExifDirectory.TAG_WIN_COMMENT:
-          value = descriptor.getWindowsCommentDescription();
-          break;
+      ImageMetadataException, UnsupportedEncodingException {
+    try {
+      List<MetaData> result = new ArrayList<MetaData>();
+      // lire le fichier des properties
+      // 1. Traitement des metadata EXIF
+      Metadata metadata = ImageMetadataReader.readMetadata(image);
+      Directory exifDirectory = metadata.getDirectory(ExifDirectory.class);
+      ExifDescriptor descriptor = new ExifDescriptor(exifDirectory);
+      String value = null;
+      for (ExifProperty property : imageProperties) {
+        // rechercher la valeur de la metadata "label"
+        int currentMetadata = property.getProperty();
+        switch (currentMetadata) {
+          case ExifDirectory.TAG_WIN_AUTHOR:
+            value = descriptor.getWindowsAuthorDescription();
+            break;
+          case ExifDirectory.TAG_WIN_COMMENT:
+            value = descriptor.getWindowsCommentDescription();
+            break;
 
-        case ExifDirectory.TAG_WIN_KEYWORDS:
-          value = descriptor.getWindowsKeywordsDescription();
-          break;
+          case ExifDirectory.TAG_WIN_KEYWORDS:
+            value = descriptor.getWindowsKeywordsDescription();
+            break;
 
-        case ExifDirectory.TAG_WIN_SUBJECT:
-          value = descriptor.getWindowsSubjectDescription();
-          break;
+          case ExifDirectory.TAG_WIN_SUBJECT:
+            value = descriptor.getWindowsSubjectDescription();
+            break;
 
-        case ExifDirectory.TAG_WIN_TITLE:
-          value = descriptor.getWindowsTitleDescription();
-          break;
-        default:
-          value = exifDirectory.getString(currentMetadata);
+          case ExifDirectory.TAG_WIN_TITLE:
+            value = descriptor.getWindowsTitleDescription();
+            break;
+          default:
+            value = exifDirectory.getString(currentMetadata);
+        }
+        if (value != null) {
+          // ajout de cette metadata à la photo
+          MetaData metaData = new MetaData();
+          metaData.setLabel(property.getLabel(lang));
+          metaData.setProperty(property.getProperty() + "");
+          metaData.setValue(value);
+          SilverTrace.debug("gallery", "GallerySessionController.addMetaData()",
+              "root.MSG_GEN_ENTER_METHOD", "METADATA EXIF label = " + property.getLabel()
+              + " value = " + value);
+          result.add(metaData);
+        }
       }
-      if (value != null) {
-        // ajout de cette metadata à la photo
-        MetaData metaData = new MetaData();
-        metaData.setLabel(property.getLabel(lang));
-        metaData.setProperty(property.getProperty() + "");
-        metaData.setValue(value);
-        SilverTrace.debug("gallery", "GallerySessionController.addMetaData()",
-            "root.MSG_GEN_ENTER_METHOD", "METADATA EXIF label = " + property.getLabel()
-            + " value = " + value);
-        result.add(metaData);
-      }
+      return result;
+    } catch (MetadataException ex) {
+      throw new ImageMetadataException(ex);
+    } catch (ImageProcessingException ex) {
+      throw new ImageMetadataException(ex);
     }
-    return result;
   }
 
-  public List<MetaData> extractImageIptcMetaData(File image) throws ImageProcessingException,
-      UnsupportedEncodingException,
-      MetadataException {
+  public List<MetaData> extractImageIptcMetaData(File image) throws ImageMetadataException,
+      UnsupportedEncodingException {
     return extractImageIptcMetaData(image, I18NHelper.defaultLanguage);
 
   }
 
   public List<MetaData> extractImageIptcMetaData(File image, String lang) throws
-      JpegProcessingException, UnsupportedEncodingException, MetadataException,
-      ImageProcessingException {
-    List<MetaData> result = new ArrayList<MetaData>();
-    // lire le fichier des properties
-    // 1. Traitement des metadata EXIF
-    Metadata metadata = ImageMetadataReader.readMetadata(image);
-    IptcDirectory iptcDirectory = (IptcDirectory) metadata.getDirectory(IptcDirectory.class);
-    for (IptcProperty iptcProperty : imageIptcProperties) {
-      // rechercher la valeur de la metadata "label"
-      String value = null;
-      switch (iptcProperty.getProperty()) {
-        case TAG_BY_LINE:
-          value = getIptcValue(iptcDirectory, TAG_BY_LINE);
-          break;
-        case TAG_BY_LINE_TITLE:
-          value = getIptcValue(iptcDirectory, TAG_BY_LINE_TITLE);
-          break;
-        case TAG_CAPTION:
-          value = getIptcValue(iptcDirectory, TAG_CAPTION);
-          break;
-        case TAG_CATEGORY:
-          value = getIptcValue(iptcDirectory, TAG_CATEGORY);
-          break;
-        case TAG_CITY:
-          value = getIptcValue(iptcDirectory, TAG_CITY);
-          break;
-        case TAG_COPYRIGHT_NOTICE:
-          value = getIptcValue(iptcDirectory, TAG_COPYRIGHT_NOTICE);
-          break;
-        case TAG_COUNTRY_OR_PRIMARY_LOCATION:
-          value = getIptcValue(iptcDirectory, TAG_COUNTRY_OR_PRIMARY_LOCATION);
-          break;
-        case TAG_CREDIT:
-          value = getIptcValue(iptcDirectory, TAG_CREDIT);
-          break;
-        case TAG_DATE_CREATED:
-          value = getIptcStringValue(iptcDirectory, TAG_DATE_CREATED);
-          break;
-        case TAG_HEADLINE:
-          value = getIptcValue(iptcDirectory, TAG_HEADLINE);
-          break;
-        case TAG_KEYWORDS:
-          value = getIptcStringValue(iptcDirectory, TAG_KEYWORDS);
-          break;
-        case TAG_OBJECT_NAME:
-          value = getIptcValue(iptcDirectory, TAG_OBJECT_NAME);
-          break;
-        case TAG_ORIGINAL_TRANSMISSION_REFERENCE:
-          value = getIptcValue(iptcDirectory, TAG_ORIGINAL_TRANSMISSION_REFERENCE);
-          break;
-        case TAG_ORIGINATING_PROGRAM:
-          value = getIptcValue(iptcDirectory, TAG_ORIGINATING_PROGRAM);
-          break;
-        case TAG_PROVINCE_OR_STATE:
-          value = getIptcValue(iptcDirectory, TAG_PROVINCE_OR_STATE);
-          break;
-        case TAG_RECORD_VERSION:
-          value = getIptcValue(iptcDirectory, TAG_RECORD_VERSION);
-          break;
-        case TAG_RELEASE_DATE:
-          value = getIptcStringValue(iptcDirectory, TAG_RELEASE_DATE);
-          break;
-        case TAG_RELEASE_TIME:
-          value = getIptcValue(iptcDirectory, TAG_RELEASE_TIME);
-          break;
-        case TAG_SOURCE:
-          value = getIptcValue(iptcDirectory, TAG_SOURCE);
-          break;
-        case TAG_SPECIAL_INSTRUCTIONS:
-          value = getIptcValue(iptcDirectory, TAG_SPECIAL_INSTRUCTIONS);
-          break;
-        case TAG_SUPPLEMENTAL_CATEGORIES:
-          value = getIptcValue(iptcDirectory, TAG_SUPPLEMENTAL_CATEGORIES);
-          break;
-        case TAG_TIME_CREATED:
-          value = getIptcValue(iptcDirectory, TAG_TIME_CREATED);
-          break;
-        case TAG_URGENCY:
-          value = getIptcValue(iptcDirectory, TAG_URGENCY);
-          break;
-        case TAG_WRITER:
-          value = getIptcValue(iptcDirectory, TAG_WRITER);
-          break;
-        default:
-          value = getIptcValue(iptcDirectory, iptcProperty.getProperty());
-          break;
-      }
-      if (value != null) {
-        MetaData metaData = new MetaData();
-        metaData.setLabel(iptcProperty.getLabel(lang));
-        metaData.setProperty(iptcProperty.getProperty() + "");
-        metaData.setValue(value);
-        if (iptcProperty.isDate()) {
-          metaData.setDate(true);
-          metaData.setDateValue(iptcDirectory.getDate(iptcProperty.getProperty()));
+      UnsupportedEncodingException, ImageMetadataException {
+    try {
+      List<MetaData> result = new ArrayList<MetaData>();
+      // lire le fichier des properties
+      // 1. Traitement des metadata EXIF
+      Metadata metadata = ImageMetadataReader.readMetadata(image);
+      IptcDirectory iptcDirectory = (IptcDirectory) metadata.getDirectory(IptcDirectory.class);
+      for (IptcProperty iptcProperty : imageIptcProperties) {
+        // rechercher la valeur de la metadata "label"
+        String value = null;
+        switch (iptcProperty.getProperty()) {
+          case TAG_BY_LINE:
+            value = getIptcValue(iptcDirectory, TAG_BY_LINE);
+            break;
+          case TAG_BY_LINE_TITLE:
+            value = getIptcValue(iptcDirectory, TAG_BY_LINE_TITLE);
+            break;
+          case TAG_CAPTION:
+            value = getIptcValue(iptcDirectory, TAG_CAPTION);
+            break;
+          case TAG_CATEGORY:
+            value = getIptcValue(iptcDirectory, TAG_CATEGORY);
+            break;
+          case TAG_CITY:
+            value = getIptcValue(iptcDirectory, TAG_CITY);
+            break;
+          case TAG_COPYRIGHT_NOTICE:
+            value = getIptcValue(iptcDirectory, TAG_COPYRIGHT_NOTICE);
+            break;
+          case TAG_COUNTRY_OR_PRIMARY_LOCATION:
+            value = getIptcValue(iptcDirectory, TAG_COUNTRY_OR_PRIMARY_LOCATION);
+            break;
+          case TAG_CREDIT:
+            value = getIptcValue(iptcDirectory, TAG_CREDIT);
+            break;
+          case TAG_DATE_CREATED:
+            value = getIptcStringValue(iptcDirectory, TAG_DATE_CREATED);
+            break;
+          case TAG_HEADLINE:
+            value = getIptcValue(iptcDirectory, TAG_HEADLINE);
+            break;
+          case TAG_KEYWORDS:
+            value = getIptcStringValue(iptcDirectory, TAG_KEYWORDS);
+            break;
+          case TAG_OBJECT_NAME:
+            value = getIptcValue(iptcDirectory, TAG_OBJECT_NAME);
+            break;
+          case TAG_ORIGINAL_TRANSMISSION_REFERENCE:
+            value = getIptcValue(iptcDirectory, TAG_ORIGINAL_TRANSMISSION_REFERENCE);
+            break;
+          case TAG_ORIGINATING_PROGRAM:
+            value = getIptcValue(iptcDirectory, TAG_ORIGINATING_PROGRAM);
+            break;
+          case TAG_PROVINCE_OR_STATE:
+            value = getIptcValue(iptcDirectory, TAG_PROVINCE_OR_STATE);
+            break;
+          case TAG_RECORD_VERSION:
+            value = getIptcValue(iptcDirectory, TAG_RECORD_VERSION);
+            break;
+          case TAG_RELEASE_DATE:
+            value = getIptcStringValue(iptcDirectory, TAG_RELEASE_DATE);
+            break;
+          case TAG_RELEASE_TIME:
+            value = getIptcValue(iptcDirectory, TAG_RELEASE_TIME);
+            break;
+          case TAG_SOURCE:
+            value = getIptcValue(iptcDirectory, TAG_SOURCE);
+            break;
+          case TAG_SPECIAL_INSTRUCTIONS:
+            value = getIptcValue(iptcDirectory, TAG_SPECIAL_INSTRUCTIONS);
+            break;
+          case TAG_SUPPLEMENTAL_CATEGORIES:
+            value = getIptcValue(iptcDirectory, TAG_SUPPLEMENTAL_CATEGORIES);
+            break;
+          case TAG_TIME_CREATED:
+            value = getIptcValue(iptcDirectory, TAG_TIME_CREATED);
+            break;
+          case TAG_URGENCY:
+            value = getIptcValue(iptcDirectory, TAG_URGENCY);
+            break;
+          case TAG_WRITER:
+            value = getIptcValue(iptcDirectory, TAG_WRITER);
+            break;
+          default:
+            value = getIptcValue(iptcDirectory, iptcProperty.getProperty());
+            break;
         }
-        result.add(metaData);
-        SilverTrace.debug("gallery",
-            "GallerySessionController.addMetaData()",
-            "root.MSG_GEN_ENTER_METHOD", "METADATA IPTC label = " + iptcProperty.getLabel()
-            + " value = " + value);
+        if (value != null) {
+          MetaData metaData = new MetaData();
+          metaData.setLabel(iptcProperty.getLabel(lang));
+          metaData.setProperty(iptcProperty.getProperty() + "");
+          metaData.setValue(value);
+          if (iptcProperty.isDate()) {
+            metaData.setDate(true);
+            metaData.setDateValue(iptcDirectory.getDate(iptcProperty.getProperty()));
+          }
+          result.add(metaData);
+          SilverTrace.debug("gallery",
+              "GallerySessionController.addMetaData()",
+              "root.MSG_GEN_ENTER_METHOD", "METADATA IPTC label = " + iptcProperty.getLabel()
+              + " value = " + value);
+        }
       }
+      return result;
+    } catch (MetadataException ex) {
+      throw new ImageMetadataException(ex);
+    } catch (ImageProcessingException ex) {
+      throw new ImageMetadataException(ex);
     }
-    return result;
   }
 
   private String getIptcValue(IptcDirectory iptcDirectory, int iptcTag) throws

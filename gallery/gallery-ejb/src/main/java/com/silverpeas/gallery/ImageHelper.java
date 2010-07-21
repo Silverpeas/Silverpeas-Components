@@ -23,6 +23,23 @@
  */
 package com.silverpeas.gallery;
 
+import com.drew.imaging.jpeg.JpegMetadataReader;
+import com.drew.metadata.Directory;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.iptc.IptcDirectory;
+import com.silverpeas.gallery.image.ImageMetadataException;
+import com.silverpeas.gallery.image.ImageMetadataExtractor;
+import com.silverpeas.gallery.image.SanselanMetadataExtractor;
+import com.silverpeas.gallery.model.MetaData;
+import com.silverpeas.gallery.model.PhotoDetail;
+import com.silverpeas.gallery.model.PhotoPK;
+import com.silverpeas.util.FileUtil;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
@@ -34,35 +51,15 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-
-import javax.imageio.ImageIO;
-
-import org.apache.commons.fileupload.FileItem;
-
-import com.drew.imaging.ImageProcessingException;
-import com.drew.metadata.MetadataException;
-import com.drew.imaging.jpeg.JpegMetadataReader;
-import com.drew.metadata.Directory;
-import com.drew.metadata.Metadata;
-import com.drew.metadata.iptc.IptcDirectory;
-import com.silverpeas.gallery.image.MetadataExtractor;
-import com.silverpeas.gallery.model.MetaData;
-import com.silverpeas.gallery.model.PhotoDetail;
-import com.silverpeas.gallery.model.PhotoPK;
-import com.silverpeas.util.FileUtil;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import java.util.List;
+import javax.imageio.ImageIO;
+import org.apache.commons.fileupload.FileItem;
 
 public class ImageHelper {
 
-  static ResourceLocator gallerySettings = new ResourceLocator(
+  final static ResourceLocator gallerySettings = new ResourceLocator(
       "com.silverpeas.gallery.settings.gallerySettings", "");
-  static ResourceLocator settings = new ResourceLocator(
+  final static ResourceLocator settings = new ResourceLocator(
       "com.silverpeas.gallery.settings.metadataSettings", "");
   static final String thumbnailSuffix_small = "_66x50.jpg";
   static final String thumbnailSuffix_medium = "_133x100.jpg";
@@ -70,7 +67,7 @@ public class ImageHelper {
   static final String previewSuffix = "_preview.jpg";
   static final String thumbnailSuffix_Xlarge = "_600x400.jpg";
   static final String watermarkSuffix = "_watermark.jpg";
-  static final MetadataExtractor extractor = new MetadataExtractor();
+  static final ImageMetadataExtractor extractor = new SanselanMetadataExtractor();
 
   public static boolean isImage(String name) {
     String type = FileRepositoryManager.getFileExtension(name);
@@ -109,8 +106,7 @@ public class ImageHelper {
     if (image != null) {
       name = image.getName();
       if (name != null) {
-        boolean runOnUnix = !FileUtil.isWindows();
-        if (runOnUnix) {
+        if (!FileUtil.isWindows()) {
           name = name.replace('\\', File.separatorChar);
           SilverTrace.info("gallery", "ImageHelper.processImage",
               "root.MSG_GEN_PARAM_VALUE", "fileName on Unix = " + name);
@@ -241,7 +237,7 @@ public class ImageHelper {
         if (value != null) {
           nameAuthor = value;
         }
-        if (!nameAuthor.equals("")) {
+        if (!nameAuthor.isEmpty()) {
           createWatermark(photo.getId(), nameAuthor, pathFile, dir, percentSize);
         }
       }
@@ -256,7 +252,7 @@ public class ImageHelper {
         if (value != null) {
           nameAuthor = value;
         }
-        if (!nameAuthor.equals("")) {
+        if (!nameAuthor.isEmpty()) {
           nameForWatermark = nameAuthor;
         }
       }
@@ -265,13 +261,13 @@ public class ImageHelper {
     }
   }
 
-  public static void setMetaData(PhotoDetail photo) throws ImageProcessingException,
-      UnsupportedEncodingException, MetadataException {
+  public static void setMetaData(PhotoDetail photo) throws UnsupportedEncodingException, 
+      ImageMetadataException {
     setMetaData(photo, I18NHelper.defaultLanguage);
   }
 
-  public static void setMetaData(PhotoDetail photo, String lang) throws ImageProcessingException,
-      UnsupportedEncodingException, MetadataException {
+  public static void setMetaData(PhotoDetail photo, String lang) throws ImageMetadataException, 
+      UnsupportedEncodingException {
     String photoId = photo.getPhotoPK().getId();
     String name = photo.getImageName();
     String mimeType = photo.getImageMimeType();
@@ -293,7 +289,7 @@ public class ImageHelper {
       }
     }
   }
-  
+
   private static void getDimension(File inputFile, PhotoDetail photo)
       throws IOException {
 
@@ -307,7 +303,7 @@ public class ImageHelper {
     }
   }
 
-  private static void createVignettes(PhotoDetail photo, String path, File dir,
+  private static void createVignettes(PhotoDetail photo, String path, File originalImage,
       boolean watermark, String nameWatermark) throws IOException {
     String fileId = photo.getId();
 
@@ -322,12 +318,12 @@ public class ImageHelper {
       largeWidth = photo.getSizeH();
     }
     if (largeWidth > vignetteFile) {
-      redimPhoto(dir, previewFile, vignetteFile, false, nameWatermark, 0);
+      redimPhoto(originalImage, previewFile, vignetteFile, false, nameWatermark, 0);
     } else {
-      redimPhoto(dir, previewFile, largeWidth, false, nameWatermark, 0);
+      redimPhoto(originalImage, previewFile, largeWidth, false, nameWatermark, 0);
     }
 
-    dir = new File(previewFile);
+    File previewImage = new File(previewFile);
 
     // 1/ création de la preview
     int sizeWatermarkPreview = Integer.parseInt(gallerySettings.getString("sizeWatermark600x400"));
@@ -339,10 +335,10 @@ public class ImageHelper {
       largeWidth = photo.getSizeH();
     }
     if (largeWidth > previewWidth) {
-      redimPhoto(dir, previewFileWatermark, previewWidth, watermark,
+      redimPhoto(previewImage, previewFileWatermark, previewWidth, watermark,
           nameWatermark, sizeWatermarkPreview);
     } else {
-      redimPhoto(dir, previewFileWatermark, largeWidth, watermark,
+      redimPhoto(previewImage, previewFileWatermark, largeWidth, watermark,
           nameWatermark, sizeWatermarkPreview);
     }
 
@@ -351,10 +347,10 @@ public class ImageHelper {
     String vignetteFile1 = path + fileId + thumbnailSuffix_large;
     int vignetteWidth1 = 266;
     if (largeWidth > vignetteWidth1) {
-      redimPhoto(dir, vignetteFile1, vignetteWidth1, watermark, nameWatermark,
+      redimPhoto(previewImage, vignetteFile1, vignetteWidth1, watermark, nameWatermark,
           sizeWatermark266x150);
     } else {
-      redimPhoto(dir, vignetteFile1, largeWidth, watermark, nameWatermark,
+      redimPhoto(previewImage, vignetteFile1, largeWidth, watermark, nameWatermark,
           sizeWatermark266x150);
     }
 
@@ -363,10 +359,10 @@ public class ImageHelper {
     String vignetteFile2 = path + fileId + thumbnailSuffix_medium;
     int vignetteWidth2 = 133;
     if (largeWidth > vignetteWidth2) {
-      redimPhoto(dir, vignetteFile2, vignetteWidth2, watermark, nameWatermark,
+      redimPhoto(previewImage, vignetteFile2, vignetteWidth2, watermark, nameWatermark,
           sizeWatermark133x100);
     } else {
-      redimPhoto(dir, vignetteFile2, largeWidth, watermark, nameWatermark,
+      redimPhoto(previewImage, vignetteFile2, largeWidth, watermark, nameWatermark,
           sizeWatermark133x100);
     }
 
@@ -375,10 +371,10 @@ public class ImageHelper {
     String vignetteFile3 = path + fileId + thumbnailSuffix_small;
     int vignetteWidth3 = 66;
     if (largeWidth > vignetteWidth3) {
-      redimPhoto(dir, vignetteFile3, vignetteWidth3, watermark, nameWatermark,
+      redimPhoto(previewImage, vignetteFile3, vignetteWidth3, watermark, nameWatermark,
           sizeWatermark50x66);
     } else {
-      redimPhoto(dir, vignetteFile3, largeWidth, watermark, nameWatermark,
+      redimPhoto(previewImage, vignetteFile3, largeWidth, watermark, nameWatermark,
           sizeWatermark50x66);
     }
   }
@@ -428,8 +424,8 @@ public class ImageHelper {
       String sWidth = Double.toString(width);
       String sHeight = Double.toString(height);
 
-      result[0] = sWidth.substring(0, sWidth.indexOf("."));
-      result[1] = sHeight.substring(0, sHeight.indexOf("."));
+      result[0] = sWidth.substring(0, sWidth.indexOf('.'));
+      result[1] = sHeight.substring(0, sHeight.indexOf('.'));
 
     } catch (Exception e) {
       result[0] = "60";
@@ -475,8 +471,8 @@ public class ImageHelper {
       g.setFont(new Font("Arial", Font.BOLD, sizeWatermark));
       FontMetrics fontMetrics = g.getFontMetrics();
       Rectangle2D rect = fontMetrics.getStringBounds(nameWatermark, g);
-      g.drawString(nameWatermark, ((int) width - (int) rect.getWidth())
-          - sizeWatermark, ((int) height - (int) rect.getHeight())
+      g.drawString(nameWatermark, (width - (int) rect.getWidth())
+          - sizeWatermark, (height - (int) rect.getHeight())
           - sizeWatermark);
 
       // ajout watermark blanc
@@ -486,8 +482,8 @@ public class ImageHelper {
       g.setFont(new Font("Arial", Font.BOLD, sizeWatermark));
       fontMetrics = g.getFontMetrics();
       rect = fontMetrics.getStringBounds(nameWatermark, g);
-      g.drawString(nameWatermark, ((int) width - (int) rect.getWidth())
-          - sizeWatermark / 2, ((int) height - (int) rect.getHeight())
+      g.drawString(nameWatermark, (width - (int) rect.getWidth())
+          - sizeWatermark / 2, (height - (int) rect.getHeight())
           - sizeWatermark / 2);
 
       g.dispose();
@@ -502,7 +498,7 @@ public class ImageHelper {
     // int type = (img.getTransparency() == Transparency.OPAQUE) ?
     // BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
     int type = BufferedImage.TYPE_INT_RGB;
-    BufferedImage ret = (BufferedImage) img;
+    BufferedImage ret = img;
     int w, h;
     if (higherQuality) {
       // Use multi-step technique: start with original size, then
@@ -723,5 +719,8 @@ public class ImageHelper {
             + fromImage + ", toImage = " + toImage, e);
       }
     }
+  }
+
+  private ImageHelper() {
   }
 }

@@ -38,7 +38,7 @@ import static org.junit.Assert.*;
  *
  * @author ehugonnet
  */
-public class MetadataExtractorTest {
+public class SanselanMetadataExtractorTest {
 
   ImageMetadataExtractor extractor;
   File koala = new File(PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar + "Koala.jpg");
@@ -47,7 +47,7 @@ public class MetadataExtractorTest {
 
   @Before
   public void setUp() {
-    extractor = new MetadataExtractor();
+    extractor = new SanselanMetadataExtractor();
   }
 
   @Test
@@ -75,7 +75,7 @@ public class MetadataExtractorTest {
       MetaData meta = metadata.get(0);
       assertEquals("622", meta.getProperty());
       assertEquals("(IPTC) Crédit", meta.getLabel());
-      assertEquals("Crédit", meta.getValue().replace('ý', 'é'));
+      assertEquals("Crédit", meta.getValue());
 
       meta = metadata.get(1);
       assertEquals("634", meta.getProperty());
@@ -85,7 +85,7 @@ public class MetadataExtractorTest {
       meta = metadata.get(2);
       assertEquals("592", meta.getProperty());
       assertEquals("Créateur", meta.getLabel());
-      assertEquals("Nom du créateur : Tag_by_line", meta.getValue().replace('ý', 'é'));
+      assertEquals("Nom du créateur : Tag_by_line", meta.getValue());
 
 
 
@@ -122,8 +122,9 @@ public class MetadataExtractorTest {
       meta = metadata.get(1);
       assertEquals("40092", meta.getProperty());
       assertEquals("(Windows) Commentaires", meta.getLabel());
+      assertArrayEquals("et un commentaire EXIF".getBytes(), meta.getValue().getBytes());
       assertEquals("et un commentaire EXIF", meta.getValue());
-
+      
       meta = metadata.get(2);
       assertEquals("40094", meta.getProperty());
       assertEquals("(Windows) mots clef", meta.getLabel());
