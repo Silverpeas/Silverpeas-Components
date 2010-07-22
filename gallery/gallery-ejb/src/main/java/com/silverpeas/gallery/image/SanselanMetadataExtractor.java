@@ -44,7 +44,6 @@ import org.apache.sanselan.Sanselan;
 import org.apache.sanselan.common.IImageMetadata;
 import org.apache.sanselan.common.ImageMetadata;
 import org.apache.sanselan.formats.jpeg.JpegImageMetadata;
-import org.apache.sanselan.formats.jpeg.JpegPhotoshopMetadata;
 import org.apache.sanselan.formats.jpeg.iptc.IPTCConstants;
 import org.apache.sanselan.formats.tiff.TiffField;
 import org.apache.sanselan.formats.tiff.constants.TagInfo;
@@ -338,15 +337,7 @@ public class SanselanMetadataExtractor implements ImageMetadataExtractor {
       return field.getStringValue();
     } catch (ImageReadException ex) {
     }
-    byte[] data = field.getByteArrayValue();
-    ByteArrayOutputStream content = new ByteArrayOutputStream();
-    for (byte bit : data) {
-      if (bit != 0) {
-        content.write(bit);
-      }
-    }
-    data = content.toByteArray();
-    return new String(data, "ISO-8859-15");
+    return new String(field.getByteArrayValue(), "UTF-16LE");
   }
 
   private Map<String, String> getIPTCValues(JpegImageMetadata photoshopMetadata) {

@@ -43,7 +43,7 @@ public class SanselanMetadataExtractorTest {
   ImageMetadataExtractor extractor;
   File koala = new File(PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar + "Koala.jpg");
   File sunset = new File(
-      PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar + "Coucher de soleil.jpg");
+      PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar + "Sunset.jpg");
 
   @Before
   public void setUp() {
@@ -113,32 +113,37 @@ public class SanselanMetadataExtractorTest {
 
       metadata = extractor.extractImageExifMetaData(sunset);
       assertNotNull(metadata);
-      assertEquals(5, metadata.size());
+      assertEquals(6, metadata.size());
       meta = metadata.get(0);
+      assertEquals("306", meta.getProperty());
+      assertEquals("Date de prise de vue", meta.getLabel());
+      assertEquals("2010:07:22 09:11:14", meta.getValue());
+
+      meta = metadata.get(1);
       assertEquals("40093", meta.getProperty());
       assertEquals("(Windows) Auteur", meta.getLabel());
       assertEquals("L'auteur EXIF", meta.getValue());
 
-      meta = metadata.get(1);
+      meta = metadata.get(2);
       assertEquals("40092", meta.getProperty());
       assertEquals("(Windows) Commentaires", meta.getLabel());
       assertArrayEquals("et un commentaire EXIF".getBytes(), meta.getValue().getBytes());
       assertEquals("et un commentaire EXIF", meta.getValue());
-      
-      meta = metadata.get(2);
+
+      meta = metadata.get(3);
       assertEquals("40094", meta.getProperty());
       assertEquals("(Windows) mots clef", meta.getLabel());
       assertEquals("des mots clés EXIF", meta.getValue());
 
-      meta = metadata.get(3);
-      assertEquals("40095", meta.getProperty());
-      assertEquals("(Windows) Sujet", meta.getLabel());
-      assertEquals("l'objet EXIF", meta.getValue());
-
-      meta = metadata.get(4);
+      meta = metadata.get(5);
       assertEquals("40091", meta.getProperty());
       assertEquals("(Windows) Titre", meta.getLabel());
       assertEquals("Le titre EXIF", meta.getValue());
+      
+      meta = metadata.get(4);
+      assertEquals("40095", meta.getProperty());
+      assertEquals("(Windows) Sujet", meta.getLabel());
+      assertEquals("l'objet EXIT", meta.getValue());
 
     } catch (Exception ex) {
       ex.printStackTrace();
