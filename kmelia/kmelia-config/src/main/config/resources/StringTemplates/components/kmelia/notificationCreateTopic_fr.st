@@ -1,1 +1,1 @@
-Un nouveau thème a été créé à l'emplacement suivant $path$ 
+Un nouveau thÃ¨me a Ã©tÃ© crÃ©Ã© Ã  l'emplacement suivant $path$ 
