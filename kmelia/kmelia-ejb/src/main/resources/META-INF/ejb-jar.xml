@@ -138,5 +138,43 @@
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
+    <container-transaction>
+    	<method>
+    		<ejb-name>ejb/KmeliaBm</ejb-name>
+    		<method-intf>Remote</method-intf>
+    		<method-name>createPublicationIntoTopic</method-name>
+    		<method-params>
+    			<method-param>com.stratelia.webactiv.util.publication.model.PublicationDetail</method-param>
+    			<method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>
+    		</method-params>
+    	</method>
+    	<trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+    	<method>
+    		<ejb-name>ejb/KmeliaBm</ejb-name>
+    		<method-intf>Remote</method-intf>
+    		<method-name>addSubTopic</method-name>
+    		<method-params>
+    			<method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>
+    			<method-param>com.stratelia.webactiv.util.node.model.NodeDetail</method-param>
+    			<method-param>java.lang.String</method-param>
+    		</method-params>
+    	</method>
+    	<trans-attribute>Required</trans-attribute>
+    </container-transaction>
+    <container-transaction>
+    	<method>
+    		<ejb-name>ejb/KmeliaBm</ejb-name>
+    		<method-intf>Remote</method-intf>
+    		<method-name>draftOutPublication</method-name>
+    		<method-params>
+    			<method-param>com.stratelia.webactiv.util.publication.model.PublicationPK</method-param>
+    			<method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>
+    			<method-param>java.lang.String</method-param>
+    		</method-params>
+    	</method>
+    	<trans-attribute>Required</trans-attribute>
+    </container-transaction>
   </assembly-descriptor>
 </ejb-jar>
