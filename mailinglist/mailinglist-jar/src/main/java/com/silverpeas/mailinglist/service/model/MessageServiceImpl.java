@@ -37,7 +37,7 @@ import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.model.dao.MessageDao;
 import com.silverpeas.mailinglist.service.util.OrderBy;
 import com.stratelia.webactiv.calendar.control.CalendarBm;
-import com.stratelia.webactiv.calendar.control.CalendarException;
+import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 
 public class MessageServiceImpl implements MessageService {
@@ -209,7 +209,7 @@ public class MessageServiceImpl implements MessageService {
         }
       } catch (RemoteException e) {
         e.printStackTrace();
-      } catch (CalendarException e) {
+      } catch (CalendarRuntimeException e) {
         e.printStackTrace();
       }
     }
@@ -238,7 +238,7 @@ public class MessageServiceImpl implements MessageService {
       }
     } catch (RemoteException e) {
       e.printStackTrace();
-    } catch (CalendarException e) {
+    } catch (CalendarRuntimeException e) {
       e.printStackTrace();
     }
   }

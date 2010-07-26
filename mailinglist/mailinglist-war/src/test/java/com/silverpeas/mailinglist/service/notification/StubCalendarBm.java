@@ -35,7 +35,6 @@ import javax.ejb.Handle;
 import javax.ejb.RemoveException;
 
 import com.stratelia.webactiv.calendar.control.CalendarBm;
-import com.stratelia.webactiv.calendar.control.CalendarException;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.calendar.model.Category;
 import com.stratelia.webactiv.calendar.model.HolidayDetail;
@@ -54,8 +53,7 @@ public class StubCalendarBm implements CalendarBm {
 
   }
 
-  public String addJournal(JournalHeader journal) throws RemoteException,
-      CalendarException {
+  public String addJournal(JournalHeader journal) throws RemoteException {
     // TODO Auto-generated method stub
     return null;
   }
@@ -72,8 +70,7 @@ public class StubCalendarBm implements CalendarBm {
 
   }
 
-  public String addToDo(ToDoHeader todo) throws RemoteException,
-      CalendarException {
+  public String addToDo(ToDoHeader todo) throws RemoteException {
     return "" + todo.hashCode();
   }
 
@@ -292,14 +289,12 @@ public class StubCalendarBm implements CalendarBm {
 
   }
 
-  public void updateJournal(JournalHeader journal) throws RemoteException,
-      CalendarException {
+  public void updateJournal(JournalHeader journal) throws RemoteException {
     // TODO Auto-generated method stub
 
   }
 
-  public void updateToDo(ToDoHeader todo) throws RemoteException,
-      CalendarException {
+  public void updateToDo(ToDoHeader todo) throws RemoteException {
     // TODO Auto-generated method stub
 
   }

@@ -58,7 +58,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.calendar.control.CalendarBm;
-import com.stratelia.webactiv.calendar.control.CalendarException;
+import com.stratelia.webactiv.calendar.control.CalendarRuntimeException;
 import com.stratelia.webactiv.calendar.model.ToDoHeader;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
@@ -132,7 +132,7 @@ public class NotificationHelperImpl implements NotificationHelper {
       if (moderate) {
         createTask(message, title, userIds);
       }
-    } catch (CalendarException e) {
+    } catch (CalendarRuntimeException e) {
       throw new NotificationManagerException("NotificationHelperImpl",
           SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES",
           e);
@@ -281,7 +281,7 @@ public class NotificationHelperImpl implements NotificationHelper {
   }
 
   protected void createTask(Message message, String title,
-      Collection<String> userIds) throws RemoteException, CalendarException,
+      Collection<String> userIds) throws RemoteException, CalendarRuntimeException,
       UnsupportedEncodingException {
     ToDoHeader todo = new ToDoHeader();
     todo.setDelegatorId(message.getComponentId());
