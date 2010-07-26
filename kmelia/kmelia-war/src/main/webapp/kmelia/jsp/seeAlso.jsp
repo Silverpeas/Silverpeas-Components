@@ -223,8 +223,8 @@ function closeWindows() {
             try {
                 searchEngine.search(query);
                 result = searchEngine.getRange(0, searchEngine.getResultLength());
-            } catch (com.stratelia.webactiv.searchEngine.model.ParseException pe) {
-				  throw new KmeliaException("JSPpublicationManager",SilverpeasRuntimeException.ERROR,"root.EX_SEARCH_ENGINE_FAILED", pe);
+            } catch (Exception e) {
+				   throw new KmeliaException("JSPpublicationManager",SilverpeasRuntimeException.ERROR,"root.EX_SEARCH_ENGINE_FAILED", e);
             }
             displaySearchResults(result, resources.getString("PubDeMemeSujet"), kmeliaScc, id, resources, out);
         }else if(action.equals("PubReferencedBy")){
