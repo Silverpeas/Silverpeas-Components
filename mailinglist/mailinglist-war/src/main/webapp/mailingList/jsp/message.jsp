@@ -30,8 +30,7 @@
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <c:set var="componentId" value="${requestScope.componentId}" />
-<c:set var="sessionController">Silverpeas_MailingList_<c:out value="${componentId}" />
-</c:set>
+<c:set var="sessionController">Silverpeas_MailingList_<c:out value="${componentId}" /></c:set>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
@@ -77,17 +76,15 @@
         <c:url value="/Rmailinglist/${componentId}/Main" var="browseUrl" />
       </c:when>
     </c:choose>
-    <c:set var="browseBarPath">
-      <a href="<c:out value="${browseUrl}"/>"><c:out value="${browseTitle}" /></a>&nbsp;&gt;&nbsp;<c:out value="${requestScope.currentMessage.title}" />
-    </c:set>	 
+    <c:set var="browseBarPath"><a href="<c:out value="${browseUrl}"/>"><c:out value="${browseTitle}" /></a>&nbsp;&gt;&nbsp;<c:out value="${requestScope.currentMessage.title}" /></c:set>	 
     <view:browseBar>
-	  <view:browsebarElt link="${browseUrl}" label="${browseTitle}"  />
-	  <view:browsebarElt link="${messageUrl}" label="${requestScope.currentMessage.title}"  />
+	  <view:browseBarElt link="${browseUrl}" label="${browseTitle}"  />
+	  <view:browseBarElt link="${messageUrl}" label="${requestScope.currentMessage.title}" id="${requestScope.currentMessage.id}"/>
 	</view:browseBar>
   </c:when>
   <c:otherwise>
    <view:browseBar>
-	  <view:browsebarElt link="${messageUrl}" label="${requestScope.currentMessage.title}"  />
+	  <view:browseBarElt link="${messageUrl}" label="${requestScope.currentMessage.title}"  />
 	</view:browseBar>
   </c:otherwise>
 </c:choose>
