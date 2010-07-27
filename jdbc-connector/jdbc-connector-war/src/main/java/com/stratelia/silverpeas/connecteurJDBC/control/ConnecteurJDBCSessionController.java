@@ -58,6 +58,7 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.XMLConfigurationStore;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,6 +67,10 @@ import java.util.List;
  * rapidement et simplement des donnees du systeme d'information de l'entreprise.
  */
 public class ConnecteurJDBCSessionController extends AbstractComponentSessionController {
+  
+  private static final String CONFIGURATION_FILE = 
+      "com.stratelia.silverpeas.connecteurJDBC.control.settings.connecteurJDBCSettings".replace(
+      '.', File.separatorChar);
 
   private ConnecteurJDBCBm connecteurJDBCEjb = null;
   private SearchEngineBm searchEngineEjb = null;
@@ -731,11 +736,11 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
   public final void loadDrivers() {
     try {
       InputStream m_ConfigFileInputStream;
-      String configFileStr = "settings/connecteurJDBCSettings";
+      
       m_ConfigFileInputStream = ResourceLocator.getResourceAsStream(this, null,
-          configFileStr, ".xml");
-      XMLConfigurationStore m_XMLConfig = new XMLConfigurationStore(null,
-          m_ConfigFileInputStream, "ConnecteurJDBC-configuration");
+          CONFIGURATION_FILE, ".xml");
+      XMLConfigurationStore m_XMLConfig = new XMLConfigurationStore(null, m_ConfigFileInputStream, 
+          "ConnecteurJDBC-configuration");
       driversNames = m_XMLConfig.getValues("Drivers");
       m_ConfigFileInputStream.close();
       driversDisplayNames = new String[driversNames.length];
@@ -747,8 +752,8 @@ public class ConnecteurJDBCSessionController extends AbstractComponentSessionCon
             "ConnecteurJDBCSessionControl.loadDrivers()",
             "connecteurJDBC.MSG_DRIVER_NAME", "DriverName=" + driversNames[j]);
 
-        m_ConfigFileInputStream = ResourceLocator.getResourceAsStream(this,
-            null, configFileStr, ".xml");
+        m_ConfigFileInputStream = ResourceLocator.getResourceAsStream(this, null, 
+            CONFIGURATION_FILE, ".xml");
         m_XMLConfig = new XMLConfigurationStore(null, m_ConfigFileInputStream,
             driversNames[j] + "-configuration");
 
