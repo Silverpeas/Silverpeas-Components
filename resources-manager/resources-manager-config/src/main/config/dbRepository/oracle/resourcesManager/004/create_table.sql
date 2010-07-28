@@ -26,7 +26,7 @@ CREATE TABLE sc_resources_resource
 	responsibleid 	INT,
 	createrid 		VARCHAR(50),
 	updaterid 		VARCHAR(50),
-	description 	VARCHAR(2000),
+	description 	VARCHAR(2000)
 ) 
 ;
 
