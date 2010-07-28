@@ -53,7 +53,8 @@ public class StubCalendarBm implements CalendarBm {
 
   }
 
-  public String addJournal(JournalHeader journal) throws RemoteException {
+  public String addJournal(JournalHeader journal) throws RemoteException
+  {
     // TODO Auto-generated method stub
     return null;
   }
@@ -70,7 +71,8 @@ public class StubCalendarBm implements CalendarBm {
 
   }
 
-  public String addToDo(ToDoHeader todo) throws RemoteException {
+  public String addToDo(ToDoHeader todo) throws RemoteException
+      {
     return "" + todo.hashCode();
   }
 
@@ -289,12 +291,14 @@ public class StubCalendarBm implements CalendarBm {
 
   }
 
-  public void updateJournal(JournalHeader journal) throws RemoteException {
+  public void updateJournal(JournalHeader journal) throws RemoteException
+  {
     // TODO Auto-generated method stub
 
   }
 
-  public void updateToDo(ToDoHeader todo) throws RemoteException {
+  public void updateToDo(ToDoHeader todo) throws RemoteException
+  {
     // TODO Auto-generated method stub
 
   }
@@ -322,6 +326,12 @@ public class StubCalendarBm implements CalendarBm {
   public void remove() throws RemoteException, RemoveException {
     // TODO Auto-generated method stub
 
+  }
+
+  @Override
+  public List<JournalHeader> getNextEventsForUser(String day, String userId, String classification,
+      int limit, int offset) throws RemoteException {
+    throw new UnsupportedOperationException("Not supported yet.");
   }
 
 }
