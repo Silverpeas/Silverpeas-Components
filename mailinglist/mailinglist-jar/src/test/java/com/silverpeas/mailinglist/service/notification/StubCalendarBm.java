@@ -328,4 +328,10 @@ public class StubCalendarBm implements CalendarBm {
 
   }
 
+  @Override
+  public List<JournalHeader> getNextEventsForUser(String day, String userId, String classification,
+      int limit, int offset) throws RemoteException {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
 }
