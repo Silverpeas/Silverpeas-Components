@@ -143,6 +143,7 @@ public class JSONServlet extends HttpServlet {
       jsonObject.put("nbObjects", node.getNbObjects());
     } else {
       jsonObject.put("name", node.getName(language));
+      jsonObject.put("description", node.getDescription(language));
       try {
         jsonObject.put("date", DateUtil.getOutputDate(node.getCreationDate(), language));
       } catch (ParseException e) {

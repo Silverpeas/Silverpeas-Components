@@ -813,8 +813,7 @@ function loadNodeData(node, fnLoadComplete)  {
                     {
                     	tempNode.label = m.name;
                     }
-                    //tempNode.title = "Description";
-                    //tempNode.href = "javascript:displayTopicContent("+m.id+")";
+                    tempNode.title = m.description;
                     if (node.data.role == "admin" && <%=kmeliaScc.getSettings().getBoolean("TreeNodeEditable", false)%>)
                     {
                         //node's label is only editable if user is admin on parent node
