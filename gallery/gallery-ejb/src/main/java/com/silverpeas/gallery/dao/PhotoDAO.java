@@ -27,10 +27,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import com.silverpeas.gallery.model.PhotoDetail;
@@ -42,6 +44,7 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class PhotoDAO {
+
   private static String nullBeginDate = new String("0000/00/00");
   private static String nullEndDate = new String("9999/99/99");
 
@@ -54,7 +57,7 @@ public class PhotoDAO {
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(query);
-      prepStmt.setInt(1, new Integer(photoId).intValue());
+      prepStmt.setInt(1, photoId);
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         // recuperation des colonnes du resulSet et construction de l'objet
@@ -86,8 +89,9 @@ public class PhotoDAO {
       listPhoto = new ArrayList<PhotoDetail>();
       while (rs.next()) {
         PhotoDetail photo = recupPhoto(rs);
-        if (viewAllPhoto || isVisible(photo, today))
+        if (viewAllPhoto || isVisible(photo, today)) {
           listPhoto.add(photo);
+        }
       }
     } finally {
       // fermeture
@@ -286,8 +290,9 @@ public class PhotoDAO {
       listPhoto = new ArrayList<PhotoDetail>();
       while (rs.next()) {
         PhotoDetail photo = recupPhoto(rs);
-        if (viewAllPhoto || isVisible(photo, today))
+        if (viewAllPhoto || isVisible(photo, today)) {
           listPhoto.add(photo);
+        }
       }
     } finally {
       // fermeture
@@ -372,7 +377,7 @@ public class PhotoDAO {
       String albumId, String instanceId) throws SQLException {
     SilverTrace.debug("gallery", "PhotoDAO.addPhotoPath()",
         "root.MSG_GEN_PARAM_VALUE", "photoId = " + photoId + " albumId = "
-            + albumId);
+        + albumId);
     // ajout d'un emplacement
     PreparedStatement prepStmt = null;
     try {
@@ -402,7 +407,7 @@ public class PhotoDAO {
   private static PhotoDetail recupPhoto(ResultSet rs) throws SQLException {
     PhotoDetail photo = new PhotoDetail();
     // recuperation des colonnes du resulSet et construction de l'objet photo
-    String photoId = new Integer(rs.getInt(1)).toString();
+    String photoId = rs.getString(1);
     String title = rs.getString(2);
     String description = rs.getString(3);
     int sizeH = rs.getInt(4);
@@ -442,8 +447,9 @@ public class PhotoDAO {
     photo.setSizeL(sizeL);
     try {
       photo.setCreationDate(DateUtil.parse(creationDate));
-      if (updateDate != null)
+      if (updateDate != null) {
         photo.setUpdateDate(DateUtil.parse(updateDate));
+      }
     } catch (Exception e) {
       throw new SQLException(e.getMessage());
     }
@@ -461,22 +467,28 @@ public class PhotoDAO {
     photo.setImageMimeType(imageMimeType);
     photo.setKeyWord(keyWord);
     try {
-      if (beginDownloadDate != null)
+      if (beginDownloadDate != null) {
         photo.setBeginDownloadDate(DateUtil.parse(beginDownloadDate));
-      if (endDownloadDate != null)
+      }
+      if (endDownloadDate != null) {
         photo.setEndDownloadDate(DateUtil.parse(endDownloadDate));
+      }
     } catch (Exception e) {
       throw new SQLException(e.getMessage());
     }
-    if (beginDate.equals(nullBeginDate))
+    if (beginDate.equals(nullBeginDate)) {
       beginDate = null;
-    if (endDate.equals(nullEndDate))
+    }
+    if (endDate.equals(nullEndDate)) {
       endDate = null;
+    }
     try {
-      if (beginDate != null)
+      if (beginDate != null) {
         photo.setBeginDate(DateUtil.parse(beginDate));
-      if (endDate != null)
+      }
+      if (endDate != null) {
         photo.setEndDate(DateUtil.parse(endDate));
+      }
     } catch (Exception e) {
       throw new SQLException(e.getMessage());
     }
@@ -492,20 +504,23 @@ public class PhotoDAO {
     prepStmt.setInt(4, photo.getSizeH());
     prepStmt.setInt(5, photo.getSizeL());
     prepStmt.setString(6, DateUtil.date2SQLDate(photo.getCreationDate()));
-    if (photo.getUpdateDate() != null)
+    if (photo.getUpdateDate() != null) {
       prepStmt.setString(7, DateUtil.date2SQLDate(photo.getUpdateDate()));
-    else
+    } else {
       prepStmt.setString(7, null);
+    }
     prepStmt.setString(8, photo.getVueDate());
     prepStmt.setString(9, photo.getAuthor());
-    if (photo.isDownload() == true)
+    if (photo.isDownload() == true) {
       prepStmt.setInt(10, 1);
-    else
+    } else {
       prepStmt.setInt(10, 0);
-    if (photo.isAlbumLabel() == true)
+    }
+    if (photo.isAlbumLabel() == true) {
       prepStmt.setInt(11, 1);
-    else
+    } else {
       prepStmt.setInt(11, 0);
+    }
     prepStmt.setString(12, photo.getStatus());
     // on met "0" dans l'albumId qui n'est plus utilisé
     prepStmt.setString(13, "0");
@@ -514,27 +529,61 @@ public class PhotoDAO {
     prepStmt.setString(16, photo.getInstanceId());
     prepStmt.setString(17, photo.getImageName());
     prepStmt.setLong(18, photo.getImageSize());
-    if (photo.getBeginDate() != null)
+    if (photo.getBeginDate() != null) {
       prepStmt.setString(19, DateUtil.date2SQLDate(photo.getBeginDate()));
-    else
+    } else {
       prepStmt.setString(19, nullBeginDate);
+    }
 
-    if (photo.getEndDate() != null)
+    if (photo.getEndDate() != null) {
       prepStmt.setString(20, DateUtil.date2SQLDate(photo.getEndDate()));
-    else
+    } else {
       prepStmt.setString(20, nullEndDate);
+    }
     prepStmt.setString(21, photo.getImageMimeType());
     prepStmt.setString(22, photo.getKeyWord());
-    if (photo.getBeginDownloadDate() != null)
-      prepStmt.setString(23, DateUtil
-          .date2SQLDate(photo.getBeginDownloadDate()));
-    else
+    if (photo.getBeginDownloadDate() != null) {
+      prepStmt.setString(23, DateUtil.date2SQLDate(photo.getBeginDownloadDate()));
+    } else {
       prepStmt.setString(23, null);
+    }
 
-    if (photo.getEndDownloadDate() != null)
+    if (photo.getEndDownloadDate() != null) {
       prepStmt.setString(24, DateUtil.date2SQLDate(photo.getEndDownloadDate()));
-    else
+    } else {
       prepStmt.setString(24, null);
+    }
   }
 
+  /**
+   * @param userId
+   *         ID of user
+   * @return send all photo of userId
+   * @throws SQLException
+   * @throws ParseException
+   **/
+  public static List<String> getAllPhotosIDbyUserid(Connection con, String userId) throws
+      SQLException, ParseException {
+    List<String> listPhoto = new ArrayList<String>();
+    String query = "(SELECT creationdate AS dateinformation, photoId,'new'as type FROM SC_Gallery_Photo  WHERE creatorid = ?) "
+        + "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo  WHERE  updateid = ? ) "
+        + "ORDER BY dateinformation DESC, photoId DESC ";
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setString(1, userId);
+      prepStmt.setString(2, userId);
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        listPhoto.add(new Integer(rs.getInt(2)).toString());
+      }
+    } finally {
+      // fermeture
+      DBUtil.close(rs, prepStmt);
+    }
+
+    return listPhoto;
+
+  }
 }

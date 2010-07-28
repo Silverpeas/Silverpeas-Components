@@ -23,6 +23,7 @@
  */
 package com.silverpeas.gallery.control.ejb;
 
+import com.silverpeas.gallery.model.PhotoWithStatus;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
@@ -45,6 +46,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
  */
 public interface GalleryBm extends EJBObject {
   // les albums ...
+
   public AlbumDetail getAlbum(NodePK nodePK, boolean viewAllPhoto)
       throws RemoteException;
 
@@ -78,7 +80,8 @@ public interface GalleryBm extends EJBObject {
 
   public void deletePhoto(PhotoPK photoPK) throws RemoteException;
 
-  public Collection<PhotoDetail> getDernieres(String instanceId, boolean viewAllPhoto) throws RemoteException;
+  public Collection<PhotoDetail> getDernieres(String instanceId, boolean viewAllPhoto) throws
+      RemoteException;
 
   public Collection<PhotoDetail> getAllPhotoEndVisible(int nbDays) throws RemoteException;
 
@@ -127,4 +130,8 @@ public interface GalleryBm extends EJBObject {
 
   public void deleteOrder(String orderId) throws RemoteException;
 
+  public List<PhotoWithStatus> getAllPhotosWithStatusbyUserid(String userId, int firstIndex,
+      int numberOfElement) throws RemoteException;
+
+  ;
 }

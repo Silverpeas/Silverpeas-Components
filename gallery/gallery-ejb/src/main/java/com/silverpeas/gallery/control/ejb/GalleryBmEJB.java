@@ -26,6 +26,7 @@ package com.silverpeas.gallery.control.ejb;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -47,6 +48,7 @@ import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
+import com.silverpeas.gallery.model.PhotoWithStatus;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
@@ -88,7 +90,7 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 public class GalleryBmEJB implements SessionBean {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
@@ -278,7 +280,7 @@ public class GalleryBmEJB implements SessionBean {
       SilverTrace.info("gallery", "GalleryBmEJB.updatePhoto()",
           "root.MSG_GEN_ENTER_METHOD", "PhotoPK = " + photo.toString());
       PhotoDAO.updatePhoto(con, photo);
-      // ajouter les metadatas pour les indexer      
+      // ajouter les metadatas pour les indexer
       ImageHelper.setMetaData(photo, "fr");
       createIndex(photo);
     } catch (Exception e) {
@@ -337,7 +339,9 @@ public class GalleryBmEJB implements SessionBean {
 
   private void fermerCon(Connection con) {
     try {
-      con.close();
+      if (con != null) {
+        con.close();
+      }
     } catch (SQLException e) {
       // traitement des exceptions
       throw new GalleryRuntimeException("GalleryBmEJB.fermerCon()",
@@ -431,8 +435,9 @@ public class GalleryBmEJB implements SessionBean {
     String htmlPath = "";
     try {
       List<NodeDetail> path = (List<NodeDetail>) getPath(nodePK);
-      if (path.size() > 0)
+      if (path.size() > 0) {
         path.remove(path.size() - 1);
+      }
       htmlPath = getSpacesPath(nodePK.getInstanceId())
           + getComponentLabel(nodePK.getInstanceId()) + " > "
           + displayPath(path, 10);
@@ -460,11 +465,11 @@ public class GalleryBmEJB implements SessionBean {
   }
 
   private String getComponentLabel(String componentId) {
-    ComponentInstLight component = getOrganizationController()
-        .getComponentInstLight(componentId);
+    ComponentInstLight component = getOrganizationController().getComponentInstLight(componentId);
     String componentLabel = "";
-    if (component != null)
+    if (component != null) {
       componentLabel = component.getLabel();
+    }
     return componentLabel;
   }
 
@@ -485,8 +490,9 @@ public class GalleryBmEJB implements SessionBean {
       nodeInPath = iterator.next();
       if ((nb <= beforeAfter) || (nb + beforeAfter >= nbItemInPath - 1)) {
         pathString = nodeInPath.getName() + " " + pathString;
-        if (iterator.hasNext())
+        if (iterator.hasNext()) {
           pathString = " > " + pathString;
+        }
       } else {
         if (!alreadyCut) {
           pathString += " ... > ";
@@ -527,7 +533,7 @@ public class GalleryBmEJB implements SessionBean {
               SilverTrace.info("gallery", "GalleryBmEJB.indexGallery()",
                   "root.MSG_GEN_ENTER_METHOD",
                   "Impossible d'ajouter les métadata à la photo "
-                      + photo.toString());
+                  + photo.toString());
             }
             // indéxation de la photo
             createIndex(photo);
@@ -551,18 +557,19 @@ public class GalleryBmEJB implements SessionBean {
       indexEntry.setCreationDate(photo.getCreationDate());
       indexEntry.setCreationUser(photo.getCreatorId());
       indexEntry.setKeyWords(photo.getKeyWord());
-      if (photo.getBeginDate() != null)
+      if (photo.getBeginDate() != null) {
         indexEntry.setStartDate(DateUtil.date2SQLDate(photo.getBeginDate()));
-      if (photo.getEndDate() != null)
+      }
+      if (photo.getEndDate() != null) {
         indexEntry.setEndDate(DateUtil.date2SQLDate(photo.getEndDate()));
+      }
 
       if (photo.getImageName() != null) {
         ResourceLocator gallerySettings = new ResourceLocator(
             "com.silverpeas.gallery.settings.gallerySettings", "");
         indexEntry.setThumbnail(photo.getImageName());
         indexEntry.setThumbnailMimeType(photo.getImageMimeType());
-        indexEntry.setThumbnailDirectory(gallerySettings
-            .getString("imagesSubDirectory")
+        indexEntry.setThumbnailDirectory(gallerySettings.getString("imagesSubDirectory")
             + photo.getPhotoPK().getId());
       }
 
@@ -580,7 +587,7 @@ public class GalleryBmEJB implements SessionBean {
       indexEntry.addTextContent(metaDataStr);
       SilverTrace.info("gallery", "GalleryBmEJB.createIndex()",
           "root.MSG_GEN_ENTER_METHOD", "metaData = " + metaDataStr
-              + " indexEntry = " + indexEntry.toString());
+          + " indexEntry = " + indexEntry.toString());
 
       // indexation des méta données (une donnée par champ d'index)
       it = properties.iterator();
@@ -590,37 +597,39 @@ public class GalleryBmEJB implements SessionBean {
         String value = metaData.getValue();
         SilverTrace.info("gallery", "GalleryBmEJB.createIndex()",
             "root.MSG_GEN_ENTER_METHOD", "property = " + property + " value = "
-                + value);
+            + value);
 
-        if (metaData.isDate())
+        if (metaData.isDate()) {
           indexEntry.addField("IPTC_" + property, metaData.getDateValue());
-        else
+        } else {
           indexEntry.addField("IPTC_" + property, value);
+        }
       }
 
       // indéxation du contenu du formulaire XML
-      String xmlFormName = getOrganizationController()
-          .getComponentParameterValue(photo.getInstanceId(), "XMLFormName");
+      String xmlFormName = getOrganizationController().getComponentParameterValue(photo.
+          getInstanceId(), "XMLFormName");
       SilverTrace.info("gallery", "GalleryBmEJB.createIndex()",
           "root.MSG_GEN_ENTER_METHOD", "xmlFormName = " + xmlFormName);
       if (StringUtil.isDefined(xmlFormName)) {
-        String xmlFormShortName = xmlFormName.substring(xmlFormName
-            .indexOf("/") + 1, xmlFormName.indexOf("."));
+        String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.
+            indexOf("."));
         PublicationTemplate pubTemplate;
         try {
-          pubTemplate = PublicationTemplateManager.getPublicationTemplate(photo
-              .getInstanceId()
+          pubTemplate = PublicationTemplateManager.getPublicationTemplate(photo.getInstanceId()
               + ":" + xmlFormShortName);
           RecordSet set = pubTemplate.getRecordSet();
           set.indexRecord(photo.getPhotoPK().getId(), xmlFormShortName,
               indexEntry);
           SilverTrace.info("gallery", "GalleryBmEJB.createIndex()",
               "root.MSG_GEN_ENTER_METHOD", "indexEntry = "
-                  + indexEntry.toString());
+              + indexEntry.toString());
         } catch (Exception e) {
-          /*throw new GalleryRuntimeException("GalleryBmEJB.createIndex()",
-              SilverpeasRuntimeException.ERROR,
-              "gallery.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID", e); */
+          /*
+           * throw new GalleryRuntimeException("GalleryBmEJB.createIndex()",
+           * SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID",
+           * e);
+           */
           SilverTrace.info("gallery", "GalleryBmEJB.createIndex()",
               "root.MSG_GEN_ENTER_METHOD", "xmlFormName = " + xmlFormName);
         }
@@ -649,8 +658,7 @@ public class GalleryBmEJB implements SessionBean {
           photoPK.getId(), photoPK.getInstanceId());
       if (silverObjectId == -1) {
         photoDetail = getPhoto(photoPK);
-        silverObjectId = createSilverContent(null, photoDetail, photoDetail
-            .getCreatorId());
+        silverObjectId = createSilverContent(null, photoDetail, photoDetail.getCreatorId());
       }
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getSilverObjectId()",
@@ -664,7 +672,7 @@ public class GalleryBmEJB implements SessionBean {
       String creatorId) {
     SilverTrace.info("gallery", "GalleryBmEJB.createSilverContent()",
         "root.MSG_GEN_ENTER_METHOD", "photoId = "
-            + photoDetail.getPhotoPK().getId());
+        + photoDetail.getPhotoPK().getId());
     try {
       return getGalleryContentManager().createSilverContent(con, photoDetail,
           creatorId);
@@ -694,7 +702,7 @@ public class GalleryBmEJB implements SessionBean {
           if (photo != null) {
             SilverTrace.info("gallery", "GalleryBmEJB.getResultSearch()",
                 "root.MSG_GEN_ENTER_METHOD", "photo = "
-                    + photo.getPhotoPK().getId());
+                + photo.getPhotoPK().getId());
             photos.add(photo);
           }
         }
@@ -727,8 +735,9 @@ public class GalleryBmEJB implements SessionBean {
       con = initCon();
       notifMetaData.setConnection(con);
       if (notifMetaData.getSender() == null
-          || notifMetaData.getSender().length() == 0)
+          || notifMetaData.getSender().length() == 0) {
         notifMetaData.setSender(senderId);
+      }
       NotificationSender notifSender = new NotificationSender(componentId);
       notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
@@ -849,9 +858,9 @@ public class GalleryBmEJB implements SessionBean {
   public PublicationBm getPublicationBm() {
     PublicationBm publicationBm = null;
     try {
-      PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
-              PublicationBmHome.class);
+      PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
+          JNDINames.PUBLICATIONBM_EJBHOME,
+          PublicationBmHome.class);
       publicationBm = publicationBmHome.create();
     } catch (Exception e) {
       throw new CommentRuntimeException(
@@ -865,9 +874,9 @@ public class GalleryBmEJB implements SessionBean {
     SearchEngineBm searchEngineBm = null;
     {
       try {
-        SearchEngineBmHome searchEngineHome = (SearchEngineBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.SEARCHBM_EJBHOME,
-                SearchEngineBmHome.class);
+        SearchEngineBmHome searchEngineHome = (SearchEngineBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.SEARCHBM_EJBHOME,
+            SearchEngineBmHome.class);
         searchEngineBm = searchEngineHome.create();
       } catch (Exception e) {
         throw new CommentRuntimeException(
@@ -906,4 +915,156 @@ public class GalleryBmEJB implements SessionBean {
   public void ejbPassivate() {
     // not implemented
   }
+
+  /**
+   * @param userId
+   *         ID of user
+   * @see PhotoDetail
+   * @return the list of photos that the user has created or updated
+   * @throws SQLException, ParseException
+   */
+  public List<PhotoDetail> getAllPhotosbyUserid(String userId) {
+    Connection con = initCon();
+    try {
+      List<String> photoIds = PhotoDAO.getAllPhotosIDbyUserid(con, userId);
+      List<PhotoDetail> photos = new ArrayList<PhotoDetail>(photoIds.size());
+      for (String id : photoIds) {
+        photos.add(PhotoDAO.getPhoto(con, Integer.parseInt(id)));
+      }
+      return photos;
+    } catch (ParseException e) {
+      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotobyUserid()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+    } catch (SQLException e) {
+      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotobyUserid()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+    } finally {
+      fermerCon(con);
+    }
+
+  }
+
+  /**
+   * @param photoId
+   *         photoId of userId
+   * @param userId
+   *         ID of user
+   * @param subPhotos
+   *         part of the list of photosId that the userId has created or updated
+   * @see PhotoWithStatus
+   * @see PhotoDetail
+   * @return the photo is showing that it is a creation or an update
+   * @throws SQLException
+   */
+  protected PhotoWithStatus getPhotoWithStatus(String photoId, String userId,
+      List<String> subPhotos) {
+    Connection con = initCon();
+    try {
+      PhotoDetail photo = PhotoDAO.getPhoto(con, Integer.parseInt(photoId));
+      return new PhotoWithStatus(photo, photoWasUpdated(photo, userId, subPhotos));
+    } catch (SQLException e) {
+      throw new GalleryRuntimeException("GalleryBmEJB.updatePhotoboolean()",
+          SilverpeasRuntimeException.ERROR, "", e);
+    } finally {
+      fermerCon(con);
+    }
+  }
+
+  /**
+   * @param photo
+   *         photo of userId
+   * @param userId
+   *         ID of user
+   * @param subPhotos
+   *         part of the list of photos that the userId has created or updated
+   * @see PhotoDetail
+   * @return boolean which shows that it is a creation or an update
+   */
+  protected boolean photoWasUpdated(PhotoDetail photo, String userId, List<String> subPhotos) {
+    if (!subPhotos.isEmpty()) {
+      if (photo.getUpdateId() != null) {
+        if (subPhotos.contains(photo.getId())) {
+          return true;
+        }
+        return userId.equals(photo.getUpdateId()) && !userId.equals(photo.getCreatorId());
+      }
+      return false;
+    }
+    return userId.equals(photo.getUpdateId());
+  }
+
+  /**
+   * @param userId
+   *         ID of user
+   * @see PhotoWithStatus
+   * @return the list of photos that the user has created or updated
+   * @throws SQLException, ParseException
+   */
+  public List<PhotoWithStatus> getAllPhotosWithStatusbyUserid(String userId) {
+    Connection con = initCon();
+    try {
+      List<String> photoIds = PhotoDAO.getAllPhotosIDbyUserid(con, userId);
+      List<PhotoWithStatus> photos = new ArrayList<PhotoWithStatus>(photoIds.size());
+      int i = 0;
+      for (String photoId : photoIds) {
+        photos.add(getPhotoWithStatus(photoId, userId, photoIds.subList(i + 1, photoIds.size())));
+        i++;
+      }
+      return photos;
+    } catch (ParseException e) {
+      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotobyUserid()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+    } catch (SQLException e) {
+      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotobyUserid()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+    } finally {
+      fermerCon(con);
+    }
+
+  }
+
+  /**
+   * @param userId
+   *         ID of user
+   * @param firstIndex
+   *         The beginning of the list
+   * @param numberOfElement
+   *         The number of items wanted
+   * @see PhotoWithStatus
+   * @return The list(of photos that the userId has created or updated) of sizenumberOfElement
+   * @throws SQLException, ParseException
+   */
+  public List<PhotoWithStatus> getAllPhotosWithStatusbyUserid(String userId, int firstIndex,
+      int nbElement) {
+    Connection con = initCon();
+    try {
+      List<String> photoIds = PhotoDAO.getAllPhotosIDbyUserid(con, userId);
+      List<PhotoWithStatus> photos = new ArrayList<PhotoWithStatus>(photoIds.size());
+      int i = 0;
+      for (String photoId : photoIds) {
+        if (firstIndex == i) {
+          photos.add(getPhotoWithStatus(photoId, userId, photoIds.subList(i + 1, photoIds.size())));
+          firstIndex++;
+        }
+        i++;
+        if (photos.size() == nbElement) {
+          return photos;
+        }
+
+      }
+      return photos;
+    } catch (ParseException e) {
+      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+    } catch (SQLException e) {
+      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+    } finally {
+      fermerCon(con);
+    }
+
+  }
+//    public List getSocialInformationsList(String userId, int firstIndex, int numberOfElement) {
+//        return getAllPhotosWithStatusbyUserid(userId, firstIndex, numberOfElement);
+//    }
 }
