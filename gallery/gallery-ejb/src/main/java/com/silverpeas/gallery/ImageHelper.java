@@ -40,12 +40,8 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -87,10 +83,12 @@ public class ImageHelper {
   }
 
   /**
-   * In case of unit upload
    * @param photo
    * @param image
    * @param subDirectory
+   * @param watermark
+   * @param watermarkHD
+   * @param watermarkOther
    * @throws Exception
    */
   public static void processImage(PhotoDetail photo, FileItem image,
@@ -141,6 +139,9 @@ public class ImageHelper {
    * In case of drag And Drop upload
    * @param photo
    * @param image
+   * @param watermark
+   * @param watermarkHD
+   * @param watermarkOther
    * @throws Exception
    */
   public static void processImage(PhotoDetail photo, File image,
@@ -444,7 +445,6 @@ public class ImageHelper {
     if (inputBuf == null) {
       return;
     }
-
     String[] widthAndHeight = getWidthAndHeight(inputBuf, widthParam);
     int width = Integer.parseInt(widthAndHeight[0]);
     int height = Integer.parseInt(widthAndHeight[1]);
@@ -495,9 +495,10 @@ public class ImageHelper {
 
   public static BufferedImage getScaledInstance(BufferedImage img,
       int targetWidth, int targetHeight, Object hint, boolean higherQuality) {
-    // int type = (img.getTransparency() == Transparency.OPAQUE) ?
-    // BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
-    int type = BufferedImage.TYPE_INT_RGB;
+    int type =  BufferedImage.TYPE_INT_RGB;
+    if (img.getTransparency() == Transparency.TRANSLUCENT) {
+      type = BufferedImage.TYPE_INT_ARGB;
+    }
     BufferedImage ret = img;
     int w, h;
     if (higherQuality) {
@@ -701,23 +702,18 @@ public class ImageHelper {
   }
 
   private static void pasteFile(String fromImage, String toImage, boolean cut) {
-    File fromFile = null;
-    File toFile = null;
     if (cut) {
-      fromFile = new File(fromImage);
-      toFile = new File(toImage);
-      fromFile.renameTo(toFile);
-
-      fromFile = null;
-      toFile = null;
-    } else {
-      try {
-        FileRepositoryManager.copyFile(fromImage, toImage);
-      } catch (Exception e) {
-        SilverTrace.error("gallery", "ImageHelper.pasteFile",
-            "root.MSG_GEN_PARAM_VALUE", "Unable to copy file : fromImage = "
-            + fromImage + ", toImage = " + toImage, e);
+      File fromFile = new File(fromImage);
+      File toFile = new File(toImage);
+      if(fromFile.renameTo(toFile)){
+        return;
       }
+    }
+    try {
+      FileRepositoryManager.copyFile(fromImage, toImage);
+    } catch (Exception e) {
+      SilverTrace.error("gallery", "ImageHelper.pasteFile", "root.MSG_GEN_PARAM_VALUE",
+          "Unable to copy file : fromImage = " + fromImage + ", toImage = " + toImage, e);
     }
   }
 

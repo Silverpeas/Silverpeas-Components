@@ -47,7 +47,7 @@ public class MetadataExtractorTest {
 
   @Before
   public void setUp() {
-    extractor = new MetadataExtractor();
+    extractor = new DrewMetadataExtractor();
   }
 
   @Test
