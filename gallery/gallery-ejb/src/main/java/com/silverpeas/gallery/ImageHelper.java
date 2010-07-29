@@ -23,6 +23,9 @@
  */
 package com.silverpeas.gallery;
 
+
+
+
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
@@ -40,10 +43,12 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-
-import static com.silverpeas.gallery.ImageType.*;
-
-import java.awt.*;
+import java.awt.AlphaComposite;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -100,7 +105,7 @@ public class ImageHelper {
         name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());
         // name = replaceSpecialChars(name);
 
-        if (isImage(name)) {
+        if (ImageType.isImage(name)) {
           dir = new File(FileRepositoryManager.getAbsolutePath(instanceId)
               + subDirectory + photoId + File.separator + name);
           mimeType = image.getContentType();
@@ -154,7 +159,7 @@ public class ImageHelper {
       name = image.getName();
       if (name != null) {
         name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());
-        if (isImage(name)) {
+        if (ImageType.isImage(name)) {
           String subDirectory = gallerySettings.getString("imagesSubDirectory");
 
           dir = FileRepositoryManager.getAbsolutePath(instanceId)
@@ -197,14 +202,14 @@ public class ImageHelper {
       percentSize = 1;
     }
 
-    if (isValidExtension(name)) {
+    if (ImageType.isValidExtension(name)) {
       // recherche de la taille de l'image
       getDimension(dir, photo);
     }
 
     // faire les preview et vignettes pour les formats possibles
     // NOTE : on ne peut pas redimensionner les images de type "bmp" ni "tif"
-    if (isValidExtension(name)) {
+    if (ImageType.isValidExtension(name)) {
 
       String pathFile = FileRepositoryManager.getAbsolutePath(instanceId)
           + subDirectory + photoId + File.separator;
@@ -212,7 +217,7 @@ public class ImageHelper {
       // JPEG
       String nameAuthor = "";
       String nameForWatermark = "";
-      if (StringUtil.isDefined(watermarkHD) && watermark && isJpeg(type)) {
+      if (StringUtil.isDefined(watermarkHD) && watermark && ImageType.isJpeg(type)) {
         // création d'un duplicata de l'image originale avec intégration du
         // watermark
         String property = watermarkHD;
@@ -229,7 +234,7 @@ public class ImageHelper {
           createWatermark(photo.getId(), nameAuthor, pathFile, dir, percentSize);
         }
       }
-      if (StringUtil.isDefined(watermarkOther) && watermark && isJpeg(type)) {
+      if (StringUtil.isDefined(watermarkOther) && watermark && ImageType.isJpeg(type)) {
         String property = watermarkOther;
         Metadata metadata = JpegMetadataReader.readMetadata(dir);
         Directory iptcDirectory = metadata.getDirectory(IptcDirectory.class);
@@ -480,9 +485,6 @@ public class ImageHelper {
   public static BufferedImage getScaledInstance(BufferedImage img,
       int targetWidth, int targetHeight, Object hint, boolean higherQuality) {
     int type =  BufferedImage.TYPE_INT_RGB;
-    if (img.getTransparency() == Transparency.TRANSLUCENT) {
-      type = BufferedImage.TYPE_INT_ARGB;
-    }
     BufferedImage ret = img;
     int w, h;
     if (higherQuality) {
