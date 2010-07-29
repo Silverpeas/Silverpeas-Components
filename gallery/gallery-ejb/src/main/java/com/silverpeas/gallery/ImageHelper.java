@@ -41,6 +41,8 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 
+import static com.silverpeas.gallery.ImageType.*;
+
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -65,22 +67,7 @@ public class ImageHelper {
   static final String watermarkSuffix = "_watermark.jpg";
   static final ImageMetadataExtractor extractor = new SanselanMetadataExtractor();
 
-  public static boolean isImage(String name) {
-    String type = FileRepositoryManager.getFileExtension(name);
-    return (isJpeg(type) || type.equalsIgnoreCase("bmp") || type.equalsIgnoreCase("tiff")
-        || type.equalsIgnoreCase("jpeg") || type.equalsIgnoreCase("png") || type.equalsIgnoreCase(
-        "tif"));
-  }
-
-  public static boolean isValidExtension(String name) {
-    String type = FileRepositoryManager.getFileExtension(name);
-    return (isJpeg(type) || type.equalsIgnoreCase("tiff") || type.equalsIgnoreCase("jpeg") || type.
-        equalsIgnoreCase("png"));
-  }
-
-  public static boolean isJpeg(String type) {
-    return type.equalsIgnoreCase("gif") || type.equalsIgnoreCase("jpg");
-  }
+  
 
   /**
    * @param photo
@@ -397,11 +384,8 @@ public class ImageHelper {
     return getWidthAndHeight(inputBuf, baseWidth);
   }
 
-  public static String[] getWidthAndHeight(BufferedImage inputBuf,
-      int widthParam) {
-
+  public static String[] getWidthAndHeight(BufferedImage inputBuf, int widthParam) {
     String[] result = new String[2];
-
     try {
       // calcul de la taille de la sortie
       double inputBufWidth;
@@ -468,7 +452,8 @@ public class ImageHelper {
       g.setColor(Color.BLACK);
       g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
           RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-      g.setFont(new Font("Arial", Font.BOLD, sizeWatermark));
+      Font watermarkFont = new Font("Arial", Font.BOLD, sizeWatermark);
+      g.setFont(watermarkFont);
       FontMetrics fontMetrics = g.getFontMetrics();
       Rectangle2D rect = fontMetrics.getStringBounds(nameWatermark, g);
       g.drawString(nameWatermark, (width - (int) rect.getWidth())
@@ -479,13 +464,12 @@ public class ImageHelper {
       g.setColor(Color.WHITE);
       g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
           RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-      g.setFont(new Font("Arial", Font.BOLD, sizeWatermark));
+      g.setFont(watermarkFont);
       fontMetrics = g.getFontMetrics();
       rect = fontMetrics.getStringBounds(nameWatermark, g);
       g.drawString(nameWatermark, (width - (int) rect.getWidth())
           - sizeWatermark / 2, (height - (int) rect.getHeight())
           - sizeWatermark / 2);
-
       g.dispose();
     }
 
@@ -615,7 +599,8 @@ public class ImageHelper {
     g.setColor(Color.BLACK);
     g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
         RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-    g.setFont(new Font("Arial", Font.BOLD, size));
+    Font watermarkFont = new Font("Arial", Font.BOLD, size);
+    g.setFont(watermarkFont);
     FontMetrics fontMetrics = g.getFontMetrics();
     Rectangle2D rect = fontMetrics.getStringBounds(name, g);
 
@@ -626,7 +611,7 @@ public class ImageHelper {
     g.setColor(Color.WHITE);
     g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
         RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-    g.setFont(new Font("Arial", Font.BOLD, size));
+    g.setFont(watermarkFont);
     fontMetrics = g.getFontMetrics();
     rect = fontMetrics.getStringBounds(name, g);
     // double angle = 3.14159265 / 2;

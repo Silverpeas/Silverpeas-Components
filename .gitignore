@@ -1,0 +1,4 @@
+*.iws
+*.ipr
+*.iml
+*/**/target/*

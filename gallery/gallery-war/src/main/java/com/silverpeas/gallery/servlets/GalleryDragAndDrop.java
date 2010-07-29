@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.silverpeas.gallery.ImageType;
 import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.gallery.ImageHelper;
@@ -160,7 +161,7 @@ public class GalleryDragAndDrop extends HttpServlet {
     while (itPathContent.hasNext()) {
       File file = itPathContent.next();
       if (file.isFile()) {
-        if (ImageHelper.isImage(file.getName())) {
+        if (ImageType.isImage(file.getName())) {
           try {
             createPhoto(file.getName(), userId, componentId, albumId, file,
                 watermark, watermarkHD, watermarkOther, download);
