@@ -24,6 +24,7 @@
 package com.silverpeas.gallery.dao;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -111,34 +112,38 @@ public class TestPhotoDAO extends AbstractTestDao {
   }
   
   
-  /*@Test
-  public void testGetAllPhotosIdbyUseridOfMyContact() throws Exception{
+  @Test
+  public void testgetSocialInformationsList() throws Exception{
     IDatabaseConnection connexion = null;
     this.setUp();       
     connexion = getConnection();
     List<String> availableList = new ArrayList<String>();
-    availableList.add("gallery27");
+    availableList.add("gallery25");
     availableList.add("gallery26");
-    PhotoDAO dao = mock(PhotoDAO.class);    
-    when(dao.getListAvailable("2")).thenReturn(availableList);
-    String userid = "1";
+    List <String> listOfuserId = new ArrayList<String>();
+    listOfuserId.add("1");
     try {
     PhotoDetail ciel = PhotoDAO.getPhoto(connexion.getConnection(), 0);
     PhotoDetail fleur = PhotoDAO.getPhoto(connexion.getConnection(), 3);
-    PhotoDetail mer = PhotoDAO.getPhoto(connexion.getConnection(), 4);
+    PhotoDetail montagne= PhotoDAO.getPhoto(connexion.getConnection(), 2);
     SocialInformationGallery socialCiel = new SocialInformationGallery(new PhotoWithStatus(ciel, true));
     SocialInformationGallery socialFleur = new SocialInformationGallery( new PhotoWithStatus(fleur, false));
-    SocialInformationGallery socialmer1 = new SocialInformationGallery(new PhotoWithStatus(mer, true));
-    SocialInformationGallery socialmer2 = new SocialInformationGallery( new PhotoWithStatus(mer, false));
+    SocialInformationGallery socialmontagne = new SocialInformationGallery(new PhotoWithStatus(montagne, true));
+
      
-    List<SocialInformationGallery> photos = PhotoDAO.getAllPhotosIDbyUseridOfMyContact(connexion.getConnection(), "2", userid, 0, 4);
+    List<SocialInformation> photos = PhotoDAO.getSocialInformationsListOfMyContacts(connexion.getConnection(), listOfuserId, null, 2,0);
     assertNotNull("Photos should exist", photos);
-    assertEquals(photos.get(3), socialCiel);
+    photos = PhotoDAO.getSocialInformationsListOfMyContacts(connexion.getConnection(), listOfuserId, availableList, 4,0);
+    assertNotNull("Photos should exist", photos);
+    assertEquals(photos.size(),3);
+    assertEquals(photos.get(0),socialmontagne);
+    assertEquals(photos.get(1),socialCiel);
+    assertEquals(photos.get(2),socialFleur);
     } finally {
      closeConnection(connexion);
    }
     
-  }*/
+  }
 
 
   @Override

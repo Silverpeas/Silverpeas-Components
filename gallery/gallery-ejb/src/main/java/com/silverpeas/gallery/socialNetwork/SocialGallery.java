@@ -30,6 +30,7 @@ package com.silverpeas.gallery.socialNetwork;
  * @see SocialInformationGallery
  **/
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
@@ -37,6 +38,8 @@ import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.socialNetwork.provider.SocialGalleryInterface;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -44,18 +47,28 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class SocialGallery implements SocialGalleryInterface {
 
-    
   @Override
   public List<SocialInformation> getSocialInformationsList(String userId, int numberOfElement,
       int firstIndex) {
     try {
-    return getGalleryBm().getAllPhotosByUserid(userId, firstIndex, numberOfElement);
-    }catch(RemoteException rex) {
-      throw new GalleryRuntimeException("SocialGallery.getSocialInformationsList()", 
+      return getGalleryBm().getAllPhotosByUserid(userId, firstIndex, numberOfElement);
+    } catch (RemoteException rex) {
+      throw new GalleryRuntimeException("SocialGallery.getSocialInformationsList()",
           SilverpeasException.ERROR, "Error obtaining all photos fo user", rex);
     }
 
   }
+  
+  public List getSocialInformationsListOfMyContacts(String MyId, List<String> listOfuserId,
+      int numberOfElement, int firstIndex) throws SilverpeasException {
+    try {
+      return getGalleryBm().getSocialInformationsListOfMyContacts(listOfuserId, this.getListAvailable(MyId),
+          numberOfElement, firstIndex);
+    } catch (RemoteException rex) {
+      throw new GalleryRuntimeException("SocialGallery.getSocialInformationsList()",
+          SilverpeasException.ERROR, "Error obtaining all photos fo user", rex);
+    }
+  } 
 
   private GalleryBm getGalleryBm() {
     GalleryBm galleryBm = null;
@@ -70,4 +83,18 @@ public class SocialGallery implements SocialGalleryInterface {
     }
     return galleryBm;
   }
+
+  private List<String> getListAvailable(String userid) {
+    OrganizationController org = new OrganizationController();
+    List<ComponentInstLight> availableList = new ArrayList<ComponentInstLight>();
+    availableList = org.getAvailComponentInstLights(userid, "gallery");
+    List<String> id_list = new ArrayList<String>();
+    for (ComponentInstLight comp : availableList) {
+      id_list.add(comp.getId());
+    }
+    return id_list;
+  }
+
+
+ 
 }

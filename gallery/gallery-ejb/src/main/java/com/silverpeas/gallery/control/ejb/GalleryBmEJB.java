@@ -982,10 +982,20 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
 
  
   @Override
-  public List<PhotoWithStatus> getAllPhotosWithStatusbyUseridOfMyContact(String userId,
-      int firstIndex, int numberOfElement) throws RemoteException {
-    // TODO Auto-generated method stub
-    return null;
+  public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> listOfuserId, List<String> availableComponent, int numberOfElement, int firstIndex){
+    Connection con = initCon();
+    try {      
+       return PhotoDAO.getSocialInformationsListOfMyContacts(con, listOfuserId, availableComponent, numberOfElement, firstIndex);     
+    } catch (ParseException e) {
+      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+    } catch (SQLException e) {
+      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+    } finally {
+      fermerCon(con);
+    }
   }
+    
   
 }

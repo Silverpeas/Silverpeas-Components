@@ -1,6 +1,7 @@
 package com.silverpeas.gallery.control.ejb;
 
 import java.rmi.RemoteException;
+import java.sql.Connection;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -18,7 +19,7 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 public interface GalleryBmBusinessSkeleton {
-//les albums ...
+  // les albums ...
 
   public AlbumDetail getAlbum(NodePK nodePK, boolean viewAllPhoto)
       throws RemoteException;
@@ -103,9 +104,9 @@ public interface GalleryBmBusinessSkeleton {
 
   public void deleteOrder(String orderId) throws RemoteException;
 
-  public List<PhotoWithStatus> getAllPhotosWithStatusbyUseridOfMyContact(String userId,
-      int firstIndex, int numberOfElement) throws RemoteException;
-
   public List<SocialInformation> getAllPhotosByUserid(String userId, int firstIndex,
       int numberOfElement) throws RemoteException;
+
+  public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> listOfuserId,
+      List<String> availableComponent, int numberOfElement, int firstIndex) throws RemoteException;
 }

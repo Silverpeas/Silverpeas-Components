@@ -23,6 +23,7 @@
  */
 package com.silverpeas.gallery.dao;
 
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -42,8 +43,6 @@ import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
 import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -607,7 +606,7 @@ public class PhotoDAO {
     return null;
 
   }
- 
+
   public static List<SocialInformation> getAllPhotosIDbyUserid_PostgreSQL(Connection con,
       String userId, int firstIndex, int nbElement) throws
       SQLException, ParseException {
@@ -640,59 +639,53 @@ public class PhotoDAO {
 
   }
 
-  public static List<SocialInformationGallery> getAllPhotosIDbyUseridOfMyContact(Connection con,String userShow,
-      String userId, int firstIndex, int nbElement) throws SQLException {
-    List<SocialInformationGallery> listPhoto = new ArrayList<SocialInformationGallery>();
-    List<String> listAvailable = getListAvailable(userShow);
-     String query =
+  public static List<SocialInformation> getSocialInformationsListOfMyContacts(Connection con,
+      List<String> listOfuserId, List<String> availableComponent, int numberOfElement,
+      int firstIndex)throws SQLException, ParseException  {
+    List<SocialInformation> listPhoto = new ArrayList<SocialInformation>();
+    // List<String> listAvailable = getListAvailable(userShow);
+    String query =
       "(SELECT creationdate AS dateinformation, photoId,'new'as type FROM SC_Gallery_Photo" +
-      "WHERE creatorid = ? AND instanceid IN (" +list2String(listAvailable) +"))"+
+      " WHERE creatorid IN ("+list2String(listOfuserId)+") AND instanceid IN ("+list2String(availableComponent)+"))" +
       "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo" +
-      " WHERE  updateid = ?AND  instanceid IN (" + list2String(listAvailable) +"))"+ 
+      " WHERE  updateid IN ("+list2String(listOfuserId)+") AND  instanceid IN ("+list2String(availableComponent)+"))" +
       "ORDER BY dateinformation DESC, photoId DESC  limit ? offset ? ";
-      PreparedStatement prepStmt = null;
-      ResultSet rs = null;
-      try {
-        prepStmt = con.prepareStatement(query);
-        prepStmt.setString(1, userId);
-        prepStmt.setString(2, userId);
-        prepStmt.setInt(3, nbElement);
-        prepStmt.setInt(4, firstIndex);
-        rs = prepStmt.executeQuery();
-        while (rs.next()) {
-          PhotoDetail pd = getPhoto(con, rs.getInt(2));
-          PhotoWithStatus withStatus = new PhotoWithStatus(pd, rs.getBoolean(3));
-          listPhoto.add(new SocialInformationGallery(withStatus));
-        }
-      } finally {
-        // fermeture
-        DBUtil.close(rs, prepStmt);
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setInt(1, numberOfElement);
+      prepStmt.setInt(2, firstIndex);
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        PhotoDetail pd = getPhoto(con, rs.getInt(2));
+        PhotoWithStatus withStatus = new PhotoWithStatus(pd, rs.getBoolean(3));
+        listPhoto.add(new SocialInformationGallery(withStatus));
       }
-
-      return listPhoto;
-
-  }
-  
-  protected static List<String> getListAvailable(String userid){
-    OrganizationController org = new OrganizationController();
-    List<ComponentInstLight> availableList = new ArrayList<ComponentInstLight>();
-    availableList = org.getAvailComponentInstLights(userid, "Gallery");
-    List<String> id_list = new ArrayList<String>();
-    for (ComponentInstLight comp : availableList) {
-      id_list.add(comp.getId());
+    } finally {
+      // fermeture
+      DBUtil.close(rs, prepStmt);
     }
-    return id_list;
+
+    return listPhoto;
+
   }
-  
+
   private static String list2String(List<String> ids) {
+    if(ids == null || ids.size() == 0 )
+      return "''";
     StringBuilder str = new StringBuilder();
     for (int i = 0; i < ids.size(); i++) {
       if (i != 0) {
         str.append(",");
       }
-      str.append(ids.get(i));
+      str.append("'"+ids.get(i)+"'");
     }
     return str.toString();
   }
+  
+  
+  
+  
 
 }
