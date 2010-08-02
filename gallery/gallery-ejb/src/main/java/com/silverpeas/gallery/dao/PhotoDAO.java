@@ -37,8 +37,13 @@ import java.util.Locale;
 
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
+import com.silverpeas.gallery.model.PhotoWithStatus;
+import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
+import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -49,7 +54,7 @@ public class PhotoDAO {
   private static String nullEndDate = new String("9999/99/99");
 
   public static PhotoDetail getPhoto(Connection con, int photoId)
-      throws SQLException {
+  throws SQLException {
     // récupérer une photo
     PhotoDetail photo = new PhotoDetail();
     String query = "select * from SC_Gallery_Photo where photoId = ? ";
@@ -77,8 +82,9 @@ public class PhotoDAO {
     ArrayList<PhotoDetail> listPhoto = null;
     Date today = new Date();
 
-    String query = "select * from SC_Gallery_Photo P, SC_Gallery_Path A "
-        + "where P.photoId = A.photoId and P.instanceId = A.instanceId and A.nodeId = ? and P.instanceId = ? order by P.photoId";
+    String query =
+      "select * from SC_Gallery_Photo P, SC_Gallery_Path A "
+      + "where P.photoId = A.photoId and P.instanceId = A.instanceId and A.nodeId = ? and P.instanceId = ? order by P.photoId";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -101,14 +107,14 @@ public class PhotoDAO {
   }
 
   public static Collection<PhotoDetail> getPhotoNotVisible(Connection con, String instanceId)
-      throws SQLException {
+  throws SQLException {
     // récupérer les photos qui ne sont plus visibles pour l'instance
     ArrayList<PhotoDetail> listPhoto = null;
     Date today = new Date();
     String dateToday = DateUtil.date2SQLDate(today);
 
     String query = "select * from SC_Gallery_Photo  where instanceId = ? "
-        + "and (beginDate > ? or endDate < ? )";
+      + "and (beginDate > ? or endDate < ? )";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -130,7 +136,7 @@ public class PhotoDAO {
   }
 
   public static Collection<PhotoDetail> getAllPhotos(Connection con, String instanceId)
-      throws SQLException {
+  throws SQLException {
     // récupérer toutes les photos de l'instance
     ArrayList<PhotoDetail> listPhoto = null;
 
@@ -154,7 +160,7 @@ public class PhotoDAO {
   }
 
   public static Collection<PhotoDetail> getAllPhotoEndVisible(Connection con, int nbDays)
-      throws SQLException {
+  throws SQLException {
     // récupérer toutes les photos de l'instance ayant une date de visibilité
     // arrivant à terme dans 'nbDays' jours
     ArrayList<PhotoDetail> listPhoto = null;
@@ -189,7 +195,7 @@ public class PhotoDAO {
   }
 
   public static String createPhoto(Connection con, PhotoDetail photo)
-      throws SQLException, UtilException {
+  throws SQLException, UtilException {
     // Création d'une nouvelle photo
     PhotoDetail newPhoto = photo;
     String id = "";
@@ -198,10 +204,11 @@ public class PhotoDAO {
       int newId = DBUtil.getNextId("SC_Gallery_Photo", "photoId");
       id = new Integer(newId).toString();
       // création de la requete
-      String query = "insert into SC_Gallery_Photo (photoId,title,description,sizeH,sizeL,creationDate,updateDate,vueDate"
-          + ",author,download,albumLabel,status,albumId,creatorId,updateId,instanceId,imageName,imageSize,beginDate,endDate"
-          + ",imageMimeType,keyWord, beginDownloadDate, endDownloadDate) "
-          + "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+      String query =
+        "insert into SC_Gallery_Photo (photoId,title,description,sizeH,sizeL,creationDate,updateDate,vueDate"
+        + ",author,download,albumLabel,status,albumId,creatorId,updateId,instanceId,imageName,imageSize,beginDate,endDate"
+        + ",imageMimeType,keyWord, beginDownloadDate, endDownloadDate) "
+        + "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       initParam(prepStmt, newId, newPhoto);
@@ -237,16 +244,17 @@ public class PhotoDAO {
   }
 
   public static void updatePhoto(Connection con, PhotoDetail photo)
-      throws SQLException {
+  throws SQLException {
     PhotoDetail updatedPhoto = photo;
     PreparedStatement prepStmt = null;
     try {
-      String query = "update SC_Gallery_Photo set photoId = ? , title = ? , description = ? , sizeH = ? ,"
-          + " sizeL = ? , creationDate = ? , updateDate = ? , vueDate = ? , author = ? ,"
-          + " download = ? , albumLabel = ? , status = ? , albumId = ? , creatorId = ? , updateId = ? , instanceId = ? ,"
-          + " imageName = ? , imageSize = ? , beginDate = ? , endDate = ? , imageMimeType = ? , keyWord = ? ,"
-          + " beginDownloadDate = ?, endDownloadDate = ? "
-          + " where photoId = ? ";
+      String query =
+        "update SC_Gallery_Photo set photoId = ? , title = ? , description = ? , sizeH = ? ,"
+        + " sizeL = ? , creationDate = ? , updateDate = ? , vueDate = ? , author = ? ,"
+        + " download = ? , albumLabel = ? , status = ? , albumId = ? , creatorId = ? , updateId = ? , instanceId = ? ,"
+        + " imageName = ? , imageSize = ? , beginDate = ? , endDate = ? , imageMimeType = ? , keyWord = ? ,"
+        + " beginDownloadDate = ?, endDownloadDate = ? "
+        + " where photoId = ? ";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       int photoId = Integer.parseInt(updatedPhoto.getPhotoPK().getId());
@@ -261,7 +269,7 @@ public class PhotoDAO {
   }
 
   public static void removePhoto(Connection con, int photoId)
-      throws SQLException {
+  throws SQLException {
     PreparedStatement prepStmt = null;
     try {
       String query = "delete from SC_Gallery_Photo where photoId = ? ";
@@ -280,7 +288,8 @@ public class PhotoDAO {
     ArrayList<PhotoDetail> listPhoto = null;
     Date today = new Date();
 
-    String query = "select * from SC_Gallery_Photo where instanceId = ? order by creationDate desc,photoId desc";
+    String query =
+      "select * from SC_Gallery_Photo where instanceId = ? order by creationDate desc,photoId desc";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -321,7 +330,7 @@ public class PhotoDAO {
       if (StringUtil.isDefined(String.valueOf(beginDate))
           && StringUtil.isDefined(String.valueOf(endDate))) {
         result = beginDate.compareTo(today) <= 0
-            && endDate.compareTo(today) >= 0;
+        && endDate.compareTo(today) >= 0;
       }
     }
     return result;
@@ -332,8 +341,9 @@ public class PhotoDAO {
     // récupérer la liste des emplacements de la photo
     ArrayList<String> listPath = null;
 
-    String query = "select N.NodeId from SC_Gallery_Path P, SB_Node_Node N "
-        + "where P.PhotoId = ? and N.nodeId = P.NodeId and P.instanceId = ? and N.instanceId = P.instanceId ";
+    String query =
+      "select N.NodeId from SC_Gallery_Path P, SB_Node_Node N "
+      + "where P.PhotoId = ? and N.nodeId = P.NodeId and P.instanceId = ? and N.instanceId = P.instanceId ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -556,18 +566,18 @@ public class PhotoDAO {
   }
 
   /**
-   * @param userId
-   *         ID of user
-   * @return send all photo of userId
+   * @param userId ID of user
+   * @return
    * @throws SQLException
    * @throws ParseException
    **/
   public static List<String> getAllPhotosIDbyUserid(Connection con, String userId) throws
-      SQLException, ParseException {
+  SQLException, ParseException {
     List<String> listPhoto = new ArrayList<String>();
-    String query = "(SELECT creationdate AS dateinformation, photoId,'new'as type FROM SC_Gallery_Photo  WHERE creatorid = ?) "
-        + "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo  WHERE  updateid = ? ) "
-        + "ORDER BY dateinformation DESC, photoId DESC ";
+    String query =
+      "(SELECT creationdate AS dateinformation, photoId,'new'as type FROM SC_Gallery_Photo  WHERE creatorid = ?) "
+      + "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo  WHERE  updateid = ? ) "
+      + "ORDER BY dateinformation DESC, photoId DESC ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -586,4 +596,103 @@ public class PhotoDAO {
     return listPhoto;
 
   }
+
+  public static List<SocialInformation> getAllPhotosIDbyUserid(Connection con,
+      String userId, int firstIndex, int nbElement) throws
+      SQLException, ParseException {
+    String DatabaseProductName = con.getMetaData().getDatabaseProductName().toUpperCase();
+    if (DatabaseProductName.contains("PostgreSQL".toUpperCase())) {
+      return getAllPhotosIDbyUserid_PostgreSQL(con, userId, firstIndex, nbElement);
+    }
+    return null;
+
+  }
+ 
+  public static List<SocialInformation> getAllPhotosIDbyUserid_PostgreSQL(Connection con,
+      String userId, int firstIndex, int nbElement) throws
+      SQLException, ParseException {
+    List<SocialInformation> listPhoto = new ArrayList<SocialInformation>();
+    String query =
+      "(SELECT creationdate AS dateinformation, photoId,'new'as type FROM SC_Gallery_Photo  WHERE creatorid = ?) "
+      + "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo  WHERE  updateid = ? ) "
+      + "ORDER BY dateinformation DESC, photoId DESC  limit ? offset ? ";
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setString(1, userId);
+      prepStmt.setString(2, userId);
+      prepStmt.setInt(3, nbElement);
+      prepStmt.setInt(4, firstIndex);
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        PhotoDetail pd = getPhoto(con, rs.getInt(2));
+        PhotoWithStatus withStatus = new PhotoWithStatus(pd, rs.getBoolean(3));
+
+        listPhoto.add(new SocialInformationGallery(withStatus));
+      }
+    } finally {
+      // fermeture
+      DBUtil.close(rs, prepStmt);
+    }
+
+    return listPhoto;
+
+  }
+
+  public static List<SocialInformationGallery> getAllPhotosIDbyUseridOfMyContact(Connection con,String userShow,
+      String userId, int firstIndex, int nbElement) throws SQLException {
+    List<SocialInformationGallery> listPhoto = new ArrayList<SocialInformationGallery>();
+    List<String> listAvailable = getListAvailable(userShow);
+     String query =
+      "(SELECT creationdate AS dateinformation, photoId,'new'as type FROM SC_Gallery_Photo" +
+      "WHERE creatorid = ? AND instanceid IN (" +list2String(listAvailable) +"))"+
+      "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo" +
+      " WHERE  updateid = ?AND  instanceid IN (" + list2String(listAvailable) +"))"+ 
+      "ORDER BY dateinformation DESC, photoId DESC  limit ? offset ? ";
+      PreparedStatement prepStmt = null;
+      ResultSet rs = null;
+      try {
+        prepStmt = con.prepareStatement(query);
+        prepStmt.setString(1, userId);
+        prepStmt.setString(2, userId);
+        prepStmt.setInt(3, nbElement);
+        prepStmt.setInt(4, firstIndex);
+        rs = prepStmt.executeQuery();
+        while (rs.next()) {
+          PhotoDetail pd = getPhoto(con, rs.getInt(2));
+          PhotoWithStatus withStatus = new PhotoWithStatus(pd, rs.getBoolean(3));
+          listPhoto.add(new SocialInformationGallery(withStatus));
+        }
+      } finally {
+        // fermeture
+        DBUtil.close(rs, prepStmt);
+      }
+
+      return listPhoto;
+
+  }
+  
+  protected static List<String> getListAvailable(String userid){
+    OrganizationController org = new OrganizationController();
+    List<ComponentInstLight> availableList = new ArrayList<ComponentInstLight>();
+    availableList = org.getAvailComponentInstLights(userid, "Gallery");
+    List<String> id_list = new ArrayList<String>();
+    for (ComponentInstLight comp : availableList) {
+      id_list.add(comp.getId());
+    }
+    return id_list;
+  }
+  
+  private static String list2String(List<String> ids) {
+    StringBuilder str = new StringBuilder();
+    for (int i = 0; i < ids.size(); i++) {
+      if (i != 0) {
+        str.append(",");
+      }
+      str.append(ids.get(i));
+    }
+    return str.toString();
+  }
+
 }

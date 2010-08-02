@@ -33,6 +33,9 @@ import org.junit.Test;
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
+import com.silverpeas.gallery.model.PhotoWithStatus;
+import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
+import com.silverpeas.socialNetwork.model.SocialInformation;
 
 public class TestPhotoDAO extends AbstractTestDao {
 
@@ -44,28 +47,31 @@ public class TestPhotoDAO extends AbstractTestDao {
   @Test
   public void testGetAllPhotosIdbyUserid() throws Exception {
     IDatabaseConnection connexion = null;
-    this.setUp();
-    String fleurId = "1";
-    String animalId = "2";
-    String merId = "3";
-    String montagneId = "4";
-
+    this.setUp();       
+    
     String userid = "1";
     try {
       connexion = getConnection();
-      List<String> photos = PhotoDAO.getAllPhotosIDbyUserid(connexion.getConnection(), userid);
+      PhotoDetail ciel = PhotoDAO.getPhoto(connexion.getConnection(), 0);
+      PhotoDetail fleur = PhotoDAO.getPhoto(connexion.getConnection(), 3);
+      PhotoDetail mer = PhotoDAO.getPhoto(connexion.getConnection(), 4);
+      SocialInformationGallery socialCiel = new SocialInformationGallery(new PhotoWithStatus(ciel, true));
+      SocialInformationGallery socialFleur = new SocialInformationGallery( new PhotoWithStatus(fleur, false));
+      SocialInformationGallery socialmer1 = new SocialInformationGallery(new PhotoWithStatus(mer, true));
+      SocialInformationGallery socialmer2 = new SocialInformationGallery( new PhotoWithStatus(mer, false));
+       
+      List<SocialInformation> photos = PhotoDAO.getAllPhotosIDbyUserid(connexion.getConnection(), userid, 0, 4);
       assertNotNull("Photos should exist", photos);
-      assertEquals("Should have 5 date creation or update ", 5, photos.size());
-      assertEquals(photos.get(0), montagneId);
-      assertEquals(photos.get(1), merId);
-      assertEquals(photos.get(2), merId);
-      assertEquals(photos.get(3), fleurId);
-      assertEquals(photos.get(4), animalId);
-    } finally {
+      assertEquals("Should have 4 date creation or update ", 4, photos.size());
+      assertEquals(photos.get(0), socialmer1);
+      assertEquals(photos.get(1), socialmer2);
+      assertEquals(photos.get(2), socialFleur);
+      assertEquals(photos.get(3), socialCiel);
+     } finally {
       closeConnection(connexion);
     }
   }
-
+  
   @Test
   public void testGetPhotoDetail() throws Exception {
     IDatabaseConnection connexion = null;
@@ -77,7 +83,7 @@ public class TestPhotoDAO extends AbstractTestDao {
     Date fleurupdate = sdf.parse("2010/06/16");
     PhotoDetail fleur =
         new PhotoDetail("fleur", "tulipe", fleurcreated, fleurupdate, null, null, false, false);
-    int fleurId = 1;
+    int fleurId = 3;
     PhotoPK photoPK = new PhotoPK(String.valueOf(fleurId), "gallery26");
     fleur.setPhotoPK(photoPK);
     fleur.setCreatorId("1");
@@ -103,6 +109,37 @@ public class TestPhotoDAO extends AbstractTestDao {
       closeConnection(connexion);
     }
   }
+  
+  
+  /*@Test
+  public void testGetAllPhotosIdbyUseridOfMyContact() throws Exception{
+    IDatabaseConnection connexion = null;
+    this.setUp();       
+    connexion = getConnection();
+    List<String> availableList = new ArrayList<String>();
+    availableList.add("gallery27");
+    availableList.add("gallery26");
+    PhotoDAO dao = mock(PhotoDAO.class);    
+    when(dao.getListAvailable("2")).thenReturn(availableList);
+    String userid = "1";
+    try {
+    PhotoDetail ciel = PhotoDAO.getPhoto(connexion.getConnection(), 0);
+    PhotoDetail fleur = PhotoDAO.getPhoto(connexion.getConnection(), 3);
+    PhotoDetail mer = PhotoDAO.getPhoto(connexion.getConnection(), 4);
+    SocialInformationGallery socialCiel = new SocialInformationGallery(new PhotoWithStatus(ciel, true));
+    SocialInformationGallery socialFleur = new SocialInformationGallery( new PhotoWithStatus(fleur, false));
+    SocialInformationGallery socialmer1 = new SocialInformationGallery(new PhotoWithStatus(mer, true));
+    SocialInformationGallery socialmer2 = new SocialInformationGallery( new PhotoWithStatus(mer, false));
+     
+    List<SocialInformationGallery> photos = PhotoDAO.getAllPhotosIDbyUseridOfMyContact(connexion.getConnection(), "2", userid, 0, 4);
+    assertNotNull("Photos should exist", photos);
+    assertEquals(photos.get(3), socialCiel);
+    } finally {
+     closeConnection(connexion);
+   }
+    
+  }*/
+
 
   @Override
   protected String getDatasetFileName() {

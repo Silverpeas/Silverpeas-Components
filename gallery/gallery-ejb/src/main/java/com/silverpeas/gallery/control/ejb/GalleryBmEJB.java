@@ -49,8 +49,10 @@ import com.silverpeas.gallery.model.OrderRow;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.gallery.model.PhotoWithStatus;
+import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.comment.control.CommentController;
 import com.stratelia.silverpeas.comment.ejb.CommentRuntimeException;
@@ -87,7 +89,7 @@ import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 /**
  * @author
  */
-public class GalleryBmEJB implements SessionBean {
+public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
 
   /**
    *
@@ -108,10 +110,14 @@ public class GalleryBmEJB implements SessionBean {
     }
   }
 
-  public Collection<NodeDetail> getAllAlbums(String instanceId) {
+  public Collection<AlbumDetail> getAllAlbums(String instanceId) {
     try {
       NodePK nodePK = new NodePK("0", instanceId);
-      Collection<NodeDetail> albums = getNodeBm().getSubTree(nodePK);
+      Collection<NodeDetail> nodes = getNodeBm().getSubTree(nodePK);
+      List<AlbumDetail> albums = new ArrayList<AlbumDetail>(nodes.size());
+      for(NodeDetail node : nodes) {
+        albums.add(new AlbumDetail(node));
+      }
       return albums;
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllAlbum()",
@@ -506,12 +512,12 @@ public class GalleryBmEJB implements SessionBean {
 
   public void indexGallery(String instanceId) {
     // parcourir tous les albums
-    Collection<NodeDetail> albums = getAllAlbums(instanceId);
+    Collection<AlbumDetail> albums = getAllAlbums(instanceId);
     if (albums != null) {
-      Iterator<NodeDetail> it = albums.iterator();
+      Iterator<AlbumDetail> it = albums.iterator();
       while (it.hasNext()) {
         // pour chaque album, parcourir toutes les photos
-        NodeDetail album = it.next();
+        AlbumDetail album = it.next();
 
         // indexation de l'album
         try {
@@ -944,84 +950,7 @@ public class GalleryBmEJB implements SessionBean {
 
   }
 
-  /**
-   * @param photoId
-   *         photoId of userId
-   * @param userId
-   *         ID of user
-   * @param subPhotos
-   *         part of the list of photosId that the userId has created or updated
-   * @see PhotoWithStatus
-   * @see PhotoDetail
-   * @return the photo is showing that it is a creation or an update
-   * @throws SQLException
-   */
-  protected PhotoWithStatus getPhotoWithStatus(String photoId, String userId,
-      List<String> subPhotos) {
-    Connection con = initCon();
-    try {
-      PhotoDetail photo = PhotoDAO.getPhoto(con, Integer.parseInt(photoId));
-      return new PhotoWithStatus(photo, photoWasUpdated(photo, userId, subPhotos));
-    } catch (SQLException e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.updatePhotoboolean()",
-          SilverpeasRuntimeException.ERROR, "", e);
-    } finally {
-      fermerCon(con);
-    }
-  }
-
-  /**
-   * @param photo
-   *         photo of userId
-   * @param userId
-   *         ID of user
-   * @param subPhotos
-   *         part of the list of photos that the userId has created or updated
-   * @see PhotoDetail
-   * @return boolean which shows that it is a creation or an update
-   */
-  protected boolean photoWasUpdated(PhotoDetail photo, String userId, List<String> subPhotos) {
-    if (!subPhotos.isEmpty()) {
-      if (photo.getUpdateId() != null) {
-        if (subPhotos.contains(photo.getId())) {
-          return true;
-        }
-        return userId.equals(photo.getUpdateId()) && !userId.equals(photo.getCreatorId());
-      }
-      return false;
-    }
-    return userId.equals(photo.getUpdateId());
-  }
-
-  /**
-   * @param userId
-   *         ID of user
-   * @see PhotoWithStatus
-   * @return the list of photos that the user has created or updated
-   * @throws SQLException, ParseException
-   */
-  public List<PhotoWithStatus> getAllPhotosWithStatusbyUserid(String userId) {
-    Connection con = initCon();
-    try {
-      List<String> photoIds = PhotoDAO.getAllPhotosIDbyUserid(con, userId);
-      List<PhotoWithStatus> photos = new ArrayList<PhotoWithStatus>(photoIds.size());
-      int i = 0;
-      for (String photoId : photoIds) {
-        photos.add(getPhotoWithStatus(photoId, userId, photoIds.subList(i + 1, photoIds.size())));
-        i++;
-      }
-      return photos;
-    } catch (ParseException e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotobyUserid()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
-    } catch (SQLException e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotobyUserid()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
-    } finally {
-      fermerCon(con);
-    }
-
-  }
+ 
 
   /**
    * @param userId
@@ -1030,29 +959,16 @@ public class GalleryBmEJB implements SessionBean {
    *         The beginning of the list
    * @param numberOfElement
    *         The number of items wanted
-   * @see PhotoWithStatus
+   * @see SocialInformationGallery
    * @return The list(of photos that the userId has created or updated) of sizenumberOfElement
    * @throws SQLException, ParseException
    */
-  public List<PhotoWithStatus> getAllPhotosWithStatusbyUserid(String userId, int firstIndex,
+  
+  public List<SocialInformation> getAllPhotosByUserid(String userId, int firstIndex,
       int nbElement) {
     Connection con = initCon();
-    try {
-      List<String> photoIds = PhotoDAO.getAllPhotosIDbyUserid(con, userId);
-      List<PhotoWithStatus> photos = new ArrayList<PhotoWithStatus>(photoIds.size());
-      int i = 0;
-      for (String photoId : photoIds) {
-        if (firstIndex == i) {
-          photos.add(getPhotoWithStatus(photoId, userId, photoIds.subList(i + 1, photoIds.size())));
-          firstIndex++;
-        }
-        i++;
-        if (photos.size() == nbElement) {
-          return photos;
-        }
-
-      }
-      return photos;
+    try {      
+       return PhotoDAO.getAllPhotosIDbyUserid(con, userId, firstIndex, nbElement);     
     } catch (ParseException e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
@@ -1062,9 +978,14 @@ public class GalleryBmEJB implements SessionBean {
     } finally {
       fermerCon(con);
     }
-
   }
-//    public List getSocialInformationsList(String userId, int firstIndex, int numberOfElement) {
-//        return getAllPhotosWithStatusbyUserid(userId, firstIndex, numberOfElement);
-//    }
+
+ 
+  @Override
+  public List<PhotoWithStatus> getAllPhotosWithStatusbyUseridOfMyContact(String userId,
+      int firstIndex, int numberOfElement) throws RemoteException {
+    // TODO Auto-generated method stub
+    return null;
+  }
+  
 }

@@ -29,87 +29,31 @@ package com.silverpeas.gallery.socialNetwork;
  * @see SocialInformation
  * @see SocialInformationGallery
  **/
-import com.silverpeas.gallery.control.ejb.GalleryBm;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.silverpeas.gallery.control.ejb.GalleryBmEJB;
+import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
-
-import com.silverpeas.gallery.model.PhotoWithStatus;
 import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.socialNetwork.provider.SocialGalleryInterface;
-import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class SocialGallery implements SocialGalleryInterface {
 
-  private static int firstIndex = 0;
-  static private GalleryBm galleryBm = null;
-
-  /**
-   * @param user
-   * @return the list of photos that the user has been created or updated
-   * @see UserDetail
-   * @see SocialInformation
-   * @see SocialInformationGallery
-   **/
-  public List<SocialInformation> getAllEventByUser(UserDetail user) {
-    GalleryBmEJB galleryEJB = new GalleryBmEJB();
-    List<PhotoWithStatus> photos = galleryEJB.getAllPhotosWithStatusbyUserid(user.getId());
-    List<SocialInformation> photosGallery = new ArrayList<SocialInformation>(photos.size());
-    for (PhotoWithStatus photoId : photos) {
-      photosGallery.add(new SocialInformationGallery(photoId));
-    }
-    return photosGallery;
-  }
-
-  /**
-   * @param user
-   * @param numberOfElement
-   *         the number of items wanted
-   * @return the list of photos that the user has been created or updated (size of numberOfElement)
-   * @see UserDetail
-   * @see SocialInformation
-   * @see SocialInformationGallery
-   **/
-  public List<SocialInformation> getAllEventByUser(UserDetail user, int numberOfElement) {
-    GalleryBmEJB galleryEJB = new GalleryBmEJB();
-    List<PhotoWithStatus> photos = galleryEJB.getAllPhotosWithStatusbyUserid(user.getId(),
-        firstIndex, numberOfElement);
-    List<SocialInformation> photosGallery = new ArrayList<SocialInformation>(photos.size());
-    for (PhotoWithStatus photo : photos) {
-      photosGallery.add(new SocialInformationGallery(photo));
-    }
-    firstIndex = numberOfElement + firstIndex;
-    return photosGallery;
-  }
-
+    
   @Override
   public List<SocialInformation> getSocialInformationsList(String userId, int numberOfElement,
-      int firstIndex) throws SilverpeasException {
-
-    List<SocialInformation> photosGallery = null;
+      int firstIndex) {
     try {
-      List<PhotoWithStatus> photos = getGalleryBm().getAllPhotosWithStatusbyUserid(userId,
-          firstIndex, numberOfElement);
-      photosGallery = new ArrayList<SocialInformation>(photos.size());
-      for (PhotoWithStatus photo : photos) {
-        photosGallery.add(new SocialInformationGallery(photo));
-      }
-      firstIndex = numberOfElement + firstIndex;
-
-    } catch (RemoteException ex) {
-      Logger.getLogger(SocialGallery.class.getName()).log(Level.SEVERE, null, ex);
+    return getGalleryBm().getAllPhotosByUserid(userId, firstIndex, numberOfElement);
+    }catch(RemoteException rex) {
+      throw new GalleryRuntimeException("SocialGallery.getSocialInformationsList()", 
+          SilverpeasException.ERROR, "Error obtaining all photos fo user", rex);
     }
-    return photosGallery;
 
   }
 

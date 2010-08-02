@@ -2,13 +2,15 @@
 
 
 <dataset>
-    <sc_gallery_photo photoid = "1" title="fleur" description="tulipe" sizeh= "110" sizel="110" creationdate= "2010/06/15" updatedate="2010/06/16" vuedate="[NULL]" author="[NULL]" download="0" albumlabel="0" status="[NULL]"  albumid="0" creatorid="1" 
-    updateid="0" instanceid="gallery26" imagename="fleur.jpg" imagesize="5146" imagemimetype="image/png" begindate="0000/00/00" enddate="9999/99/99" keyword="[NULL]" begindownloaddate="[NULL]" enddownloaddate="[NULL]" />  
-     <sc_gallery_photo photoid = "2" title="animal" description="chien" sizeh= "110" sizel="110" creationdate= "2010/04/10" updatedate="2010/04/14" vuedate="[NULL]" author="[NULL]" download="0" albumlabel="0" status=""  albumid="0" creatorid="0" 
+    <sc_gallery_photo photoid = "0" title="ciel" description="france" sizeh= "110" sizel="110" creationdate= "2010/03/01" updatedate="2010/05/01" vuedate="[NULL]" author="[NULL]" download="0" albumlabel="0" status="[NULL]"  albumid="0" creatorid="0" 
+    updateid="1" instanceid="gallery25" imagename="ciel.jpg" imagesize="5146" imagemimetype="image/png" begindate="0000/00/00" enddate="9999/99/99" keyword="[NULL]" begindownloaddate="[NULL]" enddownloaddate="[NULL]" />             
+    <sc_gallery_photo photoid = "1" title="montagne" description="alpes" sizeh= "110" sizel="110" creationdate= "2010/03/12" updatedate="[NULL]" vuedate="[NULL]" author="[NULL]" download="0" albumlabel="0" status="[NULL]"  albumid="0" creatorid="1" 
+    updateid="[NULL]" instanceid="gallery27" imagename="montagne.jpg" imagesize="5146" imagemimetype="image/png" begindate="0000/00/00" enddate="9999/99/99" keyword="[NULL]" begindownloaddate="[NULL]" enddownloaddate="[NULL]" />             
+    <sc_gallery_photo photoid = "2" title="animal" description="chien" sizeh= "110" sizel="110" creationdate= "2010/04/10" updatedate="2010/04/14" vuedate="[NULL]" author="[NULL]" download="0" albumlabel="0" status=""  albumid="0" creatorid="0" 
     updateid="1" instanceid="gallery26" imagename="animal.jpg" imagesize="5146" imagemimetype="image/png" begindate="0000/00/00" enddate="9999/99/99" keyword="[NULL]" begindownloaddate="[NULL]" enddownloaddate="[NULL]" />
-    <sc_gallery_photo photoid = "3" title="mer" description="mediterranée" sizeh= "110" sizel="110" creationdate= "2010/07/04" updatedate="2010/07/08" vuedate="[NULL]" author="[NULL]" download="0" albumlabel="0" status="[NULL]"  albumid="0" creatorid="1" 
-    updateid="1" instanceid="gallery27" imagename="mer.jpg" imagesize="5146" imagemimetype="image/png" begindate="0000/00/00" enddate="9999/99/99" keyword="[NULL]" begindownloaddate="[NULL]" enddownloaddate="[NULL]" />   
-    <sc_gallery_photo photoid = "4" title="montagne" description="alpe" sizeh= "110" sizel="110" creationdate= "2010/07/12" updatedate="[NULL]" vuedate="[NULL]" author="[NULL]" download="0" albumlabel="0" status="[NULL]"  albumid="0" creatorid="1" 
-    updateid="[NULL]" instanceid="gallery27" imagename="mer.jpg" imagesize="5146" imagemimetype="image/png" begindate="0000/00/00" enddate="9999/99/99" keyword="[NULL]" begindownloaddate="[NULL]" enddownloaddate="[NULL]" />             
+    <sc_gallery_photo photoid = "3" title="fleur" description="tulipe" sizeh= "110" sizel="110" creationdate= "2010/06/15" updatedate="2010/06/16" vuedate="[NULL]" author="[NULL]" download="0" albumlabel="0" status="[NULL]"  albumid="0" creatorid="1" 
+    updateid="0" instanceid="gallery26" imagename="fleur.jpg" imagesize="5146" imagemimetype="image/png" begindate="0000/00/00" enddate="9999/99/99" keyword="[NULL]" begindownloaddate="[NULL]" enddownloaddate="[NULL]" />  
+    <sc_gallery_photo photoid = "4" title="mer" description="mediterranée" sizeh= "110" sizel="110" creationdate= "2010/07/04" updatedate="2010/07/08" vuedate="[NULL]" author="[NULL]" download="0" albumlabel="0" status="[NULL]"  albumid="0" creatorid="1" 
+    updateid="1" instanceid="gallery27" imagename="mer.jpg" imagesize="5146" imagemimetype="image/png" begindate="0000/00/00" enddate="9999/99/99" keyword="[NULL]" begindownloaddate="[NULL]" enddownloaddate="[NULL]" />        
     <sc_gallery_photo />
 </dataset>

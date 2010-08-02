@@ -76,5 +76,32 @@
     </dependency>
 
   </dependencies>
+  
+  <build>
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>true</filtering>
+        <includes>
+        <include>**/*.properties</include>
+        </includes>
+        <excludes>
+        <exclude>**/*.jpg</exclude>
+        <exclude>**/*.xml</exclude>
+        </excludes>
+      </testResource>
+      <testResource>
+        <directory>src/test/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+        <include>**/*.jpg</include>
+        <include>**/*.xml</include>
+        </includes>
+        <excludes>
+        <exclude>**/*.properties</exclude>
+        </excludes>
+      </testResource>
+    </testResources>
+  </build>
 </project>
 
