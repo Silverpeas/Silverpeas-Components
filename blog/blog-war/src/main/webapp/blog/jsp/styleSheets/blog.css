@@ -1,7 +1,7 @@
 @CHARSET "ISO-8859-1";
 
 #blog {
-	text-align: center;
+	/*text-align: center;*/
 }
 
 #blog #blogContainer { 
@@ -81,6 +81,11 @@
 #blog .zoneRecherche {
 	font-size: 12px;
 	color: #999999;
+}
+
+#blog .zoneRecherche form {
+   margin:0;
+   padding:0;
 }
 
 #blog .inputRecherche {

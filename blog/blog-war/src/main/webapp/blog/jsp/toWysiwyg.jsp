@@ -32,13 +32,16 @@ String 				pubId 		= pub.getPK().getId();
 String 				pubName 	= pub.getName();
 
 %>
-<HTML>
-<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 
 function goToWysiwyg() {
     document.toWysiwyg.submit();
@@ -49,22 +52,22 @@ function closeWindows() {
         window.publicationWindow.close();
 }
 </script>
-</HEAD>
-<BODY id="blog" onUnload="closeWindows()">
+</head>
+<body id="blog" onunload="closeWindows()">
 <div id="<%=instanceId %>">
-<form name="toWysiwyg" Action="../../wysiwyg/jsp/htmlEditor.jsp" method="Post">
-	<input type="hidden" name="SpaceId" value="<%=spaceId%>">
-    <input type="hidden" name="SpaceName" value="<%=spaceLabel%>">
-    <input type="hidden" name="ComponentId" value="<%=instanceId%>">
-    <input type="hidden" name="ComponentName" value="<%=Encode.javaStringToHtmlString(componentLabel)%>">
-    <input type="hidden" name="ObjectId" value="<%=pubId%>">
-    <input type="hidden" name="Language" value="<%=resource.getLanguage()%>">
-    <input type="hidden" name="ReturnUrl" value="<%=m_context+URLManager.getURL("blog", "useless", instanceId)%>FromWysiwyg?PostId=<%=pubId%>">
-    <input type="hidden" name="UserId" value="<%=userId%>">
-    <input type="hidden" name="IndexIt" value="false" >
+<form name="toWysiwyg" action="../../wysiwyg/jsp/htmlEditor.jsp" method="post">
+	<input type="hidden" name="SpaceId" value="<%=spaceId%>"/>
+    <input type="hidden" name="SpaceName" value="<%=spaceLabel%>"/>
+    <input type="hidden" name="ComponentId" value="<%=instanceId%>"/>
+    <input type="hidden" name="ComponentName" value="<%=Encode.javaStringToHtmlString(componentLabel)%>"/>
+    <input type="hidden" name="ObjectId" value="<%=pubId%>"/>
+    <input type="hidden" name="Language" value="<%=resource.getLanguage()%>"/>
+    <input type="hidden" name="ReturnUrl" value="<%=m_context+URLManager.getURL("blog", "useless", instanceId)%>FromWysiwyg?PostId=<%=pubId%>"/>
+    <input type="hidden" name="UserId" value="<%=userId%>"/>
+    <input type="hidden" name="IndexIt" value="false"/>
 </form>
 
 <script>goToWysiwyg()</script>
 </div>
-</BODY>
-</HTML>
+</body>
+</html>

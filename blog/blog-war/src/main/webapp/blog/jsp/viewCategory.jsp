@@ -31,13 +31,16 @@ String 		profile 	= (String) request.getAttribute("Profile");
 
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<title></title>
 <%
 	out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 var categoryWindow = window;
 
 function addCategory() {
@@ -87,6 +90,7 @@ function deleteConfirm(id,nom)
     out.println(frame.printBefore());
     
 	ArrayPane arrayPane = gef.getArrayPane("categoryList", "ViewCategory", request, session);
+	arrayPane.setXHTML(true);
 	ArrayColumn columnIcon = arrayPane.addArrayColumn("&nbsp;");
     columnIcon.setSortable(false);
 	arrayPane.addArrayColumn(resource.getString("GML.title"));
@@ -103,7 +107,7 @@ function deleteConfirm(id,nom)
 		IconPane icon = gef.getIconPane();
 		Icon categoryIcon = icon.addIcon();
    		categoryIcon.setProperties(resource.getIcon("blog.blogSmall"), "");
-      	icon.setSpacing("30px");
+      	icon.setSpacing("30");
       	ligne.addArrayCellIconPane(icon);
 			
 		NodeDetail uneCategory = (NodeDetail) it.next();
@@ -119,7 +123,7 @@ function deleteConfirm(id,nom)
 		// icône "supprimer"
 		Icon deleteIcon = iconPane.addIcon();
 		deleteIcon.setProperties(resource.getIcon("blog.deleteCategory"), resource.getString("blog.deleteCategory"), "javaScript:deleteConfirm('"+id+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(nom))+"')");
-		iconPane.setSpacing("30px");
+		iconPane.setSpacing("30");
 		ligne.addArrayCellIconPane(iconPane);
 	}	
 	out.println(arrayPane.print());
@@ -127,10 +131,10 @@ function deleteConfirm(id,nom)
   	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-<form name="categoryForm" action="" Method="POST">
-	<input type="hidden" name="CategoryId">
-	<input type="hidden" name="Name">
-	<input type="hidden" name="Description">
+<form name="categoryForm" action="" method="post">
+	<input type="hidden" name="CategoryId"/>
+	<input type="hidden" name="Name"/>
+	<input type="hidden" name="Description"/>
 </form>
 </div>
 </body>

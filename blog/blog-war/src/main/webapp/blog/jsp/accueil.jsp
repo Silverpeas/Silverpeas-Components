@@ -46,9 +46,11 @@ String 		word 		= "";
 Date 	   dateCalendar	= new Date(dateCal);
 boolean 	isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAccessLevel());
 %>
-
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<title></title>
 <%
 	out.println(gef.getLookStyleSheet());
 %>
@@ -56,7 +58,7 @@ boolean 	isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAc
 	<link rel="alternate" type="application/rss+xml" title="<%=componentLabel%> : <%=resource.getString("blog.rssLast")%>" href="<%=m_context+rssURL%>"/>
 <% } %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 function openSPWindow(fonction, windowName)
 {
 	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
@@ -123,7 +125,7 @@ function addSubscription()
             <div class="titreTicket">
               <a href="<%="ViewPost?PostId=" + postId%>"><%=post.getPublication().getName()%></a> <span class="status">(<%=status%>)</span>
 				        <%  if ( link != null && !link.equals("")) {  %>
-				          <span class="permalink"><a href=<%=link%> ><img src=<%=resource.getIcon("blog.link")%> border="0" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>' ></a></span>
+				          <span class="permalink"><a href="<%=link%>"><img src="<%=resource.getIcon("blog.link")%>" border="0" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>'/></a></span>
 				        <%  } %>
             </div>
             <%
@@ -143,14 +145,13 @@ function addSubscription()
                 <a href="<%="ViewPost?PostId=" + postId%>" class="versCommentaires">&gt;&gt; <%=resource.getString("blog.comments")%></a> (<%=post.getNbComments()%>) 
              </span>
 
-              <span class="categoryTicket">
-              <%
-              if (!categoryId.equals(""))
-              {  %>
+              <% if (!categoryId.equals("")) {  %>
+              	<span class="categoryTicket">
                 &nbsp;|&nbsp;
                 <a href="<%="PostByCategory?CategoryId="+categoryId%>" class="versTopic">&gt;&gt; <%=post.getCategory().getName()%> </a>
+                </span>
               <% } %>
-              </span>
+              
               <span class="creatorTicket"> 
               &nbsp;|&nbsp;
                 <% // date de création et de modification %>
@@ -200,7 +201,7 @@ function addSubscription()
   </div>
 </div>
 
-<form name="subscriptionForm" action="AddSubscription" Method="POST">
+<form name="subscriptionForm" action="AddSubscription" method="post">
 </form>
 
 </body>

@@ -501,8 +501,9 @@ public class BlogSessionController extends AbstractComponentSessionController {
   }
 
   public String getRSSUrl() {
-    if (isUseRss())
-      return super.getRSSUrl();
+    if (isUseRss()) {
+      return super.getRSSUrl().replaceAll("&", "&amp;"); //replace to remove when all composants will be XHTML compliant
+    }
     return null;
   }
 

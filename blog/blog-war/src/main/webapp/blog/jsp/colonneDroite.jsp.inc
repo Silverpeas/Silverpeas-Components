@@ -1,7 +1,7 @@
 <%
 Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", false);
 %>
-<script language="javascript">
+<script type="text/javascript">
 	function selectDay(day) 
 	{
 		location.href = "PostByDay?Day="+day;
@@ -28,11 +28,11 @@ Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", 
 	   <div class="titreRecherche">
 	       <%=resource.getString("GML.search")%>
 	   </div>
+	   <form name="searchForm" action="Search" method="post">
 	   <table width="100%" border="0" cellspacing="0" cellpadding="0">
-		    <form name="searchForm" action="Search" Method="POST">	
 		      <tr>
 		        <td>
-		          <input type="text" name="WordSearch" class="inputRecherche">
+		          <input type="text" name="WordSearch" class="inputRecherche"/>
 		        </td>
 		        <td valign="top">
 				      <%
@@ -42,8 +42,9 @@ Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", 
 				      %>
 				    </td>
 				  </tr>
-		    </form>
+		    
 		  </table>
+		  </form>
 	</div>
 	<br />
 	<div id="operationBlog">
@@ -80,7 +81,7 @@ Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", 
 		 calendar.setEmptyDayNonSelectable(true);
 		 calendar.setEvents(events);
 		 %>
-		 <BR><center><%=calendar.print()%></center><BR>
+		 <br/><center><%=calendar.print()%></center><br/>
 	</div>
 	<br />
 	<div id="titreArchive"><%=resource.getString("blog.archives")%></div>
@@ -91,7 +92,7 @@ Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", 
 		    while (itAr.hasNext())  {
 		        Archive uneArchive = (Archive) itAr.next();
 		      	%>
-		        <a href="<%="PostByArchive?BeginDate=" + uneArchive.getBeginDate() + "&EndDate=" + uneArchive.getEndDate()%>"><%=resource.getString("GML.mois"+uneArchive.getMonthId())%> <%=uneArchive.getYear()%></a><br />
+		        <a href="<%="PostByArchive?BeginDate=" + uneArchive.getBeginDate() + "&amp;EndDate=" + uneArchive.getEndDate()%>"><%=resource.getString("GML.mois"+uneArchive.getMonthId())%> <%=uneArchive.getYear()%></a><br />
 		        <%
 				 }
 		 }
@@ -102,7 +103,7 @@ Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", 
 	   <%
 		 if ("admin".equals(profile)) {
 		    String url = m_context + blogUrl + "Main";
-				String lien = m_context + URLManager.getURL(URLManager.CMP_MYLINKSPEAS) + "ComponentLinks?InstanceId="+ instanceId + "&UrlReturn=" + url;
+				String lien = m_context + URLManager.getURL(URLManager.CMP_MYLINKSPEAS) + "ComponentLinks?InstanceId="+ instanceId + "&amp;UrlReturn=" + url;
 				out.println("<a href=\""+lien+"\">"+resource.getString("blog.links")+"</a>");
 		 }
 		 else {
@@ -126,9 +127,9 @@ Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", 
             }
 		      	String target = "";
 		      	if (unLink.isPopup())
-		      	   target = "_blank";
+		      	   target = "target=\"_blank\"";
 		      	%>
-		        <a href="<%=lien%>" target="<%=target%>"><%=nameLink%></a><br />
+		        <a href="<%=lien%>" <%=target%>><%=nameLink%></a><br />
 		        <%
 				}
 		 }
@@ -138,9 +139,8 @@ Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", 
 	
 	<% if (StringUtil.isDefined(rssURL)) { %>
 	   <table>
-	       <tr>
-	         <td><a href="<%=m_context+rssURL%>"><img src="icons/rss.gif" border="0"></a></td>
-	   		 </tr>
-	   		 <link rel="alternate" type="application/rss+xml" title="<%=componentLabel%> : <%=resource.getString("blog.rssLast")%>" href="<%=m_context+rssURL%>">
+	       	<tr>
+	        	<td><a href="<%=m_context+rssURL%>"><img src="icons/rss.gif" border="0" alt="RSS"/></a></td>
+			</tr>
 	   </table>
 	<% } %>

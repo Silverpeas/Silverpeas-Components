@@ -62,14 +62,17 @@
 	
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
+	<title></title>
 	<%
 		out.println(gef.getLookStyleSheet());
 	%>
 	<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 	<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-	<script language="javascript">
+	<script type="text/javascript">
 	
 	// fonctions de contrôle des zones du formulaire avant validation
 	function sendData() 
@@ -130,7 +133,7 @@
 	</script>
 		
 	</head>
-<body id="blog" onLoad="javascript:document.categoryForm.Name.focus();">
+<body id="blog" onload="javascript:document.categoryForm.Name.focus();">
 <div id="<%=instanceId %>">
 <%
 	out.println(window.printBefore());
@@ -139,32 +142,32 @@
     Board board = gef.getBoard();
     out.println(board.printBefore());
 %>
-<table CELLPADDING=5 WIDTH="100%">
-<FORM Name="categoryForm" action="<%=action%>" Method="POST">
+<form name="categoryForm" action="<%=action%>" method="post">
+<table cellpadding="5" width="100%">
 	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.title")%> :</td>
-		<TD><input type="text" name="Name" size="60" maxlength="150" value="<%=name%>" >
-			<IMG src="<%=resource.getIcon("blog.obligatoire")%>" width="5" height="5" border="0"></TD>
-			<input type="hidden" name="CategoryId" value="<%=categoryId%>"> </td>
-			<input type="hidden" name="Langue" value="<%=resource.getLanguage()%>"> </td>
+		<td><input type="text" name="Name" size="60" maxlength="150" value="<%=name%>"/>
+			<img src="<%=resource.getIcon("blog.obligatoire")%>" width="5" height="5" border="0" alt="<%=resource.getString("GML.requiredField") %>"/>
+			<input type="hidden" name="CategoryId" value="<%=categoryId%>"/>
+			<input type="hidden" name="Langue" value="<%=resource.getLanguage()%>"/></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.description")%> :</td>
-		<TD><input type="text" name="Description" size="60" maxlength="150" value="<%=description%>" ></TD>
+		<td><input type="text" name="Description" size="60" maxlength="150" value="<%=description%>"/></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.creationDate")%> :</td>
-		<TD><%=creationDate%>&nbsp;<span class="txtlibform"></TD>
+		<td><%=creationDate%></td>
 	</tr>
-	<tr><td colspan="2">( <img border="0" src=<%=resource.getIcon("blog.obligatoire")%> width="5" height="5"> : <%=resource.getString("GML.requiredField")%> )</td></tr>
-  </form>
+	<tr><td colspan="2">( <img border="0" src="<%=resource.getIcon("blog.obligatoire")%>" width="5" height="5" alt="<%=resource.getString("GML.requiredField") %>"/> : <%=resource.getString("GML.requiredField")%> )</td></tr>
 </table>
+</form>
 <% 
 	out.println(board.printAfter());
 	ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);
-	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+	out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
  	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>

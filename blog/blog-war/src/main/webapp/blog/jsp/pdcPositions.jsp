@@ -34,8 +34,11 @@
 	String 		postId			= post.getPublication().getPK().getId();
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<title></title>
 <%
 	out.println(gef.getLookStyleSheet());
 %>
@@ -62,9 +65,9 @@
   	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-<FORM NAME="toComponent" ACTION="PdcPositions" METHOD=POST>
-	<input type="hidden" name="PostId" value="<%=postId%>">
-</FORM>
+<form name="toComponent" action="PdcPositions" method="post">
+	<input type="hidden" name="PostId" value="<%=postId%>"/>
+</form>
 </div>
 </body>
 </html>

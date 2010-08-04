@@ -30,13 +30,16 @@
 Collection	posts		= (Collection) request.getAttribute("Posts");
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<title></title>
 <%
 	out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 
 function goToPost(id) {
     document.postForm.PostId.value = id;
@@ -119,11 +122,11 @@ function goToCategory(id) {
 	</tr>
 </table>
 
-<form name="postForm" action="ViewPost" Method="POST" target="MyMain">
-	<input type="hidden" name="PostId">
+<form name="postForm" action="ViewPost" method="post" target="MyMain">
+	<input type="hidden" name="PostId"/>
 </form>
-<form name="categoryForm" action="PostByCategory" Method="POST" target="MyMain">
-	<input type="hidden" name="CategoryId">
+<form name="categoryForm" action="PostByCategory" method="post" target="MyMain">
+	<input type="hidden" name="CategoryId"/>
 </form>
 </div>
 </body>

@@ -24,6 +24,7 @@
 
 --%>
 <%@ include file="check.jsp" %>
+<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 
 <% 
 	// récupération des paramètres :
@@ -68,12 +69,13 @@
 	// déclaration des boutons
 	Button validateButton 	= (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
 	Button cancelButton 	= (Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
-	
 %>
 
-
-<%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%><html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 		<head>
+		<title></title>
 		<%
 			out.println(gef.getLookStyleSheet());
 		%>
@@ -81,7 +83,7 @@
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 		<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 		<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
-    <script type="text/javascript"  language="javascript">
+    <script type="text/javascript">
 			
 			// fonctions de contrôle des zones du formulaire avant validation
 			function sendData() 
@@ -152,25 +154,24 @@
     out.println(board.printBefore());
     
 %>
-<table CELLPADDING="5" WIDTH="100%">
-<form Name="postForm" action="<%=action%>" Method="POST">
-	
+<form name="postForm" action="<%=action%>" method="post">
+<table cellpadding="5" width="100%">
 	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.title")%> :</td>
 		<td><input type="text" name="Title" size="60" maxlength="150" value="<%=title%>"/>
-      <img alt="mandatory"  src="<%=resource.getIcon("blog.obligatoire")%>" width="5" height="5" border="0"/>
+      <img alt="mandatory" src="<%=resource.getIcon("blog.obligatoire")%>" width="5" height="5" border="0"/>
 			<input type="hidden" name="PostId" value="<%=postId%>"/>
 			<input type="hidden" name="Langue" value="<%=resource.getLanguage()%>"/></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("blog.dateEvent")%> :</td>
-		<td><input type="text" id="eventDate" name="DateEvent" size="12" maxlength="10" value="<%=resource.getOutputDate(dateEvent)%>"/>&nbsp;<a href="javascript:OnClick=editDate('eventDate');"><img src="<%=resource.getIcon("blog.calendar") %>" width="13" height="15" border="0" alt="Afficher le calendrier" title="Afficher le calendrier" align="absmiddle"/></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></td>
+		<td><input type="text" id="eventDate" name="DateEvent" size="12" maxlength="10" value="<%=resource.getOutputDate(dateEvent)%>"/>&nbsp;<a href="javascript:OnClick=editDate('eventDate');"><img src="<%=resource.getIcon("blog.calendar") %>" width="13" height="15" border="0" alt="Afficher le calendrier" title="Afficher le calendrier" align="top"/></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.category")%> :</td>
-		<TD>
+		<td>
 			<select name="CategoryId">
-				<option value="" selected><%=resource.getString("GML.category")%></option>
+				<option value="" selected="selected"><%=resource.getString("GML.category")%></option>
 				<option value="">-------------------------------</option>
 				<%
 				if (categories != null)
@@ -190,7 +191,7 @@
 	      }
 				%>
 			</select>
-	  	</TD>
+	  	</td>
 
 	</tr>
 	<tr>
@@ -203,10 +204,9 @@
 				<td><%=updateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("GML.by")%></span>&nbsp;<%=updater.getDisplayedName()%></td>
 			</tr>
 		<% } %>
-    <tr><td colspan="2">( <img alt="mandatory"  border="0" src=<%=resource.getIcon("blog.obligatoire")%> width="5" height="5"/> : <%=resource.getString("GML.requiredField")%> )</td></tr>
-  </form>
-  
+    <tr><td colspan="2">( <img alt="mandatory"  border="0" src="<%=resource.getIcon("blog.obligatoire")%>" width="5" height="5"/> : <%=resource.getString("GML.requiredField")%> )</td></tr>
 </table>
+</form>
 <% 
 	out.println(board.printAfter());
 	ButtonPane buttonPane = gef.getButtonPane();

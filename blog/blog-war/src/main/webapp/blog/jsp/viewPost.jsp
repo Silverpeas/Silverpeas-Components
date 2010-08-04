@@ -59,14 +59,17 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 
 %>
 
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
+<title></title>
 <%
 	out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 
 	var notifyWindow = window;
 	
@@ -113,7 +116,7 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 
 	function updateComment(id, postId)
 	{
-	    SP_openWindow("<%=m_context%>/comment/jsp/newComment.jsp?id="+id+"&IndexIt=1", "blank", "600", "250","scrollbars=no, resizable, alwaysRaised");
+	    SP_openWindow("<%=m_context%>/comment/jsp/newComment.jsp?id="+id+"&amp;IndexIt=1", "blank", "600", "250","scrollbars=no, resizable, alwaysRaised");
 	    document.commentForm.action = "UpdateComment";
 	    document.commentForm.CommentId.value = id;
 	   	document.commentForm.PostId.value = postId;
@@ -175,7 +178,7 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 		   	<div class="titreTicket"><%=post.getPublication().getName()%> <span class="status">(<%=status%>)</span>
 			   	<%if (link != null && !link.equals("")) 
 			   	{	%>
-				  	<a href=<%=link%> ><img src=<%=resource.getIcon("blog.link")%> border="0" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>' /></a>
+				  	<a href="<%=link%>"><img src="<%=resource.getIcon("blog.link")%>" border="0" alt='<%=resource.getString("blog.CopyPostLink")%>' title='<%=resource.getString("blog.CopyPostLink")%>' /></a>
 				  <%}	%> 
 				</div>
 				<div class="infoTicket"><%=day%> <%=resource.getOutputDate(post.getDateEvent())%></div>
@@ -189,14 +192,12 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 				   <span class="versCommentaires">
 						&gt;&gt; <%=resource.getString("blog.comments")%> (<%=post.getNbComments()%>) 
 				   </span>
-				   <span class="categoryTicket">
-		         <%
-		         if (!categoryId.equals(""))
-		         {  %>
+		        <% if (!categoryId.equals("")) { %>
+		         	<span class="categoryTicket">
 		            &nbsp;|&nbsp;
 		            <a href="<%="PostByCategory?CategoryId="+categoryId%>" class="versTopic">&gt;&gt; <%=post.getCategory().getName()%> </a>
-		         <% } %>
-		       </span>
+		            </span>
+		         <% } %>		       
 		       <span class="creatorTicket"> 
 	  	       &nbsp;|&nbsp;
 		         <% // date de création et de modification %>
@@ -213,7 +214,7 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 		       </span>
 		    </div>
 		    <div class="separateur"></div>
-			  <span class="versCommentaires">
+			  <div class="commentaires">
 				  <!--Afficher les commentaires-->
 					<%
 					if (comments != null)
@@ -231,16 +232,16 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 			   			<span class="versCommentaires"><%=resource.getString("blog.de")%> <%=commentAuthor%> <%=resource.getString("blog.postLe")%> <%=commentDate%> 
 							  <% if (ownerId.equals(userId)) 
 							  {%>
-								  <A href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=postId%>)"><IMG SRC="<%=resource.getIcon("blog.smallUpdate") %>" border="0" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="absmiddle"/></A>
-									<A href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><IMG SRC="<%=resource.getIcon("blog.smallDelete") %>" border="0" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="absmiddle"/></A>
+								  <a href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=postId%>)"><img src="<%=resource.getIcon("blog.smallUpdate") %>" border="0" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="top"/></a>
+									<a href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><img src="<%=resource.getIcon("blog.smallDelete") %>" border="0" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="top"/></a>
 							  <% } 
 							  else if ("admin".equals(profile)) 
 							  {%>
 							    <% if (adminAllowedToUpdate) 
 							    { %>
-								    <A href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=postId%>)"><IMG SRC="<%=resource.getIcon("blog.smallUpdate") %>" border="0" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="absmiddle"/></A>
+								    <a href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=postId%>)"><img src="<%=resource.getIcon("blog.smallUpdate") %>" border="0" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="top"/></a>
 								  <%} %>
-								  <A href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><IMG SRC="<%=resource.getIcon("blog.smallDelete") %>" border="0" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="absmiddle"/></A>												
+								  <a href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><img src="<%=resource.getIcon("blog.smallDelete") %>" border="0" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="top"/></a>
 							  <%} %>
 							</span>
 							<br/>
@@ -250,22 +251,21 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 					}
 					if (!isUserGuest) 
 					{ %>
-		          <div id="newComment">
-		              <form Name="commentForm" action="AddComment" Method="POST">	
-			   		    		<span class="newCommentLabel"><%=resource.getString("blog.addComment")%></span>
-					  				<br/>
-					  				<span><TEXTAREA ROWS="8" COLS="80" name="Message"></TEXTAREA></span>
-		                <input type="hidden" name="PostId" value="<%=postId%>"><input type="hidden" name="CommentId" value="">
-		  			    	</form>
-					    		<%
+		          		<div id="newComment">
+		              	<form name="commentForm" action="AddComment" method="post">	
+			   		    	<span class="newCommentLabel"><%=resource.getString("blog.addComment")%></span><br/>
+			  				<textarea rows="8" cols="80" name="Message"></textarea>
+	                		<input type="hidden" name="PostId" value="<%=postId%>"/><input type="hidden" name="CommentId" value=""/>
+	  			    	</form>
+			    		<%
 		  				   	ButtonPane buttonPaneComment = gef.getButtonPane();
-					    		buttonPaneComment.addButton(validateComment);
-					    		buttonPaneComment.addButton(cancelButton);
-									out.println("<center>"+buttonPaneComment.print()+"</center><BR>");
-									%>
+				    		buttonPaneComment.addButton(validateComment);
+				    		buttonPaneComment.addButton(cancelButton);
+							out.println("<br/><center>"+buttonPaneComment.print()+"</center><br/>");
+						%>
 		        </div>
 		      <%} %>
-		    </span>		
+		    </div>		
 			</div>
 				 
 			<div id="navBlog">
@@ -290,8 +290,8 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
   </div>
 </div>
 
-<form name="postForm" action="DeletePost" Method="POST">
-	<input type="hidden" name="PostId">
+<form name="postForm" action="DeletePost" method="post">
+	<input type="hidden" name="PostId"/>
 </form>
 
 </body>
