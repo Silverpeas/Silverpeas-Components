@@ -1,6 +1,6 @@
 var dNdVisible 	= false;
 var dNdLoaded	= false;
-function showHideDragDrop(targetURL1, message1, targetURL2, message2, max_upload, webcontext, expandLabel, collapseLabel)
+function showHideDragDrop(targetURL1, message1, targetURL2, message2, altMessage, max_upload, webcontext, expandLabel, collapseLabel)
 {
   var actionDND = document.getElementById("dNdActionLabel");
 	
@@ -25,11 +25,11 @@ function showHideDragDrop(targetURL1, message1, targetURL2, message2, max_upload
     else
     {
       try {
-        loadApplet('DragAndDrop', targetURL1, message1, max_upload, webcontext);
+        loadApplet('DragAndDrop', targetURL1, message1, max_upload, webcontext, altMessage);
       } catch (e) {
       }
       try {
-        loadApplet('DragAndDropDraft', targetURL2, message2, max_upload, webcontext);
+        loadApplet('DragAndDropDraft', targetURL2, message2, max_upload, webcontext, altMessage);
       } catch (e) {
       }
       dNdLoaded = true;

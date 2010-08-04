@@ -279,10 +279,9 @@ function uploadCompleted(s)
 		
 		<%
 		ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
-		String maximumFileSize 		= uploadSettings.getString("MaximumFileSize", "10000000");
-		String maxFileSizeForApplet = maximumFileSize.substring(0, maximumFileSize.length()-3);
+		String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
 		%>
-		showHideDragDrop(url, message,'<%=maxFileSizeForApplet%>','<%=m_context%>','<%=resource.getString("GML.DragNDropExpand")%>','<%=resource.getString("GML.DragNDropCollapse")%>');
+		showHideDragDrop(url, message,'<%=resource.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resource.getString("GML.DragNDropExpand")%>','<%=resource.getString("GML.DragNDropCollapse")%>');
 	}
 	
 	

@@ -1,6 +1,6 @@
 var dNdVisible 	= false;
 var dNdLoaded	= false;
-function showHideDragDrop(targetURL, message, max_upload, webcontext, expandLabel, collapseLabel)
+function showHideDragDrop(targetURL, message, altMessage, max_upload, webcontext, expandLabel, collapseLabel)
 {
   var actionDND = document.getElementById("dNdActionLabel");
 	
@@ -23,7 +23,7 @@ function showHideDragDrop(targetURL, message, max_upload, webcontext, expandLabe
     else
     {
       try {
-        loadApplet('DragAndDrop', targetURL, message, max_upload, webcontext);
+        loadApplet('DragAndDrop', targetURL, message, max_upload, webcontext, altMessage);
         dNdLoaded = true;
       } catch (e) {
       }      
