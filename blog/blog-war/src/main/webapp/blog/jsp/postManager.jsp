@@ -182,7 +182,7 @@
 			  		{
 	      				NodeDetail uneCategory = (NodeDetail) it.next();
 	      				if (categoryId.equals(uneCategory.getNodePK().getId()))
-	      					selected = "selected";
+	      					selected = "selected=\"selected\"";
 	      				%>
 	      				<option value="<%=uneCategory.getNodePK().getId()%>" <%=selected%>><%=uneCategory.getName()%></option>
 	      				<%
