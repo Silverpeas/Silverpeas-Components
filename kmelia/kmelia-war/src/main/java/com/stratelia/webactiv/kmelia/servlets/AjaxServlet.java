@@ -26,11 +26,6 @@ package com.stratelia.webactiv.kmelia.servlets;
 
 import java.io.IOException;
 import java.io.Writer;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.StringTokenizer;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -38,12 +33,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.silverpeas.kmelia.KmeliaConstants;
-import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
-import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.kmelia.servlets.ajax.AjaxOperation;
 
 public class AjaxServlet extends HttpServlet {
 
@@ -67,136 +60,35 @@ public class AjaxServlet extends HttpServlet {
         (KmeliaSessionController) session
         .getAttribute("Silverpeas_" + "kmelia" + "_" + componentId);
 
-    String action = getAction(req);
-    String result = null;
+    if (kmeliaSC == null) {
+      kmeliaSC = createSessionController(session, componentId);
+    }
 
-    if ("Delete".equals(action)) {
-      result = deleteTopic(req, kmeliaSC);
-    } else if ("GetProfile".equals(action)) {
-      result = getProfile(req, kmeliaSC);
-    } else if ("SortTopics".equals(action)) {
-      result = sortTopics(req, kmeliaSC);
-    } else if ("EmptyTrash".equals(action)) {
-      result = emptyTrash(kmeliaSC);
-    } else if ("UpdateTopicStatus".equals(action)) {
-      result = updateTopicStatus(req, kmeliaSC);
-    } else if ("GetTopicWysiwyg".equals(action)) {
-      result = kmeliaSC.getWysiwygOnTopic(req.getParameter("Id"));
-    } else if ("Rename".equals(action)) {
-      result = renameTopic(req, kmeliaSC);
-    } else if ("bindToPub".equals(action)) {
-      updatePubsToLink(req, true);
-    } else if ("unbindFromPub".equals(action)) {
-      updatePubsToLink(req, false);
+    String result = "nok";
+    if (kmeliaSC != null) {
+      AjaxOperation action = AjaxOperation.valueOf(getAction(req));
+      result = action.handleRequest(req, kmeliaSC);
     }
 
     Writer writer = resp.getWriter();
     writer.write(result);
   }
 
-  private void updatePubsToLink(HttpServletRequest request, boolean isToBind) {
-    if (StringUtil.isDefined(request.getParameter("TopicToLinkId"))) {
-
-      HashSet<String> list =
-          (HashSet) request.getSession().getAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY);
-      if (list == null) {
-        list = new HashSet<String>();
-        request.getSession().setAttribute(KmeliaConstants.PUB_TO_LINK_SESSION_KEY, list);
-      }
-
-      if (isToBind) {
-        list.add(request.getParameter("TopicToLinkId"));
-      } else {
-        list.remove(request.getParameter("TopicToLinkId"));
-      }
-
-    }
-  }
-
   private String getAction(HttpServletRequest req) {
     return req.getParameter("Action");
   }
 
-  private String getProfile(HttpServletRequest req, KmeliaSessionController kmelia) {
-    String id = req.getParameter("Id");
-
-    try {
-      return kmelia.getUserTopicProfile(id);
-    } catch (RemoteException e) {
-      e.printStackTrace();
-      return e.getMessage();
+  private KmeliaSessionController createSessionController(HttpSession session, String componentId) {
+    MainSessionController msc =
+        (MainSessionController) session
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+    if (msc != null) {
+      ComponentContext componentContext = msc.createComponentContext(null, componentId);
+      if (msc.getOrganizationController().isComponentAvailable(componentId, msc.getUserId())) {
+        return new KmeliaSessionController(msc, componentContext);
+      }
     }
-  }
-
-  private String deleteTopic(HttpServletRequest req, KmeliaSessionController kmelia) {
-    String id = req.getParameter("Id");
-
-    try {
-      kmelia.deleteTopic(id);
-      return "ok";
-    } catch (RemoteException e) {
-      e.printStackTrace();
-      return e.getMessage();
-    }
-  }
-
-  private String sortTopics(HttpServletRequest req, KmeliaSessionController kmelia) {
-    String orderedList = req.getParameter("OrderedList");
-    String componentId = kmelia.getComponentId();
-
-    StringTokenizer tokenizer = new StringTokenizer(orderedList, ",");
-    List<NodePK> pks = new ArrayList<NodePK>();
-    while (tokenizer.hasMoreTokens()) {
-      pks.add(new NodePK(tokenizer.nextToken(), componentId));
-    }
-
-    // Save order
-    try {
-      kmelia.getNodeBm().sortNodes(pks);
-      return "ok";
-    } catch (Exception e) {
-      SilverTrace.error("kmelia", "AjaxServlet.sortTopics", "root.MSG_GEN_PARAM_VALUE", e);
-      return e.getMessage();
-    }
-  }
-
-  private String emptyTrash(KmeliaSessionController kmelia) {
-    try {
-      kmelia.flushTrashCan();
-      return "ok";
-    } catch (RemoteException e) {
-      SilverTrace.error("kmelia", "AjaxServlet.emptyTrash", "root.MSG_GEN_PARAM_VALUE", e);
-      return e.getMessage();
-    }
-  }
-
-  private String updateTopicStatus(HttpServletRequest req, KmeliaSessionController kmelia) {
-    String subTopicId = req.getParameter("Id");
-    String newStatus = req.getParameter("Status");
-    String recursive = req.getParameter("Recursive");
-
-    try {
-      kmelia.changeTopicStatus(newStatus, subTopicId, "1".equals(recursive));
-      return "ok";
-    } catch (RemoteException e) {
-      SilverTrace.error("kmelia", "AjaxServlet.updateTopicStatus", "root.MSG_GEN_PARAM_VALUE", e);
-      return e.getMessage();
-    }
-  }
-
-  private String renameTopic(HttpServletRequest req, KmeliaSessionController kmelia) {
-    String topicId = req.getParameter("Id");
-    String name = req.getParameter("Name");
-
-    try {
-      NodeDetail node = kmelia.getNodeHeader(topicId);
-      node.setName(name);
-      kmelia.updateTopicHeader(node, "NoAlert");
-      return "ok";
-    } catch (RemoteException e) {
-      SilverTrace.error("kmelia", "AjaxServlet.renameTopic", "root.MSG_GEN_PARAM_VALUE", e);
-      return e.getMessage();
-    }
+    return null;
   }
 
 }

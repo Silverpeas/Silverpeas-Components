@@ -182,6 +182,8 @@ public interface KmeliaBm extends EJBObject {
   public void addSubscription(NodePK topicPK, String userId)
       throws RemoteException;
 
+  public boolean checkSubscription(NodePK topicPK, String userId) throws RemoteException;
+
   /**************************************************************************************/
   /* Interface - Gestion des publications */
   /**************************************************************************************/
