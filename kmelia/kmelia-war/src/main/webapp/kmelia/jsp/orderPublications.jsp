@@ -34,16 +34,12 @@ String	currentLang 		= (String) request.getAttribute("Language");
 
 <HTML>
 <HEAD>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <view:looknfeel />
 <style>
 li {
 	list-style: none;
 }
 </style>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-1.2.6.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/ui.core.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/ui.sortable.js"></script>
 <script type='text/javascript'>
 	$(document).ready(function(){
 		$("#publis").sortable({opacity: 0.4}); 

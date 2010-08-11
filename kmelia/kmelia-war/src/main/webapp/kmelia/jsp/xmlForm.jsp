@@ -23,7 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="tabManager.jsp.inc" %>
@@ -70,13 +71,13 @@
       }
       boolean isEnd = "2".equals(wizardLast);
 %>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
+  	<title></title>
     <% out.println(gef.getLookStyleSheet());%>
     <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
-    <script type="text/javascript" src="<%=m_context %>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
     <% formUpdate.displayScripts(out, context);%>
-    <script type="text/javascript" language="javaScript">
+    <script type="text/javascript">
       function topicGoTo(id) {
         location.href="GoToTopic?Id="+id;
       }
@@ -105,7 +106,7 @@
       }
     </script>
   </head>
-  <body class="yui-skin-sam" onUnload="closeWindows()">
+  <body class="yui-skin-sam" onunload="closeWindows()">
     <%
           Window window = gef.getWindow();
           Frame frame = gef.getFrame();
@@ -152,11 +153,11 @@
             out.println("<BR>");
           }
     %>
-    <form name="myForm" method="POST" action="UpdateXMLForm" enctype="multipart/form-data" accept-charset="UTF-8">
+    <form name="myForm" method="post" action="UpdateXMLForm" enctype="multipart/form-data" accept-charset="UTF-8">
       <%
             formUpdate.display(out, context, data);
       %>
-      <input type="hidden" name="Name" value="<%=xmlFormName%>">
+      <input type="hidden" name="Name" value="<%=xmlFormName%>"/>
     </form>
     <%
           out.println(board.printAfter());
@@ -172,8 +173,8 @@
 
           out.println(frame.printAfter());
           out.println(window.printAfter());%>
+	<script type="text/javascript">
+    	document.myForm.elements[1].focus();
+  	</script>
   </body>
-  <script type="text/javascript" language="javascript">
-    document.myForm.elements[1].focus();
-  </script>
 </html>

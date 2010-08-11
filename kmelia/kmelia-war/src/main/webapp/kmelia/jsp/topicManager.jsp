@@ -89,7 +89,6 @@ String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute)
 <HTML>
 <HEAD>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-
 <%
 out.println(gef.getLookStyleSheet());
 %>
@@ -105,7 +104,6 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/yui/element/element-min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/yui/resize/resize-min.js"></script>
 
-<script type="text/javascript" src="<%=m_context %>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <script src="<%=m_context%>/kmelia/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
 

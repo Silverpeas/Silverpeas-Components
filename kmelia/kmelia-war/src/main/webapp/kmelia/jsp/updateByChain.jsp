@@ -95,7 +95,6 @@ Button updateAllButton = (Button) gef.getFormButton(resources.getString("kmelia.
 
 <HTML>
 <HEAD>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <TITLE></TITLE>
 <%
 out.println(gef.getLookStyleSheet());
@@ -127,38 +126,8 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-1.2.6.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/ui.core.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/ui.accordion.js"></script>
 
 <script language="javascript">
-
-$(document).ready(function(){
-		$('#accordion').accordion({
-			clearStyle: false,
-			autoHeight: false
-		}).bind("accordionchange", function(event, ui) {
-			doSomething(ui.newHeader[0].id);
-		});
-	});
-
-	var doSomething = function(paneId)
-	{
-		if (loadedPanes.indexOf(paneId) != "-1")
-		{
-			//Pane already loaded
-		}
-		else
-		{
-			$.post("<%=routerUrl%>ShowAliasTree?ComponentId="+paneId, function(data){
-				$("#content_"+paneId).html(data);
-			});
-
-			loadedPanes += ","+paneId;
-		}
-	};
-
-	var loadedPanes = "<%=componentId%>";
 
 function topicGoTo(id) {
 	location.href="GoToTopic?Id="+id;

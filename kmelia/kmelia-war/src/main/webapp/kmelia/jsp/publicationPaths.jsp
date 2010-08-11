@@ -58,7 +58,6 @@ Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel
 
 <HTML>
 <HEAD>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <TITLE></TITLE>
 <%
 out.println(gef.getLookStyleSheet());
@@ -86,11 +85,11 @@ out.println(gef.getLookStyleSheet());
 	background-repeat: repeat-x;
 }
 
+.ui-icon {
+	display: none;
+}
 </style>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-1.2.6.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/ui.core.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/ui.accordion.js"></script>
 <script type='text/javascript'>
 	$(document).ready(function(){
 		$('#accordion').accordion({   

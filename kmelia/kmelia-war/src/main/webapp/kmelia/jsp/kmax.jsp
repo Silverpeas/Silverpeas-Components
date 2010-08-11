@@ -75,7 +75,6 @@ if (action == null) {
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<script type="text/javascript" src="<%=m_context %>/attachment/jsp/jquery-1.3.2.min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <Script language="JavaScript1.2">

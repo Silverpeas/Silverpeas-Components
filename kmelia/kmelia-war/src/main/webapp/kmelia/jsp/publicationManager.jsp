@@ -332,8 +332,7 @@
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-1.3.2.min.js"></script>
-    <script language="javascript">
+        <script language="javascript">
 
       <% if (action.equals("UpdateView")) {%>
 
