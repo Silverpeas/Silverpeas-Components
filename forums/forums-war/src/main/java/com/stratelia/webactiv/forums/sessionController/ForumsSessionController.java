@@ -29,7 +29,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Vector;
 
 import javax.ejb.EJBException;
 import javax.ejb.RemoveException;
@@ -50,6 +49,7 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.forums.forumEntity.ejb.ForumPK;
@@ -74,6 +74,9 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Cette classe gere la session de l'acteur durant sa navigation dans les forums
@@ -83,36 +86,25 @@ import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 public class ForumsSessionController extends AbstractComponentSessionController {
 
   public static final String MAIL_TYPE = "default";
-
   public static final String STAT_TYPE = "ForumMessage";
-
   /** Le Business Manager */
   private ForumsBM forumsBM;
-
   /** ids des forums deployes */
-  private Vector deployedForums;
-
+  private List<Integer> deployedForums;
   /** ids des messages deployes */
-  private Vector deployedMessages;
-
+  private List<Integer> deployedMessages;
   /** utilise pour notifier les utilisateurs */
   private NotificationSender notifSender = null;
-
   public String typeMessages = "Messages";
   public String typeSubjects = "Subjects";
-
   private ResourceLocator settings = null;
-
   private PublicationBm publicationBm = null;
   private StatisticBm statisticBm = null;
   private NotationBm notationBm = null;
-
   private boolean displayAllMessages = false;
-
   private boolean external = false;
   private String mailType = MAIL_TYPE;
   private boolean resizeFrame = false;
-
   public static final String STATUS_VALIDATE = "V";
   public static final String STATUS_FOR_VALIDATION = "A";
   public static final String STATUS_REFUSED = "R";
@@ -124,8 +116,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
         "com.stratelia.webactiv.forums.multilang.forumsBundle",
         "com.stratelia.webactiv.forums.settings.forumsIcons");
 
-    deployedMessages = new Vector();
-    deployedForums = new Vector();
+    deployedMessages = new ArrayList<Integer>();
+    deployedForums = new ArrayList<Integer>();
   }
 
   public NotificationSender getNotificationSender() {
@@ -137,30 +129,28 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public Forum[] getForumsList() {
     try {
-      List forums = getForumsBM().getForums(new ForumPK(getComponentId(),
-          getSpaceId()));
-      return (Forum[]) forums.toArray(new Forum[forums.size()]);
+      @SuppressWarnings("unchecked")
+      List<Forum> forums = getForumsBM().getForums(new ForumPK(getComponentId(), getSpaceId()));
+      return forums.toArray(new Forum[forums.size()]);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
   }
 
   public Forum[] getForumsListByCategory(String categoryId) {
-    SilverTrace.debug("forums",
-        "ForumsSessionController.getForumsListByCategory()", "",
+    SilverTrace.debug("forums", "ForumsSessionController.getForumsListByCategory()", "",
         "categoryId = " + categoryId);
-
     Forum[] result = new Forum[0];
-    ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId());
     try {
-      List forums = getForumsBM().getForumsByCategory(forumPK, categoryId);
-      result = (Forum[]) forums.toArray(new Forum[forums.size()]);
+      ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId());
+      @SuppressWarnings("unchecked")
+      List<Forum> forums = getForumsBM().getForumsByCategory(forumPK, categoryId);
+      result = forums.toArray(new Forum[forums.size()]);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
-    SilverTrace.debug("forums",
-        "ForumsSessionController.getForumsListByCategory()", "", "retour = "
-            + result);
+    SilverTrace.debug("forums", "ForumsSessionController.getForumsListByCategory()", "", "retour = "
+        + result);
     return result;
   }
 
@@ -199,7 +189,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public int[] getForumSonsIds(int forumId) {
     int[] sonsIds = new int[0];
     try {
-      ArrayList ids = getForumsBM().getForumSonsIds(getForumPK(forumId));
+      List<String> ids = getForumsBM().getForumSonsIds(getForumPK(forumId));
       int n = ids.size();
       sonsIds = new int[n];
       for (int i = 0; i < n; i++) {
@@ -220,39 +210,42 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public void deployForum(int id) {
-    deployedForums.add(new Integer(id));
+    deployedForums.add(Integer.valueOf(id));
+  }
+
+  public void deployAllMessages(int forumId) {
+    Message[] messages = getMessagesList(forumId);
+    for (Message message : messages) {
+      deployMessage(message.getId());
+    }
   }
 
   public void undeployForum(int id) {
-    if (deployedForums.size() > 0) {
-      int i = 0;
-      boolean loop = true;
-      while ((i < deployedForums.size()) && (loop)) {
-        if (((Integer) deployedForums.elementAt(i)).intValue() == id) {
-          loop = false;
-          deployedForums.removeElementAt(i);
+    if (!deployedForums.isEmpty()) {
+      Iterator<Integer> iter = deployedForums.iterator();
+      while (iter.hasNext()) {
+        Integer value = iter.next();
+        if (value.intValue() == id) {
+          iter.remove();
+          return;
         }
-        i++;
       }
     }
   }
 
   public boolean forumIsDeployed(int id) {
-    if (deployedForums.size() > 0) {
-      int i = 0;
-      while (i < deployedForums.size()) {
-        if (((Integer) deployedForums.elementAt(i)).intValue() == id) {
+    if (!deployedForums.isEmpty()) {
+      for (Integer forum : deployedForums) {
+        if (forum.intValue() == id) {
           return true;
         }
-        i++;
       }
     }
     return false;
   }
 
   public void lockForum(int id, int level) {
-    ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId(), String
-        .valueOf(id));
+    ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId(), String.valueOf(id));
     try {
       getForumsBM().lockForum(forumPK, level);
     } catch (RemoteException re) {
@@ -261,8 +254,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public int unlockForum(int id, int level) {
-    ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId(), String
-        .valueOf(id));
+    ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId(), String.valueOf(id));
     try {
       return getForumsBM().unlockForum(forumPK, level);
     } catch (RemoteException re) {
@@ -289,13 +281,13 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public int createForum(String forumName, String forumDescription,
       String forumCreator, int forumParent, String categoryId, String keywords) {
     ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId());
+    String currentCategoryId = categoryId;
     try {
       if (!StringUtil.isDefined(categoryId)) {
-        categoryId = null;
+        currentCategoryId = null;
       }
-      return getForumsBM().createForum(forumPK, truncateTextField(forumName),
-          truncateTextArea(forumDescription), forumCreator, forumParent,
-          categoryId, keywords);
+      return getForumsBM().createForum(forumPK, truncateTextField(forumName), truncateTextArea(
+          forumDescription), forumCreator, forumParent, currentCategoryId, keywords);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -320,10 +312,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       String forumDescription, int forumParent, String categoryId,
       String keywords) {
     try {
-      getForumsBM()
-          .updateForum(getForumPK(forumId), truncateTextField(forumName),
-              truncateTextArea(forumDescription), forumParent, categoryId,
-              keywords);
+      getForumsBM().updateForum(getForumPK(forumId), truncateTextField(forumName),
+          truncateTextArea(forumDescription), forumParent, categoryId,
+          keywords);
     } catch (RemoteException re) {
       SilverTrace.error("forums", "ForumsSessionController.updateForum()",
           "forums.EXE_UPDATE_FORUM_FAILED", re.getMessage());
@@ -359,7 +350,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   // Methodes messages
-
   /**
    * Liste les messages d'un forum
    * @param String id du forum
@@ -405,8 +395,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     for (int i = 0; i < messages.length; i++) {
       Message message = messages[i];
       int forumId = message.getForumId();
-      if (isVisible(message.getStatus(), forumId) || "admin".equals(getUserRoleLevel()) ||
-          message.getAuthor().equals(getUserId())) {
+      if (isVisible(message.getStatus(), forumId) || "admin".equals(getUserRoleLevel())
+          || message.getAuthor().equals(getUserId())) {
         if (message.getParentId() == messageId) {
           messageList.add(message);
           fillMessageList(messageList, messages, message.getId());
@@ -429,15 +419,15 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public Object[] getLastMessage(int forumId, int messageId) {
     try {
       Message message = (messageId != -1 ? getForumsBM().getLastMessage(
-          getForumPK(forumId), messageId, STATUS_VALIDATE) : getForumsBM()
-          .getLastMessage(getForumPK(forumId), STATUS_VALIDATE));
+          getForumPK(forumId), messageId, STATUS_VALIDATE) : getForumsBM().getLastMessage(getForumPK(
+          forumId), STATUS_VALIDATE));
       if (message != null) {
         UserDetail user = getUserDetail(message.getAuthor());
         SilverTrace.debug("forums", "ForumsSessioncontroller.getLastMessage()",
             "root.MSG_GEN_ENTER_METHOD", "message = " + message.toString());
-        return new Object[] { String.valueOf(message.getId()),
-            message.getDate(),
-            (user != null ? user.getDisplayedName() : "Unknown") };
+        return new Object[]{String.valueOf(message.getId()),
+              message.getDate(),
+              (user != null ? user.getDisplayedName() : "Unknown")};
       }
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
@@ -542,9 +532,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     int messageId = 0;
 
     try {
-      if (!isValidationActive() ||
-          (getNbModerator(forumId) == 0 || isModerator(getUserId(), forumId) ||
-          "admin".equals(getUserRoleLevel()))) {
+      if (!isValidationActive()
+          || (getNbModerator(forumId) == 0 || isModerator(getUserId(), forumId)
+          || "admin".equals(getUserRoleLevel()))) {
         status = STATUS_VALIDATE;
       }
       // creation du message dans la base
@@ -582,17 +572,17 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       String text, String status) {
     MessagePK messagePK = getMessagePK(messageId);
     Message message = getMessage(messageId);
-
+    String currentStatus = status;
     try {
-      if (status == null) {
-        status = STATUS_FOR_VALIDATION;
-        if (!isValidationActive() || (getNbModerator(message.getForumId()) == 0 ||
-            isModerator(getUserId(), message.getForumId()) || "admin".equals(getUserRoleLevel()))) {
-          status = STATUS_VALIDATE;
+      if (currentStatus == null) {
+        currentStatus = STATUS_FOR_VALIDATION;
+        if (!isValidationActive() || (getNbModerator(message.getForumId()) == 0
+            || isModerator(getUserId(), message.getForumId()) || "admin".equals(getUserRoleLevel()))) {
+          currentStatus = STATUS_VALIDATE;
         }
       }
       getForumsBM().updateMessage(messagePK, truncateTextField(title), text,
-          getUserId(), status);
+          getUserId(), currentStatus);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     } catch (ForumsException e) {
@@ -644,24 +634,22 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public void sendNotification(String title, String text, int parentId,
       int messageId) throws NotificationManagerException {
-    Vector subscribers = listAllSubscribers(parentId);
+    List<String> subscribers = listAllSubscribers(parentId);
     if (subscribers.size() > 0) {
       ResourceLocator resource = new ResourceLocator(
           "com.stratelia.webactiv.forums.settings.forumsMails", getLanguage());
       // Preparation des donnees
       String[] targetUserIds = (String[]) subscribers.toArray(new String[0]);
 
-      HashMap values = new HashMap();
+      Map<String, String> values = new HashMap<String, String>();
       values.put("title", title);
       values.put("text", text);
       values.put("originTitle", getMessageTitle(parentId));
       values.put("componentId", getComponentId());
       values.put("messageId", String.valueOf(messageId));
 
-      String mailSubject = StringUtil.format(resource.getString(mailType
-          + ".subject"), values);
-      String mailBody = StringUtil.format(resource
-          .getString(mailType + ".body"), values);
+      String mailSubject = StringUtil.format(resource.getString(mailType + ".subject"), values);
+      String mailBody = StringUtil.format(resource.getString(mailType + ".body"), values);
       String url = StringUtil.format(resource.getString(mailType + ".link"),
           values);
 
@@ -684,21 +672,19 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       ResourceLocator resource = new ResourceLocator(
           "com.stratelia.webactiv.forums.settings.forumsMails", getLanguage());
       // Preparation des donnees
-      String[] targetUserIds = (String[]) moderators.toArray(new String[0]);
+      String[] targetUserIds = moderators.toArray(new String[moderators.size()]);
 
-      HashMap values = new HashMap();
+      Map<String, String> values = new HashMap<String, String>();
       values.put("title", title);
       values.put("text", text);
       values.put("originTitle", getMessageTitle(parentId));
       values.put("componentId", getComponentId());
       values.put("messageId", String.valueOf(messageId));
 
-      String mailSubject = StringUtil.format(resource.getString(mailType
-          + ".subjectToValidate"), values);
-      String mailBody = StringUtil.format(resource
-          .getString(mailType + ".bodyToValidate"), values);
-      String url = StringUtil.format(resource.getString(mailType + ".link"),
+      String mailSubject = StringUtil.format(resource.getString(mailType + ".subjectToValidate"),
           values);
+      String mailBody = StringUtil.format(resource.getString(mailType + ".bodyToValidate"), values);
+      String url = StringUtil.format(resource.getString(mailType + ".link"), values);
 
       // envoi des mails de notification
       NotificationMetaData notifMetaData = new NotificationMetaData(
@@ -715,29 +701,27 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public void sendNotificationAfterValidation(String title, String text, int parentId,
       int messageId, int forumId) throws NotificationManagerException {
     ResourceLocator resource = new ResourceLocator(
-          "com.stratelia.webactiv.forums.settings.forumsMails", getLanguage());
+        "com.stratelia.webactiv.forums.settings.forumsMails", getLanguage());
     // Preparation des donnees
     Message message = getMessage(messageId);
     String[] targetUserIds = new String[1];
     targetUserIds[0] = message.getAuthor();
 
-    HashMap values = new HashMap();
+    Map<String, String> values = new HashMap<String, String>();
     values.put("title", title);
     values.put("text", text);
     values.put("originTitle", getMessageTitle(parentId));
     values.put("componentId", getComponentId());
     values.put("messageId", String.valueOf(messageId));
 
-    String mailSubject = StringUtil.format(resource.getString(mailType
-          + ".subjectValidation"), values);
-    String mailBody = StringUtil.format(resource
-          .getString(mailType + ".bodyValidation"), values);
-    String url = StringUtil.format(resource.getString(mailType + ".link"),
-          values);
+    String mailSubject = StringUtil.format(resource.getString(mailType + ".subjectValidation"),
+        values);
+    String mailBody = StringUtil.format(resource.getString(mailType + ".bodyValidation"), values);
+    String url = StringUtil.format(resource.getString(mailType + ".link"), values);
 
     // envoi des mails de notification
     NotificationMetaData notifMetaData = new NotificationMetaData(
-          NotificationParameters.NORMAL, mailSubject, mailBody);
+        NotificationParameters.NORMAL, mailSubject, mailBody);
     notifMetaData.setSender(getUserId());
     notifMetaData.addUserRecipients(targetUserIds);
     notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
@@ -749,13 +733,13 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public void sendNotificationRefused(String title, String text, int parentId,
       int messageId, int forumId, String motive) throws NotificationManagerException {
     ResourceLocator resource = new ResourceLocator(
-          "com.stratelia.webactiv.forums.settings.forumsMails", getLanguage());
+        "com.stratelia.webactiv.forums.settings.forumsMails", getLanguage());
     // Preparation des donnees
     Message message = getMessage(messageId);
     String[] targetUserIds = new String[1];
     targetUserIds[0] = message.getAuthor();
 
-    HashMap values = new HashMap();
+    Map<String, String> values = new HashMap<String, String>();
     values.put("title", title);
     values.put("text", text);
     values.put("originTitle", getMessageTitle(parentId));
@@ -763,16 +747,13 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     values.put("messageId", String.valueOf(messageId));
     values.put("motive", motive);
 
-    String mailSubject = StringUtil.format(resource.getString(mailType
-          + ".subjectRefused"), values);
-    String mailBody = StringUtil.format(resource
-          .getString(mailType + ".bodyRefused"), values);
-    String url = StringUtil.format(resource.getString(mailType + ".link"),
-          values);
+    String mailSubject = StringUtil.format(resource.getString(mailType + ".subjectRefused"), values);
+    String mailBody = StringUtil.format(resource.getString(mailType + ".bodyRefused"), values);
+    String url = StringUtil.format(resource.getString(mailType + ".link"), values);
 
     // envoi des mails de notification
     NotificationMetaData notifMetaData = new NotificationMetaData(
-          NotificationParameters.NORMAL, mailSubject, mailBody);
+        NotificationParameters.NORMAL, mailSubject, mailBody);
     notifMetaData.setSender(getUserId());
     notifMetaData.addUserRecipients(targetUserIds);
     notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
@@ -810,30 +791,59 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public void deployMessage(int id) {
-    deployedMessages.add(new Integer(id));
+    deployedMessages.add(Integer.valueOf(id));
   }
 
   public void undeployMessage(int id) {
-    if (deployedMessages.size() > 0) {
-      int i = 0;
-      boolean loop = true;
-      while ((i < deployedMessages.size()) && (loop)) {
-        if (((Integer) deployedMessages.elementAt(i)).intValue() == id) {
-          loop = false;
-          deployedMessages.removeElementAt(i);
+    if (!deployedMessages.isEmpty()) {
+      Iterator<Integer> iter = deployedMessages.iterator();
+      while (iter.hasNext()) {
+        Integer value = iter.next();
+        if (value.intValue() == id) {
+          iter.remove();
+          return;
         }
-        i++;
       }
     }
   }
 
   public boolean messageIsDeployed(int id) {
-    int i = 0;
-    while (i < deployedMessages.size()) {
-      if (((Integer) deployedMessages.elementAt(i)).intValue() == id) {
+    for (Integer value : deployedMessages) {
+      if (value.intValue() == id) {
         return true;
       }
-      i++;
+    }
+    return false;
+  }
+
+  public boolean isReader() {
+    if (!isAdmin() || isUser()) {
+      String[] profiles = getUserRoles();
+      for (String profile : profiles) {
+        if (SilverpeasRole.reader == SilverpeasRole.valueOf(profile)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public boolean isUser() {
+    String[] profiles = getUserRoles();
+    for (String profile : profiles) {
+      if (SilverpeasRole.user == SilverpeasRole.valueOf(profile)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean isAdmin() {
+    String[] profiles = getUserRoles();
+    for (String profile : profiles) {
+      if (SilverpeasRole.admin == SilverpeasRole.valueOf(profile)) {
+        return true;
+      }
     }
     return false;
   }
@@ -929,13 +939,18 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     }
   }
 
-  public Vector listAllSubscribers(int messageId) {
-    Vector subscribers = new Vector();
+  public List<String> listAllSubscribers(int messageId) {
+    List<String> subscribers = new ArrayList<String>();
     try {
-      subscribers = getForumsBM().listAllSubscribers(getMessagePK(messageId));
+      @SuppressWarnings("unchecked")
+      List<String> forumSubscribers = getForumsBM().listAllSubscribers(getMessagePK(messageId));
+      subscribers.addAll(forumSubscribers);
       int parentId = getMessageParentId(messageId);
       while (parentId != 0) {
-        subscribers.addAll(getForumsBM().listAllSubscribers(getMessagePK(parentId)));
+        @SuppressWarnings("unchecked")
+        List<String> parentForumSubscribers = getForumsBM().listAllSubscribers(
+            getMessagePK(parentId));
+        subscribers.addAll(forumSubscribers);
         parentId = getMessageParentId(parentId);
       }
     } catch (RemoteException re) {
@@ -980,22 +995,20 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public UserDetail[] listUsers() {
-    UserDetail[] userDetails = CollectionUtil
-        .sortUserDetailArray(getOrganizationController().getAllUsers(
-            getComponentId()));
+    UserDetail[] userDetails = CollectionUtil.sortUserDetailArray(getOrganizationController().
+        getAllUsers(
+        getComponentId()));
     return (userDetails != null ? userDetails : new UserDetail[0]);
   }
 
   public String getAuthorName(String userId) {
     UserDetail userDetail = getOrganizationController().getUserDetail(userId);
-    return (userDetail != null ? (userDetail.getFirstName() + " " + userDetail
-        .getLastName()).trim() : null);
+    return (userDetail != null ? (userDetail.getFirstName() + " " + userDetail.getLastName()).trim() : null);
   }
 
   public String getAdminIds() {
-    return NotificationSender
-        .getIdsLineFromUserArray(getOrganizationController().getUsers(
-            getSpaceId(), getComponentId(), "admin"));
+    return NotificationSender.getIdsLineFromUserArray(getOrganizationController().getUsers(
+        getSpaceId(), getComponentId(), "admin"));
   }
 
   private String truncateTextField(String s) {
@@ -1030,6 +1043,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     }
   }
 
+  @Override
   public void close() {
     try {
       if (getForumsBM() != null) {
@@ -1091,6 +1105,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     }
   }
 
+  @Override
   public ResourceLocator getSettings() {
     if (settings == null) {
       settings = new ResourceLocator(
@@ -1146,7 +1161,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public NotationDetail getForumNotation(int forumId) {
     try {
-      return getNotationBm().getNotation(getForumNotationPk(forumId));
+      NotationDetail notation = getNotationBm().getNotation(getForumNotationPk(forumId));
+      return notation;
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
     }
@@ -1227,9 +1243,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   protected StatisticBm getStatisticBm() {
     if (statisticBm == null) {
       try {
-        StatisticBmHome statisticHome = (StatisticBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
-                StatisticBmHome.class);
+        StatisticBmHome statisticHome = (StatisticBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.STATISTICBM_EJBHOME,
+            StatisticBmHome.class);
         statisticBm = statisticHome.create();
       } catch (Exception e) {
         throw new StatisticRuntimeException(
@@ -1244,8 +1260,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   protected NotationBm getNotationBm() {
     if (notationBm == null) {
       try {
-        NotationBmHome notationHome = (NotationBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.NOTATIONBM_EJBHOME, NotationBmHome.class);
+        NotationBmHome notationHome = (NotationBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.NOTATIONBM_EJBHOME, NotationBmHome.class);
         notationBm = notationHome.create();
       } catch (Exception e) {
         throw new NotationRuntimeException(
@@ -1259,8 +1275,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   protected ForumsBM getForumsBM() {
     if (forumsBM == null) {
       try {
-        ForumsBMHome forumsBMHome = (ForumsBMHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.FORUMSBM_EJBHOME, ForumsBMHome.class);
+        ForumsBMHome forumsBMHome = (ForumsBMHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.FORUMSBM_EJBHOME, ForumsBMHome.class);
         forumsBM = forumsBMHome.create();
       } catch (Exception e) {
         throw new EJBException(e.getMessage());
@@ -1278,8 +1294,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   private MessagePK getMessagePK(int messageId) {
-    return new MessagePK(getComponentId(), getSpaceId(), String
-        .valueOf(messageId));
+    return new MessagePK(getComponentId(), getSpaceId(), String.valueOf(messageId));
   }
 
   private NotationPK getForumNotationPk(int forumId) {
@@ -1292,4 +1307,21 @@ public class ForumsSessionController extends AbstractComponentSessionController 
         Notation.TYPE_MESSAGE, getUserId());
   }
 
+  public List<Forum> getForumAncestors(int forumId) {
+    int currentForumId = forumId;
+    List<Forum> ancestors = new ArrayList<Forum>();
+    try {
+      String instanceId = getForumsBM().getForumInstanceId(forumId);
+      while (currentForumId > 0) {
+        currentForumId = getForumsBM().getForumParentId(currentForumId);
+        ancestors.add(
+            getForumsBM().getForum(new ForumPK(instanceId, null, String.valueOf(currentForumId))));
+
+      }
+    } catch (RemoteException re) {
+      throw new EJBException(re.getMessage());
+    }
+    Collections.reverse(ancestors);
+    return ancestors;
+  }
 }

@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.forums;
 
-import java.util.Vector;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -35,6 +34,7 @@ public class ForumsIndexer implements ComponentIndexerInterface {
 
   private ForumsSessionController fsc = null;
 
+  @Override
   public void index(MainSessionController mainSessionCtrl,
       ComponentContext context) throws Exception {
     fsc = new ForumsSessionController(mainSessionCtrl, context);

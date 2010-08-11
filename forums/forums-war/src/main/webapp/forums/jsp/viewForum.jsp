@@ -28,235 +28,241 @@
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
     response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
-<%@ include file="checkForums.jsp"
-%><%@ include file="forumsListManager.jsp"
-%><%@ include file="forumsListActionManager.jsp"
-%><%@ include file="messagesListManager.jsp"
-%>
-<%
-    String mailtoAdmin = context + "/util/icons/forums_mailtoAdmin.gif";
-    String newMegForum = context + "/util/icons/forums_addMessage.gif";
+<%@ page pageEncoding="ISO-8859-1" contentType="text/html; charset=ISO-8859-1" %>
+<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
+<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
+<c:set var="componentId" value="${sessionController.componentId}" />
+<c:set var="isReader" value="${sessionController.reader}" />
+<c:set var="isUser" value="${sessionController.user}" />
+<c:set var="isAdmin" value="${sessionController.admin}" />
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-    int forumId = getIntParameter(request, "forumId", 0);
+<%@ page import="java.io.IOException"%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
+<%@ page import="com.stratelia.webactiv.forums.sessionController.helpers.*"%>
+<%@ page import="com.stratelia.webactiv.forums.sessionController.ForumsSessionController"%>
+<%@ page import="com.stratelia.webactiv.forums.models.Forum"%>
+<%@ page import="com.stratelia.webactiv.forums.models.Message"%>
+<%
+    ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
+        "forumsSessionClientController");
+    ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");    
+    ResourceLocator resource = new ResourceLocator(
+        "com.stratelia.webactiv.forums.multilang.forumsBundle", fsc.getLanguage());
+    if (fsc == null) {
+        // No forums session controller in the request -> security exception
+        String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator()
+            .getString("sessionTimeout");
+        getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout)
+            .forward(request, response);
+        return;
+    }
+    String userId = fsc.getUserId();
+    boolean isAdmin = fsc.isAdmin();
+    boolean isUser = fsc.isUser();
+    boolean isReader = fsc.isReader();    
+    fsc.resetDisplayAllMessages();    
+    int forumId = ForumHelper.getIntParameter(request, "forumId", 0);
 
     boolean isModerator = fsc.isModerator(userId, forumId);
-    
-    fsc.resetDisplayAllMessages();
-
-    actionManagement(request, isAdmin, isModerator, userId, resource, out, fsc);
-
-    Forum forum = fsc.getForum(forumId);
-    boolean forumActive = forum.isActive();
-    String categoryId = forum.getCategory();
+    ForumActionHelper.actionManagement(request, isAdmin, isModerator, userId, resource, out, fsc);
 %>
+<c:set var="currentForum" value="${requestScope.currentForum}" />
+<c:set var="isActive"  value="${requestScope.currentForum.active}" />
+<c:set var="globalNote" value="${requestScope.notation.roundGlobalNote}" />
+<c:set var="userNote" value="${requestScope.notation.userNote}" />
 <html>
-<head>
-    <title></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><%
-
-    out.println(graphicFactory.getLookStyleSheet());
-    if (!graphicFactory.hasExternalStylesheet())
-    {
-%>
-    <link rel="stylesheet" type="text/css" href="styleSheets/forums.css"><%
-
-    }
-%>
-    <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
-    <script type="text/javascript" src="<%=context%>/util/javaScript/animation.js"></script>
-    <script type="text/javascript"><%
-        
-    if (isAdmin || isModerator) {
-%>
-
-        function confirmDeleteForum(forumId)
-        {
-            if (confirm("<%=Encode.javaStringToJsString(resource.getString("confirmDeleteForum"))%>"))
-            {
-                window.location.href = "viewForum.jsp?action=4&params=" + forumId
-                    + "&forumId=<%=forumId%>";
-            }
+  <head>
+    <title><c:out value="${currentForum.name}" /></title>
+    <view:looknfeel />
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <c:if test="${sessionScope.SessionGraphicElementFactory.externalStylesheet == null}">
+      <link rel="stylesheet" type="text/css" href="styleSheets/forums.css">
+    </c:if>
+    <script type="text/javascript" src="<c:url value="/forums/jsp/javaScript/forums.js" />" ></script>
+    <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />" ></script>
+    <script type="text/javascript">
+      <c:if test="${isAdmin || isModerator}">
+        function confirmDeleteForum(forumId) {
+          if (confirm("<%=EncodeHelper.javaStringToJsString(resource.getString("confirmDeleteForum"))%>"))
+          {
+            window.location.href = "viewForum.jsp?action=4&params=" + forumId + "&forumId=<%=forumId%>";
+          }
         }
-
-        function deleteMessage(messageId, parentId, scroll)
-        {
-            if (confirm("<%=Encode.javaStringToJsString(resource.getString("confirmDeleteMessage"))%>"))
-            {
-                window.location.href = "viewForum.jsp?action=9&params=" + messageId
-                    + "&forumId=<%=forumId%>";
-            }
-        }<%
-        
-    }
-%>
-        function notifyPopup2(context, compoId, users, groups)
-        {
-            SP_openWindow(context + "/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&compoId="
-                + compoId + "&theTargetsUsers=" + users + "&theTargetsGroups=" + groups,
-                "notifyUserPopup", "700", "400", "menubar=no,scrollbars=no,statusbar=no");
+        function deleteMessage(messageId, parentId, scroll) {
+          if (confirm("<%=EncodeHelper.javaStringToJsString(resource.getString("confirmDeleteMessage"))%>"))
+          {
+            window.location.href = "viewForum.jsp?action=9&params=" + messageId + "&forumId=<%=forumId%>";
+          }
+        }
+      </c:if>
+        function notifyPopup2(context, compoId, users, groups) {
+          SP_openWindow(context + "/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&compoId="
+            + compoId + "&theTargetsUsers=" + users + "&theTargetsGroups=" + groups,
+          "notifyUserPopup", "700", "400", "menubar=no,scrollbars=no,statusbar=no");
         }
 
         function loadNotation()
         {
-            if (document.getElementById(NOTATION_PREFIX + "1") == undefined)
-            {
-                setTimeout("loadNotation()", 200);
+          if (document.getElementById(NOTATION_PREFIX + "1") == undefined)  {
+            setTimeout("loadNotation()", 200);
+          }
+          else {
+            var img;
+            var i;
+            for (i = 1; i <= NOTATIONS_COUNT; i++) {
+              notationFlags[i - 1] = false;
+              img = document.getElementById(NOTATION_PREFIX + i);
+              img.alt = "<%=resource.getString("forums.giveNote")%> " + i + "/" + NOTATIONS_COUNT;
+              img.title = "<%=resource.getString("forums.giveNote")%> " + i + "/" + NOTATIONS_COUNT;
+              if (!readOnly) {
+                img.onclick = function() {notationNote(this);};
+                img.onmouseover = function() {notationOver(this);};
+                img.onmouseout = function() {notationOut(this);};
+              }
             }
-            else
-            {
-                var img;
-                var i;
-                for (i = 1; i <= NOTATIONS_COUNT; i++)
-                {
-                    notationFlags[i - 1] = false;
-                    img = document.getElementById(NOTATION_PREFIX + i);
-                    img.alt = "<%=resource.getString("forums.giveNote")%> " + i + "/" + NOTATIONS_COUNT;
-                    img.title = "<%=resource.getString("forums.giveNote")%> " + i + "/" + NOTATIONS_COUNT;
-                    if (!readOnly)
-                    {
-                        img.onclick = function() {notationNote(this);};
-                        img.onmouseover = function() {notationOver(this);};
-                        img.onmouseout = function() {notationOut(this);};
-                    }
-                }
-            }
+          }
         }
 
         function notationNote(image) {
-            var index = getNotationIndex(image);
-            var updateNote = false;
-            if (userNote > 0) {
-                if (index == userNote) {
-                    alert("<%=resource.getString("forums.sameNote")%> " + userNote + ".");
-                } else {
-                	updateNote = confirm("<%=resource.getString("forums.replaceNote")%> " + userNote + " <%=resource.getString("forums.by")%> " + index + ".");
-                }
+          var index = getNotationIndex(image);
+          var updateNote = false;
+          if (userNote > 0) {
+            if (index == userNote) {
+              alert("<%=resource.getString("forums.sameNote")%> " + userNote + ".");
             } else {
-            	updateNote = true;
+              updateNote = confirm("<%=resource.getString("forums.replaceNote")%> " + userNote + " <%=resource.getString("forums.by")%> " + index + ".");
             }
-            if (updateNote) {
-            	currentNote = index;
-                document.forms["notationForm"].elements["note"].value = currentNote;
-                document.forms["notationForm"].submit();
-            }
+          } else {
+            updateNote = true;
+          }
+          if (updateNote) {
+            currentNote = index;
+            document.forms["notationForm"].elements["note"].value = currentNote;
+            document.forms["notationForm"].submit();
+          }
         }
     </script>
-</head>
-
-<body id="forum" <%addBodyOnload(out, fsc);%>><%
-
-    Window window = graphicFactory.getWindow();
-
-    BrowseBar browseBar = window.getBrowseBar();
-    browseBar.setDomainName(fsc.getSpaceLabel());
-    browseBar.setComponentName(fsc.getComponentLabel(), ActionUrl.getUrl("main"));
-    browseBar.setPath(navigationBar(forumId, resource, fsc));
-    
-    if (!isReader)
-    {
-        OperationPane operationPane = window.getOperationPane();
-        operationPane.addOperation(mailtoAdmin, resource.getString("mailAdmin"),
-            "javascript:notifyPopup2('" + context + "', '" + fsc.getComponentId() + "', '"
-                + fsc.getAdminIds() + "', '');");
-        if (isAdmin && fsc.forumInsideForum())
-        {
-            displayForumsAdminButtons(isModerator, operationPane, forumId, "viewForum", resource);
-        }
-        if (fsc.isForumActive(forumId))
-        {
-            operationPane.addOperation(newMegForum, resource.getString("newMessage"),
-            	ActionUrl.getUrl("editMessage", "viewForum", 1, forumId, forumId));
-        }
-    }
-
-    out.println(window.printBefore());
-    Frame frame = graphicFactory.getFrame();
-    out.println(frame.printBefore());
-%>
-    <br>
-    <center>
+  </head>
+  <body id="forum" <%ForumHelper.addBodyOnload(out, fsc);%>>
+    <c:set var="viewForumPage">/Rforums/<c:out value="${componentId}" />/viewForum.jsp</c:set>
+    <view:browseBar>
+      <c:forEach items="${requestScope.parents}" var="ancestor">
+        <c:url var="ancestorLink" value="${viewForumPage}"><c:param name="call" value="viewForum"/><c:param name="forumId" value="${ancestor.id}"/></c:url>
+        <view:browseBarElt id="${ancestor.id}" label="${ancestor.name}" link="${ancestorLink}" />
+      </c:forEach>
+      <c:url var="forumLink" value="${viewForumPage}"><c:param name="call" value="viewForum"/><c:param name="forumId" value="${param.forumId}"/></c:url>
+      <view:browseBarElt id="${currentForum.id}" label="${currentForum.name}" link="${forumLink}" />
+    </view:browseBar>
+    <c:if test="${isAdmin || isUser}">
+      <view:operationPane>
+        <c:if test="${isAdmin && sessionController.pdcUsed}">
+          <fmt:message key="PDCUtilization" var="pdcUtilisation" />
+          <c:set var="pdcUtilisationOperation">javascript:onClick=openSPWindow('<c:url value="/RpdcUtilization/jsp/Main" >
+              <c:param name="ComponentId" value="${sessionController.componentId}" /></c:url>', 'utilizationPdc1');</c:set>
+          <c:url var="pdcUtilisationIconUrl" value="/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif" />
+          <view:operation altText="${pdcUtilisation}" icon="${pdcUtilisationIconUrl}" action="${pdcUtilisationOperation}" />
+        </c:if>
+        <fmt:message key="mailAdmin" var="mail2AdminAltText" />
+        <c:set var="mail2AdminOperation">javascript:notifyPopup2('<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
+        <c:url var="mail2AdminIconUrl" value="/util/icons/forums_mailtoAdmin.gif" />              
+        <view:operation altText="${mail2AdminAltText}" icon="${mail2AdminIconUrl}" action="${mail2AdminOperation}" />
+        <c:if test="${isAdmin}">
+          <fmt:message key="newForum" var="addForumAltText" />
+          <c:url var="addForumOperation" value="editForumInfo.jsp">
+            <c:param name="call" value="viewForum"/>
+            <c:param name="action" value="1"/>
+            <c:param name="forumId" value="${param.forumId}"/>
+            <c:param name="params" value="${param.forumId}"/>
+          </c:url>
+          <c:url var="addForumIconUrl" value="/util/icons/forums_to_add.gif" />              
+          <view:operation altText="${addForumAltText}" icon="${addForumIconUrl}" action="${addForumOperation}" />
+          <fmt:message key="forums.addCategory" var="addCategoryAltText" />
+          <c:set var="addCategoryOperation">javascript:notifyPopup2('<c:out value="${pageContext.request.contextPath}"/>','<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
+          <c:url var="addCategoryIconUrl" value="/util/icons/folderAddBig.gif" />              
+          <view:operation altText="${addCategoryAltText}" icon="${addCategoryIconUrl}" action="NewCategory" />
+        </c:if>
+        <c:if test="${isActive}">
+          <fmt:message key="newMessage" var="newMessageAltText" />
+          <c:url var="newMessageIconUrl" value="/util/icons/forums_addMessage.gif" />
+          <c:set var="newMessagePage">/Rforums/<c:out value="${componentId}" />/editMessage.jsp</c:set>
+          <c:url var="newMessageOperation" value="${newMessagePage}"><c:param name="call" value="viewForum"/><c:param name="action" value="1"/><c:param name="forumId" value="${param.forumId}"/><c:param name="params" value="${param.forumId}"/></c:url>
+          <view:operation altText="${newMessageAltText}" icon="${newMessageIconUrl}" action="${newMessageOperation}" />
+        </c:if>
+      </view:operationPane>
+    </c:if>
+    <view:window>
+      <view:frame>
         <table class="intfdcolor4" border="0" cellspacing="0" cellpadding="0" width="98%">
-            <tr class="notationLine">
-                <td align="right"><%
-
-    int[] forumNotes = displayForumNotation(out, resources, forumId, fsc, isReader);
-
-              %></td>
-            </tr>
-            <tr>
-                <td valign="top">
-                    <table class="contourintfdcolor" border="0" cellspacing="0" cellpadding="5" width="100%">
-                        <form name="nameForm" action="" method="post">
-                            <tr>
-                                <td valign="top">
-                                    <center>
-                                        <table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
-                                            <%-- affichage de l'entête des colonnes --%>
-                                            <tr class="enteteTableau">
-                                                <td nowrap="nowrap" align="center" colspan="3"><%=resources.getString("forums.nbSubjects")%></td>
-                                                <td nowrap="nowrap" align="center"><%=resources.getString("forums.lastMessage")%></td>
-                                                <td nowrap="nowrap" align="center"><%=resources.getString("forums.nbMessages")%></td>
-                                                <td nowrap="nowrap" align="center"><%=resources.getString("forums.nbViews")%></td>
-                                                <td nowrap="nowrap" align="center"><%=resources.getString("forums.notation")%></td><%
-    if (isAdmin || isModerator) {
-%>
-                                                <td nowrap="nowrap" align="center"><%=resources.getString("operations")%></td><%
-
-    }
-%>
-                                            </tr><%
-                                            
-    //displayForums(out, resources, isAdmin, isModerator, isReader, forumId, "viewForum", fsc, categoryId);
-                                            
-    Message[] messages = fsc.getMessagesList(forumId);
-    deployAll(messages, fsc);
-    displayMessagesList(out, resource, userId, isAdmin, isModerator, isReader, true, forumId, false,
-        "viewForum", fsc, resources);
-%>
-                                        </table>
-                                    </center>
-                                </td>
-                            </tr>
-                        </form>
-                    </table>
-                </td>
-            </tr>
+          <tr class="notationLine">
+            <td align="right">
+              <c:url var="starIcon" value="/util/icons/shim.gif"/>
+              <span class="txtnote"><fmt:message key="forums.forumNote"/> : 
+                <c:forEach var="i" begin="1" end="5">
+                  <img src="<c:out value="${starIcon}"/>" style="margin-bottom: 0px;" <c:if test="${!isReader}">id="notationImg<c:out value="${i}"/>"</c:if> 
+                       class="<c:choose><c:when test="${i <= globalNote}">notation_on</c:when><c:otherwise>notation_off</c:otherwise></c:choose>" />
+                </c:forEach>
+              </span>                  
+            </td>
+          </tr>
+          <tr>
+            <td valign="top">
+              <table class="contourintfdcolor" border="0" cellspacing="0" cellpadding="5" width="100%">
+                <form name="nameForm" action="" method="post">
+                  <tr>
+                    <td valign="top" align="center">
+                      <table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
+                        <%-- affichage de l'entête des colonnes --%>
+                        <tr class="enteteTableau">
+                          <td nowrap="nowrap" align="center" colspan="3"><fmt:message key="forums.nbSubjects"/></td>
+                          <td nowrap="nowrap" align="center"><fmt:message key="forums.lastMessage"/></td>
+                          <td nowrap="nowrap" align="center"><<fmt:message key="forums.nbMessages"/></td>
+                          <td nowrap="nowrap" align="center"><fmt:message key="forums.nbViews"/></td>
+                          <td nowrap="nowrap" align="center"><fmt:message key="forums.notation"/></td>
+                          <c:if test="${isAdmin || isModerator}">
+                            <td nowrap="nowrap" align="center"><fmt:message key="operations"/></td>
+                          </c:if>
+                        </tr><%
+fsc.deployAll(forumId);
+ForumHelper.displayMessagesList(out, resource, userId, isAdmin, isModerator, isReader, true, forumId, false,
+"viewForum", fsc, resources);
+                        %>
+                      </table>
+                    </td>
+                  </tr>
+                </form>
+              </table>
+            </td>
+          </tr>          
         </table>
-    </center><%
-
-    out.println(frame.printMiddle());
-
-%>
-    <br>
-    <center><%
-
-    ButtonPane backButtonPane = graphicFactory.getButtonPane();
-    backButtonPane.addButton(graphicFactory.getFormButton("Retour", "main.jsp", false));
-    backButtonPane.setHorizontalPosition();
-    out.println(backButtonPane.print());
-%>
-    </center>
-    <br><%
-
-    out.println(frame.printAfter());
-    out.println(window.printAfter());
-    
-    if (!isReader && forumNotes.length > 0)
-    {
-%>
-    <form name="notationForm" action="viewForum" method="post">
+        <br/>
+        <center>
+          <view:buttonPane>
+            <view:button action="main.jsp" label="Retour" disabled="false" />
+          </view:buttonPane> 
+        </center>
+      </view:frame>
+    </view:window>
+    <c:if test="${!isReader}">
+      <form name="notationForm" action="viewForum" method="post">
         <input name="action" type="hidden" value="16"/>
-        <input name="forumId" type="hidden" value="<%=forumId%>"/>
+        <input name="forumId" type="hidden" value="<c:out value="${param.forumId}" />"/>
         <input name="note" type="hidden" value=""/>
-    </form>
-    <script type="text/javascript">
-        readOnly = <%=isReader%>;
-        currentNote = <%=forumNotes[0]%>;
-        userNote = <%=forumNotes[1]%>;
+      </form>
+      <script type="text/javascript">
+        readOnly = <c:out value="${isReader}"/>;
+        currentNote = <c:out value="${globalNote}"/>;
+        userNote = <c:out value="${userNote}"/>;
         loadNotation();
-    </script><%
-
-    }
-%>
-</body>
+      </script>
+    </c:if>
+  </body>
 </html>

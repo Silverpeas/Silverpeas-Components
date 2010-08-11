@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="java.util.Hashtable"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -551,7 +552,7 @@
             
             if (forumActive) 
             {
-	            if (!isReader)
+	            if (isAdmin || isUser)
 	            {
 				         %> 
 				          <a href="javascript:replyMessage(<%=currentId%>)"><img

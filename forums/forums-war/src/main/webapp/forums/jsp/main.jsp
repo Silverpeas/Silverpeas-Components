@@ -28,176 +28,169 @@
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
     response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
-<%@ include file="checkForums.jsp" %>
-<%@ include file="forumsListManager.jsp" %>
-<%@ include file="forumsListActionManager.jsp" %>
-<%
-    Collection categories = fsc.getAllCategories();
+<%@ page pageEncoding="ISO-8859-1" contentType="text/html; charset=ISO-8859-1" %>
+<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
+<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<c:set var="componentId" value="${requestScope.componentId}" />
+<c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
+<c:set var="isReader" value="${sessionController.reader}" />
+<c:set var="isUser" value="${sessionController.user}" />
+<c:set var="isAdmin" value="${sessionController.admin}" />
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-    String rssURL = (fsc.isUseRss() ? fsc.getRSSUrl() : null);
+<%@ page import="java.io.IOException"%>
+<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
+<%@ page import="com.stratelia.webactiv.forums.sessionController.helpers.*"%>
+<%@ page import="com.stratelia.webactiv.forums.sessionController.ForumsSessionController"%>
+<%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
+<%
+ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
+        "forumsSessionClientController");
+    ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
     
-    String mailtoAdmin = context + "/util/icons/forums_mailtoAdmin.gif";
-    String pdcUtilizationSrc = context + "/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif";
-    
+    ResourceLocator resource = new ResourceLocator(
+        "com.stratelia.webactiv.forums.multilang.forumsBundle", fsc.getLanguage());
+
+    if (fsc == null)
+    {
+        // No forums session controller in the request -> security exception
+        String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator()
+            .getString("sessionTimeout");
+        getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout)
+            .forward(request, response);
+        return;
+    }
+    String userId = fsc.getUserId();
+    boolean isAdmin = fsc.isAdmin();
+    boolean isUser = fsc.isUser();
+    boolean isReader = fsc.isReader();
+
     boolean isModerator = false;
     
     fsc.resetDisplayAllMessages();
 
-    actionManagement(request, isAdmin, isModerator, userId, resource, out, fsc);
+    ForumActionHelper.actionManagement(request, isAdmin, isModerator, userId, resource, out, fsc);
 %>
 <html>
-<head>
+  <head>
     <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><%
-
-    out.println(graphicFactory.getLookStyleSheet());
-    if (!graphicFactory.hasExternalStylesheet())
-    {
-%>
-    <link rel="stylesheet" type="text/css" href="styleSheets/forums.css"><%
-
-    }
-%>
-    <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
-    <script type="text/javascript" src="<%=context%>/util/javaScript/animation.js"></script>
+    <view:looknfeel />
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <c:if test="${sessionScope.SessionGraphicElementFactory.externalStylesheet == null}">
+      <link rel="stylesheet" type="text/css" href="styleSheets/forums.css">
+    </c:if>
+    <script type="text/javascript" src="<c:url value="/forums/jsp/javaScript/forums.js" />"></script>
+    <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />"></script>
     <script type="text/javascript">
-        function confirmDeleteForum(forumId)
+      function confirmDeleteForum(forumId)
+      {
+        if (confirm("<fmt:message key="confirmDeleteForum" />"))
         {
-            if (confirm("<%=resources.getString("confirmDeleteForum")%>"))
-            {
-                window.location.href = "main.jsp?action=4&params=" + forumId;
-            }
+          window.location.href = "main.jsp?action=4&params=" + forumId;
         }
+      }
         
-        function confirmDeleteCategory(categoryId)
+      function confirmDeleteCategory(categoryId)
+      {
+        if (confirm("<fmt:message key="fconfirmDeleteCategory" />"))
         {
-            if (confirm("<%=resources.getString("confirmDeleteCategory")%>"))
-            {
-                window.location.href = "DeleteCategory?CategoryId=" + categoryId;
-            }
+          window.location.href = "DeleteCategory?CategoryId=" + categoryId;
         }
+      }
         
-        function notifyPopup2(context,compoId,users,groups)
-        {
-            SP_openWindow(context + '/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&compoId='
-                + compoId + '&theTargetsUsers=' + users + '&theTargetsGroups=' + groups,
-                'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
-        }
+      function notifyPopup2(compoId,users,groups)
+      {
+        SP_openWindow('<c:url value="/RnotificationUser/jsp/Main.jsp"/>?popupMode=Yes&editTargets=No&compoId='
+          + compoId + '&theTargetsUsers=' + users + '&theTargetsGroups=' + groups,
+        'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
+      }
         
-        function openSPWindow(fonction, windowName)
-        {
-            pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400',
-                'scrollbars=yes, resizable, alwaysRaised');
-        }
-    </script><%
-    
-    if (StringUtil.isDefined(rssURL)) {
-%>
-    <link rel="alternate" type="application/rss+xml" title="<%=componentLabel%> : <%=resources.getString("forums.rssLast")%>" href="<%=context+rssURL%>"/><%
-    
-    }
-%>
-</head>
+      function openSPWindow(fonction, windowName)
+      {
+        pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400',
+        'scrollbars=yes, resizable, alwaysRaised');
+      }
+    </script>
+    <c:if test="${sessionController.useRss}">
+      <link rel="alternate" type="application/rss+xml" title="<c:out value="${requestScope.browseContext[1]}" /> : <fmt:message key="forums.rssLast" />" href="<c:url value="${sessionController.RSSUrl}" />" />
+    </c:if>
+  </head>
 
-<body id="forum" <%addBodyOnload(out, fsc);%>>
-<% 
-    // AFFICHAGE DE LA FENETRE DU COMPOSANT
-    Window window = graphicFactory.getWindow();
-
-    // AFFICHAGE DE LA BARRE DE NAVIGATION
-    BrowseBar browseBar = window.getBrowseBar();
-    browseBar.setDomainName(fsc.getSpaceLabel()); 
-    browseBar.setComponentName(fsc.getComponentLabel(), ActionUrl.getUrl("main"));
-
-    // AFFICHAGE DES OPERATIONS
-    if (!isReader)
-    {
-        OperationPane operationPane = window.getOperationPane();
-    
-        if (isAdmin && fsc.isPdcUsed()) 
-        {    
-            operationPane.addOperation(pdcUtilizationSrc, resources.getString("PDCUtilization"),
-                "javascript:onClick=openSPWindow('" + context
-                    + "/RpdcUtilization/jsp/Main?ComponentId=" + fsc.getComponentId()
-                    + "', 'utilizationPdc1')");
-            operationPane.addLine();
-        }
-            
-        operationPane.addOperation(mailtoAdmin, resources.getString("mailAdmin"),
-            "javascript:notifyPopup2('" + context + "','" + fsc.getComponentId() + "','"
-                + fsc.getAdminIds() + "', '');");
-        if (isAdmin)
-        {
-             displayForumsAdminButtonsMain(isModerator, operationPane, 0, "main", resource);
-        }
-    }
-    
-    out.println(window.printBefore());
-    Frame frame = graphicFactory.getFrame();
-    out.println(frame.printBefore());
-%>
-    <center>
-        <table width="95%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
+  <body id="forum" <%ForumHelper.addBodyOnload(out, fsc);%>>
+    <view:browseBar />
+    <c:if test="${isAdmin || isUser}">
+      <view:operationPane>
+        <c:if test="${isAdmin && sessionController.pdcUsed}">
+          <fmt:message key="PDCUtilization" var="pdcUtilisation" />
+          <c:set var="pdcUtilisationOperation">javascript:onClick=openSPWindow('<c:url value="/RpdcUtilization/jsp/Main" >
+              <c:param name="ComponentId" value="${sessionController.componentId}" /></c:url>', 'utilizationPdc1');</c:set>
+          <c:url var="pdcUtilisationIconUrl" value="/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif" />
+          <view:operation altText="${pdcUtilisation}" icon="${pdcUtilisationIconUrl}" action="${pdcUtilisationOperation}" />
+        </c:if>
+        <fmt:message key="mailAdmin" var="mail2AdminAltText" />
+        <c:set var="mail2AdminOperation">javascript:notifyPopup2('<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
+        <c:url var="mail2AdminIconUrl" value="/util/icons/forums_mailtoAdmin.gif" />              
+        <view:operation altText="${mail2AdminAltText}" icon="${mail2AdminIconUrl}" action="${mail2AdminOperation}" />
+        <c:if test="${isAdmin}">
+          <fmt:message key="newForum" var="addForumAltText" />
+          <c:url var="addForumOperation" value="editForumInfo.jsp">
+            <c:param name="call" value="main"/>
+            <c:param name="action" value="1"/>
+            <c:param name="forumId" value="0"/>
+            <c:param name="params" value="0"/>
+          </c:url>
+          <c:url var="addForumIconUrl" value="/util/icons/forums_to_add.gif" />              
+          <view:operation altText="${addForumAltText}" icon="${addForumIconUrl}" action="${addForumOperation}" />
+          <fmt:message key="forums.addCategory" var="addCategoryAltText" />
+          <c:set var="addCategoryOperation">javascript:notifyPopup2('<c:out value="${pageContext.request.contextPath}"/>','<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
+          <c:url var="addCategoryIconUrl" value="/util/icons/folderAddBig.gif" />              
+          <view:operation altText="${addCategoryAltText}" icon="${addCategoryIconUrl}" action="NewCategory" />
+        </c:if>
+      </view:operationPane>
+    </c:if>
+    <view:window>
+      <view:frame>
+        <center>
+          <table width="95%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
             <tr class="enteteTableau">
-                <td colspan="2" nowrap="nowrap" align="center"><%=resources.getString("theme")%></td>
-                <td nowrap="nowrap" align="center"><%=resources.getString("forums.nbSubjects")%></td>
-                <td nowrap="nowrap" align="center"><%=resources.getString("forums.nbMessages")%></td>
-                <td nowrap="nowrap" align="center"><%=resources.getString("forums.lastMessage")%></td>
-                <td nowrap="nowrap" align="center"><%=resources.getString("forums.notation")%></td><%
-
-    if (isAdmin)
-    {
-%>
-                <td nowrap="nowrap" align="center"><%=resources.getString("operations")%></td><%
-                
-    }
-%>
+              <td colspan="2" nowrap="nowrap" align="center"><fmt:message key="theme" /></td>
+              <td nowrap="nowrap" align="center"><fmt:message key="forums.nbSubjects" /></td>
+              <td nowrap="nowrap" align="center"><fmt:message key="forums.nbMessages" /></td>
+              <td nowrap="nowrap" align="center"><fmt:message key="forums.lastMessage" /></td>
+              <td nowrap="nowrap" align="center"><fmt:message key="forums.notation" /></td>
+              <c:if test="${isAdmin}">
+                <td nowrap="nowrap" align="center"><fmt:message key="operations" /></td>
+              </c:if>
             </tr>
-<%
-    // affichage des catégories et de leurs forums
-    if (categories != null)
-    {
-        Iterator it = (Iterator) categories.iterator();
-        while (it.hasNext()) 
-        {
-            NodeDetail category = (NodeDetail) it.next();
-            displayForumsList(out, resources, isAdmin, isModerator, isReader, 0, "main", fsc,
-                Integer.toString(category.getId()), category.getName(), category.getDescription());
-        }
-    }
-
-    // liste des forums sans catégories
-    displayForumsList(out, resources, isAdmin, isModerator, isReader, 0, "main", fsc, null, "", "");
-    
-%>
-        </table><%
-
-    if (!fsc.isExternal() || !isReader)
-    {
-%>
-        <img src="icons/buletColoredGreen.gif"><%=resources.getString("forums.notNewMessageVisite")%>
-        <br>
-        <img src="icons/buletRed.gif"><%=resources.getString("forums.newMessageVisite")%><%
-
-    }
-    
-    if (StringUtil.isDefined(rssURL)) {
-%>
-        <table align="center">
-            <tr>
-                <td><a href="<%=context+rssURL%>"><img src="icons/rss.gif" border="0"></a></td>
-            </tr>
-            <link rel="alternate" type="application/rss+xml" title="<%=componentLabel%> : <%=resources.getString("forums.rssLast")%>" href="<%=context+rssURL%>">
-        </table><%
-        
-    } 
-%>
-    </center>
-
-<%
-    out.println(frame.printMiddle());
-    out.println(frame.printAfter());
-    out.println(window.printAfter());
-%>
-</body>
+            <c:forEach var="category" items="${sessionController.allCategories}">
+              <%
+                          NodeDetail category = (NodeDetail) pageContext.getAttribute("category");
+                          ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, 0, "main", fsc,
+                              Integer.toString(category.getId()), category.getName(), category.getDescription());
+              %>
+            </c:forEach>
+            <%ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, 0, "main", fsc, null, "", "");%>
+          </table>
+          <c:if test="${sessionController.external || ! isReader}">
+            <img src="icons/buletColoredGreen.gif" alt="<fmt:message key="forums.notNewMessageVisite" />" /> <fmt:message key="forums.notNewMessageVisite" />
+            <br />
+            <img src="icons/buletRed.gif" alt="<fmt:message key="forums.newMessageVisite" />" /> <fmt:message key="forums.newMessageVisite" />
+          </c:if>
+          <c:if test="${sessionController.useRss}">
+            <table align="center">
+              <tr>
+                <td><a href="<c:url value="${sessionController.RSSUrl}" />"><img src="icons/rss.gif" border="0" alt="rss"/></a></td>
+              </tr>
+            </table>
+          </c:if>
+        </center>
+      </view:frame>
+    </view:window>
+  </body>
 </html>

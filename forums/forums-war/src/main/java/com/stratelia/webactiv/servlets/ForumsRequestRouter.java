@@ -28,6 +28,7 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.RequestHelper;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -97,6 +98,10 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
     }
 
     else if (function.startsWith("viewForum")) {
+      int forumId = RequestHelper.getIntParameter(request, "forumId", 0);
+      request.setAttribute("currentForum", forumsSC.getForum(forumId));
+      request.setAttribute("notation", forumsSC.getForumNotation(forumId));
+      request.setAttribute("parents", forumsSC.getForumAncestors(forumId));
       destination = ROOT_DEST + "viewForum.jsp";
     } else if (function.startsWith("editForumInfo")) {
       destination = ROOT_DEST + "editForumInfo.jsp";
