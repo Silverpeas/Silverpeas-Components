@@ -75,13 +75,11 @@ public class ServicesFactory implements ApplicationContextAware {
   }
 
   public static NotificationHelper getNotificationHelper() {
-    return (NotificationHelper) getInstance().context
-        .getBean(NOTIFICATION_HELPER);
+    return (NotificationHelper) getInstance().context.getBean(NOTIFICATION_HELPER);
   }
 
   public static NotificationFormatter getNotificationFormatter() {
-    return (NotificationFormatter) getInstance().context
-        .getBean(NOTIFICATION_FORMATTER);
+    return (NotificationFormatter) getInstance().context.getBean(NOTIFICATION_FORMATTER);
   }
 
 }

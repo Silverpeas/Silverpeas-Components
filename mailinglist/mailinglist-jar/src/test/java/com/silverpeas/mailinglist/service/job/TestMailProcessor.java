@@ -41,7 +41,6 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.easymock.MockControl;
 import org.springframework.test.AbstractSingleSpringContextTests;
 
 import com.silverpeas.mailinglist.service.event.MessageEvent;
@@ -50,12 +49,14 @@ import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import static com.silverpeas.mailinglist.PathTestUtil.*;
+import static com.silverpeas.util.PathTestUtil.*;
+import static org.mockito.Mockito.*;
 
 public class TestMailProcessor extends AbstractSingleSpringContextTests {
 
   private static int ATT_SIZE = 85922;
 
+  @Override
   protected String[] getConfigLocations() {
     return new String[]{"spring-checker.xml", "spring-notification.xml",
           "spring-hibernate.xml", "spring-datasource.xml"};
@@ -73,6 +74,7 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
       "*Municipales & Cantonales 2008 Société Carnet Economie Médias Météo Rendez-vous Sports " +
       "*Tournoi des VI Nations E";
 
+  @Override
   protected void onTearDown() {
     try {
       FileFolderManager.deleteFolder(BUILD_PATH + SEPARATOR +
@@ -107,10 +109,8 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
 
   public void testProcessMailPartWithAttachment() throws IOException,
       MessagingException {
-    MailProcessor processor = (MailProcessor) getApplicationContext().getBean(
-        "mailProcessor");
-    MimeBodyPart part = new MimeBodyPart(TestMessageChecker.class.
-        getResourceAsStream("lemonde.html"));
+    MailProcessor processor = (MailProcessor) getApplicationContext().getBean("mailProcessor");
+    MimeBodyPart part = new MimeBodyPart(TestMessageChecker.class.getResourceAsStream("lemonde.html"));
     part.setDisposition(Part.ATTACHMENT);
     part.setFileName("lemonde.html");
     part.setHeader("Content-Type", "text/html; charset=ISO-8859-1");
@@ -119,8 +119,7 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     message.setMessageId("mailId@silverpeas.com");
     processor.processMailPart(part, message);
     assertEquals(1, message.getAttachments().size());
-    Attachment attachment = (Attachment) message.getAttachments().iterator().
-        next();
+    Attachment attachment = message.getAttachments().iterator().next();
     assertNotNull(attachment.getPath());
     assertEquals(attachment.getPath(), attachmentPath);
     assertEquals("lemonde.html", attachment.getFileName());
@@ -174,8 +173,7 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
         "mailProcessor");
     processor.processMailPart(part, message);
     assertEquals(1, message.getAttachments().size());
-    Attachment attachment = (Attachment) message.getAttachments().iterator().
-        next();
+    Attachment attachment = message.getAttachments().iterator().next();
     assertNotNull(attachment.getPath());
     assertEquals(attachment.getPath(), attachmentPath);
     assertEquals("lemonde.html", attachment.getFileName());
@@ -254,18 +252,12 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
       IOException {
     MailProcessor processor = (MailProcessor) getApplicationContext().getBean(
         "mailProcessor");
-    MockControl control = MockControl.createControl(MessageListener.class);
-    MessageListener mailingList = (MessageListener) control.getMock();
-    mailingList.getComponentId();
-    control.setReturnValue("componentId");
-    mailingList.checkSender("bart.simpson@silverpeas.com");
-    control.setReturnValue(true);
-    control.replay();
-    MimeMessage mail = new MimeMessage((Session) applicationContext.getBean(
-        "mailSession"));
+    MessageListener mailingList = mock(MessageListener.class);
+    when(mailingList.getComponentId()).thenReturn("componentId");
+    when(mailingList.checkSender("bart.simpson@silverpeas.com")).thenReturn(Boolean.TRUE);
+    MimeMessage mail = new MimeMessage((Session) applicationContext.getBean("mailSession"));
     InternetAddress bart = new InternetAddress("bart.simpson@silverpeas.com");
-    InternetAddress theSimpsons = new InternetAddress(
-        "thesimpsons@silverpeas.com");
+    InternetAddress theSimpsons = new InternetAddress("thesimpsons@silverpeas.com");
     mail.addFrom(new InternetAddress[]{bart});
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Simple text Email test");
@@ -275,7 +267,7 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     assertNotNull(event);
     assertNotNull(event.getMessages());
     assertEquals(1, event.getMessages().size());
-    Message message = (Message) event.getMessages().get(0);
+    Message message = event.getMessages().get(0);
     assertEquals("bart.simpson@silverpeas.com", message.getSender());
     assertEquals("Simple text Email test", message.getTitle());
     assertEquals(textEmailContent, message.getBody());
@@ -283,19 +275,17 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     assertEquals(0, message.getAttachmentsSize());
     assertEquals(0, message.getAttachments().size());
     assertEquals("componentId", message.getComponentId());
+    verify(mailingList, times(1)).checkSender("bart.simpson@silverpeas.com");
+    verify(mailingList, times(1)).getComponentId();
   }
 
   public void testPrepareMessageWithHtmlEmail() throws MessagingException,
       IOException {
     MailProcessor processor = (MailProcessor) getApplicationContext().getBean(
         "mailProcessor");
-    MockControl control = MockControl.createControl(MessageListener.class);
-    MessageListener mailingList = (MessageListener) control.getMock();
-    mailingList.getComponentId();
-    control.setReturnValue("componentId");
-    mailingList.checkSender("bart.simpson@silverpeas.com");
-    control.setReturnValue(true);
-    control.replay();
+    MessageListener mailingList = mock(MessageListener.class);
+    when(mailingList.getComponentId()).thenReturn("componentId");
+    when(mailingList.checkSender("bart.simpson@silverpeas.com")).thenReturn(Boolean.TRUE);
     MimeMessage mail = new MimeMessage((Session) applicationContext.getBean(
         "mailSession"));
     InternetAddress bart = new InternetAddress("bart.simpson@silverpeas.com");
@@ -312,7 +302,7 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     assertNotNull(event);
     assertNotNull(event.getMessages());
     assertEquals(1, event.getMessages().size());
-    Message message = (Message) event.getMessages().get(0);
+    Message message = event.getMessages().get(0);
     assertEquals("bart.simpson@silverpeas.com", message.getSender());
     assertEquals("Simple HTML Email test", message.getTitle());
     assertEquals(html, message.getBody());
@@ -320,24 +310,19 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     assertEquals(0, message.getAttachmentsSize());
     assertEquals(0, message.getAttachments().size());
     assertEquals("componentId", message.getComponentId());
+    verify(mailingList, times(1)).checkSender("bart.simpson@silverpeas.com");
+    verify(mailingList, times(1)).getComponentId();
   }
 
   public void testPrepareMessageWithHtmlEmailAndAttachment()
       throws MessagingException, IOException {
-    MailProcessor processor = (MailProcessor) getApplicationContext().getBean(
-        "mailProcessor");
-    MockControl control = MockControl.createControl(MessageListener.class);
-    MessageListener mailingList = (MessageListener) control.getMock();
-    mailingList.getComponentId();
-    control.setReturnValue("componentId");
-    mailingList.checkSender("bart.simpson@silverpeas.com");
-    control.setReturnValue(true);
-    control.replay();
-    MimeMessage mail = new MimeMessage((Session) applicationContext.getBean(
-        "mailSession"));
+    MailProcessor processor = (MailProcessor) getApplicationContext().getBean("mailProcessor");
+    MessageListener mailingList = mock(MessageListener.class);
+    when(mailingList.getComponentId()).thenReturn("componentId");
+    when(mailingList.checkSender("bart.simpson@silverpeas.com")).thenReturn(Boolean.TRUE);
+    MimeMessage mail = new MimeMessage((Session) applicationContext.getBean("mailSession"));
     InternetAddress bart = new InternetAddress("bart.simpson@silverpeas.com");
-    InternetAddress theSimpsons = new InternetAddress(
-        "thesimpsons@silverpeas.com");
+    InternetAddress theSimpsons = new InternetAddress("thesimpsons@silverpeas.com");
     mail.addFrom(new InternetAddress[]{bart});
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Attachment HTML Email test");
@@ -360,7 +345,7 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     assertNotNull(event);
     assertNotNull(event.getMessages());
     assertEquals(1, event.getMessages().size());
-    Message message = (Message) event.getMessages().get(0);
+    Message message = event.getMessages().get(0);
     assertEquals("bart.simpson@silverpeas.com", message.getSender());
     assertEquals("Attachment HTML Email test", message.getTitle());
     assertEquals(html, message.getBody());
@@ -368,7 +353,7 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     assertEquals(1, message.getAttachments().size());
     assertEquals(85922, message.getAttachmentsSize());
     assertEquals("componentId", message.getComponentId());
-    Attachment attach = (Attachment) message.getAttachments().iterator().next();
+    Attachment attach = message.getAttachments().iterator().next();
     assertNotNull(attach.getPath());
     assertEquals(attach.getPath(), BUILD_PATH + SEPARATOR +
         "uploads" + SEPARATOR + "componentId" + SEPARATOR + mailId + SEPARATOR +
@@ -376,11 +361,12 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     File partFile = new File(attach.getPath());
     assertTrue(partFile.exists());
     assertTrue(partFile.isFile());
+    verify(mailingList, times(1)).checkSender("bart.simpson@silverpeas.com");
+    verify(mailingList, times(1)).getComponentId();
   }
 
   public void testProcessBodyPlainText() throws Exception {
-    MailProcessor processor = (MailProcessor) getApplicationContext().getBean(
-        "mailProcessor");
+    MailProcessor processor = (MailProcessor) getApplicationContext().getBean("mailProcessor");
     Message message = new Message();
     processor.processBody(textEmailContent, "text/plain", message);
     assertNotNull(message.getBody());
@@ -395,8 +381,7 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
   }
 
   public void testProcessBodyHtmlText() throws Exception {
-    MailProcessor processor = (MailProcessor) getApplicationContext().getBean(
-        "mailProcessor");
+    MailProcessor processor = (MailProcessor) getApplicationContext().getBean("mailProcessor");
     Message message = new Message();
     String content = loadHtml();
     processor.processBody(content, "text/html", message);
@@ -408,20 +393,13 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
 
   public void testPrepareUnauthorizedMessageWithTextEmail()
       throws MessagingException, IOException {
-    MailProcessor processor = (MailProcessor) getApplicationContext().getBean(
-        "mailProcessor");
-    MockControl control = MockControl.createControl(MessageListener.class);
-    MessageListener mailingList = (MessageListener) control.getMock();
-    mailingList.getComponentId();
-    control.setReturnValue("componentId");
-    mailingList.checkSender("bart.simpson@silverpeas.com");
-    control.setReturnValue(false);
-    control.replay();
-    MimeMessage mail = new MimeMessage((Session) applicationContext.getBean(
-        "mailSession"));
+    MailProcessor processor = (MailProcessor) getApplicationContext().getBean("mailProcessor");
+    MessageListener mailingList = mock(MessageListener.class);
+    when(mailingList.getComponentId()).thenReturn("componentId");
+    when(mailingList.checkSender("bart.simpson@silverpeas.com")).thenReturn(Boolean.FALSE);
+    MimeMessage mail = new MimeMessage((Session) applicationContext.getBean("mailSession"));
     InternetAddress bart = new InternetAddress("bart.simpson@silverpeas.com");
-    InternetAddress theSimpsons = new InternetAddress(
-        "thesimpsons@silverpeas.com");
+    InternetAddress theSimpsons = new InternetAddress("thesimpsons@silverpeas.com");
     mail.addFrom(new InternetAddress[]{bart});
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Simple text Email test");
@@ -431,5 +409,7 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     assertNotNull(event);
     assertNotNull(event.getMessages());
     assertEquals(0, event.getMessages().size());
+    verify(mailingList, times(1)).checkSender("bart.simpson@silverpeas.com");
+    verify(mailingList, times(0)).getComponentId();
   }
 }

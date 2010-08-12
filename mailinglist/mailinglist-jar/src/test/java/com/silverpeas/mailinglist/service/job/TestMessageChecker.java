@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.job;
 
 import java.io.BufferedReader;
@@ -29,7 +28,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -48,7 +46,6 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.easymock.MockControl;
 import org.jvnet.mock_javamail.Mailbox;
 import org.springframework.test.AbstractSingleSpringContextTests;
 
@@ -58,24 +55,24 @@ import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import static com.silverpeas.mailinglist.PathTestUtil.*;
+import static com.silverpeas.util.PathTestUtil.*;
+import static org.mockito.Mockito.*;
 
 public class TestMessageChecker extends AbstractSingleSpringContextTests {
 
   private static int ATT_SIZE = 85922;
-
-  private static final String attachmentPath = BUILD_PATH + SEPARATOR +
-      "uploads" + SEPARATOR +
-      "componentId" + SEPARATOR + "{0}" + SEPARATOR +
-      "lemonde.html";
+  private static final String attachmentPath = BUILD_PATH + SEPARATOR
+      + "uploads" + SEPARATOR
+      + "componentId" + SEPARATOR + "{0}" + SEPARATOR
+      + "lemonde.html";
   private static final String textEmailContent =
-      "Bonjour famille Simpson, j'espère que vous allez bien. " +
-      "Ici tout se passe bien et Krusty est très sympathique. Surtout " +
-      "depuis que Tahiti Bob est retourné en prison. Je dois remplacer" +
-      "l'homme canon dans la prochaine émission.\r\nBart";
-  private static final String htmlEmailSummary = "Politique A la Une Le Desk Vidéos International *Elections " +
-      "américaines Europe Politique *Municipales & Cantonales 2008 Société Carnet Economie Médias " +
-      "Météo Rendez-vous Sports *Tournoi des VI Nations E";
+      "Bonjour famille Simpson, j'espère que vous allez bien. "
+      + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
+      + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer"
+      + "l'homme canon dans la prochaine émission.\r\nBart";
+  private static final String htmlEmailSummary = "Politique A la Une Le Desk Vidéos International *Elections "
+      + "américaines Europe Politique *Municipales & Cantonales 2008 Société Carnet Economie Médias "
+      + "Météo Rendez-vous Sports *Tournoi des VI Nations E";
 
   protected String loadHtml() throws IOException {
     StringWriter buffer = null;
@@ -133,7 +130,7 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
         "ned.flanders@silverpeas.com"));
     mail.addRecipient(RecipientType.BCC, new InternetAddress(
         "ted.flanders@silverpeas.com"));
-    Set recipients = getMessageChecker().getAllRecipients(mail);
+    Set<String> recipients = getMessageChecker().getAllRecipients(mail);
     assertNotNull(recipients);
     assertEquals(6, recipients.size());
     assertTrue(recipients.contains("lisa.simpson@silverpeas.com"));
@@ -147,19 +144,17 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
   public void testRecipientMailingList() throws AddressException,
       MessagingException {
     MessageChecker messageChecker = getMessageChecker();
-    MessageListener mockListener1 = (MessageListener) MockControl.createControl(
-        MessageListener.class).getMock();
-    MessageListener mockListener2 = (MessageListener) MockControl.
-        createNiceControl(MessageListener.class).getMock();
-    Map listenersByEmail = new HashMap(2);
+    MessageListener mockListener1 = mock(MessageListener.class);
+    MessageListener mockListener2 = mock(MessageListener.class);
+    Map<String, MessageListener> listenersByEmail = new HashMap<String, MessageListener>(2);
     listenersByEmail.put("bart.simpson@silverpeas.com", mockListener1);
     listenersByEmail.put("ned.flanders@silverpeas.com", mockListener2);
-    List allRecipients = new ArrayList(Arrays.asList(new String[]{
+    List<String> allRecipients = Arrays.asList(new String[]{
           "lisa.simpson@silverpeas.com", "marge.simpson@silverpeas.com",
           "homer.simpson@silverpeas.com", "bart.simpson@silverpeas.com",
           "krusty.theklown@silverpeas.com", "ned.flanders@silverpeas.com",
-          "ted.flanders@silverpeas.com"}));
-    Set recipients = messageChecker.getRecipientMailingLists(allRecipients,
+          "ted.flanders@silverpeas.com"});
+    Set<MessageListener> recipients = messageChecker.getRecipientMailingLists(allRecipients,
         listenersByEmail);
     assertNotNull(recipients);
     assertEquals(2, recipients.size());
@@ -170,16 +165,12 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
   public void testProcessEmailSimpleText() throws MessagingException,
       IOException {
     MessageChecker messageChecker = getMessageChecker();
-    MockControl control = MockControl.createControl(MessageListener.class);
-    MessageListener mockListener1 = (MessageListener) control.getMock();
-    mockListener1.getComponentId();
-    control.setReturnValue("componentId");
-    mockListener1.checkSender("bart.simpson@silverpeas.com");
-    control.setReturnValue(true);
-    control.replay();
-    MessageListener mockListener2 = (MessageListener) MockControl.
-        createNiceControl(MessageListener.class).getMock();
-    Map listenersByEmail = new HashMap(2);
+    MessageListener mockListener1 = mock(MessageListener.class);
+    when(mockListener1.getComponentId()).thenReturn("componentId");
+    when(mockListener1.checkSender("bart.simpson@silverpeas.com")).thenReturn(Boolean.TRUE);
+
+    MessageListener mockListener2 = mock(MessageListener.class);
+    Map<String, MessageListener> listenersByEmail = new HashMap<String, MessageListener>(2);
     listenersByEmail.put("thesimpsons@silverpeas.com", mockListener1);
     listenersByEmail.put("theflanders@silverpeas.com", mockListener2);
     MimeMessage mail = new MimeMessage(messageChecker.getMailSession());
@@ -190,17 +181,17 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Simple text Email test");
     mail.setText(textEmailContent);
-    Map events = new HashMap();
+    Map<MessageListener, MessageEvent> events = new HashMap<MessageListener, MessageEvent>();
     messageChecker.processEmail(mail, events, listenersByEmail);
     assertNotNull(events);
     assertEquals(1, events.size());
     assertNull(events.get(mockListener2));
 
-    MessageEvent event = (MessageEvent) events.get(mockListener1);
+    MessageEvent event = events.get(mockListener1);
     assertNotNull(event);
     assertNotNull(event.getMessages());
     assertEquals(1, event.getMessages().size());
-    Message message = (Message) event.getMessages().get(0);
+    Message message = event.getMessages().get(0);
     assertEquals("bart.simpson@silverpeas.com", message.getSender());
     assertEquals("Simple text Email test", message.getTitle());
     assertEquals(textEmailContent, message.getBody());
@@ -208,22 +199,17 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     assertEquals(0, message.getAttachmentsSize());
     assertEquals(0, message.getAttachments().size());
     assertEquals("componentId", message.getComponentId());
-    assertEquals("text/plain", message.getContentType());
+    assertEquals("text/plain; charset=UTF-8", message.getContentType());
+    verify(mockListener1, atLeastOnce()).checkSender("bart.simpson@silverpeas.com");
   }
 
   public void testProcessEmailHtmlText() throws MessagingException, IOException {
     MessageChecker messageChecker = getMessageChecker();
-    MockControl control = MockControl.createControl(MessageListener.class);
-    MessageListener mockListener1 = (MessageListener) control.getMock();
-    mockListener1.getComponentId();
-    control.setReturnValue("componentId");
-    mockListener1.checkSender("bart.simpson@silverpeas.com");
-    control.setReturnValue(true);
-    control.replay();
-    MessageListener mockListener2 = (MessageListener) MockControl.
-        createNiceControl(MessageListener.class).getMock();
-    Map<String, MessageListener> listenersByEmail = new HashMap<String, MessageListener>(
-        2);
+    MessageListener mockListener1 = mock(MessageListener.class);
+    when(mockListener1.getComponentId()).thenReturn("componentId");
+    when(mockListener1.checkSender("bart.simpson@silverpeas.com")).thenReturn(Boolean.TRUE);
+    MessageListener mockListener2 = mock(MessageListener.class);
+    Map<String, MessageListener> listenersByEmail = new HashMap<String, MessageListener>(2);
     listenersByEmail.put("thesimpsons@silverpeas.com", mockListener1);
     listenersByEmail.put("theflanders@silverpeas.com", mockListener2);
     MimeMessage mail = new MimeMessage(messageChecker.getMailSession());
@@ -238,18 +224,17 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     mail.setSentDate(new Date());
     Date sentDate = new Date(mail.getSentDate().getTime());
     Transport.send(mail);
-    Map<MessageListener, MessageEvent> events =
-        new HashMap<MessageListener, MessageEvent>();
+    Map<MessageListener, MessageEvent> events = new HashMap<MessageListener, MessageEvent>();
     messageChecker.processEmail(mail, events, listenersByEmail);
     assertNotNull(events);
     assertEquals(1, events.size());
     assertNull(events.get(mockListener2));
 
-    MessageEvent event = (MessageEvent) events.get(mockListener1);
+    MessageEvent event = events.get(mockListener1);
     assertNotNull(event);
     assertNotNull(event.getMessages());
     assertEquals(1, event.getMessages().size());
-    Message message = (Message) event.getMessages().get(0);
+    Message message = event.getMessages().get(0);
     assertEquals("bart.simpson@silverpeas.com", message.getSender());
     assertEquals("Simple html Email test", message.getTitle());
     assertEquals(html, message.getBody());
@@ -260,25 +245,19 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     assertEquals(0, message.getAttachments().size());
     assertEquals("componentId", message.getComponentId());
     assertEquals("text/html; charset=UTF-8", message.getContentType());
+    verify(mockListener1, atLeastOnce()).checkSender("bart.simpson@silverpeas.com");
   }
 
   public void testProcessEmailHtmlTextWithAttachment()
       throws MessagingException, IOException {
     MessageChecker messageChecker = getMessageChecker();
-    MockControl control = MockControl.createControl(MessageListener.class);
-    MessageListener mockListener1 = (MessageListener) control.getMock();
-    mockListener1.getComponentId();
-    control.setReturnValue("componentId");
-    mockListener1.checkSender("bart.simpson@silverpeas.com");
-    control.setReturnValue(true);
-    mockListener1.getComponentId();
-    control.setReturnValue("componentId");
-    control.replay();
-    MessageListener mockListener2 = (MessageListener) MockControl.
-        createNiceControl(MessageListener.class).getMock();
+    MessageListener mockListener1 = mock(MessageListener.class);
+    when(mockListener1.getComponentId()).thenReturn("componentId");
+    when(mockListener1.checkSender("bart.simpson@silverpeas.com")).thenReturn(Boolean.TRUE);
+    MessageListener mockListener2 = mock(MessageListener.class);
     messageChecker.addMessageListener(mockListener1);
     messageChecker.addMessageListener(mockListener2);
-    Map listenersByEmail = new HashMap(2);
+    Map<String, MessageListener> listenersByEmail = new HashMap<String, MessageListener>(2);
     listenersByEmail.put("thesimpsons@silverpeas.com", mockListener1);
     listenersByEmail.put("theflanders@silverpeas.com", mockListener2);
     MimeMessage mail = new MimeMessage(messageChecker.getMailSession());
@@ -289,8 +268,7 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Html Email test with attachment");
     String html = loadHtml();
-    MimeBodyPart attachment = new MimeBodyPart(TestMessageChecker.class.
-        getResourceAsStream("lemonde.html"));
+    MimeBodyPart attachment = new MimeBodyPart(TestMessageChecker.class.getResourceAsStream("lemonde.html"));
     attachment.setDisposition(Part.ATTACHMENT);
     attachment.setFileName("lemonde.html");
     MimeBodyPart body = new MimeBodyPart();
@@ -300,53 +278,43 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     multiPart.addBodyPart(attachment);
     mail.setContent(multiPart);
     Transport.send(mail);
-    Map events = new HashMap();
+    Map<MessageListener, MessageEvent> events = new HashMap<MessageListener, MessageEvent>();
     messageChecker.processEmail(mail, events, listenersByEmail);
     assertNotNull(events);
     assertEquals(1, events.size());
     assertNull(events.get(mockListener2));
 
-    MessageEvent event = (MessageEvent) events.get(mockListener1);
+    MessageEvent event = events.get(mockListener1);
     assertNotNull(event);
     assertNotNull(event.getMessages());
     assertEquals(1, event.getMessages().size());
-    Message message = (Message) event.getMessages().get(0);
+    Message message = event.getMessages().get(0);
     assertEquals("bart.simpson@silverpeas.com", message.getSender());
     assertEquals("Html Email test with attachment", message.getTitle());
     assertEquals(html, message.getBody());
     assertEquals(htmlEmailSummary, message.getSummary());
     assertEquals(ATT_SIZE, message.getAttachmentsSize());
     assertEquals(1, message.getAttachments().size());
-    String path = MessageFormat.format(attachmentPath,
-        new String[]{messageChecker.getMailProcessor().replaceSpecialChars(
-          message.getMessageId())});
-    Attachment attached =
-        (Attachment) message.getAttachments().iterator().next();
+    String path = MessageFormat.format(attachmentPath, new String[]{
+          messageChecker.getMailProcessor().replaceSpecialChars(message.getMessageId())});
+    Attachment attached = message.getAttachments().iterator().next();
     assertEquals(path, attached.getPath());
     assertEquals("lemonde.html", attached.getFileName());
     assertEquals("componentId", message.getComponentId());
     assertEquals("text/html", message.getContentType());
+    verify(mockListener1, atLeastOnce()).checkSender("bart.simpson@silverpeas.com");
   }
 
   public void testProcessEmailTextWithAttachment() throws MessagingException,
       IOException {
     MessageChecker messageChecker = getMessageChecker();
-    MockControl control = MockControl.createControl(MessageListener.class);
-    MessageListener mockListener1 = (MessageListener) control.getMock();
-    mockListener1.getComponentId();
-    control.setReturnValue("componentId");
-    mockListener1.checkSender("bart.simpson@silverpeas.com");
-    control.setReturnValue(true);
-    mockListener1.getComponentId();
-    control.setReturnValue("componentId");
-    mockListener1.getComponentId();
-    control.setReturnValue("componentId");
-    control.replay();
-    MessageListener mockListener2 = (MessageListener) MockControl.
-        createNiceControl(MessageListener.class).getMock();
+    MessageListener mockListener1 = mock(MessageListener.class);
+    when(mockListener1.getComponentId()).thenReturn("componentId");
+    when(mockListener1.checkSender("bart.simpson@silverpeas.com")).thenReturn(Boolean.TRUE);
+    MessageListener mockListener2 = mock(MessageListener.class);
     messageChecker.addMessageListener(mockListener1);
     messageChecker.addMessageListener(mockListener2);
-    Map listenersByEmail = new HashMap(2);
+    Map<String, MessageListener> listenersByEmail = new HashMap<String, MessageListener>(2);
     listenersByEmail.put("thesimpsons@silverpeas.com", mockListener1);
     listenersByEmail.put("theflanders@silverpeas.com", mockListener2);
     MimeMessage mail = new MimeMessage(messageChecker.getMailSession());
@@ -356,8 +324,7 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     mail.addFrom(new InternetAddress[]{bart});
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Plain text Email test with attachment");
-    MimeBodyPart attachment = new MimeBodyPart(TestMessageChecker.class.
-        getResourceAsStream("lemonde.html"));
+    MimeBodyPart attachment = new MimeBodyPart(TestMessageChecker.class.getResourceAsStream("lemonde.html"));
     attachment.setDisposition(Part.INLINE);
     attachment.setFileName("lemonde.html");
     MimeBodyPart body = new MimeBodyPart();
@@ -369,17 +336,17 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     mail.setSentDate(new Date());
     Date sentDate = new Date(mail.getSentDate().getTime());
     Transport.send(mail);
-    Map events = new HashMap();
+    Map<MessageListener, MessageEvent> events = new HashMap<MessageListener, MessageEvent>();
     messageChecker.processEmail(mail, events, listenersByEmail);
     assertNotNull(events);
     assertEquals(1, events.size());
     assertNull(events.get(mockListener2));
 
-    MessageEvent event = (MessageEvent) events.get(mockListener1);
+    MessageEvent event = events.get(mockListener1);
     assertNotNull(event);
     assertNotNull(event.getMessages());
     assertEquals(1, event.getMessages().size());
-    Message message = (Message) event.getMessages().get(0);
+    Message message = event.getMessages().get(0);
     assertEquals("bart.simpson@silverpeas.com", message.getSender());
     assertEquals("Plain text Email test with attachment", message.getTitle());
     assertEquals(textEmailContent, message.getBody());
@@ -389,31 +356,27 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     String path = MessageFormat.format(attachmentPath,
         new String[]{messageChecker.getMailProcessor().replaceSpecialChars(
           message.getMessageId())});
-    Attachment attached =
-        (Attachment) message.getAttachments().iterator().next();
+    Attachment attached = message.getAttachments().iterator().next();
     assertEquals(path, attached.getPath());
     assertEquals("lemonde.html", attached.getFileName());
     assertEquals("componentId", message.getComponentId());
     assertEquals(sentDate.getTime(), message.getSentDate().getTime());
     assertEquals("text/plain", message.getContentType());
     org.jvnet.mock_javamail.Mailbox.clearAll();
+    verify(mockListener1, atLeastOnce()).checkSender("bart.simpson@silverpeas.com");
+    verify(mockListener1, times(2)).getComponentId();
   }
 
   public void testProcessUnauthorizedEmailSimpleText()
       throws MessagingException, IOException {
     MessageChecker messageChecker = getMessageChecker();
-    MockControl control = MockControl.createControl(MessageListener.class);
-    MessageListener mockListener1 = (MessageListener) control.getMock();
-    mockListener1.getComponentId();
-    control.setReturnValue("componentId");
-    mockListener1.checkSender("bart.simpson@silverpeas.com");
-    control.setReturnValue(false);
-    control.replay();
-    MessageListener mockListener2 = (MessageListener) MockControl.
-        createNiceControl(MessageListener.class).getMock();
+    MessageListener mockListener1 = mock(MessageListener.class);
+    when(mockListener1.getComponentId()).thenReturn("componentId");
+    when(mockListener1.checkSender("bart.simpson@silverpeas.com")).thenReturn(Boolean.FALSE);
+    MessageListener mockListener2 = mock(MessageListener.class);
     messageChecker.addMessageListener(mockListener1);
     messageChecker.addMessageListener(mockListener2);
-    Map listenersByEmail = new HashMap(2);
+    Map<String, MessageListener> listenersByEmail = new HashMap<String, MessageListener>(2);
     listenersByEmail.put("thesimpsons@silverpeas.com", mockListener1);
     listenersByEmail.put("theflanders@silverpeas.com", mockListener2);
     MimeMessage mail = new MimeMessage(messageChecker.getMailSession());
@@ -424,15 +387,16 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     mail.addRecipient(RecipientType.TO, theSimpsons);
     mail.setSubject("Simple text Email test");
     mail.setText(textEmailContent);
-    Map events = new HashMap();
+    Map<MessageListener, MessageEvent> events = new HashMap<MessageListener, MessageEvent>();
     messageChecker.processEmail(mail, events, listenersByEmail);
     assertNotNull(events);
     assertEquals(1, events.size());
     assertNull(events.get(mockListener2));
-    MessageEvent event = (MessageEvent) events.get(mockListener1);
+    MessageEvent event = events.get(mockListener1);
     assertNotNull(event);
     assertNotNull(event.getMessages());
     assertEquals(0, event.getMessages().size());
+    verify(mockListener1, atLeastOnce()).checkSender("bart.simpson@silverpeas.com");
   }
 
   protected MessageChecker getMessageChecker() {

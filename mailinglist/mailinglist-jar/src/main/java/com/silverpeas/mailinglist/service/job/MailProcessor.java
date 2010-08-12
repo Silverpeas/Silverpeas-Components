@@ -99,7 +99,7 @@ public class MailProcessor {
 
   /**
    * Processes the body (text) part of an email.
-   * @param part the text content of the email.
+   * @param content the text content of the email.
    * @param contentType the content type for this text.
    * @param message the message corresponding to this part
    * @throws IOException

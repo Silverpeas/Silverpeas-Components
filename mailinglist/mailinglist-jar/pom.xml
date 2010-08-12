@@ -6,12 +6,12 @@
     <artifactId>mailinglist</artifactId>
     <version>5.3-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.components.mailinglist</groupId>
   <artifactId>mailinglist-jar</artifactId>
   <packaging>jar</packaging>
   <name>Lib mailinglist</name>
-	
+
   <dependencies>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
@@ -19,11 +19,16 @@
       <version>${core.version}</version>
       <classifier>client</classifier>
       <scope>provided</scope>
-    </dependency>   
+    </dependency>
+    <dependency>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>test-core</artifactId>
+      <version>${core.version}</version>
+    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring</artifactId>
-    </dependency>   
+    </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
@@ -52,14 +57,6 @@
     <dependency>
       <groupId>org.jvnet.mock-javamail</groupId>
       <artifactId>mock-javamail</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymock</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.easymock</groupId>
-      <artifactId>easymockclassextension</artifactId>
     </dependency>
     <dependency>
       <groupId>com.mockrunner</groupId>

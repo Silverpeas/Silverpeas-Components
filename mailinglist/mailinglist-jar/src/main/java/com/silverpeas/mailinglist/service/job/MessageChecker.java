@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.job;
 
 import java.io.IOException;
@@ -53,30 +52,19 @@ import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class MessageChecker implements SchedulerEventHandler {
+
   public static final String IMAP_PROTOCOL = "imap";
-
   public static final String IMAP_SSL_PROTOCOL = "imaps";
-
   public static final String POP3_PROTOCOL = "pop3";
-
   private Map<String, MessageListener> listeners;
-
   private MailProcessor processor;
-
   private String mailServer;
-
   private String login;
-
   private String password;
-
   private String protocol;
-
   private int port;
-
   private boolean leaveOnServer;
-
   private Session mailSession;
-
   private MailingListService mailingListService;
 
   public MailingListService getMailingListService() {
@@ -173,10 +161,8 @@ public class MessageChecker implements SchedulerEventHandler {
    * Adds a new listener to the list of listeners.
    * @param listener the listener to be added.
    */
-  public void addMessageListener(MessageListener listener) {
-    synchronized (this.listeners) {
+  public synchronized void addMessageListener(MessageListener listener) {
       this.listeners.put(listener.getComponentId(), listener);
-    }
   }
 
   /**
@@ -190,8 +176,7 @@ public class MessageChecker implements SchedulerEventHandler {
     try {
       mailSession.setDebug(true);
       mailAccount = mailSession.getStore(getProtocol());
-      mailAccount
-          .connect(getMailServer(), getPort(), getLogin(), getPassword());
+      mailAccount.connect(getMailServer(), getPort(), getLogin(), getPassword());
       inbox = mailAccount.getFolder("INBOX");
       if (inbox == null) {
         throw new MessagingException("No POP3 INBOX");
@@ -233,12 +218,11 @@ public class MessageChecker implements SchedulerEventHandler {
               "mail.io.error", ioex);
         }
       }
-      Iterator<Map.Entry<MessageListener, MessageEvent>> iter = eventsMap
-          .entrySet().iterator();
+      Iterator<Map.Entry<MessageListener, MessageEvent>> iter = eventsMap.entrySet().iterator();
       while (iter.hasNext()) {
         Map.Entry<MessageListener, MessageEvent> entry = iter.next();
-        MessageListener mailingList = (MessageListener) entry.getKey();
-        mailingList.onMessage((MessageEvent) entry.getValue());
+        MessageListener mailingList = entry.getKey();
+        mailingList.onMessage(entry.getValue());
       }
     } catch (MessagingException mex) {
       SilverTrace.error("mailingList", "MessageChecker.checkNewMessages",
@@ -275,18 +259,22 @@ public class MessageChecker implements SchedulerEventHandler {
       Map<MessageListener, MessageEvent> eventsMap,
       Map<String, MessageListener> listenersByEmail) throws MessagingException,
       IOException {
+    BetterMimeMessage email = new BetterMimeMessage(mail);
+    if(email.isBounced() || email.isSpam()) {
+      return;
+    }
     Set<String> allRecipients = getAllRecipients(mail);
     Set<MessageListener> mailingLists = getRecipientMailingLists(allRecipients,
         listenersByEmail);
     Iterator<MessageListener> iter = mailingLists.iterator();
     while (iter.hasNext()) {
       MessageEvent event;
-      MessageListener mailingList = (MessageListener) iter.next();
+      MessageListener mailingList = iter.next();
       if (!eventsMap.containsKey(mailingList)) {
         event = new MessageEvent();
         eventsMap.put(mailingList, event);
       } else {
-        event = (MessageEvent) eventsMap.get(mailingList);
+        event = eventsMap.get(mailingList);
       }
       this.processor.prepareMessage(mail, mailingList, event);
     }
@@ -301,8 +289,7 @@ public class MessageChecker implements SchedulerEventHandler {
    */
   Set<String> getAllRecipients(MimeMessage mail) throws MessagingException {
     Set<String> allRecipients = new HashSet<String>(10);
-    InternetAddress[] addresses = (InternetAddress[]) mail
-        .getRecipients(RecipientType.TO);
+    InternetAddress[] addresses = (InternetAddress[]) mail.getRecipients(RecipientType.TO);
     if (addresses != null) {
       for (int i = 0; i < addresses.length; i++) {
         allRecipients.add(addresses[i].getAddress());
@@ -330,11 +317,10 @@ public class MessageChecker implements SchedulerEventHandler {
    */
   Set<MessageListener> getRecipientMailingLists(Collection<String> recipients,
       Map<String, MessageListener> listenersByEmail) {
-    Set<MessageListener> mailingLists = new HashSet<MessageListener>(recipients
-        .size());
+    Set<MessageListener> mailingLists = new HashSet<MessageListener>(recipients.size());
     Iterator<String> recipientIter = recipients.iterator();
     while (recipientIter.hasNext()) {
-      String email = (String) recipientIter.next();
+      String email = recipientIter.next();
       MessageListener mailingList = listenersByEmail.get(email);
       if (mailingList != null) {
         mailingLists.add(mailingList);
@@ -347,14 +333,13 @@ public class MessageChecker implements SchedulerEventHandler {
    * Prepare a map of subscribed email addresses and their corresponding listeners.
    * @return a map of subscribed email addresses and their corresponding listeners.
    */
-  public Map<String, MessageListener> prepareListeners() {
+  public synchronized Map<String, MessageListener> prepareListeners() {
     Map<String, MessageListener> listenersByEmail = new HashMap<String, MessageListener>(
         this.listeners.size());
     Iterator<MessageListener> listenerIter = this.listeners.values().iterator();
     while (listenerIter.hasNext()) {
-      MessageListener listener = (MessageListener) listenerIter.next();
-      MailingList list = mailingListService.findMailingList(listener
-          .getComponentId());
+      MessageListener listener = listenerIter.next();
+      MailingList list = mailingListService.findMailingList(listener.getComponentId());
       if (list != null && list.getSubscribedAddress() != null) {
         listenersByEmail.put(list.getSubscribedAddress(), listener);
       }
@@ -366,10 +351,8 @@ public class MessageChecker implements SchedulerEventHandler {
    * Removes a listener from the list of listeners.
    * @param componentId the unique id of the component.
    */
-  public void removeListener(String componentId) {
-    synchronized (this.listeners) {
-      this.listeners.remove(componentId);
-    }
+  public synchronized void removeListener(String componentId) {
+    this.listeners.remove(componentId);
   }
 
   public MailProcessor getMailProcessor() {
@@ -380,11 +363,11 @@ public class MessageChecker implements SchedulerEventHandler {
     this.processor = processor;
   }
 
+  @Override
   public void handleSchedulerEvent(SchedulerEvent event) {
     switch (event.getType()) {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-        SilverTrace
-            .error("mailingList", "MessageChecker.handleSchedulerEvent",
+        SilverTrace.error("mailingList", "MessageChecker.handleSchedulerEvent",
             "The job '" + event.getJob().getJobName()
             + "' was not successfull");
         break;
@@ -414,6 +397,7 @@ public class MessageChecker implements SchedulerEventHandler {
     }
   }
 
+  @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
@@ -425,34 +409,46 @@ public class MessageChecker implements SchedulerEventHandler {
     return result;
   }
 
+  @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     final MessageChecker other = (MessageChecker) obj;
     if (login == null) {
-      if (other.login != null)
+      if (other.login != null) {
         return false;
-    } else if (!login.equals(other.login))
+      }
+    } else if (!login.equals(other.login)) {
       return false;
+    }
     if (mailServer == null) {
-      if (other.mailServer != null)
+      if (other.mailServer != null) {
         return false;
-    } else if (!mailServer.equals(other.mailServer))
+      }
+    } else if (!mailServer.equals(other.mailServer)) {
       return false;
+    }
     if (password == null) {
-      if (other.password != null)
+      if (other.password != null) {
         return false;
-    } else if (!password.equals(other.password))
+      }
+    } else if (!password.equals(other.password)) {
       return false;
+    }
     if (protocol == null) {
-      if (other.protocol != null)
+      if (other.protocol != null) {
         return false;
-    } else if (!protocol.equals(other.protocol))
+      }
+    } else if (!protocol.equals(other.protocol)) {
       return false;
+    }
     return true;
   }
 
@@ -460,5 +456,4 @@ public class MessageChecker implements SchedulerEventHandler {
     return IMAP_PROTOCOL.equalsIgnoreCase(getProtocol())
         || IMAP_SSL_PROTOCOL.equalsIgnoreCase(getProtocol());
   }
-
 }

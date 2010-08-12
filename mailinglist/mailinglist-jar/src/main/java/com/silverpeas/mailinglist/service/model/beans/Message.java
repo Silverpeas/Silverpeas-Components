@@ -112,7 +112,7 @@ public class Message extends IdentifiedObject {
   public long getAttachmentsSize() {
     long size = 0;
     for (Attachment attachment : attachments) {
-      size = size + attachment.getSize();
+      size += attachment.getSize();
     }
     return size;
   }
@@ -169,6 +169,7 @@ public class Message extends IdentifiedObject {
   public void setMonth(int month) {
   }
 
+  @Override
   public int hashCode() {
     final int prime = 31;
     int result = super.hashCode();
@@ -178,6 +179,7 @@ public class Message extends IdentifiedObject {
     return result;
   }
 
+  @Override
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;
