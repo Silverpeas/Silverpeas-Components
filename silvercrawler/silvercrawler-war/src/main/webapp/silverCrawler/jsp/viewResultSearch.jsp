@@ -65,10 +65,6 @@ if (path != null)
 <%
 	out.println(gef.getLookStyleSheet());
 %>
-<link rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css" type="text/css">
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/ajax.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/ajax-dynamic-content.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script> 
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="javascript">
@@ -91,7 +87,7 @@ function sendData()
 {
 	var query = stripInitialWhitespace(document.searchForm.WordSearch.value);
 	if (!isWhitespace(query) && query != "*") {
-		displayStaticMessage();
+		$('#modalDialog').dialog('open');
 		setTimeout("document.searchForm.submit();", 500);
     }
 }
@@ -102,6 +98,20 @@ function checkSubmitToSearch(ev)
 	if (touche == 13)
 		sendData();
 }
+
+$(document).ready(function(){
+	$("#modalDialog").dialog({
+		autoOpen: false,
+		height: 150,
+		width: 200,
+		modal: true,
+		draggable: false,
+		resizable: false,
+		open: function(event, ui) { 
+				$(".ui-dialog-titlebar-close").hide();
+				$(".ui-dialog-titlebar").hide();}
+		});
+});
 </script>
 
 </head>
@@ -261,6 +271,10 @@ out.println(window.printAfter());
 <FORM name="folderDetailForm" action="viewDirectory" method=post >
 <input type="hidden" name="FolderName">
 </FORM>
-<%@ include file="modalMessage.jsp.inc" %>
+<div id="modalDialog" style="display: none">
+	<center>
+		<table><tr><td align="center" class="txtnote"><%=resource.getString("silverCrawler.attente")%></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=resource.getIcon("silverCrawler.wait")%>" alt=""/></td></tr></table>
+	</center>
+</div>
 </body>
 </html>
