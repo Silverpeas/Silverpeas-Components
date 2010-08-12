@@ -107,9 +107,6 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <script src="<%=m_context%>/kmelia/jsp/javaScript/dragAndDrop.js" type="text/javascript"></script>
 
-<link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
-
 <link rel="stylesheet" type="text/css" href="<%=m_context%>/util/yui/treeview/assets/skins/sam/treeview.css" />
 <link rel="stylesheet" type="text/css" href="styleSheets/tree.css">
 <link rel="stylesheet" type="text/css" href="<%=m_context%>/util/yui/resize/assets/skins/sam/resize.css" />
@@ -953,10 +950,10 @@ function loadNodeData(node, fnLoadComplete)  {
 	{
 		if(window.confirm("<%=kmeliaScc.getString("ConfirmFlushTrashBean")%>"))
 		{
-			displayStaticMessage();
+			$('#modalDialog').dialog('open');
 			$.get('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'EmptyTrash'},
 					function(data){
-						closeMessage();
+						$('#modalDialog').dialog('close');
 						if (data == "ok")
 						{
 							displayPublications("1");
@@ -1047,7 +1044,7 @@ function loadNodeData(node, fnLoadComplete)  {
 
 	function pasteNode(id)
 	{
-		displayStaticMessage();
+		$('#modalDialog').dialog('open');
 
 		//alert("pasteNode : id = "+id);
 		//prepare URL for XHR request:
@@ -1091,7 +1088,7 @@ function loadNodeData(node, fnLoadComplete)  {
 
 				reloadPage(id);
 
-				closeMessage();
+				$('#modalDialog').dialog('close');;
             },
 
             //timeout -- if more than 7 seconds go by, we'll abort
@@ -1614,25 +1611,6 @@ function loadNodeData(node, fnLoadComplete)  {
         //asyncRequest method:
         YAHOO.util.Connect.asyncRequest('GET', sUrl, callback);
 	}
-
-messageObj = new DHTML_modalMessage();	// We only create one object of this class
-messageObj.setShadowOffset(5);	// Large shadow
-
-<!-- avec le script modal-message.js -->
-
-function displayStaticMessage()
-{
-	messageObj.setHtmlContent("<center><table><tr><td align=\"center\" class=\"txtnote\"><%=resources.getString("kmelia.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align=\"center\"><img src=\"<%=resources.getIcon("kmelia.progress")%>\"/></td></tr></table></center>");
-	messageObj.setSize(300,100);
-	messageObj.setCssClassMessageBox(false);
-	messageObj.setShadowDivVisible(true);	// Disable shadow for these boxes
-	messageObj.display();
-}
-
-function closeMessage()
-{
-	messageObj.close();
-}
 </script>
 <script>
 (function() {
@@ -1672,9 +1650,26 @@ function closeMessage()
         <% if (displaySearch.booleanValue()) { %>
     		document.getElementById("topicQuery").focus();
     	<% } %>
+
+    	$("#modalDialog").dialog({
+    		autoOpen: false,
+    		height: 150,
+    		width: 200,
+    		modal: true,
+    		draggable: false,
+    		resizable: false,
+    		open: function(event, ui) { 
+    				$(".ui-dialog-titlebar-close").hide();
+    				$(".ui-dialog-titlebar").hide();}
+    		});
     });
 })();
 </script>
+</div>
+<div id="modalDialog" style="display: none">
+	<center>
+		<table><tr><td align="center" class="txtnote"><%=resources.getString("GML.InProgress")%></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=resources.getIcon("kmelia.progress")%>" alt=""/></td></tr></table>
+	</center>
 </div>
 </BODY>
 </HTML>
