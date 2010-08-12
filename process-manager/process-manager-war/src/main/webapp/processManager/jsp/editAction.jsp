@@ -72,9 +72,6 @@
    out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
-<link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
-
 <%
 	if (form != null) form.displayScripts(out, context);
 %>
@@ -85,11 +82,11 @@
 	<% if (form != null) { %>
 		if (isCorrectForm())
 		{
-			displayStaticMessage();
+			$('#modalDialog').dialog('open');
 	    	setTimeout("document.<%=context.getFormName()%>.submit();", 500);
 		}
 	<% } else { %>
-		displayStaticMessage();
+		$('#modalDialog').dialog('open');
 		setTimeout("document.<%=context.getFormName()%>.submit();", 500);
 	<% } %>
 	}
@@ -100,15 +97,27 @@
 
 	function B_SAUVEGARDER_ONCLICK()
 	{
-		displayStaticMessage();
+		$('#modalDialog').dialog('open');
 		var field = document.getElementById("isDraft");
 		field.value = "yes";
 		
     	setTimeout("document.<%=context.getFormName()%>.submit();", 500);
 	}
-	
-</SCRIPT>
 
+$(document).ready(function(){
+	$("#modalDialog").dialog({
+		autoOpen: false,
+		height: 150,
+		width: 200,
+		modal: true,
+		draggable: false,
+		resizable: false,
+		open: function(event, ui) { 
+				$(".ui-dialog-titlebar-close").hide();
+				$(".ui-dialog-titlebar").hide();}
+		});
+});
+</SCRIPT>
 </HEAD>
 <BODY class="yui-skin-sam">
 <%
@@ -151,5 +160,9 @@
    out.println(frame.printAfter());
    out.println(window.printAfter());
 %>
-<%@ include file="modalMessage.jsp.inc" %>
+<div id="modalDialog" style="display: none">
+	<center>
+		<table><tr><td align="center" class="txtnote"><%=resource.getString("processManager.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=resource.getIcon("processManager.inProgress")%>" alt=""/></td></tr></table>
+	</center>
+</div>
 </BODY>
