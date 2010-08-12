@@ -73,9 +73,6 @@
 <HTML>
 <HEAD>
 <% out.println(graphicFactory.getLookStyleSheet());%>
-<link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/modal-message.css">
-
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="JavaScript">
 
@@ -96,7 +93,7 @@ function eventDeleteConfirm(t)
 {
     if (window.confirm("<%=EncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> '" + t + "' ?")){
     	<% if (periodicity != null ) { %>
-    		displayBoxOnDelete();
+    		$("#modalDialogOnDelete").dialog("open");
     	<% } else { %>
     		sendEvent('RemoveEvent', 'ReallyDelete');
     	<% } %>
@@ -109,41 +106,19 @@ function sendEvent(mainAction, action) {
 	document.eventForm.submit();
 }
 
-function displayBoxOnDelete()
-{
-<%
-	ButtonPane buttonPane = graphicFactory.getButtonPane();
-	buttonPane.addButton(graphicFactory.getFormButton(resources.getString("occurenceOnly"), "javascript:onClick=sendEvent('RemoveEvent', 'ReallyDeleteOccurence')", false));
-	buttonPane.addButton(graphicFactory.getFormButton(resources.getString("allEvents"), "javascript:onClick=sendEvent('RemoveEvent', 'ReallyDelete')", false));
-	buttonPane.addButton(graphicFactory.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=closeMessage()", false));
-	
-	out.print("var confirmBox = '");
-	out.print("<table><tr><td align=\"center\"><br/>"+resources.getString("eventsToDelete"));
-	out.print("<br/><br/>");
-	out.print(EncodeHelper.javaStringToJsString("<center>"+buttonPane.print()+"</center>"));
-	out.println("</td></tr></table>';");
-%>
-	displayStaticMessage(confirmBox, false);
-}
-
-messageObj = new DHTML_modalMessage();	// We only create one object of this class
-messageObj.setShadowOffset(5);	// Large shadow
-
-function displayStaticMessage(messageContent,cssClass)
-{
-	messageObj.setHtmlContent(messageContent);
-	messageObj.setSize(500,100);
-	messageObj.setCssClassMessageBox(cssClass);
-	messageObj.setSource(false);	// no html source since we want to use a static message here.
-	messageObj.setShadowDivVisible(false);	// Disable shadow for these boxes	
-	messageObj.display();	
-}
-
 function closeMessage()
 {
-	messageObj.close();	
+	$("#modalDialogOnDelete").dialog("close");
 }
 
+$(document).ready(function(){
+	$("#modalDialogOnDelete").dialog({
+  	  	autoOpen: false,
+        modal: true,
+        title: "<%=resources.getString("almanach.dialog.delete")%>",
+        height: 'auto',
+        width: 650});
+});
 </script>
 </HEAD>
 <TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
@@ -381,7 +356,7 @@ function closeMessage()
   </table>
   <%
 		out.println("<br>");
- 		buttonPane = graphicFactory.getButtonPane();
+ 		ButtonPane buttonPane = graphicFactory.getButtonPane();
 		buttonPane.addButton(graphicFactory.getFormButton(resources.getString("GML.back"), "almanach.jsp", false));
 		out.println(buttonPane.print());
 		out.println("<br>");
@@ -397,5 +372,17 @@ function closeMessage()
    			<input type="hidden" name="DateFinIteration" value="<%=DateUtil.date2SQLDate(dateFinIteration)%>"/>
    		<% } %>
 	</form>
+<div id="modalDialogOnDelete" style="display: none">
+	<% 
+	ButtonPane buttonPaneOnDelete = graphicFactory.getButtonPane();
+	buttonPaneOnDelete.addButton(graphicFactory.getFormButton(resources.getString("occurenceOnly"), "javascript:onClick=sendEvent('RemoveEvent', 'ReallyDeleteOccurence')", false));
+	buttonPaneOnDelete.addButton(graphicFactory.getFormButton(resources.getString("allEvents"), "javascript:onClick=sendEvent('RemoveEvent', 'ReallyDelete')", false));
+	buttonPaneOnDelete.addButton(graphicFactory.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=closeMessage()", false));
+	%>
+	<table><tr><td align="center"><br/><%=resources.getString("eventsToDelete") %>
+	<br/><br/>
+	<center><%=buttonPaneOnDelete.print()%></center>
+	</td></tr></table>
+</div>	
 </BODY>
 </HTML>

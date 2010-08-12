@@ -63,14 +63,16 @@ if (almanach.isAgregationUsed())
 %>
 
 <!-- AFFICHAGE BROWSER -->
-<HTML>
-<HEAD>
-<TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+<title><%=generalMessage.getString("GML.popupTitle")%></title>
 <% if (StringUtil.isDefined(rssURL)) { %>
 	<link rel="alternate" type="application/rss+xml" title="<%=componentLabel%> : <%=resources.getString("almanach.rssNext")%>" href="<%=m_context+rssURL%>"/>
 <% } %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 
 function nextMonth()
 {
@@ -170,15 +172,13 @@ function updateAgregation(i)
 <%
 out.println(graphicFactory.getLookStyleSheet());
 %>
-
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <style type="text/css">
 <!--
 .eventCells {  padding-right: 3px; padding-left: 3px; vertical-align: top; background-color: #FFFFFF}
 -->
 </style>
-</HEAD>
-<BODY MARGINHEIGHT="5" MARGINWIDTH="5" TOPMARGIN="5" LEFTMARGIN="5">
+</head>
+<body>
 <% 
 	Window 	window 	= graphicFactory.getWindow();
 	Frame 	frame	= graphicFactory.getFrame();
@@ -207,20 +207,19 @@ out.println(graphicFactory.getLookStyleSheet());
 %>
 
 <!-- AFFICHAGE HEADER -->
-<CENTER>
+<center>
   <table width="98%" border="0" cellspacing="0" cellpadding="1">
     <tr>
     	<% if (accessibleInstances != null) { %>
       <td>
-        <table cellpadding="0" cellspacing="0" border="0" width="50%" bgcolor="000000">
+        <table cellpadding="0" cellspacing="0" border="0" width="50%" bgcolor="#000000">
           <tr> 
             <td>
-              
+			  <form name="form1" action="">
               <table cellpadding="2" cellspacing="1" border="0" width="100%">
-				  <form name="form1">
-                  <tr> 
-                    <td class="intfdcolor" align="center" nowrap width="100%" height="24"> 
-                      <select name="select" onChange="window.open(this.options[this.selectedIndex].value,'_self')" class="selectNS">
+                  <tr>
+                    <td class="intfdcolor" align="center" nowrap="nowrap" width="100%" height="24"> 
+                      <select name="select" onchange="window.open(this.options[this.selectedIndex].value,'_self')" class="selectNS">
                       <% 
                       	List instance;
 						for (int i = 0; i < accessibleInstances.size(); i++) {
@@ -231,27 +230,27 @@ out.println(graphicFactory.getLookStyleSheet());
 							
 							String selected = "";
 							if (id.equals(instanceId))
-								selected = "selected";
+								selected = "selected=\"selected\"";
                         %>
                           <option value="<%=m_context+URLManager.getURL(null,"useless",id)+"Main"%>" <%=selected%>><%=spaceName%> - <%=compLabel%></option>
 						<% } %>
                       </select>
                     </td>
                   </tr>
-				</form>
               </table>
+              </form>
             </td>
           </tr>
         </table>
       </td>
       	<%} %>
       <td> 
-        <table cellpadding=0 cellspacing=0 border=0 width=50% bgcolor=000000>
+        <table cellpadding="0" cellspacing="0" border="0" width="50%" bgcolor="#000000">
           <tr> 
             <td> 
-              <table cellpadding=2 cellspacing=1 border=0 width="100%" >
+              <table cellpadding="2" cellspacing="1" border="0" width="100%" >
                 <tr> 
-                  <td class=intfdcolor align=center nowrap width="100%" height="24"><a href="javascript:onClick=goToDay()" onFocus="this.blur()" class=hrefComponentName><%=almanach.getString("auJour")%></a></td>
+                  <td class="intfdcolor" align="center" nowrap="nowrap" width="100%" height="24"><a href="javascript:onClick=goToDay()" onfocus="this.blur()" class="hrefComponentName"><%=almanach.getString("auJour")%></a></td>
                 </tr>
               </table>
             </td>
@@ -259,14 +258,14 @@ out.println(graphicFactory.getLookStyleSheet());
         </table>
       </td>
       <td width="100%"> 
-        <table cellpadding=0 cellspacing=0 border=0 width=50% bgcolor=000000>
+        <table cellpadding="0" cellspacing="0" border="0" width="50%" bgcolor="#000000">
           <tr> 
             <td> 
-              <table cellpadding=0 cellspacing=1 border=0 width="100%" >
+              <table cellpadding="0" cellspacing="1" border="0" width="100%">
                 <tr> 
-                  <td class=intfdcolor><a href="javascript:onClick=previousMonth()" onFocus="this.blur()"><img src="<%=arrLeft%>" border="0"></a></td>
-                  <td class=intfdcolor align=center nowrap width="100%" height="24"><span class="txtnav"><%=almanach.getString("mois" + almanach.getCurrentDay().get(Calendar.MONTH))%> <%=String.valueOf(almanach.getCurrentDay().get(Calendar.YEAR))%></span></td>
-                  <td class=intfdcolor><a href="javascript:onClick=nextMonth()" onFocus="this.blur()"><img src="<%=arrRight%>" border="0"></a></td>
+                  <td class="intfdcolor"><a href="javascript:onClick=previousMonth()" onfocus="this.blur()"><img src="<%=arrLeft%>" border="0" alt=""/></a></td>
+                  <td class="intfdcolor" align="center" nowrap="nowrap" width="100%" height="24"><span class="txtnav"><%=almanach.getString("mois" + almanach.getCurrentDay().get(Calendar.MONTH))%> <%=String.valueOf(almanach.getCurrentDay().get(Calendar.YEAR))%></span></td>
+                  <td class="intfdcolor"><a href="javascript:onClick=nextMonth()" onfocus="this.blur()"><img src="<%=arrRight%>" border="0" alt=""/></a></td>
                 </tr>
               </table>
             </td>
@@ -275,7 +274,7 @@ out.println(graphicFactory.getLookStyleSheet());
       </td>
     </tr>
   </table>
-  <BR>
+  <br/>
 <%=monthC.print()%>
 <%
 				if (almanach.isAgregationUsed())
@@ -299,7 +298,7 @@ out.println(graphicFactory.getLookStyleSheet());
 							if ((i % 5)==0 && i>=5)
 								out.println("</tr><tr><td>&nbsp;</td>");
 							 %>
-							<td><input onClick="updateAgregation(<%=i%>)" type="checkbox" name="chk_almanach" <%=checked%> value="<%=otherAlmanach.get(0)%>"></td>
+							<td><input onclick="updateAgregation(<%=i%>)" type="checkbox" name="chk_almanach" <%=checked%> value="<%=otherAlmanach.get(0)%>"/></td>
 							<td>
 							<a href="<%=m_context%>/Ralmanach/<%=otherAlmanach.get(0)%>/Main"><span style="color: <%=otherAlmanach.get(2)%>"><b><%=otherAlmanach.get(1)%></b></span></a></td>
 							<td>&nbsp;</td>
@@ -320,25 +319,24 @@ out.println(graphicFactory.getLookStyleSheet());
 				if (StringUtil.isDefined(rssURL)) {%>
 					<table>
 	   				<tr>
-	   					<td><a href="<%=m_context+rssURL%>"><img src="icons/rss.gif" border="0"></a></td>
+	   					<td><a href="<%=m_context+rssURL%>"><img src="icons/rss.gif" border="0" alt="RSS"/></a></td>
 	   				</tr>
 					</table>
-	   				<link rel="alternate" type="application/rss+xml" title="<%=componentLabel%> : <%=resources.getString("almanach.rssNext")%>" href="<%=m_context+rssURL%>">
+	   				<link rel="alternate" type="application/rss+xml" title="<%=componentLabel%> : <%=resources.getString("almanach.rssNext")%>" href="<%=m_context+rssURL%>"/>
 	   			<% } %>
-</CENTER>
+</center>
 
 <%		
 		out.println(frame.printAfter());				
 		out.println(window.printAfter());
 %>
-<form name="almanachForm" action="almanach.jsp" method="POST">
-  <input type="hidden" name="Action">
-  <input type="hidden" name="Id">
-  <!--<input type="hidden" name="Day">-->
+<form name="almanachForm" action="almanach.jsp" method="post">
+  <input type="hidden" name="Action"/>
+  <input type="hidden" name="Id"/>
 </form>
 
-<form name="eventForm" action="createEvent.jsp" method="POST">
-  <input type="hidden" name="Day">
+<form name="eventForm" action="createEvent.jsp" method="post">
+  <input type="hidden" name="Day"/>
 </form>
 </body>
 </html>
