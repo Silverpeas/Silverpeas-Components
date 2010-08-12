@@ -42,27 +42,9 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<link href="<%=m_context%>/util/styleSheets/modal-message.css" rel="stylesheet"  type="text/css">
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="JavaScript">
-	messageObj = new DHTML_modalMessage();	// We only create one object of this class
-	messageObj.setShadowOffset(5);	// Large shadow
-	
-	function displayStaticMessage()
-	{
-		messageObj.setHtmlContent("<center><table border=0><tr><td align=\"center\"><br><b><%=resource.getString("infoLetter.sendLetterToManagerInProgress")%></b></td></tr><tr><td><br/></td></tr><tr><td align=\"center\"><img src=\"<%=m_context%>/util/icons/inProgress.gif\"/></td></tr></table></center>");
-		messageObj.setSize(300,150);
-		messageObj.setCssClassMessageBox(false);
-		messageObj.setShadowDivVisible(true);	// Disable shadow for these boxes
-		messageObj.display();
-	}
-	
-	function closeMessage()
-	{
-		messageObj.close();
-	}
 	function call_wysiwyg (){
 		document.toWysiwyg.submit();
 	}
@@ -76,11 +58,24 @@ out.println(gef.getLookStyleSheet());
 	}
 	
 	function sendLetterToManager (){
-		displayStaticMessage();
+		$('#modalDialog').dialog('open');
 		document.headerParution.action = "SendLetterToManager";
 		document.headerParution.submit();
 	}
-
+	
+$(document).ready(function(){
+	$("#modalDialog").dialog({
+		autoOpen: false,
+		height: 150,
+		width: 200,
+		modal: true,
+		draggable: false,
+		resizable: false,
+		open: function(event, ui) { 
+				$(".ui-dialog-titlebar-close").hide();
+				$(".ui-dialog-titlebar").hide();}
+		});
+});
 </script>
 </head>
 <BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
@@ -115,7 +110,6 @@ String parution = (String) request.getAttribute("parution");
 	
 %>
 
-<% // Ici debute le code de la page %>
 <%
 out.flush();
 displayViewWysiwyg(parution, spaceId, componentId, request, response);		
@@ -143,6 +137,10 @@ displayViewWysiwyg(parution, spaceId, componentId, request, response);
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
+<div id="modalDialog" style="display: none">
+	<center>
+		<table border=0><tr><td align="center"><br/><b><%=resource.getString("infoLetter.sendLetterToManagerInProgress")%></b></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=m_context%>/util/icons/inProgress.gif" alt=""/></td></tr></table>
+	</center>
+</div>
 </BODY>
 </HTML>
-

@@ -32,27 +32,14 @@ out.println(gef.getLookStyleSheet());
 
 String parution = (String) request.getAttribute("parution");
 %>
-<link href="<%=m_context%>/util/styleSheets/modal-message.css" rel="stylesheet"  type="text/css">
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/modalMessage/modal-message.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="JavaScript">
-	messageObj = new DHTML_modalMessage();	// We only create one object of this class
-	messageObj.setShadowOffset(5);	// Large shadow
-	
-	function displayStaticMessage(message)
-	{
-		messageObj.setHtmlContent("<center><table border=0><tr><td align=\"center\"><br><b>"+message+"</b></td></tr><tr><td><br/></td></tr><tr><td align=\"center\"><img src=\"<%=m_context%>/util/icons/inProgress.gif\"/></td></tr></table></center>");
-		messageObj.setSize(300,150);
-		messageObj.setCssClassMessageBox(false);
-		messageObj.setShadowDivVisible(true);	// Disable shadow for these boxes
-		messageObj.display();
+	function displayStaticMessage(message) 	{
+		$('#modalDialog #message').html(message);
+		$('#modalDialog').dialog('open');
 	}
 	
-	function closeMessage()
-	{
-		messageObj.close();
-	}
 	function call_wysiwyg (){
 		document.toWysiwyg.submit();
 	}
@@ -100,6 +87,20 @@ String parution = (String) request.getAttribute("parution");
 		document.viewParution.action = "SendLetterToManager";
 		document.viewParution.submit();
 	}
+	
+$(document).ready(function(){
+	$("#modalDialog").dialog({
+		autoOpen: false,
+		height: 150,
+		width: 200,
+		modal: true,
+		draggable: false,
+		resizable: false,
+		open: function(event, ui) { 
+				$(".ui-dialog-titlebar-close").hide();
+				$(".ui-dialog-titlebar").hide();}
+		});
+});
 </script>
 </head>
 <BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
@@ -221,13 +222,14 @@ if (parution.equals("")) {
 <form name="template" action="UpdateTemplateFromHeaders" method="post">			
 	<input type="hidden" name="parution" value="<%= parution %>">
 </form>
-
-<% // Ici se termine le code de la page %>
-
+<div id="modalDialog" style="display: none">
+	<center>
+		<table border=0><tr><td align="center"><br/><b><div id="message"></div></b></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=m_context%>/util/icons/inProgress.gif" alt=""/></td></tr></table>
+	</center>
+</div>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 </BODY>
 </HTML>
-
