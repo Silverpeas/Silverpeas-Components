@@ -29,9 +29,18 @@
 package com.silverpeas.webpages;
 
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.StringTokenizer;
 import java.util.Vector;
 
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.silverpeas.webpages.model.WebPagesRuntimeException;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -128,30 +137,37 @@ public class WebPagesCallBack extends CallBack {
   private void sendSubscriptionsNotification(NodePK nodePK, String userId) {
     // send email alerts
     try {
-      Collection subscriberIds = getSubscribeBm().getNodeSubscriberDetails(
+
+      ArrayList<String> subscriberIds = (ArrayList<String>) getSubscribeBm().getNodeSubscriberDetails(
           nodePK);
 
       if (subscriberIds != null && subscriberIds.size() > 0) {
+        Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+        String fileName = "notificationUpdateContent";
 
         ResourceLocator message = new ResourceLocator(
-            "com.silverpeas.webpages.multilang.webPagesBundle", "fr");
-        ResourceLocator message_en = new ResourceLocator(
-            "com.silverpeas.webpages.multilang.webPagesBundle", "en");
-
-        // french notifications
-        String subject = getSubscriptionsNotificationSubject(message);
-        String body = getSubscriptionsNotificationBody(message, nodePK, userId);
-
-        // english notifications
-        String subject_en = getSubscriptionsNotificationSubject(message_en);
-        String body_en = getSubscriptionsNotificationBody(message_en, nodePK,
-            userId);
-
+            "com.silverpeas.webpages.multilang.webPagesBundle", I18NHelper.defaultLanguage);
+        String subject = message.getString("webPages.subscription"); 
         NotificationMetaData notifMetaData = new NotificationMetaData(
-            NotificationParameters.NORMAL, subject, body);
-        notifMetaData.addLanguage("en", subject_en, body_en);
+            NotificationParameters.NORMAL, subject, templates, fileName);
+        if (oc == null)
+          oc = new OrganizationController();
+        String senderName = oc.getUserDetail(userId).getDisplayedName(); 
 
-        notifMetaData.setUserRecipients(new Vector(subscriberIds));
+        for (String lang : getAllLanguages()) {
+          SilverpeasTemplate template = getNewTemplate();
+          templates.put(lang, template);
+          template.setAttribute("path", "");
+          template.setAttribute("senderName", senderName);
+          template.setAttribute("silverpeasURL", URLManager.getURL(null, null, nodePK
+              .getInstanceId())
+              + "Main");
+          ResourceLocator localizedMessage = new ResourceLocator(
+              "com.silverpeas.webpages.multilang.webPagesBundle", lang);
+          notifMetaData.addLanguage(lang, localizedMessage.getString("webPages.subscription", subject) 
+              , "");
+        }
+        notifMetaData.setUserRecipients(subscriberIds);
         notifMetaData.setLink(URLManager.getURL(null, null, nodePK
             .getInstanceId())
             + "Main");
@@ -165,23 +181,7 @@ public class WebPagesCallBack extends CallBack {
           + nodePK.getId(), e);
     }
   }
-
-  private String getSubscriptionsNotificationBody(ResourceLocator message,
-      NodePK nodePK, String userId) {
-    StringBuffer messageText = new StringBuffer();
-    if (oc == null)
-      oc = new OrganizationController();
-
-    messageText.append(message.getString("webPages.body")).append(" ").append(
-        oc.getUserDetail(userId).getDisplayedName()).append(".\n");
-
-    return messageText.toString();
-  }
-
-  private String getSubscriptionsNotificationSubject(ResourceLocator message) {
-    return message.getString("webPages.subscription");
-  }
-
+  
   private void notifyUsers(NotificationMetaData notifMetaData, String senderId) {
     Connection con = null;
     try {
@@ -240,6 +240,35 @@ public class WebPagesCallBack extends CallBack {
           "webPages.EX_IMPOSSIBLE_DE_FABRIQUER_SUBSCRIBEBM_HOME", e);
     }
     return subscribeBm;
+  }
+
+  private synchronized List<String> getAllLanguages() {
+    ResourceLocator resources = new ResourceLocator(
+        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings",
+        "");
+    List<String> allLanguages = new ArrayList<String>();
+    try {
+      StringTokenizer st = new StringTokenizer(
+          resources.getString("languages"), ",");
+      while (st.hasMoreTokens()) {
+        String langue = st.nextToken();
+        allLanguages.add(langue);
+      }
+    } catch (Exception e) {
+      SilverTrace.error("webpages", "WebPagesCallback.getSubscribeBm.getAllLanguages()",
+          "personalizationPeas.EX_CANT_GET_FAVORITE_LANGUAGE", e);
+    }
+    return allLanguages;
+  }
+
+  protected SilverpeasTemplate getNewTemplate() {
+    ResourceLocator rs =
+        new ResourceLocator("com.silverpeas.webpages.settings.webPagesSettings", "");
+    Properties templateConfiguration = new Properties();
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString("templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString("customersTemplatePath"));
+
+    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
 
 }
