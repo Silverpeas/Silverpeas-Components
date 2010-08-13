@@ -24,6 +24,7 @@
 
 --%>
 <%@ include file="check.jsp" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
@@ -35,11 +36,6 @@ String parution = (String) request.getAttribute("parution");
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="JavaScript">
-	function displayStaticMessage(message) 	{
-		$('#modalDialog #message').html(message);
-		$('#modalDialog').dialog('open');
-	}
-	
 	function call_wysiwyg (){
 		document.toWysiwyg.submit();
 	}
@@ -47,7 +43,7 @@ String parution = (String) request.getAttribute("parution");
 	function goValidate (){
 		if (window.confirm("<%= resource.getString("infoLetter.sendLetter")%>"))
 		{
-			displayStaticMessage("<%=resource.getString("infoLetter.sendLetterInProgress")%>");
+			$.progressMessage();
 			document.validateParution.submit();
 		}
 	}
@@ -83,24 +79,10 @@ String parution = (String) request.getAttribute("parution");
 	}
 	
 	function sendLetterToManager (){
-		displayStaticMessage("<%=resource.getString("infoLetter.sendLetterToManagerInProgress")%>");
+		$.progressMessage();
 		document.viewParution.action = "SendLetterToManager";
 		document.viewParution.submit();
 	}
-	
-$(document).ready(function(){
-	$("#modalDialog").dialog({
-		autoOpen: false,
-		height: 150,
-		width: 200,
-		modal: true,
-		draggable: false,
-		resizable: false,
-		open: function(event, ui) { 
-				$(".ui-dialog-titlebar-close").hide();
-				$(".ui-dialog-titlebar").hide();}
-		});
-});
 </script>
 </head>
 <BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
@@ -222,14 +204,10 @@ if (parution.equals("")) {
 <form name="template" action="UpdateTemplateFromHeaders" method="post">			
 	<input type="hidden" name="parution" value="<%= parution %>">
 </form>
-<div id="modalDialog" style="display: none">
-	<center>
-		<table border=0><tr><td align="center"><br/><b><div id="message"></div></b></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=m_context%>/util/icons/inProgress.gif" alt=""/></td></tr></table>
-	</center>
-</div>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
+<view:progressMessage/>
 </BODY>
 </HTML>

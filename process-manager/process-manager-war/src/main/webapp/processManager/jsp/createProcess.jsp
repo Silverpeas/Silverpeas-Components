@@ -25,6 +25,7 @@
 --%>
 
 <%@ include file="checkProcessManager.jsp" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 
 <%
 	boolean isSaveButtonEnabled = ((Boolean) request.getAttribute("isSaveButtonEnabled")).booleanValue();
@@ -69,14 +70,14 @@
 	{
 		if (isCorrectForm())
 		{
-			$('#modalDialog').dialog('open');
+			$.progressMessage();
 	    	setTimeout("document.<%=context.getFormName()%>.submit();", 500);
 		}
 	}
 
 	function B_SAUVEGARDER_ONCLICK()
 	{
-		$('#modalDialog').dialog('open');
+		$.progressMessage();
 		var field = document.getElementById("isDraft");
 		field.value = "yes";
 		
@@ -86,21 +87,6 @@
 	function B_ANNULER_ONCLICK() {
 		location.href = "listProcess";
 	}
-
-$(document).ready(function(){
-	$("#modalDialog").dialog({
-		autoOpen: false,
-		height: 150,
-		width: 200,
-		modal: true,
-		draggable: false,
-		resizable: false,
-		open: function(event, ui) { 
-				$(".ui-dialog-titlebar-close").hide();
-				$(".ui-dialog-titlebar").hide();}
-		});
-});
-	
 //-->
 </SCRIPT>
 </HEAD>
@@ -127,9 +113,6 @@ $(document).ready(function(){
    out.println(frame.printAfter());
    out.println(window.printAfter());
 %>
-<div id="modalDialog" style="display: none">
-	<center>
-		<table><tr><td align="center" class="txtnote"><%=resource.getString("processManager.inProgress")%></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=resource.getIcon("processManager.inProgress")%>" alt=""/></td></tr></table>
-	</center>
-</div>
+<view:progressMessage/>
 </BODY>
+</HTML>

@@ -36,6 +36,7 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 }
 %>
 <%@ include file="check.jsp" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
@@ -58,24 +59,10 @@ out.println(gef.getLookStyleSheet());
 	}
 	
 	function sendLetterToManager (){
-		$('#modalDialog').dialog('open');
+		$.progressMessage();
 		document.headerParution.action = "SendLetterToManager";
 		document.headerParution.submit();
 	}
-	
-$(document).ready(function(){
-	$("#modalDialog").dialog({
-		autoOpen: false,
-		height: 150,
-		width: 200,
-		modal: true,
-		draggable: false,
-		resizable: false,
-		open: function(event, ui) { 
-				$(".ui-dialog-titlebar-close").hide();
-				$(".ui-dialog-titlebar").hide();}
-		});
-});
 </script>
 </head>
 <BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
@@ -137,10 +124,6 @@ displayViewWysiwyg(parution, spaceId, componentId, request, response);
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-<div id="modalDialog" style="display: none">
-	<center>
-		<table border=0><tr><td align="center"><br/><b><%=resource.getString("infoLetter.sendLetterToManagerInProgress")%></b></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=m_context%>/util/icons/inProgress.gif" alt=""/></td></tr></table>
-	</center>
-</div>
+<view:progressMessage/>
 </BODY>
 </HTML>

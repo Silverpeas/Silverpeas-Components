@@ -24,27 +24,13 @@
 
 --%>
 <%@ include file="check.jsp" %>
-
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<html>
 <HEAD>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <TITLE></TITLE>
-<script language="JavaScript">
-$(document).ready(function(){
-	$("#modalDialog").dialog({
-		autoOpen: false,
-		height: 150,
-		width: 200,
-		modal: true,
-		draggable: false,
-		resizable: false,
-		open: function(event, ui) { 
-				$(".ui-dialog-titlebar-close").hide();
-				$(".ui-dialog-titlebar").hide();}
-		});
-});
-</script>
 </HEAD>
 
 <BODY>
@@ -71,7 +57,7 @@ $(document).ready(function(){
 	else
 	{ %>
 		<script language="javascript">
-			$('#modalDialog').dialog('open');
+			$.progressMessage();
 			document.exportForm.submit();
 		</script>
 	<%	}
@@ -103,10 +89,6 @@ $(document).ready(function(){
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-<div id="modalDialog" style="display: none">
-	<center>
-		<table border=0><tr><td align="center"><br/><b><%=resource.getString("GML.ExportInProgress")%></b></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=m_context%>/util/icons/inProgress.gif" alt=""/></td></tr></table>
-	</center>
-</div>
+<view:progressMessage/>
 </BODY>
 </HTML>

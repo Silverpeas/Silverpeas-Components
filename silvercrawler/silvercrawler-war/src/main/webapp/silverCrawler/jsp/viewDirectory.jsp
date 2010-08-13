@@ -24,7 +24,7 @@
 
 --%>
 <%@ include file="check.jsp" %>
-
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <% 
 FileFolder 	folder 			= (FileFolder) request.getAttribute("Folder");
 String 		profile 		= (String) request.getAttribute("Profile");
@@ -165,7 +165,7 @@ function sendData()
 {
 	var query = stripInitialWhitespace(document.searchForm.WordSearch.value);
 	if (!isWhitespace(query) && query != "*") {
-		$('#modalDialog').dialog('open');
+		$.progressMessage();
 		setTimeout("document.searchForm.submit();", 500);
     }
 }
@@ -176,20 +176,6 @@ function checkSubmitToSearch(ev)
 	if (touche == 13)
 		sendData();
 }
-
-$(document).ready(function(){
-	$("#modalDialog").dialog({
-		autoOpen: false,
-		height: 150,
-		width: 200,
-		modal: true,
-		draggable: false,
-		resizable: false,
-		open: function(event, ui) { 
-				$(".ui-dialog-titlebar-close").hide();
-				$(".ui-dialog-titlebar").hide();}
-		});
-});
 </script>
 
 </head>
@@ -461,10 +447,6 @@ out.println(window.printAfter());
 <input type="hidden" name="FolderName">
 <input type="hidden" name="FileName">
 </FORM>
-<div id="modalDialog" style="display: none">
-	<center>
-		<table><tr><td align="center" class="txtnote"><%=resource.getString("silverCrawler.attente")%></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=resource.getIcon("silverCrawler.wait")%>" alt=""/></td></tr></table>
-	</center>
-</div>
+<view:progressMessage/>
 </body>
 </html>

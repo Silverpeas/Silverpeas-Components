@@ -25,6 +25,7 @@
 --%>
 
 <%@ include file="checkKmelia.jsp" %>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page import="com.stratelia.silverpeas.util.SilverpeasSettings"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBarElement"%>
@@ -950,10 +951,10 @@ function loadNodeData(node, fnLoadComplete)  {
 	{
 		if(window.confirm("<%=kmeliaScc.getString("ConfirmFlushTrashBean")%>"))
 		{
-			$('#modalDialog').dialog('open');
+			$.progressMessage();
 			$.get('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'EmptyTrash'},
 					function(data){
-						$('#modalDialog').dialog('close');
+						$.closeProgressMessage();
 						if (data == "ok")
 						{
 							displayPublications("1");
@@ -1044,7 +1045,7 @@ function loadNodeData(node, fnLoadComplete)  {
 
 	function pasteNode(id)
 	{
-		$('#modalDialog').dialog('open');
+		$.progressMessage();
 
 		//alert("pasteNode : id = "+id);
 		//prepare URL for XHR request:
@@ -1088,7 +1089,7 @@ function loadNodeData(node, fnLoadComplete)  {
 
 				reloadPage(id);
 
-				$('#modalDialog').dialog('close');;
+				$.closeProgressMessage();
             },
 
             //timeout -- if more than 7 seconds go by, we'll abort
@@ -1650,26 +1651,10 @@ function loadNodeData(node, fnLoadComplete)  {
         <% if (displaySearch.booleanValue()) { %>
     		document.getElementById("topicQuery").focus();
     	<% } %>
-
-    	$("#modalDialog").dialog({
-    		autoOpen: false,
-    		height: 150,
-    		width: 200,
-    		modal: true,
-    		draggable: false,
-    		resizable: false,
-    		open: function(event, ui) { 
-    				$(".ui-dialog-titlebar-close").hide();
-    				$(".ui-dialog-titlebar").hide();}
-    		});
     });
 })();
 </script>
 </div>
-<div id="modalDialog" style="display: none">
-	<center>
-		<table><tr><td align="center" class="txtnote"><%=resources.getString("GML.InProgress")%></td></tr><tr><td><br/></td></tr><tr><td align="center"><img src="<%=resources.getIcon("kmelia.progress")%>" alt=""/></td></tr></table>
-	</center>
-</div>
+<view:progressMessage/>
 </BODY>
 </HTML>
