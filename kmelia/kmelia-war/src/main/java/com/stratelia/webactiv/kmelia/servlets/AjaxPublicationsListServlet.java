@@ -598,7 +598,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write(board.printAfter());
     } // End if
     else if (showNoPublisMessage
-        && (kmeliaScc.getNbPublicationsOnRoot() != 0 || !currentTopicId.equals("0"))) {
+        && (toSearch || kmeliaScc.getNbPublicationsOnRoot() != 0 || !currentTopicId.equals("0"))) {
+      String noPublications = kmeliaScc.getString("PubAucune");
+      if (toSearch)
+        noPublications = kmeliaScc.getString("NoPubFound");
       out.write(board.printBefore());
       out.write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" align=\"center\">");
       out.write("<tr valign=\"middle\" class=\"intfdcolor\">");
@@ -610,7 +613,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write("<tr>");
       out.write("<td>&#160;</td>");
       out.write("<td>"
-          + EncodeHelper.escapeXml(kmeliaScc.getString("PubAucune")) + "</td>");
+          + EncodeHelper.escapeXml(noPublications) + "</td>");
       out.write("</tr>");
       out.write("</table>");
       out.write(board.printAfter());
