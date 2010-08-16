@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>  
-  <parent>    
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>13-SNAPSHOT</version>
+    <version>14-SNAPSHOT</version>
   </parent>
 
   <scm>
@@ -23,7 +23,7 @@
       <snapshots><enabled>true</enabled></snapshots>
     </repository>
   </repositories>
-  
+
   <groupId>com.silverpeas</groupId>
   <artifactId>components</artifactId>
   <version>5.3-SNAPSHOT</version>
@@ -33,7 +33,7 @@
   <properties>
     <core.version>5.3-SNAPSHOT</core.version>
   </properties>
-  
+
   <build>
     <plugins>
       <plugin>
@@ -79,7 +79,7 @@
      </plugins>
   </build>
 
- 
+
 
   <modules>
     <module>hyperlink</module>
@@ -89,7 +89,7 @@
     <module>rssaggregator</module>
     <module>mydb</module>
     <module>project-manager</module>
-    <module>websites</module>    
+    <module>websites</module>
     <module>whitepages</module>
     <module>question-reply</module>
     <module>webpages</module>
@@ -112,5 +112,5 @@
     <module>classifieds</module>
 	<module>formsonline</module>
   </modules>
-  
+
 </project>
