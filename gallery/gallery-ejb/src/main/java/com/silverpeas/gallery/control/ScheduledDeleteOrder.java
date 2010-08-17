@@ -26,7 +26,6 @@ package com.silverpeas.gallery.control;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Vector;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.GalleryBmHome;
@@ -44,7 +43,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 public class ScheduledDeleteOrder implements SchedulerEventHandler {
 
   public static final String GALLERYENGINE_JOB_NAME = "GalleryEngineJobOrder";
-
   private ResourceLocator resources = new ResourceLocator(
       "com.silverpeas.gallery.settings.gallerySettings", "");
 
@@ -53,9 +51,7 @@ public class ScheduledDeleteOrder implements SchedulerEventHandler {
         "Initializing the scheduler", "ENTREE");
     try {
       String cron = resources.getString("cronScheduledDeleteOrder");
-      Vector jobList = SimpleScheduler.getJobList(this);
-      if (jobList != null && jobList.size() > 0)
-        SimpleScheduler.removeJob(this, GALLERYENGINE_JOB_NAME);
+      SimpleScheduler.removeJob(this, GALLERYENGINE_JOB_NAME);
       SimpleScheduler.getJob(this, GALLERYENGINE_JOB_NAME, cron, this,
           "doScheduledDeleteOrder");
     } catch (Exception e) {
@@ -64,17 +60,18 @@ public class ScheduledDeleteOrder implements SchedulerEventHandler {
     }
   }
 
+  @Override
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
     switch (aEvent.getType()) {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
         SilverTrace.error("gallery",
             "ScheduledDeleteOrder.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was not successfull");
+            + aEvent.getJob().getJobName() + "' was not successfull");
         break;
       case SchedulerEvent.EXECUTION_SUCCESSFULL:
         SilverTrace.debug("gallery",
             "ScheduledDeleteOrder.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was successfull");
+            + aEvent.getJob().getJobName() + "' was successfull");
         break;
       default:
         SilverTrace.error("gallery",
@@ -90,8 +87,7 @@ public class ScheduledDeleteOrder implements SchedulerEventHandler {
 
     try {
       // recherche du nombre de jours avant suppression
-      int nbDays = Integer
-          .parseInt(resources.getString("nbDaysForDeleteOrder"));
+      int nbDays = Integer.parseInt(resources.getString("nbDaysForDeleteOrder"));
 
       // rechercher toutes les demandes arrivant à échéance
       Collection orders = getGalleryBm().getAllOrderToDelete(nbDays);
@@ -121,8 +117,7 @@ public class ScheduledDeleteOrder implements SchedulerEventHandler {
   private GalleryBm getGalleryBm() {
     GalleryBm galleryBm = null;
     try {
-      GalleryBmHome galleryBmHome = (GalleryBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
+      GalleryBmHome galleryBmHome = (GalleryBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
       galleryBm = galleryBmHome.create();
     } catch (Exception e) {
       throw new GalleryRuntimeException("ScheduledDeleteOrder.getGalleryBm()",

@@ -27,7 +27,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 import com.silverpeas.silvercrawler.model.SilverCrawlerRuntimeException;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
@@ -50,9 +49,7 @@ public class ScheduledIndexFiles implements SchedulerEventHandler {
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledIndex");
-      Vector jobList = SimpleScheduler.getJobList(this);
-      if (jobList != null && jobList.size() > 0)
-        SimpleScheduler.removeJob(this, SILVERCRAWLERENGINE_JOB_NAME);
+      SimpleScheduler.removeJob(this, SILVERCRAWLERENGINE_JOB_NAME);
       SimpleScheduler.getJob(this, SILVERCRAWLERENGINE_JOB_NAME, cron, this,
           "doScheduledIndex");
     } catch (Exception e) {
@@ -61,6 +58,7 @@ public class ScheduledIndexFiles implements SchedulerEventHandler {
     }
   }
 
+  @Override
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
     switch (aEvent.getType()) {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:

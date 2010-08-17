@@ -27,7 +27,6 @@ import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.Vector;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.GalleryBmHome;
@@ -50,16 +49,13 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 public class ScheduledAlertUser implements SchedulerEventHandler {
 
   public static final String GALLERYENGINE_JOB_NAME = "GalleryEngineJob";
-
   private ResourceLocator resources = new ResourceLocator(
       "com.silverpeas.gallery.settings.gallerySettings", "");
 
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledAlertUser");
-      Vector jobList = SimpleScheduler.getJobList(this);
-      if (jobList != null && jobList.size() > 0)
-        SimpleScheduler.removeJob(this, GALLERYENGINE_JOB_NAME);
+      SimpleScheduler.removeJob(this, GALLERYENGINE_JOB_NAME);
       SimpleScheduler.getJob(this, GALLERYENGINE_JOB_NAME, cron, this,
           "doScheduledAlertUser");
     } catch (Exception e) {
@@ -68,12 +64,13 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
     }
   }
 
+  @Override
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
     switch (aEvent.getType()) {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
         SilverTrace.error("gallery", "ScheduledAlertUser.handleSchedulerEvent",
             "The job '" + aEvent.getJob().getJobName()
-                + "' was not successfull");
+            + "' was not successfull");
         break;
       case SchedulerEvent.EXECUTION_SUCCESSFULL:
         SilverTrace.debug("gallery", "ScheduledAlertUser.handleSchedulerEvent",
@@ -113,17 +110,17 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
       StringBuffer messageBody_en = new StringBuffer();
       PhotoDetail nextPhoto = new PhotoDetail();
 
-      Iterator it = photos.iterator();
+      @SuppressWarnings("unchecked")
+      Iterator<PhotoDetail> it = photos.iterator();
       while (it.hasNext()) {
-        PhotoDetail photo = (PhotoDetail) it.next();
+        PhotoDetail photo = it.next();
         nextPhoto = photo;
         if (photo.getInstanceId().equals(currentInstanceId)) {
           // construire la liste des images pour cette instance (a mettre dans
           // le corps du message)
           messageBody.append(message.getString("gallery.notifName")).append(
               " : ").append(photo.getName()).append("\n");
-          messageBody_en.append(message_en.getString("gallery.notifName"))
-              .append(" : ").append(photo.getName()).append("\n");
+          messageBody_en.append(message_en.getString("gallery.notifName")).append(" : ").append(photo.getName()).append("\n");
           SilverTrace.info("gallery",
               "ScheduledAlertUser.doScheduledAlertUser()",
               "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
@@ -138,12 +135,11 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
             messageBody_en = new StringBuffer();
           }
           currentInstanceId = photo.getInstanceId();
-          String nameInstance = orga.getComponentInst(currentInstanceId)
-              .getLabel();
+          String nameInstance = orga.getComponentInst(currentInstanceId).getLabel();
           SilverTrace.info("gallery",
               "ScheduledAlertUser.doScheduledAlertUser()",
               "root.MSG_GEN_PARAM_VALUE", "currentInstanceId = "
-                  + currentInstanceId);
+              + currentInstanceId);
 
           // initialisation du corps du message avec la première photo de
           // l'instance en cours
@@ -151,10 +147,8 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
               nameInstance).append("\n").append("\n");
           messageBody.append(message.getString("gallery.notifName")).append(
               " : ").append(photo.getName()).append("\n");
-          messageBody_en.append(message.getString("gallery.notifTitle"))
-              .append(nameInstance).append("\n").append("\n");
-          messageBody_en.append(message_en.getString("gallery.notifName"))
-              .append(" : ").append(photo.getName()).append("\n");
+          messageBody_en.append(message.getString("gallery.notifTitle")).append(nameInstance).append("\n").append("\n");
+          messageBody_en.append(message_en.getString("gallery.notifName")).append(" : ").append(photo.getName()).append("\n");
 
           SilverTrace.info("gallery",
               "ScheduledAlertUser.doScheduledAlertUser()",
@@ -163,8 +157,7 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
       }
       // Création du message à envoyer aux admins pour la dernière instance en
       // cours
-      UserDetail[] admins = orga
-          .getUsers("useless", currentInstanceId, "admin");
+      UserDetail[] admins = orga.getUsers("useless", currentInstanceId, "admin");
       createMessage(message, messageBody, message_en, messageBody_en,
           nextPhoto, admins);
       messageBody = new StringBuffer();
@@ -221,8 +214,7 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
   private GalleryBm getGalleryBm() {
     GalleryBm galleryBm = null;
     try {
-      GalleryBmHome galleryBmHome = (GalleryBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
+      GalleryBmHome galleryBmHome = (GalleryBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
       galleryBm = galleryBmHome.create();
     } catch (Exception e) {
       throw new GalleryRuntimeException("ScheduledAlertUser.getGalleryBm()",

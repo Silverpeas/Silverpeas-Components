@@ -44,7 +44,6 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 public class ScheduledDeleteClassifieds implements SchedulerEventHandler {
 
   public static final String CLASSIFIEDSENGINE_JOB_NAME = "ClassifiedsEngineJobDelete";
-
   private ResourceLocator resources =
       new ResourceLocator("com.silverpeas.classifieds.settings.classifiedsSettings", "");
 
@@ -52,10 +51,7 @@ public class ScheduledDeleteClassifieds implements SchedulerEventHandler {
     SilverTrace.error("classifieds", "ScheduledDeleteClassifieds.initialize()", "", "ENTREE");
     try {
       String cron = resources.getString("cronScheduledDeleteClassifieds");
-      Vector jobList = SimpleScheduler.getJobList(this);
-      if (jobList != null && jobList.size() > 0) {
-        SimpleScheduler.removeJob(this, CLASSIFIEDSENGINE_JOB_NAME);
-      }
+      SimpleScheduler.removeJob(this, CLASSIFIEDSENGINE_JOB_NAME);
       SimpleScheduler.getJob(this, CLASSIFIEDSENGINE_JOB_NAME, cron, this,
           "doScheduledDeleteClassifieds");
     } catch (Exception e) {
@@ -64,6 +60,7 @@ public class ScheduledDeleteClassifieds implements SchedulerEventHandler {
     }
   }
 
+  @Override
   public void handleSchedulerEvent(SchedulerEvent aEvent) {
     switch (aEvent.getType()) {
       case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
