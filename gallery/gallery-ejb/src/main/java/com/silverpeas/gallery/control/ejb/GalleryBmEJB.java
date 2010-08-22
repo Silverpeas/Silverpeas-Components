@@ -953,15 +953,13 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
  
 
   /**
-   * @param userId
-   *         ID of user
-   * @param firstIndex
-   *         The beginning of the list
-   * @param numberOfElement
-   *         The number of items wanted
-   * @see SocialInformationGallery
-   * @return The list(of photos that the userId has created or updated) of sizenumberOfElement
-   * @throws SQLException, ParseException
+   * get my list of SocialInformationGallery
+   * according to options and number of Item and the first Index
+   * @return: List <SocialInformation>
+   * @param : String myId
+   * @param :List<String> myContactsIds
+   * @param :List<String> options list of Available Components name
+   * @param int numberOfElement, int firstIndex
    */
   
   public List<SocialInformation> getAllPhotosByUserid(String userId, int firstIndex,
@@ -980,7 +978,15 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
- 
+ /**
+   * get list of SocialInformationGallery of my contacts
+   * according to options and number of Item and the first Index
+   * @return: List <SocialInformation>
+   * @param : String myId
+   * @param :List<String> myContactsIds
+   * @param :List<String> options list of Available Components name
+   * @param int numberOfElement, int firstIndex
+   */
   @Override
   public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> listOfuserId, List<String> availableComponent, int numberOfElement, int firstIndex){
     Connection con = initCon();

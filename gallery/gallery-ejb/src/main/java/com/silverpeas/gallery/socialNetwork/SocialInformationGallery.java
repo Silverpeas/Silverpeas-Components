@@ -31,9 +31,8 @@ import java.util.Date;
 
 public class SocialInformationGallery implements SocialInformation {
 
-  private String classification = "public";
-  private final SocialInformationType type = SocialInformationType.PHOTO;
-  private PhotoWithStatus picture;
+  
+  private final SocialInformationType type = SocialInformationType.PHOTO;  
   private String title ;
   private String description ;
   private boolean socialInformationWasupdated = false;
@@ -64,60 +63,72 @@ public class SocialInformationGallery implements SocialInformation {
 
 
   }
-
+/**
+   * return the Title of this SocialInformation
+   * @return String
+   */
   @Override
   public String getTitle() {
     return title;
   }
-
+/**
+   * return the Description of this SocialInformation
+   * @return String
+   */
   @Override
   public String getDescription() {
     return description;
   }
-
+/**
+   * return the Author of this SocialInfo
+   * @return String
+   */
   @Override
   public String getAuthor() {
     return author;
   }
-
+/**
+   * return the Url of this SocialInfo
+   * @return String
+   */
   @Override
   public String getUrl() {
     return url;
   }
-
+/**
+   * return the Date of this SocialInfo
+   * @return
+   */
   @Override
   public Date getDate() {
     return date;
   }
-
+ /**
+   * return the icon of this SocialInformation
+   * @return String
+   */
   @Override
   public String getIcon() {
     return icon;
   }
-
+ /**
+   * return the type of this SocialInformation
+   * @return String
+   */
   @Override
   public String getType() {
     // TODO Auto-generated method stub
     return type.toString();
   }
-
+/**
+   * return if this socialInfo was updtated or not
+   * @return boolean
+   */
   @Override
-  public boolean getSocialInformationWasUpdeted() {
+  public boolean isUpdeted() {
     return socialInformationWasupdated;
   }
-  /* (non-Javadoc)
-   * @see java.lang.Object#hashCode()
-   */
-
-  @Override
-  public int hashCode() {
-    final int prime = 31;
-    int result = 1;
-    result = prime * result + ((type.toString() == null) ? 0 : type.toString().hashCode());
-    result = prime * result + ((classification == null) ? 0 : classification.hashCode());
-    return result;
-  }
-
+  
   /* (non-Javadoc)
    * @see java.lang.Object#equals(java.lang.Object)
    */
@@ -140,13 +151,7 @@ public class SocialInformationGallery implements SocialInformation {
     } else if (!type.toString().equals(other.type.toString())) {
       return false;
     }
-    if (classification == null) {
-      if (other.classification != null) {
-        return false;
-      }
-    } else if (!classification.equals(other.classification)) {
-      return false;
-    }
+    
     return true;
   }
 

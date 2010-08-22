@@ -104,9 +104,29 @@ public interface GalleryBmBusinessSkeleton {
 
   public void deleteOrder(String orderId) throws RemoteException;
 
+  /**
+   * get my list of SocialInformationGallery
+   * according to options and number of Item and the first Index
+   * @return: List <SocialInformation>
+   * @param : String myId
+   * @param :List<String> myContactsIds
+   * @param :List<String> options list of Available Components name
+   * @param int numberOfElement, int firstIndex
+   * @throws RemoteException
+   */
   public List<SocialInformation> getAllPhotosByUserid(String userId, int firstIndex,
       int numberOfElement) throws RemoteException;
 
+  /**
+   * get list of SocialInformationGallery of my contacts
+   * according to options and number of Item and the first Index
+   * @param listOfuserId
+   * @param availableComponent
+   * @param numberOfElement
+   * @param firstIndex
+   * @return List<SocialInformation>
+   * @throws RemoteException
+   */
   public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> listOfuserId,
       List<String> availableComponent, int numberOfElement, int firstIndex) throws RemoteException;
 }

@@ -47,6 +47,15 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class SocialGallery implements SocialGalleryInterface {
 
+  /**
+   * get the my  SocialInformationGallery  according
+   * to number of Item and the first Index
+   * @param userId
+   * @param limit
+   * @param offset
+   * @return List<SocialInformationGallery>
+   * @throws SilverpeasException
+   */
   @Override
   public List<SocialInformation> getSocialInformationsList(String userId, int numberOfElement,
       int firstIndex) {
@@ -58,18 +67,33 @@ public class SocialGallery implements SocialGalleryInterface {
     }
 
   }
-  
-  public List getSocialInformationsListOfMyContacts(String MyId, List<String> listOfuserId,
+
+  /**
+   * get the   SocialInformationGallery of my contatcs according to number of Item and the first Index
+   * @param myId
+   * @param myContactsIds
+   * @param numberOfElement
+   * @param firstIndex
+   * @return List
+   * @throws SilverpeasException
+   */
+  @Override
+  public List getSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
       int numberOfElement, int firstIndex) throws SilverpeasException {
     try {
-      return getGalleryBm().getSocialInformationsListOfMyContacts(listOfuserId, this.getListAvailable(MyId),
+      return getGalleryBm().getSocialInformationsListOfMyContacts(myContactsIds, this.
+          getListAvailable(myId),
           numberOfElement, firstIndex);
     } catch (RemoteException rex) {
-      throw new GalleryRuntimeException("SocialGallery.getSocialInformationsList()",
+      throw new GalleryRuntimeException("SocialGallery.getSocialInformationsListOfMyContacts()",
           SilverpeasException.ERROR, "Error obtaining all photos fo user", rex);
     }
-  } 
+  }
 
+  /**
+   * getEJB
+   * @return instance of CalendarBmHome
+   */
   private GalleryBm getGalleryBm() {
     GalleryBm galleryBm = null;
     try {
@@ -83,18 +107,21 @@ public class SocialGallery implements SocialGalleryInterface {
     }
     return galleryBm;
   }
-
+ /**
+   * gets the available component for a given users list
+   * @param myId
+   * @param myContactsIds
+   * @param firstIndex
+   * @return List<String>
+   */
   private List<String> getListAvailable(String userid) {
     OrganizationController org = new OrganizationController();
     List<ComponentInstLight> availableList = new ArrayList<ComponentInstLight>();
     availableList = org.getAvailComponentInstLights(userid, "gallery");
-    List<String> id_list = new ArrayList<String>();
+    List<String> idsList = new ArrayList<String>();
     for (ComponentInstLight comp : availableList) {
-      id_list.add(comp.getId());
+      idsList.add(comp.getId());
     }
-    return id_list;
+    return idsList;
   }
-
-
- 
 }
