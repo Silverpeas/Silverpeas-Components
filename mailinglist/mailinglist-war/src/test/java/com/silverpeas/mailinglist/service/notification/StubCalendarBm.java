@@ -24,6 +24,7 @@
 
 package com.silverpeas.mailinglist.service.notification;
 
+import com.stratelia.webactiv.calendar.socialNetwork.SocialInformationEvent;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
@@ -331,6 +332,24 @@ public class StubCalendarBm implements CalendarBm {
   @Override
   public List<JournalHeader> getNextEventsForUser(String day, String userId, String classification,
       int limit, int offset) throws RemoteException {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public List<SocialInformationEvent> getNextEventsForMyContacts(String day, String myId,
+      List<String> myContactsIds, int numberOfElement, int firstIndex) throws RemoteException {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public List<SocialInformationEvent> getLastEventsForMyContacts(String day, String myId,
+      List<String> myContactsIds, int numberOfElement, int firstIndex) throws RemoteException {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
+  @Override
+  public List<SocialInformationEvent> getMyLastEvents(String day, String myId, int numberOfElement,
+      int firstIndex) throws RemoteException {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
