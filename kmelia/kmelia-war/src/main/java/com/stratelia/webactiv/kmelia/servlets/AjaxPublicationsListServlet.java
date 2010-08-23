@@ -162,7 +162,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
       SilverTrace.info("kmelia", "AjaxPublicationsListServlet.doPost",
           "root.MSG_GEN_PARAM_VALUE", "Request parameters = "
-          + req.getQueryString());
+              + req.getQueryString());
 
       TopicDetail currentTopic = null;
       boolean sortAllowed = true;
@@ -243,9 +243,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           userPub = iterator.next();
           if (!kmeliaSC.isPublicationDeleted(userPub.getPublication().getPK().getId()) &&
               kmeliaSecurity.
-              isObjectAvailable(componentId, kmeliaSC.getUserId(), userPub.getPublication()
-              .getPK().
-              getId(), "Publication")) {
+                  isObjectAvailable(componentId, kmeliaSC.getUserId(), userPub.getPublication()
+                      .getPK().
+                      getId(), "Publication")) {
             publicationsToDisplay.add(userPub);
           }
         }
@@ -428,7 +428,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         } else {
           if (pub.getImage() != null
               && Boolean.valueOf(resources.getSetting("isVignetteVisible"))) {
-            out.write("<td valign=\"top\" align=\"right\" width=\"80\">");
+            out.write("<td valign=\"top\" align=\"right\">");
             String height = resources.getSetting("vignetteHeight");
             String width = resources.getSetting("vignetteWidth");
             if (pub.getImage().startsWith("/")) {
@@ -437,34 +437,31 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             } else {
               vignette_url =
                   EncodeHelper.escapeXml(FileServerUtils.getUrl(pub.getPK().getSpace(), pub.
-                  getPK().getComponentName(),
-                  "vignette", pub.getImage(), pub.getImageMimeType(),
-                  publicationSettings.getString("imagesSubDirectory")));
+                      getPK().getComponentName(),
+                      "vignette", pub.getImage(), pub.getImageMimeType(),
+                      publicationSettings.getString("imagesSubDirectory")));
               // calcul de la taille de la vignette
               String[] size = new String[2];
+              File image = getThumbnail(pub, publicationSettings);
               if (StringUtil.isDefined(height) && StringUtil.isInteger(height)) {
-                size =
-                    ImageUtil.getWidthAndHeightByHeight(new File(pub.getImage()), Integer
-                    .parseInt(height));
+                size = ImageUtil.getWidthAndHeightByHeight(image, Integer.parseInt(height));
               } else if (StringUtil.isDefined(width) && StringUtil.isInteger(width)) {
-                size =
-                    ImageUtil.getWidthAndHeightByWidth(new File(pub.getImage()), Integer
-                    .parseInt(width));
+                size = ImageUtil.getWidthAndHeightByWidth(image, Integer.parseInt(width));
               }
               if (StringUtil.isDefined(size[0]) && StringUtil.isDefined(size[1])) {
-                height = size[0];
-                width = size[1];
+                width = size[0];
+                height = size[1];
               }
               out.write("<img src=\"" + vignette_url + "\""
-                  + ((height == null) ? "" : " HEIGHT=\"" + height + "\"")
-                  + ((width == null) ? "" : " WIDTH=\"" + width + "\"")
+                  + ((height == null) ? "" : " height=\"" + height + "\"")
+                  + ((width == null) ? "" : " width=\"" + width + "\"")
                   + "/>&#160;");
             }
 
             out.write("</td>");
           } else {
             out.write("<td valign=\"top\" align=\"right\">");
-            out.write("<img src=\"" + resources.getIcon("kmelia.1px") + "\"/>");
+            out.write("<img src=\"" + resources.getIcon("kmelia.1px") + "\" alt=\"\"/>");
             out.write("</td>");
           }
         }
@@ -494,7 +491,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         } else if (showImportance && !linkAttachment) {
           out.write("<nobr>"
               + displayImportance(new Integer(pub.getImportance()).intValue(),
-              5, fullStarSrc, emptyStarSrc, out) + "</nobr>");
+                  5, fullStarSrc, emptyStarSrc, out) + "</nobr>");
         }
         out.write("</td>");
         out.write("</tr>");
@@ -722,6 +719,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     return (param != null && param.length() > 0 && !param.equals("null"));
   }
 
+  @SuppressWarnings("unchecked")
   private List<String> processPublicationsToLink(
       HttpServletRequest request) {
     // get from session the list of publications to link with current publication
@@ -777,7 +775,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         permalink = URLManager.getSimpleURL(URLManager.URL_DOCUMENT, document.getPk().getId());
         url = FileServerUtils.getApplicationContext() +
             versioning.getDocumentVersionURL(document.getPk().getInstanceId(),
-            logicalName, document.getPk().getId(), version.getPk().getId());
+                logicalName, document.getPk().getId(), version.getPk().getId());
 
         result.append(displayFile(url, title, info, icon, logicalName, size, downloadTime,
             creationDate, permalink, out, resources, linkAttachment));
@@ -909,8 +907,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       // create the javascript which allows the attachment link selecting
       String javascriptFunction =
           "selectAttachment('" + EncodeHelper.escapeXml(url) + "','" + icon + "','" +
-          displayedTitle
-          + "')";
+              displayedTitle
+              + "')";
       String link = "<a href=\"javascript:" + javascriptFunction + "\" >";
       result.append("<tr><td valign=\"top\">");
 
@@ -1012,7 +1010,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           writer.write("<td valign=\"top\" width=\"" + width + "%\">");
           writer.write("<p><b><a href=\"javascript:onClick=publicationGoToFromMain('" +
               pub.getPK().
-              getId() + "')\">" + EncodeHelper.javaStringToHtmlString(pub.getName(language))
+                  getId() + "')\">" + EncodeHelper.javaStringToHtmlString(pub.getName(language))
               + "</a>" + shortcut + "</b><br/>");
 
           if (kmeliaScc.showUserNameInList()) {
@@ -1023,8 +1021,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             String link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pub.getPK().getId());
             writer.write(" - <a href=\"" + link + "\"><img src=\"" + linkIcon
                 + "\" border=\"0\" align=\"absmiddle\" alt=\"" + resources.getString(
-                "kmelia.CopyPublicationLink") + "\" title=\"" + resources.getString(
-                "kmelia.CopyPublicationLink") + "\"></a>");
+                    "kmelia.CopyPublicationLink") + "\" title=\"" + resources.getString(
+                    "kmelia.CopyPublicationLink") + "\"></a>");
           }
           writer.write("<br>");
           writer.write(EncodeHelper.javaStringToHtmlParagraphe(pub.getDescription(language))
@@ -1070,14 +1068,24 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     String componentLabel = compoInstLight.getLabel(kmelia.getCurrentLanguage());
     String spaceLabel =
         orga.getSpaceInstLightById(compoInstLight.getDomainFatherId()).getName(
-        kmelia.getCurrentLanguage());
+            kmelia.getCurrentLanguage());
     List<NodePK> nodesPK = (List<NodePK>) pub.getPublicationBm().getAllFatherPK(pub.getPK());
     if (nodesPK != null) {
       NodePK firstNodePK = (NodePK) nodesPK.get(0);
       String topicPathName = spaceLabel + " > " + componentLabel + " > " +
           kmelia.displayPath(kmelia.getKmeliaBm().getPath(firstNodePK.getId(),
-          firstNodePK.getInstanceId()), false, 3);
+              firstNodePK.getInstanceId()), false, 3);
       writer.write("<div id=\"publiPath\">" + EncodeHelper.escapeXml(topicPathName) + "</div>");
+    }
+  }
+
+  private File getThumbnail(PublicationDetail pubDetail, ResourceLocator publicationSettings) {
+    if (StringUtil.isDefined(pubDetail.getImage())) {
+      return new File(FileRepositoryManager.getAbsolutePath(pubDetail.getPK().getInstanceId())
+          + publicationSettings.getString("imagesSubDirectory") + File.separator
+          + pubDetail.getImage());
+    } else {
+      return null;
     }
   }
 }
