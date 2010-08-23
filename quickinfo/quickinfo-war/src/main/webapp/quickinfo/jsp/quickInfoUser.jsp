@@ -27,20 +27,26 @@
 <%@ include file="checkQuickInfo.jsp" %>
 <%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController" %>
 <%@ page import="com.silverpeas.util.*" %>
-<html>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>QuickInfo - User</title>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-<script language="javascript" src="<%=m_context%>/util/javaScript/formUtil.js"></script>
-<%@ include file="scriptClipboard_js.jsp.inc" %>
-
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/formUtil.js"></script>
 <%
 	out.println(gef.getLookStyleSheet());
 %>
-
+<script type="text/javascript">
+function clipboardCopy() {
+	parent.IdleFrame.location.href = '../..<%=quickinfo.getComponentUrl()%>copy.jsp?Id=<%=request.getParameter("Id")%>';
+}
+		
+</script>
 </head>
-<body leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" class="txtlist">
-<form name="quickInfoForm" method="post">
+<body class="txtlist" id="quickinfo">
+<div id="<%=componentId %>">
+<form name="quickInfoForm" method="post" action="">
   <%
 	Window mainWin = gef.getWindow();
 	Frame maFrame = gef.getFrame();
@@ -56,8 +62,9 @@
 	Iterator infosI = (Iterator) request.getAttribute("infos");
 
 	ArrayPane arrayPane = gef.getArrayPane("quickinfoList", pageContext);
+	arrayPane.setXHTML(true);
 	arrayPane.addArrayColumn(null);
-	ArrayColumn arrayColumnOp = arrayPane.addArrayColumn("<A HREF=\"javascript:void(0)\" onMouseDown=\"return SwitchSelection(quickInfoForm, 'selectItem', event)\" onClick=\"return false\">"+resources.getString("GML.selection")+"</A>");
+	ArrayColumn arrayColumnOp = arrayPane.addArrayColumn("<a href=\"javascript:void(0)\" onmousedown=\"return SwitchSelection(quickInfoForm, 'selectItem', event)\" onclick=\"return false\">"+resources.getString("GML.selection")+"</a>");
 	arrayColumnOp.setSortable(false);
 
 	int index = 0;
@@ -65,7 +72,7 @@
 	while (infosI.hasNext()) {
 		PublicationDetail pub = (PublicationDetail) infosI.next();
 		ArrayLine line = arrayPane.addArrayLine();
-		String st = "<B>" + pub.getName() + "</B>";
+		String st = "<b>" + pub.getName() + "</b>";
 		UserDetail user = quickinfo.getUserDetail(pub.getUpdaterId());
 		String date = resources.getOutputDate(pub.getBeginDate());
 		if (!StringUtil.isDefined(date))
@@ -79,7 +86,7 @@
 		   st = st + "<br/>" + description;
 		}
 		line.addArrayCellText(st);
-		cellText = line.addArrayCellText("<input type=checkbox name='selectItem"+index+"' value='"+pub.getPK().getId()+"'>");
+		cellText = line.addArrayCellText("<input type=\"checkbox\" name=\"selectItem"+index+"\" value=\""+pub.getPK().getId()+"\"/>");
 		cellText.setValignement("top");
 		index++;
 	}
@@ -89,5 +96,6 @@
 	out.println(mainWin.printAfter());
   %>
 </form>
+</div>
 </body>
 </html>

@@ -29,7 +29,7 @@
 <%
 	Iterator infosI = (Iterator) request.getAttribute("infos");
 %>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>QuickInfo - Portlet</title>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -56,7 +56,7 @@
     	description = pub.getWysiwyg();
 		else if (pub.getDescription() != null && !pub.getDescription().equals(""))
 			description = Encode.javaStringToHtmlParagraphe(pub.getDescription());
-		st = st + "<BR>"+description;
+		st = st + "<br/>"+description;
 		cellText = line.addArrayCellText(st);
 		cellText.setValignement("top");
 	}

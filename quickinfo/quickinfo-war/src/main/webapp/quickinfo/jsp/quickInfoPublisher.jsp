@@ -39,38 +39,50 @@
   }
 
 %>
-
-<HTML>
-<HEAD>
-<TITLE>Quick Info - Publieur</TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Quick Info - Publieur</title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<script language="javascript" src="<%=m_context%>/util/javaScript/formUtil.js"></script>
-<%@ include file="scriptClipboard_js.jsp.inc" %>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/formUtil.js"></script>
+<script type="text/javascript">
+function openSPWindow(fonction, windowName){
+	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
+}
 
-<script language="JavaScript1.2">
+function ClipboardCopyAll() {
+	document.quickInfoForm.action = "<%=m_context%><%=quickinfo.getComponentUrl()%>multicopy.jsp";
+	document.quickInfoForm.target = "IdleFrame";
+	document.quickInfoForm.submit();
+}
 
-  function openSPWindow(fonction, windowName){
-        pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
-  }
+function ClipboardPaste() {
+	top.IdleFrame.document.location.replace ('<%=m_context%><%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste.jsp?compR=Rquickinfo&amp;SpaceFrom=<%=quickinfo.getSpaceId()%>&amp;ComponentFrom=<%=quickinfo.getComponentId()%>&amp;JSPPage=quickInfoPublisher.jsp&amp;TargetFrame=MyMain&amp;message=REFRESH');
+}
 
+function editQuickInfo(id) {
+	document.quickInfoEditForm.Id.value = id;
+	document.quickInfoEditForm.Action.value = "Edit";
+	document.quickInfoEditForm.submit();
+}
+
+function addQuickInfo() {
+	document.quickInfoEditForm.Action.value = "Add";
+	document.quickInfoEditForm.submit();
+}
 </script>
-
 </head>
-<body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-
+<body id="quickinfo">
+<div id="<%=componentId %>">
 <form name="quickInfoForm" action="quickInfoPublisher.jsp" method="post">
-
-  <input type="hidden" name="Action">
-
+  <input type="hidden" name="Action"/>
 <%
         Window window = gef.getWindow();
 
         BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setDomainName(spaceLabel);
-        browseBar.setComponentName(componentLabel);
-
         Frame maFrame = gef.getFrame();
 
         OperationPane operationPane = window.getOperationPane();
@@ -78,28 +90,27 @@ out.println(gef.getLookStyleSheet());
             operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId=" + quickinfo.getComponentId() + "','utilizationPdc1')");
             operationPane.addLine();
         }
-
         operationPane.addOperation(m_context+"/util/icons/quickInfo_to_add.gif", resources.getString("creation"), "javascript:onClick=addQuickInfo()");
 
         // Clipboard
         operationPane.addOperation(m_context+"/util/icons/copy.gif", generalMessage.getString("GML.copy"), "javascript:onClick=ClipboardCopyAll()");
-
         operationPane.addOperation(m_context+"/util/icons/paste.gif", generalMessage.getString("GML.paste"),    "javascript:onClick=ClipboardPaste()");
 
         out.println(window.printBefore());
         out.println(maFrame.printBefore());
 
           ArrayPane arrayPane = gef.getArrayPane("quickinfoList", pageContext);
+          arrayPane.setXHTML(true);
           arrayPane.addArrayColumn(null);
           arrayPane.addArrayColumn(resources.getString("GML.title"));
           arrayPane.addArrayColumn(resources.getString("GML.publisher"));
           arrayPane.addArrayColumn(resources.getString("dateDebut"));
           arrayPane.addArrayColumn(resources.getString("dateFin"));
-          ArrayColumn arrayColumnOp = arrayPane.addArrayColumn("<A HREF=\"javascript:void(0)\" onMouseDown=\"return SwitchSelection(quickInfoForm, 'selectItem', event)\" onClick=\"return false\">"+resources.getString("GML.selection")+"</A>");
+          ArrayColumn arrayColumnOp = arrayPane.addArrayColumn("<a href=\"javascript:void(0)\" onmousedown=\"return SwitchSelection(quickInfoForm, 'selectItem', event)\" onclick=\"return false\">"+resources.getString("GML.selection")+"</a>");
                     arrayColumnOp.setSortable(false);
 
           Iterator infosI = infos.iterator();
-                         int index = 0;									
+          int index = 0;									
           while (infosI.hasNext()) {
             PublicationDetail pub = (PublicationDetail) infosI.next();
 
@@ -108,7 +119,7 @@ out.println(gef.getLookStyleSheet());
 		Icon debIcon = iconPane1.addIcon();
 		debIcon.setProperties(m_context+"/util/icons/quickInfoLittleIcon.gif", "", "");
 		line.addArrayCellIconPane(iconPane1);	
-            line.addArrayCellLink(Encode.javaStringToHtmlString(pub.getName()), "javascript:onClick=editQuickInfo('"+pub.getPK().getId()+"')");
+            line.addArrayCellLink(EncodeHelper.javaStringToHtmlString(pub.getName()), "javascript:onClick=editQuickInfo('"+pub.getPK().getId()+"')");
                                                 try {
                                                         UserDetail detail = quickinfo.getUserDetail(pub.getCreatorId());
                                                         line.addArrayCellText(detail.getLastName() + " " + detail.getFirstName());
@@ -129,7 +140,7 @@ out.println(gef.getLookStyleSheet());
               ArrayCellText text = line.addArrayCellText(resources.getOutputDate(pub.getEndDate()));
               text.setCompareOn(pub.getEndDate());
             }
-                                line.addArrayCellText("<input type=checkbox name='selectItem"+index+"' value='"+pub.getPK().getId()+"'>");
+                                line.addArrayCellText("<input type=\"checkbox\" name=\"selectItem"+index+"\" value=\""+pub.getPK().getId()+"\"/>");
                                 index++;
           }
           out.println(arrayPane.print());
@@ -138,9 +149,10 @@ out.println(gef.getLookStyleSheet());
         out.println(window.printAfter());
 %>
 </form>
-<FORM NAME="quickInfoEditForm" ACTION="quickInfoEdit.jsp" METHOD=POST >
-  <input type="hidden" name="Id">
-  <input type="hidden" name="Action">
-</FORM>
-</BODY>
-</HTML>
+<form name="quickInfoEditForm" action="quickInfoEdit.jsp" method="post">
+  <input type="hidden" name="Id"/>
+  <input type="hidden" name="Action"/>
+</form>
+</div>
+</body>
+</html>

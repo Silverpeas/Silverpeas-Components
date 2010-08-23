@@ -30,10 +30,10 @@
 
 <%@ include file="checkQuickInfo.jsp" %>
 
-<HTML>
-  <HEAD>
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
 <% out.println(gef.getLookStyleSheet()); %>
-  </HEAD>
+  </head>
   <body>
 <%
 	Window window = gef.getWindow();
@@ -75,6 +75,6 @@
 					out.println(maFrame.printAfter());
 					out.println(window.printAfter());
 			%>
-				<BR><BR>
+				<br/><br/>
 	</body>
-</HTML>
+</html>

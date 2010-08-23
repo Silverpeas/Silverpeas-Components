@@ -23,7 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <%@ page import="javax.servlet.*,
                  com.stratelia.webactiv.util.publication.model.PublicationDetail,
                  com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane,
@@ -58,10 +59,9 @@ if (pubId != null && pubId != "-1") {
 }
 
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
@@ -69,9 +69,8 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/pdcPeas/jsp/javascript/formUtil.js"></script>
-
-</HEAD>
-<BODY>
+</head>
+<body id="quickinfo">
 <%
         Window                  window                  = gef.getWindow();
         Frame                   frame                   = gef.getFrame();
@@ -110,11 +109,11 @@ out.println(gef.getLookStyleSheet());
         out.println(window.printAfter());
 %>
 
-<FORM NAME="toComponent" ACTION="quickInfoEdit.jsp" METHOD=POST >
-        <input type="hidden" name="Action" value="changePage">
-        <input type="hidden" name="Id" value="<%=pubId%>">
-        <input type="hidden" name="page" value="2">
-</FORM>
+<form name="toComponent" action="quickInfoEdit.jsp" method="post">
+        <input type="hidden" name="Action" value="changePage"/>
+        <input type="hidden" name="Id" value="<%=pubId%>"/>
+        <input type="hidden" name="page" value="2"/>
+</form>
 
-</BODY>
-</HTML>
+</body>
+</html>

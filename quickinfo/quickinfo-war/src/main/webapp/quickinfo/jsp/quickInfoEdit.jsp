@@ -23,7 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%@ include file="checkQuickInfo.jsp" %>
 <%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController" %>
 <%@ page import="com.stratelia.silverpeas.util.SilverpeasSettings" %>
@@ -49,110 +49,170 @@
   }
 
 %>
-<HTML>
-<HEAD>
-<TITLE>QuickInfo - Edition</TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>QuickInfo - Edition</title>
 <% out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+<script type="text/javascript">
+function isCorrectForm() {
+ 	var errorMsg = "";
+ 	var errorNb = 0;
+ 	var beginDate = $("#BeginDate").val();
+    var endDate = $("#EndDate").val();
+    var yearBegin = extractYear(beginDate, '<%=quickinfo.getLanguage()%>');
+    var monthBegin = extractMonth(beginDate, '<%=quickinfo.getLanguage()%>');
+	var dayBegin = extractDay(beginDate, '<%=quickinfo.getLanguage()%>');
+	var yearEnd = extractYear(endDate, '<%=quickinfo.getLanguage()%>'); 
+	var monthEnd = extractMonth(endDate, '<%=quickinfo.getLanguage()%>');
+	var dayEnd = extractDay(endDate, '<%=quickinfo.getLanguage()%>'); 
+	var beginDateOK = false;
+	var endDateOK = false;
 
-<%@ include file="scriptClipboard_js.jsp.inc" %>
+	if (isWhitespace($("#Name").val())) {
+       errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.title")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+       errorNb++; 
+    }
+       
+    if (! isWhitespace(beginDate)) {
+    	if (isCorrectDate(yearBegin, monthBegin, dayBegin)==false) {
+            	errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("dateDebut")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+             	errorNb++;
+    	}
+    	else beginDateOK = true;
+    }	
+  
+    if (! isWhitespace(endDate)) {
+    	if (isCorrectDate(yearEnd, monthEnd, dayEnd)==false) {
+            	errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("dateFin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+             	errorNb++;
+    	}
+    	else endDateOK = true;
+    }
+    
+    if (beginDateOK && endDateOK) {
+    		if (isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin, monthBegin, dayBegin)==false) {
+    			errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("dateFin")%>' <%=resources.getString("MustContainsPostDateToBeginDate")%>\n";
+                            errorNb++;	
+    		}
+    }       	       
+
+ 	switch(errorNb)
+ 	{
+    	case 0 :
+        	result = true;
+        	break;
+    	case 1 :
+        	errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+        	window.alert(errorMsg);
+        	result = false;
+        	break;
+    	default :
+    	    errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+    	    window.alert(errorMsg);
+    	    result = false;
+    	    break;
+ 	}
+ 	return result;
+}
+
+function reallyAddQuickInfo() {
+	if (isCorrectForm()) {
+		document.quickInfoEditForm.Action.value = "ReallyAdd";
+		document.quickInfoEditForm.submit();
+	}
+}
+
+function updateQuickInfo() {
+	if (isCorrectForm()) {
+		document.quickInfoEditForm.Action.value = "ReallyUpdate";
+		document.quickInfoEditForm.submit();
+	}
+}
+
+function quickInfoDeleteConfirm() {
+	if (window.confirm("<%=resources.getString("supprimerQIConfirmation")%>")) {
+      document.quickInfoEditForm.Action.value = "ReallyRemove";
+      document.quickInfoEditForm.submit();
+	}
+}
+
+function ClipboardCopyOne() {
+	document.quickInfoForm.action = "<%=m_context%><%=quickinfo.getComponentUrl()%>copy.jsp";
+	document.quickInfoForm.target = "IdleFrame";
+	document.quickInfoForm.submit();
+}
+</script>
 </head>
-
-<body bgcolor="#FFFFFF" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body id="quickinfo">
+<div id="<%=componentId %>">
 <%
-    Window window = gef.getWindow();
+    	Window window = gef.getWindow();
         BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setDomainName(spaceLabel);
-        browseBar.setComponentName(componentLabel, "Main");
-
-        browseBar.setPath(resources.getString("edition"));
-
-        Frame maFrame = gef.getFrame();
-				
+       	browseBar.setPath(resources.getString("edition"));
+			
         if (quickInfoDetail != null) {
-                OperationPane operationPane = window.getOperationPane();
-                operationPane.addOperation(m_context+"/util/icons/quickInfo_to_del.gif", resources.getString("suppression"), "javascript:onClick=quickInfoDeleteConfirm()");
-                // CLIPBOARD
+        	OperationPane operationPane = window.getOperationPane();
+            operationPane.addOperation(m_context+"/util/icons/quickInfo_to_del.gif", resources.getString("suppression"), "javascript:onClick=quickInfoDeleteConfirm()");
             operationPane.addOperation(m_context+"/util/icons/copy.gif", generalMessage.getString("GML.copy"), "javascript:onClick=ClipboardCopyOne()");
         }
 
         out.println(window.printBefore());
 
         TabbedPane tabbedPane = gef.getTabbedPane();
-        tabbedPane.addTab(resources.getString("GML.head"), routerUrl + "quickInfoEdit.jsp?Action=changePage&Id="+pubId+"&page=1",
+        tabbedPane.addTab(resources.getString("GML.head"), routerUrl + "quickInfoEdit.jsp?Action=changePage&amp;Id="+pubId+"&amp;page=1",
             quickinfo.getPageId() == QuickInfoSessionController.PAGE_HEADER, !isNewSubscription );
         if (!isNewSubscription && quickinfo.isPdcUsed()) {
-            tabbedPane.addTab( resources.getString("GML.PDC") , routerUrl + "quickInfoEdit.jsp?Action=changePage&Id="+pubId
-            +"&page=2", quickinfo.getPageId() != QuickInfoSessionController.PAGE_HEADER, true);
+            tabbedPane.addTab( resources.getString("GML.PDC") , routerUrl + "quickInfoEdit.jsp?Action=changePage&amp;Id="+pubId
+            +"&amp;page=2", quickinfo.getPageId() != QuickInfoSessionController.PAGE_HEADER, true);
         }
 
         out.println(tabbedPane.print());
-
-        out.println(maFrame.printBefore());
 %>
-
-<center>
-<table width="98%" border="0" cellspacing="0" cellpadding="0" class=intfdcolor4>
-
 <form name="quickInfoEditForm" action="quickInfoEdit" method="post">
-  <tr>
-    <td valign="top" align="center">
-                <table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%">
+<view:frame>
+<view:board>
+	<table width="100%" border="0" cellspacing="0" cellpadding="3">
+	    <tr>
+        	<td nowrap="nowrap" class="txtlibform"><%=resources.getString("GML.title")%>:</td>
+            <td><input type="text" size="97" id="Name" name="Name" maxlength="<%=DBUtil.TextFieldLength%>" <%
+                        if (quickInfoDetail != null)
+                          out.println("value=\""+Encode.javaStringToHtmlString(quickInfoDetail.getName())+"\"");
+                      %>/>
+                      &nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" alt=""/></td>
+         </tr>
          <tr>
-            <td>
-                    <table width="100%" border="0" cellspacing="0" cellpadding="3" class="intfdcolor4">
-                      <tr>
-                        <td class="intfdcolor4" nowrap>
-                        
-                        
-                          <span class="txtlibform"><%=resources.getString("GML.title")%>
-                          :</span></td>
-                          <td><input type="text" size="68" name="Name" maxlength="<%=DBUtil.TextFieldLength%>" <%
-                            if (quickInfoDetail != null)
-                              out.println("value=\""+Encode.javaStringToHtmlString(quickInfoDetail.getName())+"\"");
-                          %>>
-                          &nbsp;<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5"></td></tr>
-                        <tr><td class="intfdcolor4" nowrap valign=top><span class="txtlibform"><%= resources.getString("GML.description")%>
-                          :</span></td>
-                          <td><font size=1>
-						<textarea name="Description" id="Description"><%=codeHtml%></textarea>
-                          </font></td>
-                      </tr>
-					<tr>
-						<td>  
-					  </td>
-					 </tr>              
-                      
-                      <tr>
-                        <td class="intfdcolor4" nowrap><span class="txtlibform"><%=resources.getString("dateDebut")%> :</span></td>
-                          <td><input type="text" name="BeginDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
-                            if (quickInfoDetail != null)
-                              if (quickInfoDetail.getBeginDate() != null)
-                                out.println("value=\""+resources.getInputDate(quickInfoDetail.getBeginDate())+"\"");
-                          %>>
-                          <a href="javascript:selectBeginDay('BeginDate')"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="Afficher le calendrier" title="Afficher le calendrier"></a>
-                          <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span></td></tr>
-
-                        <tr><td class="intfdcolor4" nowrap><span class="txtlibform"><%=resources.getString("dateFin")%> :</span></td>
-
-                          <td><input type="text" name="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
-                            if (quickInfoDetail != null)
-                              if (quickInfoDetail.getEndDate() != null)
-                                out.println("value=\""+resources.getInputDate(quickInfoDetail.getEndDate())+"\"");
-                          %>>
-                          <a href="javascript:selectEndDay('EndDate')"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="Afficher le calendrier" title="Afficher le calendrier"></a>
-                          <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span></td>
-                      </tr>
-                                          <tr><td colspan=2 align=left><span class="txtnote">(<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5"> = <%=resources.getString("GML.requiredField")%></span>)</td></tr>
-                    </table>
-         </td>
-      </tr>
+         	<td nowrap="nowrap" class="txtlibform" valign="top"><%= resources.getString("GML.description")%>:</td>
+	        <td><textarea name="Description" id="Description" rows="50" cols="10"><%=codeHtml%></textarea></td>
+         </tr>
+		 <tr>
+             <td class="txtlibform" nowrap="nowrap"><%=resources.getString("dateDebut")%> :</td>
+             <td><input class="dateToPick" type="text" id="BeginDate" name="BeginDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
+                        if (quickInfoDetail != null)
+                          if (quickInfoDetail.getBeginDate() != null)
+                            out.println("value=\""+resources.getInputDate(quickInfoDetail.getBeginDate())+"\"");
+                      %>/>                      
+                      <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span></td>
+         </tr>
+         <tr>
+         	<td class="txtlibform" nowrap="nowrap"><%=resources.getString("dateFin")%> :</td>
+            <td><input class="dateToPick" type="text" id="EndDate" name="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
+                        if (quickInfoDetail != null)
+                          if (quickInfoDetail.getEndDate() != null)
+                            out.println("value=\""+resources.getInputDate(quickInfoDetail.getEndDate())+"\"");
+                      %>/>
+                      <span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span></td>
+         </tr>
+         <tr><td colspan="2" align="left"><span class="txtnote">(<img src="<%=settings.getString("mandatoryFieldIcon")%>" width="5" height="5" alt=""/> = <%=resources.getString("GML.requiredField")%></span>)</td></tr>
      </table>
+</view:board>
 <%
-	out.println(maFrame.printMiddle());
+	
 	ButtonPane	buttonPane		= gef.getButtonPane();
 
 %>
@@ -161,47 +221,38 @@
           <tr>
             <td align="right">
               <%
-                String link = null;
+                String link = "javascript:onClick=updateQuickInfo()";
                 if (quickInfoDetail == null)
                   link = "javascript:onClick=reallyAddQuickInfo()";
-                else
-                  link = "javascript:onClick=updateQuickInfo()";
                 Button button = gef.getFormButton(resources.getString("GML.validate"), link, false);
 								buttonPane.addButton(button);
                 button = gef.getFormButton(resources.getString("GML.cancel"), "Main", false);
 								buttonPane.addButton(button);
               %>
-            <BR><center><%=buttonPane.print()%></center><BR>
+            <br/><center><%=buttonPane.print()%></center><br/>
+            </td>
           </tr>
         </table>
-    </td>
-  </tr>
-    <input type="hidden" name="Action">
-  <%
-        if (quickInfoDetail != null) {
-  %>
-                <input type="hidden" name="Id" value="<%=quickInfoDetail.getPK().getId()%>">
-  <%
-        }
-  %>
+    
+	<input type="hidden" name="Action"/>
+    <% if (quickInfoDetail != null) { %>
+    	<input type="hidden" name="Id" value="<%=quickInfoDetail.getPK().getId()%>"/>
+  	<% } %>
+</view:frame>
 </form>
-</table>
+
 <%
-        out.println(maFrame.printAfter());
         out.println(window.printAfter());
 %>
 
 <form name="quickInfoForm" action="quickInfoEdit.jsp" method="post">
-  <input type="hidden" name="Action">
+  <input type="hidden" name="Action"/>
   <% if (quickInfoDetail != null) { %>
-      <input type="hidden" name="Id" value="<%=quickInfoDetail.getPK().getId()%>">
+      <input type="hidden" name="Id" value="<%=quickInfoDetail.getPK().getId()%>"/>
   <% } %>
 </form>
-
-</BODY>
-</HTML>
 <%                    
-out.println("<script language=\"JavaScript\">");
+out.println("<script type=\"text/javascript\">");
 out.println("var oFCKeditor = new FCKeditor('Description');");
 out.println("oFCKeditor.Width = \"500\";");
 out.println("oFCKeditor.Height = \"300\";");
@@ -216,3 +267,6 @@ out.println("oFCKeditor.Config[\"ToolbarStartExpanded\"] = true;");
 out.println("oFCKeditor.ReplaceTextarea();");
 out.println("</script>");
 %>
+</div>
+</body>
+</html>
