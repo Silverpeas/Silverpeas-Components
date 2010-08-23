@@ -279,10 +279,10 @@ else if (action.equals("CreateQuizz")) {
 		<td><%=creationDate%></td>
 	</tr>
     <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationBeginDate")%> :</td>
-		<td><input type="text" name="beginDate" size="11" maxlength="<%=DBUtil.DateFieldLength%>" value="<%=beginDate%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
+		<td><input type="text" class="dateToPick" name="beginDate" size="11" maxlength="<%=DBUtil.DateFieldLength%>" value="<%=beginDate%>"/><img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
 	</tr>
     <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationEndDate")%> :</td>
-		<td><input type="text" name="endDate" size="11"  maxlength="<%=DBUtil.DateFieldLength%>" value="<%=endDate%>"></td>
+		<td><input type="text" class="dateToPick" name="endDate" size="11" maxlength="<%=DBUtil.DateFieldLength%>" value="<%=endDate%>"/></td>
 	</tr>
     <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationNbQuestionPerPage")%> :</td>
 		<td><input type="text" name="nbQuestions" size="5" maxlength="3" value="<%=nbQuestions%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
