@@ -119,34 +119,6 @@ function reallyUpdate() {
 	document.eventForm.submit();
 }
 
-function setBeginDate(day)
-{
-	document.eventForm.StartDate.value = day;
-}
-
-function setEndDate(day)
-{
-	document.eventForm.EndDate.value = day;
-}
-
-function setPeriodicityStartDate(day)
-{
-	document.eventForm.PeriodicityStartDate.value = day;
-}
-
-function setPeriodicityUntilDate(day)
-{
-	document.eventForm.PeriodicityUntilDate.value = day;
-}
-
-function editDate(jsFunction)
-{
-	chemin = "calendar.jsp?JSCallback="+jsFunction;
-	largeur = "180";
-	hauteur = "200";
-	SP_openWindow(chemin,"calendrierAlmanach",largeur,hauteur,"");
-}
-
 function eventDeleteConfirm(t, id)
 {
     if (window.confirm("<%=EncodeHelper.javaStringToJsString(almanach.getString("suppressionConfirmation"))%> '" + t + "' ?")){
@@ -592,9 +564,8 @@ $(document).ready(function(){
 	  <tr> 
           <td nowrap class="txtlibform"><%=resources.getString("GML.dateBegin")%> :</td>
           <td valign="baseline"> 
-            <input type="text" name="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" 
-				value="<%=resources.getOutputDate(dateDebutIteration)%>">
-				&nbsp;<a href="javascript:OnClick=editDate('setBeginDate');"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="Afficher le calendrier" title="Afficher le calendrier" align="absmiddle"></a>&nbsp;<span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span> 
+            <input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" 
+				value="<%=resources.getOutputDate(dateDebutIteration)%>"/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
              <span class="txtlibform">&nbsp;<%=almanach.getString("ToHour")%>&nbsp;</span><input type="text" name="StartHour" 
 									<%
              						if (event.getStartHour() != null) out.println("value=\""+
@@ -606,9 +577,8 @@ $(document).ready(function(){
 	    <tr> 
           <td nowrap class="txtlibform"><%=resources.getString("GML.dateEnd")%> :</td>
           <td align=left> 
-            <input type="text" name="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" 
-				value="<%=resources.getOutputDate(dateFinIteration)%>">
-				&nbsp;<a href="javascript:OnClick=editDate('setEndDate');"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="Afficher le calendrier" title="Afficher le calendrier" align="absmiddle"></a>&nbsp;<span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
+            <input type="text" class="dateToPick" name="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" 
+				value="<%=resources.getOutputDate(dateFinIteration)%>"/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
              <span class="txtlibform">&nbsp;<%=almanach.getString("ToHour")%>&nbsp;</span><input type="text" name="EndHour" <%
    						if (event.getEndHour() != null) out.println("value=\""+
    							event.getEndHour()
@@ -759,21 +729,19 @@ $(document).ready(function(){
 		<tr> 
           <td  nowrap align=right class="txtlibform"><span><%=resources.getString("beginDatePeriodicity")%> :</span></td>
           <td valign="baseline"> 
-            <input type="text" name="PeriodicityStartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" 
+            <input type="text" class="dateToPick" name="PeriodicityStartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" 
 			<% 
 			if (event.getStartDate() != null) out.print("value=\""+resources.getInputDate(event.getStartDate())+"\"");
-			%>>&nbsp;
-			<a href="javascript:OnClick=editDate('setPeriodicityStartDate');"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="Afficher le calendrier" title="Afficher le calendrier" align="absmiddle"></a>&nbsp;<span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span> 
+			%>/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
           </td>
         </tr>
 		<tr> 
           <td  nowrap align=right class="txtlibform"><span><%=resources.getString("endDatePeriodicity")%> :</span></td>
           <td valign="baseline"> 
-            <input type="text" name="PeriodicityUntilDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>"
+            <input type="text" class="dateToPick" name="PeriodicityUntilDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>"
 			<% 
 			if (periodicity != null && periodicity.getUntilDatePeriod() != null) out.print("value=\""+resources.getInputDate(periodicity.getUntilDatePeriod())+"\"");
-			%>>&nbsp;
-			<a href="javascript:OnClick=editDate('setPeriodicityUntilDate');"><img src="icons/calendrier.gif" width="13" height="15" border="0" alt="Afficher le calendrier" title="Afficher le calendrier" align="absmiddle"></a>&nbsp;<span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span> 
+			%>/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
           </td>
         </tr>
         <tr> 
