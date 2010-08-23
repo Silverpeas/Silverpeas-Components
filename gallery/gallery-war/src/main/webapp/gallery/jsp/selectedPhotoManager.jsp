@@ -307,19 +307,19 @@
 		</tr>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("gallery.beginDownloadDate")%> :</td>
-			<TD><input type="text" name="Im$BeginDownloadDate" size="12" maxlength="10" value=<%=beginDownloadDate%>>&nbsp;</TD>
+			<td><input type="text" class="dateToPick" name="Im$BeginDownloadDate" size="12" maxlength="10" value="<%=beginDownloadDate%>"/></td>
 		</tr>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("gallery.endDownloadDate")%> :</td>
-			<TD><input type="text" name="Im$EndDownloadDate" size="12" maxlength="10" value=<%=endDownloadDate%>>&nbsp;</TD>
+			<td><input type="text" class="dateToPick" name="Im$EndDownloadDate" size="12" maxlength="10" value="<%=endDownloadDate%>"/></td>
 		</tr>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("gallery.beginDate")%> :</td>
-			<TD><input type="text" name="Im$BeginDate" size="12" maxlength="10" value=<%=beginDate%>>&nbsp;</TD>
+			<td><input type="text" class="dateToPick" name="Im$BeginDate" size="12" maxlength="10" value="<%=beginDate%>"/></td>
 		</tr>
 		<tr>
 			<td class="txtlibform"><%=resource.getString("gallery.endDate")%> :</td>
-			<TD><input type="text" name="Im$EndDate" size="12" maxlength="10" value=<%=endDate%>>&nbsp;</TD>
+			<td><input type="text" class="dateToPick" name="Im$EndDate" size="12" maxlength="10" value="<%=endDate%>"/>&nbsp;</td>
 		</tr>
 	</table>
 	<%=board.printAfter()%>

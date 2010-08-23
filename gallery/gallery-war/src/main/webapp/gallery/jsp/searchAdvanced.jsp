@@ -42,9 +42,7 @@
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-
-<script language="javascript">
-
+<script type="text/javascript">
 function sendData() 
 {
     //var query = stripInitialWhitespace(document.searchForm.SearchKeyWord.value);
@@ -53,14 +51,8 @@ function sendData()
   		setTimeout("document.searchForm.submit();", 500);
     //}
 }
-
-function calendar(elementId) {
-	SP_openWindow('<%=m_context+URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?idElem='+elementId,'Calendrier',180,200,'');
-}
-
 </script>
 </head>
-
 <body class="yui-skin-sam">
 
 <%
@@ -137,8 +129,8 @@ function calendar(elementId) {
 							}
 					%>
 						<td>
-							<input type="text" id="<%=property%>_Begin" name="<%=property%>_Begin" size="12" value="<%= beginDate %>"/>&nbsp;<a href="javascript:calendar('<%=property%>_Begin');"><img src="<%=resource.getIcon("gallery.calendar")%>" border="0" align="absmiddle"></a>
-						    <input type="text" id="<%=property%>_End" name="<%=property%>_End" size="12" value="<%= endDate %>"/>&nbsp;<a href="javascript:calendar('<%=property%>_End');"><img src="<%=resource.getIcon("gallery.calendar")%>" border="0" align="absmiddle"></a>
+							<input type="text" class="dateToPick" id="<%=property%>_Begin" name="<%=property%>_Begin" size="12" value="<%= beginDate %>"/>
+							<input type="text" class="dateToPick" id="<%=property%>_End" name="<%=property%>_End" size="12" value="<%= endDate %>"/>
 						</td>
 					<% } else { %>
 						<td><input type="text" name="<%=property%>" value="<%=metaDataValue%>" size="36"/></td>

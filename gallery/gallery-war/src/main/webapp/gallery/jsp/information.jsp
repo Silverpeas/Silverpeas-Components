@@ -647,19 +647,19 @@ function hideTip() {
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("gallery.beginDownloadDate")%> :</td>
-				<TD><input type="text" name="<%=ParameterNames.ImageBeginDownloadDate%>" size="12" maxlength="10" value=<%=beginDownloadDate%>>&nbsp;</TD>
+				<td><input type="text" class="dateToPick" name="<%=ParameterNames.ImageBeginDownloadDate%>" size="12" maxlength="10" value="<%=beginDownloadDate%>"/></td>
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("gallery.endDownloadDate")%> :</td>
-				<TD><input type="text" name="<%=ParameterNames.ImageEndDownloadDate%>" size="12" maxlength="10" value=<%=endDownloadDate%>>&nbsp;</TD>
+				<td><input type="text" class="dateToPick" name="<%=ParameterNames.ImageEndDownloadDate%>" size="12" maxlength="10" value="<%=endDownloadDate%>"/></td>
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("gallery.beginDate")%> :</td>
-				<TD><input type="text" name="<%=ParameterNames.ImageBeginDate%>" size="12" maxlength="10" value=<%=beginDate%>>&nbsp;</TD>
+				<td><input type="text" class="dateToPick" name="<%=ParameterNames.ImageBeginDate%>" size="12" maxlength="10" value="<%=beginDate%>"/></td>
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("gallery.endDate")%> :</td>
-				<TD><input type="text" name="<%=ParameterNames.ImageEndDate%>" size="12" maxlength="10" value=<%=endDate%>>&nbsp;</TD>
+				<td><input type="text" class="dateToPick" name="<%=ParameterNames.ImageEndDate%>" size="12" maxlength="10" value="<%=endDate%>"/></td>
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("gallery.creationDate")%> :</td>
