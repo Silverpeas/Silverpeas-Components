@@ -76,10 +76,8 @@
 	out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/ajax/prototype.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/ajax/rico.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-<script language="JavaScript1.2">
+<script type="text/javascript">
 
 function verificationHour(hour){
 	      var tab = hour.match(/\d{2}:\d{2}/)
@@ -178,19 +176,15 @@ function calendar(indexForm, indexField) {
 	SP_openWindow('<%=m_context+URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm='+indexForm+'&indiceElem='+indexField,'Calendrier',180,200,'');
 }
 
-
-function init(){
-	ajaxEngine.registerRequest('refreshDate', '<%=m_context%>/RAjaxResourcesManagerServlet/dummy');
-	ajaxEngine.registerAjaxElement('listResourceProblem');
-}
-
 function getResourceProblem()
 {
 	var beginDate = document.getElementById("startDate").value;
 	var endDate = document.getElementById("endDate").value;
 	var beginHour = document.getElementById("startHour").value;
 	var endHour = document.getElementById("endHour").value;
-	ajaxEngine.sendRequest('refreshDate','ElementId=listResourceProblem',"ComponentId=<%=componentId%>","reservationId=<%=reservationId%>","beginDate="+beginDate,"beginHour="+beginHour,"endDate="+endDate,"endHour="+endHour);
+	$.post("<%=m_context%>/RAjaxResourcesManagerServlet/dummy", {ComponentId:'<%=componentId%>',reservationId:'<%=reservationId%>',beginDate:beginDate,beginHour:beginHour,endDate:endDate,endHour:endHour}, function(data){
+		$("#listResourceProblem").html(data);
+	});
 }
 
 /* fonction permettant de vérifier que dateBegin,hourBegin est bien inférieur à dateEnd,hourEnd*/
@@ -201,17 +195,16 @@ function renverseStrDate(dateIn, hourIn) { //procedure renverse date
 }
 
 function isCorrectDateOrder(DateBegin, HourBegin, DateEnd, HourEnd) { // procedure du bouton vérifier
-if (renverseStrDate(DateBegin,HourBegin) < renverseStrDate(DateEnd,HourEnd))
-	return true;
-else
-	alert("<%=resource.getString("resourcesManager.ordreDateReservation")%>");
-	return false;
+	if (renverseStrDate(DateBegin,HourBegin) < renverseStrDate(DateEnd,HourEnd)) {
+		return true;
+	} else {
+		alert("<%=resource.getString("resourcesManager.ordreDateReservation")%>");
+		return false;
+	}
 }
-
-
 </script>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onLoad="init()">
+<body>
 <%
 browseBar.setDomainName(spaceLabel);
 browseBar.setComponentName(componentLabel,"Main");
@@ -239,14 +232,14 @@ buttonPane.addButton(cancelButton);
 	<tr>
 		<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.dateBegin")%>&nbsp;:&nbsp;</td>
 		<td valign="baseline"> 
-		<input type="text" name="startDate" size="14" id="startDate" maxlength="<%=DBUtil.DateFieldLength%>" value="<%=dateBegin%>" onBlur="getResourceProblem();">&nbsp;<a href="javascript:calendar('0', '1');" onBlur="getResourceProblem();"><img src="<%=resource.getIcon("resourcesManager.calendrier")%>" border="0" align="middle" alt="Afficher le calendrier" title="Afficher le calendrier"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span> 
+		<input type="text" class="dateToPick" name="startDate" size="14" id="startDate" maxlength="<%=DBUtil.DateFieldLength%>" value="<%=dateBegin%>" onBlur="getResourceProblem();">&nbsp;<a href="javascript:calendar('0', '1');" onBlur="getResourceProblem();"><img src="<%=resource.getIcon("resourcesManager.calendrier")%>" border="0" align="middle" alt="Afficher le calendrier" title="Afficher le calendrier"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span> 
 		<span class="txtlibform">&nbsp;</span><input type="text" name="startHour" id="startHour" size="5" maxlength="5" value="<%=minuteHourDateBegin%>" onBlur="getResourceProblem();">&nbsp;<span class="txtnote">(hh:mm)</span>&nbsp;<img src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5">
 	</tr>
 		
 	<tr>
 		<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.dateEnd")%>&nbsp;:&nbsp;</td>
 		<td valign="baseline"> 
-		<input type="text" name="endDate" id="endDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" value="<%=dateEnd%>" onBlur="getResourceProblem();" >&nbsp;<a href="javascript:calendar('0', '3');" onBlur="getResourceProblem();"><img src="<%=resource.getIcon("resourcesManager.calendrier")%>" border="0" align="middle" alt="Afficher le calendrier" title="Afficher le calendrier"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span> 
+		<input type="text" class="dateToPick" name="endDate" id="endDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" value="<%=dateEnd%>" onBlur="getResourceProblem();" >&nbsp;<a href="javascript:calendar('0', '3');" onBlur="getResourceProblem();"><img src="<%=resource.getIcon("resourcesManager.calendrier")%>" border="0" align="middle" alt="Afficher le calendrier" title="Afficher le calendrier"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span> 
 		<span class="txtlibform">&nbsp;</span><input type="text" name="endHour" id="endHour" size="5" maxlength="5" value="<%=minuteHourDateEnd%>" onBlur="getResourceProblem();">&nbsp;<span class="txtnote">(hh:mm)</span>&nbsp;<img src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5">
 	</tr>
 	

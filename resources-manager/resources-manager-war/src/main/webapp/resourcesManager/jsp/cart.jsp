@@ -43,8 +43,6 @@ String evenement = reservation.getEvent();
 String raison = EncodeHelper.javaStringToHtmlParagraphe(reservation.getReason());
 String lieu = reservation.getPlace();
 
-int tableTab = (nbCategories*37)+10;
-
 // boutons de validation du formulaire
 Board	board		 = gef.getBoard();
 ButtonPane buttonPane = gef.getButtonPane();
@@ -54,7 +52,6 @@ buttonPane.addButton(validateButton);
 buttonPane.addButton(cancelButton);
 
 //String qui permet de récupérer la liste des ids des ressources réservées
-String listResourceIdReserved="";
 boolean noResource = true;
 
 // Permet de récupérer l'id de la catégorie courante
@@ -65,14 +62,6 @@ String idTemoin="";
 	<%
 		out.println(gef.getLookStyleSheet());
 	%>
-	<script type="text/javascript" src="<%=m_context%>/resourcesManager/jsp/javaScript/rico.js"></script>
-	<script type='text/javascript'>
-	Rico.loadModule('Accordion');
-
-	Rico.onLoad( function() {
-	  new Rico.Accordion( $$('div.toggleratStart'), $$('div.elementatStart'), {panelHeight:100} );
-	});
-	</script>
 	
 	<script language=JavaScript>
 	
@@ -182,70 +171,14 @@ String idTemoin="";
 		window.history.back();
 		}
 
-	</script>
-	
-	<style type="text/css">	  
-	.titrePanier {
-		margin: 3px;
-		font-size: 13px;
-		font-weight: bold;
-		text-align: center;	
-	}
-	div.hover {
-		color: #666666;
-		cursor: pointer;
-	}
-	
-	div.selected {
-		font-weight: bold; /* En gras */
-	}
-	
-	
-	.toggleratStart {
-		color: #000000;
-		margin-top: 2px;
-		padding: 5px;
-		background-image: url(<%=m_context%>/admin/jsp/icons/silverpeasV4/fondOff.gif);
-		background-repeat: repeat-x;
-	}
-	
-	.elementatStart{
-		padding-left: 0px;
-		overflow: auto;
-	}
-	
-	.noRessource{
-		font-style: italic;	
-		color: #666666;
-	}
+	$(document).ready(function(){
+		$('#accordion').accordion();
+	});
 
-	#accordion {
-		height: 200px;
-		overflow:auto;
-		padding: 0px;
-		border-style: outset;
-		border-width: 1px 1 1 1;
-		border-color: #B3BFD1;
-		background-color: #FFFFFF;
-	}
-	
-	#listeReservation {
-		height: 200px;
-		overflow:auto;
-		padding: 0px;
-		border-style: outset;
-		border-width: 1px 1 1 1;
-		border-color: #B3BFD1;
-		background-color: #FFFFFF;
-	}
-	
-	</style>
-	
+	</script>
  	</head>
 	<body>
 	<%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel,"Main");
 	browseBar.setPath("<a href=\"javascript:retour()\">"+resource.getString("resourcesManager.reservationParametre")+"</a>");
 	browseBar.setExtraInformation(resource.getString("resourcesManager.resourceSelection"));
 
@@ -297,19 +230,12 @@ String idTemoin="";
 </TABLE>
 <%out.println(board.printAfter());%>		
 <br />
-<%
-	/*out.println(board.printBefore());
-	out.println(resource.getString("resourcesManager.instructionReservation"));
-	out.println(board.printAfter());
-	out.println("<br/>");*/
-%>
+
 		  <table width="100%" align="center" border="0" cellspacing="5">
 		  <tr>
 		  <td width="50%" valign="top">
-		  
+		  <div class="titrePanier"><center><%=resource.getString("resourcesManager.clickReservation")%></center></div>
 		  <div id="accordion">
-			<div class="titrePanier"><center><%=resource.getString("resourcesManager.clickReservation")%></center></div>
-			<div id="mesRessources">
 			<%
 			for (int r=0; r<list.size(); r++)
 			{
@@ -327,12 +253,10 @@ String idTemoin="";
 						<%
 						}
 						out.println("</div>");
-						out.println("</div>");
 						noResource = true;
 					}
 					%>
-					<div class="toggleratStart"><%=maResource.getCategoryName()%></div>
-					<div class="elementatStart">
+					<h3><a href="#"><%=maResource.getCategoryName()%></a></h3>
 						<div id="categ<%=maResource.getCategoryId()%>">
 					<%
 				}
@@ -347,7 +271,7 @@ String idTemoin="";
  								<td width="80%" nowrap>&nbsp;-&nbsp;<%=maResource.getResourceName()%></td>
  								<td><img src="<%=m_context %>/util/icons/ok.gif" id="image<%=resourceId%>" align="middle"/></td>
  							</tr>
- 						</table>								
+ 						</table>
 					</div>
 				<%}
 				idTemoin = maResource.getCategoryId();
@@ -359,21 +283,20 @@ String idTemoin="";
 				</div>
 			<%}			
 			%> 
-			</div>
 			  </div>
 		  </div>
 		  </td>
 		  <td valign="top" width="50%">
+		  	  <div class="titrePanier"><% out.println(resource.getString("resourcesManager.resourcesReserved"));%></div>
 		      <div id="listeReservation">
-		      <div class="titrePanier"><center><% out.println(resource.getString("resourcesManager.resourcesReserved"));%></center></div>
 		      <%if (listResourceEverReserved != null){ 
 		    	  
 		  			// la suppression ayant été faite, cette boucle permet d'afficher les resources qui n'ont pas posés problème
 		  			for (int i=0;i<listResourceEverReserved.size();i++){
 		  						ResourceDetail maRessource =(ResourceDetail)listResourceEverReserved.get(i);
-		  		  				String NomResource = (String)maRessource.getName();
-		  		  				String resourceId = (String)maRessource.getId();
-		  		  				String categoryId = (String)maRessource.getCategoryId();
+		  		  				String NomResource = maRessource.getName();
+		  		  				String resourceId = maRessource.getId();
+		  		  				String categoryId = maRessource.getCategoryId();
 		  		  			%>
 			  					<div id="<%=resourceId%>" onClick="switchResource(<%=resourceId%>,'categ<%=categoryId%>');" style="cursor: pointer;">
 			  						<table width="100%" cellspacing="0" cellpadding="0" border="0">

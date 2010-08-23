@@ -36,7 +36,6 @@ import javax.servlet.http.HttpSession;
 
 import com.silverpeas.resourcesmanager.control.ResourcesManagerSessionController;
 import com.silverpeas.resourcesmanager.model.ResourceDetail;
-import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DateUtil;
@@ -54,7 +53,7 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
       throws ServletException, IOException {
     HttpSession session = req.getSession(true);
 
-    String componentId = (String) req.getParameter("ComponentId");
+    String componentId = req.getParameter("ComponentId");
 
     ResourcesManagerSessionController resourcesManagerSC =
         (ResourcesManagerSessionController) session
@@ -62,7 +61,6 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
 
     if (resourcesManagerSC != null) {
       try {
-        String elementId = req.getParameter("ElementId");
         String reservationId = req.getParameter("reservationId");
         SilverTrace.info("resourcesManager", "AjaxResourcesManagerServlet",
             "root.MSG_GEN_PARAM_VALUE", "reservationId=" + reservationId);
@@ -113,16 +111,10 @@ public class AjaxResourcesManagerServlet extends HttpServlet {
             .info("resourcesManager", "AjaxResourcesManagerServlet",
             "root.MSG_GEN_PARAM_VALUE", "listResourceName= "
             + listResourceName);
-        res.setContentType("text/xml");
         res.setHeader("charset", "UTF-8");
 
         Writer writer = res.getWriter();
-        writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        writer.write("<ajax-response>");
-        writer.write("<response type=\"element\" id=\"" + elementId + "\">");
-        writer.write(EncodeHelper.escapeXml(listResourceName));
-        writer.write("</response>");
-        writer.write("</ajax-response>");
+        writer.write(listResourceName);
       } catch (Exception e) {
         // TODO: handle exception
       }
