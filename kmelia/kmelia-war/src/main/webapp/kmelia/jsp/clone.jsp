@@ -23,7 +23,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
+<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -76,7 +78,7 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
     }
 }
 
-// Fin des d�clarations
+// Fin des declarations
 %>
 
 <%
@@ -86,17 +88,17 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
   	String updaterName	= "";
   	String status		= "";
   	String author 		= "";
-	
+
   	ResourceLocator uploadSettings 		= new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", resources.getLanguage());
   	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());
-  
-	//R�cup�ration des param�tres
+
+	//Recuperation des parametres
 	String 					profile 		= (String) request.getAttribute("Profile");
 	String 					action 			= (String) request.getAttribute("Action");
 	String 					checkPath 		= (String) request.getAttribute("CheckPath");
 	UserCompletePublication userPubComplete = (UserCompletePublication) request.getAttribute("Publication");
 	String					visiblePubId	= (String) request.getAttribute("VisiblePublicationId");
-	
+
 	if (action == null)
 		action = "ViewClone";
 
@@ -105,9 +107,9 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 	UserDetail 					ownerDetail 	= userPubComplete.getOwner();
 	String						pubName			= pubDetail.getName();
 	String 						id 				= pubDetail.getPK().getId();
-	
+
 	String 		linkedPathString 	= kmeliaScc.getSessionPath();
-  	
+
 	//Icons
 	folderSrc 			= m_context + "/util/icons/component/kmeliaSmall.gif";
 	publicationSrc		= m_context + "/util/icons/publication.gif";
@@ -159,16 +161,16 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
         if (isOwner) {
             kmeliaScc.setSessionOwner(true);
         } else {
-		    //modification pour acc�der � l'onglet voir aussi
+		    //modification pour acceder e l'onglet voir aussi
             kmeliaScc.setSessionOwner(false);
         }
 	}
 
     creationDate = resources.getOutputDate(pubDetail.getCreationDate());
-  	
+
   	status	= pubDetail.getStatus();
   	author 	= pubDetail.getAuthor();
-  	
+
   	String creatorId = pubDetail.getCreatorId();
 	creatorName	= resources.getString("kmelia.UnknownUser");
 	if (creatorId != null && creatorId.length() > 0)
@@ -177,7 +179,7 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 		if (creator != null)
 			creatorName = creator.getDisplayedName();
 	}
-	
+
 	String 	updaterId = pubDetail.getUpdaterId();
 	updaterName = resources.getString("kmelia.UnknownUser");
 	if (updaterId != null && updaterId.length() > 0)
@@ -214,8 +216,9 @@ function compileResult(fileName) {
 
 function generatePdf(id)
 {
- document.toRouterForm.action = "<%=routerUrl%>GeneratePdf";
+ document.toRouterForm.action = "<c:url value="/generatePublicationPdf"/>";
  document.toRouterForm.PubId.value = id;
+ document.toRouterForm.ComponentId.value = "<%=pubDetail.getPK().getInstanceId()%>";
  document.toRouterForm.submit();
 }
 
@@ -302,8 +305,8 @@ function pubDraftOut() {
 
 <BODY class="yui-skin-sam" onUnload="closeWindows()" onLoad="openSingleAttachment()">
 
-<% 
-		
+<%
+
         Window window = gef.getWindow();
         Frame frame = gef.getFrame();
 
@@ -350,19 +353,19 @@ function pubDraftOut() {
         out.println(window.printBefore());
 
         displayAllOperations(id, kmeliaScc, gef, "ViewClone", resources, out);
-        
+
         out.println(frame.printBefore());
 
         if (screenMessage != null && screenMessage.length()>0)
 	    	out.println("<center>"+screenMessage+"</center>");
-               
+
         InfoDetail 			infos 	= pubComplete.getInfoDetail();
     	ModelDetail 		model 	= pubComplete.getModelDetail();
-	
+
 	    int type 	= 0;
 	    if (kmeliaScc.isVersionControlled())
 	        type = 1; // Versioning
-        
+
         /*********************************************************************************************************************/
 		/** Affichage du header de la publication																			**/
 		/*********************************************************************************************************************/
@@ -381,11 +384,11 @@ function pubDraftOut() {
 			else if ("UnValidate".equals(status))
 				out.println("<img src=\""+refusedSrc+"\" alt=\""+resources.getString("PublicationRefused")+"\" align=\"absmiddle\">");
 		}
-		
+
 		out.println("<br><b>"+Encode.javaStringToHtmlParagraphe(Encode.convertHTMLEntities(pubDetail.getDescription()))+"<b><BR><BR>");
 
 		out.println("</TD></TR></table>");
-		
+
 		/*********************************************************************************************************************/
 		/** Affichage du contenu de la publication																			**/
 		/*********************************************************************************************************************/
@@ -407,27 +410,27 @@ function pubDraftOut() {
 				xmlContext.setNodeId(kmeliaScc.getSessionTopic().getNodeDetail().getNodePK().getId());
 				xmlContext.setBorderPrinted(false);
 				xmlContext.setContentLanguage(currentLang);
-				
+
 		    	xmlForm.display(out, xmlContext, xmlData);
 		    }
     	}
     	out.println("</TD>");
-    	
+
     	/*********************************************************************************************************************/
 		/** Affichage des fichiers joints																					**/
 		/*********************************************************************************************************************/
-   
+
    		//DLE
 		boolean showTitle 				= true;
 		boolean showFileSize 			= true;
 		boolean showDownloadEstimation 	= true;
 		boolean showInfo 				= true;
 		if ("no".equals(resources.getSetting("showTitle")))
-			showTitle = false;	        
+			showTitle = false;
 		if ("no".equals(resources.getSetting("showFileSize")))
 			showFileSize = false;
 		if ("no".equals(resources.getSetting("showDownloadEstimation")))
-			showDownloadEstimation = false;	        
+			showDownloadEstimation = false;
 		if ("no".equals(resources.getSetting("showInfo")))
 			showInfo = false;
 		boolean showIcon = true;
@@ -443,7 +446,7 @@ function pubDraftOut() {
 		    }
 			try
 			{
-				out.flush();									
+				out.flush();
 				if (kmeliaScc.isVersionControlled())
 					getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+visiblePubId+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()).include(request, response);
 				else
@@ -457,7 +460,7 @@ function pubDraftOut() {
 		    out.println("</TR>");
 		}
     	out.println("</TABLE>");
-    	
+
     	out.println("<CENTER>");
     	out.print("<span class=\"txtBaseline\">");
     	if (kmeliaScc.isAuthorUsed() && pubDetail.getAuthor() != null && !pubDetail.getAuthor().equals(""))
@@ -472,9 +475,9 @@ function pubDraftOut() {
 			out.print(" | ");
 			out.print(resources.getString("kmelia.LastModification")+" : "+updaterName+" - "+resources.getOutputDate(pubDetail.getUpdateDate()));
 		}
-		
+
 		out.println("</CENTER>");
-        
+
 		out.flush();
 
         out.println(frame.printAfter());
@@ -495,6 +498,7 @@ function pubDraftOut() {
 </FORM>
 <FORM name="toRouterForm">
 	<input type="hidden" name="PubId">
+    <input type="hidden" name="ComponentId">
 </FORM>
 </BODY>
 </HTML>

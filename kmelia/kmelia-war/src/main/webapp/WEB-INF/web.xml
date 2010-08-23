@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -24,60 +24,75 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<web-app>
-  <display-name>Kmelia War</display-name>
-  <servlet>
-    <display-name>KmeliaRequestRouter</display-name>
-    <servlet-name>KmeliaRequestRouter</servlet-name>
-    <servlet-class>com.stratelia.webactiv.kmelia.servlets.KmeliaRequestRouter</servlet-class>
-  </servlet>
-  <servlet>
-    <display-name>AjaxPublicationsListServlet</display-name>
-    <servlet-name>AjaxPublicationsListServlet</servlet-name>
-    <servlet-class>com.stratelia.webactiv.kmelia.servlets.AjaxPublicationsListServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <display-name>AliasFileServer</display-name>
-    <servlet-name>AliasFileServer</servlet-name>
-    <servlet-class>com.stratelia.webactiv.kmelia.servlets.AliasFileServer</servlet-class>
-  </servlet>
-  <servlet>
-    <display-name>JSONServlet</display-name>
-    <servlet-name>JSONServlet</servlet-name>
-    <servlet-class>com.stratelia.webactiv.kmelia.servlets.JSONServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <display-name>KmeliaAjaxServlet</display-name>
-    <servlet-name>KmeliaAjaxServlet</servlet-name>
-    <servlet-class>com.stratelia.webactiv.kmelia.servlets.AjaxServlet</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>KmeliaAjaxServlet</servlet-name>
-    <url-pattern>/KmeliaAJAXServlet/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>JSONServlet</servlet-name>
-    <url-pattern>/KmeliaJSONServlet/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>KmeliaRequestRouter</servlet-name>
-    <url-pattern>/Rkmelia/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>KmeliaRequestRouter</servlet-name>
-    <url-pattern>/Rkmax/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>KmeliaRequestRouter</servlet-name>
-    <url-pattern>/Rtoolbox/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>AjaxPublicationsListServlet</servlet-name>
-    <url-pattern>/RAjaxPublicationsListServlet/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>AliasFileServer</servlet-name>
-    <url-pattern>/AliasFileServer/*</url-pattern>
-  </servlet-mapping>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
+    <display-name>Kmelia War</display-name>
+    <servlet>
+        <display-name>KmeliaRequestRouter</display-name>
+        <servlet-name>KmeliaRequestRouter</servlet-name>
+        <servlet-class>com.stratelia.webactiv.kmelia.servlets.KmeliaRequestRouter</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>AjaxPublicationsListServlet</display-name>
+        <servlet-name>AjaxPublicationsListServlet</servlet-name>
+        <servlet-class>com.stratelia.webactiv.kmelia.servlets.AjaxPublicationsListServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>AliasFileServer</display-name>
+        <servlet-name>AliasFileServer</servlet-name>
+        <servlet-class>com.stratelia.webactiv.kmelia.servlets.AliasFileServer</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>JSONServlet</display-name>
+        <servlet-name>JSONServlet</servlet-name>
+        <servlet-class>com.stratelia.webactiv.kmelia.servlets.JSONServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <display-name>KmeliaAjaxServlet</display-name>
+        <servlet-name>KmeliaAjaxServlet</servlet-name>
+        <servlet-class>com.stratelia.webactiv.kmelia.servlets.AjaxServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>KmeliaPdfGeneratorServlet</servlet-name>
+        <servlet-class>com.stratelia.webactiv.kmelia.servlets.KmeliaPdfGeneratorServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>KmeliaPublicationExportServlet</servlet-name>
+        <servlet-class>com.stratelia.webactiv.kmelia.servlets.KmeliaPublicationExportServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>KmeliaAjaxServlet</servlet-name>
+        <url-pattern>/KmeliaAJAXServlet/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>JSONServlet</servlet-name>
+        <url-pattern>/KmeliaJSONServlet/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>KmeliaRequestRouter</servlet-name>
+        <url-pattern>/Rkmelia/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>KmeliaRequestRouter</servlet-name>
+        <url-pattern>/Rkmax/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>KmeliaRequestRouter</servlet-name>
+        <url-pattern>/Rtoolbox/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AjaxPublicationsListServlet</servlet-name>
+        <url-pattern>/RAjaxPublicationsListServlet/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AliasFileServer</servlet-name>
+        <url-pattern>/AliasFileServer/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>KmeliaPdfGeneratorServlet</servlet-name>
+        <url-pattern>/generatePublicationPdf</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>KmeliaPublicationExportServlet</servlet-name>
+        <url-pattern>/exportPublication</url-pattern>
+    </servlet-mapping>
 </web-app>

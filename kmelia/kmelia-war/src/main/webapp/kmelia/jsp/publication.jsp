@@ -23,7 +23,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
+<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -38,7 +40,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ page import="com.silverpeas.publicationTemplate.*"%>
 <%@ page import="com.silverpeas.form.*"%>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%!
  //Icons
 String pubValidateSrc;
@@ -60,10 +61,10 @@ String refusedSrc;
   	String updaterName	= "";
   	String status		= "";
   	String author 		= "";
-	
+
   	ResourceLocator uploadSettings 		= new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", resources.getLanguage());
-  	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());  	
-  	
+  	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());
+
 	//Recuperation des parametres
 	String 					profile 		= (String) request.getAttribute("Profile");
 	String					alias			= (String) request.getAttribute("IsAlias");
@@ -83,7 +84,7 @@ String refusedSrc;
 
 	if (action == null)
 		action = "View";
-	
+
 	SilverTrace.info("kmelia","JSPdesign", "root.MSG_GEN_PARAM_VALUE","ACTION pubManager = "+action);
 
 	CompletePublication 		pubComplete 	= userPubComplete.getPublication();
@@ -95,19 +96,19 @@ String refusedSrc;
 	String contextComponentId = componentId;
 	//surcharge le componentId du composant courant (cas de l'alias)
 	componentId = pubDetail.getPK().getInstanceId();
-	
-	
+
+
 	TopicDetail currentTopic 		= null;
 	String 		linkedPathString 	= kmeliaScc.getSessionPath();
 	String 		pathString 			= "";
-	
+
 	boolean 	debut				= rang.intValue() == 0;
 	boolean 	fin					= rang.intValue() == nbPublis.intValue()-1;
-	
+
 	boolean 	suppressionAllowed	= false;
 
 	Board boardHelp = gef.getBoard();
-	
+
 	//Icons
 	pubValidateSrc			= m_context + "/util/icons/publicationValidate.gif";
 	pubUnvalidateSrc		= m_context + "/util/icons/publicationUnvalidate.gif";
@@ -127,7 +128,7 @@ String refusedSrc;
 
 	//Vrai si le user connecte est le createur de cette publication ou si il est admin
 	boolean isOwner = false;
-	
+
 	if (action.equals("ValidationComplete") || action.equals("ValidationInProgress") || action.equals("Unvalidate") || action.equals("Suspend")) {
 		Board boardStatus = gef.getBoard();
 		screenMessage += boardStatus.printBefore();
@@ -144,14 +145,7 @@ String refusedSrc;
 		screenMessage += ("</td></tr></TABLE>");
 		screenMessage += boardStatus.printAfter();
 	    action = "ViewPublication";
-	}
-	else if (action.equals("GeneratePdf")) {
-		String link = (String) request.getAttribute("Link");
-	    out.println("<BODY marginheight=\"5\" marginwidth=\"5\" leftmargin=\"5\" topmargin=\"5\" onLoad=\"compileResult('"+link+"')\">");
-	    out.println("</BODY>");
-	}
-		
-	if (action.equals("ValidateView")) {
+	}if (action.equals("ValidateView")) {
     	kmeliaScc.setSessionOwner(true);
         action = "UpdateView";
         isOwner = true;
@@ -159,34 +153,34 @@ String refusedSrc;
         if (profile.equals("admin") || profile.equals("publisher") || profile.equals("supervisor") || (ownerDetail != null && kmeliaScc.getUserDetail().getId().equals(ownerDetail.getId()) && profile.equals("writer")))
         {
         	isOwner = true;
-        	
+
         	if (!kmeliaScc.isSuppressionOnlyForAdmin() || (profile.equals("admin") && kmeliaScc.isSuppressionOnlyForAdmin()))
         	{
-        		// suppressionAllowed = true car si c'est un r�dacteur, c'est le propri�taire de la publication
+        		// suppressionAllowed = true car si c'est un redacteur, c'est le proprietaire de la publication
         		suppressionAllowed = true;
         	}
         }
 		else if ( !profile.equals("user") && kmeliaScc.isCoWritingEnable() )
 		{
-			// si publication en co-r�daction, consid�rer qu'elle appartient aux co-r�dacteur au m�me titre qu'au propri�taire
-			// mais suppressionAllowed = false pour que le co-r�dacteur ne puisse pas supprimer la publication
+			// si publication en co-redaction, considerer qu'elle appartient aux co-redacteur au meme titre qu'au proprietaire
+			// mais suppressionAllowed = false pour que le co-redacteur ne puisse pas supprimer la publication
 			isOwner = true;
 			suppressionAllowed = false;
 		}
-		
+
         if (isOwner) {
             kmeliaScc.setSessionOwner(true);
         } else {
-		    //modification pour acc�der � l'onglet voir aussi
+		    //modification pour acceder e l'onglet voir aussi
             kmeliaScc.setSessionOwner(false);
         }
 	}
 
     creationDate = resources.getOutputDate(pubDetail.getCreationDate());
-  	
+
   	status	= pubDetail.getStatus();
   	author 	= pubDetail.getAuthor();
-  	
+
   	String creatorId = pubDetail.getCreatorId();
 	creatorName	= resources.getString("kmelia.UnknownUser");
 	if (creatorId != null && creatorId.length() > 0)
@@ -195,7 +189,7 @@ String refusedSrc;
 		if (creator != null)
 			creatorName = creator.getDisplayedName();
 	}
-	
+
 	String 	updaterId = pubDetail.getUpdaterId();
 	updaterName = resources.getString("kmelia.UnknownUser");
 	if (updaterId != null && updaterId.length() > 0)
@@ -206,7 +200,7 @@ String refusedSrc;
 	}
 
 
-	boolean highlightFirst 		= resources.getSetting("highlightFirstOccurence", false);	
+	boolean highlightFirst 		= resources.getSetting("highlightFirstOccurence", false);
 %>
 
 <%@page import="com.stratelia.silverpeas.versioning.model.DocumentPK"%><html>
@@ -240,11 +234,11 @@ function compileResult(fileName) {
     SP_openWindow(fileName, "PdfGeneration","770", "550", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
 }
 
-function generatePdf()
-{
- document.toRouterForm.action = "<%=routerUrl%>GeneratePdf";
- document.toRouterForm.PubId.value = "<%=id%>";
- document.toRouterForm.submit();
+function generatePdf() {
+  document.toRouterForm.action = "<c:url value="/generatePublicationPdf"/>";
+  document.toRouterForm.PubId.value = "<%=id%>";
+  document.toRouterForm.ComponentId.value = "<%=componentId%>";
+  document.toRouterForm.submit();
 }
 
 function pubDeleteConfirm() {
@@ -314,8 +308,8 @@ function closeWindows() {
 
 function alertUsers()
 {
-	<% 
-		if (!"Valid".equals(pubDetail.getStatus())) 
+	<%
+		if (!"Valid".equals(pubDetail.getStatus()))
 		{
 			%>
 				if (window.confirm("<%=Encode.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>"))
@@ -341,7 +335,7 @@ function openSingleAttachment() {
 		windowParams = "directories=1,menubar=1,toolbar=1,location=1,resizable=1,scrollbars=1,status=1,alwaysRaised";
 		if (!attachmentWindow.closed && attachmentWindow.name== "attachmentWindow")
     		attachmentWindow.close();
-    	
+
     	attachmentWindow = SP_openWindow(url, windowName, "600", "400", windowParams);
 <%
 	}
@@ -353,9 +347,11 @@ function showTranslation(lang)
 	location.href="ViewPublication?SwitchLanguage="+lang;
 }
 
-function zipPublication()
-{
-	SP_openWindow("ZipPublication", "ZipPublication", "500", "300", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
+function zipPublication() {
+  document.toRouterForm.action = "<c:url value="/exportPublication"/>";
+  document.toRouterForm.PubId.value = "<%=id%>";
+  document.toRouterForm.ComponentId.value = "<%=componentId%>";
+  document.toRouterForm.submit();
 }
 
 function reloadPage() {
@@ -365,7 +361,7 @@ function reloadPage() {
 </head>
 <body class="yui-skin-sam" onUnload="closeWindows()" onLoad="openSingleAttachment()" id="<%=componentId %>">
 <div id="preview">
-<% 
+<%
         Window window = gef.getWindow();
         Frame frame = gef.getFrame();
 
@@ -399,7 +395,7 @@ function reloadPage() {
                 	operationPane.addOperation(deletePubliSrc, resources.getString("GML.delete"), "javaScript:pubDeleteConfirm()");
                 }
 				operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javaScript:AddAttachment()");
-				
+
 				if (kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone())
 				{
 					if ("Draft".equals(pubDetail.getStatus()))
@@ -410,7 +406,7 @@ function reloadPage() {
 				operationPane.addLine();
             }
 		}
-		
+
 		if (!kmaxMode)
 		{
         	operationPane.addOperation(resources.getIcon("kmelia.copy"), resources.getString("GML.copy"), "javaScript:clipboardCopy()");
@@ -456,17 +452,17 @@ function reloadPage() {
     	    out.println(boardHelp.printAfter());
     	    out.println("<br/>");
     	}
-        
+
         if (screenMessage != null && screenMessage.length()>0)
 	    	out.println("<center>"+screenMessage+"</center>");
-        
+
         InfoDetail 			infos 	= pubComplete.getInfoDetail();
     	ModelDetail 		model 	= pubComplete.getModelDetail();
-	
+
 	    int type 	= 0;
 	    if (kmeliaScc.isVersionControlled())
 	        type = 1; // Versioning
-		
+
     /*********************************************************************************************************************/
 		/** Affichage du header de la publication																			**/
 		/*********************************************************************************************************************/
@@ -476,7 +472,7 @@ function reloadPage() {
     	out.print("<span class=\"publiName\">");
     	out.print(EncodeHelper.javaStringToHtmlString(pubDetail.getName(language)));
     	out.println("</span>");
-    	
+
 		if (!"user".equals(profile))
 		{
 			if ("ToValidate".equals(status))
@@ -488,11 +484,11 @@ function reloadPage() {
 			else if ("UnValidate".equals(status))
 				out.println("<img src=\""+refusedSrc+"\" alt=\""+resources.getString("PublicationRefused")+"\" align=\"absmiddle\" id=\"status\"/>");
 		}
-    	
+
 		out.println("<br/><span class=\"publiDesc\">"+EncodeHelper.javaStringToHtmlParagraphe(pubDetail.getDescription(language))+"</span><br/><br/>");
 
 		out.println("</td><td valign=\"top\" align=\"right\">");
-		
+
 		/*********************************************************************************************************************/
 		/** Affichage des boutons de navigation (next / previous)															**/
 		/*********************************************************************************************************************/
@@ -522,9 +518,9 @@ function reloadPage() {
 			</table>
 		<%
 		}
-		
+
 		out.println("</td></tr></table>");
-		
+
 		/*********************************************************************************************************************/
 		/** Affichage du contenu de la publication																			**/
 		/*********************************************************************************************************************/
@@ -556,21 +552,21 @@ function reloadPage() {
 		    }
     	}
     	out.println("</td>");
-    	
+
     	/*********************************************************************************************************************/
 		/** Affichage des fichiers joints																					**/
 		/*********************************************************************************************************************/
-   
+
 		boolean showTitle 				= true;
 		boolean showFileSize 			= true;
 		boolean showDownloadEstimation 	= true;
 		boolean showInfo 				= true;
 		if ("no".equals(resources.getSetting("showTitle")))
-			showTitle = false;	        
+			showTitle = false;
 		if ("no".equals(resources.getSetting("showFileSize")))
 			showFileSize = false;
 		if ("no".equals(resources.getSetting("showDownloadEstimation")))
-			showDownloadEstimation = false;	        
+			showDownloadEstimation = false;
 		if ("no".equals(resources.getSetting("showInfo")))
 			showInfo = false;
 		boolean showIcon = true;
@@ -604,7 +600,7 @@ function reloadPage() {
 		    out.println("</tr>");
 		}
     	out.println("</table>");
-    	
+
     	out.println("<center>");
     	out.print("<span class=\"txtBaseline\">");
     	if (kmeliaScc.isAuthorUsed() && pubDetail.getAuthor() != null && !pubDetail.getAuthor().equals(""))
@@ -613,17 +609,17 @@ function reloadPage() {
 			out.print(resources.getString("GML.author")+" : "+pubDetail.getAuthor());
 		}
     	out.print("<br/>");
-    	    	
+
 		out.print(creatorName+" - "+resources.getOutputDate(pubDetail.getCreationDate()));
 		if (updaterId != null)
 		{
 			out.print(" | ");
 			out.print(resources.getString("kmelia.LastModification")+" : "+updaterName+" - "+resources.getOutputDate(pubDetail.getUpdateDate()));
 		}
-		
+
 		out.print(" | ");
 		out.print(resources.getString("kmelia.consulted")+" "+pubDetail.getNbAccess()+" "+resources.getString("kmelia.time"));
-		
+
 		if (URLManager.displayUniversalLinks())
     	{
     		String link = null;
@@ -633,10 +629,10 @@ function reloadPage() {
 				link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
 			out.print(" | <a href=\""+link+"\"><img src=\""+resources.getIcon("kmelia.link")+"\" border=\"0\" align=\"absmiddle\" alt=\""+Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))+"\" title=\""+Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))+"\"/></a>");
     	}
-		
+
 		out.print("</span>");
 		out.println("</center>");
-		
+
 		out.flush();
 
         out.println(frame.printAfter());
@@ -657,6 +653,7 @@ function reloadPage() {
 </form>
 <form name="toRouterForm">
 	<input type="hidden" name="PubId" value="<%=id%>"/>
+    <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
 </form>
 </div>
 </body>

@@ -23,210 +23,179 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-
+<%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
+<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
+<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ProfileInst"%>
-
-<%@ include file="checkKmelia.jsp" %>
-
+<c:url var="mandatoryFieldUrl" value="/util/icons/mandatoryField.gif"/>
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+<% com.stratelia.webactiv.kmelia.control.KmeliaSessionController kmeliaScc = (com.stratelia.webactiv.kmelia.control.KmeliaSessionController) request.getAttribute("kmelia");%>
+<c:if test="${requestScope[kmelia] == null}">
 <%
-//R�cup�ration des param�tres
-String 		path 			= (String) request.getAttribute("Path");
-String 		linkedPath 		= (String) request.getAttribute("PathLinked");
-String 		translation		= (String) request.getAttribute("Translation");
-List 		profiles 		= (List) request.getAttribute("Profiles");
-String		rightsDependsOn = (String) request.getAttribute("RightsDependsOn");
-Boolean		popup			= (Boolean) request.getAttribute("PopupDisplay");
-Boolean		isLinked		= (Boolean) request.getAttribute("IsLink");
-boolean 	notificationAllowed = ((Boolean) request.getAttribute("NotificationAllowed")).booleanValue();
-NodeDetail  parent			= (NodeDetail) request.getAttribute("Parent");
-
-boolean useRightsOnTopics = (profiles != null);
-
-//Icons
-String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
-
-Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=cancelData();", false);
-Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
-
+  // No session controller in the request -> security exception
+  String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+  getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
+  return;
 %>
-<HTML>
-<HEAD>
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script LANGUAGE="JavaScript" TYPE="text/javascript">
-function topicGoTo(id) 
-{
-    location.href = "GoToTopic?Id="+id;
-}
+<fmt:message var="cancelButtonLabel" key="GML.cancel"/>
+<fmt:message var="validateButtonLabel" key="GML.validate"/>
+<html>
+  <head>
+    <view:looknfeel />
+    <title><fmt:message key="GML.popupTitle" /></title>
+    <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
+    <script language="JavaScript" type="text/javascript">
+      function topicGoTo(id)
+      {
+        location.href = "GoToTopic?Id="+id;
+      }
 
-function sendData() {
-    if (isCorrectForm()) {
-  	  document.topicForm.submit();
-    }
-}
+      function sendData() {
+        if (isCorrectForm()) {
+          document.topicForm.submit();
+        }
+      }
 
-function cancelData()
-{
-	<% if (popup.booleanValue()) { %>
-		window.close();
-	<% } else { %>
-		location.href = "GoToCurrentTopic";
-	<% } %>
-}
+      function cancelData()
+      {
+      <c:choose>
+        <c:when test="${true eq requestScope.PopupDisplay}">
+            window.close();
+        </c:when>
+        <c:otherwise>
+            location.href = "GoToCurrentTopic";
+        </c:otherwise>
+      </c:choose>
+        }
 
-function isCorrectForm() {
-     var errorMsg = "";
-     var errorNb = 0;
-     var title = stripInitialWhitespace(document.topicForm.Name.value);
-     //var description = stripInitialWhitespace(document.topicForm.Description.value);
-     if (isWhitespace(title)) {
-       errorMsg+="  - '<%=resources.getString("TopicTitle")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-       errorNb++; 
-     }
-     <% if (isLinked != null && isLinked.booleanValue()) { %>
-     	if (isWhitespace(stripInitialWhitespace(document.topicForm.Path.value))) {
-     		errorMsg+="  - '<%=resources.getString("kmelia.Path")%>' <%=resources.getString("GML.MustContainsText")%>\n";
-       		errorNb++;
-       	}
-     <% } %>
-     /*if (isWhitespace(description)) {
-       errorMsg+="  - '<%=resources.getString("TopicDescription")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-       errorNb++; 
-     } */
-     switch(errorNb)
-     {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
-}
-</script>
-</HEAD>
+        function isCorrectForm() {
+          var errorMsg = "";
+          var errorNb = 0;
+          var title = stripInitialWhitespace(document.topicForm.Name.value);
+          if (isWhitespace(title)) {
+            errorMsg+="  - '<fmt:message key="TopicTitle"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+            errorNb++;
+          }
+      <c:if test="${true eq requestScope.IsLink}">
+          if (isWhitespace(stripInitialWhitespace(document.topicForm.Path.value))) {
+            errorMsg+="  - '<fmt:message key="kmelia.Path"/>' <fmt:message key="GML.MustContainsText"/>\n";
+            errorNb++;
+          }
+      </c:if>
+          switch(errorNb)
+          {
+            case 0 :
+              result = true;
+              break;
+            case 1 :
+              errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
+              window.alert(errorMsg);
+              result = false;
+              break;
+            default :
+              errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
+              window.alert(errorMsg);
+              result = false;
+              break;
+            }
+            return result;
+          }
+    </script>
+  </head>
 
-<BODY>
-<%
-    Window window = gef.getWindow();
-    BrowseBar browseBar = window.getBrowseBar();
-    browseBar.setDomainName(spaceLabel);
-    
-    if (popup.booleanValue())
-    {
-    	browseBar.setComponentName(componentLabel);
-    	browseBar.setPath(resources.getString("TopicCreationTitle"));
-    }
-    else
-    {
-    	browseBar.setComponentName(componentLabel, "Main");
-    	browseBar.setPath(linkedPath);
-    }
-	
-    Frame frame = gef.getFrame();
-    Board board = gef.getBoard();
-
-    //D�but code
-    out.print(window.printBefore());
-    
-    if (useRightsOnTopics)
-    {
-	    TabbedPane tabbedPane = gef.getTabbedPane();
-	    tabbedPane.addTab(resources.getString("Theme"), "#", true);
-	    
-	    Iterator p = profiles.iterator();
-	    ProfileInst theProfile = null;
-	    while (p.hasNext()) {
-	    	theProfile = (ProfileInst) p.next();
-	    	
-	    	tabbedPane.addTab(theProfile.getLabel(), "ViewTopicProfiles?Id="+theProfile.getId()+"&Role="+theProfile.getName(), false, false);
-	    }
-	    out.println(tabbedPane.print());
-    }
-    
-    out.print(frame.printBefore());
-    out.print(board.printBefore());
-%>
-<FORM name="topicForm" action="AddTopic" method="POST">
-<TABLE CELLPADDING="5" WIDTH="100%">
-  	<TR><TD class="txtlibform"><%=resources.getString("TopicPath")%> :</TD>
-      <TD valign="top"><%=path%></TD>
-    </TR>
-	<%=I18NHelper.getFormLine(resources, null, kmeliaScc.getLanguage())%>
-  	<TR>
-  		<TD class="txtlibform"><%=resources.getString("TopicTitle")%> :</TD>
-      	<TD><input type="text" name="Name" size="60" maxlength="60"/><input type="hidden" name="ParentId" value="<%=parent.getId()%>"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/></TD>
-    </TR>
-    <% if (isLinked != null && isLinked.booleanValue()) { %>
-    	<TR>
-      		<TD class="txtlibform"><%=resources.getString("kmelia.Path")%> :</TD>
-      		<TD><input type="text" name="Path" size="60" maxlength="200"/>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"/></TD>
-        </TR>
-    <% } else { %>
-    	<TR>
-  			<TD class="txtlibform"><%=resources.getString("TopicDescription")%> :</TD>
-      		<TD><input type="text" name="Description" size="60" maxlength="200"></TD>
-    	</TR>
-    <% } %>
-	<% if (notificationAllowed) { %>
-	  	<TR>
-	  		<TD class="txtlibform" valign="top"><%=resources.getString("TopicAlert")%> :</TD>
-	      	<TD valign="top">
-				<select name="AlertType">
-					<option value="NoAlert" selected="selected"><%=resources.getString("NoAlert")%></option>
-					<option value="Publisher"><%=resources.getString("OnlyPubsAlert")%></option>
-					<option value="All"><%=resources.getString("AllUsersAlert")%></option>
-				</select>
-			</TD>
-		</TR>
-	<% } %>
-   <% if (useRightsOnTopics) { %>
-   		<TR>
-   			<TD valign="top" class="txtlibform"><%=resources.getString("kmelia.WhichTopicRightsUsed")%> :</TD>
-   			<TD valign="top">
-   				<table width="235" cellpadding="0" cellspacing="0">
-   					<tr>
-   						<td width="201"><%=resources.getString("kmelia.RightsSpecific")%></td>
-   						<td width="20"><input type="radio" value="dummy" name="RightsUsed"></td>
-   					</tr>
-   	    			<tr>
-   	    				<td width="201"><%=resources.getString("kmelia.RightsInherited")%></td>
-   	    				<td width="20"><input type="radio" value="father" name="RightsUsed" checked></td>
-   	    			</tr>
-   	    		</table>
-   	    	</TD>
-   	    </TR>
-   <% } %>	
-  	<TR>
-  		<TD colspan="2">( <img border="0" src="<%=mandatoryField%>" width="5" height="5"> : <%=resources.getString("GML.requiredField")%> )</TD>
-  	</TR>  	
-</TABLE>
-</FORM>	
-<%
-	out.print(board.printAfter());
-
-    ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(validateButton);
-    buttonPane.addButton(cancelButton);
-	
-	out.print("<br/><center>"+buttonPane.print()+"</center>");
-
-	out.print(frame.printAfter());
-	out.print(window.printAfter());
-%>
-</BODY>
-<script language="javascript">
-	document.topicForm.Name.focus();
-</script>
-</HTML>
+  <body>
+    <fmt:message var="addTopicBrowseTitle" key="TopicCreationTitle"/>
+    <view:browseBar>
+      <c:choose>
+        <c:when test="${true eq requestScope.PopupDisplay}"><view:browseBarElt id="${addTopicBrowseTitle}" label="${addTopicBrowseTitle}" link=""/></c:when>
+        <c:otherwise><view:browseBarElt id="Main" label="Main" link="${requestScope.PathLinked}"/></c:otherwise></c:choose>
+    </view:browseBar>
+    <view:window>
+      <view:frame>
+        <view:board>
+          <c:if test="${requestScope.Profiles != null and !empty requestScope.Profiles}">
+            <view:tabs>
+              <fmt:message var="defaultTabLabel" key="Theme" />
+              <view:tab label="${defaultTabLabel}" action="#" selected="true" />
+              <c:forEach items="${requestScope.Profiles}" var="theProfile" >
+                <c:url var="profileAction" value="ViewTopicProfiles"><c:param name="Id" value="${theProfile.id}"/><c:param name="Role" value="${theProfile.name}"/></c:url>
+                <view:tab label="${theProfile.label}" action="${profileAction}" selected="false" />
+              </c:forEach>
+            </view:tabs>
+          </c:if>
+          <form name="topicForm" action="AddTopic" method="POST">
+            <table cellpadding="5" width="100%">
+              <tr><td class="txtlibform"><fmt:message key="TopicPath"/> :</td>
+                <td valign="top"><c:out value="${requestScope.Path}" escapeXml='false'/></td>
+              </tr>
+              <%=I18NHelper.getFormLine(resources, null, kmeliaScc.getLanguage())%>
+              <tr>
+                <td class="txtlibform"><fmt:message key="TopicTitle"/> :</td>
+                <td><input type="text" name="Name" size="60" maxlength="60"/><input type="hidden" name="ParentId" value="<c:out value="${requestScope.Parent.id}"/>"/>&nbsp;<img border="0" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
+              </tr>
+              <c:choose>
+                <c:when test="${true eq requestScope.IsLink}">
+                  <tr>
+                    <td class="txtlibform"><fmt:message key="kmelia.Path" /> :</td>
+                    <td><input type="text" name="Path" size="60" maxlength="200"/>&nbsp;<img border="0" alt="mandatory" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
+                  </tr>
+                </c:when>
+                <c:otherwise>
+                  <tr>
+                    <td class="txtlibform"><fmt:message key="TopicDescription" /> :</td>
+                    <td><input type="text" name="Description" size="60" maxlength="200"></td>
+                  </tr>
+                </c:otherwise>
+              </c:choose>
+              <c:if test="${true eq requestScope.NotificationAllowed}">
+                <tr>
+                  <td class="txtlibform" valign="top"><fmt:message key="TopicAlert" /> :</td>
+                  <td valign="top">
+                    <select name="AlertType">
+                      <option value="NoAlert" selected="selected"><fmt:message key="NoAlert" /></option>
+                      <option value="Publisher"><fmt:message key="OnlyPubsAlert" /></option>
+                      <option value="All"><fmt:message key="AllUsersAlert" /></option>
+                    </select>
+                  </td>
+                </tr>
+              </c:if>
+              <c:if test="${requestScope.Profiles != null and !empty requestScope.Profiles}">
+              <tr>
+                <td valign="top" class="txtlibform"><fmt:message key="kmelia.WhichTopicRightsUsed" /> :</td>
+                <td valign="top">
+                  <table width="235" cellpadding="0" cellspacing="0">
+                    <tr>
+                      <td width="201"><fmt:message key="kmelia.RightsSpecific"/></td>
+                      <td width="20"><input type="radio" value="dummy" name="RightsUsed"></td>
+                    </tr>
+                    <tr>
+                      <td width="201"><fmt:message key="kmelia.RightsInherited"/></td>
+                      <td width="20"><input type="radio" value="father" name="RightsUsed" checked></td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              </c:if>
+              <tr>
+                <td colspan="2">( <img border="0" alt="mandatory" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"> : <fmt:message key="GML.requiredField"/> )</td>
+              </tr>
+            </table>
+          </form>
+        </view:board>
+        <br/><center>
+          <view:buttonPane>
+            <view:button action="javascript:onClick=sendData();" label="${validateButtonLabel}" disabled="false" />
+            <view:button action="javascript:onClick=cancelData();" label="${cancelButtonLabel}" disabled="false" />
+          </view:buttonPane>
+        </center>
+      </view:frame>
+    </view:window>
+  </body>
+  <script language="javascript">
+      document.topicForm.Name.focus();
+  </script>
+</html>

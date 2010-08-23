@@ -1076,8 +1076,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
           + zipFileName);
       exportReport.setZipFileName(zipFileName);
       exportReport.setZipFileSize(zipFileSize);
-      exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName, zipFileName,
-          "application/zip"));
+      exportReport.setZipFilePath(FileServerUtils.getUrlToTempDir(zipFileName));
     } catch (Exception ex) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.export()",
           SilverpeasRuntimeException.ERROR,

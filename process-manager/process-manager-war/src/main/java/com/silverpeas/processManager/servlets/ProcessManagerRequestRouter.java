@@ -462,7 +462,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       else {
         request.setAttribute("isCurrentUserIsLockingUser", false);
      }
-      
+
 
       setSharedAttributes(session, request);
       return "/processManager/jsp/viewProcess.jsp";
@@ -528,7 +528,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       else {
         request.setAttribute("isCurrentUserIsLockingUser", false);
       }
-      
+
       setSharedAttributes(session, request);
       return "/processManager/jsp/viewProcess.jsp";
     }
@@ -614,7 +614,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       request.setAttribute("data", data);
 
       request.setAttribute("isFirstTimeSaved", "yes");
-      
+
       setSharedAttributes(session, request);
       return "/processManager/jsp/createProcess.jsp";
     }
@@ -636,12 +636,12 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       try {
         List<FileItem> items = FileUploadUtil.parseRequest(request);
         List<String> attachmentIds = form.update(items, data, context, false);
-        
+
         boolean isDraft = StringUtil.getBooleanValue( FileUploadUtil.getParameter(items, "isDraft") );
         boolean isFirstTimeSaved = StringUtil.getBooleanValue( FileUploadUtil.getParameter(items, "isFirstTimeSaved") );
-        
+
         String instanceId = session.createProcessInstance(data, isDraft, isFirstTimeSaved);
-        
+
         // launch update again to have a correct object id in wysiwyg
         context.setObjectId(instanceId);
         form.updateWysiwyg(items, data, context);
@@ -685,7 +685,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       String processId = request.getParameter("processId");
 
       ProcessInstance process = session.resetCurrentProcessInstance(processId);
-      
+
       // checking locking users
       List<User> lockingUsers = session.getLockingUsers();
       if ( (!lockingUsers.isEmpty()) && (!session.isCurrentUserIsLockingUser()) ) {
@@ -694,14 +694,14 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
 
       // check if an action must be resumed
       if (!lockingUsers.isEmpty()) {
-        
+
         // Detects special case where user has killed his navigator while filling an action form
         HistoryStep savedStep = session.getSavedStep();
         if (savedStep != null) {
           return resumeActionHandler.getDestination(function, session, request);
         }
       }
-      
+
       if (!process.getErrorStatus()) {
         Task[] tasks = session.getTasks();
 
@@ -713,12 +713,12 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
             while (actions.hasNext()) {
               AllowedAction action = actions.next();
               QualifiedUsers qualifiedUsers = action.getAction().getAllowedUsers();
-              
+
               List<String> grantedUserIds = session.getUsers(qualifiedUsers, true);
               SilverTrace.debug("processManager",
                   "ProcessManagerRequestRouter.getDestination",
                   "root.MSG_GEN_PARAM_VALUE", "granted user ids for action "+action.getAction().getName()+" : "+grantedUserIds);
-              
+
               if (grantedUserIds.contains(session.getUserId())) {
                 filteredActions.addAllowedAction(action);
               }
@@ -747,14 +747,14 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         ProcessManagerSessionController session,
         HttpServletRequest request)
         throws ProcessManagerException {
-      
+
       // retrieve state name and action name
       HistoryStep savedStep = session.getSavedStep();
       String stateName = savedStep.getResolvedState();
       String actionName = savedStep.getAction();
 
       State state = (stateName==null) ? new StateImpl("") : session.getState(stateName);
-      
+
       request.setAttribute("state", state);
       request.setAttribute("action", session.getAction(actionName));
 
@@ -772,7 +772,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
 
       // Set flag to indicate action record has already been saved as draft
       request.setAttribute("isFirstTimeSaved", "no");
-      
+
       // Set flag to indicate instance is in resuming mode
       session.setResumingInstance(true);
 
@@ -781,7 +781,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       return "/processManager/jsp/editAction.jsp";
     }
   };
-  
+
   /**
    * The editAction handler
    */
@@ -845,7 +845,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
 
         boolean isDraft = StringUtil.getBooleanValue( FileUploadUtil.getParameter(items, "isDraft") );
         boolean isFirstTimeSaved = StringUtil.getBooleanValue( FileUploadUtil.getParameter(items, "isFirstTimeSaved") );
-        
+
         com.silverpeas.form.Form form = session.getActionForm(stateName, actionName);
         PagesContext context = getFormContext("actionForm", "0", session);
         DataRecord data = session.getActionRecord(stateName, actionName);
@@ -1236,8 +1236,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       if (StringUtil.isDefined(csvFilename)) {
         File file = new File(FileRepositoryManager.getTemporaryPath() + csvFilename);
         request.setAttribute("CSVFileSize", Long.valueOf(file.length()));
-        request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename,
-            csvFilename, "text/csv"));
+        request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename));
         file = null;
       }
 

@@ -534,8 +534,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         if (StringUtil.isDefined(csvFilename)) {
           File file = new File(FileRepositoryManager.getTemporaryPath() + csvFilename);
           request.setAttribute("CSVFileSize", Long.valueOf(file.length()));
-          request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename,
-              csvFilename, "text/csv"));
+          request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename));
           file = null;
         }
 

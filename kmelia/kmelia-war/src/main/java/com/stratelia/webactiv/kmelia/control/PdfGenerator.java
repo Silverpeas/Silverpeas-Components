@@ -27,7 +27,6 @@ import java.awt.Color;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.CharArrayReader;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -98,7 +97,6 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.kmelia.model.UserPublication;
 import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
@@ -109,41 +107,41 @@ import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
 import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import java.io.OutputStream;
 import java.util.Vector;
 
 public class PdfGenerator extends PdfPageEventHelper {
 
   /** Current KmeliaSessionController */
-  static private KmeliaSessionController kmeliaSessionController = null;
+  private KmeliaSessionController kmeliaSessionController = null;
   /** Language */
-  static private String language;
+  private String language;
   /** ResourceBundle kmelia */
-  static private ResourceLocator message = null;
+  private ResourceLocator message = null;
   /** ResourceBundle genral multilang */
-  static private ResourceLocator generalMessage = null;
+  private ResourceLocator generalMessage = null;
   /** Current Complete publication */
-  static private CompletePublication completePublicationDetail;
+  private CompletePublication completePublicationDetail;
   /** Current publication */
-  static private PublicationDetail publicationDetail;
+  private PublicationDetail publicationDetail;
   /** Content language */
-  static private String publiContentLanguage;
+  private String publiContentLanguage;
   /** Image Full Star */
-  static private Image fullStar;
+  private Image fullStar;
   /** Image Empty Star */
-  static private Image emptyStar;
+  private Image emptyStar;
   /** The headertable. */
-  static private PdfPTable pdfTableHeader;
+  private PdfPTable pdfTableHeader;
   /** A template that will hold the total number of pages. */
-  static private PdfTemplate pdfTemplate;
+  private PdfTemplate pdfTemplate;
   /** The font that will be used. */
-  static private BaseFont baseFontHelv;
-  static private String serverURL;
+  private BaseFont baseFontHelv;
+  private String serverURL;
 
-  public static void generate(String namePdf,
-      CompletePublication currentPublication, KmeliaSessionController scc)
+  public void generate(OutputStream out, CompletePublication currentPublication,
+      KmeliaSessionController scc)
       throws KmeliaRuntimeException {
-    SilverTrace.info("kmelia", "PdfGenerator.generatePubList",
-        "root.MSG_ENTRY_METHOD", "Pdf name = " + namePdf);
+
     try {
       kmeliaSessionController = scc;
       language = kmeliaSessionController.getLanguage();
@@ -154,9 +152,6 @@ public class PdfGenerator extends PdfPageEventHelper {
 
       completePublicationDetail = currentPublication;
       publicationDetail = currentPublication.getPublicationDetail();
-      String fileName = FileRepositoryManager.getTemporaryPath(
-          publicationDetail.getPK().getSpace(), publicationDetail.getPK().getComponentName())
-          + namePdf;
       publiContentLanguage = kmeliaSessionController.getCurrentLanguage();
       try {
         serverURL = scc.getOrganizationController().getDomain(
@@ -178,9 +173,8 @@ public class PdfGenerator extends PdfPageEventHelper {
       document.addSubject(message.getString("SubjectPdf"));
       document.addCreationDate();
 
-      PdfWriter pdfWriter = PdfWriter.getInstance(document,
-          new FileOutputStream(fileName));
-      pdfWriter.setPageEvent(new PdfGenerator());
+      PdfWriter pdfWriter = PdfWriter.getInstance(document, out);
+      pdfWriter.setPageEvent(this);
       document.open();
       // En-Tete
       generateHeaderPage(document);
@@ -322,7 +316,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     pdfTemplate.endText();
   }
 
-  private static void addRowToTable(Table tbl, Font fnt, String[] cells,
+  private void addRowToTable(Table tbl, Font fnt, String[] cells,
       Color bg_colour, boolean isBorder, boolean first_column_bold) {
     Cell cl = null;
     Chunk chnk;
@@ -353,12 +347,12 @@ public class PdfGenerator extends PdfPageEventHelper {
     }
   }
 
-  private static void addRowToTable(Table tbl, Font fnt, String[] cells,
+  private void addRowToTable(Table tbl, Font fnt, String[] cells,
       boolean isBorder, boolean first_column_bold) {
     addRowToTable(tbl, fnt, cells, null, isBorder, first_column_bold);
   }
 
-  private static void addRowImagesToTable(Table tbl, String cell,
+  private void addRowImagesToTable(Table tbl, String cell,
       Image[] tabImage, boolean isBorder) {
     Cell cl = null;
     // cell 1
@@ -389,7 +383,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   }
 
-  private static void addRowLinkToTable(Table tbl, String[] cells,
+  private void addRowLinkToTable(Table tbl, String[] cells,
       Color[] colours, boolean isBorder, boolean first_column_bold) {
     Cell cl = null;
     Chunk chnk;
@@ -424,7 +418,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     }
   }
 
-  private static void addRowImageToTable(Table tbl, String cell, Image image,
+  private void addRowImageToTable(Table tbl, String cell, Image image,
       boolean isBorder) {
     Cell cl = null;
     // cell 1
@@ -451,7 +445,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   }
 
-  private static void addRowToTable(Table tbl, String[] cells) {
+  private void addRowToTable(Table tbl, String[] cells) {
     for (int i = 0; i < cells.length; i++) {
       Font font;
       if (i == 0 || i == 2) {
@@ -470,7 +464,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     }
   }
 
-  private static String getTopicPath() throws RemoteException {
+  private String getTopicPath() throws RemoteException {
     String out = "";
     Collection<Collection<NodeDetail>> pathList = kmeliaSessionController.getPathList(publicationDetail.
         getPK().getId());
@@ -503,7 +497,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     return out;
   }
 
-  private static Table addHearderToSection(String title)
+  private Table addHearderToSection(String title)
       throws DocumentException {
     Table tblHeader = new Table(1);
     int headerwidthsHeader[] = {100};
@@ -524,7 +518,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     return tblHeader;
   }
 
-  private static void generateHeaderPage(Document document)
+  private void generateHeaderPage(Document document)
       throws DocumentException, RemoteException {
     Table tblHeader = addHearderToSection(message.getString("Header").toUpperCase());
     document.add(tblHeader);
@@ -735,13 +729,12 @@ public class PdfGenerator extends PdfPageEventHelper {
     document.add(new Paragraph("\n"));
   }
 
-  private static void addRowToTable(Table tbl, Font fnt, String[] cells,
+  private void addRowToTable(Table tbl, Font fnt, String[] cells,
       Color bg_colour, boolean isBorder) {
     addRowToTable(tbl, fnt, cells, bg_colour, isBorder, false);
   }
 
-  private static Table addTableAttachments(String mode)
-      throws DocumentException {
+  private Table addTableAttachments(String mode) throws DocumentException {
     Table tbl = null;
 
     Font header_font = new Font(Font.HELVETICA, 10, Font.BOLD);
@@ -805,40 +798,12 @@ public class PdfGenerator extends PdfPageEventHelper {
     return tbl;
   }
 
-  private static boolean isUserReader(
-      com.stratelia.silverpeas.versioning.model.Document document, int user_id,
-      VersioningUtil versioningUtil) /* throws RemoteException */ {
-    try {
-      ArrayList readers = document.getReadList();
-      ArrayList writers = versioningUtil.getAllNoReader(document);
-      com.stratelia.silverpeas.versioning.model.Reader user;
-
-      for (int i = 0; readers != null && i < readers.size(); i++) {
-        user = (com.stratelia.silverpeas.versioning.model.Reader) readers.get(i);
-        if (user.getUserId() == user_id) {
-          return true;
-        }
-      }
-
-      for (int i = 0; writers != null && i < writers.size(); i++) {
-        user = (com.stratelia.silverpeas.versioning.model.Reader) writers.get(i);
-        if (user.getUserId() == user_id) {
-          return true;
-        }
-      }
-    } catch (Exception e) {
-      SilverTrace.error("kmelia", "PdfGenerator.isUserReader", "root.EX_REMOTE_EXCEPTION", e);
-    }
-
-    return false;
-  }
-
   /**
    * @param documentPdf
    * @throws DocumentException
    * @throws RemoteException
    */
-  private static void generateAttachments(Document documentPdf)
+  private void generateAttachments(Document documentPdf)
       throws DocumentException, RemoteException {
     Table tblHeader = addHearderToSection(message.getString("Attachments").toUpperCase());
 
@@ -863,9 +828,7 @@ public class PdfGenerator extends PdfPageEventHelper {
         Iterator documents_iterator = documents.iterator();
         boolean is_reader = false;
         int user_id = new Integer(kmeliaSessionController.getUserId()).intValue();
-        ArrayList versions;
         DocumentVersion document_version = null;
-        String creation_date;
         String creatorOrValidators = "";
         ArrayList users;
         Worker user;
@@ -875,13 +838,13 @@ public class PdfGenerator extends PdfPageEventHelper {
           /*
            * Solution 1 : affichage de la dernière version (publique ou privée)
            */
-          is_reader = isUserReader(document, user_id, versioningUtil);
+          is_reader = versioningUtil.isReader(document, user_id);
           if (versioningUtil.isWriter(document, user_id) || is_reader
-              || "admin".equals(kmeliaSessionController.getUserRoleLevel())) {
-            versions = versioningUtil.getDocumentFilteredVersions(document.getPk(), user_id);
+              || kmeliaSessionController.isAdmin()) {
+            ArrayList versions = versioningUtil.getDocumentFilteredVersions(document.getPk(), user_id);
             if (versions.size() > 0) {
               document_version = (DocumentVersion) (versions.get(versions.size() - 1)); // current version
-              creation_date = DateUtil.dateToString(document.getLastCheckOutDate(), language);
+              String creation_date = DateUtil.dateToString(document.getLastCheckOutDate(), language);
 
               if (document_version.getSize() != 0
                   || !"dummy".equals(document_version.getLogicalName())) {
@@ -946,7 +909,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
         Iterator<AttachmentDetail> itAttachment = vectAttachment.iterator();
         while (itAttachment.hasNext()) {
-          AttachmentDetail attachmentDetail = (AttachmentDetail) (itAttachment.next());
+          AttachmentDetail attachmentDetail = (itAttachment.next());
           addRowToTable(tbl, null, new String[]{
                 attachmentDetail.getLogicalName(publiContentLanguage),
                 attachmentDetail.getTitle(publiContentLanguage),
@@ -962,7 +925,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     }
   }
 
-  private static String getUserName(UserPublication userPub) {
+  private String getUserName(UserPublication userPub) {
     UserDetail user = userPub.getOwner(); // contains creator
     PublicationDetail pub = userPub.getPublication();
     String updaterId = pub.getUpdaterId();
@@ -985,7 +948,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     return userName;
   }
 
-  private static void generateSeeAlso(Document document) throws IOException,
+  private void generateSeeAlso(Document document) throws IOException,
       DocumentException {
     java.util.List<ForeignPK> targets = completePublicationDetail.getLinkList();
     if (targets != null && targets.size() > 0) {
@@ -1072,9 +1035,9 @@ public class PdfGenerator extends PdfPageEventHelper {
     }
   }
 
-  private static void generateComments(Document document)
+  private void generateComments(Document document)
       throws DocumentException, RemoteException, ParseException {
-    Vector comments = CommentController.getAllComments(new CommentPK(
+    Vector<Comment> comments = CommentController.getAllComments(new CommentPK(
         publicationDetail.getPK().getId(), null, kmeliaSessionController.getComponentId()));
     if (comments != null && comments.size() > 0) {
       /*
@@ -1125,7 +1088,7 @@ public class PdfGenerator extends PdfPageEventHelper {
    * @param isLinked - vrai si l'on souhaite un hyperlien faux si l'on ne veut que du texte
    * @return le texte en dur ou au format hypelien
    */
-  private static String linkedNode(Value unit, boolean isLinked) {
+  private String linkedNode(Value unit, boolean isLinked) {
     String node = "";
 
     // Attention la partie hyperlink est a faire !!!!
@@ -1147,7 +1110,7 @@ public class PdfGenerator extends PdfPageEventHelper {
    * @param withLastValue - on garde ou non la valeur selectionnee
    * @return completPath - le chemin fabrique
    */
-  private static String troncatePath(String completPath, java.util.List list,
+  private String troncatePath(String completPath, java.util.List<Value> list,
       boolean isLinked, int withLastValue) {
     int nbShowedEltAuthorized = 2; // nombre de noeud que l'on veut afficher
     // avant les ...
@@ -1182,7 +1145,7 @@ public class PdfGenerator extends PdfPageEventHelper {
    * l'on ne souhaite afficher que le chemin complet sans la valeur selectionnee
    * @return completPath - le chemin fabrique
    */
-  private static String buildCompletPath(java.util.List list, boolean isLinked,
+  private String buildCompletPath(java.util.List<Value> list, boolean isLinked,
       int withLastValue) {
     int maxEltAuthorized = 5; // nombre min d'elements avant la troncature du
     // chemin
@@ -1214,14 +1177,14 @@ public class PdfGenerator extends PdfPageEventHelper {
     return completPath;
   }
 
-  private static String buildCompletPath(java.util.List list, boolean isLinked) {
+  private String buildCompletPath(java.util.List<Value> list, boolean isLinked) {
     return buildCompletPath(list, isLinked, 0);
   }
 
-  private static void generateCategorization(Document document)
+  private void generateCategorization(Document document)
       throws DocumentException, PdcException {
     PdcBm pdcBm = (PdcBm) new PdcBmImpl();
-    java.util.List listPositions = pdcBm.getPositions(kmeliaSessionController.getSilverObjectId(publicationDetail.
+    java.util.List<ClassifyPosition> listPositions = pdcBm.getPositions(kmeliaSessionController.getSilverObjectId(publicationDetail.
         getPK().getId()),
         kmeliaSessionController.getComponentId());
     if (listPositions != null && listPositions.size() > 0) {
@@ -1237,7 +1200,7 @@ public class PdfGenerator extends PdfPageEventHelper {
       String separatorPath = " / "; // separateur pour le chemin complet
       ClassifyPosition position = null;
       String nI;
-      java.util.List values = null;
+      java.util.List<ClassifyValue> values = null;
       Paragraph paragraph;
       List list;
       ClassifyValue value = null;
@@ -1278,7 +1241,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     }
   }
 
-  private static void parseHTML(Document document, String text)
+  private void parseHTML(Document document, String text)
       throws KmeliaRuntimeException {
     SilverTrace.info("kmelia", "PdfGenerator.parseHTML",
         "root.MSG_ENTRY_METHOD");
@@ -1349,7 +1312,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     }
   }
 
-  private static void parseModelHTML(Document document, String text,
+  private void parseModelHTML(Document document, String text,
       Iterator<InfoTextDetail> textIterator, Iterator<InfoImageDetail> imageIterator)
       throws KmeliaRuntimeException {
     SilverTrace.info("kmelia", "PdfGenerator.parseModelHTML", "root.MSG_ENTRY_METHOD");
@@ -1369,16 +1332,8 @@ public class PdfGenerator extends PdfPageEventHelper {
     }
   }
 
-  private static boolean isInteger(String id) {
-    try {
-      Integer.parseInt(id);
-      return true;
-    } catch (NumberFormatException e) {
-      return false;
-    }
-  }
 
-  private static void generateContent(Document document)
+  private void generateContent(Document document)
       throws DocumentException, WysiwygException, PublicationTemplateException,
       FormException {
     // Paragraph title = new Paragraph("\n"+message.getString("Model")+" : ",
@@ -1410,13 +1365,11 @@ public class PdfGenerator extends PdfPageEventHelper {
       } else {// Modèles XML
 
         String infoId = publicationDetail.getInfoId();
-        if (!isInteger(infoId)) {
+        if (!StringUtil.isInteger(infoId)) {
           document.add(tblHeader);
-
           PublicationTemplateImpl pubTemplate =
               (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(
               componentId + ":" + infoId);
-
           Form formView = pubTemplate.getViewForm();
 
           RecordSet recordSet = pubTemplate.getRecordSet();
@@ -1425,7 +1378,6 @@ public class PdfGenerator extends PdfPageEventHelper {
             data = recordSet.getEmptyRecord();
             data.setId(objectId);
           }
-
           PagesContext context = new PagesContext();
           context.setLanguage(language);
           context.setComponentId(componentId);

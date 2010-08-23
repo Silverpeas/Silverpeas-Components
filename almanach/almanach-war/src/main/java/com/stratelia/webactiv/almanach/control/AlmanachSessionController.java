@@ -145,9 +145,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * @return 
+   * @return
    * @throws AlmanachException
-   * @throws RemoteException 
+   * @throws RemoteException
    * @author David Lesimple
    */
   public Collection<EventDetail> getMonthEvents(String[] instanceIds)
@@ -342,7 +342,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         Periodicity periodicity = event.getPeriodicity();
         periodicity.setEventId(new Integer(eventId).intValue());
         // Add the periodicity
-        getAlmanachBm().addPeriodicity(periodicity);      
+        getAlmanachBm().addPeriodicity(periodicity);
       }
       Date startDate = event.getStartDate();
       // currentDay
@@ -524,7 +524,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * @param mode 
+   * @param mode
    * @param bCompleteMonth
    * @return
    */
@@ -539,12 +539,12 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       return null;
     }
 
-    return FileServerUtils.getUrlToTempDir(name, name, "application/pdf");
+    return FileServerUtils.getUrlToTempDir(name);
   }
 
   /**
    * return the MonthCalendar Object
-   * @return 
+   * @return
    */
   public MonthCalendar getMonthCalendar() {
     int numbersDays = 7;
@@ -592,7 +592,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * @return 
+   * @return
    * @author dlesimple
    */
   public boolean isAgregationUsed() {
