@@ -199,7 +199,7 @@ public class TestMessageChecker extends AbstractSingleSpringContextTests {
     assertEquals(0, message.getAttachmentsSize());
     assertEquals(0, message.getAttachments().size());
     assertEquals("componentId", message.getComponentId());
-    assertEquals("text/plain; charset=UTF-8", message.getContentType());
+    assertEquals("text/plain; charset=" +System.getProperty("file.encoding"), message.getContentType());
     verify(mockListener1, atLeastOnce()).checkSender("bart.simpson@silverpeas.com");
   }
 
