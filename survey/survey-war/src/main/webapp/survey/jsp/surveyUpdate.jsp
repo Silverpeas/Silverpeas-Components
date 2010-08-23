@@ -257,14 +257,14 @@ function isCorrectForm() {
     <tr> 
       <td class="txtlibform"><%=resources.getString("SurveyCreationBeginDate")%> :</td>
       <td> 
-        <input type="text" name="beginDate" size="14" value="<%=beginDate%>" maxlength="<%=DBUtil.DateFieldLength%>">
+        <input type="text" class="dateToPick" name="beginDate" size="14" value="<%=beginDate%>" maxlength="<%=DBUtil.DateFieldLength%>"/>
       </td>
     </tr>
     <tr> 
       <td class="txtlibform"><%=resources.getString("SurveyCreationEndDate")%> 
         :</td>
       <td> 
-        <input type="text" name="endDate" size="14" value="<%=endDate%>" maxlength="<%=DBUtil.DateFieldLength%>">
+        <input type="text" class="dateToPick" name="endDate" size="14" value="<%=endDate%>" maxlength="<%=DBUtil.DateFieldLength%>"/>
       </td>
     </tr>
     <tr> 
