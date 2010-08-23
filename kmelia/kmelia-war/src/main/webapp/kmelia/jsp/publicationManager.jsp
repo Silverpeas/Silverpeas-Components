@@ -795,10 +795,10 @@
           <% }%>
 
       <TR><TD class="txtlibform"><%=resources.getString("PubDateDebut")%></TD>
-        <TD><input type="text" name="BeginDate" value="<%=beginDate%>" size="12" maxlength="10">
+        <TD><input type="text" class="dateToPick" name="BeginDate" value="<%=beginDate%>" size="12" maxlength="10"/>
           <span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span><input type="text" name="BeginHour" value="<%=beginHour%>" size="5" maxlength="5"> <i>(hh:mm)</i></TD></TR>
       <TR><TD class="txtlibform"><%=resources.getString("PubDateFin")%></TD>
-        <TD><input type="text" name="EndDate" value="<%=endDate%>" size="12" maxlength="10">
+        <TD><input type="text" class="dateToPick" name="EndDate" value="<%=endDate%>" size="12" maxlength="10"/>
           <span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span><input type="text" name="EndHour" value="<%=endHour%>" size="5" maxlength="5"> <i>(hh:mm)</i></TD></TR>
           <% if (kmeliaMode && new Boolean(settings.getString("isVignetteVisible")).booleanValue()) {%>
       <TR><TD class="txtlibform"><%=resources.getString("Vignette")%></TD>
