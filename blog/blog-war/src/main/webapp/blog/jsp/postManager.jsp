@@ -123,15 +123,7 @@
 		            	break;
 		     	} 
 		     	return result;
-			}
-
-			function editDate(elementId) {
-				chemin = "<%=m_context%>/Ragenda/jsp/calendar.jsp?idElem="+elementId;
-				largeur = "180";
-				hauteur = "200";
-				SP_openWindow(chemin,"calendrierAlmanach",largeur,hauteur,"");
-			}
-	        
+			}	        
 		</script>
 		
 		</head>
@@ -165,7 +157,7 @@
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("blog.dateEvent")%> :</td>
-		<td><input type="text" id="eventDate" name="DateEvent" size="12" maxlength="10" value="<%=resource.getOutputDate(dateEvent)%>"/>&nbsp;<a href="javascript:OnClick=editDate('eventDate');"><img src="<%=resource.getIcon("blog.calendar") %>" width="13" height="15" border="0" alt="Afficher le calendrier" title="Afficher le calendrier" align="top"/></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></td>
+		<td><input type="text" class="dateToPick" id="eventDate" name="DateEvent" size="12" maxlength="10" value="<%=resource.getOutputDate(dateEvent)%>"/><span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></td>
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.category")%> :</td>
