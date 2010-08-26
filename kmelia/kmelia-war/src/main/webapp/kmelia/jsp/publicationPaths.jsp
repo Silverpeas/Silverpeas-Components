@@ -102,7 +102,7 @@ out.println(gef.getLookStyleSheet());
 
 	var doSomething = function(paneId) 
 	{
-		if (loadedPanes.indexOf(paneId) != "-1")
+		if (loadedPanes.indexOf(","+paneId+",") != "-1")
 		{
 			//Pane already loaded
 		}
@@ -112,11 +112,11 @@ out.println(gef.getLookStyleSheet());
 				$("#content_"+paneId).html(data);
 			});
 
-			loadedPanes += ","+paneId;
+			loadedPanes += paneId+",";
 		}
 	};
 
-	var loadedPanes = "<%=componentId%>";
+	var loadedPanes = ",<%=componentId%>,";
 </script>
 <script language="javascript">
 
