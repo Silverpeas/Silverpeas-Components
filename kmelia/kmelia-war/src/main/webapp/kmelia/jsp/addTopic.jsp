@@ -24,6 +24,8 @@
 
 --%>
 <%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@page import="com.silverpeas.util.i18n.I18NHelper"%>
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
@@ -34,12 +36,13 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <% com.stratelia.webactiv.kmelia.control.KmeliaSessionController kmeliaScc = (com.stratelia.webactiv.kmelia.control.KmeliaSessionController) request.getAttribute("kmelia");%>
-<c:if test="${requestScope[kmelia] == null}">
-<%
-  // No session controller in the request -> security exception
-  String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
-  getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
-  return;
+<% if(kmeliaScc == null ) {
+    // No session controller in the request -> security exception
+    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+    getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
+    return;
+    }
+  ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
 %>
 <fmt:message var="cancelButtonLabel" key="GML.cancel"/>
 <fmt:message var="validateButtonLabel" key="GML.validate"/>
