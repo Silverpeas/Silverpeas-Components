@@ -133,6 +133,7 @@
     outDraftSrc = m_context + "/util/icons/visible.gif";
     validateSrc = m_context + "/util/icons/ok.gif";
     refusedSrc = m_context + "/util/icons/wrong.gif";
+  	String favoriteAddSrc		= m_context + "/util/icons/addFavorit.gif";
 
     String screenMessage = "";
 
@@ -333,6 +334,7 @@
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
         <script language="javascript">
+        var favoriteWindow = window;
 
       <% if (action.equals("UpdateView")) {%>
 
@@ -615,6 +617,18 @@
           $("#valueImageGallery").attr("value", url);
         }
 
+        function addFavorite(name,description,url)
+        {
+        	urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
+            windowName = "favoriteWindow";
+        	larg = "550";
+        	haut = "250";
+            windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+            if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow")
+                favoriteWindow.close();
+            favoriteWindow = SP_openWindow(urlWindow, windowName, larg, haut, windowParams);
+        }
+                
     </script>
   </HEAD>
 
@@ -631,6 +645,12 @@
         // added by LBE : importance field can be hidden (depends on settings file)
         boolean showImportance = !"no".equalsIgnoreCase(resources.getSetting("showImportance"));
 
+        String urlPublication = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
+    		pathString = pubDetail.getName(language);
+        String namePath = spaceLabel + " > " + componentLabel;
+    		if (!pathString.equals(""))
+    			namePath = namePath + " > " + pathString;
+
         BrowseBar browseBar = window.getBrowseBar();
         browseBar.setDomainName(spaceLabel);
         browseBar.setComponentName(componentLabel, "Main");
@@ -640,8 +660,9 @@
         if ("UpdateView".equals(action)) {
           if (kmeliaScc.getSessionClone() == null && isNotificationAllowed) {
             operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers();");
-            operationPane.addLine();
           }
+        	operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(pubDetail.getDescription(language)))+"','"+urlPublication+"')");
+          operationPane.addLine();
 
           if (!"supervisor".equals(profile)) {
             if (kmeliaScc.getSessionClone() == null) {
@@ -666,6 +687,8 @@
               operationPane.addOperation(pubDraftInSrc, resources.getString("PubDraftIn"), "javaScript:pubDraftIn()");
             }
           }
+          
+
         }
 
         out.println(window.printBefore());
