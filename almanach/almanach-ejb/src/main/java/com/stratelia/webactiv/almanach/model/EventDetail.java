@@ -305,6 +305,23 @@ public class EventDetail extends AbstractI18NBean implements
         eventIcal4jCalendar.getProperties().add(exDate);
       }
     }
-    return eventIcal4jCalendar;  
+    return eventIcal4jCalendar;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    EventDetail other = (EventDetail) obj;
+    if (_pk == null) {
+      if (other._pk != null)
+        return false;
+    } else if (!_pk.equals(other._pk))
+      return false;
+    return true;
   }
 }

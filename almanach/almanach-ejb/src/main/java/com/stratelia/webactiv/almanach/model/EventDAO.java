@@ -39,7 +39,8 @@ import com.stratelia.webactiv.util.DBUtil;
 
 public class EventDAO {
 
-  private static final String COLUMNNAMES = "eventId, eventName, eventDelegatorId, eventStartDay, eventEndDay, eventStartHour, eventEndHour, eventPriority, eventTitle, eventPlace, eventUrl, instanceId";
+  private static final String COLUMNNAMES =
+      "eventId, eventName, eventDelegatorId, eventStartDay, eventEndDay, eventStartHour, eventEndHour, eventPriority, eventTitle, eventPlace, eventUrl, instanceId";
   private static final java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat(
       "yyyy/MM/dd");
 
@@ -47,7 +48,8 @@ public class EventDAO {
       throws SQLException, Exception {
 
     String updateQuery = "update " + event.getPK().getTableName();
-    updateQuery += " set eventName = ? , eventDelegatorId = ? , eventStartDay = ? , eventEndDay = ? , eventStartHour = ? , eventEndHour = ? , eventPriority = ? , eventTitle = ? , eventPlace = ? , eventUrl = ? ";
+    updateQuery +=
+        " set eventName = ? , eventDelegatorId = ? , eventStartDay = ? , eventEndDay = ? , eventStartHour = ? , eventEndHour = ? , eventPriority = ? , eventTitle = ? , eventPlace = ? , eventUrl = ? ";
     updateQuery += " where eventId = ? and instanceId = ?";
 
     PreparedStatement updateStmt = null;
@@ -139,7 +141,7 @@ public class EventDAO {
   }
 
   public static Collection<EventDetail> getMonthEvents(Connection con, EventPK pk,
-      java.util.Date date, String[] instanceIds) throws SQLException, Exception {
+      Date date, String[] instanceIds) throws SQLException, Exception {
     ResultSet rs = null;
     Statement selectStmt = null;
     String paramInstanceIds = "";
@@ -163,10 +165,14 @@ public class EventDAO {
     try {
       String month = dateFormat.format(date);
       month = month.substring(0, month.length() - 2);
-      String selectQuery = "select distinct " + COLUMNNAMES + " from "
-          + pk.getTableName() + " where ((eventStartDay like '" + month
-          + "%') or (eventStartDay <= '" + month + "31' and eventEndDay >= '"
-          + month + "01')) " + paramInstanceIds + " order by eventStartDay";
+      String startDay = month + "01";
+      String endDay = month + "31";
+      String selectQuery = "select distinct " + COLUMNNAMES
+          + " from " + pk.getTableName()
+          + " where ((eventStartDay < '" + startDay + "' and eventEndDay > '" + endDay + "')"
+          + " or eventStartDay like '" + month + "%'"
+          + " or eventEndDay like '" + month + "%')"
+          + paramInstanceIds + " order by eventStartDay";
 
       SilverTrace.info("almanach", "EventDAO.getMonthEvents()", "selectQuery="
           + selectQuery);

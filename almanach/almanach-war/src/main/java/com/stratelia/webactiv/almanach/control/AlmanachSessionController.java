@@ -170,7 +170,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
     SilverTrace.info("almanach", "AlmanachSessionController.getMonthEvents()",
         "root.MSG_GEN_PARAM_VALUE", "# of events after sorting = "
-        + events.size());
+            + events.size());
 
     return events;
   }
@@ -241,13 +241,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     // Delete the Wysiwyg if exists
     if (WysiwygController.haveGotWysiwyg(getSpaceId(), getComponentId(), id)) {
       FileFolderManager.deleteFile(WysiwygController.getWysiwygPath(getComponentId(), id));
-    }
-
-    // Remove the periodicity and exceptions
-    Periodicity periodicity = getAlmanachBm().getPeriodicity(id);
-    if (periodicity != null) {
-      getAlmanachBm().removeAllPeriodicityException(periodicity.getPK().getId());
-      getAlmanachBm().removePeriodicity(periodicity);
     }
 
     // Suppression du VEvent du Calendar ical4j (pour gestion)
@@ -338,12 +331,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       event.setDelegatorId(getUserId());
       // Add the event
       String eventId = getAlmanachBm().addEvent(event);
-      if (event.getPeriodicity() != null) {
-        Periodicity periodicity = event.getPeriodicity();
-        periodicity.setEventId(new Integer(eventId).intValue());
-        // Add the periodicity
-        getAlmanachBm().addPeriodicity(periodicity);
-      }
       Date startDate = event.getStartDate();
       // currentDay
       if (startDate != null) {
@@ -402,11 +389,13 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
       // Update the Wysiwyg if exists, create one otherwise
       if (StringUtil.isDefined(event.getWysiwyg())) {
-        WysiwygController.updateFileAndAttachment(event.getDescription(getLanguage()), getSpaceId(),
+        WysiwygController.updateFileAndAttachment(event.getDescription(getLanguage()),
+            getSpaceId(),
             getComponentId(),
             event.getId(), getUserId());
       } else {
-        WysiwygController.createFileAndAttachment(event.getDescription(getLanguage()), getSpaceId(),
+        WysiwygController.createFileAndAttachment(event.getDescription(getLanguage()),
+            getSpaceId(),
             getComponentId(),
             event.getId());
       }
@@ -718,7 +707,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     SilverTrace.info("almanach",
         "AlmanachSessionController.getOthersAlmanachs()",
         "root.MSG_GEN_PARAM_VALUE", "instanceIds=" + instanceIds + " spaceId="
-        + getSpaceId());
+            + getSpaceId());
     for (int i = 0; i < instanceIds.length; i++) {
       SilverTrace.info("almanach",
           "AlmanachSessionController.getOthersAlmanachs()",
@@ -830,7 +819,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     sel.setHostComponentName(hostComponentName);
     SilverTrace.debug("almanach", "AlmanachSessionController.initAlertUser()",
         "root.MSG_GEN_PARAM_VALUE", "name = " + hostComponentName
-        + " componentId=" + getComponentId());
+            + " componentId=" + getComponentId());
     sel.setNotificationMetaData(getAlertNotificationEvent(eventId));
     // l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
     return AlertUser.getAlertUserURL();
@@ -862,7 +851,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     SilverTrace.debug("almanach",
         "AlamanachSessionController.getAlertNotificationEvent()",
         "root.MSG_GEN_PARAM_VALUE", "message = " + message.toString()
-        + " message_en = " + message_en.toString());
+            + " message_en = " + message_en.toString());
     SilverTrace.debug("almanach",
         "AlamanachSessionController.getAlertNotificationEvent()",
         "root.MSG_GEN_PARAM_VALUE", "sujet = " + subject + " corps = " + body);
@@ -874,7 +863,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     SilverTrace.debug("almanach",
         "AlmanachSessionController.getAlertNotificationEvent()",
         "root.MSG_GEN_PARAM_VALUE", "sujet_en = " + subject_en + " corps_en = "
-        + body_en);
+            + body_en);
 
     // création des notifications
     NotificationMetaData notifMetaData = new NotificationMetaData(
