@@ -380,6 +380,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
         // création du répertoire sur disque contenant la photo ainsi que les vignettes
         processPhoto(photoId, parameters, gallerySC);
 
+        // récupération du formulaire
+        createXMLFormImage(photoId, parameters, gallerySC);
+        
         // preview de la nouvelle image
         request.setAttribute("PhotoId", photoId);
         destination = getDestination("PreviewPhoto", gallerySC, request);
@@ -1966,6 +1969,46 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
     gallerySC.updatePhoto(photo);
     return photoId;
   }
+  
+  private String createXMLFormImage(String photoId, List<FileItem> parameters,
+      GallerySessionController gallerySC) throws Exception {
+
+    // récup&ration de la photo
+    PhotoDetail photo = gallerySC.getPhoto(photoId);
+
+    String xmlFormName = gallerySC.getXMLFormName();
+    if (StringUtil.isDefined(xmlFormName)) {
+      String xmlFormShortName =
+          xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+  
+      PublicationTemplate pub =
+          PublicationTemplateManager.getPublicationTemplate(gallerySC.getComponentId() + ":" +
+          xmlFormShortName);
+      RecordSet set = pub.getRecordSet();
+      Form form = pub.getUpdateForm();
+      DataRecord data = set.getRecord(photo.getId());
+      if (data == null) {
+        data = set.getEmptyRecord();
+        data.setId(photo.getId());
+      }
+  
+      PagesContext context =
+          new PagesContext("myForm", "0", gallerySC.getLanguage(), false, gallerySC.getComponentId(),
+          gallerySC.getUserId(), gallerySC.getAlbum(gallerySC.getCurrentAlbumId()).getNodePK()
+          .getId());
+      context.setEncoding("UTF-8");
+      context.setObjectId(photo.getId());
+  
+      // mise à jour des données saisies
+      form.update(parameters, data, context);
+      set.save(data);
+  
+      // mise à jour de la photo
+      gallerySC.updatePhoto(photo);
+    }
+    return photoId;
+  }
+
 
   private void updateHeaderImage(String photoId, List<FileItem> parameters,
       GallerySessionController gallerySC, String encoding)
