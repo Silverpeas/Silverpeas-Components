@@ -145,7 +145,7 @@ import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
  * access other session EJBs.
  * @author Nicolas Eysseric
  */
-public class KmeliaBmEJB implements SessionBean {
+public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   private static final long serialVersionUID = 1L;
 
