@@ -52,6 +52,7 @@ import com.silverpeas.mailinglist.service.model.beans.InternalUserSubscriber;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.MailSender;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
@@ -67,7 +68,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  * @author Emmanuel Hugonnet
  * @version $revision$
  */
-public class NotificationHelperImpl implements NotificationHelper {
+public class SimpleNotificationHelper implements NotificationHelper {
 
   private NotificationSender notificationSender;
 
@@ -108,21 +109,26 @@ public class NotificationHelperImpl implements NotificationHelper {
   public void notifyInternals(Message message, MailingList list,
       Collection<String> userIds, Collection<String> groupIds, boolean moderate)
       throws NotificationManagerException {
-    String title = notificationFormatter.formatTitle(message, list.getName(),
-        moderate);
+      String defaultTitle = notificationFormatter.formatTitle(message, list.getName(), I18NHelper.defaultLanguage, moderate);
     NotificationMetaData metadata = new NotificationMetaData();
     metadata.setAnswerAllowed(false);
     metadata.setDate(message.getSentDate());
     metadata.setSource(list.getSubscribedAddress());
     metadata.setSender(list.getSubscribedAddress());
     metadata.setComponentId(message.getComponentId());
+    String link = notificationFormatter.prepareUrl(message, moderate);
+    for (String lang : I18NHelper.getAllSupportedLanguages()) {
+      String title = notificationFormatter.formatTitle(message, list.getName(), lang, moderate);
+      String content = notificationFormatter.formatMessage(message, lang, moderate);
+      metadata.addLanguage(lang,title, content );
+    }
+    metadata.setTitle(defaultTitle);
     if (message.getSummary() != null) {
       metadata.setContent(message.getSummary());
     } else {
       metadata.setContent("");
     }
-    metadata.setLink(notificationFormatter.prepareUrl("", message, moderate));
-    metadata.setTitle(title);
+    metadata.setLink(link);
     metadata.setUserRecipients(userIds);
     if (groupIds != null && !groupIds.isEmpty()) {
       metadata.setGroupRecipients(groupIds);
@@ -130,20 +136,17 @@ public class NotificationHelperImpl implements NotificationHelper {
     notificationSender.notifyUser(metadata);
     try {
       if (moderate) {
-        createTask(message, title, userIds);
+        createTask(message, defaultTitle, userIds);
       }
     } catch (CalendarRuntimeException e) {
       throw new NotificationManagerException("NotificationHelperImpl",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES",
-          e);
+          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
     } catch (RemoteException e) {
       throw new NotificationManagerException("NotificationHelperImpl",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES",
-          e);
+          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
     } catch (UnsupportedEncodingException e) {
       throw new NotificationManagerException("NotificationHelperImpl",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES",
-          e);
+          SilverpeasException.ERROR, "calendar.MSG_CANT_CHANGE_TODO_ATTENDEES", e);
     }
   }
 
@@ -159,8 +162,7 @@ public class NotificationHelperImpl implements NotificationHelper {
         "mailinglist.notification.external.start");
     MimeMessage mail = new MimeMessage(session);
     mail.setFrom(new InternetAddress(list.getSubscribedAddress()));
-    mail.setSubject(notificationFormatter.formatTitle(message, list.getName(),
-        false));
+    mail.setSubject(notificationFormatter.formatTitle(message, list.getName(), I18NHelper.defaultLanguage, false));
     mail.setHeader("Precedence", "list");
     mail.setHeader("List-ID", list.getSubscribedAddress());
     if (!message.getAttachments().isEmpty()) {
@@ -291,8 +293,7 @@ public class NotificationHelperImpl implements NotificationHelper {
     todo.setDescription(message.getId());
     String todoId = getCalendarBm().addToDo(todo);
     todo.setId(todoId);
-    todo.setExternalId("message/" + message.getId() + "?todoId="
-        + URLEncoder.encode(todoId, "UTF-8"));
+    todo.setExternalId("message/" + message.getId() + "?todoId=" + URLEncoder.encode(todoId, "UTF-8"));
     getCalendarBm().updateToDo(todo);
     getCalendarBm().setToDoAttendees(todoId, userIds.toArray(new String[userIds.size()]));
   }

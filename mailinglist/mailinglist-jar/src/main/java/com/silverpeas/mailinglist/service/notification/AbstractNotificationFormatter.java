@@ -21,16 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.mailinglist.service.notification;
 
+package com.silverpeas.mailinglist.service.notification;
 
 import com.silverpeas.mailinglist.service.model.beans.Message;
 
-public interface NotificationFormatter {
+/**
+ * Helper class for implementing formatting.
+ * @author ehugonnet
+ */
+public abstract class AbstractNotificationFormatter implements NotificationFormatter {
 
-  public String formatTitle(Message message, String mailingListName, String lang, boolean moderate);
-
-  public String formatMessage(Message message, String lang, boolean moderate);
-
-  public String prepareUrl(Message message, boolean moderate);
+  @Override
+ public String prepareUrl(Message message, boolean moderate) {
+    if (moderate) {
+      return "/Rmailinglist/" + message.getComponentId() + "/moderationList/"
+          + message.getComponentId();
+    }
+    return "/Rmailinglist/" + message.getComponentId() + "/message/"
+        + message.getId();
+  }
 }

@@ -52,7 +52,7 @@ public class ServicesFactory implements ApplicationContextAware {
     this.context = context;
   }
 
-  protected static ServicesFactory getInstance() {
+  public static ServicesFactory getInstance() {
     synchronized (ServicesFactory.class) {
       if (ServicesFactory.instance == null) {
         ServicesFactory.instance = new ServicesFactory();

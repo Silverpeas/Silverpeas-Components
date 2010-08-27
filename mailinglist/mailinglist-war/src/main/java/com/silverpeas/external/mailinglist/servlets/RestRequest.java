@@ -38,11 +38,11 @@ public class RestRequest implements MailingListRoutage {
   public static final int FIND = 3;
   public static final int CREATE = 4;
   private String componentId;
-  private Map elements;
+  private Map<String, String> elements;
   private int action;
 
   public RestRequest(HttpServletRequest request) {
-    elements = new HashMap(10);
+    elements = new HashMap<String, String> (10);
     if ("POST".equalsIgnoreCase(request.getMethod())) {
       action = CREATE;
     } else if ("GET".equalsIgnoreCase(request.getMethod())) {
@@ -96,7 +96,7 @@ public class RestRequest implements MailingListRoutage {
     }
   }
 
-  public Map getElements() {
+  public Map<String, String>  getElements() {
     return elements;
   }
 

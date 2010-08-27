@@ -66,13 +66,13 @@ public class TestNotificationHelper extends
       + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer "
       + "l'homme canon dans la prochaine émission.Bart";
 
-  private NotificationHelperImpl notificationHelper;
+  private SimpleNotificationHelper notificationHelper;
 
-  public NotificationHelperImpl getNotificationHelper() {
+  public SimpleNotificationHelper getNotificationHelper() {
     return notificationHelper;
   }
 
-  public void setNotificationHelper(NotificationHelperImpl notificationHelper) {
+  public void setNotificationHelper(SimpleNotificationHelper notificationHelper) {
     this.notificationHelper = notificationHelper;
   }
 
@@ -257,7 +257,7 @@ public class TestNotificationHelper extends
   }
 
   public void testSpringLoading() {
-    NotificationHelperImpl helper = getNotificationHelper();
+    SimpleNotificationHelper helper = getNotificationHelper();
     assertNotNull(helper);
     assertNotNull(helper.getSmtpConfig());
     assertEquals("localhost", helper.getSmtpConfig().getServer());
@@ -268,7 +268,7 @@ public class TestNotificationHelper extends
   }
 
   @Override
-  protected void onTearDown() {
+  protected void onTearDown() throws IOException {
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
     try {
@@ -286,10 +286,12 @@ public class TestNotificationHelper extends
         }
       }
     }
+    super.onTearDown();
   }
 
   @Override
   protected void onSetUp() {
+    super.onSetUp();
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
     try {

@@ -37,7 +37,9 @@ public class MailingListRequestRouter extends ComponentRequestRouter implements 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
+   * @return
    */
+  @Override
   public String getSessionControlBeanName() {
     return "MailingList";
   }
@@ -49,6 +51,7 @@ public class MailingListRequestRouter extends ComponentRequestRouter implements 
    * @return
    * @see
    */
+  @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new MailingListSessionController(mainSessionCtrl, componentContext);
@@ -62,7 +65,7 @@ public class MailingListRequestRouter extends ComponentRequestRouter implements 
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  @SuppressWarnings("unchecked")
+  @Override
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
     String type = request.getParameter("Type");
@@ -71,8 +74,7 @@ public class MailingListRequestRouter extends ComponentRequestRouter implements 
       if ("searchResult".equalsIgnoreCase(function)
           || "searchResult.jsp".equalsIgnoreCase(function)) {
         if (DESTINATION_MESSAGE.equalsIgnoreCase(type)) {
-          rest.getElements().put(DESTINATION_MESSAGE,
-              request.getParameter("Id"));
+          rest.getElements().put(DESTINATION_MESSAGE, request.getParameter("Id"));
           rest.setComponentId(componentSC.getComponentId());
         } else if ("com.stratelia.webactiv.calendar.backbone.TodoDetail"
             .equalsIgnoreCase(type)) {
@@ -100,9 +102,9 @@ public class MailingListRequestRouter extends ComponentRequestRouter implements 
 
       request.setAttribute(RSS_URL_ATT,
           ((AbstractComponentSessionController) componentSC).getRSSUrl());
-      request.setAttribute(IS_USER_ADMIN_ATT, new Boolean(isAdmin));
-      request.setAttribute(IS_USER_MODERATOR_ATT, new Boolean(isModerator));
-      request.setAttribute(IS_LIST_MODERATED_ATT, new Boolean(isModerated));
+      request.setAttribute(IS_USER_ADMIN_ATT, Boolean.valueOf(isAdmin));
+      request.setAttribute(IS_USER_MODERATOR_ATT, Boolean.valueOf(isModerator));
+      request.setAttribute(IS_LIST_MODERATED_ATT, Boolean.valueOf(isModerated));
       request.setAttribute(COMPONENT_ID_ATT, componentSC.getComponentId());
       if (rest.getElements().get(DESTINATION_MESSAGE) != null) {
         return MessageProcessor.processMessage(rest, request);

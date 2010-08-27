@@ -36,41 +36,46 @@ import com.silverpeas.peasUtil.RssServlet;
 
 public class RssMailingListServlet extends RssServlet {
 
+  @Override
   public String getElementCreatorId(Object element) {
     return null;
   }
 
+  @Override
   public String getExternalCreatorId(Object element) {
     Message message = (Message) element;
     return message.getSender();
   }
 
+  @Override
   public Date getElementDate(Object element) {
     Message message = (Message) element;
     return message.getSentDate();
   }
 
+  @Override
   public String getElementDescription(Object element, String userId) {
     Message message = (Message) element;
     return message.getSummary();
   }
 
+  @Override
   public String getElementLink(Object element, String userId) {
     Message message = (Message) element;
-    return ServicesFactory.getNotificationFormatter().prepareUrl("", message,
-        false);
+    return ServicesFactory.getNotificationFormatter().prepareUrl(message, false);
   }
 
+  @Override
   public String getElementTitle(Object element, String userId) {
     Message message = (Message) element;
     return message.getTitle();
   }
 
+  @Override
   public Collection getListElements(String instanceId, int nbReturned)
       throws RemoteException {
-    MailingList mailingList = ServicesFactory.getMailingListService()
-        .findMailingList(instanceId);
-    return ServicesFactory.getMessageService().listDisplayableMessages(
-        mailingList, nbReturned, new OrderBy("sentDate", true));
+    MailingList mailingList = ServicesFactory.getMailingListService().findMailingList(instanceId);
+    return ServicesFactory.getMessageService().listDisplayableMessages(mailingList, nbReturned,
+        new OrderBy("sentDate", true));
   }
 }

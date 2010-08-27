@@ -21,9 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist;
 
+import com.mockrunner.mock.jms.MockQueue;
+import com.silverpeas.mailinglist.jms.MockObjectFactory;
 import com.stratelia.webactiv.util.JNDINames;
 import java.io.File;
 import java.io.IOException;
@@ -32,12 +33,14 @@ import java.sql.SQLException;
 
 import java.util.Properties;
 import java.util.StringTokenizer;
+import javax.jms.QueueConnectionFactory;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.naming.Reference;
 import javax.naming.StringRefAddr;
 import javax.sql.DataSource;
+import org.apache.commons.io.FileUtils;
 
 import org.dbunit.database.DatabaseConnection;
 import org.dbunit.database.IDatabaseConnection;
@@ -49,7 +52,6 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends Abs
 
   private DataSource datasource;
   private DataSourceConfiguration config;
-  private static boolean registred = false;
 
   public DataSource getDataSource() {
     return datasource;
@@ -69,9 +71,6 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends Abs
   }
 
   protected void registerDatasource() {
-    if (registred) {
-      return;
-    }
     try {
       prepareJndi();
       InitialContext ic = new InitialContext();
@@ -89,12 +88,26 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends Abs
       rebind(ic, config.getJndiName(), ref);
       rebind(ic, JNDINames.DATABASE_DATASOURCE, ref);
       rebind(ic, JNDINames.ADMIN_DATASOURCE, ref);
-      registred = true;
+      registerMockJMS(ic);
     } catch (NamingException nex) {
       logger.error(nex);
     } catch (IOException ex) {
       logger.error(ex);
     }
+  }
+
+
+  protected void registerMockJMS(InitialContext ic) throws NamingException {
+   Reference refFactory = new Reference("javax.jms.QueueConnectionFactory",
+        "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
+    rebind(ic, JNDINames.JMS_FACTORY, refFactory);
+    Reference refQueue = new Reference("javax.jms.Queue",
+        "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
+    rebind(ic, JNDINames.JMS_QUEUE, refQueue);
+    QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic.lookup(JNDINames.JMS_FACTORY);
+    assertNotNull(qconFactory);
+    MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);
+    queue.clear();
   }
 
   public boolean isOracle() {
@@ -142,7 +155,7 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends Abs
   }
 
   @Override
-  protected void onTearDown() {
+  protected void onTearDown() throws IOException {
     IDatabaseConnection connection = null;
     try {
       connection = getConnection();
@@ -159,6 +172,8 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends Abs
         }
       }
     }
+    MockObjectFactory.clearAll();
+    cleanJndi();
   }
 
   /**
@@ -167,8 +182,7 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends Abs
    */
   protected void prepareJndi() throws IOException {
     Properties jndiProperties = new Properties();
-    jndiProperties.load(PathTestUtil.class.getClassLoader().
-        getResourceAsStream("jndi.properties"));
+    jndiProperties.load(PathTestUtil.class.getClassLoader().getResourceAsStream("jndi.properties"));
     String jndiDirectoryPath = jndiProperties.getProperty("java.naming.provider.url").substring(7);
     File jndiDirectory = new File(jndiDirectoryPath);
     if (!jndiDirectory.exists()) {
@@ -183,12 +197,11 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends Abs
    */
   protected void cleanJndi() throws IOException {
     Properties jndiProperties = new Properties();
-    jndiProperties.load(PathTestUtil.class.getClassLoader().
-        getResourceAsStream("jndi.properties"));
+    jndiProperties.load(PathTestUtil.class.getClassLoader().getResourceAsStream("jndi.properties"));
     String jndiDirectoryPath = jndiProperties.getProperty("java.naming.provider.url").substring(7);
     File jndiDirectory = new File(jndiDirectoryPath);
     if (jndiDirectory.exists()) {
-      jndiDirectory.delete();
+      FileUtils.deleteQuietly(jndiDirectory);
     }
   }
 
@@ -200,22 +213,18 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends Abs
    * @throws NamingException
    */
   protected void rebind(InitialContext ic, String jndiName, Reference ref) throws NamingException {
-    if ('/' != File.separatorChar) {
-      ic.rebind(jndiName, ref);
-    } else {
-      Context currentContext = ic;
-      StringTokenizer tokenizer = new StringTokenizer(jndiName, "/", false);
-      while (tokenizer.hasMoreTokens()) {
-        String name = tokenizer.nextToken();
-        if (tokenizer.hasMoreTokens()) {
-          try {
-            currentContext = (Context) currentContext.lookup(name);
-          } catch (javax.naming.NameNotFoundException nnfex) {
-            currentContext = currentContext.createSubcontext(name);
-          }
-        } else {
-          currentContext.rebind(name, ref);
+    Context currentContext = ic;
+    StringTokenizer tokenizer = new StringTokenizer(jndiName, "/", false);
+    while (tokenizer.hasMoreTokens()) {
+      String name = tokenizer.nextToken();
+      if (tokenizer.hasMoreTokens()) {
+        try {
+          currentContext = (Context) currentContext.lookup(name);
+        } catch (javax.naming.NameNotFoundException nnfex) {
+          currentContext = currentContext.createSubcontext(name);
         }
+      } else {
+        currentContext.rebind(name, ref);
       }
     }
   }

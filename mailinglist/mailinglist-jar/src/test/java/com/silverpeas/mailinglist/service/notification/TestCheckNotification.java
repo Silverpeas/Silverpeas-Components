@@ -28,10 +28,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.jms.QueueConnectionFactory;
 import javax.jms.TextMessage;
-import javax.naming.InitialContext;
-import javax.naming.Reference;
 
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DataSetException;
@@ -40,7 +37,6 @@ import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.jvnet.mock_javamail.Mailbox;
 
-import com.mockrunner.mock.jms.MockQueue;
 import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
 import com.silverpeas.mailinglist.service.ServicesFactory;
@@ -55,40 +51,24 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 public class TestCheckNotification extends
     AbstractSilverpeasDatasourceSpringContextTests {
 
-  private NotificationHelperImpl notificationHelper;
+  private SimpleNotificationHelper notificationHelper;
 
-  public NotificationHelperImpl getNotificationHelper() {
+  public SimpleNotificationHelper getNotificationHelper() {
     return notificationHelper;
   }
 
-  public void setNotificationHelper(NotificationHelperImpl notificationHelper) {
+  public void setNotificationHelper(SimpleNotificationHelper notificationHelper) {
     this.notificationHelper = notificationHelper;
   }
 
+  @Override
   protected String[] getConfigLocations() {
     return new String[] { "spring-checker.xml", "spring-notification.xml",
         "spring-hibernate.xml", "spring-datasource.xml" };
   }
 
-  protected void registerMockJMS() throws Exception {
-    InitialContext ic = new InitialContext();
-    // Construct BasicDataSource reference
-    Reference refFactory = new Reference("javax.jms.QueueConnectionFactory",
-        "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
-    ic.rebind(JNDINames.JMS_FACTORY, refFactory);
-    Reference refQueue = new Reference("javax.jms.Queue",
-        "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
-    ic.rebind(JNDINames.JMS_QUEUE, refQueue);
-    QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic
-        .lookup(JNDINames.JMS_FACTORY);
-    assertNotNull(qconFactory);
-    MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);
-    queue.clear();
-  }
-
   @SuppressWarnings("unchecked")
   public void testNotifyArchivageNotModeratedOpen() throws Exception {
-    registerMockJMS();
     MailingList list = ServicesFactory.getMailingListService().findMailingList(
         "101");
     Message message = ServicesFactory.getMessageService().getMessage("701");
@@ -105,11 +85,11 @@ public class TestCheckNotification extends
     assertEquals(1, list.getInternalSubscribers().size());
     assertNotNull(list.getReaders());
     assertEquals(1, list.getReaders().size());
-    InternalUser reader = (InternalUser) list.getReaders().iterator().next();
+    InternalUser reader = list.getReaders().iterator().next();
     assertEquals("maggie.simpson@silverpeas.com", reader.getEmail());
     assertNotNull(list.getModerators());
     assertEquals(1, list.getModerators().size());
-    InternalUser moderator = (InternalUser) list.getModerators().iterator().next();
+    InternalUser moderator = list.getModerators().iterator().next();
     assertEquals("bart.simpson@silverpeas.com", moderator.getEmail());
     assertNotNull(list.getExternalSubscribers());
     assertEquals(0, list.getExternalSubscribers().size());
@@ -124,9 +104,7 @@ public class TestCheckNotification extends
 
   @SuppressWarnings("unchecked")
   public void testNotifyArchivageModeratedOpen() throws Exception {
-    registerMockJMS();
-    MailingList list = ServicesFactory.getMailingListService().findMailingList(
-        "102");
+    MailingList list = ServicesFactory.getMailingListService().findMailingList("102");
     Message message = ServicesFactory.getMessageService().getMessage("702");
     assertNotNull(message);
     assertNotNull(list);
@@ -141,19 +119,18 @@ public class TestCheckNotification extends
     assertEquals(1, list.getInternalSubscribers().size());
     assertNotNull(list.getReaders());
     assertEquals(1, list.getReaders().size());
-    InternalUser reader = (InternalUser) list.getReaders().iterator().next();
+    InternalUser reader = list.getReaders().iterator().next();
     assertEquals("lisa.simpson@silverpeas.com", reader.getEmail());
     assertNotNull(list.getModerators());
     assertEquals(1, list.getModerators().size());
-    InternalUser moderator = (InternalUser) list.getModerators().iterator().next();
+    InternalUser moderator = list.getModerators().iterator().next();
     assertEquals("bart.simpson@silverpeas.com", moderator.getEmail());
     assertNotNull(list.getExternalSubscribers());
     assertEquals(0, list.getExternalSubscribers().size());
     assertNotNull(list.getGroupSubscribers());
     assertEquals(0, list.getGroupSubscribers().size());
     notificationHelper.notify(message, list);
-    List<TextMessage> messages = MockObjectFactory
-        .getMessages(JNDINames.JMS_QUEUE);
+    List<TextMessage> messages = MockObjectFactory.getMessages(JNDINames.JMS_QUEUE);
     assertNotNull(messages);
     assertEquals(1, messages.size());
     for (TextMessage alert : messages) {
@@ -180,7 +157,8 @@ public class TestCheckNotification extends
   }
 
 
-  protected void onTearDown() {
+  @Override
+  protected void onTearDown() throws IOException {
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
     try {
@@ -198,9 +176,12 @@ public class TestCheckNotification extends
         }
       }
     }
+    super.onTearDown();
   }
 
+  @Override
   protected void onSetUp() {
+    super.onSetUp();
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
     try {
@@ -220,6 +201,7 @@ public class TestCheckNotification extends
     }
   }
 
+  @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
     if (isOracle()) {
       return new FlatXmlDataSet(TestCheckNotification.class

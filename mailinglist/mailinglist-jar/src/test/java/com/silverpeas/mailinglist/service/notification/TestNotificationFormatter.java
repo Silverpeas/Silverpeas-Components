@@ -44,7 +44,7 @@ public class TestNotificationFormatter extends AbstractSingleSpringContextTests 
     Message message = new Message();
     message.setTitle("Hello World");
     NotificationFormatter formatter = getFormatter();
-    String result = formatter.formatTitle(message, "Test", false);
+    String result = formatter.formatTitle(message, "Test", "fr", false);
     assertEquals("[Test] : Hello World", result);
   }
 
@@ -52,7 +52,7 @@ public class TestNotificationFormatter extends AbstractSingleSpringContextTests 
     Message message = new Message();
     message.setTitle("Hello World");
     NotificationFormatter formatter = getFormatter();
-    String result = formatter.formatTitle(message, "Test", true);
+    String result = formatter.formatTitle(message, "Test", "fr", true);
     assertEquals("[Test] : Hello World à modérer", result);
   }
 
@@ -87,7 +87,7 @@ public class TestNotificationFormatter extends AbstractSingleSpringContextTests 
     message.setId("id");
     message.setComponentId("componentId");
     NotificationFormatter formatter = getFormatter();
-    String result = formatter.prepareUrl("", message, true);
+    String result = formatter.prepareUrl(message, true);
     assertEquals(
         "/Rmailinglist/componentId/moderationList/componentId",
         result);
@@ -99,7 +99,7 @@ public class TestNotificationFormatter extends AbstractSingleSpringContextTests 
     message.setId("id");
     message.setComponentId("componentId");
     NotificationFormatter formatter = getFormatter();
-    String result = formatter.prepareUrl("", message, false);
+    String result = formatter.prepareUrl(message, false);
     assertEquals("/Rmailinglist/componentId/message/id", result);
   }
 }

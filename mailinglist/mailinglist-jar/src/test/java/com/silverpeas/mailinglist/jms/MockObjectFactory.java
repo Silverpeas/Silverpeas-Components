@@ -37,12 +37,24 @@ import javax.naming.spi.ObjectFactory;
 
 import com.mockrunner.mock.jms.JMSMockObjectFactory;
 import com.mockrunner.mock.jms.MockQueue;
+import java.util.Set;
+import javax.jms.TextMessage;
 
 public class MockObjectFactory implements ObjectFactory {
 
-  private static JMSMockObjectFactory factory = new JMSMockObjectFactory();
+  private final static JMSMockObjectFactory factory = new JMSMockObjectFactory();
 
-  private static Map queues = new HashMap(10);
+  private final static Map<String, Queue> queues = new HashMap<String, Queue>(10);
+
+
+  public synchronized static void clearAll() {
+    Set<String> keys = queues.keySet();
+    for(String name : keys){
+      factory.getDestinationManager().removeQueue(name);
+    }
+    queues.clear();
+    factory.getMockTopicConnectionFactory().clearConnections();
+  }
 
   public Object getObjectInstance(Object obj, Name name, Context nameCtx,
       Hashtable environment) throws Exception {
@@ -67,21 +79,31 @@ public class MockObjectFactory implements ObjectFactory {
 
   }
 
-  private static Queue getQueue(Name name){
-    Queue queue = (Queue) queues.get(name);
+
+  public static synchronized void closeQueue(String name) {
+    factory.getDestinationManager().removeQueue(name);
+    Queue queue = queues.get(name.toString());
+    if(queue != null){
+      queues.remove(name);
+    }
+  }
+
+  private synchronized static Queue getQueue(Name name){
+    Queue queue = queues.get(name.toString());
     if(queue == null){
       queue = factory.getDestinationManager().createQueue(name.toString());
-      queues.put(name, queue);
+      queues.put(name.toString(), queue);
     }
     return queue;
   }
 
-  public static List getMessages(String name) {
+  @SuppressWarnings("unchecked")
+  public synchronized static List<TextMessage> getMessages(String name) {
     MockQueue queue = factory.getDestinationManager().getQueue(name);
     if(queue == null){
       queue = (MockQueue) queues.get(name);
     }
-    return queue.getCurrentMessageList();
+    return (List<TextMessage>) queue.getCurrentMessageList();
   }
 
 }

@@ -21,19 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.model;
 
 import java.io.IOException;
-import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
 
-import javax.jms.QueueConnectionFactory;
 import javax.jms.TextMessage;
 import javax.mail.internet.MimeMessage;
-import javax.naming.InitialContext;
-import javax.naming.Reference;
 
 import org.dbunit.database.IDatabaseConnection;
 import org.dbunit.dataset.DataSetException;
@@ -42,9 +37,7 @@ import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.operation.DatabaseOperation;
 import org.jvnet.mock_javamail.Mailbox;
 
-import com.mockrunner.mock.jms.MockQueue;
 import com.silverpeas.mailinglist.AbstractSilverpeasDatasourceSpringContextTests;
-import com.silverpeas.mailinglist.PathTestUtil;
 import com.silverpeas.mailinglist.jms.MockObjectFactory;
 import com.silverpeas.mailinglist.service.ServicesFactory;
 import com.silverpeas.mailinglist.service.event.MessageEvent;
@@ -55,11 +48,9 @@ import com.stratelia.silverpeas.notificationserver.NotificationServerUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
-public class TestMailingListComponent extends
-    AbstractSilverpeasDatasourceSpringContextTests {
+public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpringContextTests {
 
-  private MailingListComponent component;
-
+  private MailingListComponent component = new MailingListComponent("100");
   private static final String textEmailContent = "Bonjour famille Simpson, j'espère que vous allez bien. "
       + "Ici tout se passe bien et Krusty est très sympathique. Surtout "
       + "depuis que Tahiti Bob est retourné en prison. Je dois remplacer "
@@ -67,19 +58,18 @@ public class TestMailingListComponent extends
 
   @Override
   protected String[] getConfigLocations() {
-    return new String[] { "spring-checker.xml", "spring-notification.xml",
-        "spring-hibernate.xml", "spring-datasource.xml" };
+    return new String[]{"spring-checker.xml", "spring-notification.xml",
+          "spring-hibernate.xml", "spring-datasource.xml"};
   }
 
   @Override
-  protected void onTearDown() {
+  protected void onTearDown() throws IOException {
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
     try {
       connection = getConnection();
       DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
-      FileFolderManager.deleteFolder(PathTestUtil.BUILD_PATH + File.separatorChar + "temp"
-              + File.separatorChar + "uploads", false);
+      FileFolderManager.deleteFolder("c:\\tmp\\uploads\\componentId", false);
     } catch (Exception ex) {
       ex.printStackTrace();
     } finally {
@@ -91,19 +81,18 @@ public class TestMailingListComponent extends
         }
       }
     }
+    super.onTearDown();
   }
 
   @Override
   protected void onSetUp() {
+    super.onSetUp();
     Mailbox.clearAll();
-    registerDatasource();
-    component = new MailingListComponent("100");
     IDatabaseConnection connection = null;
     try {
       connection = getConnection();
       DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
       DatabaseOperation.CLEAN_INSERT.execute(connection, getDataSet());
-      registerMockJMS();
     } catch (Exception ex) {
       ex.printStackTrace();
     } finally {
@@ -115,36 +104,18 @@ public class TestMailingListComponent extends
         }
       }
     }
+    ServicesFactory.getInstance().setApplicationContext(applicationContext);
   }
 
   @Override
   protected IDataSet getDataSet() throws DataSetException, IOException {
     FlatXmlDataSet dataSet;
     if (isOracle()) {
-      dataSet = new FlatXmlDataSet(TestMailingListComponent.class
-          .getResourceAsStream("test-component-oracle-dataset.xml"));
+      dataSet = new FlatXmlDataSet(TestMailingListComponent.class.getResourceAsStream("test-component-oracle-dataset.xml"));
     } else {
-      dataSet = new FlatXmlDataSet(TestMailingListComponent.class
-          .getResourceAsStream("test-component-dataset.xml"));
+      dataSet = new FlatXmlDataSet(TestMailingListComponent.class.getResourceAsStream("test-component-dataset.xml"));
     }
     return dataSet;
-  }
-
-  protected void registerMockJMS() throws Exception {
-    prepareJndi();
-    InitialContext ic = new InitialContext();
-    // Construct BasicDataSource reference
-    Reference refFactory = new Reference("javax.jms.QueueConnectionFactory",
-        "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
-    rebind(ic, JNDINames.JMS_FACTORY, refFactory);
-    Reference refQueue = new Reference("javax.jms.Queue",
-        "com.silverpeas.mailinglist.jms.MockObjectFactory", null);
-    rebind(ic, JNDINames.JMS_QUEUE, refQueue);
-    QueueConnectionFactory qconFactory = (QueueConnectionFactory) ic
-        .lookup(JNDINames.JMS_FACTORY);
-    assertNotNull(qconFactory);
-    MockQueue queue = (MockQueue) ic.lookup(JNDINames.JMS_QUEUE);
-    queue.clear();
   }
 
   public void testCheckSender() {
@@ -177,14 +148,12 @@ public class TestMailingListComponent extends
     MessageEvent event = new MessageEvent();
     event.addMessage(message);
     component.onMessage(event);
-    List<TextMessage> jmsMessages = MockObjectFactory
-        .getMessages(JNDINames.JMS_QUEUE);
+    List<TextMessage> jmsMessages = MockObjectFactory.getMessages(JNDINames.JMS_QUEUE);
     assertNotNull(jmsMessages);
     assertEquals(3, jmsMessages.size());
     for (TextMessage alert : jmsMessages) {
       assertNotNull(alert.getText());
-      NotificationData data = NotificationServerUtil
-          .convertXMLToNotificationData(alert.getText());
+      NotificationData data = NotificationServerUtil.convertXMLToNotificationData(alert.getText());
       assertNotNull(data);
       String channel = data.getTargetChannel();
       assertEquals("SMTP", channel);
@@ -192,14 +161,14 @@ public class TestMailingListComponent extends
       assertNotNull(recipient);
       assertTrue("Erreur destinataire " + recipient,
           "homer.simpson@silverpeas.com".equals(recipient)
-              || "marge.simpson@silverpeas.com".equals(recipient)
-              || "bart.simpson@silverpeas.com".equals(recipient));
+          || "marge.simpson@silverpeas.com".equals(recipient)
+          || "bart.simpson@silverpeas.com".equals(recipient));
       assertEquals(message.getSummary(), data.getMessage());
       String url = (String) data.getTargetParam().get("URL");
       assertNotNull(url);
       assertEquals(
           "http://localhost:8000/silverpeas//autoRedirect.jsp?domainId=0&"
-              + "goto=%2FRmailinglist%2F100%2FmoderationList%2F100", url);
+          + "goto=%2FRmailinglist%2F100%2FmoderationList%2F100", url);
       String source = (String) data.getTargetParam().get("SOURCE");
       assertNotNull(source);
       assertEquals("thesimpsons@silverpeas.com", source);
@@ -225,8 +194,7 @@ public class TestMailingListComponent extends
     assertEquals(6, jmsMessages.size());
     for (TextMessage alert : jmsMessages) {
       assertNotNull(alert.getText());
-      NotificationData data = NotificationServerUtil
-          .convertXMLToNotificationData(alert.getText());
+      NotificationData data = NotificationServerUtil.convertXMLToNotificationData(alert.getText());
       assertNotNull(data);
       String channel = data.getTargetChannel();
       assertEquals("SMTP", channel);
@@ -234,14 +202,14 @@ public class TestMailingListComponent extends
       assertNotNull(recipient);
       assertTrue("Erreur destinataire " + recipient,
           "bart.simpson@silverpeas.com".equals(recipient)
-              || "homer.simpson@silverpeas.com".equals(recipient)
-              || "marge.simpson@silverpeas.com".equals(recipient));
+          || "homer.simpson@silverpeas.com".equals(recipient)
+          || "marge.simpson@silverpeas.com".equals(recipient));
       assertEquals(message.getSummary(), data.getMessage());
       String url = (String) data.getTargetParam().get("URL");
       assertNotNull(url);
       assertEquals(
           "http://localhost:8000/silverpeas//autoRedirect.jsp?domainId=0&"
-              + "goto=%2FRmailinglist%2F100%2FmoderationList%2F100", url);
+          + "goto=%2FRmailinglist%2F100%2FmoderationList%2F100", url);
       String source = (String) data.getTargetParam().get("SOURCE");
       assertNotNull(source);
       assertEquals("thesimpsons@silverpeas.com", source);
@@ -263,8 +231,7 @@ public class TestMailingListComponent extends
   @SuppressWarnings("unchecked")
   public void testOnMessageNotModeratedNotify() throws Exception {
     MailingListComponent componentNotModerated = new MailingListComponent("101");
-    MailingList list = ServicesFactory.getMailingListService().findMailingList(
-        "101");
+    MailingList list = ServicesFactory.getMailingListService().findMailingList("101");
     assertNotNull(list);
     assertNotNull(list.getModerators());
     assertEquals(3, list.getModerators().size());
@@ -278,14 +245,12 @@ public class TestMailingListComponent extends
     MessageEvent event = new MessageEvent();
     event.addMessage(message);
     componentNotModerated.onMessage(event);
-    List<TextMessage> jmsMessages = MockObjectFactory
-        .getMessages(JNDINames.JMS_QUEUE);
+    List<TextMessage> jmsMessages = MockObjectFactory.getMessages(JNDINames.JMS_QUEUE);
     assertNotNull(jmsMessages);
     assertEquals(5, jmsMessages.size());
     for (TextMessage alert : jmsMessages) {
       assertNotNull(alert.getText());
-      NotificationData data = NotificationServerUtil
-          .convertXMLToNotificationData(alert.getText());
+      NotificationData data = NotificationServerUtil.convertXMLToNotificationData(alert.getText());
       assertNotNull(data);
       String channel = data.getTargetChannel();
       assertEquals("SMTP", channel);
@@ -293,16 +258,16 @@ public class TestMailingListComponent extends
       assertNotNull(recipient);
       assertTrue("Erreur destinataire " + recipient,
           "bart.simpson@silverpeas.com".equals(recipient)
-              || "marge.simpson@silverpeas.com".equals(recipient)
-              || "homer.simpson@silverpeas.com".equals(recipient)
-              || "lisa.simpson@silverpeas.com".equals(recipient)
-              || "maggie.simpson@silverpeas.com".equals(recipient));
+          || "marge.simpson@silverpeas.com".equals(recipient)
+          || "homer.simpson@silverpeas.com".equals(recipient)
+          || "lisa.simpson@silverpeas.com".equals(recipient)
+          || "maggie.simpson@silverpeas.com".equals(recipient));
       assertEquals(message.getSummary(), data.getMessage());
       String url = (String) data.getTargetParam().get("URL");
       assertNotNull(url);
       assertEquals(
           "http://localhost:8000/silverpeas//autoRedirect.jsp?domainId=0&"
-              + "goto=%2FRmailinglist%2F101%2Fmessage%2F701", url);
+          + "goto=%2FRmailinglist%2F101%2Fmessage%2F701", url);
       String source = (String) data.getTargetParam().get("SOURCE");
       assertNotNull(source);
       assertEquals("thesimpsons@silverpeas.com", source);
@@ -350,5 +315,6 @@ public class TestMailingListComponent extends
     assertEquals("text/plain; charset=\"UTF-8\"", alert.getContentType());
     assertEquals(textEmailContent, alert.getContent());
   }
+
 
 }

@@ -33,13 +33,11 @@
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>
-        <value>file://${SILVERPEAS_HOME}/properties/com/stratelia/silverpeas/notificationserver/channel/smtp/smtpSettings.properties</value>
-        <value>file://${SILVERPEAS_HOME}/properties/com/silverpeas/mailinglist/notification.properties</value>
-        <value>file://${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/util/jndi.properties</value>
+        <value>classpath:/com/stratelia/silverpeas/notificationserver/channel/smtp/smtpSettings.properties</value>
+        <value>classpath:/com/silverpeas/mailinglist/notification_postgres.properties</value>
       </list>
     </property>
     <property name="searchSystemEnvironment" value="true" />
-    <property name="ignoreUnresolvablePlaceholders" value="true"/>
   </bean>
 
   <bean id="notificationHelper" class="com.silverpeas.mailinglist.service.notification.AdvancedNotificationHelper">
@@ -49,7 +47,7 @@
     <property name="smtpConfig" ref="smtpConfiguration" />
     <property name="controller" ref="organizationController" />
     <property name="calendarBm" ref="calendarBm" />
-    <property name="externalThread" value="true" />
+    <property name="externalThread" value="false" />
   </bean>
 
   <bean id="smtpConfiguration" class="com.silverpeas.mailinglist.service.notification.SmtpConfiguration">
@@ -58,27 +56,17 @@
     <property name="username" value="${SMTPUser}" />
     <property name="password" value="${SMTPPwd}" />
     <property name="authenticate" value="${SMTPAuthentication}" />
-    <property name="secure" value="${SMTPSecure}" />
   </bean>
 
-  <bean id="calendarBm" class="org.springframework.ejb.access.SimpleRemoteStatelessSessionProxyFactoryBean">
-    <property name="jndiName" value="${CALENDARBM_EJBHOME}" />
-    <property name="businessInterface" value="com.stratelia.webactiv.calendar.control.CalendarBm" />
-    <property name="cacheHome" value="true" />
-    <property name="lookupHomeOnStartup" value="true" />
-    <property name="resourceRef" value="false" />
-    <property name="homeInterface" value="com.stratelia.webactiv.calendar.control.CalendarBmHome" />
-    <property name="refreshHomeOnConnectFailure" value="true" />
-  </bean>
-
-  <bean id="mailCheckerInitializer" name="mailCheckerInitializer"
+  <bean id="calendarBm" class="com.silverpeas.mailinglist.service.notification.StubCalendarBm" />
+<!--
+   <bean id="mailCheckerInitializer" name="mailCheckerInitializer"
     class="com.silverpeas.mailinglist.control.MailCheckerInitialize" init-method="registerAll">
     <property name="messageChecker" ref="messageChecker" />
     <property name="mailingListService" ref="mailingListService" />
     <property name="frequency" value="${mail.check.frequency}" />
   </bean>
-
-
+  -->
   <bean id="notificationFormatter" name="notificationFormatter"
     class="com.silverpeas.mailinglist.service.notification.AdvancedNotificationFormatter" />
 
@@ -86,5 +74,4 @@
     class="com.stratelia.silverpeas.notificationManager.NotificationSender">
     <constructor-arg value="fr" type="java.lang.String" />
   </bean>
-
 </beans>
