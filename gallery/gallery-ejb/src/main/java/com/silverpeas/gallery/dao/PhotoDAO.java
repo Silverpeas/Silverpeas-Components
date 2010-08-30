@@ -652,7 +652,6 @@ public class PhotoDAO {
       while (rs.next()) {
         PhotoDetail pd = getPhoto(con, rs.getInt(2));
         PhotoWithStatus withStatus = new PhotoWithStatus(pd, rs.getBoolean(3));
-
         listPhoto.add(new SocialInformationGallery(withStatus));
       }
     } finally {

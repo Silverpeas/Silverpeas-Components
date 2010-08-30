@@ -26,28 +26,30 @@ package com.silverpeas.gallery.socialNetwork;
 import com.silverpeas.gallery.model.PhotoWithStatus;
 import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.socialNetwork.model.SocialInformationType;
+import com.silverpeas.util.StringUtil;
 import java.sql.Timestamp;
 import java.util.Date;
 
 public class SocialInformationGallery implements SocialInformation {
 
-  
-  private final SocialInformationType type = SocialInformationType.PHOTO;  
-  private String title ;
-  private String description ;
+  private final SocialInformationType type = SocialInformationType.PHOTO;
+  private String title;
+  private String description;
   private boolean socialInformationWasupdated = false;
-  private String author ;
+  private String author;
   private Timestamp date;
-  private String url ;
-  private String icon ;
+  private String url;
+  private String icon;
 
   public SocialInformationGallery(PhotoWithStatus picture) {
 
     this.title = picture.getPhoto().getTitle();
 
     this.socialInformationWasupdated = picture.isUpdate();
-    this.description = picture.getPhoto().getDescription() ;
 
+    this.description = picture.getPhoto().getDescription();
+    if (!StringUtil.isDefined(description));
+    description = "";
     if (socialInformationWasupdated) {
       this.author = picture.getPhoto().getUpdateId();
       this.date = new java.sql.Timestamp(picture.getPhoto().getUpdateDate().getTime());
@@ -63,7 +65,8 @@ public class SocialInformationGallery implements SocialInformation {
 
 
   }
-/**
+
+  /**
    * return the Title of this SocialInformation
    * @return String
    */
@@ -71,7 +74,8 @@ public class SocialInformationGallery implements SocialInformation {
   public String getTitle() {
     return title;
   }
-/**
+
+  /**
    * return the Description of this SocialInformation
    * @return String
    */
@@ -79,7 +83,8 @@ public class SocialInformationGallery implements SocialInformation {
   public String getDescription() {
     return description;
   }
-/**
+
+  /**
    * return the Author of this SocialInfo
    * @return String
    */
@@ -87,7 +92,8 @@ public class SocialInformationGallery implements SocialInformation {
   public String getAuthor() {
     return author;
   }
-/**
+
+  /**
    * return the Url of this SocialInfo
    * @return String
    */
@@ -95,7 +101,8 @@ public class SocialInformationGallery implements SocialInformation {
   public String getUrl() {
     return url;
   }
-/**
+
+  /**
    * return the Date of this SocialInfo
    * @return
    */
@@ -103,7 +110,8 @@ public class SocialInformationGallery implements SocialInformation {
   public Date getDate() {
     return date;
   }
- /**
+
+  /**
    * return the icon of this SocialInformation
    * @return String
    */
@@ -111,7 +119,8 @@ public class SocialInformationGallery implements SocialInformation {
   public String getIcon() {
     return icon;
   }
- /**
+
+  /**
    * return the type of this SocialInformation
    * @return String
    */
@@ -120,7 +129,8 @@ public class SocialInformationGallery implements SocialInformation {
     // TODO Auto-generated method stub
     return type.toString();
   }
-/**
+
+  /**
    * return if this socialInfo was updtated or not
    * @return boolean
    */
@@ -128,7 +138,7 @@ public class SocialInformationGallery implements SocialInformation {
   public boolean isUpdeted() {
     return socialInformationWasupdated;
   }
-  
+
   /* (non-Javadoc)
    * @see java.lang.Object#equals(java.lang.Object)
    */
@@ -151,12 +161,12 @@ public class SocialInformationGallery implements SocialInformation {
     } else if (!type.toString().equals(other.type.toString())) {
       return false;
     }
-    
+
     return true;
   }
 
   @Override
   public int compareTo(SocialInformation o) {
-    return getDate().compareTo(o.getDate())*-1;
+    return getDate().compareTo(o.getDate()) * -1;
   }
 }
