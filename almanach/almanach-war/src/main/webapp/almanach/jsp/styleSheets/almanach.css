@@ -22,24 +22,53 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-<!--
+.eventCells {
+	padding-right: 3px;
+	padding-left: 3px;
+	vertical-align: top;
+	background-color: #FFFFFF
+}
 
-td { font-family: Verdana, Arial, Helvetica, sans-serif} 
-a { font-size: 10px; color: #000000 }
-input { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: normal; color: #000000 }
-textarea { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: normal; color: #000000 }
-select { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000000 }
-.selectNS { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: normal; color: #000000 }
+#almanachView {
+	float: left;
+	width: 100%;
+	margin-left: 10px;
+}
 
-.titremodule { font-size: 13pt; font-weight: bold; color: #000000 } 
-.txtnote { font-size: 10px; color: #000000 ; font-family: Verdana, Arial, Helvetica, sans-serif ;text-decoration: none}
+#navigation {
+	float: left;
+	margin-left: 10px;
+	margin-bottom: 10px;
+}
 
-.txtnav { font-size: 10pt; font-weight: bold; color: #000000 } 
-.txtnav2 { font-size: 10pt; font-weight: bold; color: #FFFFFF}
-th {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: bold; color: #000000}
+#currentScope,
+#today,
+#others {
+	float: left;
+	border: 1px solid;
+	margin-right: 10px;
+	background-image:
+		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+	background-repeat: repeat-x;
+	white-space: nowrap;
+	padding: 5px;
+}
 
+#currentScope {
+	width: 200px;
+	text-align: center;
+}
 
+#currentScope img {
+	margin-top: 2px;
+}
 
+#others form,
+#footer form {
+	margin: 0px;
+	padding: 0px;
+}
 
-
--->
+#today {
+	padding: 7px;
+}
