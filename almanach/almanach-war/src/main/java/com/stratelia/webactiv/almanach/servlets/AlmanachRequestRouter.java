@@ -23,12 +23,14 @@
  */
 package com.stratelia.webactiv.almanach.servlets;
 
-import com.silverpeas.util.StringUtil;
+import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import net.fortuna.ical4j.model.Calendar;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -42,7 +44,6 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendar;
-import java.util.List;
 
 public class AlmanachRequestRouter extends ComponentRequestRouter {
 
@@ -58,7 +59,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
-   * @return 
+   * @return
    */
   @Override
   public String getSessionControlBeanName() {
@@ -125,7 +126,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         Calendar calendarAlmanach = almanach.getICal4jCalendar(almanach.getAllEventsAgregation());
         almanach.setCurrentICal4jCalendar(calendarAlmanach);
         List<Event> events = almanach.listCurrentMonthEvents();
-        // transformation des VEvent du Calendar ical4j en Event du MonthCalendar        
+        // transformation des VEvent du Calendar ical4j en Event du MonthCalendar
         monthC.addEvent(events);
         // initialisation de monthC avec la date courante issue de almanach
         monthC.setCurrentMonth(almanach.getCurrentDay().getTime());
@@ -163,6 +164,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         }
 
         request.setAttribute("CompleteEvent", event);
+        request.setAttribute("From", request.getParameter("Function"));
 
         destination = "/almanach/jsp/viewEventContent.jsp?flag=" + flag;
       } else if (function.startsWith("createEvent")) {
@@ -447,10 +449,6 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Event", event);
 
         destination = "/almanach/jsp/pdcPositions.jsp";
-      } else if (function.startsWith("printAlmanach")) {
-        request.setAttribute("ListEvent", almanach.getListRecurrentEvent(false));
-
-        destination = "/almanach/jsp/printAlmanach.jsp";
       } else if (function.startsWith("Pdf")) {
         // Recuperation des parametres
         String fileName = almanach.buildPdf(function);
@@ -509,6 +507,15 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         } catch (Exception e) {
           request.setAttribute("javax.servlet.jsp.jspException", e);
         }
+      } else if ("ViewYearEvents".equals(function) || "ViewMonthEvents".equals(function)) {
+        Collection<EventDetail> events = almanach.getListRecurrentEvent(true);
+        request.setAttribute("Events", events);
+        request.setAttribute("Function", function);
+        destination = "/almanach/jsp/viewEvents.jsp";
+      } else if ("ViewYearEventsPOPUP".equals(function)) {
+        Collection<EventDetail> events = almanach.getListRecurrentEvent(true);
+        request.setAttribute("Events", events);
+        destination = "/almanach/jsp/viewEventsPopup.jsp";
       } else {
         destination = "/almanach/jsp/" + function;
       }

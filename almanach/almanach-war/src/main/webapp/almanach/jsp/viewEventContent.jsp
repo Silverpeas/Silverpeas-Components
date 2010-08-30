@@ -40,6 +40,7 @@
 	EventDetail event = (EventDetail) request.getAttribute("CompleteEvent");
 	Date dateDebutIteration = (Date) request.getAttribute("DateDebutIteration");
 	Date dateFinIteration = (Date) request.getAttribute("DateFinIteration");
+	String from = (String) request.getAttribute("From");
 
 	String dateDebutIterationString = DateUtil.date2SQLDate(dateDebutIteration);
 
@@ -122,7 +123,7 @@ $(document).ready(function(){
 </script>
 </HEAD>
 <TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
-<BODY MARGINHEIGHT="5" MARGINWIDTH="5" TOPMARGIN="5" LEFTMARGIN="5">
+<BODY>
   <% 
     Window 	window 	= graphicFactory.getWindow();
     Frame 	frame	= graphicFactory.getFrame();
@@ -130,6 +131,13 @@ $(document).ready(function(){
     OperationPane operationPane = window.getOperationPane();
         
 	BrowseBar browseBar = window.getBrowseBar();
+	if (StringUtil.isDefined(from)) {
+	  	if (from.equals("ViewYearEvents")) {
+			browseBar.setPath("<a href=\""+from+"\">"+resources.getString("almanach.browsebar.yearEvents")+"</a>");
+	  	} else if (from.equals("ViewMonthEvents")) {
+	  	  	browseBar.setPath("<a href=\""+from+"\">"+resources.getString("almanach.browsebar.monthEvents")+"</a>");
+	  	}
+	}
 	browseBar.setExtraInformation(title);
 	    
     String url = "ToAlertUser?Id="+id;
@@ -355,11 +363,15 @@ $(document).ready(function(){
   </td></tr>
   </table>
   <%
-		out.println("<br>");
+		out.println("<br/>");
  		ButtonPane buttonPane = graphicFactory.getButtonPane();
-		buttonPane.addButton(graphicFactory.getFormButton(resources.getString("GML.back"), "almanach.jsp", false));
+ 		String backURL = "almanach.jsp";
+ 		if (StringUtil.isDefined(from)) {
+ 		 	backURL = from;
+ 		}
+		buttonPane.addButton(graphicFactory.getFormButton(resources.getString("GML.back"), backURL, false));
 		out.println(buttonPane.print());
-		out.println("<br>");
+		out.println("<br/>");
 		out.println("</center>");
 		out.println(frame.printAfter());				
 		out.println(window.printAfter());

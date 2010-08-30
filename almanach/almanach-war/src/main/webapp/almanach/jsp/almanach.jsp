@@ -102,7 +102,7 @@ function clickDay(day){
 }
 
 function openSPWindow(fonction, windowName){
-	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
+	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '450','scrollbars=yes, resizable, alwaysRaised');
 }
 
 function viewEvent(id, date, componentId)
@@ -120,6 +120,10 @@ function addEvent(day)
 function printPdf(view) 
 {
     window.open(view, "PdfGeneration", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
+}
+
+function viewEvents() {
+	pdcUtilizationWindow = SP_openWindow("ViewYearEventsPOPUP", "allEvents", '600', '400','scrollbars=yes,resizable,alwaysRaised');
 }
 
 <%	if (almanach.isAgregationUsed()) { %>
@@ -190,17 +194,19 @@ out.println(graphicFactory.getLookStyleSheet());
   	OperationPane operationPane = window.getOperationPane();
    	if (flag.equals("admin") && almanach.isPdcUsed()) {
     	operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+instanceId+"','utilizationPdc1')");
-        operationPane.addLine();
    	}
-  	operationPane.addOperation(calendarPdfSrc,almanach.getString("genererPdfMoisComplet"), "javascript:onClick=printPdf('"+AlmanachPdfGenerator.PDF_MONTH_ALLDAYS+"')");
-  	operationPane.addOperation(pdfSrc,almanach.getString("genererPdfJourEvenement"), "javascript:onClick=printPdf('"+AlmanachPdfGenerator.PDF_MONTH_EVENTSONLY+"')");
-  	operationPane.addOperation(calendarPdfSrc,almanach.getString("almanach.genererPdfAnnee"), "javascript:onClick=printPdf('"+AlmanachPdfGenerator.PDF_YEAR_EVENTSONLY+"')");
-  	operationPane.addOperation(printSrc, resources.getString("GML.print"), "printAlmanach.jsp");
-
-  	if (flag.equals("publisher") || flag.equals("admin")) {
-  	  	operationPane.addLine();
-    	operationPane.addOperation(addEventSrc, almanach.getString("creerEvenement"), "javascript:onClick=addEvent('')");
+   	if (flag.equals("publisher") || flag.equals("admin")) {
+    	operationPane.addOperation(addEventSrc, resources.getString("creerEvenement"), "javascript:onClick=addEvent('')");
+    	operationPane.addLine();
 	}
+   	
+   	operationPane.addOperation(printSrc, resources.getString("almanach.action.monthEvents"), "ViewMonthEvents");
+   	operationPane.addOperation("",resources.getString("almanach.action.yearEvents"), "ViewYearEvents");
+   	operationPane.addOperation("",resources.getString("almanach.action.yearEvents")+" "+resources.getString("almanach.popup"), "javascript:onClick=viewEvents()");
+   	operationPane.addLine();
+  	operationPane.addOperation(calendarPdfSrc,resources.getString("genererPdfMoisComplet"), "javascript:onClick=printPdf('"+AlmanachPdfGenerator.PDF_MONTH_ALLDAYS+"')");
+  	operationPane.addOperation(pdfSrc,resources.getString("genererPdfJourEvenement"), "javascript:onClick=printPdf('"+AlmanachPdfGenerator.PDF_MONTH_EVENTSONLY+"')");
+  	operationPane.addOperation(calendarPdfSrc,resources.getString("almanach.genererPdfAnnee"), "javascript:onClick=printPdf('"+AlmanachPdfGenerator.PDF_YEAR_EVENTSONLY+"')");
   
   	out.println(window.printBefore());
 	out.println(frame.printBefore());

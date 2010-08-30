@@ -55,32 +55,84 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
 
 <%@ include file="checkAlmanach.jsp" %>
-
 <%
-	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(almanach.getLanguage());
-
-	Collection events = (Collection) request.getAttribute("ListEvent");
+	Collection events = (Collection) request.getAttribute("Events");
+	String function = (String) request.getAttribute("Function");
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resources.getString("GML.popupTitle")%></title>
 <%
 out.println(graphicFactory.getLookStyleSheet());
 %>
+<style type="text/css">
+#listEvents .month {
+	font-weight: bold;
+}
 
+#listEvents ul.months, ul.days, ul.events {
+	list-style-type: none;
+}
+
+#listEvents ul.days {
+	margin: 1em 0 1em 0px;
+	padding: 0;
+}
+
+#listEvents ul.events {
+	margin: 1em 0 1em 40px;
+	padding: 0;
+}
+
+#listEvents li.event {
+	background-image: url(icons/flecheGrise.gif);
+	background-repeat: no-repeat;
+	background-position: 0px 0px;
+	padding-left: 14px;
+	margin-bottom:5px;
+	margin-top:5px;
+}
+
+#listEvents li.priorityEvent {
+	background-image: url(icons/flecheRouge.gif);
+	background-repeat: no-repeat;
+	background-position: 0px 0px;
+	padding-left: 14px;
+	margin-bottom:5px;
+	margin-top:5px;
+}
+
+#listEvents li.day {
+	background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+	background-repeat:repeat-x;
+	color:#000000;
+	font-size:10pt;
+	font-weight:bold;
+}
+
+#listEvents li.month {
+	color:#000000;
+	font-size:13pt;
+	font-weight:bold;
+}
+</style>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
+<div id="listEvents">
 <%
 	Frame 	frame 	= graphicFactory.getFrame();
 	Window 	window 	= graphicFactory.getWindow();
 	Board	board	= graphicFactory.getBoard();
 
 	BrowseBar browseBar = window.getBrowseBar();
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "almanach.jsp");
-	browseBar.setPath(almanach.getString("impression"));
+	if (function.equals("ViewYearEvents")) {
+		browseBar.setPath(resources.getString("almanach.browsebar.yearEvents"));
+  	} else if (function.equals("ViewMonthEvents")) {
+  	  	browseBar.setPath(resources.getString("almanach.browsebar.monthEvents"));
+  	}
 	
     OperationPane operationPane = window.getOperationPane();
     operationPane.addOperation(m_context + "/util/icons/almanach_to_print.gif", resources.getString("GML.print"), "javascript:onClick = window.print()");
@@ -88,38 +140,37 @@ out.println(graphicFactory.getLookStyleSheet());
 	out.println(window.printBefore());
 	out.println(frame.printBefore());
 	out.println(board.printBefore());
+	
+	int scope = 0; //0 = year
+	if (!"ViewYearEvents".equals(function)) {
+	  scope = 1; //1 = month
+	}
+	
+	int currentDay = -1;
+	Calendar calendar = Calendar.getInstance();
+	calendar.setTime(almanach.getCurrentDay().getTime());
+	if (scope == 0) {
+		calendar.set(Calendar.DAY_OF_YEAR, 1);
+	} else {
+	  	calendar.set(Calendar.DAY_OF_MONTH, 1);
+	}
+	int currentYear = calendar.get(Calendar.YEAR);
+	int currentMonth = calendar.get(Calendar.MONTH);
+	%>
+	<ul class="months">
+	<%
+	while ((scope == 1 && currentMonth == calendar.get(Calendar.MONTH)) || (scope == 0 && currentYear == calendar.get(Calendar.YEAR))) {
 %>
-<center>
-    <table width="90%" border="0" cellspacing="1" cellpadding="2" class="intfdcolor4">
-      <tr> 
-	<td nowrap colspan="3"><span class="titremodule">
-	<%=
-		almanach.getString("mois" + almanach.getCurrentDay().get(Calendar.MONTH)) + 
-		" " + 
-		almanach.getCurrentDay().get(Calendar.YEAR)
-	%></span></td>
-      </tr>
-    </table>
-		<%
-		if (events.size() == 0) {
-		%>
-    <table width="90%" border="0" cellspacing="1" cellpadding="2" class="intfdcolor4">
-      <tr> 
-	<td nowrap colspan="3"><span class="txtnav"><%=almanach.getString("aucunEvenement")%></span></td>
-      </tr>
-		<%
-		}
-
-		int currentDay = -1;
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTime(almanach.getCurrentDay().getTime());
-		calendar.set(Calendar.DAY_OF_MONTH, 1);
-		int currentMonth = calendar.get(Calendar.MONTH);
-
+		<li class="month"><%=almanach.getString("mois" + calendar.get(Calendar.MONTH)) + " " + calendar.get(Calendar.YEAR) %></li>
+		<ul class="days">
+<%
+		
+		currentMonth = calendar.get(Calendar.MONTH);
+		
 		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd");
 		
 		boolean firstBgColor = true;
-
+		
 		while (currentMonth == calendar.get(Calendar.MONTH)) {
 			for (Iterator i = events.iterator(); i.hasNext(); ) {
 				EventDetail event = (EventDetail) i.next();
@@ -127,6 +178,7 @@ out.println(graphicFactory.getLookStyleSheet());
 				String startDay = dateFormat.format(event.getStartDate());
 				String startHour = event.getStartHour();
 				String endHour = event.getEndHour();
+				String url = m_context+"/Ralmanach/"+event.getPK().getInstanceId()+"/viewEventContent.jsp?Id="+event.getPK().getId()+"&amp;Date="+dateFormat.format(calendar.getTime())+"&amp;Function="+function;
 				if (startDay.compareTo(theDay) > 0) continue;
 				String endDay = startDay;
 				if (event.getEndDate() != null)
@@ -134,36 +186,36 @@ out.println(graphicFactory.getLookStyleSheet());
 				if (endDay.compareTo(theDay) < 0) continue;
 				
 				if (calendar.get(Calendar.DAY_OF_MONTH) != currentDay) {
-				   if (currentDay != -1) // if it's not the first print
-					out.println("</table>");
+				   if (currentDay != -1) {
+				     	// if it's not the first print
+						out.println("</ul>");
+				   }
 				   if (firstBgColor) {
-				     %><table width="90%" border="0" cellspacing="1" cellpadding="2" class="intfdcolor4"><%
+				     %><li class="day"><%
 				   } else {
-				     %><table width="90%" border="0" cellspacing="1" cellpadding="2" class="intfdcolor"><%
+				     %><li class="day"><%
 				   }
 				   firstBgColor = ! firstBgColor;
 				   %>
-				      <tr> 
-					<td nowrap colspan="2"><span class="txtnav"><%=almanach.getString("jour" + calendar.get(Calendar.DAY_OF_WEEK))+ 
+						<%=almanach.getString("jour" + calendar.get(Calendar.DAY_OF_WEEK))+ 
 						" " + 
 						calendar.get(Calendar.DAY_OF_MONTH) + 
 						" " + 
 						almanach.getString("mois" + calendar.get(Calendar.MONTH)) +
 						" " +
 						calendar.get(Calendar.YEAR)%>
-					</span></td>
-				      </tr>
+					</li>
+					<ul class="events">
 				   <%
 				   currentDay = calendar.get(Calendar.DAY_OF_MONTH);
 				}
 				%>
-				      <tr> 
 					<%if (event.getPriority() == 1) {%>
-					<td nowrap align="center" width="4%" valign="top"><img src="icons/flecheRouge.gif" width="6" height="11"></td>
+						<li class="priorityEvent">
 					<%} else {%>
-					<td nowrap align="center" width="4%" valign="top"><img src="icons/flecheGrise.gif" width="6" height="11"></td>
+						<li class="event">
 					<%}%>
-					<td width="61%"><span class="txtnote">
+					<span class="eventDetail">
 					<%
 					String title = EncodeHelper.javaStringToHtmlString(event.getTitle());
 					String description = null;
@@ -183,7 +235,9 @@ out.println(graphicFactory.getLookStyleSheet());
 							description = "<span style=\"color :"+eventColor+"\">"+description+"</span>";
 						}
 					}
-					out.println(title);
+					out.print("<a href=\""+url+"\">");
+					out.print(title);
+					out.println("</a>");
 					if (StringUtil.isDefined(description)) {
 						out.println(description);
 					}
@@ -197,24 +251,26 @@ out.println(graphicFactory.getLookStyleSheet());
 					}
 					%>
 					<%if (StringUtil.isDefined(event.getPlace())) { %>
-						<br><%=almanach.getString("lieuEvenement")%> : <%=event.getPlace()%>
+						<br/><%=almanach.getString("lieuEvenement")%> : <%=event.getPlace()%>
 					<% } %>
-					</span><br></td>
-				    </tr>
+					</span>
+					</li>
 				<%
 			} //end for
 			calendar.add(Calendar.DAY_OF_MONTH, 1);
 		}// end while
-	%>
-    </table>
-    </center>
+%>
+	</ul>
+<% } %>
+</ul>
+	</div>
 	<%
 	out.println(board.printAfter());
 	Button button = graphicFactory.getFormButton(resources.getString("GML.back"), "almanach.jsp", false);
-    out.print("<br><center>"+button.print()+"</center>");
+    out.print("<br/><center>"+button.print()+"</center>");
 	  
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
