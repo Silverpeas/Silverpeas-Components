@@ -494,6 +494,14 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
 
         String roleName = session.getRoleNameFromExternalTodoId(todoId);
         session.resetCurrentRole(roleName);
+      } else {
+        String roleName = request.getParameter("role");
+        SilverTrace.debug("processManager",
+            "ProcessManagerRequestRouter.getDestination",
+            "root.MSG_GEN_PARAM_VALUE", "From notification, role="+roleName);
+        if (roleName != null) {
+          session.resetCurrentRole(roleName);
+        }
       }
 
       session.resetCurrentProcessInstance(processId);
@@ -705,7 +713,14 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       if (!process.getErrorStatus()) {
         Task[] tasks = session.getTasks();
 
+        SilverTrace.debug("processManager",
+            "ProcessManagerRequestRouter.getDestination",
+            "root.MSG_GEN_PARAM_VALUE", "gettings tasks list, nb found : "+ ((tasks == null) ? 0: tasks.length));
+        
         for (int i = 0; tasks != null && i < tasks.length; i++) {
+          SilverTrace.debug("processManager",
+              "ProcessManagerRequestRouter.getDestination",
+              "root.MSG_GEN_PARAM_VALUE", "filtering task actions, task no : "+ i);
           State state = tasks[i].getState();
           AllowedActions filteredActions = new ActionRefs();
           if (state.getAllowedActionsEx() != null) {
@@ -713,16 +728,20 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
             while (actions.hasNext()) {
               AllowedAction action = actions.next();
               QualifiedUsers qualifiedUsers = action.getAction().getAllowedUsers();
-
+              
               List<String> grantedUserIds = session.getUsers(qualifiedUsers, true);
               SilverTrace.debug("processManager",
                   "ProcessManagerRequestRouter.getDestination",
                   "root.MSG_GEN_PARAM_VALUE", "granted user ids for action "+action.getAction().getName()+" : "+grantedUserIds);
-
+              
               if (grantedUserIds.contains(session.getUserId())) {
                 filteredActions.addAllowedAction(action);
               }
             }
+          } else {
+            SilverTrace.debug("processManager",
+                "ProcessManagerRequestRouter.getDestination",
+                "root.MSG_GEN_PARAM_VALUE", "no action found for task no : "+ i);
           }
           state.setFilteredActions(filteredActions);
         }
