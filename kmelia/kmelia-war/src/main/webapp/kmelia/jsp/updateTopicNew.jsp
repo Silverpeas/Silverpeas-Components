@@ -73,7 +73,7 @@
       <view:looknfeel />
       <title><fmt:message key="GML.popupTitle" /></title>
       <script type="text/javascript" src="<c:url value="/util/javaScript/checkForm.js" />"></script>
-      <script type="text/javascript" src="<<c:url value="/util/javaScript/i18n.js" />"></script>
+      <script type="text/javascript" src="<c:url value="/util/javaScript/i18n.js" />"></script>
       <script language="JavaScript" type="text/javascript">
         function topicGoTo(id)
         {
@@ -216,7 +216,7 @@
                     <table width="235" cellpadding="0" cellspacing="0">
                       <tr>
                         <td width="201"><fmt:message key="kmelia.RightsSpecific" /></td>
-                        <td width="20"><input type="radio" value="<c:out value="${node.pk.id}"/>" name="RightsUsed" <%=rightsSpecificChecked%>></td>
+                        <td width="20"><input type="radio" value="<c:out value="${node.nodePK.id}"/>" name="RightsUsed" <%=rightsSpecificChecked%>></td>
                       </tr>
                       <tr>
                         <td width="201"><fmt:message key="kmelia.RightsInherited" /></td>
