@@ -85,6 +85,7 @@ var topicAddWindow = window;
 var topicUpdateWindow = window;
 var contactWindow = window;
 var userAddWindow = window;
+var importCSVWindow = window;
 
 function topicGoTo(id) 
 {
@@ -92,6 +93,11 @@ function topicGoTo(id)
     document.topicDetailForm.Action.value = "Search";
     document.topicDetailForm.Id.value = id;
     document.topicDetailForm.submit();
+}
+
+function importCSV(id) 
+{
+	importCSVWindow = SP_openWindow("ToImportCSV", "printWindow", '500', '350', 'scrollbars=yes, alwayRaised');
 }
 
 function simpleTopicGoToSelected() {
@@ -252,22 +258,23 @@ if (action.equals("Search")) {
     Window window = gef.getWindow();
     BrowseBar browseBar=window.getBrowseBar();
     browseBar.setDomainName(spaceLabel);
-	  browseBar.setComponentName(componentLabel);
-	  browseBar.setPath(resources.getString("GML.management")+" > "+linkedPathString);
+	browseBar.setComponentName(componentLabel);
+	browseBar.setPath(resources.getString("GML.management")+" > "+linkedPathString);
     
     OperationPane operationPane = window.getOperationPane();
     if (profile.equals("admin")) 
     {
-			if (!id.equals(TRASHCAN_ID)){
-				operationPane.addOperation(resources.getIcon("yellowpages.folderAdd"), resources.getString("CreerSousTheme"), "javascript:onClick=topicAdd('"+id+"')");
-				operationPane.addLine();
-				operationPane.addOperation(resources.getIcon("yellowpages.groupAdd"), resources.getString("GroupAdd"), "javascript:onClick=addGroup()");
-				operationPane.addLine();
-			}
-			else
-			{
-				operationPane.addOperation(resources.getIcon("yellowpages.basketDelete"), resources.getString("yellowpages.DeleteBasketContent"), "javascript:onClick=deleteBasketContent()");
-			}
+		if (!id.equals(TRASHCAN_ID)){
+			operationPane.addOperation(resources.getIcon("yellowpages.folderAdd"), resources.getString("CreerSousTheme"), "javascript:onClick=topicAdd('"+id+"')");
+			operationPane.addLine();
+			operationPane.addOperation(resources.getIcon("yellowpages.groupAdd"), resources.getString("GroupAdd"), "javascript:onClick=addGroup()");
+			operationPane.addLine();
+		}
+		else
+		{
+			operationPane.addOperation(resources.getIcon("yellowpages.basketDelete"), resources.getString("yellowpages.DeleteBasketContent"), "javascript:onClick=deleteBasketContent()");
+		}
+		operationPane.addOperation(resources.getIcon("yellowpages.importCSV"), resources.getString("yellowpages.importCSV"), "javascript:onClick=importCSV('"+id+"')");
     }
     
 	// Si nous sommes dans la corbeille, alors nous ne pouvons créer un contact dedans !!
@@ -332,6 +339,7 @@ if (action.equals("Search")) {
 <input type="hidden" name="ContactId">
 <input type="hidden" name="Id" value="<%=id%>">
 </FORM>
+<form name="refreshList" action="topicManager"></form>
 
 </BODY>
 <%

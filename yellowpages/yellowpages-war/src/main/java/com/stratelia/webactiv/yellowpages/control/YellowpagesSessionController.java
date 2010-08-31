@@ -23,8 +23,10 @@
  */
 package com.stratelia.webactiv.yellowpages.control;
 
+
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.rmi.NoSuchObjectException;
@@ -33,11 +35,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.ejb.EJBException;
 import javax.ejb.RemoveException;
+
+import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.form.AbstractForm;
 import com.silverpeas.form.DataRecord;
@@ -53,6 +58,8 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.csv.CSVReader;
+import com.silverpeas.util.csv.Variant;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -77,10 +84,13 @@ import com.stratelia.webactiv.util.contact.model.ContactDetail;
 import com.stratelia.webactiv.util.contact.model.ContactFatherDetail;
 import com.stratelia.webactiv.util.contact.model.ContactPK;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.exception.UtilTrappedException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import com.stratelia.webactiv.yellowpages.YellowpagesException;
+
 import com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBm;
 import com.stratelia.webactiv.yellowpages.control.ejb.YellowpagesBmHome;
 import com.stratelia.webactiv.yellowpages.model.GroupDetail;
@@ -108,7 +118,7 @@ public class YellowpagesSessionController extends
   private String currentSearchCriteria;
   public static String GroupReferentielPrefix = "group_";
   private ResourceLocator domainMultilang;
-
+  
   /** Creates new sessionClientController */
   public YellowpagesSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
@@ -552,7 +562,7 @@ public class YellowpagesSessionController extends
   public synchronized void deleteContact(String contactId)
       throws RemoteException, PublicationTemplateException, FormException {
     try {
-      // delete donn�es formulaires XML
+      // delete donnees formulaires XML
       UserCompleteContact userCompleteContact = getCompleteContact(contactId);
       String modelId = userCompleteContact.getContact().getModelId();
       if (StringUtil.isDefined(modelId) && modelId.endsWith(".xml")) {
@@ -1585,4 +1595,103 @@ public class YellowpagesSessionController extends
     }
     return csvFilename;
   }
+  
+  /**
+   * Import Csv file
+   * @param filePart
+   * @param modelId
+   * @return HashMap<isError, messages>
+   */
+  public HashMap<Boolean,String> importCSV(FileItem filePart, String modelId) throws YellowpagesException {
+    SilverTrace.info("yellowpages",
+        "YellowpagesSessionController.importCSV()",
+        "root.MSG_GEN_ENTER_METHOD");
+    HashMap<Boolean, String> result = new HashMap<Boolean, String>();
+    InputStream is;
+    int nbContactsAdded = 0;
+    Variant[][] csvValues;
+    try {
+      is = filePart.getInputStream();
+      CSVReader csvReader = new CSVReader(getLanguage());
+      csvReader.initCSVFormat("com.stratelia.webactiv.yellowpages.settings.yellowpagesSettings", "User",",","com.stratelia.webactiv.yellowpages.settings.yellowpagesSettings","UserXMLField");
+
+      try {
+        csvValues = csvReader.parseStream(is);
+        
+        StringBuffer listErrors = new StringBuffer("");
+        ContactDetail contactDetail;
+        int nbStandardColumns = csvReader.getM_nbCols();
+        boolean processExtraColumns = false;
+        
+        //Extra columns from xml form ?
+        if (StringUtil.isDefined(modelId) && csvReader.getM_specificNbCols() > 0)
+          processExtraColumns = true;
+        for (int line = 0; line < csvValues.length; line++) {
+          String[] CSVRow = new String[csvValues[line].length];
+          //Read all columns
+          for (int column = 0; column < nbStandardColumns; column++) {
+            String value = csvValues[line][column].getValueString();
+            CSVRow[column] = value;
+          }
+          //Header columns (firstName, lastName, email, phone, fax)
+          contactDetail = new ContactDetail("X", CSVRow[0], CSVRow[1], CSVRow[2], CSVRow[3], CSVRow[4], null, null, null);
+          
+          try {
+            String contactId = createContact(contactDetail);
+            //XML form columns
+            if (processExtraColumns)
+            {
+              String xmlFormShortName = modelId;
+              // récupération des données du formulaire (via le DataRecord)
+              PublicationTemplate pubTemplate = PublicationTemplateManager
+                  .getPublicationTemplate(getComponentId() + ":"
+                  + xmlFormShortName);
+              DataRecord record = pubTemplate.getRecordSet().getEmptyRecord();
+              record.setId(contactId);
+              
+              int nbExtraColumns = csvReader.getM_specificNbCols();
+              for (int column = nbStandardColumns; column < nbStandardColumns+nbExtraColumns; column++) {
+                String value = csvValues[line][column].getValueString();
+                record.getField(csvReader.getM_specificColName(column-nbStandardColumns)).setObjectValue(value);
+              }
+              // Update
+              pubTemplate.getRecordSet().save(record);
+
+              // sauvegarde du contact et du model
+              createInfoModel(contactId, modelId);
+              UserCompleteContact userContactComplete = new UserCompleteContact(null, new CompleteContact(contactDetail, modelId));
+              setCurrentContact(userContactComplete);
+            }
+          } catch (Exception re)
+          {
+            SilverTrace.error("yellowpagesSession",
+                "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", re);
+          }
+          if (listErrors.length() > 0) {
+            result.put(new Boolean(true), listErrors.toString());
+          }
+          else
+            nbContactsAdded++;
+
+        }
+      } catch (UtilTrappedException ute) {
+        SilverTrace.error("yellowpagesSession",
+            "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", ute);
+        result.put(new Boolean(true), ute.getExtraInfos());
+      }
+      result.put(new Boolean(false), new Integer(nbContactsAdded).toString());
+      
+    } catch (IOException e) {
+      SilverTrace.error("yellowpagesSession",
+          "YellowpagesSessionController.importCSV", "yellowpages.EX_CSV_FILE", e);
+      result.put(new Boolean(true), e.getMessage());
+    }
+
+    SilverTrace.info("yellowpages",
+        "YellowpagesSessionController.importCSV()",
+        "root.MSG_GEN_EXIT_METHOD");
+
+    return result;
+  }
+
 }

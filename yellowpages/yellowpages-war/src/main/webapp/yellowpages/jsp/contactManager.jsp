@@ -46,18 +46,18 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 void displayUserView(GraphicElementFactory gef, CompleteContact contactComplete, UserDetail owner, ResourcesWrapper resources, ResourceLocator contactSettings, JspWriter out) throws IOException
 {
 	ContactDetail detail = contactComplete.getContactDetail();
-   out.println("<table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH=100% >");
-   out.println("<tr><td class=txtlibform width=\"100\">"+resources.getString("Contact")+" :</td>");
-   out.println("<td align=left class=txtnav>"+Encode.javaStringToHtmlString(detail.getFirstName())+" "+Encode.javaStringToHtmlString(detail.getLastName())+"</td>");
+   out.println("<table>");
+   out.println("<tr><td class=\"txtlibform\">"+resources.getString("Contact")+" :</td>");
+   out.println("<td align=\"left\" class=\"txtnav\">"+Encode.javaStringToHtmlString(detail.getFirstName())+" "+Encode.javaStringToHtmlString(detail.getLastName())+"</td>");
    out.println("</tr>");
-   out.println("<tr><td valign=baseline align=left class=txtlibform>"+resources.getString("GML.phoneNumber")+" :</td>");
-   out.println("<td align=left>"+Encode.javaStringToHtmlString(detail.getPhone())+"</td>");
+   out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">"+resources.getString("GML.phoneNumber")+" :</td>");
+   out.println("<td align=\"left\">"+Encode.javaStringToHtmlString(detail.getPhone())+"</td>");
    out.println("</tr>");
-   out.println("<tr><td valign=baseline align=left class=txtlibform>"+resources.getString("GML.faxNumber")+" :</td>");
-   out.println("<td align=left>"+Encode.javaStringToHtmlString(detail.getFax())+"</td>");
+   out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">"+resources.getString("GML.faxNumber")+" :</td>");
+   out.println("<td align=\"left\">"+Encode.javaStringToHtmlString(detail.getFax())+"</td>");
    out.println("</tr>");
-   out.println("<tr><td valign=baseline align=left class=txtlibform>"+resources.getString("GML.eMail")+" :</td>");
-   out.println("<td align=left><a href=mailto:"+Encode.javaStringToHtmlString(detail.getEmail())+">"+Encode.javaStringToHtmlString(Encode.javaStringToHtmlString(detail.getEmail()))+"</A></td>");
+   out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">"+resources.getString("GML.eMail")+" :</td>");
+   out.println("<td align=\"left\"><a href=mailto:"+Encode.javaStringToHtmlString(detail.getEmail())+">"+Encode.javaStringToHtmlString(Encode.javaStringToHtmlString(detail.getEmail()))+"</A></td>");
    out.println("</tr>");
    out.println("</table>");
 }
@@ -99,7 +99,7 @@ out.println(gef.getLookStyleSheet());
   ContactDetail contactDetail = null;
 
 //Récupération des paramètres
-String action = (String) request.getAttribute("Action"); //Delete || Add || Update || 
+String action = (String) request.getAttribute("Action"); //Delete || Add || Update ||
 														// ViewContactInTopic || View ||
 														// UpdateView || ViewContact ||
 														// SaveUser || New || SelectUser
@@ -126,7 +126,8 @@ Button validateButton = null;
 if (action.equals("Delete") == false) {
 %>
 
-<%@page import="com.silverpeas.util.StringUtil"%><HTML>
+<%@page import="com.silverpeas.util.StringUtil"%>
+<HTML>
 <HEAD>
 <TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
 <%
@@ -177,11 +178,11 @@ function isCorrectForm() {
 
      if (isWhitespace(firstName)) {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.surname")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-           errorNb++; 
+           errorNb++;
      }
      if (isWhitespace(lastName)) {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-           errorNb++; 
+           errorNb++;
      }
      switch(errorNb) {
         case 0 :
@@ -211,7 +212,7 @@ function init()
 function selectUser()
 {
 	document.contactForm.Action.value = "SelectUser";
-	document.contactForm.submit();	
+	document.contactForm.submit();
 }
 
 function autoSubmit(){
@@ -219,7 +220,7 @@ function autoSubmit(){
 }
 </script>
 </HEAD>
-<% } // fin action != Delete 
+<% } // fin action != Delete
 
 
 /* Add */
@@ -251,7 +252,7 @@ if (action.equals("Add")) {
 	{
 		%><BODY onload = "reallyClose()"><%
    }
-} 
+}
 
 
 /* Update */
@@ -269,7 +270,7 @@ else if (action.equals("Update")) {
           contactDetail = new ContactDetail(id, firstName, lastName, email, phone, fax, null, null, null);
       yellowpagesScc.updateContact(contactDetail);
       userContactComplete = yellowpagesScc.getCompleteContact(id);
-      yellowpagesScc.setCurrentContact(userContactComplete);      
+      yellowpagesScc.setCurrentContact(userContactComplete);
 }
 else if (action.equals("ViewContactInTopic"))
 {
@@ -305,15 +306,15 @@ if (action.equals("View") || action.equals("UpdateView") || action.equals("ViewC
       lastName = contactDetail.getLastName();
       email = contactDetail.getEmail();
       phone = contactDetail.getPhone();
-      fax = contactDetail.getFax();  
-      userId = contactDetail.getUserId();  
+      fax = contactDetail.getFax();
+      userId = contactDetail.getUserId();
       creationDate = resources.getOutputDate(contactDetail.getCreationDate());
       if (ownerDetail != null)
           creatorName = ownerDetail.getDisplayedName();
       else
           creatorName = yellowpagesScc.getString("UnknownAuthor");
       nextAction = "Update";
-} 
+}
 
 /* SaveUser : retour du UserPanel */
 else if (action.equals("SaveUser")) {
@@ -327,11 +328,11 @@ else if (action.equals("SaveUser")) {
       lastName = contactDetail.getLastName();
       email = contactDetail.getEmail();
       phone = contactDetail.getPhone();
-      fax = contactDetail.getFax();  
+      fax = contactDetail.getFax();
       userId = contactDetail.getUserId();
-      
-      isOwner=true; 
-      
+
+      isOwner=true;
+
       action = "New";
       nextAction = "Add";
 }
@@ -350,24 +351,24 @@ else if (action.equals("New") || action.equals("SelectUser")) {
       Collection pathColl = currentTopic.getPath();
       linkedPathString = displayPath(yellowpagesScc,pathColl, true, 3);
       yellowpagesScc.setPath(linkedPathString);
-      
-      isOwner=true; 
-      nextAction = "Add"; 
-      
+
+      isOwner=true;
+      nextAction = "Add";
+
       if (action.equals("SelectUser")) {
 	    	action = "New";
        	contactDetail = new ContactDetail("X", firstName, lastName, email, phone, fax, null, null, null);
      		userContactComplete = new UserCompleteContact(null, new CompleteContact(contactDetail, null));
      		yellowpagesScc.setCurrentContact(userContactComplete);
-      
+
      		//routage vers le UserPanel
 	      %>
 				<Script language="JavaScript">
 					SP_openWindow('selectUser.jsp','selectUser','750','650','scrollbars=yes, resizable, alwaysRaised');
 				</Script>
 	      <%
-      } 
-} 
+      }
+}
 
 /* Delete */
 else if (action.equals("Delete")) {
@@ -377,40 +378,41 @@ else if (action.equals("Delete")) {
 		  <jsp:forward page="<%=yellowpagesScc.getComponentUrl()+\"topicManager.jsp?Action=Search&Id=1\"%>"/>
       <%
       return;
-} 
+}
 
 validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendContactData('"+nextAction+"');", false);
 Window window = gef.getWindow();
-OperationPane operationPane = window.getOperationPane();
-Board board = gef.getBoard();
-Frame frame = gef.getFrame();
 BrowseBar browseBar = window.getBrowseBar();
 browseBar.setDomainName(spaceLabel);
 browseBar.setComponentName(componentLabel);
+
+OperationPane operationPane = window.getOperationPane();
+Board board = gef.getBoard();
+Frame frame = gef.getFrame();
 
 /* Update */
 if (action.equals("Update"))
 	out.println("<BODY onload = \"reallyClose()\">");
 
 /* New || UpdateView */
-else if (action.equals("New") || action.equals("UpdateView")) { 
+else if (action.equals("New") || action.equals("UpdateView")) {
 	/* New */
 	if (action.equals("New")) {
 		out.println("<BODY onLoad=\"init()\">");
-	} 
-	
+	}
+
 	/* UpdateView */
 	else {
 		out.println("<BODY onLoad=\"document.contactForm.LastName.focus();\">");
 	}
-	
+
 	/* New */
-	if (action.equals("New")) 
+	if (action.equals("New"))
 	{
 		browseBar.setPath(resources.getString("ContactCreation"));
 		operationPane.addOperation(resources.getIcon("yellowpages.contactAdd2"), resources.getString("UserCreer"), "javascript:selectUser();");
 	}
-	
+
 	/* UpdateView */
 	if (action.equals("UpdateView")) {
 		browseBar.setPath(resources.getString("ContactUpdate"));
@@ -491,22 +493,26 @@ else if (action.equals("New") || action.equals("UpdateView")) {
 /* ViewContact */
 else if (action.equals("ViewContact")) {
 		Form formView    = (Form) request.getAttribute("Form");
-		DataRecord data    = (DataRecord) request.getAttribute("Data"); 
-		PagesContext context = (PagesContext) request.getAttribute("PagesContext"); 
+		DataRecord data    = (DataRecord) request.getAttribute("Data");
+		PagesContext context = (PagesContext) request.getAttribute("PagesContext");
+
+		out.println(window.printBefore());
 
 		browseBar.setPath(resources.getString("BBarconsultManager"));
 		browseBar.setClickable(false);
-    	operationPane = window.getOperationPane();
+
+
+		operationPane = window.getOperationPane();
 		operationPane.addOperation(resources.getIcon("yellowpages.contactPrint"), resources.getString("GML.print"), "javaScript:window.print();");
 
-    	out.println(window.printBefore());
 		out.println(frame.printBefore());
 		out.println(board.printBefore());
 
 		displayUserView(gef, contactComplete, ownerDetail, resources, contactSettings, out);
-	
+
 		if (formView != null)
-			formView.display(out, context, data); 
+			formView.display(out, context, data);
+
 		out.println(board.printAfter());
 		out.println(frame.printAfter());
 		out.println(window.printAfter());
@@ -517,7 +523,7 @@ else if (action.equals("ViewContact")) {
 			<input type="hidden" name="ContactId">
 			<input type="hidden" name="CheckPath">
 		</FORM>
-		
+
 		<FORM NAME="topicDetailForm" ACTION="topicManager.jsp" METHOD=POST >
 		  <input type="hidden" name="Action">
 		  <input type="hidden" name="Id" value="<%=id%>">

@@ -537,12 +537,36 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
           request.setAttribute("CSVFileURL", FileServerUtils.getUrlToTempDir(csvFilename));
           file = null;
         }
-
         return "/yellowpages/jsp/downloadCSV.jsp";
+      } else if ("ToImportCSV".equals(function)) {
+        List<PublicationTemplate> listTemplates = new ArrayList<PublicationTemplate>();
+        ArrayList<String> usedTemplates = new ArrayList<String>(scc.getModelUsed());
+        try {
+          List<PublicationTemplate> allTemplates = PublicationTemplateManager
+              .getPublicationTemplates();
+          PublicationTemplate xmlForm;
+          Iterator<PublicationTemplate> iterator = allTemplates.iterator();
+          while (iterator.hasNext()) {
+            xmlForm = (PublicationTemplate) iterator.next();
+            if (usedTemplates.contains(xmlForm.getFileName()))
+              listTemplates.add(xmlForm);
+          }
+          request.setAttribute("XMLForms", listTemplates);
+        } catch (Exception e) {
+          SilverTrace.info("yellowpages",
+              "YellowpagesRequestRouter.getDestination(modelManager)",
+              "root.MSG_GEN_PARAM_VALUE", "", e);
+        }
+        destination = rootDestination + "importCSV.jsp";
+      } else if ("ImportCSV".equals(function)) {
+        List<FileItem> parameters = FileUploadUtil.parseRequest(request);
+        FileItem fileItem = FileUploadUtil.getFile(parameters);
+        String modelId = FileUploadUtil.getParameter(parameters, "modelId");
+        request.setAttribute("Result",scc.importCSV(fileItem, modelId));
+        destination = rootDestination + "importCSV.jsp";
       } else {
         destination = "/yellowpages/jsp/" + function;
       }
-
     } catch (Exception exce_all) {
       request.setAttribute("javax.servlet.jsp.jspException", exce_all);
       return "/admin/jsp/errorpageMain.jsp";
