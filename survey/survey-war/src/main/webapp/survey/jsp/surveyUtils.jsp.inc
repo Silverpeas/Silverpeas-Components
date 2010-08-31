@@ -264,16 +264,27 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
             {
              	// liste déroulante
              	String selectedStr = "";
+
+		String openAnswerId="";
+		Iterator itA = answers.iterator();
+		while (itA.hasNext()) 
+	        {
+			Answer answer = (Answer) itA.next();
+			if (answer.isOpened()) {
+				openAnswerId = answer.getPK().getId()+","+question.getPK().getId();
+			}
+		}
              	
-                r += "<tr><td><select id=\"answer_"+nbQuestionInPage+"\" name=\"answer_"+nbQuestionInPage+"\" onchange=\"selectAnswer(this.value);\">";
+                r += "<tr><td><select id=\"answer_"+nbQuestionInPage+"\" name=\"answer_"+nbQuestionInPage+"\" onchange=\"if(this.value=='"+openAnswerId+"'){document.getElementById('openanswer"+nbQuestionInPage+"').style.display='block'}else{document.getElementById('openanswer"+nbQuestionInPage+"').style.display='none'};\">";
                           			
-                Iterator itA = answers.iterator();
+                itA = answers.iterator();
 	            while (itA.hasNext()) 
 	            {
 	            	Answer answer = (Answer) itA.next();
-	            	String inputValue = answer.getPK().getId()+","+question.getPK().getId();
-                    r += "<option value=\""+inputValue+"\" "+selectedStr+">"+Encode.javaStringToHtmlString(answer.getLabel())+"</option>";
+			String inputValue = answer.getPK().getId()+","+question.getPK().getId();
+			r += "<option value=\""+inputValue+"\" "+selectedStr+">"+Encode.javaStringToHtmlString(answer.getLabel())+"</option>";
 	            }
+		    r += "<input type=\"text\" name=\"openedAnswer_"+nbQuestionInPage+"\" id=\"openanswer"+nbQuestionInPage+"\" value=\"\" style=\"display: none\"/>";
 	            r += "</td></tr>";
             }
             else
@@ -405,15 +416,20 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                           		if (style.equals("list"))
                           		{
                           			// liste d�roulante
-                          			r += "<tr><td><select id=\"answers\" name=\"answers\" onchange=\"selectAnswer(this.value);\">";
+                          			r += "<tr><td><select id=\"answers\" name=\"answers\" onchange=\"if(this.value=='openanswer_"+i+"'){document.getElementById('openanswer"+i+"').style.display='block'}else{document.getElementById('openanswer"+i+"').style.display='none'};\">";
                           			
                           			Iterator itA = answers.iterator();
 	                                int isOpened = 0;
 	                                while (itA.hasNext()) 
 	                                {
 	                                    Answer answer = (Answer) itA.next();
-                   						r += "<option name=\"answer_"+i+"\" value=\"\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</option>";
+					    if (answer.isOpened()) {
+						r += "<option name=\"openanswer_"+i+"\" value=\"openanswer_"+i+"\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</option>";
+					    } else {
+                   				r += "<option name=\"answer_"+i+"\" value=\"\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</option>";
+					    }
    	                                }
+					r += "<input type=\"text\" id=\"openanswer"+i+"\" name=\"answer_"+i+"\" value=\"\" style=\"display:none\"/>";
 	                                r += "</td></tr>";
                           		}
                           		else
@@ -548,17 +564,20 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                        		if (style.equals("list"))
                        		{
                        			// liste d�roulante
-                       			r += "<tr><td><select id=\"answers\" name=\"answers\" onchange=\"selectAnswer(this.value);\">";
+                       			r += "<tr><td><select id=\"answers\" name=\"answers\" onchange=\"if(this.value=='openanswer_"+i+"'){document.getElementById('openanswer"+i+"').style.display='block'}else{document.getElementById('openanswer"+i+"').style.display='none'};\">";
                           			
                        			Iterator itA = answers.iterator();
-	                            int isOpened = 0;
-	                            while (itA.hasNext()) 
-	                            {
-	                                Answer answer = (Answer) itA.next();
- 	            					
-                    				r += "<option name=\"answer_"+i+"\" value=\"\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</option>";
-	                            }
-	                            r += "</td></tr>";
+	                                while (itA.hasNext()) 
+	                                {
+	                                    Answer answer = (Answer) itA.next();
+					    if (answer.isOpened()) {
+						r += "<option name=\"openanswer_"+i+"\" value=\"openanswer_"+i+"\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</option>";
+					    } else {
+                   				r += "<option name=\"answer_"+i+"\" value=\"\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</option>";
+					    }
+   	                                }
+					r += "<input type=\"text\" id=\"openanswer"+i+"\" name=\"answer_"+i+"\" value=\"\" style=\"display:none\"/>";
+	                                r += "</td></tr>";
                         	}
                           	else
                           	{
