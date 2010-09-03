@@ -42,7 +42,9 @@
 	List	 					lockingUsers 				= ((List) request.getAttribute("lockingUsers"));
 	boolean						hasLockingUsers				= (lockingUsers != null) && (lockingUsers.size()>0);
 	boolean						isCurrentUserIsLockingUser 	= ((Boolean) request.getAttribute("isCurrentUserIsLockingUser")).booleanValue();
-	boolean						isReturnEnabled = ((Boolean) request.getAttribute("isReturnEnabled")).booleanValue();
+	boolean						isReturnEnabled 			= ((Boolean) request.getAttribute("isReturnEnabled")).booleanValue();
+	String 						versionning 				= (String) request.getAttribute("isVersionControlled");
+	boolean isVersionControlled = "1".equals(versionning);
 	
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
@@ -231,11 +233,11 @@ function printProcess()
 </td><td valign="top">
 <%
 	out.flush();
-  	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+process.getInstanceId()+"&ComponentId="+componentId+"&Context=Images").include(request, response);
-
-	out.flush();
-  	getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+process.getInstanceId()+"&ComponentId="+componentId+"&Context=Images").include(request, response);
-  	
+	if (!isVersionControlled) {
+  		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+process.getInstanceId()+"&ComponentId="+componentId+"&Context=Images").include(request, response);
+	} else {
+		getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+process.getInstanceId()+"&ComponentId="+componentId+"&Context=Images").include(request, response);
+	}
 %>
 </td></tr></table>
 <% out.println(board.printAfter()); %>
