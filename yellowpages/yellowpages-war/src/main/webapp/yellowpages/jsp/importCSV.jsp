@@ -24,7 +24,6 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate"%>
 <%@ include file="checkYellowpages.jsp" %>
 
 <html>
@@ -62,7 +61,6 @@
 		}
 
 	}
-	List XMLForms = (List) request.getAttribute("XMLForms");
 
 %>
 <% out.println(gef.getLookStyleSheet()); %>
@@ -136,31 +134,13 @@ out.println(board.printBefore());
 		        <tr>
 		            <td class="txtlibform">
 		                <%=resources.getString("GML.csvFile") %> :
-										<a href="#" class="highlight-silver" title="<%=resources.getString("yellowpages.importCSVHelp1")%><br><%=resources.getString("yellowpages.importCSVHelp2")%>"><img src="<%=m_context%>/util/icons/info.gif" alt="<%=resources.getString("yellowpages.importCSVHelp1")%> <%=resources.getString("yellowpages.importCSVHelp2")%>"></a>
+							<a href="#" class="highlight-silver" title="<%=resources.getString("yellowpages.importCSVHelp1")%><br><%=resources.getString("yellowpages.importCSVHelp2")%>"><img src="<%=m_context%>/util/icons/info.gif" alt="<%=resources.getString("yellowpages.importCSVHelp1")%> <%=resources.getString("yellowpages.importCSVHelp2")%>"></a>
 		            </td>
 		            <td align="left" valign="baseline">
 		                <input type="file" name="file_upload" size="50" maxlength="50" VALUE="">
 		                &nbsp;<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5">
 		            </td>
 		        </tr>
-	            <% if (!XMLForms.isEmpty()) { %>
-			        <tr>
-			            <td valign="baseline" align=left  class="txtlibform">
-			                <%=resources.getString("yellowpages.importCSVModelChoice") %> :
-			            </td>
-				            <td align=left valign="baseline">
-				                <select name="modelId">
-							<%    Iterator iXMLForms = XMLForms.iterator();
-				            		while (iXMLForms.hasNext())
-				            		  {
-				            		  PublicationTemplate pubTemplate = (PublicationTemplate) iXMLForms.next();
-				            		  %>
-									    <option value="<%=pubTemplate.getName()%>"><%=pubTemplate.getName()%></option>
-				            		<% } %>
-				            	</select>
-				            </td>
-			        </tr>
-	            <% } %>
 		        <tr>
 		            <td colspan="2">(<img border="0" src="<%=m_context%>/util/icons/mandatoryField.gif" width="5" height="5">
 		      : <%=resources.getString("GML.requiredField")%>)</td>

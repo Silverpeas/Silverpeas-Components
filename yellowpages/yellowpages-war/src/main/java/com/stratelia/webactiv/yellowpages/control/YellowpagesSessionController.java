@@ -1538,7 +1538,8 @@ public class YellowpagesSessionController extends
               "yellowpages.EX_GET_USER_DETAIL_FAILED", "modelId = " + modelId + ", contactId = " +
               contact.getPK().getId());
         }
-
+        //Remove final ","
+        csvRow.deleteCharAt(csvRow.lastIndexOf(","));
         csvRows.add(csvRow);
       }
     }
@@ -1609,39 +1610,43 @@ public class YellowpagesSessionController extends
     HashMap<Boolean, String> result = new HashMap<Boolean, String>();
     InputStream is;
     int nbContactsAdded = 0;
-    Variant[][] csvValues;
+    Variant[][] csvHeaderValues;
     try {
       is = filePart.getInputStream();
       CSVReader csvReader = new CSVReader(getLanguage());
-      csvReader.initCSVFormat("com.stratelia.webactiv.yellowpages.settings.yellowpagesSettings", "User",",","com.stratelia.webactiv.yellowpages.settings.yellowpagesSettings","UserXMLField");
+      csvReader.setColumnNumberControlEnabled(false);
+      csvReader.setExtraColumnsControlEnabled(false);
+      csvReader.initCSVFormat("com.stratelia.webactiv.yellowpages.settings.yellowpagesSettings", "User",",");
 
       try {
-        csvValues = csvReader.parseStream(is);
+        csvHeaderValues = csvReader.parseStream(is);
         
         StringBuffer listErrors = new StringBuffer("");
         ContactDetail contactDetail;
-        int nbStandardColumns = csvReader.getM_nbCols();
+        int nbColumns = csvReader.getM_nbCols()+csvReader.getM_specificNbCols();
         boolean processExtraColumns = false;
         
-        //Extra columns from xml form ?
-        if (StringUtil.isDefined(modelId) && csvReader.getM_specificNbCols() > 0)
-          processExtraColumns = true;
-        for (int line = 0; line < csvValues.length; line++) {
-          String[] CSVRow = new String[csvValues[line].length];
+        for (int line = 0; line < csvHeaderValues.length; line++) {
+          String[] CSVRow = new String[csvHeaderValues[line].length];
           //Read all columns
-          for (int column = 0; column < nbStandardColumns; column++) {
-            String value = csvValues[line][column].getValueString();
+          for (int column = 0; column < nbColumns; column++) {
+            String value = formatStringSeparator(csvHeaderValues[line][column].getValueString());
             CSVRow[column] = value;
           }
           //Header columns (firstName, lastName, email, phone, fax)
           contactDetail = new ContactDetail("X", CSVRow[0], CSVRow[1], CSVRow[2], CSVRow[3], CSVRow[4], null, null, null);
           
+          //Extra columns from xml form ?
+          if (StringUtil.isDefined(modelId))
+            processExtraColumns = true;
           try {
             String contactId = createContact(contactDetail);
             //XML form columns
             if (processExtraColumns)
             {
-              String xmlFormShortName = modelId;
+              String xmlFormShortName = modelId.substring(modelId
+                  .indexOf("/") + 1, modelId.indexOf("."));
+
               // récupération des données du formulaire (via le DataRecord)
               PublicationTemplate pubTemplate = PublicationTemplateManager
                   .getPublicationTemplate(getComponentId() + ":"
@@ -1649,17 +1654,19 @@ public class YellowpagesSessionController extends
               DataRecord record = pubTemplate.getRecordSet().getEmptyRecord();
               record.setId(contactId);
               
-              int nbExtraColumns = csvReader.getM_specificNbCols();
-              for (int column = nbStandardColumns; column < nbStandardColumns+nbExtraColumns; column++) {
-                String value = csvValues[line][column].getValueString();
-                record.getField(csvReader.getM_specificColName(column-nbStandardColumns)).setObjectValue(value);
+              int fieldIndex = 0;
+              for (int column = csvReader.getM_nbCols(); column < csvReader.getM_nbCols()+csvReader.getM_specificNbCols(); column++) {
+                String value = formatStringSeparator(CSVRow[column]);
+                if (StringUtil.isDefined(value))
+                  record.getField(fieldIndex).setObjectValue(value);
+                fieldIndex++;
               }
               // Update
               pubTemplate.getRecordSet().save(record);
 
               // sauvegarde du contact et du model
               createInfoModel(contactId, modelId);
-              UserCompleteContact userContactComplete = new UserCompleteContact(null, new CompleteContact(contactDetail, modelId));
+              UserCompleteContact userContactComplete = new UserCompleteContact(null, new CompleteContact(contactDetail, xmlFormShortName));
               setCurrentContact(userContactComplete);
             }
           } catch (Exception re)
@@ -1693,5 +1700,20 @@ public class YellowpagesSessionController extends
 
     return result;
   }
+  
+  /**
+   * Remove start & end " and replace double " by single "
+   * @param value
+   * @return
+   */
+  private String formatStringSeparator(String value) {
+    String newValue = value;
+    if (StringUtil.isDefined(value) && value.startsWith("\"") && value.endsWith("\"")) {
+      newValue = value.substring(1,value.length()-1);
+      newValue = newValue.replaceAll("\"\"", "\"");
+    }
+    return newValue;
+  }
+
 
 }
