@@ -1,1 +1,1 @@
-<html><head/><body><p><b>Message [$title$] - à modérer : </b></p><p>$summary$ ...</p><a href="$messageUrl$">Modérer</a></body></html>
+<html><head/><body><p><b>Message [$title$] - à modérer : </b></p><p>$summary$ ...</p></body></html>
