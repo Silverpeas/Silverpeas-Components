@@ -143,8 +143,8 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 				Collection classifieds = category.getClassifieds();
 				int nbClassifieds = 0;
 				%>
-				<div id="categoryTitle"><a href="ViewAllClassifiedsByCategory?CategoryName=<%=categoryName%>&FieldKey=<%=category.getKey()%>"><%=categoryName%></a></div>
-				<div id="categoryContent">
+				<div class="categoryTitle"><a href="ViewAllClassifiedsByCategory?CategoryName=<%=categoryName%>&FieldKey=<%=category.getKey()%>"><%=categoryName%></a></div>
+				<div class="categoryContent">
 				<%
 				if (classifieds == null || classifieds.size() == 0) 
 				{
@@ -163,7 +163,7 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 						classified = (ClassifiedDetail) it.next();
 						nbClassifieds = nbClassifieds + 1;
 						%>
-							<li><a href="ViewClassified?ClassifiedId=<%=classified.getClassifiedId()%>"><%=classified.getTitle()%></a></li>
+							<li><a href="ViewClassified?ClassifiedId=<%=classified.getClassifiedId()%>"><%=classified.getTitle()%></a> <span class="date"><%=resource.getOutputDateAndHour(classified.getUpdateDate(), classified.getCreationDate())%></span></li>
 						<%
 					}
 					out.println("</ul>");
