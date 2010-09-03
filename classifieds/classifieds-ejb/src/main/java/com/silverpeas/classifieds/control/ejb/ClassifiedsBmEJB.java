@@ -29,8 +29,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 
 import javax.ejb.SessionBean;
@@ -44,14 +47,15 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
 import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBmHome;
 import com.stratelia.webactiv.searchEngine.model.MatchingIndexEntry;
@@ -72,9 +76,6 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
  */
 public class ClassifiedsBmEJB implements SessionBean {
 
-  /**
-	 * 
-	 */
   private static final long serialVersionUID = 1L;
 
   public String createClassified(ClassifiedDetail classified) {
@@ -185,7 +186,7 @@ public class ClassifiedsBmEJB implements SessionBean {
       fermerCon(con);
     }
   }
-  
+
   public Collection<ClassifiedDetail> getClassifiedsToValidate(String instanceId) {
     Connection con = initCon();
     try {
@@ -236,25 +237,32 @@ public class ClassifiedsBmEJB implements SessionBean {
       String refusalMotive, String userIdWhoRefuse) {
     try {
       if (userId != null) {
-        ResourceLocator message =
-            new ResourceLocator("com.silverpeas.classifieds.multilang.classifiedsBundle", "fr");
-        ResourceLocator message_en =
-            new ResourceLocator("com.silverpeas.classifieds.multilang.classifiedsBundle", "en");
 
-        // french notifications
-        String htmlPath = getHTMLPath(classified, "fr");
-        String body = getValidationNotificationBody(classified, refusalMotive, htmlPath, message);
+        Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+
+        String resource = "com.silverpeas.classifieds.multilang.classifiedsBundle";
+        ResourceLocator message = new ResourceLocator(resource, I18NHelper.defaultLanguage);
         String subject = getValidationNotificationSubject(classified, message);
-
-        // english notifications
-        String htmlPath_en = getHTMLPath(classified, "en");
-        String body_en =
-            getValidationNotificationBody(classified, refusalMotive, htmlPath_en, message_en);
-        String subject_en = getValidationNotificationSubject(classified, message_en);
-
+        String templateName = "validated";
+        if (!ClassifiedDetail.VALID.equals(classified.getStatus())) {
+          templateName = "refused";
+        }
         NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
-        notifMetaData.addLanguage("en", subject_en, body_en);
+            new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
+                templateName);
+
+        Iterator<String> languages = I18NHelper.getLanguages();
+        while (languages.hasNext()) {
+          String language = languages.next();
+          SilverpeasTemplate template = getNewTemplate();
+          setClassifiedCommonTemplateAttributes(template, classified);
+          template.setAttribute("refusalMotive", refusalMotive);
+          templates.put(language, template);
+
+          message = new ResourceLocator(resource, language);
+          notifMetaData.addLanguage(language,
+              getValidationNotificationSubject(classified, message), "");
+        }
 
         notifMetaData.addUserRecipient(userId);
         notifMetaData.setLink(getClassifiedUrl(classified));
@@ -264,35 +272,13 @@ public class ClassifiedsBmEJB implements SessionBean {
     } catch (Exception e) {
       SilverTrace.warn("classifieds", "classifieds.sendValidationNotification()",
           "classifieds.EX_ERR_ALERT_USERS", "userId = " + userId +
-          ", classified = " + classified.getClassifiedId(), e);
+              ", classified = " + classified.getClassifiedId(), e);
     }
-  }
-
-  private String getHTMLPath(ClassifiedDetail classified, String language) {
-    String htlmPath = "";
-    htlmPath =
-        getSpacesPath(classified.getInstanceId(), language) +
-        getComponentLabel(classified.getInstanceId(), language);
-    return htlmPath;
   }
 
   public String getClassifiedUrl(ClassifiedDetail classified) {
     return "/Rclassifieds/" + classified.getInstanceId() + "/searchResult?Type=Classified&Id=" +
         classified.getClassifiedId();
-  }
-
-  private String getSpacesPath(String componentId, String language) {
-    String spacesPath = "";
-    OrganizationController orga = new OrganizationController();
-    List<SpaceInst> spaces = orga.getSpacePathToComponent(componentId);
-    Iterator<SpaceInst> iSpaces = spaces.iterator();
-    SpaceInst spaceInst = null;
-    while (iSpaces.hasNext()) {
-      spaceInst = iSpaces.next();
-      spacesPath += spaceInst.getName(language);
-      spacesPath += " > ";
-    }
-    return spacesPath;
   }
 
   public void sendSubscriptionsNotification(String field1, String field2,
@@ -301,24 +287,26 @@ public class ClassifiedsBmEJB implements SessionBean {
     Collection<String> users = getUsersBySubscribe(field1, field2);
     if (users != null) {
       try {
-        ResourceLocator message =
-            new ResourceLocator("com.silverpeas.classifieds.multilang.classifiedsBundle", "fr");
-        ResourceLocator message_en =
-            new ResourceLocator("com.silverpeas.classifieds.multilang.classifiedsBundle", "en");
+        Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
 
-        // french notifications
-        String subject = getSubscriptionsNotificationSubject(message);
-        String body =
-            getSubscriptionsNotificationBody(classified, getHTMLPath(classified, "fr"), message);
-
-        // english notifications
-        String subject_en = getSubscriptionsNotificationSubject(message_en);
-        String body_en =
-            getSubscriptionsNotificationBody(classified, getHTMLPath(classified, "en"), message_en);
-
+        String resource = "com.silverpeas.classifieds.multilang.classifiedsBundle";
+        ResourceLocator message = new ResourceLocator(resource, I18NHelper.defaultLanguage);
+        String subject = message.getString("classifieds.mailNewPublicationSubscription");
         NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
-        notifMetaData.addLanguage("en", subject_en, body_en);
+            new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
+                "subscription");
+
+        Iterator<String> languages = I18NHelper.getLanguages();
+        while (languages.hasNext()) {
+          String language = languages.next();
+          SilverpeasTemplate template = getNewTemplate();
+          setClassifiedCommonTemplateAttributes(template, classified);
+          templates.put(language, template);
+
+          message = new ResourceLocator(resource, language);
+          notifMetaData.addLanguage(language, message.getString(
+              "classifieds.mailNewPublicationSubscription", subject), "");
+        }
 
         notifMetaData.setUserRecipients(new Vector<String>(users));
         notifMetaData.setLink(getClassifiedUrl(classified));
@@ -329,52 +317,6 @@ public class ClassifiedsBmEJB implements SessionBean {
             "classifieds.EX_ERR_ALERT_USERS", "", e);
       }
     }
-  }
-
-  private String getSubscriptionsNotificationSubject(ResourceLocator message) {
-    return message.getString("classifieds.mailNewPublicationSubscription");
-  }
-
-  private String getSubscriptionsNotificationBody(ClassifiedDetail classified, String htmlPath,
-      ResourceLocator message) {
-    StringBuffer messageText = new StringBuffer();
-    messageText.append(message.getString("classifieds.mailNewPublicationSubscription"))
-        .append("\n");
-    messageText.append(message.getString("classifieds.classifiedName")).append(" : ").append(
-        classified.getTitle()).append("\n");
-    messageText.append(message.getString("classifieds.path")).append(" : ").append(htmlPath);
-
-    return messageText.toString();
-  }
-
-  private String getComponentLabel(String componentId, String language) {
-    OrganizationController orga = new OrganizationController();
-    ComponentInstLight component = orga.getComponentInstLight(componentId);
-    String componentLabel = "";
-    if (component != null)
-      componentLabel = component.getLabel(language);
-    return componentLabel;
-  }
-
-  private String getValidationNotificationBody(ClassifiedDetail classified, String refusalMotive,
-      String htmlPath, ResourceLocator message) {
-    StringBuffer messageText = new StringBuffer();
-    messageText.append(message.getString("classifieds.yourClassified")).append(" '").append(
-        classified.getTitle()).append("' ");
-
-    if (ClassifiedDetail.VALID.equals(classified.getStatus())) {
-      messageText.append(message.getString("classifieds.haveBeenValidated")).append("\n");
-    } else {
-      messageText.append(message.getString("classifieds.haveBeenRefused")).append("\n");
-      if (refusalMotive != null && refusalMotive.length() > 0) {
-        messageText.append(message.getString("classifieds.refusalMotive")).append(" : ").append(
-            refusalMotive).append("\n");
-      }
-    }
-    if (StringUtil.isDefined(htmlPath)) {
-      messageText.append(message.getString("classifieds.path")).append(" : ").append(htmlPath);
-    }
-    return messageText.toString();
   }
 
   private String getValidationNotificationSubject(ClassifiedDetail classified,
@@ -480,7 +422,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     if (classified != null) {
       indexEntry =
           new FullIndexEntry(classified.getInstanceId(), "Classified", Integer.toString(classified
-          .getClassifiedId()));
+              .getClassifiedId()));
       indexEntry.setTitle(classified.getTitle());
       indexEntry.setCreationDate(classified.getCreationDate());
       indexEntry.setCreationUser(classified.getCreatorId());
@@ -496,7 +438,7 @@ public class ClassifiedsBmEJB implements SessionBean {
         try {
           pubTemplate =
               PublicationTemplateManager.getPublicationTemplate(classified.getInstanceId() + ":" +
-              xmlFormShortName);
+                  xmlFormShortName);
           RecordSet set = pubTemplate.getRecordSet();
           String classifiedId = Integer.toString(classified.getClassifiedId());
           set.indexRecord(classifiedId, xmlFormShortName, indexEntry);
@@ -517,7 +459,7 @@ public class ClassifiedsBmEJB implements SessionBean {
         "ClassifiedId = " + classified.toString());
     IndexEntryPK indexEntry =
         new IndexEntryPK(classified.getInstanceId(), "Classified", Integer.toString(classified
-        .getClassifiedId()));
+            .getClassifiedId()));
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
@@ -526,7 +468,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     try {
       SearchEngineBmHome searchEngineHome =
           (SearchEngineBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.SEARCHBM_EJBHOME,
-          SearchEngineBmHome.class);
+              SearchEngineBmHome.class);
       searchEngineBm = searchEngineHome.create();
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.getSearchEngineBm()",
@@ -553,24 +495,26 @@ public class ClassifiedsBmEJB implements SessionBean {
   private void sendAlertToSupervisors(ClassifiedDetail classified) {
     if (ClassifiedDetail.TO_VALIDATE.equalsIgnoreCase(classified.getStatus())) {
       try {
-        ResourceLocator message =
-            new ResourceLocator("com.silverpeas.classifieds.multilang.classifiedsBundle", "fr");
-        ResourceLocator message_en =
-            new ResourceLocator("com.silverpeas.classifieds.multilang.classifiedsBundle", "en");
+        Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
 
-        // french notifications
-        String htmlPath = getHTMLPath(classified, "fr");
+        String resource = "com.silverpeas.classifieds.multilang.classifiedsBundle";
+        ResourceLocator message = new ResourceLocator(resource, I18NHelper.defaultLanguage);
         String subject = message.getString("classifieds.supervisorNotifSubject");
-        String body = getAlertBodyToSupervisors(classified, htmlPath, message);
-
-        // english notifications
-        String htmlPath_en = getHTMLPath(classified, "en");
-        String subject_en = message.getString("classifieds.supervisorNotifSubject");
-        String body_en = getAlertBodyToSupervisors(classified, htmlPath_en, message_en);
-
         NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
-        notifMetaData.addLanguage("en", subject_en, body_en);
+            new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
+                "tovalidate");
+
+        Iterator<String> languages = I18NHelper.getLanguages();
+        while (languages.hasNext()) {
+          String language = languages.next();
+          SilverpeasTemplate template = getNewTemplate();
+          setClassifiedCommonTemplateAttributes(template, classified);
+          templates.put(language, template);
+
+          message = new ResourceLocator(resource, language);
+          notifMetaData.addLanguage(language, message.getString(
+              "classifieds.supervisorNotifSubject", subject), "");
+        }
 
         List<String> roles = new ArrayList<String>();
         roles.add("admin");
@@ -585,21 +529,9 @@ public class ClassifiedsBmEJB implements SessionBean {
       } catch (Exception e) {
         SilverTrace.warn("classifieds", "classifieds.sendAlertToSupervisors()",
             "classifieds.EX_ERR_ALERT_USERS", "userId = " +
-            classified.getCreatorId() + ", classified = " + classified.getClassifiedId(), e);
+                classified.getCreatorId() + ", classified = " + classified.getClassifiedId(), e);
       }
     }
-  }
-
-  private String getAlertBodyToSupervisors(ClassifiedDetail classified, String htmlPath,
-      ResourceLocator message) {
-    StringBuffer messageText = new StringBuffer();
-    messageText.append(
-        message.getStringWithParam("classifieds.supervisorNotifNewOnLine", classified.getTitle()))
-        .append("\n");
-    if (StringUtil.isDefined(htmlPath))
-      messageText.append(message.getString("classifieds.path")).append(" : ").append(htmlPath);
-
-    return messageText.toString();
   }
 
   public void draftInClassified(String classifiedId) {
@@ -729,6 +661,25 @@ public class ClassifiedsBmEJB implements SessionBean {
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
     return con;
+  }
+
+  protected SilverpeasTemplate getNewTemplate() {
+    ResourceLocator rs =
+        new ResourceLocator("com.silverpeas.classifieds.settings.classifiedsSettings", "");
+    Properties templateConfiguration = new Properties();
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs
+        .getString("templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs
+        .getString("customersTemplatePath"));
+
+    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
+  }
+
+  private void setClassifiedCommonTemplateAttributes(SilverpeasTemplate template,
+      ClassifiedDetail classified) {
+    template.setAttribute("classified", classified);
+    template.setAttribute("classifiedName", classified.getTitle());
+    template.setAttribute("silverpeasURL", getClassifiedUrl(classified));
   }
 
   public void ejbCreate() {
