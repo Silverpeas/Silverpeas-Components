@@ -90,5 +90,18 @@
         <ParameterHelpEn>Draft mode enables you to work on a classified whilst being invisible to other users.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
+    <Parameter>
+      <ParameterName>validation</ParameterName>
+      <ParameterLabel>Validation</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterOrder>5</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Permet d'activer la validation des annonces par les gestionnaires</ParameterHelpFr>
+        <ParameterHelpEn>Enables validation of classified ads by the managers</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
   </Parameters>
 </WAComponent>

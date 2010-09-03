@@ -32,6 +32,7 @@ String 		nbTotal			= (String) request.getAttribute("NbTotal");
 Form 		formSearch 		= (Form) request.getAttribute("Form");
 DataRecord	data 			= (DataRecord) request.getAttribute("Data"); 
 String		instanceId		= (String) request.getAttribute("InstanceId");
+boolean		validation		= ((Boolean) request.getAttribute("Validation")).booleanValue();
 
 // déclaration des boutons
 Button validateButton = (Button) gef.getFormButton(resource.getString("GML.search")+" dans <b>"+nbTotal+"</b> "+resource.getString("classifieds.classifieds"), "javascript:onClick=sendData();", false);
@@ -79,15 +80,15 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 	browseBar.setComponentName(componentLabel, "Main");
 	
 	// affichage des options
-	operationPane.addOperation(resource.getIcon("classifieds.myClassifieds"), resource.getString("classifieds.myClassifieds"), "ViewMyClassifieds");
-	operationPane.addLine();
 	operationPane.addOperation(resource.getIcon("classifieds.addClassified"),resource.getString("classifieds.addClassified"), "NewClassified");
-	if ("admin".equals(profile)) {
-		operationPane.addOperation(resource.getIcon("classifieds.viewClassifiedToValidate"),resource.getString("classifieds.viewClassifiedToValidate"), "ViewClassifiedToValidate");
-	}
+	operationPane.addOperation(resource.getIcon("classifieds.myClassifieds"), resource.getString("classifieds.myClassifieds"), "ViewMyClassifieds");
 	operationPane.addLine();
 	operationPane.addOperation(resource.getIcon("classifieds.subscriptionsAdd"),resource.getString("classifieds.addSubscription"), "javaScript:addSubscription()");
 	operationPane.addOperation(resource.getIcon("classifieds.mySubscriptions"), resource.getString("classifieds.mySubscriptions"), "ViewMySubscriptions");
+	if ("admin".equals(profile) && validation) {
+	  	operationPane.addLine();
+		operationPane.addOperation(resource.getIcon("classifieds.viewClassifiedToValidate"),resource.getString("classifieds.viewClassifiedToValidate"), "ViewClassifiedToValidate");
+	}
 
 	out.println(window.printBefore());
     out.println(frame.printBefore());

@@ -353,14 +353,13 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
       if (isDraftEnabled()) {
         classified.setStatus(ClassifiedDetail.DRAFT);
       } else {
-        if ("admin".equals(profile)) {
+        if ("admin".equals(profile) || !isValidationEnabled()) {
           classified.setStatus(ClassifiedDetail.VALID);
         } else {
           classified.setStatus(ClassifiedDetail.TO_VALIDATE);
         }
       }
-      String classifiedId = getClassifiedsBm().createClassified(classified);
-      return classifiedId;
+      return getClassifiedsBm().createClassified(classified);
     } catch (RemoteException e) {
       throw new ClassifiedsRuntimeException("ClassifedsSessionController.createClassified()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -406,7 +405,7 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
           if (classified.getStatus().equals(ClassifiedDetail.VALID)) {
             notify = true;
           }
-          if (!isAdmin && classified.getStatus().equals(ClassifiedDetail.VALID)) {
+          if (!isAdmin && isValidationEnabled() && classified.getStatus().equals(ClassifiedDetail.VALID)) {
             classified.setStatus(ClassifiedDetail.TO_VALIDATE);
           }
         }
@@ -507,10 +506,10 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
             (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(
             getComponentId() + ":" + xmlFormShortName, xmlFormName);
         String key =
-            (String) pubTemplate.getRecordTemplate().getFieldTemplate(listName).getParameters(
+            pubTemplate.getRecordTemplate().getFieldTemplate(listName).getParameters(
             getLanguage()).get("keys");
         String value =
-            (String) pubTemplate.getRecordTemplate().getFieldTemplate(listName).getParameters(
+            pubTemplate.getRecordTemplate().getFieldTemplate(listName).getParameters(
             getLanguage()).get("values");
         String[] keys = key.split("##");
         String[] values = value.split("##");
@@ -562,6 +561,10 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
    */
   public boolean isDraftEnabled() {
     return "yes".equalsIgnoreCase(getComponentParameterValue("draft"));
+  }
+  
+  public boolean isValidationEnabled() {
+    return "yes".equalsIgnoreCase(getComponentParameterValue("validation"));
   }
 
   private ClassifiedsBm getClassifiedsBm() {

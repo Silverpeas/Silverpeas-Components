@@ -156,7 +156,8 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Form", formUpdate);
         request.setAttribute("Data", data);
         request.setAttribute("Categories", categories);
-        request.setAttribute("NbTotal", (classifiedsSC.getNbTotalClassifieds()));
+        request.setAttribute("NbTotal", classifiedsSC.getNbTotalClassifieds());
+        request.setAttribute("Validation", classifiedsSC.isValidationEnabled());
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("ViewClassifiedToValidate")) {
         // récupérer les petites annonces à valider
