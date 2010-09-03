@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 
 <%@ include file="checkKmelia.jsp" %>
@@ -714,7 +715,7 @@
 
   %>
   <TABLE CELLPADDING="5" WIDTH="100%">
-    <FORM Name="pubForm" Action="publicationManager.jsp" Method="POST" ENCTYPE="multipart/form-data">
+    <FORM Name="pubForm" Action="publicationManager.jsp" Method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
       <% if (kmeliaMode && "UpdateView".equals(action)) {%>
       <TR><TD class="txtlibform"><%=resources.getString("PubState")%></TD>
         <TD>

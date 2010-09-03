@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
@@ -628,7 +629,7 @@ function clearSearchQuery()
 	<input type="hidden" name="CheckPath" value="1">
 </FORM>
 
-<FORM NAME="fupload" ACTION="fileUpload.jsp" METHOD="POST"  enctype="multipart/form-data">
+<FORM NAME="fupload" ACTION="fileUpload.jsp" METHOD="POST" enctype="multipart/form-data" accept-charset="UTF-8">
 	<input type="hidden" name="Action" value="initial">
 </FORM>
 

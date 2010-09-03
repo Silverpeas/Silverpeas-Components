@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="com.stratelia.silverpeas.versioning.model.DocumentVersion"%>
 <%
@@ -93,7 +94,7 @@ function validateForm() {
   out.println(frame.printBefore());
   out.println(board.printBefore());
 %>
-<FORM NAME="frm_import" action="ImportFilesUpload" Method="POST"  ENCTYPE="multipart/form-data">
+<FORM NAME="frm_import" action="ImportFilesUpload" Method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
 <input type="hidden" name="topicId" value="<%=topicId%>">
   
 	<TABLE CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4 align="center">

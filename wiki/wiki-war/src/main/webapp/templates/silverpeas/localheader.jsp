@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page isELIgnored ="false" %> 
 <%-- This is a local JSP header file, which you can override in your own template
      if you want to put something in the head-section of the page.  This page is

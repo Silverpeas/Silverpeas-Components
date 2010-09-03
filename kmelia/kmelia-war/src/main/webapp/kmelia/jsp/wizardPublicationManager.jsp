@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
@@ -228,7 +229,7 @@ function init() {
         out.println(board.printBefore());
 %>
 	<TABLE CELLPADDING="5" WIDTH="100%">
-		<FORM Name="pubForm" Action="publicationManager.jsp" Method="POST" ENCTYPE="multipart/form-data">
+		<FORM Name="pubForm" Action="publicationManager.jsp" Method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
   			<TR><TD class="txtlibform"><%=resources.getString("PubTitre")%></TD>
       			<TD><input type="text" name="Name" value="<%=Encode.javaStringToHtmlString(pubName)%>" size="60" maxlength="150">&nbsp;<IMG src="<%=resources.getIcon("kmelia.mandatory")%>" width="5" height="5" border="0"></TD></TR>
   			<TR><TD class="txtlibform"><%=resources.getString("PubDescription")%></TD>

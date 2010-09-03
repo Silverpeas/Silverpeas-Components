@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="checkYellowpages.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>
 <%@ include file="tabManager.jsp.inc" %>

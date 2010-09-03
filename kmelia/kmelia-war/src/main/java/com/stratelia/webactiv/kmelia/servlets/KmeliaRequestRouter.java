@@ -58,7 +58,6 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.web.RequestHelper;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
@@ -403,15 +402,15 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
         destination = rootDestination + "updateTopicNew.jsp";
       } else if (function.equals("AddTopic")) {
-        String name = RequestHelper.getRequestParameter(request, "Name");
-        String description =  RequestHelper.getRequestParameter(request,"Description");
-        String alertType =  RequestHelper.getRequestParameter(request,"AlertType");
+        String name = request.getParameter("Name");
+        String description =  request.getParameter("Description");
+        String alertType =  request.getParameter("AlertType");
         if (!StringUtil.isDefined(alertType)) {
           alertType = "None";
         }
         String rightsUsed = request.getParameter("RightsUsed");
-        String path =  RequestHelper.getRequestParameter(request, "Path");
-        String parentId =  RequestHelper.getRequestParameter(request, "ParentId");
+        String path =  request.getParameter("Path");
+        String parentId =  request.getParameter("ParentId");
 
         NodeDetail topic = new NodeDetail("-1", name, description, null, null, null, "0", "X");
         I18NHelper.setI18NInfo(topic, request);
@@ -444,14 +443,14 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           destination = rootDestination + "closeWindow.jsp";
         }
       } else if ("UpdateTopic".equals(function)) {
-        String name = RequestHelper.getRequestParameter(request, "Name");
-        String description = RequestHelper.getRequestParameter(request, "Description");
+        String name = request.getParameter("Name");
+        String description = request.getParameter("Description");
         String alertType = request.getParameter("AlertType");
         if (!StringUtil.isDefined(alertType)) {
           alertType = "None";
         }
-        String id = RequestHelper.getRequestParameter(request, "ChildId");
-        String path = RequestHelper.getRequestParameter(request, "Path");
+        String id = request.getParameter("ChildId");
+        String path = request.getParameter("Path");
         NodeDetail topic = new NodeDetail(id, name, description, null, null, null, "0", "X");
         I18NHelper.setI18NInfo(topic, request);
         if (StringUtil.isDefined(path)) {

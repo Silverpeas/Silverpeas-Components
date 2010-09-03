@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="tabManager.jsp.inc" %>
@@ -206,7 +207,7 @@ function closeWindows() {
 %>
 
   	<TABLE CELLPADDING=5><TR><TD valign=top>
-  	<FORM Name="modelForm" ACTION="UpdateDBModelContent" METHOD="POST" ENCTYPE="multipart/form-data">
+  	<FORM Name="modelForm" ACTION="UpdateDBModelContent" METHOD="POST" enctype="multipart/form-data" accept-charset="UTF-8">
 <%
 	while (posit != -1) 
 	{
