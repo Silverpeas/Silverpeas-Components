@@ -1368,7 +1368,7 @@ public class YellowpagesSessionController extends
   }
 
   public int getNbContactPerPage() {
-    return new Integer(getSettings().getString("nbContactPerPage")).intValue();
+    return Integer.parseInt(getSettings().getString("nbContactPerPage", "20"));
   }
 
   /**
