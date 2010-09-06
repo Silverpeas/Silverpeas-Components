@@ -646,12 +646,6 @@
         // added by LBE : importance field can be hidden (depends on settings file)
         boolean showImportance = !"no".equalsIgnoreCase(resources.getSetting("showImportance"));
 
-        String urlPublication = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
-    		pathString = pubDetail.getName(language);
-        String namePath = spaceLabel + " > " + componentLabel;
-    		if (!pathString.equals(""))
-    			namePath = namePath + " > " + pathString;
-
         BrowseBar browseBar = window.getBrowseBar();
         browseBar.setDomainName(spaceLabel);
         browseBar.setComponentName(componentLabel, "Main");
@@ -662,7 +656,13 @@
           if (kmeliaScc.getSessionClone() == null && isNotificationAllowed) {
             operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers();");
           }
-        	operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(pubDetail.getDescription(language)))+"','"+urlPublication+"')");
+          String urlPublication = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
+	      pathString = pubDetail.getName(language);
+	      String namePath = spaceLabel + " > " + componentLabel;
+	      if (!pathString.equals("")) {
+	      	namePath = namePath + " > " + pathString;
+	      }
+		  operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(pubDetail.getDescription(language)))+"','"+urlPublication+"')");
           operationPane.addLine();
 
           if (!"supervisor".equals(profile)) {
