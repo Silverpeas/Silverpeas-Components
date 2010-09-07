@@ -35,31 +35,26 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="contactsList.jsp.inc" %>
 
 <% 
-String rootId = new Integer(ROOT_TOPIC).toString();
+String rootId = Integer.toString(ROOT_TOPIC);
 
-String action = "";
-String contactId = "";
-String id = "";
 String name = "";
 String description = "";
 String modelId = "";
 Collection path = null;
 String fatherId = "";
-String childId = "";
 Collection subTopicList = null;
 Collection contactList = null;
 String linkedPathString = "";
 String pathString = "";
-String profile = "";
 String topicName = "";
 boolean updateFailed = false;
 
-//Récupération des paramètres
-action = (String) request.getParameter("Action");
-id = (String) request.getParameter("Id");
-contactId = (String) request.getParameter("ContactId");
-childId = (String) request.getParameter("ChildId");
-profile = (String) request.getParameter("Profile");
+//Rï¿½cupï¿½ration des paramï¿½tres
+String action = request.getParameter("Action");
+String id = request.getParameter("Id");
+String contactId = request.getParameter("ContactId");
+String childId = request.getParameter("ChildId");
+String profile = request.getParameter("Profile");
 
 //Mise a jour de l'espace
 TopicDetail currentTopic = null;
@@ -79,9 +74,9 @@ if (!StringUtil.isDefined(action) || id == null) {
 <%
 out.println(gef.getLookStyleSheet());
 %>
-<SCRIPT LANGUAGE="JAVASCRIPT" SRC="<%=m_context%>/util/javaScript/animation.js"></SCRIPT>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="javaScript/spacesInURL.js"></script>
-<script language="JavaScript1.2">
+<script type="text/javascript">
 var topicAddWindow = window;
 var topicUpdateWindow = window;
 var contactWindow = window;
@@ -98,7 +93,7 @@ function topicGoTo(id)
 
 function importCSV(id) 
 {
-	importCSVWindow = SP_openWindow("ToImportCSV", "printWindow", '500', '350', 'scrollbars=yes, alwayRaised');
+	importCSVWindow = SP_openWindow("ToImportCSV", "printWindow", '600', '220', 'scrollbars=yes, alwayRaised');
 }
 
 function simpleTopicGoToSelected() {
@@ -266,8 +261,9 @@ if (action.equals("Search")) {
     if (profile.equals("admin")) 
     {
 		if (!id.equals(TRASHCAN_ID)){
-			operationPane.addOperation(resources.getIcon("yellowpages.folderAdd"), resources.getString("CreerSousTheme"), "javascript:onClick=topicAdd('"+id+"')");
+			operationPane.addOperation(resources.getIcon("yellowpages.modelUsed"), resources.getString("yellowpages.ModelUsed"), "ModelUsed");
 			operationPane.addLine();
+			operationPane.addOperation(resources.getIcon("yellowpages.folderAdd"), resources.getString("CreerSousTheme"), "javascript:onClick=topicAdd('"+id+"')");
 			operationPane.addOperation(resources.getIcon("yellowpages.groupAdd"), resources.getString("GroupAdd"), "javascript:onClick=addGroup()");
 			operationPane.addLine();
 		}
@@ -275,20 +271,15 @@ if (action.equals("Search")) {
 		{
 			operationPane.addOperation(resources.getIcon("yellowpages.basketDelete"), resources.getString("yellowpages.DeleteBasketContent"), "javascript:onClick=deleteBasketContent()");
 		}
-		operationPane.addOperation(resources.getIcon("yellowpages.importCSV"), resources.getString("yellowpages.importCSV"), "javascript:onClick=importCSV('"+id+"')");
     }
     
-	// Si nous sommes dans la corbeille, alors nous ne pouvons créer un contact dedans !!
+	// Si nous sommes dans la corbeille, alors nous ne pouvons crï¿½er un contact dedans !!
 	if (!id.equals(TRASHCAN_ID)){
 		operationPane.addOperation(resources.getIcon("yellowpages.contactAdd"), yellowpagesScc.getString("ContactCreer"), "javascript:onClick=contactAdd()");
+		operationPane.addOperation(resources.getIcon("yellowpages.importCSV"), resources.getString("yellowpages.importCSV"), "javascript:onClick=importCSV('"+id+"')");
 		operationPane.addLine();
 		operationPane.addOperation(resources.getIcon("yellowpages.basket"), yellowpagesScc.getString("ContactBasket"), "javascript:onClick=topicGoTo('1')");
-    if (profile.equals("admin")) 
-    {
-			operationPane.addLine();
-			operationPane.addOperation(resources.getIcon("yellowpages.modelUsed"), resources.getString("yellowpages.ModelUsed"), "ModelUsed");
-    }
-  }
+  	}
 
     //Onglets
     TabbedPane tabbedPane = gef.getTabbedPane();
