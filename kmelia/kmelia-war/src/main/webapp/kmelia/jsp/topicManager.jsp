@@ -1107,7 +1107,7 @@ function loadNodeData(node, fnLoadComplete)  {
 	function sortTopics()
 	{
 		closeWindows();
-		SP_openWindow("ToOrderTopics?Id="+oCurrentTextNode.labelElId, "topicAddWindow", "600", "500", "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised");
+		SP_openWindow("ToOrderTopics?Id="+oCurrentTextNode.labelElId, "topicAddWindow", "600", "500", "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised,resizable");
 	}
 
 	/*
