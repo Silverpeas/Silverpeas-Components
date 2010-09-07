@@ -72,7 +72,6 @@ function goToOperationInUserPanel(action) {
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
     browseBar.setPath(linkedPathString);
-    browseBar.setExtraInformation(node.getName());
     
     if (rightsDependsOn.equals("ThisTopic"))
     	operationPane.addOperation(resources.getIcon("kmelia.userManage"),resources.getString("GML.modify"),"javaScript:onClick=goToOperationInUserPanel('TopicProfileSelection?Role="+currentProfile.getName()+"&NodeId="+nodeId+"')");

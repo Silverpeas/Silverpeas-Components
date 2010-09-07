@@ -112,24 +112,28 @@
 
   <body>
     <fmt:message var="addTopicBrowseTitle" key="TopicCreationTitle"/>
-    <view:browseBar>
-      <c:choose>
-        <c:when test="${true eq requestScope.PopupDisplay}"><view:browseBarElt id="${addTopicBrowseTitle}" label="${addTopicBrowseTitle}" link=""/></c:when>
-        <c:otherwise><view:browseBarElt id="Main" label="Main" link="${requestScope.PathLinked}"/></c:otherwise></c:choose>
-    </view:browseBar>
+    <c:choose>
+      	<c:when test="${true eq requestScope.PopupDisplay}">
+      		<view:browseBar>
+      			<view:browseBarElt id="${addTopicBrowseTitle}" label="${addTopicBrowseTitle}" link=""/>
+      		</view:browseBar>
+      	</c:when>
+      	<c:otherwise>
+      		<view:browseBar path="${requestScope.PathLinked}"/>
+    	</c:otherwise>
+    </c:choose>
     <view:window>
-      <view:frame>
-        <view:board>
           <c:if test="${requestScope.Profiles != null and !empty requestScope.Profiles}">
             <view:tabs>
               <fmt:message var="defaultTabLabel" key="Theme" />
               <view:tab label="${defaultTabLabel}" action="#" selected="true" />
               <c:forEach items="${requestScope.Profiles}" var="theProfile" >
-                <c:url var="profileAction" value="ViewTopicProfiles"><c:param name="Id" value="${theProfile.id}"/><c:param name="Role" value="${theProfile.name}"/></c:url>
-                <view:tab label="${theProfile.label}" action="${profileAction}" selected="false" />
+                <view:tab label="${theProfile.label}" action="#" selected="false" />
               </c:forEach>
             </view:tabs>
           </c:if>
+          <view:frame>
+          <view:board>
           <form name="topicForm" action="AddTopic" method="POST">
             <table cellpadding="5" width="100%">
               <tr><td class="txtlibform"><fmt:message key="TopicPath"/> :</td>
