@@ -41,6 +41,8 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 public class HyperlinkRequestRouter extends ComponentRequestRouter {
 
+  private static final long serialVersionUID = -4334545961842905383L;
+  
   // Keyword for the parsing
   static private String s_sUserLogin = "%ST_USER_LOGIN%";
   static private String s_sUserPassword = "%ST_USER_PASSWORD%";
@@ -242,14 +244,16 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter {
         "root.MSG_GEN_PARAM_VALUE", "sDestination = " + sDestination);
 
     int nLoginIndex = sDestination.indexOf(sKeyword);
-    if (nLoginIndex != -1) {
+    while (nLoginIndex != -1) {
       // Replace the keyword with the actual value
       String sParsed = sDestination.substring(0, nLoginIndex);
       sParsed += sValue;
-      if (sDestination.length() > nLoginIndex + sKeyword.length())
+      if (sDestination.length() > nLoginIndex + sKeyword.length()) {
         sParsed += sDestination.substring(nLoginIndex + sKeyword.length(),
             sDestination.length());
+      }
       sDestination = sParsed;
+      nLoginIndex = sDestination.indexOf(sKeyword);
     }
     SilverTrace.info("hyperlink",
         "HyperlinkRequestRooter.getParsedDestination()",
