@@ -50,7 +50,7 @@ out.println(gef.getLookStyleSheet());
 		{
 			 statusMessage = resource.getString("GML.ExportSucceeded");
 			 emailCsvFileName = (String) request.getAttribute("EmailCsvName");
-			 urlEmailCsv = FileServerUtils.getUrlToTempDir(emailCsvFileName, emailCsvFileName, "text/csv");
+			 urlEmailCsv = FileServerUtils.getUrlToTempDir(emailCsvFileName);
 		 }
 		else
 			 statusMessage = resource.getString("GML.ExportFailed");
