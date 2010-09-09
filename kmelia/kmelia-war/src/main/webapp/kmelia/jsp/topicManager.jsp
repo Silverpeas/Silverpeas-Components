@@ -415,7 +415,8 @@ function doPagination(index)
 		paramToValidate = "1";
 	}
 	var topicQuery = getSearchQuery();
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',ToValidate:paramToValidate,Query:topicQuery},
+	var ieFix = new Date().getTime();
+	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',ToValidate:paramToValidate,Query:topicQuery,IEFix:ieFix},
 							function(data){
 								$('#pubList').html(data);
 							},"html");
@@ -426,7 +427,8 @@ function sortGoTo(selectedIndex) {
 	if (selectedIndex != 0 && selectedIndex != 1) {
 		var topicQuery = getSearchQuery();
 		var sort = document.publicationsForm.sortBy[selectedIndex].value;
-		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:0,Sort:sort,ComponentId:'<%=componentId%>',Query:topicQuery},
+		var ieFix = new Date().getTime();
+		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:0,Sort:sort,ComponentId:'<%=componentId%>',Query:topicQuery,IEFix:ieFix},
 							function(data){
 								$('#pubList').html(data);
 							},"html");
@@ -468,7 +470,8 @@ function searchInTopic()
 {
 	var topicQuery = getSearchQuery();
 	if (topicQuery != "" && topicQuery.length > 1) {
-		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:0,Query:topicQuery,ComponentId:'<%=componentId%>'},
+		var ieFix = new Date().getTime();
+		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:0,Query:topicQuery,ComponentId:'<%=componentId%>',IEFix:ieFix},
 				function(data){
 					$('#pubList').html(data);
 				},"html");
