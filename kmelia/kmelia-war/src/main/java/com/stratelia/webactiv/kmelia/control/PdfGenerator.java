@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.text.ParseException;
@@ -38,6 +39,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.text.html.HTMLEditorKit.ParserCallback;
 import javax.swing.text.html.parser.ParserDelegator;
@@ -109,6 +112,7 @@ import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import java.io.OutputStream;
 import java.util.Vector;
+import org.w3c.tidy.Configuration;
 
 public class PdfGenerator extends PdfPageEventHelper {
 
@@ -841,7 +845,8 @@ public class PdfGenerator extends PdfPageEventHelper {
           is_reader = versioningUtil.isReader(document, user_id);
           if (versioningUtil.isWriter(document, user_id) || is_reader
               || kmeliaSessionController.isAdmin()) {
-            ArrayList versions = versioningUtil.getDocumentFilteredVersions(document.getPk(), user_id);
+            ArrayList versions = versioningUtil.getDocumentFilteredVersions(document.getPk(),
+                user_id);
             if (versions.size() > 0) {
               document_version = (DocumentVersion) (versions.get(versions.size() - 1)); // current version
               String creation_date = DateUtil.dateToString(document.getLastCheckOutDate(), language);
@@ -1184,8 +1189,8 @@ public class PdfGenerator extends PdfPageEventHelper {
   private void generateCategorization(Document document)
       throws DocumentException, PdcException {
     PdcBm pdcBm = (PdcBm) new PdcBmImpl();
-    java.util.List<ClassifyPosition> listPositions = pdcBm.getPositions(kmeliaSessionController.getSilverObjectId(publicationDetail.
-        getPK().getId()),
+    java.util.List<ClassifyPosition> listPositions = pdcBm.getPositions(kmeliaSessionController.
+        getSilverObjectId(publicationDetail.getPK().getId()),
         kmeliaSessionController.getComponentId());
     if (listPositions != null && listPositions.size() > 0) {
       /*
@@ -1282,33 +1287,31 @@ public class PdfGenerator extends PdfPageEventHelper {
     textTransformPathFile = textTransformPathFile.replaceAll(
         "font-size: xx-large", "font-size: 20.7pt");
 
-    ByteArrayInputStream inputHtml = new ByteArrayInputStream(
-        textTransformPathFile.getBytes());
-
-    // 3 - Transformation HTML en XHTML
-    ByteArrayOutputStream xhtml = new ByteArrayOutputStream();
-    Tidy tidy = new Tidy();
-    tidy.setXHTML(true);
-    tidy.setDocType("strict");// omit
-    tidy.setMakeClean(true);
-    tidy.setQuiet(false);
-    tidy.setIndentContent(true);
-    tidy.setSmartIndent(true);
-    tidy.setIndentAttributes(true);
-    tidy.setWord2000(true);
-    tidy.setShowWarnings(false);
-    tidy.parseDOM(inputHtml, xhtml);
-
-    InputStream inputXhtml = new ByteArrayInputStream(xhtml.toByteArray());
-
-    // 4 - Transformation XHTML en PDF
-    HTMLWorker htmlWorker = new HTMLWorker(document);
-    Reader reader = new InputStreamReader(inputXhtml);
+    ByteArrayInputStream inputHtml;
     try {
+      inputHtml = new ByteArrayInputStream(textTransformPathFile.getBytes("UTF-8"));
+
+      // 3 - Transformation HTML en XHTML
+      ByteArrayOutputStream xhtml = new ByteArrayOutputStream();
+      Tidy tidy = new Tidy();
+      tidy.setXHTML(true);
+      tidy.setDocType("strict");// omit
+      tidy.setMakeClean(true);
+      tidy.setQuiet(false);
+      tidy.setIndentContent(true);
+      tidy.setSmartIndent(true);
+      tidy.setIndentAttributes(true);
+      tidy.setWord2000(true);
+      tidy.setShowWarnings(false);
+      tidy.setCharEncoding(Configuration.UTF8);
+      tidy.parseDOM(inputHtml, xhtml);
+      InputStream inputXhtml = new ByteArrayInputStream(xhtml.toByteArray());
+      // 4 - Transformation XHTML en PDF
+      HTMLWorker htmlWorker = new HTMLWorker(document);
+      Reader reader = new InputStreamReader(inputXhtml, "UTF-8");
       htmlWorker.parse(reader);
     } catch (Exception e) {
-      SilverTrace.error("kmelia", "PdfGenerator.parseHTML",
-          "kmelia.CANT_PARSE_HTML", e);
+      SilverTrace.error("kmelia", "PdfGenerator.parseHTML", "kmelia.CANT_PARSE_HTML", e);
     }
   }
 
@@ -1325,13 +1328,12 @@ public class PdfGenerator extends PdfPageEventHelper {
           getTableColumnCount();
       html = new CharArrayReader(text.toCharArray());
       ParserCallback callback = new Callback(document, columns, textIterator, imageIterator);
-      parser.parse(html, callback, true);
+      parser.parse(html, callback, false);
     } catch (Exception ex) {
       throw new KmeliaRuntimeException("PdfGenerator.parseModelHTML",
           KmeliaRuntimeException.WARNING, "kmelia.EX_CANNOT_SHOW_PDF_GENERATION", ex);
     }
   }
-
 
   private void generateContent(Document document)
       throws DocumentException, WysiwygException, PublicationTemplateException,
