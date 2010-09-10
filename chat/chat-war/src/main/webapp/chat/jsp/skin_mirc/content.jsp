@@ -35,39 +35,38 @@
 	Chatroom chatroom = null;
 	ChatroomUser cUser = null;
 
-	String kickoff = (String) session.getValue("chat_kickoff");
+	String kickoff = (String) session.getAttribute("chat_kickoff");
 
-	String banned = (String) session.getValue("chat_banned");
+	String banned = (String) session.getAttribute("chat_banned");
 
-	if ( ( kickoff != null ) && kickoff.equals("true") )
+	if ( "true".equals(kickoff) )
 	{
-
-		// process the kickoff action (remove session var kickoff)
-		//System.out.println("KICKOFF!!!!!");
-		session.removeValue("chat_kickoff");
+		session.removeAttribute("chat_kickoff");
 
 	}
 	else if ( ( banned != null ) && banned.equals("true") )
 	{
-		session.removeValue("chat_banned");
+		session.removeAttribute("chat_banned");
 	}
 	else
 	{
+    request.setCharacterEncoding("UTF-8");
 		String jspDisplay = UserProcessor.execute(request,response,session,application);
 		if (jspDisplay != null)
 		{
-			if ( (request.getParameter("todo") != null ) && ( request.getParameter("todo").equals("quit") ) )
+			if ( "quit".equals(request.getParameter("todo")) )
 			{
 				response.sendRedirect(response.encodeRedirectURL(((String)request.getAttribute("myComponentURL"))+"Main"));
 			}
-			else
+			else {
 				response.sendRedirect(response.encodeRedirectURL(jspDisplay));
+      }
 			return;
 		}
 		else
 		{
 			ChatroomManager = jChatBox.Chat.ChatroomManager.getInstance();
-			cUser = (ChatroomUser) session.getValue(XMLConfig.USERSESSIONID);
+			cUser = (ChatroomUser) session.getAttribute(XMLConfig.USERSESSIONID);
 			if (cUser != null)
 			{
 				int cID = cUser.getParams().getChatroom();
@@ -112,7 +111,7 @@ function auto_quit_chatroom()
 	}
 	else if ( ( banned != null ) && banned.equals("true") )
 	{
-		out.println("alert('Vous avez �t� banni de ce salon');");
+		out.println("alert('Vous avez été banni de ce salon');");
 		out.println("location.href='quitChatroom.jsp?action=open';");
 	}
 
@@ -134,13 +133,13 @@ else if ( (dMode == Conf.BUFFEREDFRAMED) && (buffering == null) )
 <head>
 <title><%= chatroomName %></title>
 <script language="JavaScript"><!--
-	var thechat = '<%= URLEncoder.encode((String)session.getValue("bufferedChat")).replace('+',' ') %>';
+	var thechat = '<%= URLEncoder.encode((String)session.getAttribute("bufferedChat"), "ISO-8859-1").replace('+',' ') %>';
 	function execute()
 	{
 		if (typeof(self.parent.dbcontent) != "undefined")
 		{
 			self.parent.dbcontent.document.open("text/html");
-			self.parent.dbcontent.document.writeln(unescape(thechat));
+			self.parent.dbcontent.document.writeln(decodeURIComponent(thechat));
 			self.parent.dbcontent.document.write();
 			self.parent.dbcontent.document.close();
 		}
@@ -151,7 +150,7 @@ else if ( (dMode == Conf.BUFFEREDFRAMED) && (buffering == null) )
 </body>
 </html>
 <%}
-/**----------------------*/
+/**------------------&---*/
 /** Content of chatroom. */
 /**----------------------*/
 else

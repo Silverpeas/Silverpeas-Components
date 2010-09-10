@@ -67,8 +67,8 @@ self.location.hash=ancre;
                }
                i++;
                
-               //Très vilain fix pour résoudre le problème des messages doublés sous Firefox
-			   //Pas trouvé d'autres solutions !
+               //TrÃ¨s vilain fix pour rÃ©soudre le problÃ¨me des messages doublÃ©s sous Firefox
+			   //Pas trouvÃ© d'autres solutions !
 			   if (i <v.size())
 			   {
 					nextMessage = (Msg) v.elementAt(i);
@@ -91,7 +91,7 @@ self.location.hash=ancre;
                // Quit message.
                 else if ( message.getType() == Msg.LEFT )
                {
-                  sb.append("<td valign=top><font color=\"#cc6600\" size=\"2\" face=\"Courier New, Courier, mono\">"+messageStr+" a quitté le salon.</font></td>\n");
+                  sb.append("<td valign=top><font color=\"#cc6600\" size=\"2\" face=\"Courier New, Courier, mono\">"+messageStr+" a quitt&eacute; le salon.</font></td>\n");
                }
                // Private message.
                else if ( message.getType() == Msg.PRIVATE )
