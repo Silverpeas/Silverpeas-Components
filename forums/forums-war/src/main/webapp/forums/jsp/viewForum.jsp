@@ -220,7 +220,7 @@
                   <tr>
                     <td valign="top" align="center">
                       <table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
-                        <%-- affichage de l'entête des colonnes --%>
+                        <%-- affichage de l'entï¿½te des colonnes --%>
                         <tr class="enteteTableau">
                           <td nowrap="nowrap" align="center" colspan="3"><fmt:message key="forums.nbSubjects"/></td>
                           <td nowrap="nowrap" align="center"><fmt:message key="forums.lastMessage"/></td>
@@ -231,7 +231,7 @@
                             <td nowrap="nowrap" align="center"><fmt:message key="operations"/></td>
                           </c:if>
                         </tr><%
-fsc.deployAll(forumId);
+fsc.deployAllMessages(forumId);
 ForumHelper.displayMessagesList(out, resource, userId, isAdmin, isModerator, isReader, true, forumId, false,
 "viewForum", fsc, resources);
                         %>
