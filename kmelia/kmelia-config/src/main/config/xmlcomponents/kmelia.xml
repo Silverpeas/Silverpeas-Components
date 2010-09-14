@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -27,12 +27,12 @@
 <WAComponent>
   <name>kmelia</name>
   <label>Gestion documentaire I - Theme Tracker</label>
-  <description>Permet de fédérer et structurer la documentation par répertoires thématiques 
-  arborescents. De nombreuses fonctions associées peuvent être activées : forumlaire d'entête XML 
-  et méta-données associées, gestion de fichiers joints de formats Office, PDF, html, gestion de 
-  version des fichiers joints, gestion d'un workflow multi-étapes de validation / approbation,
-  indexation manuelle sur le Plan de Classement Silverpeas, contrôle de lecture, 
-  gestion de commentaires, abonnement à un dossier ou un fichier, alerte de publication.
+  <description>Permet de fÃ©dÃ©rer et structurer la documentation par rÃ©pertoires thÃ©matiques
+  arborescents. De nombreuses fonctions associÃ©es peuvent Ãªtre activÃ©es : forumlaire d'entÃªte XML
+  et mÃ©ta-donnÃ©es associÃ©es, gestion de fichiers joints de formats Office, PDF, html, gestion de
+  version des fichiers joints, gestion d'un workflow multi-Ã©tapes de validation / approbation,
+  indexation manuelle sur le Plan de Classement Silverpeas, contrÃ´le de lecture,
+  gestion de commentaires, abonnement Ã  un dossier ou un fichier, alerte de publication.
   </description>
   <suite>01 Gestion Documentaire</suite>
   <visible>@ComponentVisibleKMelia@</visible>
@@ -54,24 +54,24 @@
   <Profiles>
     <Profile name="admin">Gestionnaires</Profile>
     <Profile name="publisher">Publieurs</Profile>
-    <Profile name="writer">Rédacteurs</Profile>
+    <Profile name="writer">RÃ©dacteurs</Profile>
     <Profile name="user">Lecteurs</Profile>
     <!--<Profile name="supervisor">Superviseurs</Profile>-->
   </Profiles>
   <Parameters>
     <Parameter>
       <ParameterName>nbPubliOnRoot</ParameterName>
-      <ParameterLabel>Nb dernières publi</ParameterLabel>
+      <ParameterLabel>Nb derniÃ¨res publi</ParameterLabel>
       <ParameterValue>15</ParameterValue>
       <ParameterSize>5</ParameterSize>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>1</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Permet de définir le nombre de dernières publications affichées sur la 
-            page d'accueil du composant. La création de publication à la racine est impossible. 
-            Si la valeur saisie est égale à 0, la publication à la racine est alors possible mais 
-            les dernières publications ne sont pas affichées sur la page d'accueil.
+        <ParameterHelpFr>Permet de dÃ©finir le nombre de derniÃ¨res publications affichÃ©es sur la
+            page d'accueil du composant. La crÃ©ation de publication Ã  la racine est impossible.
+            Si la valeur saisie est Ã©gale Ã  0, la publication Ã  la racine est alors possible mais
+            les derniÃ¨res publications ne sont pas affichÃ©es sur la page d'accueil.
         </ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
@@ -85,7 +85,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>2</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Permet de définir le nombre de publications affichées par page.</ParameterHelpFr>
+        <ParameterHelpFr>Permet de dÃ©finir le nombre de publications affichÃ©es par page.</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -98,7 +98,7 @@
       <ParameterUpdatable>OnCreationOnly</ParameterUpdatable>
       <ParameterOrder>3</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Active l'organisation arborescente de thèmes. Une publication peut être placée dans plusieurs thèmes.</ParameterHelpFr>
+        <ParameterHelpFr>Active l'organisation arborescente de thÃ¨mes. Une publication peut Ãªtre placÃ©e dans plusieurs thÃ¨mes.</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -111,7 +111,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>4</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Les publications créées au sein de cette instance pourront être classées sur le Plan de Classement</ParameterHelpFr>
+        <ParameterHelpFr>Les publications crÃ©Ã©es au sein de cette instance pourront Ãªtre classÃ©es sur le Plan de Classement</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -154,7 +154,7 @@
     </Parameter>
     <Parameter>
       <ParameterName>tabReadersList</ParameterName>
-      <ParameterLabel>Contrôles de Lecture</ParameterLabel>
+      <ParameterLabel>ContrÃ´les de Lecture</ParameterLabel>
       <ParameterValue>yes</ParameterValue>
       <ParameterValueForPersonalSpace>no</ParameterValueForPersonalSpace>
       <ParameterMandatory>Y</ParameterMandatory>
@@ -180,7 +180,7 @@
       <ParameterUpdatable>OnCreationOnly</ParameterUpdatable>
       <ParameterOrder>11</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Permet de gérer les versions des fichiers joints. Ce paramêtre n'est modifiable qu'à la création de l'instance</ParameterHelpFr>
+        <ParameterHelpFr>Permet de gÃ©rer les versions des fichiers joints. Ce paramÃªtre n'est modifiable qu'Ã  la crÃ©ation de l'instance</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -192,19 +192,19 @@
       <ParameterType>select</ParameterType>
       <ParameterOrder>12</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Droits sur les fichiers versionnés: Rédacteurs et Lecteurs, 
-        Rédacteurs seulement, Lecteurs seulement ou droits hérités du composant.
+        <ParameterHelpFr>Droits sur les fichiers versionnÃ©s: RÃ©dacteurs et Lecteurs,
+        RÃ©dacteurs seulement, Lecteurs seulement ou droits hÃ©ritÃ©s du composant.
         </ParameterHelpFr>
-        <ParameterHelpEn>Access rights on the files with versions : Writers and readers, 
+        <ParameterHelpEn>Access rights on the files with versions : Writers and readers,
         Writers only, Readers onley ou rights inherited from the component.</ParameterHelpEn>
       </ParameterHelp>
       <ParameterOptions>
         <ParameterOption>
-          <Name>Rédacteurs et Lecteurs</Name>
+          <Name>RÃ©dacteurs et Lecteurs</Name>
           <Value>0</Value>
         </ParameterOption>
         <ParameterOption>
-          <Name>Rédacteurs</Name>
+          <Name>RÃ©dacteurs</Name>
           <Value>1</Value>
         </ParameterOption>
         <ParameterOption>
@@ -212,7 +212,7 @@
           <Value>2</Value>
         </ParameterOption>
         <ParameterOption>
-          <Name>Droits hérités</Name>
+          <Name>Droits hÃ©ritÃ©s</Name>
           <Value>3</Value>
         </ParameterOption>
       </ParameterOptions>
@@ -233,27 +233,27 @@
     </Parameter>
     <Parameter>
       <ParameterName>webContent</ParameterName>
-      <ParameterLabel>Orienté contenu Web</ParameterLabel>
+      <ParameterLabel>OrientÃ© contenu Web</ParameterLabel>
       <ParameterValue>no</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterType>checkbox</ParameterType>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>14</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Permet d'activer les fonctions liées à la gestion de contenu web (wysiwyg associé au thème, visibilité des thèmes)</ParameterHelpFr>
+        <ParameterHelpFr>Permet d'activer les fonctions liÃ©es Ã  la gestion de contenu web (wysiwyg associÃ© au thÃ¨me, visibilitÃ© des thÃ¨mes)</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
     <Parameter>
       <ParameterName>delegatedTopicManagement</ParameterName>
-      <ParameterLabel>Gestion déléguée des thèmes</ParameterLabel>
+      <ParameterLabel>Gestion dÃ©lÃ©guÃ©e des thÃ¨mes</ParameterLabel>
       <ParameterValue>no</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterType>checkbox</ParameterType>
       <ParameterUpdatable>never</ParameterUpdatable>
       <ParameterOrder>16</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>La gestion des thèmes est déléguée aux publieurs et rédacteurs</ParameterHelpFr>
+        <ParameterHelpFr>La gestion des thÃ¨mes est dÃ©lÃ©guÃ©e aux publieurs et rÃ©dacteurs</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -266,7 +266,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>17</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Les documents créés au sein de cette instance pourront comporter une champ supplémentaire 'Auteur'.</ParameterHelpFr>
+        <ParameterHelpFr>Les documents crÃ©Ã©s au sein de cette instance pourront comporter une champ supplÃ©mentaire 'Auteur'.</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -279,11 +279,11 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>18</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Si une publication contient un seul fichier joint alors l'ouverture de la publication déclenche automatiquement l'ouverture du fichier joint.</ParameterHelpFr>
+        <ParameterHelpFr>Si une publication contient un seul fichier joint alors l'ouverture de la publication dÃ©clenche automatiquement l'ouverture du fichier joint.</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
-    
+
     <Parameter>
       <ParameterName>importFiles</ParameterName>
       <ParameterLabel>Importation de document(s)</ParameterLabel>
@@ -323,8 +323,8 @@
       <ParameterType>select</ParameterType>
       <ParameterOrder>20</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Classique : un valideur doit valider la publication, Ciblée (un seul valideur) : Le rédacteur choisit le valideur devant valider la publication. Ceci permet d'éviter le phénomène de spam auprès des publieurs, Ciblée (plusieurs valideurs) : Le rédacteur choisit les valideurs, Collégiale : Tous les valideurs doivent valider la publication.</ParameterHelpFr>
-        <ParameterHelpEn>Classical : once validator must validate publication, Ciblée (un seul valideur) : Writer choose one validator. This avoid spam behaviour., Ciblée (plusieurs valideurs) : Writer choose many validators, Collégiale : All validators must validate publication</ParameterHelpEn>
+        <ParameterHelpFr>Classique : un valideur doit valider la publication, CiblÃ©e (un seul valideur) : Le rÃ©dacteur choisit le valideur devant valider la publication. Ceci permet d'Ã©viter le phÃ©nomÃ¨ne de spam auprÃ¨s des publieurs, CiblÃ©e (plusieurs valideurs) : Le rÃ©dacteur choisit les valideurs, CollÃ©giale : Tous les valideurs doivent valider la publication.</ParameterHelpFr>
+        <ParameterHelpEn>Classical : once validator must validate publication, CiblÃ©e (un seul valideur) : Writer choose one validator. This avoid spam behaviour., CiblÃ©e (plusieurs valideurs) : Writer choose many validators, CollÃ©giale : All validators must validate publication</ParameterHelpEn>
       </ParameterHelp>
       <ParameterOptions>
         <ParameterOption>
@@ -332,15 +332,15 @@
           <Value>0</Value>
         </ParameterOption>
         <ParameterOption>
-          <Name>Ciblée (un seul valideur)</Name>
+          <Name>CiblÃ©e (un seul valideur)</Name>
           <Value>1</Value>
         </ParameterOption>
         <ParameterOption>
-          <Name>Ciblée (plusieurs valideurs)</Name>
+          <Name>CiblÃ©e (plusieurs valideurs)</Name>
           <Value>2</Value>
         </ParameterOption>
         <ParameterOption>
-          <Name>Collégiale</Name>
+          <Name>CollÃ©giale</Name>
           <Value>3</Value>
         </ParameterOption>
       </ParameterOptions>
@@ -387,20 +387,20 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>22</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Cette fonction permet de créer des thèmes et des publications par glisser/déposer dans une zone de l'écran.</ParameterHelpFr>
+        <ParameterHelpFr>Cette fonction permet de crÃ©er des thÃ¨mes et des publications par glisser/dÃ©poser dans une zone de l'Ã©cran.</ParameterHelpFr>
         <ParameterHelpEn>This function allow to the manager to create topics and publications using a simple drag and drop.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
     <Parameter>
       <ParameterName>coWriting</ParameterName>
-      <ParameterLabel>Co Rédaction</ParameterLabel>
+      <ParameterLabel>Co RÃ©daction</ParameterLabel>
       <ParameterValue>no</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>23</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Cette fonction permet à un rédacteur de pouvoir modifier n'importe quelle publication.</ParameterHelpFr>
+        <ParameterHelpFr>Cette fonction permet Ã  un rÃ©dacteur de pouvoir modifier n'importe quelle publication.</ParameterHelpFr>
         <ParameterHelpEn>This function makes it possible to a writer to modify any publications.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -413,7 +413,7 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>24</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>La dernière version validée d'une publication est toujours visible même lorsqu'elle est en attente de validation.</ParameterHelpFr>
+        <ParameterHelpFr>La derniÃ¨re version validÃ©e d'une publication est toujours visible mÃªme lorsqu'elle est en attente de validation.</ParameterHelpFr>
         <ParameterHelpEn>The latest valid version of a publication is always visible even if it is waiting approval.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -426,7 +426,7 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>25</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Dédié aux utilisateurs débutants, cet assistant permet de créer une publication pas à pas.</ParameterHelpFr>
+        <ParameterHelpFr>DÃ©diÃ© aux utilisateurs dÃ©butants, cet assistant permet de crÃ©er une publication pas Ã  pas.</ParameterHelpFr>
         <ParameterHelpEn>For beginners only. This wizard allows the user to create a publication step by step.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -439,20 +439,20 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>27</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Affiche le nombre de publications par thème</ParameterHelpFr>
+        <ParameterHelpFr>Affiche le nombre de publications par thÃ¨me</ParameterHelpFr>
         <ParameterHelpEn>Display the number of publications by topic</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
     <Parameter>
       <ParameterName>rightsOnTopics</ParameterName>
-      <ParameterLabel>Droits sur les thèmes</ParameterLabel>
+      <ParameterLabel>Droits sur les thÃ¨mes</ParameterLabel>
       <ParameterValue>no</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>28</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Permet de définir des droits d'accès au niveau des thèmes</ParameterHelpFr>
+        <ParameterHelpFr>Permet de dÃ©finir des droits d'accÃ¨s au niveau des thÃ¨mes</ParameterHelpFr>
         <ParameterHelpEn>Allow to define rights on topics</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -465,7 +465,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>29</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Cette option permet de choisir un délais de réservation des fichiers joints et d'en gérer les retards. Ce délais est exprimé en jours et ne tiens pas compte des samedis et dimanches.</ParameterHelpFr>
+        <ParameterHelpFr>Cette option permet de choisir un dÃ©lais de rÃ©servation des fichiers joints et d'en gÃ©rer les retards. Ce dÃ©lais est exprimÃ© en jours et ne tiens pas compte des samedis et dimanches.</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -478,7 +478,7 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>30</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Cette option permet d'afficher sur l'entête l'identifiant unique de chaque publication.</ParameterHelpFr>
+        <ParameterHelpFr>Cette option permet d'afficher sur l'entÃªte l'identifiant unique de chaque publication.</ParameterHelpFr>
         <ParameterHelpEn>This feature displays the unique id of each publication in the header tab.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -491,20 +491,20 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>31</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Seuls les gestionnaires du service auront la possibilité de supprimer une publication et d'accéder à la corbeille de publications.</ParameterHelpFr>
+        <ParameterHelpFr>Seuls les gestionnaires du service auront la possibilitÃ© de supprimer une publication et d'accÃ©der Ã  la corbeille de publications.</ParameterHelpFr>
         <ParameterHelpEn>Only administrators of this service are be able to remove publications and to access to publications bin.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
     <Parameter>
       <ParameterName>updateChain</ParameterName>
-      <ParameterLabel>Modifications enchainées</ParameterLabel>
+      <ParameterLabel>Modifications enchainÃ©es</ParameterLabel>
       <ParameterValue>no</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterUpdatable>never</ParameterUpdatable>
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>32</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Possibilité d'effectuer des modifications enchainées sur certains thèmes (possédant un descripteur)</ParameterHelpFr>
+        <ParameterHelpFr>PossibilitÃ© d'effectuer des modifications enchainÃ©es sur certains thÃ¨mes (possÃ©dant un descripteur)</ParameterHelpFr>
         <ParameterHelpEn>possibility of making successive modifications on certains topics (having a descriptor)</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -517,7 +517,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>33</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Ce paramètre permet d'activer la saisie d'informations complémentaires pour chaque fichier joint. Ces informations sont saisies au travers d'un formulaire XML.</ParameterHelpFr>
+        <ParameterHelpFr>Ce paramÃ¨tre permet d'activer la saisie d'informations complÃ©mentaires pour chaque fichier joint. Ces informations sont saisies au travers d'un formulaire XML.</ParameterHelpFr>
         <ParameterHelpEn>This feature allows to enter additional informations on each file. XML template is used to enter this data.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -531,7 +531,7 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>34</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Permet de désactiver l'opération "Notifier" sur les publications</ParameterHelpFr>
+        <ParameterHelpFr>Permet de dÃ©sactiver l'opÃ©ration "Notifier" sur les publications</ParameterHelpFr>
         <ParameterHelpEn>Avoid "Notify" operation on publications</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -544,7 +544,7 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>35</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Si ce paramètre est activé, les informations indexées ne seront pas retrouvables par le moteur de recherche général.</ParameterHelpFr>
+        <ParameterHelpFr>Si ce paramÃ¨tre est activÃ©, les informations indexÃ©es ne seront pas retrouvables par le moteur de recherche gÃ©nÃ©ral.</ParameterHelpFr>
         <ParameterHelpEn>If this parameter is enabled, indexed informations won't be findable by global search engine.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -557,7 +557,7 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>36</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Ce paramètre permet de saisir une description Wysiwyg sur un thème qui sera affichée dans le thème</ParameterHelpFr>
+        <ParameterHelpFr>Ce paramÃ¨tre permet de saisir une description Wysiwyg sur un thÃ¨me qui sera affichÃ©e dans le thÃ¨me</ParameterHelpFr>
         <ParameterHelpEn>This feature allows to make a rich description of a topic.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -571,36 +571,36 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>37</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail</ParameterHelpFr>
+        <ParameterHelpFr>Ce paramÃ¨tre permet d'activer le partage de fichiers Ã  des tiers non utilisateurs du portail</ParameterHelpFr>
         <ParameterHelpEn>This feature allows to activate file sharing with persons who have no access to the portal</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
     <Parameter>
       <ParameterName>attachmentsInPubList</ParameterName>
-      <ParameterLabel>Fichiers joints listés</ParameterLabel>
+      <ParameterLabel>Fichiers joints listÃ©s</ParameterLabel>
       <ParameterValue>no</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>38</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Ce paramètre permet d'afficher directement dans la liste des publications les fichiers joints à chaque publication.</ParameterHelpFr>
+        <ParameterHelpFr>Ce paramÃ¨tre permet d'afficher directement dans la liste des publications les fichiers joints Ã  chaque publication.</ParameterHelpFr>
         <ParameterHelpEn>This feature allows to display the attached files to each publications directly in the publications list.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
     <Parameter>
       <ParameterName>publicFiles</ParameterName>
-      <ParameterLabel>Fichiers réutilisables</ParameterLabel>
+      <ParameterLabel>Fichiers rÃ©utilisables</ParameterLabel>
       <ParameterValue>no</ParameterValue>
       <ParameterMandatory>N</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>39</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Ce paramètre permet de définir ce composant comme une banque de fichiers. Les pièces jointes d'une banque peuvent être insérées dans le corps d'une publication grâce à l'éditeur Wysiwyg.</ParameterHelpFr>
+        <ParameterHelpFr>Ce paramÃ¨tre permet de dÃ©finir ce composant comme une banque de fichiers. Les piÃ¨ces jointes d'une banque peuvent Ãªtre insÃ©rÃ©es dans le corps d'une publication grÃ¢ce Ã  l'Ã©diteur Wysiwyg.</ParameterHelpFr>
         <ParameterHelpEn>This feature allows indicating this component as a file storage. The attachment of a file storage can be inserted into the body of a publication with the help of Wysiwyg editor.</ParameterHelpEn>
       </ParameterHelp>
-    </Parameter>   
+    </Parameter>
     <Parameter>
       <ParameterName>axisIdGlossary</ParameterName>
       <ParameterLabel>Lexique</ParameterLabel>
@@ -609,20 +609,20 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>40</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Ce paramètre permet de définir l'identifiant de l'axe du PDC qui sera utilisé comme lexique dans le theme tracker courant. </ParameterHelpFr>
+        <ParameterHelpFr>Ce paramÃ¨tre permet de dÃ©finir l'identifiant de l'axe du PDC qui sera utilisÃ© comme lexique dans le theme tracker courant. </ParameterHelpFr>
         <ParameterHelpEn>This feature allows to indicate the identifier of PDC axis's used as glossary for the current Theme tracker.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
     <Parameter>
       <ParameterName>searchOnTopics</ParameterName>
-      <ParameterLabel>Recherche sur thèmes</ParameterLabel>
+      <ParameterLabel>Recherche sur thÃ¨mes</ParameterLabel>
       <ParameterValue>no</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>41</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Ce paramètre permet d'afficher une zone de recherche pour chaque thème.</ParameterHelpFr>
+        <ParameterHelpFr>Ce paramÃ¨tre permet d'afficher une zone de recherche pour chaque thÃ¨me.</ParameterHelpFr>
         <ParameterHelpEn>This feature allows to display a search box in each topic.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>

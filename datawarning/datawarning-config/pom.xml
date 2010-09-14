@@ -4,9 +4,9 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>datawarning</artifactId>
-    <version>5.1-SNAPSHOT</version>
+    <version>5.3-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.components.datawarning</groupId>
   <artifactId>datawarning-config</artifactId>
   <packaging>pom</packaging>

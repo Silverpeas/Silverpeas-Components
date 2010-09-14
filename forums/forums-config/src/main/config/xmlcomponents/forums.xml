@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -28,7 +28,7 @@
 <WAComponent>
   <name>forums</name>
   <label>Forum</label>
-  <description>Supporte les processus de communication asynchrone de type forum. Des salons peuvent être ouverts, sur des thèmes variés. L'escalade à plusieurs niveaux est possible sur chaque intervention d'un participant. Chaque salon est classable sur le plan de classement.</description>
+  <description>Supporte les processus de communication asynchrone de type forum. Des salons peuvent Ãªtre ouverts, sur des thÃ¨mes variÃ©s. L'escalade Ã  plusieurs niveaux est possible sur chaque intervention d'un participant. Chaque salon est classable sur le plan de classement.</description>
   <suite>02 Gestion Collaborative</suite>
   <visible>@ComponentVisibleForum@</visible>
   <portlet>yes</portlet>
@@ -53,7 +53,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>2</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Les forums créés au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
+        <ParameterHelpFr>Les forums crÃ©Ã©s au sein de cette instance pourront Ãªtre classÃ©s sur le Plan de Classement</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -79,7 +79,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>4</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Permet de générer un flux RSS de ces forums.</ParameterHelpFr>
+        <ParameterHelpFr>Permet de gÃ©nÃ©rer un flux RSS de ces forums.</ParameterHelpFr>
         <ParameterHelpEn>.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -92,9 +92,9 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>5</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Si ce paramètre est activé, les messages seront soumis à validation par les modérateurs.</ParameterHelpFr>
+        <ParameterHelpFr>Si ce paramÃ¨tre est activÃ©, les messages seront soumis Ã  validation par les modÃ©rateurs.</ParameterHelpFr>
         <ParameterHelpEn>.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
-  </Parameters>  
+  </Parameters>
 </WAComponent>

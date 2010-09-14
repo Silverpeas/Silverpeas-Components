@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -27,9 +27,9 @@
 
 <WAComponent>
   <name>survey</name>
-  <label>Enquête - QuickSurvey</label>
-  <description>Permet d'organiser des enquêtes d'opinion sur des questions ouvertes ou fermées, à 
-  choix multiples.. Une surveillance du niveau de participation et du résultat en cours est possible.</description>
+  <label>EnquÃªte - QuickSurvey</label>
+  <description>Permet d'organiser des enquÃªtes d'opinion sur des questions ouvertes ou fermÃ©es, Ã 
+  choix multiples.. Une surveillance du niveau de participation et du rÃ©sultat en cours est possible.</description>
   <suite>02 Gestion Collaborative</suite>
   <visible>@ComponentVisibleSurvey@</visible>
   <portlet>yes</portlet>
@@ -42,7 +42,7 @@
     <tabletpl>SurveyComment</tabletpl>
   </tableList>
   <Profiles>
-    <Profile name="admin">Gestionnaire</Profile>	
+    <Profile name="admin">Gestionnaire</Profile>
     <Profile name="publisher">Publieur</Profile>
     <Profile name="userMultiple">Participants multiples</Profile>
     <Profile name="user">Participants</Profile>
@@ -56,7 +56,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterType>checkbox</ParameterType>
       <ParameterHelp>
-        <ParameterHelpFr>Les enquêtes créées au sein de cette instance pourront être classées sur le Plan de Classement</ParameterHelpFr>
+        <ParameterHelpFr>Les enquÃªtes crÃ©Ã©es au sein de cette instance pourront Ãªtre classÃ©es sur le Plan de Classement</ParameterHelpFr>
         <ParameterHelpEn>The surveys created in this instance may be classified on the Categorization Plan.</ParameterHelpEn>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
@@ -69,7 +69,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterType>checkbox</ParameterType>
       <ParameterHelp>
-        <ParameterHelpFr>Les enquêtes créées au sein de cette instance pourront être répondues de manière anonyme</ParameterHelpFr>
+        <ParameterHelpFr>Les enquÃªtes crÃ©Ã©es au sein de cette instance pourront Ãªtre rÃ©pondues de maniÃ¨re anonyme</ParameterHelpFr>
         <ParameterHelpEn>The surveys created in this instance may be answered by anonymous way.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>

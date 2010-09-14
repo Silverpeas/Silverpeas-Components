@@ -61,7 +61,7 @@
         operationPane.addOperation(context + "/pdcPeas/jsp/icons/pdcPeas_position_to_del.gif",
         	resources.getString("GML.PDCDeletePosition"), "javascript:getSelectedItems()");
     }
-    
+
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(fsc.getSpaceLabel());
     browseBar.setComponentName(fsc.getComponentLabel(), ActionUrl.getUrl("main"));
@@ -69,7 +69,7 @@
     out.println(window.printBefore());
 
     displayTabs(params, forumId, fsc, graphicFactory, "ViewPdcPositions", out);
-    
+
     out.println(frame.printBefore());
 
     out.flush();

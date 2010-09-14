@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -27,8 +27,8 @@
 
 <WAComponent>
   <name>quickinfo</name>
-  <label>Actualités - QuickInfo</label>
-  <description>Permet de diffuser des brèves d'information. Les informations sont classées sur le Plan de Classement.</description>
+  <label>ActualitÃ©s - QuickInfo</label>
+  <description>Permet de diffuser des brÃ¨ves d'information. Les informations sont classÃ©es sur le Plan de Classement.</description>
   <suite>04 Gestion de contenu</suite>
   <visible>@ComponentVisibleQuickInfo@</visible>
   <portlet>yes</portlet>
@@ -50,7 +50,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterType>checkbox</ParameterType>
       <ParameterHelp>
-        <ParameterHelpFr>Les brèves créées au sein de cette instance pourront Être classées sur le Plan de Classement</ParameterHelpFr>
+        <ParameterHelpFr>Les brÃ¨ves crÃ©Ã©es au sein de cette instance pourront ÃŠtre classÃ©es sur le Plan de Classement</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>

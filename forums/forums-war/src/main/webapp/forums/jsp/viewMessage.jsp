@@ -46,10 +46,10 @@
     if (StringUtil.isDefined(nbModeratorsString)) {
       nbModerators = Integer.parseInt(nbModeratorsString);
     }
-    
+
     boolean scrollToMessage = false;
     boolean displayAllMessages = false;
-    
+
     try
     {
         switch (action)
@@ -75,18 +75,18 @@
                     fsc.changeDisplayAllMessages();
                 }
                 break;
-                
+
             case 8 :
                 int parentId = getIntParameter(request, "parentId", 0);
                 String messageTitle = request.getParameter("messageTitle").trim();
                 String messageText = request.getParameter("messageText").trim();
                 String subscribe = request.getParameter("subscribeMessage");
-                
+
                 if ((messageTitle.length() > 0) && (messageText.length() > 0))
                 {
                     if (params == -1)
                     {
-                        // Création
+                        // Crï¿½ation
                         int result = fsc.createMessage(
                             messageTitle, userId, forumId, parentId, messageText, null);
                         messageId = result;
@@ -117,34 +117,34 @@
                 call = "viewForum";
                 scrollToMessage = true;
                 break;
-                
+
             case 9 :
                 messageId = fsc.getMessageParentId(params);
                 fsc.deleteMessage(params);
                 call = "viewForum";
                 scrollToMessage = "true".equals(request.getParameter("scroll"));
                 break;
-                
+
             case 10 :
                 fsc.deployMessage(params);
                 messageId = params;
                 break;
-                
+
             case 11 :
                 fsc.undeployMessage(params);
                 messageId = params;
                 break;
-                
+
             case 13 :
                 fsc.unsubscribeMessage(params, userId);
                 messageId = params;
                 break;
-                
+
             case 14 :
                 fsc.subscribeMessage(params, userId);
                 messageId = params;
                 break;
-                
+
             case 15 :
                 // Notation d'un message.
                 int note = getIntParameter(request, "note", -1);
@@ -160,17 +160,17 @@
     {
         SilverTrace.info("forums", "JSPviewMessage", "root.EX_NO_MESSAGE", null, nfe);
     }
-    
+
     String backURL = ActionUrl.getUrl(call, -1, forumId);
-    
+
     Message message = fsc.getMessage(messageId);
     if (forumId == -1)
     {
         forumId = message.getForumId();
     }
-    
+
     boolean forumActive = false;
-    
+
     int[] forumNotes = new int[0];
 
     if (message == null)
@@ -184,18 +184,18 @@
         int reqForum = (forumId != -1 ? forumId : 0);
         int folderId = message.getForumId();
         boolean isModerator = fsc.isModerator(userId, folderId);
-        
+
         displayAllMessages = fsc.isDisplayAllMessages();
-        
+
         forumActive = fsc.isForumActive(folderId);
-        
+
         String folderName = Encode.javaStringToHtmlString(
             fsc.getForumName(folderId > 0 ? folderId : params));
 
         ResourceLocator settings = fsc.getSettings();
         String configFile = SilverpeasSettings.readString(settings, "configFile",
             URLManager.getApplicationURL() + "/wysiwyg/jsp/javaScript/myconfig.js");
-        
+
         // Messages
         currentMessageId = messageId;
         int parent = fsc.getMessageParentId(currentMessageId);
@@ -212,7 +212,6 @@
 <head>
     <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><%
-
         out.println(graphicFactory.getLookStyleSheet());
         if (!graphicFactory.hasExternalStylesheet())
         {
@@ -228,7 +227,7 @@
         {
             parentMessageId = <%=currentMessageId%>;
         }
-        
+
         function validateMessage()
         {
             if (document.forms["forumsForm"].elements["messageTitle"].value == "")
@@ -244,7 +243,7 @@
                 document.forms["forumsForm"].submit();
             }
         }
-    
+
         function deleteMessage(messageId, parentId, scroll)
         {
             if (confirm('<%=resource.getString("confirmDeleteMessage")%>'))
@@ -256,7 +255,7 @@
                     + "&scroll=" + (scroll && parentId != 0);
             }
         }
-            
+
         function initFCKeditor()
         {
             if (oFCKeditor == null)
@@ -342,7 +341,7 @@
         {
             window.location.href = "refuseMessage.jsp?params=" + messageId;
         }
-                
+
     </script>
 </head>
 
@@ -350,15 +349,15 @@
 
         Window window = graphicFactory.getWindow();
         Frame frame=graphicFactory.getFrame();
-    
+
         BrowseBar browseBar = window.getBrowseBar();
         browseBar.setDomainName(fsc.getSpaceLabel());
         browseBar.setComponentName(fsc.getComponentLabel(), ActionUrl.getUrl("main"));
         browseBar.setPath(navigationBar(reqForum, resource, fsc));
-        
+
         out.println(window.printBefore());
         out.println(frame.printBefore());
-        
+
         int previousMessageId = -1;
         int nextMessageId = -1;
         if (!displayAllMessages && messagesCount > 1)
@@ -380,7 +379,7 @@
                 i++;
             }
         }
-    
+
         // Liste des messages
         String formAction = (reqForum > 0
             ? ActionUrl.getUrl("viewMessage", 8, forumId) : ActionUrl.getUrl("main", 8, -1));
@@ -460,7 +459,7 @@
             <tr>
                 <td valign="top"><%
 
-        
+
         if (!displayAllMessages)
         {
             messages = new Message[] {message};
@@ -501,7 +500,7 @@
                 nbMessages = ((Integer)authorNbMessages.get(author)).intValue();
             }
 %>
-                    
+
                     <div id="msgContent<%=currentId%>">
                         <a name="msg<%=currentId%>"/>
                         <table width="100%" border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor">
@@ -550,12 +549,12 @@
                                                 <span class="texteLabelForm"><%=resource.getString("subscribeMessage")%></span></td>
                                             <td valign="top" align="right">&nbsp;<%
 
-            
-            if (forumActive) 
+
+            if (forumActive)
             {
 	            if (isAdmin || isUser)
 	            {
-				         %> 
+				         %>
 				          <a href="javascript:replyMessage(<%=currentId%>)"><img
 				           src="<%=context%>/util/icons/reply.gif" align="middle" border="0" alt="<%=resource.getString("replyMessage")%>" title="<%=resource.getString("replyMessage")%>"></a>&nbsp;
 				         <%
@@ -563,7 +562,7 @@
               if (userId.equals(author) || isAdmin || isModerator)
               {
                 if (STATUS_FOR_VALIDATION.equals(status)) {
-                  // afficher les icônes pour valider ou refuser un message
+                  // afficher les icï¿½nes pour valider ou refuser un message
                   %>
                     <a href="javascript:valideMessage(<%=currentId%>)"><img
                       src="<%=context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("valideMessage")%>" title="<%=resource.getString("valideMessage")%>"></a>&nbsp;
@@ -578,7 +577,7 @@
                  <a href="javascript:deleteMessage(<%=currentId%>, <%=parentId%>, true)"><img
                    src="<%=context%>/util/icons/delete.gif" align="middle" border="0" alt="<%=resource.getString("deleteMessage")%>" title="<%=resource.getString("deleteMessage")%>"></a>&nbsp;<%
                 }
-                  
+
                }
             }
 %>
@@ -602,7 +601,7 @@
                                 <td valign="top">
                                     <table border="0" cellspacing="0" cellpadding="5" width="100%">
                                         <!-- REPONSE -->
-                                        <!-- ligne séparatrice
+                                        <!-- ligne sï¿½paratrice
                                         <tr>
                                             <td colspan="2"><img src="<%=context%>/util/icons/colorPix/1px.gif" width="100%" height="1" class="intfdcolor"></td>
                                         </tr>
@@ -668,7 +667,7 @@
         out.println(frame.printAfter());
         out.println(window.printAfter());
     }
-%>  
+%>
     <script type="text/javascript">init();scrollMessageList(<%=messageId%>);</script><%
 
     if (displayAllMessages && scrollToMessage)
@@ -677,7 +676,7 @@
     <script type="text/javascript">scrollMessage(<%=messageId%>);</script><%
 
     }
-    
+
     if (!isReader && forumNotes.length > 0)
     {
 %>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -28,7 +28,7 @@
 <WAComponent>
   <name>almanach</name>
   <label>Almanach</label>
-  <description>Permet de créer et de visualiser les différents agendas d'événements définis dans les espaces et sous-espaces collaboratifs. A chaque événement peuvent être associés des fichiers joints. La visualisation s'effectue sur plusieurs échelles de temps.</description>
+  <description>Permet de crÃ©er et de visualiser les diffÃ©rents agendas d'Ã©vÃ©nements dÃ©finis dans les espaces et sous-espaces collaboratifs. A chaque Ã©vÃ©nement peuvent Ãªtre associÃ©s des fichiers joints. La visualisation s'effectue sur plusieurs Ã©chelles de temps.</description>
   <suite>02 Gestion Collaborative</suite>
   <visible>@ComponentVisibleAlmanach@</visible>
   <portlet>yes</portlet>
@@ -51,20 +51,20 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterHelp>
-        <ParameterHelpFr>Les événements saisis au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
+        <ParameterHelpFr>Les Ã©vÃ©nements saisis au sein de cette instance pourront Ãªtre classÃ©s sur le Plan de Classement</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
     <Parameter>
       <ParameterName>useAgregation</ParameterName>
-      <ParameterLabel>Agrégation d'Almanachs</ParameterLabel>
+      <ParameterLabel>AgrÃ©gation d'Almanachs</ParameterLabel>
       <ParameterOrder>2</ParameterOrder>
       <ParameterValue>no</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterType>checkbox</ParameterType>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterHelp>
-        <ParameterHelpFr>Cet Almanach pourra contenir des évènements d'Almanachs appartenant à des sous-espaces de l'espace de cet Almanach.</ParameterHelpFr>
+        <ParameterHelpFr>Cet Almanach pourra contenir des Ã©vÃ¨nements d'Almanachs appartenant Ã  des sous-espaces de l'espace de cet Almanach.</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -77,7 +77,7 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterHelp>
-        <ParameterHelpFr>Permet d'alléger l'interface et d'optimiser l'affichage du reste de la semaine</ParameterHelpFr>
+        <ParameterHelpFr>Permet d'allÃ©ger l'interface et d'optimiser l'affichage du reste de la semaine</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -90,20 +90,20 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>4</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Permet de générer un flux RSS des événements de cet Almanach.</ParameterHelpFr>
+        <ParameterHelpFr>Permet de gÃ©nÃ©rer un flux RSS des Ã©vÃ©nements de cet Almanach.</ParameterHelpFr>
         <ParameterHelpEn>.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
     <Parameter>
       <ParameterName>directAccess</ParameterName>
-      <ParameterLabel>Accès transversal</ParameterLabel>
+      <ParameterLabel>AccÃ¨s transversal</ParameterLabel>
       <ParameterType>select</ParameterType>
       <ParameterValue>0</ParameterValue>
       <ParameterMandatory>N</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>5</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Permet de choisir quelles autres instances du composant Almanach sont accessibles depuis la liste déroulante.</ParameterHelpFr>
+        <ParameterHelpFr>Permet de choisir quelles autres instances du composant Almanach sont accessibles depuis la liste dÃ©roulante.</ParameterHelpFr>
         <ParameterHelpEn>.</ParameterHelpEn>
       </ParameterHelp>
       <ParameterOptions>

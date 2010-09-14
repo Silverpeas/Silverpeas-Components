@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -27,7 +27,7 @@
 <WAComponent>
   <name>organizationchart</name>
   <label>organigramme</label>
-  <description>Ce composant permet l'affichage d'un organigramme à partir d'un annuaire LDAP./description>
+  <description>Ce composant permet l'affichage d'un organigramme Ã  partir d'un annuaire LDAP./description>
     <suite>04 Gestion de contenu</suite>
     <visible>organizationchart</visible>
     <portlet>no</portlet>
@@ -58,7 +58,7 @@
         <ParameterUpdatable>always</ParameterUpdatable>
         <ParameterOrder>2</ParameterOrder>
         <ParameterHelp>
-          <ParameterHelpFr>nom de classe factory utilisée lors l'initialisation du contexte</ParameterHelpFr>
+          <ParameterHelpFr>nom de classe factory utilisÃ©e lors l'initialisation du contexte</ParameterHelpFr>
           <ParameterHelpEn>Class name of the factory class that will create an initial context</ParameterHelpEn>
         </ParameterHelp>
       </Parameter>
@@ -82,7 +82,7 @@
         <ParameterUpdatable>always</ParameterUpdatable>
         <ParameterOrder>4</ParameterOrder>
         <ParameterHelp>
-          <ParameterHelpFr>identité du principal pour authentification (ex : cn=Manager,dc=mondomain,dc=com)</ParameterHelpFr>
+          <ParameterHelpFr>identitÃ© du principal pour authentification (ex : cn=Manager,dc=mondomain,dc=com)</ParameterHelpFr>
           <ParameterHelpEn>identity of the principal for authenticating the caller to the service</ParameterHelpEn>
         </ParameterHelp>
       </Parameter>
@@ -142,55 +142,55 @@
         <ParameterUpdatable>always</ParameterUpdatable>
         <ParameterOrder>11</ParameterOrder>
         <ParameterHelp>
-          <ParameterHelpFr>nom de l'attribut désignant le nom du service</ParameterHelpFr>
+          <ParameterHelpFr>nom de l'attribut dÃ©signant le nom du service</ParameterHelpFr>
           <ParameterHelpEn>attribut name of the name's unit</ParameterHelpEn>
         </ParameterHelp>
       </Parameter>
       <Parameter>
         <ParameterName>ldapAttName</ParameterName>
-        <ParameterLabel>attribut désignant le nom</ParameterLabel>
+        <ParameterLabel>attribut dÃ©signant le nom</ParameterLabel>
         <ParameterValue>cn</ParameterValue>
         <ParameterMandatory>Y</ParameterMandatory>
         <ParameterUpdatable>always</ParameterUpdatable>
         <ParameterOrder>10</ParameterOrder>
         <ParameterHelp>
-          <ParameterHelpFr>nom de l'attribut désignant le nom de l'utilisateur</ParameterHelpFr>
+          <ParameterHelpFr>nom de l'attribut dÃ©signant le nom de l'utilisateur</ParameterHelpFr>
           <ParameterHelpEn>attribut name of the name's user</ParameterHelpEn>
         </ParameterHelp>
       </Parameter>
       <Parameter>
         <ParameterName>ldapAttTitle</ParameterName>
-        <ParameterLabel>attribut désignant le titre</ParameterLabel>
+        <ParameterLabel>attribut dÃ©signant le titre</ParameterLabel>
         <ParameterValue>title</ParameterValue>
         <ParameterMandatory>F</ParameterMandatory>
         <ParameterUpdatable>always</ParameterUpdatable>
         <ParameterOrder>12</ParameterOrder>
         <ParameterHelp>
-          <ParameterHelpFr>nom de l'attribut désignant le titre de l'utilisateur</ParameterHelpFr>
+          <ParameterHelpFr>nom de l'attribut dÃ©signant le titre de l'utilisateur</ParameterHelpFr>
           <ParameterHelpEn>attribut name of the title's user</ParameterHelpEn>
         </ParameterHelp>
       </Parameter>
       <Parameter>
         <ParameterName>ldapAttDesc</ParameterName>
-        <ParameterLabel>attribut désignant la description</ParameterLabel>
+        <ParameterLabel>attribut dÃ©signant la description</ParameterLabel>
         <ParameterValue>description</ParameterValue>
         <ParameterMandatory>F</ParameterMandatory>
         <ParameterUpdatable>always</ParameterUpdatable>
         <ParameterOrder>13</ParameterOrder>
         <ParameterHelp>
-          <ParameterHelpFr>nom de l'attribut désignant la description de l'utilisateur</ParameterHelpFr>
+          <ParameterHelpFr>nom de l'attribut dÃ©signant la description de l'utilisateur</ParameterHelpFr>
           <ParameterHelpEn>attribut name of the description's user</ParameterHelpEn>
         </ParameterHelp>
       </Parameter>
       <Parameter>
         <ParameterName>ldapAttTel</ParameterName>
-        <ParameterLabel>attribut désignant le numéro de téléphone</ParameterLabel>
+        <ParameterLabel>attribut dÃ©signant le numÃ©ro de tÃ©lÃ©phone</ParameterLabel>
         <ParameterValue>telephoneNumber</ParameterValue>
         <ParameterMandatory>F</ParameterMandatory>
         <ParameterUpdatable>always</ParameterUpdatable>
         <ParameterOrder>14</ParameterOrder>
         <ParameterHelp>
-          <ParameterHelpFr>nom de l'attribut désignant le numéro de téléphone de l'utilisateur</ParameterHelpFr>
+          <ParameterHelpFr>nom de l'attribut dÃ©signant le numÃ©ro de tÃ©lÃ©phone de l'utilisateur</ParameterHelpFr>
           <ParameterHelpEn>attribut name of the phone number's user</ParameterHelpEn>
         </ParameterHelp>
       </Parameter>
@@ -202,7 +202,7 @@
         <ParameterUpdatable>always</ParameterUpdatable>
         <ParameterOrder>15</ParameterOrder>
         <ParameterHelp>
-          <ParameterHelpFr>libellé du ou des titre(s) des responsable des service (ex : responsable,directeur)</ParameterHelpFr>
+          <ParameterHelpFr>libellÃ© du ou des titre(s) des responsable des service (ex : responsable,directeur)</ParameterHelpFr>
           <ParameterHelpEn>titles label of unit head (ex : manager,boss)</ParameterHelpEn>
         </ParameterHelp>
       </Parameter>
@@ -214,7 +214,7 @@
         <ParameterUpdatable>always</ParameterUpdatable>
         <ParameterOrder>16</ParameterOrder>
         <ParameterHelp>
-          <ParameterHelpFr>libellé du ou des titre(s) des assistants</ParameterHelpFr>
+          <ParameterHelpFr>libellÃ© du ou des titre(s) des assistants</ParameterHelpFr>
           <ParameterHelpEn>titles label of assistant (ex : assistant)</ParameterHelpEn>
         </ParameterHelp>
       </Parameter>
@@ -226,7 +226,7 @@
         <ParameterUpdatable>always</ParameterUpdatable>
         <ParameterOrder>17</ParameterOrder>
         <ParameterHelp>
-          <ParameterHelpFr>nom de l'attribut indiquant si la personne est active (attribut booléen)</ParameterHelpFr>
+          <ParameterHelpFr>nom de l'attribut indiquant si la personne est active (attribut boolÃ©en)</ParameterHelpFr>
           <ParameterHelpEn>name of the indicating attribute if the person is active (boolean attribut)</ParameterHelpEn>
         </ParameterHelp>
       </Parameter>

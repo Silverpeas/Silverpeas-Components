@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -28,8 +28,8 @@
 <WAComponent>
   <name>rssAgregator</name>
   <label>Agregateur RSS</label>
-  <description>Permet d'afficher, au sein de Silverpeas, des informations provenant de sites web 
-  externes. Ce composant permet d'agréger plusieurs sources d'informations au format RSS.</description>
+  <description>Permet d'afficher, au sein de Silverpeas, des informations provenant de sites web
+  externes. Ce composant permet d'agrÃ©ger plusieurs sources d'informations au format RSS.</description>
   <suite>06 Connecteurs</suite>
   <visible>@ComponentVisibleRssAgregator@</visible>
   <visibleInPersonalSpace>yes</visibleInPersonalSpace>

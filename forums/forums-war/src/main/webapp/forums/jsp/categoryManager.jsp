@@ -30,7 +30,7 @@
     response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%@ include file="checkForums.jsp" %>
-<% 
+<%
     Category category = (Category) request.getAttribute("Category");
     String name;
     String description;
@@ -53,37 +53,38 @@
         creationDate = resources.getOutputDate(new Date());
         action = "CreateCategory";
     }
-    
+
     Window window = graphicFactory.getWindow();
     Frame frame = graphicFactory.getFrame();
     Board board = graphicFactory.getBoard();
 %>
 <html>
-    <head><%
-
-        out.println(graphicFactory.getLookStyleSheet());
+    <head>
+          <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
+<%
+  out.println(graphicFactory.getLookStyleSheet());
 %>
     <script type="text/javascript" src="<%=context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
     <script type="text/javascript">
-        // fonctions de contrôle des zones du formulaire avant validation
-        function sendData(creation) 
+        // fonctions de controle des zones du formulaire avant validation
+        function sendData(creation)
         {
-            if (isCorrectForm()) 
+            if (isCorrectForm())
             {
                 document.forms["categoryForm"].action = (creation ? "CreateCategory" : "UpdateCategory");
                 document.forms["categoryForm"].submit();
             }
         }
-            
-        function isCorrectForm() 
+
+        function isCorrectForm()
         {
             var errorMsg = "";
             var errorNb = 0;
             var name = stripInitialWhitespace(document.categoryForm.Name.value);
-            if (name == "") 
-            { 
+            if (name == "")
+            {
                 errorMsg += "  - '<%=resources.getString("GML.title")%>'  "
                     + "<%=resources.getString("GML.MustBeFilled")%>\n";
                 errorNb++;
@@ -107,17 +108,17 @@
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" <%addBodyOnload(out, fsc, "document.categoryForm.Name.focus();");%>>
 <%
     BrowseBar browseBar = window.getBrowseBar();
-    browseBar.setDomainName(fsc.getSpaceLabel()); 
+    browseBar.setDomainName(fsc.getSpaceLabel());
     browseBar.setComponentName(fsc.getComponentLabel(), "Main");
     browseBar.setPath(resources.getString(action.equals("CreateCategory")
         ? "forums.addCategory" : "forums.editCategory"));
-    
+
     out.println(window.printBefore());
     out.println(frame.printBefore());
     out.println(board.printBefore());
 %>
     <table cellpadding="5" width="100%">
-    <form name="categoryForm" action="<%=action%>" method="post">
+      <form name="categoryForm" action="<%=action%>" method="POST" enctype="multipart/form-data;charset=UTF-8">
         <tr>
             <td class="txtlibform"><%=resources.getString("GML.title")%> :</td>
             <td><input type="text" name="Name" size="60" maxlength="150" value="<%=name%>">

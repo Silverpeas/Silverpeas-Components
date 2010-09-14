@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -28,7 +28,7 @@
 <WAComponent>
   <name>classifieds</name>
   <label>Petites annonces - classifieds</label>
-  <description>Les petites annonces seront classées par catégories et type</description>
+  <description>Les petites annonces seront classÃ©es par catÃ©gories et type</description>
   <suite>80 Nouveau composant</suite>
   <visible>yes</visible>
   <portlet>no</portlet>
@@ -47,7 +47,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>1</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Nom du formulaire XML associé aux petites annonces</ParameterHelpFr>
+        <ParameterHelpFr>Nom du formulaire XML associÃ© aux petites annonces</ParameterHelpFr>
         <ParameterHelpEn>Form XML name attached to classifieds</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>

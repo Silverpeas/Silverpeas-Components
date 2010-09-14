@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -28,8 +28,8 @@
 <WAComponent>
   <name>pollingStation</name>
   <label>Vote - QuickVote</label>
-  <description>Permet d'organiser des votes ou referendum sur une question unique, auprès d'une 
-  audience ciblée. Une surveillance du niveau de participation et du résultat en cours est possible.</description>
+  <description>Permet d'organiser des votes ou referendum sur une question unique, auprÃ¨s d'une
+  audience ciblÃ©e. Une surveillance du niveau de participation et du rÃ©sultat en cours est possible.</description>
   <suite>02 Gestion Collaborative</suite>
   <visible>@ComponentVisiblePollingStation@</visible>
   <portlet>yes</portlet>
@@ -42,7 +42,7 @@
     <tabletpl>SurveyComment</tabletpl>
   </tableList>
   <Profiles>
-    <Profile name="admin">Gestionnaire</Profile>	
+    <Profile name="admin">Gestionnaire</Profile>
     <Profile name="publisher">Publieur</Profile>
     <Profile name="user">Lecteur</Profile>
   </Profiles>
@@ -55,7 +55,7 @@
       <ParameterUpdatable>Always</ParameterUpdatable>
       <ParameterType>checkbox</ParameterType>
       <ParameterHelp>
-        <ParameterHelpFr>Les votes créés au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
+        <ParameterHelpFr>Les votes crÃ©Ã©s au sein de cette instance pourront Ãªtre classÃ©s sur le Plan de Classement</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -67,7 +67,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterType>checkbox</ParameterType>
       <ParameterHelp>
-        <ParameterHelpFr>Les votes créés au sein de cette instance pourront être répondus de manière anonyme</ParameterHelpFr>
+        <ParameterHelpFr>Les votes crÃ©Ã©s au sein de cette instance pourront Ãªtre rÃ©pondus de maniÃ¨re anonyme</ParameterHelpFr>
         <ParameterHelpEn>The polls created in this instance may be answered by anonymous way.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>

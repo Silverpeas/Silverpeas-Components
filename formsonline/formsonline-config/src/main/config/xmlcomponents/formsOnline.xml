@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -35,6 +35,6 @@
   <instanceClassName>com.silverpeas.formsonline.FormsOnlineInstanciator</instanceClassName>
   <Profiles>
     <Profile name="Administrator">Gestionnaires</Profile>
-    <Profile name="SenderReceiver">Emetteurs et Récepteurs</Profile>
+    <Profile name="SenderReceiver">Emetteurs et RÃ©cepteurs</Profile>
   </Profiles>
 </WAComponent>

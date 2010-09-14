@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -28,7 +28,7 @@
 <WAComponent>
   <name>webPages</name>
   <label>Designer de page web - WebPage Designer</label>
-  <description>Permet de créer une page web via l'éditeur WYSIWYG</description>
+  <description>Permet de crÃ©er une page web via l'Ã©diteur WYSIWYG</description>
   <suite>04 Gestion de contenu</suite>
   <visible>@ComponentVisiblewebPages@</visible>
   <portlet>yes</portlet>
@@ -47,7 +47,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>1</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Permet d'envoyer une notification aux utilisateurs abonnés à la page Web</ParameterHelpFr>
+        <ParameterHelpFr>Permet d'envoyer une notification aux utilisateurs abonnÃ©s Ã  la page Web</ParameterHelpFr>
         <ParameterHelpEn>Allows to send a notification to the users who have subscribed to the Web page</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>

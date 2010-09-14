@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -28,7 +28,7 @@
 <WAComponent>
   <name>chat</name>
   <label>Chat</label>
-  <description>Supporte les processus de communication synchrone de type chat. Des salons peuvent être ouverts sur des thèmes variés. Des communications en mode 'privé' sont possibles, au sein d'un chat multi-participants.</description>
+  <description>Supporte les processus de communication synchrone de type chat. Des salons peuvent Ãªtre ouverts sur des thÃ¨mes variÃ©s. Des communications en mode 'privÃ©' sont possibles, au sein d'un chat multi-participants.</description>
   <suite>02 Gestion Collaborative</suite>
   <visible>@ComponentVisibleChat@</visible>
   <portlet>no</portlet>
@@ -50,7 +50,7 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterHelp>
-        <ParameterHelpFr>Les salons créés au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
+        <ParameterHelpFr>Les salons crÃ©Ã©s au sein de cette instance pourront Ãªtre classÃ©s sur le Plan de Classement</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>

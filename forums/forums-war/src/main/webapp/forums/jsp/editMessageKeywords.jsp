@@ -44,7 +44,6 @@
 <head>
     <title></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><%
-    
     out.println(graphicFactory.getLookStyleSheet());
 %>
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
@@ -52,7 +51,7 @@
 </head>
 
 <body marginheight="5" marginwidth="5" bgcolor="#FFFFFF" leftmargin="5" topmargin="5" <%addBodyOnload(out, fsc, "document.forms['forumsForm'].elements['forumKeywords'].focus();");%>>
-<% 
+<%
     Window window = graphicFactory.getWindow();
 
     BrowseBar browseBar = window.getBrowseBar();

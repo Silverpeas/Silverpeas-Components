@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -27,8 +27,8 @@
 
 <WAComponent>
   <name>newsEdito</name>
-  <label>Editorial - Journal périodique</label>
-  <description>Permet de créer un journal d'entreprise, contenant des articles, éditoriaux, première page.</description>
+  <label>Editorial - Journal pÃ©riodique</label>
+  <description>Permet de crÃ©er un journal d'entreprise, contenant des articles, Ã©ditoriaux, premiÃ¨re page.</description>
   <suite>04 Gestion de contenu</suite>
   <visible>@ComponentVisibleNewsEdito@</visible>
   <portlet>yes</portlet>
@@ -39,7 +39,7 @@
   </tableList>
   <Profiles>
     <Profile name="admin">Gestionnaire</Profile>
-    <Profile name="publisher">Rédacteur</Profile>
+    <Profile name="publisher">RÃ©dacteur</Profile>
     <Profile name="user">Lecteur</Profile>
   </Profiles>
 </WAComponent>

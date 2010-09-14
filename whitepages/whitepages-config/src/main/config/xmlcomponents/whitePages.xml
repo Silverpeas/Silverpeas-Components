@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -29,10 +29,10 @@
   <name>whitePages</name>
   <label>Annuaire d'experts - Annuaire</label>
   <description>
-		Permet de créer un annuaire de compétences. A chaque expert est
-		associé un formulaire décrivant ses domaines d'expertise.
+		Permet de crÃ©er un annuaire de compÃ©tences. A chaque expert est
+		associÃ© un formulaire dÃ©crivant ses domaines d'expertise.
 		L'indexation du CV sur le plan de classement permet de trouver
-		rapidement une compétence.
+		rapidement une compÃ©tence.
   </description>
   <suite>03 Gestion de la connaissance</suite>
   <visible>@ComponentVisibleWhitePages@</visible>
@@ -45,13 +45,13 @@
   <Parameters>
     <Parameter>
       <ParameterName>cardTemplate</ParameterName>
-      <ParameterLabel>Modèle de fiche</ParameterLabel>
+      <ParameterLabel>ModÃ¨le de fiche</ParameterLabel>
       <ParameterValue>whitePages/annuaire.xml</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterUpdatable>OnCreationOnly</ParameterUpdatable>
       <ParameterHelp>
         <ParameterHelpFr>
-					Modèle xml spécifique permettant de saisir des
+					ModÃ¨le xml spÃ©cifique permettant de saisir des
 					informations sur l'expert
         </ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
@@ -60,12 +60,12 @@
     </Parameter>
     <Parameter>
       <ParameterName>userTemplate</ParameterName>
-      <ParameterLabel>Modèle d'identité</ParameterLabel>
+      <ParameterLabel>ModÃ¨le d'identitÃ©</ParameterLabel>
       <ParameterValue>whitePages/annuaire.html</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterHelp>
         <ParameterHelpFr>
-					Fichier html permettant de présenter les
+					Fichier html permettant de prÃ©senter les
 					informations de l'expert
         </ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
@@ -82,8 +82,8 @@
       <ParameterHelp>
         <ParameterHelpFr>
 					Active le masquage des mails dans l'IHM. Les
-					notifications envoyées à partir de ce composant
-					auront un expéditeur générique.
+					notifications envoyÃ©es Ã  partir de ce composant
+					auront un expÃ©diteur gÃ©nÃ©rique.
         </ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
@@ -96,8 +96,8 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterOrder>4</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Si ce paramètre est activé, l'utilisateur n'aura accès qu'à l'écran de 
-        création de sa fiche. Le reste du portail lui sera innaccessible tant qu'il n'aura pas 
+        <ParameterHelpFr>Si ce paramÃ¨tre est activÃ©, l'utilisateur n'aura accÃ¨s qu'Ã  l'Ã©cran de
+        crÃ©ation de sa fiche. Le reste du portail lui sera innaccessible tant qu'il n'aura pas
         rempli sa fiche.
         </ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>

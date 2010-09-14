@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -28,7 +28,7 @@
 <WAComponent>
   <name>blog</name>
   <label>Blog</label>
-  <description>Permet de réunir des billets affichés par ordre antéchronologique et éventuellement classés par catégorie.</description>
+  <description>Permet de rÃ©unir des billets affichÃ©s par ordre antÃ©chronologique et Ã©ventuellement classÃ©s par catÃ©gorie.</description>
   <suite>04 Gestion de contenu</suite>
   <visible>@ComponentVisibleblog@</visible>
   <portlet>yes</portlet>
@@ -47,7 +47,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>1</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Permet de générer un flux RSS de ce blog.</ParameterHelpFr>
+        <ParameterHelpFr>Permet de gÃ©nÃ©rer un flux RSS de ce blog.</ParameterHelpFr>
         <ParameterHelpEn>.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
@@ -60,7 +60,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>2</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Les billets créés au sein de cette instance pourront être classées sur le Plan de Classement</ParameterHelpFr>
+        <ParameterHelpFr>Les billets crÃ©Ã©s au sein de cette instance pourront Ãªtre classÃ©es sur le Plan de Classement</ParameterHelpFr>
         <ParameterHelpEn>Post would be classified on PDC</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>

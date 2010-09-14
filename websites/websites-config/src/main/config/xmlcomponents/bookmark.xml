@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -28,7 +28,7 @@
 <WAComponent>
   <name>bookmark</name>
   <label>Annuaire de sites - Bookmark</label>
-  <description>Permet de gérer un référentiel de sites Internet remarquables sur un thème donné.</description>
+  <description>Permet de gÃ©rer un rÃ©fÃ©rentiel de sites Internet remarquables sur un thÃ¨me donnÃ©.</description>
   <suite>04 Gestion de contenu</suite>
   <visible>@ComponentVisibleBookmark@</visible>
   <portlet>yes</portlet>
@@ -52,19 +52,19 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterHelp>
-        <ParameterHelpFr>Les bookmarks saisis au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
+        <ParameterHelpFr>Les bookmarks saisis au sein de cette instance pourront Ãªtre classÃ©s sur le Plan de Classement</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
     <Parameter>
       <ParameterName>sortedTopics</ParameterName>
-      <ParameterLabel>Thèmes / liens ordonnés</ParameterLabel>
+      <ParameterLabel>ThÃ¨mes / liens ordonnÃ©s</ParameterLabel>
       <ParameterValue>no</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterType>checkbox</ParameterType>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterHelp>
-        <ParameterHelpFr>Ce paramètre permet d'ordonner les thèmes et les liens</ParameterHelpFr>
+        <ParameterHelpFr>Ce paramÃ¨tre permet d'ordonner les thÃ¨mes et les liens</ParameterHelpFr>
         <ParameterHelpEn>This parameter allows to order topics and links</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>

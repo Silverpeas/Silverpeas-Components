@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -27,10 +27,10 @@
 
 <WAComponent>
   <name>questionReply</name>
-  <label>Questions/Réponses - Questions aux experts</label>
-  <description>Permet de gérer la base de connaissances des questions posées par les utilisateurs 
-  vers les experts, localiser automatiquement l'expert apte à répondre à une question et gérer 
-  la distribution de la réponse vers les utilisateurs.</description>
+  <label>Questions/RÃ©ponses - Questions aux experts</label>
+  <description>Permet de gÃ©rer la base de connaissances des questions posÃ©es par les utilisateurs
+  vers les experts, localiser automatiquement l'expert apte Ã  rÃ©pondre Ã  une question et gÃ©rer
+  la distribution de la rÃ©ponse vers les utilisateurs.</description>
   <suite>03 Gestion de la connaissance</suite>
   <portlet>yes</portlet>
   <visible>@ComponentVisibleQuestionReply@</visible>
@@ -44,27 +44,27 @@
   <Parameters>
     <Parameter>
       <ParameterName>privateRepliesUsed</ParameterName>
-      <ParameterLabel>Utilisation des réponses privées</ParameterLabel>
+      <ParameterLabel>Utilisation des rÃ©ponses privÃ©es</ParameterLabel>
       <ParameterType>checkbox</ParameterType>
       <ParameterValue>no</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>1</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Possibilité de créer des réponses privées</ParameterHelpFr>
+        <ParameterHelpFr>PossibilitÃ© de crÃ©er des rÃ©ponses privÃ©es</ParameterHelpFr>
         <ParameterHelpEn>Private answer re authorized</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
     <Parameter>
       <ParameterName>sortable</ParameterName>
-      <ParameterLabel>Questions triées par ordre</ParameterLabel>
+      <ParameterLabel>Questions triÃ©es par ordre</ParameterLabel>
       <ParameterType>checkbox</ParameterType>
       <ParameterValue>no</ParameterValue>
       <ParameterMandatory>N</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>2</ParameterOrder>
       <ParameterHelp>
-        <ParameterHelpFr>Possibilité de trier les questions</ParameterHelpFr>
+        <ParameterHelpFr>PossibilitÃ© de trier les questions</ParameterHelpFr>
         <ParameterHelpEn>Questions are sortable</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>

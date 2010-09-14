@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -26,8 +26,8 @@
 -->
 <WAComponent>
   <name>demandeCongesSimple</name>
-  <label>Demande de congés simplifiée</label>
-  <description>Processus : Demande de congés simplifiée</description>
+  <label>Demande de congÃ©s simplifiÃ©e</label>
+  <description>Processus : Demande de congÃ©s simplifiÃ©e</description>
   <suite>05 Workflow</suite>
   <visible>yes</visible>
   <portlet>no</portlet>
@@ -41,7 +41,7 @@
   <Parameters>
     <Parameter>
       <ParameterName>XMLFileName</ParameterName>
-      <ParameterLabel>Modèle abstrait</ParameterLabel>
+      <ParameterLabel>ModÃ¨le abstrait</ParameterLabel>
       <ParameterValue>DemandeCongesSimple/DemandeCongesSimple.xml</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterOrder>1</ParameterOrder>
@@ -57,7 +57,7 @@
     </Parameter>
     <Parameter>
       <ParameterName>fieldsToExport</ParameterName>
-      <ParameterLabel>Champs à exporter</ParameterLabel>
+      <ParameterLabel>Champs Ã  exporter</ParameterLabel>
       <ParameterValue></ParameterValue>
       <ParameterMandatory>N</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>

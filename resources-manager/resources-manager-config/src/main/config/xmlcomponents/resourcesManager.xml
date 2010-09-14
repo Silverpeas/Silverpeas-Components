@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -28,7 +28,7 @@
 <WAComponent>
   <name>resourcesManager</name>
   <label>Gestion de ressources</label>
-  <description>Ce composant permet de gérer ses ressources matérielles et de les réserver</description>
+  <description>Ce composant permet de gÃ©rer ses ressources matÃ©rielles et de les rÃ©server</description>
   <suite>02 Gestion Collaborative</suite>
   <visible>yes</visible>
   <portlet>no</portlet>
@@ -62,7 +62,7 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterHelp>
-        <ParameterHelpFr>Permet d'alléger l'interface et d'optimiser l'affichage du reste de la semaine</ParameterHelpFr>
+        <ParameterHelpFr>Permet d'allÃ©ger l'interface et d'optimiser l'affichage du reste de la semaine</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>

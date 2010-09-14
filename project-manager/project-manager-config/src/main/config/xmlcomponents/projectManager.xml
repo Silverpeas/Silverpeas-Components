@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -28,7 +28,7 @@
 <WAComponent>
   <name>projectManager</name>
   <label>Gestion de projet II - Project Manager</label>
-  <description>A la différence du Project Organizer, ce composant permet de gérer la notion de précédence entre deux tâches de même niveau.</description>
+  <description>A la diffÃ©rence du Project Organizer, ce composant permet de gÃ©rer la notion de prÃ©cÃ©dence entre deux tÃ¢ches de mÃªme niveau.</description>
   <suite>02 Gestion Collaborative</suite>
   <visible>yes</visible>
   <portlet>yes</portlet>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -28,8 +28,8 @@
 <WAComponent>
   <name>webSites</name>
   <label>Designer de site web - WebSite Designer</label>
-  <description>Idem à l'annuaire de sites. Propose également des services pour créer un site Web, 
-  via un éditeur WYSIWYG. Permet enfin de télécharger un site statique.</description>
+  <description>Idem Ã  l'annuaire de sites. Propose Ã©galement des services pour crÃ©er un site Web,
+  via un Ã©diteur WYSIWYG. Permet enfin de tÃ©lÃ©charger un site statique.</description>
   <suite>04 Gestion de contenu</suite>
   <visible>@ComponentVisibleWebSites@</visible>
   <portlet>yes</portlet>
@@ -40,7 +40,7 @@
   <Profiles>
     <Profile name="Admin">Gestionnaires</Profile>
     <Profile name="Publisher">Publieurs</Profile>
-    <Profile name="Reader">Lecteurs</Profile>    
+    <Profile name="Reader">Lecteurs</Profile>
   </Profiles>
   <Parameters>
     <Parameter>
@@ -51,20 +51,20 @@
       <ParameterType>checkbox</ParameterType>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterHelp>
-        <ParameterHelpFr>Les bookmarks et/ou sites saisis au sein de cette instance pourront être 
-        classés sur le Plan de Classement</ParameterHelpFr>
+        <ParameterHelpFr>Les bookmarks et/ou sites saisis au sein de cette instance pourront Ãªtre
+        classÃ©s sur le Plan de Classement</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
     <Parameter>
       <ParameterName>sortedTopics</ParameterName>
-      <ParameterLabel>Thèmes / liens ordonés</ParameterLabel>
+      <ParameterLabel>ThÃ¨mes / liens ordonÃ©s</ParameterLabel>
       <ParameterValue>no</ParameterValue>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterType>checkbox</ParameterType>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterHelp>
-        <ParameterHelpFr>Ce paramï¿½tre permet d'ordonner les thèmes et les liens</ParameterHelpFr>
+        <ParameterHelpFr>Ce paramÃ¯Â¿Â½tre permet d'ordonner les thÃ¨mes et les liens</ParameterHelpFr>
         <ParameterHelpEn>This parameter allows to order topics and links</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -28,8 +28,8 @@
 <WAComponent>
   <name>quizz</name>
   <label>Quiz</label>
-  <description>Permet d'évaluer la compréhension ou niveau de connaissance acquis d'un sujet. 
-  L'utilisateur peut se faire aider d'indices. Un scoring évalue sa performance.</description>
+  <description>Permet d'Ã©valuer la comprÃ©hension ou niveau de connaissance acquis d'un sujet.
+  L'utilisateur peut se faire aider d'indices. Un scoring Ã©value sa performance.</description>
   <suite>02 Gestion Collaborative</suite>
   <visible>@ComponentVisibleQuizz@</visible>
   <portlet>yes</portlet>
@@ -55,7 +55,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterType>checkbox</ParameterType>
       <ParameterHelp>
-        <ParameterHelpFr>Les quizz créés au sein de cette instance pourront être classés sur le 
+        <ParameterHelpFr>Les quizz crÃ©Ã©s au sein de cette instance pourront Ãªtre classÃ©s sur le
         Plan de Classement</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>

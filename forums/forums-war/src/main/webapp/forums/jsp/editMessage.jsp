@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -67,14 +68,14 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     boolean reply = false;
     boolean move = false;
     boolean allowMessagesInRoot = false;
-    
+
     int reqForum = getIntParameter(request, "forumId", 0);
     String call = request.getParameter("call");
     String backURL = ActionUrl.getUrl(call, -1, reqForum);
-    
+
     int params = getIntParameter(request, "params");
     int action = getIntParameter(request, "action", 1);
-    
+
     int folderId = 0;
     int parentId = 0;
     int forumId = 0;
@@ -88,19 +89,19 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
                 forumId = reqForum;
                 reply = false;
                 break;
-                
+
             case 2 :
             	parentId = params;
                 reply = true;
                 break;
-                
+
             case 3 :
             	forumId = reqForum;
                 messageId = params;
                 move = true;
                 break;
         }
-    } 
+    }
     catch (NumberFormatException nfe)
     {
         SilverTrace.warn(
@@ -111,13 +112,13 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     if (reply)
     {
         Message parentMessage = fsc.getMessage(parentId);
-        parentTitle = Encode.javaStringToHtmlString(parentMessage.getTitle());
+        parentTitle = EncodeHelper.javaStringToHtmlString(parentMessage.getTitle());
         folderId = parentMessage.getForumId();
     }
 
-    String folderName = Encode.javaStringToHtmlString(
+    String folderName = EncodeHelper.javaStringToHtmlString(
         fsc.getForumName(folderId > 0 ? folderId : forumId));
-    
+
     String configFile = null;
     if (!move)
     {
@@ -129,26 +130,26 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
 <html>
 <head>
     <title></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><%
-    
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<%
     out.println(graphicFactory.getLookStyleSheet());
 %>
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
     <script type="text/javascript" src="<%=context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
     <script type="text/javascript"><%
-    
+
     if (move) {
 %>
         function validateMessage()
         {
             document.forms["forumsForm"].submit();
         }<%
-        
+
     } else {
 %>
         var oFCKeditor = null;
-        
+
         function init()
         {
             oFCKeditor = new FCKeditor("messageText");
@@ -180,14 +181,14 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
                 document.forms["forumsForm"].submit();
             }
         }<%
-        
+
     }
 %>
     </script>
 </head>
 
 <body marginheight="5" marginwidth="5" bgcolor="#FFFFFF" leftmargin="5" topmargin="5" <%addBodyOnload(out, fsc, (move ? "" : "init();"));%>>
-<% 
+<%
     Window window = graphicFactory.getWindow();
 
     BrowseBar browseBar = window.getBrowseBar();
@@ -207,7 +208,7 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
         <form name="forumsForm" action="<%=formAction%>" method="post">
             <tr align="center">
                 <td valign="top" align="center"><%
-    
+
     if (move)
     {
         String messageTitle = fsc.getMessageTitle(messageId);%>
@@ -247,7 +248,7 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     {
 %>
                     <input type="hidden" name="forumId" value="<%=String.valueOf(folderId)%>"><%
-                                    
+
         if (reply)
         {
 %>
@@ -255,7 +256,7 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
 
         }
 %>
-                                
+
                     <table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%">
                         <tr>
                             <td valign="top"><span class="txtlibform"><%=resource.getString("messageTitle")%> :</span></td>

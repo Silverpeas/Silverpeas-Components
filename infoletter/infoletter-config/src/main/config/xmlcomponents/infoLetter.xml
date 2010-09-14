@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -28,7 +28,7 @@
 <WAComponent>
   <name>infoLetter</name>
   <label>Lettre informative</label>
-  <description>Permet de créer une lettre d'information périodique, suivant un modèle de publication ré-utilisable. Gère les abonnements à la lettre.</description>
+  <description>Permet de crÃ©er une lettre d'information pÃ©riodique, suivant un modÃ¨le de publication rÃ©-utilisable. GÃ¨re les abonnements Ã  la lettre.</description>
   <suite>04 Gestion de contenu</suite>
   <visible>@ComponentVisibleInfoLetter@</visible>
   <portlet>yes</portlet>
@@ -47,7 +47,7 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterType>checkbox</ParameterType>
       <ParameterHelp>
-        <ParameterHelpFr>Les newsletter créées au sein de cette instance pourront être classées sur le Plan de Classement</ParameterHelpFr>
+        <ParameterHelpFr>Les newsletter crÃ©Ã©es au sein de cette instance pourront Ãªtre classÃ©es sur le Plan de Classement</ParameterHelpFr>
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>

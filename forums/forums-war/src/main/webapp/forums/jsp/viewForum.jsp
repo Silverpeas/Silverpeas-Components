@@ -54,7 +54,7 @@
 <%
     ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
         "forumsSessionClientController");
-    ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");    
+    ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
     ResourceLocator resource = new ResourceLocator(
         "com.stratelia.webactiv.forums.multilang.forumsBundle", fsc.getLanguage());
     if (fsc == null) {
@@ -68,8 +68,8 @@
     String userId = fsc.getUserId();
     boolean isAdmin = fsc.isAdmin();
     boolean isUser = fsc.isUser();
-    boolean isReader = fsc.isReader();    
-    fsc.resetDisplayAllMessages();    
+    boolean isReader = fsc.isReader();
+    fsc.resetDisplayAllMessages();
     int forumId = ForumHelper.getIntParameter(request, "forumId", 0);
 
     boolean isModerator = fsc.isModerator(userId, forumId);
@@ -173,7 +173,7 @@
         </c:if>
         <fmt:message key="mailAdmin" var="mail2AdminAltText" />
         <c:set var="mail2AdminOperation">javascript:notifyPopup2('<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
-        <c:url var="mail2AdminIconUrl" value="/util/icons/forums_mailtoAdmin.gif" />              
+        <c:url var="mail2AdminIconUrl" value="/util/icons/forums_mailtoAdmin.gif" />
         <view:operation altText="${mail2AdminAltText}" icon="${mail2AdminIconUrl}" action="${mail2AdminOperation}" />
         <c:if test="${isAdmin}">
           <fmt:message key="newForum" var="addForumAltText" />
@@ -183,11 +183,11 @@
             <c:param name="forumId" value="${param.forumId}"/>
             <c:param name="params" value="${param.forumId}"/>
           </c:url>
-          <c:url var="addForumIconUrl" value="/util/icons/forums_to_add.gif" />              
+          <c:url var="addForumIconUrl" value="/util/icons/forums_to_add.gif" />
           <view:operation altText="${addForumAltText}" icon="${addForumIconUrl}" action="${addForumOperation}" />
           <fmt:message key="forums.addCategory" var="addCategoryAltText" />
           <c:set var="addCategoryOperation">javascript:notifyPopup2('<c:out value="${pageContext.request.contextPath}"/>','<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
-          <c:url var="addCategoryIconUrl" value="/util/icons/folderAddBig.gif" />              
+          <c:url var="addCategoryIconUrl" value="/util/icons/folderAddBig.gif" />
           <view:operation altText="${addCategoryAltText}" icon="${addCategoryIconUrl}" action="NewCategory" />
         </c:if>
         <c:if test="${isActive}">
@@ -205,12 +205,12 @@
           <tr class="notationLine">
             <td align="right">
               <c:url var="starIcon" value="/util/icons/shim.gif"/>
-              <span class="txtnote"><fmt:message key="forums.forumNote"/> : 
+              <span class="txtnote"><fmt:message key="forums.forumNote"/> :
                 <c:forEach var="i" begin="1" end="5">
-                  <img src="<c:out value="${starIcon}"/>" style="margin-bottom: 0px;" <c:if test="${!isReader}">id="notationImg<c:out value="${i}"/>"</c:if> 
+                  <img src="<c:out value="${starIcon}"/>" style="margin-bottom: 0px;" <c:if test="${!isReader}">id="notationImg<c:out value="${i}"/>"</c:if>
                        class="<c:choose><c:when test="${i <= globalNote}">notation_on</c:when><c:otherwise>notation_off</c:otherwise></c:choose>" />
                 </c:forEach>
-              </span>                  
+              </span>
             </td>
           </tr>
           <tr>
@@ -241,13 +241,13 @@ ForumHelper.displayMessagesList(out, resource, userId, isAdmin, isModerator, isR
                 </form>
               </table>
             </td>
-          </tr>          
+          </tr>
         </table>
         <br/>
         <center>
           <view:buttonPane>
             <view:button action="main.jsp" label="Retour" disabled="false" />
-          </view:buttonPane> 
+          </view:buttonPane>
         </center>
       </view:frame>
     </view:window>

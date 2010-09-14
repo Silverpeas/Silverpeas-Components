@@ -38,7 +38,7 @@ public String navigationBar(int forumId, ResourceLocator resource, ForumsSession
     String navigation = "";
     if (forumId != 0)
     {
-    	navigation = "<a href=\"" + ActionUrl.getUrl("viewForum", -1, forumId) + "\">" + 
+    	navigation = "<a href=\"" + ActionUrl.getUrl("viewForum", -1, forumId) + "\">" +
             fsc.getForumName(forumId) + "</a>";
         int currentId = forumId;
         boolean loop = true;
@@ -93,24 +93,24 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
     {
         SilverTrace.info("forums", "JSPeditForumInfo.listFolders()", "root.EX_NO_MESSAGE", null, ioe);
     }
-} 
+}
 %>
 <%
     Collection allCategories = fsc.getAllCategories();
-    
+
     int forumId = getIntParameter(request, "forumId", 0);
-    
+
     String call = request.getParameter("call");
     String backURL = ActionUrl.getUrl(call, -1, forumId);
-    
+
     int params = getIntParameter(request, "params");
-    
+
     int action = getIntParameter(request, "action", 1);
-    
+
     SilverTrace.debug("forums", "JSPeditForumInfo", "root.MSG_GEN_PARAM_VALUE",
         "isAdmin=" + isAdmin + " ; " + "forumId=" + forumId + " ; " + "call=" + call
         + " ; " + "params=" + params + " ; " + "action=" + action);
-    
+
     int parentId = 0;
     boolean update = false;
 	if (action == 1)
@@ -123,7 +123,7 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
 		forumId = params;
         update = true;
     }
-    
+
     boolean isModerator = (params != 0 && fsc.isModerator(userId, params));
 
     Forum forum = null;
@@ -141,14 +141,13 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
 <head>
     <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><%
-
     out.println(graphicFactory.getLookStyleSheet());
 %>
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
     <script type="text/javascript" src="<%=context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript"><%
-    
+
     if (isAdmin || isModerator)
     {
 %>
@@ -172,7 +171,7 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
                 }
                 else
                 {
-                    document.forumsForm.submit(); 
+                    document.forumsForm.submit();
                 }
             }
         }
@@ -242,7 +241,7 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
                 source.options[i] = null;
             }
         }<%
-    
+
     }
 %>
         function notifyPopup2(context, compoId, users, groups)
@@ -263,7 +262,7 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
     browseBar.setComponentName(fsc.getComponentLabel(), ActionUrl.getUrl("main"));
     browseBar.setPath(navigationBar(forumId, resource, fsc));
     browseBar.setExtraInformation(resource.getString("creatnewForum"));
-    
+
     if (!isReader)
     {
         OperationPane operationPane = window.getOperationPane();
@@ -272,15 +271,15 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
             "javascript:notifyPopup2('" + context + "','" + fsc.getComponentId() + "','"
                 + fsc.getAdminIds() + "','');");
     }
-    
+
     out.println(window.printBefore());
-    
+
     Frame frame = graphicFactory.getFrame();
     if (fsc.isPdcUsed() && update)
     {
     	displayTabs(params, forumId, fsc, graphicFactory, "editForumInfos", out);
     }
-    
+
     out.println(frame.printBefore());
 %>
     <center>
@@ -308,7 +307,7 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
                                             &nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5">
                                         </td>
                                     </tr>
-                                    <!-- Affichage de la liste des catégories -->
+                                    <!-- Affichage de la liste des catï¿½gories -->
                                     <tr>
                                         <td>
                                             <span class="txtlibform"><%=resource.getString("forums.category")%> :&nbsp;</span>
@@ -323,7 +322,7 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
             NodeDetail currentCategory;
             String currentCategoryId;
             String selected;
-            while (it.hasNext()) 
+            while (it.hasNext())
             {
                 currentCategory = (NodeDetail) it.next();
                 currentCategoryId = currentCategory.getNodePK().getId();
@@ -403,13 +402,13 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
                         <tr>
                             <td colspan="3">&nbsp;</td>
                         </tr>
-                        <tr> 
+                        <tr>
                             <td nowrap align="right"><span class="txtlibform"><%=resource.getString("availableUsers")%> : </span>&nbsp;</td>
                             <td nowrap width="10%">&nbsp;</td>
                             <td nowrap align="left">&nbsp;<span class="txtlibform"><%=resource.getString("moderators")%> : </span></td>
                         </tr>
-                        <tr> 
-                            <td nowrap align="right" valign="middle"><span class="selectNS"> 
+                        <tr>
+                            <td nowrap align="right" valign="middle"><span class="selectNS">
                                 <select name="availableUsers" multiple size="7"><%
 
         UserDetail[] userDetails = fsc.listUsers();
@@ -445,7 +444,7 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
                                     </table>
                                 </center>
                             </td>
-                            <td valign="middle" align="left">&nbsp;&nbsp;<span class="selectNS"> 
+                            <td valign="middle" align="left">&nbsp;&nbsp;<span class="selectNS">
                                 <select name="moderators" multiple size="7"><%
 
         if (params != 0)
@@ -457,7 +456,7 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
                 {
 %>
                                     <option value="<%=userDetail.getId()%>"><%=userDetail.getFirstName()%> <%=userDetail.getLastName()%></option><%
-                    
+
                 }
             }
         }

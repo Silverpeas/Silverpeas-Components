@@ -38,18 +38,18 @@
     int forumId = message.getForumId();
     String text = message.getText();
     String title = message.getTitle();
-    
+
     ResourceLocator settings = fsc.getSettings();
     String configFile = SilverpeasSettings.readString(settings, "configFile",
         URLManager.getApplicationURL() + "/wysiwyg/jsp/javaScript/myconfig.js");
-    
+
     //Icons
     String mandatoryField = context + "/util/icons/mandatoryField.gif";
 %>
 <html>
 <head>
+  <title></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><%
-
     out.println(graphicFactory.getLookStyleSheet());
 %>
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
@@ -57,13 +57,13 @@
     <script type="text/javascript">
 
     function validateMessage() {
-    	document.refusalForm.submit();  
+    	document.refusalForm.submit();
     }
 
     function cancelMessage() {
-    	
+
     }
-    
+
     </script>
 </head>
 
@@ -72,16 +72,16 @@
     Window window = graphicFactory.getWindow();
     Frame frame=graphicFactory.getFrame();
     Board board = graphicFactory.getBoard();
-    
+
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(fsc.getSpaceLabel());
     browseBar.setComponentName(fsc.getComponentLabel(), ActionUrl.getUrl("main", -1, forumId));
     browseBar.setPath(navigationBar(forumId, resource, fsc));
-    
+
     out.println(window.printBefore());
     out.println(frame.printBefore());
     out.println(board.printBefore());
-    
+
     %>
 
     <FORM NAME="refusalForm" Action="RefuseMessage" Method="POST">
@@ -92,8 +92,8 @@
 	      <TR>
 	         <TD class="txtlibform" valign=top><%=resource.getString("RefusalMotive")%> :</TD>
 	         <TD>
-	            <textarea name="Motive" rows="5" cols="60"></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> 
-	            <input type="hidden" name="params" value="<%=messageId%>"> 
+	            <textarea name="Motive" rows="5" cols="60"></textarea>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5">
+	            <input type="hidden" name="params" value="<%=messageId%>">
 	         </TD>
 	      </TR>
 	      <TR>
@@ -101,13 +101,13 @@
 	           ( <img border="0" src="<%=mandatoryField%>" width="5" height="5"> : <%=resources.getString("GML.requiredField")%> )
 	         </TD>
 	      </TR>
-	   </TABLE>  
+	   </TABLE>
     </FORM>
     <%
 
  	  out.println(board.printAfter());
 	  out.println("<br/>");
-	  
+
 	  ButtonPane msgButtonPane = graphicFactory.getButtonPane();
     msgButtonPane.addButton(graphicFactory.getFormButton(
         resource.getString("valider"), "javascript:validateMessage();", false));
@@ -116,7 +116,7 @@
     //msgButtonPane.addButton(graphicFactory.getFormButton(resource.getString("annuler"), "javascript:cancelMessage();", false));
     msgButtonPane.setHorizontalPosition();
     out.println("<center>" + msgButtonPane.print()+ "</center>");
- 
+
 
     out.println(frame.printAfter());
     out.println(window.printAfter());
