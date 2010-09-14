@@ -37,14 +37,14 @@
 <%!
 public void displayTabs(int params, int forumId, ForumsSessionController forumsScc,
         GraphicElementFactory gef, String action, JspWriter out)
-    throws IOException 
+    throws IOException
 {
 	ResourceLocator resource = new ResourceLocator(
         "com.stratelia.webactiv.forums.multilang.forumsBundle", forumsScc.getLanguage());
 	String routerUrl = URLManager.getApplicationURL()
         + URLManager.getURL("forums", forumsScc.getSpaceId(), forumsScc.getComponentId());
     boolean enabled = (forumId != -1);
-    
+
     TabbedPane tabbedPane = gef.getTabbedPane();
     tabbedPane.addTab(resource.getString("Description"),
         routerUrl + ActionUrl.getUrl("editForumInfo", "main", 2, params, forumId),
@@ -58,12 +58,12 @@ public void displayTabs(int params, int forumId, ForumsSessionController forumsS
 public void displayBeginFrame(JspWriter out)
     throws IOException
 {
-    out.println("<!-- Cadre extérieur -->");
+    out.println("<!-- Cadre exterieur -->");
     out.println("<table cellpadding=\"2\" cellspacing=\"0\" border=\"0\" width=\"98%\" class=\"intfdcolor\" align=\"center\" valign=\"top\">");
     out.println("<tr>");
     out.println("<td>");
-    
-    out.println("<!-- Cadre intérieur -->");
+
+    out.println("<!-- Cadre interieur -->");
     out.println("<table cellpadding=\"5\" cellspacing=\"0\" border=\"0\" width=\"100%\" class=\"intfdcolor4\" align=\"center\">");
     out.println("<tr valign=\"middle\">");
     out.println("<td align=\"center\">");
@@ -72,8 +72,8 @@ public void displayBeginFrame(JspWriter out)
 void displayEndFrame(JspWriter out)
     throws IOException
 {
-    out.println("</td></tr></table> <!-- Fin cadre intérieur -->");
-   	out.println("</td></tr></table> <!-- Fin cadre extérieur -->");
+    out.println("</td></tr></table> <!-- Fin cadre interieur -->");
+   	out.println("</td></tr></table> <!-- Fin cadre exterieur -->");
 }
 
 %>

@@ -119,12 +119,13 @@
 %>
     <table cellpadding="5" width="100%">
       <form name="categoryForm" action="<%=action%>" method="POST" enctype="multipart/form-data;charset=UTF-8">
+                     <input type="hidden" name="CategoryId" value="<%=categoryId%>"/>
+                <input type="hidden" name="Langue" value="<%=resources.getLanguage()%>"/>
         <tr>
             <td class="txtlibform"><%=resources.getString("GML.title")%> :</td>
             <td><input type="text" name="Name" size="60" maxlength="150" value="<%=name%>">
                 <img src="<%=resources.getIcon("forums.obligatoire")%>" width="5" height="5" border="0"></td>
-                <input type="hidden" name="CategoryId" value="<%=categoryId%>"/></td>
-                <input type="hidden" name="Langue" value="<%=resources.getLanguage()%>"/></td>
+
         </tr>
         <tr>
             <td class="txtlibform"><%=resources.getString("GML.description")%> :</td>

@@ -54,7 +54,7 @@ public String navigationBar(int forumId, ResourceLocator resource, ForumsSession
             + "</a>";
         loop = true;
     }
-    
+
     while (loop)
     {
         int forumParent = fsc.getForumParentId(currentId);
@@ -85,10 +85,10 @@ public void displayForumLine(Forum forum, ResourcesWrapper resources, JspWriter 
         String forumName = forum.getName();
         String forumDescription = forum.getDescription();
         boolean forumActive = forum.isActive();
-        
+
         String nbSubjects = Integer.toString(fsc.getNbSubjects(forumId));
         String nbMessages = Integer.toString(fsc.getNbMessages(forumId));
-        
+
         int lastMessageId = -1;
         Date dateLastMessage = null;
         String lastMessageDate = "";
@@ -100,10 +100,10 @@ public void displayForumLine(Forum forum, ResourcesWrapper resources, JspWriter 
             lastMessageDate = convertDate((Date)lastMessage[1], resources);
             lastMessageUser = (String)lastMessage[2];
         }
-        
+
         out.println("<tr>");
 
-        // 1ère colonne : état des messages (lus / non lus)
+        // 1ï¿½re colonne : ï¿½tat des messages (lus / non lus)
         out.print("<td>");
 
         if (!fsc.isExternal() || !reader)
@@ -121,7 +121,7 @@ public void displayForumLine(Forum forum, ResourcesWrapper resources, JspWriter 
         }
         out.println("</td>");
 
-        // 2ème colonne : nom et description
+        // 2eme colonne : nom et description
         out.print("<td width=\"100%\" >");
         out.print("<a href=\"" + ActionUrl.getUrl("viewForum", call, forumId) + "\">");
         out.print("<span class=\"titreForum\">");
@@ -134,18 +134,18 @@ public void displayForumLine(Forum forum, ResourcesWrapper resources, JspWriter 
         out.print("</span>");
         out.print("</a>");
         out.println("</td>");
-        
-        // 3ème colonne : nombre de sujets
+
+        // 3eme colonne : nombre de sujets
         out.print("<td align=\"center\" class=\"fondClair\"><span class=\"txtnote\">");
         out.print(Encode.javaStringToHtmlString(nbSubjects));
         out.println("</span></td>");
-        
-        // 4ème colonne : nombre de sujets
+
+        // 4eme colonne : nombre de sujets
         out.print("<td align=\"center\" class=\"fondFonce\"><span class=\"txtnote\">");
         out.print(Encode.javaStringToHtmlString(nbMessages));
         out.println("</span></td>");
-        
-        // 5ème colonne : dernier message
+
+        // 5eme colonne : dernier message
         out.print("<td nowrap=\"nowrap\" align=\"center\" class=\"fondClair\"><span class=\"txtnote\">");
         if (lastMessageDate != null)
         {
@@ -157,8 +157,8 @@ public void displayForumLine(Forum forum, ResourcesWrapper resources, JspWriter 
             out.print("</a>");
         }
         out.println("</span></td>");
-        
-        // 6ème colonne : notation
+
+        // 6eme colonne : notation
         NotationDetail notation = fsc.getForumNotation(forumId);
         int globalNote = notation.getRoundGlobalNote();
         int userNote = notation.getUserNote();
@@ -173,12 +173,12 @@ public void displayForumLine(Forum forum, ResourcesWrapper resources, JspWriter 
                 + "\" src=\"" + IMAGE_NOTATION_EMPTY + "\"/>");
         }
         out.println("</span></td>");
-            
-        // 7ème colonne : boutons d'admin
+
+        // 7eme colonne : boutons d'admin
         if (admin || moderator)
         {
             out.print("<td align=\"center\" nowrap class=\"fondClair\">");
-        
+
             // icone de modification
             out.print("<a href=\"");
             out.print(ActionUrl.getUrl("editForumInfo", call, 2, forumId, currentPage));
@@ -197,20 +197,20 @@ public void displayForumLine(Forum forum, ResourcesWrapper resources, JspWriter 
             out.print(ActionUrl.getUrl((currentPage > 0 ? "viewForum" : "main"), call,
                 (forumActive ? 5 : 6), forumId, currentPage));
             out.print("\">");
-            if (forumActive) 
+            if (forumActive)
             {
                 out.print("<img src=\"" + IMAGE_UNLOCK + "\" border=\"0\" align=\"middle\" alt=\"");
                 out.print(resources.getString("lockForum"));
                 out.print("\" title=\"" + resources.getString("lockForum") + "\"/>");
             }
-            else 
+            else
             {
                 out.print("<img src=\"" + IMAGE_LOCK + "\" border=\"0\" align=\"middle\" alt=\"");
                 out.print(resources.getString("unlockForum"));
                 out.print("\" title=\"" + resources.getString("unlockForum") + "\"/>");
             }
             out.print("</a>");
-            
+
             out.println("</td>");
         }
         out.println("</tr>");
@@ -224,9 +224,9 @@ public void displayForumLine(Forum forum, ResourcesWrapper resources, JspWriter 
 
 public void displayForumsList(JspWriter out, ResourcesWrapper resources, boolean admin,
     boolean moderator, boolean reader, int currentForumId, String call, ForumsSessionController fsc,
-    String categoryId, String nom, String description) 
+    String categoryId, String nom, String description)
 {
-    try 
+    try
     {
         Forum[] forums = fsc.getForumsListByCategory(categoryId);
 
@@ -241,7 +241,7 @@ public void displayForumsList(JspWriter out, ResourcesWrapper resources, boolean
             out.println("</td>");
 
             // boutons d'admin
-            if (admin || moderator) 
+            if (admin || moderator)
             {
                 out.print("<td class=\"titreCateg\" align=\"center\" nowrap>");
                 if (categoryId != null)
@@ -262,18 +262,18 @@ public void displayForumsList(JspWriter out, ResourcesWrapper resources, boolean
                 out.println("</td>");
             }
             out.println("</tr>");
-                    
+
             scanForum(forums, resources, out, currentForumId, call, admin, moderator, reader,
                 currentForumId, 0, fsc);
         }
     }
-    catch (IOException ioe) 
+    catch (IOException ioe)
     {
         SilverTrace.info("forums", "JSPforumsListManager.displayForumsList()",
             "root.EX_NO_MESSAGE", null, ioe);
     }
 }
-  
+
 public void displayForums(JspWriter out, ResourcesWrapper resources, boolean admin,
     boolean moderator, boolean reader, int currentForumId, String call, ForumsSessionController fsc,
     String categoryId)
@@ -288,7 +288,7 @@ public void scanForum(Forum[] forums, ResourcesWrapper resources, JspWriter out,
     ForumsSessionController fsc)
 {
     Forum forum;
-    for (int i = 0; i < forums.length; i++) 
+    for (int i = 0; i < forums.length; i++)
     {
         forum = forums[i];
         int forumParent = forum.getParentId();
@@ -323,14 +323,14 @@ public boolean hasChildren(Forum[] forums, int currentForumId)
 }
 
 public void displayForumsAdminButtons(boolean moderator, OperationPane operationPane,
-    int currentFolderId, String call, ResourceLocator resource) 
+    int currentFolderId, String call, ResourceLocator resource)
 {
     operationPane.addOperation(IMAGE_ADD_FORUM, resource.getString("newForum"),
         ActionUrl.getUrl("editForumInfo", call, 1, currentFolderId, currentFolderId));
 }
-  
+
 public void displayForumsAdminButtonsMain(boolean moderator, OperationPane operationPane,
-    int currentFolderId, String call, ResourceLocator resource) 
+    int currentFolderId, String call, ResourceLocator resource)
 {
     operationPane.addOperation(IMAGE_ADD_FORUM, resource.getString("newForum"),
         ActionUrl.getUrl("editForumInfo", call, 1, currentFolderId, currentFolderId));
@@ -340,7 +340,7 @@ public void displayForumsAdminButtonsMain(boolean moderator, OperationPane opera
 public int[] displayForumNotation(JspWriter out, ResourcesWrapper resources, int forumId,
     ForumsSessionController fsc, boolean reader)
 {
-    try 
+    try
     {
         NotationDetail notation = fsc.getForumNotation(forumId);
         int globalNote = notation.getRoundGlobalNote();
@@ -362,7 +362,7 @@ public int[] displayForumNotation(JspWriter out, ResourcesWrapper resources, int
         out.println(")</span>");
         return new int[] {globalNote, userNote};
     }
-    catch (IOException ioe) 
+    catch (IOException ioe)
     {
         SilverTrace.info("forums", "JSPforumsListManager.displayForumNotation()",
             "root.EX_NO_MESSAGE", null, ioe);
