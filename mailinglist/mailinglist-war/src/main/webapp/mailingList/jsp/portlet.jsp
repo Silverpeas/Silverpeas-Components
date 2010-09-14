@@ -24,8 +24,6 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"%>
 <%@ include file="check.jsp"%>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
@@ -50,7 +48,7 @@
   <c:url var="listAction" value="/Rmailinglist/${componentId}/list/${componentId}" />
   <c:set var="currentList" value="${requestScope.currentList}" />
   <view:frame>
-    <center>   
+    <center>
     <c:set var="messages" value="${requestScope.currentListActivity.messages}" />
     <table id="messages" class="tableArrayPane" width="98%" cellspacing="2" cellpadding="2" border="0">
       <tr align="left">

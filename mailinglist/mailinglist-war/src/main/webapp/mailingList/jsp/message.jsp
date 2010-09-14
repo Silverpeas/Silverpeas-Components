@@ -24,8 +24,6 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<%@ page language="java" contentType="text/html; charset=ISO-8859-1"%>
 <%@ include file="check.jsp"%>
 <%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
@@ -77,7 +75,7 @@
         <c:url value="/Rmailinglist/${componentId}/Main" var="browseUrl" />
       </c:when>
     </c:choose>
-    <c:set var="browseBarPath"><a href="<c:out value="${browseUrl}"/>"><c:out value="${browseTitle}" /></a>&nbsp;&gt;&nbsp;<c:out value="${requestScope.currentMessage.title}" /></c:set>	 
+    <c:set var="browseBarPath"><a href="<c:out value="${browseUrl}"/>"><c:out value="${browseTitle}" /></a>&nbsp;&gt;&nbsp;<c:out value="${requestScope.currentMessage.title}" /></c:set>
     <view:browseBar>
 	  <view:browseBarElt link="${browseUrl}" label="${browseTitle}"  />
 	  <view:browseBarElt link="${messageUrl}" label="${requestScope.currentMessage.title}" id="${requestScope.currentMessage.id}"/>
