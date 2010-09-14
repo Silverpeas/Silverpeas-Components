@@ -46,7 +46,6 @@
 <html>
 <head>
     <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><%
     out.println(graphicFactory.getLookStyleSheet());
 %>
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
@@ -111,7 +110,7 @@
                             <td valign="top">
                                 <table border="0" cellspacing="0" cellpadding="5" width="100%">
                                     <!-- REPONSE -->
-                                    <!-- ligne s�paratrice
+                                    <!-- ligne separatrice
                                     <tr>
                                         <td colspan="2"><img src="<%=context%>/util/icons/colorPix/1px.gif" width="100%" height="1" class="intfdcolor"></td>
                                     </tr>
