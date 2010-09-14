@@ -133,7 +133,7 @@ else if ( (dMode == Conf.BUFFEREDFRAMED) && (buffering == null) )
 <head>
 <title><%= chatroomName %></title>
 <script language="JavaScript"><!--
-	var thechat = '<%= URLEncoder.encode((String)session.getAttribute("bufferedChat"), "ISO-8859-1").replace('+',' ') %>';
+	var thechat = '<%= URLEncoder.encode((String)session.getAttribute("bufferedChat"), "UTF-8").replace('+',' ') %>';
 	function execute()
 	{
 		if (typeof(self.parent.dbcontent) != "undefined")

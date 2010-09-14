@@ -57,7 +57,7 @@ String user_id = kmeliaScc.getUserId();
 %>
 <HTML>
 <HEAD>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <TITLE></TITLE>
 <%
 out.println(gef.getLookStyleSheet());

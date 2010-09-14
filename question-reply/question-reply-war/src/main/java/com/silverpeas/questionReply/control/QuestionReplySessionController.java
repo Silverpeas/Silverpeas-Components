@@ -1096,7 +1096,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     sb.append("<HEAD>\n");
 
     sb.append("<TITLE>").append(fileName).append("</TITLE>\n");
-    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=ISO-8859-1\">\n");
+    sb.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n");
     sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"files/ExportFAQ.css\">\n");
     sb.append("\n");
     sb.append(addFunction());

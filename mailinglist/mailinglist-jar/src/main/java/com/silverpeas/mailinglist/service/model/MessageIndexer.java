@@ -48,7 +48,7 @@ public class MessageIndexer {
       Set<Attachment> attachments = message.getAttachments();
       if (attachments != null && !attachments.isEmpty()) {
         for (Attachment attachment : attachments) {
-          index.addFileContent(attachment.getPath(), "ISO-8859-1", attachment
+          index.addFileContent(attachment.getPath(), "UTF-8", attachment
               .getContentType(), "fr");
         }
       }

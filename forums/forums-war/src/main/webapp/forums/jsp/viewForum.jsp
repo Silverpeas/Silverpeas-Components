@@ -83,7 +83,7 @@
   <head>
     <title><c:out value="${currentForum.name}" /></title>
     <view:looknfeel />
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <c:if test="${sessionScope.SessionGraphicElementFactory.externalStylesheet == null}">
       <link rel="stylesheet" type="text/css" href="styleSheets/forums.css">
     </c:if>

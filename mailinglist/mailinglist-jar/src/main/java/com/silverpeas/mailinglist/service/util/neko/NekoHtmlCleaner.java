@@ -79,7 +79,7 @@ public class NekoHtmlCleaner implements HtmlCleaner {
     content = new StringWriter();
     writer.setWriter(content);
     XMLInputSource source = new XMLInputSource("-//W3C//DTD HTML 4.01", null,
-        null, in, "ISO-8859-1");
+        null, in, "UTF-8");
     parser.parse(source);
   }
 

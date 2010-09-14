@@ -55,7 +55,7 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter {
   static private String s_sSessionId = "%ST_SESSION_ID%";
   static private String s_sUserPropertyPrefix = "%ST_USER_PROPERTY_";
 
-  static private String ENCODING = "ISO-8859-1";
+  static private String ENCODING = "UTF-8";
 
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {

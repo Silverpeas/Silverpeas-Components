@@ -37,7 +37,7 @@
 <html>
 <head>
 <c:set var="message" value="${requestScope.currentMessage}" />
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Message</title>
 <view:looknfeel />
 <script type="text/javascript">

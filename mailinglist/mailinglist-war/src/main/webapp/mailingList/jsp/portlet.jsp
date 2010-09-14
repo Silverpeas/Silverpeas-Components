@@ -37,7 +37,7 @@
 <fmt:message key="mailingList.icons.attachmentSmall" var="attachmentIcon" bundle="${icons}" />
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title><fmt:message key="mailingList.tab.activity.title" /></title>
 <view:looknfeel />
 </head>

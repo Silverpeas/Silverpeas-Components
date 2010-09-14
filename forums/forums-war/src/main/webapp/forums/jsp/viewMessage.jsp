@@ -211,7 +211,7 @@
 <%@page import="java.util.List"%><html>
 <head>
     <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"><%
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><%
 
         out.println(graphicFactory.getLookStyleSheet());
         if (!graphicFactory.hasExternalStylesheet())

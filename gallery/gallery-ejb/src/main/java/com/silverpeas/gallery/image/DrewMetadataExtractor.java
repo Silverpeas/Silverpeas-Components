@@ -299,7 +299,7 @@ public class DrewMetadataExtractor implements ImageMetadataExtractor {
       UnsupportedEncodingException, MetadataException {
     if (iptcDirectory.containsTag(iptcTag)) {
       byte[] data = iptcDirectory.getByteArray(iptcTag);
-      String encoding = StringUtil.detectEncoding(data, "ISO-8859-15");
+      String encoding = StringUtil.detectEncoding(data, "UTF-85");
       return new String(data, encoding);
     }
     return null;

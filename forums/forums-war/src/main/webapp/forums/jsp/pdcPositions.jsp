@@ -78,7 +78,7 @@
             "/pdcPeas/jsp/positionsInComponent.jsp"
             + "?SilverObjectId=" + fsc.getSilverObjectId(params)
             + "&ComponentId=" + fsc.getComponentId()
-            + "&ReturnURL=" + URLEncoder.encode(url, "ISO-8859-1"))
+            + "&ReturnURL=" + URLEncoder.encode(url, "UTF-8"))
         .include(request, response);
 
     out.println(frame.printAfter());

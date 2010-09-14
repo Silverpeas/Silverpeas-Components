@@ -113,7 +113,7 @@ public class TestMailProcessor extends AbstractSingleSpringContextTests {
     MimeBodyPart part = new MimeBodyPart(TestMessageChecker.class.getResourceAsStream("lemonde.html"));
     part.setDisposition(Part.ATTACHMENT);
     part.setFileName("lemonde.html");
-    part.setHeader("Content-Type", "text/html; charset=ISO-8859-1");
+    part.setHeader("Content-Type", "text/html; charset=UTF-8");
     Message message = new Message();
     message.setComponentId("componentId");
     message.setMessageId("mailId@silverpeas.com");

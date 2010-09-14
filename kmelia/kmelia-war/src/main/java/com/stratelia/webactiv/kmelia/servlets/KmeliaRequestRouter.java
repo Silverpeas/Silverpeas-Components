@@ -810,14 +810,14 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
             request.getScheme() + "://" + kmelia.getServerNameAndPort()
             + URLManager.getApplicationURL() + "/wysiwyg/jsp/htmlEditor.jsp?";
         destination += "SpaceId=" + kmelia.getSpaceId();
-        destination += "&SpaceName=" + URLEncoder.encode(kmelia.getSpaceLabel(), "ISO-8859-1");
+        destination += "&SpaceName=" + URLEncoder.encode(kmelia.getSpaceLabel(), "UTF-8");
         destination += "&ComponentId=" + kmelia.getComponentId();
         destination +=
-            "&ComponentName=" + URLEncoder.encode(kmelia.getComponentLabel(), "ISO-8859-1");
+            "&ComponentName=" + URLEncoder.encode(kmelia.getComponentLabel(), "UTF-8");
         destination +=
             "&BrowseInfo="
             + URLEncoder.encode(kmelia.getSessionPathString() + " > " + topic.getName() + " > "
-            + kmelia.getString("TopicWysiwyg"), "ISO-8859-1");
+            + kmelia.getString("TopicWysiwyg"), "UTF-8");
         destination += "&ObjectId=Node_" + subTopicId;
         destination += "&Language=fr";
         destination +=
@@ -825,7 +825,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
             + URLEncoder.encode(URLManager.getApplicationURL()
             + URLManager.getURL(kmelia.getSpaceId(), kmelia.getComponentId())
             + "FromTopicWysiwyg?Action=Search&Id=" + topicId + "&ChildId=" + subTopicId
-            + "&Profile=" + flag, "ISO-8859-1");
+            + "&Profile=" + flag, "UTF-8");
       } else if (function.equals("FromTopicWysiwyg")) {
         String subTopicId = request.getParameter("ChildId");
 

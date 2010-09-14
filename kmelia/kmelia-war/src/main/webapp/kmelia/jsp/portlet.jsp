@@ -93,7 +93,7 @@ ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.kmelia.se
 
 <HTML>
 <HEAD>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <TITLE></TITLE>
 <% out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_context%>/util/ajax/prototype.js"></script>

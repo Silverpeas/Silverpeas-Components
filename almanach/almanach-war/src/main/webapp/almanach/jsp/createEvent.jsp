@@ -43,7 +43,7 @@
 <HTML>
 <HEAD>
 <TITLE><%=generalMessage.getString("GML.popupTitle")%></TITLE>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <style type="text/css">
 <!--
 .eventCells {  padding-right: 3px; padding-left: 3px; vertical-align: top; background-color: #FFFFFF}

@@ -322,20 +322,20 @@ public class WebSitesRequestRouter extends ComponentRequestRouter {
             "/wysiwyg/jsp/htmlEditor.jsp?";
         destination += "SpaceId=" + scc.getSpaceId();
 
-        destination += "&SpaceName=" + URLEncoder.encode(scc.getSpaceLabel(), "ISO-8859-1");
+        destination += "&SpaceName=" + URLEncoder.encode(scc.getSpaceLabel(), "UTF-8");
         destination += "&ComponentId=" + scc.getComponentId();
-        destination += "&ComponentName=" + URLEncoder.encode(scc.getComponentLabel(), "ISO-8859-1");
-        destination += "&BrowseInfo=" + URLEncoder.encode(nameSite, "ISO-8859-1");
+        destination += "&ComponentName=" + URLEncoder.encode(scc.getComponentLabel(), "UTF-8");
+        destination += "&BrowseInfo=" + URLEncoder.encode(nameSite, "UTF-8");
         destination += "&Language=fr";
         destination += "&ObjectId=" + id;
-        destination += "&FileName=" + URLEncoder.encode(name, "ISO-8859-1");
-        destination += "&Path=" + URLEncoder.encode(path, "ISO-8859-1");
+        destination += "&FileName=" + URLEncoder.encode(name, "UTF-8");
+        destination += "&Path=" + URLEncoder.encode(path, "UTF-8");
         destination +=
             "&ReturnUrl=" +
             URLEncoder.encode(URLManager.getApplicationURL() +
             URLManager.getURL(scc.getSpaceId(), scc.getComponentId()) +
             "FromWysiwyg?path=" + path + "&name=" + name + "&nameSite=" + nameSite +
-            "&profile=" + flag + "&id=" + id, "ISO-8859-1");
+            "&profile=" + flag + "&id=" + id, "UTF-8");
         SilverTrace.info("webSites", "WebSitesRequestRouter.getDestination().ToWysiwyg",
             "root.MSG_GEN_PARAM_VALUE", "destination = " + destination);
       } else if (function.startsWith("FromWysiwyg")) {

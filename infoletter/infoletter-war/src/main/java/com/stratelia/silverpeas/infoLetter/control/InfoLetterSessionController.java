@@ -350,9 +350,9 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         // create a message
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(from));
-        msg.setSubject(subject, "ISO-8859-1");
-        // email.setSubject(pSubject == null ? "" : pSubject, "ISO-8859-1");
-        // email.setText(pMessage == null ? "" : pMessage, "ISO-8859-1");
+        msg.setSubject(subject, "UTF-8");
+        // email.setSubject(pSubject == null ? "" : pSubject, "UTF-8");
+        // email.setText(pMessage == null ? "" : pMessage, "UTF-8");
 
         // create and fill the first message part
         MimeBodyPart mbp1 = new MimeBodyPart();

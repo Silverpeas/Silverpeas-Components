@@ -43,7 +43,7 @@ public class TestNekoHtml2Text extends TestCase {
 
 	public void testParse() throws Exception {
 		String html = "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">"
-				+ "<html><head><meta content=\"text/html;charset=ISO-8859-1\" "
+				+ "<html><head><meta content=\"text/html;charset=UTF-8\" "
 				+ "http-equiv=\"Content-Type\"><title></title></head><body "
 				+ "bgcolor=\"#ffffff\" text=\"#000000\">Hello World <i>Salut les "
 				+ "copains </i></body></html>";
