@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.questionReply.control;
 
 import java.io.File;
@@ -34,16 +33,13 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
-import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Category;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Recipient;
 import com.silverpeas.questionReply.model.Reply;
-import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.whitePages.control.CardManager;
 import com.silverpeas.whitePages.model.Card;
@@ -61,6 +57,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
@@ -72,7 +69,6 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAPrimaryKey;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -81,9 +77,9 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.viewGenerator.html.Encode;
 
 public class QuestionReplySessionController extends AbstractComponentSessionController {
+
   private String userProfil;
   private Question currentQuestion;
   private Reply currentReply;
@@ -96,25 +92,28 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   private String returnURL = "";
 
   private QuestionManager getQuestionManager() {
-    if (questionManager == null)
+    if (questionManager == null) {
       questionManager = QuestionManager.getInstance();
+    }
     return questionManager;
   }
 
   /*
    * Recupère la liste des questions selon le profil de l'utilisateur courant
    */
-  public Collection getQuestions() throws QuestionReplyException {
-    Collection questions = new ArrayList();
-    if (userProfil.equals("user"))
-      questions = getUserQuestions();
-    else if (userProfil.equals("writer"))
-      questions = getWriterQuestions();
-    else if (userProfil.equals("publisher"))
-      questions = getPublisherQuestions();
-    else if (userProfil.equals("admin"))
-      questions = getAdminQuestions();
-    return questions;
+  public Collection<Question> getQuestions() throws QuestionReplyException {
+    SilverpeasRole role = SilverpeasRole.valueOf(userProfil);
+    switch (role) {
+      case user:
+        return getUserQuestions();
+      case writer:
+        return getWriterQuestions();
+      case publisher:
+        return getPublisherQuestions();
+      case admin:
+        return getAdminQuestions();
+    }
+    return new ArrayList<Question>();
   }
 
   public Collection<Question> getQuestionsByCategory(String categoryId)
@@ -124,10 +123,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return questions;
   }
 
-  public Collection getAllQuestions() throws QuestionReplyException {
-    Collection questions = getQuestionManager().getAllQuestions(
-        getComponentId());
-    return questions;
+  public Collection<Question> getAllQuestions() throws QuestionReplyException {
+    return getQuestionManager().getAllQuestions(getComponentId());
   }
 
   /*
@@ -137,15 +134,21 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public Question getQuestion(long questionId) throws QuestionReplyException {
     Question question = getQuestionManager().getQuestion(questionId);
     setCurrentQuestion(question);
-    Collection replies = new ArrayList();
-    Collection recipients = getQuestionManager().getQuestionRecipients(
-        questionId);
-    if (userProfil.equals("user"))
-      replies = getCurrentQuestionPublicReplies();
-    else if (userProfil.equals("publisher"))
-      replies = getCurrentQuestionPrivateReplies();
-    else if ((userProfil.equals("writer")) || (userProfil.equals("admin")))
-      replies = getCurrentQuestionReplies();
+    Collection<Reply> replies = new ArrayList<Reply>();
+    Collection recipients = getQuestionManager().getQuestionRecipients(questionId);
+    SilverpeasRole role = SilverpeasRole.valueOf(userProfil);
+    switch (role) {
+      case user:
+        replies = getCurrentQuestionPublicReplies();
+        break;
+      case publisher:
+        replies = getCurrentQuestionPrivateReplies();
+        break;
+      case writer:
+      case admin:
+        replies = getCurrentQuestionReplies();
+        break;
+    }
     getCurrentQuestion().writeReplies(replies);
     getCurrentQuestion().writeRecipients(recipients);
     return getCurrentQuestion();
@@ -223,8 +226,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     newQuestion.setContent(content);
   }
 
-  public void setNewQuestionContent(String title, String content,
-      String categoryId) {
+  public void setNewQuestionContent(String title, String content, String categoryId) {
     newQuestion.setTitle(title);
     newQuestion.setContent(content);
     newQuestion.setCategoryId(categoryId);
@@ -248,11 +250,11 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public Reply getNewReply() {
     Reply reply;
     if ((getCurrentQuestion() != null)
-        && (getCurrentQuestion().getPK() != null))
-      reply = new Reply(((IdPK) getCurrentQuestion().getPK()).getIdAsLong(),
-          getUserId());
-    else
+        && (getCurrentQuestion().getPK() != null)) {
+      reply = new Reply(((IdPK) getCurrentQuestion().getPK()).getIdAsLong(), getUserId());
+    } else {
       reply = new Reply(getUserId());
+    }
     newReply = reply;
     return newReply;
   }
@@ -260,8 +262,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   /*
    * initialise le contenu de la réponse à créer
    */
-  public void setNewReplyContent(String title, String content, int publicReply,
-      int privateReply) {
+  public void setNewReplyContent(String title, String content, int publicReply, int privateReply) {
     newReply.setTitle(title);
     newReply.setContent(content);
     newReply.setPublicReply(publicReply);
@@ -278,11 +279,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     newQuestion.setPrivateReplyNumber(0);
     newReply.setPublicReply(1);
     newReply.setPrivateReply(0);
-
     WAPrimaryKey pk = newReply.getPK();
     pk.setComponentName(getComponentId());
     newReply.setPK(pk);
-
     return getQuestionManager().createQuestionReply(newQuestion, newReply);
   }
 
@@ -301,15 +300,14 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   /*
    * Modifie et enregistre la question courante
    */
-  public void updateCurrentQuestion(String title, String content)
-      throws QuestionReplyException {
+  public void updateCurrentQuestion(String title, String content) throws QuestionReplyException {
     getCurrentQuestion().setTitle(title);
     getCurrentQuestion().setContent(content);
     getQuestionManager().updateQuestion(getCurrentQuestion());
   }
 
-  public void updateCurrentQuestion(String title, String content,
-      String categoryId) throws QuestionReplyException {
+  public void updateCurrentQuestion(String title, String content, String categoryId)
+      throws QuestionReplyException {
     getCurrentQuestion().setTitle(title);
     getCurrentQuestion().setContent(content);
     getCurrentQuestion().setCategoryId(categoryId);
@@ -320,17 +318,15 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Modifie la réponse courante => supprime la réponse publique => deletePublicReplies() => crée
    * une nouvelle réponse publique et privée met à jour en session la question courante
    */
-  public void updateCurrentReplyOLD(String title, String content)
-      throws QuestionReplyException {
+  public void updateCurrentReplyOLD(String title, String content) throws QuestionReplyException {
     getNewReply();
     setNewReplyContent(title, content, getCurrentReply().getPublicReply(), 1);
     WAPrimaryKey pk = newReply.getPK();
     pk.setComponentName(getComponentId());
     newReply.setPK(pk);
-    long replyId = getQuestionManager().createReply(newReply,
-        getCurrentQuestion());
+    long replyId = getQuestionManager().createReply(newReply, getCurrentQuestion());
     Collection replyIds = new ArrayList();
-    replyIds.add(new Long(((IdPK) getCurrentReply().getPK()).getIdAsLong()));
+    replyIds.add(Long.valueOf(((IdPK) getCurrentReply().getPK()).getIdAsLong()));
     deletePublicReplies(replyIds);
     getReply(replyId);
     getQuestion(((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
@@ -353,15 +349,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Supprime une liste de questions selon le profil de l'utilisateur courant i.e. suppression de
    * toutes les réponses publiques ou privées des questions
    */
-  public void deleteQuestions(Collection questionsIds)
-      throws QuestionReplyException {
+  public void deleteQuestions(Collection<Long> questionsIds) throws QuestionReplyException {
     try {
       getQuestionManager().deleteQuestionAndReplies(questionsIds);
-      /*
-       * if (userProfil.equals("publisher")) deletePrivateQuestions(questionsIds); else if
-       * ((userProfil.equals("writer")) || (userProfil.equals("admin")))
-       * deletePublicQuestions(questionsIds);
-       */
     } catch (QuestionReplyException e) {
       throw new QuestionReplyException(
           "QuestionReplySessionController.deleteQuestions",
@@ -380,15 +370,17 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public void deleteReplies(Collection replyIds) throws QuestionReplyException {
     try {
       int rest = 0;
-      if (userProfil.equals("publisher"))
+      if (userProfil.equals("publisher")) {
         rest = deletePrivateReplies(replyIds);
-      else if ((userProfil.equals("writer")) || (userProfil.equals("admin")))
+      } else if ((userProfil.equals("writer")) || (userProfil.equals("admin"))) {
         rest = deletePublicReplies(replyIds);
+      }
       if ((((getCurrentQuestion().getReplyNumber()) == 0) || (rest == 0))
-          && (getCurrentQuestion().getStatus() == 2))
+          && (getCurrentQuestion().getStatus() == 2)) {
         reSetCurrentQuestion();
-      else
+      } else {
         getQuestion(((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
+      }
     } catch (QuestionReplyException e) {
       throw new QuestionReplyException(
           "QuestionReplySessionController.deleteReplies",
@@ -403,10 +395,11 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       rest = deletePrivateReplies(replyIds);
       rest = deletePublicReplies(replyIds);
       if ((((getCurrentQuestion().getReplyNumber()) == 0) || (rest == 0))
-          && (getCurrentQuestion().getStatus() == 2))
+          && (getCurrentQuestion().getStatus() == 2)) {
         reSetCurrentQuestion();
-      else
+      } else {
         getQuestion(((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
+      }
     } catch (QuestionReplyException e) {
       throw new QuestionReplyException(
           "QuestionReplySessionController.deleteReplies",
@@ -418,7 +411,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   /*
    * Clos une liste de questions
    */
-  public void closeQuestions(Collection questionIds)
+  public void closeQuestions(Collection<Long> questionIds)
       throws QuestionReplyException {
     getQuestionManager().closeQuestions(questionIds);
   }
@@ -428,14 +421,14 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * met en session la question
    */
   public void closeQuestion(long questionId) throws QuestionReplyException {
-    Collection questionIds = new ArrayList();
-    questionIds.add(new Long(questionId));
+    Collection<Long> questionIds = new ArrayList<Long>();
+    questionIds.add(Long.valueOf(questionId));
     getQuestionManager().closeQuestions(questionIds);
   }
 
   public void openQuestion(long questionId) throws QuestionReplyException {
-    Collection questionIds = new ArrayList();
-    questionIds.add(new Long(questionId));
+    Collection<Long> questionIds = new ArrayList<Long>();
+    questionIds.add(Long.valueOf(questionId));
     getQuestionManager().openQuestions(questionIds);
   }
 
@@ -443,10 +436,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Supprime les réponses publiques => getQuestionManager().updateRepliesPublicStatus() retourne le
    * nombre de réponses publiques restantes
    */
-  private int deletePublicReplies(Collection replyIds)
-      throws QuestionReplyException {
-    getQuestionManager().updateRepliesPublicStatus(replyIds,
-        getCurrentQuestion());
+  private int deletePublicReplies(Collection replyIds) throws QuestionReplyException {
+    getQuestionManager().updateRepliesPublicStatus(replyIds, getCurrentQuestion());
     return getCurrentQuestion().getPublicReplyNumber();
   }
 
@@ -454,10 +445,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Supprime les réponses privées => getQuestionManager().updateRepliesPrivateStatus() retourne le
    * nombre de réponses privées restantes
    */
-  private int deletePrivateReplies(Collection replyIds)
-      throws QuestionReplyException {
-    getQuestionManager().updateRepliesPrivateStatus(replyIds,
-        getCurrentQuestion());
+  private int deletePrivateReplies(Collection replyIds) throws QuestionReplyException {
+    getQuestionManager().updateRepliesPrivateStatus(replyIds, getCurrentQuestion());
     return getCurrentQuestion().getPrivateReplyNumber();
   }
 
@@ -465,7 +454,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Retourne la liste des questions de l'utilisateur de rôle User i.e. liste des questions avec
    * réponses publiques => getQuestionManager().getPublicQuestions()
    */
-  private Collection getUserQuestions() throws QuestionReplyException {
+  private Collection<Question> getUserQuestions() throws QuestionReplyException {
     return getQuestionManager().getPublicQuestions(getComponentId());
   }
 
@@ -473,9 +462,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Retourne la liste des questions de l'utilisateur de rôle Writer (expert) i.e. liste des
    * questions dont il est le destinataire non close => getQuestionManager().getReceiveQuestions()
    */
-  private Collection getWriterQuestions() throws QuestionReplyException {
-    return getQuestionManager().getReceiveQuestions(getUserId(),
-        getComponentId());
+  private Collection<Question> getWriterQuestions() throws QuestionReplyException {
+    return getQuestionManager().getReceiveQuestions(getUserId(), getComponentId());
   }
 
   /*
@@ -483,7 +471,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * questions dont il est l'auteur non close ou close avec réponses privées =>
    * getQuestionManager().getSendQuestions()
    */
-  private Collection getPublisherQuestions() throws QuestionReplyException {
+  private Collection<Question> getPublisherQuestions() throws QuestionReplyException {
     return getQuestionManager().getSendQuestions(getUserId(), getComponentId());
   }
 
@@ -491,32 +479,33 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Retourne la liste des questions de l'utilisateur de rôle Admin (animateur) i.e. liste des
    * questions non close ou close avec réponses publiques => getQuestionManager().getQuestions()
    */
-  private Collection getAdminQuestions() throws QuestionReplyException {
+  private Collection<Question> getAdminQuestions() throws QuestionReplyException {
     return getQuestionManager().getQuestions(getComponentId());
   }
 
   /*
    * liste les réponses publiques d'une question
    */
-  private Collection getCurrentQuestionPublicReplies()
-      throws QuestionReplyException {
-    return getQuestionManager().getQuestionPublicReplies(
-        ((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
+  @SuppressWarnings("unchecked")
+  private Collection<Reply> getCurrentQuestionPublicReplies() throws QuestionReplyException {
+    return getQuestionManager().getQuestionPublicReplies(((IdPK) getCurrentQuestion().getPK()).
+        getIdAsLong());
   }
 
   /*
    * liste les réponses privées d'une question
    */
-  private Collection getCurrentQuestionPrivateReplies()
-      throws QuestionReplyException {
-    return getQuestionManager().getQuestionPrivateReplies(
-        ((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
+  @SuppressWarnings("unchecked")
+  private Collection<Reply> getCurrentQuestionPrivateReplies() throws QuestionReplyException {
+    return getQuestionManager().getQuestionPrivateReplies(((IdPK) getCurrentQuestion().getPK()).
+        getIdAsLong());
   }
 
   /*
    * liste les réponses à une question
    */
-  private Collection getCurrentQuestionReplies() throws QuestionReplyException {
+  @SuppressWarnings("unchecked")
+  private Collection<Reply> getCurrentQuestionReplies() throws QuestionReplyException {
     return getQuestionManager().getQuestionReplies(
         ((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
   }
@@ -576,16 +565,17 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   /*
    * Retourne true si la liste contient deja le user
    */
-  private boolean exist(UserDetail user, Collection listUser) {
+  private boolean exist(UserDetail user, Collection<UserDetail> listUser) {
     int i = 0;
-    ArrayList arrayUser = new ArrayList(listUser);
+    List<UserDetail> arrayUser = new ArrayList<UserDetail>(listUser);
     if (user != null) {
       String idUser = user.getId();
       while (i < arrayUser.size()) {
-        UserDetail theUser = (UserDetail) arrayUser.get(i);
+        UserDetail theUser = arrayUser.get(i);
         String theId = theUser.getId();
-        if (theId.equals(idUser))
+        if (theId.equals(idUser)) {
           return true;
+        }
         i++;
       }
     } else {
@@ -597,40 +587,30 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   /*
    * Récupère la liste des positions d'une question
    */
-  public ContainerPositionInterface getSilverContentIdPosition()
-      throws QuestionReplyException {
-    ContainerPositionInterface position;
+  public ContainerPositionInterface getSilverContentIdPosition() throws QuestionReplyException {
     try {
-
-      position = (ContainerPositionInterface) containerContext
-          .getSilverContentIdSearchContext(new Integer(
-          getCurrentQuestionContentId()).intValue(), getComponentId());
+      return containerContext.getSilverContentIdSearchContext(Integer.parseInt(
+          getCurrentQuestionContentId()), getComponentId());
     } catch (Exception e) {
       throw new QuestionReplyException(
           "QuestionReplySessionController.getCurrentQuestionWriters()",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_EXPERTS", "", e);
     }
-
-    return position;
-
   }
 
   public String genericWriters() throws QuestionReplyException {
     GenericPanel gp = new GenericPanel();
-    String context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
-    String theURL = context + "/RquestionReply/" + getComponentId()
-        + "/EffectiveRelaunch";
-    String cancelURL = context + "/RquestionReply/" + getComponentId()
-        + "/ConsultQuestionQuery?questionId="
-        + ((IdPK) getCurrentQuestion().getPK()).getId();
-    PairObject hostComponentName = new PairObject(getComponentLabel(), context
+    String webContext = GeneralPropertiesManager.getGeneralResourceLocator().getString(
+        "ApplicationURL");
+    String theURL = webContext + "/RquestionReply/" + getComponentId() + "/EffectiveRelaunch";
+    String cancelURL = webContext + "/RquestionReply/" + getComponentId()
+        + "/ConsultQuestionQuery?questionId=" + ((IdPK) getCurrentQuestion().getPK()).getId();
+    PairObject hostComponentName = new PairObject(getComponentLabel(), webContext
         + "/RquestionReply/" + getComponentId() + "/Main");
     PairObject hostPath1 = new PairObject(getCurrentQuestion().getTitle(),
-        "/RquestionReply/" + getComponentId()
-        + "/ConsultQuestionQuery?questionId="
+        "/RquestionReply/" + getComponentId() + "/ConsultQuestionQuery?questionId="
         + ((IdPK) getCurrentQuestion().getPK()).getId());
-    PairObject[] hostPath = { hostPath1 };
+    PairObject[] hostPath = {hostPath1};
 
     gp.resetAll();
 
@@ -642,8 +622,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
     gp.setGoBackURL(theURL);
 
-    gp.setPanelProvider(new ExpertPanel(getLanguage(),
-        getCurrentQuestionWriters()));
+    gp.setPanelProvider(new ExpertPanel(getLanguage(), getCurrentQuestionWriters()));
 
     gp.setPopupMode(false);
     gp.setMultiSelect(true);
@@ -659,12 +638,12 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public void relaunchRecipients() throws QuestionReplyException {
     GenericPanel gp = getGenericPanel("QR");
     String[] uids = gp.getSelectedElements();
-    Collection recipients = new ArrayList();
+    Collection<Recipient> recipients = new ArrayList<Recipient>();
 
     if (uids != null) {
       for (int i = 0; i < uids.length; i++) {
-        Recipient recipient = new Recipient(((IdPK) getCurrentQuestion()
-            .getPK()).getIdAsLong(), uids[i]);
+        Recipient recipient = new Recipient(((IdPK) getCurrentQuestion().getPK()).getIdAsLong(),
+            uids[i]);
         recipients.add(recipient);
       }
     }
@@ -696,8 +675,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       ContainerPositionInterface position = getSilverContentIdPosition();
       if (position != null) {
         if (!position.isEmpty()) {
-          List liste = containerContext.getSilverContentIdByPosition(position,
-              listeInstanceId);
+          List liste = containerContext.getSilverContentIdByPosition(position, listeInstanceId);
           i = 0;
           ArrayList arraySilverContentId = new ArrayList();
           if (liste != null) {
@@ -706,10 +684,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
           CardManager cardManager = CardManager.getInstance();
           while (i < arraySilverContentId.size()) {
-            int silverContentId = ((Integer) arraySilverContentId.get(i))
-                .intValue();
-            String internalContentId = contentManager
-                .getInternalContentId(silverContentId);
+            int silverContentId = ((Integer) arraySilverContentId.get(i)).intValue();
+            String internalContentId = contentManager.getInternalContentId(silverContentId);
             Long userCardIdLong = new Long(internalContentId);
             long userCardId = userCardIdLong.longValue();
             Card card = cardManager.getCard(userCardId);
@@ -750,18 +726,20 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       boolean isRecipient = false;
       while (itR.hasNext()) {
         Recipient recipient = (Recipient) itR.next();
-        if (user.getId().equals(recipient.getUserId()))
+        if (user.getId().equals(recipient.getUserId())) {
           isRecipient = true;
+        }
       }
-      if (!isRecipient)
+      if (!isRecipient) {
         availableUsers.add(user);
+      }
     }
     return availableUsers;
   }
 
   /*
-	*
-	*/
+   *
+   */
   private void notify(String intro, String content, UserDetail[] users)
       throws QuestionReplyException {
     try {
@@ -785,8 +763,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   /*
-	*
-	*/
+   *
+   */
   private void notifyQuestion(Question question) throws QuestionReplyException {
     String message = getString("questionReply.Question") + question.getTitle()
         + "\n" + question.getContent() + "\n";
@@ -820,8 +798,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   /*
-	*
-	*/
+   *
+   */
   private void notifyReply(Reply reply) throws QuestionReplyException {
     String message = getString("questionReply.Question")
         + getCurrentQuestion().getTitle() + "\n"
@@ -837,19 +815,20 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   /*
-	*
-	*/
+   *
+   */
   public NotificationSender getNotificationSender() {
-    if (notifSender == null)
+    if (notifSender == null) {
       notifSender = new NotificationSender(getComponentId());
+    }
     return notifSender;
   }
 
   /*-------------- Methodes de la classe ------------------*/
 
   /*
-	*
-	*/
+   *
+   */
   public QuestionReplySessionController(MainSessionController mainSessionCtrl,
       ComponentContext context, String multilangBaseName, String iconBaseName) {
     super(mainSessionCtrl, context, multilangBaseName, iconBaseName);
@@ -859,8 +838,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   /*-------------- Methodes utiles a l'integration du PDC ------------------*/
 
   /*
-	*
-	*/
+   *
+   */
   public String getCurrentQuestionContentId() {
     String contentId = null;
 
@@ -870,8 +849,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
         contentId = ""
             + contentManager.getSilverContentId(
-            currentQuestion.getPK().getId(), currentQuestion
-            .getInstanceId());
+            currentQuestion.getPK().getId(), currentQuestion.getInstanceId());
       } catch (ContentManagerException ignored) {
         SilverTrace.error("questionReply", "QuestionReplySessionController",
             "questionReply.EX_UNKNOWN_CONTENT_MANAGER", ignored);
@@ -883,20 +861,19 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public boolean isPrivateRepliesEnabled() {
-    return "yes"
-        .equalsIgnoreCase(getComponentParameterValue("privateRepliesUsed"));
+    return "yes".equalsIgnoreCase(getComponentParameterValue("privateRepliesUsed"));
   }
 
   /*
-	*
-	*/
+   *
+   */
   public void setContainerContext(ContainerContext containerContext) {
     this.containerContext = containerContext;
   }
 
   /*
-	*
-	*/
+   *
+   */
   public ContainerContext getContainerContext() {
     return containerContext;
   }
@@ -911,7 +888,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   // Gestion des catégories
   // ----------------------
-
   public Collection getAllCategories() throws QuestionReplyException {
     try {
       NodePK nodePK = new NodePK("0", getComponentId());
@@ -1147,188 +1123,43 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       ParseException {
     StringBuilder sb = new StringBuilder();
     sb.append("<table width=\"100%\">\n");
+    @SuppressWarnings("unchecked")
     Collection<NodeDetail> categories = getAllCategories();
-    Iterator<NodeDetail> itC = categories.iterator();
-    while (itC.hasNext()) {
-      NodeDetail category = itC.next();
+    QuestionReplyExport exporter = new QuestionReplyExport(resource, file);
+    for (NodeDetail category : categories) {
       String categoryId = Integer.toString(category.getId());
-      // titre de la catégorie
-      sb.append("<tr>\n");
-      sb.append("<td class=\"titreCateg\" width=\"91%\">").append(category.getName()).append(
-          "</td>\n");
-      sb.append("</tr>\n");
-      // contenu de la catégorie
-      sb.append("<tr>\n");
-      sb.append("<td colspan=\"2\">\n");
-      Collection<Question> questions = getQuestionsByCategory(categoryId);
-      Iterator<Question> itQ = questions.iterator();
-      while (itQ.hasNext()) {
-        Question question = itQ.next();
-        String questionId = question.getPK().getId();
-        String qId = "q" + questionId;
-        sb
-            .append("<table class=\"question\" width=\"98%\" align=\"center\" border=\"0\" cellpadding=\"0\" cellspacing=\"0\">\n");
-        sb.append("<tr>\n");
-        sb.append("<td>\n");
-        sb.append("<table width=\"100%\" cellpadding=\"0\" cellspacing=\"2\">\n");
-        sb.append("<tr>\n");
-        sb.append("<td></td>\n");
-        sb.append("<td class=\"titreQuestionReponse\" width=\"100%\">\n");
-        sb.append("<div id=").append(qId).append(" class=\"question\">");
-        sb.append(EncodeHelper.javaStringToHtmlParagraphe(question.getTitle()));
-        sb.append("</div>\n");
-        sb.append("</td>\n");
-        sb.append("</tr>\n");
-        sb.append("<tr>\n");
-        sb.append("<td colspan=\"2\">\n");
-        sb.append("<span class=\"txtBaseline\">");
-        sb.append("Question de").append(question.readCreatorName()).append(" - ").append(
-            resource.getOutputDate(question.getCreationDate()));
-        sb.append("</span>\n");
-        sb.append("</td>\n");
-        sb.append("</tr>\n");
-        sb.append("</table>\n");
-        sb.append("</td>\n");
-        sb.append("</tr>\n");
-        sb.append("</table>\n");
-
-        // affichage des réponses
-        String aId = "a" + questionId;
-        Collection replies = question.readReplies();
-        Iterator itR = replies.iterator();
-        boolean existe = false;
-        if (itR.hasNext())
-          existe = true;
-        existe = true;
-        if (existe) {
-          sb.append("<table width=\"98%\" align=\"center\" cellpadding=\"0\" cellspacing=\"0\">\n");
-          sb.append("<tr>\n");
-          sb.append("<td class=\"answers\">\n");
-          sb.append("<div id=").append(aId).append(" class=\"answer\">\n");
-          // contenu de la question
-          sb.append("<table>\n");
-          sb.append("<tr>\n");
-          sb.append("<td>");
-          sb.append(EncodeHelper.javaStringToHtmlParagraphe(question.getContent()));
-          sb.append("</td>\n");
-          sb.append("</tr>\n");
-          sb.append("</table>\n");
-        }
-        while (itR.hasNext()) {
-          Reply reply = (Reply) itR.next();
-          sb.append("<br>\n");
-          sb.append("<center>\n");
-          sb
-              .append("<table class=\"tableBoard\" width=\"98%\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">\n");
-          sb.append("<tr>\n");
-          sb.append("<td nowrap=\"nowrap\">\n");
-          sb.append("<table width=\"100%\" cellpadding=\"0\" cellspacing=\"2\">\n");
-          sb.append("<tr>\n");
-          sb.append("<td class=\"titreQuestionReponse\" width=\"100%\">\n");
-          sb.append(" <span class=\"titreQuestionReponse\">").append(
-              EncodeHelper.javaStringToHtmlParagraphe(reply.getTitle())).append(
-              "</span>\n");
-          sb.append("</td>\n");
-          sb.append("</tr>\n");
-          sb.append("</table>\n");
-          sb.append("<br>\n");
-          sb.append("<table>\n");
-          sb.append("<tr>\n");
-          sb.append("<td width=\"90%\">");
-          sb.append(EncodeHelper.javaStringToHtmlParagraphe(reply.getContent()));
-          sb.append("</td>\n");
-
-          // récupération des fichiers joints : copie de ces fichiers dans le dossier "files"
-          AttachmentImportExport attachmentIE = new AttachmentImportExport();
-          Vector<AttachmentDetail> attachments = null;
-          try {
-            String filePath = file.getParentFile().getPath() + File.separator + "files";
-            String relativeFilePath = file.getParentFile().getPath();
-            WAPrimaryKey replyPk = reply.getPK();
-            replyPk.setComponentName(question.getInstanceId());
-            attachments = attachmentIE.getAttachments(replyPk, filePath, relativeFilePath, null);
-          } catch (Exception ex) {
-            // En cas d"objet non trouvé: pas d'exception gérée par le système
-            throw new QuestionReplyException("QuestionReplySessioncontroller.export()",
-                0, "root.EX_CANT_GET_ATTACHMENTS", ex);
-          }
-
-          if (attachments != null && attachments.size() > 0) {
-            // les fichiers joints : création du lien dans la page
-            sb.append("<td valign=\"top\" align=\"left\">\n");
-            sb.append("<a name=\"attachments\"></a>\n");
-            sb.append("<td valign=\"top\" align=\"left\">\n");
-            sb.append("<center>\n");
-            sb
-                .append("<table class=\"tableBoard\" width=\"98%\" border=\"0\" cellpadding=\"5\" cellspacing=\"0\">\n");
-            sb.append("<tr>\n");
-            sb.append("<td nowrap=\"nowrap\">\n");
-            sb.append("<table width=\"150\">\n");
-
-            Iterator<AttachmentDetail> it = attachments.iterator();
-            // pour chaque fichier
-            while (it.hasNext()) {
-              AttachmentDetail attachment = it.next();
-              // attachment
-              sb.append("<tr>\n");
-              sb.append("<td align=\"center\"></td>\n");
-              sb.append("</tr>\n");
-              sb.append("<tr>\n");
-              sb.append("<td valign=\"top\">\n");
-              sb.append("<nobr>\n");
-              sb.append("<a href=\"files/");
-              sb.append(attachment.getLogicalName());
-              sb.append("\" target=\"_blank\">");
-              sb.append(attachment.getLogicalName());
-              sb.append("</a>\n");
-              sb.append("</nobr>\n");
-              sb.append("<br>\n");
-              sb.append(attachment.getAttachmentFileSize(attachment.getLanguage())).append("  ");
-              sb.append(attachment.getAttachmentDownloadEstimation(attachment.getLanguage()));
-              sb.append("</td>\n");
-              sb.append("</tr>\n");
-            }
-            sb.append("</table>\n");
-            sb.append("</td>\n");
-            sb.append("</tr>\n");
-            sb.append("</table>\n");
-            sb.append("</center>\n");
-            sb.append("</td>\n");
-          }
-          sb.append("</tr>\n");
-          sb.append("</table>\n");
-          sb.append("<br>\n");
-          sb.append("<span class=\"txtBaseline\">");
-          sb.append("Réponse de ").append(reply.readCreatorName()).append(" - ").append(
-              resource.getOutputDate(reply.getCreationDate()));
-          sb.append("</span>\n");
-          sb.append("</td>\n");
-          sb.append("</tr>\n");
-          sb.append("</table>\n");
-          sb.append("</center>\n");
-
-        }
-        if (existe) {
-          sb.append("<br>\n");
-          sb.append("</div>\n");
-          sb.append("</td>\n");
-          sb.append("</tr>\n");
-          sb.append("</table>\n");
-        }
-      }
-      sb.append("</td>\n");
-      sb.append("</tr>\n");
+      exportCategory(exporter, category, categoryId, sb);
     }
+    NodeDetail fakeCategory = new NodeDetail();
+    fakeCategory.setName("");
+    exportCategory(exporter, fakeCategory, null, sb);
+
     sb.append("</table>\n");
     return sb.toString();
   }
 
+  public void exportCategory(QuestionReplyExport exporter, NodeDetail category, String categoryId,
+      StringBuilder sb) throws QuestionReplyException, ParseException {
+    // titre de la catégorie
+    sb.append("<tr>\n");
+    sb.append("<td class=\"titreCateg\" width=\"91%\">").append(category.getName()).append(
+        "</td>\n");
+    sb.append("</tr>\n");
+    // contenu de la catégorie
+    sb.append("<tr>\n");
+    sb.append("<td colspan=\"2\">\n");
+    Collection<Question> questions = getQuestionsByCategory(categoryId);
+    for (Question question : questions) {
+      exporter.exportQuestion(question, sb);
+    }
+    sb.append("</td>\n");
+    sb.append("</tr>\n");
+  }
+
   public boolean isVersionControlled() {
-    String strVersionControlled = this
-        .getComponentParameterValue("versionControl");
+    String strVersionControlled = this.getComponentParameterValue("versionControl");
     return ((strVersionControlled != null)
-        && !("").equals(strVersionControlled) && !("no")
-        .equals(strVersionControlled.toLowerCase()));
+        && !("").equals(strVersionControlled) && !("no").equals(strVersionControlled.toLowerCase()));
   }
 
   private NodeBm getNodeBm() throws QuestionReplyException {
