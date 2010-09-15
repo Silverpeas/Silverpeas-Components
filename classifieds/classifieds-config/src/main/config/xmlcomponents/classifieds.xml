@@ -41,7 +41,7 @@
     <Parameter>
       <ParameterName>XMLFormName</ParameterName>
       <ParameterLabel>Formulaire XML</ParameterLabel>
-      <ParameterValue></ParameterValue>
+      <ParameterValue>classifieds.xml</ParameterValue>
       <ParameterSize>25</ParameterSize>
       <ParameterMandatory>N</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
@@ -54,7 +54,7 @@
     <Parameter>
       <ParameterName>searchFields1</ParameterName>
       <ParameterLabel>Champs recherche 1</ParameterLabel>
-      <ParameterValue></ParameterValue>
+      <ParameterValue>category</ParameterValue>
       <ParameterSize>25</ParameterSize>
       <ParameterMandatory>N</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
@@ -67,7 +67,7 @@
     <Parameter>
       <ParameterName>searchFields2</ParameterName>
       <ParameterLabel>Champs recherche 2</ParameterLabel>
-      <ParameterValue></ParameterValue>
+      <ParameterValue>type</ParameterValue>
       <ParameterSize>25</ParameterSize>
       <ParameterMandatory>N</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
