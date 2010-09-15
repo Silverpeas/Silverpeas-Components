@@ -28,20 +28,20 @@
 <%@ include file="check.jsp" %>
 
 <% 
-	// récupération des paramètres :
+	// rï¿½cupï¿½ration des paramï¿½tres :
 	ClassifiedDetail 	classified		= (ClassifiedDetail) request.getAttribute("Classified");
 	String 				userName		= (String) request.getAttribute("UserName");
 	String 				userEmail		= (String) request.getAttribute("UserEmail");
 	String 				userId			= (String) request.getAttribute("UserId");
 
-	// paramètres pour le formulaire
+	// paramï¿½tres pour le formulaire
 	Form 			formUpdate 			= (Form) request.getAttribute("Form");
 	DataRecord 		data 				= (DataRecord) request.getAttribute("Data"); 
 	
 	String 			fieldKey			= (String) request.getAttribute("FieldKey");
 	String 			fieldName			= (String) request.getAttribute("FieldName");
 	
-	// déclaration des variables :
+	// dï¿½claration des variables :
 	String 		classifiedId 			= "";
 	String 		title 					= "";
 	String 		instanceId				= "";
@@ -95,7 +95,7 @@
       	}
 	}
 	
-	// déclaration des boutons
+	// dï¿½claration des boutons
 	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javaScript:onClick=sendData();", false);
 	Button cancelButton   = (Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
 	
@@ -113,7 +113,7 @@ if (formUpdate != null)
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="javascript">
 		
-	// fonctions de contrôle des zones des formulaires avant validation
+	// fonctions de contrï¿½le des zones des formulaires avant validation
 	function sendData() 
 	{
 		<% if (formUpdate != null) { %>

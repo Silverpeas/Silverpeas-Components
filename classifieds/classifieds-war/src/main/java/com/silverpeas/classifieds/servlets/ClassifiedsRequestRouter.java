@@ -25,15 +25,11 @@ package com.silverpeas.classifieds.servlets;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.silverpeas.classifieds.control.ClassifiedsSessionController;
 import com.silverpeas.classifieds.model.Category;
@@ -50,15 +46,18 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 
 public class ClassifiedsRequestRouter extends ComponentRequestRouter {
+
   /**
    * 
    */
@@ -68,6 +67,7 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
    */
+  @Override
   public String getSessionControlBeanName() {
     return "classifieds";
   }
@@ -79,8 +79,9 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
    * @return
    * @see
    */
+  @Override
   public ComponentSessionController createComponentSessionController(
-      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
+          MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new ClassifiedsSessionController(mainSessionCtrl, componentContext);
   }
 
@@ -103,14 +104,15 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function, ComponentSessionController componentSC,
-      HttpServletRequest request) {
+          HttpServletRequest request) {
     String destination = "";
     String rootDest = "/classifieds/jsp/";
 
     ClassifiedsSessionController classifiedsSC = (ClassifiedsSessionController) componentSC;
     SilverTrace.info("classifieds", "classifiedsRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
+            "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
 
     // création des paramètres généraux
     String flag = getFlag(classifiedsSC.getUserRoles());
@@ -122,7 +124,7 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
     request.setAttribute("Language", classifiedsSC.getLanguage());
 
     SilverTrace.debug("classifieds", "classifiedsRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Profile=" + flag);
+            "root.MSG_GEN_PARAM_VALUE", "Profile=" + flag);
 
     try {
       if (function.startsWith("Main")) {
@@ -132,12 +134,10 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
         DataRecord data = null;
         Collection<Category> categories = null;
         if (StringUtil.isDefined(xmlFormName)) {
-          xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName
-              .indexOf("."));
+          xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
           PublicationTemplateImpl pubTemplate =
-              (PublicationTemplateImpl) PublicationTemplateManager
-                  .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
-                      xmlFormName);
+                  (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
+                  xmlFormName);
           String templateFileName = pubTemplate.getFileName();
           String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
           formUpdate = pubTemplate.getSearchForm();
@@ -146,10 +146,8 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
           // récupération des valeurs de la première liste déroulante pour affichage en page
           // d'accueil
           String field = classifiedsSC.getSearchFields1();
-          String keys = (String) pubTemplate.getRecordTemplate().getFieldTemplate(field)
-              .getParameters(classifiedsSC.getLanguage()).get("keys");
-          String values = (String) pubTemplate.getRecordTemplate().getFieldTemplate(field)
-              .getParameters(classifiedsSC.getLanguage()).get("values");
+          String keys = (String) pubTemplate.getRecordTemplate().getFieldTemplate(field).getParameters(classifiedsSC.getLanguage()).get("keys");
+          String values = (String) pubTemplate.getRecordTemplate().getFieldTemplate(field).getParameters(classifiedsSC.getLanguage()).get("values");
           String label = pubTemplate.getRecordTemplate().getFieldTemplate(field).getFieldName();
           categories = createCategory(templateName, label, keys, values, classifiedsSC);
         }
@@ -172,54 +170,51 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
         request.setAttribute("TitlePath", "classifieds.myClassifieds");
         destination = rootDest + "classifieds.jsp";
       } else if (function.equals("SearchClassifieds")) {
-        List<FileItem> items = getRequestItems(request);
-        QueryDescription query = new QueryDescription();
-        String xmlFormName = classifiedsSC.getXMLFormName();
-        DataRecord data = null;
-        String xmlFormShortName = null;
-        XmlSearchForm searchForm = null;
-        if (StringUtil.isDefined(xmlFormName)) {
-          xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName
-              .indexOf("."));
-          PublicationTemplateImpl template = (PublicationTemplateImpl) PublicationTemplateManager
-              .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName);
-          String templateFileName = template.getFileName();
-          String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
-          RecordTemplate searchTemplate = template.getSearchTemplate();
-          data = searchTemplate.getEmptyRecord();
-          PagesContext context = new PagesContext("XMLSearchForm", "2",
-              classifiedsSC.getLanguage(), classifiedsSC.getUserId());
-          searchForm = (XmlSearchForm) template.getSearchForm();
-          searchForm.update(items, data, context);
+        if (FileUploadUtil.isRequestMultipart(request)) {
+          List<FileItem> items = FileUploadUtil.parseRequest(request);
+          QueryDescription query = new QueryDescription();
+          String xmlFormName = classifiedsSC.getXMLFormName();
+          DataRecord data = null;
+          String xmlFormShortName = null;
+          XmlSearchForm searchForm = null;
+          if (StringUtil.isDefined(xmlFormName)) {
+            xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.
+                    indexOf("."));
+            PublicationTemplateImpl template = (PublicationTemplateImpl) PublicationTemplateManager.
+                    getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName);
+            String templateFileName = template.getFileName();
+            String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
+            RecordTemplate searchTemplate = template.getSearchTemplate();
+            data = searchTemplate.getEmptyRecord();
+            PagesContext context = new PagesContext("XMLSearchForm", "2",
+                    classifiedsSC.getLanguage(), classifiedsSC.getUserId());
+            searchForm = (XmlSearchForm) template.getSearchForm();
+            searchForm.update(items, data, context);
 
-          String[] fieldNames = searchTemplate.getFieldNames();
-          String fieldValue = "";
-          String fieldName = "";
-          String fieldQuery = "";
-          Field field = null;
-          for (int f = 0; f < fieldNames.length; f++) {
-            fieldName = fieldNames[f];
-            field = data.getField(fieldName);
-            fieldValue = field.getStringValue();
-            if (fieldValue != null && fieldValue.trim().length() > 0) {
-              fieldQuery = fieldValue.trim().replaceAll("##", " AND "); // case � cocher multiple
-              query.addFieldQuery(new FieldDescription(templateName + "$$" + fieldName, fieldQuery,
-                  null));
+            String[] fieldNames = searchTemplate.getFieldNames();
+            for (int f = 0; f < fieldNames.length; f++) {
+              String fieldName = fieldNames[f];
+              Field field = data.getField(fieldName);
+              String fieldValue = field.getStringValue();
+              if (fieldValue != null && fieldValue.trim().length() > 0) {
+                String fieldQuery = fieldValue.trim().replaceAll("##", " AND "); // case à cocher multiple
+                query.addFieldQuery(new FieldDescription(templateName + "$$" + fieldName, fieldQuery,
+                        null));
+              }
             }
           }
+          // Lancement de la recherche
+          Collection<ClassifiedDetail> classifieds;
+          try {
+            classifieds = classifiedsSC.search(query);
+          } catch (Exception e) {
+            classifieds = new ArrayList<ClassifiedDetail>();
+          }
+          request.setAttribute("Form", searchForm);
+          request.setAttribute("Data", data);
+          request.setAttribute("NbTotal", (classifiedsSC.getNbTotalClassifieds()));
+          request.setAttribute("Classifieds", classifieds);
         }
-        // Lancement de la recherche
-        Collection<ClassifiedDetail> classifieds;
-        try {
-          classifieds = classifiedsSC.search(query);
-        } catch (Exception e) {
-          classifieds = new ArrayList<ClassifiedDetail>();
-        }
-        request.setAttribute("Form", searchForm);
-        request.setAttribute("Data", data);
-        request.setAttribute("NbTotal", (classifiedsSC.getNbTotalClassifieds()));
-        request.setAttribute("Classifieds", classifieds);
-
         destination = rootDest + "classifiedsResult.jsp";
       } else if (function.equals("ViewClassified")) {
         request.setAttribute("IsDraftEnabled", classifiedsSC.isDraftEnabled());
@@ -232,12 +227,10 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
         DataRecord data = null;
         String xmlFormName = classifiedsSC.getXMLFormName();
         if (StringUtil.isDefined(xmlFormName)) {
-          String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName
-              .indexOf("."));
+          String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
           PublicationTemplateImpl pubTemplate =
-              (PublicationTemplateImpl) PublicationTemplateManager
-                  .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
-                      xmlFormName);
+                  (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
+                  xmlFormName);
           if (pubTemplate != null) {
             formView = pubTemplate.getViewForm();
             RecordSet recordSet = pubTemplate.getRecordSet();
@@ -263,12 +256,10 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
         Form formUpdate = null;
         DataRecord data = null;
         if (StringUtil.isDefined(xmlFormName)) {
-          xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName
-              .indexOf("."));
+          xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
           PublicationTemplateImpl pubTemplate =
-              (PublicationTemplateImpl) PublicationTemplateManager
-                  .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
-                      xmlFormName);
+                  (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
+                  xmlFormName);
           formUpdate = pubTemplate.getUpdateForm();
           RecordSet recordSet = pubTemplate.getRecordSet();
           data = recordSet.getEmptyRecord();
@@ -279,35 +270,33 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
         request.setAttribute("FieldName", classifiedsSC.getSearchFields1());
         destination = rootDest + "classifiedManager.jsp";
       } else if (function.equals("CreateClassified")) {
-        List<FileItem> items = getRequestItems(request);
-        String title = getParameterValue(items, "Title");
-        ClassifiedDetail classified = new ClassifiedDetail(title);
-        String classifiedId = classifiedsSC.createClassified(classified, flag);
-        String xmlFormName = classifiedsSC.getXMLFormName();
-        if (StringUtil.isDefined(xmlFormName)) {
-          String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName
-              .indexOf("."));
+        if (FileUploadUtil.isRequestMultipart(request)) {
+          List<FileItem> items = FileUploadUtil.parseRequest(request);
+          String title = FileUploadUtil.getParameter(items, "Title");
+          ClassifiedDetail classified = new ClassifiedDetail(title);
+          String classifiedId = classifiedsSC.createClassified(classified, flag);
+          String xmlFormName = classifiedsSC.getXMLFormName();
+          if (StringUtil.isDefined(xmlFormName)) {
+            String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+            PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(classifiedsSC.getComponentId()
+                    + ":" + xmlFormShortName);
+            RecordSet set = pub.getRecordSet();
+            Form form = pub.getUpdateForm();
+            DataRecord data = set.getRecord(classifiedId);
+            if (data == null) {
+              data = set.getEmptyRecord();
+              data.setId(classifiedId);
+            }
+            PagesContext context = new PagesContext("myForm", "0", classifiedsSC.getLanguage(),
+                    false, classifiedsSC.getComponentId(), classifiedsSC.getUserId());
+            context.setObjectId(classifiedId);
 
-          PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(classifiedsSC
-              .getComponentId()
-              + ":" + xmlFormShortName);
-          RecordSet set = pub.getRecordSet();
-          Form form = pub.getUpdateForm();
-          DataRecord data = set.getRecord(classifiedId);
-          if (data == null) {
-            data = set.getEmptyRecord();
-            data.setId(classifiedId);
+            // mise à jour des données saisies
+            form.update(items, data, context);
+            set.save(data);
+            classifiedsSC.updateClassified(classified, false, false);
           }
-
-          PagesContext context = new PagesContext("myForm", "0", classifiedsSC.getLanguage(),
-              false, classifiedsSC.getComponentId(), classifiedsSC.getUserId());
-          context.setObjectId(classifiedId);
-
-          // mise à jour des données saisies
-          form.update(items, data, context);
-          set.save(data);
         }
-        classifiedsSC.updateClassified(classified, false, false);
         destination = getDestination("ViewMyClassifieds", classifiedsSC, request);
       } else if (function.equals("EditClassified")) {
         String classifiedId = request.getParameter("ClassifiedId");
@@ -320,12 +309,10 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
         DataRecord data = null;
         String xmlFormName = classifiedsSC.getXMLFormName();
         if (StringUtil.isDefined(xmlFormName)) {
-          String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName
-              .indexOf("."));
+          String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
           PublicationTemplateImpl pubTemplate =
-              (PublicationTemplateImpl) PublicationTemplateManager
-                  .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
-                      xmlFormName);
+                  (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
+                  xmlFormName);
           if (pubTemplate != null) {
             formView = pubTemplate.getUpdateForm();
             RecordSet recordSet = pubTemplate.getRecordSet();
@@ -338,39 +325,35 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
         }
         destination = rootDest + "classifiedManager.jsp";
       } else if (function.equals("UpdateClassified")) {
-        List<FileItem> items = getRequestItems(request);
-        String title = getParameterValue(items, "Title");
-        String classifiedId = getParameterValue(items, "ClassifiedId");
-        ClassifiedDetail classified = classifiedsSC.getClassified(classifiedId);
-        classified.setTitle(title);
+        if (FileUploadUtil.isRequestMultipart(request)) {
+          List<FileItem> items = FileUploadUtil.parseRequest(request);
+          String title = FileUploadUtil.getParameter(items, "Title");
+          String classifiedId = FileUploadUtil.getParameter(items, "ClassifiedId");
+          ClassifiedDetail classified = classifiedsSC.getClassified(classifiedId);
+          classified.setTitle(title);
 
-        String xmlFormName = classifiedsSC.getXMLFormName();
-        if (StringUtil.isDefined(xmlFormName)) {
-          String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName
-              .indexOf("."));
-
-          PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(classifiedsSC
-              .getComponentId()
-              + ":" + xmlFormShortName);
-          RecordSet set = pub.getRecordSet();
-          Form form = pub.getUpdateForm();
-          DataRecord data = set.getRecord(classifiedId);
-          if (data == null) {
-            data = set.getEmptyRecord();
-            data.setId(classifiedId);
+          String xmlFormName = classifiedsSC.getXMLFormName();
+          if (StringUtil.isDefined(xmlFormName)) {
+            String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+            PublicationTemplate pub = PublicationTemplateManager.getPublicationTemplate(classifiedsSC.getComponentId()
+                    + ":" + xmlFormShortName);
+            RecordSet set = pub.getRecordSet();
+            Form form = pub.getUpdateForm();
+            DataRecord data = set.getRecord(classifiedId);
+            if (data == null) {
+              data = set.getEmptyRecord();
+              data.setId(classifiedId);
+            }
+            PagesContext context = new PagesContext("myForm", "0", classifiedsSC.getLanguage(),
+                    false, classifiedsSC.getComponentId(), classifiedsSC.getUserId());
+            context.setObjectId(classifiedId);
+            // mise à jour des données saisies
+            form.update(items, data, context);
+            set.save(data);
           }
-
-          PagesContext context = new PagesContext("myForm", "0", classifiedsSC.getLanguage(),
-              false, classifiedsSC.getComponentId(), classifiedsSC.getUserId());
-          context.setObjectId(classifiedId);
-
-          // mise à jour des données saisies
-          form.update(items, data, context);
-          set.save(data);
+          classifiedsSC.updateClassified(classified, true, SilverpeasRole.admin.isInRole(flag));
+          request.setAttribute("ClassifiedId", classifiedId);
         }
-        classifiedsSC.updateClassified(classified, true, flag.equals("admin"));
-
-        request.setAttribute("ClassifiedId", classifiedId);
         destination = getDestination("ViewMyClassifieds", classifiedsSC, request);
       } else if (function.equals("DeleteClassified")) {
         String classifiedId = request.getParameter("ClassifiedId");
@@ -440,12 +423,10 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
         Form formUpdate = null;
         DataRecord data = null;
         if (StringUtil.isDefined(xmlFormName)) {
-          xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName
-              .indexOf("."));
+          xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
           PublicationTemplateImpl pubTemplate =
-              (PublicationTemplateImpl) PublicationTemplateManager
-                  .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
-                      xmlFormName);
+                  (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
+                  xmlFormName);
           formUpdate = pubTemplate.getSearchForm();
           RecordSet recordSet = pubTemplate.getRecordSet();
           data = recordSet.getEmptyRecord();
@@ -454,12 +435,14 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Data", data);
         destination = rootDest + "subscriptionManager.jsp";
       } else if (function.equals("AddSubscription")) {
-        List<FileItem> items = getRequestItems(request);
-        String field1 = getParameterValue(items, classifiedsSC.getSearchFields1());
-        String field2 = getParameterValue(items, classifiedsSC.getSearchFields2());
-        if (StringUtil.isDefined(field1) && StringUtil.isDefined(field2)) {
-          Subscribe subscribe = new Subscribe(field1, field2);
-          classifiedsSC.createSubscribe(subscribe);
+        if (FileUploadUtil.isRequestMultipart(request)) {
+          List<FileItem> items = FileUploadUtil.parseRequest(request);
+          String field1 = FileUploadUtil.getParameter(items, classifiedsSC.getSearchFields1());
+          String field2 = FileUploadUtil.getParameter(items, classifiedsSC.getSearchFields2());
+          if (StringUtil.isDefined(field1) && StringUtil.isDefined(field2)) {
+            Subscribe subscribe = new Subscribe(field1, field2);
+            classifiedsSC.createSubscribe(subscribe);
+          }
         }
         destination = getDestination("ViewMySubscriptions", classifiedsSC, request);
       } else if (function.equals("ViewMySubscriptions")) {
@@ -477,12 +460,10 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
         Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
         String xmlFormShortName = null;
         if (StringUtil.isDefined(xmlFormName)) {
-          xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName
-              .indexOf("."));
+          xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
           PublicationTemplateImpl pubTemplate =
-              (PublicationTemplateImpl) PublicationTemplateManager
-                  .getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
-                      xmlFormName);
+                  (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(classifiedsSC.getComponentId() + ":" + xmlFormShortName,
+                  xmlFormName);
           String templateFileName = pubTemplate.getFileName();
           String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
           String field = classifiedsSC.getSearchFields1();
@@ -490,8 +471,7 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
           // Ajout des résultats de la recherche dans la catégorie
           QueryDescription query = new QueryDescription();
           query.addFieldQuery(new FieldDescription(templateName + "$$" + label, fieldKey, null));
-          String values = (String) pubTemplate.getRecordTemplate().getFieldTemplate(field)
-          .getParameters(classifiedsSC.getLanguage()).get("values");
+          String values = (String) pubTemplate.getRecordTemplate().getFieldTemplate(field).getParameters(classifiedsSC.getLanguage()).get("values");
           try {
             classifieds = classifiedsSC.search(query);
           } catch (Exception e) {
@@ -514,29 +494,13 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
     }
 
     SilverTrace.info("classifieds", "classifiedsRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
+            "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
 
-   private List<FileItem> getRequestItems(HttpServletRequest request) throws FileUploadException {
-    DiskFileItemFactory factory = new DiskFileItemFactory();
-    ServletFileUpload upload = new ServletFileUpload(factory);
-    List<FileItem> items = upload.parseRequest(request);
-    return items;
-  }
-
-  private String getParameterValue(List<FileItem> items, String parameterName) {
-    Iterator<FileItem> iter = items.iterator();
-    while (iter.hasNext()) {
-      FileItem item = (FileItem) iter.next();
-      if (item.isFormField() && parameterName.equals(item.getFieldName()))
-        return item.getString();
-    }
-    return null;
-  }
 
   private Collection<Category> createCategory(String templateName, String label, String stringKeys,
-      String stringValues, ClassifiedsSessionController classifiedsSC) {
+          String stringValues, ClassifiedsSessionController classifiedsSC) {
     Collection<Category> categories = new ArrayList<Category>();
     String[] keys = stringKeys.split("##");
     String[] values = stringValues.split("##");
@@ -556,5 +520,4 @@ public class ClassifiedsRequestRouter extends ComponentRequestRouter {
     }
     return categories;
   }
-
 }
