@@ -39,6 +39,7 @@
 #classifieds #categories #categoryleft {
 	width: 47%;
 	float: left;
+    clear: left;
 	margin-left: 10px;
 	margin-bottom: 10px;
 	position: relative;
@@ -53,6 +54,7 @@
 #classifieds #categories #categoryright {
 	width: 47%;
 	float: right;
+    clear: right;
 	margin-right: 10px;
 	margin-bottom: 10px;
 	position: relative;
