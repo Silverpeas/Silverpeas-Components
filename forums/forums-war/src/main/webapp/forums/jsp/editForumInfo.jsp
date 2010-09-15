@@ -244,12 +244,6 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
 
     }
 %>
-        function notifyPopup2(context, compoId, users, groups)
-        {
-            SP_openWindow(context + "/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&compoId=" + compoId
-                    + "&theTargetsUsers=" + users + "&theTargetsGroups=" + groups,
-                "notifyUserPopup", "700", "400", "menubar=no,scrollbars=no,statusbar=no");
-        }
     </script>
 </head>
 

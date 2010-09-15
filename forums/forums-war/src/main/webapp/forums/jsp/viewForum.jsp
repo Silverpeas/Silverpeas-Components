@@ -104,11 +104,6 @@
           }
         }
       </c:if>
-        function notifyPopup2(context, compoId, users, groups) {
-          SP_openWindow(context + "/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&compoId="
-            + compoId + "&theTargetsUsers=" + users + "&theTargetsGroups=" + groups,
-          "notifyUserPopup", "700", "400", "menubar=no,scrollbars=no,statusbar=no");
-        }
 
         function loadNotation()
         {
@@ -172,7 +167,7 @@
           <view:operation altText="${pdcUtilisation}" icon="${pdcUtilisationIconUrl}" action="${pdcUtilisationOperation}" />
         </c:if>
         <fmt:message key="mailAdmin" var="mail2AdminAltText" />
-        <c:set var="mail2AdminOperation">javascript:notifyPopup2('<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
+        <c:set var="mail2AdminOperation">javascript:notifyPopup2('<c:out value="${pageContext.request.contextPath}"/>', '<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
         <c:url var="mail2AdminIconUrl" value="/util/icons/forums_mailtoAdmin.gif" />
         <view:operation altText="${mail2AdminAltText}" icon="${mail2AdminIconUrl}" action="${mail2AdminOperation}" />
         <c:if test="${isAdmin}">
@@ -186,7 +181,7 @@
           <c:url var="addForumIconUrl" value="/util/icons/forums_to_add.gif" />
           <view:operation altText="${addForumAltText}" icon="${addForumIconUrl}" action="${addForumOperation}" />
           <fmt:message key="forums.addCategory" var="addCategoryAltText" />
-          <c:set var="addCategoryOperation">javascript:notifyPopup2('<c:out value="${pageContext.request.contextPath}"/>','<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
+          <c:set var="addCategoryOperation">javascript:notifyPopup2('<c:out value="${pageContext.request.contextPath}"/>', '<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
           <c:url var="addCategoryIconUrl" value="/util/icons/folderAddBig.gif" />
           <view:operation altText="${addCategoryAltText}" icon="${addCategoryIconUrl}" action="NewCategory" />
         </c:if>

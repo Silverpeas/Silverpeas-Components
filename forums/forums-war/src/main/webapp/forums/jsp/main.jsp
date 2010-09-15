@@ -90,7 +90,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
     <script type="text/javascript">
       function confirmDeleteForum(forumId)
       {
-        if (confirm('<fmt:message key="confirmDeleteForum" />'))
+        if (confirm("<fmt:message key='confirmDeleteForum' />"))
         {
           window.location.href = "main.jsp?action=4&params=" + forumId;
         }
@@ -98,17 +98,10 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
 
       function confirmDeleteCategory(categoryId)
       {
-        if (confirm("<fmt:message key="fconfirmDeleteCategory" />"))
+        if (confirm("<fmt:message key='confirmDeleteCategory' />"))
         {
           window.location.href = "DeleteCategory?CategoryId=" + categoryId;
         }
-      }
-
-      function notifyPopup2(compoId,users,groups)
-      {
-        SP_openWindow('<c:url value="/RnotificationUser/jsp/Main.jsp"/>?popupMode=Yes&editTargets=No&compoId='
-          + compoId + '&theTargetsUsers=' + users + '&theTargetsGroups=' + groups,
-        'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
       }
 
       function openSPWindow(fonction, windowName)
@@ -134,7 +127,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
           <view:operation altText="${pdcUtilisation}" icon="${pdcUtilisationIconUrl}" action="${pdcUtilisationOperation}" />
         </c:if>
         <fmt:message key="mailAdmin" var="mail2AdminAltText" />
-        <c:set var="mail2AdminOperation">javascript:notifyPopup2('<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
+        <c:set var="mail2AdminOperation">javascript:notifyPopup2('<c:out value="${pageContext.request.contextPath}"/>', '<c:out value="${sessionController.componentId}" />','<c:out value="${sessionController.adminIds}" />', '');</c:set>
         <c:url var="mail2AdminIconUrl" value="/util/icons/forums_mailtoAdmin.gif" />
         <view:operation altText="${mail2AdminAltText}" icon="${mail2AdminIconUrl}" action="${mail2AdminOperation}" />
         <c:if test="${isAdmin}">
