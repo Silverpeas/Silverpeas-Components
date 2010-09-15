@@ -8,9 +8,9 @@
   </parent>
 
   <scm>
-    <connection>scm:svn:https://www.silverpeas.org/svn/silverpeas/components/tags/components-5.3</connection>
-    <developerConnection>scm:svn:https://www.silverpeas.org/svn/silverpeas/components/tags/components-5.3</developerConnection>
-    <url>https://www.silverpeas.org/redmine/repositories/show/silverpeas-components/tags/components-5.3</url>
+    <connection>scm:svn:https://www.silverpeas.org/svn/silverpeas/components/trunk</connection>
+    <developerConnection>scm:svn:https://www.silverpeas.org/svn/silverpeas/components/trunk</developerConnection>
+    <url>https://www.silverpeas.org/redmine/repositories/show/silverpeas-components</url>
   </scm>
 
   <repositories>
@@ -26,7 +26,7 @@
 
   <groupId>com.silverpeas</groupId>
   <artifactId>components</artifactId>
-  <version>5.3</version>
+  <version>5.4-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Components</name>
 
