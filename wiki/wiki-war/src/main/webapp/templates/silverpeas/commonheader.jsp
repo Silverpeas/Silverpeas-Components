@@ -31,10 +31,10 @@
 <%@ page import="com.ecyrd.jspwiki.util.*" %>
 <%@ page import="com.ecyrd.jspwiki.preferences.*" %>
 <%@ page import="java.util.*" %>
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
-<%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <fmt:setLocale value="${userLanguage}"/>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <view:setBundle basename="templates.default"/>
 <%--
    This file provides a common header which includes the important JSPWiki scripts and other files.

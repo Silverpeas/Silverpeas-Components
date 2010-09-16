@@ -37,7 +37,7 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 }
 %>
 <%@ include file="check.jsp" %>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <HTML>
 <HEAD>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>

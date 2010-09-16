@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <% 
 FileFolder 	folder 			= (FileFolder) request.getAttribute("Folder");
 String 		profile 		= (String) request.getAttribute("Profile");
@@ -44,7 +44,7 @@ boolean nav = true;
 if ("user".equals(profile) && !allowedNav)
 	nav = false;
 
-//création du chemin :
+//crï¿½ation du chemin :
 String 		chemin 		= "";
 if (path != null)
 {
@@ -144,7 +144,7 @@ function checkSubmitToSearch(ev)
 
 <%
 
-// mettre les opération si on est à la racine
+// mettre les opï¿½ration si on est ï¿½ la racine
 String name = folder.getName();
 
 out.println(frame.printBefore());
@@ -180,7 +180,7 @@ out.println(board.printAfter());
 out.println("<br>");
 
 
-// remplissage de l'ArrayPane avec la liste des sous répertoires
+// remplissage de l'ArrayPane avec la liste des sous rï¿½pertoires
 // -------------------------------------------------------------
 if (nav || (!nav && !isRootPath))
 {
@@ -240,11 +240,11 @@ if (nav || (!nav && !isRootPath))
 	        // affichage de la cellule
 	        arrayLine.addArrayCellText(nameCell);
 	        
-			// création de la colonne des icônes
+			// crï¿½ation de la colonne des icï¿½nes
 	        IconPane iconPane = gef.getIconPane();
 		   	if (download)
 		   	{
-		   		// icône "télécharger le répertoire"
+		   		// icï¿½ne "tï¿½lï¿½charger le rï¿½pertoire"
 		   		Icon downloadIcon = iconPane.addIcon();
 		   		downloadIcon.setProperties(resource.getIcon("silverCrawler.download"), resource.getString("silverCrawler.download"), "javaScript:downloadFolder('"+Encode.javaStringToJsString(fileName)+"')");
 		   		iconPane.setSpacing("20px");

@@ -31,9 +31,9 @@
 <%@ page import="com.ecyrd.jspwiki.ui.progress.*" %>
 <%@ page import="com.ecyrd.jspwiki.auth.permissions.*" %>
 <%@ page import="java.security.Permission" %>
-<%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <fmt:setLocale value="${userLanguage}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="silverpeas_icons" />
 <view:setBundle basename="templates.default"/>

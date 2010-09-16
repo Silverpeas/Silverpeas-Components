@@ -29,11 +29,11 @@
 <%@ page import="com.ecyrd.jspwiki.*" %>
 <%@ page import="java.util.*" %>
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki" %>
-<%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*" %>
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <fmt:setLocale value="${userLanguage}"/>
-<fmt<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<fmt<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <viewsetBundle basename="templates.default"/>
 <% 
   WikiContext c = WikiContext.findContext( pageContext );  

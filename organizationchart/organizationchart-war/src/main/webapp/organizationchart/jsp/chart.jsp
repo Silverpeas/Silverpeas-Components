@@ -26,9 +26,9 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page isELIgnored="false"%>
 <%@ include file="check.jsp"%>
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
-<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <html>
   <head>
 	<link type="text/css" href="<c:url value="/organizationchart/css/dtree.css" />" rel="StyleSheet"/>
@@ -48,8 +48,8 @@
           <c:out value="${error}"/>
          <table align="center">
          	<tr>
-         	<td align="left"><A href="javascript:;" onClick="mytree.closeAll();">tout réduire</A></td>
-         	<td align="right"><A href="javascript:;" onClick="mytree.resizeon(-2);">retour à la racine</A></td>
+         	<td align="left"><A href="javascript:;" onClick="mytree.closeAll();">tout rï¿½duire</A></td>
+         	<td align="right"><A href="javascript:;" onClick="mytree.resizeon(-2);">retour ï¿½ la racine</A></td>
          	</tr>
          	<tr><td>
 	    	<script type="text/javascript">

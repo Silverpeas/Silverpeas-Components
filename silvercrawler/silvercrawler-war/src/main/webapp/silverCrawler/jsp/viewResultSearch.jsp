@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <% 
 Collection docs 			= (Collection) request.getAttribute("Docs");
 Collection path 			= (Collection) request.getAttribute("Path");
@@ -33,7 +33,7 @@ String userId 				= (String) request.getAttribute("UserId");
 String profile 				= (String) request.getAttribute("Profile");
 String word 				= (String) request.getAttribute("Word");
 
-//création du chemin :
+//crï¿½ation du chemin :
 String 		chemin 		= "";
 if (path != null)
 {
@@ -154,7 +154,7 @@ out.println("<br>");
 </table border=0>
 
 <%
-// affichage des fichiers, résultats de la recherche
+// affichage des fichiers, rï¿½sultats de la recherche
 // -------------------------------------------------
 
 	if (docs != null && docs.size() > 0)
@@ -186,7 +186,7 @@ out.println("<br>");
 	
 	        if (fileDetail.isIsDirectory())
 	        {
-	        	// allimenter l'ArrayPane avec le répertoire
+	        	// allimenter l'ArrayPane avec le rï¿½pertoire
 	        	ArrayLine  arrayLine = arrayPane.addArrayLine();
 	        	
 	        	ArrayCellText cell = arrayLine.addArrayCellText("<img src=\""+resource.getIcon("silverCrawler.folder")+"\" />");
@@ -209,7 +209,7 @@ out.println("<br>");
 	    		{
 	    	    	IconPane iconPane = gef.getIconPane();
 	    	    	
-	            	//icône de l'historique
+	            	//icï¿½ne de l'historique
 	        	   	Icon historyIcon = iconPane.addIcon();
 	        	   	historyIcon.setProperties(resource.getIcon("silverCrawler.viewHistory"), resource.getString("silverCrawler.downloadHistory"), "javaScript:viewDownloadHistory('"+Encode.javaStringToJsString(filePath)+"')");
 	        	   	iconPane.setSpacing("20px");
@@ -238,7 +238,7 @@ out.println("<br>");
 				{
 			    	IconPane iconPane = gef.getIconPane();
 			    	
-		        	//icône de l'historique
+		        	//icï¿½ne de l'historique
 		    	   	Icon historyIcon = iconPane.addIcon();
 		    	   	historyIcon.setProperties(resource.getIcon("silverCrawler.viewHistory"), resource.getString("silverCrawler.downloadHistory"), "javaScript:viewDownloadHistory('"+Encode.javaStringToJsString(filePath)+"')");
 		    	   	iconPane.setSpacing("20px");

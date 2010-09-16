@@ -31,20 +31,14 @@
 			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%-- Import area --%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page
-	import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
+<%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
 <%@page import="java.util.List"%>
 <%@page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@page import="com.silverpeas.treeMenu.process.TreeHandler"%>
@@ -90,8 +84,8 @@ function buildTree() {
     tree.setDynamicLoad(loadNodeData, 0);
     //get root node for tree:
     var root = tree.getRoot();
-    
-    //add child nodes for tree; our top level nodes are  
+
+    //add child nodes for tree; our top level nodes are
    try{
    var mes = [];
    mes =YAHOO.lang.JSON.stringify(<%=TreeHandler.ProcessMenu(request,MenuConstants.THEME_MENU_TYPE)%>);
@@ -103,12 +97,12 @@ function buildTree() {
    for (var i=0, j=mes.length; i<j; i++) {
          var tempNode = new YAHOO.widget.TextNode(mes[i], root, false);
 			tempNode.multiExpand =false;
-    } 
+    }
     //render tree with these toplevel nodes; all descendants of these nodes
     //will be generated as needed by the dynamic loader.
     tree.draw();
   //action when a user click on a node
-    tree.subscribe('clickEvent',function(oArgs) { 
+    tree.subscribe('clickEvent',function(oArgs) {
 		currentComponent = oArgs.node.data.componentId;
 		// highlight selected node
 		$("#ygtvcontentel"+currentNodeIndex).css({'font-weight':'normal'});
@@ -134,8 +128,8 @@ function setCurrentNodeId(id){
 }
 
 function doPagination(index){
-	var ieFix = new Date().getTime(); 
-	$.get('<%=contextName%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:currentComponent,attachmentLink:1,IEFix:ieFix}, 
+	var ieFix = new Date().getTime();
+	$.get('<%=contextName%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:currentComponent,attachmentLink:1,IEFix:ieFix},
 			function(data){
 				$('#pubList').html(data);
 			},"html");
@@ -143,7 +137,7 @@ function doPagination(index){
 
 function displayPublications(CompoId,topicId){
 	var ieFix = new Date().getTime();
-	$.get('<%=contextName%>/RAjaxPublicationsListServlet', {ComponentId:CompoId,TopicToLinkId:topicId,attachmentLink:1,IEFix:ieFix}, 
+	$.get('<%=contextName%>/RAjaxPublicationsListServlet', {ComponentId:CompoId,TopicToLinkId:topicId,attachmentLink:1,IEFix:ieFix},
 			function(data){
 				$('#pubList').html(data);
 			},"html");
@@ -160,7 +154,7 @@ function selectAttachment(url,img,label){
 		window.opener.insertAttachmentLink<%=request.getParameter("fieldname")%>(url,img,label);
 	<%} else {%>
 		window.opener.insertAttachmentLink(url,img,label);
-	<%} %>	
+	<%} %>
 	window.close();
 }
 

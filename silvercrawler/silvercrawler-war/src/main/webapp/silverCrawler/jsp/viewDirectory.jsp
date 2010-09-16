@@ -25,7 +25,7 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <% 
 FileFolder 	folder 			= (FileFolder) request.getAttribute("Folder");
 String 		profile 		= (String) request.getAttribute("Profile");
@@ -53,7 +53,7 @@ boolean nav = true;
 if ("user".equals(profile) && !allowedNav)
 	nav = false;
 
-//création du chemin :
+//crï¿½ation du chemin :
 String 		chemin 		= "";
 if (path != null)
 {
@@ -187,7 +187,7 @@ browseBar.setDomainName(spaceLabel);
 browseBar.setComponentName(componentLabel, "Main");
 browseBar.setPath(chemin);
 
-// mettre les opération si on est à la racine
+// mettre les opï¿½ration si on est ï¿½ la racine
 String name = folder.getName();
 if ("admin".equals(profile))
 {
@@ -198,7 +198,7 @@ if ("admin".equals(profile))
 		if (download)
 			operationPane.addOperation(resource.getIcon("silverCrawler.uploadDisk"), resource.getString("silverCrawler.download"), "javaScript:downloadFolder('')");
 	}
-	// opération de réindexation par lot
+	// opï¿½ration de rï¿½indexation par lot
 	operationPane.addOperation(resource.getIcon("silverCrawler.indexDirByLot"), resource.getString("silverCrawler.indexDirByLot"), "javaScript:indexDirByLot('')");
 	operationPane.addOperation(resource.getIcon("silverCrawler.indexFileByLot"), resource.getString("silverCrawler.indexFileByLot"), "javaScript:indexFileByLot('')");
 }
@@ -239,7 +239,7 @@ out.println("<br>");
 <FORM NAME="liste_dir" >
 <%
 
-// remplissage de l'ArrayPane avec la liste des sous répertoires
+// remplissage de l'ArrayPane avec la liste des sous rï¿½pertoires
 // -------------------------------------------------------------
 if (nav || (!nav && !isRootPath))
 {
@@ -251,7 +251,7 @@ if (nav || (!nav && !isRootPath))
 	    String link = "";
 	    
 	    ArrayPane arrayPane = gef.getArrayPane("folderList", "ViewDirectory", request, session);
-	    // nombre de répertoires à afficher
+	    // nombre de rï¿½pertoires ï¿½ afficher
 	    arrayPane.setVisibleLineNumber(nbDirectories);
 	
 	    ArrayColumn columnType = arrayPane.addArrayColumn(resource.getString("GML.type"));
@@ -305,23 +305,23 @@ if (nav || (!nav && !isRootPath))
 	        
 	        if (download || "admin".equals(profile))
 	        {
-				// création de la colonne des icônes
+				// crï¿½ation de la colonne des icï¿½nes
 		        IconPane iconPane = gef.getIconPane();
 		        if ("admin".equals(profile))
 				{
-		        	//icône de l'historique
+		        	//icï¿½ne de l'historique
 		    	   	Icon historyIcon = iconPane.addIcon();
 		    	   	historyIcon.setProperties(resource.getIcon("silverCrawler.viewHistory"), resource.getString("silverCrawler.downloadHistory"), "javaScript:viewDownloadHistory('"+Encode.javaStringToJsString(fileName)+"')");
 		    	   	iconPane.setSpacing("20px");
 		    	   	
-					// icône "réindexer"
+					// icï¿½ne "rï¿½indexer"
 					Icon indexIcon = iconPane.addIcon();
 					indexIcon.setProperties(resource.getIcon("silverCrawler.reIndexer"), resource.getString("silverCrawler.reIndexer"), "javaScript:indexFolder('"+Encode.javaStringToJsString(fileName)+"')");
 			   		iconPane.setSpacing("20px");
 				}
 			   	if (download)
 			   	{
-			   		// icône "télécharger le répertoire"
+			   		// icï¿½ne "tï¿½lï¿½charger le rï¿½pertoire"
 			   		Icon downloadIcon = iconPane.addIcon();
 			   		downloadIcon.setProperties(resource.getIcon("silverCrawler.download"), resource.getString("silverCrawler.download"), "javaScript:downloadFolder('"+Encode.javaStringToJsString(fileName)+"')");
 			   		iconPane.setSpacing("20px");
@@ -329,7 +329,7 @@ if (nav || (!nav && !isRootPath))
 			   	
 			   	if ("admin".equals(profile) && indexed)
 			   	{
-			   		// icône "répertoire indéxé"
+			   		// icï¿½ne "rï¿½pertoire indï¿½xï¿½"
 			   		Icon indexedIcon = iconPane.addIcon();
 			   		indexedIcon.setProperties(resource.getIcon("silverCrawler.isIndexed"), resource.getString("silverCrawler.isIndexed"), "");
 			   		iconPane.setSpacing("20px");
@@ -338,7 +338,7 @@ if (nav || (!nav && !isRootPath))
 			   	arrayLine.addArrayCellIconPane(iconPane);
 			   	if ("admin".equals(profile))
 				{
-			   		// case à cocher pour traitement par lot
+			   		// case ï¿½ cocher pour traitement par lot
 			   		arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedDir\" value=\""+Encode.javaStringToHtmlString(fileName)+"\">");
 				}
 	        }
@@ -408,19 +408,19 @@ if (nav || (!nav && !isRootPath))
 			{
 		    	IconPane iconPane = gef.getIconPane();
 		    	
-	        	//icône de l'historique
+	        	//icï¿½ne de l'historique
 	    	   	Icon historyIcon = iconPane.addIcon();
 	    	   	historyIcon.setProperties(resource.getIcon("silverCrawler.viewHistory"), resource.getString("silverCrawler.downloadHistory"), "javaScript:viewDownloadHistory('"+Encode.javaStringToJsString(fileName)+"')");
 	    	   	iconPane.setSpacing("20px");
 	    	   	
-	    	   	//icône "réindexer"
+	    	   	//icï¿½ne "rï¿½indexer"
 				Icon indexIcon = iconPane.addIcon();
 				indexIcon.setProperties(resource.getIcon("silverCrawler.reIndexer"), resource.getString("silverCrawler.reIndexer"), "javaScript:indexFile('"+Encode.javaStringToJsString(fileName)+"')");
 		   		iconPane.setSpacing("20px");    
 		   		
 		   		if (indexed)
 			   	{
-			   		// icône "répertoire indéxé"
+			   		// icï¿½ne "rï¿½pertoire indï¿½xï¿½"
 			   		Icon indexedIcon = iconPane.addIcon();
 			   		indexedIcon.setProperties(resource.getIcon("silverCrawler.isIndexed"), resource.getString("silverCrawler.isIndexed"), "");
 			   		iconPane.setSpacing("20px");
@@ -429,7 +429,7 @@ if (nav || (!nav && !isRootPath))
 		   		
 		   		if ("admin".equals(profile))
 				{
-			   		// case à cocher pour traitement par lot
+			   		// case ï¿½ cocher pour traitement par lot
 			   		arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedFile\" value=\""+Encode.javaStringToHtmlString(fileName)+"\">");
 				}
 			}
