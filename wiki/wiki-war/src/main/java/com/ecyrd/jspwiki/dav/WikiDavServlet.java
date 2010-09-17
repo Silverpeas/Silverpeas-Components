@@ -50,6 +50,7 @@ public class WikiDavServlet extends WebdavServlet {
   private DavProvider m_rootProvider;
   private DavProvider m_htmlProvider;
 
+  @Override
   public void init(ServletConfig config) throws ServletException {
     super.init(config);
 
@@ -69,6 +70,7 @@ public class WikiDavServlet extends WebdavServlet {
     return m_rootProvider;
   }
 
+  @Override
   public void doPropFind(HttpServletRequest req, HttpServletResponse res)
       throws IOException, ServletException {
     StopWatch sw = new StopWatch();
@@ -93,6 +95,7 @@ public class WikiDavServlet extends WebdavServlet {
     log.debug("Propfind done for path " + path + ", took " + sw);
   }
 
+  @Override
   protected void doOptions(HttpServletRequest req, HttpServletResponse res) {
     log.debug("DAV doOptions for path " + req.getPathInfo());
 
@@ -102,6 +105,7 @@ public class WikiDavServlet extends WebdavServlet {
     res.setStatus(HttpServletResponse.SC_OK);
   }
 
+  @Override
   public void doMkCol(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     if (request.getContentLength() > 0) {
@@ -113,6 +117,7 @@ public class WikiDavServlet extends WebdavServlet {
     }
   }
 
+  @Override
   public void doPropPatch(HttpServletRequest request,
       HttpServletResponse response) throws ServletException, IOException {
     // DavMethod dm = new PropPatchMethod( m_rawProvider );
@@ -120,12 +125,14 @@ public class WikiDavServlet extends WebdavServlet {
     // dm.execute( request, response );
   }
 
+  @Override
   public void doCopy(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
         "JSPWiki is read-only.");
   }
 
+  @Override
   public void doMove(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
@@ -133,18 +140,21 @@ public class WikiDavServlet extends WebdavServlet {
 
   }
 
+  @Override
   protected void doDelete(HttpServletRequest arg0, HttpServletResponse response)
       throws ServletException, IOException {
     response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
         "JSPWiki is read-only.");
   }
 
+  @Override
   protected void doPost(HttpServletRequest arg0, HttpServletResponse response)
       throws ServletException, IOException {
     response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
         "JSPWiki is read-only.");
   }
 
+  @Override
   protected void doPut(HttpServletRequest arg0, HttpServletResponse response)
       throws ServletException, IOException {
     response.sendError(HttpServletResponse.SC_UNAUTHORIZED,
@@ -155,6 +165,7 @@ public class WikiDavServlet extends WebdavServlet {
    * GET /dav/raw/WikiPage.txt GET /dav/html/WikiPage.html GET /dav/pdf/WikiPage.pdf GET
    * /dav/raw/WikiPage/attachment1.png
    */
+  @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     // Do the "sanitize url" trick

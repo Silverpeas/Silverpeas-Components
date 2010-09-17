@@ -55,15 +55,15 @@ import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
  * logic needed to grab any user login credentials set by the container or by cookies.
  * @author Andrew Jaquith
  */
-public class WikiServletFilter implements Filter {
-  protected static final Logger log = Logger.getLogger(WikiServletFilter.class);
+public class SilverpeasWikiServletFilter implements Filter {
+  protected static final Logger log = Logger.getLogger(SilverpeasWikiServletFilter.class);
   protected WikiEngine m_engine = null;
   protected static SilverpeasWebUtil webUtil;
 
   /**
    * Creates a Wiki Servlet Filter.
    */
-  public WikiServletFilter() {
+  public SilverpeasWikiServletFilter() {
     super();
   }
 
@@ -72,6 +72,7 @@ public class WikiServletFilter implements Filter {
    * @param config The FilterConfig.
    * @throws ServletException If a WikiEngine cannot be started.
    */
+  @Override
   public void init(FilterConfig config) throws ServletException {
     ServletContext context = config.getServletContext();
     m_engine = WikiEngine.getInstance(context, null);
@@ -81,6 +82,7 @@ public class WikiServletFilter implements Filter {
   /**
    * Destroys the WikiServletFilter.
    */
+  @Override
   public void destroy() {
   }
 
@@ -96,6 +98,7 @@ public class WikiServletFilter implements Filter {
    * any reason
    * @throws IOException If writing to the servlet response fails.
    */
+  @Override
   public void doFilter(ServletRequest request, ServletResponse response,
       FilterChain chain) throws IOException, ServletException {
     //

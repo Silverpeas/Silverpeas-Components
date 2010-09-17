@@ -85,19 +85,21 @@ import com.stratelia.silverpeas.peasCore.URLManager;
  * @see TemplateManager
  * @see com.ecyrd.jspwiki.tags.RequestResourceTag
  */
-public class WikiJSPFilter extends WikiServletFilter {
+public class SilverpeasWikiJSPFilter extends SilverpeasWikiServletFilter {
   private Boolean m_useOutputStream;
   private static Pattern pattern = Pattern.compile(URLManager
       .getApplicationURL()
       + "/Rwiki/.*\\.jsp");
 
   /** {@inheritDoc} */
+  @Override
   public void init(FilterConfig config) throws ServletException {
     super.init(config);
     ServletContext context = config.getServletContext();
     m_useOutputStream = UtilJ2eeCompat.useOutputStream(context.getServerInfo());
   }
 
+  @Override
   public void doFilter(ServletRequest request, ServletResponse response,
       FilterChain chain) throws ServletException, IOException {
     if (request instanceof HttpServletRequest) {
@@ -236,7 +238,7 @@ public class WikiJSPFilter extends WikiServletFilter {
 
     String[] resources = TemplateManager.getResourceRequests(wikiContext, type);
 
-    StringBuffer concat = new StringBuffer(resources.length * 40);
+    StringBuilder concat = new StringBuilder(resources.length * 40);
 
     for (int i = 0; i < resources.length; i++) {
       log.debug("...:::" + resources[i]);
@@ -271,10 +273,12 @@ public class WikiJSPFilter extends WikiServletFilter {
     /**
      * Returns a writer for output; this wraps the internal buffer into a PrintWriter.
      */
+    @Override
     public PrintWriter getWriter() {
       return new PrintWriter(m_output);
     }
 
+    @Override
     public ServletOutputStream getOutputStream() {
       return new MyServletOutputStream(m_output);
     }
@@ -287,6 +291,7 @@ public class WikiJSPFilter extends WikiServletFilter {
         m_buffer = aCharArrayWriter;
       }
 
+      @Override
       public void write(int aInt) {
         m_buffer.write(aInt);
       }
@@ -296,6 +301,7 @@ public class WikiJSPFilter extends WikiServletFilter {
     /**
      * Returns whatever was written so far into the Writer.
      */
+    @Override
     public String toString() {
       return m_output.toString();
     }
@@ -325,10 +331,12 @@ public class WikiJSPFilter extends WikiServletFilter {
     /**
      * Returns a writer for output; this wraps the internal buffer into a PrintWriter.
      */
+    @Override
     public PrintWriter getWriter() {
       return new PrintWriter(getOutputStream(), true);
     }
 
+    @Override
     public ServletOutputStream getOutputStream() {
       return new MyServletOutputStream(m_output);
     }
@@ -341,6 +349,7 @@ public class WikiJSPFilter extends WikiServletFilter {
         m_stream = new DataOutputStream(aOutput);
       }
 
+      @Override
       public void write(int aInt) throws IOException {
         m_stream.write(aInt);
       }
@@ -349,6 +358,7 @@ public class WikiJSPFilter extends WikiServletFilter {
     /**
      * Returns whatever was written so far into the Writer.
      */
+    @Override
     public String toString() {
       try {
         return m_output.toString(m_response.getCharacterEncoding());

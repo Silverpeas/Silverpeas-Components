@@ -61,11 +61,12 @@
   WikiContext c = WikiContext.findContext(pageContext); %>
     <c:set var="wiki_link_raw"><%=c.getURL(WikiContext.VIEW, "")%></c:set>
     <c:set var="wiki_link" value="${fn:substringBefore(wiki_link_raw, '?') }" />
+    <c:set var="deleteConfirm"><fmt:message key="info.confirmdelete" /></c:set>
     <form action="<wiki:Link format='url' context='<%=WikiContext.DELETE%>' />"
           class="wikiform"
           id="deleteForm"
           method="post" accept-charset="<wiki:ContentEncoding />"
-          onsubmit="return( confirm('<fmt:message key="info.confirmdelete" />') && Wiki.submitOnce(this) );">
+          onsubmit="return( confirm('${deleteConfirm}') && Wiki.submitOnce(this) );">
           <input type="hidden" name="delete-all" value="1"/>
     </form>
 

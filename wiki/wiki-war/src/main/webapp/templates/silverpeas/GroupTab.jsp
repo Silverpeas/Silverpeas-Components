@@ -139,10 +139,11 @@
 
       <wiki:Permission permission="deleteGroup">
       <div>
+      <c:set var="deleteConfirm"><fmt:message key="grp.deletegroup.confirm"/></c:set>
       <input type="button" disabled="disabled" 
              name="deleteButton" id="deleteButton"
             value='<fmt:message key="grp.deletegroup"/>' 
-          onclick="confirm( '<fmt:message key="grp.deletegroup.confirm"/>' ) 
+          onclick="confirm( '${deleteConfirm}' ) 
                 && WikiGroup.onSubmit( this.form, '<wiki:Link format='url' jsp='DeleteGroup.jsp' />' );" /></div>
       </wiki:Permission>
     </form>

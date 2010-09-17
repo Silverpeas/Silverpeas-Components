@@ -82,12 +82,12 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
  * @author Erik Bunn
  * @since 1.9.45.
  */
-public class AttachmentServlet extends WebdavServlet {
+public class SilverpeasAttachmentServlet extends WebdavServlet {
 
   private static final int BUFFER_SIZE = 8192;
   private static final long serialVersionUID = 3257282552187531320L;
   private WikiEngine m_engine;
-  static Logger log = Logger.getLogger(AttachmentServlet.class.getName());
+  static Logger log = Logger.getLogger(SilverpeasAttachmentServlet.class.getName());
   private static final String HDR_VERSION = "version";
   // private static final String HDR_NAME = "page";
   /** Default expiry period is 1 day */

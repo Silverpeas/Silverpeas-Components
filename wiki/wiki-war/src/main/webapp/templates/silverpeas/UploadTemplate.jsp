@@ -27,7 +27,7 @@
 <%@ page isELIgnored="false"%>
 <%@ page import="com.ecyrd.jspwiki.*"%>
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki"%>
-<%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page import="javax.servlet.jsp.jstl.fmt.*"%>
@@ -86,7 +86,7 @@
     </wiki:PageExists>
     <c:set var="tabHelpTitle"><%=LocaleSupport.getLocalizedMessage(pageContext,
                     "edit.tab.help")%></c:set>
-    <c:set var="helpAction" value="<%=c.getURL(WikiContext.VIEW, "EditPageHelp")%>" />
+    <c:set var="helpAction"><%=c.getURL(WikiContext.VIEW, "EditPageHelp")%></c:set>
     <view:tab label="${tabHelpTitle}" action="javascript: showHelp();" selected="false" />
   </view:tabs> <view:frame>
     <wiki:PageExists>

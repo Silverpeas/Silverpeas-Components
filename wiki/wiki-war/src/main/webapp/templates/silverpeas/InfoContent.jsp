@@ -115,7 +115,6 @@
            </fmt:message>" >
     <img src="<wiki:Link jsp='images/xml.png' format='url'/>" alt="[RSS]"/>
   </a>
-  </p>
 
   <wiki:CheckVersion mode="notfirst">
     <p>
@@ -318,11 +317,12 @@
 
   <wiki:Permission permission="delete">
     <h3><fmt:message key="info.deleteattachment"/></h3>
+    <c:set var="deleteConfirm"><fmt:message key="info.confirmdelete"/></c:set>
     <form action="<wiki:Link format='url' context='<%=WikiContext.DELETE%>' />"
            class="wikiform"
               id="deleteForm"
           method="post" accept-charset="<wiki:ContentEncoding />"
-        onsubmit="return( confirm('<fmt:message key="info.confirmdelete"/>') && Wiki.submitOnce(this) );" >
+        onsubmit="return( confirm('${deleteConfirm}') && Wiki.submitOnce(this) );" >
      <div>
 	<c:set var="deleteAllButtonLabel"><fmt:message key='info.deleteattachment.submit'/></c:set>
 	<view:button label="${deleteAllButtonLabel}" action="javascript:document.forms['deleteForm'].submit()" disabled="false"/>
@@ -355,7 +355,7 @@
     %>
 
     <tr>
-      <td class="ArrayCell"><view:mimeTypeIcon divId="<%="attach-" + attachtype%>" ><%= attachtype%></view:mimeTypeIcon></td>
+      <td class="ArrayCell"><view:mimeTypeIcon divId="attach-<%= attachtype%>" ><%= attachtype%></view:mimeTypeIcon></td>
       <td class="ArrayCell"><a href="<wiki:Link version='<%=Integer.toString(att.getVersion())%>' format='url' />"
                        title="<%= name %>"
                        class="attachment" ><wiki:PageVersion /></a></td>

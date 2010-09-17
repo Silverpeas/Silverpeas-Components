@@ -93,11 +93,12 @@
 
   <wiki:Permission permission="delete">
     <%-- hidden delete form --%>
+    <c:set var="deleteConfirm"><fmt:message key="attach.deleteconfirm" /></c:set>
     <form action="tdb"
            class="wikiform"
               id="deleteAttForm" style="display:none;"
           method="post" accept-charset="<wiki:ContentEncoding />"
-        onsubmit="return(confirm('<fmt:message key="attach.deleteconfirm" />') && Wiki.submitOnce(this) );" >
+        onsubmit="return(confirm('${deleteConfirm}') && Wiki.submitOnce(this) );" >
       <input id="delete-all" name="delete-all" type="submit" value="Delete" />
 
     </form>
@@ -125,7 +126,7 @@
       if( sname.length() > MAXATTACHNAMELENGTH ) sname = sname.substring(0,MAXATTACHNAMELENGTH) + "...";
     %>
     <tr>
-      <td class="ArrayCell"><view:mimeTypeIcon divId="<%="attach-" + attachtype%>" ><%= attachtype%></view:mimeTypeIcon></td>
+      <td class="ArrayCell"><view:mimeTypeIcon divId="attach-<%= attachtype%>" ><%= attachtype%></view:mimeTypeIcon></td>
       <td class="ArrayCell"><wiki:LinkTo title="<%= name %>" ><%= sname %></wiki:LinkTo></td>
       <td class="ArrayCell" style="white-space:nowrap;text-align:right;">
         <fmt:formatNumber value='<%=Double.toString(att.getSize()/1000.0)%>' groupingUsed='false' maxFractionDigits='1' minFractionDigits='1'/>&nbsp;<fmt:message key="info.kilobytes"/>
@@ -138,7 +139,7 @@
       <wiki:Permission permission="delete">
       <td class="ArrayCell" style="text-align:center; valign:middle;">     
           <fmt:message key="wiki.icons.deleteAttachment" bundle="${pageScope.silverpeas_icons}" var="deleteAttachmentIcon" />
-          <a href="javascript:$('deleteAttForm').setProperty('action', '<wiki:Link format='url' context='<%=WikiContext.DELETE%>' />'); $('delete-all').click();" ><img src="<c:url value="${deleteAttachmentIcon}" />"  border="0" /></a>
+          <a href="javascript:$('deleteAttForm').setProperty('action', '<wiki:Link format='url' context='<%=WikiContext.DELETE%>' />'); $('delete-all').click();" ><img src='<c:url value="${deleteAttachmentIcon}" />'  border="0" /></a>
       </td>
       </wiki:Permission>
       <td class="ArrayCell">

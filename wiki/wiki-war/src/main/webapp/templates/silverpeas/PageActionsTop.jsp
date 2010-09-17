@@ -26,9 +26,9 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page isELIgnored="false"%>
 <%@ taglib uri="/WEB-INF/jspwiki.tld" prefix="wiki"%>
-<%@ page import="com.ecyrd.jspwiki.*"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="/WEB-INF/jstl-fmt.tld" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ page import="com.ecyrd.jspwiki.*"%>
 
 <fmt:setLocale value="${userLanguage}" />
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -134,7 +134,7 @@
 
   <wiki:CheckRequestContext context='edit'>
     <fmt:message key="edit.tab.help" var="tabHelpTitle" bundle="${wikiMessages}" />
-    <c:set var="helpAction" value="<%=c.getURL(WikiContext.VIEW, "EditPageHelp")%>" />
+    <c:set var="helpAction"><%=c.getURL(WikiContext.VIEW, "EditPageHelp")%></c:set>
     <view:operation altText="${tabHelpTitle}" icon="${viewIcon}" action="javascript: showHelp();" />
   </wiki:CheckRequestContext>
 </view:operationPane>

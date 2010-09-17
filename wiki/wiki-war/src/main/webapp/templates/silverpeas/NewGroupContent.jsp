@@ -105,7 +105,8 @@
       </td>
     </tr>
     </table>
-    <input type="submit" name="ok" value="<fmt:message key="newgroup.creategroup"/>" />
+      <c:set var="groupCreation"><fmt:message key="newgroup.creategroup"/></c:set>
+    <input type="submit" name="ok" value="${groupCreation}" />
     <input type="hidden" name="action" value="save" />
     <div class="formhelp">
          <fmt:message key="newgroup.instructions.end"/>

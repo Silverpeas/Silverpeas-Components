@@ -115,10 +115,11 @@
         <c:if test="${!empty decision.facts}">
           <tr class="<%=evenOdd%>" class="hideDiv">
             <td>&nbsp;</td>
+          <c:set var="decisionJSObject">$('decision.<c:out value="${decision.workflow.id}"/>')</c:set>
             <td colspan="4" class="split">
               <a href="#" 
                 title="Show or hide details"
-              onclick="$('decision.<c:out value="${decision.workflow.id}"/>').toggle();" >
+              onclick="${decisionJSObject}.toggle();" >
                 <fmt:message key="workflow.details" />
               </a>
               <div class="hideDiv" id="<c:out value='decision.${decision.workflow.id}'/>">
@@ -175,10 +176,11 @@
           </td >
           <!-- Actions -->
           <td align="left">
+          <c:set var="abort"><fmt:message key="outcome.step.abort" /></c:set>
             <form id="<c:out value='workflow.${workflow.id}'/>" action="<wiki:Link jsp='Workflow.jsp' format='url'/>" method="POST" accept-charset="UTF-8">
-              <input type="submit" name="submit" value="<fmt:message key="outcome.step.abort" />" />
+              <input type="submit" name="submit" value="${abort}" />
               <input type="hidden" name="action" value="abort" />
-              <input type="hidden" name="id" value="<c:out value="${workflow.id}" />" />
+              <input type="hidden" name="id" value=""${workflow.id} />
             </form>
           </td>
           <!-- Current actor -->

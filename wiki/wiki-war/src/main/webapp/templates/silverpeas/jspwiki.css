@@ -382,7 +382,7 @@ td .information, td .warning, td .error {
 #attach-xls { background-image:url(images/fileType/excelSmall.gif);}
 #attach-xlsx { background-image:url(images/fileType/excel2007Small.gif);}
 #attach-ods { background-image:url(images/fileType/oo_spreadsheetSmall.gif);}
-#attach-ppt { background-image:url(images/fileType/powerPointSmall.gif;}
+#attach-ppt { background-image:url(images/fileType/powerPointSmall.gif);}
 #attach-pptx { background-image:url(images/fileType/powerPoint2007Small.gif);}
 #attach-odp { background-image:url(images/fileType/oo_presentationSmall.gif);}
 #attach-swf { background-image:url(images/fileType/flashSmall.gif);}

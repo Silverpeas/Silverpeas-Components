@@ -63,8 +63,10 @@
       <option value="attachment:" <c:if test='${param.scope eq "attachment:"}'>selected="selected"</c:if> ><fmt:message key='find.scope.attach' /></option>       
     </select>
 
-	<input type="submit" name="ok" id="ok" value="<fmt:message key="find.submit.find"/>" />
-	<input type="submit" name="go" id="go" value="<fmt:message key="find.submit.go"/>" />
+    <c:set var="findButton"><fmt:message key="find.submit.find"/></c:set>
+    <c:set var="goButton"><fmt:message key="find.submit.go"/></c:set>
+	<input type="submit" name="ok" id="ok" value="${findButton}" />
+	<input type="submit" name="go" id="go" value="${goButton}" />
     <input type="hidden" name="start" id="start" value="0" />
     <input type="hidden" name="maxitems" id="maxitems" value="20" />
 
