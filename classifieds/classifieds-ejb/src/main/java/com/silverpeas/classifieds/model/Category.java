@@ -28,7 +28,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 public class Category implements Serializable {
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 7469456333519529362L;
+
   private String key;
   private String value;
   private Collection<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();

@@ -44,21 +44,17 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
  */
 public class ClassifiedsStatistics implements ComponentStatisticsInterface {
 
+  @Override
   public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId)
       throws Exception {
     ArrayList<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
     Collection<ClassifiedDetail> c = getElements(spaceId, componentId);
-    Iterator<ClassifiedDetail> iter = c.iterator();
-    while (iter.hasNext()) {
-      ClassifiedDetail classified = (ClassifiedDetail) iter.next();
-
+    for (ClassifiedDetail classified : c) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
-
       myCouple.setUserId(classified.getCreatorId());
       myCouple.setCountVolume(1);
       myArrayList.add(myCouple);
     }
-
     return myArrayList;
   }
 

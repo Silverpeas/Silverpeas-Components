@@ -27,7 +27,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class ClassifiedDetail implements Serializable {
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -355125879163002184L;
+
   private String title;
   private int classifiedId;
   private String instanceId;

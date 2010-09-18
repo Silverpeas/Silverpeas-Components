@@ -24,11 +24,9 @@
 package com.silverpeas.classifieds.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
 
 public class Subscribe implements Serializable {
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -2746485759326084199L;
   private String subscribeId;
   private String userId;
   private String field1;

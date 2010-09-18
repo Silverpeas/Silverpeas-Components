@@ -23,9 +23,10 @@
  */
 package com.silverpeas.classifieds.model;
 
-import com.stratelia.webactiv.util.exception.*;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class ClassifiedsRuntimeException extends SilverpeasRuntimeException {
+  private static final long serialVersionUID = 2413240875023557772L;
   /**
    * --------------------------------------------------------------------------constructors
    * constructors

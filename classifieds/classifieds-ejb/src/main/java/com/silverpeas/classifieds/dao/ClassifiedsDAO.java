@@ -251,7 +251,7 @@ public class ClassifiedsDAO {
     }
     return listClassifieds;
   }
-  
+
   /**
    * get all classifieds to validate for an instance corresponding to instanceId
    * @param con : Connection
@@ -483,16 +483,16 @@ public class ClassifiedsDAO {
     String instanceId = rs.getString("instanceId");
     String title = rs.getString("title");
     String creatorId = rs.getString("creatorId");
-    Date creationDate = new Date(Long.parseLong((String) rs.getString("creationDate")));
+    Date creationDate = new Date(Long.parseLong(rs.getString("creationDate")));
     Date updateDate = null;
     if (rs.getString("updateDate") != null) {
-      updateDate = new Date(Long.parseLong((String) rs.getString("updateDate")));
+      updateDate = new Date(Long.parseLong(rs.getString("updateDate")));
     }
     String status = rs.getString("status");
     String validatorId = rs.getString("validatorId");
     Date validateDate = null;
     if (rs.getString("validateDate") != null) {
-      validateDate = new Date(Long.parseLong((String) rs.getString("validateDate")));
+      validateDate = new Date(Long.parseLong(rs.getString("validateDate")));
     }
     classified.setClassifiedId(classifiedId);
     classified.setInstanceId(instanceId);

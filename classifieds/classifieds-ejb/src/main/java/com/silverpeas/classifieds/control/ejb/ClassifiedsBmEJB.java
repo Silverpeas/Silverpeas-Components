@@ -23,22 +23,6 @@
  */
 package com.silverpeas.classifieds.control.ejb;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Vector;
-
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-
 import com.silverpeas.classifieds.dao.ClassifiedsDAO;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
@@ -70,14 +54,27 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
 
 /**
  * @author
  */
-public class ClassifiedsBmEJB implements SessionBean {
+public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkeleton {
+  private static final long serialVersionUID = 5737592996224214551L;
 
-  private static final long serialVersionUID = 1L;
-
+  @Override
   public String createClassified(ClassifiedDetail classified) {
     Connection con = initCon();
     try {
@@ -96,6 +93,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     }
   }
 
+  @Override
   public void deleteClassified(String classifiedId) {
     Connection con = initCon();
     try {
@@ -110,11 +108,10 @@ public class ClassifiedsBmEJB implements SessionBean {
     }
   }
 
+  @Override
   public void deleteAllClassifieds(String instanceId) {
     Collection<ClassifiedDetail> classifieds = getAllClassifieds(instanceId);
-    Iterator<ClassifiedDetail> it = classifieds.iterator();
-    while (it.hasNext()) {
-      ClassifiedDetail classified = it.next();
+    for (ClassifiedDetail classified : classifieds) {
       deleteClassified(Integer.toString(classified.getClassifiedId()));
     }
   }
@@ -123,6 +120,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     updateClassified(classified, false);
   }
 
+  @Override
   public void updateClassified(ClassifiedDetail classified, boolean notify) {
     Connection con = initCon();
     try {
@@ -139,6 +137,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     }
   }
 
+  @Override
   public ClassifiedDetail getClassified(String classifiedId) {
     Connection con = initCon();
     try {
@@ -151,6 +150,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     }
   }
 
+  @Override
   public Collection<ClassifiedDetail> getAllClassifieds(String instanceId) {
     Connection con = initCon();
     try {
@@ -163,6 +163,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     }
   }
 
+  @Override
   public String getNbTotalClassifieds(String instanceId) {
     Connection con = initCon();
     try {
@@ -175,6 +176,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     }
   }
 
+  @Override
   public Collection<ClassifiedDetail> getClassifiedsByUser(String instanceId, String userId) {
     Connection con = initCon();
     try {
@@ -187,6 +189,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     }
   }
 
+  @Override
   public Collection<ClassifiedDetail> getClassifiedsToValidate(String instanceId) {
     Connection con = initCon();
     try {
@@ -199,6 +202,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     }
   }
 
+  @Override
   public void validateClassified(String classifiedId, String userId) {
     SilverTrace.info("classified", "ClassifiedsBmEJB.validateClassified()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -219,6 +223,7 @@ public class ClassifiedsBmEJB implements SessionBean {
         "root.MSG_GEN_EXIT_METHOD", "classifiedId = " + classifiedId);
   }
 
+  @Override
   public void refusedClassified(String classifiedId, String userId, String refusalMotive) {
     SilverTrace.info("classified", "ClassifiedsBmEJB.refusedClassified()",
         "root.MSG_GEN_ENTER_METHOD");
@@ -251,9 +256,7 @@ public class ClassifiedsBmEJB implements SessionBean {
             new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
                 templateName);
 
-        Iterator<String> languages = I18NHelper.getLanguages();
-        while (languages.hasNext()) {
-          String language = languages.next();
+        for (String language : I18NHelper.getAllSupportedLanguages()) {
           SilverpeasTemplate template = getNewTemplate();
           setClassifiedCommonTemplateAttributes(template, classified);
           template.setAttribute("refusalMotive", refusalMotive);
@@ -281,6 +284,7 @@ public class ClassifiedsBmEJB implements SessionBean {
         classified.getClassifiedId();
   }
 
+  @Override
   public void sendSubscriptionsNotification(String field1, String field2,
       ClassifiedDetail classified) {
     // We alert subscribers only if classified is Valid
@@ -308,7 +312,7 @@ public class ClassifiedsBmEJB implements SessionBean {
               "classifieds.mailNewPublicationSubscription", subject), "");
         }
 
-        notifMetaData.setUserRecipients(new Vector<String>(users));
+        notifMetaData.setUserRecipients(users);
         notifMetaData.setLink(getClassifiedUrl(classified));
         notifMetaData.setComponentId(classified.getInstanceId());
         notifyUsers(notifMetaData, classified.getCreatorId());
@@ -330,6 +334,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     return subject;
   }
 
+  @Override
   public Collection<ClassifiedDetail> getAllClassifiedsToDelete(int nbDays) {
     Connection con = initCon();
     SilverTrace.info("classifieds", "classifiedsBmEJB.getAllClassifiedsToDelete()",
@@ -369,6 +374,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     return notifSender;
   }
 
+  @Override
   public Collection<ClassifiedDetail> search(QueryDescription query) {
     List<ClassifiedDetail> classifieds = new ArrayList<ClassifiedDetail>();
     MatchingIndexEntry[] result = null;
@@ -405,13 +411,12 @@ public class ClassifiedsBmEJB implements SessionBean {
     return classifieds;
   }
 
+  @Override
   public void indexClassifieds(String instanceId) {
     // parcourir toutes les petites annonnces
     Collection<ClassifiedDetail> classifieds = getAllClassifieds(instanceId);
     if (classifieds != null) {
-      Iterator<ClassifiedDetail> it = classifieds.iterator();
-      while (it.hasNext()) {
-        ClassifiedDetail classified = it.next();
+      for (ClassifiedDetail classified : classifieds) {
         createIndex(classified);
       }
     }
@@ -477,6 +482,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     return searchEngineBm;
   }
 
+  @Override
   public void draftOutClassified(String classifiedId, String profile) {
     ClassifiedDetail classified = getClassified(classifiedId);
     String status = classified.getStatus();
@@ -534,6 +540,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     }
   }
 
+  @Override
   public void draftInClassified(String classifiedId) {
     ClassifiedDetail classified = getClassified(classifiedId);
     String status = classified.getStatus();
@@ -544,13 +551,14 @@ public class ClassifiedsBmEJB implements SessionBean {
     updateClassified(classified);
   }
 
+  @Override
   public void createSubscribe(Subscribe subscribe) {
     Connection con = initCon();
     try {
-      if (!checkSubscription(subscribe))
-        return;
-      String id = ClassifiedsDAO.createSubscribe(con, subscribe);
-      subscribe.setSubscribeId(id);
+      if (checkSubscription(subscribe)) {
+        String id = ClassifiedsDAO.createSubscribe(con, subscribe);
+        subscribe.setSubscribeId(id);
+      }
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifiedsBmEJB.createSubscribe()",
           SilverpeasRuntimeException.ERROR, "classifieds.MSG_SUBSCRIBE_NOT_CREATE", e);
@@ -560,6 +568,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     }
   }
 
+  @Override
   public void deleteSubscribe(String subscribeId) {
     Connection con = initCon();
     try {
@@ -577,8 +586,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     try {
       Collection<Subscribe> subscriptions =
           getSubscribesByUser(subscribe.getInstanceId(), subscribe.getUserId());
-      for (Iterator<Subscribe> iterator = subscriptions.iterator(); iterator.hasNext();) {
-        Subscribe sub = (Subscribe) iterator.next();
+      for (Subscribe sub : subscriptions) {
         if (sub.getField1().equals(subscribe.getField1()) &&
             sub.getField2().equals(subscribe.getField2())) {
           return false;
@@ -592,6 +600,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     }
   }
 
+  @Override
   public Collection<Subscribe> getSubscribesByUser(String instanceId, String userId) {
     Connection con = initCon();
     try {
@@ -605,6 +614,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     }
   }
 
+  @Override
   public Collection<String> getUsersBySubscribe(String field1, String field2) {
     Connection con = initCon();
     try {
@@ -631,6 +641,7 @@ public class ClassifiedsBmEJB implements SessionBean {
     }
   }
 
+  @Override
   public void deleteAllSubscribes(String instanceId) {
     Collection<Subscribe> subscribes = getAllSubscribes(instanceId);
     Iterator<Subscribe> it = subscribes.iterator();
@@ -686,18 +697,22 @@ public class ClassifiedsBmEJB implements SessionBean {
     // not implemented
   }
 
+  @Override
   public void setSessionContext(SessionContext context) {
     // not implemented
   }
 
+  @Override
   public void ejbRemove() {
     // not implemented
   }
 
+  @Override
   public void ejbActivate() {
     // not implemented
   }
 
+  @Override
   public void ejbPassivate() {
     // not implemented
   }
