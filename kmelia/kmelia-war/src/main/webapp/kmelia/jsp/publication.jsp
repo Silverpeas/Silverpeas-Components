@@ -509,7 +509,10 @@ function addFavorite(name,description,url)
 				out.println("<img src=\""+refusedSrc+"\" alt=\""+resources.getString("PublicationRefused")+"\" align=\"absmiddle\" id=\"status\"/>");
 		}
 
-		out.println("<br/><span class=\"publiDesc\">"+EncodeHelper.javaStringToHtmlParagraphe(pubDetail.getDescription(language))+"</span><br/><br/>");
+		String description = Encode.javaStringToHtmlString(pubDetail.getDescription(language));
+		description = Encode.javaStringToHtmlParagraphe(description);
+
+		out.println("<br/><span class=\"publiDesc\">"+description+"</span><br/><br/>");
 
 		out.println("</td><td valign=\"top\" align=\"right\">");
 
