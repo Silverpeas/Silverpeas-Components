@@ -28,6 +28,7 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
+import com.stratelia.webactiv.SilverpeasRole;
 import java.io.Serializable;
 
 import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
@@ -56,32 +57,37 @@ public class KmeliaHelper implements Serializable {
   }
 
   public static String getProfile(String[] profiles) {
-    String flag = "user";
-    String profile = "";
-    for (int i = 0; i < profiles.length; i++) {
-      profile = profiles[i];
-      // if admin, return it, we won't find a better profile
-      if (profile.equals("admin"))
-        return profile;
-      if (profile.equals("publisher"))
-        flag = profile;
-      else if (profile.equals("writer")) {
-        if (!flag.equals("publisher"))
-          flag = profile;
-      } else if (profile.equals("supervisor")) {
-        flag = profile;
+    SilverpeasRole flag = SilverpeasRole.user;
+    for (String profile : profiles) {
+      SilverpeasRole role = SilverpeasRole.valueOf(profile);
+      switch (role) {
+        case admin:
+          return SilverpeasRole.admin.toString();
+        case publisher:
+          flag = SilverpeasRole.publisher;
+          break;
+        case writer:
+          if (flag != SilverpeasRole.publisher) {
+            flag = SilverpeasRole.writer;
+          }
+          break;
+        case supervisor:
+          flag = SilverpeasRole.supervisor;
+          break;
       }
     }
-    return flag;
+    return flag.toString();
   }
 
   public static void checkIndex(PublicationDetail pubDetail) {
     // This publication must be indexed ?
     // Only if it is valid
-    if (isIndexable(pubDetail))
+    if (isIndexable(pubDetail)) {
       pubDetail.setIndexOperation(IndexManager.ADD);
-    else
+    }
+    else {
       pubDetail.setIndexOperation(IndexManager.REMOVE);
+    }
   }
 
   public static boolean isIndexable(PublicationDetail pubDetail) {
