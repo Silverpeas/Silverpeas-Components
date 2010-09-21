@@ -23,62 +23,54 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page isELIgnored="false"%>
+<%@ page import="java.net.URLEncoder"%>
+<%@ page import="java.util.HashMap"%>
+<%@ page import="java.util.Map"%>
+<%@ page import="java.util.ArrayList"%>
+<%@ page import="java.util.Set"%>
+<%@ page import="java.util.Iterator"%>
+
+<%@ page import="com.silverpeas.components.organizationchart.model.OrganizationalChart"%>
+<%@ page import="com.silverpeas.components.organizationchart.model.OrganizationalUnit"%>
 <%@ include file="check.jsp"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
+<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
+<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <html>
   <head>
-	<link type="text/css" href="<c:url value="/organizationchart/css/dtree.css" />" rel="StyleSheet"/>
+	<link type="text/css" href="<c:url value="/organizationchart/css/organizationchart.css" />" rel="StyleSheet"/>
     <view:looknfeel />
     <script type="text/javascript">
     var organizationchartPath = '<%=request.getContextPath()%>/organizationchart/';
     </script>
-    <script type="text/javascript" src="<c:url value="/organizationchart/js/vertdtree.js" />" ></script>
+    <script type="text/javascript" src="<c:url value="/organizationchart/js/organizationchart.js" />" ></script>
   </head>
   <fmt:setLocale value="${sessionScope[sessionController].language}" />
   <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
   <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-  <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+  <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onload="chartinit();">
     <view:window>
       <view:frame>
         <view:board>
           <c:out value="${error}"/>
-         <table align="center">
-         	<tr>
-         	<td align="left"><A href="javascript:;" onClick="mytree.closeAll();">tout r�duire</A></td>
-         	<td align="right"><A href="javascript:;" onClick="mytree.resizeon(-2);">retour � la racine</A></td>
-         	</tr>
-         	<tr><td>
-	    	<script type="text/javascript">
-	    		mytree = new dTree('mytree');
-	    		<c:forEach var="child" items="${organigramme}">
-	    	  		mytree.add(<c:out value="${child.id}"/>, 
-	    	  			<c:out value="${child.parentId}"/>,
-		      			'<c:out value="${child.name}"/><c:if test="${child.fonction != ''}"><br></c:if>' +
-		      			'<c:out value="${child.fonction}"/>' +
-		      			'<c:if test="${child.tel != ''}"><br></c:if><c:out value="${child.tel}"/>', 
-		      			<c:choose>
-		      				<c:when test="${child.detailed}">'id<c:out value="${child.id}"/>'</c:when>
-		      				<c:otherwise>''</c:otherwise>
-		      			</c:choose>
-						,'<c:out value="${child.description}"/>', 
-		      			'popup', '', '', true, 
-		      			<c:choose>
-	      					<c:when test="${child.firstLevel}">true</c:when>
-	      					<c:otherwise>false</c:otherwise>
-			      		</c:choose>
-		      			, '<c:out value="${child.style}"/>');
-				</c:forEach>
-				
-				document.write(mytree); 
-				mytree.closeAll();
-			</script> 
-		  </td></tr></table>
+             <div id="chart" border="2px"></div>
+             <div id="chartInvisible" border="2px"></div>
+		     <script type="text/javascript">
+		     <c:choose>
+                <c:when test="${organigramme.chartType==0}">
+                	<jsp:include page="chartUnit.jsp"/> 
+       			</c:when>
+       			<c:when test="${organigramme.chartType==1}">
+       				<jsp:include page="chartPersonns.jsp"/> 
+       			</c:when>
+       	  	</c:choose>
+   	      </script>
+   	     
         </view:board>
       </view:frame>
+      
+      
     </view:window>
   </body>
 </html>

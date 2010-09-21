@@ -31,4 +31,20 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 <c:out value="${error}"/>
+
+<%@ page import="com.silverpeas.components.organizationchart.control.OrganizationChartSessionController"%>
+<%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
+<%
+	OrganizationChartSessionController organizationChartScc = (OrganizationChartSessionController) request.getAttribute("OrganizationChart");
+	
+	if (organizationChartScc == null) {
+	    // No session controller in the request -> security exception
+	    String sessionTimeout = GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
+	    getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
+	    return;
+	}
+	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
+	
+%>

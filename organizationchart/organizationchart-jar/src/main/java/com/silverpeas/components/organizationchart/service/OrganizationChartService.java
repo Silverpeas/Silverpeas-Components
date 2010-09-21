@@ -24,11 +24,13 @@
 package com.silverpeas.components.organizationchart.service;
 
 import java.util.Map;
+
+import com.silverpeas.components.organizationchart.model.OrganizationalChart;
 import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
 
 public interface OrganizationChartService {
 
-  public OrganizationalPerson[] getOrganizationChart(String componentId);
+  public OrganizationalChart getOrganizationChart(String componentId, String baseOu, int type);
 
   public Map<String, String> getOrganizationalPerson(OrganizationalPerson[] org, int id);
 }

@@ -27,16 +27,23 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.naming.Context;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import javax.naming.directory.*;
+import javax.naming.directory.Attribute;
+import javax.naming.directory.Attributes;
+import javax.naming.directory.DirContext;
+import javax.naming.directory.InitialDirContext;
+import javax.naming.directory.SearchControls;
+import javax.naming.directory.SearchResult;
 
+import com.silverpeas.components.organizationchart.model.OrganizationalChart;
 import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
+import com.silverpeas.components.organizationchart.model.OrganizationalRole;
+import com.silverpeas.components.organizationchart.model.OrganizationalUnit;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 
@@ -52,14 +59,17 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
   public static final String PARAM_LDAP_CLASS_UNIT = "ldapClassUnit";
   public static final String PARAM_LDAP_ATT_UNIT = "ldapAttUnit";
   public static final String PARAM_LDAP_ATT_NAME = "ldapAttName";
-  public static final String PARAM_LDAP_ATT_TITLE = "ldapAttTitle";
-  public static final String PARAM_LDAP_ATT_DESC = "ldapAttDesc";
-  public static final String PARAM_LDAP_ATT_TEL = "ldapAttTel";
-  public static final String PARAM_RESPONSABLE_LABEL = "responsableLabel";
-  public static final String PARAM_FIRSTLEVEL_LABEL = "firstLevelLabel";
+  public static final String PARAM_LDAP_ATT_TITLE = "ldapAttTitle"; // champ LDAP du titre 
+  public static final String PARAM_LDAP_ATT_DESC = "ldapAttDesc"; // champ ldap de la description
+  public static final String PARAM_UNITSCHART_CENTRAL_LABEL = "unitsChartCentralLabel";
+  public static final String PARAM_UNITSCHART_RIGHT_LABEL = "unitsChartRightLabel";
+  public static final String PARAM_UNITSCHART_LEFT_LABEL = "unitsChartLeftLabel";
+  public static final String PARAM_PERSONNSCHART_CENTRAL_LABEL = "personnsChartCentralLabel";
+  public static final String PARAM_PERSONNSCHART_CATEGORIES_LABEL = "personnsChartCategoriesLabel";
+  public static final String PARAM_UNITSCHART_OTHERSINFOS_KEYS = "unitsChartOthersInfosKeys";
+  public static final String PARAM_PERSONNSCHART_OTHERSINFOS_KEYS = "personnsChartOthersInfosKeys";
+  
   public static final String PARAM_LDAP_ATT_ACTIF = "ldapAttActif";
-
-  private static final String LIB_TEL = "Tel : ";
 
   private String LDAP_ROOT;
   private String LDAP_CLASS_PERSON;
@@ -68,75 +78,64 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
   private String LDAP_ATT_NAME;
   private String LDAP_ATT_TITLE;
   private String LDAP_ATT_DESC;
-  private String LDAP_ATT_TEL;
-  private String[] RESPONSABLE_LABEL;
-  private String[] FIRSTLEVEL_LABEL;
   private String LDAP_ATT_ACTIF;
 
+  private OrganizationalRole[] UNITSCHART_CENTRAL_LABEL;
+  private OrganizationalRole[] UNITSCHART_RIGHT_LABEL;
+  private OrganizationalRole[] UNITSCHART_LEFT_LABEL;
+  private OrganizationalRole[] PERSONNSCHART_CENTRAL_LABEL;
+  private OrganizationalRole[] PERSONNSCHART_CATEGORIES_LABEL;
+  private Map<String,String> UNITSCHART_KEYSANDLABELOTHERSINFOS;
+  private Map<String,String> PERSONNSCHART_KEYSANDLABELOTHERSINFOS;
+  
   private OrganizationController controller;
 
   @Override
-  public OrganizationalPerson[] getOrganizationChart(String componentId) {
+  public OrganizationalChart getOrganizationChart(String componentId, String baseOu, int type) {
     SilverTrace.info("organizationchart",
         "OrganizationChartLdapServiceImpl.getOrganizationChart()", "root.MSG_GEN_ENTER_METHOD",
         "componentId=" + componentId);
     Hashtable<String, String> env = initEnv(componentId);
-    Map<String, OrganizationalPerson> mapPerson = new HashMap<String, OrganizationalPerson>();
+    OrganizationalPerson[] arrayPerson = null;
+    OrganizationalUnit[] units = null;
+    
+    // beginning node of the search
+    String rootOu = LDAP_ROOT;
+    if(baseOu != null){
+    	rootOu = baseOu;
+    }
+    
+    // Parent definition = top of the chart
+    String[] ous = rootOu.split(",");
+    String[] firstOu = ous[0].split("=");
+    OrganizationalUnit parent = new OrganizationalUnit(firstOu[1],rootOu,LDAP_ATT_UNIT);
+    
     try {
       DirContext ctx = new InitialDirContext(env);
       SearchControls ctls = new SearchControls();
-      ctls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+      ctls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
       ctls.setCountLimit(0);
 
       try {
-        // recupere les personnes
-        NamingEnumeration<SearchResult> results = ctx.search(LDAP_ROOT,
-            "(objectclass=" + LDAP_CLASS_PERSON + ")", ctls);
-        SilverTrace.info("organizationchart",
-            "OrganizationChartLdapServiceImpl.getOrganizationChart()", "root.MSG_GEN_PARAM_VALUE",
-            "users retrieved !");
-        int i = 0;
-        Map<String, Integer> listResponsable = new HashMap<String, Integer>();
-        while (results != null && results.hasMore()) {
-          SearchResult entry = (SearchResult) results.next();
-          if (entry.getName() != null && !entry.getName().isEmpty()) {
-            Attributes attrs = entry.getAttributes();
-            if (isActif(attrs)) {
-              OrganizationalPerson pers = createPerson(i, attrs,
-                  entry.getNameInNamespace(), listResponsable);
-              mapPerson.put(pers.getName() + pers.getId(), pers);
-              i++;
-            }
-          }
-        }
-
-        // recupère les services
-        Map<String, String> listOu = new HashMap<String, String>();
-        results = ctx.search(LDAP_ROOT, "(objectclass=" + LDAP_CLASS_UNIT + ")", ctls);
-        SilverTrace.info("organizationchart",
-            "OrganizationChartLdapServiceImpl.getOrganizationChart()", "root.MSG_GEN_PARAM_VALUE",
-            "services retrieved !");
-        while (results != null && results.hasMore()) {
-          SearchResult entry = (SearchResult) results.next();
-          Attributes attrs = entry.getAttributes();
-          String ou = getAttributValue(attrs.get(LDAP_ATT_UNIT));
-          if (!LDAP_ROOT.contains(ou)) {
-            String[] ous = entry.getNameInNamespace().split(",");
-            if (ous.length > 1) {
-              for (int j = 0; j < ous.length; j++) {
-                String[] atr = ous[j].split("=");
-                if (atr.length > 1 && atr[0].equalsIgnoreCase(LDAP_ATT_UNIT) &&
-                    !atr[1].equalsIgnoreCase(ou)) {
-                  listOu.put(ou, atr[1]);
-                  break;
-                }
-              }
-            }
-          }
-        }
+        // get personns
+    	arrayPerson = getPersons(ctx, ctls, rootOu, type);
+    	if(arrayPerson!=null && arrayPerson.length > 0){
+    		parent.setUnderPersonnsExists(true);
+    	}
+    	SilverTrace.info("organizationchart",
+				"OrganizationChartLdapServiceImpl.getOrganizationChart()", "root.MSG_GEN_PARAM_VALUE",
+            	"personns retrieved !");
+    	
+        // get units
+    	if(type == OrganizationalChart.UNITCHART){
+    		units = getUnits(ctx, ctls, rootOu);
+    		SilverTrace.info("organizationchart",
+    				"OrganizationChartLdapServiceImpl.getOrganizationChart()", "root.MSG_GEN_PARAM_VALUE",
+                	"units retrieved !");
+    	}
 
         // détermination du chef de chaque personne
-        List<OrganizationalPerson> listService = new ArrayList<OrganizationalPerson>();
+        /*List<OrganizationalPerson> listService = new ArrayList<OrganizationalPerson>();
         for (Iterator<OrganizationalPerson> it = mapPerson.values().iterator(); it.hasNext();) {
           OrganizationalPerson pers = it.next();
           if (pers.isResponsable()) {
@@ -150,7 +149,8 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
         }
         for (OrganizationalPerson pers : listService) {
           mapPerson.put(pers.getName() + pers.getId(), pers);
-        }
+        }*/
+        
       } catch (Exception ex) {
         ctx.close();
         ex.printStackTrace();
@@ -168,21 +168,116 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
           "organizationChart.ldap.conection.error", e);
       return null;
     }
+    
+    OrganizationalChart chart = null;
+    if(type == OrganizationalChart.UNITCHART){
+    	chart = new OrganizationalChart(parent, units, arrayPerson);
+    }else{
+    	OrganizationalUnit[] categories = getCategories(arrayPerson);
+    	chart = new OrganizationalChart(parent, arrayPerson, categories);
+    }
+    return chart;
+  }
 
-    // classement alphabétique
-    OrganizationalPerson[] arrayPerson = null;
+private OrganizationalPerson[] getPersons(DirContext ctx, SearchControls ctls, String rootOu, int type) throws NamingException {
+	Map<String, OrganizationalPerson> mapPerson = new HashMap<String, OrganizationalPerson>();
+	NamingEnumeration<SearchResult> results = ctx.search(rootOu,
+	    "(objectclass=" + LDAP_CLASS_PERSON + ")", ctls);
+	SilverTrace.info("organizationchart",
+	    "OrganizationChartLdapServiceImpl.getOrganizationChart()", "root.MSG_GEN_PARAM_VALUE",
+	    "users retrieved !");
+	int i = 0;
+	while (results != null && results.hasMore()) {
+	  SearchResult entry = (SearchResult) results.next();
+	  if (entry.getName() != null && !entry.getName().isEmpty()) {
+	    Attributes attrs = entry.getAttributes();
+	    if (isActif(attrs)) {
+	      OrganizationalPerson pers = createPerson(i, attrs,
+	          entry.getNameInNamespace(), type);
+	      mapPerson.put(pers.getName() + pers.getId(), pers);
+	      i++;
+	    }
+	  }
+	}
+	
+	// alphabetical sort
+	OrganizationalPerson[] arrayPerson = null;
     if (mapPerson.size() > 0) {
       arrayPerson = new OrganizationalPerson[mapPerson.size()];
       List<String> keys = new ArrayList<String>(mapPerson.keySet());
       Collections.sort(keys);
-      int i = 0;
+      int j = 0;
       for (String id : keys) {
         OrganizationalPerson pers = mapPerson.get(id);
-        arrayPerson[i++] = pers;
+        arrayPerson[j++] = pers;
       }
     }
+    
     return arrayPerson;
-  }
+}
+
+private OrganizationalUnit[] getUnits(DirContext ctx,
+		SearchControls ctls, String rootOu) throws NamingException {
+	
+	ArrayList<OrganizationalUnit> units = new ArrayList<OrganizationalUnit>();
+	
+	NamingEnumeration<SearchResult> results = ctx.search(rootOu, "(objectclass=" + LDAP_CLASS_UNIT + ")", ctls);
+	SilverTrace.info("organizationchart",
+	    "OrganizationChartLdapServiceImpl.getOrganizationChart()", "root.MSG_GEN_PARAM_VALUE",
+	    "services retrieved !");
+	while (results != null && results.hasMore()) {
+	  SearchResult entry = (SearchResult) results.next();
+	  Attributes attrs = entry.getAttributes();
+	  String ou = getAttributValue(attrs.get(LDAP_ATT_UNIT));
+	  String completeOu = entry.getNameInNamespace();
+	  OrganizationalUnit unit = new OrganizationalUnit(ou, completeOu, LDAP_ATT_UNIT);
+	  // search of sub ous
+	  NamingEnumeration<SearchResult> subOus = ctx.search(completeOu, "(objectclass=" + LDAP_CLASS_UNIT + ")", ctls);
+	  if(subOus != null && subOus.hasMoreElements()){
+		  unit.setUnderOrganizationalUnitExists(true);
+	  }
+	  // search of personns in this unit
+	  NamingEnumeration<SearchResult> subPersonns = ctx.search(completeOu,
+			    "(objectclass=" + LDAP_CLASS_PERSON + ")", ctls);
+	  if(subPersonns != null && subPersonns.hasMoreElements()){
+		  unit.setUnderPersonnsExists(true);
+	  }
+	  units.add(unit);
+	}
+	return units.toArray(new OrganizationalUnit[units.size()]);
+}
+
+private OrganizationalUnit[] getCategories(OrganizationalPerson[] arrayPerson) {
+	if(arrayPerson!= null && arrayPerson.length > 0){
+		ArrayList<OrganizationalUnit> categories = new ArrayList<OrganizationalUnit>();
+		boolean createOthersCases = false;
+		for (int i = 0; i < PERSONNSCHART_CATEGORIES_LABEL.length; i++) {
+			String key = PERSONNSCHART_CATEGORIES_LABEL[i].getLdapKey();
+			// check if key found just one time
+			boolean found = false;
+			for (int j = 0; j < arrayPerson.length; j++) {
+				if(key.equals(arrayPerson[i].getVisibleCategory())){
+					found = true;
+					break;
+				}
+			}
+			if(found){
+				OrganizationalUnit newUnit = new OrganizationalUnit(PERSONNSCHART_CATEGORIES_LABEL[i].getLabel(), PERSONNSCHART_CATEGORIES_LABEL[i].getLdapKey());
+				categories.add(newUnit);
+			}else if(!createOthersCases){
+				OrganizationalUnit otherUnit = new OrganizationalUnit("Personnel");
+				categories.add(otherUnit);
+			}
+		}
+		if(categories.size() > 0){
+			return categories.toArray(new OrganizationalUnit[categories.size()]);
+		}else{
+			return null;
+		}
+	}else{
+		return null;
+	}
+}
 
   public Map<String, String> getOrganizationalPerson(OrganizationalPerson[] org, int id) {
     for (OrganizationalPerson pers : org) {
@@ -194,8 +289,7 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
     return null;
   }
 
-  private OrganizationalPerson createPerson(int id, Attributes attrs, String dn,
-      Map<String, Integer> listResponsable) {
+  private OrganizationalPerson createPerson(int id, Attributes attrs, String dn, int type) {
     Attribute cn = attrs.get(LDAP_ATT_NAME);
     Attribute title = attrs.get(LDAP_ATT_TITLE);
     String service = "";
@@ -216,34 +310,28 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
       service = getAttributValue(ou);
 
     String fonction = getAttributValue(title);
-    boolean responsable = false;
-    for (String label : RESPONSABLE_LABEL) {
-      if (fonction != null && label != null && fonction.toLowerCase().contains(label)) {
-        responsable = true;
-        fonction = service;
-        listResponsable.put(fonction, id);
-        break;
-      }
-    }
+    
     Attribute desc = attrs.get(LDAP_ATT_DESC);
-    Attribute tel = attrs.get(LDAP_ATT_TEL);
     OrganizationalPerson pers =
         new OrganizationalPerson(id, -1,
-            getAttributValue(cn), fonction, getLibTel(tel), getAttributValue(desc), service,
-            responsable);
-    for (String label : FIRSTLEVEL_LABEL) {
-      if (fonction != null && label != null && !label.isEmpty() &&
-          fonction.toLowerCase().contains(label)) {
-        pers.setFirstLevel(true);
-        break;
-      }
-    }
+            getAttributValue(cn), fonction, getAttributValue(desc), service);
+    
     NamingEnumeration<?> attributs = attrs.getAll();
     Map<String, String> details = new HashMap<String, String>();
+    
+    Map<String, String> attributesToReturn = null;
+    if(type == OrganizationalChart.UNITCHART){
+    	attributesToReturn = UNITSCHART_KEYSANDLABELOTHERSINFOS;
+    }else{
+    	attributesToReturn = PERSONNSCHART_KEYSANDLABELOTHERSINFOS;
+    }
+    
+    // get only the attributes defined in the organizationChart parameters
     try {
       while (attributs.hasMore()) {
         Attribute att = (Attribute) attributs.next();
-        if (att != null && !att.getID().equalsIgnoreCase("objectClass")) {
+        if (att != null && !att.getID().equalsIgnoreCase("objectClass") &&
+            attributesToReturn != null && attributesToReturn.size() > 0 && attributesToReturn.containsKey(att.getID())){
           String detail = "";
           if (att.size() > 1) {
             NamingEnumeration<?> vals = att.getAll();
@@ -252,41 +340,100 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
               detail += val + ", ";
             }
             detail = detail.substring(0, detail.length() - 2);
-          } else
+          } else {
             detail = getAttributValue(att);
-          details.put(att.getID(), detail);
+          }
+          details.put(attributesToReturn.get(att.getID()), detail);
         }
       }
     } catch (NamingException e) {
-      SilverTrace.warn("organizationchart", "OrganizationChartLdapServiceImpl.createPerson",
-          "organizationChart.ldap.search.error", e);
-    }
+        SilverTrace.warn("organizationchart", "OrganizationChartLdapServiceImpl.createPerson",
+            "organizationChart.ldap.search.error", e);
+    }  
+    
     pers.setDetail(details);
+    
+    // defined the boxes with personns inside
+    if(type == OrganizationalChart.UNITCHART){
+    	defineUnitChartRoles(pers, fonction);
+    }else{
+    	defineDetailledChartRoles(pers, fonction);
+    }
+
     return pers;
   }
-
-  private int setResponsable(OrganizationalPerson pers, String service,
-      int i, Map<String, String> listOu, Map<String, Integer> listResponsable,
-      List<OrganizationalPerson> listService) {
-    if (listResponsable.containsKey(service))
-      pers.setParentId(listResponsable.get(service));
-    else { // pas de responsable
-      OrganizationalPerson respService = new OrganizationalPerson(i, -1,
-          service, "", "", "", service, true);
-      respService.setDetailed(false);
-      listResponsable.put(service, i);
-      pers.setParentId(i);
-      i++;
-      if (listOu.containsKey(service))
-        i =
-            setResponsable(respService, listOu.get(service), i, listOu, listResponsable,
-                listService);
-      listService.add(respService);
-      return i;
-    }
-    return i;
+  
+  private void defineUnitChartRoles(OrganizationalPerson pers, String function){
+     
+	 // principle: the left and right have the most complicated labels
+	 // so we look for them before the central
+	 // ex: left = maire-adjoint
+	 //     central = maire
+	  
+	 boolean finish = false;
+	 // right 
+ 	 for (OrganizationalRole role : UNITSCHART_RIGHT_LABEL) {
+		  if (function != null && role != null && role.getLdapKey() != null && !role.getLdapKey().isEmpty() &&
+			  function.toLowerCase().indexOf(role.getLdapKey()) != -1) {
+			  	pers.setVisibleOnRight(true);
+			  	pers.setVisibleRightLabel(role.getLabel());
+			  	finish = true;
+			  	break;
+		  }
+     }
+ 
+	 // left
+	 if(!finish){
+		 for (OrganizationalRole role : UNITSCHART_LEFT_LABEL) {
+			  if (function != null && role != null && role.getLdapKey() != null && !role.getLdapKey().isEmpty() &&
+				  function.toLowerCase().indexOf(role.getLdapKey()) != -1) {
+				  	pers.setVisibleOnLeft(true);
+				  	pers.setVisibleLeftLabel(role.getLabel());
+				  	finish = true;
+				  	break;
+			  }
+	     }
+	 }
+	 if(!finish){
+		 // central
+		 for (OrganizationalRole role : UNITSCHART_CENTRAL_LABEL) {
+			  if (function != null && role != null && role.getLdapKey() != null && !role.getLdapKey().isEmpty() &&
+				  function.toLowerCase().indexOf(role.getLdapKey()) != -1) {
+				  	pers.setVisibleOnCenter(true);
+				  	pers.setVisibleCenterLabel(role.getLabel());
+				  	finish = true;
+				  	break;
+			  }
+	     }
+	 }
   }
-
+  
+  private void defineDetailledChartRoles(OrganizationalPerson pers, String function){
+	     boolean finish = false;
+		 // central
+		 for (OrganizationalRole role : PERSONNSCHART_CENTRAL_LABEL) {
+			  if (function != null && role != null && role.getLdapKey() != null && !role.getLdapKey().isEmpty() &&
+				  function.toLowerCase().indexOf(role.getLdapKey()) != -1) {
+				  	pers.setVisibleOnCenter(true);
+				  	pers.setVisibleCenterLabel(role.getLabel());
+				  	finish = true;
+				  	break;
+			  }
+	     }
+		 // categories 
+		 if(!finish){
+			 for (OrganizationalRole role : PERSONNSCHART_CATEGORIES_LABEL) {
+				  if (function != null && role != null && role.getLdapKey() != null && !role.getLdapKey().isEmpty() &&
+					  function.toLowerCase().indexOf(role.getLdapKey()) != -1) {
+					  	pers.setVisibleCategory(role.getLabel());
+					  	finish = true;
+					  	break;
+				  }
+		     }
+		 }
+	  }
+  
+  
   private String getAttributValue(Attribute att) {
     if (att == null)
       return null;
@@ -298,13 +445,6 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
     } catch (Exception e) {
       return null;
     }
-  }
-
-  private String getLibTel(Attribute telAtt) {
-    String tel = getAttributValue(telAtt);
-    if (tel == null)
-      return "";
-    return LIB_TEL + tel;
   }
 
   private boolean isActif(Attributes attrs) {
@@ -344,11 +484,23 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
     LDAP_ATT_NAME = controller.getComponentParameterValue(componentId, PARAM_LDAP_ATT_NAME);// "cn";
     LDAP_ATT_TITLE = controller.getComponentParameterValue(componentId, PARAM_LDAP_ATT_TITLE);// "title";
     LDAP_ATT_DESC = controller.getComponentParameterValue(componentId, PARAM_LDAP_ATT_DESC);// "description";
-    LDAP_ATT_TEL = controller.getComponentParameterValue(componentId, PARAM_LDAP_ATT_TEL);// telephoneNumber
-    String resp = controller.getComponentParameterValue(componentId, PARAM_RESPONSABLE_LABEL);
-    RESPONSABLE_LABEL = resp.toLowerCase().split(",");
-    String firstLevel = controller.getComponentParameterValue(componentId, PARAM_FIRSTLEVEL_LABEL);
-    FIRSTLEVEL_LABEL = firstLevel.toLowerCase().split(",");
+    
+    // unit chart parameters
+    String unitsCentral = controller.getComponentParameterValue(componentId, PARAM_UNITSCHART_CENTRAL_LABEL);
+    UNITSCHART_CENTRAL_LABEL = getRole(unitsCentral);
+    String unitsRight = controller.getComponentParameterValue(componentId, PARAM_UNITSCHART_RIGHT_LABEL);
+    UNITSCHART_RIGHT_LABEL = getRole(unitsRight);
+    String unitsLeft = controller.getComponentParameterValue(componentId, PARAM_UNITSCHART_LEFT_LABEL);
+    UNITSCHART_LEFT_LABEL = getRole(unitsLeft);
+    UNITSCHART_KEYSANDLABELOTHERSINFOS = getKeysAndLabel(controller.getComponentParameterValue(componentId, PARAM_UNITSCHART_OTHERSINFOS_KEYS));
+    
+    // detailled chart parameters
+    String personnsCentral = controller.getComponentParameterValue(componentId, PARAM_PERSONNSCHART_CENTRAL_LABEL);
+    PERSONNSCHART_CENTRAL_LABEL = getRole(personnsCentral);
+    String personnsCategories = controller.getComponentParameterValue(componentId, PARAM_PERSONNSCHART_CATEGORIES_LABEL);
+    PERSONNSCHART_CATEGORIES_LABEL = getRole(personnsCategories);
+    PERSONNSCHART_KEYSANDLABELOTHERSINFOS = getKeysAndLabel(controller.getComponentParameterValue(componentId, PARAM_PERSONNSCHART_OTHERSINFOS_KEYS));
+    
     LDAP_ATT_ACTIF = controller.getComponentParameterValue(componentId, PARAM_LDAP_ATT_ACTIF);
     if (LDAP_ATT_ACTIF == null || LDAP_ATT_ACTIF.isEmpty())
       LDAP_ATT_ACTIF = null;
@@ -356,8 +508,49 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
         "root.MSG_GEN_EXIT_METHOD");
     return env;
   }
+  
+  private Map<String, String> getKeysAndLabel(String parameterValue){
+	  Map<String, String> others = new HashMap<String, String>();
+	  if(parameterValue != null && parameterValue.length() > 0){
+		  String[] couples = parameterValue.toLowerCase().split(";");
+		  // ex: labelChamp1=keyLdap1;labelChamp2=keyLdap2
+		  if(couples!= null && couples.length > 0){
+			  for (int i = 0; i < couples.length; i++) {
+				  String[] details = couples[i].split("=");
+				  others.put(details[1],details[0]);
+			  }
+		  }
+	  }
+	  return others;
+  }
+  
+  
+  private OrganizationalRole[] getRole(String parameterValue){
+	  OrganizationalRole[] roles = null;
+	  if(parameterValue != null && parameterValue.length() > 0){
+		  String[] roleCouple = parameterValue.toLowerCase().split(";");
+		  
+		  // ex: labelRole1=keyRole1;labelRole2=keyRole2
+		  if(roleCouple!= null && roleCouple.length > 0){
+			  roles = new OrganizationalRole[roleCouple.length];
+			  for (int i = 0; i < roleCouple.length; i++) {
+				String[] roleDetails = roleCouple[i].split("=");
+				if(roleDetails.length == 2){
+					roles[i] = new OrganizationalRole(roleDetails[0],roleDetails[1]);
+				}else{
+					SilverTrace.info("organizationchart",
+							"OrganizationChartLdapServiceImpl.getRole()", "root.MSG_GEN_PARAM_VALUE",
+			            	"bad format for a role couple " + roleCouple[i]);
+				}
+			  }
+		  }
+	  }
+	  return roles;
+  }
 
   public void setController(OrganizationController controller) {
     this.controller = controller;
   }
+  
+  
 }

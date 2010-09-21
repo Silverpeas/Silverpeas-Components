@@ -30,6 +30,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.components.organizationchart.control.OrganizationChartSessionController;
+import com.silverpeas.components.organizationchart.model.OrganizationalChart;
 import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
 import com.silverpeas.components.organizationchart.service.ServicesFactory;
 
@@ -41,18 +42,37 @@ public class OrganizationChartProcessor {
   public static final String DESTINATION_ERROR = "check.jsp";
 
   public static String processOrganizationChart(HttpServletRequest request, String componentId) {
-    request.removeAttribute("error");
-    if (request.getSession().getAttribute("organigramme") == null ||
-        request.getSession().getAttribute("orgId") != componentId) {
-      OrganizationalPerson[] result = ServicesFactory.getOrganizationChartService().
-          getOrganizationChart(componentId);
+	  request.removeAttribute("error");
+      String rootOu = request.getParameter("baseOu");
+      
+      String chartType = request.getParameter("chartType");
+      int type = OrganizationalChart.UNITCHART;
+      if(chartType != null){
+    	  try{
+    		  type = Integer.valueOf(chartType);
+    	  }catch(NumberFormatException e){
+    		  type = OrganizationalChart.UNITCHART;
+    	  }
+      }
+      
+      OrganizationalChart result = ServicesFactory.getOrganizationChartService().
+          getOrganizationChart(componentId, rootOu, type);
       if (result != null) {
-        request.getSession().setAttribute("organigramme", result);
+        if(result.getUnits() == null || result.getUnits().length == 0){
+        	// if no sub-units, force to personn chart
+        	type = OrganizationalChart.PERSONNCHART;
+        	result = ServicesFactory.getOrganizationChartService().getOrganizationChart(componentId, rootOu, type);
+        	 if (result == null) {
+        		 request.setAttribute("error", "Une erreur s'est produite lors du chargement des donnees (redirection automatique organigramme personnes)");
+        	 }
+        } 
+    	request.getSession().setAttribute("organigramme", result);
         request.getSession().setAttribute("orgId", componentId);
-      } else
-        request.setAttribute("error", "une erreur s'est produite lors du chargement des données");
-    }
-    return JSP_BASE + DESTINATION_DISPLAY_CHART;
+        request.getSession().setAttribute("chartType", type);
+      } else {
+        request.setAttribute("error", "une erreur s'est produite lors du chargement des donnÃ©es");
+      }   
+      return JSP_BASE + DESTINATION_DISPLAY_CHART;
   }
 
   public static String processPerson(HttpServletRequest request, String idStr,
@@ -80,11 +100,11 @@ public class OrganizationChartProcessor {
         }
         return JSP_BASE + DESTINATION_PERSON;
       } else {
-        request.setAttribute("error", "impossible d'aficher le détail de cette personne");
+        request.setAttribute("error", "impossible d'aficher le dÃ©tail de cette personne");
         return JSP_BASE + DESTINATION_ERROR;
       }
     } catch (Exception ex) {
-      request.setAttribute("error", "impossible d'aficher le détail de cette personne : \n" +
+      request.setAttribute("error", "impossible d'aficher le dÃ©tail de cette personne : \n" +
           ex.getMessage());
       return JSP_BASE + DESTINATION_ERROR;
     }

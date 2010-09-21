@@ -30,29 +30,27 @@ public class OrganizationalPerson {
   private int id;
   private int parentId;
   private String name;// =cn
-  private String fonction; // =title ou ou si responsable
+  private String fonction; // =titre
   private String description;// =tooltip
   private String service;// ou
-  private String tel;// telephone
-  private boolean responsable;
-  private boolean firstLevel;
-  private boolean detailed; // si true, on peut cliquer dessus pour voir toutes ses info
   private Map<String, String> detail;
-
-  public OrganizationalPerson(int id, int parentId, String name, String fonction, String tel,
-      String description, String service, boolean responsable) {
+  
+  private boolean visibleOnCenter = false; // visible on the top central unit
+  private String visibleCenterLabel = null;
+  private boolean visibleOnRight = false;  // visible on the right unit (units organizational chart only)
+  private String visibleRightLabel = null; 
+  private boolean visibleOnLeft = false;   // visible on the right unit (units organizational chart only)
+  private String visibleLeftLabel = null;
+  private String visibleCategory = null;  // visible category name (detailled organizational chart only)
+  
+  public OrganizationalPerson(int id, int parentId, String name, String fonction, String description, String service) {
     this.id = id;
     this.parentId = parentId;
     this.name = name;
     this.fonction = fonction;
-    this.tel = tel;
     this.description = description;
     this.service = service;
-    this.responsable = responsable;
-    this.detailed = true;
     this.parentId = -1;// root par défaut
-    this.firstLevel = false;// children normal par défaut
-
   }
 
   public String toString() {// pour debug
@@ -65,10 +63,6 @@ public class OrganizationalPerson {
 
   public String getService() {
     return service;
-  }
-
-  public boolean isResponsable() {
-    return responsable;
   }
 
   public int getId() {
@@ -87,43 +81,72 @@ public class OrganizationalPerson {
     return fonction;
   }
 
-  public String getTel() {
-    return tel;
-  }
-
-  public String getStyle() {
-    if (responsable)
-      return "resp";
-    if (firstLevel)
-      return "assist";
-    return "empl";
-  }
-
-  public void setFirstLevel(boolean first) {
-    this.firstLevel = first;
-  }
-
-  public boolean isFirstLevel() {
-    return firstLevel;
-  }
-
   public String getDescription() {
     return description;
   }
-
-  public boolean isDetailed() {
-    return detailed;
-  }
-
-  public void setDetailed(boolean detailed) {
-    this.detailed = detailed;
-  }
-
-  public Map<String, String> getDetail() {
-    return detail;
-  }
-
+ 
   public void setDetail(Map<String, String> detail) {
     this.detail = detail;
   }
+  
+  public Map<String, String> getDetail() {
+	return detail;
+  }
+  
+  public boolean isVisibleOnCenter() {
+		return visibleOnCenter;
+	}
+
+	public void setVisibleOnCenter(boolean visibleOnCenter) {
+		this.visibleOnCenter = visibleOnCenter;
+	}
+
+	public boolean isVisibleOnRight() {
+		return visibleOnRight;
+	}
+
+	public void setVisibleOnRight(boolean visibleOnRight) {
+		this.visibleOnRight = visibleOnRight;
+	}
+
+	public boolean isVisibleOnLeft() {
+		return visibleOnLeft;
+	}
+
+	public void setVisibleOnLeft(boolean visibleOnLeft) {
+		this.visibleOnLeft = visibleOnLeft;
+	}
+
+	public String getVisibleCategory() {
+		return visibleCategory;
+	}
+
+	public void setVisibleCategory(String visibleCategory) {
+		this.visibleCategory = visibleCategory;
+	}
+	
+    public String getVisibleCenterLabel() {
+		return visibleCenterLabel;
+	}
+
+	public void setVisibleCenterLabel(String visibleCenterlabel) {
+		this.visibleCenterLabel = visibleCenterlabel;
+	}
+
+	public String getVisibleRightLabel() {
+		return visibleRightLabel;
+	}
+
+	public void setVisibleRightLabel(String visibleRightLabel) {
+		this.visibleRightLabel = visibleRightLabel;
+	}
+
+	public String getVisibleLeftLabel() {
+		return visibleLeftLabel;
+	}
+
+	public void setVisibleLeftLabel(String visibleLeftLabel) {
+		this.visibleLeftLabel = visibleLeftLabel;
+	}
+
 }
