@@ -484,6 +484,16 @@ public class ImageHelper {
 
   public static BufferedImage getScaledInstance(BufferedImage img,
       int targetWidth, int targetHeight, Object hint, boolean higherQuality) {
+
+    // Never try to get a 0-sized picture so that constructor of BufferedImage
+    // will not return an IllegalArgumentException
+    if (targetWidth < 1) {
+      targetWidth = 1;
+    }
+    if (targetHeight < 1) {
+      targetHeight = 1;
+    }
+
     int type =  BufferedImage.TYPE_INT_RGB;
     BufferedImage ret = img;
     int w, h;
