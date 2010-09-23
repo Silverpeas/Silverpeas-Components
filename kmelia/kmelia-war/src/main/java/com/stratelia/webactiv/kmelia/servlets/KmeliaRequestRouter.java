@@ -1124,7 +1124,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         Collection<PublicationTemplate> listModelXml = new ArrayList<PublicationTemplate>();
         List<PublicationTemplate> templates = new ArrayList<PublicationTemplate>();
         try {
-          templates = PublicationTemplateManager.getPublicationTemplates();
+          templates = getPublicationTemplateManager().getPublicationTemplates();
           // recherche de la liste des modèles utilisables
           PublicationTemplate xmlForm;
           Iterator<PublicationTemplate> iterator = templates.iterator();
@@ -1181,7 +1181,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("ModelUsed")) {
         try {
           List<PublicationTemplate> templates =
-              PublicationTemplateManager.getPublicationTemplates();
+              getPublicationTemplateManager().getPublicationTemplates();
           request.setAttribute("XMLForms", templates);
         } catch (Exception e) {
           SilverTrace.info("kmelia", "KmeliaRequestRouter.getDestination(ModelUsed)",
@@ -1393,7 +1393,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         String pubId = pubDetail.getPK().getId();
 
         PublicationTemplate pub =
-            PublicationTemplateManager.getPublicationTemplate(kmelia.getComponentId() + ":"
+            getPublicationTemplateManager().getPublicationTemplate(kmelia.getComponentId() + ":"
             + xmlFormShortName);
 
         RecordSet set = pub.getRecordSet();
@@ -2084,7 +2084,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
     String pubId = pubDetail.getPK().getId();
     if (!isInteger(infoId)) {
       PublicationTemplateImpl pubTemplate =
-          (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(pubDetail.
+          (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(pubDetail.
           getPK().getInstanceId()
           + ":"
           + infoId);
@@ -2313,12 +2313,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           "root.MSG_GEN_PARAM_VALUE", "xmlFormShortName = " + xmlFormShortName);
 
       // register xmlForm to publication
-      PublicationTemplateManager.addDynamicPublicationTemplate(kmelia.getComponentId()
+      getPublicationTemplateManager().addDynamicPublicationTemplate(kmelia.getComponentId()
           + ":" + xmlFormShortName, xmlFormName);
     }
 
     PublicationTemplateImpl pubTemplate =
-        (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(kmelia.
+        (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(kmelia.
         getComponentId()
         + ":"
         + xmlFormShortName, xmlFormName);
@@ -2549,5 +2549,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
       return getDestination("GoToTopic", kmelia, request);
     }
     return "";
+  }
+  
+  /**
+   * Gets an instance of PublicationTemplateManager.
+   * @return an instance of PublicationTemplateManager.
+   */
+  public PublicationTemplateManager getPublicationTemplateManager() {
+    return PublicationTemplateManager.getInstance();
   }
 }

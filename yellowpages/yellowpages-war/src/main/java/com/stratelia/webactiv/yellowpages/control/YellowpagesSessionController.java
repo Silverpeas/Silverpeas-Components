@@ -570,7 +570,7 @@ public class YellowpagesSessionController extends
             .indexOf("/") + 1, xmlFormName.indexOf("."));
 
         // recuperation des donnees du formulaire (via le DataRecord)
-        PublicationTemplate pubTemplate = PublicationTemplateManager
+        PublicationTemplate pubTemplate = getPublicationTemplateManager()
             .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
 
         RecordSet recordSet = pubTemplate.getRecordSet();
@@ -1061,7 +1061,7 @@ public class YellowpagesSessionController extends
             xmlFormName.indexOf("."));
 
         // recuperation des donn�es du formulaire (via le DataRecord)
-        pubTemplate = PublicationTemplateManager
+        pubTemplate = getPublicationTemplateManager()
             .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
 
         recordSet = pubTemplate.getRecordSet();
@@ -1499,7 +1499,7 @@ public class YellowpagesSessionController extends
             String xmlFormName = modelId;
             String xmlFormShortName = xmlFormName.substring(0, xmlFormName.indexOf("."));
             PublicationTemplateImpl pubTemplate =
-                (PublicationTemplateImpl) PublicationTemplateManager
+                (PublicationTemplateImpl) getPublicationTemplateManager()
                     .getPublicationTemplate(getComponentId() + ":"
                         + xmlFormShortName, xmlFormName);
 
@@ -1645,7 +1645,7 @@ public class YellowpagesSessionController extends
                   .indexOf("/") + 1, modelId.indexOf("."));
 
               // récupération des données du formulaire (via le DataRecord)
-              PublicationTemplate pubTemplate = PublicationTemplateManager
+              PublicationTemplate pubTemplate = getPublicationTemplateManager()
                   .getPublicationTemplate(getComponentId() + ":"
                       + xmlFormShortName);
               DataRecord record = pubTemplate.getRecordSet().getEmptyRecord();
@@ -1720,4 +1720,11 @@ public class YellowpagesSessionController extends
     return newValue;
   }
 
+  /**
+   * Gets an instance of PublicationTemplateManager.
+   * @return an instance of PublicationTemplateManager.
+   */
+  private PublicationTemplateManager getPublicationTemplateManager() {
+    return PublicationTemplateManager.getInstance();
+  }
 }

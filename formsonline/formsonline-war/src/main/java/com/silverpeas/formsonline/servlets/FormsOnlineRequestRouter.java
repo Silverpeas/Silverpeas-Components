@@ -107,7 +107,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
       else if (function.equals("CreateForm")) {
         FormDetail form = new FormDetail();
         form.setCreatorId(formsOnlineSC.getUserId());
-        List<PublicationTemplate> templates = PublicationTemplateManager
+        List<PublicationTemplate> templates = getPublicationTemplateManager()
             .getPublicationTemplates();
 
         formsOnlineSC.setCurrentForm(form);
@@ -147,7 +147,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
           return getDestination("Main", componentSC, request);
         }
 
-        List<PublicationTemplate> templates = PublicationTemplateManager
+        List<PublicationTemplate> templates = getPublicationTemplateManager()
             .getPublicationTemplates();
         request.setAttribute("currentForm", form);
         request.setAttribute("availableTemplates", templates);
@@ -217,22 +217,22 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
       }
 
       else if (function.equals("Preview")) {
-        // r�cuperation de l�objet et du nom du formulaire
+        // form object and data fetching
         String xmlFormName = formsOnlineSC.getCurrentForm()
             .getXmlFormName();
         String xmlFormShortName = xmlFormName.substring(xmlFormName
             .indexOf("/") + 1, xmlFormName.indexOf("."));
 
-        // cr�ation du PublicationTemplate
-        PublicationTemplateManager
+        // PublicationTemplate creation
+        getPublicationTemplateManager()
             .addDynamicPublicationTemplate(formsOnlineSC
             .getComponentId()
             + ":" + xmlFormShortName, xmlFormName);
-        PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
-            .getPublicationTemplate(formsOnlineSC.getComponentId()
-            + ":" + xmlFormShortName, xmlFormName);
+        PublicationTemplateImpl pubTemplate = 
+                (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
+                    formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
 
-        // cr�ation du formulaire et du DataRecord
+        // DataRecord and form creation
         Form formUpdate = pubTemplate.getUpdateForm();
         RecordSet recordSet = pubTemplate.getRecordSet();
         DataRecord data = recordSet.getEmptyRecord();
@@ -241,7 +241,7 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
         FormInstance fake = new FormInstance();
         fake.setCreatorId(formsOnlineSC.getUserId());
 
-        // appel de la jsp avec les param�tres
+        // call to the JSP with required parameters
         request.setAttribute("Form", formUpdate);
         request.setAttribute("Data", data);
         request.setAttribute("XMLFormName", xmlFormName);
@@ -352,26 +352,26 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
       else if (function.equals("CreateInstance")) {
         FormDetail form = formsOnlineSC.getChoosenForm();
 
-        // r�cuperation de l�objet et du nom du formulaire
+        // form object and name fetching
         String xmlFormName = form.getXmlFormName();
         String xmlFormShortName = xmlFormName.substring(xmlFormName
             .indexOf("/") + 1, xmlFormName.indexOf("."));
 
-        // cr�ation du PublicationTemplate
-        PublicationTemplateManager
+        // PublicationTemplate creation
+        getPublicationTemplateManager()
             .addDynamicPublicationTemplate(formsOnlineSC
             .getComponentId()
             + ":" + xmlFormShortName, xmlFormName);
-        PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
-            .getPublicationTemplate(formsOnlineSC.getComponentId()
-            + ":" + xmlFormShortName, xmlFormName);
+        PublicationTemplateImpl pubTemplate =
+                (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
+                    formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
 
-        // cr�ation du formulaire et du DataRecord
+        // form and DataRecord creation
         Form formUpdate = pubTemplate.getUpdateForm();
         RecordSet recordSet = pubTemplate.getRecordSet();
         DataRecord data = recordSet.getEmptyRecord();
 
-        // appel de la jsp avec les param�tres
+        // call of the JSP with required parameters
         request.setAttribute("Form", formUpdate);
         request.setAttribute("Data", data);
         request.setAttribute("XMLFormName", xmlFormName);
@@ -410,13 +410,13 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
             .indexOf("/") + 1, xmlFormName.indexOf("."));
 
         // cr�ation du PublicationTemplate
-        PublicationTemplateManager
+        getPublicationTemplateManager()
             .addDynamicPublicationTemplate(formsOnlineSC
             .getComponentId()
             + ":" + xmlFormShortName, xmlFormName);
-        PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
-            .getPublicationTemplate(formsOnlineSC.getComponentId()
-            + ":" + xmlFormShortName, xmlFormName);
+        PublicationTemplateImpl pubTemplate =
+                (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
+                    formsOnlineSC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
 
         // cr�ation du formulaire et du DataRecord
         Form formView = pubTemplate.getViewForm();
@@ -452,11 +452,12 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
             .indexOf("/") + 1, xmlFormName.indexOf("."));
 
         // cr�ation du PublicationTemplate
-        PublicationTemplateManager
+        getPublicationTemplateManager()
             .addDynamicPublicationTemplate(formsOnlineSC
             .getComponentId()
             + ":" + xmlFormShortName, xmlFormName);
-        PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
+        PublicationTemplateImpl pubTemplate =
+                (PublicationTemplateImpl) getPublicationTemplateManager()
             .getPublicationTemplate(formsOnlineSC.getComponentId()
             + ":" + xmlFormShortName, xmlFormName);
 
@@ -541,5 +542,13 @@ public class FormsOnlineRequestRouter extends ComponentRequestRouter {
         return profiles[i];
     }
     return flag;
+  }
+  
+  /**
+   * Gets an instance of the PublicationTemplateManager manager.
+   * @return an instance of PublicationTemplateManager.
+   */
+  private PublicationTemplateManager getPublicationTemplateManager() {
+    return PublicationTemplateManager.getInstance();
   }
 }

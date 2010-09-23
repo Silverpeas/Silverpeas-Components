@@ -116,8 +116,9 @@ public class FormsOnlineInstanciator implements ComponentsInstanciatorIntf {
         String xmlFormShortName = xmlFormName.substring(xmlFormName
             .indexOf("/") + 1, xmlFormName.indexOf("."));
 
-        // r�cup�ration des donn�es du formulaire (via le DataRecord)
-        PublicationTemplateManager.removePublicationTemplate(componentId + ":" + xmlFormShortName);
+        // form data fetching (through the DataRecord)
+        PublicationTemplateManager.getInstance().removePublicationTemplate(componentId + ":" +
+                xmlFormShortName);
       }
     } catch (PublicationTemplateException e) {
       throw new InstanciationException(

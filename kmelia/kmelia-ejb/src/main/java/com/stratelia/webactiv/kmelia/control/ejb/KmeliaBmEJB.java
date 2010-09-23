@@ -3137,9 +3137,10 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           String xmlFormShortName = infoId;
 
           // get xmlContent to paste
-          PublicationTemplate pubTemplate = PublicationTemplateManager
-              .getPublicationTemplate(tempPK.getInstanceId() + ":"
-                  + xmlFormShortName);
+          PublicationTemplateManager publicationTemplateManager = 
+                  PublicationTemplateManager.getInstance();
+          PublicationTemplate pubTemplate = publicationTemplateManager.getPublicationTemplate(
+                  tempPK.getInstanceId() + ":" + xmlFormShortName);
 
           RecordSet set = pubTemplate.getRecordSet();
           // DataRecord data = set.getRecord(fromId);
@@ -3149,7 +3150,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             set.merge(cloneId, pubPK.getInstanceId(), pubPK.getId(), pubPK.getInstanceId());
           } else {
             // il n'y avait pas encore de contenu
-            PublicationTemplateManager.addDynamicPublicationTemplate(tempPK
+            publicationTemplateManager.addDynamicPublicationTemplate(tempPK
                 .getInstanceId()
                 + ":" + xmlFormShortName, xmlFormShortName + ".xml");
 
@@ -4018,7 +4019,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       if (!isInteger(infoId)) {
         String xmlFormShortName = infoId;
 
-        PublicationTemplate pubTemplate = PublicationTemplateManager
+        PublicationTemplate pubTemplate = PublicationTemplateManager.getInstance()
             .getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":"
                 + xmlFormShortName);
 

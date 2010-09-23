@@ -441,9 +441,8 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
             xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
         PublicationTemplate pubTemplate;
         try {
-          pubTemplate =
-              PublicationTemplateManager.getPublicationTemplate(classified.getInstanceId() + ":" +
-                  xmlFormShortName);
+          pubTemplate = PublicationTemplateManager.getInstance()
+              .getPublicationTemplate(classified.getInstanceId() + ":" + xmlFormShortName);
           RecordSet set = pubTemplate.getRecordSet();
           String classifiedId = Integer.toString(classified.getClassifiedId());
           set.indexRecord(classifiedId, xmlFormShortName, indexEntry);

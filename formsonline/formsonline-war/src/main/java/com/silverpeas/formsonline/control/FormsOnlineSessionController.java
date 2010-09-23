@@ -274,7 +274,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
         .indexOf("/") + 1, xmlFormName.indexOf("."));
 
     // r�cup�ration des donn�es du formulaire (via le DataRecord)
-    PublicationTemplate pub = PublicationTemplateManager
+    PublicationTemplate pub = PublicationTemplateManager.getInstance()
         .getPublicationTemplate(getComponentId() + ":"
         + xmlFormShortName);
     RecordSet set = pub.getRecordSet();
@@ -480,7 +480,7 @@ public class FormsOnlineSessionController extends AbstractComponentSessionContro
       String xmlFormShortName =
           xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
       PublicationTemplate pubTemplate =
-          PublicationTemplateManager.getPublicationTemplate(getComponentId() + ":" +
+          PublicationTemplateManager.getInstance().getPublicationTemplate(getComponentId() + ":" +
           xmlFormShortName);
       RecordSet set = pubTemplate.getRecordSet();
       DataRecord data = set.getRecord(formInstanceIds[i]);

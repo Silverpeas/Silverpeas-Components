@@ -622,8 +622,8 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
             indexOf("."));
         PublicationTemplate pubTemplate;
         try {
-          pubTemplate = PublicationTemplateManager.getPublicationTemplate(photo.getInstanceId()
-              + ":" + xmlFormShortName);
+          pubTemplate = PublicationTemplateManager.getInstance().getPublicationTemplate(
+                  photo.getInstanceId() + ":" + xmlFormShortName);
           RecordSet set = pubTemplate.getRecordSet();
           set.indexRecord(photo.getPhotoPK().getId(), xmlFormShortName,
               indexEntry);

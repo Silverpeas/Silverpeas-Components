@@ -874,6 +874,8 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
           getPublicationId(), getSpaceId(), getComponentId()));
 
       String xmlFormShortName = null;
+      PublicationTemplateManager publicationTemplateManager =
+              PublicationTemplateManager.getInstance();
       if (!StringUtil.isDefined(xmlFormName)) {
         xmlFormShortName = pubDetail.getInfoId();
         xmlFormName = null;
@@ -882,11 +884,11 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
             xmlFormName.indexOf("."));
 
         // register xmlForm to publication
-        PublicationTemplateManager.addDynamicPublicationTemplate(
+        publicationTemplateManager.addDynamicPublicationTemplate(
             getComponentId() + ":" + xmlFormShortName, xmlFormName);
       }
 
-      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
+      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) publicationTemplateManager
           .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName,
           xmlFormName);
       return pubTemplate;
@@ -920,7 +922,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
       String pubId = pubDetail.getPK().getId();
 
-      PublicationTemplate pub = PublicationTemplateManager
+      PublicationTemplate pub = PublicationTemplateManager.getInstance()
           .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
 
       RecordSet set = pub.getRecordSet();

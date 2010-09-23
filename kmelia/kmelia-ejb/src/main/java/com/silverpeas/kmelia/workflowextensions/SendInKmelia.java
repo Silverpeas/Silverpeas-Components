@@ -209,9 +209,8 @@ public class SendInKmelia extends ExternalActionImpl {
     UpdatableProcessInstance currentProcessInstance =
         (UpdatableProcessInstance) getProcessInstance();
     try {
-      PublicationTemplateImpl pubTemplate =
-          (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(targetId +
-          ":" + xmlFormName);
+      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
+              .getInstance().getPublicationTemplate(targetId + ":" + xmlFormName);
       DataRecord record = pubTemplate.getRecordSet().getEmptyRecord();
       record.setId(pubId);
       for (int i = 0; i < record.getFieldNames().length; i++) {

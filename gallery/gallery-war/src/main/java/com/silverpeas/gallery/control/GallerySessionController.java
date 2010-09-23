@@ -157,7 +157,7 @@ public class GallerySessionController extends AbstractComponentSessionController
       xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName
           .indexOf("."));
       try {
-        PublicationTemplateManager.addDynamicPublicationTemplate(getComponentId() + ":"
+        getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
             + xmlFormShortName, xmlFormName);
       } catch (PublicationTemplateException e) {
         xmlFormName = null;
@@ -177,7 +177,7 @@ public class GallerySessionController extends AbstractComponentSessionController
       xmlOrderFormShortName = xmlOrderFormName.substring(xmlOrderFormName.indexOf("/") + 1,
           xmlOrderFormName.indexOf("."));
       try {
-        PublicationTemplateManager.addDynamicPublicationTemplate(getComponentId() + ":"
+        getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
             + xmlOrderFormShortName, xmlOrderFormName);
       } catch (PublicationTemplateException e) {
         throw new GalleryRuntimeException("GallerySessionController.super()",
@@ -602,7 +602,7 @@ public class GallerySessionController extends AbstractComponentSessionController
       if (isDefined(xmlFormName)) {
         String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName
             .indexOf("."));
-        PublicationTemplate pubTemplate = PublicationTemplateManager
+        PublicationTemplate pubTemplate = getPublicationTemplateManager()
             .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
 
         RecordSet set = pubTemplate.getRecordSet();
@@ -795,7 +795,7 @@ public class GallerySessionController extends AbstractComponentSessionController
       try {
         String xmlFormShortName =
             formName.substring(formName.indexOf("/") + 1, formName.indexOf("."));
-        PublicationTemplateManager.getPublicationTemplate(getComponentId() +
+        getPublicationTemplateManager().getPublicationTemplate(getComponentId() +
             ":" + xmlFormShortName, formName);
       } catch (PublicationTemplateException e) {
         formName = null;
@@ -1289,24 +1289,24 @@ public class GallerySessionController extends AbstractComponentSessionController
               // if XMLForm
               String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1,
                   xmlFormName.indexOf("."));
-              PublicationTemplateManager.addDynamicPublicationTemplate(getComponentId() + ":"
+              getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
                   + xmlFormShortName, xmlFormShortName + ".xml");
 
               // get xmlContent to paste
-              PublicationTemplate pubTemplateFrom = PublicationTemplateManager
+              PublicationTemplate pubTemplateFrom = getPublicationTemplateManager()
                   .getPublicationTemplate(fromComponentId + ":" + xmlFormShortName);
               IdentifiedRecordTemplate recordTemplateFrom =
                   (IdentifiedRecordTemplate) pubTemplateFrom
                       .getRecordSet().getRecordTemplate();
 
-              PublicationTemplate pubTemplate = PublicationTemplateManager
+              PublicationTemplate pubTemplate = getPublicationTemplateManager()
                   .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
               IdentifiedRecordTemplate recordTemplate = (IdentifiedRecordTemplate) pubTemplate
                   .getRecordSet().getRecordTemplate();
 
               // paste xml content
-              GenericRecordSetManager.cloneRecord(recordTemplateFrom, fromId, recordTemplate, id,
-                  null);
+              getGenericRecordSetManager().cloneRecord(recordTemplateFrom,
+                      fromId, recordTemplate, id, null);
             }
           } catch (PublicationTemplateException e) {
             SilverTrace.info("gallery", "GallerySessionController.pastPhoto()",
@@ -1361,23 +1361,23 @@ public class GallerySessionController extends AbstractComponentSessionController
             // if XMLForm
             String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1,
                 xmlFormName.indexOf("."));
-            PublicationTemplateManager.addDynamicPublicationTemplate(getComponentId() + ":"
+            getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
                 + xmlFormShortName, xmlFormShortName + ".xml");
 
             // get xmlContent to paste
-            PublicationTemplate pubTemplateFrom = PublicationTemplateManager
+            PublicationTemplate pubTemplateFrom = getPublicationTemplateManager()
                 .getPublicationTemplate(fromComponentId + ":" + xmlFormShortName);
             IdentifiedRecordTemplate recordTemplateFrom =
                 (IdentifiedRecordTemplate) pubTemplateFrom
                     .getRecordSet().getRecordTemplate();
 
-            PublicationTemplate pubTemplate = PublicationTemplateManager
+            PublicationTemplate pubTemplate = getPublicationTemplateManager()
                 .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
             IdentifiedRecordTemplate recordTemplate = (IdentifiedRecordTemplate) pubTemplate
                 .getRecordSet().getRecordTemplate();
 
             // paste xml content
-            GenericRecordSetManager.cloneRecord(recordTemplateFrom, fromId, recordTemplate, id,
+            getGenericRecordSetManager().cloneRecord(recordTemplateFrom, fromId, recordTemplate, id,
                 null);
           }
         } catch (PublicationTemplateException e) {
@@ -1848,5 +1848,21 @@ public class GallerySessionController extends AbstractComponentSessionController
   protected boolean isAdminOrPublisher(String profile) {
     return SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile))
         || SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile));
+  }
+  
+  /**
+   * Gets an instance of a GenericRecordSet objects manager.
+   * @return a GenericRecordSetManager instance.
+   */
+  private GenericRecordSetManager getGenericRecordSetManager() {
+    return GenericRecordSetManager.getInstance();
+  }
+  
+  /**
+   * Gets an instance of PublicationTemplateManager.
+   * @return an instance of PublicationTemplateManager.
+   */
+  private PublicationTemplateManager getPublicationTemplateManager() {
+    return PublicationTemplateManager.getInstance();
   }
 }

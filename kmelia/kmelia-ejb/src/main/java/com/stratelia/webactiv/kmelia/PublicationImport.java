@@ -161,10 +161,12 @@ public class PublicationImport {
     try {
       String pubId = pubPK.getId();
 
-      PublicationTemplateManager.addDynamicPublicationTemplate(componentId
+      PublicationTemplateManager publicationTemplateManager = 
+              PublicationTemplateManager.getInstance();
+      publicationTemplateManager.addDynamicPublicationTemplate(componentId
           + ":" + xmlFormName, xmlFormName + ".xml");
 
-      PublicationTemplate pub = PublicationTemplateManager
+      PublicationTemplate pub = publicationTemplateManager
           .getPublicationTemplate(componentId + ":" + xmlFormName);
 
       RecordSet set = pub.getRecordSet();

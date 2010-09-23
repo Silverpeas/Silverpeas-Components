@@ -359,7 +359,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           xmlFormShortName =
                   xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
           PublicationTemplateImpl pubTemplate =
-                  (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(gallerySC.getComponentId()
+                  (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(gallerySC.getComponentId()
                   + ":" + xmlFormShortName, xmlFormName);
           formUpdate = pubTemplate.getUpdateForm();
           RecordSet recordSet = pubTemplate.getRecordSet();
@@ -717,7 +717,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
             xmlFormShortName =
                     xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
             PublicationTemplateImpl pubTemplate =
-                    (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(
+                    (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
                     gallerySC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
             Form formUpdate = pubTemplate.getUpdateForm();
             RecordSet recordSet = pubTemplate.getRecordSet();
@@ -827,7 +827,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
         }
 
         PublicationTemplateImpl pubTemplate =
-                (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(gallerySC.getComponentId()
+                (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(gallerySC.getComponentId()
                 + ":" + xmlFormShortName, xmlFormName);
         Form formUpdate = pubTemplate.getUpdateForm();
         RecordSet recordSet = pubTemplate.getRecordSet();
@@ -888,7 +888,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
                   xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
 
           PublicationTemplateImpl pubTemplate =
-                  (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(gallerySC.getComponentId()
+                  (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(gallerySC.getComponentId()
                   + ":" + xmlFormShortName, xmlFormName);
           formUpdate = pubTemplate.getUpdateForm();
           RecordSet recordSet = pubTemplate.getRecordSet();
@@ -972,7 +972,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           xmlFormShortName =
                   xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
           PublicationTemplateImpl pubTemplate =
-                  (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(gallerySC.getComponentId()
+                  (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(gallerySC.getComponentId()
                   + ":" + xmlFormShortName, xmlFormName);
           Form form = pubTemplate.getSearchForm();
 
@@ -1076,7 +1076,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           String xmlFormShortName =
                   xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
           PublicationTemplateImpl template =
-                  (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(gallerySC.getComponentId()
+                  (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(gallerySC.getComponentId()
                   + ":" + xmlFormShortName);
 
           String templateFileName = template.getFileName();
@@ -1390,7 +1390,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
             xmlFormShortName =
                     xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
             PublicationTemplateImpl pubTemplate =
-                    (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(
+                    (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
                     gallerySC.getComponentId() + ":" + xmlFormShortName, xmlFormName);
             Form formUpdate = pubTemplate.getUpdateForm();
             RecordSet recordSet = pubTemplate.getRecordSet();
@@ -1421,7 +1421,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
                     xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
 
             PublicationTemplate pub =
-                    PublicationTemplateManager.getPublicationTemplate(gallerySC.getComponentId() + ":"
+                    getPublicationTemplateManager().getPublicationTemplate(gallerySC.getComponentId() + ":"
                     + xmlFormShortName);
             RecordSet set = pub.getRecordSet();
             Form form = pub.getUpdateForm();
@@ -1496,7 +1496,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
             String xmlFormShortName =
                     xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
             PublicationTemplateImpl pubTemplate =
-                    (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(gallerySC.getComponentId() + ":" + xmlFormShortName);
+                    (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(gallerySC.getComponentId() + ":" + xmlFormShortName);
 
             if (pubTemplate != null) {
               formView = pubTemplate.getViewForm();
@@ -1865,7 +1865,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
       String xmlFormShortName =
               xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
       PublicationTemplate pub =
-              PublicationTemplateManager.getPublicationTemplate(gallerySC.getComponentId() + ":"
+              getPublicationTemplateManager().getPublicationTemplate(gallerySC.getComponentId() + ":"
               + xmlFormShortName);
       set = pub.getRecordSet();
       form = pub.getUpdateForm();
@@ -1965,7 +1965,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
       String xmlFormShortName =
               xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
       PublicationTemplateImpl pubTemplate =
-              (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(gallerySC.getComponentId()
+              (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(gallerySC.getComponentId()
               + ":" + xmlFormShortName);
 
       if (pubTemplate != null) {
@@ -1993,7 +1993,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
             xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
 
     PublicationTemplate pub =
-            PublicationTemplateManager.getPublicationTemplate(gallerySC.getComponentId() + ":"
+            getPublicationTemplateManager().getPublicationTemplate(gallerySC.getComponentId() + ":"
             + xmlFormShortName);
     RecordSet set = pub.getRecordSet();
     Form form = pub.getUpdateForm();
@@ -2031,7 +2031,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
             xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
 
     PublicationTemplate pub =
-            PublicationTemplateManager.getPublicationTemplate(gallerySC.getComponentId() + ":"
+            getPublicationTemplateManager().getPublicationTemplate(gallerySC.getComponentId() + ":"
             + xmlFormShortName);
     RecordSet set = pub.getRecordSet();
     Form form = pub.getUpdateForm();
@@ -2245,5 +2245,9 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           HttpServletRequest request) {
     request.setAttribute("ComponentId", gallery.getComponentId());
     return "/admin/jsp/documentNotFound.jsp";
+  }
+  
+  private PublicationTemplateManager getPublicationTemplateManager() {
+    return PublicationTemplateManager.getInstance();
   }
 }

@@ -57,7 +57,7 @@ public class WhitePagesInstanciator extends SQLRequest implements ComponentsInst
 
       // PublicationTemplateManager.addPublicationTemplate(componentId,
       // template);
-      PublicationTemplateManager.addDynamicPublicationTemplate(componentId,
+      PublicationTemplateManager.getInstance().addDynamicPublicationTemplate(componentId,
           template);
 
     } catch (Exception e) {
@@ -72,7 +72,7 @@ public class WhitePagesInstanciator extends SQLRequest implements ComponentsInst
     deleteDataOfInstance(con, componentId, "WhitePages");
 
     try {
-      PublicationTemplateManager.removePublicationTemplate(componentId);
+      PublicationTemplateManager.getInstance().removePublicationTemplate(componentId);
     } catch (Exception e) {
       throw new InstanciationException("WhitePagesInstanciator.delete()",
           SilverpeasException.ERROR, "whitePages.EX_CANT_REMOVE_TEMPLATE", e);

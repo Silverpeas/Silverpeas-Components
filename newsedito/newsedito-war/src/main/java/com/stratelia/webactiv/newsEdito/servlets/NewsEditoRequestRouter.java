@@ -184,7 +184,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
 
     else if (function.equals("ListModels")) {
       try {
-        List<PublicationTemplate> listModels = PublicationTemplateManager.getPublicationTemplates();
+        List<PublicationTemplate> listModels = getPublicationTemplateManager().getPublicationTemplates();
         request.setAttribute("ListModels", listModels);
       } catch (PublicationTemplateException e) {
         SilverTrace.warn("NewsEdito", "NewsEditoRequestRooter.getDestination",
@@ -356,7 +356,7 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
 
     String pubId = pubDetail.getPK().getId();
 
-    PublicationTemplate pub = PublicationTemplateManager
+    PublicationTemplate pub = getPublicationTemplateManager()
         .getPublicationTemplate(newsEdito.getComponentId() + ":"
         + xmlFormShortName);
 
@@ -397,12 +397,12 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
           xmlFormName.indexOf("."));
 
       // register xmlForm to publication
-      PublicationTemplateManager.addDynamicPublicationTemplate(newsEdito
+      getPublicationTemplateManager().addDynamicPublicationTemplate(newsEdito
           .getComponentId()
           + ":" + xmlFormShortName, xmlFormName);
     }
 
-    PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
+    PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getPublicationTemplateManager()
         .getPublicationTemplate(newsEdito.getComponentId() + ":"
         + xmlFormShortName, xmlFormName);
     Form formUpdate = pubTemplate.getUpdateForm();
@@ -428,7 +428,8 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
     String infoId = pubDetail.getInfoId();
     String pubId = pubDetail.getPK().getId();
     if (StringUtil.isDefined(infoId)) {
-      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
+      PublicationTemplateImpl pubTemplate =
+              (PublicationTemplateImpl) getPublicationTemplateManager()
           .getPublicationTemplate(pubDetail.getPK().getInstanceId() + ":"
           + infoId);
 
@@ -447,4 +448,11 @@ public class NewsEditoRequestRouter extends ComponentRequestRouter {
     }
   }
 
+  /**
+   * Gets an instance of PublicationTemplateManager.
+   * @return an instance of PublicationTemplateManager.
+   */
+  private PublicationTemplateManager getPublicationTemplateManager() {
+    return PublicationTemplateManager.getInstance();
+  }
 }

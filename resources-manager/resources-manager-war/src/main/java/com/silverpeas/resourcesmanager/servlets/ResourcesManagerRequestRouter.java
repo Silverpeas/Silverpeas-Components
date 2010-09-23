@@ -175,7 +175,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
       }
       /*********** Gestion des catégories ******************/
       else if (function.equals("NewCategory")) {
-        List<PublicationTemplate> listTemplates = PublicationTemplateManager
+        List<PublicationTemplate> listTemplates = getPublicationTemplateManager()
             .getPublicationTemplates();
 
         request.setAttribute("listTemplates", listTemplates);
@@ -188,7 +188,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("EditCategory")) {
         categoryId = request.getParameter("id");
         CategoryDetail category = resourcesManagerSC.getCategory(categoryId);
-        List<PublicationTemplate> listTemplates = PublicationTemplateManager
+        List<PublicationTemplate> listTemplates = getPublicationTemplateManager()
             .getPublicationTemplates();
 
         request.setAttribute("listTemplates", listTemplates);
@@ -747,10 +747,11 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
       String xmlFormShortName = xmlFormName.substring(
           xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
       // création du PublicationTemplate
-      PublicationTemplateManager.addDynamicPublicationTemplate(
+      getPublicationTemplateManager().addDynamicPublicationTemplate(
           resourcesManagerSC.getComponentId() + ":" + xmlFormShortName,
           xmlFormName);
-      PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
+      PublicationTemplateImpl pubTemplate =
+              (PublicationTemplateImpl) getPublicationTemplateManager()
           .getPublicationTemplate(resourcesManagerSC.getComponentId() + ":"
               + xmlFormShortName, xmlFormName);
 
@@ -784,12 +785,12 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
         xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
 
     // register xmlForm
-    PublicationTemplateManager.addDynamicPublicationTemplate(resourcesManagerSC
+    getPublicationTemplateManager().addDynamicPublicationTemplate(resourcesManagerSC
         .getComponentId()
         + ":" + xmlFormShortName, xmlFormName);
 
     // création du PublicationTemplate
-    PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) PublicationTemplateManager
+    PublicationTemplateImpl pubTemplate = (PublicationTemplateImpl) getPublicationTemplateManager()
         .getPublicationTemplate(resourcesManagerSC.getComponentId() + ":"
             + xmlFormShortName, xmlFormName);
     // récupération des données
@@ -826,7 +827,7 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
       String xmlFormShortName = xmlFormName.substring(
           xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
       // récupération des données du formulaire (via le DataRecord)
-      PublicationTemplate pub = PublicationTemplateManager
+      PublicationTemplate pub = getPublicationTemplateManager()
           .getPublicationTemplate(resourcesManagerSC.getComponentId() + ":"
               + xmlFormShortName);
       RecordSet set = pub.getRecordSet();
@@ -871,5 +872,13 @@ public class ResourcesManagerRequestRouter extends ComponentRequestRouter {
       }
     }
     return managers;
+  }
+  
+  /**
+   * Gets an instance of PublicationTemplateManager.
+   * @return an instance of PublicationTemplateManager.
+   */
+  private PublicationTemplateManager getPublicationTemplateManager() {
+    return PublicationTemplateManager.getInstance();
   }
 }

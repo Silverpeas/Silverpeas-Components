@@ -452,7 +452,7 @@ public class CardManager {
     // indexEntry.addTextContent(userInfo);
 
     try {
-      PublicationTemplate pub = PublicationTemplateManager
+      PublicationTemplate pub = PublicationTemplateManager.getInstance()
           .getPublicationTemplate(card.getInstanceId());
 
       RecordSet set = pub.getRecordSet();

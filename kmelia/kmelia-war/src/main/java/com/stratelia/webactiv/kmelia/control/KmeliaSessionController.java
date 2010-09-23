@@ -1111,11 +1111,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           // Content = XMLForm
           // register xmlForm to publication
           String xmlFormShortName = infoId;
-          PublicationTemplateManager.addDynamicPublicationTemplate(getComponentId() + ":"
+          getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
               + xmlFormShortName, xmlFormShortName + ".xml");
 
           PublicationTemplate pubTemplate =
-              PublicationTemplateManager.getPublicationTemplate(getComponentId() + ":"
+              getPublicationTemplateManager().getPublicationTemplate(getComponentId() + ":"
               + xmlFormShortName);
 
           RecordSet set = pubTemplate.getRecordSet();
@@ -1300,7 +1300,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         String xmlFormShortName = infoId;
 
         PublicationTemplate pubTemplate =
-            PublicationTemplateManager.getPublicationTemplate(pubDetail.getPK().getInstanceId()
+            getPublicationTemplateManager().getPublicationTemplate(pubDetail.getPK().getInstanceId()
             + ":" + xmlFormShortName);
 
         RecordSet set = pubTemplate.getRecordSet();
@@ -3757,7 +3757,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             String infoId = publi.getInfoId();
             if (infoId != null && !"0".equals(infoId)) {
               // register content to component
-              PublicationTemplateManager.addDynamicPublicationTemplate(getComponentId() + ":"
+              getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
                   + publi.getInfoId(), publi.getInfoId() + ".xml");
             }
           }
@@ -3854,7 +3854,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             // Content = XMLForm
             // register xmlForm to publication
             String xmlFormShortName = infoId;
-            PublicationTemplateManager.addDynamicPublicationTemplate(getComponentId() + ":"
+            getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
                 + xmlFormShortName, xmlFormShortName + ".xml");
 
             // Paste images
@@ -3872,20 +3872,20 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
             // get xmlContent to paste
             PublicationTemplate pubTemplateFrom =
-                PublicationTemplateManager.getPublicationTemplate(fromComponentId + ":"
+                getPublicationTemplateManager().getPublicationTemplate(fromComponentId + ":"
                 + xmlFormShortName);
             IdentifiedRecordTemplate recordTemplateFrom =
                 (IdentifiedRecordTemplate) pubTemplateFrom.getRecordSet().getRecordTemplate();
 
             PublicationTemplate pubTemplate =
-                PublicationTemplateManager.getPublicationTemplate(getComponentId() + ":"
+                getPublicationTemplateManager().getPublicationTemplate(getComponentId() + ":"
                 + xmlFormShortName);
             IdentifiedRecordTemplate recordTemplate =
                 (IdentifiedRecordTemplate) pubTemplate.getRecordSet().getRecordTemplate();
 
             // paste xml content
-            GenericRecordSetManager.cloneRecord(recordTemplateFrom, fromId, recordTemplate, id,
-                fileIds);
+            GenericRecordSetManager.getInstance().cloneRecord(recordTemplateFrom, fromId, 
+                    recordTemplate, id, fileIds);
           }
         }
 
@@ -4588,5 +4588,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public List<SpaceInst> getSpacePath() {
     return this.getOrganizationController().getSpacePath(this.getSpaceId());
+  }
+  
+  /**
+   * Gets an instance of PublicationTemplateManager.
+   * @return an instance of PublicationTemplateManager.
+   */
+  private PublicationTemplateManager getPublicationTemplateManager() {
+    return PublicationTemplateManager.getInstance();
   }
 }

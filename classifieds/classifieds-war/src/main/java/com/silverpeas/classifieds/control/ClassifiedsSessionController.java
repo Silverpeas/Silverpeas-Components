@@ -86,7 +86,7 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
       xmlFormShortName =
           xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
       try {
-        PublicationTemplateManager.addDynamicPublicationTemplate(getComponentId() + ":" +
+        getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":" +
             xmlFormShortName, xmlFormName);
       } catch (PublicationTemplateException e) {
         throw new ClassifiedsRuntimeException("GallerySessionController.super()",
@@ -439,7 +439,7 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
         String xmlFormShortName =
             xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
         PublicationTemplateImpl pubTemplate =
-            (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(
+            (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
             getComponentId() + ":" + xmlFormShortName, xmlFormName);
         if (pubTemplate != null) {
           RecordSet recordSet = pubTemplate.getRecordSet();
@@ -503,7 +503,7 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
       PublicationTemplateImpl pubTemplate;
       try {
         pubTemplate =
-            (PublicationTemplateImpl) PublicationTemplateManager.getPublicationTemplate(
+            (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
             getComponentId() + ":" + xmlFormShortName, xmlFormName);
         String key =
             pubTemplate.getRecordTemplate().getFieldTemplate(listName).getParameters(
@@ -593,5 +593,13 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
           SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return commentBm;
+  }
+  
+  /**
+   * Gets an instance of PublicationTemplateManager.
+   * @return an instance of PublicationTemplateManager.
+   */
+  private PublicationTemplateManager getPublicationTemplateManager() {
+    return PublicationTemplateManager.getInstance();
   }
 }

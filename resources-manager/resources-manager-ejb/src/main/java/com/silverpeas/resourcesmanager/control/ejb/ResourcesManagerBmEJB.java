@@ -562,7 +562,7 @@ public class ResourcesManagerBmEJB implements SessionBean {
                 .indexOf("/") + 1, xmlFormName.indexOf("."));
             PublicationTemplate pubTemplate;
             try {
-              pubTemplate = PublicationTemplateManager
+              pubTemplate = PublicationTemplateManager.getInstance()
                   .getPublicationTemplate(resource.getInstanceId() + ":"
                       + xmlFormShortName);
               RecordSet set = pubTemplate.getRecordSet();

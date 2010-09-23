@@ -92,7 +92,6 @@
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplate" %>
 <%@ page import="com.silverpeas.publicationTemplate.PublicationTemplateException" %>
-<%@ page import="com.silverpeas.publicationTemplate.PublicationTemplateManager" %>
 <%@ page import="com.silverpeas.form.DataRecord" %>
 <%@ page import="com.silverpeas.form.Form" %>
 <%@ page import="com.silverpeas.form.PagesContext" %>
@@ -123,6 +122,6 @@
 
 	String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("newsEdito", spaceId, componentId);
 
-	//Récupération du contexte
+	//Rï¿½cupï¿½ration du contexte
 	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>

@@ -292,11 +292,11 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             String xmlFormShortName = xmlFormName.substring(xmlFormName
                 .indexOf("/") + 1, xmlFormName.indexOf("."));
             // création du PublicationTemplate
-            PublicationTemplateManager.addDynamicPublicationTemplate(scc
+            getPublicationTemplateManager().addDynamicPublicationTemplate(scc
                 .getComponentId()
                 + ":" + xmlFormShortName, xmlFormName);
             PublicationTemplateImpl pubTemplate =
-                (PublicationTemplateImpl) PublicationTemplateManager
+                (PublicationTemplateImpl) getPublicationTemplateManager()
                 .getPublicationTemplate(scc.getComponentId() + ":"
                 + xmlFormShortName, xmlFormName);
 
@@ -353,7 +353,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("ModelUsed")) {
         try {
           List<PublicationTemplate> templates =
-              PublicationTemplateManager.getPublicationTemplates();
+              getPublicationTemplateManager().getPublicationTemplates();
           request.setAttribute("XMLForms", templates);
         } catch (Exception e) {
           SilverTrace.info("yellowPages",
@@ -392,11 +392,11 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
 
         if ("ModelChoice".equals(action)) {
           // List listTemplate =
-          // PublicationTemplateManager.getPublicationTemplates();
+          // getPublicationTemplateManager().getPublicationTemplates();
           List<PublicationTemplate> listTemplates = new ArrayList<PublicationTemplate>();
           ArrayList<String> usedTemplates = new ArrayList<String>(scc.getModelUsed());
           try {
-            List<PublicationTemplate> allTemplates = PublicationTemplateManager
+            List<PublicationTemplate> allTemplates = getPublicationTemplateManager()
                 .getPublicationTemplates();
             PublicationTemplate xmlForm;
             Iterator<PublicationTemplate> iterator = allTemplates.iterator();
@@ -426,11 +426,11 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             String xmlFormShortName = xmlFormName.substring(xmlFormName
                 .indexOf("/") + 1, xmlFormName.indexOf("."));
             // création du PublicationTemplate
-            PublicationTemplateManager.addDynamicPublicationTemplate(scc
+            getPublicationTemplateManager().addDynamicPublicationTemplate(scc
                 .getComponentId()
                 + ":" + xmlFormShortName, xmlFormName);
             PublicationTemplateImpl pubTemplate =
-                (PublicationTemplateImpl) PublicationTemplateManager
+                (PublicationTemplateImpl) getPublicationTemplateManager()
                 .getPublicationTemplate(scc.getComponentId() + ":"
                 + xmlFormShortName, xmlFormName);
 
@@ -461,11 +461,11 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
             String xmlFormShortName = xmlFormName.substring(xmlFormName
                 .indexOf("/") + 1, xmlFormName.indexOf("."));
             // création du PublicationTemplate
-            PublicationTemplateManager.addDynamicPublicationTemplate(scc
+            getPublicationTemplateManager().addDynamicPublicationTemplate(scc
                 .getComponentId()
                 + ":" + xmlFormShortName, xmlFormName);
             PublicationTemplateImpl pubTemplate =
-                (PublicationTemplateImpl) PublicationTemplateManager
+                (PublicationTemplateImpl) getPublicationTemplateManager()
                 .getPublicationTemplate(scc.getComponentId() + ":"
                 + xmlFormShortName, xmlFormName);
 
@@ -496,7 +496,7 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
                 .indexOf("/") + 1, xmlFormName.indexOf("."));
 
             // récupération des données du formulaire (via le DataRecord)
-            PublicationTemplate pubTemplate = PublicationTemplateManager
+            PublicationTemplate pubTemplate = getPublicationTemplateManager()
                 .getPublicationTemplate(scc.getComponentId() + ":"
                 + xmlFormShortName);
             Form formUpdate = pubTemplate.getUpdateForm();
@@ -557,6 +557,14 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
         "YellowpagesRequestRooter.getDestination()",
         "root.MSG_GEN_EXIT_METHOD", "destination = " + destination);
     return destination;
+  }
+  
+  /**
+   * Gets an instance of PublicationTemplateManager.
+   * @return an instance of PublicationTemplateManager.
+   */
+  private PublicationTemplateManager getPublicationTemplateManager() {
+    return PublicationTemplateManager.getInstance();
   }
 
 }

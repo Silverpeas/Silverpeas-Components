@@ -611,13 +611,13 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
   /*
    * Retourne le cardTemplate d'un annuaire :
-   * PublicationTemplateManager.getPublicationTemplate(instanceId, getParam("cardTemplate",
+   * PublicationTemplateManager#getPublicationTemplate(instanceId, getParam("cardTemplate",
    * instanceId))
    */
   private PublicationTemplate getTemplate(String instanceId)
       throws WhitePagesException {
     try {
-      return PublicationTemplateManager.getPublicationTemplate(instanceId,
+      return PublicationTemplateManager.getInstance().getPublicationTemplate(instanceId,
           getParam("cardTemplate", instanceId));
     } catch (PublicationTemplateException e) {
       throw new WhitePagesException("WhitePagesSessionController.getTemplate",
@@ -628,7 +628,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
 
   /*
    * Retourne le userTemplate d'un annuaire :
-   * PublicationTemplateManager.getPublicationTemplate(instanceId, getParam("userTemplate",
+   * PublicationTemplateManager#getPublicationTemplate(instanceId, getParam("userTemplate",
    * instanceId))
    */
   private UserTemplate getUserTemplate(String instanceId)
@@ -725,7 +725,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   private PublicationTemplate getCardTemplate() throws WhitePagesException {
     try {
       if (cardTemplate == null)
-        cardTemplate = PublicationTemplateManager.getPublicationTemplate(
+        cardTemplate = PublicationTemplateManager.getInstance().getPublicationTemplate(
             getComponentId(), getParam("cardTemplate"));
       return cardTemplate;
     } catch (PublicationTemplateException e) {
