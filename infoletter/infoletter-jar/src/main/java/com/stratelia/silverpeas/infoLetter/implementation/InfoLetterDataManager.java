@@ -47,6 +47,9 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Class declaration
@@ -81,6 +84,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   // Methodes de l'interface InfoLetterDataInterface
 
   // Creation d'une lettre d'information
+  @Override
   public void createInfoLetter(InfoLetter ie) {
     try {
 
@@ -94,6 +98,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   // Suppression d'une lettre d'information
+  @Override
   public void deleteInfoLetter(WAPrimaryKey pk) {
     try {
       infoLetterDAO.remove(pk);
@@ -105,6 +110,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   // Mise a jour d'une lettre d'information
+  @Override
   public void updateInfoLetter(InfoLetter ie) {
     try {
       infoLetterDAO.update(ie);
@@ -425,9 +431,9 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   // Recuperation de la liste des emails externes
-  public Vector getExternalsSuscribers(WAPrimaryKey letterPK) {
+  public Collection<String> getExternalsSuscribers(WAPrimaryKey letterPK) {
     Connection con = openConnection();
-    Vector retour = new Vector();
+    List<String> retour = new ArrayList<String>();
     Statement selectStmt = null;
     ResultSet rs = null;
     try {
@@ -451,12 +457,14 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
           SilverpeasRuntimeException.FATAL, e.getMessage());
     } finally {
       try {
-        if (rs != null)
+        if (rs != null) {
           rs.close();
+        }
         if (selectStmt != null)
           selectStmt.close();
-        if (con != null)
+        if (con != null) {
           con.close();
+        }
       } catch (Exception e) {
         throw new InfoLetterException(
             "com.stratelia.silverpeas.infoLetter.implementation.InfoLetterDataManager",
@@ -468,7 +476,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
   }
 
   // Sauvegarde de la liste des emails externes
-  public void setExternalsSuscribers(WAPrimaryKey letterPK, Vector emails) {
+  public void setExternalsSuscribers(WAPrimaryKey letterPK, Collection<String> emails) {
     Connection con = openConnection();
     Statement stmt = null;
     try {
@@ -482,8 +490,7 @@ public class InfoLetterDataManager implements InfoLetterDataInterface {
       stmt = con.createStatement();
       stmt.executeUpdate(query);
       if (emails.size() > 0) {
-        for (int i = 0; i < emails.size(); i++) {
-          String email = (String) emails.elementAt(i);
+        for (String email : emails) {
           query = "insert into " + TableExternalEmails
               + "(letter, email, instanceId)";
           query += " values (" + letterPK.getId() + ", '" + email + "', '"

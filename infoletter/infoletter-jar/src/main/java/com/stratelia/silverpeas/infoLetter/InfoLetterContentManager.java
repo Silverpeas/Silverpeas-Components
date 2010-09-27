@@ -52,6 +52,7 @@ public class InfoLetterContentManager implements ContentInterface {
    * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
+  @Override
   public List getSilverContentById(List ids, String peasId, String userId,
       List userRoles) {
     if (getContentManager() == null)

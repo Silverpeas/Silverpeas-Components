@@ -26,6 +26,7 @@ package com.stratelia.silverpeas.infoLetter.model;
 import com.stratelia.silverpeas.infoLetter.*;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import java.sql.Connection;
+import java.util.Collection;
 import java.util.Vector;
 
 /**
@@ -87,10 +88,10 @@ public interface InfoLetterDataInterface {
   public void setInternalSuscribers(WAPrimaryKey letterPK, Vector abonnes);
 
   // Recuperation de la liste des emails externes
-  public Vector getExternalsSuscribers(WAPrimaryKey letterPK);
+  public Collection<String> getExternalsSuscribers(WAPrimaryKey letterPK);
 
   // Sauvegarde de la liste des emails externes
-  public void setExternalsSuscribers(WAPrimaryKey letterPK, Vector emails);
+  public void setExternalsSuscribers(WAPrimaryKey letterPK, Collection<String> emails);
 
   // abonnement ou desabonnement d'un utilisateur interne
   public void toggleSuscriber(String userId, WAPrimaryKey letterPK, boolean flag);

@@ -324,7 +324,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       // Corps et sujet du message
       InfoLetter il = dataInterface.getInfoLetter(letterPK);
       String subject = getString("infoLetter.emailSubject") + ilp.getName();
-		
+
       // Email du publieur
       String from = getUserDetail().geteMail();
 
@@ -556,7 +556,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
   // Recuperation de la liste des emails externes
   public Vector getExternalsSuscribers(WAPrimaryKey letterPK) {
-    Vector retour = dataInterface.getExternalsSuscribers(letterPK);
+    Vector retour = new Vector(dataInterface.getExternalsSuscribers(letterPK));
     return retour;
   }
 
