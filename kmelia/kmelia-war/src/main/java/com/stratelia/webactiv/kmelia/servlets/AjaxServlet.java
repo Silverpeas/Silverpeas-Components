@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.kmelia.servlets;
 
 import java.io.IOException;
@@ -51,25 +50,22 @@ public class AjaxServlet extends HttpServlet {
   @Override
   protected void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
-
     HttpSession session = req.getSession(true);
-
     String componentId = req.getParameter("ComponentId");
-
     KmeliaSessionController kmeliaSC =
-        (KmeliaSessionController) session
-        .getAttribute("Silverpeas_" + "kmelia" + "_" + componentId);
-
+        (KmeliaSessionController) session.getAttribute("Silverpeas_" + "kmelia" + "_" + componentId);
     if (kmeliaSC == null) {
       kmeliaSC = createSessionController(session, componentId);
     }
-
     String result = "nok";
-    if (kmeliaSC != null) {
-      AjaxOperation action = AjaxOperation.valueOf(getAction(req));
+    AjaxOperation action = AjaxOperation.valueOf(getAction(req));
+    if (action.requiresController()) {
+      if (kmeliaSC != null) {
+        result = action.handleRequest(req, kmeliaSC);
+      }
+    } else {
       result = action.handleRequest(req, kmeliaSC);
     }
-
     Writer writer = resp.getWriter();
     writer.write(result);
   }
@@ -80,8 +76,8 @@ public class AjaxServlet extends HttpServlet {
 
   private KmeliaSessionController createSessionController(HttpSession session, String componentId) {
     MainSessionController msc =
-        (MainSessionController) session
-        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+        (MainSessionController) session.getAttribute(
+        MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (msc != null) {
       ComponentContext componentContext = msc.createComponentContext(null, componentId);
       if (msc.getOrganizationController().isComponentAvailable(componentId, msc.getUserId())) {
@@ -90,5 +86,4 @@ public class AjaxServlet extends HttpServlet {
     }
     return null;
   }
-
 }
