@@ -23,24 +23,14 @@
  */
 package com.silverpeas.gallery.control.ejb;
 
-import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
 
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
 
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.gallery.GalleryContentManager;
 import com.silverpeas.gallery.ImageHelper;
 import com.silverpeas.gallery.dao.OrderDAO;
 import com.silverpeas.gallery.dao.PhotoDAO;
+import com.silverpeas.gallery.image.ImageMetadataException;
 import com.silverpeas.gallery.model.AlbumDetail;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
 import com.silverpeas.gallery.model.MetaData;
@@ -48,8 +38,6 @@ import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
-import com.silverpeas.gallery.model.PhotoWithStatus;
-import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.socialNetwork.model.SocialInformation;
@@ -85,17 +73,25 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
+import java.rmi.RemoteException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
 
 /**
  * @author
  */
 public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
+  private static final long serialVersionUID = 8148021767416025104L;
 
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
-
+  @Override
   public AlbumDetail getAlbum(NodePK nodePK, boolean viewAllPhoto) {
     try {
       AlbumDetail album = new AlbumDetail(getNodeBm().getDetail(nodePK));
@@ -110,12 +106,13 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public Collection<AlbumDetail> getAllAlbums(String instanceId) {
     try {
       NodePK nodePK = new NodePK("0", instanceId);
       Collection<NodeDetail> nodes = getNodeBm().getSubTree(nodePK);
       List<AlbumDetail> albums = new ArrayList<AlbumDetail>(nodes.size());
-      for(NodeDetail node : nodes) {
+      for (NodeDetail node : nodes) {
         albums.add(new AlbumDetail(node));
       }
       return albums;
@@ -125,17 +122,18 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public NodePK createAlbum(AlbumDetail album, NodePK nodePK) {
     try {
       AlbumDetail currentAlbum = getAlbum(nodePK, true);
-      nodePK = getNodeBm().createNode(album, currentAlbum);
-      return nodePK;
+      return getNodeBm().createNode(album, currentAlbum);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.createAlbum()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_CREATE", e);
     }
   }
 
+  @Override
   public void updateAlbum(AlbumDetail album) {
     try {
       getNodeBm().setDetail(album);
@@ -145,6 +143,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public void deleteAlbum(NodePK nodePK) {
     try {
       // suppression des photos de l'album et des sous albums
@@ -198,6 +197,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     return nodeBm;
   }
 
+  @Override
   public PhotoDetail getPhoto(PhotoPK photoPK) {
     Connection con = initCon();
     try {
@@ -213,6 +213,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public Collection<PhotoDetail> getAllPhotos(String instanceId) {
     Connection con = initCon();
     try {
@@ -227,6 +228,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public Collection<PhotoDetail> getAllPhoto(NodePK nodePK, boolean viewAllPhoto) {
     Connection con = initCon();
     try {
@@ -245,6 +247,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public Collection<PhotoDetail> getNotVisible(String instanceId) {
     Connection con = initCon();
     try {
@@ -260,6 +263,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public String createPhoto(PhotoDetail photo, String albumId) {
     Connection con = initCon();
     try {
@@ -280,6 +284,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public void updatePhoto(PhotoDetail photo) {
     Connection con = initCon();
     try {
@@ -287,7 +292,12 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
           "root.MSG_GEN_ENTER_METHOD", "PhotoPK = " + photo.toString());
       PhotoDAO.updatePhoto(con, photo);
       // ajouter les metadatas pour les indexer
-      ImageHelper.setMetaData(photo, "fr");
+      try {
+        ImageHelper.setMetaData(photo, "fr");
+      } catch (ImageMetadataException imex) {
+        SilverTrace.debug("gallery", "GalleryBmEJB.updatePhoto()", "gallery.EXTRACT_METADATA",
+            "photoId = " + photo);
+      }
       createIndex(photo);
     } catch (Exception e) {
       throw new GalleryRuntimeException("GalleryBmEJB.updatePhoto()",
@@ -298,6 +308,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public void deletePhoto(PhotoPK photoPK) {
     Connection con = initCon();
     try {
@@ -329,6 +340,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public Collection<PhotoDetail> getDernieres(String instanceId, boolean viewAllPhoto) {
     Connection con = initCon();
     try {
@@ -368,6 +380,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     return con;
   }
 
+  @Override
   public Collection<NodeDetail> getPath(NodePK nodePK) {
     Collection<NodeDetail> path;
     try {
@@ -379,6 +392,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     return path;
   }
 
+  @Override
   public Collection<String> getPathList(String instanceId, String photoId) {
     Connection con = initCon();
     try {
@@ -392,6 +406,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public void setPhotoPath(String photoId, String[] albums, String instanceId) {
     Connection con = initCon();
     try {
@@ -414,6 +429,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public void updatePhotoPath(String photoId, String[] albums,
       String instanceIdFrom, String instanceIdTo) {
     Connection con = initCon();
@@ -437,6 +453,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public String getHTMLNodePath(NodePK nodePK) {
     String htmlPath = "";
     try {
@@ -458,12 +475,8 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
 
   private String getSpacesPath(String componentId) {
     String spacesPath = "";
-    List<SpaceInst> spaces = getOrganizationController().getSpacePathToComponent(
-        componentId);
-    Iterator<SpaceInst> iSpaces = spaces.iterator();
-    SpaceInst spaceInst = null;
-    while (iSpaces.hasNext()) {
-      spaceInst = (SpaceInst) iSpaces.next();
+    List<SpaceInst> spaces = getOrganizationController().getSpacePathToComponent(componentId);
+    for(SpaceInst spaceInst : spaces) {
       spacesPath += spaceInst.getName();
       spacesPath += " > ";
     }
@@ -510,6 +523,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     return pathString;
   }
 
+  @Override
   public void indexGallery(String instanceId) {
     // parcourir tous les albums
     Collection<AlbumDetail> albums = getAllAlbums(instanceId);
@@ -549,6 +563,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public void createIndex(PhotoDetail photo) {
     SilverTrace.info("gallery", "GalleryBmEJB.createIndex()",
         "root.MSG_GEN_ENTER_METHOD", "photoDetail = " + photo.toString());
@@ -583,28 +598,20 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       String metaDataStr = "";
       MetaData metaData;
       Collection<String> properties = photo.getMetaDataProperties();
-      Iterator<String> it = properties.iterator();
-      while (it.hasNext()) {
-        String property = (it.next());
+       for(String property : properties) {
         metaData = photo.getMetaData(property);
         String value = metaData.getValue();
         metaDataStr = metaDataStr + " " + value;
       }
       indexEntry.addTextContent(metaDataStr);
-      SilverTrace.info("gallery", "GalleryBmEJB.createIndex()",
-          "root.MSG_GEN_ENTER_METHOD", "metaData = " + metaDataStr
-          + " indexEntry = " + indexEntry.toString());
-
+      SilverTrace.info("gallery", "GalleryBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
+          "metaData = " + metaDataStr  + " indexEntry = " + indexEntry.toString());
       // indexation des méta données (une donnée par champ d'index)
-      it = properties.iterator();
-      while (it.hasNext()) {
-        String property = (String) it.next();
+      for(String property : properties) {
         metaData = photo.getMetaData(property);
         String value = metaData.getValue();
         SilverTrace.info("gallery", "GalleryBmEJB.createIndex()",
-            "root.MSG_GEN_ENTER_METHOD", "property = " + property + " value = "
-            + value);
-
+            "root.MSG_GEN_ENTER_METHOD", "property = " + property + " value = " + value);
         if (metaData.isDate()) {
           indexEntry.addField("IPTC_" + property, metaData.getDateValue());
         } else {
@@ -612,7 +619,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
         }
       }
 
-      // indéxation du contenu du formulaire XML
+      // indexation du contenu du formulaire XML
       String xmlFormName = getOrganizationController().getComponentParameterValue(photo.
           getInstanceId(), "XMLFormName");
       SilverTrace.info("gallery", "GalleryBmEJB.createIndex()",
@@ -623,7 +630,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
         PublicationTemplate pubTemplate;
         try {
           pubTemplate = PublicationTemplateManager.getInstance().getPublicationTemplate(
-                  photo.getInstanceId() + ":" + xmlFormShortName);
+              photo.getInstanceId() + ":" + xmlFormShortName);
           RecordSet set = pubTemplate.getRecordSet();
           set.indexRecord(photo.getPhotoPK().getId(), xmlFormShortName,
               indexEntry);
@@ -631,11 +638,6 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
               "root.MSG_GEN_ENTER_METHOD", "indexEntry = "
               + indexEntry.toString());
         } catch (Exception e) {
-          /*
-           * throw new GalleryRuntimeException("GalleryBmEJB.createIndex()",
-           * SilverpeasRuntimeException.ERROR, "gallery.EX_IMPOSSIBLE_DOBTENIR_LE_SILVEROBJECTID",
-           * e);
-           */
           SilverTrace.info("gallery", "GalleryBmEJB.createIndex()",
               "root.MSG_GEN_ENTER_METHOD", "xmlFormName = " + xmlFormName);
         }
@@ -645,6 +647,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public void deleteIndex(PhotoPK photoPK) {
     SilverTrace.info("gallery", "GalleryBmEJB.deleteIndex()",
         "root.MSG_GEN_ENTER_METHOD", "PhotoPK = " + photoPK.toString());
@@ -654,6 +657,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
+  @Override
   public int getSilverObjectId(PhotoPK photoPK) {
     SilverTrace.info("gallery", "GalleryBmEJB.getSilverObjectId()",
         "root.MSG_GEN_ENTER_METHOD", "photoId = " + photoPK.getId());
@@ -689,6 +693,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public Collection<PhotoDetail> search(QueryDescription query) {
     Collection<PhotoDetail> photos = new ArrayList<PhotoDetail>();
     MatchingIndexEntry[] result = null;
@@ -721,6 +726,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     return photos;
   }
 
+  @Override
   public Collection<PhotoDetail> getAllPhotoEndVisible(int nbDays) {
     Connection con = initCon();
     try {
@@ -734,6 +740,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public void notifyUsers(NotificationMetaData notifMetaData, String senderId,
       String componentId) {
     Connection con = null;
@@ -754,6 +761,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public String createOrder(Collection<String> basket, String userId, String componentId) {
     Connection con = initCon();
     try {
@@ -767,6 +775,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public List<Order> getAllOrders(String userId, String instanceId) {
     Connection con = initCon();
     try {
@@ -781,6 +790,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public void updateOrder(Order order) {
     Connection con = initCon();
     try {
@@ -795,6 +805,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public void updateOrderRow(OrderRow row) {
     Connection con = initCon();
     try {
@@ -809,6 +820,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public Order getOrder(String orderId, String instanceId) {
     Connection con = initCon();
     try {
@@ -822,6 +834,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public Collection<Order> getAllOrderToDelete(int nbDays) {
     Connection con = initCon();
     try {
@@ -835,6 +848,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public void deleteOrder(String orderId) {
     Connection con = initCon();
     try {
@@ -848,6 +862,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
+  @Override
   public Date getDownloadDate(String orderId, String photoId) {
     Connection con = initCon();
     try {
@@ -950,8 +965,6 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
 
   }
 
- 
-
   /**
    * get my list of SocialInformationGallery
    * according to options and number of Item and the first Index
@@ -961,12 +974,12 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
    * @param :List<String> options list of Available Components name
    * @param int numberOfElement, int firstIndex
    */
-  
+  @Override
   public List<SocialInformation> getAllPhotosByUserid(String userId, int firstIndex,
       int nbElement) {
     Connection con = initCon();
-    try {      
-       return PhotoDAO.getAllPhotosIDbyUserid(con, userId, firstIndex, nbElement);     
+    try {
+      return PhotoDAO.getAllPhotosIDbyUserid(con, userId, firstIndex, nbElement);
     } catch (ParseException e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
@@ -978,7 +991,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     }
   }
 
- /**
+  /**
    * get list of SocialInformationGallery of my contacts
    * according to options and number of Item and the first Index
    * @return: List <SocialInformation>
@@ -988,10 +1001,12 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
    * @param int numberOfElement, int firstIndex
    */
   @Override
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> listOfuserId, List<String> availableComponent, int numberOfElement, int firstIndex){
+  public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> listOfuserId,
+      List<String> availableComponent, int numberOfElement, int firstIndex) {
     Connection con = initCon();
-    try {      
-       return PhotoDAO.getSocialInformationsListOfMyContacts(con, listOfuserId, availableComponent, numberOfElement, firstIndex);     
+    try {
+      return PhotoDAO.getSocialInformationsListOfMyContacts(con, listOfuserId, availableComponent,
+          numberOfElement, firstIndex);
     } catch (ParseException e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
@@ -1002,6 +1017,4 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       fermerCon(con);
     }
   }
-    
-  
 }

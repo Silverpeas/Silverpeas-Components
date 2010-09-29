@@ -38,6 +38,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.print.DocFlavor.READER;
 import org.apache.sanselan.ImageReadException;
 import org.apache.sanselan.Sanselan;
 import org.apache.sanselan.common.IImageMetadata;
@@ -155,7 +156,10 @@ public class SanselanMetadataExtractor implements ImageMetadataExtractor {
       ImageMetadataException, UnsupportedEncodingException {
     try {
       List<MetaData> result = new ArrayList<MetaData>();
-      IImageMetadata metadata = Sanselan.getMetadata(image);
+      Map<String, Boolean> params = new HashMap<String, Boolean>();
+      params.put(Sanselan.PARAM_KEY_READ_THUMBNAILS, Boolean.FALSE);
+      params.put(Sanselan.PARAM_KEY_STRICT, Boolean.FALSE);
+      IImageMetadata metadata = Sanselan.getMetadata(image, params);
       if (metadata instanceof JpegImageMetadata) {
         JpegImageMetadata jpegMetadata = (JpegImageMetadata) metadata;
         String value = null;
