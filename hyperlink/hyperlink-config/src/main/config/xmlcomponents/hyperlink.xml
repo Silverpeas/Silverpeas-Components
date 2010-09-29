@@ -33,8 +33,7 @@
   <suite>04 Gestion de contenu</suite>
   <visible>@ComponentVisibleHyperlink@</visible>
   <portlet>yes</portlet>
-  <instanceClassName>com.stratelia.webactiv.hyperlink.HyperlinkInstanciator
-  </instanceClassName>
+  <instanceClassName>com.stratelia.webactiv.hyperlink.HyperlinkInstanciator</instanceClassName>
   <Profiles>
     <Profile name="user">Lecteur</Profile>
   </Profiles>
@@ -90,26 +89,6 @@
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
-		<!--
-			<Parameter> <ParameterName>sso</ParameterName>
-			<ParameterLabel>SSO</ParameterLabel>
-			<ParameterValue>no</ParameterValue>
-			<ParameterMandatory>Y</ParameterMandatory>
-			<ParameterType>checkbox</ParameterType>
-			<ParameterUpdatable>Always</ParameterUpdatable> <ParameterHelp>
-			<ParameterHelpFr>Single Sign-On (SSO) vers des applications
-			nécessitant une authentification basique</ParameterHelpFr>
-			<ParameterHelpEn>Allow to pass the user credentials through the URL
-			for Single Sign-On (SSO) by using Basic
-			authentication</ParameterHelpEn> </ParameterHelp> </Parameter>
-			<Parameter> <ParameterName>domain</ParameterName>
-			<ParameterLabel>Domaine Windows</ParameterLabel>
-			<ParameterValue></ParameterValue>
-			<ParameterMandatory>Y</ParameterMandatory> <ParameterHelp>
-			<ParameterHelpFr>Nom de domaine Windows (pour le SSO
-			uniquement)</ParameterHelpFr> <ParameterHelpEn>Windows domain's name
-			(for SSO only)</ParameterHelpEn> </ParameterHelp> </Parameter>
-		-->
     <Parameter>
       <ParameterName>login</ParameterName>
       <ParameterLabel>Login SSO</ParameterLabel>
