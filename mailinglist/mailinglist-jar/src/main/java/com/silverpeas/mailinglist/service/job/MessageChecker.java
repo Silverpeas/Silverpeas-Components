@@ -174,7 +174,6 @@ public class MessageChecker implements SchedulerEventHandler {
     Folder inbox = null;
     Map<String, MessageListener> listenersByEmail = prepareListeners();
     try {
-      mailSession.setDebug(true);
       mailAccount = mailSession.getStore(getProtocol());
       mailAccount.connect(getMailServer(), getPort(), getLogin(), getPassword());
       inbox = mailAccount.getFolder("INBOX");
