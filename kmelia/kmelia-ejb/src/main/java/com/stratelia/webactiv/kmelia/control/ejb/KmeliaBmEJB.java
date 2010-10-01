@@ -1685,7 +1685,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         "root.MSG_GEN_ENTER_METHOD", "updateScope = " + updateScope);
     try {
       // if pubDetail is a clone
-      boolean isClone = StringUtil.isDefined(pubDetail.getCloneId()) &&
+      boolean isClone = StringUtil.isDefined(pubDetail.getCloneId()) && !"-1".equals(pubDetail.getCloneId()) &&
           !StringUtil.isDefined(pubDetail.getCloneStatus());
       SilverTrace.info("kmelia", "KmeliaBmEJB.updatePublication()", "root.MSG_GEN_PARAM_VALUE",
           "This publication is clone ? " + isClone);
