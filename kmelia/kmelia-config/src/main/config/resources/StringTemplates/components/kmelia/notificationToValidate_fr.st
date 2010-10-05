@@ -1,13 +1,13 @@
-Validate publications $publicationName$ 
+La publication <b>$publicationName$</b> doit être validée.
 
 $if(notification_receiver_users)$
-This message has been sent
- to users : $notification_receiver_users$
+Ce message a été envoyé
+ aux utilisateurs : $notification_receiver_users$
 $endif$
 
 $if(notification_receiver_groups)$
   $if(!notification_receiver_users)$
-  This message has been sent to
+  Ce message a été envoyé
   $endif$
- to groups : $notification_receiver_groups$
+ aux groupes : $notification_receiver_groups$
 $endif$

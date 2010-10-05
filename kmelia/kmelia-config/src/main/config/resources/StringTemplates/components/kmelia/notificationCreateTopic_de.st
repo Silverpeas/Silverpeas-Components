@@ -1,4 +1,5 @@
-Am folgenden Speicherort ist ein neues Thema erstellt worden $path$
+Am folgenden Speicherort ist ein neues Thema erstellt worden :
+$path$ > $topicName$
 
 $if(notification_receiver_users)$
 Diese Nachricht wurde gesendet

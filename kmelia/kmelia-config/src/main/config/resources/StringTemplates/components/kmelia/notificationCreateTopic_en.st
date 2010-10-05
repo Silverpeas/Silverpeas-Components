@@ -1,4 +1,5 @@
-A new theme has been added in the following place $path$
+A new theme has been added in the following place :
+$path$ > $topicName$
 
 $if(notification_receiver_users)$
 This message has been sent

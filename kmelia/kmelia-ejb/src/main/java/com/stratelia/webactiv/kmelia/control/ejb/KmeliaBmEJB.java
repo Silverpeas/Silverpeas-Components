@@ -717,13 +717,10 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     for (String lang : getAllLanguages()) {
       SilverpeasTemplate template = getNewTemplate();
       templates.put(lang, template);
-      template.setAttribute("path", "");
-      template.setAttribute("publication", nodeDetail);
+      template.setAttribute("path", getHTMLNodePath(fatherPK, lang));
+      template.setAttribute("topic", nodeDetail);
       template.setAttribute("topicName", nodeDetail.getName(lang));
       template.setAttribute("topicDescription", nodeDetail.getDescription(lang));
-      template.setAttribute("publicationName", "");
-      template.setAttribute("publicationDesc", "");
-      template.setAttribute("publicationKeywords", "");
       template.setAttribute("senderName", "");
       template.setAttribute("silverpeasURL", getNodeUrl(nodeDetail));
       ResourceLocator localizedMessage = new ResourceLocator(
