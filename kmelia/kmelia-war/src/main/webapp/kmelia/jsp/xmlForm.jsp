@@ -29,6 +29,8 @@
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="tabManager.jsp.inc" %>
 
+<%@taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
 <%@ page import="com.silverpeas.publicationTemplate.*"%>
 <%@ page import="com.silverpeas.form.*"%>
 
@@ -86,6 +88,7 @@
       {
         if (isCorrectForm())
         {
+          $.progressMessage();
           document.myForm.submit();
         }
       }
@@ -176,5 +179,6 @@
 	<script type="text/javascript">
     	document.myForm.elements[1].focus();
   	</script>
+  <view:progressMessage/>
   </body>
 </html>
