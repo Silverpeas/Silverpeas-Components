@@ -454,32 +454,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     // get the publications associated to this topic
     if (pk.getId().equals("1")) {
       // Topic = Basket
-      SilverTrace
-          .info(
-              "kmelia",
-              "KmeliaBmEJB.goTo()",
-              "root.MSG_GEN_PARAM_VALUE",
-              "pubBm.getUnavailablePublicationsByPublisherId(pubPK, currentUser.getId()) BEGIN");
-      try {
-        // Give the publications associated to basket topic and
-        // visibility period expired
-        if ("admin".equals(userProfile)) // Admin can see all Publis in
-        // the basket.
-        {
-          userId = null;
-        }
-        // pubDetails =
-        // pubBm.getUnavailablePublicationsByPublisherId(pubPK, userId,
-        // "1");
-        pubDetails = pubBm.getDetailsByFatherPK(pk, null, false, userId);
-      } catch (Exception e) {
-        throw new KmeliaRuntimeException("KmeliaBmEJB.goTo()",
-            SilverpeasRuntimeException.ERROR,
-            "kmelia.EX_IMPOSSIBLE_DAVOIR_LE_CONTENU_DE_LA_CORBEILLE", e);
-      }
-      SilverTrace
-          .info("kmelia", "KmeliaBmEJB.goTo()", "root.MSG_GEN_PARAM_VALUE",
-              "pubBm.getUnavailablePublicationsByPublisherId(pubPK, currentUser.getId()) END");
+      pubDetails = getPublicationsInBasket(pk, userProfile, userId);
     } else if (pk.getId().equals("0")) {
       SilverTrace
           .info(
@@ -1214,7 +1189,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         NodeDetail node = null;
         for (int t = 0; t < allowedTree.size(); t++) {
           node = allowedTree.get(t);
-          node.setNbObjects(getNbPublis(node, distribution, allowedTree));
+          if (node.getNodePK().getId().equals("1")) {
+            Collection<PublicationDetail> pubs =
+                getPublicationsInBasket(node.getNodePK(), profile, userId);
+            node.setNbObjects(pubs.size());
+          } else {
+            node.setNbObjects(getNbPublis(node, distribution, allowedTree));
+          }
         }
       }
       return allowedTree;
@@ -1223,6 +1204,30 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           SilverpeasRuntimeException.ERROR,
           "kmelia.EX_IMPOSSIBLE_DAVOIR_LA_LISTE_DES_PUBLICATIONS", e);
     }
+  }
+
+  private Collection<PublicationDetail> getPublicationsInBasket(NodePK pk, String userProfile,
+      String userId) {
+    Collection<PublicationDetail> pubDetails = null;
+    SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsInBasket()",
+        "root.MSG_GEN_ENTER_METHOD", "pk = " + pk.toString() + ", userProfile = " + userProfile +
+            ", userId = " + userId);
+    try {
+      // Give the publications associated to basket topic and
+      // visibility period expired
+      if ("admin".equals(userProfile)) {
+        // Admin can see all Publis in the basket.
+        userId = null;
+      }
+      pubDetails = getPublicationBm().getDetailsByFatherPK(pk, null, false, userId);
+      SilverTrace.info("kmelia", "KmeliaBmEJB.getPublicationsInBasket()",
+          "root.MSG_GEN_EXIT_METHOD", "nbPublis = " + pubDetails.size());
+    } catch (Exception e) {
+      throw new KmeliaRuntimeException("KmeliaBmEJB.goTo()",
+          SilverpeasRuntimeException.ERROR,
+          "kmelia.EX_IMPOSSIBLE_DAVOIR_LE_CONTENU_DE_LA_CORBEILLE", e);
+    }
+    return pubDetails;
   }
 
   private int getNbPublis(NodeDetail node, Hashtable<String, Integer> distribution,
@@ -1682,8 +1687,9 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         "root.MSG_GEN_ENTER_METHOD", "updateScope = " + updateScope);
     try {
       // if pubDetail is a clone
-      boolean isClone = StringUtil.isDefined(pubDetail.getCloneId()) && !"-1".equals(pubDetail.getCloneId()) &&
-          !StringUtil.isDefined(pubDetail.getCloneStatus());
+      boolean isClone =
+          StringUtil.isDefined(pubDetail.getCloneId()) && !"-1".equals(pubDetail.getCloneId()) &&
+              !StringUtil.isDefined(pubDetail.getCloneStatus());
       SilverTrace.info("kmelia", "KmeliaBmEJB.updatePublication()", "root.MSG_GEN_PARAM_VALUE",
           "This publication is clone ? " + isClone);
       if (isClone) {
@@ -2715,8 +2721,11 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           template.setAttribute("refusalMotive", refusalMotive);
           ResourceLocator localizedMessage = new ResourceLocator(
               "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", lang);
-          notifMetaData.addLanguage(lang, localizedMessage.getString("PublicationValidated",
-              subject), "");
+          subject = localizedMessage.getString("PublicationRefused");
+          if (!StringUtil.isDefined(refusalMotive)) {
+            subject = message.getString("PublicationValidated");
+          }
+          notifMetaData.addLanguage(lang, subject, "");
         }
         notifMetaData.addUserRecipient(userId);
         notifMetaData.setLink(getPublicationUrl(pubDetail));
@@ -3134,7 +3143,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           String xmlFormShortName = infoId;
 
           // get xmlContent to paste
-          PublicationTemplateManager publicationTemplateManager = 
+          PublicationTemplateManager publicationTemplateManager =
                   PublicationTemplateManager.getInstance();
           PublicationTemplate pubTemplate = publicationTemplateManager.getPublicationTemplate(
                   tempPK.getInstanceId() + ":" + xmlFormShortName);
@@ -4780,7 +4789,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // right URL
       sendSubscriptionsNotification(new NodePK(a.getId(), a.getInstanceId()), pubDetail, false);
     }
-    //restore original primary key 
+    // restore original primary key
     pubDetail.getPK().setComponentName(originalComponentId);
   }
 
@@ -5025,8 +5034,10 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     ResourceLocator rs =
         new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "");
     Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString("templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString("customersTemplatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs
+        .getString("templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs
+        .getString("customersTemplatePath"));
 
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }

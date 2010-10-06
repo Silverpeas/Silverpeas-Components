@@ -294,6 +294,8 @@ function topicUpdate(id)
 	<% } %>
 }
 
+<% } %>
+
 function showDnD()
 {
 	<%
@@ -305,8 +307,6 @@ function showDnD()
 		showHideDragDrop('<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeNormal_<%=language%>.html','<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&Draft=1&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeDraft_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
 	<% } %>
 }
-
-<% } %>
 
 function addFavorite(name,description,url)
 {
@@ -832,9 +832,9 @@ function loadNodeData(node, fnLoadComplete)  {
                     }
                 }
             }
-            if (basketHere && <%="admin".equals(profile)%>)
+            if (basketHere)
             {
-                if (<%=!toolboxMode%>)
+                if (<%=!toolboxMode%> && <%="admin".equals(profile) || "publisher".equals(profile)%>)
                 {
 					//add "To validate"
 					toValidateNode = new YAHOO.widget.TextNode({"id":"tovalidate"}, root, false, true);
@@ -851,18 +851,19 @@ function loadNodeData(node, fnLoadComplete)  {
 					toValidateNode.labelStyle = "icon-tovalidate";
                 }
 
-            	//add basket
-	   			basketNode = new YAHOO.widget.TextNode({"id":"1"}, root, false, true);
-	   			basketNode.labelElId = "basket";
-	   			basketNode.label = "<%=resources.getString("kmelia.basket")%>";
-	   			if (nbItemsInBasket != -1)
-	   			{
-	   				basketNode.label = basketNode.label + " ("+nbItemsInBasket+")";
-	   			}
-	   			basketNode.href = "javascript:displayTopicContent(1)";
-	   			basketNode.isLeaf = true;
-	   			basketNode.hasIcon = true;
-				basketNode.labelStyle = "icon-basket";
+                if (<%="admin".equals(profile) || "publisher".equals(profile) || "writer".equals(profile)%>) {
+	            	//add basket
+		   			basketNode = new YAHOO.widget.TextNode({"id":"1"}, root, false, true);
+		   			basketNode.labelElId = "basket";
+		   			basketNode.label = "<%=resources.getString("kmelia.basket")%>";
+		   			if (nbItemsInBasket != -1) {
+		   				basketNode.label = basketNode.label + " ("+nbItemsInBasket+")";
+		   			}
+		   			basketNode.href = "javascript:displayTopicContent(1)";
+		   			basketNode.isLeaf = true;
+		   			basketNode.hasIcon = true;
+					basketNode.labelStyle = "icon-basket";
+                }
             }
 
             if (nbPublisOnRoot > 0)
@@ -1387,7 +1388,10 @@ function loadNodeData(node, fnLoadComplete)  {
 			if (id == "tovalidate")
 			{
 				displayPublicationsToValidate();
-				$("td .browsebar").html("<%=EncodeHelper.javaStringToJsString(spaceLabel)%> > <%=EncodeHelper.javaStringToJsString(componentLabel)%> > <%=resources.getString("ToValidate")%>");
+
+				//update breadcrumb
+                removeBreadCrumbElements();
+                addBreadCrumbElement("#", "<%=resources.getString("ToValidate")%>");
 			}
 			else
 			{

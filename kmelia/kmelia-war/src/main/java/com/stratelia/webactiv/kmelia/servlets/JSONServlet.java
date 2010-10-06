@@ -77,7 +77,7 @@ public class JSONServlet extends HttpServlet {
 
     KmeliaSessionController kmeliaSC =
         (KmeliaSessionController) req.getSession().getAttribute(
-        "Silverpeas_" + "kmelia" + "_" + componentId);
+            "Silverpeas_" + "kmelia" + "_" + componentId);
 
     NodePK nodePK = new NodePK(id, componentId);
 
@@ -86,8 +86,10 @@ public class JSONServlet extends HttpServlet {
       TopicDetail topic = kmeliaSC.getTopic(id);
       List<NodeDetail> nodes = (List<NodeDetail>) topic.getNodeDetail().getChildrenDetails();
 
-      if ("0".equals(id) && !KmeliaHelper.isToolbox(componentId) && kmeliaSC.displayNbPublis() &&
-          "admin".equals(kmeliaSC.getUserTopicProfile())) {
+      if ("0".equals(id) && !KmeliaHelper.isToolbox(componentId) &&
+          kmeliaSC.displayNbPublis() &&
+          ("admin".equals(kmeliaSC.getUserTopicProfile()) || "publisher".equals(kmeliaSC
+              .getUserTopicProfile()))) {
         int nbPublisToValidate =
             kmeliaSC.getKmeliaBm().getPublicationsToValidate(componentId).size();
         NodeDetail temp = new NodeDetail();
