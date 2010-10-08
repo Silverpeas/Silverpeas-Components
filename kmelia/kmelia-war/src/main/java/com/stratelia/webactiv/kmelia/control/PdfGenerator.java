@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.text.ParseException;
@@ -39,8 +38,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.text.html.HTMLEditorKit.ParserCallback;
 import javax.swing.text.html.parser.ParserDelegator;
@@ -551,8 +548,8 @@ public class PdfGenerator extends PdfPageEventHelper {
 
     // Vignette : optionnel
     ResourceLocator settings = new ResourceLocator(
-            "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", language);
-    if (new Boolean(settings.getString("isVignetteVisible")).booleanValue()) {
+        "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", language);
+    if (settings.getBoolean("isVignetteVisible", false)) {
       if (publicationDetail.getImage() != null) {
         ResourceLocator publicationSettings = new ResourceLocator(
                 "com.stratelia.webactiv.util.publication.publicationSettings",
@@ -607,18 +604,13 @@ public class PdfGenerator extends PdfPageEventHelper {
     // Importance : optionnel
     if (kmeliaSessionController.isFieldImportanceVisible() && fullStar != null
             && emptyStar != null) {
-      String importance = new Integer(publicationDetail.getImportance()).toString();
-      if (importance.equals("")) {
-        importance = "1";
-      }
-      int sImportance = new Integer(importance).intValue();
       Image[] tabImage = new Image[5];
       // display full Stars
-      for (int i = 0; i < sImportance; i++) {
+      for (int i = 0; i < publicationDetail.getImportance(); i++) {
         tabImage[i] = fullStar;
       }
       // display empty stars
-      for (int i = sImportance; i < 5; i++) {
+      for (int i = publicationDetail.getImportance(); i < 5; i++) {
         tabImage[i] = emptyStar;
       }
       addRowImagesToTable(tbl, message.getString("PubImportance") + " :",
@@ -630,8 +622,7 @@ public class PdfGenerator extends PdfPageEventHelper {
       String validatorDate = kmeliaSessionController.getUserDetail(
               publicationDetail.getValidatorId()).getDisplayedName();
       if (publicationDetail.getValidateDate() != null) {
-        validatorDate += " ("
-                + DateUtil.getOutputDate(publicationDetail.getValidateDate(),
+        validatorDate += " ("+ DateUtil.getOutputDate(publicationDetail.getValidateDate(),
                 language) + ")";
       }
       addRowToTable(tbl, null, new String[]{

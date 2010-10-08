@@ -5,9 +5,11 @@
 package com.stratelia.webactiv.kmelia.servlets;
 
 import com.google.common.io.Closeables;
+import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.MimeTypes;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.PdfGenerator;
+import com.stratelia.webactiv.util.ClientBrowserUtil;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -39,7 +41,7 @@ public class KmeliaPdfGeneratorServlet extends HttpServlet {
     OutputStream out = response.getOutputStream();
     ByteArrayOutputStream buffer = new ByteArrayOutputStream();
     CompletePublication complete = kmelia.getCompletePublication(pubId);
-    String pdfName = kmelia.getPublicationPdfName(pubId);
+    String pdfName = ClientBrowserUtil.rfc2047EncodeFilename(request, kmelia.getPublicationPdfName(pubId));
     PdfGenerator pdfGenerator = new PdfGenerator();
     pdfGenerator.generate(buffer, complete, kmelia);
     response.setHeader("Content-Disposition", "inline; filename=\"" + pdfName + "\"");
