@@ -250,25 +250,38 @@ private OrganizationalUnit[] getUnits(DirContext ctx,
 private OrganizationalUnit[] getCategories(OrganizationalPerson[] arrayPerson) {
 	if(arrayPerson!= null && arrayPerson.length > 0){
 		ArrayList<OrganizationalUnit> categories = new ArrayList<OrganizationalUnit>();
-		boolean createOthersCases = false;
-		for (int i = 0; i < PERSONNSCHART_CATEGORIES_LABEL.length; i++) {
-			String key = PERSONNSCHART_CATEGORIES_LABEL[i].getLdapKey();
-			// check if key found just one time
-			boolean found = false;
+		ArrayList<String> categoriesLabelFound = new ArrayList<String>();
+		boolean alreadyCreateOthersCase = false;
 			for (int j = 0; j < arrayPerson.length; j++) {
-				if(key.equals(arrayPerson[i].getVisibleCategory())){
-					found = true;
-					break;
+				// check if key found just one time
+				boolean otherExist = true;
+				for (int i = 0; i < PERSONNSCHART_CATEGORIES_LABEL.length; i++) {
+					String key = PERSONNSCHART_CATEGORIES_LABEL[i].getLdapKey();	
+					if(key.equals(arrayPerson[j].getVisibleCategory())){
+						// clé trouvé - on la rajoute si nécessaire et on passe à la personne suivante
+						if(!categoriesLabelFound.contains(PERSONNSCHART_CATEGORIES_LABEL[i].getLabel())){
+							OrganizationalUnit newUnit = new OrganizationalUnit(PERSONNSCHART_CATEGORIES_LABEL[i].getLabel(), PERSONNSCHART_CATEGORIES_LABEL[i].getLdapKey());
+							categories.add(newUnit);
+							categoriesLabelFound.add(PERSONNSCHART_CATEGORIES_LABEL[i].getLabel());
+						}
+						otherExist = false;
+						break;
+					}
+				}
+				if(otherExist && !alreadyCreateOthersCase){
+					// on vérifie que la personne ne soit pas centrale
+					// si elle l'est -> on la considère trouver et donc pas besoin de créer la catégorie others
+					if(arrayPerson[j].isVisibleOnCenter()){
+							otherExist = false;
+					}	
+					if(otherExist){
+						// on doit vraiment créer la catégorie "Autres"
+						OrganizationalUnit otherUnit = new OrganizationalUnit("Personnel");
+						categories.add(otherUnit);
+						alreadyCreateOthersCase = true;
+					}
 				}
 			}
-			if(found){
-				OrganizationalUnit newUnit = new OrganizationalUnit(PERSONNSCHART_CATEGORIES_LABEL[i].getLabel(), PERSONNSCHART_CATEGORIES_LABEL[i].getLdapKey());
-				categories.add(newUnit);
-			}else if(!createOthersCases){
-				OrganizationalUnit otherUnit = new OrganizationalUnit("Personnel");
-				categories.add(otherUnit);
-			}
-		}
 		if(categories.size() > 0){
 			return categories.toArray(new OrganizationalUnit[categories.size()]);
 		}else{
