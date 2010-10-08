@@ -23,6 +23,7 @@ function JCell(id, name, infoSup, url, level, type, cellType, linkCenter, linkDe
 	this.linkCenter = linkCenter;
 	this.linkDetails = linkDetails;
 	this.upperLink = upperLink;
+	this.downLinksAlreadyDone = 0;
 }
 
 var cellRightNumber = -1;
@@ -103,7 +104,7 @@ function chartinit()
 	  maxWidth = Math.max(maxWidth, div.offsetLeft + div.offsetWidth + 2);
   }
 	
-  // on centre le scroll sur la case 0 (moitié de la largeur max moins un demi écran moins une demi cellule)
+  // on centre le scroll sur la case 0 (moitiÃ© de la largeur max moins un demi Ã©cran moins une demi cellule)
   mainDiv.scrollLeft= parseInt( maxWidth / 2 - widthDiv / 2 - CELLSIZE / 2 );
   mainDiv.style.width = "95%";
 }
@@ -116,24 +117,26 @@ function buildCells()
     buildCell(jCells[i]);
 	}
 	
-	var jLink;
-	var jCell1;
-	var jCell2;
-	for (i = 0; i < jLinks.length; i++)
-	{
-		jLink = jLinks[i];
-		jCell1 = getJCell(jLink.origin);
-		jCell2 = getJCell(jLink.destination);
-		if (jCell1.level < jCell2.level)
-		{
-			jCell1.downLinks[jCell1.downLinks.length] = jLink;
-			jCell2.upLinks[jCell2.upLinks.length] = jLink;
-		}
-		else if (jCell1.level > jCell2.level)
-		{
-			jCell1.upLinks[jCell1.upLinks.length] = jLink;
-			jCell2.downLinks[jCell2.downLinks.length] = jLink;
-		}
+	if(jLinks.length > 0){
+	  var jLink;
+  	var jCell1;
+  	var jCell2;
+  	for (i = 0; i < jLinks.length; i++)
+  	{
+  		jLink = jLinks[i];
+  		jCell1 = getJCell(jLink.origin);
+  		jCell2 = getJCell(jLink.destination);
+  		if (jCell1.level < jCell2.level)
+  		{
+  			jCell1.downLinks[jCell1.downLinks.length] = jLink;
+  			jCell2.upLinks[jCell2.upLinks.length] = jLink;
+  		}
+  		else if (jCell1.level > jCell2.level)
+  		{
+  			jCell1.upLinks[jCell1.upLinks.length] = jLink;
+  			jCell2.downLinks[jCell2.downLinks.length] = jLink;
+  		}
+  	}
 	}
 }
 
@@ -182,7 +185,7 @@ function buildCell(jCell)
   		td3.innerHTML = centrer;
       var detail = "&nbsp;";
   	  if(jCell.linkDetails){
-  		  detail = "<a href=\"" + jCell.url +"&chartType=1\">Détails</a>";
+  		  detail = "<a href=\"" + jCell.url +"&chartType=1\">D&eacute;tails</a>";
   		}
   		td4.innerHTML = detail;
   }
@@ -244,9 +247,8 @@ function placeCells()
   mainDiv.style.height = topGap + V_MARGIN;
   mainDiv.style.width = 800;
   mainDiv.style.overflow="auto";
-  
   moveMain(jLevels);
-	
+  
 	var maxLevelWidth = 0;
 	for (i = 0; i < jLevels.length; i++)
 	{
@@ -285,7 +287,7 @@ function placeCells()
 		moveMain(jLevels);
 		
 		// on refait une passe si on a cellule droite ou gauche
-		// il faut que la case supérieur (case 0) soit bien placé
+		// il faut que la case supÃ©rieur (case 0) soit bien placÃ©
 		for (i = 0; i < jLevels.length; i++)
 		{
 			leftGap = 0;
@@ -299,7 +301,7 @@ function placeCells()
 		          var originLeft = divOrigin.style.left;
 		          var origin = originLeft.substring(0,originLeft.length - 2);
 		          var intOrigin = parseInt(origin);
-		          div.style.left =  intOrigin + CELLSIZE; // on décalle d'une cellule si c'est possible
+		          div.style.left =  intOrigin + CELLSIZE; // on dÃ©calle d'une cellule si c'est possible
 		        }else if(cellLeftNumber != -1 && cellLeftNumber == jLevels[i][j].id){
 		          // la cellule est une cellule gauche
 		          div = jLevels[i][j].div;
@@ -309,7 +311,7 @@ function placeCells()
 		          var origin = originLeft.substring(0,originLeft.length - 2);
 		          var intOrigin = parseInt(origin);
 		          if(intOrigin > CELLSIZE){
-		               div.style.left = intOrigin - CELLSIZE; // on décalle d'une cellule si c'est possible
+		               div.style.left = intOrigin - CELLSIZE; // on dÃ©calle d'une cellule si c'est possible
 		          }
 				}
 			}
@@ -423,8 +425,8 @@ function getJCell(id)
 function resizeBoxes(jLevels)
 		{
 		  // recuperation max
-      var maxWidth = new Array(jLevels.length);;
-		  var maxHeight = new Array(jLevels.length);;
+      var maxWidth = new Array(jLevels.length);
+		  var maxHeight = new Array(jLevels.length);
 		  for (i = 0; i < jLevels.length; i++)
 			{
 			 for (j = 0; j < jLevels[i].length; j++)
@@ -457,42 +459,28 @@ function resizeBoxes(jLevels)
 		{
 			var jCell;
 			var topGap;
-		  var topGapOrigin;
-			var leftGap;
-			var leftGapOrigin;
-			var V_GAP_SAME_LEVEL = 10;
+		  var leftGap;
+			var V_GAP_SAME_LEVEL = 20;
 			var H_GAP = 50;
-			var saveOrigin;
 			
 			for (i = 0; i < jLevels.length; i++)
 			{
 				topGap = -1;
-				topGapOrigin= -1;
-        saveOrigin = -1;
-        leftGap = 0;
-        leftGapOrigin = leftGap;
+				leftGap = 0;
         
         for (j = 0; j < jLevels[i].length; j++)
 				{
           jCell = jLevels[i][j];
-          if(topGap == -1){
-            topGap = jCell.div.offsetTop;
-            topGapOrigin = topGap;
-          }
           
           if (jCell.upLinks.length == 1)
   				{
   					var currentOrigin = jCell.upLinks[0].origin;
-  					if(saveOrigin == -1){
-  					   // first time
-               saveOrigin = currentOrigin;
-            }
-            if(jCell.upLinks[0].orientation == 0) //same link on one level 
+  					if(jCell.upLinks[0].orientation == 0) //same link on one level 
             {
   					    // oriention horizontal uniquement
                 div = jCell.div;
   					    div.style.left = leftGap;
-  					    leftGap += div.offsetWidth + H_GAP;
+  					    leftGap += div.offsetWidth + V_GAP;
             }else if(jCell.upLinks[0].orientation == 2)
             {
   					    // oriention droite -> horizontal
@@ -508,21 +496,14 @@ function resizeBoxes(jLevels)
   					}else{
                 // orientation vertical uniquement
                 div = jCell.div;
-                if(currentOrigin != saveOrigin){
-                  leftGap += div.offsetWidth + H_GAP;
-                  // on décale à gauche
-                  div.style.left = leftGap;
-                  // on remet la case en haut
-                  topGap = topGapOrigin;
-                  // on change de source
-                  saveOrigin = currentOrigin;
-                  leftGapOrigin = leftGap;
-                }
-                
-  					    div.style.top = topGap;
-  					    div.style.left = leftGapOrigin;
-  					    topGap += div.offsetHeight + V_GAP_SAME_LEVEL;
-            }
+                var jcellorigin = getJCell(currentOrigin);
+                leftGap = jcellorigin.div.offsetLeft;
+                topGap = jcellorigin.div.offsetTop + jcellorigin.div.offsetHeight + V_GAP_SAME_LEVEL + jcellorigin.downLinksAlreadyDone;
+                jcellorigin.downLinksAlreadyDone += jcellorigin.div.offsetHeight + V_GAP_SAME_LEVEL;
+                  
+                div.style.top = topGap;
+  					    div.style.left = leftGap;
+  					}
   				}
   			}
 			}
@@ -580,7 +561,7 @@ function buildLinks()
     				 var part2y = parseInt((y1 - y0) * 1 / 3);
     				 
 					   buildLink(jLink.type, x0, y0, 0, part1y); // premier lien vertical
-					   buildLink(jLink.type, x1, y1 - part2y, 0, part2y); // deuxième lien vertical
+					   buildLink(jLink.type, x1, y1 - part2y, 0, part2y); // deuxiÃ¨me lien vertical
 					   buildLink(jLink.type, Math.min(x0, x1), y0 + part1y, Math.abs(x1 - x0), 0); // lien horizontal
 					}
 			 }else if (jLink.orientation == 1){
@@ -591,14 +572,14 @@ function buildLinks()
 						div1 = jCell1.div;
 						x1 = parseInt(div1.offsetLeft);
 						y1 = div1.offsetTop + div1.offsetHeight/2;
-						// ligne horizontale coté haut
+						// ligne horizontale cotÃ© haut
 						buildLink(jLink.type, x0 - X_DEC, y0, X_DEC, 0);
 						// ligne droite verticals
             buildLink(jLink.type, x0 - X_DEC, y0, 0, y1 - y0);
-						// ligne horizontale coté bas
+						// ligne horizontale cotÃ© bas
 						buildLink(jLink.type, x1 - X_DEC, y1, X_DEC, 0);
   			 }else if (jLink.orientation == 2){
-  			    // lien de type case à droite
+  			    // lien de type case Ã  droite
   			    div0 = jCell0.div;
 						x0 = parseInt(div0.offsetLeft + div0.offsetWidth / 2);
 						y0 = div0.offsetTop;
@@ -607,10 +588,10 @@ function buildLinks()
 						y1 = parseInt(div1.offsetTop + div1.offsetHeight/2);
 						// ligne droite verticals
             buildLink(jLink.type, x0, y0, 0, y1 - y0);
-						// ligne horizontale coté bas
+						// ligne horizontale cotÃ© bas
 						buildLink(jLink.type, x0, y1, x1 - x0, 0);
 				 }else if (jLink.orientation == 3){
-  			    // lien de type case à gauche
+  			    // lien de type case Ã  gauche
             div0 = jCell0.div;
 						x0 = parseInt(div0.offsetLeft + div0.offsetWidth / 2);
 						y0 = div0.offsetTop;
@@ -619,7 +600,7 @@ function buildLinks()
 						y1 = div1.offsetTop + div1.offsetHeight/2;
 						// ligne droite verticale
             buildLink(jLink.type, x0, y0, 0, y1 - y0);
-						// ligne horizontale coté bas
+						// ligne horizontale cotÃ© bas
 						buildLink(jLink.type, x1, y1, x0 - x1, 0);
          }
 			}

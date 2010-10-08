@@ -35,7 +35,6 @@
 <%@ page import="com.silverpeas.components.organizationchart.model.OrganizationalUnit"%>
 <%@ include file="check.jsp"%>
 
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%
 // ------------------------------------------------------------------------------
 // ORGANIGRAMME DE TYPE UNIT
@@ -166,7 +165,7 @@ for (int l=0; l<right.size(); l++ )
 <%
 }
 %>
-jCells[<%=i%>] = new JCell(<%=i%>, "<%=rightTitle%>", infoSup, "", <%=level%>, 1, 1, false, false,"");
+jCells[<%=i%>] = new JCell(<%=i%>, "<%=rightTitle%>", infoSup, "", <%=level%>, 3, 1, false, false,"");
 jLinks[<%=i-1%>] = new JLink(0, <%=i%>, 0, 2);
 <%
 i++;
@@ -196,7 +195,7 @@ if(left != null && left.size()>0){
      <%
      }
      %>
-     jCells[<%=i%>] = new JCell(<%=i%>, "<%=leftTitle%>", infoSup, "", <%=level%>, 1, 1, false, false,"");
+     jCells[<%=i%>] = new JCell(<%=i%>, "<%=leftTitle%>", infoSup, "", <%=level%>, 4, 1, false, false,"");
      jLinks[<%=i-1%>] = new JLink(0, <%=i%>, 0, 3);
 <%    
      i++;

@@ -35,14 +35,13 @@
 <%@ page import="com.silverpeas.components.organizationchart.model.OrganizationalUnit"%>
 <%@ include file="check.jsp"%>
 
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
 <%
 // ------------------------------------------------------------------------------
 // ORGANIGRAMME DE TYPE PERSONNES
 // ------------------------------------------------------------------------------	 			
 %>
-var jCells = new Array('jCells');
-var jLinks = new Array('jLinks');
+var jCells = new Array();
+var jLinks = new Array();
 <c:set var="parentUnit" value="${organigramme.parent}"/>
 <%
 // gestion du label central
@@ -127,7 +126,7 @@ Map categMap = new HashMap();
       		<c:set var="otherName" value="${category.name}"/>
       	</c:when>
 		<c:otherwise>
-			jCells[<%=j%>] = new JCell(<%=j%>, "<c:out value="${category.name}"/>", "", "", 1, 1, 1,false,false,"");
+			jCells[<%=j%>] = new JCell(<%=j%>, "<c:out value="${category.name}"/>", "", "", 1, 5, 1,false,false,"");
 			jLinks[<%=j-1%>] = new JLink(0, <%=j%>, 0, 0);
 			<c:set var="categKey" value="${category.key}"/>
 			<%
@@ -138,7 +137,7 @@ Map categMap = new HashMap();
 	</c:choose>
 </c:forEach>
 <%if(pageContext.getAttribute("otherName") != null && !"".equals((String)pageContext.getAttribute("otherName"))){%>
-	jCells[<%=j%>] = new JCell(<%=j%>, "<c:out value="${otherName}"/>", "", "", 1, 1, 1,false,false,"");
+	jCells[<%=j%>] = new JCell(<%=j%>, "<c:out value="${otherName}"/>", "", "", 1, 5, 1,false,false,"");
 	jLinks[<%=j-1%>] = new JLink(0, <%=j%>, 0, 0);
 	<%
     other = j;

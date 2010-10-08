@@ -34,9 +34,6 @@
 <%@ page import="com.silverpeas.components.organizationchart.model.OrganizationalChart"%>
 <%@ page import="com.silverpeas.components.organizationchart.model.OrganizationalUnit"%>
 <%@ include file="check.jsp"%>
-<%@ taglib uri="/WEB-INF/c.tld" prefix="c"%>
-<%@ taglib uri="/WEB-INF/fmt.tld" prefix="fmt"%>
-<%@ taglib uri="/WEB-INF/viewGenerator.tld" prefix="view"%>
 <html>
   <head>
 	<link type="text/css" href="<c:url value="/organizationchart/css/organizationchart.css" />" rel="StyleSheet"/>
