@@ -205,6 +205,7 @@ function placeCells()
 	var leftGap = mainDiv.offsetLeft;
 	var minHeight;
 	var maxHeight;
+	var jCell;
 	var div;
 	var jLevels = new Array(maxLevel);
 	
@@ -242,14 +243,14 @@ function placeCells()
   }
   
   //resizeBoxes(jLevels);
+  
   moveHorizontalAndVertical(jLevels);
   
   mainDiv.style.height = topGap + V_MARGIN;
   mainDiv.style.width = 800;
   mainDiv.style.overflow="auto";
   moveMain(jLevels);
-  
-	var maxLevelWidth = 0;
+  var maxLevelWidth = 0;
 	for (i = 0; i < jLevels.length; i++)
 	{
 		div = jLevels[i][jLevels[i].length - 1].div;
@@ -265,7 +266,7 @@ function placeCells()
 	}
 	else
 	{
-		var maxCount = 0; // numbre de cellules max. par ligne
+		var maxCount = 0; // nombre de cellules max. par ligne
 		for (i = 0; i < jLevels.length; i++)
 		{
 			maxCount = Math.max(maxCount, jLevels[i].length);
@@ -273,50 +274,69 @@ function placeCells()
 		maxCount--;
 		var gap = parseInt((maxLevelWidth - mainDiv.offsetWidth) / maxCount) + 5;
 		H_GAP = Math.max(H_GAP - gap, 5);
-
-		for (i = 0; i < jLevels.length; i++)
+    for (i = 0; i < jLevels.length; i++)
 		{
-			leftGap = 0;
+			leftGap = H_GAP;
 			for (j = 0; j < jLevels[i].length; j++)
 			{
-				div = jLevels[i][j].div;
-				div.style.left = leftGap;
-				leftGap += div.offsetWidth + H_GAP;
+				jCell = jLevels[i][j];
+				if (jCell.upLinks.length == 1)
+  			{
+					if(jCell.upLinks[0].orientation == 1)
+          {
+            // case orientation vertical du niveau
+            // on ne peut pas être recursif
+            // on recup la case du dessus
+            var currentOrigin = jCell.upLinks[0].origin;
+            var jcellorigin = getJCell(currentOrigin);
+            div = jLevels[i][j].div;
+            div.style.left = jcellorigin.div.offsetLeft;
+          }else{
+			      div = jLevels[i][j].div;
+			      div.style.left = leftGap;
+			      leftGap += div.offsetWidth + H_GAP;
+			    }
+				}else{
+				  // case 0 -> no up link
+				    div = jLevels[i][j].div;
+			      div.style.left = leftGap;
+			      leftGap += div.offsetWidth + H_GAP;
+			  }
 			}
 		}
 		moveMain(jLevels);
 		
-		// on refait une passe si on a cellule droite ou gauche
-		// il faut que la case supérieur (case 0) soit bien placé
-		for (i = 0; i < jLevels.length; i++)
+  }
+    
+  // on refait une passe si on a cellule droite ou gauche
+	// il faut que la case supérieur (case 0) soit bien placé
+	for (i = 0; i < jLevels.length; i++)
+	{
+		leftGap = 0;
+		for (j = 0; j < jLevels[i].length; j++)
 		{
-			leftGap = 0;
-			for (j = 0; j < jLevels[i].length; j++)
-			{
-				if(cellRightNumber != -1 && cellRightNumber == jLevels[i][j].id){
-				  // la cellule est une cellule droite
-		          div = jLevels[i][j].div;
-		          divOrigin = jCells[cellRightOrigin].div;
-		          // suppr le px
-		          var originLeft = divOrigin.style.left;
-		          var origin = originLeft.substring(0,originLeft.length - 2);
-		          var intOrigin = parseInt(origin);
-		          div.style.left =  intOrigin + CELLSIZE; // on décalle d'une cellule si c'est possible
-		        }else if(cellLeftNumber != -1 && cellLeftNumber == jLevels[i][j].id){
-		          // la cellule est une cellule gauche
-		          div = jLevels[i][j].div;
-		          divOrigin = jCells[cellLeftOrigin].div;
-		          // suppr le px
-		          var originLeft = divOrigin.style.left;
-		          var origin = originLeft.substring(0,originLeft.length - 2);
-		          var intOrigin = parseInt(origin);
-		          if(intOrigin > CELLSIZE){
-		               div.style.left = intOrigin - CELLSIZE; // on décalle d'une cellule si c'est possible
-		          }
-				}
+			if(cellRightNumber != -1 && cellRightNumber == jLevels[i][j].id){
+			  // la cellule est une cellule droite
+	          div = jLevels[i][j].div;
+	          divOrigin = jCells[cellRightOrigin].div;
+	          // suppr le px
+	          var originLeft = divOrigin.style.left;
+	          var origin = originLeft.substring(0,originLeft.length - 2);
+	          var intOrigin = parseInt(origin);
+	          div.style.left =  intOrigin + CELLSIZE; // on décalle d'une cellule si c'est possible
+	        }else if(cellLeftNumber != -1 && cellLeftNumber == jLevels[i][j].id){
+	          // la cellule est une cellule gauche
+	          div = jLevels[i][j].div;
+	          divOrigin = jCells[cellLeftOrigin].div;
+	          // suppr le px
+	          var originLeft = divOrigin.style.left;
+	          var origin = originLeft.substring(0,originLeft.length - 2);
+	          var intOrigin = parseInt(origin);
+	          if(intOrigin > CELLSIZE){
+	               div.style.left = intOrigin - CELLSIZE; // on décalle d'une cellule si c'est possible
+	          }
 			}
 		}
-		
   }   
 }
 
