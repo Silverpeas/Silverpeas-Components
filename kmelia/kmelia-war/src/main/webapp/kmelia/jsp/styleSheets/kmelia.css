@@ -95,3 +95,98 @@
 #templates .template {
 	text-align: center;
 }
+
+#pubList {
+	display:block;
+}
+
+#pubList #pubsHeader {
+	background-color:transparent;
+	background-image:url("/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg");
+	background-repeat:repeat-x;
+	font-weight:bold;
+	float: left;
+	width: 100%;
+}
+
+#pubList #pubsHeader img {
+	float: left;
+}
+
+#pubList #pubsCounter {
+	float:left;
+	margin-top:8px;
+	position:relative;
+}
+
+#pubList #pubsSort {
+	float: right;
+	margin-top: 6px;
+	position: relative;
+}
+
+#pubList ul {
+	list-style: none;
+	float: left;
+	width: 95%;
+	white-space: normal;
+}
+
+#pubList ul li {
+	margin-bottom: 10px;
+	float: left;
+	width: 100%;
+}
+
+#pubList .firstColumn {
+	float: left;
+}
+
+#pubList .publication {
+	white-space: normal;
+	float: left;
+}
+
+#pubList .publication .bullet {
+	margin-right: 10px;
+}
+
+#pubList .publication .importance {
+	font-size: 10px;
+}
+
+#pubList .publication .date {
+	font-size: 10px;
+}
+
+#pubList .publication .line1 {
+	height: 15px;
+}
+
+#pubList .publication .line2, 
+#pubList .publication .line3,
+#pubList .publication .files {
+	margin-left: 15px;
+	width: 95%;
+	white-space: normal;
+	float: left;
+}
+
+#pubList .publication .line3 {
+	margin-top: 2px;
+}
+
+#pubList .publication .line3 .description {
+	white-space: normal;
+}
+
+#pubList #pagination {
+	float: left;
+	width: 100%;
+	background-image:url("/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg");
+	background-repeat:repeat-x;
+}
+
+#pubList .publication .user {
+	/*display: none;*/
+}
