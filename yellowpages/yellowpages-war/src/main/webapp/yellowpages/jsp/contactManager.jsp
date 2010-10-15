@@ -99,7 +99,7 @@ out.println(gef.getLookStyleSheet());
   CompleteContact contactComplete = null;
   ContactDetail contactDetail = null;
 
-//Récupération des paramètres
+//Rï¿½cupï¿½ration des paramï¿½tres
 String action = (String) request.getAttribute("Action"); //Delete || Add || Update ||
 														// ViewContactInTopic || View ||
 														// UpdateView || ViewContact ||
@@ -241,11 +241,11 @@ if (action.equals("Add")) {
 	  contactDetail = new ContactDetail("X", firstName, lastName, email, phone, fax, null, null, null);
 	}
 	newContactId = yellowpagesScc.createContact(contactDetail);
-  userContactComplete = yellowpagesScc.getCompleteContact(newContactId);
-  yellowpagesScc.setCurrentContact(userContactComplete);
+    userContactComplete = yellowpagesScc.getCompleteContact(newContactId);
+    yellowpagesScc.setCurrentContact(userContactComplete);
 
-  boolean useModel = StringUtil.isDefined(yellowpagesScc.getCurrentTopic().getNodeDetail().getModelId());
-	if (useModel)
+
+	if (yellowpagesScc.useForm())
 	{
 		%><BODY onload = "autoSubmit()"><%
 	}
@@ -259,16 +259,19 @@ if (action.equals("Add")) {
 /* Update */
 else if (action.equals("Update")) {
       //Mise a jour du contact
-      firstName = (String) request.getParameter("FirstName");
-      lastName = (String) request.getParameter("LastName");
-      email = (String) request.getParameter("Email");
-      phone = (String) request.getParameter("Phone");
-      fax = (String) request.getParameter("Fax");
-      userId = (String) request.getParameter("UserId");
-      if (! userId.equals(""))
-          contactDetail = new ContactDetail(id,firstName, lastName, email, phone, fax, userId, null, null);
-      else
-          contactDetail = new ContactDetail(id, firstName, lastName, email, phone, fax, null, null, null);
+      firstName = request.getParameter("FirstName");
+      lastName = request.getParameter("LastName");
+      email = request.getParameter("Email");
+      phone = request.getParameter("Phone");
+      fax = request.getParameter("Fax");
+      userId = request.getParameter("UserId");
+      if (!userId.equals("")) {
+        contactDetail = new ContactDetail(id, firstName, lastName, email, phone, fax, userId, null,
+              null);
+      } else {
+        contactDetail = new ContactDetail(id, firstName, lastName, email, phone, fax, null, null,
+              null);
+      }
       yellowpagesScc.updateContact(contactDetail);
       userContactComplete = yellowpagesScc.getCompleteContact(id);
       yellowpagesScc.setCurrentContact(userContactComplete);
@@ -424,7 +427,7 @@ else if (action.equals("New") || action.equals("UpdateView")) {
 
 	out.println(window.printBefore());
 
-	if (isOwner && StringUtil.isDefined(currentTopic.getNodeDetail().getModelId())) {
+	if (isOwner && yellowpagesScc.useForm()) {
 		boolean useModel = yellowpagesScc.getCurrentTopic().getNodeDetail().getId() != ROOT_TOPIC;
 		displayContactOperations(resources, id, gef, action, out, useModel);
 	}

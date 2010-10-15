@@ -49,7 +49,6 @@ public class YellowpagesIndexer implements ComponentIndexerInterface {
     if (!topicId
         .startsWith(YellowpagesSessionController.GroupReferentielPrefix)) {
       TopicDetail topic = scc.getTopic(topicId);
-
       if (!topicId.equals("0") && !topicId.equals("1") && !topicId.equals("2"))
         scc.updateTopicHeader(topic.getNodeDetail());
 
@@ -58,10 +57,8 @@ public class YellowpagesIndexer implements ComponentIndexerInterface {
 
       // treatment of the nodes of current topic
       Collection<NodeDetail> subTopics = topic.getNodeDetail().getChildrenDetails();
-      String nodeId = null;
       for (NodeDetail node : subTopics) {
-        nodeId = node.getNodePK().getId();
-        indexTopic(nodeId);
+        indexTopic(node.getNodePK().getId());
       }
     }
   }

@@ -90,11 +90,9 @@ public class YellowpagesRequestRouter extends ComponentRequestRouter {
    */
   public String getDestination(String function,
       ComponentSessionController componentSC, HttpServletRequest request) {
-    SilverTrace.info("yellowpages",
-        "YellowpagesRequestRooter.getDestination()",
+    SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()",
         "root.MSG_GEN_ENTER_METHOD");
-    SilverTrace.info("yellowpages",
-        "YellowpagesRequestRooter.getDestination()",
+    SilverTrace.info("yellowpages", "YellowpagesRequestRooter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "function = " + function);
     YellowpagesSessionController scc = (YellowpagesSessionController) componentSC;
 
