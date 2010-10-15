@@ -674,15 +674,23 @@ public interface KmeliaBmBusinessSkeleton {
       Map<String, String> formParams,
       String language, String xmlFormName, String discrimatingParameterName,
       String userProfile) throws RemoteException;
+  
+  public boolean importPublication(String publicationId, String componentId, String topicId,
+      String spaceId, String userId, Map<String, String> publiParams,
+      Map<String, String> formParams, String language,
+      String xmlFormName, String userProfile) throws RemoteException;
 
   public void importPublications(String componentId, String topicId,
       String spaceId, String userId, List<Map<String, String>> publiParamsList,
       List<Map<String, String>> formParamsList, String language, String xmlFormName,
       String discrimatingParameterName, String userProfile)
       throws RemoteException;
+  
+  public List getPublicationXmlFields(String publicationId, String componentId, String spaceId,
+    String userId) throws RemoteException;
 
-  public List getPublicationXmlFields(String publicationId, String componentId,
-      String spaceId, String userId) throws RemoteException;
+  public List getPublicationXmlFields(String publicationId, String componentId, String spaceId,
+    String userId, String language) throws RemoteException;
 
   public String createTopic(String componentId, String topicId, String spaceId,
       String userId, String name, String description) throws RemoteException;

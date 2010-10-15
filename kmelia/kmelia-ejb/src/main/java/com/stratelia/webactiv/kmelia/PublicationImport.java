@@ -102,25 +102,41 @@ public class PublicationImport {
    * @param formParams The parameters of the publication's form.
    * @param language The language of the publication.
    * @param xmlFormName The name of the publication's form.
-   * @param discrimatingParameterName The name of the field included in the form which allowes to
+   * @param discrimatingParameterName The name of the field included in the form which allows to
    * retrieve the eventually existing publication to update.
    * @param userProfile The user's profile used to draft out the publication.
    * @return True if the publication is created, false if it is updated.
    * @throws RemoteException
    */
   public boolean importPublication(Map<String, String> publiParams, Map<String, String> formParams,
-      String language, String xmlFormName, String discrimatingParameterName,
-      String userProfile) throws RemoteException {
-    PublicationDetail pubDetail = null;
-
+      String language, String xmlFormName, String discrimatingParameterName, String userProfile)
+      throws RemoteException {
     String publicationToUpdateId = null;
-    if (discrimatingParameterName != null
-        && discrimatingParameterName.length() > 0) {
-      String discrimatingParameterValue = formParams.get(discrimatingParameterName);
-      publicationToUpdateId = getPublicationId(xmlFormName,
-          discrimatingParameterName, discrimatingParameterValue);
+    if (discrimatingParameterName != null && discrimatingParameterName.length() > 0) {
+      String discrimatingParameterValue = (String)formParams.get(discrimatingParameterName);
+      publicationToUpdateId = getPublicationId(
+        xmlFormName, discrimatingParameterName, discrimatingParameterValue);
     }
-
+    
+    return importPublication(
+      publicationToUpdateId, publiParams, formParams, language, xmlFormName, userProfile);
+  }
+  
+  /**
+   * Creates or updates a publication.
+   * @param publicationToUpdateId The id of the publication to update.
+   * @param publiParams The parameters of the publication.
+   * @param formParams The parameters of the publication's form.
+   * @param language The language of the publication.
+   * @param xmlFormName The name of the publication's form.
+   * @param userProfile The user's profile used to draft out the publication.
+   * @return True if the publication is created, false if it is updated.
+   * @throws RemoteException
+   */
+  public boolean importPublication(String publicationToUpdateId, Map<String, String> publiParams,
+      Map<String, String> formParams, String language, String xmlFormName, String userProfile)
+      throws RemoteException {
+    PublicationDetail pubDetail = null;
     boolean resultStatus;
     PublicationPK pubPK;
     if (publicationToUpdateId != null) {
@@ -212,10 +228,14 @@ public class PublicationImport {
     return resultStatus;
   }
 
-  public List<XMLField> getPublicationXmlFields(String publicationId) {
+  public List getPublicationXmlFields(String publicationId) {
+    return getPublicationXmlFields(publicationId, null);
+  }
+  
+  public List getPublicationXmlFields(String publicationId, String language) {
     PublicationPK pubPK = new PublicationPK(publicationId, spaceId, componentId);
     PublicationDetail pubDetail = kmeliaBm.getPublicationDetail(pubPK);
-    return pubDetail.getXmlFields();
+    return pubDetail.getXmlFields(language);
   }
 
   /**
@@ -453,13 +473,15 @@ public class PublicationImport {
     attDetail.setTitle(title);
     attDetail.setInfo(info);
     attDetail.setCreationDate(creationDate);
+    boolean updateLogicalName = true;
     if (logicalName != null) {
       // force
       attDetail.setLogicalName(logicalName);
+      updateLogicalName=false;
     }
 
     attachmentIE.importAttachment(publicationId, componentId, attDetail,
-        isIndexable);
+        isIndexable, updateLogicalName);
   }
 
   /**

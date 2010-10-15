@@ -4913,13 +4913,37 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
    */
   public boolean importPublication(String componentId, String topicId,
       String spaceId, String userId, Map<String, String> publiParams,
-      Map<String, String> formParams,
-      String language, String xmlFormName, String discrimatingParameterName,
-      String userProfile) throws RemoteException {
-    PublicationImport publicationImport = new PublicationImport(this,
-        componentId, topicId, spaceId, userId);
+      Map<String, String> formParams, String language, String xmlFormName,
+      String discrimatingParameterName, String userProfile) throws RemoteException {
+    PublicationImport publicationImport = new PublicationImport(
+      this, componentId, topicId, spaceId, userId);
     return publicationImport.importPublication(publiParams, formParams,
-        language, xmlFormName, discrimatingParameterName, userProfile);
+      language, xmlFormName, discrimatingParameterName, userProfile);
+  }
+  
+  /**
+   * Creates or updates a publication.
+   * @param publicationToUpdateId The id of the publication to update.
+   * @param componentId The id of the component containing the publication.
+   * @param topicId The id of the topic containing the publication.
+   * @param spaceId The id of the space containing the publication.
+   * @param userId The id of the user creating or updating the publication.
+   * @param publiParams The publication's parameters.
+   * @param formParams The parameters of the publication's form.
+   * @param language The language of the publication.
+   * @param xmlFormName The name of the publication's form.
+   * @param userProfile The user's profile used to draft out the publication.
+   * @return True if the publication is created, false if it is updated.
+   * @throws RemoteException
+   */
+  public boolean importPublication(String publicationId, String componentId, String topicId,
+      String spaceId, String userId, Map<String, String> publiParams,
+      Map<String, String> formParams, String language, String xmlFormName, String userProfile)
+      throws RemoteException {
+    PublicationImport publicationImport = new PublicationImport(
+      this, componentId, topicId, spaceId, userId);
+    return publicationImport.importPublication(
+      publicationId, publiParams, formParams, language, xmlFormName, userProfile);
   }
 
   public void importPublications(String componentId, String topicId,
@@ -4938,6 +4962,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     PublicationImport publicationImport = new PublicationImport(this,
         componentId, null, spaceId, userId);
     return publicationImport.getPublicationXmlFields(publicationId);
+  }
+  
+  public List getPublicationXmlFields(String publicationId, String componentId, String spaceId,
+      String userId, String language) {
+    PublicationImport publicationImport = new PublicationImport(
+      this, componentId, null, spaceId, userId);
+    return publicationImport.getPublicationXmlFields(publicationId, language);
   }
 
   public String createTopic(String componentId, String topicId, String spaceId,
