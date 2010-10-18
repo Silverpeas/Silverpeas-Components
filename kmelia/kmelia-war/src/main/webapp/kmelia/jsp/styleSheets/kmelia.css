@@ -83,6 +83,15 @@
 	font-weight: bold;
 }
 
+#preview .extraInformation_Refused {
+	background: #EF9595;
+	border: 3px solid red;
+	font-weight: bold;
+	padding: 5px;
+	text-align: center;
+	width: 100%;
+}
+
 #preview #pagination {
 	display: block;
 	float: right;

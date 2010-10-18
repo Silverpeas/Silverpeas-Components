@@ -375,7 +375,7 @@ function addFavorite(name,description,url)
 
 </script>
 </head>
-<body class="yui-skin-sam" onUnload="closeWindows()" onLoad="openSingleAttachment()" id="<%=componentId %>">
+<body class="yui-skin-sam" onunload="closeWindows()" onload="openSingleAttachment()" id="<%=componentId %>">
 <div id="preview">
 <%
         Window window = gef.getWindow();
@@ -513,6 +513,10 @@ function addFavorite(name,description,url)
 		description = Encode.javaStringToHtmlParagraphe(description);
 
 		out.println("<br/><span class=\"publiDesc\">"+description+"</span><br/><br/>");
+		
+		if ("UnValidate".equals(status)) { %>
+		  <div class="extraInformation_Refused"><%=resources.getString("PublicationRefused")%></div>
+		<% }
 
 		out.println("</td><td valign=\"top\" align=\"right\">");
 

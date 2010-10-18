@@ -30,6 +30,7 @@ import java.util.List;
 
 import com.silverpeas.util.security.ComponentSecurity;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
@@ -133,8 +134,17 @@ public class KmeliaSecurity implements ComponentSecurity {
           } else {
             return true;
           }
-        } else if ("UnValidate".equalsIgnoreCase(status)
-            || "Draft".equalsIgnoreCase(status)) {
+        } else if ("UnValidate".equalsIgnoreCase(status)) {
+          String profile = getProfile(userId, pk);
+          if (!"user".equalsIgnoreCase(profile)) {
+            return userId.equals(publication.getUpdaterId())
+                || userId.equals(publication.getCreatorId())
+                || SilverpeasRole.admin.isInRole(profile)
+                || SilverpeasRole.publisher.isInRole(profile);
+          } else {
+            return false;
+          }
+        } else if ("Draft".equalsIgnoreCase(status)) {
           String profile = getProfile(userId, pk);
           if (!"user".equalsIgnoreCase(profile)) {
             return userId.equals(publication.getUpdaterId())
@@ -167,11 +177,11 @@ public class KmeliaSecurity implements ComponentSecurity {
     return objectAvailable;
   }
 
-
   protected boolean isKmeliaObjectType(String objectType) {
     return objectType != null && ("Publication".equalsIgnoreCase(objectType)
         || objectType.startsWith("Attachment") || objectType.startsWith("Version"));
   }
+
   protected boolean isRightsOnTopicsEnable(String componentId) {
     String param = controller.getComponentParameterValue(componentId,
         "rightsOnTopics");
@@ -199,7 +209,7 @@ public class KmeliaSecurity implements ComponentSecurity {
         if (!"1".equals(fatherPK.getId())) {
           objectAvailable = isNodeAvailable(fatherPK, userId);
         }
-        if(objectAvailable) {
+        if (objectAvailable) {
           break;
         }
       }
@@ -233,8 +243,9 @@ public class KmeliaSecurity implements ComponentSecurity {
         if (!node.haveRights()) {
           objectAvailable = true;
         } else {
-          objectAvailable = controller.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
-              nodePK.getInstanceId(), userId);
+          objectAvailable =
+              controller.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
+                  nodePK.getInstanceId(), userId);
         }
       } else {
         objectAvailable = false;
