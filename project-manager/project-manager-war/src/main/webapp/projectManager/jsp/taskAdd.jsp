@@ -144,16 +144,25 @@ function dateDansPeriodeMere(yearBegin, monthBegin, dayBegin)
 }
 function isCorrectForm() {
 	
-	var i=0;
+	 var i=0;
 	 var str = "";
 	 var hasNext = 1;
+   var errorMsg 			= "";
+   var errorNb 			= 0;
 	 while (hasNext == 1)
 	 {
 		 try
 		 {
-			 str += document.getElementById("Resource"+i).value;
+       var resourceId = document.getElementById("Resource"+i).value;
+       var chargeResource = document.getElementById("Charge"+i).value;
+       if (!isInteger(chargeResource))
+       {
+          errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.ResourceCharge")%>' <%=resource.getString("GML.MustContainsNumber")%>\n";
+          errorNb++;
+       }
+			 str += resourceId;
 			 str += "_";
-			 str += document.getElementById("Charge"+i).value;
+			 str += chargeResource;
 			 str += ",";
 			 i++;
 		 }
@@ -164,8 +173,6 @@ function isCorrectForm() {
 	 }
 	 document.actionForm.allResources.value = str;
 	 
-     var errorMsg 			= "";
-     var errorNb 			= 0;
      var beginDateOK 		= true;
      var name 				= document.actionForm.Nom.value;
      var responsable		= document.actionForm.ResponsableId.value;
