@@ -27,78 +27,32 @@
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>
-<%@ include file="publicationsList.jsp.inc" %>
-
-<%!
-  //Icons
-  String folderSrc;
-  String publicationSrc;
-  String fullStarSrc;
-  String emptyStarSrc;
-  String topicSrc;
-%>
 
 <% 
-
-String rootId = "0";
-String space = "";
-String action = "";
-String sort = "";
-String id = "";
-String description = "";
-String alertType = "";
-String creationDate = "";
-String creatorName = "";
-Collection path = null;
-String level = "";
-String fatherId = "";
-String childId = "";
-Collection subTopicList = null;
-Collection publicationList = null;
-String linkedPathString = "";
-String pathString = "";
-String language = "";
-String profile = "";
-
-//R�cup�ration des param�tres
-action = (String) request.getParameter("Action");
-sort = (String) request.getParameter("Sort");
-id = (String) request.getParameter("Id");
-childId = (String) request.getParameter("ChildId");
-language = (String) request.getParameter("Language");
-space = (String) request.getParameter("Space");
-profile = (String) request.getParameter("Profile");
-String translation = (String) request.getParameter("Translation");
-if (translation == null)
+String id = request.getParameter("Id");
+String translation = request.getParameter("Translation");
+if (translation == null) {
 	translation = kmeliaScc.getLanguage();
-
-//Icons
-folderSrc = m_context + "/util/icons/component/kmeliaSmall.gif";
-publicationSrc = m_context + "/util/icons/publication.gif";
-fullStarSrc = m_context + "/util/icons/starFilled.gif";
-emptyStarSrc = m_context + "/util/icons/starEmpty.gif";
-topicSrc = m_context + "/util/icons/folder.gif";
-
-//Mise a jour de l'espace
-if (action == null) {
-	id = rootId;
-	action = "Search";
 }
 
-TopicDetail currentTopic = null;
+String rootId = "0";
+if (id == null) {
+  id = rootId;
+}
 
-ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", kmeliaScc.getLanguage());
+TopicDetail currentTopic = kmeliaScc.getTopic(id);
+kmeliaScc.setSessionTopic(currentTopic);
+Collection path = currentTopic.getPath();
+String linkedPathString = displayPath(path, true, 3, translation);
+kmeliaScc.setSessionPath(linkedPathString);
 
 %>
 
-<HTML>
-<HEAD>
+<html>
+<head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE></TITLE>
+<title></title>
 <% out.println(gef.getLookStyleSheet()); %>
-<script type="text/javascript" src="<%=m_context%>/util/ajax/prototype.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/ajax/rico.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/ajax/ricoAjax.js"></script>
 <Script language="JavaScript1.2">
 function topicGoTo(id) {
     document.topicDetailForm.Action.value = "Search";
@@ -108,7 +62,6 @@ function topicGoTo(id) {
 }
 
 function publicationGoTo(id){
-    document.pubForm.Action.value = "View";
     document.pubForm.Id.value = id;
     document.pubForm.submit();
 }
@@ -117,56 +70,53 @@ function publicationGoToFromMain(id){
     publicationGoTo(id);
 }
 
+function sortGoTo(selectedIndex) {
+	if (selectedIndex != 0 && selectedIndex != 1) {
+		var sort = document.publicationsForm.sortBy[selectedIndex].value;
+		var ieFix = new Date().getTime();
+		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:0,Sort:sort,ComponentId:'<%=componentId%>',IEFix:ieFix},
+							function(data){
+								$('#pubList').html(data);
+							},"html");
+		return;
+	}
+}
+
 function doPagination(index)
 {
-	ajaxEngine.sendRequest('refreshPubList','ElementId=pubList',"ComponentId=<%=componentId%>",'ToPortlet=1',"Index="+index);
+	var ieFix = new Date().getTime();
+	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',IEFix:ieFix},
+							function(data){
+								$('#pubList').html(data);
+							},"html");
+}
+
+function displayPublications(id)
+{
+	//display publications of topic
+	var ieFix = new Date().getTime();
+	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Id:id,ComponentId:'<%=componentId%>',IEFix:ieFix},
+			function(data){
+				$('#pubList').html(data);
+			},"html");
 }
 
 function init()
 {
-	ajaxEngine.registerRequest('refreshPubList', '<%=m_context%>/RAjaxPublicationsListServlet/dummy');
-	
-	ajaxEngine.registerAjaxElement('pubList');
-	
-	ajaxEngine.sendRequest('refreshPubList','ElementId=pubList',"ComponentId=<%=componentId%>",'ToPortlet=1');
+	displayPublications('<%=id%>');
 }
 </script>
-</HEAD>
+</head>
 
-<BODY onLoad="init()">
-
+<body id="kmelia" onload="init()">
+<div id="<%=componentId %>">
+<span class="portlet">
 <%
-//Traitement = View, Search, Add, Update ou Delete
-      if (id == null) {
-            if (sort != null) {
-                currentTopic = kmeliaScc.getSessionTopic();
-                id = currentTopic.getNodePK().getId();
-            } else {
-                id = rootId;
-            }
-            action = "Search";
-      }
-      if (action.equals("Search")) {
-		currentTopic = kmeliaScc.getTopic(id);
-		kmeliaScc.setSessionTopic(currentTopic);
-		path = currentTopic.getPath();
-		pathString = displayPath(path, false, 3, translation);
-		linkedPathString = displayPath(path, true, 3, translation);
-
-		kmeliaScc.setSessionPath(linkedPathString);
-	  } 
-	  else if (action.equals("OtherPublications"))
-	  {
-		currentTopic		= kmeliaScc.getSessionTopic();
-		pathString			= kmeliaScc.getSessionPathString();
-	    linkedPathString	= kmeliaScc.getSessionPath();
-	  }
-
 		Window window = gef.getWindow();
 
 		BrowseBar browseBar = window.getBrowseBar();
 		browseBar.setDomainName(kmeliaScc.getSpaceLabel());
-        browseBar.setComponentName(kmeliaScc.getComponentLabel(), "javascript:onClick=topicGoTo('0')");
+        browseBar.setComponentName(kmeliaScc.getComponentLabel(), "portlet.jsp");
 		browseBar.setPath(linkedPathString);
 
 		Frame frame = gef.getFrame();
@@ -177,35 +127,21 @@ function init()
 			displaySessionTopicsToUsers(kmeliaScc, currentTopic, gef, request, session, resources, out);
 		}
 
-		if (id.equals("0"))
-		{
-			displayLastPublications(currentTopic.getPublicationDetails(), (currentTopic.getNodeDetail().getChildrenNumber() > 0), pathString, kmeliaScc.getString("PublicationsLast"), kmeliaScc, settings, resources, out);
-		}
-		else
-		{
-			out.println("<div id=\"pubList\"/>");
-		}
-
+		out.println("<div id=\"pubList\"/>");
+		
 		out.println(window.printAfter());
 %>
+</span>
+</div>
+<form name="topicDetailForm" action="portlet.jsp" method="post">
+  <input type="hidden" name="Action"/>
+  <input type="hidden" name="Id" value="<%=id%>"/>
+  <input type="hidden" name="Translation"/>
+</form>
 
-<FORM NAME="topicDetailForm" ACTION="portlet.jsp" METHOD=POST >
-  <input type="hidden" name="Action"><input type="hidden" name="Id" value="<%=id%>">
-  <input type="hidden" name="Path" value="<%=Encode.javaStringToHtmlString(pathString)%>"><input type="hidden" name="ChildId">
-  <input type="hidden" name="Name"><input type="hidden" name="Description">
-  <input type="hidden" name="Translation">
-  <input type="hidden" name="AlertType"></TD>
-</FORM>
-
-<FORM NAME="pubForm" ACTION="searchResult.jsp" METHOD="POST" target="MyMain">
-<input type="hidden" name="Action">
-<input type="hidden" name="Id">
-<input type="hidden" name="Path">
-<input type="hidden" name="CheckPath">
-<input type="hidden" name="Space" value="<%=kmeliaScc.getSpaceId()%>">
-<input type="hidden" name="Component" value="<%=kmeliaScc.getComponentId()%>">
-<input type="hidden" name="Type" value="Publication">
-</FORM>
-
-</BODY>
-</HTML>
+<form name="pubForm" action="ViewPublication" method="post" target="MyMain">
+<input type="hidden" name="Id"/>
+<input type="hidden" name="CheckPath"/>
+</form>
+</body>
+</html>

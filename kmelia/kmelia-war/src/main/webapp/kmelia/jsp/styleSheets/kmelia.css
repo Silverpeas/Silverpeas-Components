@@ -199,3 +199,7 @@
 #pubList .publication .user {
 	/*display: none;*/
 }
+
+.portlet #pubList {
+	margin-top: 5px;
+}
