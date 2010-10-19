@@ -4505,7 +4505,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @param sort
    * @return List of UserPublication
    */
-  public List<UserPublication> search(String query, int sort) {
+  public synchronized List<UserPublication> search(String query, int sort) {
     LinkedHashSet<UserPublication> userPublications = new LinkedHashSet<UserPublication>();
     QueryDescription queryDescription = new QueryDescription(query);
     queryDescription.setSearchingUser(getUserDetail().getId());
@@ -4522,9 +4522,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
     MatchingIndexEntry[] results = null;
     try {
-      getSearchEngine().search(queryDescription);
+      try {
+        getSearchEngine().search(queryDescription);
+      } catch (NoSuchObjectException nsoe) {
+        //reference to EJB Session statefull is expired
+        //getting a new one...
+        searchEngineEjb = null;
+        //re-launching the search
+        getSearchEngine().search(queryDescription);
+      } 
       results = getSearchEngine().getRange(0, getSearchEngine().getResultLength());
-
       MatchingIndexEntry result = null;
       PublicationDetail pubDetail = new PublicationDetail();
       pubDetail.setPk(new PublicationPK("unknown"));

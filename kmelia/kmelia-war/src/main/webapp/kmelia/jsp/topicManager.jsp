@@ -470,9 +470,11 @@ function searchInTopic()
 {
 	var topicQuery = getSearchQuery();
 	if (topicQuery != "" && topicQuery.length > 1) {
+		$.progressMessage();
 		var ieFix = new Date().getTime();
 		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:0,Query:topicQuery,ComponentId:'<%=componentId%>',IEFix:ieFix},
 				function(data){
+					$.closeProgressMessage();
 					$('#pubList').html(data);
 				},"html");
 	}
