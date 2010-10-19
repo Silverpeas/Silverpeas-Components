@@ -51,7 +51,7 @@
     <view:board>
 <table>
 <tr><td class="txtlibform"><fmt:message key="importExportPeas.ExportDuration" /> :</td><td><%=DateUtil.formatDuration(report.getDuration())%></td></tr>
-<tr><td class="txtlibform"><fmt:message key="importExportPeas.FileSize"/> :</td><td><%=FileRepositoryManager.getFileSize(report.getZipFileSize())%></td></tr>
+<tr><td class="txtlibform"><fmt:message key="importExportPeas.FileSize"/> :</td><td><%=FileRepositoryManager.formatFileSize(report.getZipFileSize())%></td></tr>
 <tr><td class="txtlibform"><fmt:message key="importExportPeas.File"/> :</td><td><a href="<%=report.getZipFilePath()%>"><%=report.getZipFileName()%></a> <a href="<%=report.getZipFilePath()%>"><img src="<%=FileRepositoryManager.getFileIcon("zip")%>" border="0" align="absmiddle"></a></td></tr>
 </table>
 </view:board>
