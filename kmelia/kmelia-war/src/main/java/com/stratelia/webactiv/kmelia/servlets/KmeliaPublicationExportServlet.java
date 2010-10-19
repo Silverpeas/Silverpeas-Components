@@ -8,6 +8,7 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.Closeables;
 import com.silverpeas.util.MimeTypes;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
+import com.stratelia.webactiv.util.ClientBrowserUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -23,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author ehugonnet
  */
 public class KmeliaPublicationExportServlet extends HttpServlet {
+  private static final long serialVersionUID = 5790958079143913041L;
 
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -38,11 +40,12 @@ public class KmeliaPublicationExportServlet extends HttpServlet {
     KmeliaSessionController kmelia = (KmeliaSessionController) request.getSession().getAttribute(
         "Silverpeas_kmelia_" + componentId);
     OutputStream out = response.getOutputStream();
-    File exportFile = kmelia.exportPublication();
+    File exportFile = kmelia.exportPublication();    
+    String fileName = ClientBrowserUtil.rfc2047EncodeFilename(request,exportFile.getName());
     InputStream in = new FileInputStream(exportFile);
     try {
       response.setContentLength(Long.valueOf(exportFile.length()).intValue());
-      response.setHeader("Content-Disposition", "inline; filename=\"" + exportFile.getName() + "\"");
+      response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
       ByteStreams.copy(in, out);
     } finally {
       Closeables.closeQuietly(in);

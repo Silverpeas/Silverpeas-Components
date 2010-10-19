@@ -140,9 +140,7 @@ public class PdfGenerator extends PdfPageEventHelper {
   private String serverURL;
 
   public void generate(OutputStream out, CompletePublication currentPublication,
-          KmeliaSessionController scc)
-          throws KmeliaRuntimeException {
-
+          KmeliaSessionController scc) throws KmeliaRuntimeException {
     try {
       kmeliaSessionController = scc;
       language = kmeliaSessionController.getLanguage();
@@ -159,8 +157,8 @@ public class PdfGenerator extends PdfPageEventHelper {
                 scc.getUserDetail().getDomainId()).getSilverpeasServerURL();
         fullStar = Image.getInstance(serverURL + URLManager.getApplicationURL()
                 + "/util/icons/starFilled.gif");
-        emptyStar = Image.getInstance(serverURL
-                + URLManager.getApplicationURL() + "/util/icons/starEmpty.gif");
+        emptyStar = Image.getInstance(serverURL + URLManager.getApplicationURL() 
+            + "/util/icons/starEmpty.gif");
       } catch (Exception e) {
         SilverTrace.warn("kmelia", "PdfGenerator.generate",
                 "root.EX_REMOTE_EXCEPTION", e);
@@ -168,8 +166,7 @@ public class PdfGenerator extends PdfPageEventHelper {
         emptyStar = null;
       }
 
-      Document document = new com.lowagie.text.Document(PageSize.A4, 50, 50,
-              115, 50);
+      Document document = new com.lowagie.text.Document(PageSize.A4, 50, 50, 115, 50);
       document.addAuthor(message.getString("GeneratorPdf"));
       document.addSubject(message.getString("SubjectPdf"));
       document.addCreationDate();

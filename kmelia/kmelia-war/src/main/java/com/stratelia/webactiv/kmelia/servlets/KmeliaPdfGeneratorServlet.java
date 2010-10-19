@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author ehugonnet
  */
 public class KmeliaPdfGeneratorServlet extends HttpServlet {
+  private static final long serialVersionUID = -293231440555171364L;
 
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
