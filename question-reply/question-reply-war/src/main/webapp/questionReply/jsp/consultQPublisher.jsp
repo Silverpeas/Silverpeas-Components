@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.*"%>
@@ -112,8 +113,8 @@ out.println(gef.getLookStyleSheet());
 	while(it.hasNext())
 	{
 		Reply reply = (Reply) it.next();
-		String titleR = Encode.javaStringToHtmlString(reply.getTitle());
-		String creator = Encode.javaStringToHtmlString(reply.readCreatorName());
+		String titleR = EncodeHelper.javaStringToHtmlString(reply.getTitle());
+		String creator = EncodeHelper.javaStringToHtmlString(reply.readCreatorName());
 		String dateR = resource.getOutputDate(reply.getCreationDate());
 		String idR = reply.getPK().getId();
 

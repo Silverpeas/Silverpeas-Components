@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.*"%>
@@ -368,9 +369,9 @@ window.onload = initShowHideContent;
 		while(it.hasNext())
 		{
 			Question question = (Question) it.next();
-			String title = Encode.javaStringToHtmlString(question.getTitle());
-			String content = Encode.javaStringToHtmlString(question.getContent());
-			String creator = Encode.javaStringToHtmlString(question.readCreatorName());
+			String title = EncodeHelper.javaStringToHtmlString(question.getTitle());
+			String content = EncodeHelper.javaStringToHtmlString(question.getContent());
+			String creator = EncodeHelper.javaStringToHtmlString(question.readCreatorName());
 			String date = resource.getOutputDate(question.getCreationDate());
 			String id = question.getPK().getId();
 			String link = question._getPermalink();
@@ -410,7 +411,7 @@ window.onload = initShowHideContent;
 							<td><img src="<%=etat%>"></td>
 							<td class="titreQuestionReponse" width="100%">
 								<div id="<%=qId%>" class="question">
-									<%=Encode.javaStringToHtmlParagraphe(title)%>
+									<%=EncodeHelper.javaStringToHtmlParagraphe(title)%>
 								</div>
 							</td>
 							<td>
@@ -487,7 +488,7 @@ window.onload = initShowHideContent;
 							<% if (content != null && content.length() > 0) 
 							{ %>
 								<table><tr><td>
-									<%=Encode.javaStringToHtmlParagraphe(content)%>
+									<%=EncodeHelper.javaStringToHtmlParagraphe(content)%>
 								</td></tr></table>				
 								<br/>
 							<% } 
@@ -497,8 +498,8 @@ window.onload = initShowHideContent;
 				while (itR.hasNext())
 				{
 					Reply reply = (Reply) itR.next();
-					String creatorR = Encode.javaStringToHtmlString(reply.readCreatorName());
-					String contentR = Encode.javaStringToHtmlString(reply.getContent());
+					String creatorR = EncodeHelper.javaStringToHtmlString(reply.readCreatorName());
+					String contentR = EncodeHelper.javaStringToHtmlString(reply.getContent());
 					String dateR = resource.getOutputDate(reply.getCreationDate());
 					String titleR = reply.getTitle();
 					String idR = reply.getPK().getId();
@@ -506,28 +507,13 @@ window.onload = initShowHideContent;
 					// recherche du type de la r�ponse (publique ou priv�e) pour l'ic�ne � afficher
 					int statusR = reply.getPublicReply();
 					String typeReply = "";
-					if (statusR == 1)
+					if (statusR == 1) {
 						typeReply = resource.getIcon("questionReply.minicone"); 
-					else
+					} else {
 						typeReply = resource.getIcon("questionReply.miniconeReponse");
-					
+					}
 					// dans le cas du demandeur, regarder si la question est la sienne pour afficher ou non les r�ponses priv�es
-					boolean isPublisherQuestion = true;
-					if (profil.equals("publisher") && statusR == 0)
-					{
-						if (!question.getCreatorId().equals(userId))
-							isPublisherQuestion = false;
-						else
-							isPublisherQuestion = true;
-					}
-	
-					if ( (statusR == 0 && profil.equals("user")) || (!isPublisherQuestion) )
-					{
-						// on n'affiche pas cette r�ponse priv�e car :
-						// soit c'est un lecteur (il ne voit jamais les r�ponses priv�es)
-						// soit c'est un publieur et ce n'est pas sa question (il ne voit pas les r�ponses priv�es des autres demandeurs)
-					}
-					else
+					if(scc.isReplyVisible(question, reply))
 					{ 
 						out.println(board.printBefore());
 						%>
@@ -535,7 +521,7 @@ window.onload = initShowHideContent;
 						<tr>
 							<td><img src="<%=typeReply%>"></td>
 							<td class="titreQuestionReponse" width="100%">
-								<span class="titreQuestionReponse"><%=Encode.javaStringToHtmlParagraphe(titleR)%></span>
+								<span class="titreQuestionReponse"><%=EncodeHelper.javaStringToHtmlParagraphe(titleR)%></span>
 							</td>
 							<td nowrap>
 								<%
@@ -552,7 +538,7 @@ window.onload = initShowHideContent;
 						<tr>
 							<td width="90%">
 							<% if (contentR != null && !contentR.equals("")) { %>
-									<%=Encode.javaStringToHtmlParagraphe(contentR)%>
+									<%=EncodeHelper.javaStringToHtmlParagraphe(contentR)%>
 							<% } %> 
 							</td>
 							<td valign="top" align="left">
@@ -611,9 +597,9 @@ window.onload = initShowHideContent;
 		while(it.hasNext())
 		{
 			Question question = (Question) it.next();
-			String title = Encode.javaStringToHtmlString(question.getTitle());
-			String content = Encode.javaStringToHtmlString(question.getContent());
-			String creator = Encode.javaStringToHtmlString(question.readCreatorName());
+			String title = EncodeHelper.javaStringToHtmlString(question.getTitle());
+			String content = EncodeHelper.javaStringToHtmlString(question.getContent());
+			String creator = EncodeHelper.javaStringToHtmlString(question.readCreatorName());
 			String date = resource.getOutputDate(question.getCreationDate());
 			String id = question.getPK().getId();
 			String link = question._getPermalink();
@@ -740,8 +726,8 @@ window.onload = initShowHideContent;
 				while (itR.hasNext())
 				{
 					Reply reply = (Reply) itR.next();
-					String creatorR = Encode.javaStringToHtmlString(reply.readCreatorName());
-					String contentR = Encode.javaStringToHtmlString(reply.getContent());
+					String creatorR = EncodeHelper.javaStringToHtmlString(reply.readCreatorName());
+					String contentR = EncodeHelper.javaStringToHtmlString(reply.getContent());
 					String dateR = resource.getOutputDate(reply.getCreationDate());
 					String titleR = reply.getTitle();
 					String idR = reply.getPK().getId();
@@ -755,22 +741,7 @@ window.onload = initShowHideContent;
 						typeReply = resource.getIcon("questionReply.miniconeReponse");
 					
 					// dans le cas du demandeur, regarder si la question est la sienne pour afficher ou non les r�ponses priv�es
-					boolean isPublisherQuestion = true;
-					if (profil.equals("publisher") && statusR == 0)
-					{
-						if (!question.getCreatorId().equals(userId))
-							isPublisherQuestion = false;
-						else
-							isPublisherQuestion = true;
-					}
-	
-					if ( (statusR == 0 && profil.equals("user")) || (!isPublisherQuestion) )
-					{
-						// on n'affiche pas cette r�ponse priv�e car :
-						// soit c'est un lecteur (il ne voit jamais les r�ponses priv�es)
-						// soit c'est un publieur et ce n'est pas sa question (il ne voit pas les r�ponses priv�es des autres demandeurs)
-					}
-					else
+					if(scc.isReplyVisible(question, reply))
 					{ 
 						out.println(board.printBefore());
 						%>
@@ -795,7 +766,7 @@ window.onload = initShowHideContent;
 						<tr>
 							<td width="90%">
 							<% if (contentR != null && !contentR.equals("")) { %>
-									<%=Encode.javaStringToHtmlParagraphe(contentR)%>
+									<%=EncodeHelper.javaStringToHtmlParagraphe(contentR)%>
 							<% } %> 
 							</td>
 							<td valign="top" align="left">

@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.*"%>
@@ -67,7 +68,7 @@ out.println(gef.getLookStyleSheet());
 	while(it.hasNext())
 	{
 		Question question = (Question) it.next();
-		String title = Encode.javaStringToHtmlString(question.getTitle());
+		String title = EncodeHelper.javaStringToHtmlString(question.getTitle());
 		String date = resource.getOutputDate(question.getCreationDate());
 		String id = question.getPK().getId();
 		int status = question.getStatus();

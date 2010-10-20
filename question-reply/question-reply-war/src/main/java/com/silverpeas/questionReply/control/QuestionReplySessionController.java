@@ -135,23 +135,24 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     Question question = getQuestionManager().getQuestion(questionId);
     setCurrentQuestion(question);
     Collection<Reply> replies = new ArrayList<Reply>();
-    Collection recipients = getQuestionManager().getQuestionRecipients(questionId);
-    SilverpeasRole role = SilverpeasRole.valueOf(userProfil);
+    question.writeRecipients(getQuestionManager().getQuestionRecipients(questionId));   
+    question.writeReplies(getRepliesForQuestion(questionId));
+    return question;
+  }
+
+  
+  public Collection<Reply> getRepliesForQuestion(long id) throws QuestionReplyException {
+     SilverpeasRole role = SilverpeasRole.valueOf(userProfil);
     switch (role) {
       case user:
-        replies = getCurrentQuestionPublicReplies();
-        break;
+       return getPublicRepliesForQuestion(id);
       case publisher:
-        replies = getCurrentQuestionPrivateReplies();
-        break;
+        return getPrivateRepliesForQuestion(id);
       case writer:
       case admin:
-        replies = getCurrentQuestionReplies();
-        break;
+        return getAllRepliesForQuestion(id);
     }
-    getCurrentQuestion().writeReplies(replies);
-    getCurrentQuestion().writeRecipients(recipients);
-    return getCurrentQuestion();
+    return new ArrayList<Reply>();
   }
 
   /*
@@ -206,7 +207,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * initialise les destinataires de la question à créer
    */
   public void setNewQuestionRecipients(Collection userIds) {
-    Collection recipients = new ArrayList();
+    Collection<Recipient> recipients = new ArrayList<Recipient>();
     if (userIds != null) {
       Iterator it = userIds.iterator();
       while (it.hasNext()) {
@@ -487,27 +488,24 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * liste les réponses publiques d'une question
    */
   @SuppressWarnings("unchecked")
-  private Collection<Reply> getCurrentQuestionPublicReplies() throws QuestionReplyException {
-    return getQuestionManager().getQuestionPublicReplies(((IdPK) getCurrentQuestion().getPK()).
-        getIdAsLong());
+  private Collection<Reply> getPublicRepliesForQuestion(long id) throws QuestionReplyException {
+    return getQuestionManager().getQuestionPublicReplies(id);
   }
 
   /*
    * liste les réponses privées d'une question
    */
   @SuppressWarnings("unchecked")
-  private Collection<Reply> getCurrentQuestionPrivateReplies() throws QuestionReplyException {
-    return getQuestionManager().getQuestionPrivateReplies(((IdPK) getCurrentQuestion().getPK()).
-        getIdAsLong());
+  private Collection<Reply> getPrivateRepliesForQuestion(long id) throws QuestionReplyException {
+    return getQuestionManager().getQuestionPrivateReplies(id);
   }
 
   /*
    * liste les réponses à une question
    */
   @SuppressWarnings("unchecked")
-  private Collection<Reply> getCurrentQuestionReplies() throws QuestionReplyException {
-    return getQuestionManager().getQuestionReplies(
-        ((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
+  private Collection<Reply> getAllRepliesForQuestion(long id) throws QuestionReplyException {
+    return getQuestionManager().getQuestionReplies(id);
   }
 
   public void setUserProfil() {
@@ -889,6 +887,10 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public String getReturnURL() {
     return returnURL;
   }
+  
+  public boolean isReplyVisible(Question question, Reply reply) {
+    return QuestionReplyExport.isReplyVisible(question, reply, getUserRole(), getUserId());
+  }
 
   // Gestion des catégories
   // ----------------------
@@ -1017,12 +1019,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       if (chemin.startsWith("file:")) {
         chemin = chemin.substring(8);
       }
-      Collection files = FileFolderManager.getAllFile(chemin);
-      Iterator itFiles = files.iterator();
-      while (itFiles.hasNext()) {
-        File file = (File) itFiles.next();
-        File newFile =
-            new File(dir + File.separator + nameForFiles + File.separator + file.getName());
+      Collection<File> files = FileFolderManager.getAllFile(chemin);
+      for(File file : files) {
+        File newFile = new File(dir + File.separator + nameForFiles + File.separator + file.getName());
         FileRepositoryManager.copyFile(file.getPath(), newFile.getPath());
       }
     } catch (Exception ex) {
@@ -1154,7 +1153,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     sb.append("<td colspan=\"2\">\n");
     Collection<Question> questions = getQuestionsByCategory(categoryId);
     for (Question question : questions) {
-      exporter.exportQuestion(question, sb);
+      exporter.exportQuestion(question, sb, this);
     }
     sb.append("</td>\n");
     sb.append("</tr>\n");

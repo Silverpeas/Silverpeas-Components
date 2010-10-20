@@ -29,6 +29,7 @@ import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.io.File;
 import java.text.ParseException;
@@ -49,8 +50,8 @@ public class QuestionReplyExport {
     this.resource = resource;
   }
 
-  public void exportQuestion(Question question, StringBuilder sb) throws QuestionReplyException,
-      ParseException {
+  public void exportQuestion(Question question, StringBuilder sb, QuestionReplySessionController scc)
+      throws QuestionReplyException, ParseException {
     String questionId = question.getPK().getId();
     String qId = "q" + questionId;
     sb.append(
@@ -105,8 +106,8 @@ public class QuestionReplyExport {
     }
     while (itR.hasNext()) {
       Reply reply = itR.next();
-      reply.getPK().setComponentName(question.getInstanceId());
-      if (reply.getPublicReply() > 0) {
+      if (isReplyVisible(question, reply, scc)) {
+        reply.getPK().setComponentName(question.getInstanceId());
         exportReply(reply, sb);
       }
     }
@@ -120,8 +121,8 @@ public class QuestionReplyExport {
 
   }
 
-  protected void exportReply(Reply reply, StringBuilder sb)
-      throws QuestionReplyException, ParseException {
+  protected void exportReply(Reply reply, StringBuilder sb) throws QuestionReplyException,
+      ParseException {
     sb.append("<br>\n");
     sb.append("<center>\n");
     sb.append(
@@ -213,5 +214,21 @@ public class QuestionReplyExport {
     sb.append(attachment.getAttachmentDownloadEstimation(attachment.getLanguage()));
     sb.append("</td>\n");
     sb.append("</tr>\n");
+  }
+  
+  public boolean  isReplyVisible(Question question, Reply reply, QuestionReplySessionController scc) {
+    return isReplyVisible(question, reply, scc.getUserRole(), scc.getUserId()) ;
+  }
+  
+  public static boolean isReplyVisible(Question question, Reply reply, SilverpeasRole role, String userId) {
+    boolean isPrivate = reply.getPublicReply() == 0;
+    boolean isPublisherQuestion = true;
+    if (SilverpeasRole.publisher == role && isPrivate) {
+      isPublisherQuestion = question.getCreatorId().equals(userId);
+    }
+    if (isPrivate && SilverpeasRole.user == role || !isPublisherQuestion) {
+      return false;
+    }
+    return true;
   }
 }

@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ page import="java.util.*"%>
@@ -35,12 +36,12 @@
 	Question 	question 	= (Question) request.getAttribute("question");
 	String		userId		= (String) request.getAttribute("UserId");
 	
-	String title = Encode.javaStringToHtmlString(question.getTitle());
-	String content = Encode.javaStringToHtmlString(question.getContent());
+	String title = EncodeHelper.javaStringToHtmlString(question.getTitle());
+	String content = EncodeHelper.javaStringToHtmlString(question.getContent());
 	String date = resource.getOutputDate(question.getCreationDate());
 	String id = question.getPK().getId();
 	int status = question.getStatus();
-	String creator = Encode.javaStringToHtmlString(question.readCreatorName());
+	String creator = EncodeHelper.javaStringToHtmlString(question.readCreatorName());
 	Collection replies = question.readReplies();
 	Iterator it = replies.iterator();
 %>
@@ -118,14 +119,14 @@ function deleteConfirm(replyId)
 			<img src="<%=resource.getIcon("questionReply.miniconeQuestion")%>">
 		</td>
 		<td width="100%" class="titreQuestionReponse">
-			<%=Encode.javaStringToHtmlParagraphe(title)%>
+			<%=EncodeHelper.javaStringToHtmlParagraphe(title)%>
 		</td>
 		<td nowrap>
 		<a href="#"><img border=0 src="<%=resource.getIcon("questionReply.update")%>"/></a>
 		</td>
 	</tr>
 	<tr>
-		<td colspan="3"><%=Encode.javaStringToHtmlParagraphe(content)%></td>
+		<td colspan="3"><%=EncodeHelper.javaStringToHtmlParagraphe(content)%></td>
 	</tr>
 	<tr>
 		<td colspan="3">			
@@ -141,9 +142,9 @@ function deleteConfirm(replyId)
 	while(it.hasNext())
 	{
 		Reply reply = (Reply) it.next();
-		String titleR = Encode.javaStringToHtmlString(reply.getTitle());
-		String contentR = Encode.javaStringToHtmlString(reply.getContent());
-		String creatorR = Encode.javaStringToHtmlString(reply.readCreatorName());
+		String titleR = EncodeHelper.javaStringToHtmlString(reply.getTitle());
+		String contentR = EncodeHelper.javaStringToHtmlString(reply.getContent());
+		String creatorR = EncodeHelper.javaStringToHtmlString(reply.readCreatorName());
 		String dateR = resource.getOutputDate(reply.getCreationDate());
 		String idR = reply.getPK().getId();
 		int statusR = reply.getPublicReply();
@@ -161,7 +162,7 @@ function deleteConfirm(replyId)
 					%>
 				</td>
 				<td width="100%" class="titreQuestionReponse">
-					<%=Encode.javaStringToHtmlParagraphe(titleR)%>
+					<%=EncodeHelper.javaStringToHtmlParagraphe(titleR)%>
 				</td>
 				<td nowrap>
 					<%
@@ -177,7 +178,7 @@ function deleteConfirm(replyId)
 				</td>
 			</tr>
 			<tr>
-				<td colspan="3"><%=Encode.javaStringToHtmlParagraphe(contentR)%></td>
+				<td colspan="3"><%=EncodeHelper.javaStringToHtmlParagraphe(contentR)%></td>
 			</tr>
 			<tr>
 				<td colspan="3">			

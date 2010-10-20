@@ -9,7 +9,9 @@
 -->
 
 <dataset>
-<sc_questionreply_question id="1" title="Les accents ça fonctionne ïci ?" content="la mise en œuvre désigne la création"
+  <sb_containermanager_instance instanceid="14" componentid="questionReply12" containertype="containerPDC"
+contenttype="questionReply"/>
+  <sc_questionreply_question id="1" title="Les accents ça fonctionne ïci ?" content="la mise en œuvre désigne la création"
   creatorid="0" creationdate="2010/09/14" status="2" publicreplynumber="1" privatereplynumber="0"
   replynumber="1" instanceid="questionReply12" categoryid="" />
 <!-- 2;"Ma question";"C'est une super question";"0";"2010/10/19";1;0;1;1;"questionReply27";"''"-->

@@ -469,8 +469,8 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         destination = "/questionReply/jsp/categoryManager.jsp";
       } else if (function.equals("CreateCategory")) {
         // récupération des paramètres
-        String name = (String) request.getParameter("Name");
-        String description = (String) request.getParameter("Description");
+        String name = request.getParameter("Name");
+        String description = request.getParameter("Description");
         NodeDetail node = new NodeDetail("unknown", name, description, null,
             null, null, "0", "unknown");
         Category category = new Category(node);

@@ -1,3 +1,21 @@
+CREATE TABLE uniqueid
+(
+  maxid integer NOT NULL,
+  tablename character varying(100) NOT NULL,
+  CONSTRAINT pk_uniqueid PRIMARY KEY (tablename)
+)
+;
+
+CREATE TABLE sb_containermanager_instance
+(
+  instanceid integer NOT NULL,
+  componentid character varying(100) NOT NULL,
+  containertype character varying(100) NOT NULL,
+  contenttype character varying(100) NOT NULL,
+  CONSTRAINT pk_containermanager_instance PRIMARY KEY (instanceid)
+)
+;
+
 CREATE TABLE sc_questionreply_question  (
 	id			int		NOT NULL,
 	title			varchar (100)	NOT NULL,
