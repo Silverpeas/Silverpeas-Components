@@ -325,7 +325,7 @@
         out.println(gef.getLookStyleSheet());
     %>
     <style type="text/css">
-      #thumbnailArea {
+      #thumbnailPreview {
         <% if (vignette_url == null) {%>
         display: none;
         <% }%>
@@ -620,7 +620,7 @@
 
         function choixImageInGallery(url)
         {
-          $("#thumbnailArea").css("display", "block");
+          $("#thumbnailPreview").css("display", "block");
           $("#thumbnail").attr("src", url);
           $("#valueImageGallery").attr("value", url);
         }
@@ -639,10 +639,8 @@
                 
     </script>
   </HEAD>
-
-  <% if ("New".equals(action) || "UpdateView".equals(action)) {
-        out.println("<BODY onLoad=\"init()\" onUnload=\"closeWindows()\">");
-
+  <BODY id="<%=componentId%>" onload="init()" onunload="closeWindows()">
+<%
         Window window = gef.getWindow();
         OperationPane operationPane = window.getOperationPane();
 
@@ -721,10 +719,11 @@
         out.println(board.printBefore());
 
   %>
+  <div id="header">
   <TABLE CELLPADDING="5" WIDTH="100%">
     <FORM Name="pubForm" Action="publicationManager.jsp" Method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
       <% if (kmeliaMode && "UpdateView".equals(action)) {%>
-      <TR><TD class="txtlibform"><%=resources.getString("PubState")%></TD>
+      <TR id="stateArea"><TD class="txtlibform"><%=resources.getString("PubState")%></TD>
         <TD>
           <%
              if (profile != null && !profile.equals("user")) {
@@ -752,7 +751,7 @@
 
       <!-- DESCRIPTION -->
       <% if (isFieldDescriptionVisible) {%>
-      <TR><TD class="txtlibform" valign="top"><%=resources.getString("PubDescription")%></TD>
+      <TR id="descriptionArea"><TD class="txtlibform" valign="top"><%=resources.getString("PubDescription")%></TD>
         <TD><TEXTAREA rows="6" cols="65" name="Description" id="pubDesc"><%=EncodeHelper.javaStringToHtmlString(description)%></TEXTAREA>
           <% if (isFieldDescriptionMandatory) {%>
           <IMG src="<%=mandatorySrc%>" width="5" height="5" border="0"/>
@@ -761,20 +760,20 @@
         <% }%>
 
       <% if (isFieldKeywordsVisible) {%>
-      <TR><TD class="txtlibform"><%=resources.getString("PubMotsCles")%></TD>
+      <TR id="keywordsArea"><TD class="txtlibform"><%=resources.getString("PubMotsCles")%></TD>
         <TD><input type="text" name="Keywords" id="pubKeys" value="<%=EncodeHelper.javaStringToHtmlString(keywords)%>" size="68" maxlength="100"></TD></TR>
           <% }%>
 
       <!-- Author -->
       <% if (kmeliaScc.isAuthorUsed()) {%>
-      <TR>
+      <TR id="authorArea">
         <TD class="txtlibform"><%=resources.getString("GML.author")%></TD>
         <TD><input type="text" name="Author" value="<%=EncodeHelper.javaStringToHtmlString(author)%>" size="68" maxlength="50"></TD>
       </TR>
       <% }%>
       <!-- Importance -->
       <% if (isFieldImportanceVisible) {%>
-      <TR><TD class="txtlibform"><%=resources.getString("PubImportance")%></TD>
+      <TR id="importanceArea"><TD class="txtlibform"><%=resources.getString("PubImportance")%></TD>
         <TD><select name="Importance">
             <% if (importance.equals("")) {
                  importance = "1";
@@ -794,14 +793,14 @@
       <input type="hidden" name="Importance" value="1">
       <% }%>
       <% if (isFieldVersionVisible) {%>
-      <TR><TD class="txtlibform"><%=resources.getString("PubVersion")%></TD>
+      <TR id="versionArea"><TD class="txtlibform"><%=resources.getString("PubVersion")%></TD>
         <TD><input type="text" name="Version" value="<%=EncodeHelper.javaStringToHtmlString(version)%>" size="5" maxlength="30"></TD></TR>
           <% }%>
-      <TR><TD class="txtlibform"><%=resources.getString("PubDateCreation")%></TD>
+      <TR id="creationArea"><TD class="txtlibform"><%=resources.getString("PubDateCreation")%></TD>
         <TD><%=creationDate%>&nbsp;<span class="txtsublibform"><%=resources.getString("kmelia.By")%></span>&nbsp;<%=creatorName%></TD></TR>
 
       <% if (updateDate != null && updateDate.length() > 0 && updaterName != null && updaterName.length() > 0) {%>
-      <TR><TD class="txtlibform"><%=resources.getString("PubDateUpdate")%></TD>
+      <TR id="updateArea"><TD class="txtlibform"><%=resources.getString("PubDateUpdate")%></TD>
         <TD><%=updateDate%>&nbsp;<span class="txtsublibform"><%=resources.getString("kmelia.By")%></span>&nbsp;<%=updaterName%></TD></TR>
         <% }%>
 
@@ -825,16 +824,16 @@
           <input type="hidden" name="ValideurId" value="<%=targetValidatorId%>"><%=link%>&nbsp;<img src="<%=mandatorySrc%>" align="absmiddle" width="5" height="5" border="0"></TD></TR>
           <% }%>
 
-      <TR><TD class="txtlibform"><%=resources.getString("PubDateDebut")%></TD>
+      <TR id="beginArea"><TD class="txtlibform"><%=resources.getString("PubDateDebut")%></TD>
         <TD><input type="text" class="dateToPick" name="BeginDate" value="<%=beginDate%>" size="12" maxlength="10"/>
           <span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span><input type="text" name="BeginHour" value="<%=beginHour%>" size="5" maxlength="5"> <i>(hh:mm)</i></TD></TR>
-      <TR><TD class="txtlibform"><%=resources.getString("PubDateFin")%></TD>
+      <TR id="endArea"><TD class="txtlibform"><%=resources.getString("PubDateFin")%></TD>
         <TD><input type="text" class="dateToPick" name="EndDate" value="<%=endDate%>" size="12" maxlength="10"/>
           <span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span><input type="text" name="EndHour" value="<%=endHour%>" size="5" maxlength="5"> <i>(hh:mm)</i></TD></TR>
       <% if (kmeliaMode && new Boolean(settings.getString("isVignetteVisible")).booleanValue()) {%>
-      <TR><TD class="txtlibform"><%=resources.getString("Vignette")%></TD>
+      <TR id="thumbnailArea"><TD class="txtlibform"><%=resources.getString("Vignette")%></TD>
         <TD>
-          <div id="thumbnailArea">
+          <div id="thumbnailPreview">
             <%
                out.println("<IMG SRC=\"" + vignette_url + "\" height=\"50\" id=\"thumbnail\"/>");
                out.println("<a href=\"DeleteVignette?PubId=" + id + "\"><img border=\"0\" src=\"" + deleteSrc + "\" alt=\"" + resources.getString("VignetteDelete") + "\" title=\"" + kmeliaScc.getString("VignetteDelete") + "\"/></a>");
@@ -868,6 +867,7 @@
       <TR><TD colspan="2">( <img border="0" src="<%=mandatorySrc%>" width="5" height="5"> : <%=resources.getString("GML.requiredField")%> )</TD></TR>
     </FORM>
   </TABLE>
+  </div>
   <%
         out.println(board.printAfter());
         out.println(frame.printMiddle());
@@ -880,7 +880,6 @@
         }
         out.println(frame.printAfter());
         out.println(window.printAfter());
-      }
   %>
   <FORM name="toRouterForm">
     <input type="hidden" name="PubId" value="<%=id%>">
