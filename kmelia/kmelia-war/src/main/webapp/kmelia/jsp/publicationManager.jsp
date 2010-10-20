@@ -150,6 +150,7 @@
     boolean isFieldImportanceVisible = kmeliaScc.isFieldImportanceVisible();
     boolean isFieldVersionVisible = kmeliaScc.isFieldVersionVisible();
     boolean isNotificationAllowed = kmeliaScc.isNotificationAllowed();
+    boolean isThumbnailMandatory = kmeliaScc.isThumbnailMandatory();
 
     String linkedPathString = kmeliaScc.getSessionPath();
     String pathString = "";
@@ -454,7 +455,7 @@
 
         var beginDateOK = true;
 
-    if (isWhitespace    (title)) {
+    	if (isWhitespace(title)) {
           errorMsg+="  - '<%=resources.getString("PubTitre")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
           errorNb++;
         }
@@ -527,6 +528,12 @@
              {
                errorMsg+="  - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
                errorNb++;
+             }
+             if (<%=isThumbnailMandatory%>) {
+                 if ($('#thumbnailFile').val() == '' && $('#thumbnail').attr("src") == 'null') {
+                	 errorMsg+="  - '<%=resources.getString("Vignette")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+                     errorNb++;
+                 }
              }
              switch(errorNb) {
                case 0 :
@@ -824,7 +831,7 @@
       <TR><TD class="txtlibform"><%=resources.getString("PubDateFin")%></TD>
         <TD><input type="text" class="dateToPick" name="EndDate" value="<%=endDate%>" size="12" maxlength="10"/>
           <span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span><input type="text" name="EndHour" value="<%=endHour%>" size="5" maxlength="5"> <i>(hh:mm)</i></TD></TR>
-          <% if (kmeliaMode && new Boolean(settings.getString("isVignetteVisible")).booleanValue()) {%>
+      <% if (kmeliaMode && new Boolean(settings.getString("isVignetteVisible")).booleanValue()) {%>
       <TR><TD class="txtlibform"><%=resources.getString("Vignette")%></TD>
         <TD>
           <div id="thumbnailArea">
@@ -834,7 +841,7 @@
                out.println("<br/>");
             %>
           </div>
-          <input type="file" name="WAIMGVAR0" size="40"/>
+          <input type="file" name="WAIMGVAR0" size="40" id="thumbnailFile"/>
           <%
              // liste pour choisir une galerie
              List galleries = kmeliaScc.getGalleries();
@@ -851,6 +858,9 @@
                out.println("</select>");
              }
           %>
+          <% if (isThumbnailMandatory) { %>
+          		<img src="<%=mandatorySrc%>" width="5" height="5" border="0" alt=""/>
+          <% } %>
         </TD>
       </TR> <%
      }%>

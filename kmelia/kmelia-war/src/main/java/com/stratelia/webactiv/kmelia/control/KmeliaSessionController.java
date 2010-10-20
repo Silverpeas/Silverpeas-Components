@@ -552,6 +552,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public boolean isSuppressionOnlyForAdmin() {
     return "yes".equals(getComponentParameterValue("suppressionOnlyForAdmin"));
   }
+  
+  public boolean isThumbnailMandatory() {
+    return "yes".equals(getComponentParameterValue("thumbnailMandatory"));
+  }
 
   public boolean isContentEnabled() {
     String parameterValue = getComponentParameterValue("tabContent");

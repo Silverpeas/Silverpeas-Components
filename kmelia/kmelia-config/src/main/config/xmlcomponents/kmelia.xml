@@ -626,5 +626,18 @@
         <ParameterHelpEn>This feature allows to display a search box in each topic.</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
+    <Parameter>
+      <ParameterName>thumbnailMandatory</ParameterName>
+      <ParameterLabel>Vignette obligatoire</ParameterLabel>
+      <ParameterValue>no</ParameterValue>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>
+      <ParameterType>checkbox</ParameterType>
+      <ParameterOrder>42</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Permet de rendre obligatoire l'ajout d'une vignette à chaque publication</ParameterHelpFr>
+        <ParameterHelpEn>Lets make it mandatory to add a thumbnail to each publication</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
   </Parameters>
 </WAComponent>
