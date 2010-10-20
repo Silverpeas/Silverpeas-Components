@@ -45,10 +45,12 @@ public class QuestionReplyInstanciator extends SQLRequest implements ComponentsI
     super("com.silverpeas.questionReply");
   }
 
+  @Override
   public void create(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
   }
 
+  @Override
   public void delete(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
     setDeleteQueries();

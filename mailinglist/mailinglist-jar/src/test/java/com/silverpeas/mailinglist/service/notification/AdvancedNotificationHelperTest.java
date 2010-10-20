@@ -56,7 +56,11 @@ import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
+import javax.naming.NamingException;
 import org.apache.commons.io.FileUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -83,10 +87,16 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
     }
   }
 
+  @BeforeClass
+  public static void generalSetUp() throws IOException, NamingException {
+    AbstractTestDao.configureJNDIDatasource();
+  }
+
+  @Before
   @Override
-  protected void setUp() throws Exception {
+  public void setUp() throws Exception {
     cleanJndi();
-    super.setUp();
+    super.prepareData();
     registerMockJMS();
     context = new ClassPathXmlApplicationContext(new String[]{"spring-checker.xml",
           "spring-advanced-notification.xml", "spring-hibernate.xml", "spring-datasource.xml"});
@@ -293,6 +303,7 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
   }
 
   @Override
+  @After
   protected void tearDown() throws Exception {
     InitialContext ic = new InitialContext();
     MockObjectFactory.clearAll();
@@ -314,7 +325,7 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
         }
       }
     }
-   cleanJndi();
+    cleanJndi();
   }
 
   public void testGetUsersIds() {

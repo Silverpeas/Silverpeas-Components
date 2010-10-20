@@ -24,10 +24,13 @@
 
 package com.silverpeas.questionReply.model;
 
-import com.stratelia.webactiv.persistence.*;
-import com.stratelia.webactiv.beans.admin.*;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.persistence.SilverpeasBean;
+import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 
 public class Recipient extends SilverpeasBean {
+  private static final long serialVersionUID = 909658183117075174L;
   private long questionId;
   private String userId;
   private static OrganizationController organizationController = new OrganizationController();
@@ -36,12 +39,12 @@ public class Recipient extends SilverpeasBean {
   }
 
   public Recipient(String userId) {
-    setUserId(userId);
+    this.userId = userId;
   }
 
   public Recipient(long questionId, String userId) {
-    setQuestionId(questionId);
-    setUserId(userId);
+    this.questionId = questionId;
+    this.userId = userId;
   }
 
   public long getQuestionId() {
@@ -62,17 +65,19 @@ public class Recipient extends SilverpeasBean {
 
   public String readRecipientName() {
     String name = null;
-    UserDetail userDetail = organizationController.getUserDetail(new Integer(
-        getUserId()).toString());
-    if (userDetail != null)
+    UserDetail userDetail = organizationController.getUserDetail(String.valueOf(this.userId));
+    if (userDetail != null) {
       name = userDetail.getLastName() + " " + userDetail.getFirstName();
+    }
     return name;
   }
 
+  @Override
   public String _getTableName() {
     return "SC_QuestionReply_Recipient";
   }
 
+  @Override
   public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }

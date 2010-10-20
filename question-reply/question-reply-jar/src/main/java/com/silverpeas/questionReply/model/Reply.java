@@ -30,6 +30,7 @@ import com.stratelia.webactiv.beans.admin.*;
 import java.util.Date;
 
 public class Reply extends SilverpeasBean {
+  private static final long serialVersionUID = 5638699228049557540L;
   private long questionId;
   private String title;
   private String content;
@@ -43,14 +44,13 @@ public class Reply extends SilverpeasBean {
   }
 
   public Reply(String creatorId) {
-    setCreatorId(creatorId);
+    this.creatorId = creatorId;
     setCreationDate();
   }
 
   public Reply(long questionId, String creatorId) {
-    setQuestionId(questionId);
-    setCreatorId(creatorId);
-    setCreationDate();
+    this(creatorId);
+    this.questionId = questionId;
   }
 
   public long getQuestionId() {
@@ -89,7 +89,7 @@ public class Reply extends SilverpeasBean {
     this.creatorId = creatorId;
   }
 
-  public void setCreationDate() {
+  public final void setCreationDate() {
     this.creationDate = DateUtil.date2SQLDate(new Date());
   }
 
@@ -115,17 +115,19 @@ public class Reply extends SilverpeasBean {
 
   public String readCreatorName() {
     String creatorName = null;
-    UserDetail userDetail = organizationController.getUserDetail(new Integer(
-        getCreatorId()).toString());
-    if (userDetail != null)
+    UserDetail userDetail = organizationController.getUserDetail(String.valueOf(this.creatorId));
+    if (userDetail != null) {
       creatorName = userDetail.getDisplayedName();
+    }
     return creatorName;
   }
 
+  @Override
   public String _getTableName() {
     return "SC_QuestionReply_Reply";
   }
 
+  @Override
   public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }

@@ -36,6 +36,7 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.DateUtil;
 
 public class Question extends SilverpeasBean {
+  private static final long serialVersionUID = 8690405914141003827L;
   private String title;
   private String content;
   private String creatorId;
@@ -46,8 +47,8 @@ public class Question extends SilverpeasBean {
   private int replyNumber = 0;
   private String instanceId;
   private String categoryId;
-  private Collection replies = new ArrayList();
-  private Collection recipients = new ArrayList();
+  private Collection<Reply> replies = new ArrayList<Reply>();
+  private Collection<Recipient> recipients = new ArrayList<Recipient>();
 
   private static OrganizationController organizationController = new OrganizationController();
 
@@ -55,8 +56,8 @@ public class Question extends SilverpeasBean {
   }
 
   public Question(String creatorId, String instanceId) {
-    setCreatorId(creatorId);
-    setInstanceId(instanceId);
+    this.creatorId = creatorId;
+    this.instanceId = instanceId;
     setCreationDate();
   }
 
@@ -96,11 +97,11 @@ public class Question extends SilverpeasBean {
     return instanceId;
   }
 
-  public Collection readReplies() {
+  public Collection<Reply> readReplies() {
     return replies;
   }
 
-  public Collection readRecipients() {
+  public Collection<Recipient> readRecipients() {
     return recipients;
   }
 
@@ -116,7 +117,7 @@ public class Question extends SilverpeasBean {
     this.creatorId = creatorId;
   }
 
-  public void setCreationDate() {
+  public final void setCreationDate() {
     this.creationDate = DateUtil.date2SQLDate(new Date());
   }
 
@@ -144,11 +145,11 @@ public class Question extends SilverpeasBean {
     this.instanceId = instanceId;
   }
 
-  public void writeReplies(Collection replies) {
+  public void writeReplies(Collection<Reply> replies) {
     this.replies = replies;
   }
 
-  public void writeRecipients(Collection recipients) {
+  public void writeRecipients(Collection<Recipient> recipients) {
     this.recipients = recipients;
   }
 
@@ -177,8 +178,9 @@ public class Question extends SilverpeasBean {
   }
 
   public String _getPermalink() {
-    if (URLManager.displayUniversalLinks())
+    if (URLManager.displayUniversalLinks()) {
       return URLManager.getApplicationURL() + "/Question/" + getPK().getId();
+    }
 
     return null;
   }
@@ -189,17 +191,19 @@ public class Question extends SilverpeasBean {
 
   public String readCreatorName() {
     String creatorName = null;
-    UserDetail userDetail = organizationController.getUserDetail(new Integer(
-        getCreatorId()).toString());
-    if (userDetail != null)
+    UserDetail userDetail = organizationController.getUserDetail(String.valueOf(getCreatorId()));
+    if (userDetail != null) {
       creatorName = userDetail.getDisplayedName();
+    }
     return creatorName;
   }
 
+  @Override
   public String _getTableName() {
     return "SC_QuestionReply_Question";
   }
 
+  @Override
   public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }

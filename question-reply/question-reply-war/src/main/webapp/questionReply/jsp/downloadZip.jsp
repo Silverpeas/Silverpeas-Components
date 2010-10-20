@@ -33,35 +33,44 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <fmt:setLocale value="${userLanguage}"/>
 <view:setBundle basename="com.silverpeas.importExportPeas.multilang.importExportPeasBundle"/>
+<view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="general"/>
 <fmt:message key="importExportPeas.Export" var="page_title" />
+<fmt:message key="GML.close" var="close_button" bundle="${general}" />
+
 
 <%
-	ExportReport report = (ExportReport) request.getAttribute("ExportReport");
+  ExportReport report = (ExportReport) request.getAttribute("ExportReport");
 %>
 <html>
-<head>
-<view:looknfeel />
-</head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<view:browseBar>
-  <view:browseBarElt link="" label="${page_title}" />
-</view:browseBar>
-<view:window>
-  <view:frame>
-    <view:board>
-<table>
-<tr><td class="txtlibform"><fmt:message key="importExportPeas.ExportDuration" /> :</td><td><%=DateUtil.formatDuration(report.getDuration())%></td></tr>
-<tr><td class="txtlibform"><fmt:message key="importExportPeas.FileSize"/> :</td><td><%=FileRepositoryManager.formatFileSize(report.getZipFileSize())%></td></tr>
-<tr><td class="txtlibform"><fmt:message key="importExportPeas.File"/> :</td><td><a href="<%=report.getZipFilePath()%>"><%=report.getZipFileName()%></a> <a href="<%=report.getZipFilePath()%>"><img src="<%=FileRepositoryManager.getFileIcon("zip")%>" border="0" align="absmiddle"></a></td></tr>
-</table>
-</view:board>
-<%
-ButtonPane buttonPane = gef.getButtonPane();
-Button button = (Button) gef.getFormButton(resource.getString("GML.close"), "javaScript:window.close();", false);
-buttonPane.addButton(button);
-out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-%>
-  </view:frame>
-</view:window>  
-</body>
+  <head>
+    <title><c:out value="${page_title}" /></title>
+    <view:looknfeel />
+  </head>
+  <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+    <view:browseBar>
+      <view:browseBarElt link="" label="${page_title}" />
+    </view:browseBar>
+    <view:window>
+      <view:frame>
+        <view:board>
+          <table>
+            <tr>
+              <td class="txtlibform"><fmt:message key="importExportPeas.ExportDuration" /> :</td>
+              <td><%=DateUtil.formatDuration(report.getDuration())%></td>
+            </tr>
+            <tr>
+              <td class="txtlibform"><fmt:message key="importExportPeas.FileSize"/> :</td>
+              <td><%=FileRepositoryManager.formatFileSize(report.getZipFileSize())%></td>
+            </tr>
+            <tr><td class="txtlibform"><fmt:message key="importExportPeas.File"/> :</td>
+              <td><a href="<%=report.getZipFilePath()%>"><%=report.getZipFileName()%></a> <a href="<%=report.getZipFilePath()%>"><img src="<%=FileRepositoryManager.getFileIcon("zip")%>" border="0" align="absmiddle" /></a></td>
+            </tr>
+          </table>
+        </view:board>
+        <view:buttonPane horizontalPosition="${true}" verticalPosition="${false}">
+          <view:button action="javaScript:window.close();" label="${close_button}"/>
+        </view:buttonPane>
+      </view:frame>
+    </view:window>  
+  </body>
 </html>

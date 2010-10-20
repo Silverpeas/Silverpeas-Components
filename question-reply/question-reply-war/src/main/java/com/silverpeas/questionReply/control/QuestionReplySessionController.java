@@ -538,6 +538,10 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public String getUserProfil() {
     return this.userProfil;
   }
+  
+  public SilverpeasRole getUserRole() {
+    return SilverpeasRole.valueOf(this.userProfil);
+  }
 
   /**
    * Redefinition method de abstractComponentSessionController car 4 rôles Return the highest user's

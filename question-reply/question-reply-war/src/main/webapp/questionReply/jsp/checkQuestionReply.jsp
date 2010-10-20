@@ -116,15 +116,6 @@ String returnURL = (String) request.getAttribute("ReturnURL");
 
 browseBar.setComponentName(componentLabel, "Main");
 
-/*if (containerContext == null) {
-	if (returnURL != null && returnURL.length() > 0)
-		browseBar.setComponentName(componentLabel, m_context+returnURL);
-	else
-		browseBar.setComponentName(componentLabel, "Main");
-} else {
-	browseBar.setComponentName(componentLabel, m_context+containerContext.getReturnURL()); 
-}*/
-
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>

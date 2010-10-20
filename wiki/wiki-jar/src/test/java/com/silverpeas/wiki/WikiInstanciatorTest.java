@@ -27,6 +27,10 @@
  */
 package com.silverpeas.wiki;
 
+import java.io.IOException;
+import javax.naming.NamingException;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.wiki.control.WikiPageDAO;
 import com.silverpeas.wiki.control.model.PageDetail;
@@ -57,8 +61,15 @@ public class WikiInstanciatorTest extends AbstractTestDao {
     return "test-wiki-dao-dataset.xml";
   }
 
+  @BeforeClass
+  public static void generalSetUp() throws IOException, NamingException {
+    AbstractTestDao.configureJNDIDatasource();
+  }
+
+  @Before
   @Override
-  protected void setUp() throws Exception {
+  public void setUp() throws Exception {
+    super.prepareData();
     Properties props = new Properties();
     props.load(this.getClass().getClassLoader().getResourceAsStream(
         "jndi.properties"));

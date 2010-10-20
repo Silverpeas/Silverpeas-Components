@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.questionReply.control;
 
 import java.sql.Connection;
@@ -73,8 +72,10 @@ public class QuestionManager {
   }
 
   static public QuestionManager getInstance() {
-    if (instance == null) {
-      instance = new QuestionManager();
+    synchronized (QuestionManager.class) {
+      if (instance == null) {
+        instance = new QuestionManager();
+      }
     }
     return instance;
   }
@@ -997,15 +998,12 @@ public class QuestionManager {
       SilverpeasBeanDAO daoQ = getQdao();
       IdPK pk = new IdPK();
       questions =
-          daoQ
-              .findByWhereClause(
-                  pk,
-                  " instanceId = '"
-                      +
-                      instanceId
-                      +
-                      "' and status <> 2 and id IN (select questionId from SC_QuestionReply_Recipient where userId = "
-                      + userId + ")");
+          daoQ.findByWhereClause(
+          pk,
+          " instanceId = '"
+          + instanceId
+          + "' and status <> 2 and id IN (select questionId from SC_QuestionReply_Recipient where userId = "
+          + userId + ")");
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getReceiveQuestions",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_QUESTIONS", "",
@@ -1201,7 +1199,6 @@ public class QuestionManager {
   }
 
   protected boolean isSortable(String instanceId) {
-    return StringUtil
-        .getBooleanValue(controller.getComponentParameterValue(instanceId, "sortable"));
+    return StringUtil.getBooleanValue(controller.getComponentParameterValue(instanceId, "sortable"));
   }
 }

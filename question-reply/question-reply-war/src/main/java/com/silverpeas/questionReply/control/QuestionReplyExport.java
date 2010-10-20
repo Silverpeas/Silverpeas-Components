@@ -106,7 +106,9 @@ public class QuestionReplyExport {
     while (itR.hasNext()) {
       Reply reply = itR.next();
       reply.getPK().setComponentName(question.getInstanceId());
-      exportReply(reply, sb);
+      if (reply.getPublicReply() > 0) {
+        exportReply(reply, sb);
+      }
     }
     if (existe) {
       sb.append("<br>\n");

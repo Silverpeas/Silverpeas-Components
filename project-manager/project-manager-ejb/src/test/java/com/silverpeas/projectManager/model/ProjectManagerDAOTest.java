@@ -4,6 +4,10 @@
  */
 package com.silverpeas.projectManager.model;
 
+import java.io.IOException;
+import javax.naming.NamingException;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Calendar;
@@ -22,6 +26,17 @@ import static org.junit.Assert.*;
 public class ProjectManagerDAOTest extends AbstractTestDao {
 
   public ProjectManagerDAOTest() {
+  }
+
+  @BeforeClass
+  public static void generalSetUp() throws IOException, NamingException {
+    AbstractTestDao.configureJNDIDatasource();
+  }
+
+  @Before
+  @Override
+  public void setUp() throws Exception {
+    super.prepareData();
   }
 
   @Override
@@ -150,16 +165,17 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
     TaskDetail result = ProjectManagerDAO.getTask(con, taskId);
     assertEquals("Id is incorrect", taskId, result.getId());
     assertEquals("Charge is incorrect", detail.getCharge(), result.getCharge(), 0.01d);
-    assertEquals("Chrono should not be updated",  10, result.getChrono());
-    assertEquals("Project code should not be updated",  "Silverpeas", result.getCodeProjet());
-    assertEquals("Consomme is incorrect",  detail.getConsomme(), result.getConsomme(), 0.01d);
+    assertEquals("Chrono should not be updated", 10, result.getChrono());
+    assertEquals("Project code should not be updated", "Silverpeas", result.getCodeProjet());
+    assertEquals("Consomme is incorrect", detail.getConsomme(), result.getConsomme(), 0.01d);
     assertEquals("Raf is incorrect", detail.getRaf(), result.getRaf(), 0.01d);
     assertEquals("Date de debut is incorrect", ProjectManagerDAO.date2DBDate(detail.getDateDebut()),
         ProjectManagerDAO.date2DBDate(result.getDateDebut()));
     assertEquals("Date de fin is incorrect", ProjectManagerDAO.date2DBDate(detail.getDateFin()),
         ProjectManagerDAO.date2DBDate(result.getDateFin()));
     assertEquals("Description is incorrect", detail.getDescription(), result.getDescription());
-    assertEquals("Project description should not be updated", "Silverpeas est un portail collaboratif",
+    assertEquals("Project description should not be updated",
+        "Silverpeas est un portail collaboratif",
         result.getDescriptionProjet());
     assertEquals("Est decomposee is incorrect", detail.getEstDecomposee(), result.getEstDecomposee());
     assertEquals("InstanceId is incorrect", "projectManager100", result.getInstanceId());
@@ -168,7 +184,8 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
     assertEquals("Nom is incorrect", detail.getNom(), result.getNom());
     assertEquals("Organisateur id  should not be updated", 5, result.getOrganisateurId());
     assertEquals("Path is incorrect", detail.getPath(), result.getPath());
-    assertEquals("Previous task is incorrect", detail.getPreviousTaskId(), result.getPreviousTaskId());
+    assertEquals("Previous task is incorrect", detail.getPreviousTaskId(),
+        result.getPreviousTaskId());
     assertNotNull("Null ressources", result.getResources());
     assertEquals("2 ressources are expected", 2, result.getResources().size());
     assertEquals("Responsable id is incorrect", detail.getResponsableId(), result.getResponsableId());
@@ -345,177 +362,169 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
   /**
    * Test of getAllTasks method, of class ProjectManagerDAO.
    */
-/*  @org.junit.Test
+  /*  @org.junit.Test
   public void testGetAllTasks() throws Exception {
-    System.out.println("getAllTasks");
-    Connection con = null;
-    String instanceId = "";
-    Filtre filtre = null;
-    List expResult = null;
-    List result = ProjectManagerDAO.getAllTasks(con, instanceId, filtre);
-    assertEquals(
-        expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail(
-        "The test case is a prototype.");
-
-
+  System.out.println("getAllTasks");
+  Connection con = null;
+  String instanceId = "";
+  Filtre filtre = null;
+  List expResult = null;
+  List result = ProjectManagerDAO.getAllTasks(con, instanceId, filtre);
+  assertEquals(
+  expResult, result);
+  // TODO review the generated test code and remove the default call to fail.
+  fail(
+  "The test case is a prototype.");
+  
+  
   }*/
-
   /**
    * Test of getTasks method, of class ProjectManagerDAO.
    */
-/*  @org.junit.Test
+  /*  @org.junit.Test
   public void testGetTasks() throws Exception {
-    System.out.println("getTasks");
-    Connection con = null;
-
-
-    int actionId = 0;
-    Filtre filtre = null;
-    String instanceId = "";
-    List expResult = null;
-    List result = ProjectManagerDAO.getTasks(con, actionId, filtre, instanceId);
-    assertEquals(
-        expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail(
-        "The test case is a prototype.");
-
-
+  System.out.println("getTasks");
+  Connection con = null;
+  
+  
+  int actionId = 0;
+  Filtre filtre = null;
+  String instanceId = "";
+  List expResult = null;
+  List result = ProjectManagerDAO.getTasks(con, actionId, filtre, instanceId);
+  assertEquals(
+  expResult, result);
+  // TODO review the generated test code and remove the default call to fail.
+  fail(
+  "The test case is a prototype.");
+  
+  
   }*/
-
   /**
    * Test of getNextTasks method, of class ProjectManagerDAO.
    */
- /* @org.junit.Test
+  /* @org.junit.Test
   public void testGetNextTasks() throws Exception {
-    System.out.println("getNextTasks");
-    Connection con = null;
-
-
-    int taskId = 0;
-    List expResult = null;
-    List result = ProjectManagerDAO.getNextTasks(con, taskId);
-    assertEquals(
-        expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail(
-        "The test case is a prototype.");
-
-
+  System.out.println("getNextTasks");
+  Connection con = null;
+  
+  
+  int taskId = 0;
+  List expResult = null;
+  List result = ProjectManagerDAO.getNextTasks(con, taskId);
+  assertEquals(
+  expResult, result);
+  // TODO review the generated test code and remove the default call to fail.
+  fail(
+  "The test case is a prototype.");
+  
+  
   }*/
-
   /**
    * Test of getMostDistantTask method, of class ProjectManagerDAO.
    */
-/*  @org.junit.Test
+  /*  @org.junit.Test
   public void testGetMostDistantTask() throws Exception {
-    System.out.println("getMostDistantTask");
-    Connection con = null;
-    String instanceId = "";
-
-
-    int taskId = 0;
-    TaskDetail expResult = null;
-    TaskDetail result = ProjectManagerDAO.getMostDistantTask(con, instanceId, taskId);
-    assertEquals(
-        expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail(
-        "The test case is a prototype.");
-
-
+  System.out.println("getMostDistantTask");
+  Connection con = null;
+  String instanceId = "";
+  
+  
+  int taskId = 0;
+  TaskDetail expResult = null;
+  TaskDetail result = ProjectManagerDAO.getMostDistantTask(con, instanceId, taskId);
+  assertEquals(
+  expResult, result);
+  // TODO review the generated test code and remove the default call to fail.
+  fail(
+  "The test case is a prototype.");
+  
+  
   }*/
-
   /**
    * Test of getTree method, of class ProjectManagerDAO.
    */
-/*  @org.junit.Test
+  /*  @org.junit.Test
   public void testGetTree() throws Exception {
-    System.out.println("getTree");
-    Connection con = null;
-
-
-    int actionId = 0;
-    List expResult = null;
-    List result = ProjectManagerDAO.getTree(con, actionId);
-    assertEquals(
-        expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail(
-        "The test case is a prototype.");
-
-
+  System.out.println("getTree");
+  Connection con = null;
+  
+  
+  int actionId = 0;
+  List expResult = null;
+  List result = ProjectManagerDAO.getTree(con, actionId);
+  assertEquals(
+  expResult, result);
+  // TODO review the generated test code and remove the default call to fail.
+  fail(
+  "The test case is a prototype.");
+  
+  
   }*/
-
   /**
    * Test of getTasksByMotherId method, of class ProjectManagerDAO.
    */
-/*  @org.junit.Test
+  /*  @org.junit.Test
   public void testGetTasksByMotherId() throws Exception {
-    System.out.println("getTasksByMotherId");
-    Connection con = null;
-    String instanceId = "";
-
-
-    int motherId = 0;
-    Filtre filtre = null;
-    List expResult = null;
-    List result = ProjectManagerDAO.getTasksByMotherId(con, instanceId, motherId, filtre);
-    assertEquals(
-        expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail(
-        "The test case is a prototype.");
+  System.out.println("getTasksByMotherId");
+  Connection con = null;
+  String instanceId = "";
+  
+  
+  int motherId = 0;
+  Filtre filtre = null;
+  List expResult = null;
+  List result = ProjectManagerDAO.getTasksByMotherId(con, instanceId, motherId, filtre);
+  assertEquals(
+  expResult, result);
+  // TODO review the generated test code and remove the default call to fail.
+  fail(
+  "The test case is a prototype.");
   }*/
-
   /**
    * Test of getTasksNotCancelledByMotherId method, of class ProjectManagerDAO.
    */
- /* @org.junit.Test
+  /* @org.junit.Test
   public void testGetTasksNotCancelledByMotherId() throws Exception {
-    System.out.println("getTasksNotCancelledByMotherId");
-    Connection con = null;
-    String instanceId = "";
-
-
-    int motherId = 0;
-    Filtre filtre = null;
-    List expResult = null;
-    List result = ProjectManagerDAO.getTasksNotCancelledByMotherId(con, instanceId, motherId, filtre);
-    assertEquals(
-        expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail(
-        "The test case is a prototype.");
+  System.out.println("getTasksNotCancelledByMotherId");
+  Connection con = null;
+  String instanceId = "";
+  
+  
+  int motherId = 0;
+  Filtre filtre = null;
+  List expResult = null;
+  List result = ProjectManagerDAO.getTasksNotCancelledByMotherId(con, instanceId, motherId, filtre);
+  assertEquals(
+  expResult, result);
+  // TODO review the generated test code and remove the default call to fail.
+  fail(
+  "The test case is a prototype.");
   }*/
-
   /**
    * Test of getTasksByMotherIdAndPreviousId method, of class ProjectManagerDAO.
    */
   /*@org.junit.Test
   public void testGetTasksByMotherIdAndPreviousId() throws Exception {
-    System.out.println("getTasksByMotherIdAndPreviousId");
-    Connection con = null;
-    String instanceId = "";
-
-
-    int motherId = 0;
-
-
-    int previousId = 0;
-    List expResult = null;
-    List result = ProjectManagerDAO.getTasksByMotherIdAndPreviousId(con, instanceId, motherId, previousId);
-    assertEquals(
-        expResult, result);
-    // TODO review the generated test code and remove the default call to fail.
-    fail(
-        "The test case is a prototype.");
-
-
+  System.out.println("getTasksByMotherIdAndPreviousId");
+  Connection con = null;
+  String instanceId = "";
+  
+  
+  int motherId = 0;
+  
+  
+  int previousId = 0;
+  List expResult = null;
+  List result = ProjectManagerDAO.getTasksByMotherIdAndPreviousId(con, instanceId, motherId, previousId);
+  assertEquals(
+  expResult, result);
+  // TODO review the generated test code and remove the default call to fail.
+  fail(
+  "The test case is a prototype.");
+  
+  
   }*/
-
   /**
    * Test of getOccupationByUser method, of class ProjectManagerDAO.
    */
@@ -598,22 +607,27 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
     assertEquals("Chrono should be the same", expected.getChrono(), result.getChrono());
     assertEquals("Code projet should be the same", expected.getCodeProjet(), result.getCodeProjet());
     assertEquals("Consomme should be the same", expected.getConsomme(), result.getConsomme(), 0.01d);
-    assertEquals("Date debut should be the same", ProjectManagerDAO.date2DBDate(expected.getDateDebut()),
+    assertEquals("Date debut should be the same", ProjectManagerDAO.date2DBDate(expected.
+        getDateDebut()),
         ProjectManagerDAO.date2DBDate(result.getDateDebut()));
     assertEquals("Date fin should be the same", ProjectManagerDAO.date2DBDate(expected.getDateFin()),
         ProjectManagerDAO.date2DBDate(result.getDateFin()));
-    assertEquals("Description should be the same", expected.getDescription(), result.getDescription());
+    assertEquals("Description should be the same", expected.getDescription(),
+        result.getDescription());
     assertEquals("Description projet should be the same", expected.getDescriptionProjet(),
         result.getDescriptionProjet());
-    assertEquals("EstDecomposee should be the same", expected.getEstDecomposee(), result.getEstDecomposee());
+    assertEquals("EstDecomposee should be the same", expected.getEstDecomposee(), result.
+        getEstDecomposee());
     assertEquals("InstanceId should be the same", expected.getInstanceId(), result.getInstanceId());
     assertEquals("Mother Id should be the same", expected.getMereId(), result.getMereId());
     assertEquals("Nom should be the same", expected.getNom(), result.getNom());
     assertEquals("OrganisateurId should be the same", expected.getOrganisateurId(),
         result.getOrganisateurId());
     assertEquals("Path should be the same", expected.getPath(), result.getPath());
-    assertEquals("Previous taskId should be the same", expected.getPreviousTaskId(), result.getPreviousTaskId());
-    assertEquals("ResponsableId should be the same", expected.getResponsableId(), result.getResponsableId());
+    assertEquals("Previous taskId should be the same", expected.getPreviousTaskId(), result.
+        getPreviousTaskId());
+    assertEquals("ResponsableId should be the same", expected.getResponsableId(), result.
+        getResponsableId());
     assertEquals("Raf should be the same", expected.getRaf(), result.getRaf(), 0.01d);
     assertEquals("Statut should be the same", expected.getStatut(), result.getStatut());
   }

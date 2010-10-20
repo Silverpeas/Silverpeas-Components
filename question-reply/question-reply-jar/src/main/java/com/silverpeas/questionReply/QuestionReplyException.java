@@ -27,6 +27,7 @@ package com.silverpeas.questionReply;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class QuestionReplyException extends SilverpeasException {
+  private static final long serialVersionUID = 5146623952157133392L;
 
   // constructors
   /**
@@ -65,6 +66,7 @@ public class QuestionReplyException extends SilverpeasException {
    * Returns the name of this jobPeas
    * @return the name of this module
    */
+  @Override
   public String getModule() {
     return "QuestionReply";
   }

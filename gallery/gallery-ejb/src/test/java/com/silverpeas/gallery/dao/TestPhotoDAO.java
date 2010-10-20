@@ -37,12 +37,22 @@ import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.gallery.model.PhotoWithStatus;
 import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
 import com.silverpeas.socialNetwork.model.SocialInformation;
+import java.io.IOException;
+import javax.naming.NamingException;
+import org.junit.Before;
+import org.junit.BeforeClass;
 
 public class TestPhotoDAO extends AbstractTestDao {
 
+  @BeforeClass
+  public static void generalSetUp() throws IOException, NamingException {
+    AbstractTestDao.configureJNDIDatasource();
+  }
+
+  @Before
   @Override
-  protected void setUp() throws Exception {
-    super.setUp();
+  public void setUp() throws Exception {
+    super.prepareData();
   }
 
   @Test

@@ -40,9 +40,10 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.webactiv.SilverpeasRole;
+import static com.stratelia.webactiv.SilverpeasRole.*;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import java.util.List;
-
 /**
  * Class declaration
  * @author
@@ -134,6 +135,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
     QuestionReplySessionController scc = (QuestionReplySessionController) componentSC;
 
     String flag = scc.getUserProfil();
+    SilverpeasRole role = scc.getUserRole();
     SilverTrace.info("questionReply",
         "QuestionReplyRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "flag = " + flag);
@@ -154,12 +156,10 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("MainQuestions")) {
         Collection questions = scc.getQuestions();
         request.setAttribute("questions", questions);
-
-        if (flag.equals("admin") || flag.equals("writer")) {
+        if(admin == role || writer == role) {
           destination = "/questionReply/jsp/listQExpertAdmin.jsp";
-        } else if (flag.equals("publisher")) {
-          if (scc.getUserRoleLevel().equals("admin")
-              || scc.getUserRoleLevel().equals("writer")) {
+        } else if (role == publisher) {
+          if (admin.isInRole(scc.getUserRoleLevel()) || writer.isInRole(scc.getUserRoleLevel())) {
             destination = "/questionReply/jsp/listSendQ.jsp";
           } else {
             destination = "/questionReply/jsp/listQPublisher.jsp";
@@ -171,10 +171,8 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         SilverTrace.info("questionReply",
             "QuestionReplyRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "flag entrée= " + flag);
-
-        if ((flag.equals("admin")) || (flag.equals("writer"))
-            || (flag.equals("publisher"))) {
-          scc.setUserProfil("publisher");
+        if (role == admin || role == writer || role == publisher) {
+          scc.setUserProfil(publisher.toString());
           flag = scc.getUserProfil();
 
           SilverTrace.info("questionReply",
@@ -199,7 +197,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         scc.deleteQuestions(listToDelete);
         destination = getDestination("Main", componentSC, request);
       } else if (function.equals("DeleteQuestions")) {
-        if ((flag.equals("admin")) || (flag.equals("publisher"))) {
+        if (admin == role || publisher == role) {
           String[] checkQuestions = request.getParameterValues("checkedQuestion");
           List<Long> listToDelete = new ArrayList<Long>();
           if (checkQuestions != null) {
@@ -222,7 +220,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         scc.closeQuestion(Long.parseLong(questionId));
         destination = getDestination("Main", componentSC, request);
       } else if (function.equals("CloseQuestions")) {
-        if ((flag.equals("admin")) || (flag.equals("writer"))) {
+        if (admin == role || writer == role) {
           String[] checkQuestions = request.getParameterValues("checkedQuestion");
           List<Long> listToClose = new ArrayList<Long>();
           if (checkQuestions != null) {
@@ -237,7 +235,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
           destination = "/admin/jsp/errorpage.jsp";
         }
       } else if (function.equals("CloseQuestion")) {
-        if ((flag.equals("admin")) || (flag.equals("writer"))) {
+        if (admin == role || writer == role) {
           scc.closeQuestion(Long.parseLong(request.getParameter("QuestionId")));
           destination = getDestination("Main", componentSC, request);
         } else {
@@ -260,8 +258,6 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
 
         Question question = scc.getQuestion(Long.parseLong(questionId));
         scc.setCurrentQuestion(question);
-        // redirection vers la liste des question en ouvrant la question
-        // recherchée
         request.setAttribute("QuestionId", questionId);
         destination = getDestination("Main", componentSC, request);
       } else if (function.equals("ConsultQuestion")) {
@@ -284,15 +280,14 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         request.setAttribute("AllCategories", scc.getAllCategories());
         destination = "/questionReply/jsp/updateQ.jsp";
       } else if (function.equals("UpdateQQuery")) {
-        if ((flag.equals("admin")) || (flag.equals("writer"))) {
+        if (admin == role || writer == role) {
           request.setAttribute("question", scc.getCurrentQuestion());
           destination = "/questionReply/jsp/updateQ.jsp";
         } else {
           destination = "/admin/jsp/errorpage.jsp";
         }
       } else if (function.equals("DeleteReplies")) {
-        if ((flag.equals("admin")) || (flag.equals("publisher"))
-            || (flag.equals("writer"))) {
+        if (admin == role || writer == role || publisher == role) {
           String[] checkReplies = request.getParameterValues("checkedReply");
           List<Long> listToDelete = new ArrayList<Long>();
           if (checkReplies != null) {
@@ -302,16 +297,12 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
             }
           }
           scc.deleteReplies(listToDelete);
-          /*
-           * if (scc.getCurrentQuestion()== null) destination = getDestination("Main", componentSC,
-           * request); else destination = getDestination("ConsultQuestion", componentSC, request);
-           */
           destination = getDestination("Main", componentSC, request);
         } else {
           destination = "/admin/jsp/errorpage.jsp";
         }
       } else if (function.equals("DeleteReply")) {
-        if (flag.equals("publisher")) {
+        if (publisher == role) {
           Collection replies = new ArrayList();
           replies.add(new Long(request.getParameter("replyId")));
           scc.deleteReplies(replies);
@@ -329,7 +320,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         Question question = scc.getQuestion(Long.parseLong(questionId));
         scc.setCurrentQuestion(question);
         String id = request.getParameter("replyId");
-        Long replyId = new Long(id);
+        Long replyId = Long.valueOf(id);
         Collection replies = new ArrayList();
         replies.add(replyId);
         scc.deleteR(replies);

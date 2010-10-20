@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+    Document   : questio-reply-dataset.xml
+    Created on : 20 octobre 2010, 07:46
+    Author     : ehugonnet
+    Description:
+        Purpose of the document follows.
+-->
+
+<dataset>
+<sc_questionreply_question id="1" title="Les accents ça fonctionne ïci ?" content="la mise en œuvre désigne la création"
+  creatorid="0" creationdate="2010/09/14" status="2" publicreplynumber="1" privatereplynumber="0"
+  replynumber="1" instanceid="questionReply12" categoryid="" />
+<!-- 2;"Ma question";"C'est une super question";"0";"2010/10/19";1;0;1;1;"questionReply27";"''"-->
+
+</dataset>

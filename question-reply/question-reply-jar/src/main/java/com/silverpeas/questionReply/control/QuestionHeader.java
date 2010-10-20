@@ -35,6 +35,7 @@ import com.stratelia.webactiv.persistence.IdPK;
  * The questionReply implementation of SilverContentInterface
  */
 public final class QuestionHeader extends AbstractI18NBean implements SilverContentInterface {
+  private static final long serialVersionUID = 311303663095375317L;
   private long id;
   private String label;
   private String instanceId;
@@ -63,30 +64,37 @@ public final class QuestionHeader extends AbstractI18NBean implements SilverCont
     this.creatorId = creatorId;
   }
 
+  @Override
   public String getName() {
     return label;
   }
 
+  @Override
   public String getDescription() {
     return description;
   }
 
+  @Override
   public String getDescription(String language) {
     return getDescription();
   }
 
+  @Override
   public String getName(String language) {
     return getName();
   }
 
+  @Override
   public String getURL() {
     return "ConsultQuestionQuery?questionId=" + id;
   }
 
+  @Override
   public String getId() {
     return (new Long(id)).toString();
   }
 
+  @Override
   public String getInstanceId() {
     return instanceId;
   }
@@ -95,6 +103,7 @@ public final class QuestionHeader extends AbstractI18NBean implements SilverCont
     return this.title;
   }
 
+  @Override
   public String getDate() {
     return this.date;
   }
