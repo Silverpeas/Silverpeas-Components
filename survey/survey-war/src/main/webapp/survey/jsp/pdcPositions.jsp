@@ -46,6 +46,11 @@ String url				= surveyScc.getComponentUrl()+"pdcPositions.jsp";
 
 String profile			= (String) request.getAttribute("Profile");
 
+boolean participated = true;
+if (StringUtil.isDefined(request.getParameter("Participated"))) {
+  participated = request.getParameter("Participated").equalsIgnoreCase("true");
+}
+
 %>
 <HTML>
 <HEAD>
@@ -64,8 +69,6 @@ out.println(gef.getLookStyleSheet());
 	OperationPane	operationPane	= window.getOperationPane();
 	BrowseBar		browseBar		= window.getBrowseBar();
 	
-	browseBar.setDomainName(surveyScc.getSpaceLabel());
-	browseBar.setComponentName(surveyScc.getComponentLabel(), "surveyList.jsp?Action=View");
 	browseBar.setExtraInformation(Encode.javaStringToHtmlString(surveyName));
 
 	operationPane.addOperation(m_context+"/pdcPeas/jsp/icons/pdcPeas_position_to_add.gif", resources.getString("GML.PDCNewPosition"), "javascript:openSPWindow('"+m_context+"/RpdcClassify/jsp/NewPosition','newposition')");
@@ -73,7 +76,7 @@ out.println(gef.getLookStyleSheet());
 
 	out.println(window.printBefore());
 
-	out.println(displayTabs(surveyScc, surveyId, gef, "ViewPdcPositions", profile, resources, pollingStationMode).print());
+	out.println(displayTabs(surveyScc, surveyId, gef, "ViewPdcPositions", profile, resources, pollingStationMode, participated).print());
 
 	out.println(frame.printBefore());
 
