@@ -187,7 +187,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
    * Return if anonymous mode is enabled
    * @return
    */
-  private boolean isAnonymousModeEnabled() {
+  public boolean isAnonymousModeEnabled() {
     String value = getComponentParameterValue("useAnonymousMode");
     if (value != null)
       return "yes".equals(value.toLowerCase());

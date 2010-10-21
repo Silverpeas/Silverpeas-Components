@@ -174,13 +174,21 @@ ResourcesWrapper resources, ResourceLocator settings, String profile, boolean po
                
                		if (end >= questions.size())
                		{
+						//Mode anonyme ou enquete anonyme -> force les commentaires à être tous anonymes
+						String anonymousCommentCheck = "";
+						String anonymousCommentDisabled = "";
+						if(surveyScc.isAnonymousModeEnabled() || surveyHeader.isAnonymous()) {
+							anonymousCommentCheck = "checked";
+							anonymousCommentDisabled = "disabled";
+						}
+	
 	                    // affichage de la zone pour les commentaires
 	                    r += "<br>";
 	        			r += board.printBefore();
 	        			r += "<table><tr><td align=\"left\" valign=top class=\"txtlibform\">"+resources.getString("survey.Comments")+" :</td>";
 	        			r += "<td align=\"left\"><textarea name=\"Comment\" rows=\"4\" cols=\"60\"></textarea></td></tr>";
 	        			r += "<tr><td align=\"left\" class=\"txtlibform\">"+resources.getString("survey.AnonymousComment")+" :</td>";
-	        			r += "<td align=\"left\"><input type=\"checkbox\" name=\"anonymousComment\"></td></tr>";
+	        			r += "<td align=\"left\"><input type=\"checkbox\" name=\"anonymousComment\" "+anonymousCommentCheck+" "+anonymousCommentDisabled+"></td></tr>";
 	        			r += "</table>";
 	        			r += board.printAfter();
 	        			r += "<br>";
@@ -695,6 +703,12 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                 	int nbRegistered = surveyHeader.getNbRegistered();
                 	int participationRate = Math.round(((float)nbVoters*100)/((float)nbRegistered));
                 	boolean anonymous = surveyHeader.isAnonymous();
+                	
+                	//Mode anonyme -> force les enquêtes à être toutes anonymes
+                	if(surveyScc.isAnonymousModeEnabled()) {
+						anonymous = true; 
+					}
+           
 				
 				if (!styleView.equals("user"))
 				{
@@ -987,7 +1001,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                     r += "&nbsp;"+percentageForThisAnswer+"%";
                     if (!anonymous && nbSquareForThisAnswer != 0)
                     {
-                    	// l'enqu�te n'est pas anonyme et le % de r�ponse n'est pas nul : afficher l'icone pour visualiser les users
+                    	// l'enquête n'est pas anonyme et le % de réponse n'est pas nulle : afficher l'icone pour visualiser les users
                        	r += "<a href=\"javaScript:onClick=viewUsers('"+answer.getPK().getId()+"');\"><img src=\"icons/info.gif\" border=\"0\" align=\"absmiddle\" width=\"15\" height=\"15\"></a>";
                     }
                     r += "</td>";
@@ -1187,7 +1201,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                                         r += "<tr><td class=txtnav><B>"+resources.getString("survey.Comments")+"</B><BR></td></tr>";
                                   r += "<tr>";
                                   r += "<td valign=\"top\"><blockquote>";
-                                  if (comment.isAnonymous()) {
+                                  if (comment.isAnonymous() || surveyScc.isAnonymousModeEnabled()) {
                                       userName = resources.getString("survey.AnonymousComment");
                                   } else {
                                       user = surveyScc.getUserDetail(comment.getUserId());

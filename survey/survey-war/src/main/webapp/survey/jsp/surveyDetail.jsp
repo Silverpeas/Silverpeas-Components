@@ -354,6 +354,7 @@
         	  
         	 try 
         	 {
+				 document.survey.anonymousComment.disabled = false;
         		 if (document.survey.anonymousComment.checked)
         			 x = 1;
         		 else

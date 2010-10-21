@@ -55,9 +55,13 @@ String beginDate = request.getParameter("beginDate");
 String endDate = request.getParameter("endDate");
 String nbQuestions = request.getParameter("nbQuestions");
 String anonymousString = request.getParameter("anonymous");
-boolean anonymous = false;
-if (StringUtil.isDefined(anonymousString)&& anonymousString.equals("true"))
-	anonymous = true;
+
+//Mode anonyme -> force les enquêtes à être toutes anonymes
+if(surveyScc.isAnonymousModeEnabled()) {
+	anonymousString = "true";
+}
+
+boolean anonymous = StringUtil.isDefined(anonymousString) && "true".equalsIgnoreCase(anonymousString);
 
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
@@ -98,9 +102,16 @@ if (action.equals("UpdateSurveyHeader"))
               endDate = resources.getInputDate(surveyHeader.getEndDate());
           nbQuestions = new Integer(surveyHeader.getNbQuestionsPerPage()).toString();
           anonymous = surveyHeader.isAnonymous();
+          
+          //Mode anonyme -> force les enquêtes à être toutes anonymes
+		  if(surveyScc.isAnonymousModeEnabled()) {
+			anonymous = true;
+		  }
+          
           anonymousString = "0";
-          if (anonymous)
+          if (anonymous) {
           	anonymousString = "1";
+		  }
           
 %>
 <html>
@@ -112,6 +123,7 @@ if (action.equals("UpdateSurveyHeader"))
 <script language="JavaScript1.2">
 function sendData() {
     if (isCorrectForm()) {
+		document.surveyForm.anonymous.disabled = false;
         document.surveyForm.submit();
     }
 }
@@ -283,10 +295,16 @@ function isCorrectForm() {
     {
     	anonymousCheck = "checked";
     }
+    
+    //Mode anonyme -> force les enquêtes à être toutes anonymes
+	String anonymousDisabled = "";
+	if(surveyScc.isAnonymousModeEnabled()) {
+		anonymousDisabled = "disabled";
+	}
     %>
     	<td class="txtlibform"><%=resources.getString("survey.surveyAnonymous")%> :</td>
     	<td>
-    	  <input type="checkbox" name="anonymous" value="true" <%=anonymousCheck%>>
+    	  <input type="checkbox" name="anonymous" value="true" <%=anonymousCheck%> <%=anonymousDisabled%>>
     	  <input type="hidden" name="anonymousString" value="<%=anonymousString%>">
     	</td>
     </tr>

@@ -71,6 +71,11 @@
     String anonymousAllowed = "";
     String anonymousCheck = "";
     String anonymous = FileUploadUtil.getOldParameter(items, "AnonymousAllowed");
+    
+    //Mode anonyme -> force les votes à être tous anonymes
+	if(surveyScc.isAnonymousModeEnabled()) {
+		anonymous = "1";
+	}
 
 //Icons
     String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
@@ -168,6 +173,7 @@
           if (checkAnswers()) {
             if (window.document.pollForm.suggestion.checked)
               window.document.pollForm.SuggestionAllowed.value = "1";
+            window.document.pollForm.anonymous.disabled = false;
             if (window.document.pollForm.anonymous.checked)
                 window.document.pollForm.AnonymousAllowed.value = "1";
             window.document.pollForm.submit();
@@ -480,7 +486,17 @@ disabledValue = "disabled";
 
         <tr><td class="txtlibform"><%=resources.getString("SurveyCreationNbPossibleAnswer")%> :</td><td><input type="text" name="nbAnswers" value="<%=nbAnswers%>" size="3" maxlength="2" <%=disabledValue%>>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> </td></tr>
         <tr><td class="txtlibform"><%=resources.getString("SuggestionAllowed")%> :</td><td><input type="checkbox" name="suggestion" value="" <%=suggestionCheck%> <%=disabledValue%>></td></tr>
-        <tr><td class="txtlibform"><%=resources.getString("survey.pollAnonymous")%> :</td><td><input type="checkbox" name="anonymous" value="" <%=anonymousCheck%> <%=disabledValue%>></td></tr>
+        
+        <%
+        //Mode anonyme -> force les votes à être tous anonymes
+        String anonymousDisabled = "";
+        if(surveyScc.isAnonymousModeEnabled()) {
+			anonymousCheck = "checked";
+			anonymousDisabled = "disabled";
+		}
+		%>
+        
+        <tr><td class="txtlibform"><%=resources.getString("survey.pollAnonymous")%> :</td><td><input type="checkbox" name="anonymous" value="" <%=anonymousCheck%> <%=disabledValue%> <%=anonymousDisabled%>></td></tr>
 
         <% if ("SendPollForm".equals(action)) {
 nb = new Integer(nbAnswers).intValue();
@@ -555,8 +571,9 @@ if (!"0".equals(suggestion)) {
 
           // création du vote
           boolean anonymousB = false;
-          if (anonymous.equals("1"))
+          if (anonymous.equals("1")) {
             anonymousB = true;
+		  }
           QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, creationDate, beginDate, endDate, false, 0, 1, anonymousB);
           Question questionObject = new Question(null, null, question, "", "", null, style, 0);
           ArrayList questions = new ArrayList();

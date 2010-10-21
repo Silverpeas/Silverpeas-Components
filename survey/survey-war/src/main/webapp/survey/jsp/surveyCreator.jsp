@@ -58,6 +58,12 @@ String beginDate = request.getParameter("beginDate");
 String endDate = request.getParameter("endDate");
 String nbQuestions = request.getParameter("nbQuestions");
 String anonymousString = request.getParameter("anonymous");
+
+//Mode anonyme -> force les enquêtes à être toutes anonymes
+if(surveyScc.isAnonymousModeEnabled()) {
+	anonymousString = "true";
+}
+
 boolean anonymous = StringUtil.isDefined(anonymousString) && "true".equalsIgnoreCase(anonymousString);
 
 //Mise a jour de l'espace
@@ -75,6 +81,7 @@ if (action == null) {
 <script type="text/javascript" language="JavaScript1.2">
 function sendData() {
     if (isCorrectForm()) {
+		document.surveyForm.anonymous.disabled = false;
         document.surveyForm.submit();
     }
 }
@@ -243,8 +250,14 @@ else if (action.equals("CreateSurvey")) {
 	        {
 	        	anonymousCheck = "checked";
 	        }
+	        
+	        //Mode anonyme -> force les enquêtes à être toutes anonymes
+	        String anonymousDisabled = "";
+	        if(surveyScc.isAnonymousModeEnabled()) {
+				anonymousDisabled = "disabled";
+			}
 		%>
-    	<td><input type="checkbox" name="anonymous" value="true" <%=anonymousCheck%>>
+    	<td><input type="checkbox" name="anonymous" value="true" <%=anonymousCheck%> <%=anonymousDisabled%>>
     	  <input type="hidden" name="anonymousString" value="<%=anonymousString%>"></td>
     </tr>    
     <tr><td colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5"> : <%=generalMessage.getString("GML.requiredField")%>)</td></tr>
