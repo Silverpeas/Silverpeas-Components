@@ -115,9 +115,10 @@ function init()
 		Window window = gef.getWindow();
 
 		BrowseBar browseBar = window.getBrowseBar();
-		browseBar.setDomainName(kmeliaScc.getSpaceLabel());
         browseBar.setComponentName(kmeliaScc.getComponentLabel(), "portlet.jsp");
 		browseBar.setPath(linkedPathString);
+		browseBar.setIgnoreComponentLink(false);
+		browseBar.setComponentId(componentId);
 
 		Frame frame = gef.getFrame();
 

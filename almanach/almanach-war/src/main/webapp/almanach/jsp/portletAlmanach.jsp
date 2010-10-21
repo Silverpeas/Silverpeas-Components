@@ -105,8 +105,7 @@ out.println(graphicFactory.getLookStyleSheet());
 	Frame 	frame	= graphicFactory.getFrame();
 
 	BrowseBar browseBar = window.getBrowseBar();
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel);
+	browseBar.setComponentId(instanceId);
   
 	out.println(window.printBefore());
 	out.println(frame.printBefore());

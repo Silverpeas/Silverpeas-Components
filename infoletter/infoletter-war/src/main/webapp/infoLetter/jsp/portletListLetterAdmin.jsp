@@ -59,11 +59,10 @@ function openViewParution(par) {
 <BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
 <%
 
-
-	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "javascript:goto_jsp('Main','')");
 	browseBar.setPath("<a href=# onClick=\"goto_jsp('Main','')\">" + resource.getString("infoLetter.listParutions") + "</a>");
-	//browseBar.setPath("javascript:goto_jsp('Main','')");
+	browseBar.setComponentId(componentId);
+	browseBar.setIgnoreComponentLink(false);
 
 
 boolean isSuscriber = "true".equals(((String)request.getAttribute("userIsSuscriber")));

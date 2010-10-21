@@ -77,10 +77,10 @@ function goto_jsp(jsp, param)
 <%
 
   //browse bar
-  //BrowseBar browseBar = window.getBrowseBar();
-  //browseBar.setExtraInformation(messages.getString("Donn�es entreprise"));
   browseBar.setComponentName(connecteurJDBC.getComponentLabel(), "javascript:goto_jsp('Main', '')");
   browseBar.setExtraInformation(connecteurJDBC.getString("titreExecution"));
+  browseBar.setIgnoreComponentLink(false);
+  browseBar.setComponentId(componentId);
   
 
 	//Les onglets
