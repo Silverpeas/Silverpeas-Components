@@ -80,6 +80,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import javax.ejb.SessionBean;
@@ -97,6 +98,22 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       AlbumDetail album = new AlbumDetail(getNodeBm().getDetail(nodePK));
       // récupération des photos
       Collection<PhotoDetail> photos = getAllPhoto(nodePK, viewAllPhoto);
+      // ajout des photos à l'album
+      album.setPhotos(photos);
+      return album;
+    } catch (Exception e) {
+      throw new GalleryRuntimeException("GalleryBmEJB.getAlbum()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_EXIST", e);
+    }
+  }
+  
+  @Override
+  public AlbumDetail getAlbumByIdAndField(NodePK nodePK, HashMap<String, String> parsedParameters, 
+      boolean viewAllPhoto){
+    try {
+      AlbumDetail album = new AlbumDetail(getNodeBm().getDetail(nodePK));
+      // récupération des photos
+      Collection<PhotoDetail> photos = getAllPhoto(nodePK, parsedParameters, viewAllPhoto);
       // ajout des photos à l'album
       album.setPhotos(photos);
       return album;
@@ -235,6 +252,26 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       String albumId = nodePK.getId();
       String instanceId = nodePK.getInstanceId();
       Collection<PhotoDetail> photos = PhotoDAO.getAllPhoto(con, albumId, instanceId,
+          viewAllPhoto);
+
+      return photos;
+    } catch (Exception e) {
+      throw new GalleryRuntimeException("GalleryBmEJB.getAllPhoto()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+    } finally {
+      // fermer la connexion
+      fermerCon(con);
+    }
+  }
+  
+  @Override
+  public Collection<PhotoDetail> getAllPhoto(NodePK nodePK,
+      HashMap<String, String> parsedParameters, boolean viewAllPhoto) {
+    Connection con = initCon();
+    try {
+      String albumId = nodePK.getId();
+      String instanceId = nodePK.getInstanceId();
+      Collection<PhotoDetail> photos = PhotoDAO.getAllPhoto(con, albumId, instanceId, parsedParameters,
           viewAllPhoto);
 
       return photos;

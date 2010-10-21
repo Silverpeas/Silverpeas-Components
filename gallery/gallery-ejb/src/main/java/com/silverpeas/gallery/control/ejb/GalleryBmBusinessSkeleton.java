@@ -1,9 +1,9 @@
 package com.silverpeas.gallery.control.ejb;
 
 import java.rmi.RemoteException;
-import java.sql.Connection;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import com.silverpeas.gallery.model.AlbumDetail;
@@ -11,7 +11,6 @@ import com.silverpeas.gallery.model.Order;
 import com.silverpeas.gallery.model.OrderRow;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
-import com.silverpeas.gallery.model.PhotoWithStatus;
 import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
@@ -23,6 +22,9 @@ public interface GalleryBmBusinessSkeleton {
 
   public AlbumDetail getAlbum(NodePK nodePK, boolean viewAllPhoto)
       throws RemoteException;
+  
+  public AlbumDetail getAlbumByIdAndField(NodePK nodePK, HashMap<String, String> parsedParameters, 
+      boolean viewAllPhoto) throws RemoteException;
 
   public NodePK createAlbum(AlbumDetail album, NodePK nodePK)
       throws RemoteException;
@@ -44,6 +46,9 @@ public interface GalleryBmBusinessSkeleton {
 
   public Collection<PhotoDetail> getAllPhoto(NodePK nodePK, boolean viewAllPhoto)
       throws RemoteException;
+  
+  public Collection<PhotoDetail> getAllPhoto(NodePK nodePK,
+      HashMap<String, String> parsedParameters, boolean viewAllPhoto) throws RemoteException;
 
   public Collection<PhotoDetail> getAllPhotos(String instanceId) throws RemoteException;
 

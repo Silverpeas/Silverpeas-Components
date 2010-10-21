@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -74,7 +75,41 @@ public class PhotoDAO {
     }
     return photo;
   }
+  
+  public static Collection<PhotoDetail> getAllPhoto(Connection con, String albumId,
+      String instanceId, HashMap<String, String> parsedParameters, boolean viewAllPhoto) throws SQLException {
+    // récupérer toutes les photos d'un album
+    ArrayList<PhotoDetail> listPhoto = null;
+    Date today = new Date();
 
+    String fieldOrdering = parsedParameters.get("fieldName");
+    String fieldOrderingType = parsedParameters.get("sortType");
+    
+    String query =
+        "select * from SC_Gallery_Photo P, SC_Gallery_Path A "
+        + "where P.photoId = A.photoId and P.instanceId = A.instanceId and A.nodeId = ? and P.instanceId = ? order by P."
+        +fieldOrdering+" "+fieldOrderingType;
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setInt(1, Integer.parseInt(albumId));
+      prepStmt.setString(2, instanceId);
+      rs = prepStmt.executeQuery();
+      listPhoto = new ArrayList<PhotoDetail>();
+      while (rs.next()) {
+        PhotoDetail photo = recupPhoto(rs);
+        if (viewAllPhoto || isVisible(photo, today)) {
+          listPhoto.add(photo);
+        }
+      }
+    } finally {
+      // fermeture
+      DBUtil.close(rs, prepStmt);
+    }
+    return listPhoto;
+  }
+  
   public static Collection<PhotoDetail> getAllPhoto(Connection con, String albumId,
       String instanceId, boolean viewAllPhoto) throws SQLException {
     // récupérer toutes les photos d'un album
