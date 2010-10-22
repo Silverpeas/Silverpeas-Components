@@ -90,7 +90,7 @@
     <script type="text/javascript" src="<c:url value="/forums/jsp/javaScript/forums.js" />" ></script>
     <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />" ></script>
     <script type="text/javascript">
-      <c:if test="${isAdmin || isModerator}">
+      <c:if test="${isAdmin || isUser || isModerator}">
         function confirmDeleteForum(forumId) {
           if (confirm("<%=EncodeHelper.javaStringToJsString(resource.getString("confirmDeleteForum"))%>"))
           {

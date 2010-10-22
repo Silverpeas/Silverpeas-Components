@@ -561,7 +561,7 @@
 	            }
               if (userId.equals(author) || isAdmin || isModerator)
               {
-                if (STATUS_FOR_VALIDATION.equals(status)) {
+                if (isModerator && STATUS_FOR_VALIDATION.equals(status)) {
                   // afficher les ic�nes pour valider ou refuser un message
                   %>
                     <a href="javascript:valideMessage(<%=currentId%>)"><img
