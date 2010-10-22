@@ -81,7 +81,6 @@ import com.stratelia.webactiv.kmelia.model.updatechain.FieldUpdateChainDescripto
 import com.stratelia.webactiv.kmelia.model.updatechain.Fields;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.WAAttributeValuePair;
@@ -233,7 +232,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           request.setAttribute("RightsOnTopicsEnabled", Boolean.valueOf(kmelia.
               isRightsOnTopicsEnabled()));
           request.setAttribute("WysiwygDescription", kmelia.getWysiwygOnTopic());
-          destination = rootDestination + "topicManager.jsp";
+          if (kmelia.isTreeStructure()) {
+            destination = rootDestination + "topicManager.jsp";
+          } else {
+            destination = rootDestination + "simpleListOfPublications.jsp";
+          }
         }
       } else if (function.equals("GoToCurrentTopic")) {
         if (kmelia.getSessionTopic() != null) {
@@ -243,6 +246,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         } else {
           destination = getDestination("Main", kmelia, request);
         }
+      } else if (function.equals("GoToBasket")) {
+        destination = rootDestination + "basket.jsp";
+      } else if (function.equals("ViewPublicationsToValidate")) {
+        destination = rootDestination + "publicationsToValidate.jsp";
       } else if (function.startsWith("searchResult")) {
         resetWizard(kmelia);
         String id = request.getParameter("Id");
@@ -886,7 +893,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         String[] pubIds = request.getParameterValues("PubIds");
 
         List<ForeignPK> infoLinks = new ArrayList<ForeignPK>();
-        String id = null;
         StringTokenizer tokens = null;
         for (String pubId : pubIds) {
           tokens = new StringTokenizer(pubId, "/");

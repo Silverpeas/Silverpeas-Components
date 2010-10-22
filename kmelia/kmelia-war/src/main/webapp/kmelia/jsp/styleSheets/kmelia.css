@@ -107,6 +107,7 @@
 
 #pubList {
 	display:block;
+	overflow: auto;
 }
 
 #pubList #pubsHeader {
