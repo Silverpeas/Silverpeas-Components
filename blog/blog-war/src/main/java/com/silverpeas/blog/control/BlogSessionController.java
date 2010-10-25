@@ -182,8 +182,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
     try {
       // création du billet
       PublicationDetail pub =
-          new PublicationDetail("X", title, "", null, null, null, null, "1", null, null, "", null,
-          "");
+          new PublicationDetail("X", title, "", null, null, null, null, "1", null, null, "");
       pub.getPK().setComponentName(getComponentId());
       pub.setCreatorId(getUserId());
       pub.setCreatorName(getUserDetail(getUserId()).getDisplayedName());
