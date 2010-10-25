@@ -215,9 +215,6 @@ public interface KmeliaBmBusinessSkeleton {
    */
   public void deletePublication(PublicationPK pubPK) throws RemoteException;
 
-  public void deletePublicationImage(PublicationPK pubPK)
-      throws RemoteException;
-
   public void sendPublicationToBasket(PublicationPK pubPK)
       throws RemoteException;
 

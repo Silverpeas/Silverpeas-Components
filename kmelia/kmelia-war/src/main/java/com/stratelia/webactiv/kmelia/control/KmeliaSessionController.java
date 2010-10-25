@@ -23,9 +23,9 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
-import com.google.common.io.Closeables;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.rmi.NoSuchObjectException;
@@ -49,6 +49,9 @@ import javax.ejb.EJBObject;
 import javax.ejb.RemoveException;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.FilenameUtils;
+
+import com.google.common.io.Closeables;
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
@@ -59,6 +62,11 @@ import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.thumbnail.ThumbnailException;
+import com.silverpeas.thumbnail.control.ThumbnailController;
+import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import com.silverpeas.thumbnail.service.ThumbnailService;
+import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
@@ -85,6 +93,7 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
@@ -131,7 +140,6 @@ import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -168,14 +176,11 @@ import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import java.io.FileOutputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import org.apache.commons.io.FilenameUtils;
 
 public class KmeliaSessionController extends AbstractComponentSessionController {
 
   /* EJBs used by sessionController */
+  private ThumbnailService thumbnailService = null;
   private SearchEngineBm searchEngineEjb = null;
   private CommentBm commentBm = null;
   private VersioningBm versioningBm = null;
@@ -1051,21 +1056,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       String imagesSubDirectory = getPublicationSettings().getString("imagesSubDirectory");
       String absolutePath = FileRepositoryManager.getAbsolutePath(fromComponentId);
 
-      // paste vignette
-      String vignette = refPub.getImage();
-      if (vignette != null) {
-        String from = absolutePath + imagesSubDirectory + File.separator + vignette;
-
-        String type = vignette.substring(vignette.lastIndexOf(".") + 1, vignette.length());
-        String newVignette = new Long(new java.util.Date().getTime()).toString() + "." + type;
-
-        String to = absolutePath + imagesSubDirectory + File.separator + newVignette;
-        FileRepositoryManager.copyFile(from, to);
-
-        clone.setImage(newVignette);
-        clone.setImageMimeType(refPub.getImageMimeType());
-      }
-
       if (pubDetail != null) {
         clone.setAuthor(pubDetail.getAuthor());
         clone.setBeginDate(pubDetail.getBeginDate());
@@ -1157,6 +1147,29 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       getKmeliaBm().updatePublication(refPub);
 
       setSessionClone(getUserCompletePublication(cloneId));
+      
+   // paste vignette
+      String vignette = refPub.getImage();
+      if (vignette != null) {
+    	String thumbnailsSubDirectory = getPublicationSettings().getString("imagesSubDirectory");
+        String from = absolutePath + thumbnailsSubDirectory + File.separator + vignette;
+
+        String type = vignette.substring(vignette.lastIndexOf(".") + 1, vignette.length());
+        String newVignette = new Long(new java.util.Date().getTime()).toString() + "." + type;
+
+        String to = absolutePath + thumbnailsSubDirectory + File.separator + newVignette;
+        FileRepositoryManager.copyFile(from, to);
+        
+		ThumbnailDetail thumbDetail = new ThumbnailDetail(
+						clone.getPK().getInstanceId(),
+						Integer.valueOf(clone.getPK().getId()),
+						ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+        thumbDetail.setOriginalFileName(newVignette);
+        thumbDetail.setMimeType(refPub.getImageMimeType());
+        
+        getThumbnailService().createThumbnail(thumbDetail);
+        
+      }
     } catch (IOException e) {
       throw new KmeliaRuntimeException("KmeliaSessionController.clonePublication",
           SilverpeasException.ERROR, "kmelia.CANT_CLONE_PUBLICATION", e);
@@ -1169,7 +1182,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     } catch (PublicationTemplateException pe) {
       throw new KmeliaRuntimeException("KmeliaSessionController.clonePublication",
           SilverpeasException.ERROR, "kmelia.CANT_CLONE_PUBLICATION_XMLCONTENT", pe);
-    }
+    } catch (ThumbnailException e) {
+        throw new KmeliaRuntimeException("KmeliaSessionController.clonePublication",
+                SilverpeasException.ERROR, "kmelia.CANT_CLONE_PUBLICATION", e);
+    } 
     return cloneId;
   }
 
@@ -1197,12 +1213,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
     if (refPub.getEndHour() != null) {
       clone.setEndHour(new String(refPub.getEndHour()));
-    }
-    if (refPub.getImage() != null) {
-      clone.setImage(new String(refPub.getImage()));
-    }
-    if (refPub.getImageMimeType() != null) {
-      clone.setImageMimeType(new String(refPub.getImageMimeType()));
     }
     clone.setImportance(refPub.getImportance());
     if (refPub.getInfoId() != null) {
@@ -1924,22 +1934,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           getSessionPublication().getPublication().getPublicationDetail().getPK());
     }
     refreshSessionPubliAndClone();
-  }
-
-  public void deleteVignette(String pubId) throws RemoteException {
-    PublicationDetail pubDetail = getKmeliaBm().getPublicationDetail(getPublicationPK(pubId));
-
-    // remove image from filesystem
-    File dir =
-        new File(FileRepositoryManager.getAbsolutePath(getComponentId())
-        + getPublicationSettings().getString("imagesSubDirectory") + File.separator
-        + pubDetail.getImage());
-    if (dir.exists()) {
-      dir.delete();
-    }
-
-    // remove image in DB
-    getKmeliaBm().deletePublicationImage(getPublicationPK(pubId));
   }
 
   /**************************************************************************************/
@@ -2707,6 +2701,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
     return pubBm;
   }
+  
+  public ThumbnailService getThumbnailService() {
+	    if (thumbnailService == null)
+	    	thumbnailService = new ThumbnailServiceImpl();
+	    return thumbnailService;
+	  }
 
   /**
    * @return
@@ -3636,9 +3636,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       ForeignPK toForeignPK = new ForeignPK(publi.getPK().getId(), getComponentId());
       PublicationPK toPubPK = new PublicationPK(publi.getPK().getId(), getComponentId());
 
-      String imagesSubDirectory = getPublicationSettings().getString("imagesSubDirectory");
-      String toAbsolutePath = FileRepositoryManager.getAbsolutePath(getComponentId());
-      String fromAbsolutePath = FileRepositoryManager.getAbsolutePath(fromComponentId);
+			String imagesSubDirectory = getPublicationSettings().getString(
+					"imagesSubDirectory");
+		      String thumbnailsSubDirectory = getPublicationSettings().getString("imagesSubDirectory");
+			String toAbsolutePath = FileRepositoryManager
+					.getAbsolutePath(getComponentId());
+			String fromAbsolutePath = FileRepositoryManager
+					.getAbsolutePath(fromComponentId);
 
       if (isCutted) {
         if (nodePK == null) {
@@ -3678,17 +3682,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           // header+content
 
           // move Vignette on disk
-          String vignette = publi.getImage();
+			          String vignette = ThumbnailController.getImage(fromComponentId, Integer.parseInt(fromId), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
           if (StringUtil.isDefined(vignette)) {
-            String from = fromAbsolutePath + imagesSubDirectory + File.separator + vignette;
+			            String from = fromAbsolutePath + thumbnailsSubDirectory + File.separator + vignette;
 
             try {
-              FileRepositoryManager.createAbsolutePath(getComponentId(), imagesSubDirectory);
+			              FileRepositoryManager.createAbsolutePath(getComponentId(), thumbnailsSubDirectory);
             } catch (Exception e) {
               SilverTrace.error("kmelia", "KmeliaSessionController.pastePublication()",
                   "root.MSG_GEN_PARAM_VALUE", "kmelia.CANT_MOVE_ATTACHMENTS", e);
             }
-            String to = toAbsolutePath + imagesSubDirectory + File.separator + vignette;
+			            String to = toAbsolutePath + thumbnailsSubDirectory + File.separator + vignette;
 
             File fromVignette = new File(from);
             File toVignette = new File(to);
@@ -3809,20 +3813,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
         }
       } else {
-        // paste vignette
-        String vignette = publi.getImage();
-        if (vignette != null) {
-          String from = fromAbsolutePath + imagesSubDirectory + File.separator + vignette;
-
-          String type = vignette.substring(vignette.indexOf(".") + 1, vignette.length());
-          String newVignette = new Long(new java.util.Date().getTime()).toString() + "." + type;
-
-          String to = toAbsolutePath + imagesSubDirectory + File.separator + newVignette;
-          FileRepositoryManager.copyFile(from, to);
-
-          publi.setImage(newVignette);
-        }
-
         // paste the publicationDetail
         publi.setUpdaterId(getUserId()); // ignore initial parameters
 
@@ -3836,6 +3826,38 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           if (nodePKsToPaste != null) {
             fatherPKs.removeAll(nodePKsToPaste);
           }
+        }
+        
+     // paste vignette
+			        ThumbnailDetail vignette = ThumbnailController.getCompleteThumbnail(new ThumbnailDetail(fromComponentId, Integer.parseInt(fromId), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE));
+        if (vignette != null) {
+			           ThumbnailDetail thumbDetail = new ThumbnailDetail(publi.getPK().getInstanceId(),Integer.valueOf(id), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+			          String from = fromAbsolutePath + thumbnailsSubDirectory + File.separator + vignette.getOriginalFileName();
+
+			          String type = vignette.getOriginalFileName().substring(vignette.getOriginalFileName().indexOf(".") + 1, vignette.getOriginalFileName().length());
+			          String newOriginalImage = new Long(new java.util.Date().getTime()).toString() + "." + type;
+
+			          String to = toAbsolutePath + thumbnailsSubDirectory + File.separator + newOriginalImage;
+          FileRepositoryManager.copyFile(from, to);
+			          thumbDetail.setOriginalFileName(newOriginalImage);
+
+			          // then copy thumnbnail image if exists
+			          if (vignette.getCropFileName() != null) {
+				          from = fromAbsolutePath + thumbnailsSubDirectory + File.separator + vignette.getCropFileName();
+				          type = vignette.getCropFileName().substring(vignette.getCropFileName().indexOf(".") + 1, vignette.getCropFileName().length());
+				          String newThumbnailImage = new Long(new java.util.Date().getTime()).toString() + "." + type;
+				          to = toAbsolutePath + thumbnailsSubDirectory + File.separator + newThumbnailImage;
+				          FileRepositoryManager.copyFile(from, to);
+				          thumbDetail.setCropFileName(newThumbnailImage);
+			          }
+          thumbDetail.setMimeType(type);
+			          thumbDetail.setXLength(vignette.getXLength());
+			          thumbDetail.setYLength(vignette.getYLength());
+			          thumbDetail.setXStart(vignette.getXStart());
+			          thumbDetail.setYStart(vignette.getYStart());
+          getThumbnailService().createThumbnail(thumbDetail);
+          
+          //publi.setImage(newVignette);
         }
 
         // update id cause new publication is created
@@ -3954,7 +3976,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     } catch (IOException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-    }
+    } catch (ThumbnailException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
   }
 
   /**
@@ -4397,6 +4422,64 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DAVOIR_LE_CHEMIN_COURANT", e);
     }
     return newPath;
+  }
+  
+  public int getThumbnailWidth(){
+	  int result;
+	  String widthFromXml = getComponentParameterValue("thumbnailWidthSize");
+	  if(widthFromXml != null){
+		  try{
+			  result = Integer.parseInt(widthFromXml);
+		 	  return result;
+		  }catch (NumberFormatException e) {
+			// second chance -> properties
+			  SilverTrace.warn("kmelia", "KmeliaSessionController.getThumbnailWidth()",
+	                    "root.MSG_GEN_PARAM_VALUE", "xml wrong parameter thumbnailWidthSize = " + widthFromXml);
+	      }
+	  }
+	  
+	  ResourcesWrapper resources = new ResourcesWrapper(
+	          getMultilang(), getIcon(), getSettings(),
+	          getLanguage());
+	  
+	  String widthFromProperties = resources.getSetting("vignetteWidth");
+	  try{
+		  result = Integer.parseInt(widthFromProperties);
+      }catch (NumberFormatException e) {
+		  SilverTrace.warn("kmelia", "KmeliaSessionController.getThumbnailWidth()",
+                  "root.MSG_GEN_PARAM_VALUE", "properties wrong parameter vignetteWidth = " + widthFromProperties);
+		  result = 50; // default hard value
+      }
+	  return result;
+  }
+  
+  public int getThumbnailHeight(){
+	  int result;
+	  String widthFromXml = getComponentParameterValue("thumbnailHeightSize");
+	  if(widthFromXml != null){
+		  try{
+			  result = Integer.parseInt(widthFromXml);
+		 	  return result;
+		  }catch (NumberFormatException e) {
+			// second chance -> properties
+			  SilverTrace.warn("kmelia", "KmeliaSessionController.getThumbnailHeight()",
+	                    "root.MSG_GEN_PARAM_VALUE", "xml wrong parameter thumbnailHeightSize = " + widthFromXml);
+	      }
+	  }
+	  
+	  ResourcesWrapper resources = new ResourcesWrapper(
+	          getMultilang(), getIcon(), getSettings(),
+	          getLanguage());
+	  
+	  String heightFromProperties = resources.getSetting("vignetteHeight");
+	  try{
+		  result = Integer.parseInt(heightFromProperties);
+      }catch (NumberFormatException e) {
+		  SilverTrace.warn("kmelia", "KmeliaSessionController.getThumbnailHeight()",
+                  "root.MSG_GEN_PARAM_VALUE", "properties wrong parameter vignetteHeight = " + heightFromProperties);
+		  result = 50; // default hard value
+      }
+	  return result;
   }
 
   /**

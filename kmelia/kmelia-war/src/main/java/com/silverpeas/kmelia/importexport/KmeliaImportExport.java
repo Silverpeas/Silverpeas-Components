@@ -111,10 +111,7 @@ public class KmeliaImportExport extends GEDImportExport {
       pubDet_temp.setStatusMustBeChecked(false);
       pubDet_temp.setStatus(pubDetailToCreate.getStatus());
     }
-    if (StringUtil.isDefined(pubDetailToCreate.getImage())) {
-      pubDet_temp.setImage(pubDetailToCreate.getImage());
-    }
-
+    
     pubDet_temp.setUpdateDate(new Date());
     pubDet_temp.setUpdaterId(userDetail.getId());
     getKmeliaBm().updatePublication(pubDet_temp);

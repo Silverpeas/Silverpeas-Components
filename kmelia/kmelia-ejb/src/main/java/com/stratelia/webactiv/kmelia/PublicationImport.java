@@ -285,10 +285,9 @@ public class PublicationImport {
     String pubId = (StringUtil.isDefined(id) ? id : "X");
     PublicationDetail pubDetail = new PublicationDetail(pubId, name,
         description, jCreationDate, jBeginDate, jEndDate, null, importance, version,
-        keywords, "", null, author);
+        keywords, "", status, "", author);
     pubDetail.setBeginHour(beginHour);
     pubDetail.setEndHour(endHour);
-    pubDetail.setStatus(status);
     pubDetail.setUpdateDate(jUpdateDate);
 
     if (StringUtil.isDefined(validatorId)) {

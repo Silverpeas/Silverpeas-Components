@@ -33,6 +33,7 @@
 <%@ include file="topicReport.jsp.inc" %>
 <%@ include file="tabManager.jsp.inc" %>
 
+<%@page import="com.silverpeas.thumbnail.model.ThumbnailDetail"%>
 <%!  //Icons
   String folderSrc;
   String publicationSrc;
@@ -102,7 +103,7 @@
 //Recuperation des parametres
 
     String vignette_url = null;
-
+   
     String profile = request.getParameter("Profile");
     String action = request.getParameter("Action");
     String id = request.getParameter("PubId");
@@ -110,9 +111,15 @@
     String wizard = (String) request.getAttribute("Wizard");
     String currentLang = (String) request.getAttribute("Language");
 
+    String resultThumbnail = (String)request.getParameter("resultThumbnail");
+    boolean errorThumbnail = false;
+	if(resultThumbnail != null && !"ok".equals(resultThumbnail)){
+		errorThumbnail = true;
+	}
+    
     SilverTrace.info("kmelia", "JSPdesign", "root.MSG_GEN_PARAM_VALUE", "ACTION pubManager = " + action);
 
-//Icons
+    //Icons
     folderSrc = m_context + "/util/icons/component/kmeliaSmall.gif";
     publicationSrc = m_context + "/util/icons/publication.gif";
     pubValidateSrc = m_context + "/util/icons/publicationValidate.gif";
@@ -150,6 +157,8 @@
     boolean isFieldImportanceVisible = kmeliaScc.isFieldImportanceVisible();
     boolean isFieldVersionVisible = kmeliaScc.isFieldVersionVisible();
     boolean isNotificationAllowed = kmeliaScc.isNotificationAllowed();
+
+    boolean isThumbnailField = false;
     boolean isThumbnailMandatory = kmeliaScc.isThumbnailMandatory();
 
     String linkedPathString = kmeliaScc.getSessionPath();
@@ -183,11 +192,7 @@
       pubDetail = pubComplete.getPublicationDetail();
       pubName = pubDetail.getName(language);
       if (pubDetail.getImage() != null) {
-        if (pubDetail.getImage().startsWith("/")) {
-          vignette_url = pubDetail.getImage() + "&Size=266x150";
-        } else {
           vignette_url = FileServer.getUrl("useless", pubDetail.getPK().getComponentName(), "vignette", pubDetail.getImage(), pubDetail.getImageMimeType(), publicationSettings.getString("imagesSubDirectory"));
-        }
       }
       ownerDetail = userPubComplete.getOwner();
 
@@ -311,11 +316,16 @@
         kmeliaScc.setSessionPathString(pathString);
       }
       nextAction = "AddPublication";
-
-    }
+      isThumbnailField = true;
+} 
 
     validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendPublicationDataToRouter('" + nextAction + "');", false);
 
+    String sRequestURL = request.getRequestURL().toString();
+    String m_sAbsolute = sRequestURL.substring(0, sRequestURL.length() - request.getRequestURI().length());
+    ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
+    //Example: http://myserver
+    String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
 %>
 
 <HTML>
@@ -335,6 +345,9 @@
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
+    <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery-1.2.6.js"></script>
+    <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/ui.thickbox.js"></script>
+    <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/jquery-thickbox.css">
         <script language="javascript">
         var favoriteWindow = window;
 
@@ -529,11 +542,22 @@
                errorMsg+="  - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
                errorNb++;
              }
-             if (<%=isThumbnailMandatory%>) {
+             if (<%=isThumbnailMandatory%> && <%=isThumbnailField%>) {
                  if ($('#thumbnailFile').val() == '' && $('#thumbnail').attr("src") == 'null') {
-                	 errorMsg+="  - '<%=resources.getString("Vignette")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+                	 errorMsg+=" - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
                      errorNb++;
                  }
+				 if($('#thumbnail').attr("src") == 'null'){
+					var logicalName = $('#thumbnailFile').val();
+					var type = logicalName.substring(logicalName.lastIndexOf(".") + 1, logicalName.length);
+                 	if (type == 'gif' || type == 'jpg'
+                         || type == 'jpeg' || type == 'png') {
+                 	}else{
+                 		errorMsg+=" - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("kmelia.EX_MSG_WRONG_TYPE_ERROR")%>\n";
+                        errorNb++;
+                    }
+                 }
+                 
              }
              switch(errorNb) {
                case 0 :
@@ -830,36 +854,106 @@
       <TR id="endArea"><TD class="txtlibform"><%=resources.getString("PubDateFin")%></TD>
         <TD><input type="text" class="dateToPick" name="EndDate" value="<%=endDate%>" size="12" maxlength="10"/>
           <span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span><input type="text" name="EndHour" value="<%=endHour%>" size="5" maxlength="5"> <i>(hh:mm)</i></TD></TR>
-      <% if (kmeliaMode && new Boolean(settings.getString("isVignetteVisible")).booleanValue()) {%>
-      <TR id="thumbnailArea"><TD class="txtlibform"><%=resources.getString("Vignette")%></TD>
-        <TD>
-          <div id="thumbnailPreview">
-            <%
-               out.println("<IMG SRC=\"" + vignette_url + "\" height=\"50\" id=\"thumbnail\"/>");
-               out.println("<a href=\"DeleteVignette?PubId=" + id + "\"><img border=\"0\" src=\"" + deleteSrc + "\" alt=\"" + resources.getString("VignetteDelete") + "\" title=\"" + kmeliaScc.getString("VignetteDelete") + "\"/></a>");
-               out.println("<br/>");
-            %>
-          </div>
-          <input type="file" name="WAIMGVAR0" size="40" id="thumbnailFile"/>
-          <%
-             // liste pour choisir une galerie
-             List galleries = kmeliaScc.getGalleries();
-             if (galleries != null) {
-               //zone pour le lien vers l'image
-               out.println("<span class=\"txtsublibform\"> ou </span><input type=\"hidden\" id=\"valueImageGallery\" name=\"valueImageGallery\"/>");
-
-               out.println(" <select id=\"galleries\" name=\"galleries\" onchange=\"choixGallery(this);this.selectedIndex=0;\"> ");
-               out.println(" <option selected>" + resources.getString("kmelia.galleries") + "</option> ");
-               for (int k = 0; k < galleries.size(); k++) {
-                 ComponentInstLight gallery = (ComponentInstLight) galleries.get(k);
-                 out.println(" <option value=\"" + gallery.getId() + "\">" + gallery.getLabel() + "</option> ");
-               }
-               out.println("</select>");
-             }
+          <% if (kmeliaMode && new Boolean(settings.getString("isVignetteVisible")).booleanValue()) {%>
+          <TR>
+          	<TD class="txtlibform"><%=resources.getString("Thumbnail")%></TD>
+          	<TD>
+		  <% if(isThumbnailField){
+		  // mode création (-> champ de formulaire)
+		  %>
+				<div id="thumbnailPreview">
+            	<%
+               	out.println("<IMG SRC=\"" + vignette_url + "\" id=\"thumbnail\"/>");
+               	out.println("<br/>");
+            	%>
+          		</div>
+          	  	<input type="file" name="WAIMGVAR0" size="40" id="thumbnailFile"/>
+	          <% // liste pour choisir une galerie
+	             List galleries = kmeliaScc.getGalleries();
+	             if (galleries != null) {
+	               //zone pour le lien vers l'image
+	               out.println("<span class=\"txtsublibform\"> ou </span><input type=\"hidden\" id=\"valueImageGallery\" name=\"valueImageGallery\"/>");
+	
+	               out.println(" <select id=\"galleries\" name=\"galleries\" onchange=\"choixGallery(this);this.selectedIndex=0;\"> ");
+	               out.println(" <option selected>" + resources.getString("kmelia.galleries") + "</option> ");
+	               for (int k = 0; k < galleries.size(); k++) {
+	                 ComponentInstLight gallery = (ComponentInstLight) galleries.get(k);
+	                 out.println(" <option value=\"" + gallery.getId() + "\">" + gallery.getLabel() + "</option> ");
+	               }
+	               out.println("</select>");
+	             }
+	          %>
+	          <% if (isThumbnailMandatory) { %>
+	          		<img src="<%=mandatorySrc%>" width="5" height="5" border="0" alt=""/>
+	          <% } %>
+          <%}else{
+				String objectId = "";
+				if(pubDetail != null)
+					objectId =  pubDetail.getPK().getId();
+					
+				String requestURL = request.getRequestURL().toString();
+				String applicationURL = URLManager.getApplicationURL();
+				String prefixURL = requestURL.substring(0, requestURL.indexOf(applicationURL));
+				String backUrl = prefixURL + applicationURL + "/Rkmelia/" + componentId + "/publicationManager.jsp?Action=UpdateView&PubId=" + objectId + "&Profile=" + kmeliaScc.getProfile();
+					
+				String standardParamaters = "&ComponentId=" + componentId +  
+					                        "&ObjectId=" + objectId +
+					                        "&BackUrl=" + URLEncoder.encode(backUrl) +
+				                            "&ObjectType=" + ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE +
+				                            "&height=380&width=800";
+					
+				String standardParamatersForAddOnly = "&ComponentId=" + componentId +  
+                "&ObjectId=" + objectId +
+                "&BackUrl=" + URLEncoder.encode(backUrl) +
+                "&ObjectType=" + ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE +
+                "&height=80&width=800";
+					String vignetteSizeParameters = "&ThumbnailHeight=" + kmeliaScc.getThumbnailHeight() +
+													"&ThumbnailWidth=" + kmeliaScc.getThumbnailWidth();
+					
+				    if ( vignette_url != null )
+					{
+			    		// mode modification
+			    		out.println("<div id=\"thumbnailPreview\">");
+				    	out.println("<IMG SRC=" + vignette_url + " height="+kmeliaScc.getThumbnailHeight()+" width="+kmeliaScc.getThumbnailWidth()+" id=\"thumbnail\">");
+						if(isThumbnailMandatory){
+							// vignette obligatoire -> 2 boutons modifier image et modifier fichier
+							out.println("</div>");
+							out.println("<BR>");
+							out.println("<input alt=\"" + httpServerBase + m_context + "/Thumbnail/jsp/thumbnailManager.jsp?Action=UpdateFile" +
+									standardParamatersForAddOnly + vignetteSizeParameters +
+									"&modal=true\" title=\"" + resources.getString("ThumbnailUpdateFile") + "\" class=\"thickbox\" type=\"button\" value=\"" + resources.getString("ThumbnailUpdateFile") + "\"/>");
+						}else{
+							// bouton suppression actif
+							out.println("<a href=\"" + httpServerBase + m_context + "/Thumbnail/jsp/thumbnailManager.jsp?Action=Delete"+
+									standardParamaters +
+								    "\")><img border=\"0\" src=\""+deleteSrc+"\" alt=\""+resources.getString("ThumbnailDelete")+"\" title=\""+resources.getString("ThumbnailDelete")+"\"></a>");
+							out.println("<BR>");
+							out.println("</div>");
+						}
+						out.println("<input alt=\"" + httpServerBase + m_context + "/Thumbnail/jsp/thumbnailManager.jsp?Action=Update" +
+								standardParamaters + vignetteSizeParameters +
+								"&modal=true\" title=\"" + resources.getString("ThumbnailUpdate") + "\" class=\"thickbox\" type=\"button\" value=\"" + resources.getString("ThumbnailUpdate") + "\"/>");
+						out.println("<BR>");
+						
+					} else {
+						// mode création
+						out.println("<input alt=\"" + httpServerBase + m_context + "/Thumbnail/jsp/thumbnailManager.jsp?Action=Add" +
+								standardParamatersForAddOnly + vignetteSizeParameters +
+					    		                    "&modal=true\" title=\"" + resources.getString("ThumbnailAdd") + "\" class=\"thickbox\" type=\"button\" value=\"" + resources.getString("ThumbnailAdd") + "\"/>");
+						out.println("<BR>");
+					}
+				%>
+				<%
+				if(errorThumbnail){
+			    // message d'erreur
+					%>
+						<br/>
+						<div style="font-style: italic;color:red;"><%=resources.getString("kmelia." + resultThumbnail)%></div>
+						<br/>
+					<%
+				}
+			}
           %>
-          <% if (isThumbnailMandatory) { %>
-          		<img src="<%=mandatorySrc%>" width="5" height="5" border="0" alt=""/>
-          <% } %>
         </TD>
       </TR> <%
      }%>

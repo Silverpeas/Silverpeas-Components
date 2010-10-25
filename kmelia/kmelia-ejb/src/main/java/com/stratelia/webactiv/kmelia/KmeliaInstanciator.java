@@ -43,6 +43,7 @@ import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.node.NodeInstanciator;
 import com.stratelia.webactiv.publication.PublicationInstanciator;
 import com.stratelia.webactiv.util.DateUtil;
+import com.silverpeas.thumbnail.ThumbnailInstanciator;
 
 /**
  * @author nesseric
@@ -95,6 +96,10 @@ public class KmeliaInstanciator extends SQLRequest implements ComponentsInstanci
     // delete versioning infos
     VersioningInstanciator version = new VersioningInstanciator();
     version.delete(con, spaceId, componentId, userId);
+    
+    // delete thumbnail infos
+    ThumbnailInstanciator thumbnail = new ThumbnailInstanciator();
+    thumbnail.delete(con, spaceId, componentId, userId);
   }
 
   private void insertSpecialNode(Connection con, String componentId,

@@ -138,6 +138,9 @@ public class PdfGenerator extends PdfPageEventHelper {
   /** The font that will be used. */
   private BaseFont baseFontHelv;
   private String serverURL;
+  
+  private static final ResourceLocator publicationSettings = new ResourceLocator(
+	      "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
 
   public void generate(OutputStream out, CompletePublication currentPublication,
       KmeliaSessionController scc) throws KmeliaRuntimeException {
@@ -547,17 +550,23 @@ public class PdfGenerator extends PdfPageEventHelper {
     ResourceLocator settings = new ResourceLocator(
         "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", language);
     if (settings.getBoolean("isVignetteVisible", false)) {
-      if (publicationDetail.getImage() != null) {
-        ResourceLocator publicationSettings = new ResourceLocator(
-            "com.stratelia.webactiv.util.publication.publicationSettings",
-            language);
-        String vignette_url = serverURL
-            + FileServerUtils.getUrl("useless", publicationDetail.getPK().getComponentName(),
-            "vignette", publicationDetail.getImage(),
-            publicationDetail.getImageMimeType(),
-            publicationSettings.getString("imagesSubDirectory"));
-        vignette_url = vignette_url.replaceAll("/FileServer",
-            "/OnlineFileServer");
+      String imageFileName = null;
+      String imageMimeType = null;
+    	try{
+    		imageFileName = publicationDetail.getImage();
+    		imageMimeType = publicationDetail.getImageMimeType();
+	      }catch (Exception e) {
+	    	  SilverTrace.error("kmelia", "PdfGenerator.onOpenDocument",
+	                  "root.EX_REMOTE_EXCEPTION", e);
+		  }
+    	if (imageFileName != null) {
+	        String vignette_url = serverURL
+	            + FileServerUtils.getUrl("useless", publicationDetail.getPK()
+	            .getComponentName(), "vignette", imageFileName,
+	            imageMimeType, publicationSettings.getString("imagesSubDirectory"));
+	        vignette_url = vignette_url.replaceAll("/FileServer",
+	            "/OnlineFileServer");
+
         try {
           Image image = Image.getInstance(new URL(vignette_url));
           addRowImageToTable(tbl, message.getString("Vignette") + " :", image,

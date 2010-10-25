@@ -639,5 +639,31 @@
         <ParameterHelpEn>Lets make it mandatory to add a thumbnail to each publication</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
+    <Parameter>
+        <ParameterName>thumbnailWidthSize</ParameterName>
+        <ParameterLabel>Largeur de la vignette</ParameterLabel>
+        <ParameterValue>100</ParameterValue>
+        <ParameterMandatory>N</ParameterMandatory>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterSize>5</ParameterSize>
+	    <ParameterOrder>43</ParameterOrder>
+	   	<ParameterHelp>
+			<ParameterHelpFr>Ce paramètre permet de définir la largeur de la vignette à afficher.</ParameterHelpFr>
+			<ParameterHelpEn>This feature allows to define width of the displayed thumbnail.</ParameterHelpEn>
+	   	</ParameterHelp>
+    </Parameter>
+    <Parameter>
+        <ParameterName>thumbnailHeightSize</ParameterName>
+        <ParameterLabel>Hauteur de la vignette</ParameterLabel>
+        <ParameterValue>100</ParameterValue>
+        <ParameterMandatory>N</ParameterMandatory>
+	    <ParameterUpdatable>always</ParameterUpdatable>
+	    <ParameterSize>5</ParameterSize>
+	    <ParameterOrder>44</ParameterOrder>
+	   	<ParameterHelp>
+			<ParameterHelpFr>Ce paramètre permet de définir la hauteur de la vignette à afficher.</ParameterHelpFr>
+			<ParameterHelpEn>This feature allows to define height of the displayed thumbnail.</ParameterHelpEn>
+	   	</ParameterHelp>
+    </Parameter>
   </Parameters>
 </WAComponent>

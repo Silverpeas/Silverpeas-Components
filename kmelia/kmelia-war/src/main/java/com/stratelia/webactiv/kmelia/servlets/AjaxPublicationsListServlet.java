@@ -43,6 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.silverpeas.kmelia.KmeliaConstants;
+import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.ImageUtil;
@@ -275,6 +276,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
    * @param linkAttachment indicates if it displays the attachment publication for the link
    * management administration
    * @throws IOException
+ * @throws ThumbnailException 
+ * @throws NumberFormatException 
    */
   private void displayPublications(List<UserPublication> allPubs, boolean subtopicsExist,
       boolean sortAllowed, boolean linksAllowed, boolean checkboxAllowed, boolean toSearch,
@@ -285,6 +288,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     PublicationDetail pub;
     UserPublication userPub;
     UserDetail user;
+
     String publicationSrc = resources.getIcon("kmelia.publication");
     String fullStarSrc = resources.getIcon("kmelia.fullStar");
     String emptyStarSrc = resources.getIcon("kmelia.emptyStar");
@@ -424,10 +428,16 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               + " onclick=\"sendPubId(this.value, this.checked);\"/>");
           out.write("</span>");
         } else {
-          if (pub.getImage() != null
+          String image = pub.getImage();
+          if (image != null
               && Boolean.valueOf(resources.getSetting("isVignetteVisible"))) {
             out.write("<span class=\"thumbnail\">");
-            displayThumbnail(pub, resources, publicationSettings, out);
+            try{
+            	displayThumbnail(pub, resources, publicationSettings, out);
+            }catch (ThumbnailException e) {
+        		SilverTrace.info("kmelia", "AjaxPublicationsListServlet.displayPublications()",
+        		        "root.MSG_GEN_ENTER_METHOD", "exception = " + e);
+			}
             out.write("</span>");
           } else {
             out.write("<span class=\"thumbnail\">");
@@ -575,7 +585,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   void displayThumbnail(PublicationDetail pub, ResourcesWrapper resources,
-      ResourceLocator publicationSettings, Writer out) throws IOException {
+      ResourceLocator publicationSettings, Writer out) throws IOException, NumberFormatException, ThumbnailException {
     String height = resources.getSetting("vignetteHeight");
     String width = resources.getSetting("vignetteWidth");
     String vignette_url;
@@ -1083,7 +1093,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     }
   }
 
-  private File getThumbnail(PublicationDetail pubDetail, ResourceLocator publicationSettings) {
+  private File getThumbnail(PublicationDetail pubDetail, ResourceLocator publicationSettings) throws ThumbnailException {
     if (StringUtil.isDefined(pubDetail.getImage())) {
       return new File(FileRepositoryManager.getAbsolutePath(pubDetail.getPK().getInstanceId())
           + publicationSettings.getString("imagesSubDirectory") + File.separator

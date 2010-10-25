@@ -53,6 +53,9 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.thumbnail.ThumbnailRuntimeException;
+import com.silverpeas.thumbnail.control.ThumbnailController;
+import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
@@ -355,6 +358,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         String flag = kmelia.getProfile();
         request.setAttribute("Wizard", kmelia.getWizard());
         destination = rootDestination + "publicationManager.jsp?Profile=" + flag;
+        // thumbnail error for front explication
+        if(request.getParameter("errorThumbnail") != null){
+        	destination = destination + "&resultThumbnail=" + request.getParameter("errorThumbnail");
+        }
       } else if (function.equals("ToAddTopic")) {
         String isLink = request.getParameter("IsLink");
         if (StringUtil.isDefined(isLink)) {
@@ -919,21 +926,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         request.setAttribute("RootId", topicId);
         // Go to importExportPeas
         destination = "/RimportExportPeas/jsp/ExportPDF";
-      } else if (function.equals("DeleteVignette")) {
-        String pubId = request.getParameter("PubId");
-        kmelia.deleteVignette(pubId);
-        destination =
-            rootDestination + "publicationManager.jsp?Action=UpdateView&PubId=" + pubId
-            + "&Profile=" + kmelia.getProfile();
       } else if (function.equals("NewPublication")) {
         destination =
             rootDestination + "publicationManager.jsp?Action=New&CheckPath=0&Profile="
             + kmelia.getProfile();
       } else if (function.equals("AddPublication")) {
         List<FileItem> parameters = FileUploadUtil.parseRequest(request);
-        List<String> vignetteParams = processVignette(parameters, kmelia);
-        PublicationDetail pubDetail = getPublicationDetail(parameters, vignetteParams, kmelia);
+        
+        // create publication
+        PublicationDetail pubDetail = getPublicationDetail(parameters, kmelia);
         String newPubId = kmelia.createPublication(pubDetail);
+        // create vignette if exists
+        processVignette(parameters, kmelia, pubDetail.getInstanceId(), Integer.valueOf(newPubId));
         request.setAttribute("PubId", newPubId);
         processPath(kmelia, newPubId);
         String wizard = kmelia.getWizard();
@@ -953,10 +957,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         }
       } else if (function.equals("UpdatePublication")) {
         List<FileItem> parameters = FileUploadUtil.parseRequest(request);
-        List<String> vignetteParams = processVignette(parameters, kmelia);
-        PublicationDetail pubDetail = getPublicationDetail(parameters, vignetteParams, kmelia);
+        
+        PublicationDetail pubDetail = getPublicationDetail(parameters, kmelia);
         kmelia.updatePublication(pubDetail);
+        
         String id = pubDetail.getPK().getId();
+        
         String wizard = kmelia.getWizard();
         if (wizard.equals("progress")) {
           UserCompletePublication userPubComplete = kmelia.getUserCompletePublication(id);
@@ -1754,7 +1760,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
   }
 
   private PublicationDetail getPublicationDetail(List<FileItem> parameters,
-      List<String> vignetteParams, KmeliaSessionController kmelia) throws Exception {
+      KmeliaSessionController kmelia) throws Exception {
     String id = FileUploadUtil.getParameter(parameters, "PubId");
     String status = FileUploadUtil.getParameter(parameters, "Status");
     String name = FileUploadUtil.getParameter(parameters, "Name");
@@ -1788,18 +1794,12 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
     }
     PublicationDetail pubDetail = new PublicationDetail(pubId, name,
         description, null, jBeginDate, jEndDate, null, importance, version,
-        keywords, "", null, author);
+        keywords, "", status, "", author);
     pubDetail.setBeginHour(beginHour);
     pubDetail.setEndHour(endHour);
-    pubDetail.setStatus(status);
-
+    
     if (StringUtil.isDefined(targetValidatorId)) {
       pubDetail.setTargetValidatorId(targetValidatorId);
-    }
-
-    if (vignetteParams != null) {
-      pubDetail.setImage(vignetteParams.get(0));
-      pubDetail.setImageMimeType(vignetteParams.get(1));
     }
 
     pubDetail.setCloneId(tempId);
@@ -1832,14 +1832,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
     }
   }
 
-  private List<String> processVignette(List<FileItem> parameters, KmeliaSessionController kmelia)
+  private void processVignette(List<FileItem> parameters, KmeliaSessionController kmelia, String instanceId, int pubId)
       throws Exception {
     FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
 
     String physicalName = null;
     String mimeType = null;
-    List<String> result = null;
-
+    
     if (file != null) {
       String logicalName = file.getName();
       String type = null;
@@ -1857,27 +1856,42 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
               + kmelia.getPublicationSettings().getString("imagesSubDirectory")
               + File.separator + physicalName);
           mimeType = file.getContentType();
-
-          result = new ArrayList<String>();
-          result.add(physicalName);
-          result.add(mimeType);
-
           file.write(dir);
         }
       }
     }
-    if (result == null) {
-      // on a pas d'image, regarder s'il y a une provenant de la galerie
-      String nameImageFromGallery = FileUploadUtil.getParameter(parameters, "valueImageGallery");
-      {
-        if (StringUtil.isDefined(nameImageFromGallery)) {
-          result = new ArrayList<String>();
-          result.add(nameImageFromGallery);
-          result.add("image/jpeg");
+    if (physicalName == null) {
+        // on a pas d'image, regarder s'il y a une provenant de la galerie
+        String nameImageFromGallery = FileUploadUtil.getParameter(parameters, "valueImageGallery");
+        {
+          if (StringUtil.isDefined(nameImageFromGallery)) {
+            physicalName = nameImageFromGallery;
+            mimeType = "image/jpeg";
+          }
         }
-      }
     }
-    return result;
+    
+    if (physicalName != null) {
+    	ThumbnailDetail detail = new ThumbnailDetail(instanceId, pubId, ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+	    detail.setOriginalFileName(physicalName);
+	    detail.setMimeType(mimeType);
+	    
+    	try {
+		    ThumbnailController.createThumbnail(detail, kmelia.getThumbnailWidth(), kmelia.getThumbnailHeight());
+    	} catch (ThumbnailRuntimeException e) {
+			SilverTrace.error("Thumbnail",
+					"ThumbnailRequestRouter.addThumbnail",
+					"root.MSG_GEN_PARAM_VALUE", e);
+			// need remove the file on disk
+			try {
+				ThumbnailController.deleteThumbnail(detail);
+			} catch (Exception exp) {
+				SilverTrace.info("Thumbnail",
+						"ThumbnailRequestRouter.addThumbnail - remove after error",
+						"root.MSG_GEN_PARAM_VALUE", exp);
+			}
+		}
+    }
   }
 
   /**
@@ -2415,7 +2429,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
     }
     PublicationDetail pubDetail = new PublicationDetail(pubId, name,
         description, null, jBeginDate, jEndDate, null, "0", "", keywords, "",
-        null, "");
+        "", "", "");
     pubDetail.setStatus("Valid");
     I18NHelper.setI18NInfo(pubDetail, request);
 

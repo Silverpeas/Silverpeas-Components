@@ -59,6 +59,8 @@ import com.silverpeas.pdcSubscription.util.PdcSubscriptionUtil;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.thumbnail.control.ThumbnailController;
+import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -1943,16 +1945,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         "root.MSG_GEN_EXIT_METHOD");
   }
 
-  public void deletePublicationImage(PublicationPK pubPK) {
-    try {
-      getPublicationBm().removeImage(pubPK);
-    } catch (Exception e) {
-      throw new KmeliaRuntimeException("KmeliaBmEJB.deletePublicationImage()",
-          SilverpeasRuntimeException.ERROR,
-          "kmelia.EX_IMPOSSIBLE_SUPPRESSION_LA_VIGNETTE", e);
-    }
-  }
-
   /**
    * Send the publication in the basket topic
    * @param pubId the id of the publication
@@ -3046,12 +3038,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     if (refPub.getEndHour() != null) {
       clone.setEndHour(new String(refPub.getEndHour()));
     }
-    if (refPub.getImage() != null) {
-      clone.setImage(new String(refPub.getImage()));
-    }
-    if (refPub.getImageMimeType() != null) {
-      clone.setImageMimeType(new String(refPub.getImageMimeType()));
-    }
     clone.setImportance(refPub.getImportance());
     if (refPub.getInfoId() != null) {
       clone.setInfoId(new String(refPub.getInfoId()));
@@ -4014,6 +4000,19 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       throw new KmeliaRuntimeException(
           "KmeliaBmEJB.removeExternalElementsOfPublications",
           SilverpeasRuntimeException.ERROR, "root.EX_DELETE_ATTACHMENT_FAILED",
+          e);
+    }
+    
+    // remove Thumbnail content
+    try {
+    	ThumbnailDetail thumbToDelete = new ThumbnailDetail(pubPK
+    	          .getInstanceId(), Integer.parseInt(pubPK.getId()),  
+    	          ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+    	ThumbnailController.deleteThumbnail(thumbToDelete);
+    } catch (Exception e) {
+      throw new KmeliaRuntimeException(
+          "KmeliaBmEJB.removeExternalElementsOfPublications",
+          SilverpeasRuntimeException.ERROR, "root.EX_DELETE_THUMBNAIL_FAILED",
           e);
     }
   }
