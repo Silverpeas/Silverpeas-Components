@@ -41,6 +41,9 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import com.silverpeas.thumbnail.service.ThumbnailService;
+import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -141,6 +144,7 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
   private PublicationBm publicationBm;
   private FavoritBm favoritBm;
   private StatisticBm statisticBm;
+  private ThumbnailService thumbnailService = null;
 
   private ResourceLocator settings;
 
@@ -685,15 +689,34 @@ public class NewsEditoSessionController extends AbstractComponentSessionControll
 
       detail.setName(name);
       detail.setDescription(description);
-      detail.setImage(imageName);
-      detail.setImageMimeType(mimeType);
-      publicationBm.setDetail(detail);
+      	publicationBm.setDetail(detail);
+      	// update de l'image
+      	ThumbnailDetail thumbDetail = new ThumbnailDetail(
+      		  getComponentId(),
+      		  Integer.valueOf(getPublicationId()),
+  			  ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+        	thumbDetail.setOriginalFileName(imageName);
+        	thumbDetail.setMimeType(mimeType);
+
+        	if(getThumbnailService().getCompleteThumbnail(thumbDetail) != null){
+        		// case update
+        		getThumbnailService().updateThumbnail(thumbDetail);
+        	}else{
+        		// case create
+        		getThumbnailService().createThumbnail(thumbDetail);
+        	}
     } catch (Exception e) {
       throw new NewsEditoException("NewsEditoSessionControl.updatePublication",
           NewsEditoException.WARNING, "NewsEdito.EX_PROBLEM_TO_UPDATE_PUBLI", e);
     }
   }
 
+  public ThumbnailService getThumbnailService() {
+	    if (thumbnailService == null)
+	    	thumbnailService = new ThumbnailServiceImpl();
+	    return thumbnailService;
+	  }
+  
   /**
    * Method declaration
    * @param pubId
