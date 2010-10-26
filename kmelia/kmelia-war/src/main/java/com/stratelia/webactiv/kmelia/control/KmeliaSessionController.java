@@ -3682,9 +3682,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           // header+content
 
           // move Vignette on disk
-			          String vignette = ThumbnailController.getImage(fromComponentId, Integer.parseInt(fromId), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+          int[] thumbnailSize = getThumbnailWidthAndHeight();
+          
+		  String vignette = ThumbnailController.getImage(fromComponentId, 
+				                                         Integer.parseInt(fromId),
+				                                         ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE,
+				                                         thumbnailSize[0],
+				                                         thumbnailSize[1]);
           if (StringUtil.isDefined(vignette)) {
-			            String from = fromAbsolutePath + thumbnailsSubDirectory + File.separator + vignette;
+			String from = fromAbsolutePath + thumbnailsSubDirectory + File.separator + vignette;
 
             try {
 			              FileRepositoryManager.createAbsolutePath(getComponentId(), thumbnailsSubDirectory);
@@ -4424,42 +4430,23 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return newPath;
   }
   
-  public int getThumbnailWidth(){
-	  int result;
+  public int[] getThumbnailWidthAndHeight(){
+	  int widthInt = -1;
 	  String widthFromXml = getComponentParameterValue("thumbnailWidthSize");
 	  if(widthFromXml != null){
 		  try{
-			  result = Integer.parseInt(widthFromXml);
-		 	  return result;
+			  widthInt = Integer.parseInt(widthFromXml);
 		  }catch (NumberFormatException e) {
-			// second chance -> properties
 			  SilverTrace.warn("kmelia", "KmeliaSessionController.getThumbnailWidth()",
 	                    "root.MSG_GEN_PARAM_VALUE", "xml wrong parameter thumbnailWidthSize = " + widthFromXml);
 	      }
 	  }
 	  
-	  ResourcesWrapper resources = new ResourcesWrapper(
-	          getMultilang(), getIcon(), getSettings(),
-	          getLanguage());
-	  
-	  String widthFromProperties = resources.getSetting("vignetteWidth");
-	  try{
-		  result = Integer.parseInt(widthFromProperties);
-      }catch (NumberFormatException e) {
-		  SilverTrace.warn("kmelia", "KmeliaSessionController.getThumbnailWidth()",
-                  "root.MSG_GEN_PARAM_VALUE", "properties wrong parameter vignetteWidth = " + widthFromProperties);
-		  result = 50; // default hard value
-      }
-	  return result;
-  }
-  
-  public int getThumbnailHeight(){
-	  int result;
-	  String widthFromXml = getComponentParameterValue("thumbnailHeightSize");
-	  if(widthFromXml != null){
+	  int heightInt = -1;
+	  String heightFromXml = getComponentParameterValue("thumbnailHeightSize");
+	  if(heightFromXml != null){
 		  try{
-			  result = Integer.parseInt(widthFromXml);
-		 	  return result;
+			  heightInt = Integer.parseInt(heightFromXml);
 		  }catch (NumberFormatException e) {
 			// second chance -> properties
 			  SilverTrace.warn("kmelia", "KmeliaSessionController.getThumbnailHeight()",
@@ -4470,16 +4457,39 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 	  ResourcesWrapper resources = new ResourcesWrapper(
 	          getMultilang(), getIcon(), getSettings(),
 	          getLanguage());
+	  if(widthInt == -1 && heightInt == -1){
+		  // 2ième chance si nécessaire
+		  String widthFromProperties = resources.getSetting("vignetteWidth");
+		  try{
+			  widthInt = Integer.parseInt(widthFromProperties);
+	      }catch (NumberFormatException e) {
+			  SilverTrace.warn("kmelia", "KmeliaSessionController.getThumbnailWidth()",
+	                  "root.MSG_GEN_PARAM_VALUE", "properties wrong parameter vignetteWidth = " + widthFromProperties);
+		  }
+	      String heightFromProperties = resources.getSetting("vignetteHeight");
+		  try{
+			  heightInt = Integer.parseInt(heightFromProperties);
+	      }catch (NumberFormatException e) {
+			  SilverTrace.warn("kmelia", "KmeliaSessionController.getThumbnailHeight()",
+	                  "root.MSG_GEN_PARAM_VALUE", "properties wrong parameter vignetteHeight = " + heightFromProperties);
+		  }
+	  }
 	  
-	  String heightFromProperties = resources.getSetting("vignetteHeight");
-	  try{
-		  result = Integer.parseInt(heightFromProperties);
-      }catch (NumberFormatException e) {
-		  SilverTrace.warn("kmelia", "KmeliaSessionController.getThumbnailHeight()",
-                  "root.MSG_GEN_PARAM_VALUE", "properties wrong parameter vignetteHeight = " + heightFromProperties);
-		  result = 50; // default hard value
-      }
-	  return result;
+	  return new int[]{widthInt,heightInt};
+  }
+  
+  public String getThumbnailDefaultJcropWidth(){
+	  ResourcesWrapper resources = new ResourcesWrapper(
+	          getMultilang(), getIcon(), getSettings(),
+	          getLanguage());
+	  return resources.getSetting("thumbnailJCropDefaultWidth");
+  }
+  
+  public String getThumbnailDefaultJcropHeight(){
+	  ResourcesWrapper resources = new ResourcesWrapper(
+	          getMultilang(), getIcon(), getSettings(),
+	          getLanguage());
+	  return resources.getSetting("thumbnailJCropDefaultHeight");
   }
 
   /**

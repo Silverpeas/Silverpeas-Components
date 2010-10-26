@@ -44,6 +44,7 @@ import org.xml.sax.SAXException;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
+import com.silverpeas.form.GalleryHelper;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.kmelia.KmeliaConstants;
@@ -1865,6 +1866,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         String nameImageFromGallery = FileUploadUtil.getParameter(parameters, "valueImageGallery");
         {
           if (StringUtil.isDefined(nameImageFromGallery)) {
+        	  
+        	
+        	  
             physicalName = nameImageFromGallery;
             mimeType = "image/jpeg";
           }
@@ -1877,7 +1881,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 	    detail.setMimeType(mimeType);
 	    
     	try {
-		    ThumbnailController.createThumbnail(detail, kmelia.getThumbnailWidth(), kmelia.getThumbnailHeight());
+    		int[] thumbnailSize = kmelia.getThumbnailWidthAndHeight();
+    		ThumbnailController.createThumbnail(detail, thumbnailSize[0], thumbnailSize[1]);
     	} catch (ThumbnailRuntimeException e) {
 			SilverTrace.error("Thumbnail",
 					"ThumbnailRequestRouter.addThumbnail",
