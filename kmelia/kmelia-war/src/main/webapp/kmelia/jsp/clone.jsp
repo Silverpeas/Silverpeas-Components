@@ -435,32 +435,31 @@ function pubDraftOut() {
 		if ("no".equals(resources.getSetting("showInfo")))
 			showInfo = false;
 		boolean showIcon = true;
-		if (infos != null) {
-		    if (!"bottom".equals(resources.getSetting("attachmentPosition"))) {
-				out.println("<TD width=\"25%\" valign=\"top\" align=\"center\">");
-				out.println("<A NAME=attachments></a>");
-		   	}
-		   	else {
-				out.println("</TR><TR>");
-				out.println("<TD valign=\"top\" align=\"left\">");
-				out.println("<A NAME=attachments></a>");
-		    }
-			try
-			{
-				out.flush();
-				if (kmeliaScc.isVersionControlled())
-					getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+visiblePubId+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()).include(request, response);
-				else
-					getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+id+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()).include(request, response);
+	    if (!"bottom".equals(resources.getSetting("attachmentPosition"))) {
+			out.println("<TD width=\"25%\" valign=\"top\" align=\"center\">");
+			out.println("<A NAME=attachments></a>");
+	   	}
+	   	else {
+			out.println("</TR><TR>");
+			out.println("<TD valign=\"top\" align=\"left\">");
+			out.println("<A NAME=attachments></a>");
+	    }
+		try
+		{
+			out.flush();
+			if (kmeliaScc.isVersionControlled()) {
+				getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+visiblePubId+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()).include(request, response);
+			} else {
+				getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+id+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Profile="+profile).include(request, response);
 			}
-			catch (Exception e)
-			{
-				throw new KmeliaException("JSPpublicationManager.displayUserModelAndAttachmentsView()",SilverpeasException.ERROR,"root.EX_DISPLAY_ATTACHMENTS_FAILED", e);
-			}
-			out.println("</TD>");
-		    out.println("</TR>");
 		}
-    	out.println("</TABLE>");
+		catch (Exception e)
+		{
+			throw new KmeliaException("JSPpublicationManager.displayUserModelAndAttachmentsView()",SilverpeasException.ERROR,"root.EX_DISPLAY_ATTACHMENTS_FAILED", e);
+		}
+		out.println("</TD>");
+	    out.println("</TR>");
+		out.println("</TABLE>");
 
     	out.println("<CENTER>");
     	out.print("<span class=\"txtBaseline\">");
