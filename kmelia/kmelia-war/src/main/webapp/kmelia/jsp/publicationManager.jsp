@@ -83,6 +83,7 @@
     String targetValidatorName = "";
     String tempId = "";
     String infoId = "0";
+    String draftOutDate = "";
 
     String nextAction = "";
 
@@ -160,6 +161,8 @@
 
     boolean isThumbnailField = false;
     boolean isThumbnailMandatory = kmeliaScc.isThumbnailMandatory();
+    
+    boolean isAutomaticDraftOutEnabled = StringUtil.isDefined(resources.getSetting("cronAutomaticDraftOut"));
 
     String linkedPathString = kmeliaScc.getSessionPath();
     String pathString = "";
@@ -299,6 +302,11 @@
 
       tempId = pubDetail.getCloneId();
       infoId = pubDetail.getInfoId();
+      
+      if (pubDetail.getDraftOutDate() != null) {
+        draftOutDate = resources.getInputDate(pubDetail.getDraftOutDate());
+      }
+      
       nextAction = "UpdatePublication";
 
     } else if (action.equals("New")) {
@@ -853,6 +861,11 @@
       <TR id="endArea"><TD class="txtlibform"><%=resources.getString("PubDateFin")%></TD>
         <TD><input type="text" class="dateToPick" name="EndDate" value="<%=endDate%>" size="12" maxlength="10"/>
           <span class="txtsublibform">&nbsp;<%=resources.getString("ToHour")%>&nbsp;</span><input type="text" name="EndHour" value="<%=endHour%>" size="5" maxlength="5"> <i>(hh:mm)</i></TD></TR>
+      <% if (pubDetail != null && isAutomaticDraftOutEnabled && !"-1".equals(pubDetail.getCloneId())) { %>
+      	<tr id="draftOutArea"><td class="txtlibform"><%=resources.getString("kmelia.automaticDraftOutDate")%></td>
+        <td><input type="text" class="dateToPick" name="DraftOutDate" value="<%=draftOutDate%>" size="12" maxlength="10"/>
+        </td></tr>
+      <% } %>
           <% if (kmeliaMode && new Boolean(settings.getString("isVignetteVisible")).booleanValue()) {%>
           <TR>
           	<TD class="txtlibform"><%=resources.getString("Thumbnail")%></TD>

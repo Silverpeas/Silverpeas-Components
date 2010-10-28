@@ -33,7 +33,6 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
  * @author sfariello
- *
  */
 public interface KmeliaBmBusinessSkeleton {
   /**************************************************************************************/
@@ -671,7 +670,7 @@ public interface KmeliaBmBusinessSkeleton {
       Map<String, String> formParams,
       String language, String xmlFormName, String discrimatingParameterName,
       String userProfile) throws RemoteException;
-  
+
   public boolean importPublication(String publicationId, String componentId, String topicId,
       String spaceId, String userId, Map<String, String> publiParams,
       Map<String, String> formParams, String language,
@@ -682,12 +681,12 @@ public interface KmeliaBmBusinessSkeleton {
       List<Map<String, String>> formParamsList, String language, String xmlFormName,
       String discrimatingParameterName, String userProfile)
       throws RemoteException;
-  
-  public List getPublicationXmlFields(String publicationId, String componentId, String spaceId,
-    String userId) throws RemoteException;
 
   public List getPublicationXmlFields(String publicationId, String componentId, String spaceId,
-    String userId, String language) throws RemoteException;
+      String userId) throws RemoteException;
+
+  public List getPublicationXmlFields(String publicationId, String componentId, String spaceId,
+      String userId, String language) throws RemoteException;
 
   public String createTopic(String componentId, String topicId, String spaceId,
       String userId, String name, String description) throws RemoteException;
@@ -716,5 +715,18 @@ public interface KmeliaBmBusinessSkeleton {
   public String findPublicationIdBySpecificValue(String componentId, String xmlFormName,
       String fieldName, String fieldValue, String topicId, String spaceId, String userId)
       throws RemoteException;
+
+  public void doAutomaticDraftOut() throws RemoteException;
+
+  /**
+   * Clone CompletePublication. Create new publication based on pubDetail object if not null or
+   * CompletePublication otherwise. Original publication will not be modified (except references to
+   * clone : cloneId and cloneStatus).
+   * @param pubDetail If not null, attribute values are set to the clone
+   * @param nextStatus Draft or Clone
+   * @return
+   */
+  public String clonePublication(CompletePublication refPubComplete, PublicationDetail pubDetail,
+      String nextStatus) throws RemoteException;
 
 }

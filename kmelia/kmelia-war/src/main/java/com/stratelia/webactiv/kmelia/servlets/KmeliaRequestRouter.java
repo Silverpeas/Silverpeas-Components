@@ -44,7 +44,6 @@ import org.xml.sax.SAXException;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
-import com.silverpeas.form.GalleryHelper;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.kmelia.KmeliaConstants;
@@ -1778,15 +1777,20 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         "ValideurId");
     String tempId = FileUploadUtil.getParameter(parameters, "TempId");
     String infoId = FileUploadUtil.getParameter(parameters, "InfoId");
+    String draftOutDate = FileUploadUtil.getParameter(parameters, "DraftOutDate");
 
     Date jBeginDate = null;
     Date jEndDate = null;
+    Date jDraftOutDate = null;
 
     if (beginDate != null && !beginDate.trim().equals("")) {
       jBeginDate = DateUtil.stringToDate(beginDate, kmelia.getLanguage());
     }
     if (endDate != null && !endDate.trim().equals("")) {
       jEndDate = DateUtil.stringToDate(endDate, kmelia.getLanguage());
+    }
+    if (StringUtil.isDefined(draftOutDate)) {
+      jDraftOutDate = DateUtil.stringToDate(draftOutDate, kmelia.getLanguage());
     }
 
     String pubId = "X";
@@ -1798,7 +1802,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         keywords, "", status, "", author);
     pubDetail.setBeginHour(beginHour);
     pubDetail.setEndHour(endHour);
-    
+    pubDetail.setStatus(status);
+    pubDetail.setDraftOutDate(jDraftOutDate);
     if (StringUtil.isDefined(targetValidatorId)) {
       pubDetail.setTargetValidatorId(targetValidatorId);
     }

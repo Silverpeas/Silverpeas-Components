@@ -24,6 +24,7 @@
 
 package com.stratelia.webactiv.kmelia.control.ejb;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -59,8 +60,10 @@ import com.silverpeas.pdcSubscription.util.PdcSubscriptionUtil;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
+import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -118,6 +121,7 @@ import com.stratelia.webactiv.util.coordinates.control.CoordinatesBmHome;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePoint;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.favorit.control.FavoritBm;
 import com.stratelia.webactiv.util.favorit.control.FavoritBmHome;
@@ -129,6 +133,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.info.model.InfoDetail;
+import com.stratelia.webactiv.util.publication.info.model.InfoImageDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.Alias;
@@ -4002,13 +4007,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           SilverpeasRuntimeException.ERROR, "root.EX_DELETE_ATTACHMENT_FAILED",
           e);
     }
-    
+
     // remove Thumbnail content
     try {
-    	ThumbnailDetail thumbToDelete = new ThumbnailDetail(pubPK
-    	          .getInstanceId(), Integer.parseInt(pubPK.getId()),  
-    	          ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-    	ThumbnailController.deleteThumbnail(thumbToDelete);
+      ThumbnailDetail thumbToDelete = new ThumbnailDetail(pubPK
+                .getInstanceId(), Integer.parseInt(pubPK.getId()),
+                ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+      ThumbnailController.deleteThumbnail(thumbToDelete);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(
           "KmeliaBmEJB.removeExternalElementsOfPublications",
@@ -4915,11 +4920,11 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       Map<String, String> formParams, String language, String xmlFormName,
       String discrimatingParameterName, String userProfile) throws RemoteException {
     PublicationImport publicationImport = new PublicationImport(
-      this, componentId, topicId, spaceId, userId);
+        this, componentId, topicId, spaceId, userId);
     return publicationImport.importPublication(publiParams, formParams,
-      language, xmlFormName, discrimatingParameterName, userProfile);
+        language, xmlFormName, discrimatingParameterName, userProfile);
   }
-  
+
   /**
    * Creates or updates a publication.
    * @param publicationToUpdateId The id of the publication to update.
@@ -4940,9 +4945,9 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       Map<String, String> formParams, String language, String xmlFormName, String userProfile)
       throws RemoteException {
     PublicationImport publicationImport = new PublicationImport(
-      this, componentId, topicId, spaceId, userId);
+        this, componentId, topicId, spaceId, userId);
     return publicationImport.importPublication(
-      publicationId, publiParams, formParams, language, xmlFormName, userProfile);
+        publicationId, publiParams, formParams, language, xmlFormName, userProfile);
   }
 
   public void importPublications(String componentId, String topicId,
@@ -4962,11 +4967,11 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         componentId, null, spaceId, userId);
     return publicationImport.getPublicationXmlFields(publicationId);
   }
-  
+
   public List getPublicationXmlFields(String publicationId, String componentId, String spaceId,
       String userId, String language) {
     PublicationImport publicationImport = new PublicationImport(
-      this, componentId, null, spaceId, userId);
+        this, componentId, null, spaceId, userId);
     return publicationImport.getPublicationXmlFields(publicationId, language);
   }
 
@@ -5071,4 +5076,172 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
+
+  public void doAutomaticDraftOut() {
+    // get all clones with draftoutdate <= current date
+    // pubCloneId <> -1 AND pubCloneStatus == 'Draft'
+    Collection<PublicationDetail> pubs;
+    try {
+      pubs = getPublicationBm().getPublicationsToDraftOut(true);
+
+      // for each clone, call draftOutPublication method
+      for (PublicationDetail pub : pubs) {
+        draftOutPublication(pub.getClonePK(), null, "admin", true);
+      }
+    } catch (RemoteException e) {
+      throw new KmeliaRuntimeException(
+          "KmeliaBmEJB.doAutomaticDraftOut()",
+          SilverpeasRuntimeException.ERROR,
+          "kmelia.CANT_DO_AUTOMATIC_DRAFTOUT", e);
+    }
+  }
+
+  public String clonePublication(CompletePublication refPubComplete, PublicationDetail pubDetail,
+      String nextStatus) {
+    String cloneId = null;
+    try {
+      // récupération de la publi de référence
+      PublicationDetail refPub = refPubComplete.getPublicationDetail();
+
+      String fromId = new String(refPub.getPK().getId());
+      String fromComponentId = new String(refPub.getPK().getInstanceId());
+
+      PublicationDetail clone = getClone(refPub);
+
+      ResourceLocator publicationSettings =
+          new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", "");
+      String imagesSubDirectory = publicationSettings.getString("imagesSubDirectory");
+      String absolutePath = FileRepositoryManager.getAbsolutePath(fromComponentId);
+
+      if (pubDetail != null) {
+        clone.setAuthor(pubDetail.getAuthor());
+        clone.setBeginDate(pubDetail.getBeginDate());
+        clone.setBeginHour(pubDetail.getBeginHour());
+        clone.setDescription(pubDetail.getDescription());
+        clone.setEndDate(pubDetail.getEndDate());
+        clone.setEndHour(pubDetail.getEndHour());
+        clone.setImportance(pubDetail.getImportance());
+        clone.setKeywords(pubDetail.getKeywords());
+        clone.setName(pubDetail.getName());
+        clone.setTargetValidatorId(pubDetail.getTargetValidatorId());
+      }
+      if (isInteger(refPub.getInfoId())) {
+        // Case content = DB
+        clone.setInfoId(null);
+      }
+      clone.setStatus(nextStatus);
+      clone.setCloneId(fromId);
+      clone.setIndexOperation(IndexManager.NONE);
+
+      PublicationPK clonePK = getPublicationBm().createPublication(clone);
+      clonePK.setComponentName(fromComponentId);
+      cloneId = clonePK.getId();
+
+      // eventually, paste the model content
+      if (refPubComplete.getModelDetail() != null && refPubComplete.getInfoDetail() != null) {
+        // Paste images of model
+        if (refPubComplete.getInfoDetail().getInfoImageList() != null) {
+          for (Iterator<InfoImageDetail> i =
+              refPubComplete.getInfoDetail().getInfoImageList().iterator(); i.hasNext();) {
+            InfoImageDetail attachment = (InfoImageDetail) i.next();
+            String from =
+                absolutePath + imagesSubDirectory + File.separator + attachment.getPhysicalName();
+            String type =
+                attachment.getPhysicalName().substring(
+                    attachment.getPhysicalName().lastIndexOf(".") + 1,
+                    attachment.getPhysicalName().length());
+            String newName = new Long(new java.util.Date().getTime()).toString() + "." + type;
+            attachment.setPhysicalName(newName);
+            String to = absolutePath + imagesSubDirectory + File.separator + newName;
+            FileRepositoryManager.copyFile(from, to);
+          }
+        }
+
+        // Paste model content
+        createInfoModelDetail(clonePK, refPubComplete.getModelDetail().getId(), refPubComplete
+            .getInfoDetail());
+      } else {
+        String infoId = refPub.getInfoId();
+        if (infoId != null && !"0".equals(infoId) && !isInteger(infoId)) {
+          PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+          // Content = XMLForm
+          // register xmlForm to publication
+          String xmlFormShortName = infoId;
+          templateManager.addDynamicPublicationTemplate(fromComponentId + ":"
+              + xmlFormShortName, xmlFormShortName + ".xml");
+
+          PublicationTemplate pubTemplate =
+              templateManager.getPublicationTemplate(fromComponentId + ":" + xmlFormShortName);
+
+          RecordSet set = pubTemplate.getRecordSet();
+
+          // clone dataRecord
+          set.clone(fromId, fromComponentId, cloneId, fromComponentId);
+        }
+      }
+      // paste only links, reverseLinks can't be cloned because it'is a new content not referenced
+      // by any publication
+      if (refPubComplete.getLinkList() != null && refPubComplete.getLinkList().size() > 0) {
+        addInfoLinks(clonePK, refPubComplete.getLinkList());
+      }
+
+      // paste wysiwyg
+      WysiwygController.copy(null, fromComponentId, fromId, null, fromComponentId, cloneId, clone.
+          getCreatorId());
+
+      // clone attachments
+      AttachmentPK pkFrom = new AttachmentPK(fromId, fromComponentId);
+      AttachmentPK pkTo = new AttachmentPK(cloneId, fromComponentId);
+      AttachmentController.cloneAttachments(pkFrom, pkTo);
+
+      // paste versioning documents
+      // pasteDocuments(pubPKFrom, clonePK.getId());
+
+      // affectation de l'id du clone à la publication de référence
+      refPub.setCloneId(cloneId);
+      refPub.setCloneStatus(nextStatus);
+      refPub.setStatusMustBeChecked(false);
+      refPub.setUpdateDateMustBeSet(false);
+      updatePublication(refPub);
+
+      // paste vignette
+      String vignette = refPub.getImage();
+      if (vignette != null) {
+        String thumbnailsSubDirectory = publicationSettings.getString("imagesSubDirectory");
+        String from = absolutePath + thumbnailsSubDirectory + File.separator + vignette;
+
+        String type = vignette.substring(vignette.lastIndexOf(".") + 1, vignette.length());
+        String newVignette = new Long(new java.util.Date().getTime()).toString() + "." + type;
+
+        String to = absolutePath + thumbnailsSubDirectory + File.separator + newVignette;
+        FileRepositoryManager.copyFile(from, to);
+
+        ThumbnailDetail thumbDetail = new ThumbnailDetail(
+            clone.getPK().getInstanceId(),
+            Integer.valueOf(clone.getPK().getId()),
+            ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+        thumbDetail.setOriginalFileName(newVignette);
+        thumbDetail.setMimeType(refPub.getImageMimeType());
+
+        new ThumbnailServiceImpl().createThumbnail(thumbDetail);
+      }
+    } catch (IOException e) {
+      throw new KmeliaRuntimeException("KmeliaBmEJB.clonePublication",
+          SilverpeasException.ERROR, "kmelia.CANT_CLONE_PUBLICATION", e);
+    } catch (AttachmentException ae) {
+      throw new KmeliaRuntimeException("KmeliaBmEJB.clonePublication",
+          SilverpeasException.ERROR, "kmelia.CANT_CLONE_PUBLICATION_FILES", ae);
+    } catch (FormException fe) {
+      throw new KmeliaRuntimeException("KmeliaBmEJB.clonePublication",
+          SilverpeasException.ERROR, "kmelia.CANT_CLONE_PUBLICATION_XMLCONTENT", fe);
+    } catch (PublicationTemplateException pe) {
+      throw new KmeliaRuntimeException("KmeliaBmEJB.clonePublication",
+          SilverpeasException.ERROR, "kmelia.CANT_CLONE_PUBLICATION_XMLCONTENT", pe);
+    } catch (ThumbnailException e) {
+      throw new KmeliaRuntimeException("KmeliaBmEJB.clonePublication",
+          SilverpeasException.ERROR, "kmelia.CANT_CLONE_PUBLICATION", e);
+    }
+    return cloneId;
+  }
+
 }
