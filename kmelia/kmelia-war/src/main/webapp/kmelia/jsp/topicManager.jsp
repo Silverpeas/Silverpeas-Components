@@ -365,6 +365,7 @@ function getHeight() {
 	  }
 	  return myHeight;
 }
+
 </script>
 </HEAD>
 <BODY id="kmelia" onUnload="closeWindows()" class="yui-skin-sam">
@@ -399,7 +400,7 @@ function getHeight() {
         operationPane.addOperation(resources.getIcon("kmelia.paste"), resources.getString("GML.paste"), "javascript:onClick=pasteFromOperations()");
     	operationPane.addLine();
     	operationPane.addOperation(subscriptionAddSrc, resources.getString("SubscriptionsAdd"), "javascript:onClick=addSubscription()");
-      	operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(description))+"','"+urlTopic+"')");
+      	operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addCurrentNodeAsFavorite()");
 
     //Instanciation du cadre avec le view generator
 	Frame frame = gef.getFrame();
@@ -506,6 +507,9 @@ function getHeight() {
 var Dom = YAHOO.util.Dom;
 var Event = YAHOO.util.Event;
 
+var initCreatorName = "<%=kmeliaScc.getUserDetail(nodeDetail.getCreatorId()).getDisplayedName()%>";
+var initCreationDate = "<%=resources.getOutputDate(nodeDetail.getCreationDate())%>";
+
 var oTreeView;
 var root;
 var currentNodeId;
@@ -580,6 +584,22 @@ function initTree(id)
 				});
 	});
 
+}
+
+var componentPermalink = "<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId)%>";
+
+function addCurrentNodeAsFavorite() {
+	var path = $("#breadCrumb").text();
+	var description = "";
+	var url = componentPermalink;
+	if (getCurrentNodeId() != "0") {
+		var node = oTreeView.getNodeByProperty("labelElId", getCurrentNodeId());
+		if (typeof node.data.description  != "undefined"){ 
+			description = node.data.description;
+		}
+		url = $("#topicPermalink").attr("href");
+	}
+	addFavorite(escape(path), escape(description), url);
 }
 
 function getCurrentNodeId()
@@ -1274,7 +1294,11 @@ function loadNodeData(node, fnLoadComplete)  {
 		if (id != "0" && id != "1" && id != "tovalidate")
 		{
 			$("#footer").css({'visibility':'visible'});
-			$("#footer").html("<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.topic.info"))%>"+node.data.creatorName+" - "+node.data.date+" - <a id=\"topicPermalink\" href=\"#\"><img src=\"<%=resources.getIcon("kmelia.link")%>\"/></a>");
+			if (node != null) {
+				initCreatorName = node.data.creatorName;
+				initCreationDate = node.data.date;
+			}
+			$("#footer").html("<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.topic.info"))%>"+initCreatorName+" - "+initCreationDate+" - <a id=\"topicPermalink\" href=\"#\"><img src=\"<%=resources.getIcon("kmelia.link")%>\"/></a>");
 			$("#footer #topicPermalink").attr("href", "<%=m_context%>/Topic/"+id+"?ComponentId=<%=componentId%>");
 		}
 		else
