@@ -23,9 +23,6 @@ public interface GalleryBmBusinessSkeleton {
   public AlbumDetail getAlbum(NodePK nodePK, boolean viewAllPhoto)
       throws RemoteException;
   
-  public AlbumDetail getAlbumByIdAndField(NodePK nodePK, HashMap<String, String> parsedParameters, 
-      boolean viewAllPhoto) throws RemoteException;
-
   public NodePK createAlbum(AlbumDetail album, NodePK nodePK)
       throws RemoteException;
 
@@ -47,7 +44,7 @@ public interface GalleryBmBusinessSkeleton {
   public Collection<PhotoDetail> getAllPhoto(NodePK nodePK, boolean viewAllPhoto)
       throws RemoteException;
   
-  public Collection<PhotoDetail> getAllPhoto(NodePK nodePK,
+  public Collection<PhotoDetail> getAllPhotosSorted(NodePK nodePK,
       HashMap<String, String> parsedParameters, boolean viewAllPhoto) throws RemoteException;
 
   public Collection<PhotoDetail> getAllPhotos(String instanceId) throws RemoteException;

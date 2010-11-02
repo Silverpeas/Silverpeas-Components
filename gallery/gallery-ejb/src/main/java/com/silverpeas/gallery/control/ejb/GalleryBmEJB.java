@@ -106,22 +106,6 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
           SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_EXIST", e);
     }
   }
-  
-  @Override
-  public AlbumDetail getAlbumByIdAndField(NodePK nodePK, HashMap<String, String> parsedParameters, 
-      boolean viewAllPhoto){
-    try {
-      AlbumDetail album = new AlbumDetail(getNodeBm().getDetail(nodePK));
-      // récupération des photos
-      Collection<PhotoDetail> photos = getAllPhoto(nodePK, parsedParameters, viewAllPhoto);
-      // ajout des photos à l'album
-      album.setPhotos(photos);
-      return album;
-    } catch (Exception e) {
-      throw new GalleryRuntimeException("GalleryBmEJB.getAlbum()",
-          SilverpeasRuntimeException.ERROR, "gallery.MSG_ALBUM_NOT_EXIST", e);
-    }
-  }
 
   @Override
   public Collection<AlbumDetail> getAllAlbums(String instanceId) {
@@ -265,13 +249,13 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
   
   @Override
-  public Collection<PhotoDetail> getAllPhoto(NodePK nodePK,
+  public Collection<PhotoDetail> getAllPhotosSorted(NodePK nodePK,
       HashMap<String, String> parsedParameters, boolean viewAllPhoto) {
     Connection con = initCon();
     try {
       String albumId = nodePK.getId();
       String instanceId = nodePK.getInstanceId();
-      Collection<PhotoDetail> photos = PhotoDAO.getAllPhoto(con, albumId, instanceId, parsedParameters,
+      Collection<PhotoDetail> photos = PhotoDAO.getAllPhotosSorted(con, albumId, instanceId, parsedParameters,
           viewAllPhoto);
 
       return photos;

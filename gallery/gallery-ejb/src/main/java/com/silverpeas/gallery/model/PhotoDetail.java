@@ -33,6 +33,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.FileServerUtils;
 
 public class PhotoDetail implements SilverContentInterface, Serializable {
   /**
@@ -439,4 +440,36 @@ public class PhotoDetail implements SilverContentInterface, Serializable {
     return result;
   }
 
+  /**
+   * Get url to access photo from a web site.
+   * 
+   * @param size  the expecting size of photo (tiny, small, normal, preview, original)
+   * 
+   * @return the url
+   */
+  public String getWebURL(String size) {
+    PhotoSize photoSize = PhotoSize.get(size);
+    
+    return getWebURL(photoSize);
+  }
+   
+  /**
+   * Get url to access photo from a web site.
+   * 
+   * @param size  the expecting size of photo
+   * 
+   * @return the url
+   */
+  public String getWebURL(PhotoSize size) {
+    String idPhoto = photoPK.getId();
+    String path = "image" + idPhoto;    
+    String name = getImageName();
+    if (name != null)
+    {
+      name = (size.getPrefix().equals(".jpg")) ? name : (getId() + size.getPrefix());
+      return FileServerUtils.getWebUrl(photoPK.getSpaceId(), photoPK.getInstanceId(), name, name, getImageMimeType(), path);
+    }
+    
+    return null;
+  }
 }

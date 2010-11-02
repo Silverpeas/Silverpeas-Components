@@ -23,7 +23,6 @@
  */
 package com.silverpeas.gallery.dao;
 
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -75,20 +74,22 @@ public class PhotoDAO {
     }
     return photo;
   }
-  
-  public static Collection<PhotoDetail> getAllPhoto(Connection con, String albumId,
-      String instanceId, HashMap<String, String> parsedParameters, boolean viewAllPhoto) throws SQLException {
+
+  public static Collection<PhotoDetail> getAllPhotosSorted(Connection con, String albumId,
+      String instanceId, HashMap<String, String> sortingParameters, boolean viewAllPhoto)
+      throws SQLException {
     // récupérer toutes les photos d'un album
     ArrayList<PhotoDetail> listPhoto = null;
     Date today = new Date();
 
-    String fieldOrdering = parsedParameters.get("fieldName");
-    String fieldOrderingType = parsedParameters.get("sortType");
-    
+    String fieldOrdering = sortingParameters.get("fieldName");
+    String fieldOrderingType = sortingParameters.get("sortType");
+
     String query =
         "select * from SC_Gallery_Photo P, SC_Gallery_Path A "
-        + "where P.photoId = A.photoId and P.instanceId = A.instanceId and A.nodeId = ? and P.instanceId = ? order by P."
-        +fieldOrdering+" "+fieldOrderingType;
+            +
+            "where P.photoId = A.photoId and P.instanceId = A.instanceId and A.nodeId = ? and P.instanceId = ? order by P."
+            + fieldOrdering + " " + fieldOrderingType;
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -109,7 +110,7 @@ public class PhotoDAO {
     }
     return listPhoto;
   }
-  
+
   public static Collection<PhotoDetail> getAllPhoto(Connection con, String albumId,
       String instanceId, boolean viewAllPhoto) throws SQLException {
     // récupérer toutes les photos d'un album
@@ -118,7 +119,7 @@ public class PhotoDAO {
 
     String query =
         "select * from SC_Gallery_Photo P, SC_Gallery_Path A "
-        + "where P.photoId = A.photoId and P.instanceId = A.instanceId and A.nodeId = ? and P.instanceId = ? order by P.photoId";
+            + "where P.photoId = A.photoId and P.instanceId = A.instanceId and A.nodeId = ? and P.instanceId = ? order by P.photoId";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -240,9 +241,9 @@ public class PhotoDAO {
       // création de la requete
       String query =
           "insert into SC_Gallery_Photo (photoId,title,description,sizeH,sizeL,creationDate,updateDate,vueDate"
-          + ",author,download,albumLabel,status,albumId,creatorId,updateId,instanceId,imageName,imageSize,beginDate,endDate"
-          + ",imageMimeType,keyWord, beginDownloadDate, endDownloadDate) "
-          + "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+              + ",author,download,albumLabel,status,albumId,creatorId,updateId,instanceId,imageName,imageSize,beginDate,endDate"
+              + ",imageMimeType,keyWord, beginDownloadDate, endDownloadDate) "
+              + "values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       initParam(prepStmt, newId, newPhoto);
@@ -284,11 +285,11 @@ public class PhotoDAO {
     try {
       String query =
           "update SC_Gallery_Photo set photoId = ? , title = ? , description = ? , sizeH = ? ,"
-          + " sizeL = ? , creationDate = ? , updateDate = ? , vueDate = ? , author = ? ,"
-          + " download = ? , albumLabel = ? , status = ? , albumId = ? , creatorId = ? , updateId = ? , instanceId = ? ,"
-          + " imageName = ? , imageSize = ? , beginDate = ? , endDate = ? , imageMimeType = ? , keyWord = ? ,"
-          + " beginDownloadDate = ?, endDownloadDate = ? "
-          + " where photoId = ? ";
+              + " sizeL = ? , creationDate = ? , updateDate = ? , vueDate = ? , author = ? ,"
+              + " download = ? , albumLabel = ? , status = ? , albumId = ? , creatorId = ? , updateId = ? , instanceId = ? ,"
+              + " imageName = ? , imageSize = ? , beginDate = ? , endDate = ? , imageMimeType = ? , keyWord = ? ,"
+              + " beginDownloadDate = ?, endDownloadDate = ? "
+              + " where photoId = ? ";
       // initialisation des paramètres
       prepStmt = con.prepareStatement(query);
       int photoId = Integer.parseInt(updatedPhoto.getPhotoPK().getId());
@@ -377,7 +378,7 @@ public class PhotoDAO {
 
     String query =
         "select N.NodeId from SC_Gallery_Path P, SB_Node_Node N "
-        + "where P.PhotoId = ? and N.nodeId = P.NodeId and P.instanceId = ? and N.instanceId = P.instanceId ";
+            + "where P.PhotoId = ? and N.nodeId = P.NodeId and P.instanceId = ? and N.instanceId = P.instanceId ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -610,8 +611,8 @@ public class PhotoDAO {
     List<String> listPhoto = new ArrayList<String>();
     String query =
         "(SELECT creationdate AS dateinformation, photoId,'new'as type FROM SC_Gallery_Photo  WHERE creatorid = ?) "
-        + "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo  WHERE  updateid = ? ) "
-        + "ORDER BY dateinformation DESC, photoId DESC ";
+            + "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo  WHERE  updateid = ? ) "
+            + "ORDER BY dateinformation DESC, photoId DESC ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -632,8 +633,8 @@ public class PhotoDAO {
   }
 
   /**
-   * get my SocialInformationGallery  accordint to
-   * the type of data base used(PostgreSQL,Oracle,MMS) .
+   * get my SocialInformationGallery accordint to the type of data base used(PostgreSQL,Oracle,MMS)
+   * .
    * @param con
    * @param userId
    * @param firstIndex
@@ -651,14 +652,14 @@ public class PhotoDAO {
     } else if (DatabaseProductName.contains("ORACLE")) {
       return getAllPhotosIDbyUserid_Oracle(con, userId, firstIndex, nbElement);
     }
-    //MSSQL
+    // MSSQL
     return getAllPhotosIDbyUserid_MMS(con, userId, firstIndex, nbElement);
 
   }
 
   /**
-   * get my SocialInformationPublication  accordint to number of elements and the first index
-   * when data base is PostgreSQL
+   * get my SocialInformationPublication accordint to number of elements and the first index when
+   * data base is PostgreSQL
    * @param con
    * @param userId
    * @param firstIndex
@@ -673,8 +674,8 @@ public class PhotoDAO {
     List<SocialInformation> listPhoto = new ArrayList<SocialInformation>();
     String query =
         "(SELECT creationdate AS dateinformation, photoId,'new'as type FROM SC_Gallery_Photo  WHERE creatorid = ?) "
-        + "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo  WHERE  updateid = ? ) "
-        + "ORDER BY dateinformation DESC, photoId DESC  limit ? offset ? ";
+            + "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo  WHERE  updateid = ? ) "
+            + "ORDER BY dateinformation DESC, photoId DESC  limit ? offset ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -699,8 +700,8 @@ public class PhotoDAO {
   }
 
   /**
-   * get my SocialInformationPublication  accordint to number of elements and the first index
-   * when data base is Oracle
+   * get my SocialInformationPublication accordint to number of elements and the first index when
+   * data base is Oracle
    * @param con
    * @param userId
    * @param firstIndex
@@ -716,8 +717,8 @@ public class PhotoDAO {
     String queryOracle = " select * from (ROWNUM num , pubs_oracle.* from (";
     String query =
         "(SELECT creationdate AS dateinformation, photoId,'new'as type FROM SC_Gallery_Photo  WHERE creatorid = ?) "
-        + "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo  WHERE  updateid = ? ) "
-        + "ORDER BY dateinformation DESC, photoId DESC  ";
+            + "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo  WHERE  updateid = ? ) "
+            + "ORDER BY dateinformation DESC, photoId DESC  ";
     queryOracle = queryOracle + " " + query;
     queryOracle = queryOracle + " ) pubs_oracle) where num between ? and ? ";
     PreparedStatement prepStmt = null;
@@ -745,8 +746,8 @@ public class PhotoDAO {
   }
 
   /**
-   * get my SocialInformationPublication  accordint to number of elements and the first index
-   * when data base is MMS
+   * get my SocialInformationPublication accordint to number of elements and the first index when
+   * data base is MMS
    * @param con
    * @param userId
    * @param firstIndex
@@ -761,8 +762,8 @@ public class PhotoDAO {
     List<SocialInformation> listPhoto = new ArrayList<SocialInformation>();
     String query =
         "(SELECT creationdate AS dateinformation, photoId,'new'as type FROM SC_Gallery_Photo  WHERE creatorid = ?) "
-        + "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo  WHERE  updateid = ? ) "
-        + "ORDER BY dateinformation DESC, photoId DESC  ";
+            + "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo  WHERE  updateid = ? ) "
+            + "ORDER BY dateinformation DESC, photoId DESC  ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -791,46 +792,49 @@ public class PhotoDAO {
     return listPhoto;
 
   }
-/**
- *  get list of socialInformationGallery of my contacts according to
- * the type of data base used(PostgreSQL,Oracle,MMS) .
- * @param con
- * @param listOfuserId
- * @param availableComponent
- * @param numberOfElement
- * @param firstIndex
- * @return
- * @throws SQLException
- * @throws ParseException
- */
+
+  /**
+   * get list of socialInformationGallery of my contacts according to the type of data base
+   * used(PostgreSQL,Oracle,MMS) .
+   * @param con
+   * @param listOfuserId
+   * @param availableComponent
+   * @param numberOfElement
+   * @param firstIndex
+   * @return
+   * @throws SQLException
+   * @throws ParseException
+   */
   public static List<SocialInformation> getSocialInformationsListOfMyContacts(Connection con,
       List<String> listOfuserId, List<String> availableComponent, int numberOfElement,
       int firstIndex) throws SQLException, ParseException {
     String DatabaseProductName = con.getMetaData().getDatabaseProductName().toUpperCase();
     if (DatabaseProductName.contains("PostgreSQL".toUpperCase())) {
-      return getSocialInformationsListOfMyContacts_PostgreSQL(con, listOfuserId, availableComponent,
+      return getSocialInformationsListOfMyContacts_PostgreSQL(con, listOfuserId,
+          availableComponent,
           numberOfElement, firstIndex);
     } else if (DatabaseProductName.contains("ORACLE")) {
       return getSocialInformationsListOfMyContacts_Oracle(con, listOfuserId, availableComponent,
           numberOfElement, firstIndex);
     }
-    //MSSQL
+    // MSSQL
     return getSocialInformationsListOfMyContacts_MMS(con, listOfuserId, availableComponent,
         numberOfElement, firstIndex);
 
   }
-/**
- * When data base is PostgreSQL get list of socialInformation of my contacts according to
- * options and number of Item and the first Index
- * @param con
- * @param listOfuserId
- * @param availableComponent
- * @param numberOfElement
- * @param firstIndex
- * @return List<SocialInformation>
- * @throws SQLException
- * @throws ParseException
- */
+
+  /**
+   * When data base is PostgreSQL get list of socialInformation of my contacts according to options
+   * and number of Item and the first Index
+   * @param con
+   * @param listOfuserId
+   * @param availableComponent
+   * @param numberOfElement
+   * @param firstIndex
+   * @return List<SocialInformation>
+   * @throws SQLException
+   * @throws ParseException
+   */
   public static List<SocialInformation> getSocialInformationsListOfMyContacts_PostgreSQL(
       Connection con,
       List<String> listOfuserId, List<String> availableComponent, int numberOfElement,
@@ -839,12 +843,15 @@ public class PhotoDAO {
     // List<String> listAvailable = getListAvailable(userShow);
     String query =
         "(SELECT creationdate AS dateinformation, photoId,'new'as type FROM SC_Gallery_Photo"
-        + " WHERE creatorid IN (" + list2String(listOfuserId) + ") AND instanceid IN (" + list2String(
-        availableComponent) + "))"
-        + "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo"
-        + " WHERE  updateid IN (" + list2String(listOfuserId) + ") AND  instanceid IN (" + list2String(
-        availableComponent) + "))"
-        + "ORDER BY dateinformation DESC, photoId DESC  limit ? offset ? ";
+            + " WHERE creatorid IN (" + list2String(listOfuserId) + ") AND instanceid IN (" +
+            list2String(
+            availableComponent) + "))"
+            +
+            "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo"
+            + " WHERE  updateid IN (" + list2String(listOfuserId) + ") AND  instanceid IN (" +
+            list2String(
+            availableComponent) + "))"
+            + "ORDER BY dateinformation DESC, photoId DESC  limit ? offset ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -865,31 +872,36 @@ public class PhotoDAO {
     return listPhoto;
 
   }
-/**
- * When data base is Oracle get list of socialInformation of my contacts according to
- * options and number of Item and the first Index
- * @param con
- * @param listOfuserId
- * @param availableComponent
- * @param numberOfElement
- * @param firstIndex
- * @return List<SocialInformation>
- * @throws SQLException
- * @throws ParseException
- */
-  public static List<SocialInformation> getSocialInformationsListOfMyContacts_Oracle(Connection con,
+
+  /**
+   * When data base is Oracle get list of socialInformation of my contacts according to options and
+   * number of Item and the first Index
+   * @param con
+   * @param listOfuserId
+   * @param availableComponent
+   * @param numberOfElement
+   * @param firstIndex
+   * @return List<SocialInformation>
+   * @throws SQLException
+   * @throws ParseException
+   */
+  public static List<SocialInformation> getSocialInformationsListOfMyContacts_Oracle(
+      Connection con,
       List<String> listOfuserId, List<String> availableComponent, int numberOfElement,
       int firstIndex) throws SQLException, ParseException {
     List<SocialInformation> listPhoto = new ArrayList<SocialInformation>();
     String queryOracle = " select * from (ROWNUM num , pubs_oracle.* from (";
     String query =
         "(SELECT creationdate AS dateinformation, photoId,'new'as type FROM SC_Gallery_Photo"
-        + " WHERE creatorid IN (" + list2String(listOfuserId) + ") AND instanceid IN (" + list2String(
-        availableComponent) + "))"
-        + "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo"
-        + " WHERE  updateid IN (" + list2String(listOfuserId) + ") AND  instanceid IN (" + list2String(
-        availableComponent) + "))"
-        + "ORDER BY dateinformation DESC, photoId DESC ";
+            + " WHERE creatorid IN (" + list2String(listOfuserId) + ") AND instanceid IN (" +
+            list2String(
+            availableComponent) + "))"
+            +
+            "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo"
+            + " WHERE  updateid IN (" + list2String(listOfuserId) + ") AND  instanceid IN (" +
+            list2String(
+            availableComponent) + "))"
+            + "ORDER BY dateinformation DESC, photoId DESC ";
     queryOracle = queryOracle + " " + query;
     queryOracle = queryOracle + " ) pubs_oracle) where num between ? and ? ";
     PreparedStatement prepStmt = null;
@@ -912,18 +924,19 @@ public class PhotoDAO {
     return listPhoto;
 
   }
-/**
- * When data base is MMS get list of socialInformation of my contacts according to
- * options and number of Item and the first Index
- * @param con
- * @param listOfuserId
- * @param availableComponent
- * @param numberOfElement
- * @param firstIndex
- * @return List<SocialInformation>
- * @throws SQLException
- * @throws ParseException
- */
+
+  /**
+   * When data base is MMS get list of socialInformation of my contacts according to options and
+   * number of Item and the first Index
+   * @param con
+   * @param listOfuserId
+   * @param availableComponent
+   * @param numberOfElement
+   * @param firstIndex
+   * @return List<SocialInformation>
+   * @throws SQLException
+   * @throws ParseException
+   */
   public static List<SocialInformation> getSocialInformationsListOfMyContacts_MMS(Connection con,
       List<String> listOfuserId, List<String> availableComponent, int numberOfElement,
       int firstIndex) throws SQLException, ParseException {
@@ -931,12 +944,15 @@ public class PhotoDAO {
     // List<String> listAvailable = getListAvailable(userShow);
     String query =
         "(SELECT creationdate AS dateinformation, photoId,'new'as type FROM SC_Gallery_Photo"
-        + " WHERE creatorid IN (" + list2String(listOfuserId) + ") AND instanceid IN (" + list2String(
-        availableComponent) + "))"
-        + "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo"
-        + " WHERE  updateid IN (" + list2String(listOfuserId) + ") AND  instanceid IN (" + list2String(
-        availableComponent) + "))"
-        + "ORDER BY dateinformation DESC, photoId DESC  limit ? offset ? ";
+            + " WHERE creatorid IN (" + list2String(listOfuserId) + ") AND instanceid IN (" +
+            list2String(
+            availableComponent) + "))"
+            +
+            "UNION (SELECT updatedate AS dateinformation, photoId ,'update'as type FROM sc_gallery_photo"
+            + " WHERE  updateid IN (" + list2String(listOfuserId) + ") AND  instanceid IN (" +
+            list2String(
+            availableComponent) + "))"
+            + "ORDER BY dateinformation DESC, photoId DESC  limit ? offset ? ";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -962,11 +978,12 @@ public class PhotoDAO {
     return listPhoto;
 
   }
-/**
- * tronsform the list of string to String for using in query sql
- * @param list
- * @return String
- */
+
+  /**
+   * tronsform the list of string to String for using in query sql
+   * @param list
+   * @return String
+   */
   private static String list2String(List<String> ids) {
     if (ids == null || ids.size() == 0) {
       return "''";
