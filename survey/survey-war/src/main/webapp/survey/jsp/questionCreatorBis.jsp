@@ -38,8 +38,6 @@
 
 
 <% 
-
-//Récupération des paramètres
 String action = "";
 String question = "";
 String nbAnswers = "";
@@ -91,31 +89,31 @@ Iterator itemIter = items.iterator();
          if ("Action".equals(mpName))
         action = item.getString();
     else if ("question".equals(mpName))
-        question = item.getString();
+        question = item.getString(FileUploadUtil.DEFAULT_ENCODING);
     else if ("nbAnswers".equals(mpName))
-        nbAnswers = item.getString();
+        nbAnswers = item.getString(FileUploadUtil.DEFAULT_ENCODING);
     else if ("SuggestionAllowed".equals(mpName))
-        suggestion = item.getString();
+        suggestion = item.getString(FileUploadUtil.DEFAULT_ENCODING);
     else if ("questionStyle".equals(mpName))
-    	style = item.getString();
+    	style = item.getString(FileUploadUtil.DEFAULT_ENCODING);
     else if (mpName.startsWith("answer")) 
     {
-        answerInput = item.getString();
+        answerInput = item.getString(FileUploadUtil.DEFAULT_ENCODING);
         answer = new Answer(null, null, answerInput, 0, 0, false, "", 0, false, null);
         answers.add(answer);
     } else if ("suggestionLabel".equals(mpName))
     {
-        answerInput = item.getString();
+        answerInput = item.getString(FileUploadUtil.DEFAULT_ENCODING);
         answer = new Answer(null, null, answerInput, 0, 0, false, "", 0, true, null);
         answers.add(answer);
     }
     else if (mpName.startsWith("valueImageGallery")) 
     {
-    	if (StringUtil.isDefined(item.getString()))
+    	if (StringUtil.isDefined(item.getString(FileUploadUtil.DEFAULT_ENCODING)))
     	{
     		// traiter les images venant de la gallery si pas d'image externe
     		if (!file)
-    			answer.setImage(item.getString());
+    			answer.setImage(item.getString(FileUploadUtil.DEFAULT_ENCODING));
     	}
     }  
     //String value = paramPart.getStringValue();
@@ -495,7 +493,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 		} 
         else 
         {
-             // liste déroulante des choix possible
+             // liste dÃ©roulante des choix possible
             out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("survey.style")+" :</td><td>");
             out.println(" <select id=\"questionStyle\" name=\"questionStyle\" onchange=\"showQuestionOptions(this.value);\"> ");
             out.println(" <option selected value=\"null\">"+resources.getString("survey.style")+"</option> ");

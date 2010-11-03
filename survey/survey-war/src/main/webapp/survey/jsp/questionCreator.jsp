@@ -72,12 +72,7 @@
 %>
 
 <% 
-//Récupération des paramètres
-
-
 String nextAction = "";
-
-
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
 //Icons
@@ -123,10 +118,10 @@ while (itemIter.hasNext()) {
   {
     String mpName = item.getFieldName();
     if (mpName.startsWith("answer")) {
-        answer = new Answer(null, null, item.getString(), 0, 0, false, "", 0, false, null);
+        answer = new Answer(null, null, item.getString(FileUploadUtil.DEFAULT_ENCODING), 0, 0, false, "", 0, false, null);
         answers.add(answer);    
     } else if ("suggestionLabel".equals(mpName)) {
-        answer = new Answer(null, null, item.getString(), 0, 0, false, "", 0, true, null);
+        answer = new Answer(null, null, item.getString(FileUploadUtil.DEFAULT_ENCODING), 0, 0, false, "", 0, true, null);
         answers.add(answer);
     }
     else if (mpName.startsWith("valueImageGallery")) 
@@ -469,7 +464,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
                 //if (openQuestion.equals("0")) {
                 if (!style.equals("open")) 
                 {
-                	// question fermée
+                	// question fermÃ©e
                     out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("survey.style")+" :</td><td>"+resources.getString("survey."+style));
                     //out.println("<tr style=\"visibility: hidden;\"><td class=\"txtlibform\" valign=top>"+resources.getString("survey.style")+" :</td><td>");
                 	out.println(" <select style=\"visibility: hidden;\" id=\"questionStyle\" name=\"questionStyle\" value="+style+"><option selected>"+style+"</option></select>");
@@ -493,7 +488,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 
                         if (!style.equals("list"))
                         {
-                        	// afficher les photos que si on est pas dans le choix d'une liste déroulante
+                        	// afficher les photos que si on est pas dans le choix d'une liste dÃ©roulante
                         	out.println("<tr><td class=\"txtlibform\">"+resources.getString("SurveyCreationAnswerImage")+"&nbsp;"+j+" :</td><td><input type=\"file\" name=\"image"+i+"\" size=\"60\"></td></tr>");
                         
 	                     	//zone pour le lien vers l'image
@@ -538,7 +533,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
            {
         	    
                 //out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("SurveyCreationQuestionOpen")+" :</td><td><input type=\"checkbox\" name=\"openQuestion\" value=\"1\" "+openQuestionCheck+" onClick=\"javaScript:changeQuestionType()\"></td></tr>");
-                // liste déroulante des choix possible
+                // liste dÃ©roulante des choix possible
                 out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("survey.style")+" :</td><td>");
                 out.println(" <select id=\"questionStyle\" name=\"questionStyle\" onchange=\"showQuestionOptions(this.value);\"> ");
     			out.println(" <option selected value=\"null\">"+resources.getString("survey.style")+"</option> ");

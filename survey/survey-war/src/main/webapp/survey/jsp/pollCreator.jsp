@@ -37,13 +37,8 @@
 
 <%@ include file="checkSurvey.jsp" %>
 
-<%!
-
-%>
-
 <%
     List items = FileUploadUtil.parseRequest(request);
-//Récupération des paramètres
     String action = FileUploadUtil.getOldParameter(items, "Action");
     String pollId = FileUploadUtil.getOldParameter(items, "PollId");
     String title = FileUploadUtil.getOldParameter(items, "title");
@@ -72,7 +67,7 @@
     String anonymousCheck = "";
     String anonymous = FileUploadUtil.getOldParameter(items, "AnonymousAllowed");
     
-    //Mode anonyme -> force les votes à être tous anonymes
+    //Mode anonyme -> force les votes Ã  Ãªtre tous anonymes
 	if(surveyScc.isAnonymousModeEnabled()) {
 		anonymous = "1";
 	}
@@ -116,11 +111,11 @@
       if (item.isFormField()) {
         String mpName = item.getFieldName();
         if (mpName.startsWith("answer")) {
-          answerInput = item.getString();
+          answerInput = item.getString(FileUploadUtil.DEFAULT_ENCODING);
           answer = new Answer(null, null, answerInput, 0, 0, false, "", 0, false, null);
           answers.add(answer);
         } else if ("suggestionLabel".equals(mpName)) {
-          answerInput = item.getString();
+          answerInput = item.getString(FileUploadUtil.DEFAULT_ENCODING);
           answer = new Answer(null, null, answerInput, 0, 0, false, "", 0, true, null);
           answers.add(answer);
         } else if (mpName.startsWith("valueImageGallery")) {
@@ -488,7 +483,7 @@ disabledValue = "disabled";
         <tr><td class="txtlibform"><%=resources.getString("SuggestionAllowed")%> :</td><td><input type="checkbox" name="suggestion" value="" <%=suggestionCheck%> <%=disabledValue%>></td></tr>
         
         <%
-        //Mode anonyme -> force les votes à être tous anonymes
+        //Mode anonyme -> force les votes Ã  Ãªtre tous anonymes
         String anonymousDisabled = "";
         if(surveyScc.isAnonymousModeEnabled()) {
 			anonymousCheck = "checked";
@@ -569,7 +564,7 @@ if (!"0".equals(suggestion)) {
             }
           }
 
-          // création du vote
+          // crÃ©ation du vote
           boolean anonymousB = false;
           if (anonymous.equals("1")) {
             anonymousB = true;
