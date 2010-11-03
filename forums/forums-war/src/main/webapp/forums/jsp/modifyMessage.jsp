@@ -45,7 +45,8 @@
 %>
 <html>
 <head>
-    <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
+    <title></title>
+<%
     out.println(graphicFactory.getLookStyleSheet());
 %>
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
