@@ -69,8 +69,8 @@
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterType>checkbox</ParameterType>
       <ParameterHelp>
-        <ParameterHelpFr>Les enquêtes créées au sein de cette instance pourront être répondues de manière anonyme</ParameterHelpFr>
-        <ParameterHelpEn>The surveys created in this instance may be answered by anonymous way.</ParameterHelpEn>
+        <ParameterHelpFr>Les participations à toutes les enquêtes créées au sein de cette instance seront anonymes</ParameterHelpFr>
+        <ParameterHelpEn>Entries in all surveys created in this instance will be anonymous</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
   </Parameters>
