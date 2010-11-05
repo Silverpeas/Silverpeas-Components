@@ -204,3 +204,11 @@
 .portlet #pubList {
 	margin-top: 5px;
 }
+
+#thumbnailPreview {
+	float: left;
+}
+
+#thumbnailActions {
+	float: left;
+}

@@ -334,6 +334,68 @@
     ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
     //Example: http://myserver
     String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
+    
+    
+    //some thumbnail stuff to move in router
+    String objectId = "";
+	if(pubDetail != null) {
+		objectId =  pubDetail.getPK().getId();
+	}
+		
+	String requestURL = request.getRequestURL().toString();
+	String applicationURL = URLManager.getApplicationURL();
+	String prefixURL = requestURL.substring(0, requestURL.indexOf(applicationURL));
+	String backUrl = prefixURL + applicationURL + "/Rkmelia/" + componentId + "/publicationManager.jsp?Action=UpdateView&PubId=" + objectId + "&Profile=" + kmeliaScc.getProfile();
+		
+	String standardParamaters = "&ComponentId=" + componentId +  
+		                        "&ObjectId=" + objectId +
+		                        "&BackUrl=" + URLEncoder.encode(backUrl) +
+	                            "&ObjectType=" + ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE +
+	                            "&height=380&width=800";
+		
+	String standardParamatersForAddOnly = "&ComponentId=" + componentId +  
+             "&ObjectId=" + objectId +
+             "&BackUrl=" + URLEncoder.encode(backUrl) +
+             "&ObjectType=" + ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE +
+             "&height=80&width=800";
+	
+	int[] thumbnailSize = kmeliaScc.getThumbnailWidthAndHeight();
+	
+	//definition size of thumbnail selector
+	String thumbnailWidth = "";
+	String thumbnailHeight = "";
+	String vignetteSizeParameters = "";
+	String vignetteSizeParametersForUpdateFile = "";
+    if ( vignette_url != null ) {
+		if(thumbnailSize[0] != -1){
+			thumbnailWidth = String.valueOf(thumbnailSize[0]);
+			vignetteSizeParametersForUpdateFile += "&ThumbnailWidth=" + String.valueOf(thumbnailSize[0]);
+        }else if(thumbnailSize[1] != -1){
+			// square id one selected
+          	thumbnailWidth = String.valueOf(thumbnailSize[1]);
+        }else{
+			thumbnailWidth = kmeliaScc.getThumbnailDefaultJcropWidth();	
+		}
+		if(thumbnailSize[1] != -1){
+			thumbnailHeight = String.valueOf(thumbnailSize[1]);
+			vignetteSizeParametersForUpdateFile += "&ThumbnailHeight=" + String.valueOf(thumbnailSize[1]);
+		}else if(thumbnailSize[0] != -1){
+		  // square id one selected
+        			thumbnailHeight = String.valueOf(thumbnailSize[0]);
+      		}else{
+			thumbnailHeight = kmeliaScc.getThumbnailDefaultJcropHeight();
+		}
+		vignetteSizeParameters = "&ThumbnailWidth=" + thumbnailWidth + "&ThumbnailHeight=" + thumbnailHeight;
+	}
+    else {
+      if(thumbnailSize[0] != -1){
+			vignetteSizeParameters += "&ThumbnailWidth=" + String.valueOf(thumbnailSize[0]);
+		}
+		if(thumbnailSize[1] != -1){
+			vignetteSizeParameters += "&ThumbnailHeight=" + String.valueOf(thumbnailSize[1]);
+		}
+    }
+    
 %>
 
 <HTML>
@@ -353,8 +415,8 @@
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/ui.thickbox.js"></script>
-    <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/jquery-thickbox.css">
+    <!-- <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/ui.thickbox.js"></script>
+    <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/jquery-thickbox.css"> -->
     <script language="javascript">
       var favoriteWindow = window;
 
@@ -667,6 +729,46 @@
                 favoriteWindow.close();
             favoriteWindow = SP_openWindow(urlWindow, windowName, larg, haut, windowParams);
         }
+
+        $(document).ready(function(){
+
+	        var dialogOpts = {
+	                modal: true,
+	                autoOpen: false,
+	                height: "auto"
+	        };
+	
+	        $("#thumbnailDialog").dialog(dialogOpts);    //end dialog
+        });
+
+        function addThumbnail() {
+        	$("#thumbnailDialog").dialog("option", "title", "<%=resources.getString("ThumbnailAdd")%>");
+        	$("#thumbnailDialog").dialog("option", "width", 500);
+        	var url = "<%=httpServerBase + m_context%>/Thumbnail/jsp/thumbnailManager.jsp?Action=Add<%=standardParamatersForAddOnly + vignetteSizeParameters%>&modal=true";
+        	$("#thumbnailDialog").load(url).dialog("open");
+        }
+
+        function updateThumbnail() {
+        	$("#thumbnailDialog").dialog("option", "title", "<%=resources.getString("ThumbnailUpdateFile")%>");
+        	$("#thumbnailDialog").dialog("option", "width", 500);
+        	var url = "<%=httpServerBase + m_context%>/Thumbnail/jsp/thumbnailManager.jsp?Action=UpdateFile<%=standardParamatersForAddOnly + vignetteSizeParametersForUpdateFile%>&modal=true";
+        	$("#thumbnailDialog").load(url).dialog("open");
+        }
+
+        function cropThumbnail() {
+        	$("#thumbnailDialog").dialog("option", "title", "<%=resources.getString("ThumbnailUpdate")%>");
+        	$("#thumbnailDialog").dialog("option", "width", 750);
+        	var url = "<%=httpServerBase + m_context%>/Thumbnail/jsp/thumbnailManager.jsp?Action=Update<%=standardParamaters + vignetteSizeParameters%>&modal=true";
+        	$("#thumbnailDialog").load(url).dialog("open");
+        }
+
+        function deleteThumbnail() {
+        	location.href="<%=httpServerBase + m_context%>/Thumbnail/jsp/thumbnailManager.jsp?Action=Delete<%=standardParamaters%>";
+        }
+
+        function closeThumbnailDialog() {
+        	$("#thumbnailDialog").dialog("close");
+        }
                 
     </script>
   </HEAD>
@@ -899,109 +1001,54 @@
 	          		<img src="<%=mandatorySrc%>" width="5" height="5" border="0" alt=""/>
 	          <% } %>
           <%}else{
-				String objectId = "";
-				if(pubDetail != null)
-					objectId =  pubDetail.getPK().getId();
-					
-				String requestURL = request.getRequestURL().toString();
-				String applicationURL = URLManager.getApplicationURL();
-				String prefixURL = requestURL.substring(0, requestURL.indexOf(applicationURL));
-				String backUrl = prefixURL + applicationURL + "/Rkmelia/" + componentId + "/publicationManager.jsp?Action=UpdateView&PubId=" + objectId + "&Profile=" + kmeliaScc.getProfile();
-					
-				String standardParamaters = "&ComponentId=" + componentId +  
-					                        "&ObjectId=" + objectId +
-					                        "&BackUrl=" + URLEncoder.encode(backUrl) +
-				                            "&ObjectType=" + ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE +
-				                            "&height=380&width=800";
-					
-				String standardParamatersForAddOnly = "&ComponentId=" + componentId +  
-                "&ObjectId=" + objectId +
-                "&BackUrl=" + URLEncoder.encode(backUrl) +
-                "&ObjectType=" + ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE +
-                "&height=80&width=800";
-				
-				int[] thumbnailSize = kmeliaScc.getThumbnailWidthAndHeight();
-				
-				    if ( vignette_url != null )
-					{
-				    	// definition size of thumbnail selector
-				    	String thumbnailWidth = "";
-						String thumbnailHeight = "";
-						String vignetteSizeParametersForUpdateFile = "";
-						if(thumbnailSize[0] != -1){
-							thumbnailWidth = String.valueOf(thumbnailSize[0]);
-							vignetteSizeParametersForUpdateFile += "&ThumbnailWidth=" + String.valueOf(thumbnailSize[0]);
-				        }else if(thumbnailSize[1] != -1){
-							// square id one selected
-				          	thumbnailWidth = String.valueOf(thumbnailSize[1]);
-				        }else{
-							thumbnailWidth = kmeliaScc.getThumbnailDefaultJcropWidth();	
-						}
-						if(thumbnailSize[1] != -1){
-							thumbnailHeight = String.valueOf(thumbnailSize[1]);
-							vignetteSizeParametersForUpdateFile += "&ThumbnailHeight=" + String.valueOf(thumbnailSize[1]);
-						}else if(thumbnailSize[0] != -1){
-						  // square id one selected
-		          			thumbnailHeight = String.valueOf(thumbnailSize[0]);
-		        		}else{
-							thumbnailHeight = kmeliaScc.getThumbnailDefaultJcropHeight();
-						}
-						
+            		//ButtonPane thumbnailBP = gef.getButtonPane();
+				    if ( vignette_url != null )	{
 				    	// mode modification
 			    		out.println("<div id=\"thumbnailPreview\">");
-				    	out.println("<IMG SRC=" + vignette_url + " id=\"thumbnail\">");
-						if(isThumbnailMandatory){
+				    	out.println("<img src=" + vignette_url + " id=\"thumbnail\" alt=\"\"/>");
+				    	if (isThumbnailMandatory) { %>
+    						<img src="<%=mandatorySrc%>" width="5" height="5" border="0" alt=""/>
+    					<% }
+				    	out.println("</div>");
+				    	out.println("<div id=\"thumbnailActions\">");
+						if (isThumbnailMandatory) {
 							// vignette obligatoire -> 2 boutons modifier image et modifier fichier
-							out.println("</div>");
-							out.println("<BR>");
-							out.println("<input alt=\"" + httpServerBase + m_context + "/Thumbnail/jsp/thumbnailManager.jsp?Action=UpdateFile" +
-									standardParamatersForAddOnly + vignetteSizeParametersForUpdateFile +
-									"&modal=true\" title=\"" + resources.getString("ThumbnailUpdateFile") + "\" class=\"thickbox\" type=\"button\" value=\"" + resources.getString("ThumbnailUpdateFile") + "\"/>");
-						}else{
+							//Button thumbnailUpdate = gef.getFormButton(resources.getString("ThumbnailUpdateFile"), "javascript:updateThumbnail()", false);
+							//thumbnailBP.addButton(thumbnailUpdate);
+							%>
+							<a href="javascript:updateThumbnail()"><img src="/silverpeas/util/icons/images.png" alt=""/> <%=resources.getString("ThumbnailUpdateFile") %></a><br/>
+							<%
+						} else {
 							// bouton suppression actif
-							out.println("<a href=\"" + httpServerBase + m_context + "/Thumbnail/jsp/thumbnailManager.jsp?Action=Delete"+
-									standardParamaters +
-								    "\")><img border=\"0\" src=\""+deleteSrc+"\" alt=\""+resources.getString("ThumbnailDelete")+"\" title=\""+resources.getString("ThumbnailDelete")+"\"></a>");
-							out.println("<BR>");
-							out.println("</div>");
+							%>
+							<a href="javascript:deleteThumbnail()"><img border="0" src="<%=deleteSrc%>" alt="<%=resources.getString("ThumbnailDelete") %>" title="<%=resources.getString("ThumbnailDelete") %>"/><%=resources.getString("ThumbnailDelete") %></a><br/>
+							<%
 						}
-						String vignetteSizeParameters = "&ThumbnailWidth=" + thumbnailWidth + "&ThumbnailHeight=" + thumbnailHeight;
-				    	out.println("<input alt=\"" + httpServerBase + m_context + "/Thumbnail/jsp/thumbnailManager.jsp?Action=Update" +
-								standardParamaters + vignetteSizeParameters +
-								"&modal=true\" title=\"" + resources.getString("ThumbnailUpdate") + "\" class=\"thickbox\" type=\"button\" value=\"" + resources.getString("ThumbnailUpdate") + "\"/>");
-						if (isThumbnailMandatory) { %>
-		          			<img src="<%=mandatorySrc%>" width="5" height="5" border="0" alt=""/>
-		          			<% }
-						out.println("<BR>");
-						
+						//Button thumbnailCrop = gef.getFormButton(resources.getString("ThumbnailUpdate"), "javascript:cropThumbnail()", false);
+						//thumbnailBP.addButton(thumbnailCrop);
+						%>
+						<a href="javascript:cropThumbnail()"><img src="/silverpeas/util/icons/arrow_in.png" alt="" align="bottom"/> <%=resources.getString("ThumbnailUpdate") %></a>
+						</div>
+						<%
 					} else {
-						String vignetteSizeParameters = "";
-						if(thumbnailSize[0] != -1){
-							vignetteSizeParameters += "&ThumbnailWidth=" + String.valueOf(thumbnailSize[0]);
-						}
-						if(thumbnailSize[1] != -1){
-							vignetteSizeParameters += "&ThumbnailHeight=" + String.valueOf(thumbnailSize[1]);
-						}
-						
 						// mode création
-						out.println("<input alt=\"" + httpServerBase + m_context + "/Thumbnail/jsp/thumbnailManager.jsp?Action=Add" +
-								standardParamatersForAddOnly + vignetteSizeParameters +
-					    		"&modal=true\" title=\"" + resources.getString("ThumbnailAdd") + "\" class=\"thickbox\" type=\"button\" value=\"" + resources.getString("ThumbnailAdd") + "\"/>");
-						if (isThumbnailMandatory) { %>
-		          			<img src="<%=mandatorySrc%>" width="5" height="5" border="0" alt=""/>
-		          		        <% }
-						out.println("<BR>");
+						%>
+						<a href="javascript:addThumbnail()"><img src="/silverpeas/util/icons/image_1.png" alt=""/> <%=resources.getString("ThumbnailAdd") %></a>
+						<%
+						//Button thumbnailAdd = gef.getFormButton(resources.getString("ThumbnailAdd"), "javascript:addThumbnail()", false);
+						//thumbnailBP.addButton(thumbnailAdd);
 					}
-				%>
-				<%
-				if(errorThumbnail){
-			    // message d'erreur
-					%>
-						<br/>
-						<div style="font-style: italic;color:red;"><%=resources.getString("kmelia." + resultThumbnail)%></div>
-						<br/>
-					<%
-				}
+				    //out.println(thumbnailBP.print());
+					out.println("<br/>");
+						
+					if(errorThumbnail){
+				    // message d'erreur
+						%>
+							<br/>
+							<div style="font-style: italic;color:red;"><%=resources.getString("kmelia." + resultThumbnail)%></div>
+							<br/>
+						<%
+					}
 			}
           %>
         </TD>
@@ -1025,6 +1072,7 @@
         out.println(frame.printAfter());
         out.println(window.printAfter());
   %>
+  <div id="thumbnailDialog"/>
   <FORM name="toRouterForm">
     <input type="hidden" name="PubId" value="<%=id%>">
   </FORM>
