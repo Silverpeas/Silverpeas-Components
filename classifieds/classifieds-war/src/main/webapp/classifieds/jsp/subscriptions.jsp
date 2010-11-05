@@ -38,23 +38,6 @@ Collection	subscribes		= (Collection) request.getAttribute("Subscribes");
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 
-<script type="text/javascript">
-
-var subscriptionWindow = window;
-
-function addSubscription() {
-//	url = "NewSubscription";
-//	windowName = "subscriptionWindow";
-//	larg = "550";
-//	haut = "350";
-//	windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-//	if (!subscriptionWindow.closed && subscriptionWindow.name== "subscriptionWindow")
-//		subscriptionWindow.close();
-//	subscriptionWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-  $( "#subscription-adding" ).dialog( "open" );
-}
-
-</script>
 </head>
 
 <body>

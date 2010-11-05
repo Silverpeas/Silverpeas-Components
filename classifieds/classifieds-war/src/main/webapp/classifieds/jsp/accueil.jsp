@@ -58,18 +58,6 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 	function sendData() {
 		document.classifiedForm.submit();
 	}
-	
-	function addSubscription() {
-//	url = "NewSubscription";
-//	windowName = "subscriptionWindow";
-//	larg = "550";
-//	haut = "350";
-//	windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-//	if (!subscriptionWindow.closed && subscriptionWindow.name== "subscriptionWindow")
-//		subscriptionWindow.close();
-//	subscriptionWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-  $( "#subscription-adding" ).dialog( "open" );
-}
 </script>
 
 </head>

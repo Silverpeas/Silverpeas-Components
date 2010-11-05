@@ -29,16 +29,17 @@
 Form 		formSearch 		= (Form) request.getAttribute("Form");
 DataRecord	data 			= (DataRecord) request.getAttribute("Data"); 
 String		instanceId		= (String) request.getAttribute("InstanceId");
-
-// d�claration des boutons
-//Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-//Button cancelButton   = (Button) gef.getFormButton(resource.getString("GML.cancel"), "javaScript:window.close()", false);
-
+String      dialogTitle     = resource.getString("classifieds.subscriptionsAdd");
 %>
 
 <script type="text/javascript">
+  function addSubscription() {
+    $( "#subscription-adding" ).dialog( "open" );
+  }
+  
   $(function() {
 		$( "#subscription-adding" ).dialog({
+            title: "<%= dialogTitle %>",
 			autoOpen: false,
 			height: 200,
 			width: 400,
@@ -61,20 +62,6 @@ String		instanceId		= (String) request.getAttribute("InstanceId");
 </script>
 
 <div id="subscription-adding" style="display: none">
-
-<%
-	//browseBar.setDomainName(spaceLabel);
-	//browseBar.setComponentName(componentLabel);
-	//browseBar.setPath(resource.getString("classifieds.subscriptionsAdd"));
-	
-	// affichage des options
-	//out.println(window.printBefore());
-    //out.println(frame.printBefore());
-    
-    //Board	board		 = gef.getBoard();
-    
-	// afficher les crit�res de tri
-	%>
 	<br/>
 	<FORM Name="SubscriptionForm" action="AddSubscription" Method="POST" ENCTYPE="multipart/form-data">
 		<% if (formSearch != null) { %>
@@ -96,18 +83,4 @@ String		instanceId		= (String) request.getAttribute("InstanceId");
 			<br/>
 		<% } %>	
 	</FORM>
-		
-	<%
-	// bouton valider
-	//ButtonPane buttonPane = gef.getButtonPane();
-	//buttonPane.addButton(validateButton);
-	//buttonPane.addButton(cancelButton);
-	//out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-	
-	
-	
-	
-  	//out.println(frame.printAfter());
-	//out.println(window.printAfter());
-%>
 </div>

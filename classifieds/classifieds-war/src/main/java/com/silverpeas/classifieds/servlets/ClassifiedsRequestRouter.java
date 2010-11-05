@@ -23,7 +23,6 @@
  */
 package com.silverpeas.classifieds.servlets;
 
-import com.silverpeas.form.FormException;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import java.util.ArrayList;
 import java.util.Collection;
