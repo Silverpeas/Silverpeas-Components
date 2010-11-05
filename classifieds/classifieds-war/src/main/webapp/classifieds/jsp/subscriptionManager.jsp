@@ -24,54 +24,61 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="check.jsp" %>
 
 <% 
 Form 		formSearch 		= (Form) request.getAttribute("Form");
 DataRecord	data 			= (DataRecord) request.getAttribute("Data"); 
 String		instanceId		= (String) request.getAttribute("InstanceId");
 
-// déclaration des boutons
-Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-Button cancelButton   = (Button) gef.getFormButton(resource.getString("GML.cancel"), "javaScript:window.close()", false);
+// dï¿½claration des boutons
+//Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
+//Button cancelButton   = (Button) gef.getFormButton(resource.getString("GML.cancel"), "javaScript:window.close()", false);
 
 %>
 
-<html>
-<head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript">
+  $(function() {
+		$( "#subscription-adding" ).dialog({
+			autoOpen: false,
+			height: 200,
+			width: 400,
+			modal: true,
+			buttons: {
+				'<%= resource.getString("GML.validate") %>': function() {
+                    sendSubscriptionData();
+                },
+				'<%= resource.getString("GML.cancel") %>' : function() {
+					$( this ).dialog( "close" );
+				}
+			}
+		});
+	});
 
-<script language="javascript">
-	function sendData() {
-		document.SubscriptionForm.submit();
-		window.close();
+	function sendSubscriptionData() {
+      $( "#subscription-adding" ).dialog( "close" );
+      document.SubscriptionForm.submit();
 	}
 </script>
-</head>
 
-<body>
+<div id="subscription-adding" style="display: none">
 
 <%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel);
-	browseBar.setPath(resource.getString("classifieds.subscriptionsAdd"));
+	//browseBar.setDomainName(spaceLabel);
+	//browseBar.setComponentName(componentLabel);
+	//browseBar.setPath(resource.getString("classifieds.subscriptionsAdd"));
 	
 	// affichage des options
-	out.println(window.printBefore());
-    out.println(frame.printBefore());
+	//out.println(window.printBefore());
+    //out.println(frame.printBefore());
     
-    Board	board		 = gef.getBoard();
+    //Board	board		 = gef.getBoard();
     
-	// afficher les critères de tri
+	// afficher les critï¿½res de tri
 	%>
 	<br/>
 	<FORM Name="SubscriptionForm" action="AddSubscription" Method="POST" ENCTYPE="multipart/form-data">
 		<% if (formSearch != null) { %>
-			<%=board.printBefore()%>
+			
 			<table border="0" width="100%" align="center">
 				<!-- AFFICHAGE du formulaire -->
 				<tr>
@@ -87,22 +94,20 @@ Button cancelButton   = (Button) gef.getFormButton(resource.getString("GML.cance
 				</tr>
 			</table>
 			<br/>
-			<%=board.printAfter()%>
 		<% } %>	
 	</FORM>
 		
 	<%
 	// bouton valider
-	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton(validateButton);
-	buttonPane.addButton(cancelButton);
-	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+	//ButtonPane buttonPane = gef.getButtonPane();
+	//buttonPane.addButton(validateButton);
+	//buttonPane.addButton(cancelButton);
+	//out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
 	
 	
 	
 	
-  	out.println(frame.printAfter());
-	out.println(window.printAfter());
+  	//out.println(frame.printAfter());
+	//out.println(window.printAfter());
 %>
-</body>
-</html>
+</div>

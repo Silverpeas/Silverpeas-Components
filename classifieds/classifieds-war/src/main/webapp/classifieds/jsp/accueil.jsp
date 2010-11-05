@@ -30,12 +30,12 @@
 String 		profile			= (String) request.getAttribute("Profile");
 Collection	categories		= (Collection) request.getAttribute("Categories");
 String 		nbTotal			= (String) request.getAttribute("NbTotal");
-Form 		formSearch 		= (Form) request.getAttribute("Form");
-DataRecord	data 			= (DataRecord) request.getAttribute("Data"); 
-String		instanceId		= (String) request.getAttribute("InstanceId");
+//Form 		formSearch 		= (Form) request.getAttribute("Form");
+//DataRecord	data 			= (DataRecord) request.getAttribute("Data"); 
+String		componentInstanceId		= (String) request.getAttribute("InstanceId");
 boolean		validation		= ((Boolean) request.getAttribute("Validation")).booleanValue();
 
-// déclaration des boutons
+// dï¿½claration des boutons
 Button validateButton = (Button) gef.getFormButton(resource.getString("GML.search")+" dans <b>"+nbTotal+"</b> "+resource.getString("classifieds.classifieds"), "javascript:onClick=sendData();", false);
 
 %>
@@ -48,7 +48,7 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 
-<script language="javascript">
+<script type="text/javascript">
 	var subscriptionWindow = window;
 
 	function openSPWindow(fonction, windowName){
@@ -60,22 +60,23 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 	}
 	
 	function addSubscription() {
-		url = "NewSubscription";
-	    windowName = "subscriptionWindow";
-		larg = "550";
-		haut = "350";
-	    windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-	    if (!subscriptionWindow.closed && subscriptionWindow.name== "subscriptionWindow")
-	        subscriptionWindow.close();
-	    subscriptionWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-	}
+//	url = "NewSubscription";
+//	windowName = "subscriptionWindow";
+//	larg = "550";
+//	haut = "350";
+//	windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
+//	if (!subscriptionWindow.closed && subscriptionWindow.name== "subscriptionWindow")
+//		subscriptionWindow.close();
+//	subscriptionWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+  $( "#subscription-adding" ).dialog( "open" );
+}
 </script>
 
 </head>
 
 <body id="classifieds">
 <center>
-<div id="<%=instanceId%>">
+<div id="<%=componentInstanceId%>">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
@@ -96,9 +97,12 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
     
     Board	board		 = gef.getBoard();
     
-	// afficher les critères de tri
+	// afficher les critï¿½res de tri
 	%>
-	<FORM Name="classifiedForm" action="SearchClassifieds" Method="POST" ENCTYPE="multipart/form-data">
+	
+    <%@include file="subscriptionManager.jsp" %>
+    
+    <FORM Name="classifiedForm" action="SearchClassifieds" Method="POST" ENCTYPE="multipart/form-data">
 		<% if (formSearch != null) { %>
 			<center>
 			<div id="search">
@@ -124,7 +128,7 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 	</FORM>
            
 	<%
-	// affichage des pavés pour les petites annonces par catégorie
+	// affichage des pavï¿½s pour les petites annonces par catï¿½gorie
 	int nbAffiche = 0;
 	%>
 	<div id="categories">
@@ -133,14 +137,14 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 			Iterator itC = categories.iterator();
 			String leftOrRight = "left";
 			while (itC.hasNext()) {
-				// pour une catégorie
+				// pour une catï¿½gorie
 				category = (Category) itC.next();
 				String categoryName = category.getValue();
 				out.println("<div id=\"category"+leftOrRight+"\" class=\"category"+category.getKey()+"\">");
 				//out.println(board.printBefore());				
 				nbAffiche = nbAffiche + 1;
 							
-				// affichage des annonces de cette catégorie
+				// affichage des annonces de cette catï¿½gorie
 				Collection classifieds = category.getClassifieds();
 				int nbClassifieds = 0;
 				%>
@@ -157,7 +161,7 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 				{
 					ClassifiedDetail classified;
 					Iterator it = classifieds.iterator();
-					// on ne veut que 5 annonces par catégories
+					// on ne veut que 5 annonces par catï¿½gories
 					int max = 5;
 					out.println("<ul>");
 					while (it.hasNext() && nbClassifieds < max) {
@@ -171,7 +175,7 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 				}
 				out.print("</div>");
 				
-			  // lien pour la visualisation de toutes les annonces de la catégorie
+			  // lien pour la visualisation de toutes les annonces de la catï¿½gorie
         %>
           <div id="ViewAllClassifiedsByCategory"><a href="ViewAllClassifiedsByCategory?CategoryName=<%=categoryName%>&FieldKey=<%=category.getKey()%>"><%=resource.getString("classifieds.viewAllClassifiedsByCategory")%></a></div>
         <%
