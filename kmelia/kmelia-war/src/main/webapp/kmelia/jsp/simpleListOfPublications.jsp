@@ -248,7 +248,7 @@ $(document).ready(function() {
 					} %>
 					<div id="topicDescription"></div>
 				<%
-					  if (dragAndDropEnable)
+					  if (dragAndDropEnable && userCanCreatePublications)
 					  {
 						%>
 						<div id="DnD">
