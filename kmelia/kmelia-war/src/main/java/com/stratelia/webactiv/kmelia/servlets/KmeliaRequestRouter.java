@@ -363,58 +363,67 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         	destination = destination + "&resultThumbnail=" + request.getParameter("errorThumbnail");
         }
       } else if (function.equals("ToAddTopic")) {
-        String isLink = request.getParameter("IsLink");
-        if (StringUtil.isDefined(isLink)) {
-          request.setAttribute("IsLink", Boolean.TRUE);
-        }
-
         String topicId = request.getParameter("Id");
-        List<NodeDetail> path = kmelia.getTopicPath(topicId);
-        request.setAttribute("Path", kmelia.displayPath(path, false, 3));
-        request.setAttribute("PathLinked", kmelia.displayPath(path, true, 3));
-        request.setAttribute("Translation", kmelia.getCurrentLanguage());
-        request.setAttribute("PopupDisplay", Boolean.TRUE);
-        request.setAttribute("NotificationAllowed", Boolean.valueOf(kmelia.isNotificationAllowed()));
-        request.setAttribute("Parent", kmelia.getNodeHeader(topicId));
+        if (!SilverpeasRole.admin.isInRole(kmelia.getUserTopicProfile(topicId))) {
+          destination = "/admin/jsp/accessForbidden.jsp";
+        } else {
+          String isLink = request.getParameter("IsLink");
+          if (StringUtil.isDefined(isLink)) {
+            request.setAttribute("IsLink", Boolean.TRUE);
+          }
 
-        if (kmelia.isRightsOnTopicsEnabled()) {
-          request.setAttribute("PopupDisplay", Boolean.FALSE);
-          request.setAttribute("Profiles", kmelia.getTopicProfiles());
+          List<NodeDetail> path = kmelia.getTopicPath(topicId);
+          request.setAttribute("Path", kmelia.displayPath(path, false, 3));
+          request.setAttribute("PathLinked", kmelia.displayPath(path, true, 3));
+          request.setAttribute("Translation", kmelia.getCurrentLanguage());
+          request.setAttribute("PopupDisplay", Boolean.TRUE);
+          request.setAttribute("NotificationAllowed", Boolean.valueOf(kmelia
+              .isNotificationAllowed()));
+          request.setAttribute("Parent", kmelia.getNodeHeader(topicId));
 
-          // Rights of the component
-          request.setAttribute("RightsDependsOn", "ThisComponent");
-        }
+          if (kmelia.isRightsOnTopicsEnabled()) {
+            request.setAttribute("PopupDisplay", Boolean.FALSE);
+            request.setAttribute("Profiles", kmelia.getTopicProfiles());
 
-        destination = rootDestination + "addTopic.jsp";
-      } else if ("ToUpdateTopic".equals(function)) {
-        String id = request.getParameter("Id");
-
-        NodeDetail node = kmelia.getSubTopicDetail(id);
-
-        request.setAttribute("NodeDetail", node);
-
-        List<NodeDetail> path = kmelia.getTopicPath(id);
-        request.setAttribute("Path", kmelia.displayPath(path, false, 3));
-        request.setAttribute("PathLinked", kmelia.displayPath(path, true, 3));
-        request.setAttribute("Translation", kmelia.getCurrentLanguage());
-        request.setAttribute("PopupDisplay", Boolean.TRUE);
-        request.setAttribute("NotificationAllowed", Boolean.valueOf(kmelia.isNotificationAllowed()));
-
-        if (kmelia.isRightsOnTopicsEnabled()) {
-          request.setAttribute("PopupDisplay", Boolean.FALSE);
-          request.setAttribute("Profiles", kmelia.getTopicProfiles(id));
-
-          if (node.haveInheritedRights()) {
-            request.setAttribute("RightsDependsOn", "AnotherTopic");
-          } else if (node.haveLocalRights()) {
-            request.setAttribute("RightsDependsOn", "ThisTopic");
-          } else {
             // Rights of the component
             request.setAttribute("RightsDependsOn", "ThisComponent");
           }
-        }
 
-        destination = rootDestination + "updateTopicNew.jsp";
+          destination = rootDestination + "addTopic.jsp";
+        }
+      } else if ("ToUpdateTopic".equals(function)) {
+        String id = request.getParameter("Id");
+        NodeDetail node = kmelia.getSubTopicDetail(id);
+        if (!SilverpeasRole.admin.isInRole(kmelia.getUserTopicProfile(id)) &&
+            !SilverpeasRole.admin.isInRole(kmelia.getUserTopicProfile(node.getFatherPK().getId()))) {
+          destination = "/admin/jsp/accessForbidden.jsp";
+        } else {
+          request.setAttribute("NodeDetail", node);
+
+          List<NodeDetail> path = kmelia.getTopicPath(id);
+          request.setAttribute("Path", kmelia.displayPath(path, false, 3));
+          request.setAttribute("PathLinked", kmelia.displayPath(path, true, 3));
+          request.setAttribute("Translation", kmelia.getCurrentLanguage());
+          request.setAttribute("PopupDisplay", Boolean.TRUE);
+          request.setAttribute("NotificationAllowed", Boolean.valueOf(kmelia
+              .isNotificationAllowed()));
+
+          if (kmelia.isRightsOnTopicsEnabled()) {
+            request.setAttribute("PopupDisplay", Boolean.FALSE);
+            request.setAttribute("Profiles", kmelia.getTopicProfiles(id));
+
+            if (node.haveInheritedRights()) {
+              request.setAttribute("RightsDependsOn", "AnotherTopic");
+            } else if (node.haveLocalRights()) {
+              request.setAttribute("RightsDependsOn", "ThisTopic");
+            } else {
+              // Rights of the component
+              request.setAttribute("RightsDependsOn", "ThisComponent");
+            }
+          }
+
+          destination = rootDestination + "updateTopicNew.jsp";
+        }
       } else if (function.equals("AddTopic")) {
         String name = request.getParameter("Name");
         String description =  request.getParameter("Description");
@@ -1472,9 +1481,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         destination = getDestination("GoToCurrentTopic", kmelia, request);
       } else if (function.equals("ToOrderTopics")) {
         String id = request.getParameter("Id");
-        TopicDetail topic = kmelia.getTopic(id);
-        request.setAttribute("Nodes", topic.getNodeDetail().getChildrenDetails());
-        destination = rootDestination + "orderTopics.jsp";
+        if (!SilverpeasRole.admin.isInRole(kmelia.getUserTopicProfile(id))) {
+          destination = "/admin/jsp/accessForbidden.jsp";
+        } else {
+          TopicDetail topic = kmelia.getTopic(id);
+          request.setAttribute("Nodes", topic.getNodeDetail().getChildrenDetails());
+          destination = rootDestination + "orderTopics.jsp";
+        }
       } else if (function.startsWith("Wizard")) {
         destination = processWizard(function, kmelia, request, rootDestination);
       } else if (function.equals("ViewPdcPositions")) {

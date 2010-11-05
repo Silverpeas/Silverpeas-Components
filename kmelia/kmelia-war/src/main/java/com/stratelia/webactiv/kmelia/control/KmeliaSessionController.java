@@ -886,17 +886,21 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public synchronized void deleteTopic(String topicId) throws RemoteException {
-    // First, remove rights on topic and its descendants
-    List<NodeDetail> treeview = getNodeBm().getSubTree(getNodePK(topicId));
-    NodeDetail node = null;
-    for (int n = 0; n < treeview.size(); n++) {
-      node = treeview.get(n);
+    NodeDetail node = getNodeHeader(topicId);
+    // check if user is allowed to delete this topic
+    if (SilverpeasRole.admin.isInRole(getUserTopicProfile(topicId)) ||
+        SilverpeasRole.admin.isInRole(getUserTopicProfile(node.getFatherPK().getId()))) {
+      // First, remove rights on topic and its descendants
+      List<NodeDetail> treeview = getNodeBm().getSubTree(getNodePK(topicId));
+      for (int n = 0; n < treeview.size(); n++) {
+        node = treeview.get(n);
 
-      deleteTopicRoles(node);
+        deleteTopicRoles(node);
+      }
+
+      // Then, remove the topic itself
+      getKmeliaBm().deleteTopic(getNodePK(topicId));
     }
-
-    // Then, remove the topic itself
-    getKmeliaBm().deleteTopic(getNodePK(topicId));
   }
 
   public synchronized void changeSubTopicsOrder(String way, String subTopicId)

@@ -86,6 +86,9 @@ String userId = kmeliaScc.getUserId();
 ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
 String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
 
+boolean userCanManageRoot = "admin".equalsIgnoreCase(profile);
+boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgnoreCase(profile) || kmeliaScc.isTopicManagementDelegated();
+
 %>
 
 <HTML>
@@ -254,8 +257,6 @@ function clipboardCut() {
     top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>cut?Object=Node&Id=<%=id%>';
 }
 
-<% if (!profile.equals("user")) { %>
-
 function updateChain()
 {
     document.updateChain.submit();
@@ -287,8 +288,6 @@ function topicUpdate(id)
 		topicWindow = SP_openWindow("ToUpdateTopic?Id="+id+"&Translation=<%=translation%>", "topicWindow", "550", "350", "directories=0,menubar=0,toolbar=0,alwaysRaised");
 	<% } %>
 }
-
-<% } %>
 
 function showDnD()
 {
@@ -793,8 +792,7 @@ function loadNodeData(node, fnLoadComplete)  {
 	     that was the target of the "contextmenu" event that
 	     triggered the display of the ContextMenu instance.
 	*/
-	function addNode()
-	{
+	function addNode() {
 		topicAdd(oCurrentTextNode.labelElId, false);
 	}
 
@@ -951,26 +949,6 @@ function loadNodeData(node, fnLoadComplete)  {
                     return;
                 }
 
-                /*var path = "";
-                // The returned data was parsed into an array of objects.
-                for (var i = 0; i < messages.length ; i++) {
-                    var m = messages[i];
-                    var oChildNode = new YAHOO.widget.TextNode(m.name, oCurrentTextNode, false);
-                    oChildNode.labelElId = m.id;
-                    //oChildNode.href = "javascript:displayTopicContent("+m.id+")";
-                    oChildNode.editable = true;
-                    if (m.id == nodeToCut)
-                    {
-                    	var node = oTreeView.getNodeByProperty("labelElId", m.id);
-                    	oTreeView.removeNode(node);
-                    }
-                }
-                oCurrentTextNode.refresh();
-				oCurrentTextNode.expand();
-				oTreeView.draw();
-
-				displayPublications(oCurrentTextNode.labelElId);*/
-
 				reloadPage(id);
 
 				$.closeProgressMessage();
@@ -999,30 +977,24 @@ function loadNodeData(node, fnLoadComplete)  {
     to set a reference to the TextNode instance that triggered
     the display of the ContextMenu instance.
 	*/
-	function onTriggerContextMenu(p_oEvent)
-	{
-    	//alert("onTriggerContextMenu : enter");
-	    var oTarget = this.contextEventTarget;
-
-	    /*
-	         Get the TextNode instance that that triggered the
-	         display of the ContextMenu instance.
-	    */
-	    oCurrentTextNode = oTreeView.getNodeByElement(oTarget);
-	    if (!oCurrentTextNode) {
-	        // Cancel the display of the ContextMenu instance.
-	        this.cancel();
-	    }
-
-	    if (oCurrentTextNode)
-	    {
-			if (oCurrentTextNode.labelElId == "basket" || oCurrentTextNode.labelElId == "tovalidate")
-			{
-				//do not show the menu
-				oContextMenu.cfg.setProperty("visible", false);
-			}
-			else
-			{
+	<% if (userCanManageTopics) { %>
+		function onTriggerContextMenu(p_oEvent)
+		{
+	    	//alert("onTriggerContextMenu : enter");
+		    var oTarget = this.contextEventTarget;
+	
+		    /*
+		         Get the TextNode instance that that triggered the
+		         display of the ContextMenu instance.
+		    */
+		    oCurrentTextNode = oTreeView.getNodeByElement(oTarget);
+		    if (!oCurrentTextNode) {
+		        // Cancel the display of the ContextMenu instance.
+		        this.cancel();
+		    }
+	
+		    if (oCurrentTextNode)
+		    {
 			    //get profile to display more or less context actions
 				$.getJSON("<%=m_context%>/KmeliaJSONServlet?Id="+oCurrentTextNode.labelElId+"&Action=GetTopic&ComponentId=<%=componentId%>&Language=<%=language%>&IEFix="+new Date().getTime(),
 						function(data){
@@ -1032,12 +1004,13 @@ function loadNodeData(node, fnLoadComplete)  {
 								var parentProfile =  oCurrentTextNode.parent.data.role;
 								if (profile == "admin")
 								{
+									//oContextMenu.cfg.setProperty("visible", true);
 									//all actions are enabled
 									oContextMenu.getItem(0).cfg.setProperty("disabled", false);
 									oContextMenu.getItem(1).cfg.setProperty("disabled", false);
 									oContextMenu.getItem(2).cfg.setProperty("disabled", false);
 									oContextMenu.getItem(3).cfg.setProperty("disabled", false);
-
+	
 									oContextMenu.getItem(0,1).cfg.setProperty("disabled", false);
 									oContextMenu.getItem(1,1).cfg.setProperty("disabled", false);
 									oContextMenu.getItem(2,1).cfg.setProperty("disabled", false);
@@ -1051,11 +1024,12 @@ function loadNodeData(node, fnLoadComplete)  {
 									}
 									else
 									{
+										//oContextMenu.cfg.setProperty("visible", true);
 										oContextMenu.getItem(0).cfg.setProperty("disabled", true);
 										oContextMenu.getItem(1).cfg.setProperty("disabled", false);
 										oContextMenu.getItem(2).cfg.setProperty("disabled", false);
 										oContextMenu.getItem(3).cfg.setProperty("disabled", true);
-
+	
 										oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
 										oContextMenu.getItem(1,1).cfg.setProperty("disabled", true);
 										oContextMenu.getItem(2,1).cfg.setProperty("disabled", true);
@@ -1075,10 +1049,11 @@ function loadNodeData(node, fnLoadComplete)  {
 										}
 										else if (creatorId == userId)
 										{
+											//oContextMenu.cfg.setProperty("visible", true);
 											oContextMenu.getItem(0,1).cfg.setProperty("disabled", true);
 											oContextMenu.getItem(1,1).cfg.setProperty("disabled", true);
 											oContextMenu.getItem(2,1).cfg.setProperty("disabled", true);
-
+	
 											oContextMenu.getItem(0,2).cfg.setProperty("disabled", true);
 											oContextMenu.getItem(1,2).cfg.setProperty("disabled", true);
 										}
@@ -1092,7 +1067,7 @@ function loadNodeData(node, fnLoadComplete)  {
 										}
 									}
 								}
-
+	
 								<% if (kmeliaScc.isOrientedWebContent()) { %>
 									if (data[0].status == "Invisible")
 									{
@@ -1108,68 +1083,51 @@ function loadNodeData(node, fnLoadComplete)  {
 								//alert(e);
 							}
 						});
-			}
-	    }
-	}
+		    }
+		}
 
-	function onTriggerRootContextMenu(p_oEvent)
-	{
-		//alert("onTriggerContextMenu : enter");
-	    var oTarget = this.contextEventTarget;
+		/*
+		    Instantiate a ContextMenu:  The first argument passed to the constructor
+		    is the id for the Menu element to be created, the second is an
+		    object literal of configuration properties.
+		*/
+		var oContextMenu = new YAHOO.widget.ContextMenu(
+		    "mytreecontextmenu",
+		    {
+		        trigger: "treeDiv1",
+		        hideDelay: 100,
+		        effect: {
+	                effect: YAHOO.widget.ContainerEffect.FADE,
+	                duration: 0.30
+	            },
+		        lazyload: true,
+		        itemdata: [
+			        [
+			            { text: "<%=resources.getString("CreerSousTheme")%>", onclick: { fn: addNode } },
+			            { text: "<%=resources.getString("ModifierSousTheme")%>", onclick: { fn: editNodeLabel } },
+			            { text: "<%=resources.getString("SupprimerSousTheme")%>", onclick: { fn: deleteNode } },
+			            { text: "<%=resources.getString("kmelia.SortTopics")%>", onclick: { fn: sortTopics } }
+			        ],
+		            [
+			            { text: "<%=resources.getString("GML.copy")%>", onclick: { fn: copyNode } },
+		            	{ text: "<%=resources.getString("GML.cut")%>", onclick: { fn: cutNode } },
+		            	{ text: "<%=resources.getString("GML.paste")%>", onclick: { fn: pasteFromTree } }
+		    		],
+		    		[
+			    		<% if (kmeliaScc.isOrientedWebContent()) { %>
+			            	{ text: "<%=kmeliaScc.getString("TopicWysiwyg")%>", onclick: { fn: topicWysiwyg } },
+			            	{ text: "<%=kmeliaScc.getString("TopicVisible2Invisible")%>", onclick: { fn: changeTopicStatus } }
+			            <% } else if (kmeliaScc.isWysiwygOnTopicsEnabled()) { %>
+			            	{ text: "<%=kmeliaScc.getString("TopicWysiwyg")%>", onclick: { fn: topicWysiwyg } }
+			            <% } %>
+		    		]
+		    	]
+		    }
+		);
 
-	    /*
-	         Get the TextNode instance that that triggered the
-	         display of the ContextMenu instance.
-	    */
-	    oCurrentTextNode = oTreeView.getNodeByElement(oTarget);
-	    if (!oCurrentTextNode) {
-	        // Cancel the display of the ContextMenu instance.
-	        this.cancel();
-	    }
-
-	    <% if (!"admin".equals(kmeliaScc.getUserTopicProfile("0"))) { %>
-	    	this.cancel();
-	    <% } %>
-	}
-
-	/*
-	    Instantiate a ContextMenu:  The first argument passed to the constructor
-	    is the id for the Menu element to be created, the second is an
-	    object literal of configuration properties.
-	*/
-	var oContextMenu = new YAHOO.widget.ContextMenu(
-	    "mytreecontextmenu",
-	    {
-	        trigger: "treeDiv1",
-	        hideDelay: 100,
-	        effect: {
-                effect: YAHOO.widget.ContainerEffect.FADE,
-                duration: 0.30
-            },
-	        lazyload: true,
-	        itemdata: [
-		        [
-		            { text: "<%=resources.getString("CreerSousTheme")%>", onclick: { fn: addNode } },
-		            { text: "<%=resources.getString("ModifierSousTheme")%>", onclick: { fn: editNodeLabel } },
-		            { text: "<%=resources.getString("SupprimerSousTheme")%>", onclick: { fn: deleteNode } },
-		            { text: "<%=resources.getString("kmelia.SortTopics")%>", onclick: { fn: sortTopics } }
-		        ],
-	            [
-		            { text: "<%=resources.getString("GML.copy")%>", onclick: { fn: copyNode } },
-	            	{ text: "<%=resources.getString("GML.cut")%>", onclick: { fn: cutNode } },
-	            	{ text: "<%=resources.getString("GML.paste")%>", onclick: { fn: pasteFromTree } }
-	    		],
-	    		[
-		    		<% if (kmeliaScc.isOrientedWebContent()) { %>
-		            	{ text: "<%=kmeliaScc.getString("TopicWysiwyg")%>", onclick: { fn: topicWysiwyg } },
-		            	{ text: "<%=kmeliaScc.getString("TopicVisible2Invisible")%>", onclick: { fn: changeTopicStatus } }
-		            <% } else if (kmeliaScc.isWysiwygOnTopicsEnabled()) { %>
-		            	{ text: "<%=kmeliaScc.getString("TopicWysiwyg")%>", onclick: { fn: topicWysiwyg } }
-		            <% } %>
-	    		]
-	    	]
-	    }
-	);
+		oContextMenu.subscribe("triggerContextMenu", onTriggerContextMenu);
+		YAHOO.util.Event.addListener("mytreecontextmenu", "mouseout", oContextMenu.hide);
+	<% } %>
 
 	var oBasketContextMenu = new YAHOO.widget.ContextMenu(
 		    "basketcontextmenu",
@@ -1194,6 +1152,23 @@ function loadNodeData(node, fnLoadComplete)  {
 		        lazyload: true
 		    }
 		);
+
+	<% if (userCanManageRoot) { %>
+  	function onTriggerRootContextMenu(p_oEvent)
+	{
+		//alert("onTriggerContextMenu : enter");
+	    var oTarget = this.contextEventTarget;
+	
+	    /*
+	         Get the TextNode instance that that triggered the
+	         display of the ContextMenu instance.
+	    */
+	    oCurrentTextNode = oTreeView.getNodeByElement(oTarget);
+	    if (!oCurrentTextNode) {
+	        // Cancel the display of the ContextMenu instance.
+	        this.cancel();
+	    }
+	}
 
 	var oRootContextMenu = new YAHOO.widget.ContextMenu(
 		    "rootcontextmenu",
@@ -1222,16 +1197,8 @@ function loadNodeData(node, fnLoadComplete)  {
 		    }
 		);
 
-	/*
-	     Subscribe to the "contextmenu" event for the element(s)
-	     specified as the "trigger" for the ContextMenu instance.
-	*/
-	oBasketContextMenu.subscribe("triggerContextMenu", onTriggerContextMenu);
-	oValidateContextMenu.subscribe("triggerContextMenu", onTriggerContextMenu);
-	oContextMenu.subscribe("triggerContextMenu", onTriggerContextMenu);
 	oRootContextMenu.subscribe("triggerContextMenu", onTriggerRootContextMenu);
-
-	YAHOO.util.Event.addListener("mytreecontextmenu", "mouseout", oContextMenu.hide);
+	<% } %>
 
 	function displayTopicContent(id)
 	{
