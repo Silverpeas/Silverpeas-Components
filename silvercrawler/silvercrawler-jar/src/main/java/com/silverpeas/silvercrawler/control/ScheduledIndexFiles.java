@@ -49,8 +49,8 @@ public class ScheduledIndexFiles implements SchedulerEventHandler {
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledIndex");
-      SimpleScheduler.removeJob(this, SILVERCRAWLERENGINE_JOB_NAME);
-      SimpleScheduler.getJob(this, SILVERCRAWLERENGINE_JOB_NAME, cron, this,
+      SimpleScheduler.unscheduleJob(this, SILVERCRAWLERENGINE_JOB_NAME);
+      SimpleScheduler.scheduleJob(this, SILVERCRAWLERENGINE_JOB_NAME, cron, this,
           "doScheduledIndex");
     } catch (Exception e) {
       SilverTrace.error("silverCrawler", "ScheduledIndexFiles.initialize()",

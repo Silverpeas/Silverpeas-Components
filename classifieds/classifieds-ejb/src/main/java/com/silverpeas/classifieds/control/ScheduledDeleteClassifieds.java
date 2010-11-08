@@ -51,8 +51,8 @@ public class ScheduledDeleteClassifieds implements SchedulerEventHandler {
     SilverTrace.error("classifieds", "ScheduledDeleteClassifieds.initialize()", "", "ENTREE");
     try {
       String cron = resources.getString("cronScheduledDeleteClassifieds");
-      SimpleScheduler.removeJob(this, CLASSIFIEDSENGINE_JOB_NAME);
-      SimpleScheduler.getJob(this, CLASSIFIEDSENGINE_JOB_NAME, cron, this,
+      SimpleScheduler.unscheduleJob(this, CLASSIFIEDSENGINE_JOB_NAME);
+      SimpleScheduler.scheduleJob(this, CLASSIFIEDSENGINE_JOB_NAME, cron, this,
           "doScheduledDeleteClassifieds");
     } catch (Exception e) {
       SilverTrace.error("classifieds", "ScheduledDeleteClassifieds.initialize()",

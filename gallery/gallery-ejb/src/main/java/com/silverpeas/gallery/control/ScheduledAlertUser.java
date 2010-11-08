@@ -55,8 +55,8 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledAlertUser");
-      SimpleScheduler.removeJob(this, GALLERYENGINE_JOB_NAME);
-      SimpleScheduler.getJob(this, GALLERYENGINE_JOB_NAME, cron, this,
+      SimpleScheduler.unscheduleJob(this, GALLERYENGINE_JOB_NAME);
+      SimpleScheduler.scheduleJob(this, GALLERYENGINE_JOB_NAME, cron, this,
           "doScheduledAlertUser");
     } catch (Exception e) {
       SilverTrace.error("gallery", "ScheduledAlertUser.initialize()",

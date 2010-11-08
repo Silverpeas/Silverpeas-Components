@@ -78,9 +78,9 @@ public class MailCheckerInitialize {
       SilverTrace.info("mailingList", "MailCheckerInitialize.Initialize",
           "mailinglist.initialization.joblist", " " + jobList);
       if (jobList != null && jobList.size() > 0) {
-        SimpleScheduler.removeJob(checker, MAILING_LIST_JOB_NAME);
+        SimpleScheduler.unscheduleJob(checker, MAILING_LIST_JOB_NAME);
       }
-      SimpleScheduler.getJob(checker, MAILING_LIST_JOB_NAME, getFrequency());
+      SimpleScheduler.scheduleJob(checker, MAILING_LIST_JOB_NAME, getFrequency());
       List<MailingList> mailingLists = getMailingListService().listAllMailingLists();
       SilverTrace.info("mailingList", "MailCheckerInitialize.Initialize",
           "mailinglist.initialization.existing.lists", " " + mailingLists.size());

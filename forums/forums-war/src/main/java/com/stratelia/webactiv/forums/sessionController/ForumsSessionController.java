@@ -210,7 +210,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public void deployForum(int id) {
-    deployedForums.add(Integer.valueOf(id));
+//    deployedForums.add(Integer.valueOf(id));
+    deployedForums.add(id);
   }
 
   public void deployAllMessages(int forumId) {
@@ -221,27 +222,29 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public void undeployForum(int id) {
-    if (!deployedForums.isEmpty()) {
-      Iterator<Integer> iter = deployedForums.iterator();
-      while (iter.hasNext()) {
-        Integer value = iter.next();
-        if (value.intValue() == id) {
-          iter.remove();
-          return;
-        }
-      }
-    }
+//    if (!deployedForums.isEmpty()) {
+//      Iterator<Integer> iter = deployedForums.iterator();
+//      while (iter.hasNext()) {
+//        Integer value = iter.next();
+//        if (value.intValue() == id) {
+//          iter.remove();
+//          return;
+//        }
+//      }
+//    }
+    deployedForums.remove(id);
   }
 
   public boolean forumIsDeployed(int id) {
-    if (!deployedForums.isEmpty()) {
-      for (Integer forum : deployedForums) {
-        if (forum.intValue() == id) {
-          return true;
-        }
-      }
-    }
-    return false;
+//    if (!deployedForums.isEmpty()) {
+//      for (Integer forum : deployedForums) {
+//        if (forum.intValue() == id) {
+//          return true;
+//        }
+//      }
+//    }
+//    return false;
+    return deployedForums.contains(id);
   }
 
   public void lockForum(int id, int level) {

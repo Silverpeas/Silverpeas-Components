@@ -51,8 +51,8 @@ public class ScheduledDeleteOrder implements SchedulerEventHandler {
         "Initializing the scheduler", "ENTREE");
     try {
       String cron = resources.getString("cronScheduledDeleteOrder");
-      SimpleScheduler.removeJob(this, GALLERYENGINE_JOB_NAME);
-      SimpleScheduler.getJob(this, GALLERYENGINE_JOB_NAME, cron, this,
+      SimpleScheduler.unscheduleJob(this, GALLERYENGINE_JOB_NAME);
+      SimpleScheduler.scheduleJob(this, GALLERYENGINE_JOB_NAME, cron, this,
           "doScheduledDeleteOrder");
     } catch (Exception e) {
       SilverTrace.error("gallery", "ScheduledDeleteOrder.initialize()",
