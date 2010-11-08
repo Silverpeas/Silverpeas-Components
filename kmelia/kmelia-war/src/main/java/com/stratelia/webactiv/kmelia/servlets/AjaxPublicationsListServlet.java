@@ -433,7 +433,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               && Boolean.valueOf(resources.getSetting("isVignetteVisible"))) {
             out.write("<span class=\"thumbnail\">");
             try{
-            	displayThumbnail(pub, resources, publicationSettings, out);
+            	displayThumbnail(pub, kmeliaScc, publicationSettings, out);
             }catch (ThumbnailException e) {
         		SilverTrace.info("kmelia", "AjaxPublicationsListServlet.displayPublications()",
         		        "root.MSG_GEN_ENTER_METHOD", "exception = " + e);
@@ -584,10 +584,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write("</form>");
   }
 
-  void displayThumbnail(PublicationDetail pub, ResourcesWrapper resources,
+  void displayThumbnail(PublicationDetail pub, KmeliaSessionController ksc,
       ResourceLocator publicationSettings, Writer out) throws IOException, NumberFormatException, ThumbnailException {
-    String height = resources.getSetting("vignetteHeight");
-    String width = resources.getSetting("vignetteWidth");
+    int[] defaultSizes = ksc.getThumbnailWidthAndHeight();
     String vignette_url;
     if (pub.getImage().startsWith("/")) {
       vignette_url = pub.getImage() + "&Size=133x100";
@@ -601,11 +600,13 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       // calcul de la taille de la vignette
       String[] size = new String[2];
       File image = getThumbnail(pub, publicationSettings);
-      if (StringUtil.isDefined(height) && StringUtil.isInteger(height)) {
-        size = ImageUtil.getWidthAndHeightByHeight(image, Integer.parseInt(height));
-      } else if (StringUtil.isDefined(width) && StringUtil.isInteger(width)) {
-        size = ImageUtil.getWidthAndHeightByWidth(image, Integer.parseInt(width));
+      if (defaultSizes[1] != -1) {
+        size = ImageUtil.getWidthAndHeightByHeight(image, defaultSizes[1]);
+      } else if (defaultSizes[0] != -1) {
+        size = ImageUtil.getWidthAndHeightByWidth(image, defaultSizes[0]);
       }
+      String height = "";
+      String width = "";
       if (StringUtil.isDefined(size[0]) && StringUtil.isDefined(size[1])) {
         width = size[0];
         height = size[1];

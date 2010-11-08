@@ -4260,60 +4260,44 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public int[] getThumbnailWidthAndHeight() {
-    int widthInt = -1;
-    String widthFromXml = getComponentParameterValue("thumbnailWidthSize");
-    if (widthFromXml != null) {
-      try {
-        widthInt = Integer.parseInt(widthFromXml);
-      } catch (NumberFormatException e) {
-        SilverTrace.warn("kmelia", "KmeliaSessionController.getThumbnailWidth()",
-            "root.MSG_GEN_PARAM_VALUE", "xml wrong parameter thumbnailWidthSize = " + widthFromXml);
-      }
-    }
-
-    int heightInt = -1;
-    String heightFromXml = getComponentParameterValue("thumbnailHeightSize");
-    if (heightFromXml != null) {
-      try {
-        heightInt = Integer.parseInt(heightFromXml);
-      } catch (NumberFormatException e) {
-        // second chance -> properties
-        SilverTrace
-            .warn("kmelia", "KmeliaSessionController.getThumbnailHeight()",
-                "root.MSG_GEN_PARAM_VALUE", "xml wrong parameter thumbnailHeightSize = " +
-                    widthFromXml);
-      }
-    }
+    int widthInt = getLengthFromXMLDescriptor("thumbnailWidthSize");
+    int heightInt = getLengthFromXMLDescriptor("thumbnailHeightSize");
 
     if (widthInt == -1 && heightInt == -1) {
       // 2ième chance si nécessaire
-      String widthFromProperties = getSettings().getString("vignetteWidth");
-      try {
-        widthInt = Integer.parseInt(widthFromProperties);
-      } catch (NumberFormatException e) {
-        SilverTrace.warn("kmelia", "KmeliaSessionController.getThumbnailWidth()",
-            "root.MSG_GEN_PARAM_VALUE", "properties wrong parameter vignetteWidth = " +
-                widthFromProperties);
-      }
-      String heightFromProperties = getSettings().getString("vignetteHeight");
-      try {
-        heightInt = Integer.parseInt(heightFromProperties);
-      } catch (NumberFormatException e) {
-        SilverTrace.warn("kmelia", "KmeliaSessionController.getThumbnailHeight()",
-            "root.MSG_GEN_PARAM_VALUE", "properties wrong parameter vignetteHeight = " +
-                heightFromProperties);
-      }
+      widthInt = getLengthFromProperties("vignetteWidth");
+      heightInt = getLengthFromProperties("vignetteHeight");
     }
 
     return new int[] { widthInt, heightInt };
   }
 
-  public String getThumbnailDefaultJcropWidth() {
-    return getSettings().getString("thumbnailJCropDefaultWidth");
+  private int getLengthFromProperties(String name) {
+    int length = -1;
+    String lengthFromProperties = getSettings().getString(name);
+    try {
+      length = Integer.parseInt(lengthFromProperties);
+    } catch (NumberFormatException e) {
+      SilverTrace.info("kmelia", "KmeliaSessionController.getLengthFromProperties()",
+          "root.MSG_GEN_PARAM_VALUE", "properties wrong parameter " + name + " = " +
+              lengthFromProperties);
+    }
+    return length;
   }
 
-  public String getThumbnailDefaultJcropHeight() {
-    return getSettings().getString("thumbnailJCropDefaultHeight");
+  private int getLengthFromXMLDescriptor(String name) {
+    int length = -1;
+    String lengthFromXml = getComponentParameterValue(name);
+    if (StringUtil.isDefined(lengthFromXml)) {
+      try {
+        length = Integer.parseInt(lengthFromXml);
+      } catch (NumberFormatException e) {
+        SilverTrace.info("kmelia", "KmeliaSessionController.getLengthFromXMLDescriptor()",
+            "root.MSG_GEN_PARAM_VALUE", "xml wrong parameter " + name + " = " +
+                lengthFromXml);
+      }
+    }
+    return length;
   }
 
   /**
