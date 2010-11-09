@@ -971,6 +971,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         kmelia.updatePublication(pubDetail);
         
         String id = pubDetail.getPK().getId();
+        processVignette(parameters, kmelia, pubDetail.getInstanceId(), Integer.valueOf(id));
         
         String wizard = kmelia.getWizard();
         if (wizard.equals("progress")) {
@@ -1884,9 +1885,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         String nameImageFromGallery = FileUploadUtil.getParameter(parameters, "valueImageGallery");
         {
           if (StringUtil.isDefined(nameImageFromGallery)) {
-        	  
-        	
-        	  
             physicalName = nameImageFromGallery;
             mimeType = "image/jpeg";
           }
@@ -1894,26 +1892,28 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
     }
     
     if (physicalName != null) {
-    	ThumbnailDetail detail = new ThumbnailDetail(instanceId, pubId, ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-	    detail.setOriginalFileName(physicalName);
-	    detail.setMimeType(mimeType);
-	    
-    	try {
-    		int[] thumbnailSize = kmelia.getThumbnailWidthAndHeight();
-    		ThumbnailController.createThumbnail(detail, thumbnailSize[0], thumbnailSize[1]);
-    	} catch (ThumbnailRuntimeException e) {
-			SilverTrace.error("Thumbnail",
-					"ThumbnailRequestRouter.addThumbnail",
-					"root.MSG_GEN_PARAM_VALUE", e);
-			// need remove the file on disk
-			try {
-				ThumbnailController.deleteThumbnail(detail);
-			} catch (Exception exp) {
-				SilverTrace.info("Thumbnail",
-						"ThumbnailRequestRouter.addThumbnail - remove after error",
-						"root.MSG_GEN_PARAM_VALUE", exp);
-			}
-		}
+      ThumbnailDetail detail =
+          new ThumbnailDetail(instanceId, pubId,
+              ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+      detail.setOriginalFileName(physicalName);
+      detail.setMimeType(mimeType);
+
+      try {
+        int[] thumbnailSize = kmelia.getThumbnailWidthAndHeight();
+        ThumbnailController.updateThumbnail(detail, thumbnailSize[0], thumbnailSize[1]);
+      } catch (ThumbnailRuntimeException e) {
+        SilverTrace.error("Thumbnail",
+            "ThumbnailRequestRouter.addThumbnail",
+            "root.MSG_GEN_PARAM_VALUE", e);
+        // need remove the file on disk
+        try {
+          ThumbnailController.deleteThumbnail(detail);
+        } catch (Exception exp) {
+          SilverTrace.info("Thumbnail",
+              "ThumbnailRequestRouter.addThumbnail - remove after error",
+              "root.MSG_GEN_PARAM_VALUE", exp);
+        }
+      }
     }
   }
 

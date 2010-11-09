@@ -44,6 +44,7 @@ import javax.servlet.http.HttpSession;
 
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.thumbnail.ThumbnailException;
+import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.ImageUtil;
@@ -428,8 +429,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               + " onclick=\"sendPubId(this.value, this.checked);\"/>");
           out.write("</span>");
         } else {
-          String image = pub.getImage();
-          if (image != null
+          ThumbnailDetail thumbnail = pub.getThumbnail();
+          if (thumbnail != null
               && Boolean.valueOf(resources.getSetting("isVignetteVisible"))) {
             out.write("<span class=\"thumbnail\">");
             try{
@@ -597,19 +598,21 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               getPK().getComponentName(),
               "vignette", pub.getImage(), pub.getImageMimeType(),
               publicationSettings.getString("imagesSubDirectory")));
-      // calcul de la taille de la vignette
-      String[] size = new String[2];
-      File image = getThumbnail(pub, publicationSettings);
-      if (defaultSizes[1] != -1) {
-        size = ImageUtil.getWidthAndHeightByHeight(image, defaultSizes[1]);
-      } else if (defaultSizes[0] != -1) {
-        size = ImageUtil.getWidthAndHeightByWidth(image, defaultSizes[0]);
-      }
       String height = "";
       String width = "";
-      if (StringUtil.isDefined(size[0]) && StringUtil.isDefined(size[1])) {
-        width = size[0];
-        height = size[1];
+      if (!StringUtil.isDefined(pub.getThumbnail().getCropFileName())) {
+        // thumbnail is not cropable, process sizes  
+        String[] size = new String[2];
+        File image = getThumbnail(pub, publicationSettings);
+        if (defaultSizes[0] != -1) {
+          size = ImageUtil.getWidthAndHeightByWidth(image, defaultSizes[0]);
+        } else if (defaultSizes[1] != -1) {
+          size = ImageUtil.getWidthAndHeightByHeight(image, defaultSizes[1]);
+        }
+        if (StringUtil.isDefined(size[0]) && StringUtil.isDefined(size[1])) {
+          width = size[0];
+          height = size[1];
+        }
       }
       out.write("<img src=\"" + vignette_url + "\""
           + ((height == null) ? "" : " height=\"" + height + "\"")

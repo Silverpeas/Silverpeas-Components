@@ -195,7 +195,11 @@
       pubDetail = pubComplete.getPublicationDetail();
       pubName = pubDetail.getName(language);
       if (pubDetail.getImage() != null) {
+        if (pubDetail.getImage().startsWith("/")) {
+          vignette_url = pubDetail.getImage() + "&Size=133x100";
+        } else {
           vignette_url = FileServer.getUrl("useless", pubDetail.getPK().getComponentName(), "vignette", pubDetail.getImage(), pubDetail.getImageMimeType(), publicationSettings.getString("imagesSubDirectory"));
+        }
       }
       ownerDetail = userPubComplete.getOwner();
 
@@ -392,7 +396,7 @@
         out.println(gef.getLookStyleSheet());
     %>
     <style type="text/css">
-      #thumbnailPreview {
+      #thumbnailPreviewAndActions {
         <% if (vignette_url == null) {%>
         display: none;
         <% }%>
@@ -598,7 +602,7 @@
                errorMsg+="  - '<%=resources.getString("ToHour")%>' <%=resources.getString("GML.MustContainsCorrectHour")%>\n";
                errorNb++;
              }
-             if (<%=isThumbnailMandatory%> && <%=isThumbnailField%>) {
+             if (<%=isThumbnailMandatory%>) {
                  if ($('#thumbnailFile').val() == '' && $('#thumbnail').attr("src") == 'null') {
                 	 errorMsg+=" - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
                      errorNb++;
@@ -606,9 +610,7 @@
 				 if($('#thumbnail').attr("src") == 'null'){
 					var logicalName = $('#thumbnailFile').val();
 					var type = logicalName.substring(logicalName.lastIndexOf(".") + 1, logicalName.length);
-                 	if (type == 'gif' || type == 'jpg'
-                         || type == 'jpeg' || type == 'png') {
-                 	}else{
+                 	if (type != 'gif' && type != 'jpg' && type != 'jpeg' && type != 'png') {
                  		errorMsg+=" - '<%=resources.getString("Thumbnail")%>' <%=resources.getString("kmelia.EX_MSG_WRONG_TYPE_ERROR")%>\n";
                         errorNb++;
                     }
@@ -683,7 +685,7 @@
         {
           index = liste.selectedIndex;
           var componentId = liste.options[index].value;
-      if (index != 0)
+      	  if (index != 0)
           {
             url = "<%=m_context%>/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=<%=kmeliaScc.getLanguage()%>";
             windowName = "galleryWindow";
@@ -700,7 +702,8 @@
 
         function choixImageInGallery(url)
         {
-          $("#thumbnailPreview").css("display", "block");
+          $("#thumbnailPreviewAndActions").css("display", "block");
+          $("#thumbnailActions").css("display", "none");
           $("#thumbnail").attr("src", url);
           $("#valueImageGallery").attr("value", url);
         }
@@ -728,18 +731,8 @@
 	        $("#thumbnailDialog").dialog(dialogOpts);    //end dialog
         });
 
-        function addThumbnail() {
-        	$("#thumbnailDialog").dialog("option", "title", "<%=resources.getString("ThumbnailAdd")%>");
-        	$("#thumbnailDialog").dialog("option", "width", 500);
-        	var url = "<%=httpServerBase + m_context%>/Thumbnail/jsp/thumbnailManager.jsp?Action=Add<%=standardParamaters + vignetteSizeParameters%>&modal=true";
-        	$("#thumbnailDialog").load(url).dialog("open");
-        }
-
         function updateThumbnail() {
-        	$("#thumbnailDialog").dialog("option", "title", "<%=resources.getString("ThumbnailUpdateFile")%>");
-        	$("#thumbnailDialog").dialog("option", "width", 500);
-        	var url = "<%=httpServerBase + m_context%>/Thumbnail/jsp/thumbnailManager.jsp?Action=UpdateFile<%=standardParamaters%>&modal=true";
-        	$("#thumbnailDialog").load(url).dialog("open");
+        	$("#thumbnailInputs").css("display", "block");
         }
 
         function cropThumbnail() {
@@ -959,17 +952,29 @@
           <TR>
           	<TD class="txtlibform"><%=resources.getString("Thumbnail")%></TD>
           	<TD>
-		  <% if(isThumbnailField){
-		  // mode création (-> champ de formulaire)
-		  %>
-				<div id="thumbnailPreview">
-            	<%
-               	out.println("<img src=\"" + vignette_url + "\" height=\"50px\" id=\"thumbnail\"/>");
-               	out.println("<br/>");
-            	%>
-          		</div>
-          	  	<input type="file" name="WAIMGVAR0" size="40" id="thumbnailFile"/>
-	          <% // liste pour choisir une galerie
+          		<div id="thumbnailPreviewAndActions">
+	          		<div id="thumbnailPreview">
+		            <%
+		               out.println("<img src=\"" + vignette_url + "\" id=\"thumbnail\"/>");
+		               //out.println("<a href=\"DeleteVignette?PubId=" + id + "\"><img border=\"0\" src=\"" + deleteSrc + "\" alt=\"" + resources.getString("VignetteDelete") + "\" title=\"" + kmeliaScc.getString("VignetteDelete") + "\"/></a>");
+		               out.println("<br/>");
+		            %>
+		          	</div>
+		          	<div id="thumbnailActions">
+		          		<% if (pubDetail != null && pubDetail.getThumbnail() != null && pubDetail.getThumbnail().isCropable()) { %>
+							<a href="javascript:cropThumbnail()"><img src="<%=resources.getIcon("kmelia.cropThumbnail") %>" alt="" align="bottom"/> <%=resources.getString("ThumbnailUpdate") %></a>
+						<% } %>
+						<% if (!isThumbnailMandatory) { %>
+						    <!-- bouton suppression actif  -->
+							<a href="javascript:deleteThumbnail()"><img border="0" src="<%=resources.getIcon("kmelia.deleteThumbnail") %>" alt="<%=resources.getString("ThumbnailDelete") %>" title="<%=resources.getString("ThumbnailDelete") %>"/> <%=resources.getString("ThumbnailDelete") %></a>
+						<% } %>
+						<!-- <a href="javascript:updateThumbnail()"><img src="<%=resources.getIcon("kmelia.changeThumbnail") %>" alt="<%=resources.getString("ThumbnailUpdateFile") %>"/> <%=resources.getString("ThumbnailUpdateFile") %></a> -->
+					</div>
+				</div>
+				<div id="thumbnailInputs">
+	          	<img src="<%=resources.getIcon("kmelia.changeThumbnail") %>" alt="<%=resources.getString("ThumbnailUpdateFile") %>" title="<%=resources.getString("ThumbnailUpdateFile") %>"/> <input type="file" name="WAIMGVAR0" size="40" id="thumbnailFile"/>
+	          	<%
+	             // liste pour choisir une galerie
 	             List galleries = kmeliaScc.getGalleries();
 	             if (galleries != null) {
 	               //zone pour le lien vers l'image
@@ -983,54 +988,17 @@
 	               }
 	               out.println("</select>");
 	             }
-	          %>
-	          <% if (isThumbnailMandatory) { %>
-	          		<img src="<%=mandatorySrc%>" width="5" height="5" border="0" alt=""/>
-	          <% } %>
-          <%}else{
-				    if ( vignette_url != null )	{
-				    	// mode modification
-			    		out.println("<div id=\"thumbnailPreview\">");
-				    	out.println("<img src=" + vignette_url + " height=\"50px\" id=\"thumbnail\" alt=\"\"/>");
-				    	if (isThumbnailMandatory) { %>
-    						<img src="<%=mandatorySrc%>" width="5" height="5" border="0" alt=""/>
-    					<% }
-				    	out.println("</div>");
-				    	out.println("<div id=\"thumbnailActions\">");
-						if (isThumbnailMandatory) {
-							// vignette obligatoire -> 2 boutons modifier image et modifier fichier
-							%>
-							<a href="javascript:updateThumbnail()"><img src="<%=resources.getIcon("kmelia.changeThumbnail") %>" alt=""/> <%=resources.getString("ThumbnailUpdateFile") %></a>
-							<%
-						} else {
-							// bouton suppression actif
-							%>
-							<a href="javascript:deleteThumbnail()"><img border="0" src="<%=deleteSrc%>" alt="<%=resources.getString("ThumbnailDelete") %>" title="<%=resources.getString("ThumbnailDelete") %>"/><%=resources.getString("ThumbnailDelete") %></a>
-							<%
-						}
-						%>
-						<a href="javascript:cropThumbnail()"><img src="<%=resources.getIcon("kmelia.cropThumbnail") %>" alt="" align="bottom"/> <%=resources.getString("ThumbnailUpdate") %></a>
-						</div>
-						<%
-					} else {
-						// mode création
-						%>
-						<a href="javascript:addThumbnail()"><img src="<%=resources.getIcon("kmelia.addThumbnail") %>" alt=""/> <%=resources.getString("ThumbnailAdd") %></a>
-						<%
-					}
-					out.println("<br/>");
-						
-					if(errorThumbnail){
-				    // message d'erreur
-						%>
-							<br/>
-							<div style="font-style: italic;color:red;"><%=resources.getString("kmelia." + resultThumbnail)%></div>
-							<br/>
-						<%
-					}
-			}
-          %>
-        </TD>
+	          	%>
+	          	<% if (isThumbnailMandatory) { %>
+					<img src="<%=mandatorySrc%>" width="5" height="5" border="0" alt=""/>
+			    <% } %>
+	          	</div>
+	          	<% if(errorThumbnail) { %>
+					<br/>
+					<div style="font-style: italic;color:red;"><%=resources.getString("kmelia." + resultThumbnail)%></div>
+					<br/>
+				<% } %>
+	       </TD>
       </TR> <%
      }%>
       <TR><TD><input type="hidden" name="Action"><input type="hidden" name="PubId" value="<%=id%>"><input type="hidden" name="Status" value="<%=status%>"><input type="hidden" name="TempId" value="<%=tempId%>"><input type="hidden" name="InfoId" value="<%=infoId%>"></TD></TR>
