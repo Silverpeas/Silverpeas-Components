@@ -50,7 +50,7 @@ public class ScheduledIndexFiles implements SchedulerEventHandler {
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledIndex");
-      SimpleScheduler.unscheduleJob(this, SILVERCRAWLERENGINE_JOB_NAME);
+      SimpleScheduler.unscheduleJob(SILVERCRAWLERENGINE_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       SimpleScheduler.scheduleJob(SILVERCRAWLERENGINE_JOB_NAME, trigger, this);
     } catch (Exception e) {

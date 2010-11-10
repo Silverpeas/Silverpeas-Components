@@ -55,7 +55,7 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledAlertUser");
-      SimpleScheduler.unscheduleJob(this, GALLERYENGINE_JOB_NAME);
+      SimpleScheduler.unscheduleJob(GALLERYENGINE_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       SimpleScheduler.scheduleJob(GALLERYENGINE_JOB_NAME, trigger, this);
     } catch (Exception e) {

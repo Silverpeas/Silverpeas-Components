@@ -49,7 +49,7 @@ public class AutomaticDraftOut implements SchedulerEventHandler {
     SilverTrace.info("kmelia", "AutomaticDraftOut.initialize()", "root.MSG_GEN_ENTER_METHOD");
     try {
       String cron = resources.getString("cronAutomaticDraftOut");
-      SimpleScheduler.unscheduleJob(this, AUTOMATICDRAFTOUT_JOB_NAME);
+      SimpleScheduler.unscheduleJob(AUTOMATICDRAFTOUT_JOB_NAME);
       if (StringUtil.isDefined(cron)) {
         JobTrigger trigger = JobTrigger.triggerAt(cron);
         SimpleScheduler.scheduleJob(AUTOMATICDRAFTOUT_JOB_NAME, trigger, this);

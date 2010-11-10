@@ -51,7 +51,7 @@ public class ScheduledDeleteOrder implements SchedulerEventHandler {
         "Initializing the scheduler", "ENTREE");
     try {
       String cron = resources.getString("cronScheduledDeleteOrder");
-      SimpleScheduler.unscheduleJob(this, GALLERYENGINE_JOB_NAME);
+      SimpleScheduler.unscheduleJob(GALLERYENGINE_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       SimpleScheduler.scheduleJob(GALLERYENGINE_JOB_NAME, trigger, this);
     } catch (Exception e) {

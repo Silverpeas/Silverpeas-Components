@@ -31,11 +31,9 @@ import com.silverpeas.mailinglist.service.model.MailingListService;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.scheduler.SchedulerException;
-import com.stratelia.silverpeas.scheduler.SchedulerJob;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
 import com.stratelia.silverpeas.scheduler.TimeUnit;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import java.util.Collection;
 
 public class MailCheckerInitialize {
 
@@ -75,12 +73,12 @@ public class MailCheckerInitialize {
     try {
       SilverTrace.info("mailingList", "MailCheckerInitialize.Initialize",
           "mailinglist.initialization.start", " " + checker);
-      @SuppressWarnings("unchecked")
-      Collection<SchedulerJob> jobList = SimpleScheduler.getJobList(checker);
-      SilverTrace.info("mailingList", "MailCheckerInitialize.Initialize",
-          "mailinglist.initialization.joblist", " " + jobList);
-      if (jobList != null && jobList.size() > 0) {
-        SimpleScheduler.unscheduleJob(checker, MAILING_LIST_JOB_NAME);
+      //@SuppressWarnings("unchecked")
+      //Collection<SchedulerJob> jobList = SimpleScheduler.getJobList(checker);
+      //SilverTrace.info("mailingList", "MailCheckerInitialize.Initialize",
+      //    "mailinglist.initialization.joblist", " " + jobList);
+      if (SimpleScheduler.isJobScheduled(MAILING_LIST_JOB_NAME)) {
+        SimpleScheduler.unscheduleJob(MAILING_LIST_JOB_NAME);
       }
       //SimpleScheduler.scheduleJob(checker, MAILING_LIST_JOB_NAME, getFrequency());
       JobTrigger trigger = JobTrigger.triggerEvery(getFrequency(), TimeUnit.MINUTE);
