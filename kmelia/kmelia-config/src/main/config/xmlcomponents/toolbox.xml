@@ -265,7 +265,7 @@
           <Value>2</Value>
         </ParameterOption>
         <ParameterOption>
-          <Name>Import unitaire et massif</Name>
+          <Name>Tous</Name>
           <Value>3</Value>
         </ParameterOption>
       </ParameterOptions>
@@ -303,15 +303,15 @@
           <Value>0</Value>
         </ParameterOption>
         <ParameterOption>
-          <Name>Export au format ZIP</Name>
+          <Name>Au format ZIP</Name>
           <Value>1</Value>
         </ParameterOption>
         <ParameterOption>
-          <Name>Export des fichiers PDF</Name>
+          <Name>Des fichiers PDF</Name>
           <Value>2</Value>
         </ParameterOption>
         <ParameterOption>
-          <Name>Export au format ZIP et des fichiers PDF</Name>
+          <Name>Tous</Name>
           <Value>3</Value>
         </ParameterOption>
       </ParameterOptions>

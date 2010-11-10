@@ -186,7 +186,7 @@
     </Parameter>
     <Parameter>
       <ParameterName>versionUseFileRights</ParameterName>
-      <ParameterLabel>Utilisation des droits sur les fichiers</ParameterLabel>
+      <ParameterLabel>Droits sur les fichiers</ParameterLabel>
       <ParameterMandatory>Y</ParameterMandatory>
       <ParameterUpdatable>OnCreationOnly</ParameterUpdatable>
       <ParameterType>select</ParameterType>
@@ -309,7 +309,7 @@
           <Value>2</Value>
         </ParameterOption>
         <ParameterOption>
-          <Name>Import unitaire et massif</Name>
+          <Name>Tous</Name>
           <Value>3</Value>
         </ParameterOption>
       </ParameterOptions>
@@ -364,15 +364,15 @@
           <Value>no</Value>
         </ParameterOption>
         <ParameterOption>
-          <Name>Export au format ZIP</Name>
+          <Name>Au format ZIP</Name>
           <Value>yes</Value>
         </ParameterOption>
         <ParameterOption>
-          <Name>Export des fichiers PDF</Name>
+          <Name>Des fichiers PDF</Name>
           <Value>pdf</Value>
         </ParameterOption>
         <ParameterOption>
-          <Name>Export au format ZIP et des fichiers PDF</Name>
+          <Name>Tous</Name>
           <Value>both</Value>
         </ParameterOption>
       </ParameterOptions>
@@ -642,7 +642,7 @@
     <Parameter>
         <ParameterName>thumbnailWidthSize</ParameterName>
         <ParameterLabel>Largeur de la vignette</ParameterLabel>
-        <ParameterValue>100</ParameterValue>
+        <ParameterValue></ParameterValue>
         <ParameterMandatory>N</ParameterMandatory>
 	    <ParameterUpdatable>always</ParameterUpdatable>
 	    <ParameterSize>5</ParameterSize>
@@ -655,7 +655,7 @@
     <Parameter>
         <ParameterName>thumbnailHeightSize</ParameterName>
         <ParameterLabel>Hauteur de la vignette</ParameterLabel>
-        <ParameterValue>100</ParameterValue>
+        <ParameterValue></ParameterValue>
         <ParameterMandatory>N</ParameterMandatory>
 	    <ParameterUpdatable>always</ParameterUpdatable>
 	    <ParameterSize>5</ParameterSize>
