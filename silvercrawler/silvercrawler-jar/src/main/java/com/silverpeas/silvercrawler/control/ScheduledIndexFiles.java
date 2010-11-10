@@ -32,6 +32,7 @@ import com.silverpeas.silvercrawler.model.SilverCrawlerRuntimeException;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -50,8 +51,8 @@ public class ScheduledIndexFiles implements SchedulerEventHandler {
     try {
       String cron = resources.getString("cronScheduledIndex");
       SimpleScheduler.unscheduleJob(this, SILVERCRAWLERENGINE_JOB_NAME);
-      SimpleScheduler.scheduleJob(this, SILVERCRAWLERENGINE_JOB_NAME, cron, this,
-          "doScheduledIndex");
+      JobTrigger trigger = JobTrigger.triggerAt(cron);
+      SimpleScheduler.scheduleJob(SILVERCRAWLERENGINE_JOB_NAME, trigger, this);
     } catch (Exception e) {
       SilverTrace.error("silverCrawler", "ScheduledIndexFiles.initialize()",
           "silverCrawler.EX_CANT_INIT_SCHEDULED_INDEX_FILES", e);
@@ -71,6 +72,12 @@ public class ScheduledIndexFiles implements SchedulerEventHandler {
             "ScheduledIndexFiles.handleSchedulerEvent", "The job '"
                 + aEvent.getJob().getJobName() + "' was successfull");
         break;
+      case SchedulerEvent.EXECUTION:
+        SilverTrace.debug("silverCrawler",
+            "ScheduledIndexFiles.handleSchedulerEvent", "The job '"
+                + aEvent.getJob().getJobName() + "' is executing");
+        doScheduledIndex();
+        break;
       default:
         SilverTrace.error("silverCrawler",
             "ScheduledIndexFiles.handleSchedulerEvent", "Illegal event type");
@@ -78,7 +85,7 @@ public class ScheduledIndexFiles implements SchedulerEventHandler {
     }
   }
 
-  public void doScheduledIndex(Date date) {
+  public void doScheduledIndex() {
     SilverTrace.info("silverCrawler", "ScheduledIndexFiles.doScheduledIndex()",
         "root.MSG_GEN_ENTER_METHOD");
 

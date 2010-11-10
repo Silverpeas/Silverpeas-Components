@@ -24,7 +24,6 @@
 package com.silverpeas.gallery.control;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
@@ -34,6 +33,7 @@ import com.silverpeas.gallery.model.Order;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -52,8 +52,8 @@ public class ScheduledDeleteOrder implements SchedulerEventHandler {
     try {
       String cron = resources.getString("cronScheduledDeleteOrder");
       SimpleScheduler.unscheduleJob(this, GALLERYENGINE_JOB_NAME);
-      SimpleScheduler.scheduleJob(this, GALLERYENGINE_JOB_NAME, cron, this,
-          "doScheduledDeleteOrder");
+      JobTrigger trigger = JobTrigger.triggerAt(cron);
+      SimpleScheduler.scheduleJob(GALLERYENGINE_JOB_NAME, trigger, this);
     } catch (Exception e) {
       SilverTrace.error("gallery", "ScheduledDeleteOrder.initialize()",
           "gallery.EX_CANT_INIT_SCHEDULED_DELETE_ORDER", e);
@@ -73,6 +73,12 @@ public class ScheduledDeleteOrder implements SchedulerEventHandler {
             "ScheduledDeleteOrder.handleSchedulerEvent", "The job '"
             + aEvent.getJob().getJobName() + "' was successfull");
         break;
+      case SchedulerEvent.EXECUTION:
+        SilverTrace.debug("gallery",
+            "ScheduledDeleteOrder.handleSchedulerEvent", "The job '"
+            + aEvent.getJob().getJobName() + "' is executing");
+        doScheduledDeleteOrder();
+        break;
       default:
         SilverTrace.error("gallery",
             "ScheduledDeleteOrder.handleSchedulerEvent", "Illegal event type");
@@ -80,7 +86,7 @@ public class ScheduledDeleteOrder implements SchedulerEventHandler {
     }
   }
 
-  public void doScheduledDeleteOrder(Date date) {
+  public void doScheduledDeleteOrder() {
     SilverTrace.info("gallery",
         "ScheduledDeleteOrder.doScheduledDeleteOrder()",
         "root.MSG_GEN_ENTER_METHOD");

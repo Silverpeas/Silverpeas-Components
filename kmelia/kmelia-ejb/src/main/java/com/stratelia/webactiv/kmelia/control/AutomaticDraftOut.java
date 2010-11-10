@@ -24,12 +24,12 @@
 package com.stratelia.webactiv.kmelia.control;
 
 import java.rmi.RemoteException;
-import java.util.Date;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
@@ -51,8 +51,8 @@ public class AutomaticDraftOut implements SchedulerEventHandler {
       String cron = resources.getString("cronAutomaticDraftOut");
       SimpleScheduler.unscheduleJob(this, AUTOMATICDRAFTOUT_JOB_NAME);
       if (StringUtil.isDefined(cron)) {
-        SimpleScheduler.scheduleJob(this, AUTOMATICDRAFTOUT_JOB_NAME, cron, this,
-            "doAutomaticDraftOut");
+        JobTrigger trigger = JobTrigger.triggerAt(cron);
+        SimpleScheduler.scheduleJob(AUTOMATICDRAFTOUT_JOB_NAME, trigger, this);
       }
     } catch (Exception e) {
       SilverTrace.error("kmelia", "AutomaticDraftOut.initialize()",
@@ -71,6 +71,11 @@ public class AutomaticDraftOut implements SchedulerEventHandler {
         SilverTrace.debug("kmelia", "AutomaticDraftOut.handleSchedulerEvent",
             "The job '" + aEvent.getJob().getJobName() + "' was successfull");
         break;
+      case SchedulerEvent.EXECUTION:
+        SilverTrace.debug("kmelia", "AutomaticDraftOut.handleSchedulerEvent",
+            "The job '" + aEvent.getJob().getJobName() + "' is executing");
+        doAutomaticDraftOut();
+        break;
       default:
         SilverTrace.error("kmelia", "AutomaticDraftOut.handleSchedulerEvent",
             "Illegal event type");
@@ -78,7 +83,7 @@ public class AutomaticDraftOut implements SchedulerEventHandler {
     }
   }
 
-  public void doAutomaticDraftOut(Date date) {
+  public void doAutomaticDraftOut() {
     SilverTrace.info("kmelia", "AutomaticDraftOut.doAutomaticDraftOut()",
         "root.MSG_GEN_ENTER_METHOD");
     try {

@@ -25,7 +25,6 @@ package com.silverpeas.gallery.control;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
 
 import com.silverpeas.gallery.control.ejb.GalleryBm;
@@ -38,6 +37,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -56,8 +56,8 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
     try {
       String cron = resources.getString("cronScheduledAlertUser");
       SimpleScheduler.unscheduleJob(this, GALLERYENGINE_JOB_NAME);
-      SimpleScheduler.scheduleJob(this, GALLERYENGINE_JOB_NAME, cron, this,
-          "doScheduledAlertUser");
+      JobTrigger trigger = JobTrigger.triggerAt(cron);
+      SimpleScheduler.scheduleJob(GALLERYENGINE_JOB_NAME, trigger, this);
     } catch (Exception e) {
       SilverTrace.error("gallery", "ScheduledAlertUser.initialize()",
           "gallery.EX_CANT_INIT_SCHEDULED_ALERT_USER", e);
@@ -76,6 +76,11 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
         SilverTrace.debug("gallery", "ScheduledAlertUser.handleSchedulerEvent",
             "The job '" + aEvent.getJob().getJobName() + "' was successfull");
         break;
+      case SchedulerEvent.EXECUTION:
+        SilverTrace.debug("gallery", "ScheduledAlertUser.handleSchedulerEvent",
+            "The job '" + aEvent.getJob().getJobName() + "' is executing");
+        doScheduledAlertUser();
+        break;
       default:
         SilverTrace.error("gallery", "ScheduledAlertUser.handleSchedulerEvent",
             "Illegal event type");
@@ -83,7 +88,7 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
     }
   }
 
-  public void doScheduledAlertUser(Date date) {
+  public void doScheduledAlertUser() {
     SilverTrace.info("gallery", "ScheduledAlertUser.doScheduledAlertUser()",
         "root.MSG_GEN_ENTER_METHOD");
 

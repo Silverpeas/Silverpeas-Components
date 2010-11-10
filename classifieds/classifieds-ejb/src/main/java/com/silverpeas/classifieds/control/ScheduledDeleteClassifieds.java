@@ -24,9 +24,7 @@
 package com.silverpeas.classifieds.control;
 
 import java.util.Collection;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.Vector;
 
 import com.silverpeas.classifieds.control.ejb.ClassifiedsBm;
 import com.silverpeas.classifieds.control.ejb.ClassifiedsBmHome;
@@ -35,6 +33,7 @@ import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
 import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
 import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -52,8 +51,8 @@ public class ScheduledDeleteClassifieds implements SchedulerEventHandler {
     try {
       String cron = resources.getString("cronScheduledDeleteClassifieds");
       SimpleScheduler.unscheduleJob(this, CLASSIFIEDSENGINE_JOB_NAME);
-      SimpleScheduler.scheduleJob(this, CLASSIFIEDSENGINE_JOB_NAME, cron, this,
-          "doScheduledDeleteClassifieds");
+      JobTrigger trigger = JobTrigger.triggerAt(cron);
+      SimpleScheduler.scheduleJob(cron, trigger, this);
     } catch (Exception e) {
       SilverTrace.error("classifieds", "ScheduledDeleteClassifieds.initialize()",
           "classifieds.EX_CANT_INIT_SCHEDULED_DELETE_CLASSIFIEDS", e);
@@ -71,6 +70,11 @@ public class ScheduledDeleteClassifieds implements SchedulerEventHandler {
         SilverTrace.debug("classifieds", "ScheduledDeleteClassifieds.handleSchedulerEvent",
             "The job '" + aEvent.getJob().getJobName() + "' was successfull");
         break;
+      case SchedulerEvent.EXECUTION:
+        SilverTrace.debug("classifieds", "ScheduledDeleteClassifieds.handleSchedulerEvent",
+            "The job '" + aEvent.getJob().getJobName() + "' is executed");
+        doScheduledDeleteClassifieds();
+        break;
       default:
         SilverTrace.error("classifieds", "ScheduledDeleteClassifieds.handleSchedulerEvent",
             "Illegal event type");
@@ -78,7 +82,7 @@ public class ScheduledDeleteClassifieds implements SchedulerEventHandler {
     }
   }
 
-  public void doScheduledDeleteClassifieds(Date date) {
+  public void doScheduledDeleteClassifieds() {
     SilverTrace.info("classifieds", "ScheduledDeleteClassifieds.doScheduledDeleteClassifieds()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
