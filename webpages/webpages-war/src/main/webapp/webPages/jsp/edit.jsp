@@ -44,7 +44,7 @@ function goToWysiwyg() {
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
 
 <%
-	//Affichage du contenu: appel � l'�diteur wysiwyg
+	//Affichage du contenu: appel à l'éditeur wysiwyg
 	out.println(window.printBefore());
 %>
 

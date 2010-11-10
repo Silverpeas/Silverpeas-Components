@@ -24,13 +24,19 @@
 
 package com.silverpeas.webpages.servlets;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
+
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.webpages.control.*;
 
 /**
@@ -76,14 +82,13 @@ public class WebPagesRequestRouter extends ComponentRequestRouter {
     WebPagesSessionController webPagesSC = (WebPagesSessionController) componentSC;
     SilverTrace.info("webPages", "WebPagesRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId()
-        + " Function=" + function);
+            + " Function=" + function);
 
     try {
       if (function.startsWith("Main") || (function.equals("searchResult"))) {
         String profile = webPagesSC.getProfile();
-        boolean haveGotWysiwyg = processHaveGotWysiwygNotEmpty(webPagesSC, 
-            request);
-        if (!profile.equals(USER) && !haveGotWysiwyg) {
+        boolean haveGotContent = processHaveGotContent(webPagesSC, request);
+        if (!profile.equals(USER) && !haveGotContent) {
           // Si le role est publieur, le composant s'ouvre en edition
           destination = getDestination("Edit", componentSC, request);
         } else {
@@ -92,32 +97,51 @@ public class WebPagesRequestRouter extends ComponentRequestRouter {
           destination = getDestination("Preview", componentSC, request);
         }
       } else if (function.equals("Edit")) {
-        request.setAttribute("userId", webPagesSC.getUserId());
-        destination = rootDestination + "edit.jsp";
+        if (webPagesSC.isXMLTemplateUsed()) {
+          destination = getDestination("EditXMLContent", componentSC, request);
+        } else {
+          request.setAttribute("userId", webPagesSC.getUserId());
+          destination = rootDestination + "edit.jsp";
+        }
       } else if (function.equals("Preview")) {
-        processHaveGotWysiwygNotEmpty(webPagesSC, request);
-        
+        processHaveGotContent(webPagesSC, request);
+
         request.setAttribute("IsSubscriber", webPagesSC.isSubscriber());
+        if (webPagesSC.isXMLTemplateUsed()) {
+          request.setAttribute("Form", webPagesSC.getViewForm());
+          request.setAttribute("Data", webPagesSC.getDataRecord());
+        }
+
         String profile = webPagesSC.getProfile();
         if (!profile.equals(USER)) {
           request.setAttribute("Action", "Preview");
         } else {
           request.setAttribute("Action", "Display");
         }
-        
+
         destination = rootDestination + "display.jsp";
       } else if (function.startsWith("portlet")) {
-        processHaveGotWysiwygNotEmpty(webPagesSC, request);
-        
+        processHaveGotContent(webPagesSC, request);
+
         request.setAttribute("IsSubscriber", webPagesSC.isSubscriber());
         request.setAttribute("Action", "Portlet");
-        
+
         destination = rootDestination + "display.jsp";
       } else if (function.startsWith("AddSubscription")) {
         webPagesSC.addSubscription();
         destination = getDestination("Main", componentSC, request);
       } else if (function.startsWith("RemoveSubscription")) {
         webPagesSC.removeSubscription();
+        destination = getDestination("Main", componentSC, request);
+      } else if ("EditXMLContent".equals(function)) {
+        request.setAttribute("Form", webPagesSC.getUpdateForm());
+        request.setAttribute("Data", webPagesSC.getDataRecord());
+
+        destination = rootDestination + "editXMLContent.jsp";
+      } else if ("UpdateXMLContent".equals(function)) {
+        List<FileItem> items = FileUploadUtil.parseRequest(request);
+        webPagesSC.saveDataRecord(items);
+
         destination = getDestination("Main", componentSC, request);
       } else {
         destination = rootDestination + function;
@@ -132,11 +156,16 @@ public class WebPagesRequestRouter extends ComponentRequestRouter {
     return destination;
   }
 
-  private boolean processHaveGotWysiwygNotEmpty(
-      WebPagesSessionController webPagesSC, HttpServletRequest request) {
-    boolean haveGotWysiwyg = webPagesSC.haveGotWysiwygNotEmpty();
-    request.setAttribute("haveGotWysiwyg", new Boolean(haveGotWysiwyg));
-    return haveGotWysiwyg;
+  private boolean processHaveGotContent(WebPagesSessionController webPagesSC,
+      HttpServletRequest request) {
+    boolean haveGotContent = false;
+    if (webPagesSC.isXMLTemplateUsed()) {
+      haveGotContent = webPagesSC.isXMLContentDefined();
+    } else {
+      haveGotContent = webPagesSC.haveGotWysiwygNotEmpty();
+    }
+    request.setAttribute("haveGotContent", haveGotContent);
+    return haveGotContent;
   }
 
 }

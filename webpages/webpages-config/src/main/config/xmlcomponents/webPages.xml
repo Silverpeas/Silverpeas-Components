@@ -51,5 +51,17 @@
         <ParameterHelpEn>Allows to send a notification to the users who have subscribed to the Web page</ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
+    <Parameter>
+      <ParameterName>xmlTemplate</ParameterName>
+      <ParameterLabel>Formulaire utilisé</ParameterLabel>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterType>xmltemplates</ParameterType>
+      <ParameterUpdatable>OnCreationOnly</ParameterUpdatable>
+      <ParameterOrder>2</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Permet d'utiliser un formulaire comme masque de saisie</ParameterHelpFr>
+        <ParameterHelpEn>Allows you to use a form as an input mask</ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
   </Parameters>
 </WAComponent>

@@ -26,7 +26,20 @@ package com.silverpeas.webpages.control;
 
 import java.rmi.RemoteException;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
+import org.apache.commons.fileupload.FileItem;
+
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.Form;
+import com.silverpeas.form.FormException;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.StringUtil;
 import com.silverpeas.webpages.model.WebPagesRuntimeException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -34,17 +47,18 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
+import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.subscribe.control.SubscribeBm;
 import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
 
-/**
- * @author sdevolder
- */
 public class WebPagesSessionController extends AbstractComponentSessionController {
+
   /**
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
@@ -56,6 +70,17 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     super(mainSessionCtrl, componentContext,
         "com.silverpeas.webpages.multilang.webPagesBundle",
         "com.silverpeas.webpages.settings.webPagesIcons");
+
+    if (isXMLTemplateUsed()) {
+      // register xmlForm to component
+      try {
+        PublicationTemplateManager.getInstance().addDynamicPublicationTemplate(getComponentId()
+            + ":" + getUsedXMLTemplateShortname(), getUsedXMLTemplate());
+      } catch (PublicationTemplateException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
+      }
+    }
   }
 
   /**
@@ -188,4 +213,110 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     return "yes".equalsIgnoreCase(getComponentParameterValue("useSubscription"));
   }
 
+  /**************************************************************************************/
+  /*
+   * XML template management
+   * /*************************************************************************************
+   */
+  private String getUsedXMLTemplate() {
+    return getComponentParameterValue("xmlTemplate");
+  }
+
+  private String getUsedXMLTemplateShortname() {
+    String xmlFormName = getUsedXMLTemplate();
+    return xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+  }
+
+  public boolean isXMLTemplateUsed() {
+    return StringUtil.isDefined(getUsedXMLTemplate());
+  }
+
+  private PublicationTemplate getXMLTemplate() throws PublicationTemplateException {
+    PublicationTemplate pubTemplate =
+        PublicationTemplateManager.getInstance().getPublicationTemplate(
+            getComponentId() + ":" + getUsedXMLTemplateShortname());
+
+    return pubTemplate;
+  }
+
+  public DataRecord getDataRecord() throws FormException, PublicationTemplateException {
+    PublicationTemplate pubTemplate = getXMLTemplate();
+
+    RecordSet recordSet = pubTemplate.getRecordSet();
+    DataRecord data = recordSet.getRecord("0", getLanguage());
+    if (data == null) {
+      data = recordSet.getEmptyRecord();
+      data.setId("0");
+      data.setLanguage(getLanguage());
+    }
+
+    return data;
+  }
+
+  public boolean isXMLContentDefined() {
+    DataRecord data;
+    try {
+      PublicationTemplate pubTemplate = getXMLTemplate();
+
+      RecordSet recordSet = pubTemplate.getRecordSet();
+      data = recordSet.getRecord("0", getLanguage());
+      return data != null;
+    } catch (Exception e) {
+      // TODO Auto-generated catch block
+      e.printStackTrace();
+    }
+    return true;
+  }
+
+  public Form getViewForm() throws PublicationTemplateException {
+    PublicationTemplate pubTemplate = getXMLTemplate();
+
+    return pubTemplate.getViewForm();
+  }
+
+  public Form getUpdateForm() throws PublicationTemplateException {
+    PublicationTemplate pubTemplate = getXMLTemplate();
+
+    return pubTemplate.getUpdateForm();
+  }
+
+  public void saveDataRecord(List<FileItem> items) throws FormException,
+      PublicationTemplateException {
+    PublicationTemplate pub = getXMLTemplate();
+
+    // save data in database
+    RecordSet set = pub.getRecordSet();
+    Form form = pub.getUpdateForm();
+
+    DataRecord data = set.getRecord("0", getLanguage());
+    if (data == null) {
+      data = set.getEmptyRecord();
+      data.setId("0");
+      data.setLanguage(getLanguage());
+    }
+
+    PagesContext context =
+        new PagesContext("useless", "0", getLanguage(), false, getComponentId(), getUserId());
+    context.setEncoding("UTF-8");
+    context.setObjectId("0");
+    context.setContentLanguage(getLanguage());
+
+    form.update(items, data, context);
+    set.save(data);
+
+    // index updated data
+    FullIndexEntry indexEntry = new FullIndexEntry(getComponentId(), "Component", getComponentId());
+    indexEntry.setCreationDate(new Date());
+    indexEntry.setCreationUser(getUserId());
+    indexEntry.setTitle(getComponentLabel());
+    ComponentInstLight component =
+        getOrganizationController().getComponentInstLight(getComponentId());
+    if (component != null) {
+      indexEntry.setPreView(component.getDescription());
+    }
+
+    set.indexRecord("0", getUsedXMLTemplateShortname(), indexEntry);
+
+    IndexEngineProxy.addIndexEntry(indexEntry);
+  }
 }

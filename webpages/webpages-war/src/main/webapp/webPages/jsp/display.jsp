@@ -26,7 +26,9 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
-
+<%@page import="com.silverpeas.form.Form"%>
+<%@page import="com.silverpeas.form.DataRecord"%>
+<%@page import="com.silverpeas.form.PagesContext"%>
 <%
 	boolean isSubscriber = ((Boolean) request.getAttribute("IsSubscriber")).booleanValue();
 
@@ -34,7 +36,14 @@
 	if (action == null) {
 	  action = "Display";
 	}
-	boolean haveGotWysiwyg = ((Boolean)request.getAttribute("haveGotWysiwyg")).booleanValue();
+	boolean haveGotContent = ((Boolean)request.getAttribute("haveGotContent")).booleanValue();
+	
+	Form form = (Form) request.getAttribute("Form");
+	DataRecord data = (DataRecord) request.getAttribute("Data");
+	
+	PagesContext context = new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, "useless");
+ 	context.setObjectId("0");
+	context.setBorderPrinted(false);
 %>
 
 <html>
@@ -72,22 +81,21 @@ out.println(gef.getLookStyleSheet());
 	<table width="100%" border="0">
 	<tr><td id="richContent">
 		<%
-			if (haveGotWysiwyg)
-			{
-				out.flush();
-				getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+componentId+"&SpaceId="+spaceId+"&ComponentId="+componentId).include(request, response);
-			}
-			else 
-			{
+			if (haveGotContent) {
+			  	if (data != null) {
+			  	  form.display(out, context, data);
+			  	} else {			  	  
+					out.flush();
+					getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/htmlDisplayer.jsp?ObjectId="+componentId+"&SpaceId="+spaceId+"&ComponentId="+componentId).include(request, response);
+			  	}
+			} else {
 		%>
 				<center>
 				<img src="<%=resource.getIcon("webPages.underConstruction") %>" alt=""/>
 				<span class="txtnav"><%=resource.getString("webPages.emptyPage")%></span>
 				<img src="<%=resource.getIcon("webPages.underConstruction") %>" alt=""/>
 				</center>
-		<%
-			}
-		%>
+		<% } %>
 	</td></tr>
 	</table>
 <%
