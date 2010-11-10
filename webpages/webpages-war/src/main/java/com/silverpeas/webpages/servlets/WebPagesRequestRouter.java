@@ -81,7 +81,7 @@ public class WebPagesRequestRouter extends ComponentRequestRouter {
     try {
       if (function.startsWith("Main") || (function.equals("searchResult"))) {
         String profile = webPagesSC.getProfile();
-        boolean haveGotWysiwyg = processHaveGotWysiwygNotEmpty(webPagesSC,
+        boolean haveGotWysiwyg = processHaveGotWysiwygNotEmpty(webPagesSC, 
             request);
         if (!profile.equals(USER) && !haveGotWysiwyg) {
           // Si le role est publieur, le composant s'ouvre en edition
@@ -96,25 +96,28 @@ public class WebPagesRequestRouter extends ComponentRequestRouter {
         destination = rootDestination + "edit.jsp";
       } else if (function.equals("Preview")) {
         processHaveGotWysiwygNotEmpty(webPagesSC, request);
-
+        
+        request.setAttribute("IsSubscriber", webPagesSC.isSubscriber());
         String profile = webPagesSC.getProfile();
-        if (!profile.equals(USER))
+        if (!profile.equals(USER)) {
           request.setAttribute("Action", "Preview");
-        else
+        } else {
           request.setAttribute("Action", "Display");
-
+        }
+        
         destination = rootDestination + "display.jsp";
       } else if (function.startsWith("portlet")) {
         processHaveGotWysiwygNotEmpty(webPagesSC, request);
-
+        
+        request.setAttribute("IsSubscriber", webPagesSC.isSubscriber());
         request.setAttribute("Action", "Portlet");
-
+        
         destination = rootDestination + "display.jsp";
       } else if (function.startsWith("AddSubscription")) {
-        webPagesSC.addSubscription("0");
+        webPagesSC.addSubscription();
         destination = getDestination("Main", componentSC, request);
       } else if (function.startsWith("RemoveSubscription")) {
-        webPagesSC.removeSubscription("0");
+        webPagesSC.removeSubscription();
         destination = getDestination("Main", componentSC, request);
       } else {
         destination = rootDestination + function;

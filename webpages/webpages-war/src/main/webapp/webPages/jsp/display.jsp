@@ -26,42 +26,38 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
-<html>
-<head>
 
 <%
-	String subscriptionAddSrc	= m_context + "/util/icons/subscribeAdd.gif";
-	String subscriptionRemoveSrc	= m_context + "/util/icons/subscribeRemove.gif";
+	boolean isSubscriber = ((Boolean) request.getAttribute("IsSubscriber")).booleanValue();
 
-	out.println(gef.getLookStyleSheet());
-
-	//D�clarations
-	String toBuildSrc	= "<img src=\"" + resource.getIcon("webPages.underConstruction") + "\">";
 	String action = (String)request.getAttribute("Action");
-	if (action == null) action = "Display";
-	Boolean o = (Boolean)request.getAttribute("haveGotWysiwyg");
-	boolean haveGotWysiwyg = false;
-	if (o!= null)
-		haveGotWysiwyg = o.booleanValue();
-	
+	if (action == null) {
+	  action = "Display";
+	}
+	boolean haveGotWysiwyg = ((Boolean)request.getAttribute("haveGotWysiwyg")).booleanValue();
 %>
 
+<html>
+<head>
+<%
+out.println(gef.getLookStyleSheet());
+%>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-
+<body>
 <%
 	if (!action.equals("Portlet") && webPagesScc.isSubscriptionUsed())
 	{
-	 	if (webPagesScc.getSubscriptionList().isEmpty())
-	 		operationPane.addOperation(subscriptionAddSrc, resource.getString("webPages.subscriptionAdd"), "AddSubscription");
-	 	else
-	 		operationPane.addOperation(subscriptionRemoveSrc, resource.getString("webPages.subscriptionRemove"), "RemoveSubscription");
+	 	if (!isSubscriber) {
+	 		operationPane.addOperation("useless", resource.getString("webPages.subscriptionAdd"), "AddSubscription");
+	 	} else {
+	 		operationPane.addOperation("useless", resource.getString("webPages.subscriptionRemove"), "RemoveSubscription");
+	 	}
 	}
 	
-	if (action.equals("Preview") || (!action.equals("Portlet") && webPagesScc.isSubscriptionUsed()))
+	if (action.equals("Preview") || (!action.equals("Portlet") && webPagesScc.isSubscriptionUsed())) {
 		out.println(window.printBefore());
+	}
 
 	//Les onglets
 	if (action.equals("Preview")) {
@@ -85,9 +81,9 @@
 			{
 		%>
 				<center>
-				<%=toBuildSrc%>
+				<img src="<%=resource.getIcon("webPages.underConstruction") %>" alt=""/>
 				<span class="txtnav"><%=resource.getString("webPages.emptyPage")%></span>
-				<%=toBuildSrc%>
+				<img src="<%=resource.getIcon("webPages.underConstruction") %>" alt=""/>
 				</center>
 		<%
 			}
@@ -96,11 +92,13 @@
 	</table>
 <%
 	
-	if (action.equals("Preview"))
+	if (action.equals("Preview")) {
 		out.println(frame.printAfter());
+	}
 		
-	if (action.equals("Preview") || (!action.equals("Portlet") && webPagesScc.isSubscriptionUsed()))
+	if (action.equals("Preview") || (!action.equals("Portlet") && webPagesScc.isSubscriptionUsed())) {
 		out.println(window.printAfter());
+	}
 %>	
 </body>
 </html>

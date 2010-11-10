@@ -25,23 +25,18 @@
 package com.silverpeas.webpages.control;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
+import com.silverpeas.webpages.model.WebPagesRuntimeException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
-import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import com.silverpeas.webpages.model.WebPagesRuntimeException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.node.control.NodeBm;
-import com.stratelia.webactiv.util.node.control.NodeBmHome;
-import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.subscribe.control.SubscribeBm;
 import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
@@ -121,144 +116,53 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   /**************************************************************************************/
   /* webPages - Gestion des abonnements */
   /**************************************************************************************/
-  public synchronized Collection<NodeDetail> getSubscriptionList() throws RemoteException {
-    return getSubscriptionList(getUserId(), getComponentId());
-  }
-
-  public synchronized void removeSubscription(String topicId)
-      throws RemoteException {
-    this.removeSubscriptionToCurrentUser(getNodePK(topicId), getUserId());
-  }
-
-  public synchronized void addSubscription(String topicId)
-      throws RemoteException {
-
-    this.addSubscription(getNodePK(topicId), getUserId());
-  }
-
-  /**************************************************************************************/
-  /* Interface - Gestion des abonnements */
-  /**************************************************************************************/
-  /**
-   * Subscriptions - get the subscription list of the current user
-   * @return a Path Collection - it's a Collection of NodeDetail collection
-   * @see com.stratelia.webactiv.util.node.model.NodeDetail
-   * @since 1.0
-   */
-  public Collection<NodeDetail> getSubscriptionList(String userId, String componentId) {
-    SilverTrace.info("webPages",
-        "WebPagesSessionController.getSubscriptionList()",
+  public synchronized void removeSubscription() throws RemoteException {
+    SilverTrace.info("webPages", "WebPagesSessionController.removeSubscription()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      Collection<NodePK> list = getSubscribeBm().getUserSubscribePKsByComponent(userId,
-          componentId);
-      Collection<NodeDetail> detailedList = new ArrayList<NodeDetail>();
-      Iterator<NodePK> i = list.iterator();
-      // For each favorite, get the path from root to favorite
-      while (i.hasNext()) {
-        NodePK pk = i.next();
-        NodeDetail nodeDetail = new NodeDetail();
-        nodeDetail.setNodePK(pk);
-        detailedList.add(nodeDetail);
-      }
-      SilverTrace.info("webPages",
-          "WebPagesSessionController.getSubscriptionList()",
-          "root.MSG_GEN_EXIT_METHOD");
-      return detailedList;
+      getSubscribeBm().removeSubscribe(getUserId(), getNodePK());
     } catch (Exception e) {
       throw new WebPagesRuntimeException(
-          "WebPagesSessionController.getSubscriptionList()",
-          SilverpeasRuntimeException.ERROR,
-          "webPages.EX_IMPOSSIBLE_DOBTENIR_LES_ABONNEMENTS", e);
-    }
-  }
-
-  /**
-   * Subscriptions - remove a subscription to the subscription list of the current user
-   * @param topicId the subscribe topic Id to remove
-   * @since 1.0
-   */
-  public void removeSubscriptionToCurrentUser(NodePK topicPK, String userId) {
-    SilverTrace.info("webPages",
-        "WebPagesSessionController.removeSubscriptionToCurrentUser()",
-        "root.MSG_GEN_ENTER_METHOD");
-    try {
-      getSubscribeBm().removeSubscribe(userId, topicPK);
-    } catch (Exception e) {
-      throw new WebPagesRuntimeException(
-          "WebPagesSessionController.removeSubscriptionToCurrentUser()",
+          "WebPagesSessionController.removeSubscription()",
           SilverpeasRuntimeException.ERROR,
           "webPages.EX_IMPOSSIBLE_DE_SUPPRIMER_ABONNEMENT", e);
     }
-    SilverTrace.info("webPages",
-        "WebPagesSessionController.removeSubscriptionToCurrentUser()",
-        "root.MSG_GEN_EXIT_METHOD");
   }
 
-  private NodePK getNodePK(String id) {
-    return new NodePK(id, getSpaceId(), getComponentId());
-  }
-
-  public NodeBm getNodeBm() {
-    NodeBm nodeBm = null;
-    try {
-      NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
-          JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-      nodeBm = nodeBmHome.create();
-    } catch (Exception e) {
-      throw new WebPagesRuntimeException(
-          "WebPagesSessionController.getNodeBm()",
-          SilverpeasRuntimeException.ERROR,
-          "webPages.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
-    }
-    return nodeBm;
-  }
-
-  /**
-   * Subscriptions - add a subscription
-   * @param topicId the subscription topic Id to add
-   * @since 1.0
-   */
-  public void addSubscription(NodePK topicPK, String userId) {
+  public synchronized void addSubscription() throws RemoteException {
     SilverTrace.info("webPages", "WebPagesSessionController.addSubscription()",
         "root.MSG_GEN_ENTER_METHOD");
 
-    if (!checkSubscription(topicPK, userId))
+    if (isSubscriber()) {
       return;
+    }
 
     try {
-      getSubscribeBm().addSubscribe(userId, topicPK);
+      getSubscribeBm().addSubscribe(getUserId(), getNodePK());
     } catch (Exception e) {
       SilverTrace.warn("webPages",
           "WebPagesSessionController.addSubscription()",
-          "webPages.EX_SUBSCRIPTION_ADD_FAILED",
-          "topicId = " + topicPK.getId(), e);
+          "webPages.EX_SUBSCRIPTION_ADD_FAILED", e);
     }
-    SilverTrace.info("webPages", "WebPagesSessionController.addSubscription()",
-        "root.MSG_GEN_EXIT_METHOD");
   }
 
-  /**
-   * @return true if this topic does not exists in user subscriptions and can be added to them.
-   */
-  public boolean checkSubscription(NodePK topicPK, String userId) {
+  public boolean isSubscriber() {
+    SilverTrace.info("webPages", "WebPagesSessionController.isSubscriber()",
+        "root.MSG_GEN_ENTER_METHOD");
     try {
-      Collection<NodePK> subscriptions = getSubscribeBm()
-          .getUserSubscribePKsByComponent(userId, topicPK.getInstanceId());
-      for (Iterator<NodePK> iterator = subscriptions.iterator(); iterator.hasNext();) {
-        NodePK nodePK = iterator.next();
-        if (topicPK.getId().equals(nodePK.getId())) {
-          return false;
-        }
-      }
-      return true;
-
+      Collection<NodePK> list =
+          getSubscribeBm().getUserSubscribePKsByComponent(getUserId(), getComponentId());
+      return (list != null && !list.isEmpty());
     } catch (Exception e) {
       throw new WebPagesRuntimeException(
-          "WebPagesSessionController.checkSubscription()",
+          "WebPagesSessionController.isSubscriber()",
           SilverpeasRuntimeException.ERROR,
           "webPages.EX_IMPOSSIBLE_DOBTENIR_LES_ABONNEMENTS", e);
     }
+  }
+
+  private NodePK getNodePK() {
+    return new NodePK("0", getSpaceId(), getComponentId());
   }
 
   public SubscribeBm getSubscribeBm() {
@@ -281,9 +185,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
    * @return boolean
    */
   public boolean isSubscriptionUsed() {
-    if ("yes".equalsIgnoreCase(getComponentParameterValue("useSubscription")))
-      return true;
-    return false;
+    return "yes".equalsIgnoreCase(getComponentParameterValue("useSubscription"));
   }
 
 }
