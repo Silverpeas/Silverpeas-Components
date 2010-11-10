@@ -137,8 +137,8 @@
       <ParameterName>XMLFormName</ParameterName>
       <ParameterLabel>Formulaire XML</ParameterLabel>
       <ParameterValue></ParameterValue>
-      <ParameterSize>25</ParameterSize>
       <ParameterMandatory>N</ParameterMandatory>
+      <ParameterType>xmltemplates</ParameterType>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>9</ParameterOrder>
       <ParameterHelp>
@@ -282,7 +282,7 @@
       <ParameterName>XMLOrderFormName</ParameterName>
       <ParameterLabel>Formulaire XML associé aux demandes</ParameterLabel>
       <ParameterValue></ParameterValue>
-      <ParameterSize>25</ParameterSize>
+      <ParameterType>xmltemplates</ParameterType>
       <ParameterMandatory>N</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>19</ParameterOrder>

@@ -42,8 +42,8 @@
       <ParameterName>XMLFormName</ParameterName>
       <ParameterLabel>Formulaire XML</ParameterLabel>
       <ParameterValue>classifieds.xml</ParameterValue>
-      <ParameterSize>25</ParameterSize>
-      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterMandatory>Y</ParameterMandatory>
+      <ParameterType>xmltemplates</ParameterType>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>1</ParameterOrder>
       <ParameterHelp>
