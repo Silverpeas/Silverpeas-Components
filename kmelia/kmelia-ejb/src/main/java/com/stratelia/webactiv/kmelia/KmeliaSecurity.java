@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.kmelia;
 
+import com.silverpeas.util.StringUtil;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +31,6 @@ import java.util.List;
 
 import com.silverpeas.util.security.ComponentSecurity;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
@@ -50,11 +50,17 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import static com.stratelia.webactiv.SilverpeasRole.*;
+import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
 
 public class KmeliaSecurity implements ComponentSecurity {
+  public static final String PUBLICATION_TYPE = "Publication";
+  public static final String NODE_TYPE = "Node";
+  
+  public static final String RIGHTS_ON_TOPIC_PARAM = "rightsOnTopics";
 
-  private PublicationBm publicationBm = null;
-  private NodeBm nodeBm = null;
+  private PublicationBm publicationBm;
+  private NodeBm nodeBm;
   private OrganizationController controller = null;
   private Map<String, Boolean> cache = Collections.synchronizedMap(new HashMap<String, Boolean>());
   private volatile boolean cacheEnabled = false;
@@ -79,8 +85,7 @@ public class KmeliaSecurity implements ComponentSecurity {
     cacheEnabled = false;
   }
 
-  private void writeInCache(String objectId, String objectType,
-      String componentId, boolean available) {
+  private void writeInCache(String objectId, String objectType, String componentId, boolean available) {
     if (cacheEnabled) {
       cache.put(objectId + objectType + componentId, Boolean.valueOf(available));
     }
@@ -95,7 +100,7 @@ public class KmeliaSecurity implements ComponentSecurity {
 
   @Override
   public boolean isAccessAuthorized(String componentId, String userId, String objectId) {
-    return isAccessAuthorized(componentId, userId, objectId, "Publication");
+    return isAccessAuthorized(componentId, userId, objectId, PUBLICATION_TYPE);
   }
 
   @Override
@@ -122,39 +127,35 @@ public class KmeliaSecurity implements ComponentSecurity {
       }
       if (publication != null) {
         String status = publication.getStatus();
-        if ("Valid".equalsIgnoreCase(status)) {
+        if (VALID.equalsIgnoreCase(status)) {
           return true;
-        } else if ("ToValidate".equalsIgnoreCase(status)) {
+        } else if (TO_VALIDATE.equalsIgnoreCase(status)) {
           String profile = getProfile(userId, pk);
-          if ("user".equalsIgnoreCase(profile)) {
+          if (user.isInRole(profile)) {
             return false;
-          } else if ("writer".equalsIgnoreCase(profile)) {
+          } else if (writer.isInRole(profile)) {
             return userId.equals(publication.getUpdaterId())
                 || userId.equals(publication.getCreatorId());
-          } else {
-            return true;
           }
-        } else if ("UnValidate".equalsIgnoreCase(status)) {
+          return true;
+        } else if (REFUSED.equalsIgnoreCase(status)) {
           String profile = getProfile(userId, pk);
-          if (!"user".equalsIgnoreCase(profile)) {
+          if (!user.isInRole(profile)) {
             return userId.equals(publication.getUpdaterId())
-                || userId.equals(publication.getCreatorId())
-                || SilverpeasRole.admin.isInRole(profile)
-                || SilverpeasRole.publisher.isInRole(profile);
-          } else {
-            return false;
+              || userId.equals(publication.getCreatorId()) || admin.isInRole(profile)
+              || publisher.isInRole(profile);
           }
-        } else if ("Draft".equalsIgnoreCase(status)) {
+          return false;
+        } else if (DRAFT.equalsIgnoreCase(status)) {
           String profile = getProfile(userId, pk);
-          if (!"user".equalsIgnoreCase(profile)) {
-            return userId.equals(publication.getUpdaterId())
-                || userId.equals(publication.getCreatorId());
-          } else {
-            return false;
+          if (!user.isInRole(profile)) {
+            return userId.equals(publication.getUpdaterId()) 
+              || userId.equals(publication.getCreatorId());
           }
+          return false;
         }
       }
-    } else if (objectType != null && "Node".equalsIgnoreCase(objectType)) {
+    } else if (NODE_TYPE.equalsIgnoreCase(objectType)) {
       NodePK pk = new NodePK(objectId, componentId);
       return isNodeAvailable(pk, userId);
     }
@@ -164,39 +165,33 @@ public class KmeliaSecurity implements ComponentSecurity {
   @Override
   public boolean isObjectAvailable(String componentId, String userId, String objectId,
       String objectType) {
-    boolean objectAvailable = false;
     if (isKmeliaObjectType(objectType)) {
-      objectAvailable = isPublicationAvailable(new PublicationPK(objectId,
-          componentId), userId);
-    } else if ("Node".equalsIgnoreCase(objectType)) {
-      objectAvailable = isNodeAvailable(new NodePK(objectId, componentId),
-          userId);
-    } else {
-      objectAvailable = true;
-    }
-    return objectAvailable;
+      return isPublicationAvailable(new PublicationPK(objectId, componentId), userId);
+    } else if (NODE_TYPE.equalsIgnoreCase(objectType)) {
+      return isNodeAvailable(new NodePK(objectId, componentId), userId);
+    } 
+    return true;
   }
 
   protected boolean isKmeliaObjectType(String objectType) {
-    return objectType != null && ("Publication".equalsIgnoreCase(objectType)
+    return objectType != null && (PUBLICATION_TYPE.equalsIgnoreCase(objectType)
         || objectType.startsWith("Attachment") || objectType.startsWith("Version"));
   }
 
-  protected boolean isRightsOnTopicsEnable(String componentId) {
-    String param = controller.getComponentParameterValue(componentId,
-        "rightsOnTopics");
-    return ("yes".equalsIgnoreCase(param));
+  protected boolean isRightsOnTopicsEnabled(String componentId) {
+    String param = controller.getComponentParameterValue(componentId, RIGHTS_ON_TOPIC_PARAM);
+    return StringUtil.getBooleanValue(param);
   }
 
   protected boolean isPublicationAvailable(PublicationPK pk, String userId) {
-    Boolean fromCache = readFromCache(pk.getId(), "Publication", pk.getInstanceId());
+    Boolean fromCache = readFromCache(pk.getId(), PUBLICATION_TYPE, pk.getInstanceId());
     if (fromCache != null) {
       // Availabily already processed
       return fromCache.booleanValue();
     }
 
     boolean objectAvailable = false;
-    if (isRightsOnTopicsEnable(pk.getInstanceId())) {
+    if (isRightsOnTopicsEnabled(pk.getInstanceId())) {
       Collection<NodePK> fatherPKs = null;
       try {
         fatherPKs = getPublicationBm().getAllFatherPK(pk);
@@ -216,21 +211,19 @@ public class KmeliaSecurity implements ComponentSecurity {
     } else {
       objectAvailable = true;
     }
-    writeInCache(pk.getId(), "Publication", pk.getInstanceId(), objectAvailable);
+    writeInCache(pk.getId(), PUBLICATION_TYPE, pk.getInstanceId(), objectAvailable);
     return objectAvailable;
   }
 
   private boolean isNodeAvailable(NodePK nodePK, String userId) {
-    Boolean fromCache = readFromCache(nodePK.getId(), "Node", nodePK.getInstanceId());
+    Boolean fromCache = readFromCache(nodePK.getId(), NODE_TYPE, nodePK.getInstanceId());
     if (fromCache != null) {
       // Availabily already processed
       return fromCache.booleanValue();
     }
-
     boolean objectAvailable = false;
-    if (isRightsOnTopicsEnable(nodePK.getInstanceId())) {
+    if (isRightsOnTopicsEnabled(nodePK.getInstanceId())) {
       NodeDetail node = null;
-
       try {
         node = getNodeBm().getHeader(nodePK, false);
       } catch (RemoteException e) {
@@ -238,13 +231,11 @@ public class KmeliaSecurity implements ComponentSecurity {
             SilverpeasRuntimeException.ERROR,
             "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
       }
-
       if (node != null) {
         if (!node.haveRights()) {
           objectAvailable = true;
         } else {
-          objectAvailable =
-              controller.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
+          objectAvailable = controller.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
                   nodePK.getInstanceId(), userId);
         }
       } else {
@@ -253,14 +244,13 @@ public class KmeliaSecurity implements ComponentSecurity {
     } else {
       objectAvailable = true;
     }
-    writeInCache(nodePK.getId(), "Node", nodePK.getInstanceId(),
-        objectAvailable);
+    writeInCache(nodePK.getId(), NODE_TYPE, nodePK.getInstanceId(), objectAvailable);
     return objectAvailable;
   }
 
   private String getProfile(String userId, PublicationPK pubPK) {
     String[] profiles;
-    if (!isRightsOnTopicsEnable(pubPK.getInstanceId())) {
+    if (!isRightsOnTopicsEnabled(pubPK.getInstanceId())) {
       // get component-level profiles
       profiles = controller.getUserProfiles(userId, pubPK.getInstanceId());
     } else {
@@ -291,8 +281,7 @@ public class KmeliaSecurity implements ComponentSecurity {
                 pubPK.getInstanceId())));
           } else {
             lProfiles.addAll(Arrays.asList(controller.getUserProfiles(userId,
-                pubPK.getInstanceId(), node.getRightsDependsOn(),
-                ObjectType.NODE)));
+                pubPK.getInstanceId(), node.getRightsDependsOn(), ObjectType.NODE)));
           }
         }
       }
@@ -307,7 +296,7 @@ public class KmeliaSecurity implements ComponentSecurity {
         PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
             JNDINames.PUBLICATIONBM_EJBHOME,
             PublicationBmHome.class);
-        publicationBm = publicationBmHome.create();
+        setPublicationBm(publicationBmHome.create());
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.getPublicationBm()",
             SilverpeasRuntimeException.ERROR,
@@ -322,7 +311,7 @@ public class KmeliaSecurity implements ComponentSecurity {
       try {
         NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
             JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
-        nodeBm = nodeBmHome.create();
+        setNodeBm(nodeBmHome.create());
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.getNodeBm()",
             SilverpeasRuntimeException.ERROR,
@@ -330,5 +319,23 @@ public class KmeliaSecurity implements ComponentSecurity {
       }
     }
     return nodeBm;
+  }
+  
+  public synchronized boolean isCacheEnabled() {
+    return cacheEnabled;
+  }
+
+  /**
+   * @param publicationBm the publicationBm to set
+   */
+  void setPublicationBm(PublicationBm publicationBm) {
+    this.publicationBm = publicationBm;
+  }
+
+  /**
+   * @param nodeBm the nodeBm to set
+   */
+  void setNodeBm(NodeBm nodeBm) {
+    this.nodeBm = nodeBm;
   }
 }

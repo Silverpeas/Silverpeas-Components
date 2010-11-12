@@ -197,7 +197,7 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
     ArrayList headers = new ArrayList();
     try {
       KmeliaSecurity security = new KmeliaSecurity();
-      boolean checkRights = security.isRightsOnTopicsEnable(componentId);
+      boolean checkRights = security.isRightsOnTopicsEnabled(componentId);
 
       ArrayList publicationDetails = (ArrayList) getPublicationBm()
           .getPublications((ArrayList) ids);
