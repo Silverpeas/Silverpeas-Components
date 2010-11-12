@@ -24,7 +24,6 @@
 
 package com.silverpeas.webpages.control;
 
-import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +39,8 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.webpages.WebPagesNotifier;
+import com.silverpeas.webpages.model.WebPagesException;
 import com.silverpeas.webpages.model.WebPagesRuntimeException;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -50,6 +51,7 @@ import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
@@ -58,6 +60,8 @@ import com.stratelia.webactiv.util.subscribe.control.SubscribeBm;
 import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
 
 public class WebPagesSessionController extends AbstractComponentSessionController {
+
+  WebPagesNotifier notifier = null;
 
   /**
    * Standard Session Controller Constructeur
@@ -77,8 +81,8 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
         PublicationTemplateManager.getInstance().addDynamicPublicationTemplate(getComponentId()
             + ":" + getUsedXMLTemplateShortname(), getUsedXMLTemplate());
       } catch (PublicationTemplateException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+        SilverTrace.error("webPages", "WebPagesSessionController()", "", "template = " +
+            getUsedXMLTemplate(), e);
       }
     }
   }
@@ -90,19 +94,10 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   public String getProfile() {
     String[] profiles = getUserRoles();
     String flag = "user";
-    String profile = "";
-    for (int i = 0; i < profiles.length; i++) {
-      profile = profiles[i];
-      // if admin, return it, we won't find a better profile
-      if (profile.equals("admin"))
+    for (String profile : profiles) {
+      // if publisher, return it, we won't find a better profile
+      if (profile.equals("publisher")) {
         return profile;
-      if (profile.equals("publisher"))
-        flag = profile;
-      else if (profile.equals("writer")) {
-        if (!flag.equals("publisher"))
-          flag = profile;
-      } else if (profile.equals("supervisor")) {
-        flag = profile;
       }
     }
     return flag;
@@ -141,7 +136,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
   /**************************************************************************************/
   /* webPages - Gestion des abonnements */
   /**************************************************************************************/
-  public synchronized void removeSubscription() throws RemoteException {
+  public synchronized void removeSubscription() {
     SilverTrace.info("webPages", "WebPagesSessionController.removeSubscription()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
@@ -154,7 +149,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     }
   }
 
-  public synchronized void addSubscription() throws RemoteException {
+  public synchronized void addSubscription() {
     SilverTrace.info("webPages", "WebPagesSessionController.addSubscription()",
         "root.MSG_GEN_ENTER_METHOD");
 
@@ -190,7 +185,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     return new NodePK("0", getSpaceId(), getComponentId());
   }
 
-  public SubscribeBm getSubscribeBm() {
+  private SubscribeBm getSubscribeBm() {
     SubscribeBm subscribeBm = null;
     try {
       SubscribeBmHome subscribeBmHome = (SubscribeBmHome) EJBUtilitaire
@@ -213,10 +208,8 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     return "yes".equalsIgnoreCase(getComponentParameterValue("useSubscription"));
   }
 
-  /**************************************************************************************/
   /*
    * XML template management
-   * /*************************************************************************************
    */
   private String getUsedXMLTemplate() {
     return getComponentParameterValue("xmlTemplate");
@@ -231,29 +224,39 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     return StringUtil.isDefined(getUsedXMLTemplate());
   }
 
-  private PublicationTemplate getXMLTemplate() throws PublicationTemplateException {
-    PublicationTemplate pubTemplate =
-        PublicationTemplateManager.getInstance().getPublicationTemplate(
-            getComponentId() + ":" + getUsedXMLTemplateShortname());
+  private PublicationTemplate getXMLTemplate() throws WebPagesException {
+    try {
+      PublicationTemplate pubTemplate =
+          PublicationTemplateManager.getInstance().getPublicationTemplate(
+              getComponentId() + ":" + getUsedXMLTemplateShortname());
 
-    return pubTemplate;
-  }
-
-  public DataRecord getDataRecord() throws FormException, PublicationTemplateException {
-    PublicationTemplate pubTemplate = getXMLTemplate();
-
-    RecordSet recordSet = pubTemplate.getRecordSet();
-    DataRecord data = recordSet.getRecord("0", getLanguage());
-    if (data == null) {
-      data = recordSet.getEmptyRecord();
-      data.setId("0");
-      data.setLanguage(getLanguage());
+      return pubTemplate;
+    } catch (PublicationTemplateException e) {
+      throw new WebPagesException("WebPagesSessionController.getXMLTemplate()",
+          SilverpeasException.ERROR, "webPages.EX_CANT_GET_TEMPLATE", e);
     }
-
-    return data;
   }
 
-  public boolean isXMLContentDefined() {
+  public DataRecord getDataRecord() throws WebPagesException {
+    try {
+      PublicationTemplate pubTemplate = getXMLTemplate();
+
+      RecordSet recordSet = pubTemplate.getRecordSet();
+      DataRecord data = recordSet.getRecord("0", getLanguage());
+      if (data == null) {
+        data = recordSet.getEmptyRecord();
+        data.setId("0");
+        data.setLanguage(getLanguage());
+      }
+
+      return data;
+    } catch (Exception e) {
+      throw new WebPagesException("WebPagesSessionController.getDataRecord()",
+          SilverpeasException.ERROR, "webPages.EX_CANT_GET_DATA", e);
+    }
+  }
+
+  public boolean isXMLContentDefined() throws WebPagesException {
     DataRecord data;
     try {
       PublicationTemplate pubTemplate = getXMLTemplate();
@@ -262,61 +265,91 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       data = recordSet.getRecord("0", getLanguage());
       return data != null;
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      throw new WebPagesException("WebPagesSessionController.isXMLContentDefined()",
+          SilverpeasException.ERROR, "webPages.EX_CANT_GET_DATA", e);
     }
-    return true;
   }
 
-  public Form getViewForm() throws PublicationTemplateException {
-    PublicationTemplate pubTemplate = getXMLTemplate();
+  public Form getViewForm() throws WebPagesException {
+    try {
+      PublicationTemplate pubTemplate = getXMLTemplate();
 
-    return pubTemplate.getViewForm();
+      return pubTemplate.getViewForm();
+    } catch (PublicationTemplateException e) {
+      throw new WebPagesException("WebPagesSessionController.getViewForm()",
+          SilverpeasException.ERROR, "webPages.EX_CANT_GET_VIEWFORM", e);
+    }
   }
 
-  public Form getUpdateForm() throws PublicationTemplateException {
-    PublicationTemplate pubTemplate = getXMLTemplate();
+  public Form getUpdateForm() throws WebPagesException {
+    try {
+      PublicationTemplate pubTemplate = getXMLTemplate();
 
-    return pubTemplate.getUpdateForm();
+      return pubTemplate.getUpdateForm();
+    } catch (PublicationTemplateException e) {
+      throw new WebPagesException("WebPagesSessionController.getUpdateForm()",
+          SilverpeasException.ERROR, "webPages.EX_CANT_GET_UPDATEFORM", e);
+    }
   }
 
-  public void saveDataRecord(List<FileItem> items) throws FormException,
-      PublicationTemplateException {
-    PublicationTemplate pub = getXMLTemplate();
-
+  public void saveDataRecord(List<FileItem> items) throws WebPagesException {
     // save data in database
-    RecordSet set = pub.getRecordSet();
-    Form form = pub.getUpdateForm();
+    RecordSet set;
+    try {
+      PublicationTemplate pub = getXMLTemplate();
 
-    DataRecord data = set.getRecord("0", getLanguage());
-    if (data == null) {
-      data = set.getEmptyRecord();
-      data.setId("0");
-      data.setLanguage(getLanguage());
+      set = pub.getRecordSet();
+      Form form = pub.getUpdateForm();
+
+      DataRecord data = set.getRecord("0", getLanguage());
+      if (data == null) {
+        data = set.getEmptyRecord();
+        data.setId("0");
+        data.setLanguage(getLanguage());
+      }
+
+      PagesContext context =
+          new PagesContext("useless", "0", getLanguage(), false, getComponentId(), getUserId());
+      context.setEncoding("UTF-8");
+      context.setObjectId("0");
+      context.setContentLanguage(getLanguage());
+
+      form.update(items, data, context);
+      set.save(data);
+    } catch (Exception e) {
+      throw new WebPagesException("WebPagesSessionController.saveDataRecord()",
+          SilverpeasException.ERROR, "webPages.EX_CANT_SAVE_DATA", e);
     }
 
-    PagesContext context =
-        new PagesContext("useless", "0", getLanguage(), false, getComponentId(), getUserId());
-    context.setEncoding("UTF-8");
-    context.setObjectId("0");
-    context.setContentLanguage(getLanguage());
-
-    form.update(items, data, context);
-    set.save(data);
+    // send subscriptions
+    getNotifier().sendSubscriptionsNotification(getNodePK(), getUserId());
 
     // index updated data
-    FullIndexEntry indexEntry = new FullIndexEntry(getComponentId(), "Component", getComponentId());
-    indexEntry.setCreationDate(new Date());
-    indexEntry.setCreationUser(getUserId());
-    indexEntry.setTitle(getComponentLabel());
-    ComponentInstLight component =
-        getOrganizationController().getComponentInstLight(getComponentId());
-    if (component != null) {
-      indexEntry.setPreView(component.getDescription());
+    try {
+      FullIndexEntry indexEntry =
+          new FullIndexEntry(getComponentId(), "Component", getComponentId());
+      indexEntry.setCreationDate(new Date());
+      indexEntry.setCreationUser(getUserId());
+      indexEntry.setTitle(getComponentLabel());
+      ComponentInstLight component =
+          getOrganizationController().getComponentInstLight(getComponentId());
+      if (component != null) {
+        indexEntry.setPreView(component.getDescription());
+      }
+
+      set.indexRecord("0", getUsedXMLTemplateShortname(), indexEntry);
+
+      IndexEngineProxy.addIndexEntry(indexEntry);
+    } catch (FormException e) {
+      throw new WebPagesException("WebPagesSessionController.saveDataRecord()",
+          SilverpeasException.ERROR, "webPages.EX_CANT_INDEX_DATA", e);
     }
+  }
 
-    set.indexRecord("0", getUsedXMLTemplateShortname(), indexEntry);
-
-    IndexEngineProxy.addIndexEntry(indexEntry);
+  private WebPagesNotifier getNotifier() {
+    if (notifier == null) {
+      notifier = new WebPagesNotifier();
+    }
+    return notifier;
   }
 }

@@ -26,8 +26,12 @@ package com.silverpeas.webpages;
 
 import java.sql.Connection;
 
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
 import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -39,30 +43,43 @@ public class WebPagesInstanciator implements ComponentsInstanciatorIntf {
 
   public void create(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
-    SilverTrace.info("webPages", "WebPagesInstanciator.create()",
-        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-        + componentId + ", userId =" + userId);
-
-    // insert your code here !
-
-    SilverTrace.info("webPages", "WebPagesInstanciator.create()",
-        "root.MSG_GEN_EXIT_METHOD");
+    // do nothing
   }
 
   public void delete(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
     SilverTrace.info("webPages", "WebPagesInstanciator.delete()",
-        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-        + componentId + ", userId =" + userId);
+        "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId + ", userId =" + userId);
 
+    removeWysiwygContent(componentId);
+    removeXMLContent(componentId);
+
+    SilverTrace.info("webPages", "WebPagesInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
+  }
+
+  private void removeWysiwygContent(String componentId) throws InstanciationException {
     try {
       WysiwygController.deleteFileAndAttachment(componentId, componentId);
     } catch (Exception e) {
       throw new InstanciationException("WebPagesInstanciator.delete",
           SilverpeasException.ERROR, "webPages.WYSIWYG_DELETION_FAILED", e);
     }
+  }
 
-    SilverTrace.info("webPages", "WebPagesInstanciator.delete()",
-        "root.MSG_GEN_EXIT_METHOD");
+  private void removeXMLContent(String componentId) throws InstanciationException {
+    String xmlFormName =
+        new OrganizationController().getComponentParameterValue(componentId, "xmlTemplate");
+    if (StringUtil.isDefined(xmlFormName)) {
+      String xmlShortName =
+          xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+
+      try {
+        PublicationTemplateManager.getInstance().removePublicationTemplate(
+            componentId + ":" + xmlShortName);
+      } catch (PublicationTemplateException e) {
+        throw new InstanciationException("WebPagesInstanciator.removeXMLContent",
+            SilverpeasException.ERROR, "webPages.XMLCONTENT_DELETION_FAILED", e);
+      }
+    }
   }
 }

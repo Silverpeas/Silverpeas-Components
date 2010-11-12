@@ -38,6 +38,7 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.webpages.control.*;
+import com.silverpeas.webpages.model.WebPagesException;
 
 /**
  * @author sdevolder
@@ -134,11 +135,13 @@ public class WebPagesRequestRouter extends ComponentRequestRouter {
         webPagesSC.removeSubscription();
         destination = getDestination("Main", componentSC, request);
       } else if ("EditXMLContent".equals(function)) {
+        // user wants to edit data
         request.setAttribute("Form", webPagesSC.getUpdateForm());
         request.setAttribute("Data", webPagesSC.getDataRecord());
 
         destination = rootDestination + "editXMLContent.jsp";
       } else if ("UpdateXMLContent".equals(function)) {
+        // user saves updated data
         List<FileItem> items = FileUploadUtil.parseRequest(request);
         webPagesSC.saveDataRecord(items);
 
@@ -157,7 +160,7 @@ public class WebPagesRequestRouter extends ComponentRequestRouter {
   }
 
   private boolean processHaveGotContent(WebPagesSessionController webPagesSC,
-      HttpServletRequest request) {
+      HttpServletRequest request) throws WebPagesException {
     boolean haveGotContent = false;
     if (webPagesSC.isXMLTemplateUsed()) {
       haveGotContent = webPagesSC.isXMLContentDefined();

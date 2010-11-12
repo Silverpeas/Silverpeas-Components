@@ -28,37 +28,13 @@
  */
 package com.silverpeas.webpages;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.StringTokenizer;
-import java.util.Vector;
-
-import com.silverpeas.util.i18n.I18NHelper;
-import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.silverpeas.webpages.model.WebPagesRuntimeException;
-import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
-import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
-import com.stratelia.silverpeas.notificationManager.NotificationParameters;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
-import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.util.DBUtil;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.subscribe.control.SubscribeBm;
-import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
 
 /**
  * @author dlesimple
@@ -78,15 +54,15 @@ public class WebPagesCallBack extends CallBack {
   public void doInvoke(int action, int iParam, String sParam, Object extraParam) {
     SilverTrace.info("webPages", "WebPagesCallback.doInvoke()",
         "root.MSG_GEN_ENTER_METHOD", "action = " + action + ", iParam = "
-        + iParam + ", sParam = " + sParam + ", extraParam = "
-        + extraParam.toString());
+            + iParam + ", sParam = " + sParam + ", extraParam = "
+            + extraParam.toString());
 
     if (iParam == -1) {
       SilverTrace.info("webPages", "WebPagesCallback.doInvoke()",
           "root.MSG_GEN_PARAM_VALUE",
           "userId is null. Callback stopped ! action = " + action
-          + ", sParam = " + sParam + ", extraParam = "
-          + extraParam.toString());
+              + ", sParam = " + sParam + ", extraParam = "
+              + extraParam.toString());
       return;
     }
 
@@ -96,14 +72,16 @@ public class WebPagesCallBack extends CallBack {
         String sUserId = Integer.toString(iParam);
         String componentId = sParam;
         String pubId = (String) extraParam;
-        if (oc == null)
+        if (oc == null) {
           oc = new OrganizationController();
+        }
 
         // If parameter useSubscription is used
         if ("yes".equals(oc.getComponentParameterValue(componentId,
             "useSubscription"))) {
-          if (isWebPageModified(pubId, action))
+          if (isWebPageModified(pubId, action)) {
             externalElementsOfWebPagesHaveChanged(componentId, sUserId);
+          }
         }
       }
     } catch (Exception e) {
@@ -131,144 +109,8 @@ public class WebPagesCallBack extends CallBack {
   public void externalElementsOfWebPagesHaveChanged(String componentId,
       String userId) {
     NodePK nodePK = new NodePK("0", componentId);
-    sendSubscriptionsNotification(nodePK, userId);
-  }
-
-  private void sendSubscriptionsNotification(NodePK nodePK, String userId) {
-    // send email alerts
-    try {
-
-      ArrayList<String> subscriberIds = (ArrayList<String>) getSubscribeBm().getNodeSubscriberDetails(
-          nodePK);
-
-      if (subscriberIds != null && subscriberIds.size() > 0) {
-        Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-        String fileName = "notificationUpdateContent";
-
-        ResourceLocator message = new ResourceLocator(
-            "com.silverpeas.webpages.multilang.webPagesBundle", I18NHelper.defaultLanguage);
-        String subject = message.getString("webPages.subscription"); 
-        NotificationMetaData notifMetaData = new NotificationMetaData(
-            NotificationParameters.NORMAL, subject, templates, fileName);
-        if (oc == null)
-          oc = new OrganizationController();
-        String senderName = oc.getUserDetail(userId).getDisplayedName(); 
-
-        for (String lang : getAllLanguages()) {
-          SilverpeasTemplate template = getNewTemplate();
-          templates.put(lang, template);
-          template.setAttribute("path", "");
-          template.setAttribute("senderName", senderName);
-          template.setAttribute("silverpeasURL", URLManager.getURL(null, null, nodePK
-              .getInstanceId())
-              + "Main");
-          ResourceLocator localizedMessage = new ResourceLocator(
-              "com.silverpeas.webpages.multilang.webPagesBundle", lang);
-          notifMetaData.addLanguage(lang, localizedMessage.getString("webPages.subscription", subject) 
-              , "");
-        }
-        notifMetaData.setUserRecipients(subscriberIds);
-        notifMetaData.setLink(URLManager.getURL(null, null, nodePK
-            .getInstanceId())
-            + "Main");
-        notifMetaData.setComponentId(nodePK.getInstanceId());
-        notifyUsers(notifMetaData, userId);
-      }
-    } catch (Exception e) {
-      SilverTrace.warn("webPages",
-          "WebPagesCallback.sendSubscriptionsNotification()",
-          "webPages.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "nodeId = "
-          + nodePK.getId(), e);
-    }
-  }
-  
-  private void notifyUsers(NotificationMetaData notifMetaData, String senderId) {
-    Connection con = null;
-    try {
-      con = getConnection();
-      notifMetaData.setConnection(con);
-      if (notifMetaData.getSender() == null
-          || notifMetaData.getSender().length() == 0)
-        notifMetaData.setSender(senderId);
-      getNotificationSender(notifMetaData.getComponentId()).notifyUser(
-          notifMetaData);
-    } catch (NotificationManagerException e) {
-      SilverTrace.warn("webPages", "WebPagesCallback.notifyUsers()",
-          "webPages.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", e);
-    } finally {
-      freeConnection(con);
-    }
-  }
-
-  private NotificationSender getNotificationSender(String componentId) {
-    // must return a new instance each time
-    // This is to resolve Serializable problems
-    NotificationSender notifSender = new NotificationSender(componentId);
-    return notifSender;
-  }
-
-  private Connection getConnection() {
-    try {
-      Connection con = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
-      return con;
-    } catch (Exception e) {
-      throw new WebPagesRuntimeException("WebPagesCallback.getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
-    }
-  }
-
-  private void freeConnection(Connection con) {
-    if (con != null) {
-      try {
-        con.close();
-      } catch (Exception e) {
-        SilverTrace.error("webPages", "WebPagesCallback.freeConnection()",
-            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
-      }
-    }
-  }
-
-  public SubscribeBm getSubscribeBm() {
-    SubscribeBm subscribeBm = null;
-    try {
-      SubscribeBmHome subscribeBmHome = (SubscribeBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.SUBSCRIBEBM_EJBHOME, SubscribeBmHome.class);
-      subscribeBm = subscribeBmHome.create();
-    } catch (Exception e) {
-      throw new WebPagesRuntimeException("WebPagesCallback.getSubscribeBm()",
-          SilverpeasRuntimeException.ERROR,
-          "webPages.EX_IMPOSSIBLE_DE_FABRIQUER_SUBSCRIBEBM_HOME", e);
-    }
-    return subscribeBm;
-  }
-
-  private synchronized List<String> getAllLanguages() {
-    ResourceLocator resources = new ResourceLocator(
-        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings",
-        "");
-    List<String> allLanguages = new ArrayList<String>();
-    try {
-      StringTokenizer st = new StringTokenizer(
-          resources.getString("languages"), ",");
-      while (st.hasMoreTokens()) {
-        String langue = st.nextToken();
-        allLanguages.add(langue);
-      }
-    } catch (Exception e) {
-      SilverTrace.error("webpages", "WebPagesCallback.getSubscribeBm.getAllLanguages()",
-          "personalizationPeas.EX_CANT_GET_FAVORITE_LANGUAGE", e);
-    }
-    return allLanguages;
-  }
-
-  protected SilverpeasTemplate getNewTemplate() {
-    ResourceLocator rs =
-        new ResourceLocator("com.silverpeas.webpages.settings.webPagesSettings", "");
-    Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString("templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString("customersTemplatePath"));
-
-    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
+    WebPagesNotifier notifier = new WebPagesNotifier();
+    notifier.sendSubscriptionsNotification(nodePK, userId);
   }
 
 }

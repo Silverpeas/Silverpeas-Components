@@ -58,7 +58,7 @@ public class WebPagesRuntimeException extends SilverpeasRuntimeException {
    * -------------------------------------------------------------------------- getModule getModule
    */
   public String getModule() {
-    return "WebPages";
+    return "webPages";
   }
 
 }
