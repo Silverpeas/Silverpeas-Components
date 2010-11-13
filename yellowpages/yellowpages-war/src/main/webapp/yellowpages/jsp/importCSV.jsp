@@ -170,8 +170,6 @@ out.println(board.printAfter());
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
-	%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.1.3.2.min.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.qtip-1.0.0-rc3.min.js"></script>
+%>
 </body>
 </html>

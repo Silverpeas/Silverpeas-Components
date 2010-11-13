@@ -5,24 +5,13 @@ $(document).ready(function() {
 		   $(this).qtip({
 			   content: { text: false // Use each elements title attribute
 			   },				   
-		       style: {
-                  border: {
-                     width: 5,
-                     radius: 5
-                  },
-                  padding: 7, 
-                  textAlign: 'center',
-                  tip: true, 
-                  name: 'green' 
-               },
-
-		      position: {
+		       style: 'silverpeas',
+		       position: {
 				corner: {
 				   target: 'topRight',
 				   tooltip: 'bottomLeft'
 				}
 			  }
-						      
 		   });
 		});
 });
