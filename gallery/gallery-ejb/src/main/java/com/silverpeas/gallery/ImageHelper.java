@@ -685,6 +685,11 @@ public class ImageHelper {
       fromImage = fromDir + fromPK.getId() + previewSuffix;
       toImage = toDir + toPK.getId() + previewSuffix;
       pasteFile(fromImage, toImage, cut);
+      
+      // copier preview sans watermark
+      fromImage = fromDir + fromPK.getId() + thumbnailSuffix_Xlarge;
+      toImage = toDir + toPK.getId() + thumbnailSuffix_Xlarge;
+      pasteFile(fromImage, toImage, cut);
 
       // copier originale
       fromImage = fromDir + image.getImageName();
@@ -693,8 +698,13 @@ public class ImageHelper {
 
       // copie original avec Watermark si elle existe
       fromImage = fromDir + fromPK.getId() + watermarkSuffix;
-      toImage = toDir + toPK.getId() + watermarkSuffix;
-      pasteFile(fromImage, toImage, cut);
+      File fromFile = new File(fromImage);
+      // original with watermark does not exist (if watermark is not used)
+      // copy file only if original with watermark exists
+      if (fromFile != null && fromFile.exists()) {
+        toImage = toDir + toPK.getId() + watermarkSuffix;
+        pasteFile(fromImage, toImage, cut);
+      }
     }
   }
 

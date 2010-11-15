@@ -1168,6 +1168,7 @@ public class GallerySessionController extends AbstractComponentSessionController
       album.setDescription(albumToPaste.getDescription());
       album.setTranslations(albumToPaste.getTranslations());
       album.setRightsDependsOn(father.getRightsDependsOn());
+      album.setCreationDate(albumToPaste.getCreationDate());
 
       nodePK = getNodeBm().createNode(album, father);
 
