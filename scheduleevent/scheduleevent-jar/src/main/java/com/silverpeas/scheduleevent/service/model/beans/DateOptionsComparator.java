@@ -29,15 +29,15 @@ import java.util.Comparator;
 public class DateOptionsComparator implements Comparator<DateOption> {
 
   public int compare(DateOption date1, DateOption date2) {
-    if(date1.getDay().compareTo(date2.getDay()) == 0){
-      if(date1.getHour() == date2.getHour()){
+    if (date1.getDay().compareTo(date2.getDay()) == 0) {
+      if (date1.getHour() == date2.getHour()) {
         return 0;
-      }else if(date1.getHour() > date2.getHour()){
+      } else if (date1.getHour() > date2.getHour()) {
         return 1;
-      }else{
+      } else {
         return -1;
       }
-    }else{
+    } else {
       return date1.getDay().compareTo(date2.getDay());
     }
   }

@@ -47,7 +47,7 @@ public class ScheduleEventDaoImpl extends HibernateDaoSupport implements Schedul
   public void deleteScheduleEvent(ScheduleEvent scheduleEvent) {
     // purge all the response
     Set<Response> responses = scheduleEvent.getResponses();
-    
+
     Response[] responsesArray = responses.toArray(new Response[responses.size()]);
     for (int i = 0; i < responsesArray.length; i++) {
       Response resp = responsesArray[i];
@@ -55,7 +55,7 @@ public class ScheduleEventDaoImpl extends HibernateDaoSupport implements Schedul
       getSession().delete(resp);
       getSession().flush();
     }
-    //scheduleEvent = getScheduleEventComplete(scheduleEvent.getId());
+    // scheduleEvent = getScheduleEventComplete(scheduleEvent.getId());
     // delete the scheduleEvent
     getSession().delete(scheduleEvent);
   }
@@ -73,7 +73,7 @@ public class ScheduleEventDaoImpl extends HibernateDaoSupport implements Schedul
     returnSet.addAll(criteria.list());
     return returnSet;
   }
-  
+
   public Set<ScheduleEvent> listScheduleEventsByContributorId(String userId) {
     Criteria criteria = getSession().createCriteria(Contributor.class);
     criteria.add(Restrictions.eq("userId", Integer.parseInt(userId)));
@@ -81,7 +81,7 @@ public class ScheduleEventDaoImpl extends HibernateDaoSupport implements Schedul
     returnSet.addAll(criteria.list());
 
     Set<ScheduleEvent> scheduleEvents = new HashSet<ScheduleEvent>();
-    if(returnSet != null && returnSet.size() > 0){
+    if (returnSet != null && returnSet.size() > 0) {
       Iterator<Contributor> iterRes = returnSet.iterator();
       while (iterRes.hasNext()) {
         Contributor resp = iterRes.next();
@@ -94,7 +94,7 @@ public class ScheduleEventDaoImpl extends HibernateDaoSupport implements Schedul
   public void updateScheduleEvent(ScheduleEvent scheduleEvent) {
     getSession().update(scheduleEvent);
   }
-  
+
   public void purgeResponseScheduleEvent(ScheduleEvent scheduleEvent, int userId) {
     Set<Response> responses = scheduleEvent.getResponses();
     // remove old values if exists
@@ -107,5 +107,5 @@ public class ScheduleEventDaoImpl extends HibernateDaoSupport implements Schedul
       }
     }
   }
-  
+
 }

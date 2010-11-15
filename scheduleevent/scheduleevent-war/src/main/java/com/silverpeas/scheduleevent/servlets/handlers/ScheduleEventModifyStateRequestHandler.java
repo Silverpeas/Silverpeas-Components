@@ -36,9 +36,9 @@ public class ScheduleEventModifyStateRequestHandler implements ScheduleEventRequ
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
       HttpServletRequest request) throws Exception {
-    
+
     String scheduleEventId = request.getParameter("scheduleEventId");
-    if(scheduleEventId != null){
+    if (scheduleEventId != null) {
       // make the inversion of state
       scheduleeventSC.modifyState(scheduleEventId);
       // go back to list

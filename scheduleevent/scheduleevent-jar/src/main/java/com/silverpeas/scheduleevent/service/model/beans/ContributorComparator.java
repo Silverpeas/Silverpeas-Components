@@ -29,12 +29,12 @@ import java.util.Comparator;
 public class ContributorComparator implements Comparator<Contributor> {
 
   public int compare(Contributor contr1, Contributor contr2) {
-    if(contr1.getUserName() != null){
+    if (contr1.getUserName() != null) {
       return contr1.getUserName().compareTo(contr2.getUserName());
-    }else{
-      if(contr1.getUserId() > contr2.getUserId()){
+    } else {
+      if (contr1.getUserId() > contr2.getUserId()) {
         return 1;
-      }else{
+      } else {
         return -1;
       }
     }

@@ -38,7 +38,8 @@ public class ScheduleEvent {
   public Date creationDate;
   public int author;
   public SortedSet<DateOption> dates = new TreeSet<DateOption>(new DateOptionsComparator());
-  public SortedSet<Contributor> contributors = new TreeSet<Contributor>(new ContributorComparator());
+  public SortedSet<Contributor> contributors =
+      new TreeSet<Contributor>(new ContributorComparator());
   public Set<Response> responses = new HashSet<Response>();
   public int status;
 

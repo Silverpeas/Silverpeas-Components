@@ -34,16 +34,16 @@ public class ScheduleEventDetailRequestHandler implements ScheduleEventRequestHa
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
       HttpServletRequest request) throws Exception {
-    
+
     String scheduleEventId = request.getParameter("scheduleEventId");
-    if(scheduleEventId != null){
+    if (scheduleEventId != null) {
       ScheduleEvent event = scheduleeventSC.getDetail(scheduleEventId);
-      if(event != null){
+      if (event != null) {
         request.setAttribute(SCHEDULE_EVENT_DETAIL, event);
         return "detail.jsp";
       }
     }
-    
+
     // error page
     throw new Exception("No event for the id " + scheduleEventId);
   }

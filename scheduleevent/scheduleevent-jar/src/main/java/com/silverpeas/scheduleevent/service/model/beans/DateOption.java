@@ -26,7 +26,6 @@ package com.silverpeas.scheduleevent.service.model.beans;
 
 import java.util.Date;
 
-
 public class DateOption implements Comparable<DateOption> {
 
   private String id;
@@ -56,7 +55,7 @@ public class DateOption implements Comparable<DateOption> {
   public void setHour(int hour) {
     this.hour = hour;
   }
-  
+
   public int hashCode() {
     final int prime = 31;
     int result = super.hashCode();
@@ -66,27 +65,27 @@ public class DateOption implements Comparable<DateOption> {
   }
 
   public boolean equals(DateOption obj) {
-    if(day == obj.getDay() &&
-        hour == obj.getHour()){
+    if (day == obj.getDay() &&
+        hour == obj.getHour()) {
       return true;
-    }else{
+    } else {
       return false;
     }
   }
 
   @Override
   public int compareTo(DateOption obj) {
-    if(this.equals(obj)){
+    if (this.equals(obj)) {
       return 0;
-    }else if(day.equals(obj.getDay())){
-      if(hour > obj.getHour()){
+    } else if (day.equals(obj.getDay())) {
+      if (hour > obj.getHour()) {
         return 1;
-      }else{
+      } else {
         return -1;
       }
-    }else{
+    } else {
       return day.compareTo(obj.getDay());
     }
   }
-  
+
 }

@@ -38,7 +38,7 @@ public class ScheduleEventDeleteRequestHandler implements ScheduleEventRequestHa
       HttpServletRequest request) {
 
     String scheduleEventId = request.getParameter("scheduleEventId");
-    if(scheduleEventId!=null){
+    if (scheduleEventId != null) {
       scheduleeventSC.delete(scheduleEventId);
     }
     // set list objects in request

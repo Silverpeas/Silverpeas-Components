@@ -37,7 +37,7 @@ import com.silverpeas.scheduleevent.service.model.beans.Response;
 public class ResponseDaoImpl extends HibernateDaoSupport implements ResponseDao {
 
   public void deleteResponse(Response response) {
-        getSession().delete(response);
+    getSession().delete(response);
   }
 
 }

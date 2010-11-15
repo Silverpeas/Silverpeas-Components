@@ -37,11 +37,11 @@ public interface ScheduleEventService {
   public ScheduleEvent findScheduleEvent(String scheduleEventId);
 
   public Set<ScheduleEvent> listAllScheduleEventsByUserId(String userId);
-  
+
   public void updateScheduleEventStatus(String scheduleEventId, int newStatus);
 
   public void updateScheduleEvent(ScheduleEvent scheduleEvent);
-  
+
   public ScheduleEvent purgeOldResponseForUserId(ScheduleEvent scheduleEvent, int userId);
-  
+
 }

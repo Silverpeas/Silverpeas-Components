@@ -58,7 +58,7 @@ public class UserEventPK implements Serializable {
       return false;
     }
   }
-  
+
   public int hashCode() {
     final int prime = 31;
     int result = 1;

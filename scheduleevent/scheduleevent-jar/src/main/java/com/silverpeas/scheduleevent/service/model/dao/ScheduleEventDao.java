@@ -33,7 +33,7 @@ public interface ScheduleEventDao {
   public String createScheduleEvent(ScheduleEvent scheduleEvent);
 
   public Set<ScheduleEvent> listScheduleEventsByCreatorId(String userId);
-  
+
   public Set<ScheduleEvent> listScheduleEventsByContributorId(String userId);
 
   public void deleteScheduleEvent(ScheduleEvent scheduleEvent);
@@ -41,7 +41,7 @@ public interface ScheduleEventDao {
   public void updateScheduleEvent(ScheduleEvent scheduleEvent);
 
   public ScheduleEvent getScheduleEventComplete(String scheduleEventId);
-  
+
   public void purgeResponseScheduleEvent(ScheduleEvent scheduleEvent, int userId);
 
 }

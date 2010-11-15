@@ -60,7 +60,7 @@ public class ScheduleEventValidResponseRequestHandler implements ScheduleEventRe
         int userId = Integer.parseInt(scheduleeventSC.getUserId());
 
         event = scheduleeventSC.purgeOldResponseForUserId(event);
-        
+
         Set<Response> responses = event.getResponses();
 
         // set new values
@@ -77,7 +77,7 @@ public class ScheduleEventValidResponseRequestHandler implements ScheduleEventRe
             responses.add(oneResponse);
           }
         }
-        
+
         scheduleeventSC.update(event);
 
         // return to detail page

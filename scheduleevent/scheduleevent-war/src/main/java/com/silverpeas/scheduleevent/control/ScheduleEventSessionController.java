@@ -153,22 +153,22 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
     currentScheduleEvent.setAuthor(Integer.parseInt(getUserId()));
     currentScheduleEvent.setStatus(ScheduleEventStatus.OPEN);
     currentScheduleEvent.setCreationDate(new Date());
-    
+
     // create all dateoption for database
     preTreatementForDateOption();
-    
+
     ServicesFactory.getScheduleEventService().createScheduleEvent(currentScheduleEvent);
     // delete session object after saving it
     currentScheduleEvent = null;
 
   }
-  
-  private void preTreatementForDateOption(){
+
+  private void preTreatementForDateOption() {
     SortedSet<DateOption> dates = currentScheduleEvent.getDates();
     DateOption[] dateoptions = dates.toArray(new DateOption[dates.size()]);
     for (int i = 0; i < dateoptions.length; i++) {
       DateOption current = dateoptions[i];
-      if(current.getHour() > 24){
+      if (current.getHour() > 24) {
         // case all the day -> AM + PM
         dates.remove(current);
         DateOption newAM = new DateOption();
@@ -186,37 +186,40 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
 
   public SortedSet<ScheduleEvent> getScheduleEventsByUserId() {
     Set<ScheduleEvent> allEvents = new HashSet<ScheduleEvent>();
-    allEvents = ServicesFactory.getScheduleEventService().listAllScheduleEventsByUserId(getUserId());
-    SortedSet<ScheduleEvent> eventsSorted = new TreeSet<ScheduleEvent>(new ScheduleEventComparator());
+    allEvents =
+        ServicesFactory.getScheduleEventService().listAllScheduleEventsByUserId(getUserId());
+    SortedSet<ScheduleEvent> eventsSorted =
+        new TreeSet<ScheduleEvent>(new ScheduleEventComparator());
     eventsSorted.addAll(allEvents);
     return eventsSorted;
   }
-  
-  public ScheduleEvent getDetail(String id){
+
+  public ScheduleEvent getDetail(String id) {
     return ServicesFactory.getScheduleEventService().findScheduleEvent(id);
   }
 
-  public void modifyState(String id){
-    
+  public void modifyState(String id) {
+
     ScheduleEvent event = ServicesFactory.getScheduleEventService().findScheduleEvent(id);
     int actualStatus = event.getStatus();
     int newStatus = ScheduleEventStatus.OPEN;
-    if(ScheduleEventStatus.OPEN == actualStatus){
+    if (ScheduleEventStatus.OPEN == actualStatus) {
       newStatus = ScheduleEventStatus.CLOSED;
     }
-    ServicesFactory.getScheduleEventService().updateScheduleEventStatus(id,newStatus);
+    ServicesFactory.getScheduleEventService().updateScheduleEventStatus(id, newStatus);
   }
-  
-  public void delete(String scheduleEventId){
+
+  public void delete(String scheduleEventId) {
     ServicesFactory.getScheduleEventService().deleteScheduleEvent(scheduleEventId);
   }
-  
-  public void update(ScheduleEvent scheduleEvent){
+
+  public void update(ScheduleEvent scheduleEvent) {
     ServicesFactory.getScheduleEventService().updateScheduleEvent(scheduleEvent);
   }
-  
-  public ScheduleEvent purgeOldResponseForUserId(ScheduleEvent scheduleEvent){
-    return ServicesFactory.getScheduleEventService().purgeOldResponseForUserId(scheduleEvent,Integer.parseInt(getUserId()));
+
+  public ScheduleEvent purgeOldResponseForUserId(ScheduleEvent scheduleEvent) {
+    return ServicesFactory.getScheduleEventService().purgeOldResponseForUserId(scheduleEvent,
+        Integer.parseInt(getUserId()));
   }
-  
+
 }

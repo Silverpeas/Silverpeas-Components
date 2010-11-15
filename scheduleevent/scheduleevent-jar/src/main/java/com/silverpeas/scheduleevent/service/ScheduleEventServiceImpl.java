@@ -65,18 +65,18 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
     return events;
   }
 
-  public void updateScheduleEventStatus(String scheduleEventId, int newStatus){
+  public void updateScheduleEventStatus(String scheduleEventId, int newStatus) {
     ScheduleEvent event = scheduleEventDao.getScheduleEventComplete(scheduleEventId);
     event.setStatus(newStatus);
     scheduleEventDao.updateScheduleEvent(event);
   }
-  
-  public ScheduleEvent purgeOldResponseForUserId(ScheduleEvent scheduleEvent, int userId){
+
+  public ScheduleEvent purgeOldResponseForUserId(ScheduleEvent scheduleEvent, int userId) {
     scheduleEventDao.purgeResponseScheduleEvent(scheduleEvent, userId);
     return scheduleEventDao.getScheduleEventComplete(scheduleEvent.getId());
   }
-  
-  public void updateScheduleEvent(ScheduleEvent scheduleEvent){
+
+  public void updateScheduleEvent(ScheduleEvent scheduleEvent) {
     scheduleEventDao.updateScheduleEvent(scheduleEvent);
   }
 
@@ -87,5 +87,5 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
   public ResponseDao getResponseDao() {
     return responseDao;
   }
-  
+
 }
