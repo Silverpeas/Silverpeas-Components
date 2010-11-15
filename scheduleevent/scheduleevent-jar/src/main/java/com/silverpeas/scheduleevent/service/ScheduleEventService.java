@@ -44,4 +44,6 @@ public interface ScheduleEventService {
 
   public ScheduleEvent purgeOldResponseForUserId(ScheduleEvent scheduleEvent, int userId);
 
+  public void setLastVisited(String scheduleEventId, int userId);
+
 }

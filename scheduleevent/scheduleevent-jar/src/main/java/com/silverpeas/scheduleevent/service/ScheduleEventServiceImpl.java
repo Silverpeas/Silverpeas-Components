@@ -24,10 +24,12 @@
 
 package com.silverpeas.scheduleevent.service;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.SortedSet;
 
-import com.silverpeas.scheduleevent.service.model.beans.Response;
+import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 import com.silverpeas.scheduleevent.service.model.dao.ResponseDao;
 import com.silverpeas.scheduleevent.service.model.dao.ScheduleEventDao;
@@ -86,6 +88,21 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
 
   public ResponseDao getResponseDao() {
     return responseDao;
+  }
+
+  public void setLastVisited(String scheduleEventId, int userId) {
+    ScheduleEvent event = scheduleEventDao.getScheduleEventComplete(scheduleEventId);
+    SortedSet<Contributor> contributors = event.getContributors();
+    Iterator<Contributor> iter = contributors.iterator();
+    boolean finish = false;
+    while (iter.hasNext() && !finish) {
+      Contributor contrib = (Contributor) iter.next();
+      if (userId == contrib.getUserId()) {
+        contrib.setLastVisit(new Date());
+        finish = true;
+      }
+    }
+    scheduleEventDao.updateScheduleEvent(event);
   }
 
 }

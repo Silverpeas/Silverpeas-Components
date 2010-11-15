@@ -195,6 +195,9 @@ public class ScheduleEventSessionController extends AbstractComponentSessionCont
   }
 
   public ScheduleEvent getDetail(String id) {
+    // update last visited date
+    ServicesFactory.getScheduleEventService().setLastVisited(id, Integer.valueOf(getUserId()));
+    // return detail for page
     return ServicesFactory.getScheduleEventService().findScheduleEvent(id);
   }
 
