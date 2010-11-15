@@ -111,6 +111,7 @@
     <module>organizationchart</module>
     <module>classifieds</module>
 	<module>formsonline</module>
+    <module>scheduleevent</module>
   </modules>
 
 </project>
