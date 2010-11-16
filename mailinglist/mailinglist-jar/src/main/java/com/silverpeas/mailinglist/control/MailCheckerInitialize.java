@@ -29,10 +29,11 @@ import com.silverpeas.mailinglist.model.MailingListComponent;
 import com.silverpeas.mailinglist.service.job.MessageChecker;
 import com.silverpeas.mailinglist.service.model.MailingListService;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
+import com.stratelia.silverpeas.scheduler.Scheduler;
 import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.scheduler.SchedulerException;
-import com.stratelia.silverpeas.scheduler.SimpleScheduler;
-import com.stratelia.silverpeas.scheduler.TimeUnit;
+import com.stratelia.silverpeas.scheduler.SchedulerFactory;
+import com.stratelia.silverpeas.scheduler.trigger.TimeUnit;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class MailCheckerInitialize {
@@ -77,12 +78,14 @@ public class MailCheckerInitialize {
       //Collection<SchedulerJob> jobList = SimpleScheduler.getJobList(checker);
       //SilverTrace.info("mailingList", "MailCheckerInitialize.Initialize",
       //    "mailinglist.initialization.joblist", " " + jobList);
-      if (SimpleScheduler.isJobScheduled(MAILING_LIST_JOB_NAME)) {
-        SimpleScheduler.unscheduleJob(MAILING_LIST_JOB_NAME);
+      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
+      Scheduler scheduler = schedulerFactory.getScheduler();
+      if (scheduler.isJobScheduled(MAILING_LIST_JOB_NAME)) {
+        scheduler.unscheduleJob(MAILING_LIST_JOB_NAME);
       }
       //SimpleScheduler.scheduleJob(checker, MAILING_LIST_JOB_NAME, getFrequency());
-      JobTrigger trigger = JobTrigger.triggerEvery(getFrequency(), TimeUnit.MINUTE);
-      SimpleScheduler.scheduleJob(MAILING_LIST_JOB_NAME, trigger, checker);
+      JobTrigger trigger = JobTrigger.triggerEach(getFrequency(), TimeUnit.MINUTE);
+      scheduler.scheduleJob(MAILING_LIST_JOB_NAME, trigger, checker);
       List<MailingList> mailingLists = getMailingListService().listAllMailingLists();
       SilverTrace.info("mailingList", "MailCheckerInitialize.Initialize",
           "mailinglist.initialization.existing.lists", " " + mailingLists.size());

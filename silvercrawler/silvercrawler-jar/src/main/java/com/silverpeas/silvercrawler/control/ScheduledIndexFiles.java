@@ -29,9 +29,10 @@ import java.util.Date;
 import java.util.List;
 
 import com.silverpeas.silvercrawler.model.SilverCrawlerRuntimeException;
+import com.stratelia.silverpeas.scheduler.Scheduler;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
-import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
+import com.stratelia.silverpeas.scheduler.SchedulerFactory;
 import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
@@ -40,48 +41,24 @@ import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.indexEngine.model.RepositoryIndexer;
 
-public class ScheduledIndexFiles implements SchedulerEventHandler {
+public class ScheduledIndexFiles
+    implements SchedulerEventListener {
 
   public static final String SILVERCRAWLERENGINE_JOB_NAME = "SilverCrawlerEngineJob";
-
   private ResourceLocator resources = new ResourceLocator(
       "com.silverpeas.silvercrawler.settings.silverCrawlerSettings", "");
 
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledIndex");
-      SimpleScheduler.unscheduleJob(SILVERCRAWLERENGINE_JOB_NAME);
+      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
+      Scheduler scheduler = schedulerFactory.getScheduler();
+      scheduler.unscheduleJob(SILVERCRAWLERENGINE_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
-      SimpleScheduler.scheduleJob(SILVERCRAWLERENGINE_JOB_NAME, trigger, this);
+      scheduler.scheduleJob(SILVERCRAWLERENGINE_JOB_NAME, trigger, this);
     } catch (Exception e) {
       SilverTrace.error("silverCrawler", "ScheduledIndexFiles.initialize()",
           "silverCrawler.EX_CANT_INIT_SCHEDULED_INDEX_FILES", e);
-    }
-  }
-
-  @Override
-  public void handleSchedulerEvent(SchedulerEvent aEvent) {
-    switch (aEvent.getType()) {
-      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-        SilverTrace.error("silverCrawler",
-            "ScheduledIndexFiles.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was not successfull");
-        break;
-      case SchedulerEvent.EXECUTION_SUCCESSFULL:
-        SilverTrace.debug("silverCrawler",
-            "ScheduledIndexFiles.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' was successfull");
-        break;
-      case SchedulerEvent.EXECUTION:
-        SilverTrace.debug("silverCrawler",
-            "ScheduledIndexFiles.handleSchedulerEvent", "The job '"
-                + aEvent.getJob().getJobName() + "' is executing");
-        doScheduledIndex();
-        break;
-      default:
-        SilverTrace.error("silverCrawler",
-            "ScheduledIndexFiles.handleSchedulerEvent", "Illegal event type");
-        break;
     }
   }
 
@@ -96,8 +73,7 @@ public class ScheduledIndexFiles implements SchedulerEventHandler {
       for (int i = 0; instanceIds != null && i < instanceIds.length; i++) {
         ComponentInst instance = orga.getComponentInst("silverCrawler"
             + instanceIds[i]);
-        boolean periodicIndex = "yes".equals(instance
-            .getParameterValue("periodicIndex"));
+        boolean periodicIndex = "yes".equals(instance.getParameterValue("periodicIndex"));
         if (periodicIndex) {
           RepositoryIndexer repositoryIndexer = new RepositoryIndexer(null,
               instance.getId());
@@ -108,13 +84,15 @@ public class ScheduledIndexFiles implements SchedulerEventHandler {
               profiles);
 
           String adminId = "0";
-          if (adminIds != null && adminIds.length > 0)
+          if (adminIds != null && adminIds.length > 0) {
             adminId = adminIds[0];
+          }
 
           String pathRepository = instance.getParameterValue("directory");
 
-          if (!pathRepository.endsWith(File.separator))
+          if (!pathRepository.endsWith(File.separator)) {
             pathRepository += File.separator;
+          }
           Date dateIndex = new Date();
           repositoryIndexer.pathIndexer(pathRepository, dateIndex.toString(),
               adminId, "add");
@@ -128,5 +106,27 @@ public class ScheduledIndexFiles implements SchedulerEventHandler {
 
     SilverTrace.info("silverCrawler", "ScheduledIndexFiles.doScheduledIndex()",
         "root.MSG_GEN_EXIT_METHOD");
+  }
+
+  @Override
+  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+    SilverTrace.debug("silverCrawler",
+        "ScheduledIndexFiles.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' is executing");
+    doScheduledIndex();
+  }
+
+  @Override
+  public void jobSucceeded(SchedulerEvent anEvent) {
+    SilverTrace.debug("silverCrawler",
+        "ScheduledIndexFiles.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+  }
+
+  @Override
+  public void jobFailed(SchedulerEvent anEvent) {
+    SilverTrace.error("silverCrawler",
+        "ScheduledIndexFiles.handleSchedulerEvent", "The job '"
+        + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

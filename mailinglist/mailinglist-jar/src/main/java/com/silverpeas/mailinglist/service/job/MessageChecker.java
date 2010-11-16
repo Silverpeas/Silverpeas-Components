@@ -48,10 +48,11 @@ import com.silverpeas.mailinglist.service.event.MessageListener;
 import com.silverpeas.mailinglist.service.model.MailingListService;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class MessageChecker implements SchedulerEventHandler {
+public class MessageChecker
+    implements SchedulerEventListener {
 
   public static final String IMAP_PROTOCOL = "imap";
   public static final String IMAP_SSL_PROTOCOL = "imaps";
@@ -162,7 +163,7 @@ public class MessageChecker implements SchedulerEventHandler {
    * @param listener the listener to be added.
    */
   public synchronized void addMessageListener(MessageListener listener) {
-      this.listeners.put(listener.getComponentId(), listener);
+    this.listeners.put(listener.getComponentId(), listener);
   }
 
   /**
@@ -259,7 +260,7 @@ public class MessageChecker implements SchedulerEventHandler {
       Map<String, MessageListener> listenersByEmail) throws MessagingException,
       IOException {
     BetterMimeMessage email = new BetterMimeMessage(mail);
-    if(email.isBounced() || email.isSpam()) {
+    if (email.isBounced() || email.isSpam()) {
       return;
     }
     Set<String> allRecipients = getAllRecipients(mail);
@@ -363,40 +364,6 @@ public class MessageChecker implements SchedulerEventHandler {
   }
 
   @Override
-  public void handleSchedulerEvent(SchedulerEvent event) {
-    switch (event.getType()) {
-      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-        SilverTrace.error("mailingList", "MessageChecker.handleSchedulerEvent",
-            "The job '" + event.getJob().getJobName()
-            + "' was not successfull");
-        break;
-      case SchedulerEvent.EXECUTION_SUCCESSFULL:
-        SilverTrace.debug("mailingList", "MessageChecker.handleSchedulerEvent",
-            "The job '" + event.getJob().getJobName() + "' was successfull");
-        break;
-      case SchedulerEvent.EXECUTION:
-        if (this.listeners != null && !this.listeners.isEmpty()) {
-          SilverTrace.info("mailingList",
-              "MessageChecker.handleSchedulerEvent", "The job '"
-              + event.getJob().getJobName() + "' executing ....");
-          this.checkNewMessages(new Date());
-          SilverTrace.info("mailingList",
-              "MessageChecker.handleSchedulerEvent", "The job '"
-              + event.getJob().getJobName() + "' done!!");
-        } else {
-          SilverTrace.info("mailingList",
-              "MessageChecker.handleSchedulerEvent", "The job '"
-              + event.getJob().getJobName() + "' has no listeners ....");
-        }
-        break;
-      default:
-        SilverTrace.error("mailingList", "MessageChecker.handleSchedulerEvent",
-            "Illegal event type");
-        break;
-    }
-  }
-
-  @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
@@ -454,5 +421,36 @@ public class MessageChecker implements SchedulerEventHandler {
   protected boolean isImap() {
     return IMAP_PROTOCOL.equalsIgnoreCase(getProtocol())
         || IMAP_SSL_PROTOCOL.equalsIgnoreCase(getProtocol());
+  }
+
+  @Override
+  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+    final String jobName = anEvent.getJobExecutionContext().getJobName();
+    if (this.listeners != null && !this.listeners.isEmpty()) {
+      SilverTrace.info("mailingList",
+          "MessageChecker.handleSchedulerEvent", "The job '"
+          + jobName + "' executing ....");
+      this.checkNewMessages(new Date());
+      SilverTrace.info("mailingList",
+          "MessageChecker.handleSchedulerEvent", "The job '"
+          + jobName + "' done!!");
+    } else {
+      SilverTrace.info("mailingList",
+          "MessageChecker.handleSchedulerEvent", "The job '"
+          + jobName + "' has no listeners ....");
+    }
+  }
+
+  @Override
+  public void jobSucceeded(SchedulerEvent anEvent) {
+    SilverTrace.debug("mailingList", "MessageChecker.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+  }
+
+  @Override
+  public void jobFailed(SchedulerEvent anEvent) {
+    SilverTrace.error("mailingList", "MessageChecker.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName()
+        + "' was not successfull");
   }
 }

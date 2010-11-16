@@ -34,9 +34,10 @@ import com.silverpeas.gallery.model.PhotoDetail;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.scheduler.Scheduler;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
-import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
+import com.stratelia.silverpeas.scheduler.SchedulerFactory;
 import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -46,7 +47,8 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class ScheduledAlertUser implements SchedulerEventHandler {
+public class ScheduledAlertUser
+    implements SchedulerEventListener {
 
   public static final String GALLERYENGINE_JOB_NAME = "GalleryEngineJob";
   private ResourceLocator resources = new ResourceLocator(
@@ -55,36 +57,14 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
   public void initialize() {
     try {
       String cron = resources.getString("cronScheduledAlertUser");
-      SimpleScheduler.unscheduleJob(GALLERYENGINE_JOB_NAME);
+      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
+      Scheduler scheduler = schedulerFactory.getScheduler();
+      scheduler.unscheduleJob(GALLERYENGINE_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
-      SimpleScheduler.scheduleJob(GALLERYENGINE_JOB_NAME, trigger, this);
+      scheduler.scheduleJob(GALLERYENGINE_JOB_NAME, trigger, this);
     } catch (Exception e) {
       SilverTrace.error("gallery", "ScheduledAlertUser.initialize()",
           "gallery.EX_CANT_INIT_SCHEDULED_ALERT_USER", e);
-    }
-  }
-
-  @Override
-  public void handleSchedulerEvent(SchedulerEvent aEvent) {
-    switch (aEvent.getType()) {
-      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-        SilverTrace.error("gallery", "ScheduledAlertUser.handleSchedulerEvent",
-            "The job '" + aEvent.getJob().getJobName()
-            + "' was not successfull");
-        break;
-      case SchedulerEvent.EXECUTION_SUCCESSFULL:
-        SilverTrace.debug("gallery", "ScheduledAlertUser.handleSchedulerEvent",
-            "The job '" + aEvent.getJob().getJobName() + "' was successfull");
-        break;
-      case SchedulerEvent.EXECUTION:
-        SilverTrace.debug("gallery", "ScheduledAlertUser.handleSchedulerEvent",
-            "The job '" + aEvent.getJob().getJobName() + "' is executing");
-        doScheduledAlertUser();
-        break;
-      default:
-        SilverTrace.error("gallery", "ScheduledAlertUser.handleSchedulerEvent",
-            "Illegal event type");
-        break;
     }
   }
 
@@ -125,7 +105,8 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
           // le corps du message)
           messageBody.append(message.getString("gallery.notifName")).append(
               " : ").append(photo.getName()).append("\n");
-          messageBody_en.append(message_en.getString("gallery.notifName")).append(" : ").append(photo.getName()).append("\n");
+          messageBody_en.append(message_en.getString("gallery.notifName")).append(" : ").append(photo.
+              getName()).append("\n");
           SilverTrace.info("gallery",
               "ScheduledAlertUser.doScheduledAlertUser()",
               "root.MSG_GEN_PARAM_VALUE", "body=" + messageBody.toString());
@@ -152,8 +133,10 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
               nameInstance).append("\n").append("\n");
           messageBody.append(message.getString("gallery.notifName")).append(
               " : ").append(photo.getName()).append("\n");
-          messageBody_en.append(message.getString("gallery.notifTitle")).append(nameInstance).append("\n").append("\n");
-          messageBody_en.append(message_en.getString("gallery.notifName")).append(" : ").append(photo.getName()).append("\n");
+          messageBody_en.append(message.getString("gallery.notifTitle")).append(nameInstance).append(
+              "\n").append("\n");
+          messageBody_en.append(message_en.getString("gallery.notifName")).append(" : ").append(photo.
+              getName()).append("\n");
 
           SilverTrace.info("gallery",
               "ScheduledAlertUser.doScheduledAlertUser()",
@@ -177,9 +160,12 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
         "root.MSG_GEN_EXIT_METHOD");
   }
 
-  private void createMessage(ResourceLocator message, StringBuffer messageBody,
-      ResourceLocator message_en, StringBuffer messageBody_en,
-      PhotoDetail photo, UserDetail[] admins) {
+  private void createMessage(ResourceLocator message,
+      StringBuffer messageBody,
+      ResourceLocator message_en,
+      StringBuffer messageBody_en,
+      PhotoDetail photo,
+      UserDetail[] admins) {
     // 1. création du message
 
     // french notifications
@@ -219,12 +205,33 @@ public class ScheduledAlertUser implements SchedulerEventHandler {
   private GalleryBm getGalleryBm() {
     GalleryBm galleryBm = null;
     try {
-      GalleryBmHome galleryBmHome = (GalleryBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
+      GalleryBmHome galleryBmHome = (GalleryBmHome) EJBUtilitaire.getEJBObjectRef(
+          JNDINames.GALLERYBM_EJBHOME, GalleryBmHome.class);
       galleryBm = galleryBmHome.create();
     } catch (Exception e) {
       throw new GalleryRuntimeException("ScheduledAlertUser.getGalleryBm()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return galleryBm;
+  }
+
+  @Override
+  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+    SilverTrace.debug("gallery", "ScheduledAlertUser.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is executing");
+    doScheduledAlertUser();
+  }
+
+  @Override
+  public void jobSucceeded(SchedulerEvent anEvent) {
+    SilverTrace.debug("gallery", "ScheduledAlertUser.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+  }
+
+  @Override
+  public void jobFailed(SchedulerEvent anEvent) {
+    SilverTrace.error("gallery", "ScheduledAlertUser.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName()
+        + "' was not successfull");
   }
 }

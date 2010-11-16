@@ -26,9 +26,10 @@ package com.stratelia.webactiv.kmelia.control;
 import java.rmi.RemoteException;
 
 import com.silverpeas.util.StringUtil;
+import com.stratelia.silverpeas.scheduler.Scheduler;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
-import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
+import com.stratelia.silverpeas.scheduler.SchedulerFactory;
 import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
@@ -39,7 +40,8 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class AutomaticDraftOut implements SchedulerEventHandler {
+public class AutomaticDraftOut
+    implements SchedulerEventListener {
 
   public static final String AUTOMATICDRAFTOUT_JOB_NAME = "KmeliaAutomaticDraftOutJob";
   private ResourceLocator resources =
@@ -49,37 +51,16 @@ public class AutomaticDraftOut implements SchedulerEventHandler {
     SilverTrace.info("kmelia", "AutomaticDraftOut.initialize()", "root.MSG_GEN_ENTER_METHOD");
     try {
       String cron = resources.getString("cronAutomaticDraftOut");
-      SimpleScheduler.unscheduleJob(AUTOMATICDRAFTOUT_JOB_NAME);
+      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
+      Scheduler scheduler = schedulerFactory.getScheduler();
+      scheduler.unscheduleJob(AUTOMATICDRAFTOUT_JOB_NAME);
       if (StringUtil.isDefined(cron)) {
         JobTrigger trigger = JobTrigger.triggerAt(cron);
-        SimpleScheduler.scheduleJob(AUTOMATICDRAFTOUT_JOB_NAME, trigger, this);
+        scheduler.scheduleJob(AUTOMATICDRAFTOUT_JOB_NAME, trigger, this);
       }
     } catch (Exception e) {
       SilverTrace.error("kmelia", "AutomaticDraftOut.initialize()",
           "kmelia.EX_CANT_INIT_AUTOMATIC_DRAFT_OUT", e);
-    }
-  }
-
-  @Override
-  public void handleSchedulerEvent(SchedulerEvent aEvent) {
-    switch (aEvent.getType()) {
-      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-        SilverTrace.error("kmelia", "AutomaticDraftOut.handleSchedulerEvent",
-            "The job '" + aEvent.getJob().getJobName() + "' was not successfull");
-        break;
-      case SchedulerEvent.EXECUTION_SUCCESSFULL:
-        SilverTrace.debug("kmelia", "AutomaticDraftOut.handleSchedulerEvent",
-            "The job '" + aEvent.getJob().getJobName() + "' was successfull");
-        break;
-      case SchedulerEvent.EXECUTION:
-        SilverTrace.debug("kmelia", "AutomaticDraftOut.handleSchedulerEvent",
-            "The job '" + aEvent.getJob().getJobName() + "' is executing");
-        doAutomaticDraftOut();
-        break;
-      default:
-        SilverTrace.error("kmelia", "AutomaticDraftOut.handleSchedulerEvent",
-            "Illegal event type");
-        break;
     }
   }
 
@@ -101,7 +82,7 @@ public class AutomaticDraftOut implements SchedulerEventHandler {
     try {
       KmeliaBmHome kscEjbHome =
           (KmeliaBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME,
-              KmeliaBmHome.class);
+          KmeliaBmHome.class);
       return kscEjbHome.create();
     } catch (Exception e) {
       throw new KmeliaRuntimeException("AutomaticDraftOut.getKmeliaBm()",
@@ -109,4 +90,22 @@ public class AutomaticDraftOut implements SchedulerEventHandler {
     }
   }
 
+  @Override
+  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+    SilverTrace.debug("kmelia", "AutomaticDraftOut.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is executing");
+    doAutomaticDraftOut();
+  }
+
+  @Override
+  public void jobSucceeded(SchedulerEvent anEvent) {
+    SilverTrace.debug("kmelia", "AutomaticDraftOut.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+  }
+
+  @Override
+  public void jobFailed(SchedulerEvent anEvent) {
+    SilverTrace.error("kmelia", "AutomaticDraftOut.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
+  }
 }

@@ -30,9 +30,10 @@ import com.silverpeas.classifieds.control.ejb.ClassifiedsBm;
 import com.silverpeas.classifieds.control.ejb.ClassifiedsBmHome;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
+import com.stratelia.silverpeas.scheduler.Scheduler;
 import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventHandler;
-import com.stratelia.silverpeas.scheduler.SimpleScheduler;
+import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
+import com.stratelia.silverpeas.scheduler.SchedulerFactory;
 import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -40,45 +41,24 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class ScheduledDeleteClassifieds implements SchedulerEventHandler {
+public class ScheduledDeleteClassifieds
+    implements SchedulerEventListener {
 
   public static final String CLASSIFIEDSENGINE_JOB_NAME = "ClassifiedsEngineJobDelete";
   private ResourceLocator resources =
       new ResourceLocator("com.silverpeas.classifieds.settings.classifiedsSettings", "");
 
   public void initialize() {
-    SilverTrace.error("classifieds", "ScheduledDeleteClassifieds.initialize()", "", "ENTREE");
     try {
       String cron = resources.getString("cronScheduledDeleteClassifieds");
-      SimpleScheduler.unscheduleJob(CLASSIFIEDSENGINE_JOB_NAME);
+      SchedulerFactory schedulerFactory = SchedulerFactory.getFactory();
+      Scheduler scheduler = schedulerFactory.getScheduler();
+      scheduler.unscheduleJob(CLASSIFIEDSENGINE_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
-      SimpleScheduler.scheduleJob(cron, trigger, this);
+      scheduler.scheduleJob(CLASSIFIEDSENGINE_JOB_NAME, trigger, this);
     } catch (Exception e) {
       SilverTrace.error("classifieds", "ScheduledDeleteClassifieds.initialize()",
           "classifieds.EX_CANT_INIT_SCHEDULED_DELETE_CLASSIFIEDS", e);
-    }
-  }
-
-  @Override
-  public void handleSchedulerEvent(SchedulerEvent aEvent) {
-    switch (aEvent.getType()) {
-      case SchedulerEvent.EXECUTION_NOT_SUCCESSFULL:
-        SilverTrace.error("classifieds", "ScheduledDeleteClassifieds.handleSchedulerEvent",
-            "The job '" + aEvent.getJob().getJobName() + "' was not successfull");
-        break;
-      case SchedulerEvent.EXECUTION_SUCCESSFULL:
-        SilverTrace.debug("classifieds", "ScheduledDeleteClassifieds.handleSchedulerEvent",
-            "The job '" + aEvent.getJob().getJobName() + "' was successfull");
-        break;
-      case SchedulerEvent.EXECUTION:
-        SilverTrace.debug("classifieds", "ScheduledDeleteClassifieds.handleSchedulerEvent",
-            "The job '" + aEvent.getJob().getJobName() + "' is executed");
-        doScheduledDeleteClassifieds();
-        break;
-      default:
-        SilverTrace.error("classifieds", "ScheduledDeleteClassifieds.handleSchedulerEvent",
-            "Illegal event type");
-        break;
     }
   }
 
@@ -127,5 +107,24 @@ public class ScheduledDeleteClassifieds implements SchedulerEventHandler {
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     return classifiedsBm;
+  }
+
+  @Override
+  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+    SilverTrace.debug("classifieds", "ScheduledDeleteClassifieds.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is executed");
+    doScheduledDeleteClassifieds();
+  }
+
+  @Override
+  public void jobSucceeded(SchedulerEvent anEvent) {
+    SilverTrace.debug("classifieds", "ScheduledDeleteClassifieds.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
+  }
+
+  @Override
+  public void jobFailed(SchedulerEvent anEvent) {
+    SilverTrace.error("classifieds", "ScheduledDeleteClassifieds.handleSchedulerEvent",
+        "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }
