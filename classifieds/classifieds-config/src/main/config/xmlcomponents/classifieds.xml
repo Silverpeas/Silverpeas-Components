@@ -29,7 +29,7 @@
   <name>classifieds</name>
   <label>Petites annonces - classifieds</label>
   <description>Les petites annonces seront classées par catégories et type</description>
-  <suite>80 Nouveau composant</suite>
+  <suite>04 Gestion de contenu</suite>
   <visible>yes</visible>
   <portlet>no</portlet>
   <instanceClassName>com.silverpeas.classifieds.ClassifiedsInstanciator</instanceClassName>
