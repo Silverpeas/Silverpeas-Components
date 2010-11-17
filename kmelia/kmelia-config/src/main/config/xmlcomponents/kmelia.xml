@@ -512,7 +512,7 @@
       <ParameterName>XmlFormForFiles</ParameterName>
       <ParameterLabel>Formulaire XML pour fichiers</ParameterLabel>
       <ParameterValue></ParameterValue>
-      <ParameterSize>20</ParameterSize>
+      <ParameterType>xmltemplates</ParameterType>
       <ParameterMandatory>N</ParameterMandatory>
       <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>33</ParameterOrder>
