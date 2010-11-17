@@ -29,7 +29,7 @@
   <name>formsOnline</name>
   <label>Formulaires en ligne</label>
   <description>Mise en ligne de formulaires</description>
-  <suite>80 Nouveau composant</suite>
+  <suite>02 Gestion Collaborative</suite>
   <visible>yes</visible>
   <portlet>no</portlet>
   <instanceClassName>com.silverpeas.formsonline.FormsOnlineInstanciator</instanceClassName>
