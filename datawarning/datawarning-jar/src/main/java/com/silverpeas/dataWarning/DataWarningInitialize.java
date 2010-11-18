@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.dataWarning;
 
 import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
@@ -30,29 +29,22 @@ import com.silverpeas.dataWarning.model.*;
 import com.silverpeas.dataWarning.control.*;
 import java.util.*;
 
-public class DataWarningInitialize implements IInitialize
-{
-    public DataWarningInitialize()
-	{
-	}
+public class DataWarningInitialize implements IInitialize {
 
-    public boolean Initialize()
-    {
-        try
-		{
-        	DataWarningDataManager dwdm = new DataWarningDataManager();
-        	Collection instCol = dwdm.getDataWarningSchedulerInstances();
-        	Iterator it = instCol.iterator();
-        	
-        	while (it.hasNext())
-        	{
-				DataWarningSchedulerTable.addScheduler((String)it.next());
-        	}
-		}
-		catch (Exception e)
-		{
-			SilverTrace.error("dataWarning", "DataWarningInitialize.initialize()", "", e);
-		}
-		return true;
+  public DataWarningInitialize() {
+  }
+
+  @Override
+  public boolean Initialize() {
+    try {
+      DataWarningDataManager dwdm = new DataWarningDataManager();
+      List<String> schedulerInstances = dwdm.getDataWarningSchedulerInstances();
+      for (String scheduler : schedulerInstances) {
+        DataWarningSchedulerTable.addScheduler(scheduler);
+      }
+    } catch (Exception e) {
+      SilverTrace.error("dataWarning", "DataWarningInitialize.initialize()", "", e);
     }
+    return true;
+  }
 }

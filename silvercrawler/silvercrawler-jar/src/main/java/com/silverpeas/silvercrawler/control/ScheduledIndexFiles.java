@@ -29,11 +29,11 @@ import java.util.Date;
 import java.util.List;
 
 import com.silverpeas.silvercrawler.model.SilverCrawlerRuntimeException;
-import com.stratelia.silverpeas.scheduler.Scheduler;
-import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
-import com.stratelia.silverpeas.scheduler.SchedulerFactory;
-import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.scheduler.Scheduler;
+import com.silverpeas.scheduler.SchedulerEvent;
+import com.silverpeas.scheduler.SchedulerEventListener;
+import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.OrganizationController;

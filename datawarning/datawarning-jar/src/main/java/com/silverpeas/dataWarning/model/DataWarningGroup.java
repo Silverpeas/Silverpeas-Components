@@ -21,47 +21,48 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.dataWarning.model;
 
 import com.stratelia.webactiv.persistence.*;
 
 public class DataWarningGroup extends SilverpeasBean {
 
+  private static final long serialVersionUID = -7331971484764201589L;
   private String instanceId;
   private int groupId;
 
-	public DataWarningGroup()
-	{
-		super();
-	}
+  public DataWarningGroup() {
+    super();
+  }
 
-  public DataWarningGroup(String instanceId, int groupId)
-  {
-	this.instanceId = instanceId;
-	this.groupId = groupId;
+  public DataWarningGroup(String instanceId, int groupId) {
+    this.instanceId = instanceId;
+    this.groupId = groupId;
   }
 
   public String getInstanceId() {
-	return instanceId;
+    return instanceId;
   }
+
   public int getGroupId() {
-	return groupId;
+    return groupId;
   }
 
   public void setInstanceId(String instanceId) {
-	this.instanceId = instanceId;
+    this.instanceId = instanceId;
   }
+
   public void setGroupId(int groupId) {
-	this.groupId = groupId;
+    this.groupId = groupId;
   }
 
+  @Override
   public String _getTableName() {
-	return "SC_DataWarning_Rel_Group";
+    return "SC_DataWarning_Rel_Group";
   }
 
-  public int _getConnectionType()
-  {
+  @Override
+  public int _getConnectionType() {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 }

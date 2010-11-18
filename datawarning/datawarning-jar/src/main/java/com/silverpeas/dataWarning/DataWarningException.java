@@ -21,36 +21,34 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.dataWarning;
 
 import com.stratelia.webactiv.util.exception.SilverpeasException;
- 
-public class DataWarningException extends SilverpeasException
-{
-    public DataWarningException(String callingClass, int errorLevel, String message)
-    {
-        super(callingClass, errorLevel, message);
-    }
 
-    public DataWarningException(String callingClass, int errorLevel, String message, String extraParams)
-    {
-        super(callingClass, errorLevel, message, extraParams);
-    }
+public class DataWarningException extends SilverpeasException {
 
-    public DataWarningException(String callingClass, int errorLevel, String message, Exception nested)
-    {
-        super(callingClass, errorLevel, message, nested);
-    }
+  private static final long serialVersionUID = 8310353094310503522L;
 
-    public DataWarningException(String callingClass, int errorLevel, String message, String extraParams, Exception nested)
-    {
-        super(callingClass, errorLevel, message, extraParams, nested);
-    }
+  public DataWarningException(String callingClass, int errorLevel, String message) {
+    super(callingClass, errorLevel, message);
+  }
 
-    public String getModule()
-    {
-        return "DataWarning";
-    }
+  public DataWarningException(String callingClass, int errorLevel, String message,
+      String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
+  }
 
+  public DataWarningException(String callingClass, int errorLevel, String message, Exception nested) {
+    super(callingClass, errorLevel, message, nested);
+  }
+
+  public DataWarningException(String callingClass, int errorLevel, String message,
+      String extraParams, Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
+  }
+
+  @Override
+  public String getModule() {
+    return "DataWarning";
+  }
 }

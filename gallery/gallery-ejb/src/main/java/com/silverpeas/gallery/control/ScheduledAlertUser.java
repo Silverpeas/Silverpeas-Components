@@ -34,11 +34,11 @@ import com.silverpeas.gallery.model.PhotoDetail;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.silverpeas.scheduler.Scheduler;
-import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
-import com.stratelia.silverpeas.scheduler.SchedulerFactory;
-import com.stratelia.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.scheduler.Scheduler;
+import com.silverpeas.scheduler.SchedulerEvent;
+import com.silverpeas.scheduler.SchedulerEventListener;
+import com.silverpeas.scheduler.SchedulerFactory;
+import com.silverpeas.scheduler.trigger.JobTrigger;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
@@ -91,8 +91,8 @@ public class ScheduledAlertUser
       ResourceLocator message_en = new ResourceLocator(
           "com.silverpeas.gallery.multilang.galleryBundle", "en");
 
-      StringBuffer messageBody = new StringBuffer();
-      StringBuffer messageBody_en = new StringBuffer();
+      StringBuilder messageBody = new StringBuilder();
+      StringBuilder messageBody_en = new StringBuilder();
       PhotoDetail nextPhoto = new PhotoDetail();
 
       @SuppressWarnings("unchecked")
@@ -117,8 +117,8 @@ public class ScheduledAlertUser
                 "admin");
             createMessage(message, messageBody, message_en, messageBody_en,
                 photo, admins);
-            messageBody = new StringBuffer();
-            messageBody_en = new StringBuffer();
+            messageBody = new StringBuilder();
+            messageBody_en = new StringBuilder();
           }
           currentInstanceId = photo.getInstanceId();
           String nameInstance = orga.getComponentInst(currentInstanceId).getLabel();
@@ -148,8 +148,8 @@ public class ScheduledAlertUser
       UserDetail[] admins = orga.getUsers("useless", currentInstanceId, "admin");
       createMessage(message, messageBody, message_en, messageBody_en,
           nextPhoto, admins);
-      messageBody = new StringBuffer();
-      messageBody_en = new StringBuffer();
+      messageBody = new StringBuilder();
+      messageBody_en = new StringBuilder();
     } catch (Exception e) {
       throw new GalleryRuntimeException(
           "ScheduledAlertUser.doScheduledAlertUser()",
@@ -161,9 +161,9 @@ public class ScheduledAlertUser
   }
 
   private void createMessage(ResourceLocator message,
-      StringBuffer messageBody,
+      StringBuilder messageBody,
       ResourceLocator message_en,
-      StringBuffer messageBody_en,
+      StringBuilder messageBody_en,
       PhotoDetail photo,
       UserDetail[] admins) {
     // 1. création du message
@@ -232,6 +232,6 @@ public class ScheduledAlertUser
   public void jobFailed(SchedulerEvent anEvent) {
     SilverTrace.error("gallery", "ScheduledAlertUser.handleSchedulerEvent",
         "The job '" + anEvent.getJobExecutionContext().getJobName()
-        + "' was not successfull");
+        + "' was not successfull", anEvent.getJobException());
   }
 }

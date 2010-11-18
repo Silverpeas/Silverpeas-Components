@@ -114,7 +114,7 @@ out.println(gef.getLookStyleSheet());
 <%
                             for (int i = 0; i < dataWarningDBDrivers.length; i++)
                             {
-                      			out.println("<option value=\""+dataWarningDBDrivers[i].DriverUniqueID+"\" " + ((currentDBDriver.DriverUniqueID.equals(dataWarningDBDrivers[i].DriverUniqueID)) ? "selected" : "") + ">"+dataWarningDBDrivers[i].DriverName);
+                      			out.println("<option value=\""+dataWarningDBDrivers[i].getDriverUniqueID()+"\" " + ((currentDBDriver.getDriverUniqueID().equals(dataWarningDBDrivers[i].getDriverUniqueID())) ? "selected" : "") + ">"+dataWarningDBDrivers[i].getDriverName());
                             }
 %>
                         </select>
@@ -123,13 +123,13 @@ out.println(gef.getLookStyleSheet());
 				<TR>
 					<TD class="txtlibform"><%=resource.getString("champsDescription")%> :</TD>
 					<TD>
-						<input type="text" name="DescriptionDrv" size="100" disabled value="<%=currentDBDriver.Description%>">
+						<input type="text" name="DescriptionDrv" size="100" disabled value="<%=currentDBDriver.getDescription()%>">
 					</TD>
 				</TR>
 				<TR>
 					<TD class="txtlibform"><%=resource.getString("champUrlJDBC")%> :</TD>
 					<TD>
-						<input type="text" name="JDBCUrl" size="100" disabled value="<%=currentDBDriver.JDBCUrl%>">
+						<input type="text" name="JDBCUrl" size="100" disabled value="<%=currentDBDriver.getJDBCUrl()%>">
                     </TD>
 				</TR>
 				<TR>

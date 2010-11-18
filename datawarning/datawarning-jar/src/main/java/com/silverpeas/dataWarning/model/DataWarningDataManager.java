@@ -41,6 +41,7 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.pool.ConnectionPool;
+import java.util.List;
 
 public class DataWarningDataManager {
   private SilverpeasBeanDAO DataWarningDAO;
@@ -276,9 +277,9 @@ public class DataWarningDataManager {
     return retour;
   }
 
-  public Collection getDataWarningSchedulerInstances()
+  public List<String> getDataWarningSchedulerInstances()
       throws DataWarningException {
-    ArrayList retour = new ArrayList();
+    List<String> retour = new ArrayList<String>();
     Connection con = null;
     Statement stmt = null;
     ResultSet rs_Schedulers = null;
@@ -473,7 +474,7 @@ public class DataWarningDataManager {
 
   /**
    * Ouverture de la connection vers la source de donnees
-   * 
+   *
    * @return Connection la connection
    * @exception DataWarningException
    */

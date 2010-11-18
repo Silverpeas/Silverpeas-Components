@@ -47,8 +47,8 @@ import com.silverpeas.mailinglist.service.event.MessageEvent;
 import com.silverpeas.mailinglist.service.event.MessageListener;
 import com.silverpeas.mailinglist.service.model.MailingListService;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
-import com.stratelia.silverpeas.scheduler.SchedulerEvent;
-import com.stratelia.silverpeas.scheduler.SchedulerEventListener;
+import com.silverpeas.scheduler.SchedulerEvent;
+import com.silverpeas.scheduler.SchedulerEventListener;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class MessageChecker

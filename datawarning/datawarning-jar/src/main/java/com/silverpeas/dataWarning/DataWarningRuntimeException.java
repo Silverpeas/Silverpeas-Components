@@ -21,34 +21,36 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.dataWarning;
 
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class DataWarningRuntimeException extends SilverpeasRuntimeException {
-  
+
+  private static final long serialVersionUID = -5763680875084957726L;
+
   public DataWarningRuntimeException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  public DataWarningRuntimeException(String callingClass, int errorLevel, String message, String extraParams) {
-	super(callingClass, errorLevel, message, extraParams);
+  public DataWarningRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams) {
+    super(callingClass, errorLevel, message, extraParams);
   }
 
-  public DataWarningRuntimeException(String callingClass, int errorLevel, String message, Exception nested) {
-	super(callingClass, errorLevel, message, nested);
+  public DataWarningRuntimeException(String callingClass, int errorLevel, String message,
+      Exception nested) {
+    super(callingClass, errorLevel, message, nested);
   }
 
-  public DataWarningRuntimeException(String callingClass, int errorLevel, String message, String extraParams,
-	                             Exception nested) {
-	super(callingClass, errorLevel, message, extraParams, nested);
+  public DataWarningRuntimeException(String callingClass, int errorLevel, String message,
+      String extraParams,
+      Exception nested) {
+    super(callingClass, errorLevel, message, extraParams, nested);
   }
-	
+
+  @Override
   public String getModule() {
     return "dataWarning";
   }
-
-
 }
-
