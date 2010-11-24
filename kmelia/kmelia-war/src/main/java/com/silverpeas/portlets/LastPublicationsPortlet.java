@@ -43,37 +43,51 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.kmelia.KmeliaTransversal;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import java.util.Calendar;
 
 public class LastPublicationsPortlet extends GenericPortlet implements FormNames {
 
+  @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
     PortletSession session = request.getPortletSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController",
-        PortletSession.APPLICATION_SCOPE);
+        .getAttribute("SilverSessionController", PortletSession.APPLICATION_SCOPE);
 
     String spaceId = (String) session.getAttribute(
         "Silverpeas_Portlet_SpaceId", PortletSession.APPLICATION_SCOPE);
 
     PortletPreferences pref = request.getPreferences();
-    int nbPublis = Integer.parseInt(pref.getValue("nbPublis", "5"));
-
-    KmeliaTransversal kmeliaTransversal = new KmeliaTransversal(
-        m_MainSessionCtrl);
-    List<PublicationDetail> publications = kmeliaTransversal.getPublications(spaceId, nbPublis);
-
+    int nbPublis = 5;
+    if(StringUtil.isInteger(pref.getValue("nbPublis", "5"))) {
+      nbPublis = Integer.parseInt(pref.getValue("nbPublis", "5"));
+    }
+    int maxAge = 0;
+    if(StringUtil.isInteger(pref.getValue("maxAge","0"))) {
+      maxAge = Integer.parseInt(pref.getValue("maxAge","0"));
+    }
+    KmeliaTransversal kmeliaTransversal = new KmeliaTransversal(m_MainSessionCtrl);
+    List<PublicationDetail> publications;
+    if(maxAge > 0) {
+      maxAge = -1 * maxAge;
+      Calendar calend = Calendar.getInstance();
+      calend.add(Calendar.DAY_OF_MONTH, maxAge);
+      publications = kmeliaTransversal.getUpdatedPublications(spaceId, calend.getTime(), nbPublis);
+    } else {
+      publications = kmeliaTransversal.getPublications(spaceId, nbPublis);
+    }
     request.setAttribute("Publications", publications);
-
     include(request, response, "portlet.jsp");
   }
 
+  @Override
   public void doEdit(RenderRequest request, RenderResponse response)
       throws PortletException {
     include(request, response, "edit.jsp");
   }
 
   /** Include "help" JSP. */
+  @Override
   public void doHelp(RenderRequest request, RenderResponse response)
       throws PortletException {
     include(request, response, "help.jsp");
@@ -99,6 +113,7 @@ public class LastPublicationsPortlet extends GenericPortlet implements FormNames
   /*
    * Process Action.
    */
+  @Override
   public void processAction(ActionRequest request, ActionResponse response)
       throws PortletException {
     if (request.getParameter(SUBMIT_FINISHED) != null) {
@@ -131,29 +146,31 @@ public class LastPublicationsPortlet extends GenericPortlet implements FormNames
   private void processEditFinishedAction(ActionRequest request,
       ActionResponse response) throws PortletException {
     String nbPublis = request.getParameter(TEXTBOX_NB_ITEMS);
+    String maxAge = request.getParameter(TEXTBOX_MAX_AGE);
     String displayDescription = request.getParameter("displayDescription");
 
     // Check if it is a number
     try {
       int nb = Integer.parseInt(nbPublis);
+      Integer.parseInt(maxAge);
 
-      if (nb < 0 || nb > 30)
+      if (nb < 0 || nb > 30) {
         throw new NumberFormatException();
+      }
 
       // store preference
       PortletPreferences pref = request.getPreferences();
       try {
         pref.setValue("nbPublis", nbPublis);
+        pref.setValue("maxAge", maxAge);
         pref.setValue("displayDescription", displayDescription);
         pref.store();
       } catch (ValidatorException ve) {
         getPortletContext().log("could not set nbPublis", ve);
-        throw new PortletException("IFramePortlet.processEditFinishedAction",
-            ve);
+        throw new PortletException("IFramePortlet.processEditFinishedAction", ve);
       } catch (IOException ioe) {
         getPortletContext().log("could not set nbPublis", ioe);
-        throw new PortletException("IFramePortlet.prcoessEditFinishedAction",
-            ioe);
+        throw new PortletException("IFramePortlet.prcoessEditFinishedAction", ioe);
       }
       response.setPortletMode(PortletMode.VIEW);
 
