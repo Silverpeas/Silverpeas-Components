@@ -232,6 +232,6 @@ public class ScheduledAlertUser
   public void jobFailed(SchedulerEvent anEvent) {
     SilverTrace.error("gallery", "ScheduledAlertUser.handleSchedulerEvent",
         "The job '" + anEvent.getJobExecutionContext().getJobName()
-        + "' was not successfull", anEvent.getJobException());
+        + "' was not successfull", anEvent.getJobThrowable());
   }
 }
