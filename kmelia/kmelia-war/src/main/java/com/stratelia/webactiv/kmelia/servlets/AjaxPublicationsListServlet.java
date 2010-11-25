@@ -543,11 +543,12 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             !checkboxAllowed || linkAttachment) {
           out.write("<span class=\"files\">");
           // Can be a shortcut. Must check attachment mode according to publication source.
+          boolean isAlias = !kmeliaScc.getComponentId().equalsIgnoreCase(pub.getPK().getInstanceId());
           if (kmeliaScc.isVersionControlled(pub.getPK().getInstanceId())) {
-            out.write(displayVersioning(pub, out, resources, linkAttachment));
+            out.write(displayVersioning(pub, out, resources, linkAttachment, isAlias));
           } else {
             out.write(displayAttachments(pub, currentUserId, currentTopicId, out, resources,
-                linkAttachment));
+                linkAttachment, isAlias));
           }
           out.write("</span>");
         }
@@ -759,7 +760,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   @SuppressWarnings("unchecked")
   private String displayVersioning(PublicationDetail pubDetail, Writer out,
-      ResourcesWrapper resources, boolean linkAttachment) throws IOException {
+      ResourcesWrapper resources, boolean linkAttachment, boolean alias) throws IOException {
     VersioningUtil versioning = new VersioningUtil();
     ForeignPK foreignPK = new ForeignPK(pubDetail.getPK());
     List<Document> documents = versioning.getDocuments(foreignPK);
@@ -795,6 +796,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         url = FileServerUtils.getApplicationContext() +
             versioning.getDocumentVersionURL(document.getPk().getInstanceId(),
                 logicalName, document.getPk().getId(), version.getPk().getId());
+        
+        if (alias) {
+          url = FileServerUtils.getAliasURL(document.getPk().getInstanceId(), logicalName,
+              document.getPk().getId(), version.getPk().getId());
+        }
 
         result.append(displayFile(url, title, info, icon, logicalName, size, downloadTime,
             creationDate, permalink, out, resources, linkAttachment));
@@ -807,7 +813,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   private String displayAttachments(PublicationDetail pubDetail, String userId, String nodeId,
-      Writer out, ResourcesWrapper resources, boolean linkAttachment) throws
+      Writer out, ResourcesWrapper resources, boolean linkAttachment, boolean alias) throws
       IOException {
     SilverTrace.info("kmelia", "AjaxPublicationsListServlet.displayAttachments()",
         "root.MSG_GEN_ENTER_METHOD", "pubId = " + pubDetail.getPK().getId());
@@ -834,6 +840,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         if (!attachmentDetail.isAttachmentLinked()) {
           permalink = URLManager.getSimpleURL(URLManager.URL_FILE, id);
         }
+        
+        if (alias) {
+          url = FileServerUtils.getAliasURL(foreignKey.getInstanceId(), logicalName, id);
+        }
+        
         result.append(displayFile(url, title, info, icon, logicalName, size, downloadTime,
             creationDate, permalink, out, resources, linkAttachment));
       }
