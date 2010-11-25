@@ -542,7 +542,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
             &&
             !checkboxAllowed || linkAttachment) {
           out.write("<span class=\"files\">");
-          if (kmeliaScc.isVersionControlled()) {
+          // Can be a shortcut. Must check attachment mode according to publication source.
+          if (kmeliaScc.isVersionControlled(pub.getPK().getInstanceId())) {
             out.write(displayVersioning(pub, out, resources, linkAttachment));
           } else {
             out.write(displayAttachments(pub, currentUserId, currentTopicId, out, resources,
