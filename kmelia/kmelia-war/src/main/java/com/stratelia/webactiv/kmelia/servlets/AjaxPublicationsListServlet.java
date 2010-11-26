@@ -617,8 +617,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         }
       }
       out.write("<img src=\"" + vignette_url + "\""
-          + ((height == null) ? "" : " height=\"" + height + "\"")
-          + ((width == null) ? "" : " width=\"" + width + "\"")
+          + (!StringUtil.isDefined(height) ? "" : " height=\"" + height + "\"")
+          + (!StringUtil.isDefined(width) ? "" : " width=\"" + width + "\"")
           + "/ alt=\"\">&#160;");
     }
   }
