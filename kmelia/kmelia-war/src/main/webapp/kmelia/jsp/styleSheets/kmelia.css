@@ -154,7 +154,7 @@
 
 #pubList .publication {
 	white-space: normal;
-	float: left;
+	/*float: left;*/
 }
 
 #pubList .publication .bullet {
@@ -179,7 +179,7 @@
 	margin-left: 15px;
 	width: 95%;
 	white-space: normal;
-	float: left;
+	/*float: left;*/
 }
 
 #pubList .publication .line3 {
