@@ -40,7 +40,6 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
-import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 public class GalleryInstanciator implements ComponentsInstanciatorIntf {
@@ -48,12 +47,11 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
   public GalleryInstanciator() {
   }
 
+  @Override
   public void create(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
-    SilverTrace.info("gallery", "GalleryInstanciator.create()",
-        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-        + componentId + ", userId =" + userId);
-
+    SilverTrace.info("gallery", "GalleryInstanciator.create()", "root.MSG_GEN_ENTER_METHOD", 
+      "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
     // create node component
     NodeInstanciator node = new NodeInstanciator("com.silverpeas.gallery");
     node.create(con, spaceId, componentId, userId);
@@ -61,26 +59,22 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
     insertRootNode(con, componentId, userId);
     // inserer le premier album
     insertAlbumNode(con, componentId, userId);
-
-    SilverTrace.info("gallery", "GalleryInstanciator.create()",
-        "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("gallery", "GalleryInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
   }
 
+  @Override
   public void delete(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
     SilverTrace.info("gallery", "GalleryInstanciator.delete()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
         + componentId + ", userId =" + userId);
-
     // supression de tous les albums
     try {
       getGalleryBm().deleteAlbum(new NodePK("0", componentId));
     } catch (RemoteException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      SilverTrace.error("gallery", "GalleryInstanciator.delete()", e.getMessage(), e);
     }
-    SilverTrace.info("gallery", "GalleryInstanciator.delete()",
-        "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("gallery", "GalleryInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   private void insertRootNode(Connection con, String componentId, String userId)
@@ -101,8 +95,7 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
       prepStmt.executeUpdate();
     } catch (SQLException se) {
       throw new InstanciationException("GalleryInstanciator.insertRootNode()",
-          InstanciationException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
-          "Query = " + query, se);
+          InstanciationException.ERROR, "root.EX_RECORD_INSERTION_FAILED", "Query = " + query, se);
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -122,7 +115,7 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
       prepStmt = con.prepareStatement(query);
 
       // Recherche de la nouvelle PK de la table
-      int newId = DBUtil.getNextId("SB_Node_Node", new String("nodeId"));
+      int newId = DBUtil.getNextId(con, "SB_Node_Node", "nodeId");
       prepStmt.setInt(1, newId);
       prepStmt.setString(2, creationDate);
       prepStmt.setString(3, userId);
@@ -135,10 +128,6 @@ public class GalleryInstanciator implements ComponentsInstanciatorIntf {
       throw new InstanciationException("GalleryInstanciator.insertAlbumNode()",
           InstanciationException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
           "Query = " + query, se);
-    } catch (UtilException ue) {
-      throw new InstanciationException("GalleryInstanciator.insertAlbumNode()",
-          InstanciationException.ERROR, "root.EX_RECORD_INSERTION_FAILED",
-          "Query = " + query, ue);
     }
   }
 
