@@ -35,7 +35,6 @@ public interface ScheduleEventRequestHandler {
   public static final String CURRENT_SCHEDULE_EVENT = "currentScheduleEvent";
   public static final String LIST_SCHEDULE_EVENT = "scheduleEventList";
 
-  public static final SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yy");
   public static final SimpleDateFormat formatterTmpId = new SimpleDateFormat("ddMMyy");
 
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,

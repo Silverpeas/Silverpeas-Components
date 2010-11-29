@@ -18,7 +18,7 @@
         id varchar(255) not null,
         scheduleeventid varchar(255) not null,
         userid int not null,
-        lastvisit datetime not null
+        lastvisit datetime
     );
     
     create table sc_scheduleevent_response (

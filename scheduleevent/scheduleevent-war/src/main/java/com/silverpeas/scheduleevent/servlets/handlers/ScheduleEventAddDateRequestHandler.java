@@ -24,6 +24,7 @@
 
 package com.silverpeas.scheduleevent.servlets.handlers;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
 
@@ -40,6 +41,7 @@ public class ScheduleEventAddDateRequestHandler extends ScheduleEventActionDateR
       HttpServletRequest request) throws Exception {
     ScheduleEvent current = scheduleeventSC.getCurrentScheduleEvent();
     Set<DateOption> dates = current.getDates();
+    SimpleDateFormat formatter = getSimpleDateFormat(scheduleeventSC);
     Date dateToAdd = formatter.parse(request.getParameter("dateToAdd"));
     String dateIdSearch = formatterTmpId.format(dateToAdd);
     DateOption dateOption = getExistingDateOption(current.getDates(), dateIdSearch);
@@ -52,5 +54,12 @@ public class ScheduleEventAddDateRequestHandler extends ScheduleEventActionDateR
     request.setAttribute(CURRENT_SCHEDULE_EVENT, current);
     return "form/options.jsp";
   }
-
+  
+  private SimpleDateFormat getSimpleDateFormat(ScheduleEventSessionController scheduleeventSC){
+    String pattern = scheduleeventSC.getString("scheduleevent.form.dateformat");
+    if(pattern == null){
+      pattern = "dd/MM/yy";
+    }
+    return new SimpleDateFormat(pattern);
+  }
 }
