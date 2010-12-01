@@ -23,9 +23,6 @@
  */
 package com.silverpeas.gallery;
 
-
-
-
 import com.drew.imaging.jpeg.JpegMetadataReader;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
@@ -71,8 +68,6 @@ public class ImageHelper {
   static final String thumbnailSuffix_Xlarge = "_600x400.jpg";
   static final String watermarkSuffix = "_watermark.jpg";
   static final ImageMetadataExtractor extractor = new SanselanMetadataExtractor();
-
-  
 
   /**
    * @param photo
@@ -254,12 +249,12 @@ public class ImageHelper {
     }
   }
 
-  public static void setMetaData(PhotoDetail photo) throws UnsupportedEncodingException, 
+  public static void setMetaData(PhotoDetail photo) throws UnsupportedEncodingException,
       ImageMetadataException {
     setMetaData(photo, I18NHelper.defaultLanguage);
   }
 
-  public static void setMetaData(PhotoDetail photo, String lang) throws ImageMetadataException, 
+  public static void setMetaData(PhotoDetail photo, String lang) throws ImageMetadataException,
       UnsupportedEncodingException {
     String photoId = photo.getPhotoPK().getId();
     String name = photo.getImageName();
@@ -494,7 +489,7 @@ public class ImageHelper {
       targetHeight = 1;
     }
 
-    int type =  BufferedImage.TYPE_INT_RGB;
+    int type = BufferedImage.TYPE_INT_RGB;
     BufferedImage ret = img;
     int w, h;
     if (higherQuality) {
@@ -685,7 +680,7 @@ public class ImageHelper {
       fromImage = fromDir + fromPK.getId() + previewSuffix;
       toImage = toDir + toPK.getId() + previewSuffix;
       pasteFile(fromImage, toImage, cut);
-      
+
       // copier preview sans watermark
       fromImage = fromDir + fromPK.getId() + thumbnailSuffix_Xlarge;
       toImage = toDir + toPK.getId() + thumbnailSuffix_Xlarge;
@@ -709,18 +704,18 @@ public class ImageHelper {
   }
 
   private static void pasteFile(String fromImage, String toImage, boolean cut) {
-    if (cut) {
-      File fromFile = new File(fromImage);
-      File toFile = new File(toImage);
-      if(fromFile.renameTo(toFile)){
+    File fromFile = new File(fromImage);
+    File toFile = new File(toImage);
+    if (fromFile.exists()) {
+      if (cut && fromFile.renameTo(toFile)) {
         return;
       }
-    }
-    try {
-      FileRepositoryManager.copyFile(fromImage, toImage);
-    } catch (Exception e) {
-      SilverTrace.error("gallery", "ImageHelper.pasteFile", "root.MSG_GEN_PARAM_VALUE",
-          "Unable to copy file : fromImage = " + fromImage + ", toImage = " + toImage, e);
+      try {
+        FileRepositoryManager.copyFile(fromImage, toImage);
+      } catch (Exception e) {
+        SilverTrace.error("gallery", "ImageHelper.pasteFile", "root.MSG_GEN_PARAM_VALUE",
+            "Unable to copy file : fromImage = " + fromImage + ", toImage = " + toImage, e);
+      }
     }
   }
 
