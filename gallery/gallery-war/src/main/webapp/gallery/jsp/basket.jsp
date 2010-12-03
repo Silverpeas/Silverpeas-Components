@@ -156,18 +156,18 @@ var messages = new Array();
 // multi-dimensional arrays containing: 
 // image and text for tooltip
 // optional: bgColor and color to be sent to tooltip
-    <%int messagesId = 0;
-      while (itP.hasNext()) {
-        String photoId = (String) itP.next();
-        PhotoDetail photo = gallerySC.getPhoto(photoId);
-        String nomRep = resource.getSetting("imagesSubDirectory")
-        + photo.getId();%>		
-		messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl(spaceId, componentId, photo.getId()
+  <%int messagesId = 0;
+          while (itP.hasNext()) {
+            String photoId = (String) itP.next();
+            PhotoDetail photo = gallerySC.getPhoto(photoId);
+            String nomRep = resource.getSetting("imagesSubDirectory")
+                + photo.getId();%>		
+            messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl(spaceId, componentId, photo.getId()
             + extensionAlt, photo.getImageMimeType(),
             nomRep)%>','<%=EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(photo.
-                                    getName()))%>',"#FFFFFF");
-    <%messagesId++;
-			}%>
+                getName()))%>',"#FFFFFF");
+        <%messagesId++;
+      }%>
 
 ////////////////////  END OF CUSTOMIZATION AREA  ///////////////////
 
@@ -292,118 +292,108 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 </head>
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5"
 	marginheight="5">
-<%
-  // creation de la barre de navigation
-			browseBar.setDomainName(spaceLabel);
-			browseBar.setComponentName(componentLabel, "Main");
-			browseBar.setPath(resource.getString("gallery.basket"));
-
-			if (photos.size() != 0) {
-				if (isOrder) {
-					// transformer le panier en demande
-					operationPane.addOperation(resource
-							.getIcon("gallery.AddOrder"), resource
-							.getString("gallery.addOrder"), "OrderAdd");
-					operationPane.addLine();
-				}
-
-				// possibilite de modifier ou supprimer les photos par lot
-				operationPane.addOperation(resource
-						.getIcon("gallery.deleteSelectedPhoto"), resource
-						.getString("gallery.deleteSelectedPhoto"),
-						"javascript:onClick=sendDataDelete();");
-
-				// vider le panier
-				operationPane.addOperation(resource
-						.getIcon("gallery.deleteBasket"), resource
-						.getString("gallery.deleteBasket"), "BasketDelete");
-			}
-
-			out.println(window.printBefore());
-			out.println(frame.printBefore());
-
-			// afficher les photos du panier
-			// -------------------
+  <%
+    // creation de la barre de navigation
+    browseBar.setDomainName(spaceLabel);
+    browseBar.setComponentName(componentLabel, "Main");
+    browseBar.setPath(resource.getString("gallery.basket"));
+      
+    if (photos.size() != 0) {
+      if (isOrder) {
+        // transformer le panier en demande
+        operationPane.addOperation(resource.getIcon("gallery.AddOrder"), resource.getString(
+            "gallery.addOrder"), "OrderAdd");
+        operationPane.addLine();
+      }
+        
+      // possibilite de modifier ou supprimer les photos par lot
+      operationPane.addOperation(resource.getIcon("gallery.deleteSelectedPhoto"), resource.getString(
+          "gallery.deleteSelectedPhoto"),
+          "javascript:onClick=sendDataDelete();");
+            
+      // vider le panier
+      operationPane.addOperation(resource.getIcon("gallery.deleteBasket"), resource.getString(
+          "gallery.deleteBasket"), "BasketDelete");
+    }
+      
+    out.println(window.printBefore());
+    out.println(frame.printBefore());
+      
+    // afficher les photos du panier
+    // -------------------
 %>
 <FORM NAME="photoForm"><input type="hidden" name="SelectedIds">
 <input type="hidden" name="NotSelectedIds"> <%
    if (photos.size() == 0) {
- 				out.println("<center>"
- 						+ resource.getString("gallery.emptyBasket")
- 						+ "</center>");
- 			} else {
- 				// affichage des photos dans un ArrayPane
- 				ArrayPane arrayPane = gef.getArrayPane("basket", "BasketView",
- 						request, session);
- 				boolean ok = false;
- 				itP = (Iterator) photos.iterator();
- 				if (itP.hasNext()) {
- 					arrayPane.addArrayColumn(resource
- 							.getString("gallery.photo"));
- 					ArrayColumn columnOp = arrayPane.addArrayColumn(resource
- 							.getString("gallery.operation"));
- 					columnOp.setSortable(false);
- 					ok = true;
- 				}
- 				int indexPhoto = 0;
- 				while (itP.hasNext()) {
- 					ArrayLine ligne = arrayPane.addArrayLine();
-
- 					id = Integer.parseInt((String) itP.next());
- 					PhotoDetail photo = gallerySC
- 							.getPhoto(Integer.toString(id));
- 					String nomRep = resource.getSetting("imagesSubDirectory")
- 							+ id;
- 					String name = id + extension;
- 					String altTitle = Encode.javaStringToHtmlString(photo
- 							.getTitle());
- 					if (photo.getDescription() != null
- 							&& photo.getDescription().length() > 0)
- 						altTitle += " : "
- 								+ Encode.javaStringToHtmlString(photo
- 										.getDescription());
- 					String vignette_url = FileServer
- 							.getUrl(spaceId, componentId, name, photo
- 									.getImageMimeType(), nomRep);
- 					String vignetteAlt = FileServer.getUrl(spaceId,
- 							componentId, photo.getId() + extensionAlt, photo
- 									.getImageMimeType(), nomRep);
- 					String alt = Encode.javaStringToHtmlString("<IMG SRC=\""
- 							+ vignetteAlt + "\" border=\"0\">");
-
- 					ArrayCellText arrayCellText0 = ligne
- 							.addArrayCellText("<a href=\"PreviewPhoto?PhotoId="
- 									+ id
- 									+ "\" onmouseover=\"doTooltip(event,"
- 									+ indexPhoto
- 									+ ")\" onmouseout=\"hideTip()\"><IMG SRC=\""
- 									+ vignette_url + "\" border=\"0\"></a>");
- 					arrayCellText0.setCompareOn(name);
- 					indexPhoto++;
-
- 					// case e cocher pour traitement par lot
- 					String usedCheck = "";
- 					if (selectedIds != null
- 							&& selectedIds.contains(Integer.toString(id)))
- 						usedCheck = "checked";
- 					ligne
- 							.addArrayCellText("<a href=\"#\" onclick=\"javaScript:deleteConfirm('"
- 									+ id
- 									+ "')\"><img src=\""
- 									+ resource.getIcon("gallery.deleteSrc")
- 									+ "\" alt=\""
- 									+ resource.getString("gallery.deletePhoto")
- 									+ "\" border=\"0\" align=\"absmiddle\"></a> <input type=\"checkbox\" name=\"SelectPhoto\" value=\""
- 									+ Encode.javaStringToHtmlString(Integer
- 											.toString(id)) + usedCheck + "\">");
-
- 				}
- 				if (ok)
- 					out.println(arrayPane.print());
- 			}
-
- 			out.println(frame.printAfter());
- 			out.println(window.printAfter());
+       out.println("<center>"
+           + resource.getString("gallery.emptyBasket")
+           + "</center>");
+     } else {
+       // affichage des photos dans un ArrayPane
+       ArrayPane arrayPane = gef.getArrayPane("basket", "BasketView",
+           request, session);
+       boolean ok = false;
+       itP = photos.iterator();
+       if (itP.hasNext()) {
+         arrayPane.addArrayColumn(resource.getString("gallery.photo"));
+         ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("gallery.operation"));
+         columnOp.setSortable(false);
+         ok = true;
+       }
+       int indexPhoto = 0;
+       while (itP.hasNext()) {
+         ArrayLine ligne = arrayPane.addArrayLine();
+           
+         id = Integer.parseInt((String) itP.next());
+         PhotoDetail photo = gallerySC.getPhoto(Integer.toString(id));
+         String nomRep = resource.getSetting("imagesSubDirectory")
+             + id;
+         String name = id + extension;
+         String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
+         if (photo.getDescription() != null
+             && photo.getDescription().length() > 0) {
+           altTitle += " : "
+               + EncodeHelper.javaStringToHtmlString(photo.getDescription());
+         }
+         String vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.
+             getImageMimeType(), nomRep);
+         String vignetteAlt = FileServerUtils.getUrl(spaceId,
+             componentId, photo.getId() + extensionAlt, photo.getImageMimeType(), nomRep);
+         String alt = EncodeHelper.javaStringToHtmlString("<IMG SRC=\""
+             + vignetteAlt + "\" border=\"0\">");
+               
+         ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"PreviewPhoto?PhotoId="
+             + id
+             + "\" onmouseover=\"doTooltip(event,"
+             + indexPhoto
+             + ")\" onmouseout=\"hideTip()\"><IMG SRC=\""
+             + vignette_url + "\" border=\"0\"></a>");
+         arrayCellText0.setCompareOn(name);
+         indexPhoto++;
+           
+         // case e cocher pour traitement par lot
+         String usedCheck = "";
+         if (selectedIds != null
+             && selectedIds.contains(Integer.toString(id))) {
+           usedCheck = "checked";
+         }
+         ligne.addArrayCellText("<a href=\"#\" onclick=\"javaScript:deleteConfirm('"
+             + id
+             + "')\"><img src=\""
+             + resource.getIcon("gallery.deleteSrc")
+             + "\" alt=\""
+             + resource.getString("gallery.deletePhoto")
+             + "\" border=\"0\" align=\"absmiddle\"></a> <input type=\"checkbox\" name=\"SelectPhoto\" value=\""
+             + EncodeHelper.javaStringToHtmlString(String.valueOf(id)) + usedCheck + "\">");
+               
+       }
+       if (ok) {
+         out.println(arrayPane.print());
+       }
+     }
+       
+     out.println(frame.printAfter());
+     out.println(window.printAfter());
  %>
 </FORM>
 

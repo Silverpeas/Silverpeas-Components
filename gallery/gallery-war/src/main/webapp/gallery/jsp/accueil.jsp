@@ -37,7 +37,7 @@ boolean 	isBasket	 	= ((Boolean) request.getAttribute("IsBasket")).booleanValue(
 boolean 	isOrder		 	= ((Boolean) request.getAttribute("IsOrder")).booleanValue();
 boolean 	isGuest		 	= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
 
-// param�trage pour l'affichage des derni�res photos t�l�charg�es
+// parametrage pour l'affichage des dernieres photos telechargees
 int nbAffiche 	= 0;
 int nbParLigne 	= 5;
 int nbTotal 	= 15;
@@ -158,7 +158,7 @@ function clipboardPaste() {
 	
 	if (!"admin".equals(profile) && !isGuest)
 	{
-		// demande de photo aupr�s du gestionnaire
+		// demande de photo aupres du gestionnaire
 		operationPane.addOperation(resource.getIcon("gallery.askPhoto"),resource.getString("gallery.askPhoto"), "javaScript:askPhoto()");
 		operationPane.addLine();
 	}
@@ -170,7 +170,7 @@ function clipboardPaste() {
        	operationPane.addLine();
 	}
 	
-	// derniers r�sultat de la recherche
+	// derniers resultat de la recherche
 	if (isPrivateSearch)
 	{
     	operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString("gallery.lastResult"), "LastResult");
@@ -208,92 +208,94 @@ function clipboardPaste() {
 		 		</form>
 		     </table>
 		 </center>
-		 <%
-		 out.println(b.printAfter());
-		 out.println("<br>");
-	}
-    
-    if ( "user".equals(profile) ||"privilegedUser".equals(profile) || "writer".equals(profile) )
-	{
-		NavigationList navList = gef.getNavigationList();
-    	navList.setTitle(root.getName());
-		Iterator it = (Iterator) root.getChildrenDetails().iterator();
-		
-		while (it.hasNext()) 
-		{
-			NodeDetail unAlbum = (NodeDetail) it.next();
-			int id = unAlbum.getId();
-			String nom = unAlbum.getName();
-			String lien = null;
-			navList.addItem(nom,"ViewAlbum?Id="+id,-1,unAlbum.getDescription(), lien);
-		}
-		out.println(navList.print());
-	}
-	else
-	{
-	    ArrayPane arrayPane = gef.getArrayPane("albumList", "GoToCurrentAlbum", request, session);
-		ArrayColumn columnIcon = arrayPane.addArrayColumn("&nbsp;");
-        columnIcon.setSortable(false);
-		arrayPane.addArrayColumn(resource.getString("gallery.albums"));
-		arrayPane.addArrayColumn(resource.getString("GML.description"));
-		ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("gallery.operation"));
-		columnOp.setSortable(false);
-		
-		// remplissage de l'ArrayPane avec les albums de niveau 1
-		// ------------------------------------------------------
-		Iterator it = (Iterator) root.getChildrenDetails().iterator();
-		while (it.hasNext()) 
-		{
-			ArrayLine ligne = arrayPane.addArrayLine();
-			
-			IconPane icon = gef.getIconPane();
-			Icon albumIcon = icon.addIcon();
-       		albumIcon.setProperties(resource.getIcon("gallery.gallerySmall"), "");
-       		icon.setSpacing("30px");
-       		ligne.addArrayCellIconPane(icon);
-			
-			NodeDetail unAlbum = (NodeDetail) it.next();
-			int id = unAlbum.getId();
-			String nom = unAlbum.getName();
-			String link = "";
-			if (unAlbum.getPermalink() != null)
-			{
-				link = "&nbsp;<a href=\""+unAlbum.getPermalink()+"\"><img src=\""+resource.getIcon("gallery.link")+"\" border=\"0\" align=\"bottom\" alt=\""+resource.getString("gallery.CopyAlbumLink")+"\" title=\""+resource.getString("gallery.CopyAlbumLink")+"\"></a>";
-			}
-			//ligne.addArrayCellLink(unAlbum.getName()+link,"ViewAlbum?Id="+id);
-			
-			ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"ViewAlbum?Id="+id+"\">"+unAlbum.getName()+"</a>"+link);
-            arrayCellText0.setCompareOn(unAlbum.getName());
-			
-			ligne.addArrayCellText(unAlbum.getDescription());
-			if ( "admin".equals(profile) || ("publisher".equals(profile) && unAlbum.getCreatorId().equals(userId)) )
-			{
-				// si publisher, possibilit� de modif que sur ses albums
-				// cr�ation de la colonne des ic�nes
-				IconPane iconPane = gef.getIconPane();
-				// ic�ne "modifier"
-				Icon updateIcon = iconPane.addIcon();
-	       		updateIcon.setProperties(resource.getIcon("gallery.updateAlbum"), resource.getString("gallery.updateAlbum"), "javaScript:editAlbum('"+id+"')");
-	   			// ic�ne "supprimer"
-	       		Icon deleteIcon = iconPane.addIcon();
-	       		deleteIcon.setProperties(resource.getIcon("gallery.deleteAlbum"), resource.getString("gallery.deleteAlbum"), "javaScript:deleteConfirm('"+id+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(nom))+"')");
-	       		iconPane.setSpacing("30px");
-	       		ligne.addArrayCellIconPane(iconPane);
-	        }
-		}
-		out.println(arrayPane.print());
-	}
-		
-	// afficher les derni�res photos t�l�charg�es
-	// ------------------------------------------
-	
-	Board	board		 = gef.getBoard();
+                                    <%
+             out.println(b.printAfter());
+             out.println("<br>");
+           }
+             
+           if ("user".equals(profile) || "privilegedUser".equals(profile) || "writer".equals(profile)) {
+             NavigationList navList = gef.getNavigationList();
+             navList.setTitle(root.getName());
+             Iterator it = root.getChildrenDetails().iterator();
+               
+             while (it.hasNext()) {
+               NodeDetail unAlbum = (NodeDetail) it.next();
+               int id = unAlbum.getId();
+               String nom = unAlbum.getName();
+               String lien = null;
+               navList.addItem(nom, "ViewAlbum?Id=" + id, -1, unAlbum.getDescription(), lien);
+             }
+             out.println(navList.print());
+           } else {
+             ArrayPane arrayPane = gef.getArrayPane("albumList", "GoToCurrentAlbum", request,
+                 session);
+             ArrayColumn columnIcon = arrayPane.addArrayColumn("&nbsp;");
+             columnIcon.setSortable(false);
+             arrayPane.addArrayColumn(resource.getString("gallery.albums"));
+             arrayPane.addArrayColumn(resource.getString("GML.description"));
+             ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("gallery.operation"));
+             columnOp.setSortable(false);
+               
+             // remplissage de l'ArrayPane avec les albums de niveau 1
+             // ------------------------------------------------------
+             Iterator it = root.getChildrenDetails().iterator();
+             while (it.hasNext()) {
+               ArrayLine ligne = arrayPane.addArrayLine();
+                 
+               IconPane icon = gef.getIconPane();
+               Icon albumIcon = icon.addIcon();
+               albumIcon.setProperties(resource.getIcon("gallery.gallerySmall"), "");
+               icon.setSpacing("30px");
+               ligne.addArrayCellIconPane(icon);
+                 
+               NodeDetail unAlbum = (NodeDetail) it.next();
+               int id = unAlbum.getId();
+               String nom = unAlbum.getName();
+               String link = "";
+               if (unAlbum.getPermalink() != null) {
+                 link = "&nbsp;<a href=\"" + unAlbum.getPermalink() + "\"><img src=\"" + resource.
+                     getIcon("gallery.link") + "\" border=\"0\" align=\"bottom\" alt=\"" + resource.
+                     getString("gallery.CopyAlbumLink") + "\" title=\"" + resource.getString(
+                     "gallery.CopyAlbumLink") + "\"></a>";
+               }
+               //ligne.addArrayCellLink(unAlbum.getName()+link,"ViewAlbum?Id="+id);
+                 
+               ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"ViewAlbum?Id=" + id + "\">" + unAlbum.
+                   getName() + "</a>" + link);
+               arrayCellText0.setCompareOn(unAlbum.getName());
+                 
+               ligne.addArrayCellText(unAlbum.getDescription());
+               if ("admin".equals(profile) || ("publisher".equals(profile) && unAlbum.getCreatorId().
+                   equals(userId))) {
+                 // si publisher, possibilite de modif que sur ses albums
+                 // creation de la colonne des icenes
+                 IconPane iconPane = gef.getIconPane();
+                 // icene "modifier"
+                 Icon updateIcon = iconPane.addIcon();
+                 updateIcon.setProperties(resource.getIcon("gallery.updateAlbum"), resource.
+                     getString("gallery.updateAlbum"), "javaScript:editAlbum('" + id + "')");
+                 // icene "supprimer"
+                 Icon deleteIcon = iconPane.addIcon();
+                 deleteIcon.setProperties(resource.getIcon("gallery.deleteAlbum"), resource.
+                     getString("gallery.deleteAlbum"), "javaScript:deleteConfirm('" + id + "','" + EncodeHelper.
+                     javaStringToHtmlString(EncodeHelper.javaStringToJsString(nom)) + "')");
+                 iconPane.setSpacing("30px");
+                 ligne.addArrayCellIconPane(iconPane);
+               }
+             }
+             out.println(arrayPane.print());
+           }
+             
+           // afficher les dernieres photos telechargees
+           // ------------------------------------------
+             
+           Board board = gef.getBoard();
 	%>
-			<br>
+			<br/>
 	<%
 	out.println(board.printBefore());
 	
-	// affichage de l'ent�te
+	// affichage de l'entete
 	%>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0" align=center>
 		<tr>
@@ -349,7 +351,7 @@ function clipboardPaste() {
 						nbTotal 	= nbTotal - 1 ;	
 						nbAffiche 	= nbAffiche + 1;
 						
-						// on affiche encore sur la m�me ligne
+						// on affiche encore sur la meme ligne
 						%>
 							<td valign="middle" align="center">
 								<table border="0" width="10" align="center" cellspacing="1" cellpadding="0" class="fondPhoto"><tr><td align="center">
@@ -361,7 +363,7 @@ function clipboardPaste() {
 						<%
 					}
 				}
-				// on passe � la ligne suivante
+				// on passe e la ligne suivante
 				nbAffiche = 0;
 				out.println("</tr>");
 				if (itP.hasNext())

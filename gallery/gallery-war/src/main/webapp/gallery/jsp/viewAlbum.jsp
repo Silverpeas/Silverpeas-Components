@@ -461,7 +461,7 @@ function uploadCompleted(s)
 	        		updateIcon.setProperties(resource.getIcon("gallery.updateAlbum"), resource.getString("gallery.updateAlbum"),"javaScript:editAlbum('"+id+"')");
 	        		// icene "supprimer"
 	        		Icon deleteIcon = iconPane.addIcon();
-	        		deleteIcon.setProperties(resource.getIcon("gallery.deleteAlbum"), resource.getString("gallery.deleteAlbum"),"javaScript:deleteConfirm('"+id+"','"+EncodeHelper.javaStringToHtmlString(Encode.javaStringToJsString(nom))+"')");
+	        		deleteIcon.setProperties(resource.getIcon("gallery.deleteAlbum"), resource.getString("gallery.deleteAlbum"),"javaScript:deleteConfirm('"+id+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(nom))+"')");
 	        		iconPane.setSpacing("30px");
 	        		ligne.addArrayCellIconPane(iconPane);
 	        	}

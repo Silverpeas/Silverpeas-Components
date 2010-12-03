@@ -24,6 +24,7 @@
 package com.silverpeas.gallery.control;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -58,6 +59,7 @@ import com.silverpeas.gallery.model.PhotoSelection;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
@@ -102,6 +104,7 @@ import com.stratelia.webactiv.util.viewGenerator.html.Encode;
 
 public class GallerySessionController extends AbstractComponentSessionController {
   // déclaration des variables
+
   private String currentAlbumId = "0";
   private AlbumDetail currentAlbum = getAlbum(currentAlbumId);
   private int rang = 0;
@@ -109,10 +112,8 @@ public class GallerySessionController extends AbstractComponentSessionController
   private String tri = "CreationDateAsc";
   private boolean viewAllPhoto = false;
   private String currentOrderId = "0";
-
   private Collection<String> listSelected = new ArrayList<String>();
   private boolean isViewNotVisible = false;
-
   // gestion de la recherche par mot clé
   private String searchKeyWord = "";
   private Collection<PhotoDetail> searchResultListPhotos = new ArrayList<PhotoDetail>();
@@ -121,20 +122,14 @@ public class GallerySessionController extends AbstractComponentSessionController
   private QueryDescription query = new QueryDescription();
   private SearchContext pdcSearchContext;
   private DataRecord xmlSearchContext;
-
   // pour tout selectionner / déselectionner
   private boolean select = false;
-
   private ResourceLocator metadataSettings = null;
   private ResourceLocator metadataResources = null;
-
   private CommentBm commentBm = null;
-
   // pagination de la liste des résultats (PDC via DomainsBar)
   private int indexOfFirstItemToDisplay = 0;
-
   private AdminController m_AdminCtrl = null;
-
   // panier en cours
   private List<String> basket = new ArrayList<String>(); // liste des photos mise dans le panier
 
@@ -154,8 +149,8 @@ public class GallerySessionController extends AbstractComponentSessionController
     String xmlFormName = getXMLFormName();
     String xmlFormShortName = null;
     if (StringUtil.isDefined(xmlFormName)) {
-      xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName
-          .indexOf("."));
+      xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1,
+          xmlFormName.indexOf("."));
       try {
         getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
             + xmlFormShortName, xmlFormName);
@@ -349,16 +344,18 @@ public class GallerySessionController extends AbstractComponentSessionController
   }
 
   public ResourceLocator getMetadataSettings() {
-    if (metadataSettings == null)
+    if (metadataSettings == null) {
       metadataSettings = new ResourceLocator("com.silverpeas.gallery.settings.metadataSettings",
           getLanguage());
+    }
     return metadataSettings;
   }
 
   public ResourceLocator getMetadataResources() {
-    if (metadataResources == null)
+    if (metadataResources == null) {
       metadataResources = new ResourceLocator("com.silverpeas.gallery.multilang.metadataBundle",
           getLanguage());
+    }
     return metadataResources;
   }
 
@@ -368,8 +365,9 @@ public class GallerySessionController extends AbstractComponentSessionController
 
     photo = getGalleryBm().getPhoto(photoPK);
     photo.setCreatorName(getUserDetail(photo.getCreatorId()).getDisplayedName());
-    if (photo.getUpdateId() != null)
+    if (photo.getUpdateId() != null) {
       photo.setUpdateName(getUserDetail(photo.getUpdateId()).getDisplayedName());
+    }
 
     // ajout des metadata depuis le fichier des properties
     try {
@@ -399,11 +397,13 @@ public class GallerySessionController extends AbstractComponentSessionController
         firstAlbumId = albumId;
         first = false;
       }
-      if (albumId.equals(currentAlbumId))
+      if (albumId.equals(currentAlbumId)) {
         inAlbum = true;
+      }
     }
-    if (!inAlbum)
+    if (!inAlbum) {
       setCurrentAlbumId(firstAlbumId);
+    }
 
     SilverTrace.info("gallery", "GallerySessionController.getPhoto", "root.MSG_GEN_PARAM_VALUE",
         "currentAlbumId fin = " + currentAlbumId);
@@ -564,9 +564,7 @@ public class GallerySessionController extends AbstractComponentSessionController
     } else if (tri.equals("Size")) {
       GSCSizeComparatorAsc comparateur = new GSCSizeComparatorAsc();
       Collections.sort((List<PhotoDetail>) currentAlbum.getPhotos(), comparateur);
-    }
-
-    else if (tri.equals("Title")) {
+    } else if (tri.equals("Title")) {
       GSCTitleComparatorAsc comparateur = new GSCTitleComparatorAsc();
       Collections.sort((List) currentAlbum.getPhotos(), comparateur);
     } else if (tri.equals("Author")) {
@@ -585,9 +583,7 @@ public class GallerySessionController extends AbstractComponentSessionController
     } else if (tri.equals("Size")) {
       GSCSizeComparatorAsc comparateur = new GSCSizeComparatorAsc();
       Collections.sort((List<PhotoDetail>) getRestrictedListPhotos(), comparateur);
-    }
-
-    else if (tri.equals("Title")) {
+    } else if (tri.equals("Title")) {
       GSCTitleComparatorAsc comparateur = new GSCTitleComparatorAsc();
       Collections.sort((List<PhotoDetail>) getRestrictedListPhotos(), comparateur);
     } else if (tri.equals("Author")) {
@@ -600,10 +596,10 @@ public class GallerySessionController extends AbstractComponentSessionController
     try {
       String xmlFormName = getXMLFormName();
       if (isDefined(xmlFormName)) {
-        String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName
-            .indexOf("."));
-        PublicationTemplate pubTemplate = getPublicationTemplateManager()
-            .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
+        String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.
+            indexOf("."));
+        PublicationTemplate pubTemplate = getPublicationTemplateManager().getPublicationTemplate(
+            getComponentId() + ":" + xmlFormShortName);
 
         RecordSet set = pubTemplate.getRecordSet();
         DataRecord data = set.getRecord(photoId);
@@ -745,11 +741,13 @@ public class GallerySessionController extends AbstractComponentSessionController
 
   public Integer getPercentSizeWatermark() {
     String percent = getComponentParameterValue("percentSizeWatermark");
-    if (!StringUtil.isDefined(percent))
+    if (!StringUtil.isDefined(percent)) {
       percent = "1";
+    }
     Integer percentSize = new Integer(percent);
-    if (percentSize.intValue() <= 0)
+    if (percentSize.intValue() <= 0) {
       percentSize = new Integer(1);
+    }
     return percentSize;
   }
 
@@ -763,28 +761,33 @@ public class GallerySessionController extends AbstractComponentSessionController
 
   public String getPreviewSize() {
     String previewSize = getComponentParameterValue("previewSize");
-    if (!StringUtil.isDefined(previewSize))
+    if (!StringUtil.isDefined(previewSize)) {
       previewSize = "preview";
+    }
     return previewSize;
   }
 
   public Integer getSlideshowWait() {
     String wait = getComponentParameterValue("slideshow");
-    if (wait == null || wait.equalsIgnoreCase("null") || wait.length() == 0)
+    if (wait == null || wait.equalsIgnoreCase("null") || wait.length() == 0) {
       wait = "5";
+    }
     Integer iWait = new Integer(wait);
-    if (iWait.intValue() <= 0)
+    if (iWait.intValue() <= 0) {
       iWait = new Integer(5);
+    }
     return iWait;
   }
 
   public Integer getDayVisible() {
     String day = getComponentParameterValue("dayBeforeEndVisible");
-    if (day == null || day.equalsIgnoreCase("null") || day.length() == 0)
+    if (day == null || day.equalsIgnoreCase("null") || day.length() == 0) {
       day = "3";
+    }
     Integer nbDay = new Integer(day);
-    if (nbDay.intValue() <= 0)
+    if (nbDay.intValue() <= 0) {
       nbDay = new Integer(3);
+    }
     return nbDay;
   }
 
@@ -795,8 +798,8 @@ public class GallerySessionController extends AbstractComponentSessionController
       try {
         String xmlFormShortName =
             formName.substring(formName.indexOf("/") + 1, formName.indexOf("."));
-        getPublicationTemplateManager().getPublicationTemplate(getComponentId() +
-            ":" + xmlFormShortName, formName);
+        getPublicationTemplateManager().getPublicationTemplate(getComponentId()
+            + ":" + xmlFormShortName, formName);
       } catch (PublicationTemplateException e) {
         formName = null;
       }
@@ -827,7 +830,7 @@ public class GallerySessionController extends AbstractComponentSessionController
     sel.setHostComponentName(hostComponentName);
     SilverTrace.debug("gallery", "GallerySessionController.initAlertUser()",
         "root.MSG_GEN_PARAM_VALUE", "name = " + hostComponentName + " componentId="
-            + getComponentId());
+        + getComponentId());
     sel.setNotificationMetaData(getAlertNotificationMetaData(photoId)); // set
     // NotificationMetaData contenant les informations à notifier fin initialisation de
     // AlertUser l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
@@ -942,9 +945,10 @@ public class GallerySessionController extends AbstractComponentSessionController
     messageText.append(message.getString("gallery.notifInfo")).append("\n\n");
     messageText.append(message.getString("gallery.notifName")).append(" : ").append(
         photoDetail.getName()).append("\n");
-    if (isDefined(photoDetail.getDescription()))
+    if (isDefined(photoDetail.getDescription())) {
       messageText.append(message.getString("gallery.notifDesc")).append(" : ").append(
           photoDetail.getDescription()).append("\n");
+    }
     messageText.append(message.getString("gallery.path")).append(" : ").append(htmlPath);
     return messageText.toString();
   }
@@ -1016,8 +1020,8 @@ public class GallerySessionController extends AbstractComponentSessionController
     } else {
       // rechercher le créateur de l'album
       AlbumDetail album = getAlbum(albumId);
-      return ("admin".equals(profile) || ("publisher".equals(profile) && album.getCreatorId()
-          .equals(userId)));
+      return ("admin".equals(profile) || ("publisher".equals(profile) && album.getCreatorId().equals(
+          userId)));
     }
   }
 
@@ -1027,8 +1031,8 @@ public class GallerySessionController extends AbstractComponentSessionController
     } else {
       // rechercher le créateur de la photo
       PhotoDetail photo = getPhoto(photoId);
-      return (isAdminOrPublisher(profile) || ("writer".equals(profile) && photo.getCreatorId()
-          .equals(userId)));
+      return (isAdminOrPublisher(profile) || ("writer".equals(profile) && photo.getCreatorId().
+          equals(userId)));
     }
   }
 
@@ -1097,22 +1101,24 @@ public class GallerySessionController extends AbstractComponentSessionController
         ClipboardSelection clipObject = clipObjectIterator.next();
         if (clipObject != null) {
           if (clipObject.isDataFlavorSupported(PhotoSelection.PhotoDetailFlavor)) {
-            PhotoDetail photo = (PhotoDetail) clipObject
-                .getTransferData(PhotoSelection.PhotoDetailFlavor);
+            PhotoDetail photo = (PhotoDetail) clipObject.getTransferData(
+                PhotoSelection.PhotoDetailFlavor);
             pastePhoto(photo, clipObject.isCutted());
-            if (clipObject.isCutted())
-              CallBackManager.invoke(CallBackManager.ACTION_CUTANDPASTE, Integer
-                  .parseInt(getUserId()), getComponentId(), photo.getPhotoPK());
+            if (clipObject.isCutted()) {
+              CallBackManager.invoke(CallBackManager.ACTION_CUTANDPASTE, Integer.parseInt(
+                  getUserId()), getComponentId(), photo.getPhotoPK());
+            }
           }
           if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
-            AlbumDetail album = (AlbumDetail) clipObject
-                .getTransferData(NodeSelection.NodeDetailFlavor);
+            AlbumDetail album = (AlbumDetail) clipObject.getTransferData(
+                NodeSelection.NodeDetailFlavor);
             SilverTrace.info("gallery", "GalleryRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
                 "albumId = " + album.getId());
             pasteAlbum(album, currentAlbum, clipObject.isCutted());
-            if (clipObject.isCutted())
-              CallBackManager.invoke(CallBackManager.ACTION_CUTANDPASTE, Integer
-                  .parseInt(getUserId()), getComponentId(), album.getNodePK());
+            if (clipObject.isCutted()) {
+              CallBackManager.invoke(CallBackManager.ACTION_CUTANDPASTE, Integer.parseInt(
+                  getUserId()), getComponentId(), album.getNodePK());
+            }
           }
         }
       }
@@ -1136,11 +1142,11 @@ public class GallerySessionController extends AbstractComponentSessionController
       // move node and subtree
       SilverTrace.info("gallery", "GalleryRequestRooter.pasteAlbum()", "root.MSG_GEN_PARAM_VALUE",
           " AVANT nodeToPastePK = " + nodeToPastePK.getId() + " father = "
-              + father.getNodePK().getId());
+          + father.getNodePK().getId());
       getNodeBm().moveNode(nodeToPastePK, father.getNodePK());
       SilverTrace.info("gallery", "GalleryRequestRooter.pasteAlbum()", "root.MSG_GEN_PARAM_VALUE",
           " APRES nodeToPastePK = " + nodeToPastePK.getId() + " father = "
-              + father.getNodePK().getId());
+          + father.getNodePK().getId());
 
       // move images
       NodeDetail fromNode = null;
@@ -1153,7 +1159,7 @@ public class GallerySessionController extends AbstractComponentSessionController
           // move images of album
           SilverTrace.info("gallery", "GalleryRequestRooter.pasteAlbum()",
               "root.MSG_GEN_PARAM_VALUE", "fromNode = " + fromNode.toString() + " toNode = "
-                  + toNodePK.toString());
+              + toNodePK.toString());
           pasteImagesOfAlbum(fromNode.getNodePK(), toNodePK, true, null);
         }
       }
@@ -1176,8 +1182,9 @@ public class GallerySessionController extends AbstractComponentSessionController
       NodeDetail oneNodeToPaste = null;
       for (int i = 0; i < treeToPaste.size(); i++) {
         oneNodeToPaste = (NodeDetail) treeToPaste.get(i);
-        if (oneNodeToPaste != null)
+        if (oneNodeToPaste != null) {
           nodeIdsToPaste.add(oneNodeToPaste.getNodePK());
+        }
       }
 
       // paste images of album
@@ -1188,8 +1195,9 @@ public class GallerySessionController extends AbstractComponentSessionController
         while (it != null && it.hasNext()) {
           NodeDetail unNode = it.next();
           AlbumDetail unAlbum = new AlbumDetail(unNode);
-          if (unAlbum != null)
+          if (unAlbum != null) {
             pasteAlbum(unAlbum, album, isCutted);
+          }
         }
       }
     }
@@ -1201,8 +1209,9 @@ public class GallerySessionController extends AbstractComponentSessionController
     // getComponentId());
     for (int p = 0; profiles != null && p < profiles.size(); p++) {
       ProfileInst profile = profiles.get(p);
-      if (profile.getName().equals(role))
+      if (profile.getName().equals(role)) {
         return profile;
+      }
     }
 
     ProfileInst profile = new ProfileInst();
@@ -1211,8 +1220,9 @@ public class GallerySessionController extends AbstractComponentSessionController
   }
 
   private AdminController getAdmin() {
-    if (m_AdminCtrl == null)
+    if (m_AdminCtrl == null) {
       m_AdminCtrl = new AdminController(getUserId());
+    }
 
     return m_AdminCtrl;
   }
@@ -1294,20 +1304,19 @@ public class GallerySessionController extends AbstractComponentSessionController
                   + xmlFormShortName, xmlFormShortName + ".xml");
 
               // get xmlContent to paste
-              PublicationTemplate pubTemplateFrom = getPublicationTemplateManager()
-                  .getPublicationTemplate(fromComponentId + ":" + xmlFormShortName);
+              PublicationTemplate pubTemplateFrom = getPublicationTemplateManager().
+                  getPublicationTemplate(fromComponentId + ":" + xmlFormShortName);
               IdentifiedRecordTemplate recordTemplateFrom =
-                  (IdentifiedRecordTemplate) pubTemplateFrom
-                      .getRecordSet().getRecordTemplate();
+                  (IdentifiedRecordTemplate) pubTemplateFrom.getRecordSet().getRecordTemplate();
 
-              PublicationTemplate pubTemplate = getPublicationTemplateManager()
-                  .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
-              IdentifiedRecordTemplate recordTemplate = (IdentifiedRecordTemplate) pubTemplate
-                  .getRecordSet().getRecordTemplate();
+              PublicationTemplate pubTemplate = getPublicationTemplateManager().
+                  getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
+              IdentifiedRecordTemplate recordTemplate = (IdentifiedRecordTemplate) pubTemplate.
+                  getRecordSet().getRecordTemplate();
 
               // paste xml content
               getGenericRecordSetManager().cloneRecord(recordTemplateFrom,
-                      fromId, recordTemplate, id, null);
+                  fromId, recordTemplate, id, null);
             }
           } catch (PublicationTemplateException e) {
             SilverTrace.info("gallery", "GallerySessionController.pastPhoto()",
@@ -1366,16 +1375,15 @@ public class GallerySessionController extends AbstractComponentSessionController
                 + xmlFormShortName, xmlFormShortName + ".xml");
 
             // get xmlContent to paste
-            PublicationTemplate pubTemplateFrom = getPublicationTemplateManager()
-                .getPublicationTemplate(fromComponentId + ":" + xmlFormShortName);
+            PublicationTemplate pubTemplateFrom = getPublicationTemplateManager().
+                getPublicationTemplate(fromComponentId + ":" + xmlFormShortName);
             IdentifiedRecordTemplate recordTemplateFrom =
-                (IdentifiedRecordTemplate) pubTemplateFrom
-                    .getRecordSet().getRecordTemplate();
+                (IdentifiedRecordTemplate) pubTemplateFrom.getRecordSet().getRecordTemplate();
 
-            PublicationTemplate pubTemplate = getPublicationTemplateManager()
-                .getPublicationTemplate(getComponentId() + ":" + xmlFormShortName);
-            IdentifiedRecordTemplate recordTemplate = (IdentifiedRecordTemplate) pubTemplate
-                .getRecordSet().getRecordTemplate();
+            PublicationTemplate pubTemplate = getPublicationTemplateManager().getPublicationTemplate(
+                getComponentId() + ":" + xmlFormShortName);
+            IdentifiedRecordTemplate recordTemplate = (IdentifiedRecordTemplate) pubTemplate.
+                getRecordSet().getRecordTemplate();
 
             // paste xml content
             getGenericRecordSetManager().cloneRecord(recordTemplateFrom, fromId, recordTemplate, id,
@@ -1409,8 +1417,8 @@ public class GallerySessionController extends AbstractComponentSessionController
 
     SilverTrace.debug("gallery", "GallerySessionController.moveImage()",
         "root.MSG_GEN_PARAM_VALUE", "photoId = " + photoDetail.getPhotoPK().getId()
-            + " componentFrom = " + fromPhotoPK.getInstanceId() + " componentTo = "
-            + getComponentId());
+        + " componentFrom = " + fromPhotoPK.getInstanceId() + " componentTo = "
+        + getComponentId());
     String[] albums = new String[1];
     albums[0] = fatherId;
     getGalleryBm().updatePhotoPath(photoDetail.getPhotoPK().getId(), albums,
@@ -1546,14 +1554,15 @@ public class GallerySessionController extends AbstractComponentSessionController
     // remettre à blanc la liste des photos sélectionnées
     SilverTrace.debug("gallery", "GallerySessionController.addToBasket()",
         "root.MSG_GEN_PARAM_VALUE", "listSelected = " + listSelected.toString() + " basket = "
-            + basket.toString());
+        + basket.toString());
     clearListSelected();
   }
 
   public void addPhotoToBasket(String photoId) throws RemoteException {
     // ajout dans le panier la photo
-    if (!basket.contains(photoId))
+    if (!basket.contains(photoId)) {
       basket.add(photoId);
+    }
   }
 
   public void deleteToBasket() throws RemoteException {
@@ -1627,7 +1636,7 @@ public class GallerySessionController extends AbstractComponentSessionController
     }
   }
 
-  public String getUrl(String orderId, String photoId) throws RemoteException {
+  public String getUrl(String orderId, String photoId) throws RemoteException, UnsupportedEncodingException {
     String url = "";
     Order order = getOrder(orderId);
     List<OrderRow> rows = order.getRows();
@@ -1643,7 +1652,7 @@ public class GallerySessionController extends AbstractComponentSessionController
         if (!download.equals("T")) {
           // la photo n'a pas déjà été téléchargée
           // par defaut photo sans watermark
-          String title = Encode.javaStringToHtmlString(photo.getImageName());
+          String title = EncodeHelper.javaStringToHtmlString(photo.getImageName());
           if (download.equals("DW")) {
             // demande avec Watermark
             title = photoId + "_watermark.jpg";
@@ -1653,10 +1662,10 @@ public class GallerySessionController extends AbstractComponentSessionController
             String watermarkFile = pathFile + title;
             File file = new File(watermarkFile);
             if (!file.exists()) {
-              title = Encode.javaStringToHtmlString(photo.getImageName());
+              title = EncodeHelper.javaStringToHtmlString(photo.getImageName());
             }
           }
-          url = FileServerUtils.getUrl(getSpaceId(), getComponentId(), URLEncoder.encode(title),
+          url = FileServerUtils.getUrl(getSpaceId(), getComponentId(), URLEncoder.encode(title, "UTF-8"),
               photo.getImageMimeType(), nomRep);
         }
       }
@@ -1668,6 +1677,7 @@ public class GallerySessionController extends AbstractComponentSessionController
     return Integer.toString(getOrder(orderId).getUserId()).equals(getUserId());
   }
 
+  @SuppressWarnings("AssignmentReplaceableWithOperatorAssignment")
   public List<MetaData> getMetaDataKeys() {
     List<MetaData> metaDatas = new ArrayList<MetaData>();
 
@@ -1675,10 +1685,10 @@ public class GallerySessionController extends AbstractComponentSessionController
     // passer les metadata EXIF
     String property = getMetadataSettings().getString("METADATA_1_TAG");
     int indice = 1;
-    while (property != null && !"".equals(property)) {
+    while (StringUtil.isDefined(property)) {
       // lecture de la property suivante
       indice = indice + 1;
-      property = getMetadataSettings().getString("METADATA_" + Integer.toString(indice) + "_TAG");
+      property = getMetadataSettings().getString("METADATA_" + String.valueOf(indice) + "_TAG");
     }
 
     indice = indice + 1;
@@ -1713,8 +1723,9 @@ public class GallerySessionController extends AbstractComponentSessionController
           Iterator<FieldDescription> it = metadataValue.iterator();
           while (it.hasNext()) {
             FieldDescription field = it.next();
-            if (field.getFieldName().equals("IPTC_" + metaData.getProperty()))
+            if (field.getFieldName().equals("IPTC_" + metaData.getProperty())) {
               metaData.setValue(field.getContent());
+            }
 
           }
         }
@@ -1752,29 +1763,33 @@ public class GallerySessionController extends AbstractComponentSessionController
 
   public String getCharteUrl() {
     String url = getComponentParameterValue("UrlCharte");
-    if (!StringUtil.isDefined(url))
+    if (!StringUtil.isDefined(url)) {
       url = "";
+    }
     return url;
   }
 
   public Boolean isBasket() {
-    if (getUserDetail().getAccessLevel().equals("G"))
-      return false;
-    else
-      return new Boolean("yes".equalsIgnoreCase(getComponentParameterValue("basket")));
+    if (getUserDetail().getAccessLevel().equals("G")) {
+      return Boolean.FALSE;
+    } else {
+      return StringUtil.getBooleanValue(getComponentParameterValue("basket"));
+    }
   }
 
   public Boolean isGuest() {
-    if (getUserDetail().getAccessLevel().equals("G"))
-      return true;
+    if (getUserDetail().getAccessLevel().equals("G")) {
+      return Boolean.TRUE;
+    }
     return false;
   }
 
   public Boolean isOrder() {
-    if (getUserDetail().getAccessLevel().equals("G"))
-      return false;
-    else
-      return new Boolean("yes".equalsIgnoreCase(getComponentParameterValue("order")));
+    if (getUserDetail().getAccessLevel().equals("G")) {
+      return Boolean.FALSE;
+    } else {
+      return StringUtil.getBooleanValue(getComponentParameterValue("order"));
+    }
   }
 
   private PdcBm getPdcBm() {
@@ -1850,7 +1865,7 @@ public class GallerySessionController extends AbstractComponentSessionController
     return SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile))
         || SilverpeasRole.publisher.equals(SilverpeasRole.valueOf(profile));
   }
-  
+
   /**
    * Gets an instance of a GenericRecordSet objects manager.
    * @return a GenericRecordSetManager instance.
@@ -1858,7 +1873,7 @@ public class GallerySessionController extends AbstractComponentSessionController
   private GenericRecordSetManager getGenericRecordSetManager() {
     return GenericRecordSetManager.getInstance();
   }
-  
+
   /**
    * Gets an instance of PublicationTemplateManager.
    * @return an instance of PublicationTemplateManager.

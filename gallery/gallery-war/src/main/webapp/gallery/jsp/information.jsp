@@ -635,20 +635,20 @@ function hideTip() {
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"><%=resource.getString("GML.title")%> :</td>
-				<TD><input type="text" name="<%=ParameterNames.ImageTitle%>" size="60" maxlength="150" value="<%=Encode.javaStringToHtmlString(title)%>">
+				<TD><input type="text" name="<%=ParameterNames.ImageTitle%>" size="60" maxlength="150" value="<%=EncodeHelper.javaStringToHtmlString(title)%>">
 					<input type="hidden" name="PhotoId" value="<%=photoId%>"> </td>
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"> <%=resource.getString("GML.description")%> :</td>
-				<TD><input type="text" name="<%=ParameterNames.ImageDescription%>" size="60" maxlength="150" value="<%=Encode.javaStringToHtmlString(description)%>" ></TD>
+				<TD><input type="text" name="<%=ParameterNames.ImageDescription%>" size="60" maxlength="150" value="<%=EncodeHelper.javaStringToHtmlString(description)%>" ></TD>
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"> <%=resource.getString("GML.author")%> :</td>
-				<TD><input type="text" name="<%=ParameterNames.ImageAuthor%>" size="60" maxlength="150" value="<%=Encode.javaStringToHtmlString(author)%>" ></TD>
+				<TD><input type="text" name="<%=ParameterNames.ImageAuthor%>" size="60" maxlength="150" value="<%=EncodeHelper.javaStringToHtmlString(author)%>" ></TD>
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"> <%=resource.getString("gallery.keyWord")%> :</td>
-				<TD><input type="text" name="<%=ParameterNames.ImageKeyWord%>" size="60" maxlength="150" value="<%=Encode.javaStringToHtmlString(keyWord)%>" ></TD>
+				<TD><input type="text" name="<%=ParameterNames.ImageKeyWord%>" size="60" maxlength="150" value="<%=EncodeHelper.javaStringToHtmlString(keyWord)%>" ></TD>
 			</tr>
 			<tr align="left">
 				<td class="txtlibform"> <%=resource.getString("gallery.download")%> :</td>
