@@ -338,18 +338,14 @@
     ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
     //Example: http://myserver
     String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
-    
-    
+        
     //some thumbnail stuff to move in router
     String objectId = "";
 	if(pubDetail != null) {
 		objectId =  pubDetail.getPK().getId();
 	}
 		
-	String requestURL = request.getRequestURL().toString();
-	String applicationURL = URLManager.getApplicationURL();
-	String prefixURL = requestURL.substring(0, requestURL.indexOf(applicationURL));
-	String backUrl = prefixURL + applicationURL + "/Rkmelia/" + componentId + "/publicationManager.jsp?Action=UpdateView&PubId=" + objectId + "&Profile=" + kmeliaScc.getProfile();
+	String backUrl = httpServerBase + URLManager.getApplicationURL() + "/Rkmelia/" + componentId + "/publicationManager.jsp?Action=UpdateView&PubId=" + objectId + "&Profile=" + kmeliaScc.getProfile();
 		
 	String standardParamaters = "&ComponentId=" + componentId +  
 		                        "&ObjectId=" + objectId +
