@@ -388,6 +388,8 @@ public interface KmeliaBmBusinessSkeleton {
    * @since 3.0
    */
   public void draftInPublication(PublicationPK pubPK) throws RemoteException;
+  
+  public void draftInPublication(PublicationPK pubPK, String userId) throws RemoteException;
 
   /**
    * alert that an external elements of publication (wysiwyg, attachment, versioning) has been

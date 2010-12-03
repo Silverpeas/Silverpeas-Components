@@ -3415,6 +3415,10 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
    * @since 3.0
    */
   public void draftInPublication(PublicationPK pubPK) {
+    draftInPublication(pubPK, null);
+  }
+  
+  public void draftInPublication(PublicationPK pubPK, String userId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.draftInPublication()",
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
     try {
@@ -3424,6 +3428,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           "root.MSG_GEN_PARAM_VALUE", "actual status = "
               + pubDetail.getStatus());
       pubDetail.setStatus(PublicationDetail.DRAFT);
+      pubDetail.setUpdaterId(userId);
 
       KmeliaHelper.checkIndex(pubDetail);
 

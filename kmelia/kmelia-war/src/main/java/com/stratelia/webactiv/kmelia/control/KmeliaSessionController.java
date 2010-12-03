@@ -1349,7 +1349,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             // toutes les publications en mode brouillon sont visibles par tous, sauf les lecteurs
             // sinon, seule les publications brouillon de l'utilisateur sont visibles
             if (getUserId().equals(pub.getUpdaterId())
-                || ((isCoWritingEnable() && isDraftVisibleWithCoWriting()) && !getProfile().equals(
+                || (isCoWritingEnable() && isDraftVisibleWithCoWriting() && !getProfile().equals(
                     "user"))) {
               orderedPublications.add(userPub);
             }
@@ -1739,7 +1739,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       // getKmeliaBm().draftInPublication(getPublicationPK(cloneId));
     } else {
       getKmeliaBm().draftInPublication(
-          getSessionPublication().getPublication().getPublicationDetail().getPK());
+          getSessionPublication().getPublication().getPublicationDetail().getPK(), getUserId());
     }
     refreshSessionPubliAndClone();
   }
