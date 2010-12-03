@@ -38,14 +38,14 @@
 %>
 
 <% 
-List 	photos		= (List) request.getAttribute("Photos");
-String 	language	= (String) request.getAttribute("Language");
-
-// paramètrage pour l'affichage des photos 
-int nbAffiche 	= 0;
-int nbParLigne 	= 4;
-
-multilang = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle", language);
+  List photos = (List) request.getAttribute("Photos");
+  String language = (String) request.getAttribute("Language");
+    
+// paramï¿½trage pour l'affichage des photos 
+  int nbAffiche = 0;
+  int nbParLigne = 4;
+    
+  multilang = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle", language);
 %>
 
 <html>
@@ -68,46 +68,44 @@ function selectImage(url, idP)
 <form name="frmVignette">
 <table width="100%">
 <%	
-if (photos != null)
-{
-	String	vignette_url = null;
-	
-	if (photos.size()>0) 
-	{
-		PhotoDetail photo;
-		String idP;
-		Iterator itP = (Iterator) photos.iterator();
-
-		while (itP.hasNext()) 
-		{
-			// affichage de la photo
-			out.println("<tr>");
-			while (itP.hasNext() && nbAffiche < nbParLigne)
-			{			
-				photo = (PhotoDetail) itP.next();
-				idP = photo.getPhotoPK().getId();
-				String name = "";
-				String url = "";
-				if (photo.getImageName() != null && !photo.getImageName().equals(""))
-				{
-					name = photo.getImageName();
-					String type = name.substring(name.lastIndexOf(".") + 1, name.length());
-					url = m_context+"/GalleryInWysiwyg/dummy?ImageId="+idP+"&ComponentId="+photo.getPhotoPK().getInstanceId();
-					name = photo.getId() + "_133x100.jpg";
-					//vignette_url = FileServer.getUrl("useless", photo.getPhotoPK().getInstanceId(), name, photo.getImageMimeType(), nomRep);
-					vignette_url = m_context+"/GalleryInWysiwyg/dummy?ImageId="+idP+"&ComponentId="+photo.getPhotoPK().getInstanceId()+"&Size=133x100";
-					if ("bmp".equalsIgnoreCase(type))
-						vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+"fr"+"_133x100.jpg";
-				}
-
-				nbAffiche = nbAffiche + 1;
-				
-				String altTitle = Encode.javaStringToHtmlString(photo.getTitle());
-				if (photo.getDescription() != null && photo.getDescription().length() > 0)
-					altTitle += " : "+Encode.javaStringToHtmlString(photo.getDescription());
-					
-				// on affiche encore sur la même ligne
-				%>
+if (photos != null) {
+    String vignette_url = null;
+      
+    if (photos.size() > 0) {
+      PhotoDetail photo;
+      String idP;
+      Iterator itP = photos.iterator();
+        
+      while (itP.hasNext()) {
+        // affichage de la photo
+        out.println("<tr>");
+        while (itP.hasNext() && nbAffiche < nbParLigne) {
+          photo = (PhotoDetail) itP.next();
+          idP = photo.getPhotoPK().getId();
+          String name = "";
+          String url = "";
+          if (photo.getImageName() != null && !photo.getImageName().equals("")) {
+            name = photo.getImageName();
+            String type = name.substring(name.lastIndexOf(".") + 1, name.length());
+            url = m_context + "/GalleryInWysiwyg/dummy?ImageId=" + idP + "&ComponentId=" + photo.
+                getPhotoPK().getInstanceId();
+            name = photo.getId() + "_133x100.jpg";
+            vignette_url = m_context + "/GalleryInWysiwyg/dummy?ImageId=" + idP + "&ComponentId=" + photo.
+                getPhotoPK().getInstanceId() + "&Size=133x100";
+            if ("bmp".equalsIgnoreCase(type)) {
+              vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + "fr" + "_133x100.jpg";
+            }
+          }
+            
+          nbAffiche = nbAffiche + 1;
+            
+          String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
+          if (photo.getDescription() != null && photo.getDescription().length() > 0) {
+            altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
+          }
+            
+          // on affiche encore sur la mï¿½me ligne
+%>
 					<td valign="middle" align="center">
 						<table border="0" align="center" width="10" cellspacing="1" cellpadding="0" class="fondPhoto">
 							<tr><td align="center" colspan="2">
@@ -118,18 +116,17 @@ if (photos != null)
 							</td></tr>
 						</table>
 					</td>
-				<%
-			}
-			// on passe à la ligne suivante
-			nbAffiche = 0;
-			out.println("</tr>");
-			if (itP.hasNext())
-				out.println("<tr><td colspan=\""+nbParLigne+"\">&nbsp;</td></tr>");
-		}
-	}
-	else
-	{
-		%>
+                    <%
+                        }
+                        // on passe ï¿½ la ligne suivante
+                        nbAffiche = 0;
+                        out.println("</tr>");
+                        if (itP.hasNext()) {
+                          out.println("<tr><td colspan=\"" + nbParLigne + "\">&nbsp;</td></tr>");
+                        }
+                      }
+                    } else {
+                    %>
 			<tr>
 				<td colspan="5" valign="middle" align="center" width="100%">
 					<br>

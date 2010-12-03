@@ -26,98 +26,107 @@
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp" %>
-
-<% 
-	// récupération des paramètres :
-	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
-	String 		repertoire 		= (String) request.getAttribute("Repertoire");
-	List 	path 			= (List) request.getAttribute("Path");
-	String 		userName		= (String) request.getAttribute("UserName");
-	
-	Integer		nbCom			= (Integer) request.getAttribute("NbComments");
-	Boolean		isUsePdc		= (Boolean) request.getAttribute("IsUsePdc");
-	String 		XMLFormName		= (String) request.getAttribute("XMLFormName");
-	boolean		showComments	= ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
-
-	// déclaration des variables :
-	String 		photoId 			= "";
-	String 		title 				= "";
-	String 		description 		= "";
-	String 		author 				= "";
-	boolean 	download 			= false;
-	boolean 	albumLabel 			= false;
-	String 		linkPhoto 			= "";
-	String 		nomRep 				= "";
-	String 		vignette_url 		= null;
-	String 		action 				= "CreatePhoto";	
-	String 		chemin 				= "";
-	String 		creationDate		= resource.getOutputDate(new Date());
-	String 		updateDate 			= null;
-	String 		nameFile 			= "";
-	String 		name 				= "";
-	String 		creatorName 		= userName;
-	String 		updateName 			= "";
-	String		beginDownloadDate	= "";
-	String		endDownloadDate		= "";
-	String 		keyWord 			= "";
-	String 		beginDate			= "";
-	String 		endDate				= "";
-	
-	// dans le cas d'une mise à jour, récupération des données :
-	if (photo != null)
-	{
-		photoId 		= new Integer(photo.getPhotoPK().getId()).toString();
-		title 			= photo.getTitle();
-		description 	= photo.getDescription();
-		if (description == null)
-			description = "";
-		author 			= photo.getAuthor();
-		if (author == null)
-			author 	= "";
-		download 		= photo.isDownload();
-		albumLabel 		= photo.isAlbumLabel();
-		nomRep 			= repertoire;
-		nameFile 		= photo.getImageName();
-		// name = nameFile.substring(0,nameFile.indexOf(".")) + "_66x50.jpg";
-		name 			= photo.getId() + "_66x50.jpg";
-		vignette_url 	= FileServer.getUrl(spaceId, componentId, name, photo.getImageMimeType(), nomRep);
-		action 			= "UpdatePhoto";
-		creationDate 	= resource.getOutputDate(photo.getCreationDate());
-		updateDate		= resource.getOutputDate(photo.getUpdateDate());
-		creatorName 	= photo.getCreatorName();
-		updateName 		= photo.getUpdateName();
-		if (photo.getBeginDownloadDate() != null)
-          	beginDownloadDate = resource.getInputDate(photo.getBeginDownloadDate());
-      	else
-          	beginDownloadDate = "";
-		if (photo.getEndDownloadDate() != null)
-          	endDownloadDate = resource.getInputDate(photo.getEndDownloadDate());
-      	else
-          	endDownloadDate = "";
-		
-		if (title.equals(nameFile))
-			title = "";
-		keyWord 	= photo.getKeyWord();
-		if (keyWord == null)
-			keyWord 	= "";
-		if (photo.getBeginDate() != null)
-          	beginDate = resource.getInputDate(photo.getBeginDate());
-      	else
-          	beginDate = "";
-		if (photo.getEndDate() != null)
-          	endDate = resource.getInputDate(photo.getEndDate());
-      	else
-          	endDate = "";
-	}
-	
-	// déclaration des boutons
-	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-	Button cancelButton;
-	if (action == "UpdatePhoto")
-		cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "PreviewPhoto?PhotoId="+photoId, false);
-	else
-		cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "GoToCurrentAlbum", false);
-	
+<%
+  // récupération des paramètres :
+  PhotoDetail photo = (PhotoDetail) request.getAttribute("Photo");
+  String repertoire = (String) request.getAttribute("Repertoire");
+  List path = (List) request.getAttribute("Path");
+  String userName = (String) request.getAttribute("UserName");
+    
+  Integer nbCom = (Integer) request.getAttribute("NbComments");
+  Boolean isUsePdc = (Boolean) request.getAttribute("IsUsePdc");
+  String XMLFormName = (String) request.getAttribute("XMLFormName");
+  boolean showComments = ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
+    
+  // déclaration des variables :
+  String photoId = "";
+  String title = "";
+  String description = "";
+  String author = "";
+  boolean download = false;
+  boolean albumLabel = false;
+  String linkPhoto = "";
+  String nomRep = "";
+  String vignette_url = null;
+  String action = "CreatePhoto";
+  String chemin = "";
+  String creationDate = resource.getOutputDate(new Date());
+  String updateDate = null;
+  String nameFile = "";
+  String name = "";
+  String creatorName = userName;
+  String updateName = "";
+  String beginDownloadDate = "";
+  String endDownloadDate = "";
+  String keyWord = "";
+  String beginDate = "";
+  String endDate = "";
+    
+  // dans le cas d'une mise à jour, récupération des données :
+  if (photo != null) {
+    photoId = new Integer(photo.getPhotoPK().getId()).toString();
+    title = photo.getTitle();
+    description = photo.getDescription();
+    if (description == null) {
+      description = "";
+    }
+    author = photo.getAuthor();
+    if (author == null) {
+      author = "";
+    }
+    download = photo.isDownload();
+    albumLabel = photo.isAlbumLabel();
+    nomRep = repertoire;
+    nameFile = photo.getImageName();
+    name = photo.getId() + "_66x50.jpg";
+    vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.getImageMimeType(),
+        nomRep);
+    action = "UpdatePhoto";
+    creationDate = resource.getOutputDate(photo.getCreationDate());
+    updateDate = resource.getOutputDate(photo.getUpdateDate());
+    creatorName = photo.getCreatorName();
+    updateName = photo.getUpdateName();
+    if (photo.getBeginDownloadDate() != null) {
+      beginDownloadDate = resource.getInputDate(photo.getBeginDownloadDate());
+    } else {
+      beginDownloadDate = "";
+    }
+    if (photo.getEndDownloadDate() != null) {
+      endDownloadDate = resource.getInputDate(photo.getEndDownloadDate());
+    } else {
+      endDownloadDate = "";
+    }
+      
+    if (title.equals(nameFile)) {
+      title = "";
+    }
+    keyWord = photo.getKeyWord();
+    if (keyWord == null) {
+      keyWord = "";
+    }
+    if (photo.getBeginDate() != null) {
+      beginDate = resource.getInputDate(photo.getBeginDate());
+    } else {
+      beginDate = "";
+    }
+    if (photo.getEndDate() != null) {
+      endDate = resource.getInputDate(photo.getEndDate());
+    } else {
+      endDate = "";
+    }
+  }
+    
+  // déclaration des boutons
+  Button validateButton = gef.getFormButton(resource.getString("GML.validate"),
+      "javascript:onClick=sendData();", false);
+  Button cancelButton;
+  if (action == "UpdatePhoto") {
+    cancelButton = gef.getFormButton(resource.getString("GML.cancel"),
+        "PreviewPhoto?PhotoId=" + photoId, false);
+  } else {
+    cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "GoToCurrentAlbum", false);
+  }
+    
 %>
 
 <html>
@@ -332,34 +341,37 @@
 		</head>
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onLoad="javascript:document.photoForm.WAIMGVAR0.focus();">
 <%
-
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-	displayPath(path, browseBar);
-	
-	Board board	= gef.getBoard();
-	
-	TabbedPane tabbedPane = gef.getTabbedPane();
-	if (photo != null)
-		tabbedPane.addTab(resource.getString("gallery.photo"), "PreviewPhoto?PhotoId="+photoId, false);
-	tabbedPane.addTab(resource.getString("GML.head"), "#", true, false);
-	if (photo != null)
-	{
-		//if (XMLFormName != null && !XMLFormName.equals(""))
-			//tabbedPane.addTab(resource.getString("gallery.form"), "GoToXMLForm?PhotoId="+photoId, false);
-		tabbedPane.addTab(resource.getString("gallery.info"), "EditInformation?PhotoId="+photoId, false);
-		if (showComments)
-			tabbedPane.addTab(resource.getString("gallery.comments")+" ("+nbCom.intValue()+")", "Comments?PhotoId="+photoId, false);
-		tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?PhotoId="+photoId, false);
-		if (isUsePdc.booleanValue())
-			tabbedPane.addTab(resource.getString("GML.PDC"), "PdcPositions?PhotoId="+photoId, false);
-	}
-	
-	out.println(window.printBefore());
-	out.println(tabbedPane.print());
-    out.println(frame.printBefore());
-    out.println(board.printBefore());
     
+  browseBar.setDomainName(spaceLabel);
+  browseBar.setComponentName(componentLabel, "Main");
+  displayPath(path, browseBar);
+      
+  Board board = gef.getBoard();
+      
+  TabbedPane tabbedPane = gef.getTabbedPane();
+  if (photo != null) {
+    tabbedPane.addTab(resource.getString("gallery.photo"), "PreviewPhoto?PhotoId=" + photoId, false);
+  }
+  tabbedPane.addTab(resource.getString("GML.head"), "#", true, false);
+  if (photo != null) {
+    tabbedPane.addTab(resource.getString("gallery.info"), "EditInformation?PhotoId=" + photoId,
+        false);
+    if (showComments) {
+      tabbedPane.addTab(resource.getString("gallery.comments") + " (" + nbCom.intValue() + ")",
+          "Comments?PhotoId=" + photoId, false);
+    }
+    tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?PhotoId=" + photoId,
+        false);
+    if (isUsePdc.booleanValue()) {
+      tabbedPane.addTab(resource.getString("GML.PDC"), "PdcPositions?PhotoId=" + photoId, false);
+    }
+  }
+      
+  out.println(window.printBefore());
+  out.println(tabbedPane.print());
+  out.println(frame.printBefore());
+  out.println(board.printBefore());
+      
 %>
 <FORM Name="photoForm" action="<%=action%>" Method="POST" ENCTYPE="multipart/form-data" accept-charset="UTF-8">
 
@@ -457,7 +469,7 @@
 	ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);
-	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+	out.println("<br/><center>"+buttonPane.print()+"</center>br/>");
  	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>

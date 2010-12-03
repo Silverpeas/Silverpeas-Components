@@ -23,89 +23,84 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
-
 <% 
-	// récupération des paramètres :
-	AlbumDetail 	currentAlbum 		= (AlbumDetail) request.getAttribute("CurrentAlbum");
-	String 			userId 				= (String) request.getAttribute("UserId");
-	String 			profile 			= (String) request.getAttribute("Profile");
-	List 		path 				= (List) request.getAttribute("Path");
-	int				firstPhotoIndex		= ((Integer) request.getAttribute("FirstPhotoIndex")).intValue();
-	int				nbPhotosPerPage		= ((Integer) request.getAttribute("NbPhotosPerPage")).intValue();
-	String 			taille	 			= (String) request.getAttribute("Taille");
-	Boolean			dragAndDropEnable 	= (Boolean) request.getAttribute("DragAndDropEnable");
-	Boolean 		isViewMetadata		= (Boolean) request.getAttribute("IsViewMetadata");
-	Boolean 		isViewList			= (Boolean) request.getAttribute("IsViewList");
-	Collection		selectedIds			= (Collection) request.getAttribute("SelectedIds");
-	boolean			isPdcUsed			= ((Boolean) request.getAttribute("IsUsePdc")).booleanValue();
-	boolean 		isBasket	 		= ((Boolean) request.getAttribute("IsBasket")).booleanValue();
-	boolean 		isGuest		 		= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
-	boolean   isPrivateSearch = ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
-
-	//For Drag And Drop
-	String m_sAbsolute  = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
-	ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();	
-	String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
-	
-	// déclaration des variables :
-	int 	nbAffiche 		= 0;
-	String 	albumId 		= "";
-	List 	photos 			= null;
-	int 	id 				= 0;
-	int 	nbParLigne		= 1;
-	int		largeurCellule	= 0;
-	String 	extension		= "";
-	String 	albumName		= "";
-	String 	albumDescription = "";
-	String 	albumUrl		= "";
-	boolean viewMetadata	= isViewMetadata.booleanValue();
-	boolean viewList		= isViewList.booleanValue();
-	String 	typeAff			= "1";
-	
-	if (currentAlbum != null)
-	{
-		albumId = new Integer(currentAlbum.getId()).toString();
-		photos = (List) currentAlbum.getPhotos();
-		albumDescription = currentAlbum.getDescription();
-		albumUrl = currentAlbum.getLink();
-	}
-		
-	// initialisation de la pagination
-	Pagination 	pagination 	= gef.getPagination(photos.size(), nbPhotosPerPage, firstPhotoIndex);
-	List 		affPhotos 	= photos.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
-
-	// création du chemin :
-	String 		namePath	= "";
-	boolean 	suivant 	= false;
-	//Collections.reverse(path);
-	albumName = browseBar.getBreadCrumb();
-			
-	// calcul du nombre de photo par ligne en fonction de la taille
-	if (taille.equals("66x50"))
-	{
-		nbParLigne = 8;
-		extension = "_66x50.jpg";
-	}
-	else if (taille.equals("133x100"))
-	{
-		nbParLigne = 5;
-		extension = "_133x100.jpg";
-		if (viewList)
-			typeAff = "2";
-	}
-	else if (taille.equals("266x150"))
-	{
-		nbParLigne = 3;
-		extension = "_266x150.jpg";
-		if (viewList)
-		{
-			typeAff = "3";
-			nbParLigne = 1;
-		}
-	}
-	largeurCellule = 100/nbParLigne;
+	// recuperation des parametres :
+      AlbumDetail currentAlbum = (AlbumDetail) request.getAttribute("CurrentAlbum");
+      String userId = (String) request.getAttribute("UserId");
+      String profile = (String) request.getAttribute("Profile");
+      List path = (List) request.getAttribute("Path");
+      int firstPhotoIndex = ((Integer) request.getAttribute("FirstPhotoIndex")).intValue();
+      int nbPhotosPerPage = ((Integer) request.getAttribute("NbPhotosPerPage")).intValue();
+      String taille = (String) request.getAttribute("Taille");
+      Boolean dragAndDropEnable = (Boolean) request.getAttribute("DragAndDropEnable");
+      Boolean isViewMetadata = (Boolean) request.getAttribute("IsViewMetadata");
+      Boolean isViewList = (Boolean) request.getAttribute("IsViewList");
+      Collection selectedIds = (Collection) request.getAttribute("SelectedIds");
+      boolean isPdcUsed = ((Boolean) request.getAttribute("IsUsePdc")).booleanValue();
+      boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
+      boolean isGuest = ((Boolean) request.getAttribute("IsGuest")).booleanValue();
+      boolean isPrivateSearch = ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
+        
+      //For Drag And Drop
+      String m_sAbsolute = request.getScheme() + "://" + request.getServerName() + ":" + request.
+          getServerPort();
+      ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
+      String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
+        
+      // declaration des variables :
+      int nbAffiche = 0;
+      String albumId = "";
+      List photos = null;
+      int id = 0;
+      int nbParLigne = 1;
+      int largeurCellule = 0;
+      String extension = "";
+      String albumName = "";
+      String albumDescription = "";
+      String albumUrl = "";
+      boolean viewMetadata = isViewMetadata.booleanValue();
+      boolean viewList = isViewList.booleanValue();
+      String typeAff = "1";
+        
+      if (currentAlbum != null) {
+        albumId = new Integer(currentAlbum.getId()).toString();
+        photos = (List) currentAlbum.getPhotos();
+        albumDescription = currentAlbum.getDescription();
+        albumUrl = currentAlbum.getLink();
+      }
+        
+      // initialisation de la pagination
+      Pagination pagination = gef.getPagination(photos.size(), nbPhotosPerPage, firstPhotoIndex);
+      List affPhotos = photos.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
+        
+      // creation du chemin :
+      String namePath = "";
+      boolean suivant = false;
+      //Collections.reverse(path);
+      albumName = browseBar.getBreadCrumb();
+        
+      // calcul du nombre de photo par ligne en fonction de la taille
+      if (taille.equals("66x50")) {
+        nbParLigne = 8;
+        extension = "_66x50.jpg";
+      } else if (taille.equals("133x100")) {
+        nbParLigne = 5;
+        extension = "_133x100.jpg";
+        if (viewList) {
+          typeAff = "2";
+        }
+      } else if (taille.equals("266x150")) {
+        nbParLigne = 3;
+        extension = "_266x150.jpg";
+        if (viewList) {
+          typeAff = "3";
+          nbParLigne = 1;
+        }
+      }
+      largeurCellule = 100 / nbParLigne;
 	
 %>
 
@@ -177,7 +172,7 @@
 	
 	function sendData() 
 	{
-		// envoi des photos sélectionnées pour la modif par lot
+		// envoi des photos selectionnees pour la modif par lot
 		document.photoForm.SelectedIds.value 	= getObjects(true);
 		document.photoForm.NotSelectedIds.value = getObjects(false);
 		
@@ -186,7 +181,7 @@
 	
 	function sendToBasket() 
 	{
-		// envoi des photos sélectionnées dans le panier
+		// envoi des photos selectionnees dans le panier
 		document.photoForm.SelectedIds.value 	= getObjects(true);
 		document.photoForm.NotSelectedIds.value = getObjects(false);
 		document.photoForm.action				= "BasketAddPhotos";
@@ -198,7 +193,7 @@
 		//confirmation de suppression de l'album
 		if(window.confirm("<%=resource.getString("gallery.confirmDeletePhotos")%> "))
 		{
-			// envoi des photos sélectionnées pour la modif par lot
+			// envoi des photos selectionnees pour la modif par lot
 			document.photoForm.SelectedIds.value 	= getObjects(true);
 			document.photoForm.NotSelectedIds.value = getObjects(false);
 			document.photoForm.action				= "DeleteSelectedPhoto";
@@ -228,7 +223,7 @@
 				// au moins une checkbox exist
 				var nbBox = boxItems.length;
 				if ( (nbBox == null) && (boxItems.checked == selected) ){
-					// il n'y a qu'une checkbox non selectionnée
+					// il n'y a qu'une checkbox non selectionnee
 					items += boxItems.value+",";
 				} else{
 					// search not checked boxes 
@@ -287,7 +282,7 @@ function uploadCompleted(s)
 	
 	
 	function clipboardPaste() {
-    	top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RGallery&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("GoToCurrentAlbum"))%>&TargetFrame=MyMain&message=REFRESH');
+    	top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RGallery&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("GoToCurrentAlbum", "UTF-8"))%>&TargetFrame=MyMain&message=REFRESH');
 	}
 
 	function clipboardCopy() {
@@ -318,14 +313,14 @@ function uploadCompleted(s)
 </head>
 <body>
 <%
-	// création de la barre de navigation
+	// creation de la barre de navigation
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
 	displayPath(path, browseBar);
 	
 	if ( "admin".equals(profile) || "publisher".equals(profile))
 	{
-		// possibilité d'ajouter des albums pour les "admin" et "publisher"
+		// possibilite d'ajouter des albums pour les "admin" et "publisher"
 		operationPane.addOperation(resource.getIcon("gallery.addAlbum"),resource.getString("gallery.ajoutAlbum"),"javaScript:addAlbum()");
 		operationPane.addLine();
 		
@@ -336,17 +331,17 @@ function uploadCompleted(s)
 	       	operationPane.addLine();
 		}
 		
-		// possibilité de modifier ou supprimer les photos par lot
+		// possibilite de modifier ou supprimer les photos par lot
 		operationPane.addOperation(resource.getIcon("gallery.updateSelectedPhoto"),resource.getString("gallery.updateSelectedPhoto"),"javascript:onClick=sendData();");
 		operationPane.addOperation(resource.getIcon("gallery.deleteSelectedPhoto"),resource.getString("gallery.deleteSelectedPhoto"),"javascript:onClick=sendDataDelete();");
 		if (isPdcUsed)
 		{
-			// si on a le classement Pdc : possibilité de classer par lot
+			// si on a le classement Pdc : possibilite de classer par lot
 			operationPane.addOperation(resource.getIcon("gallery.categorizeSelectedPhoto"),resource.getString("gallery.categorizeSelectedPhoto"),"javascript:onClick=sendDataCategorize();");
 		}
 	}
 	
-	// bouton pour tout selectionner ou tout déselectionner
+	// bouton pour tout selectionner ou tout deselectionner
 	operationPane.addOperation(resource.getIcon("gallery.allSelect"),resource.getString("gallery.allSelect"),"AllSelected");
 	
 	if ("admin".equals(profile))
@@ -358,14 +353,14 @@ function uploadCompleted(s)
 	}
 	if ( "admin".equals(profile) || "publisher".equals(profile) || "writer".equals(profile))
 	{
-		// possibilité d'ajouter des photos pour les "admin", "publisher" et "writer"
+		// possibilite d'ajouter des photos pour les "admin", "publisher" et "writer"
 		operationPane.addOperation(resource.getIcon("gallery.addPhoto"),resource.getString("gallery.ajoutPhoto"),"AddPhoto");
 		operationPane.addLine();
 	}
 	
 	if ("user".equals(profile) && isBasket)
 	{
-		// ajouter les photos sélectionnées au panier
+		// ajouter les photos selectionnees au panier
 		operationPane.addOperation(resource.getIcon("gallery.addToBasketSelectedPhoto"),resource.getString("gallery.addToBasketSelectedPhoto"),"javascript:onClick=sendToBasket();");
 		// voir le panier
 		operationPane.addOperation(resource.getIcon("gallery.viewBasket"),resource.getString("gallery.viewBasket"), "BasketView");
@@ -380,11 +375,11 @@ function uploadCompleted(s)
 	
 	// favoris
 	if (!isGuest) {
-		operationPane.addOperation(resource.getIcon("gallery.addFavorite"),resource.getString("gallery.addFavorite"),"javaScript:addFavorite('"+m_sAbsolute+"','"+m_context+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(albumName))+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(albumDescription))+"','"+albumUrl+"')");
+		operationPane.addOperation(resource.getIcon("gallery.addFavorite"),resource.getString("gallery.addFavorite"),"javaScript:addFavorite('"+m_sAbsolute+"','"+m_context+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(albumName))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(albumDescription))+"','"+albumUrl+"')");
 	}
 	
 	if (isPrivateSearch) {
-	   // derniers résultat de la recherche
+	   // derniers resultat de la recherche
 	   operationPane.addLine();
 	   operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString("gallery.lastResult"), "LastResult");
 	}
@@ -395,7 +390,7 @@ function uploadCompleted(s)
 	
 	// afficher les sous albums
 	// ------------------------
-	// création et remplissage d'un ArrayPane avec les sous albums de l'album courant (s'il y en a)
+	// creation et remplissage d'un ArrayPane avec les sous albums de l'album courant (s'il y en a)
 	if (currentAlbum.getChildrenDetails() != null)
 	{
 		if ( "user".equals(profile) || "writer".equals(profile) )
@@ -403,7 +398,7 @@ function uploadCompleted(s)
 			NavigationList navList = gef.getNavigationList();
       		navList.setTitle(currentAlbum.getName());
       		boolean ok = false;
-			Iterator it = (Iterator) currentAlbum.getChildrenDetails().iterator();
+			Iterator it = currentAlbum.getChildrenDetails().iterator();
 			if (it.hasNext())
 				ok = true;
 			
@@ -424,7 +419,7 @@ function uploadCompleted(s)
 			ArrayColumn columnIcon = arrayPane.addArrayColumn("&nbsp;");
         	columnIcon.setSortable(false);
 			boolean ok = false;
-			Iterator it = (Iterator) currentAlbum.getChildrenDetails().iterator();
+			Iterator it = currentAlbum.getChildrenDetails().iterator();
 			if (it.hasNext())
 			{
 				arrayPane.addArrayColumn(resource.getString("gallery.albums"));
@@ -452,7 +447,6 @@ function uploadCompleted(s)
 				{
 					link = "&nbsp;<a href=\""+unAlbum.getPermalink()+"\"><img src=\""+resource.getIcon("gallery.link")+"\" border=\"0\" align=\"bottom\" alt=\""+resource.getString("gallery.CopyAlbumLink")+"\" title=\""+resource.getString("gallery.CopyAlbumLink")+"\"></a>";
 				}
-				//ligne.addArrayCellLink(unAlbum.getName()+ link,"ViewAlbum?Id="+id);
 				
 				ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"ViewAlbum?Id="+id+"\">"+unAlbum.getName()+"</a>"+link);
 	            arrayCellText0.setCompareOn(unAlbum.getName());
@@ -460,14 +454,14 @@ function uploadCompleted(s)
 				ligne.addArrayCellText(unAlbum.getDescription());
 				if ( "admin".equals(profile) || ("publisher".equals(profile) && unAlbum.getCreatorId().equals(userId)) )
 				{
-					// création de la colonne des icônes
+					// creation de la colonne des icenes
 					IconPane iconPane = gef.getIconPane();
-					// icône "modifier"
+					// icene "modifier"
 					Icon updateIcon = iconPane.addIcon();
 	        		updateIcon.setProperties(resource.getIcon("gallery.updateAlbum"), resource.getString("gallery.updateAlbum"),"javaScript:editAlbum('"+id+"')");
-	        		// icône "supprimer"
+	        		// icene "supprimer"
 	        		Icon deleteIcon = iconPane.addIcon();
-	        		deleteIcon.setProperties(resource.getIcon("gallery.deleteAlbum"), resource.getString("gallery.deleteAlbum"),"javaScript:deleteConfirm('"+id+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(nom))+"')");
+	        		deleteIcon.setProperties(resource.getIcon("gallery.deleteAlbum"), resource.getString("gallery.deleteAlbum"),"javaScript:deleteConfirm('"+id+"','"+EncodeHelper.javaStringToHtmlString(Encode.javaStringToJsString(nom))+"')");
 	        		iconPane.setSpacing("30px");
 	        		ligne.addArrayCellIconPane(iconPane);
 	        	}
@@ -508,7 +502,7 @@ function uploadCompleted(s)
 		if (photos.size()>0) 
 		{
 			out.println(board.printBefore());
-			// affichage de l'entête
+			// affichage de l'entete
 			%>
 			<table width="98%" border="0" cellspacing="0" cellpadding="0" align="center">
 				<form name="photoForm" action="EditSelectedPhoto">
@@ -527,33 +521,37 @@ function uploadCompleted(s)
 							<tr>
 								<td align="center" width="100%" class=ArrayNavigation>
 									<%=pagination.printCounter()%>
-									<%
-										if (photos.size() == 1)
-											out.println(resource.getString("gallery.photo"));
-										else
-											out.println(resource.getString("gallery.photos"));
-									%>
+                                    <%
+                                      if (photos.size() == 1) {
+                                        out.println(resource.getString("gallery.photo"));
+                                      } else {
+                                        out.println(resource.getString("gallery.photos"));
+                                      }
+                                    %>
 								</td>
 								<td align="right" nowrap>
 									<select name="ChoiceSize" onChange="javascript:choiceGoTo(this.selectedIndex);">
 										<option selected><%=resource.getString("gallery.choixTaille")%></option>
 										<option>-------------------------------</option>
-										<%
-											String selected = "";
-											if (taille.equals("66x50"))
-												selected = "selected";
+                                        <%
+                                          String selected = "";
+                                          if ("66x50".equals(taille)) {
+                                            selected = "selected";
+                                          }
 										%>
 										<option value="66x50" <%=selected%>><%="66x50"%></option>
-										<%
-											selected = "";
-											if (taille.equals("133x100"))
-												selected = "selected";
+                                        <%
+                                          selected = "";
+                                          if ("133x100".equals(taille)) {
+                                            selected = "selected";
+                                          }
 										%>
 										<option value="133x100" <%=selected%>><%="133x100"%></option>
-										<%
-											selected = "";
-											if (taille.equals("266x150"))
-												selected = "selected";
+                                        <%
+                                          selected = "";
+                                          if ("266x150".equals(taille)) {
+                                            selected = "selected";
+                                          }
 										%>
 										<option value="266x150" <%=selected%>><%="266x150"%></option>
 									</select>
@@ -584,7 +582,7 @@ function uploadCompleted(s)
 			calendar.set(Calendar.SECOND, 0);
 			calendar.set(Calendar.MILLISECOND, 0);
 			Date today = calendar.getTime();
-			Iterator it = (Iterator) affPhotos.iterator();
+			Iterator it = affPhotos.iterator();
 			while (it.hasNext())
 			{
 				// affichage de la photo
@@ -592,45 +590,42 @@ function uploadCompleted(s)
 				<table width="98%" border="0" cellspacing="5" cellpadding="0" align=center>
 				<tr><td colspan="<%=nbParLigne + textColonne%>">&nbsp;</td></tr>
 				<tr>
-				<%
-				
-				while (it.hasNext() && nbAffiche < nbParLigne)
-				{
-					photo 		= (PhotoDetail) it.next();
-					altTitle 	= "";
-					if (photo != null)
-					{
-						idP = photo.getPhotoPK().getId();
-						String nomRep = resource.getSetting("imagesSubDirectory") + idP;
-						String name = photo.getImageName();
-						if (name != null)
-						{
-							String type = name.substring(name.lastIndexOf(".") + 1, name.length());
-							name = photo.getId() + extension;
-							vignette_url = FileServer.getUrl(spaceId, componentId, name, photo.getImageMimeType(), nomRep);
-							if ("bmp".equalsIgnoreCase(type))
-								vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+extension;
-															
-							altTitle = Encode.javaStringToHtmlString(photo.getTitle());
-							if (photo.getDescription() != null && photo.getDescription().length() > 0)
-								altTitle += " : "+Encode.javaStringToHtmlString(photo.getDescription());
-						}
-						else
-						{
-							vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+extension;
-						}
-						photoColor = "fondPhoto";
-						if (!photo.isVisible(today))
-							photoColor = "fondPhotoNotVisible";
-						
-						nbAffiche = nbAffiche + 1;
-						
-						// on affiche encore sur la même ligne
-						%>
-						
-						<% 
-							if (typeAff.equals("2"))
-							{ %>
+                  <%
+                    
+                    while (it.hasNext() && nbAffiche < nbParLigne) {
+                      photo = (PhotoDetail) it.next();
+                      altTitle = "";
+                      if (photo != null) {
+                        idP = photo.getPhotoPK().getId();
+                        String nomRep = resource.getSetting("imagesSubDirectory") + idP;
+                        String name = photo.getImageName();
+                        if (name != null) {
+                          String type = name.substring(name.lastIndexOf(".") + 1, name.length());
+                          name = photo.getId() + extension;
+                          vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.
+                              getImageMimeType(), nomRep);
+                          if ("bmp".equalsIgnoreCase(type)) {
+                            vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + resource.
+                                getLanguage() + extension;
+                          }
+                            
+                          altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
+                          if (photo.getDescription() != null && photo.getDescription().length() > 0) {
+                            altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.
+                                getDescription());
+                          }
+                        } else {
+                          vignette_url = m_context + "/gallery/jsp/icons/notAvailable_" + resource.
+                              getLanguage() + extension;
+                        }
+                        photoColor = "fondPhoto";
+                        if (!photo.isVisible(today)) {
+                          photoColor = "fondPhotoNotVisible";
+                        }
+                          
+                        nbAffiche = nbAffiche + 1;
+                        if ("2".equals(typeAff)) { 
+                        %>
 								<td valign="top" width="<%=largeurCellule%>%">	
 								<table border="0" align="center" width="10" cellspacing="1" cellpadding="0" class="<%=photoColor%>">
 									<tr><td align="center" colspan="2">
@@ -640,7 +635,7 @@ function uploadCompleted(s)
 									</td></tr>
 									<tr>
 									<%
-									//traitement de la case à cocher
+									//traitement de la case e cocher
 									String usedCheck = "";
 									if (selectedIds != null && selectedIds.contains(idP))
 										usedCheck = "checked";
@@ -658,7 +653,7 @@ function uploadCompleted(s)
 								</table>
 								</td>
 							<% }
-							if (typeAff.equals("1"))
+							if ("1".equals(typeAff))
 							{ %>
 								<td valign="bottom" width="<%=largeurCellule%>%">
 								<table border="0" width="10" cellspacing="1" cellpadding="0" align="center" class="<%=photoColor%>">
@@ -668,7 +663,7 @@ function uploadCompleted(s)
 										</td></tr></table>
 									</td></tr>
 									<%
-									//traitement de la case à cocher
+									//traitement de la case e cocher
 									String usedCheck = "";
 									if (selectedIds != null && selectedIds.contains(idP))
 										usedCheck = "checked";
@@ -677,10 +672,10 @@ function uploadCompleted(s)
 								</table>
 								</td>
 							<% } 
-							// affichage du texte à coté de la photo pour le cas de l'affichage en liste
-							if (typeAff.equals("3"))
+							// affichage du texte e cote de la photo pour le cas de l'affichage en liste
+							if ("3".equals(typeAff))
 							{	
-								// on affiche les photos en colonne avec les métaData à droite
+								// on affiche les photos en colonne avec les metaData e droite
 								%>
 								<td valign="middle" align="center">
 									<table border="0" width="10" cellspacing="1" cellpadding="0" align="center" class="<%=photoColor%>"><tr><td align="center">
@@ -715,7 +710,7 @@ function uploadCompleted(s)
 										{	
 											if (metaDataKeys != null) 
 											{	
-												Iterator itMeta = (Iterator) metaDataKeys.iterator();
+												Iterator itMeta = metaDataKeys.iterator();
 												while (itMeta.hasNext())
 												{
 													// traitement de la metaData
@@ -744,9 +739,9 @@ function uploadCompleted(s)
 												<td>
 											<%
 											String keyWord = photo.getKeyWord();   
-											// découper la zone keyWord en mots
+											// decouper la zone keyWord en mots
 											StringTokenizer st = new StringTokenizer(keyWord);
-											// traitement des mots clés
+											// traitement des mots cles
 											while (st.hasMoreTokens()) 
 											{
 												String searchKeyWord = (String) st.nextToken();
@@ -755,7 +750,7 @@ function uploadCompleted(s)
 											 <% } 
 											out.println("</td></tr>"); 
 										}
-										//traitement de la case à cocher
+										//traitement de la case e cocher
 										String usedCheck = "";
 										if (selectedIds != null && selectedIds.contains(idP))
 											usedCheck = "checked";
@@ -768,7 +763,7 @@ function uploadCompleted(s)
 						}
 					}
 				
-				// on prépare pour la ligne suivante
+				// on prepare pour la ligne suivante
 				nbAffiche = 0;
 				%>
 				</tr>

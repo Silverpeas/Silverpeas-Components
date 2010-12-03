@@ -23,9 +23,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
-
 <% 
 AlbumDetail root 			= (AlbumDetail) request.getAttribute("root");
 String 		profile 		= (String) request.getAttribute("Profile");
@@ -37,7 +37,7 @@ boolean 	isBasket	 	= ((Boolean) request.getAttribute("IsBasket")).booleanValue(
 boolean 	isOrder		 	= ((Boolean) request.getAttribute("IsOrder")).booleanValue();
 boolean 	isGuest		 	= ((Boolean) request.getAttribute("IsGuest")).booleanValue();
 
-// paramètrage pour l'affichage des dernières photos téléchargées
+// paramï¿½trage pour l'affichage des derniï¿½res photos tï¿½lï¿½chargï¿½es
 int nbAffiche 	= 0;
 int nbParLigne 	= 5;
 int nbTotal 	= 15;
@@ -158,7 +158,7 @@ function clipboardPaste() {
 	
 	if (!"admin".equals(profile) && !isGuest)
 	{
-		// demande de photo auprès du gestionnaire
+		// demande de photo auprï¿½s du gestionnaire
 		operationPane.addOperation(resource.getIcon("gallery.askPhoto"),resource.getString("gallery.askPhoto"), "javaScript:askPhoto()");
 		operationPane.addLine();
 	}
@@ -170,7 +170,7 @@ function clipboardPaste() {
        	operationPane.addLine();
 	}
 	
-	// derniers résultat de la recherche
+	// derniers rï¿½sultat de la recherche
 	if (isPrivateSearch)
 	{
     	operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString("gallery.lastResult"), "LastResult");
@@ -268,13 +268,13 @@ function clipboardPaste() {
 			ligne.addArrayCellText(unAlbum.getDescription());
 			if ( "admin".equals(profile) || ("publisher".equals(profile) && unAlbum.getCreatorId().equals(userId)) )
 			{
-				// si publisher, possibilité de modif que sur ses albums
-				// création de la colonne des icônes
+				// si publisher, possibilitï¿½ de modif que sur ses albums
+				// crï¿½ation de la colonne des icï¿½nes
 				IconPane iconPane = gef.getIconPane();
-				// icône "modifier"
+				// icï¿½ne "modifier"
 				Icon updateIcon = iconPane.addIcon();
 	       		updateIcon.setProperties(resource.getIcon("gallery.updateAlbum"), resource.getString("gallery.updateAlbum"), "javaScript:editAlbum('"+id+"')");
-	   			// icône "supprimer"
+	   			// icï¿½ne "supprimer"
 	       		Icon deleteIcon = iconPane.addIcon();
 	       		deleteIcon.setProperties(resource.getIcon("gallery.deleteAlbum"), resource.getString("gallery.deleteAlbum"), "javaScript:deleteConfirm('"+id+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(nom))+"')");
 	       		iconPane.setSpacing("30px");
@@ -284,7 +284,7 @@ function clipboardPaste() {
 		out.println(arrayPane.print());
 	}
 		
-	// afficher les dernières photos téléchargées
+	// afficher les derniï¿½res photos tï¿½lï¿½chargï¿½es
 	// ------------------------------------------
 	
 	Board	board		 = gef.getBoard();
@@ -293,7 +293,7 @@ function clipboardPaste() {
 	<%
 	out.println(board.printBefore());
 	
-	// affichage de l'entête
+	// affichage de l'entï¿½te
 	%>
 		<table width="100%" border="0" cellspacing="0" cellpadding="0" align=center>
 		<tr>
@@ -314,7 +314,7 @@ function clipboardPaste() {
 		{
 			PhotoDetail photo;
 			String idP;
-			Iterator itP = (Iterator) photos.iterator();
+			Iterator itP = photos.iterator();
 	
 			while (itP.hasNext() && nbTotal != 0) 
 			{
@@ -334,13 +334,13 @@ function clipboardPaste() {
 						{
 							String type = name.substring(name.lastIndexOf(".") + 1, name.length());
 							name = photo.getId() + "_133x100.jpg";
-							vignette_url = FileServer.getUrl(spaceId, componentId, name, photo.getImageMimeType(), nomRep);
+							vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.getImageMimeType(), nomRep);
 							if ("bmp".equalsIgnoreCase(type))
 								vignette_url = m_context+"/gallery/jsp/icons/notAvailable_"+resource.getLanguage()+"_133x100.jpg";
 																
-							altTitle = Encode.javaStringToHtmlString(photo.getTitle());
+							altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
 							if (photo.getDescription() != null && photo.getDescription().length() > 0)
-								altTitle += " : "+Encode.javaStringToHtmlString(photo.getDescription());
+								altTitle += " : "+EncodeHelper.javaStringToHtmlString(photo.getDescription());
 						}
 						else
 						{
@@ -349,7 +349,7 @@ function clipboardPaste() {
 						nbTotal 	= nbTotal - 1 ;	
 						nbAffiche 	= nbAffiche + 1;
 						
-						// on affiche encore sur la même ligne
+						// on affiche encore sur la mï¿½me ligne
 						%>
 							<td valign="middle" align="center">
 								<table border="0" width="10" align="center" cellspacing="1" cellpadding="0" class="fondPhoto"><tr><td align="center">
@@ -361,7 +361,7 @@ function clipboardPaste() {
 						<%
 					}
 				}
-				// on passe à la ligne suivante
+				// on passe ï¿½ la ligne suivante
 				nbAffiche = 0;
 				out.println("</tr>");
 				if (itP.hasNext())

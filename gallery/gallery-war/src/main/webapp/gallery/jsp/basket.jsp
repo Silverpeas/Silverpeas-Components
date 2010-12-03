@@ -25,21 +25,18 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp"%>
-
 <%
-  // récupération des paramètres :
-			Collection photos = (List) request.getAttribute("Photos");
-			Collection selectedIds = (Collection) request
-					.getAttribute("SelectedIds");
-			boolean isOrder = ((Boolean) request.getAttribute("IsOrder"))
-					.booleanValue();
-
-			// déclaration des variables :
-			int id = 0;
-			String extension = "_66x50.jpg";
-			String extensionAlt = "_266x150.jpg";
-
-			Iterator itP = (Iterator) photos.iterator();
+  // recuperation des parametres :
+    Collection photos = (List) request.getAttribute("Photos");
+    Collection selectedIds = (Collection) request.getAttribute("SelectedIds");
+    boolean isOrder = ((Boolean) request.getAttribute("IsOrder")).booleanValue();
+      
+    // declaration des variables :
+    int id = 0;
+    String extension = "_66x50.jpg";
+    String extensionAlt = "_266x150.jpg";
+      
+    Iterator itP = photos.iterator();
 %>
 
 <html>
@@ -54,10 +51,10 @@
 	
 	function sendDataDelete() 
 	{
-		//confirmation de suppression des photos sélectionnées
+		//confirmation de suppression des photos selectionnees
 		if(window.confirm("<%=resource.getString("gallery.confirmDeletePhotos")%> "))
 		{
-			// envoi des photos sélectionnées pour la suppression
+			// envoi des photos selectionnees pour la suppression
 			document.photoForm.SelectedIds.value 	= getObjects(true);
 			document.photoForm.NotSelectedIds.value = getObjects(false);
 			document.photoForm.action				= "BasketDeleteSelectedPhoto";
@@ -75,7 +72,7 @@
 				// au moins une checkbox exist
 				var nbBox = boxItems.length;
 				if ( (nbBox == null) && (boxItems.checked == selected) ){
-					// il n'y a qu'une checkbox non selectionnée
+					// il n'y a qu'une checkbox non selectionnee
 					items += boxItems.value+",";
 				} else{
 					// search not checked boxes 
@@ -159,17 +156,17 @@ var messages = new Array();
 // multi-dimensional arrays containing: 
 // image and text for tooltip
 // optional: bgColor and color to be sent to tooltip
-<%int messagesId = 0;
-			while (itP.hasNext()) {
-				String photoId = (String) itP.next();
-				PhotoDetail photo = gallerySC.getPhoto(photoId);
-				String nomRep = resource.getSetting("imagesSubDirectory")
-						+ photo.getId();%>		
-		messages[<%=messagesId%>] = new Array('<%=FileServer.getUrl(spaceId, componentId, photo.getId()
-								+ extensionAlt, photo.getImageMimeType(),
-								nomRep)%>','<%=Encode.javaStringToHtmlString(Encode
-								.javaStringToJsString(photo.getName()))%>',"#FFFFFF");
-<%messagesId++;
+    <%int messagesId = 0;
+      while (itP.hasNext()) {
+        String photoId = (String) itP.next();
+        PhotoDetail photo = gallerySC.getPhoto(photoId);
+        String nomRep = resource.getSetting("imagesSubDirectory")
+        + photo.getId();%>		
+		messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl(spaceId, componentId, photo.getId()
+            + extensionAlt, photo.getImageMimeType(),
+            nomRep)%>','<%=EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(photo.
+                                    getName()))%>',"#FFFFFF");
+    <%messagesId++;
 			}%>
 
 ////////////////////  END OF CUSTOMIZATION AREA  ///////////////////
@@ -296,7 +293,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5"
 	marginheight="5">
 <%
-  // création de la barre de navigation
+  // creation de la barre de navigation
 			browseBar.setDomainName(spaceLabel);
 			browseBar.setComponentName(componentLabel, "Main");
 			browseBar.setPath(resource.getString("gallery.basket"));
@@ -310,7 +307,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 					operationPane.addLine();
 				}
 
-				// possibilité de modifier ou supprimer les photos par lot
+				// possibilite de modifier ou supprimer les photos par lot
 				operationPane.addOperation(resource
 						.getIcon("gallery.deleteSelectedPhoto"), resource
 						.getString("gallery.deleteSelectedPhoto"),
@@ -384,7 +381,7 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
  					arrayCellText0.setCompareOn(name);
  					indexPhoto++;
 
- 					// case à cocher pour traitement par lot
+ 					// case e cocher pour traitement par lot
  					String usedCheck = "";
  					if (selectedIds != null
  							&& selectedIds.contains(Integer.toString(id)))

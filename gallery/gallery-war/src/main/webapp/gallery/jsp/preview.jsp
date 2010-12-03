@@ -27,75 +27,82 @@
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ include file="check.jsp" %>
 
-<% 
-	// récupération des paramètres :
-	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
-	List  	path 			= (List) request.getAttribute("Path");
-	String 		profile			= (String) request.getAttribute("Profile");
-	Integer		rang			= (Integer) request.getAttribute("Rang");
-	Integer		albumSize		= (Integer) request.getAttribute("NbPhotos");
-	Integer		nbCom			= (Integer) request.getAttribute("NbComments");
-	boolean		pdc 			= ((Boolean) request.getAttribute("IsUsePdc")).booleanValue();
-	boolean 	viewMetadata	= ((Boolean) request.getAttribute("IsViewMetadata")).booleanValue();
-	boolean 	watermark		= ((Boolean) request.getAttribute("IsWatermark")).booleanValue();
-	String 		XMLFormName		= (String) request.getAttribute("XMLFormName");
-	boolean		updateAllowed	= ((Boolean) request.getAttribute("UpdateImageAllowed")).booleanValue();
-	boolean		showComments	= ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
-	String 		sizeParam		= (String) request.getAttribute("PreviewSize");
-	boolean 	linkDownload 	= ((Boolean) request.getAttribute("ViewLinkDownload")).booleanValue();
-	boolean 	isBasket	 	= ((Boolean) request.getAttribute("IsBasket")).booleanValue();
-	boolean  isPrivateSearch = ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
-
-	// paramètres du formulaire
-	Form		xmlForm 		= (Form) request.getAttribute("XMLForm");
-	DataRecord	xmlData			= (DataRecord) request.getAttribute("XMLData");
-	
-	// déclaration des variables :
-	String 		nomRep 				= resource.getSetting("imagesSubDirectory") + photo.getPhotoPK().getId();
-	String 		name 				= "";
-	if (photo.getImageName() != null && !photo.getImageName().equals(""))
-		name = photo.getImageName();
-	String 		namePreview			= photo.getId() + "_" + sizeParam + ".jpg";
-	//String 		namePreview			= photo.getId() + "_preview.jpg";
-	String 		nameVignette		= photo.getId() + "_266x150.jpg";
-	String 		preview_url			= FileServer.getUrl(null, componentId, namePreview, photo.getImageMimeType(), nomRep);
-	String 		title 				= photo.getTitle();		
-	String 		description			= photo.getDescription();	
-	String 		author				= photo.getAuthor();
-	String 		creationDate		= resource.getOutputDate(photo.getCreationDate());
-	String 		creatorName 		= photo.getCreatorName();
-	String 		updateDate			= resource.getOutputDate(photo.getUpdateDate());
-	String 		updateName 			= photo.getUpdateName();
-	long 		size				= photo.getImageSize();
-	int 		height				= photo.getSizeH();
-	int 		width				= photo.getSizeL();
-	String 		photoId				= new Integer(photo.getPhotoPK().getId()).toString();	
-	String 		lien 				= FileServer.getUrl(spaceId, componentId, URLEncoder.encode(name), photo.getImageMimeType(), nomRep);
-	String 		lienWatermark		= "";
-	String 		lienPreview			= FileServer.getUrl(spaceId, componentId, namePreview, photo.getImageMimeType(), nomRep);
-	String 		lienVignette		= FileServer.getUrl(spaceId, componentId, nameVignette, photo.getImageMimeType(), nomRep);
-	boolean 	debut				= rang.intValue() == 0;
-	boolean 	fin					= rang.intValue() == albumSize.intValue()-1;
-	String		beginDownloadDate	= resource.getOutputDate(photo.getBeginDownloadDate());
-	String 		endDownloadDate		= resource.getOutputDate(photo.getEndDownloadDate());
-	String 		nbComments 			= nbCom.toString();
-	String 		link				= photo.getPermalink();
-	Collection	metaDataKeys		= photo.getMetaDataProperties();
-	String 		keyWord				= photo.getKeyWord();
-	String		beginDate			= resource.getOutputDate(photo.getBeginDate());
-	String 		endDate				= resource.getOutputDate(photo.getEndDate());
-	
-	// si le paramètre watermark est actif, récupérer l'image avec le watermark
-	if (watermark)
-	{
-		// image avec le watermarkOther pour le téléchargement
-		File fileWatermark = new File(FileRepositoryManager.getAbsolutePath(componentId) + nomRep + File.separator + photo.getId() + "_watermark.jpg");
-		
-		if( fileWatermark.exists() )
-			lienWatermark = FileServer.getUrl(spaceId, componentId, photo.getId() + "_watermark.jpg", photo.getImageMimeType(), nomRep);
-	}
-	
-	Board board	= gef.getBoard();
+<%
+  // récupération des paramètres :
+  PhotoDetail photo = (PhotoDetail) request.getAttribute("Photo");
+  List path = (List) request.getAttribute("Path");
+  String profile = (String) request.getAttribute("Profile");
+  Integer rang = (Integer) request.getAttribute("Rang");
+  Integer albumSize = (Integer) request.getAttribute("NbPhotos");
+  Integer nbCom = (Integer) request.getAttribute("NbComments");
+  boolean pdc = ((Boolean) request.getAttribute("IsUsePdc")).booleanValue();
+  boolean viewMetadata = ((Boolean) request.getAttribute("IsViewMetadata")).booleanValue();
+  boolean watermark = ((Boolean) request.getAttribute("IsWatermark")).booleanValue();
+  String XMLFormName = (String) request.getAttribute("XMLFormName");
+  boolean updateAllowed = ((Boolean) request.getAttribute("UpdateImageAllowed")).booleanValue();
+  boolean showComments = ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
+  String sizeParam = (String) request.getAttribute("PreviewSize");
+  boolean linkDownload = ((Boolean) request.getAttribute("ViewLinkDownload")).booleanValue();
+  boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
+  boolean isPrivateSearch = ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
+    
+  // paramètres du formulaire
+  Form xmlForm = (Form) request.getAttribute("XMLForm");
+  DataRecord xmlData = (DataRecord) request.getAttribute("XMLData");
+    
+  // déclaration des variables :
+  String nomRep = resource.getSetting("imagesSubDirectory") + photo.getPhotoPK().getId();
+  String name = "";
+  if (photo.getImageName() != null && !photo.getImageName().equals("")) {
+    name = photo.getImageName();
+  }
+  String namePreview = photo.getId() + "_" + sizeParam + ".jpg";
+  //String 		namePreview			= photo.getId() + "_preview.jpg";
+  String nameVignette = photo.getId() + "_266x150.jpg";
+  String preview_url = FileServerUtils.getUrl(null, componentId, namePreview,
+      photo.getImageMimeType(), nomRep);
+  String title = photo.getTitle();
+  String description = photo.getDescription();
+  String author = photo.getAuthor();
+  String creationDate = resource.getOutputDate(photo.getCreationDate());
+  String creatorName = photo.getCreatorName();
+  String updateDate = resource.getOutputDate(photo.getUpdateDate());
+  String updateName = photo.getUpdateName();
+  long size = photo.getImageSize();
+  int height = photo.getSizeH();
+  int width = photo.getSizeL();
+  String photoId = new Integer(photo.getPhotoPK().getId()).toString();
+  String lien = FileServerUtils.getUrl(spaceId, componentId, URLEncoder.encode(name, "UTF-8"), photo.
+      getImageMimeType(), nomRep);
+  String lienWatermark = "";
+  String lienPreview = FileServerUtils.getUrl(spaceId, componentId, namePreview, photo.
+      getImageMimeType(), nomRep);
+  String lienVignette = FileServerUtils.getUrl(spaceId, componentId, nameVignette, photo.
+      getImageMimeType(), nomRep);
+  boolean debut = rang.intValue() == 0;
+  boolean fin = rang.intValue() == albumSize.intValue() - 1;
+  String beginDownloadDate = resource.getOutputDate(photo.getBeginDownloadDate());
+  String endDownloadDate = resource.getOutputDate(photo.getEndDownloadDate());
+  String nbComments = nbCom.toString();
+  String link = photo.getPermalink();
+  Collection metaDataKeys = photo.getMetaDataProperties();
+  String keyWord = photo.getKeyWord();
+  String beginDate = resource.getOutputDate(photo.getBeginDate());
+  String endDate = resource.getOutputDate(photo.getEndDate());
+    
+  // si le paramètre watermark est actif, récupérer l'image avec le watermark
+  if (watermark) {
+    // image avec le watermarkOther pour le téléchargement
+    File fileWatermark = new File(FileRepositoryManager.getAbsolutePath(componentId) + nomRep + File.separator + photo.
+        getId() + "_watermark.jpg");
+          
+    if (fileWatermark.exists()) {
+      lienWatermark = FileServerUtils.getUrl(spaceId, componentId, photo.getId() + "_watermark.jpg", photo.
+          getImageMimeType(), nomRep);
+    }
+  }
+    
+  Board board = gef.getBoard();
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
@@ -140,63 +147,70 @@ function goToNotify(url)
 </script>
 </head>
 <body class="yui-skin-sam" bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-	displayPath(path, browseBar);
-	
-	String url = "ToAlertUser?PhotoId="+photoId;
-	operationPane.addOperation(resource.getIcon("gallery.alert"), resource.getString("GML.notify"), "javaScript:onClick=goToNotify('"+url+"')");
-	operationPane.addLine();
-	
-	if (updateAllowed)
-	{
-		operationPane.addOperation(resource.getIcon("gallery.deletePhoto"),resource.getString("gallery.deletePhoto"),"javaScript:deleteConfirm('"+photoId+"','"+Encode.javaStringToHtmlString(Encode.javaStringToJsString(title))+"')");
-	}
-	if ("admin".equals(profile))
-	{
-   		operationPane.addOperation(resource.getIcon("gallery.copy"), resource.getString("GML.copy"), "javascript:onClick=clipboardCopy()");
-   		operationPane.addOperation(resource.getIcon("gallery.cut"), resource.getString("GML.cut"), "javascript:onClick=clipboardCut()");
-       	operationPane.addLine();
-	}
-	if (albumSize.intValue() > 1)
-	{
-   		// diaporama
-		operationPane.addOperation(resource.getIcon("gallery.startDiaporama"), resource.getString("gallery.diaporama"), "StartDiaporama");
-	}
-
-	if ("user".equals(profile) && isBasket)
-	{
-		operationPane.addLine();
-		// ajouter la photo au panier
-		operationPane.addOperation(resource.getIcon("gallery.addPhotoToBasket"),resource.getString("gallery.addPhotoToBasket"),"BasketAddPhoto?PhotoId="+photoId);
-	}
-	
-	if (isPrivateSearch) {
-	   // derniers résultat de la recherche
-	   operationPane.addLine();
-	   operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString("gallery.lastResult"), "LastResult");
-	}
-
-  TabbedPane tabbedPane = gef.getTabbedPane();
-	tabbedPane.addTab(resource.getString("gallery.photo"), "#", true, false);
-	if (updateAllowed)
-	{
-		tabbedPane.addTab(resource.getString("gallery.info"), "EditInformation?PhotoId="+photoId, false);
-	}
-	if (showComments)
-		tabbedPane.addTab(resource.getString("gallery.comments")+" ("+nbComments+")", "Comments?PhotoId="+photoId, false);
-	if (updateAllowed)
-	{
-		tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?PhotoId="+photoId, false);
-		if (pdc)
-			tabbedPane.addTab(resource.getString("GML.PDC"), "PdcPositions?PhotoId="+photoId, false);
-	}
-	
-	out.println(window.printBefore());
-	out.println(tabbedPane.print());
+  <%
+    browseBar.setDomainName(spaceLabel);
+    browseBar.setComponentName(componentLabel, "Main");
+    displayPath(path, browseBar);
+      
+    String url = "ToAlertUser?PhotoId=" + photoId;
+    operationPane.addOperation(resource.getIcon("gallery.alert"), resource.getString("GML.notify"),
+        "javaScript:onClick=goToNotify('" + url + "')");
+    operationPane.addLine();
+      
+    if (updateAllowed) {
+      operationPane.addOperation(resource.getIcon("gallery.deletePhoto"), resource.getString(
+          "gallery.deletePhoto"), "javaScript:deleteConfirm('" + photoId + "','" + EncodeHelper.
+          javaStringToHtmlString(EncodeHelper.javaStringToJsString(title)) + "')");
+    }
+    if ("admin".equals(profile)) {
+      operationPane.addOperation(resource.getIcon("gallery.copy"), resource.getString("GML.copy"),
+          "javascript:onClick=clipboardCopy()");
+      operationPane.addOperation(resource.getIcon("gallery.cut"), resource.getString("GML.cut"),
+          "javascript:onClick=clipboardCut()");
+      operationPane.addLine();
+    }
+    if (albumSize.intValue() > 1) {
+      // diaporama
+      operationPane.addOperation(resource.getIcon("gallery.startDiaporama"), resource.getString(
+          "gallery.diaporama"), "StartDiaporama");
+    }
+      
+    if ("user".equals(profile) && isBasket) {
+      operationPane.addLine();
+      // ajouter la photo au panier
+      operationPane.addOperation(resource.getIcon("gallery.addPhotoToBasket"), resource.getString(
+          "gallery.addPhotoToBasket"), "BasketAddPhoto?PhotoId=" + photoId);
+    }
+      
+    if (isPrivateSearch) {
+      // derniers résultat de la recherche
+      operationPane.addLine();
+      operationPane.addOperation(resource.getIcon("gallery.lastResult"), resource.getString(
+          "gallery.lastResult"), "LastResult");
+    }
+      
+    TabbedPane tabbedPane = gef.getTabbedPane();
+    tabbedPane.addTab(resource.getString("gallery.photo"), "#", true, false);
+    if (updateAllowed) {
+      tabbedPane.addTab(resource.getString("gallery.info"), "EditInformation?PhotoId=" + photoId,
+          false);
+    }
+    if (showComments) {
+      tabbedPane.addTab(resource.getString("gallery.comments") + " (" + nbComments + ")",
+          "Comments?PhotoId=" + photoId, false);
+    }
+    if (updateAllowed) {
+      tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?PhotoId=" + photoId,
+          false);
+      if (pdc) {
+        tabbedPane.addTab(resource.getString("GML.PDC"), "PdcPositions?PhotoId=" + photoId, false);
+      }
+    }
+      
+    out.println(window.printBefore());
+    out.println(tabbedPane.print());
     out.println(frame.printBefore());
-%>
+  %>
 <table CELLPADDING=5 WIDTH="100%">
 <FORM Name="photoForm" Method="POST" accept-charset="UTF-8">
 	<tr>
@@ -274,14 +288,14 @@ function goToNotify(url)
 						{ %>
 						<tr align="left">
 							<td class="txtlibform" nowrap><%=resource.getString("gallery.originale")%> :</td>
-							<td><a href="<%=lien%>" target=_blank><%=Encode.javaStringToHtmlString(resource.getString("gallery.telecharger"))%></a></td>
+							<td><a href="<%=lien%>" target=_blank><%=EncodeHelper.javaStringToHtmlString(resource.getString("gallery.telecharger"))%></a></td>
 						</tr>
 						
 						<% if (!lienWatermark.equals(""))
 							{%>
 						<tr align="left">
 							<td class="txtlibform" nowrap><%=resource.getString("gallery.originaleWatermark")%> :</td>
-							<td><a href="<%=lienWatermark%>" target=_blank><%=Encode.javaStringToHtmlString(resource.getString("gallery.telecharger"))%></a></td>
+							<td><a href="<%=lienWatermark%>" target=_blank><%=EncodeHelper.javaStringToHtmlString(resource.getString("gallery.telecharger"))%></a></td>
 						</tr>
 						<% } 
 						} %>
@@ -305,19 +319,7 @@ function goToNotify(url)
 						<% } %>
 						</TD>
 					</tr>
-				<% 	}  %>
-	
-			<!--		
-				<tr>
-					<td class="txtlibform" nowrap><%=resource.getString("gallery.preview")%> :</td>
-					<td><a href="<%=lienPreview%>" target=_blank><%=Encode.javaStringToHtmlString(resource.getString("gallery.telechargerPreview"))%></a></td>
-				</tr>
-				<tr>
-					<td class="txtlibform" nowrap><%=resource.getString("gallery.vignette")%> :</td>
-					<td><a href="<%=lienVignette%>" target=_blank><%=Encode.javaStringToHtmlString(resource.getString("gallery.telechargerVignette"))%></a></td>
-				</tr> 	 
-			-->
-			
+				<% 	}  %>			
 				<% 
 				if ( name != null ) {	%>
 					<tr align="left">
@@ -362,7 +364,7 @@ function goToNotify(url)
 					StringTokenizer st = new StringTokenizer(keyWord);
 					while (st.hasMoreTokens()) 
 					{
-						String searchKeyWord = (String) st.nextToken();
+						String searchKeyWord = st.nextToken();
 						%>
 						<a href="<%="SearchKeyWord?SearchKeyWord=" + searchKeyWord%>"> <%=searchKeyWord%> </a>
 					 <% } %>
@@ -375,12 +377,12 @@ function goToNotify(url)
 				// AFFICHAGE des métadonnées
 				if (viewMetadata)
 				{	
-					if (metaDataKeys != null && metaDataKeys.size() > 0) 
+					if (metaDataKeys != null && !metaDataKeys.isEmpty()) 
 					{
 						out.println("<br/>");
 						out.println(board.printBefore());
 						out.println("<table align=\"left\" border=\"0\" CELLPADDING=\"5\">");
-						Iterator it = (Iterator) metaDataKeys.iterator();
+						Iterator it = metaDataKeys.iterator();
 						while (it.hasNext())
 						{
 							// traitement de la metaData
@@ -413,14 +415,16 @@ function goToNotify(url)
 					<!-- AFFICHAGE du formulaire -->
 						<tr align="left">
 							<td colspan="2">
-							<%
-								PagesContext xmlContext = new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, gallerySC.getUserId(), gallerySC.getAlbum(gallerySC.getCurrentAlbumId()).getNodePK().getId());
-								xmlContext.setObjectId(photoId);
-								xmlContext.setBorderPrinted(false);
-								xmlContext.setIgnoreDefaultValues(true);
-								
-						    	xmlForm.display(out, xmlContext, xmlData);
-						    %>
+                              <%
+                                PagesContext xmlContext = new PagesContext("myForm", "0", resource.
+                                    getLanguage(), false, componentId, gallerySC.getUserId(), gallerySC.
+                                    getAlbum(gallerySC.getCurrentAlbumId()).getNodePK().getId());
+                                xmlContext.setObjectId(photoId);
+                                xmlContext.setBorderPrinted(false);
+                                xmlContext.setIgnoreDefaultValues(true);
+                                  
+                                xmlForm.display(out, xmlContext, xmlData);
+                              %>
 							</td>	
 						</tr>
 					</table>

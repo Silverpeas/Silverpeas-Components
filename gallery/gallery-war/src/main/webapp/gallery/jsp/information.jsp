@@ -29,103 +29,116 @@
 
 <% 
 	// récupération des paramètres :
-	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
-	String 		repertoire 		= (String) request.getAttribute("Repertoire");
-	List 	path 			= (List) request.getAttribute("Path");
-	String 		userName		= (String) request.getAttribute("UserName");
-	
-	boolean 	viewMetadata	= ((Boolean) request.getAttribute("IsViewMetadata")).booleanValue();
-	
-	Integer		nbCom			= (Integer) request.getAttribute("NbComments");
-	Boolean		isUsePdc		= (Boolean) request.getAttribute("IsUsePdc");
-	boolean		showComments	= ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
-	
-	// paramètres pour le formulaire
-	Form 			formUpdate 		= (Form) request.getAttribute("Form");
-	DataRecord 		data 			= (DataRecord) request.getAttribute("Data"); 
-	
-	// déclaration des variables :
-	String 		photoId 			= "";
-	String 		title 				= "";
-	String 		description 		= "";
-	String 		author 				= "";
-	boolean 	download 			= false;
-	String 		nomRep 				= "";
-	String 		vignette_url 		= null;
-	String 		action 				= "CreatePhoto";	
-	String 		chemin 				= "";
-	String 		creationDate		= resource.getOutputDate(new Date());
-	String 		updateDate 			= null;
-	String 		nameFile 			= "";
-	String 		name 				= "";
-	String 		creatorName 		= userName;
-	String 		updateName 			= "";
-	String		beginDownloadDate	= "";
-	String		endDownloadDate		= "";
-	String 		keyWord 			= "";
-	String 		beginDate			= "";
-	String 		endDate				= "";
-	Collection	metaDataKeys		= null;
-	
-	String 	extensionAlt 	= "_preview.jpg";
-	
-	PagesContext 		context 	= new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, null);
-	context.setBorderPrinted(false);
-	context.setCurrentFieldIndex("11");
-	context.setIgnoreDefaultValues(true);
-
-	if (photo != null)
-	{
-		photoId 		= new Integer(photo.getPhotoPK().getId()).toString();
-		title 			= photo.getTitle();
-		description 	= photo.getDescription();
-		if (description == null)
-			description = "";
-		author 			= photo.getAuthor();
-		if (author == null)
-			author 	= "";
-		download 		= photo.isDownload();
-		nomRep 			= repertoire;
-		nameFile 		= photo.getImageName();
-		name 			= photo.getId() + "_266x150.jpg";
-		vignette_url 	= FileServer.getUrl(spaceId, componentId, name, photo.getImageMimeType(), nomRep);
-		action 			= "UpdateInformation";
-		creationDate 	= resource.getOutputDate(photo.getCreationDate());
-		updateDate		= resource.getOutputDate(photo.getUpdateDate());
-		creatorName 	= photo.getCreatorName();
-		updateName 		= photo.getUpdateName();
-		if (photo.getBeginDownloadDate() != null)
-          	beginDownloadDate = resource.getInputDate(photo.getBeginDownloadDate());
-      	else
-          	beginDownloadDate = "";
-		if (photo.getEndDownloadDate() != null)
-          	endDownloadDate = resource.getInputDate(photo.getEndDownloadDate());
-      	else
-          	endDownloadDate = "";
-		
-		if (title.equals(nameFile))
-			title = "";
-		keyWord 	= photo.getKeyWord();
-		if (keyWord == null)
-			keyWord 	= "";
-		if (photo.getBeginDate() != null)
-          	beginDate = resource.getInputDate(photo.getBeginDate());
-      	else
-          	beginDate = "";
-		if (photo.getEndDate() != null)
-          	endDate = resource.getInputDate(photo.getEndDate());
-      	else
-          	endDate = "";
-		metaDataKeys		= photo.getMetaDataProperties();
-	}
-	
-	// déclaration des boutons
-	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-	Button cancelButton;
-	if (action == "UpdateInformation")
-		cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "PreviewPhoto?PhotoId="+photoId, false);
-	else
-		cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "GoToCurrentAlbum", false);
+      PhotoDetail photo = (PhotoDetail) request.getAttribute("Photo");
+      String repertoire = (String) request.getAttribute("Repertoire");
+      List path = (List) request.getAttribute("Path");
+      String userName = (String) request.getAttribute("UserName");
+        
+      boolean viewMetadata = ((Boolean) request.getAttribute("IsViewMetadata")).booleanValue();
+        
+      Integer nbCom = (Integer) request.getAttribute("NbComments");
+      Boolean isUsePdc = (Boolean) request.getAttribute("IsUsePdc");
+      boolean showComments = ((Boolean) request.getAttribute("ShowCommentsTab")).booleanValue();
+        
+      // paramètres pour le formulaire
+      Form formUpdate = (Form) request.getAttribute("Form");
+      DataRecord data = (DataRecord) request.getAttribute("Data");
+        
+      // déclaration des variables :
+      String photoId = "";
+      String title = "";
+      String description = "";
+      String author = "";
+      boolean download = false;
+      String nomRep = "";
+      String vignette_url = null;
+      String action = "CreatePhoto";
+      String chemin = "";
+      String creationDate = resource.getOutputDate(new Date());
+      String updateDate = null;
+      String nameFile = "";
+      String name = "";
+      String creatorName = userName;
+      String updateName = "";
+      String beginDownloadDate = "";
+      String endDownloadDate = "";
+      String keyWord = "";
+      String beginDate = "";
+      String endDate = "";
+      Collection metaDataKeys = null;
+        
+      String extensionAlt = "_preview.jpg";
+        
+      PagesContext context = new PagesContext("myForm", "0", resource.getLanguage(), false,
+          componentId, null);
+      context.setBorderPrinted(false);
+      context.setCurrentFieldIndex("11");
+      context.setIgnoreDefaultValues(true);
+        
+      if (photo != null) {
+        photoId = new Integer(photo.getPhotoPK().getId()).toString();
+        title = photo.getTitle();
+        description = photo.getDescription();
+        if (description == null) {
+          description = "";
+        }
+        author = photo.getAuthor();
+        if (author == null) {
+          author = "";
+        }
+        download = photo.isDownload();
+        nomRep = repertoire;
+        nameFile = photo.getImageName();
+        name = photo.getId() + "_266x150.jpg";
+        vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.getImageMimeType(),
+            nomRep);
+        action = "UpdateInformation";
+        creationDate = resource.getOutputDate(photo.getCreationDate());
+        updateDate = resource.getOutputDate(photo.getUpdateDate());
+        creatorName = photo.getCreatorName();
+        updateName = photo.getUpdateName();
+        if (photo.getBeginDownloadDate() != null) {
+          beginDownloadDate = resource.getInputDate(photo.getBeginDownloadDate());
+        } else {
+          beginDownloadDate = "";
+        }
+        if (photo.getEndDownloadDate() != null) {
+          endDownloadDate = resource.getInputDate(photo.getEndDownloadDate());
+        } else {
+          endDownloadDate = "";
+        }
+          
+        if (title.equals(nameFile)) {
+          title = "";
+        }
+        keyWord = photo.getKeyWord();
+        if (keyWord == null) {
+          keyWord = "";
+        }
+        if (photo.getBeginDate() != null) {
+          beginDate = resource.getInputDate(photo.getBeginDate());
+        } else {
+          beginDate = "";
+        }
+        if (photo.getEndDate() != null) {
+          endDate = resource.getInputDate(photo.getEndDate());
+        } else {
+          endDate = "";
+        }
+        metaDataKeys = photo.getMetaDataProperties();
+      }
+        
+      // déclaration des boutons
+      Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"),
+          "javascript:onClick=sendData();", false);
+      Button cancelButton;
+      if (action == "UpdateInformation") {
+        cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"),
+            "PreviewPhoto?PhotoId=" + photoId, false);
+      } else {
+        cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"),
+            "GoToCurrentAlbum", false);
+      }
 	
 %>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
@@ -392,12 +405,13 @@ var messages = new Array();
 // image and text for tooltip
 // optional: bgColor and color to be sent to tooltip
 <%
-if (photo != null)
-{
-	String nameRep = resource.getSetting("imagesSubDirectory") + photo.getId();
+if (photo != null) {
+    String nameRep = resource.getSetting("imagesSubDirectory") + photo.getId();
 %>		
-messages[0] = new Array('<%=FileServer.getUrl(spaceId, componentId, photo.getId() + extensionAlt, photo.getImageMimeType(), nameRep)%>','<%=Encode.javaStringToHtmlString(Encode.javaStringToJsString(photo.getName()))%>',"#FFFFFF");
-
+messages[0] = new Array('<%=FileServerUtils.getUrl(spaceId, componentId,
+    photo.getId() + extensionAlt, photo.getImageMimeType(), nameRep)%>','<%=EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(photo.
+    getName()))%>',"#FFFFFF");
+  
 <% } %>
 
 ////////////////////  END OF CUSTOMIZATION AREA  ///////////////////

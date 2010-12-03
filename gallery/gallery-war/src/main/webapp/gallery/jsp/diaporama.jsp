@@ -27,18 +27,18 @@
 <%@ include file="check.jsp" %>
 
 <% 
-	// récupération des paramètres :
-	List 		photos	= (List) request.getAttribute("Photos");
-	Integer		rang	= (Integer) request.getAttribute("Rang");
-	List 	path 	= (List) request.getAttribute("Path");
-	Integer		wait	= (Integer) request.getAttribute("Wait");
-
-	// déclaration des variables :
-	String 		nomRep ; 		
-	String 		name ;
-	String 		namePreview ;
-	String 		preview_url ="";
-	String 		photoId = "";
+    // recuperation des parametres :
+      List photos = (List) request.getAttribute("Photos");
+      Integer rang = (Integer) request.getAttribute("Rang");
+      List path = (List) request.getAttribute("Path");
+      Integer wait = (Integer) request.getAttribute("Wait");
+        
+      // declaration des variables :
+      String nomRep;
+      String name;
+      String namePreview;
+      String preview_url = "";
+      String photoId = "";
 %>
 
 <html>
@@ -74,25 +74,24 @@
 	// to add more images, just continue
 	// the pattern, adding to the array below
 	
-	<%
-		// recherche de l'url des photos
-		int p = 0;
-		Iterator it = (Iterator) photos.iterator();
-		while (it.hasNext()) 
-		{
-			PhotoDetail unePhoto = (PhotoDetail) it.next();
-			if (unePhoto != null)
-			{
-				nomRep 		= resource.getSetting("imagesSubDirectory") + unePhoto.getPhotoPK().getId();
-				name 		= unePhoto.getImageName();
-				//namePreview	= name.substring(0,name.indexOf(".")) + "_preview.jpg";
-				namePreview	= unePhoto.getPhotoPK().getId() + "_preview.jpg";
-				preview_url	= FileServer.getUrl(null, componentId, namePreview, unePhoto.getImageMimeType(), nomRep);
-				photoId 	= new Integer(unePhoto.getPhotoPK().getId()).toString();
-				out.println("Pic["+p+"] = '"+preview_url+"'");
-			}
-			p++;
-		}
+    <%
+      // recherche de l'url des photos
+      int p = 0;
+      Iterator it = photos.iterator();
+      while (it.hasNext()) {
+        PhotoDetail unePhoto = (PhotoDetail) it.next();
+        if (unePhoto != null) {
+          nomRep = resource.getSetting("imagesSubDirectory") + unePhoto.getPhotoPK().getId();
+          name = unePhoto.getImageName();
+          //namePreview	= name.substring(0,name.indexOf(".")) + "_preview.jpg";
+          namePreview = unePhoto.getPhotoPK().getId() + "_preview.jpg";
+          preview_url = FileServerUtils.getUrl(null, componentId, namePreview, unePhoto.
+              getImageMimeType(), nomRep);
+          photoId = String.valueOf(unePhoto.getPhotoPK().getId());
+          out.println("Pic[" + p + "] = '" + preview_url + "'");
+        }
+        p++;
+      }
 	%>
 	
 	var t

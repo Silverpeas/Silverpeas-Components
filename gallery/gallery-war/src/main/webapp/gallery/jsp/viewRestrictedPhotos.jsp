@@ -27,63 +27,65 @@
 <%@ include file="check.jsp"%>
 
 <%
-	// récupération des paramètres :
-	String 		searchKeyWord 		= (String) request.getAttribute("SearchKeyWord");
-	List 		photos 				= (List) request.getAttribute("Photos");
-	String 		profile 			= (String) request.getAttribute("Profile");
-	int 		firstPhotoIndex 	= ((Integer) request.getAttribute("FirstPhotoIndex")).intValue();
-	int 		nbPhotosPerPage 	= ((Integer) request.getAttribute("NbPhotosPerPage")).intValue();
-	String 		taille 				= (String) request.getAttribute("Taille");
-	Boolean 	isViewMetadata 		= (Boolean) request.getAttribute("IsViewMetadata");
-	Boolean 	isViewList 			= (Boolean) request.getAttribute("IsViewList");
-	Collection 	selectedIds 		= (Collection) request.getAttribute("SelectedIds");
-	boolean 	isViewNotVisible 	= ((Boolean) request.getAttribute("ViewVisible")).booleanValue();
-	boolean 	isBasket	 		= ((Boolean) request.getAttribute("IsBasket")).booleanValue();
-
-	// déclaration des variables :
-	int nbAffiche = 0;
-	int nbParLigne = 1;
-	int largeurCellule = 0;
-	String extension = "";
-	boolean viewMetadata = isViewMetadata.booleanValue();
-	boolean viewList = isViewList.booleanValue();
-	String typeAff = "1";
-
-	// initialisation de la pagination
-	Pagination pagination = gef.getPagination(photos.size(), nbPhotosPerPage, firstPhotoIndex);
-	List affPhotos = photos.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
-
-	// création du chemin :
-	String chemin = " ";
-	if (isViewNotVisible)
-		chemin = resource.getString("gallery.viewNotVisible");
-	else {
-		chemin = "<a href=\"SearchAdvanced\">"
-				+ resource.getString("gallery.searchAdvanced") + "</a>";
-		chemin = chemin + " > "
-				+ resource.getString("gallery.resultSearch");
-		if (StringUtil.isDefined(searchKeyWord))
-			chemin = chemin + " '" + searchKeyWord + "'";
-	}
-
-	// calcul du nombre de photo par ligne en fonction de la taille
-	if (taille.equals("66x50")) {
-		nbParLigne = 8;
-		extension = "_66x50.jpg";
-	} else if (taille.equals("133x100")) {
-		nbParLigne = 5;
-		extension = "_133x100.jpg";
-		if (viewList)
-			typeAff = "2";
-	} else if (taille.equals("266x150")) {
-		nbParLigne = 3;
-		extension = "_266x150.jpg";
-		if (viewList) {
-			typeAff = "3";
-			nbParLigne = 1;
-		}
-	}
-	largeurCellule = 100 / nbParLigne;
+  // récupération des paramètres :
+  String searchKeyWord = (String) request.getAttribute("SearchKeyWord");
+  List photos = (List) request.getAttribute("Photos");
+  String profile = (String) request.getAttribute("Profile");
+  int firstPhotoIndex = ((Integer) request.getAttribute("FirstPhotoIndex")).intValue();
+  int nbPhotosPerPage = ((Integer) request.getAttribute("NbPhotosPerPage")).intValue();
+  String taille = (String) request.getAttribute("Taille");
+  Boolean isViewMetadata = (Boolean) request.getAttribute("IsViewMetadata");
+  Boolean isViewList = (Boolean) request.getAttribute("IsViewList");
+  Collection selectedIds = (Collection) request.getAttribute("SelectedIds");
+  boolean isViewNotVisible = ((Boolean) request.getAttribute("ViewVisible")).booleanValue();
+  boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
+    
+  // déclaration des variables :
+  int nbAffiche = 0;
+  int nbParLigne = 1;
+  int largeurCellule = 0;
+  String extension = "";
+  boolean viewMetadata = isViewMetadata.booleanValue();
+  boolean viewList = isViewList.booleanValue();
+  String typeAff = "1";
+    
+  // initialisation de la pagination
+  Pagination pagination = gef.getPagination(photos.size(), nbPhotosPerPage, firstPhotoIndex);
+  List affPhotos = photos.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
+    
+  // création du chemin :
+  String chemin = " ";
+  if (isViewNotVisible) {
+    chemin = resource.getString("gallery.viewNotVisible");
+  } else {
+    chemin = "<a href=\"SearchAdvanced\">"
+        + resource.getString("gallery.searchAdvanced") + "</a>";
+    chemin = chemin + " > "
+        + resource.getString("gallery.resultSearch");
+    if (StringUtil.isDefined(searchKeyWord)) {
+      chemin = chemin + " '" + searchKeyWord + "'";
+    }
+  }
+    
+  // calcul du nombre de photo par ligne en fonction de la taille
+  if (taille.equals("66x50")) {
+    nbParLigne = 8;
+    extension = "_66x50.jpg";
+  } else if (taille.equals("133x100")) {
+    nbParLigne = 5;
+    extension = "_133x100.jpg";
+    if (viewList) {
+      typeAff = "2";
+    }
+  } else if (taille.equals("266x150")) {
+    nbParLigne = 3;
+    extension = "_266x150.jpg";
+    if (viewList) {
+      typeAff = "3";
+      nbParLigne = 1;
+    }
+  }
+  largeurCellule = 100 / nbParLigne;
 %>
 
 <html>
@@ -170,37 +172,40 @@
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5"
 	marginheight="5">
 
-<%
-	// création de la barre de navigation
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-	browseBar.setPath(chemin);
-
-	Button returnButton;
-	if (isViewNotVisible)
-		returnButton = (Button) gef.getFormButton(resource.getString("GML.back"), "Main", false);
-	else
-		returnButton = (Button) gef.getFormButton(resource.getString("GML.back"), "SearchAdvanced", false);
-
-	if ("admin".equals(profile) || "publisher".equals(profile) || "writer".equals(profile)) 
-	{
-		// possibilité de modifier les photos par lot
-		operationPane.addOperation(resource.getIcon("gallery.updateSelectedPhoto"), resource.getString("gallery.updateSelectedPhoto"),"javascript:onClick=sendData();");
-		operationPane.addOperation(resource.getIcon("gallery.allSelect"), resource.getString("gallery.allSelect"), "AllSelected");
-	}
-	if ("user".equals(profile) && isBasket)
-	{
-		// ajouter les photos sélectionnées au panier
-		operationPane.addOperation(resource.getIcon("gallery.addToBasketSelectedPhoto"),resource.getString("gallery.addToBasketSelectedPhoto"),"javascript:onClick=sendToBasket();");
-	}
-
-	out.println(window.printBefore());
-	out.println(frame.printBefore());
-
-	// afficher les photos
-	// -------------------
-	// affichage des photos sous forme de vignettes	
-	if (photos != null) {
+  <%
+    // création de la barre de navigation
+    browseBar.setDomainName(spaceLabel);
+    browseBar.setComponentName(componentLabel, "Main");
+    browseBar.setPath(chemin);
+      
+    Button returnButton;
+    if (isViewNotVisible) {
+      returnButton = gef.getFormButton(resource.getString("GML.back"), "Main", false);
+    } else {
+      returnButton = gef.getFormButton(resource.getString("GML.back"), "SearchAdvanced",
+          false);
+    }
+      
+    if ("admin".equals(profile) || "publisher".equals(profile) || "writer".equals(profile)) {
+      // possibilité de modifier les photos par lot
+      operationPane.addOperation(resource.getIcon("gallery.updateSelectedPhoto"), resource.getString(
+          "gallery.updateSelectedPhoto"), "javascript:onClick=sendData();");
+      operationPane.addOperation(resource.getIcon("gallery.allSelect"), resource.getString(
+          "gallery.allSelect"), "AllSelected");
+    }
+    if ("user".equals(profile) && isBasket) {
+      // ajouter les photos sélectionnées au panier
+      operationPane.addOperation(resource.getIcon("gallery.addToBasketSelectedPhoto"), resource.
+          getString("gallery.addToBasketSelectedPhoto"), "javascript:onClick=sendToBasket();");
+    }
+      
+    out.println(window.printBefore());
+    out.println(frame.printBefore());
+      
+    // afficher les photos
+    // -------------------
+    // affichage des photos sous forme de vignettes	
+    if (photos != null) {
 %>
 <br>
 <%
@@ -283,7 +288,7 @@
 	calendar.set(Calendar.SECOND, 0);
 	calendar.set(Calendar.MILLISECOND, 0);
 	Date today = calendar.getTime();
-	Iterator it = (Iterator) affPhotos.iterator();
+	Iterator it = affPhotos.iterator();
 	while (it.hasNext()) {
 		// affichage de la photo
 %>
@@ -293,45 +298,41 @@
 		<td colspan="<%=nbParLigne + textColonne%>">&nbsp;</td>
 	</tr>
 	<tr>
-		<%
-			while (it.hasNext() && nbAffiche < nbParLigne) {
-							photo = (PhotoDetail) it.next();
-							if (photo != null) {
-								idP = photo.getPhotoPK().getId();
-								String nomRep = resource
-										.getSetting("imagesSubDirectory")
-										+ idP;
-								String name = photo.getImageName();
-								String type = name.substring(name
-										.lastIndexOf(".") + 1, name.length());
-								//name = name.substring(0,name.indexOf(".")) + extension;
-								name = photo.getId() + extension;
-								vignette_url = FileServer.getUrl(spaceId,
-										componentId, name, photo
-												.getImageMimeType(), nomRep);
-								if ("bmp".equalsIgnoreCase(type))
-									vignette_url = m_context
-											+ "/gallery/jsp/icons/notAvailable_"
-											+ resource.getLanguage()
-											+ extension;
-
-								photoColor = "fondPhoto";
-								if (!photo.isVisible(today))
-									photoColor = "fondPhotoNotVisible";
-
-								nbAffiche = nbAffiche + 1;
-
-								String altTitle = Encode
-										.javaStringToHtmlString(photo
-												.getTitle());
-								if (photo.getDescription() != null
-										&& photo.getDescription().length() > 0)
-									altTitle += " : "
-											+ Encode
-													.javaStringToHtmlString(photo
-															.getDescription());
-
-								// on affiche encore sur la même ligne
+      <%
+          while (it.hasNext() && nbAffiche < nbParLigne) {
+            photo = (PhotoDetail) it.next();
+            if (photo != null) {
+              idP = photo.getPhotoPK().getId();
+              String nomRep = resource.getSetting("imagesSubDirectory")
+                  + idP;
+              String name = photo.getImageName();
+              String type = name.substring(name.lastIndexOf(".") + 1, name.length());
+              //name = name.substring(0,name.indexOf(".")) + extension;
+              name = photo.getId() + extension;
+              vignette_url = FileServerUtils.getUrl(spaceId,
+                  componentId, name, photo.getImageMimeType(), nomRep);
+              if ("bmp".equalsIgnoreCase(type)) {
+                vignette_url = m_context
+                    + "/gallery/jsp/icons/notAvailable_"
+                    + resource.getLanguage()
+                    + extension;
+              }
+                
+              photoColor = "fondPhoto";
+              if (!photo.isVisible(today)) {
+                photoColor = "fondPhotoNotVisible";
+              }
+                
+              nbAffiche = nbAffiche + 1;
+                
+              String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
+              if (photo.getDescription() != null
+                  && photo.getDescription().length() > 0) {
+                altTitle += " : "
+                    + EncodeHelper.javaStringToHtmlString(photo.getDescription());
+              }
+                
+              // on affiche encore sur la même ligne
 		%>
 
 		<%
@@ -455,30 +456,23 @@
 				<td><%=photo.getAuthor()%></td>
 			</tr>
 			<%
-				}
-										Collection metaDataKeys = photo
-												.getMetaDataProperties();
-										if (viewMetadata) {
-											if (metaDataKeys != null) {
-												Iterator itMeta = (Iterator) metaDataKeys
-														.iterator();
-												while (itMeta.hasNext()) {
-													// traitement de la metaData
-													String property = (String) itMeta
-															.next();
-
-													MetaData metaData = photo
-															.getMetaData(property);
-													String mdLabel = metaData
-															.getLabel();
-													String mdValue = metaData
-															.getValue();
-													if (metaData.isDate())
-														mdValue = resource
-																.getOutputDateAndHour(metaData
-																		.getDateValue());
-													// affichage
-			%>
+    }
+      Collection metaDataKeys = photo.getMetaDataProperties();
+      if (viewMetadata) {
+        if (metaDataKeys != null) {
+          Iterator itMeta = (Iterator) metaDataKeys.iterator();
+          while (itMeta.hasNext()) {
+            // traitement de la metaData
+            String property = (String) itMeta.next();
+              
+            MetaData metaData = photo.getMetaData(property);
+            String mdLabel = metaData.getLabel();
+            String mdValue = metaData.getValue();
+            if (metaData.isDate()) {
+              mdValue = resource.getOutputDateAndHour(metaData.getDateValue());
+            }
+            // affichage
+%>
 			<tr>
 				<td class="txtlibform" nowrap><%=mdLabel%> :</td>
 				<td><%=mdValue%></td>
@@ -496,13 +490,12 @@
 				<td>
 				<%
 					String keyWord = photo.getKeyWord();
-												// découper la zone keyWord en mots
-												StringTokenizer st = new StringTokenizer(
-														keyWord);
-												// traitement des mots clés
-												while (st.hasMoreTokens()) {
-													String searchWord = (String) st
-															.nextToken();
+                      // découper la zone keyWord en mots
+                      StringTokenizer st = new StringTokenizer(
+                          keyWord);
+                      // traitement des mots clés
+                      while (st.hasMoreTokens()) {
+                        String searchWord = st.nextToken();
 				%> <a href="SearchKeyWord?SearchKeyWord=<%=searchWord%>">
 				<%=searchWord%> </a> <%
  	}

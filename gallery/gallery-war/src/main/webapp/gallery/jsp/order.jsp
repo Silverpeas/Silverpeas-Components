@@ -112,7 +112,7 @@ var messages = new Array();
 		PhotoDetail photo = row.getPhoto();
 		String nomRep = resource.getSetting("imagesSubDirectory") + photo.getId();
 %>		
-		messages[<%=messagesId%>] = new Array('<%=FileServer.getUrl(spaceId, componentId, photo.getId() + extensionAlt, photo.getImageMimeType(), nomRep)%>','<%=photo.getName()%>',"#FFFFFF");
+		messages[<%=messagesId%>] = new Array('<%=FileServerUtils.getUrl(spaceId, componentId, photo.getId() + extensionAlt, photo.getImageMimeType(), nomRep)%>','<%=photo.getName()%>',"#FFFFFF");
 <%		
 		messagesId++;
 	}
@@ -436,215 +436,186 @@ document.write('<div id="tipDiv" style="position:absolute; visibility:hidden; z-
 	<input type="hidden" name="NotSelectedIds">
 	<input type="hidden" name="OrderId" value="<%=orderId%>">
 	<%
-
-	// afficher les photos 
-	// -------------------
-	
-
-	// affichage des lignes de la demande dans un ArrayPane
-	ArrayPane arrayPane = gef.getArrayPane("order", "OrderViewPagin", request, session);
-	arrayPane.setVisibleLineNumber(100);
-	boolean viewValid = true;
-	
-	if ("admin".equals(profile))
-	{
-		
-		boolean ok = false;
-		itP = (Iterator) rows.iterator();
-		if (itP.hasNext())
-		{
-			ArrayColumn columnOp0 = arrayPane.addArrayColumn(resource.getString("gallery.photo"));
-			columnOp0.setSortable(false);
-			ArrayColumn columnOp1 = arrayPane.addArrayColumn(resource.getString("gallery.choiceDownload"));
-			columnOp1.setSortable(false);
-			//ArrayColumn columnOp2 = arrayPane.addArrayColumn(resource.getString("gallery.operation"));
-			//columnOp2.setSortable(false);
-			
-			ok = true;
-		}
-		int indexPhoto = 0;
-		while (itP.hasNext()) 
-		{
-			ArrayLine ligne = arrayPane.addArrayLine();
-			
-			OrderRow row = (OrderRow) itP.next();
-			photoId = row.getPhotoId();
-			
-			String download = row.getDownloadDecision();
-			
-			String nomRep = resource.getSetting("imagesSubDirectory") + photoId;
-			String name = photoId + extension;
-			PhotoDetail photo = row.getPhoto();
-			String altTitle = Encode.javaStringToHtmlString(photo.getTitle());
-			if (StringUtil.isDefined(photo.getDescription()))
-				altTitle += " : "+Encode.javaStringToHtmlString(photo.getDescription());
-			String vignette_url = FileServer.getUrl(spaceId, componentId, name, photo.getImageMimeType(), nomRep);
-			
-			ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"PreviewPhoto?PhotoId="+photoId+"\" onmouseover=\"doTooltip(event,"+indexPhoto+")\" onmouseout=\"hideTip()\"><IMG SRC=\""+vignette_url+"\" border=\"0\"></a>");
-	        arrayCellText0.setCompareOn(name);
-	        indexPhoto++;
-			
-	        
-	        // colonne des choix de téléchargement
-	        String choix = "";
-	        if ("T".equals(download))
-	        {
-	        	// la photo a été téléchargée
-	        	Date dateDownload = row.getDownloadDate();
-	        	
-	        	choix = resource.getString("gallery.downloadDate") + resource.getOutputDateAndHour(dateDownload);
-	        	viewValid = false;
-	        }
-	        else
-	        {
-	        	if (order.getProcessUserId() != -1)
-	        	{
-	        		// la demande est déjà traitée
-	        		if (("R").equals(download))
-	    			{
-	    				// la photo a été refusée
-	    				choix = resource.getString("gallery.refused");
-	    			}
-	    			else if (("D").equals(download))
-	    			{
-	    				// la photo est autorisée en téléchargement
-	    				choix = resource.getString("gallery.downloadOk");
-	    			}
-	    			else if (("DW").equals(download))
-	    			{
-	    				// la photo est autorisée en téléchargement avec le watermark 
-	    				choix = resource.getString("gallery.downloadWithWatermark");
-	    			}
-	        		viewValid = false;
-	        	}
-	        	else
-	        	{
-		        	choix = "<select name=\"DownloadType"+photoId+"\" id=\"DownloadType"+photoId+"\" onChange=\"javascript:downloadGoTo(this.selectedIndex);\">";
-					choix = choix + "<option value=\"0\" selected>"+resource.getString("gallery.choiceDownload")+"</option>";
-					choix = choix + "<option value=\"0\">-------------------------------</option>";
-					String selected = "";
-					if ("R".equals(download))
-						selected = "selected";
-					choix = choix + "<option value=\"R\" "+selected+">"+resource.getString("gallery.refused")+"</option>";
-					selected = "";
-					if ("D".equals(download))
-						selected = "selected";
-					choix = choix + "<option value=\"D\" "+selected+">"+resource.getString("gallery.downloadOk")+"</option>";
-					selected = "";
-					if ("DW".equals(download))
-						selected = "selected";
-					choix = choix + "<option value=\"DW\" "+selected+">"+resource.getString("gallery.downloadWithWatermark")+"</option>";
-					choix = choix + "</select>";
-	        	}
-	        }
-	        ligne.addArrayCellText(choix);
-	   		
-	  		// case à cocher pour traitement par lot
-			//String usedCheck = "";
-			//if (selectedIds != null && selectedIds.contains(Integer.toString(photoId)))
-				//usedCheck = "checked";
-	  		//ligne.addArrayCellText("<input type=\"checkbox\" name=\"SelectPhoto\" value=\""+Encode.javaStringToHtmlString(Integer.toString(photoId))+usedCheck+"\">");
-	 
-	 	}
-		if (ok)
-			out.println(arrayPane.print());
-	}
-	else
-	{
-		boolean ok = false;
-		itP = (Iterator) rows.iterator();
-		if (itP.hasNext())
-		{
-			ArrayColumn columnOp0 = arrayPane.addArrayColumn(resource.getString("gallery.photo"));
-			columnOp0.setSortable(false);
-			ArrayColumn columnOp1 = arrayPane.addArrayColumn(resource.getString("gallery.downloadDate"));
-			columnOp1.setSortable(false);
-			ok = true;
-		}
-		int indexPhoto = 0;
-		while (itP.hasNext()) 
-		{
-			ArrayLine ligne = arrayPane.addArrayLine();
-			
-			OrderRow row = (OrderRow) itP.next();
-			photoId = row.getPhotoId();
-			String nomRep = resource.getSetting("imagesSubDirectory") + photoId;
-			String name = photoId + extension;
-			PhotoDetail photo = row.getPhoto();
-			String altTitle = Encode.javaStringToHtmlString(photo.getTitle());
-			if (StringUtil.isDefined(photo.getDescription()))
-				altTitle += " : "+Encode.javaStringToHtmlString(photo.getDescription());
-			String vignette_url = FileServer.getUrl(spaceId, componentId, name, photo.getImageMimeType(), nomRep);
-			
-			ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"PreviewPhoto?PhotoId="+photoId+"\" onmouseover=\"doTooltip(event,"+indexPhoto+")\" onmouseout=\"hideTip()\"><IMG SRC=\""+vignette_url+"\" border=\"0\"></a>");
-	        arrayCellText0.setCompareOn(name);
-	        indexPhoto++;
-	   				
-			// SECOND TELECHARGEMENT AVEC MISE A JOUR
-			// traitement du téléchargement
-	   		String download = resource.getString("gallery.wait");
-			
-	   		// rechercher l'état de la photo
-			String downloadDecision = row.getDownloadDecision();
-			if (("R").equals(downloadDecision))
-			{
-				// la photo a été refusée
-				download = resource.getString("gallery.refused");
-			}
-			else if (("D").equals(downloadDecision))
-			{
-				// la photo est autorisée en téléchargement
-				download = "<a href=\"OrderDownloadImage?PhotoId="+photoId+"&OrderId="+orderId+"\" target=_blank>"+Encode.javaStringToHtmlString(resource.getString("gallery.telecharger"))+"</a>";
-			}
-			else if (("DW").equals(downloadDecision))
-			{
-				// la photo est autorisée en téléchargement avec le watermark 
-				download = "<a href=\"OrderDownloadImage?PhotoId="+photoId+"&OrderId="+orderId+"\" target=_blank>"+Encode.javaStringToHtmlString(resource.getString("gallery.telecharger"))+"</a>";
-			}
-			else if (("T").equals(downloadDecision))
-			{
-				// la photo est déjà téléchargée
-				Date dateDownload = row.getDownloadDate();
-				if (dateDownload != null)
-					download = resource.getString("gallery.downloadDate") + resource.getOutputDateAndHour(dateDownload);
-			}
-			
-			ligne.addArrayCellText(download);
-	  		
-			// case à cocher pour traitement par lot
-	  		//traitement de la case à cocher
-			//String usedCheck = "";
-			//if (selectedIds != null && selectedIds.contains(Integer.toString(photoId)))
-				//usedCheck = "checked";
-	  		//ligne.addArrayCellText("<input type=\"checkbox\" name=\"SelectPhoto\" value=\""+Encode.javaStringToHtmlString(Integer.toString(photoId))+usedCheck+"\">");
-	 
-	 	}
-		if (ok)
-			out.println(arrayPane.print());
-	}
-	
-
-	ButtonPane buttonPane = gef.getButtonPane();
-
-	if ("admin".equals(profile))
-	{
-		if (viewValid)
-		{
-			buttonPane.addButton(validateButton);
-    		buttonPane.addButton(cancelButton);
-		}
-		else
-			buttonPane.addButton(returnButton);
-	}
-	else
-	{
-    	buttonPane.addButton(returnButton);
-	}
-
-    out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-	
-  	out.println(frame.printAfter());
-	out.println(window.printAfter());
+      
+  // afficher les photos 
+  // -------------------   
+    
+  // affichage des lignes de la demande dans un ArrayPane
+  ArrayPane arrayPane = gef.getArrayPane("order", "OrderViewPagin", request, session);
+  arrayPane.setVisibleLineNumber(100);
+  boolean viewValid = true;
+    
+  if ("admin".equals(profile)) {
+    
+    boolean ok = false;
+    itP = rows.iterator();
+    if (itP.hasNext()) {
+      ArrayColumn columnOp0 = arrayPane.addArrayColumn(resource.getString("gallery.photo"));
+      columnOp0.setSortable(false);
+      ArrayColumn columnOp1 = arrayPane.addArrayColumn(resource.getString("gallery.choiceDownload"));
+      columnOp1.setSortable(false);        
+      ok = true;
+    }
+    int indexPhoto = 0;
+    while (itP.hasNext()) {
+      ArrayLine ligne = arrayPane.addArrayLine();
+        
+      OrderRow row = (OrderRow) itP.next();
+      photoId = row.getPhotoId();
+        
+      String download = row.getDownloadDecision();
+        
+      String nomRep = resource.getSetting("imagesSubDirectory") + photoId;
+      String name = photoId + extension;
+      PhotoDetail photo = row.getPhoto();
+      String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
+      if (StringUtil.isDefined(photo.getDescription())) {
+        altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
+      }
+      String vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.
+          getImageMimeType(), nomRep);
+            
+      ArrayCellText arrayCellText0 = ligne.addArrayCellText(
+          "<a href=\"PreviewPhoto?PhotoId=" + photoId + "\" onmouseover=\"doTooltip(event," + indexPhoto + ")\" onmouseout=\"hideTip()\"><IMG SRC=\"" + vignette_url + "\" border=\"0\"></a>");
+      arrayCellText0.setCompareOn(name);
+      indexPhoto++;
+        
+        
+      // colonne des choix de téléchargement
+      String choix = "";
+      if ("T".equals(download)) {
+        // la photo a été téléchargée
+        Date dateDownload = row.getDownloadDate();
+          
+        choix = resource.getString("gallery.downloadDate") + resource.getOutputDateAndHour(
+            dateDownload);
+        viewValid = false;
+      } else {
+        if (order.getProcessUserId() != -1) {
+          // la demande est déjà traitée
+          if (("R").equals(download)) {
+            // la photo a été refusée
+            choix = resource.getString("gallery.refused");
+          } else if (("D").equals(download)) {
+            // la photo est autorisée en téléchargement
+            choix = resource.getString("gallery.downloadOk");
+          } else if (("DW").equals(download)) {
+            // la photo est autorisée en téléchargement avec le watermark 
+            choix = resource.getString("gallery.downloadWithWatermark");
+          }
+          viewValid = false;
+        } else {
+          choix = "<select name=\"DownloadType" + photoId + "\" id=\"DownloadType" + photoId + "\" onChange=\"javascript:downloadGoTo(this.selectedIndex);\">";
+          choix = choix + "<option value=\"0\" selected>" + resource.getString(
+              "gallery.choiceDownload") + "</option>";
+          choix = choix + "<option value=\"0\">-------------------------------</option>";
+          String selected = "";
+          if ("R".equals(download)) {
+            selected = "selected";
+          }
+          choix = choix + "<option value=\"R\" " + selected + ">" + resource.getString(
+              "gallery.refused") + "</option>";
+          selected = "";
+          if ("D".equals(download)) {
+            selected = "selected";
+          }
+          choix = choix + "<option value=\"D\" " + selected + ">" + resource.getString(
+              "gallery.downloadOk") + "</option>";
+          selected = "";
+          if ("DW".equals(download)) {
+            selected = "selected";
+          }
+          choix = choix + "<option value=\"DW\" " + selected + ">" + resource.getString(
+              "gallery.downloadWithWatermark") + "</option>";
+          choix = choix + "</select>";
+        }
+      }
+      ligne.addArrayCellText(choix);     
+    }
+    if (ok) {
+      out.println(arrayPane.print());
+    }
+  } else {
+    boolean ok = false;
+    itP = rows.iterator();
+    if (itP.hasNext()) {
+      ArrayColumn columnOp0 = arrayPane.addArrayColumn(resource.getString("gallery.photo"));
+      columnOp0.setSortable(false);
+      ArrayColumn columnOp1 = arrayPane.addArrayColumn(resource.getString("gallery.downloadDate"));
+      columnOp1.setSortable(false);
+      ok = true;
+    }
+    int indexPhoto = 0;
+    while (itP.hasNext()) {
+      ArrayLine ligne = arrayPane.addArrayLine();
+        
+      OrderRow row = (OrderRow) itP.next();
+      photoId = row.getPhotoId();
+      String nomRep = resource.getSetting("imagesSubDirectory") + photoId;
+      String name = photoId + extension;
+      PhotoDetail photo = row.getPhoto();
+      String altTitle = EncodeHelper.javaStringToHtmlString(photo.getTitle());
+      if (StringUtil.isDefined(photo.getDescription())) {
+        altTitle += " : " + EncodeHelper.javaStringToHtmlString(photo.getDescription());
+      }
+      String vignette_url = FileServerUtils.getUrl(spaceId, componentId, name, photo.getImageMimeType(),
+          nomRep);
+            
+      ArrayCellText arrayCellText0 = ligne.addArrayCellText(
+          "<a href=\"PreviewPhoto?PhotoId=" + photoId + "\" onmouseover=\"doTooltip(event," + indexPhoto + ")\" onmouseout=\"hideTip()\"><IMG SRC=\"" + vignette_url + "\" border=\"0\"></a>");
+      arrayCellText0.setCompareOn(name);
+      indexPhoto++;
+        
+      // SECOND TELECHARGEMENT AVEC MISE A JOUR
+      // traitement du téléchargement
+      String download = resource.getString("gallery.wait");
+        
+      // rechercher l'état de la photo
+      String downloadDecision = row.getDownloadDecision();
+      if (("R").equals(downloadDecision)) {
+        // la photo a été refusée
+        download = resource.getString("gallery.refused");
+      } else if (("D").equals(downloadDecision)) {
+        // la photo est autorisée en téléchargement
+        download = "<a href=\"OrderDownloadImage?PhotoId=" + photoId + "&OrderId=" + orderId + "\" target=_blank>" + EncodeHelper.
+            javaStringToHtmlString(resource.getString("gallery.telecharger")) + "</a>";
+      } else if (("DW").equals(downloadDecision)) {
+        // la photo est autorisée en téléchargement avec le watermark 
+        download = "<a href=\"OrderDownloadImage?PhotoId=" + photoId + "&OrderId=" + orderId + "\" target=_blank>" + EncodeHelper.
+            javaStringToHtmlString(resource.getString("gallery.telecharger")) + "</a>";
+      } else if (("T").equals(downloadDecision)) {
+        // la photo est déjà téléchargée
+        Date dateDownload = row.getDownloadDate();
+        if (dateDownload != null) {
+          download = resource.getString("gallery.downloadDate") + resource.getOutputDateAndHour(
+              dateDownload);
+        }
+      }        
+      ligne.addArrayCellText(download);
+    }
+    if (ok) {
+      out.println(arrayPane.print());
+    }
+  }
+    
+    
+  ButtonPane buttonPane = gef.getButtonPane();
+    
+  if ("admin".equals(profile)) {
+    if (viewValid) {
+      buttonPane.addButton(validateButton);
+      buttonPane.addButton(cancelButton);
+    } else {
+      buttonPane.addButton(returnButton);
+    }
+  } else {
+    buttonPane.addButton(returnButton);
+  }
+    
+  out.println("<br/><center>" + buttonPane.print() + "</center><br/>");
+    
+  out.println(frame.printAfter());
+  out.println(window.printAfter());
 %>
 </FORM>
 
