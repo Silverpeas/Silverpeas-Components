@@ -35,9 +35,11 @@ import org.w3c.dom.Node;
 
 import com.silverpeas.mydb.data.datatype.DataType;
 import com.silverpeas.mydb.data.datatype.DataTypeList;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.XMLConfigurationStore;
+import java.util.List;
 
 /**
  * Database driver manager. All available drivers are described in MyDB setting file.
@@ -53,13 +55,13 @@ public class DriverManager {
   private String[] driversDisplayNames;
   private String[] driversClassNames;
   private String[] driversDescriptions;
-  private Vector<String[]> driversUrls;
+  private List<String[]> driversUrls;
 
   // Number of available drivers.
   private int driversCount = 0;
 
   // Lists of keywords.
-  private ArrayList[] databaseKeywordsLists;
+  private ArrayList<String>[] databaseKeywordsLists;
 
   // Lists of data types.
   private DataTypeList[] dataTypesLists;
@@ -87,7 +89,7 @@ public class DriverManager {
       driversDescriptions = new String[driversCount];
       databaseKeywordsLists = new ArrayList[driversCount];
       dataTypesLists = new DataTypeList[driversCount];
-      driversUrls = new Vector<String[]>();
+      driversUrls = new ArrayList<String[]>();
       String rootString;
 
       String[] dataTypesKeys = { "name", "sqlType", "javaType", "length" };
@@ -105,9 +107,9 @@ public class DriverManager {
         driversDisplayNames[i] = xmlConfig.getString("DriverName");
         driversClassNames[i] = xmlConfig.getString("ClassName");
         driversDescriptions[i] = xmlConfig.getString("Description");
-        driversUrls.addElement(xmlConfig.getValues("JDBCUrls"));
+        driversUrls.add(xmlConfig.getValues("JDBCUrls"));
         String[] keywords = xmlConfig.getValues("DatabaseKeywords");
-        databaseKeywordsLists[i] = new ArrayList(Arrays.asList(keywords));
+        databaseKeywordsLists[i] = new ArrayList<String>(Arrays.asList(keywords));
 
         Node configurationNode = xmlConfig.findNodes(rootString)[0];
         Node[] dataTypes = xmlConfig.findNodes(configurationNode, "DataType");
@@ -135,21 +137,20 @@ public class DriverManager {
    * @param driverName The name of searched driver.
    * @return The driver corresponding to the name given as parameter.
    */
-  public Driver getDriver(String driverName) {
+  public Driver getDriver(final String driverName) {
+    String currentDriver = driverName;
     if (driver == null) {
       try {
-        if (driverName == null || driverName.length() == 0) {
-          driverName = driversNames[0];
+        if (!StringUtil.isDefined(currentDriver)) {
+          currentDriver = driversNames[0];
           SilverTrace
-              .info("myDB", "DriverManager.getDriver()",
-              "myDB.MSG_DRIVER_UNDEFINED",
-              "driverName undefined ! default one used instead = "
-              + driverName);
+              .info("myDB", "DriverManager.getDriver()", "myDB.MSG_DRIVER_UNDEFINED",
+              "driverName undefined ! default one used instead = " + currentDriver);
         }
-        driver = registerAndInstanciateDriver(driverName);
+        driver = registerAndInstanciateDriver(currentDriver);
       } catch (Exception e) {
         SilverTrace.warn("myDB", "DriverManager.getDriver()",
-            "myDB.MSG_DRIVER_INIT_FAILED", "DriverName=" + driverName, e);
+            "myDB.MSG_DRIVER_INIT_FAILED", "DriverName=" + currentDriver, e);
       }
     }
     return driver;
@@ -165,21 +166,21 @@ public class DriverManager {
   /**
    * @return the descriptions of the available drivers.
    */
-  public Collection getDriversDescriptions() {
+  public Collection<String> getDriversDescriptions() {
     return Arrays.asList(driversDescriptions);
   }
 
   /**
    * @return the names of the available drivers.
    */
-  public Collection getAvailableDriversNames() {
+  public Collection<String> getAvailableDriversNames() {
     return Arrays.asList(driversNames);
   }
 
   /**
    * @return the display names of the available drivers.
    */
-  public Collection getAvailableDriversDisplayNames() {
+  public Collection<String> getAvailableDriversDisplayNames() {
     return Arrays.asList(driversDisplayNames);
   }
 
@@ -187,9 +188,8 @@ public class DriverManager {
    * @param driverName The name of the driver.
    * @return the JDBC URLs corresponding to the name given as parameter.
    */
-  public Collection getJdbcUrlsForDriver(String driverName) {
-    String[] str = (String[]) driversUrls
-        .elementAt(searchDriverIndex(driverName));
+  public Collection<String> getJdbcUrlsForDriver(String driverName) {
+    String[] str = driversUrls.get(searchDriverIndex(driverName));
     return Arrays.asList(str);
   }
 
@@ -213,7 +213,7 @@ public class DriverManager {
    * @param driverName The name of the driver.
    * @return the list of keywords of the driver corresponding to the name given as parameter.
    */
-  public ArrayList getDatabaseKeywordsListForDriver(String driverName) {
+  public ArrayList<String> getDatabaseKeywordsListForDriver(String driverName) {
     return databaseKeywordsLists[searchDriverIndex(driverName)];
   }
 
