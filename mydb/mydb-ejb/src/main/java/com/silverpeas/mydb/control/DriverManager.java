@@ -29,7 +29,6 @@ import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Vector;
 
 import org.w3c.dom.Node;
 
