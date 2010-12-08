@@ -175,8 +175,9 @@ public class KmeliaImportExport extends GEDImportExport {
 
       // Recherche si le noeud existe déjà, on s'arrête si c'est le cas
       try {
-        if (getNodeBm().getHeader(nodePk) != null) {
-          return null;
+        NodeDetail header = getNodeBm().getHeader(nodePk);
+        if (header != null) {
+          return header.getNodePK();
         }
       } catch (RemoteException ex) {
         SilverTrace.debug("importExport", "KmeliaImportExport.addSubTopicToTopic()",
