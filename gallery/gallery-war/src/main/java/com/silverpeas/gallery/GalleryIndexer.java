@@ -35,6 +35,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class GalleryIndexer implements ComponentIndexerInterface {
 
+  @Override
   public void index(MainSessionController mainSessionCtrl,
       ComponentContext context) throws Exception {
     getGalleryBm().indexGallery(context.getCurrentComponentId());

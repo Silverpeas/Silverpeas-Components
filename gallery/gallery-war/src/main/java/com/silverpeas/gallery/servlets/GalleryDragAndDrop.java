@@ -67,6 +67,7 @@ import java.util.Arrays;
  * @author
  */
 public class GalleryDragAndDrop extends HttpServlet {
+  private static final long serialVersionUID = -3063286463794353943L;
 
   @Override
   public void init(ServletConfig config) {
@@ -211,8 +212,7 @@ public class GalleryDragAndDrop extends HttpServlet {
         + albumId);
 
     // création de la photo
-    PhotoDetail newPhoto = new PhotoDetail(name, null, new Date(), null, null,
-        null, download, false);
+    PhotoDetail newPhoto = new PhotoDetail(name, null, new Date(), null, null,  null, download, false);
     newPhoto.setAlbumId(albumId);
     newPhoto.setCreatorId(userId);
     PhotoPK pk = new PhotoPK("unknown", componentId);
@@ -222,8 +222,7 @@ public class GalleryDragAndDrop extends HttpServlet {
     newPhoto.getPhotoPK().setId(photoId);
 
     // Création de la preview et des vignettes sur disque
-    ImageHelper.processImage(newPhoto, file, watermark, watermarkHD,
-        watermarkOther);
+    ImageHelper.processImage(newPhoto, file, watermark, watermarkHD, watermarkOther);
     try {
       ImageHelper.setMetaData(newPhoto, "fr");
     } catch (Exception e) {
@@ -235,10 +234,8 @@ public class GalleryDragAndDrop extends HttpServlet {
     return photoId;
   }
 
-  private String getParameterValue(List items, String parameterName) {
-    Iterator iter = items.iterator();
-    while (iter.hasNext()) {
-      FileItem item = (FileItem) iter.next();
+  private String getParameterValue(List<FileItem> items, String parameterName) {
+    for (FileItem item : items) {
       if (item.isFormField() && parameterName.equals(item.getFieldName())) {
         return item.getString();
       }

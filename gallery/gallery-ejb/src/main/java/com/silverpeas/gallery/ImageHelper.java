@@ -98,25 +98,19 @@ public class ImageHelper {
         }
 
         name = name.substring(name.lastIndexOf(File.separator) + 1, name.length());
-        // name = replaceSpecialChars(name);
-
         if (ImageType.isImage(name)) {
           dir = new File(FileRepositoryManager.getAbsolutePath(instanceId)
               + subDirectory + photoId + File.separator + name);
           mimeType = image.getContentType();
           size = image.getSize();
-
           // création du répertoire pour mettre la photo
           String nameRep = subDirectory + photoId;
           FileRepositoryManager.createAbsolutePath(instanceId, nameRep);
           image.write(dir);
-
           photo.setImageName(name);
           photo.setImageMimeType(mimeType);
           photo.setImageSize(size);
-
-          createImage(name, dir, photo, subDirectory, watermark, watermarkHD,
-              watermarkOther);
+          createImage(name, dir, photo, subDirectory, watermark, watermarkHD, watermarkOther);
         }
       }
     }

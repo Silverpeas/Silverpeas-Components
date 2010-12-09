@@ -49,8 +49,8 @@ import com.stratelia.webactiv.util.exception.UtilException;
 
 public class PhotoDAO {
 
-  private static String nullBeginDate = new String("0000/00/00");
-  private static String nullEndDate = new String("9999/99/99");
+  private static String nullBeginDate =  "0000/00/00";
+  private static String nullEndDate = "9999/99/99";
 
   public static PhotoDetail getPhoto(Connection con, int photoId)
       throws SQLException {
@@ -434,15 +434,6 @@ public class PhotoDAO {
       prepStmt.setInt(2, Integer.parseInt(albumId));
       prepStmt.setString(3, instanceId);
       prepStmt.executeUpdate();
-      // mise à jour de l'album dans la table photo
-      // String query2 =
-      // "update SC_Gallery_Photo set albumId = ? where photoId = ? and instanceId = ?";
-      // initialisation des paramètres
-      // prepStmt = con.prepareStatement(query2);
-      // prepStmt.setInt(1, Integer.parseInt(albumId));
-      // prepStmt.setInt(2, Integer.parseInt(photoId));
-      // prepStmt.setString(3, instanceId);
-      // prepStmt.executeUpdate();
     } finally {
       // fermeture
       DBUtil.close(prepStmt);
@@ -621,7 +612,7 @@ public class PhotoDAO {
       prepStmt.setString(2, userId);
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        listPhoto.add(new Integer(rs.getInt(2)).toString());
+        listPhoto.add(rs.getString("photoId"));
       }
     } finally {
       // fermeture
@@ -985,7 +976,7 @@ public class PhotoDAO {
    * @return String
    */
   private static String list2String(List<String> ids) {
-    if (ids == null || ids.size() == 0) {
+    if (ids == null || ids.isEmpty()) {
       return "''";
     }
     StringBuilder str = new StringBuilder();
@@ -993,7 +984,7 @@ public class PhotoDAO {
       if (i != 0) {
         str.append(",");
       }
-      str.append("'" + ids.get(i) + "'");
+      str.append("'").append(ids.get(i)).append("'");
     }
     return str.toString();
   }

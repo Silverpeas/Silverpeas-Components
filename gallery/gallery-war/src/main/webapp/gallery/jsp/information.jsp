@@ -76,7 +76,7 @@
       context.setIgnoreDefaultValues(true);
         
       if (photo != null) {
-        photoId = new Integer(photo.getPhotoPK().getId()).toString();
+        photoId = String.valueOf(photo.getPhotoPK().getId());
         title = photo.getTitle();
         description = photo.getDescription();
         if (description == null) {
@@ -129,15 +129,12 @@
       }
         
       // déclaration des boutons
-      Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"),
-          "javascript:onClick=sendData();", false);
+      Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
       Button cancelButton;
       if (action == "UpdateInformation") {
-        cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"),
-            "PreviewPhoto?PhotoId=" + photoId, false);
+        cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "PreviewPhoto?PhotoId=" + photoId, false);
       } else {
-        cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"),
-            "GoToCurrentAlbum", false);
+        cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "GoToCurrentAlbum", false);
       }
 	
 %>
@@ -589,7 +586,7 @@ function hideTip() {
 						<br/>
 						<table align="left" border="0" CELLPADDING="5">
 						<%
-						Iterator it = (Iterator) metaDataKeys.iterator();
+						Iterator it = metaDataKeys.iterator();
 						while (it.hasNext())
 						{
 							// traitement de la metaData
