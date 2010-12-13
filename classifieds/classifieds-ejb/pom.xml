@@ -4,11 +4,7 @@
 	<parent>
 		<groupId>com.silverpeas.components</groupId>
 		<artifactId>classifieds</artifactId>
-<<<<<<< HEAD
 		<version>5.5-SNAPSHOT</version>
-=======
-		<version>5.4-SNAPSHOT</version>
->>>>>>> Takes into account the refactoring of the Comment component.
 	</parent>
 
 	<groupId>com.silverpeas.components.classifieds</groupId>
