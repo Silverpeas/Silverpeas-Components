@@ -40,7 +40,8 @@ import com.silverpeas.projectManager.model.ProjectManagerDAO;
 import com.silverpeas.projectManager.model.ProjectManagerRuntimeException;
 import com.silverpeas.projectManager.model.TaskDetail;
 import com.silverpeas.projectManager.model.TaskPK;
-import com.stratelia.silverpeas.comment.control.CommentController;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
@@ -63,15 +64,15 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
   private static final long serialVersionUID = -1707326539051696107L;
 
   private String dbName = JNDINames.SILVERPEAS_DATASOURCE;
-  private CommentController commentController = null;
+  private CommentService commentController = null;
 
   /**
-   * Gets a comment controller.
-   * @return a CommentController instance.
+   * Gets a comment service.
+   * @return a CommentService instance.
    */
-  private CommentController getCommentController() {
+  private CommentService getCommentService() {
     if (commentController == null) {
-      commentController = new CommentController();
+      commentController = CommentServiceFactory.getFactory().getCommentService();
     }
     return commentController;
   }
@@ -371,7 +372,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
     AttachmentController.deleteAttachmentByCustomerPK(taskPK);
 
     // supprime les commentaires de la tâche
-    getCommentController().deleteCommentsByForeignPK(taskPK);
+    getCommentService().deleteAllCommentsOnPublication(taskPK);
 
     // suppression de l'index
     removeIndex(id, instanceId);
@@ -1016,7 +1017,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
     AttachmentController.attachmentIndexer(taskPK);
 
     // index comments
-    getCommentController().indexCommentsByForeignKey(taskPK);
+    getCommentService().indexAllCommentsOnPublication(taskPK);
   }
 
   private Connection getConnection() {

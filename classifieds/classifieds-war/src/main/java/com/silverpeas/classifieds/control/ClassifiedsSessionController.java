@@ -41,9 +41,10 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.comment.control.CommentController;
-import com.stratelia.silverpeas.comment.model.Comment;
-import com.stratelia.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -64,7 +65,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   private int indexOfFirstItemToDisplay = 0;
   private Map<String, String> fields1 = createListField(getSearchFields1());
   private Map<String, String> fields2 = createListField(getSearchFields2());
-  private CommentController commentController = null;
+  private CommentService commentService = null;
 
   /**
    * Standard Session Controller Constructeur
@@ -85,8 +86,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       xmlFormShortName =
           xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
       try {
-        getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":" +
-            xmlFormShortName, xmlFormName);
+        getPublicationTemplateManager().addDynamicPublicationTemplate(getComponentId() + ":"
+            + xmlFormShortName, xmlFormName);
       } catch (PublicationTemplateException e) {
         throw new ClassifiedsRuntimeException("GallerySessionController.super()",
             SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -106,8 +107,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       classified.setCreatorName(getUserDetail(classified.getCreatorId()).getDisplayedName());
       classified.setCreatorEmail(getUserDetail(classified.getCreatorId()).geteMail());
       if (StringUtil.isDefined(classified.getValidatorId())) {
-        classified
-            .setValidatorName((getUserDetail(classified.getValidatorId()).getDisplayedName()));
+        classified.setValidatorName((getUserDetail(classified.getValidatorId()).getDisplayedName()));
       }
     } catch (RemoteException e) {
       throw new ClassifiedsRuntimeException("ClassifedsSessionController.getClassified()",
@@ -199,17 +199,12 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return
    */
   public Collection<Comment> getAllComments(String classifiedId) {
-    try {
-      CommentPK foreign_pk = new CommentPK(classifiedId, getComponentId());
-      List<Comment>  allComments = getCommentController().getAllComments(foreign_pk);
-      for (Comment comment : allComments) {
-        comment.setOwner(getUserDetail(Integer.toString(comment.getOwnerId())).getDisplayedName());
-      }
-      return allComments;
-    } catch (RemoteException e) {
-      throw new ClassifiedsRuntimeException("ClassifedsSessionController.getAllComments()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    CommentPK foreign_pk = new CommentPK(classifiedId, getComponentId());
+    List<Comment> allComments = getCommentService().getAllCommentsOnPublication(foreign_pk);
+    for (Comment comment : allComments) {
+      comment.setOwner(getUserDetail(Integer.toString(comment.getOwnerId())).getDisplayedName());
     }
+    return allComments;
   }
 
   /**
@@ -218,24 +213,19 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param message : String
    */
   public synchronized void addComment(String classifiedId, String message) {
-    try {
-      CommentPK foreign_pk = new CommentPK(classifiedId, getComponentId());
-      CommentPK pk = new CommentPK("X", getComponentId());
-      Date dateToday = new Date();
-      String date = DateUtil.date2SQLDate(dateToday);
-      String owner = getUserDetail(getUserId()).getDisplayedName();
-      SilverTrace.info("classifieds", "ClassifedsSessionController.addComment()",
-          "root.MSG_GEN_PARAM_VALUE", "owner=" + owner);
+    CommentPK foreign_pk = new CommentPK(classifiedId, getComponentId());
+    CommentPK pk = new CommentPK("X", getComponentId());
+    Date dateToday = new Date();
+    String date = DateUtil.date2SQLDate(dateToday);
+    String owner = getUserDetail(getUserId()).getDisplayedName();
+    SilverTrace.info("classifieds", "ClassifedsSessionController.addComment()",
+        "root.MSG_GEN_PARAM_VALUE", "owner=" + owner);
 
-      Comment comment =
-          new Comment(pk, foreign_pk, Integer.parseInt(getUserId()), owner, message, date, date);
-      getCommentController().createComment(comment, false);
-      SilverTrace.info("classifieds", "ClassifedsSessionController.addComment()",
-          "root.MSG_GEN_PARAM_VALUE", "owner comment=" + comment.getOwner());
-    } catch (RemoteException e) {
-      throw new ClassifiedsRuntimeException("ClassifedsSessionController.addComment()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_ADD_OBJECT", e);
-    }
+    Comment comment =
+        new Comment(pk, foreign_pk, Integer.parseInt(getUserId()), owner, message, date, date);
+    getCommentService().createComment(comment);
+    SilverTrace.info("classifieds", "ClassifedsSessionController.addComment()",
+        "root.MSG_GEN_PARAM_VALUE", "owner comment=" + comment.getOwner());
   }
 
   /**
@@ -243,13 +233,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param commentId : String
    */
   public void deleteComment(String commentId) {
-    try {
-      CommentPK pk = new CommentPK(commentId, "useless", getComponentId());
-      getCommentController().deleteComment(pk);
-    } catch (RemoteException e) {
-      throw new ClassifiedsRuntimeException("ClassifedsSessionController.deleteComment()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_REMOVE_OBJECT", e);
-    }
+    CommentPK pk = new CommentPK(commentId, "useless", getComponentId());
+    getCommentService().deleteComment(pk);
   }
 
   /**
@@ -371,7 +356,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       while (it.hasNext()) {
         Comment comment = it.next();
         CommentPK commentPK = comment.getCommentPK();
-        getCommentController().deleteComment(commentPK);
+        getCommentService().deleteComment(commentPK);
       }
     } catch (RemoteException e) {
       throw new ClassifiedsRuntimeException("ClassifedsSessionController.deleteClassified()",
@@ -397,7 +382,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
           if (classified.getStatus().equals(ClassifiedDetail.VALID)) {
             notify = true;
           }
-          if (!isAdmin && isValidationEnabled() && classified.getStatus().equals(ClassifiedDetail.VALID)) {
+          if (!isAdmin && isValidationEnabled() && classified.getStatus().equals(
+              ClassifiedDetail.VALID)) {
             classified.setStatus(ClassifiedDetail.TO_VALIDATE);
           }
         }
@@ -574,14 +560,14 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   }
 
   /**
-   * Gets a controller of operations on comments.
-   * @return a CommentController instance.
+   * Gets a service providing operations on comments.
+   * @return a CommentService instance.
    */
-  public CommentController getCommentController() {
-    if (commentController == null) {
-      commentController = new CommentController();
+  public CommentService getCommentService() {
+    if (commentService == null) {
+      commentService = CommentServiceFactory.getFactory().getCommentService();
     }
-    return commentController;
+    return commentService;
   }
 
   /**

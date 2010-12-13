@@ -105,7 +105,7 @@
 <%@ page import="com.stratelia.webactiv.kmelia.model.*"%>
 <%@ page import="com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper"%>
 
-<%@ page import="com.stratelia.silverpeas.comment.model.Comment"%>
+<%@ page import="com.silverpeas.comment.model.Comment"%>
 <%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController"%>
 <%@ page import="com.stratelia.silverpeas.wysiwyg.WysiwygException"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.*"%>

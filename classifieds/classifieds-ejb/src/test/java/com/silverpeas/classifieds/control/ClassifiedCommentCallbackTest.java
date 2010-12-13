@@ -26,9 +26,10 @@ package com.silverpeas.classifieds.control;
 import java.util.List;
 import com.silverpeas.classifieds.control.ejb.ClassifiedsBm;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
-import com.stratelia.silverpeas.comment.control.CommentController;
-import com.stratelia.silverpeas.comment.model.Comment;
-import com.stratelia.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import java.util.ArrayList;
@@ -52,7 +53,7 @@ public class ClassifiedCommentCallbackTest {
   /**
    * Id of the commented classified.
    */
-  private static final String CLASSIFIED_ID = "230";
+  private static final int CLASSIFIED_ID = 230;
   /**
    * Id of the author that wrote the comment concerned by the tests.
    */
@@ -60,7 +61,7 @@ public class ClassifiedCommentCallbackTest {
   /*
    * Id of the classified component instance to use in the tests.
    */
-  private static final String CLASSIFIED_INSTANCEID = "classified3";
+  private static final String CLASSIFIED_INSTANCEID = "classifieds3";
   /**
    * The callback to test. It is partially mocked.
    */
@@ -113,7 +114,7 @@ public class ClassifiedCommentCallbackTest {
    */
   @Test
   public void commentAddedShouldNotifyClassifiedAndCommentAuthors() throws Exception {
-    callback.commentAdded(Integer.parseInt(COMMENT_AUTHORID), CLASSIFIED_ID, concernedComment);
+    callback.commentAdded(CLASSIFIED_ID, CLASSIFIED_INSTANCEID, concernedComment);
     verify(callback).getNotificationSender(CLASSIFIED_INSTANCEID);
     verify(notificationSender).notifyUser(notifInfoCaptor.capture());
     NotificationMetaData notif = getCapturedInfoInNotificiation();
@@ -138,16 +139,17 @@ public class ClassifiedCommentCallbackTest {
    * The comment to use in the invocation of the callback is also set.
    */
   protected void setUpClassifiedComments() {
+    ForeignPK publicationPk = new ForeignPK(String.valueOf(CLASSIFIED_ID), CLASSIFIED_INSTANCEID);
     for (int i = 0; i < 5; i++) {
       String date = (new Date()).toString();
-      Comment aComment = new Comment(new CommentPK(String.valueOf(i)), new CommentPK(CLASSIFIED_ID),
+      Comment aComment = new Comment(new CommentPK(String.valueOf(i)), publicationPk,
           i, "Toto" + i, "comment " + i, date, date);
       classifiedComments.add(aComment);
     }
     String date = new Date().toString();
     concernedComment = new Comment(
         new CommentPK("10"),
-        new CommentPK(CLASSIFIED_ID),
+        publicationPk,
         Integer.parseInt(COMMENT_AUTHORID),
         "Toto" + COMMENT_AUTHORID,
         "concerned comment",
@@ -165,25 +167,26 @@ public class ClassifiedCommentCallbackTest {
    * ClassifiedsBm.
    */
   protected ClassifiedsBm mockClassifiedBm() throws Exception {
-    ClassifiedDetail detail = new ClassifiedDetail(Integer.parseInt(CLASSIFIED_ID));
+    ClassifiedDetail detail = new ClassifiedDetail(CLASSIFIED_ID);
     detail.setCreatorId("0");
     detail.setInstanceId(CLASSIFIED_INSTANCEID);
     ClassifiedsBm classifieds = mock(ClassifiedsBm.class);
-    when(classifieds.getClassified(CLASSIFIED_ID)).thenReturn(detail);
+    when(classifieds.getClassified(String.valueOf(CLASSIFIED_ID))).thenReturn(detail);
     return classifieds;
   }
 
   /**
-   * Mocks the CommentController to use by the callback.
+   * Mocks the CommentService to use by the callback.
    * It is expected all of other comments are asked by the callback to get their authors. So that
    * it can notify them about the new comment.
    * @return the mocked comment controller.
    * @throws Exception - it is just for satisfying the contract of some called methods of
-   * CommentController.
+   * CommentService.
    */
-  protected CommentController mockCommentController() throws Exception {
-    CommentController commentController = mock(CommentController.class);
-    when(commentController.getAllComments(new CommentPK(CLASSIFIED_ID))).thenReturn(
+  protected CommentService mockCommentController() throws Exception {
+    CommentService commentController = mock(CommentService.class);
+    when(commentController.getAllCommentsOnPublication(
+        new ForeignPK(String.valueOf(CLASSIFIED_ID), CLASSIFIED_INSTANCEID))).thenReturn(
         classifiedComments);
     return commentController;
   }

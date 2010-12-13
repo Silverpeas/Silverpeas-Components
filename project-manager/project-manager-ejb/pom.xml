@@ -6,12 +6,12 @@
     <artifactId>project-manager</artifactId>
     <version>5.5-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.components.project-manager</groupId>
   <artifactId>project-manager-ejb</artifactId>
   <packaging>ejb</packaging>
   <name>EJB project-manager</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
@@ -26,7 +26,6 @@
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>comment</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>

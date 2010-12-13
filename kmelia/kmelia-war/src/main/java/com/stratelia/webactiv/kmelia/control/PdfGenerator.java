@@ -77,9 +77,10 @@ import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.comment.control.CommentController;
-import com.stratelia.silverpeas.comment.model.Comment;
-import com.stratelia.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
@@ -943,8 +944,8 @@ public class PdfGenerator extends PdfPageEventHelper {
       List list = new List(false, 20);
       list.setListSymbol(new Chunk("\u2022", new Font(Font.HELVETICA, 20,
           Font.BOLD, new Color(0, 0, 0))));
-      Collection linkedPublications = kmeliaSessionController.getPublications(targets);
-      Iterator iterator = linkedPublications.iterator();
+      Collection<UserPublication> linkedPublications = kmeliaSessionController.getPublications(targets);
+      Iterator<UserPublication> iterator = linkedPublications.iterator();
       UserPublication userPub;
       PublicationDetail pub;
       Chunk permalinkPubli;
@@ -958,7 +959,7 @@ public class PdfGenerator extends PdfPageEventHelper {
       ListItem subListItem;
       if (iterator.hasNext()) {
         while (iterator.hasNext()) {
-          userPub = (UserPublication) iterator.next();
+          userPub = iterator.next();
           pub = userPub.getPublication();
 
           if (pub.getStatus() != null && pub.getStatus().equals("Valid")
@@ -1017,8 +1018,8 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   private void generateComments(Document document)
       throws DocumentException, RemoteException, ParseException {
-    CommentController commentController = new CommentController();
-    java.util.List<Comment> comments = commentController.getAllComments(new CommentPK(
+    CommentService commentService = CommentServiceFactory.getFactory().getCommentService();
+    java.util.List<Comment> comments = commentService.getAllCommentsOnPublication(new CommentPK(
         publicationDetail.getPK().getId(), null, kmeliaSessionController.getComponentId()));
     if (comments != null && comments.size() > 0) {
       /*
@@ -1050,7 +1051,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
       Comment comment;
       for (int i = 0; i < comments.size(); i++) {
-        comment = (Comment) comments.get(i);
+        comment = comments.get(i);
 
         addRowToTable(tbl, null, new String[]{comment.getOwner(),
               comment.getMessage(),
@@ -1074,10 +1075,10 @@ public class PdfGenerator extends PdfPageEventHelper {
 
     // Attention la partie hyperlink est a faire !!!!
     if (isLinked) {
-      node = "<a href=" + (String) unit.getPath() + ">"
-          + (String) unit.getName(language) + "</a>";
+      node = "<a href=" + unit.getPath() + ">"
+          + unit.getName(language) + "</a>";
     } else {
-      node = (String) unit.getName(language);
+      node = unit.getName(language);
     }
 
     return node;
@@ -1097,24 +1098,25 @@ public class PdfGenerator extends PdfPageEventHelper {
     // avant les ...
     String separatorPath = " / "; // separateur pour le chemin complet
     String troncateSeparator = " ... ";
+    String path = completPath;
 
     Value value = null;
     // prend les nbShowedEltAuthorized 1er elements
     for (int nb = 0; nb < nbShowedEltAuthorized; nb++) {
-      value = (Value) list.get(nb);
-      completPath += linkedNode(value, isLinked) + separatorPath;
+      value = list.get(nb);
+      path += linkedNode(value, isLinked) + separatorPath;
     }
 
     // colle ici les points de suspension
-    completPath += troncateSeparator + separatorPath;
+    path += troncateSeparator + separatorPath;
 
     // prend les nbShowedEltAuthorized derniers elements
     for (int nb = nbShowedEltAuthorized + withLastValue; nb > withLastValue; nb--) {
-      value = (Value) list.get(list.size() - nb);
-      completPath += linkedNode(value, isLinked) + separatorPath;
+      value = list.get(list.size() - nb);
+      path += linkedNode(value, isLinked) + separatorPath;
     }
 
-    return completPath;
+    return path;
   }
 
   /**
@@ -1143,12 +1145,12 @@ public class PdfGenerator extends PdfPageEventHelper {
       completPath = troncatePath(completPath, list, isLinked, withLastValue);
     } else {
       for (int nb = 0; nb < list.size() - withLastValue; nb++) {
-        value = (Value) list.get(nb);
+        value = list.get(nb);
         completPath += linkedNode(value, isLinked) + separatorPath;
       }
     }
 
-    if ((completPath == "") || (completPath.equals("/"))) {
+    if (("".equals(completPath)) || (completPath.equals("/"))) {
       completPath = null;
     } else {
       completPath = completPath.substring(0, completPath.length()
@@ -1190,7 +1192,7 @@ public class PdfGenerator extends PdfPageEventHelper {
       Chunk chnk;
       ListItem listItem;
       for (int i = 0; i < listPositions.size(); i++) {
-        position = (ClassifyPosition) listPositions.get(i);
+        position = listPositions.get(i);
         nI = new Integer(i + 1).toString();
 
         paragraph = new Paragraph(messagePdc.getString("pdcPeas.position")

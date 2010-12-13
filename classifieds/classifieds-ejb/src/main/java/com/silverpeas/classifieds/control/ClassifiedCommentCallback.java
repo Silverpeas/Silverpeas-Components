@@ -23,6 +23,7 @@
  */
 package com.silverpeas.classifieds.control;
 
+import com.silverpeas.comment.service.CommentServiceFactory;
 import java.util.Set;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
@@ -34,9 +35,9 @@ import com.silverpeas.classifieds.control.ejb.ClassifiedsBmHome;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
 import com.silverpeas.util.template.SilverpeasTemplate;
-import com.stratelia.silverpeas.comment.control.CallBackOnCommentAction;
-import com.stratelia.silverpeas.comment.control.CommentController;
-import com.stratelia.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.service.CallBackOnCommentAction;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.model.Comment;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -67,7 +68,7 @@ public class ClassifiedCommentCallback extends CallBackOnCommentAction {
    * in the resources of the classifieds module.
    */
   protected static final String SUBJECT_COMMENT_ADDING = "classifieds.commentAddingSubject";
-  private CommentController commentController = null;
+  private CommentService commentController = null;
   private ClassifiedsBm classifiedsBm = null;
 
   @Override
@@ -76,35 +77,34 @@ public class ClassifiedCommentCallback extends CallBackOnCommentAction {
   }
 
   @Override
-  public void commentAdded(int authorId, String classifiedId, Comment addedComment) {
-    SilverTrace.debug("classifieds", getClass().getSimpleName() + ".commentAdded()",
-        "Notified about a comment adding by user " + addedComment.getOwner() + " for classified id "
-        + classifiedId);
-    try {
-      ClassifiedDetail detail = getClassifiedsBm().getClassified(classifiedId);
-      Set<String> recipients = getInterestedUsers(addedComment, detail);
-      NotificationMetaData notification = createNotification(SUBJECT_COMMENT_ADDING, detail,
-          addedComment);
-      notifyUsers(recipients, notification);
-    } catch (Exception ex) {
-      SilverTrace.error("classifieds", getClass().getSimpleName() + ".commentAdded()",
-          "root.EX_NO_MESSAGE", ex);
+  public void commentAdded(int publicationId, String componentInstanceId, Comment addedComment) {
+    if (componentInstanceId.startsWith("classifieds")) {
+      try {
+        ClassifiedDetail detail = getClassifiedsBm().getClassified(String.valueOf(publicationId));
+        Set<String> recipients = getInterestedUsers(addedComment, detail);
+        NotificationMetaData notification = createNotification(SUBJECT_COMMENT_ADDING, detail,
+            addedComment);
+        notifyUsers(recipients, notification);
+      } catch (Exception ex) {
+        SilverTrace.error("classifieds", getClass().getSimpleName() + ".commentAdded()",
+            "root.EX_NO_MESSAGE", ex);
+      }
     }
   }
 
   @Override
-  public void commentRemoved(int authorId, String classifiedId, Comment removedComment) {
+  public void commentRemoved(int publicationId, String componentInstanceId, Comment removedComment) {
     SilverTrace.warn("classifieds", getClass().getSimpleName() + ".doInvoke()",
         "classifieds.MSG_WARN_BAD_CALLBACK_INVOCATION");
   }
 
   /**
    * Gets a business controller on comments of resources.
-   * @return a CommentController instance.
+   * @return a CommentService instance.
    */
-  protected CommentController getCommentController() {
+  protected CommentService getCommentController() {
     if (commentController == null) {
-      commentController = new CommentController();
+      commentController = CommentServiceFactory.getFactory().getCommentService();
     }
     return commentController;
   }
@@ -168,7 +168,8 @@ public class ClassifiedCommentCallback extends CallBackOnCommentAction {
       throws RemoteException {
     Set<String> interestedUsers = new LinkedHashSet<String>();
     int currentAuthor = theComment.getOwnerId();
-    List<Comment> comments = getCommentController().getAllComments(theComment.getForeignKey());
+    List<Comment> comments = getCommentController().getAllCommentsOnPublication(theComment.
+        getForeignKey());
     for (Comment aComment : comments) {
       int commentAuthor = aComment.getOwnerId();
       if (commentAuthor != currentAuthor) {

@@ -33,12 +33,11 @@ import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.comment.control.CommentController;
-import com.stratelia.silverpeas.comment.ejb.CommentBm;
-import com.stratelia.silverpeas.comment.ejb.CommentBmHome;
-import com.stratelia.silverpeas.comment.ejb.CommentRuntimeException;
-import com.stratelia.silverpeas.comment.model.Comment;
-import com.stratelia.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.CommentRuntimeException;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -82,7 +81,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
@@ -169,7 +167,7 @@ public class BlogBmEJB implements SessionBean {
               new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
           notifMetaData.addLanguage("en", subject_en, body_en);
 
-          notifMetaData.setUserRecipients(new Vector<String>(newSubscribers));
+          notifMetaData.setUserRecipients(new ArrayList<String>(newSubscribers));
           notifMetaData.setLink(getPostUrl(pubDetail));
           notifMetaData.setComponentId(fatherPK.getInstanceId());
           notifyUsers(notifMetaData, senderId);
@@ -277,7 +275,7 @@ public class BlogBmEJB implements SessionBean {
 
       // Supprime les commentaires
       ForeignPK foreignPK = new ForeignPK(postId, instanceId);
-      getCommentBm().deleteAllComments(foreignPK);
+      getCommentService().deleteAllCommentsOnPublication(foreignPK);
 
       // Supprime le contenu Wysiwyg
       WysiwygController.deleteFileAndAttachment(instanceId, postId);
@@ -343,7 +341,7 @@ public class BlogBmEJB implements SessionBean {
       }
       // rechercher le nombre de commentaire
       CommentPK foreign_pk = new CommentPK(pub.getPK().getId(), null, pub.getPK().getInstanceId());
-      List<Comment> comments = getCommentBm().getAllComments(foreign_pk);
+      List<Comment> comments = getCommentService().getAllCommentsOnPublication(foreign_pk);
 
       // recherche de la date d'evenement
       Connection con = initCon();
@@ -752,8 +750,7 @@ public class BlogBmEJB implements SessionBean {
   private void indexExternalElementsOfPublication(PublicationPK pubPK) {
     try {
       // index comments
-      CommentController commentController = new CommentController();
-      commentController.indexCommentsByForeignKey(pubPK);
+      getCommentService().indexAllCommentsOnPublication(pubPK);
     } catch (Exception e) {
       SilverTrace.error("blog", "BlogBmEJB.indexExternalElementsOfPublication",
           "Indexing comments failed", "pubPK = " + pubPK.toString(), e);
@@ -777,8 +774,8 @@ public class BlogBmEJB implements SessionBean {
             pubDetail, "update", pubDetail.getUpdaterId());
       }
     } catch (RemoteException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      SilverTrace.error("blog", getClass().getSimpleName() +
+          ".externalElementsOfPublicationHaveChanged", "root.EX_NO_MESSAGE", e);
     }
   }
 
@@ -886,20 +883,6 @@ public class BlogBmEJB implements SessionBean {
     return nodeBm;
   }
 
-  public CommentBm getCommentBm() {
-    CommentBm commentBm = null;
-    try {
-      CommentBmHome commentHome =
-          (CommentBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.COMMENT_EJBHOME,
-          CommentBmHome.class);
-      commentBm = commentHome.create();
-    } catch (Exception e) {
-      throw new CommentRuntimeException("GallerySessionController.getCommentBm()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return commentBm;
-  }
-
   public SearchEngineBm getSearchEngineBm() {
     SearchEngineBm searchEngineBm = null;
     {
@@ -914,6 +897,14 @@ public class BlogBmEJB implements SessionBean {
       }
     }
     return searchEngineBm;
+  }
+
+  /**
+   * Gets a CommentService instance.
+   * @return a CommentService instance.
+   */
+  protected CommentService getCommentService() {
+    return CommentServiceFactory.getFactory().getCommentService();
   }
 
   public void ejbCreate() {

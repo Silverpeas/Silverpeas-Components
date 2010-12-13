@@ -6,7 +6,7 @@
     <artifactId>blog</artifactId>
     <version>5.5-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.components.blog</groupId>
   <artifactId>blog-war</artifactId>
   <packaging>war</packaging>
@@ -44,7 +44,6 @@
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>comment</artifactId>
       <version>${core.version}</version>
-      <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
     <dependency>

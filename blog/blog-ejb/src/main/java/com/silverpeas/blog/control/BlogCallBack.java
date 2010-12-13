@@ -95,10 +95,12 @@ public class BlogCallBack extends CallBack {
 
   private boolean isPublicationModified(String pubId, int action) {
     if (!pubId.startsWith("Node")
-        && action == CallBackManager.ACTION_ON_WYSIWYG)
+        && action == CallBackManager.ACTION_ON_WYSIWYG) {
       return true;
-    else
+    }
+    else {
       return false;
+    }
   }
 
   private BlogBm getBlogBm() {

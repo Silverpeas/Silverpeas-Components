@@ -67,7 +67,8 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.silverpeas.comment.control.CommentController;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -154,7 +155,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   private static final long serialVersionUID = 1L;
 
-  private CommentController commentController = null;
+  private CommentService commentService = null;
 
   public KmeliaBmEJB() {
   }
@@ -3466,7 +3467,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   public void draftInPublication(PublicationPK pubPK) {
     draftInPublication(pubPK, null);
   }
-  
+
   public void draftInPublication(PublicationPK pubPK, String userId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.draftInPublication()",
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
@@ -4002,7 +4003,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     try {
       // index comments
-      getCommentController().indexCommentsByForeignKey(pubPK);
+      getCommentService().indexAllCommentsOnPublication(pubPK);
     } catch (Exception e) {
       SilverTrace.error("kmelia",
           "KmeliaBmEJB.indexExternalElementsOfPublication",
@@ -4027,7 +4028,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     try {
       // index comments
-      getCommentController().unindexCommentsByForeignKey(pubPK);
+      getCommentService().unindexAllCommentsOnPublication(pubPK);
     } catch (Exception e) {
       SilverTrace.error("kmelia",
           "KmeliaBmEJB.indexExternalElementsOfPublication",
@@ -4051,7 +4052,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     // remove comments
     try {
-      getCommentController().deleteCommentsByForeignPK(pubPK);
+      getCommentService().deleteAllCommentsOnPublication(pubPK);
     } catch (Exception e) {
       throw new KmeliaRuntimeException(
           "KmeliaBmEJB.removeExternalElementsOfPublications()",
@@ -5348,14 +5349,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   /**
-   * Gets a controller of operations on comments.
-   * @return a CommentController instance.
+   * Gets a service object on the comments.
+   * @return a CommentService instance.
    */
-  private CommentController getCommentController() {
-    if (commentController == null) {
-      commentController = new CommentController();
+  private CommentService getCommentService() {
+    if (commentService == null) {
+      commentService = CommentServiceFactory.getFactory().getCommentService();
     }
-    return commentController;
+    return commentService;
   }
 
 }

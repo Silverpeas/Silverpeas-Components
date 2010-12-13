@@ -73,8 +73,9 @@ import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.versioning.importExport.VersioningImportExport;
 import com.stratelia.silverpeas.alertUser.AlertUser;
-import com.stratelia.silverpeas.comment.control.CommentController;
-import com.stratelia.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationManager;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
@@ -178,7 +179,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   /* EJBs used by sessionController */
   private ThumbnailService thumbnailService = null;
   private SearchEngineBm searchEngineEjb = null;
-  private CommentController commentController = null;
+  private CommentService commentService = null;
   private VersioningBm versioningBm = null;
   private PdcBm pdcBm = null;
   private StatisticBm statisticBm = null;
@@ -267,14 +268,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   /**
-   * Gets a business controller of comments.
-   * @return a CommentController instance.
+   * Gets a business service of comments.
+   * @return a CommentService instance.
    */
-  protected CommentController getCommentController() {
-    if (commentController == null) {
-      commentController = new CommentController();
+  protected CommentService getCommentService() {
+    if (commentService == null) {
+      commentService = CommentServiceFactory.getFactory().getCommentService();
     }
-    return commentController;
+    return commentService;
   }
 
   public KmeliaBm getKmeliaBm() {
@@ -1582,7 +1583,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public List<Comment> getAllComments(String id) throws RemoteException {
-    return getCommentController().getAllComments(getPublicationPK(id));
+    return getCommentService().getAllCommentsOnPublication(getPublicationPK(id));
   }
 
   public void processTopicWysiwyg(String topicId) throws RemoteException {
@@ -3607,7 +3608,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           }
 
           // move comments
-          getCommentController().moveComments(fromForeignPK, toForeignPK, indexIt);
+          if (indexIt) {
+            getCommentService().moveAndReindexComments(fromForeignPK, toForeignPK);
+          } else {
+            getCommentService().moveComments(fromForeignPK, toForeignPK);
+          }
 
           // move pdc positions
           int fromSilverObjectId = getKmeliaBm().getSilverObjectId(fromPubPK);

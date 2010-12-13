@@ -62,8 +62,9 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
-import com.stratelia.silverpeas.comment.control.CommentController;
-import com.stratelia.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
@@ -121,7 +122,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   private boolean select = false;
   private ResourceLocator metadataSettings = null;
   private ResourceLocator metadataResources = null;
-  private CommentController commentController = null;
+  private CommentService commentService = null;
   // pagination de la liste des résultats (PDC via DomainsBar)
   private int indexOfFirstItemToDisplay = 0;
   private AdminController m_AdminCtrl = null;
@@ -130,14 +131,14 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
 
   /**
-   * Gets the business controller of operations on comments
-   * @return a COmmentController instance.
+   * Gets the business service of operations on comments
+   * @return a CommentService instance.
    */
-  private CommentController getCommentController() {
-    if (commentController == null) {
-      commentController = new CommentController();
+  private CommentService getCommentService() {
+    if (commentService == null) {
+      commentService = CommentServiceFactory.getFactory().getCommentService();
     }
-    return commentController;
+    return commentService;
   }
 
   /**
@@ -201,7 +202,8 @@ public final class GallerySessionController extends AbstractComponentSessionCont
   }
 
   public  List<Comment> getAllComments(String id) throws RemoteException {
-    return getCommentController().getAllComments(new PhotoPK(id, getSpaceId(), getComponentId()));
+    return getCommentService().getAllCommentsOnPublication(new PhotoPK(id, getSpaceId(),
+        getComponentId()));
   }
 
   public int getSilverObjectId(String objectId) {
@@ -1280,7 +1282,11 @@ public final class GallerySessionController extends AbstractComponentSessionCont
           getGalleryBm().deleteIndex(fromPhotoPK);
 
           // move comments
-          getCommentController().moveComments(fromForeignPK, toForeignPK, indexIt);
+          if (indexIt) {
+            getCommentService().moveAndReindexComments(fromForeignPK, toForeignPK);
+          } else {
+            getCommentService().moveComments(fromForeignPK, toForeignPK);
+          }
 
           // move pdc positions
           int fromSilverObjectId = getGalleryBm().getSilverObjectId(fromPhotoPK);
@@ -1356,8 +1362,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
             getComponentId());
 
         // move comments
-        boolean indexIt = true;
-        getCommentController().moveComments(fromForeignPK, toForeignPK, indexIt);
+        getCommentService().moveAndReindexComments(fromForeignPK, toForeignPK);
 
         String xmlFormName = getXMLFormName();
 

@@ -42,8 +42,9 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.comment.control.CommentController;
-import com.stratelia.silverpeas.comment.ejb.CommentRuntimeException;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.comment.CommentRuntimeException;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
@@ -337,8 +338,8 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       PhotoDAO.removePhoto(con, photoId);
 
       // supprimer les commentaires
-      CommentController commentController = new CommentController();
-      commentController.deleteCommentsByForeignPK(photoPK);
+      CommentService commentController = CommentServiceFactory.getFactory().getCommentService();
+      commentController.deleteAllCommentsOnPublication(photoPK);
 
       // supprime le répertoire de la photo et tout ce qu'il contient
       String componentId = photoPK.getInstanceId();

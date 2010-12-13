@@ -35,16 +35,16 @@ import com.silverpeas.blog.model.Archive;
 import com.silverpeas.blog.model.BlogRuntimeException;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
+import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.myLinks.ejb.MyLinksBm;
 import com.silverpeas.myLinks.ejb.MyLinksBmHome;
 import com.silverpeas.myLinks.model.LinkDetail;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.alertUser.AlertUser;
-import com.stratelia.silverpeas.comment.ejb.CommentBm;
-import com.stratelia.silverpeas.comment.ejb.CommentBmHome;
-import com.stratelia.silverpeas.comment.ejb.CommentRuntimeException;
-import com.stratelia.silverpeas.comment.model.Comment;
-import com.stratelia.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -69,6 +69,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import java.util.List;
 
 public class BlogSessionController extends AbstractComponentSessionController {
+
   private Calendar currentBeginDate = Calendar.getInstance(); // format = yyyy/MM/ddd
   private Calendar currentEndDate = Calendar.getInstance(); // format = yyyy/MM/ddd
   private String serverURL = null;
@@ -320,7 +321,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
       Collection<Comment> comments = getAllComments(postId);
       for (Comment comment : comments) {
         CommentPK commentPK = comment.getCommentPK();
-        getCommentBm().deleteComment(commentPK);
+        getCommentService().deleteComment(commentPK);
       }
 
     } catch (RemoteException e) {
@@ -330,27 +331,17 @@ public class BlogSessionController extends AbstractComponentSessionController {
   }
 
   public Collection<Comment> getAllComments(String postId) {
-    try {
-      CommentPK foreign_pk = new CommentPK(postId, null, getComponentId());
-      List<Comment>  allComments = getCommentBm().getAllComments(foreign_pk);
-      for (Comment comment : allComments) {
-        comment.setOwner(getUserDetail(Integer.toString(comment.getOwnerId())).getDisplayedName());
-      }
-      return allComments;
-    } catch (RemoteException e) {
-      throw new BlogRuntimeException("BlogSessionController.getAllComments()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    CommentPK foreign_pk = new CommentPK(postId, null, getComponentId());
+    List<Comment> allComments = getCommentService().getAllCommentsOnPublication(foreign_pk);
+    for (Comment comment : allComments) {
+      comment.setOwner(getUserDetail(Integer.toString(comment.getOwnerId())).getDisplayedName());
     }
+    return allComments;
   }
 
   public Comment getComment(String commentId) {
     CommentPK commentPK = new CommentPK(commentId);
-    try {
-      return getCommentBm().getComment(commentPK);
-    } catch (RemoteException e) {
-      throw new BlogRuntimeException("BlogSessionController.getComment()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
+    return getCommentService().getComment(commentPK);
   }
 
   public Collection<NodeDetail> getAllCategories() {
@@ -424,9 +415,8 @@ public class BlogSessionController extends AbstractComponentSessionController {
 
   public synchronized void addComment(String postId, String message) {
     try {
-      CommentPK foreign_pk = new CommentPK(postId);
-      CommentPK pk = new CommentPK("X");
-      pk.setComponentName(getComponentId());
+      CommentPK foreign_pk = new CommentPK(postId, getComponentId());
+      CommentPK pk = new CommentPK("X", getComponentId());
       Date dateToday = new Date();
       String date = DateUtil.date2SQLDate(dateToday);
       String owner = getUserDetail(getUserId()).getDisplayedName();
@@ -435,7 +425,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
 
       Comment comment =
           new Comment(pk, foreign_pk, Integer.parseInt(getUserId()), owner, message, date, date);
-      getCommentBm().createComment(comment);
+      getCommentService().createComment(comment);
       SilverTrace.info("blog", "BlogSessionContreller.createPost()", "root.MSG_GEN_PARAM_VALUE",
           "owner comment=" + comment.getOwner());
 
@@ -468,13 +458,8 @@ public class BlogSessionController extends AbstractComponentSessionController {
   }
 
   public void deleteComment(String commentId) {
-    try {
-      CommentPK pk = new CommentPK(commentId, "useless", getComponentId());
-      getCommentBm().deleteComment(pk);
-    } catch (RemoteException e) {
-      throw new BlogRuntimeException("BlogSessionController.deleteComment()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_REMOVE_OBJECT", e);
-    }
+    CommentPK pk = new CommentPK(commentId, "useless", getComponentId());
+    getCommentService().deleteComment(pk);
   }
 
   public Collection<PostDetail> getResultSearch(String word) {
@@ -517,8 +502,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
     int silverObjectId = -1;
     try {
       silverObjectId =
-          getBlogBm()
-          .getSilverObjectId(new PublicationPK(objectId, getSpaceId(), getComponentId()));
+          getBlogBm().getSilverObjectId(new PublicationPK(objectId, getSpaceId(), getComponentId()));
     } catch (Exception e) {
       SilverTrace.error("blog", "BlogSessionController.getSilverObjectId()",
           "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
@@ -526,21 +510,12 @@ public class BlogSessionController extends AbstractComponentSessionController {
     return silverObjectId;
   }
 
-  public CommentBm getCommentBm() {
-    CommentBm commentBm = null;
-    {
-      try {
-        CommentBmHome commentHome =
-            (CommentBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.COMMENT_EJBHOME,
-            CommentBmHome.class);
-        commentBm = commentHome.create();
-      } catch (Exception e) {
-        throw new CommentRuntimeException("BlogSessionController.getCommentBm()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
-
-    return commentBm;
+  /**
+   * Gets a CommentService instance.
+   * @return a CommentService instance.
+   */
+  protected CommentService getCommentService() {
+    return CommentServiceFactory.getFactory().getCommentService();
   }
 
   public MyLinksBm getMyLinksBm() {
@@ -608,8 +583,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
     currentBeginDate.set(Calendar.DATE, 1);
 
     currentEndDate.add(Calendar.MONTH, 1);
-    currentEndDate.set(Calendar.DAY_OF_MONTH, currentEndDate
-        .getActualMaximum(Calendar.DAY_OF_MONTH));
+    currentEndDate.set(Calendar.DAY_OF_MONTH, currentEndDate.getActualMaximum(Calendar.DAY_OF_MONTH));
   }
 
   public void previousMonth() {
@@ -617,12 +591,10 @@ public class BlogSessionController extends AbstractComponentSessionController {
     currentBeginDate.set(Calendar.DATE, 1);
 
     currentEndDate.add(Calendar.MONTH, -1);
-    currentEndDate.set(Calendar.DAY_OF_MONTH, currentEndDate
-        .getActualMaximum(Calendar.DAY_OF_MONTH));
+    currentEndDate.set(Calendar.DAY_OF_MONTH, currentEndDate.getActualMaximum(Calendar.DAY_OF_MONTH));
   }
 
   public String getServerURL() {
     return serverURL;
   }
-
 }
