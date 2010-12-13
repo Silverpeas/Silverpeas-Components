@@ -4,11 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-<<<<<<< HEAD
-    <version>16</version>
-=======
     <version>17-SNAPSHOT</version>
->>>>>>> Takes into account the refactoring of the Comment component.
   </parent>
 
   <scm>
