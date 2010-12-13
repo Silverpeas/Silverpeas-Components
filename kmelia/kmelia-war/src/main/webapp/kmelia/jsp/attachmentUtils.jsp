@@ -46,7 +46,7 @@
 <%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
 
-<%@ page import="com.stratelia.webactiv.util.publication.info.model.ModelDetail, java.util.Collection, java.util.Iterator, java.util.ArrayList, com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
+<%@ page import="com.stratelia.webactiv.util.publication.info.model.ModelDetail, java.util.Collection, java.util.Iterator, java.util.ArrayList, java.util.List, com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
 <%@ page import="com.stratelia.webactiv.util.publication.info.model.InfoDetail, com.stratelia.webactiv.util.publication.info.model.InfoAttachmentDetail"%>
 <%@ page import="javax.ejb.RemoveException, javax.ejb.CreateException, java.sql.SQLException, javax.naming.NamingException, java.rmi.RemoteException, javax.ejb.FinderException"%>
 <%@ page import="java.util.Enumeration "%>
@@ -59,7 +59,7 @@
 
 <%!
 void displayUserAttachmentsView(PublicationDetail pubDetail, String m_context, JspWriter out, int type, String user_id, boolean showIcon, ResourcesWrapper resources) throws IOException {
-  
+
 	//construction du path context
   int VERSIONING = 1;
   String ctx = "Images";
@@ -71,7 +71,7 @@ void displayUserAttachmentsView(PublicationDetail pubDetail, String m_context, J
         String component_id = foreignKey.componentName;
         VersioningUtil versioning_util = new VersioningUtil();
 
-        ArrayList documents = versioning_util.getDocuments(foreignKey);
+        List documents = versioning_util.getDocuments(foreignKey);
 
         Iterator iterator = documents.iterator();
         Document document;
@@ -100,7 +100,7 @@ void displayUserAttachmentsView(PublicationDetail pubDetail, String m_context, J
 												   }
 												   if (!"no".equals(resources.getSetting("showDownloadEstimation")))
                            		out.println(separator+versioning_util.getDownloadEstimation(document_version.getSize()));
-												   
+
                            if (document_version.getMajorNumber() > 1)
                            {
                            		if (showIcon)
@@ -156,7 +156,7 @@ public boolean isUserReader(Document document, int user_id, VersioningUtil versi
     }
 
 
-  void displayUserAttachmentsView(PublicationDetail pubDetail, String m_context, JspWriter out, boolean showIcon, ResourcesWrapper resources) throws IOException 
+  void displayUserAttachmentsView(PublicationDetail pubDetail, String m_context, JspWriter out, boolean showIcon, ResourcesWrapper resources) throws IOException
   {
   	//construction du path context
     String ctx = "Images";
@@ -188,7 +188,7 @@ public boolean isUserReader(Document document, int user_id, VersioningUtil versi
 				else
 					out.print(attachmentDetail.getLogicalName());
 				out.print("</A>"+author+"<BR>");
-				
+
 				String separator = "";
 				if (title != null && title.length()>0) {
 					if (!"no".equals(resources.getSetting("showTitle")))
@@ -197,16 +197,16 @@ public boolean isUserReader(Document document, int user_id, VersioningUtil versi
 						separator = " / ";
 					}
 				}
-				
+
 				if (!"no".equals(resources.getSetting("showFileSize")))
                	{
 					out.println(separator + attachmentDetail.getAttachmentFileSize());
 					separator = " / ";
 			   	}
-			   	
+
 			   	if (!"no".equals(resources.getSetting("showDownloadEstimation")))
                		out.println(separator + attachmentDetail.getAttachmentDownloadEstimation());
-				
+
                 if (info != null && info.length()>0)
                 {
                 	if (!"no".equals(resources.getSetting("showInfo")))
@@ -220,5 +220,5 @@ public boolean isUserReader(Document document, int user_id, VersioningUtil versi
           out.println("</TABLE>");
      }
   }
- 
+
 %>

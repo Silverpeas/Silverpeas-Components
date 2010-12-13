@@ -58,7 +58,7 @@ public class ProjectManagerCalendarDAO {
         "root.MSG_GEN_ENTER_METHOD", holiday.getDate().toString());
 
     if (!isHolidayDate(con, holiday)) {
-      StringBuffer insertStatement = new StringBuffer(128);
+      StringBuilder insertStatement = new StringBuilder(128);
       insertStatement.append("insert into ").append(
           PROJECTMANAGER_CALENDAR_TABLENAME);
       insertStatement.append(" values ( ? , ? , ? )");
@@ -80,7 +80,7 @@ public class ProjectManagerCalendarDAO {
 
   public static void removeHolidayDate(Connection con, HolidayDetail holiday)
       throws SQLException {
-    StringBuffer deleteStatement = new StringBuffer(128);
+    StringBuilder deleteStatement = new StringBuilder(128);
     deleteStatement.append("delete from ").append(
         PROJECTMANAGER_CALENDAR_TABLENAME);
     deleteStatement.append(" where holidayDate = ? ");
@@ -103,7 +103,7 @@ public class ProjectManagerCalendarDAO {
 
   public static boolean isHolidayDate(Connection con, HolidayDetail holiday)
       throws SQLException {
-    StringBuffer query = new StringBuffer(128);
+    StringBuilder query = new StringBuilder(128);
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_CALENDAR_TABLENAME);
     query.append(" where holidayDate = ? ");
@@ -132,10 +132,10 @@ public class ProjectManagerCalendarDAO {
     }
   }
 
-  public static List getHolidayDates(Connection con, String instanceId)
+  public static List<Date> getHolidayDates(Connection con, String instanceId)
       throws SQLException {
-    List holidayDates = new ArrayList();
-    StringBuffer query = new StringBuffer(128);
+    List<Date> holidayDates = new ArrayList<Date>();
+    StringBuilder query = new StringBuilder(128);
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_CALENDAR_TABLENAME);
     query.append(" where instanceId = ? ");
@@ -162,10 +162,10 @@ public class ProjectManagerCalendarDAO {
     return holidayDates;
   }
 
-  public static List getHolidayDates(Connection con, String instanceId,
+  public static List<Date> getHolidayDates(Connection con, String instanceId,
       Date beginDate, Date endDate) throws SQLException {
-    List holidayDates = new ArrayList();
-    StringBuffer query = new StringBuffer(128);
+    List<Date> holidayDates = new ArrayList<Date>();
+    StringBuilder query = new StringBuilder(128);
     query.append("select * ");
     query.append("from ").append(PROJECTMANAGER_CALENDAR_TABLENAME);
     query.append(" where instanceId = ? ");

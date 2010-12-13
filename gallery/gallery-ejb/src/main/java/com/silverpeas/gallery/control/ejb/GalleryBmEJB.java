@@ -247,7 +247,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       fermerCon(con);
     }
   }
-  
+
   @Override
   public Collection<PhotoDetail> getAllPhotosSorted(NodePK nodePK,
       HashMap<String, String> parsedParameters, boolean viewAllPhoto) {
@@ -337,7 +337,8 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       PhotoDAO.removePhoto(con, photoId);
 
       // supprimer les commentaires
-      CommentController.deleteCommentsByForeignPK(photoPK);
+      CommentController commentController = new CommentController();
+      commentController.deleteCommentsByForeignPK(photoPK);
 
       // supprime le répertoire de la photo et tout ce qu'il contient
       String componentId = photoPK.getInstanceId();

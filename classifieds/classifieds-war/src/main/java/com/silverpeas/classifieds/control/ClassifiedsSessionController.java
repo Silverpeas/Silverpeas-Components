@@ -27,10 +27,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.Vector;
 
 import com.silverpeas.classifieds.control.ejb.ClassifiedsBm;
 import com.silverpeas.classifieds.control.ejb.ClassifiedsBmHome;
@@ -44,9 +41,7 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.comment.ejb.CommentBm;
-import com.stratelia.silverpeas.comment.ejb.CommentBmHome;
-import com.stratelia.silverpeas.comment.ejb.CommentRuntimeException;
+import com.stratelia.silverpeas.comment.control.CommentController;
 import com.stratelia.silverpeas.comment.model.Comment;
 import com.stratelia.silverpeas.comment.model.CommentPK;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -58,14 +53,18 @@ import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class ClassifiedsSessionController extends AbstractComponentSessionController {
+public final class ClassifiedsSessionController extends AbstractComponentSessionController {
 
   private int indexOfFirstItemToDisplay = 0;
-  private Hashtable<String, String> fields1 = createListField(getSearchFields1());
-  private Hashtable<String, String> fields2 = createListField(getSearchFields2());
+  private Map<String, String> fields1 = createListField(getSearchFields1());
+  private Map<String, String> fields2 = createListField(getSearchFields2());
+  private CommentController commentController = null;
 
   /**
    * Standard Session Controller Constructeur
@@ -177,7 +176,7 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
     }
     return classifieds;
   }
-  
+
   /**
    * get all classifieds to validate for this instance
    * @return a collection of ClassifiedDetail
@@ -201,18 +200,12 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
    */
   public Collection<Comment> getAllComments(String classifiedId) {
     try {
-      CommentPK foreign_pk = new CommentPK(classifiedId, null, getComponentId());
-
-      Vector<Comment> vComments = null;
-      Comment comment;
-      vComments = getCommentBm().getAllComments(foreign_pk);
-      Vector<Comment> vReturn = new Vector<Comment>(vComments.size());
-      for (Enumeration<Comment> e = vComments.elements(); e.hasMoreElements();) {
-        comment = (Comment) e.nextElement();
+      CommentPK foreign_pk = new CommentPK(classifiedId, getComponentId());
+      List<Comment>  allComments = getCommentController().getAllComments(foreign_pk);
+      for (Comment comment : allComments) {
         comment.setOwner(getUserDetail(Integer.toString(comment.getOwnerId())).getDisplayedName());
-        vReturn.addElement(comment);
       }
-      return vReturn;
+      return allComments;
     } catch (RemoteException e) {
       throw new ClassifiedsRuntimeException("ClassifedsSessionController.getAllComments()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -226,9 +219,8 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
    */
   public synchronized void addComment(String classifiedId, String message) {
     try {
-      CommentPK foreign_pk = new CommentPK(classifiedId);
-      CommentPK pk = new CommentPK("X");
-      pk.setComponentName(getComponentId());
+      CommentPK foreign_pk = new CommentPK(classifiedId, getComponentId());
+      CommentPK pk = new CommentPK("X", getComponentId());
       Date dateToday = new Date();
       String date = DateUtil.date2SQLDate(dateToday);
       String owner = getUserDetail(getUserId()).getDisplayedName();
@@ -237,7 +229,7 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
 
       Comment comment =
           new Comment(pk, foreign_pk, Integer.parseInt(getUserId()), owner, message, date, date);
-      getCommentBm().createComment(comment);
+      getCommentController().createComment(comment, false);
       SilverTrace.info("classifieds", "ClassifedsSessionController.addComment()",
           "root.MSG_GEN_PARAM_VALUE", "owner comment=" + comment.getOwner());
     } catch (RemoteException e) {
@@ -253,7 +245,7 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
   public void deleteComment(String commentId) {
     try {
       CommentPK pk = new CommentPK(commentId, "useless", getComponentId());
-      getCommentBm().deleteComment(pk);
+      getCommentController().deleteComment(pk);
     } catch (RemoteException e) {
       throw new ClassifiedsRuntimeException("ClassifedsSessionController.deleteComment()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_REMOVE_OBJECT", e);
@@ -375,11 +367,11 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
       getClassifiedsBm().deleteClassified(classifiedId);
       // supprimer les commentaires
       Collection<Comment> comments = getAllComments(classifiedId);
-      Iterator<Comment> it = (Iterator<Comment>) comments.iterator();
+      Iterator<Comment> it = comments.iterator();
       while (it.hasNext()) {
-        Comment comment = (Comment) it.next();
+        Comment comment = it.next();
         CommentPK commentPK = comment.getCommentPK();
-        getCommentBm().deleteComment(commentPK);
+        getCommentController().deleteComment(commentPK);
       }
     } catch (RemoteException e) {
       throw new ClassifiedsRuntimeException("ClassifedsSessionController.deleteClassified()",
@@ -493,8 +485,8 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
    * @param listName : String
    * @return a Hashtable of <String, String>
    */
-  public Hashtable<String, String> createListField(String listName) {
-    Hashtable<String, String> fields = new Hashtable<String, String>();
+  private Map<String, String> createListField(String listName) {
+    Map<String, String> fields = Collections.synchronizedMap(new HashMap<String, String>());
     // création de la hashtable (key,value)
     String xmlFormName = getXMLFormName();
     if (StringUtil.isDefined(xmlFormName)) {
@@ -562,7 +554,7 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
   public boolean isDraftEnabled() {
     return "yes".equalsIgnoreCase(getComponentParameterValue("draft"));
   }
-  
+
   public boolean isValidationEnabled() {
     return "yes".equalsIgnoreCase(getComponentParameterValue("validation"));
   }
@@ -581,20 +573,17 @@ public class ClassifiedsSessionController extends AbstractComponentSessionContro
     return classifiedsBm;
   }
 
-  public CommentBm getCommentBm() {
-    CommentBm commentBm = null;
-    try {
-      CommentBmHome commentHome =
-          (CommentBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.COMMENT_EJBHOME,
-          CommentBmHome.class);
-      commentBm = commentHome.create();
-    } catch (Exception e) {
-      throw new CommentRuntimeException("BlogSessionController.getCommentBm()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+  /**
+   * Gets a controller of operations on comments.
+   * @return a CommentController instance.
+   */
+  public CommentController getCommentController() {
+    if (commentController == null) {
+      commentController = new CommentController();
     }
-    return commentBm;
+    return commentController;
   }
-  
+
   /**
    * Gets an instance of PublicationTemplateManager.
    * @return an instance of PublicationTemplateManager.

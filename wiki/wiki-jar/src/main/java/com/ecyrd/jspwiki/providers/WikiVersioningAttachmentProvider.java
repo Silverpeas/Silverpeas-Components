@@ -100,12 +100,10 @@ public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider 
       versioningBm.deleteDocument(new DocumentPK(documentId,
           WikiMultiInstanceManager.getComponentId()));
     } catch (NumberFormatException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
     } catch (RemoteException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
@@ -121,12 +119,10 @@ public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider 
       versioningBm.deleteDocument(new DocumentPK(documentId,
           WikiMultiInstanceManager.getComponentId()));
     } catch (NumberFormatException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
     } catch (RemoteException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
@@ -192,17 +188,14 @@ public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider 
       }
       return getVersioningBm().getLastDocumentVersion(docPk);
     } catch (RemoteException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
     } catch (UtilException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
     } catch (CreateException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
@@ -215,17 +208,14 @@ public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider 
     try {
       return getVersioningBm().getDocumentVersions(docPk);
     } catch (RemoteException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
     } catch (UtilException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
     } catch (CreateException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
@@ -249,22 +239,18 @@ public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider 
       }
       return null;
     } catch (WikiException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
     } catch (RemoteException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
     } catch (UtilException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
     } catch (CreateException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
@@ -287,7 +273,6 @@ public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider 
         attachments.add(attachment);
       }
     } catch (ProviderException e) {
-      e.printStackTrace();
     }
     return attachments;
   }
@@ -319,22 +304,18 @@ public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider 
         }
       }
     } catch (WikiException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
     } catch (RemoteException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
     } catch (UtilException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
     } catch (CreateException e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;
@@ -408,13 +389,13 @@ public class WikiVersioningAttachmentProvider implements WikiAttachmentProvider 
         document.setPk(documentPK);
       }
       if (newVersion.getType() == DocumentVersion.TYPE_PUBLIC_VERSION) {
-        CallBackManager.invoke(CallBackManager.ACTION_VERSIONING_UPDATE,
+        CallBackManager callBackManager = CallBackManager.get();
+        callBackManager.invoke(CallBackManager.ACTION_VERSIONING_UPDATE,
             newVersion.getAuthorId(), document.getForeignKey().getInstanceId(),
             document.getForeignKey().getId());
         indexer.createIndex(document, newVersion);
       }
     } catch (Exception e) {
-      e.printStackTrace();
       ProviderException ex = new ProviderException(e.getMessage());
       ex.initCause(e);
       throw ex;

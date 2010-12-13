@@ -33,7 +33,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -47,7 +46,6 @@ import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
@@ -64,9 +62,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
+import static com.silverpeas.classifieds.ClassifiedUtil.*;
 
 /**
  * @author
@@ -244,10 +242,7 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
       if (userId != null) {
 
         Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-
-        String resource = "com.silverpeas.classifieds.multilang.classifiedsBundle";
-        ResourceLocator message = new ResourceLocator(resource, I18NHelper.defaultLanguage);
-        String subject = getValidationNotificationSubject(classified, message);
+        String subject = getValidationNotificationSubject(classified, I18NHelper.defaultLanguage);
         String templateName = "validated";
         if (!ClassifiedDetail.VALID.equals(classified.getStatus())) {
           templateName = "refused";
@@ -257,14 +252,11 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
                 templateName);
 
         for (String language : I18NHelper.getAllSupportedLanguages()) {
-          SilverpeasTemplate template = getNewTemplate();
-          setClassifiedCommonTemplateAttributes(template, classified);
+          SilverpeasTemplate template = newTemplate(classified);
           template.setAttribute("refusalMotive", refusalMotive);
           templates.put(language, template);
-
-          message = new ResourceLocator(resource, language);
           notifMetaData.addLanguage(language,
-              getValidationNotificationSubject(classified, message), "");
+              getValidationNotificationSubject(classified, language), "");
         }
 
         notifMetaData.addUserRecipient(userId);
@@ -279,11 +271,6 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
     }
   }
 
-  public String getClassifiedUrl(ClassifiedDetail classified) {
-    return "/Rclassifieds/" + classified.getInstanceId() + "/searchResult?Type=Classified&Id=" +
-        classified.getClassifiedId();
-  }
-
   @Override
   public void sendSubscriptionsNotification(String field1, String field2,
       ClassifiedDetail classified) {
@@ -292,10 +279,7 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
     if (users != null) {
       try {
         Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-
-        String resource = "com.silverpeas.classifieds.multilang.classifiedsBundle";
-        ResourceLocator message = new ResourceLocator(resource, I18NHelper.defaultLanguage);
-        String subject = message.getString("classifieds.mailNewPublicationSubscription");
+        String subject = getMessage("classifieds.mailNewPublicationSubscription");
         NotificationMetaData notifMetaData =
             new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
                 "subscription");
@@ -303,13 +287,10 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
         Iterator<String> languages = I18NHelper.getLanguages();
         while (languages.hasNext()) {
           String language = languages.next();
-          SilverpeasTemplate template = getNewTemplate();
-          setClassifiedCommonTemplateAttributes(template, classified);
+          SilverpeasTemplate template = newTemplate(classified);
           templates.put(language, template);
-
-          message = new ResourceLocator(resource, language);
-          notifMetaData.addLanguage(language, message.getString(
-              "classifieds.mailNewPublicationSubscription", subject), "");
+          notifMetaData.addLanguage(language, getMessage(
+              "classifieds.mailNewPublicationSubscription", subject, language), "");
         }
 
         notifMetaData.setUserRecipients(users);
@@ -323,13 +304,12 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
     }
   }
 
-  private String getValidationNotificationSubject(ClassifiedDetail classified,
-      ResourceLocator message) {
+  private String getValidationNotificationSubject(ClassifiedDetail classified, final String language) {
     String subject = "";
     if (ClassifiedDetail.VALID.equals(classified.getStatus())) {
-      subject = message.getString("classifieds.classifiedValidated");
+      subject = getMessage("classifieds.classifiedValidated", language);
     } else {
-      subject = message.getString("classifieds.classifiedRefused");
+      subject = getMessage("classifieds.classifiedRefused", language);
     }
     return subject;
   }
@@ -501,10 +481,7 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
     if (ClassifiedDetail.TO_VALIDATE.equalsIgnoreCase(classified.getStatus())) {
       try {
         Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-
-        String resource = "com.silverpeas.classifieds.multilang.classifiedsBundle";
-        ResourceLocator message = new ResourceLocator(resource, I18NHelper.defaultLanguage);
-        String subject = message.getString("classifieds.supervisorNotifSubject");
+        String subject = getMessage("classifieds.supervisorNotifSubject");
         NotificationMetaData notifMetaData =
             new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
                 "tovalidate");
@@ -512,13 +489,10 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
         Iterator<String> languages = I18NHelper.getLanguages();
         while (languages.hasNext()) {
           String language = languages.next();
-          SilverpeasTemplate template = getNewTemplate();
-          setClassifiedCommonTemplateAttributes(template, classified);
+          SilverpeasTemplate template = newTemplate(classified);
           templates.put(language, template);
-
-          message = new ResourceLocator(resource, language);
-          notifMetaData.addLanguage(language, message.getString(
-              "classifieds.supervisorNotifSubject", subject), "");
+          notifMetaData.addLanguage(language, getMessage(
+              "classifieds.supervisorNotifSubject", subject, language), "");
         }
 
         List<String> roles = new ArrayList<String>();
@@ -671,25 +645,6 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
           SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
     return con;
-  }
-
-  protected SilverpeasTemplate getNewTemplate() {
-    ResourceLocator rs =
-        new ResourceLocator("com.silverpeas.classifieds.settings.classifiedsSettings", "");
-    Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs
-        .getString("templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs
-        .getString("customersTemplatePath"));
-
-    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
-  }
-
-  private void setClassifiedCommonTemplateAttributes(SilverpeasTemplate template,
-      ClassifiedDetail classified) {
-    template.setAttribute("classified", classified);
-    template.setAttribute("classifiedName", classified.getTitle());
-    template.setAttribute("silverpeasURL", getClassifiedUrl(classified));
   }
 
   public void ejbCreate() {

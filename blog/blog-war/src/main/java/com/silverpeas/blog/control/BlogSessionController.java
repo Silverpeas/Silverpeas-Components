@@ -28,8 +28,6 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.Vector;
 
 import com.silverpeas.blog.control.ejb.BlogBm;
 import com.silverpeas.blog.control.ejb.BlogBmHome;
@@ -39,6 +37,7 @@ import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
 import com.silverpeas.myLinks.ejb.MyLinksBm;
 import com.silverpeas.myLinks.ejb.MyLinksBmHome;
+import com.silverpeas.myLinks.model.LinkDetail;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.comment.ejb.CommentBm;
@@ -67,6 +66,7 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import java.util.List;
 
 public class BlogSessionController extends AbstractComponentSessionController {
   private Calendar currentBeginDate = Calendar.getInstance(); // format = yyyy/MM/ddd
@@ -130,7 +130,9 @@ public class BlogSessionController extends AbstractComponentSessionController {
     }
   }
 
-  public Collection<PostDetail> postsByArchive(String beginDate, String endDate) {
+  public Collection<PostDetail> postsByArchive(String theBeginDate, String theEndDate) {
+    String beginDate = theBeginDate;
+    String endDate = theEndDate;
     if (endDate == null || endDate.length() == 0 || "null".equals(endDate)) {
       beginDate = getCurrentBeginDateAsString();
       endDate = getCurrentEndDateAsString();
@@ -299,14 +301,15 @@ public class BlogSessionController extends AbstractComponentSessionController {
   }
 
   private String getNotificationBody(PostDetail post, ResourceLocator message, String senderName) {
-    StringBuffer messageText = new StringBuffer();
+    StringBuilder messageText = new StringBuilder();
     messageText.append(senderName).append(" ");
     messageText.append(message.getString("blog.notifInfo")).append("\n\n");
     messageText.append(message.getString("blog.notifName")).append(" : ").append(
         post.getPublication().getName()).append("\n");
-    if (StringUtil.isDefined(post.getPublication().getDescription()))
+    if (StringUtil.isDefined(post.getPublication().getDescription())) {
       messageText.append(message.getString("blog.notifDesc")).append(" : ").append(
           post.getPublication().getDescription()).append("\n");
+    }
     return messageText.toString();
   }
 
@@ -329,17 +332,11 @@ public class BlogSessionController extends AbstractComponentSessionController {
   public Collection<Comment> getAllComments(String postId) {
     try {
       CommentPK foreign_pk = new CommentPK(postId, null, getComponentId());
-
-      Vector<Comment> vComments = null;
-      Comment comment;
-      vComments = getCommentBm().getAllComments(foreign_pk);
-      Vector vReturn = new Vector(vComments.size());
-      for (Enumeration e = vComments.elements(); e.hasMoreElements();) {
-        comment = (Comment) e.nextElement();
+      List<Comment>  allComments = getCommentBm().getAllComments(foreign_pk);
+      for (Comment comment : allComments) {
         comment.setOwner(getUserDetail(Integer.toString(comment.getOwnerId())).getDisplayedName());
-        vReturn.addElement(comment);
       }
-      return vReturn;
+      return allComments;
     } catch (RemoteException e) {
       throw new BlogRuntimeException("BlogSessionController.getAllComments()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
@@ -416,7 +413,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
     }
   }
 
-  public Collection getAllLinks() {
+  public Collection<LinkDetail> getAllLinks() {
     try {
       return getMyLinksBm().getAllLinksByInstance(getComponentId());
     } catch (RemoteException e) {
@@ -499,6 +496,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
     return "yes".equalsIgnoreCase(getComponentParameterValue("rss"));
   }
 
+  @Override
   public String getRSSUrl() {
     if (isUseRss()) {
       return super.getRSSUrl().replaceAll("&", "&amp;"); //replace to remove when all composants will be XHTML compliant
@@ -507,11 +505,11 @@ public class BlogSessionController extends AbstractComponentSessionController {
   }
 
   public Boolean isPdcUsed() {
-    return new Boolean("yes".equalsIgnoreCase(getComponentParameterValue("usePdc")));
+    return "yes".equalsIgnoreCase(getComponentParameterValue("usePdc"));
   }
 
   public Boolean isDraftVisible() {
-    return new Boolean("yes".equalsIgnoreCase(getComponentParameterValue("draftVisible")));
+    return "yes".equalsIgnoreCase(getComponentParameterValue("draftVisible"));
   }
 
   public int getSilverObjectId(String objectId) {

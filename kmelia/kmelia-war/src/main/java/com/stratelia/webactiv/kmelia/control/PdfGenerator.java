@@ -108,7 +108,6 @@ import com.stratelia.webactiv.util.publication.info.model.InfoTextDetail;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import java.io.OutputStream;
-import java.util.Vector;
 import org.w3c.tidy.Configuration;
 
 public class PdfGenerator extends PdfPageEventHelper {
@@ -138,7 +137,7 @@ public class PdfGenerator extends PdfPageEventHelper {
   /** The font that will be used. */
   private BaseFont baseFontHelv;
   private String serverURL;
-  
+
   private static final ResourceLocator publicationSettings = new ResourceLocator(
 	      "com.stratelia.webactiv.util.publication.publicationSettings", "fr");
 
@@ -817,7 +816,7 @@ public class PdfGenerator extends PdfPageEventHelper {
    * @param documentPdf
    * @throws DocumentException
    */
-  private void generateSimpleFilesTable(Document documentPdf) throws DocumentException {    
+  private void generateSimpleFilesTable(Document documentPdf) throws DocumentException {
     String idPubli = publicationDetail.getPK().getId();
     String instanceId = kmeliaSessionController.getComponentId();
     AttachmentPK foreignKey = new AttachmentPK(idPubli, instanceId);
@@ -830,8 +829,8 @@ public class PdfGenerator extends PdfPageEventHelper {
       Table tbl = addTableAttachments("A");
       for (AttachmentDetail attachmentDetail : attachments) {
         addRowToTable(tbl, null, new String[]{attachmentDetail.getLogicalName(publiContentLanguage),
-            attachmentDetail.getTitle(publiContentLanguage), 
-            attachmentDetail.getInfo(publiContentLanguage), 
+            attachmentDetail.getTitle(publiContentLanguage),
+            attachmentDetail.getInfo(publiContentLanguage),
             attachmentDetail.getAttachmentFileSize(publiContentLanguage),
             DateUtil.getOutputDate(attachmentDetail.getCreationDate(publiContentLanguage),
             language)}, true, false);
@@ -840,7 +839,7 @@ public class PdfGenerator extends PdfPageEventHelper {
       documentPdf.add(tbl);
     }
   }
-  
+
   private void generateVersionnedFileTable(Document documentPdf)
       throws RemoteException, DocumentException {
     String idPubli = publicationDetail.getPK().getId();
@@ -848,7 +847,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     VersioningUtil versioningUtil = new VersioningUtil();
     ForeignPK foreignKey = new ForeignPK(idPubli, instanceId);
     @SuppressWarnings("unchecked")
-    ArrayList<com.stratelia.silverpeas.versioning.model.Document> documents =
+    java.util.List<com.stratelia.silverpeas.versioning.model.Document> documents =
         versioningUtil.getDocuments(foreignKey);
     if (documents != null && !documents.isEmpty()) {
       // Titre
@@ -1018,7 +1017,8 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   private void generateComments(Document document)
       throws DocumentException, RemoteException, ParseException {
-    Vector<Comment> comments = CommentController.getAllComments(new CommentPK(
+    CommentController commentController = new CommentController();
+    java.util.List<Comment> comments = commentController.getAllComments(new CommentPK(
         publicationDetail.getPK().getId(), null, kmeliaSessionController.getComponentId()));
     if (comments != null && comments.size() > 0) {
       /*

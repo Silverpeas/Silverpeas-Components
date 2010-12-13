@@ -51,6 +51,7 @@ public class WebPagesCallBack extends CallBack {
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int, int,
    * java.lang.String, java.lang.Object)
    */
+  @Override
   public void doInvoke(int action, int iParam, String sParam, Object extraParam) {
     SilverTrace.info("webPages", "WebPagesCallback.doInvoke()",
         "root.MSG_GEN_ENTER_METHOD", "action = " + action + ", iParam = "
@@ -94,8 +95,10 @@ public class WebPagesCallBack extends CallBack {
    * (non-Javadoc)
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#subscribe()
    */
+  @Override
   public void subscribe() {
-    CallBackManager.subscribeAction(CallBackManager.ACTION_ON_WYSIWYG, this);
+    CallBackManager callBackManager = CallBackManager.get();
+    callBackManager.subscribeAction(CallBackManager.ACTION_ON_WYSIWYG, this);
   }
 
   private boolean isWebPageModified(String pubId, int action) {

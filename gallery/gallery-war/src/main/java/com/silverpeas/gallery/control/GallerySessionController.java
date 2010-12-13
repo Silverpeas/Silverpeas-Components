@@ -25,7 +25,6 @@ package com.silverpeas.gallery.control;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +32,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
@@ -65,9 +63,7 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.comment.control.CommentController;
-import com.stratelia.silverpeas.comment.ejb.CommentBm;
-import com.stratelia.silverpeas.comment.ejb.CommentBmHome;
-import com.stratelia.silverpeas.comment.ejb.CommentRuntimeException;
+import com.stratelia.silverpeas.comment.model.Comment;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
@@ -100,9 +96,8 @@ import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.node.model.NodeSelection;
-import com.stratelia.webactiv.util.viewGenerator.html.Encode;
 
-public class GallerySessionController extends AbstractComponentSessionController {
+public final class GallerySessionController extends AbstractComponentSessionController {
   // déclaration des variables
 
   private String currentAlbumId = "0";
@@ -112,12 +107,12 @@ public class GallerySessionController extends AbstractComponentSessionController
   private String tri = "CreationDateAsc";
   private boolean viewAllPhoto = false;
   private String currentOrderId = "0";
-  private Collection<String> listSelected = new ArrayList<String>();
+  private List<String> listSelected = new ArrayList<String>();
   private boolean isViewNotVisible = false;
   // gestion de la recherche par mot clé
   private String searchKeyWord = "";
-  private Collection<PhotoDetail> searchResultListPhotos = new ArrayList<PhotoDetail>();
-  private Collection<PhotoDetail> restrictedListPhotos = new ArrayList<PhotoDetail>();
+  private List<PhotoDetail> searchResultListPhotos = new ArrayList<PhotoDetail>();
+  private List<PhotoDetail> restrictedListPhotos = new ArrayList<PhotoDetail>();
   private boolean isSearchResult = false;
   private QueryDescription query = new QueryDescription();
   private SearchContext pdcSearchContext;
@@ -126,12 +121,24 @@ public class GallerySessionController extends AbstractComponentSessionController
   private boolean select = false;
   private ResourceLocator metadataSettings = null;
   private ResourceLocator metadataResources = null;
-  private CommentBm commentBm = null;
+  private CommentController commentController = null;
   // pagination de la liste des résultats (PDC via DomainsBar)
   private int indexOfFirstItemToDisplay = 0;
   private AdminController m_AdminCtrl = null;
   // panier en cours
   private List<String> basket = new ArrayList<String>(); // liste des photos mise dans le panier
+
+
+  /**
+   * Gets the business controller of operations on comments
+   * @return a COmmentController instance.
+   */
+  private CommentController getCommentController() {
+    if (commentController == null) {
+      commentController = new CommentController();
+    }
+    return commentController;
+  }
 
   /**
    * Standard Session Controller Constructeur
@@ -193,23 +200,8 @@ public class GallerySessionController extends AbstractComponentSessionController
     return photos;
   }
 
-  public Vector getAllComments(String id) throws RemoteException {
-    return getCommentBm().getAllComments(new PhotoPK(id, getSpaceId(), getComponentId()));
-  }
-
-  public CommentBm getCommentBm() {
-    if (commentBm == null) {
-      try {
-        CommentBmHome commentHome = (CommentBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.COMMENT_EJBHOME, CommentBmHome.class);
-        commentBm = commentHome.create();
-      } catch (Exception e) {
-        throw new CommentRuntimeException("GallerySessionController.getCommentBm()",
-            SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      }
-    }
-
-    return commentBm;
+  public  List<Comment> getAllComments(String id) throws RemoteException {
+    return getCommentController().getAllComments(new PhotoPK(id, getSpaceId(), getComponentId()));
   }
 
   public int getSilverObjectId(String objectId) {
@@ -408,7 +400,7 @@ public class GallerySessionController extends AbstractComponentSessionController
     SilverTrace.info("gallery", "GallerySessionController.getPhoto", "root.MSG_GEN_PARAM_VALUE",
         "currentAlbumId fin = " + currentAlbumId);
     // mise à jour du rang de la photo courante
-    List<PhotoDetail> photos = (List<PhotoDetail>) currentAlbum.getPhotos();
+    List<PhotoDetail> photos = currentAlbum.getPhotos();
     rang = photos.indexOf(photo);
 
     return photo;
@@ -419,8 +411,8 @@ public class GallerySessionController extends AbstractComponentSessionController
     try {
       // rechercher le rang de la photo précédente
       int rangPrevious = rang - 1;
-      List<PhotoDetail> photos = (List<PhotoDetail>) currentAlbum.getPhotos();
-      photo = (PhotoDetail) photos.get(rangPrevious);
+      List<PhotoDetail> photos = currentAlbum.getPhotos();
+      photo = photos.get(rangPrevious);
       // ajout des metadata depuis le fichier des properties
       try {
         ImageHelper.setMetaData(photo, getLanguage());
@@ -443,8 +435,8 @@ public class GallerySessionController extends AbstractComponentSessionController
     try {
       // rechercher le rang de la photo précédente
       int rangNext = rang + 1;
-      List<PhotoDetail> photos = (List<PhotoDetail>) currentAlbum.getPhotos();
-      photo = (PhotoDetail) photos.get(rangNext);
+      List<PhotoDetail> photos = currentAlbum.getPhotos();
+      photo = photos.get(rangNext);
       // ajout des metadata depuis le fichier des properties
       try {
         ImageHelper.setMetaData(photo, getLanguage());
@@ -467,8 +459,8 @@ public class GallerySessionController extends AbstractComponentSessionController
     String photoId = null;
     try {
       // rechercher le rang de la photo précédente
-      List<PhotoDetail> photos = (List<PhotoDetail>) currentAlbum.getPhotos();
-      photo = (PhotoDetail) photos.get(rang);
+      List<PhotoDetail> photos = currentAlbum.getPhotos();
+      photo = photos.get(rang);
       photoId = photo.getPhotoPK().getId();
     } catch (Exception e) {
       // traitement des exceptions
@@ -557,19 +549,19 @@ public class GallerySessionController extends AbstractComponentSessionController
   public void sortPhotos() {
     if (tri.equals("CreationDateAsc")) {
       GSCCreationDateComparatorAsc comparateur = new GSCCreationDateComparatorAsc();
-      Collections.sort((List<PhotoDetail>) currentAlbum.getPhotos(), comparateur);
+      Collections.sort(currentAlbum.getPhotos(), comparateur);
     } else if (tri.equals("CreationDateDesc")) {
       GSCCreationDateComparatorDesc comparateur = new GSCCreationDateComparatorDesc();
-      Collections.sort((List<PhotoDetail>) currentAlbum.getPhotos(), comparateur);
+      Collections.sort(currentAlbum.getPhotos(), comparateur);
     } else if (tri.equals("Size")) {
       GSCSizeComparatorAsc comparateur = new GSCSizeComparatorAsc();
-      Collections.sort((List<PhotoDetail>) currentAlbum.getPhotos(), comparateur);
+      Collections.sort(currentAlbum.getPhotos(), comparateur);
     } else if (tri.equals("Title")) {
       GSCTitleComparatorAsc comparateur = new GSCTitleComparatorAsc();
-      Collections.sort((List) currentAlbum.getPhotos(), comparateur);
+      Collections.sort(currentAlbum.getPhotos(), comparateur);
     } else if (tri.equals("Author")) {
       GSCAuthorComparatorAsc comparateur = new GSCAuthorComparatorAsc();
-      Collections.sort((List) currentAlbum.getPhotos(), comparateur);
+      Collections.sort(currentAlbum.getPhotos(), comparateur);
     }
   }
 
@@ -714,19 +706,19 @@ public class GallerySessionController extends AbstractComponentSessionController
   }
 
   public Boolean isDragAndDropEnabled() {
-    return new Boolean("yes".equalsIgnoreCase(getComponentParameterValue("dragAndDrop")));
+    return "yes".equalsIgnoreCase(getComponentParameterValue("dragAndDrop"));
   }
 
   public Boolean isUsePdc() {
-    return new Boolean("yes".equalsIgnoreCase(getComponentParameterValue("usePdc")));
+    return "yes".equalsIgnoreCase(getComponentParameterValue("usePdc"));
   }
 
   public Boolean isViewMetadata() {
-    return new Boolean("yes".equalsIgnoreCase(getComponentParameterValue("viewMetadata")));
+    return "yes".equalsIgnoreCase(getComponentParameterValue("viewMetadata"));
   }
 
   public Boolean isMakeWatermark() {
-    return new Boolean("yes".equalsIgnoreCase(getComponentParameterValue("watermark")));
+    return "yes".equalsIgnoreCase(getComponentParameterValue("watermark"));
   }
 
   public String getWatermarkHD() {
@@ -752,11 +744,11 @@ public class GallerySessionController extends AbstractComponentSessionController
   }
 
   public Boolean isViewList() {
-    return new Boolean("yes".equalsIgnoreCase(getComponentParameterValue("viewList")));
+    return "yes".equalsIgnoreCase(getComponentParameterValue("viewList"));
   }
 
   public Boolean areCommentsEnabled() {
-    return new Boolean(!"no".equalsIgnoreCase(getComponentParameterValue("comments")));
+    return !"no".equalsIgnoreCase(getComponentParameterValue("comments"));
   }
 
   public String getPreviewSize() {
@@ -808,7 +800,7 @@ public class GallerySessionController extends AbstractComponentSessionController
   }
 
   public Boolean isViewInWysiwyg() {
-    return new Boolean("yes".equalsIgnoreCase(getComponentParameterValue("viewInWysiwyg")));
+    return "yes".equalsIgnoreCase(getComponentParameterValue("viewInWysiwyg"));
   }
 
   public void initIndex() {
@@ -940,7 +932,7 @@ public class GallerySessionController extends AbstractComponentSessionController
 
   private String getNotificationBody(PhotoDetail photoDetail, String htmlPath,
       ResourceLocator message, String senderName) {
-    StringBuffer messageText = new StringBuffer();
+    StringBuilder messageText = new StringBuilder();
     messageText.append(senderName).append(" ");
     messageText.append(message.getString("gallery.notifInfo")).append("\n\n");
     messageText.append(message.getString("gallery.notifName")).append(" : ").append(
@@ -981,7 +973,8 @@ public class GallerySessionController extends AbstractComponentSessionController
   }
 
   public void setRestrictedListPhotos(Collection<PhotoDetail> restrictedListPhotos) {
-    this.restrictedListPhotos = restrictedListPhotos;
+    this.restrictedListPhotos = (restrictedListPhotos == null ? null :
+        new ArrayList<PhotoDetail>(restrictedListPhotos));
   }
 
   public Collection<PhotoDetail> getSearchResultListPhotos() {
@@ -989,7 +982,8 @@ public class GallerySessionController extends AbstractComponentSessionController
   }
 
   public void setSearchResultListPhotos(Collection<PhotoDetail> searchResultListPhotos) {
-    this.searchResultListPhotos = searchResultListPhotos;
+    this.searchResultListPhotos = (searchResultListPhotos == null ? null:
+        new ArrayList<PhotoDetail>(searchResultListPhotos));
   }
 
   public String getSearchKeyWord() {
@@ -1011,7 +1005,7 @@ public class GallerySessionController extends AbstractComponentSessionController
   public Boolean isPrivateSearch() {
     // retourne true si on utilise le moteur de recherche dédié
 
-    return new Boolean("yes".equalsIgnoreCase(getComponentParameterValue("privateSearch")));
+    return "yes".equalsIgnoreCase(getComponentParameterValue("privateSearch"));
   }
 
   public boolean isAlbumAdmin(String profile, String albumId, String userId) {
@@ -1095,6 +1089,7 @@ public class GallerySessionController extends AbstractComponentSessionController
     try {
       SilverTrace.info("gallery", "GalleryRequestRooter.paste()", "root.MSG_GEN_PARAM_VALUE",
           "clipboard = " + getClipboardName() + " count=" + getClipboardCount());
+      CallBackManager callBackManager = CallBackManager.get();
       Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
       Iterator<ClipboardSelection> clipObjectIterator = clipObjects.iterator();
       while (clipObjectIterator.hasNext()) {
@@ -1105,8 +1100,8 @@ public class GallerySessionController extends AbstractComponentSessionController
                 PhotoSelection.PhotoDetailFlavor);
             pastePhoto(photo, clipObject.isCutted());
             if (clipObject.isCutted()) {
-              CallBackManager.invoke(CallBackManager.ACTION_CUTANDPASTE, Integer.parseInt(
-                  getUserId()), getComponentId(), photo.getPhotoPK());
+              callBackManager.invoke(CallBackManager.ACTION_CUTANDPASTE, Integer
+                  .parseInt(getUserId()), getComponentId(), photo.getPhotoPK());
             }
           }
           if (clipObject.isDataFlavorSupported(NodeSelection.NodeDetailFlavor)) {
@@ -1116,8 +1111,8 @@ public class GallerySessionController extends AbstractComponentSessionController
                 "albumId = " + album.getId());
             pasteAlbum(album, currentAlbum, clipObject.isCutted());
             if (clipObject.isCutted()) {
-              CallBackManager.invoke(CallBackManager.ACTION_CUTANDPASTE, Integer.parseInt(
-                  getUserId()), getComponentId(), album.getNodePK());
+              callBackManager.invoke(CallBackManager.ACTION_CUTANDPASTE, Integer
+                  .parseInt(getUserId()), getComponentId(), album.getNodePK());
             }
           }
         }
@@ -1152,7 +1147,7 @@ public class GallerySessionController extends AbstractComponentSessionController
       NodeDetail fromNode = null;
       NodePK toNodePK = null;
       for (int i = 0; i < treeToPaste.size(); i++) {
-        fromNode = (NodeDetail) treeToPaste.get(i);
+        fromNode = treeToPaste.get(i);
         if (fromNode != null) {
           toNodePK = getNodePK(fromNode.getNodePK().getId());
 
@@ -1181,7 +1176,7 @@ public class GallerySessionController extends AbstractComponentSessionController
       List<NodePK> nodeIdsToPaste = new ArrayList<NodePK>();
       NodeDetail oneNodeToPaste = null;
       for (int i = 0; i < treeToPaste.size(); i++) {
-        oneNodeToPaste = (NodeDetail) treeToPaste.get(i);
+        oneNodeToPaste = treeToPaste.get(i);
         if (oneNodeToPaste != null) {
           nodeIdsToPaste.add(oneNodeToPaste.getNodePK());
         }
@@ -1285,7 +1280,7 @@ public class GallerySessionController extends AbstractComponentSessionController
           getGalleryBm().deleteIndex(fromPhotoPK);
 
           // move comments
-          CommentController.moveComments(fromForeignPK, toForeignPK, indexIt);
+          getCommentController().moveComments(fromForeignPK, toForeignPK, indexIt);
 
           // move pdc positions
           int fromSilverObjectId = getGalleryBm().getSilverObjectId(fromPhotoPK);
@@ -1362,7 +1357,7 @@ public class GallerySessionController extends AbstractComponentSessionController
 
         // move comments
         boolean indexIt = true;
-        CommentController.moveComments(fromForeignPK, toForeignPK, indexIt);
+        getCommentController().moveComments(fromForeignPK, toForeignPK, indexIt);
 
         String xmlFormName = getXMLFormName();
 
@@ -1401,7 +1396,8 @@ public class GallerySessionController extends AbstractComponentSessionController
       }
     } catch (Exception e) {
       // TODO Auto-generated catch block
-      e.printStackTrace();
+      SilverTrace.info("gallery", "GallerySessionController.pastPhoto()",
+              "root.EX_NO_MESSAGE", e);
     }
   }
 
@@ -1665,7 +1661,7 @@ public class GallerySessionController extends AbstractComponentSessionController
               title = EncodeHelper.javaStringToHtmlString(photo.getImageName());
             }
           }
-          url = FileServerUtils.getUrl(getSpaceId(), getComponentId(), URLEncoder.encode(title, "UTF-8"),
+          url = FileServerUtils.getUrl(getSpaceId(), getComponentId(), getUrlEncodedParameter(title),
               photo.getImageMimeType(), nomRep);
         }
       }
@@ -1687,11 +1683,11 @@ public class GallerySessionController extends AbstractComponentSessionController
     int indice = 1;
     while (StringUtil.isDefined(property)) {
       // lecture de la property suivante
-      indice = indice + 1;
+      indice += 1;
       property = getMetadataSettings().getString("METADATA_" + String.valueOf(indice) + "_TAG");
     }
 
-    indice = indice + 1;
+    indice += 1;
 
     // Traitement des metadata IPTC
     property = getMetadataSettings().getString("IPTC_" + Integer.toString(indice) + "_TAG");
@@ -1734,7 +1730,7 @@ public class GallerySessionController extends AbstractComponentSessionController
       }
 
       // lecture de la property suivante
-      indice = indice + 1;
+      indice += 1;
       property = getMetadataSettings().getString("IPTC_" + Integer.toString(indice) + "_TAG");
     }
     return metaDatas;
@@ -1771,23 +1767,25 @@ public class GallerySessionController extends AbstractComponentSessionController
 
   public Boolean isBasket() {
     if (getUserDetail().getAccessLevel().equals("G")) {
-      return Boolean.FALSE;
-    } else {
+      return false;
+    }
+    else {
       return StringUtil.getBooleanValue(getComponentParameterValue("basket"));
     }
   }
 
   public Boolean isGuest() {
     if (getUserDetail().getAccessLevel().equals("G")) {
-      return Boolean.TRUE;
+      return true;
     }
     return false;
   }
 
   public Boolean isOrder() {
     if (getUserDetail().getAccessLevel().equals("G")) {
-      return Boolean.FALSE;
-    } else {
+      return false;
+    }
+    else {
       return StringUtil.getBooleanValue(getComponentParameterValue("order"));
     }
   }

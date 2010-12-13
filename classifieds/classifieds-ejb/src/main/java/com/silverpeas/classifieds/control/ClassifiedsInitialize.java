@@ -23,15 +23,38 @@
  */
 package com.silverpeas.classifieds.control;
 
+import com.stratelia.silverpeas.silverpeasinitialize.CallBack;
 import com.stratelia.silverpeas.silverpeasinitialize.IInitialize;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class ClassifiedsInitialize implements IInitialize {
   public ClassifiedsInitialize() {
   }
 
+  @Override
   public boolean Initialize() {
+    initializeJobsScheduling();
+    initializeCallbacks();
+    return true;
+  }
+
+  /**
+   * Initializes the scheduling of the classifieds module's jobs
+   */
+  protected void initializeJobsScheduling() {
+    SilverTrace.info("classifieds", getClass().getSimpleName(), "root.EX_NO_MESSAGE",
+        "Initialize the scheduling");
     ScheduledDeleteClassifieds sc = new ScheduledDeleteClassifieds();
     sc.initialize();
-    return true;
+  }
+
+  /**
+   * Initializes the callbacks subscription within the CallBackManager.
+   */
+  protected void initializeCallbacks() {
+    SilverTrace.info("classifieds", getClass().getSimpleName(), "root.EX_NO_MESSAGE",
+        "Initialize the callbacks on events");
+    CallBack callback = new ClassifiedCommentCallback();
+    callback.subscribe();
   }
 }

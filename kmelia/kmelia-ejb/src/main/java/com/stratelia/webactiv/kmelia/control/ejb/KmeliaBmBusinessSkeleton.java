@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
@@ -574,7 +574,7 @@ public interface KmeliaBmBusinessSkeleton {
    * @return Collection of publication
    * @throws RemoteException
    */
-  public Collection<UserPublication> search(List<String> combination, String componentId)
+  public List<UserPublication> search(List<String> combination, String componentId)
       throws RemoteException;
 
   /**
@@ -584,7 +584,7 @@ public interface KmeliaBmBusinessSkeleton {
    * @return Collection of publication
    * @throws RemoteException
    */
-  public Collection<UserPublication> search(List<String> combination, int nbDays, String componentId)
+  public List<UserPublication> search(List<String> combination, int nbDays, String componentId)
       throws RemoteException;
 
   /**

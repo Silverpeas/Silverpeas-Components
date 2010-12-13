@@ -61,7 +61,7 @@ public class ClassifiedsRequestRouter
     extends ComponentRequestRouter {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
@@ -140,9 +140,9 @@ public class ClassifiedsRequestRouter
           String templateFileName = pubTemplate.getFileName();
           String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
           String field = classifiedsSC.getSearchFields1();
-          String keys = (String) pubTemplate.getRecordTemplate().getFieldTemplate(field).
+          String keys = pubTemplate.getRecordTemplate().getFieldTemplate(field).
               getParameters(classifiedsSC.getLanguage()).get("keys");
-          String values = (String) pubTemplate.getRecordTemplate().getFieldTemplate(field).
+          String values = pubTemplate.getRecordTemplate().getFieldTemplate(field).
               getParameters(classifiedsSC.getLanguage()).get("values");
           String label = pubTemplate.getRecordTemplate().getFieldTemplate(field).getFieldName();
           categories = createCategory(templateName, label, keys, values, classifiedsSC);
@@ -333,7 +333,7 @@ public class ClassifiedsRequestRouter
       } else if (function.equals("AddComment")) {
         // récupération des paramètres
         String message = request.getParameter("Message");
-        String classifiedId = (String) request.getParameter("ClassifiedId");
+        String classifiedId = request.getParameter("ClassifiedId");
         // ajout du commentaire
         classifiedsSC.addComment(classifiedId, message);
         // retour à la page de visualisation de la petite annonce
@@ -442,7 +442,7 @@ public class ClassifiedsRequestRouter
           // Ajout des résultats de la recherche dans la catégorie
           QueryDescription query = new QueryDescription();
           query.addFieldQuery(new FieldDescription(templateName + "$$" + label, fieldKey, null));
-          String values = (String) pubTemplate.getRecordTemplate().getFieldTemplate(field).
+          String values = pubTemplate.getRecordTemplate().getFieldTemplate(field).
               getParameters(classifiedsSC.getLanguage()).get("values");
           try {
             classifieds = classifiedsSC.search(query);
@@ -516,7 +516,7 @@ public class ClassifiedsRequestRouter
     }
     return pubTemplate;
   }
-  
+
   /**
    * Gets an instance of PublicationTemplateManager.
    * @return an instance of PublicationTemplateManager.

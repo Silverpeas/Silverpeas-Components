@@ -26,13 +26,15 @@ package com.silverpeas.gallery.model;
 import java.util.Collection;
 
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+import java.util.ArrayList;
+import java.util.List;
 
 public class AlbumDetail extends NodeDetail {
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
-  private Collection<PhotoDetail> photos;
+  private List<PhotoDetail> photos;
   private String permalink = null;
 
   public AlbumDetail(NodeDetail node) {
@@ -50,14 +52,15 @@ public class AlbumDetail extends NodeDetail {
     setOrder(node.getOrder());
   }
 
-  public Collection<PhotoDetail> getPhotos() {
+  public List<PhotoDetail> getPhotos() {
     return photos;
   }
 
   public void setPhotos(Collection<PhotoDetail> photos) {
-    this.photos = photos;
+    this.photos = new ArrayList<PhotoDetail>(photos);
   }
 
+  @Override
   public String getPermalink() {
     return permalink;
   }

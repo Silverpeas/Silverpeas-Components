@@ -80,18 +80,18 @@ public interface ProjectManagerBmBusinessSkeleton {
   // Gestion des jours non travailles
   public boolean isHolidayDate(HolidayDetail date) throws RemoteException;
 
-  public List getHolidayDates(String instanceId) throws RemoteException;
+  public List<Date> getHolidayDates(String instanceId) throws RemoteException;
 
-  public List getHolidayDates(String instanceId, Date beginDate, Date endDate)
+  public List<Date> getHolidayDates(String instanceId, Date beginDate, Date endDate)
       throws RemoteException;
 
   public void addHolidayDate(HolidayDetail holiday) throws RemoteException;
 
-  public void addHolidayDates(List holidayDates) throws RemoteException;
+  public void addHolidayDates(List<HolidayDetail> holidayDates) throws RemoteException;
 
   public void removeHolidayDate(HolidayDetail holiday) throws RemoteException;
 
-  public void removeHolidayDates(List holidayDates) throws RemoteException;
+  public void removeHolidayDates(List<HolidayDetail> holidayDates) throws RemoteException;
 
   public Date processEndDate(TaskDetail task) throws RemoteException;
 

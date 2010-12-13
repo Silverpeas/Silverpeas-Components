@@ -89,7 +89,7 @@ import javax.ejb.SessionContext;
 public class BlogBmEJB implements SessionBean {
 
   private static final long serialVersionUID = 1L;
-  static SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+  static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
 
   public Date getDateEvent(String pubId) {
     Connection con = initCon();
@@ -104,7 +104,7 @@ public class BlogBmEJB implements SessionBean {
   }
 
   /**
-   * 
+   *
    * @param post
    * @return
    */
@@ -343,7 +343,7 @@ public class BlogBmEJB implements SessionBean {
       }
       // rechercher le nombre de commentaire
       CommentPK foreign_pk = new CommentPK(pub.getPK().getId(), null, pub.getPK().getInstanceId());
-      Collection<Comment> comments = getCommentBm().getAllComments(foreign_pk);
+      List<Comment> comments = getCommentBm().getAllComments(foreign_pk);
 
       // recherche de la date d'evenement
       Connection con = initCon();
@@ -376,7 +376,7 @@ public class BlogBmEJB implements SessionBean {
           getPublicationBm().getAllPublications(pubPK);
       OrganizationController orgaController = new OrganizationController();
       for(String pubId : lastEvents) {
-        for(PublicationDetail pub : publications) {       
+        for(PublicationDetail pub : publications) {
           if (pub.getPK().getId().equals(pubId)) {
             posts.add(getPost(pub, orgaController));
           }
@@ -752,7 +752,8 @@ public class BlogBmEJB implements SessionBean {
   private void indexExternalElementsOfPublication(PublicationPK pubPK) {
     try {
       // index comments
-      CommentController.indexCommentsByForeignKey(pubPK);
+      CommentController commentController = new CommentController();
+      commentController.indexCommentsByForeignKey(pubPK);
     } catch (Exception e) {
       SilverTrace.error("blog", "BlogBmEJB.indexExternalElementsOfPublication",
           "Indexing comments failed", "pubPK = " + pubPK.toString(), e);

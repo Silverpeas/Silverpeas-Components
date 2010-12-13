@@ -55,6 +55,7 @@ public class KmeliaCallBack extends CallBack {
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#doInvoke(int, int,
    * java.lang.String, java.lang.Object)
    */
+  @Override
   public void doInvoke(int action, int iParam, String componentId,
       Object extraParam) {
     SilverTrace.info("kmelia", "KmeliaCallback.doInvoke()",
@@ -111,21 +112,23 @@ public class KmeliaCallBack extends CallBack {
    * (non-Javadoc)
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#subscribe()
    */
+  @Override
   public void subscribe() {
-    CallBackManager.subscribeAction(CallBackManager.ACTION_ON_WYSIWYG, this);
-    CallBackManager
+    CallBackManager callBackManager = CallBackManager.get();
+    callBackManager.subscribeAction(CallBackManager.ACTION_ON_WYSIWYG, this);
+    callBackManager
         .subscribeAction(CallBackManager.ACTION_ATTACHMENT_ADD, this);
-    CallBackManager.subscribeAction(CallBackManager.ACTION_ATTACHMENT_UPDATE,
+    callBackManager.subscribeAction(CallBackManager.ACTION_ATTACHMENT_UPDATE,
         this);
-    CallBackManager.subscribeAction(CallBackManager.ACTION_ATTACHMENT_REMOVE,
+    callBackManager.subscribeAction(CallBackManager.ACTION_ATTACHMENT_REMOVE,
         this);
-    CallBackManager
+    callBackManager
         .subscribeAction(CallBackManager.ACTION_VERSIONING_ADD, this);
-    CallBackManager.subscribeAction(CallBackManager.ACTION_VERSIONING_UPDATE,
+    callBackManager.subscribeAction(CallBackManager.ACTION_VERSIONING_UPDATE,
         this);
-    CallBackManager.subscribeAction(CallBackManager.ACTION_VERSIONING_REMOVE,
+    callBackManager.subscribeAction(CallBackManager.ACTION_VERSIONING_REMOVE,
         this);
-    CallBackManager.subscribeAction(CallBackManager.ACTION_CUTANDPASTE, this);
+    callBackManager.subscribeAction(CallBackManager.ACTION_CUTANDPASTE, this);
   }
 
   private boolean isPublicationModified(String pubId, int action) {
