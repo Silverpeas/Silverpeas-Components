@@ -1,0 +1,35 @@
+10
+
+dir
+0
+https://www.silverpeas.org/svn/silverpeas/components/trunk/classifieds/classifieds-ejb/src/test
+https://www.silverpeas.org/svn/silverpeas
+add
+
+
+
+
+
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+a8e77078-a1c7-4fa5-b8fc-53c5178a176c
+
+resources
+dir
+
+
+
+add
+
