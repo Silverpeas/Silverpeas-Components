@@ -43,6 +43,20 @@ void displayJavascriptAndFormToOperations(KmeliaSessionController kmeliaScc, Jsp
                 out.println("publicationWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);");
           out.println("}");
      out.println("}");
+     
+     out.println("function goToOperationInAnotherWindow(target, pubId, attachmentOrDocumentId, operation) {");
+          out.println("alertMsg = \""+kmeliaScc.getString("PubRemplirFormulaire")+"\";");
+          out.println("if (pubId == \"\") {");
+	        out.println("window.alert(alertMsg);");
+          out.println("} else { ");
+                out.println("url = target+\"?PubId=\"+pubId+\"&AttachmentOrDocumentId=\"+attachmentOrDocumentId+\"&Action=\"+operation;");
+                out.println("windowName = \"publicationWindow\";");
+                out.println("windowParams = \"directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars\";");
+                out.println("larg = \"740\";");
+				out.println("haut = \"600\";");
+                out.println("publicationWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);");
+          out.println("}");
+     out.println("}");
 
       out.println("function goToPathOperation(target, pubId, topicId, operation) {");
           out.println("alertMsg = \""+kmeliaScc.getString("PubRemplirFormulaire")+"\";");

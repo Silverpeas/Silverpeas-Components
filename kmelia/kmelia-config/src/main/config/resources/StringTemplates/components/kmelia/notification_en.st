@@ -1,8 +1,9 @@
-$senderName$  has created a new document which is now available... 
+$senderName$ inform you of a publication... 
 $if(senderMessage)$
 Content  :
 "$senderMessage$" 
 $endif$
+
 Access path of the publication "$publicationName$" was : $path$
 
 $if(notification_receiver_users)$

@@ -4,6 +4,7 @@
 package com.stratelia.webactiv.kmelia.control.ejb;
 
 import java.rmi.RemoteException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -17,6 +18,7 @@ import com.stratelia.webactiv.kmelia.model.FullPublication;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.kmelia.model.UserCompletePublication;
 import com.stratelia.webactiv.kmelia.model.UserPublication;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.coordinates.model.Coordinate;
 import com.stratelia.webactiv.util.coordinates.model.CoordinatePK;
@@ -30,6 +32,7 @@ import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.silverpeas.versioning.model.DocumentPK;
 
 /**
  * @author sfariello
@@ -412,15 +415,26 @@ public interface KmeliaBmBusinessSkeleton {
   public void sendModificationAlert(int modificationScope, PublicationPK pubPK)
       throws RemoteException;
 
-  /*************************************************************/
-  /** SCO - 26/12/2002 Integration AlertUser et AlertUserPeas **/
-  /*************************************************************/
   /**
    * Send an email to alert users of a publication creation
    * @param pubId the publication Id
    */
   public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK,
       NodePK topicPK, String senderName) throws RemoteException;
+  
+  /**
+   * Send an email to alert users of a attachment
+   * @param pubId the publication Id
+   */
+  public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK, AttachmentPK attachmentPk, 
+		  NodePK topicPK, String senderName) throws RemoteException;
+  
+  /**
+   * Send an email to alert users of a document
+   * @param pubId the publication Id
+   */
+  public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK, DocumentPK documentPk, 
+		  NodePK topicPK, String senderName) throws RemoteException;
 
   /**************************************************************************************/
   /* Interface - Controle de lecture */

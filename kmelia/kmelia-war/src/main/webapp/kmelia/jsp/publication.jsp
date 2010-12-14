@@ -293,6 +293,30 @@ function alertUsers()
 	<% } %>
 }
 
+function alertUsersAttachment(attachmentId)
+{
+	<% if (!"Valid".equals(pubDetail.getStatus())) { %>
+		if (window.confirm("<%=Encode.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>"))
+		{
+			goToOperationInAnotherWindow('ToAlertUserAttachment', '<%=id%>', attachmentId, 'ViewAlert');
+		}
+	<% } else { %>
+		goToOperationInAnotherWindow('ToAlertUserAttachment', '<%=id%>', attachmentId, 'ViewAlert');
+	<% } %>
+}
+
+function alertUsersDocument(documentId)
+{
+	<% if (!"Valid".equals(pubDetail.getStatus())) { %>
+		if (window.confirm("<%=Encode.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>"))
+		{
+			goToOperationInAnotherWindow('ToAlertUserDocument', '<%=id%>', documentId, 'ViewAlert');
+		}
+	<% } else { %>
+		goToOperationInAnotherWindow('ToAlertUserDocument', '<%=id%>', documentId, 'ViewAlert');
+	<% } %>
+}
+
 function openSingleAttachment() {
 <% if (StringUtil.isDefined(singleFileURL)) { 
 		out.print("url = \""+Encode.javaStringToJsString(singleFileURL)+"\";");
@@ -580,7 +604,7 @@ function addFavorite(name,description,url)
 				pIndexIt = "1";
 			}
 			if (kmeliaScc.isVersionControlled(componentId)) {
-				getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+id+"&ComponentId="+componentId+"&Alias="+alias+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Profile="+kmeliaScc.getProfile()+"&NodeId="+kmeliaScc.getSessionTopic().getNodePK().getId()+"&TopicRightsEnabled="+kmeliaScc.isRightsOnTopicsEnabled()+"&VersionningFileRightsMode="+kmeliaScc.getVersionningFileRightsMode()+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewPublication&IndexIt="+pIndexIt).include(request, response);
+				getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+id+"&ComponentId="+componentId+"&Alias="+alias+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Profile="+kmeliaScc.getProfile()+"&NodeId="+kmeliaScc.getSessionTopic().getNodePK().getId()+"&TopicRightsEnabled="+kmeliaScc.isRightsOnTopicsEnabled()+"&VersionningFileRightsMode="+kmeliaScc.getVersionningFileRightsMode()+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewPublication&IndexIt="+pIndexIt+"&ShowMenuNotif="+true).include(request, response);
 			} else {
 			  	String attProfile = kmeliaScc.getProfile();
 			  	if (!isOwner || pubDetail.haveGotClone()) {
@@ -589,7 +613,7 @@ function addFavorite(name,description,url)
 			  	  //  - if current user can modified publication
 			  	  attProfile = "user";
 			  	}
-			  	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+id+"&ComponentId="+componentId+"&Alias="+alias+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Language="+language+"&Profile="+attProfile+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewPublication&IndexIt="+pIndexIt).include(request, response);
+			  	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+id+"&ComponentId="+componentId+"&Alias="+alias+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Language="+language+"&Profile="+attProfile+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewPublication&IndexIt="+pIndexIt+"&ShowMenuNotif="+true).include(request, response);
 			}
 		} catch (Exception e) {
 			throw new KmeliaException("JSPpublicationManager.displayUserModelAndAttachmentsView()",SilverpeasException.ERROR,"root.EX_DISPLAY_ATTACHMENTS_FAILED", e);

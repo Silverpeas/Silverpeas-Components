@@ -1,10 +1,10 @@
-$senderName$ teilt Ihnen mit, dass Ihnen ein neues Dokument zur Verfügung steht...
+$senderName$ teilt Ihnen mit, dass Ihnen eine neue Publikation zur Verfügung steht...
 $if(senderMessage)$
 Message :
 "$senderMessage$" 
 $endif$
  
-Vous trouverez la publication "$publicationName$" ici : $path$
+Access path of the publication "$publicationName$" was : $path$
 
 $if(notification_receiver_users)$
 Diese Nachricht wurde gesendet

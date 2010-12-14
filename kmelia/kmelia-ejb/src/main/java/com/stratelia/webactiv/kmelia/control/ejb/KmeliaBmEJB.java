@@ -25,6 +25,8 @@
 package com.stratelia.webactiv.kmelia.control.ejb;
 
 import java.io.File;
+
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -3499,9 +3501,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
   }
 
-  /*************************************************************/
-  /** SCO - 26/12/2002 Integration AlertUser et AlertUserPeas **/
-  /*************************************************************/
+
   @Override
   public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK,
       NodePK topicPK, String senderName) {
@@ -3537,7 +3537,71 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return notifMetaData;
   }
 
-  /*************************************************************/
+  public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK, AttachmentPK attachmentPk, 
+		  NodePK topicPK, String senderName) {
+	  SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(attachment)",
+	        "root.MSG_GEN_ENTER_METHOD");
+    PublicationDetail pubDetail = getPublicationDetail(pubPK);
+    NotificationMetaData notifMetaData = getAlertNotificationMetaData(pubPK, topicPK, senderName);
+    
+    ResourceLocator message = new ResourceLocator(
+            "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", I18NHelper.defaultLanguage);
+    String subject = message.getString("AlertAttachment");
+    notifMetaData.setTitle(subject);
+    notifMetaData.setFileName("notificationAttachment");
+    
+    AttachmentDetail attachmentDetail = AttachmentController.searchAttachmentByPK(attachmentPk);
+    
+    Map<String, SilverpeasTemplate> templates = notifMetaData.getTemplates();
+    SilverpeasTemplate template;
+    for (String lang : getAllLanguages()) {
+    	template = templates.get(lang);
+    	template.setAttribute("attachment", attachmentDetail);
+    	template.setAttribute("attachmentFileName", attachmentDetail.getLogicalName(lang));
+    	template.setAttribute("attachmentTitle", attachmentDetail.getTitle(lang));
+    	template.setAttribute("attachmentDesc", attachmentDetail.getDescription());
+    	template.setAttribute("silverpeasURL", getAttachmentUrl(pubDetail, attachmentDetail));
+    }
+    notifMetaData.setLink(getAttachmentUrl(pubDetail, attachmentDetail));
+    SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(attachment)",
+        "root.MSG_GEN_EXIT_METHOD");
+    return notifMetaData;
+  }
+  
+  public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK, DocumentPK documentPk, 
+		  NodePK topicPK, String senderName) throws RemoteException {
+	  SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(document)",
+	        "root.MSG_GEN_ENTER_METHOD");
+    PublicationDetail pubDetail = getPublicationDetail(pubPK);
+    NotificationMetaData notifMetaData = getAlertNotificationMetaData(pubPK, topicPK, senderName);
+    
+    ResourceLocator message = new ResourceLocator(
+            "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", I18NHelper.defaultLanguage);
+    String subject = message.getString("AlertDocument");
+    notifMetaData.setTitle(subject);
+    notifMetaData.setFileName("notificationAttachment");
+    
+    VersioningUtil versioningUtil = new VersioningUtil();
+    Document document = versioningUtil.getDocument(documentPk);
+    DocumentVersion documentVersion = versioningUtil.getLastPublicVersion(documentPk);
+    
+    Map<String, SilverpeasTemplate> templates = notifMetaData.getTemplates();
+    SilverpeasTemplate template;
+    for (String lang : getAllLanguages()) {
+    	template = templates.get(lang);
+    	template.setAttribute("attachment", documentVersion);
+    	template.setAttribute("attachmentFileName", documentVersion.getLogicalName());
+    	template.setAttribute("attachmentTitle", document.getName());
+    	template.setAttribute("attachmentDesc", document.getDescription());
+    	template.setAttribute("silverpeasURL", getDocumentUrl(pubDetail, document));
+    }
+    notifMetaData.setLink(getDocumentUrl(pubDetail, document));
+    SilverTrace.info("kmelia", "KmeliaBmEJB.getAlertNotificationMetaData(document)",
+        "root.MSG_GEN_EXIT_METHOD");
+    return notifMetaData;
+  }
+
+  
   /**************************************************************************************/
   /* Controle de lecture */
   /**************************************************************************************/
@@ -3930,6 +3994,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   private String getNodeUrl(NodeDetail nodeDetail) {
     return KmeliaHelper.getNodeUrl(nodeDetail);
   }
+  
+  private String getAttachmentUrl(PublicationDetail pubDetail, AttachmentDetail attDetail) {
+	    return KmeliaHelper.getAttachmentUrl(pubDetail, attDetail);
+  }
+  
+  private String getDocumentUrl(PublicationDetail pubDetail, Document document) {
+	    return KmeliaHelper.getDocumentUrl(pubDetail, document);
+}
 
   /**************************************************************************************/
   /* Interface - Fichiers joints */

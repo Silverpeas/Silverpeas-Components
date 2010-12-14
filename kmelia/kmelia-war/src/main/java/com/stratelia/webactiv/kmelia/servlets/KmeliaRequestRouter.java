@@ -69,7 +69,9 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
+import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
@@ -259,42 +261,54 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         String type = request.getParameter("Type");
         String fileAlreadyOpened = request.getParameter("FileOpened");
         if (type.equals("Publication")
-            || type.equals("com.stratelia.webactiv.calendar.backbone.TodoDetail")) {
+            || type.equals("com.stratelia.webactiv.calendar.backbone.TodoDetail") 
+            || type.equals("Attachment") 
+            || type.equals("Document")) {
           KmeliaSecurity security = new KmeliaSecurity(kmelia.getOrganizationController());
           try {
             boolean accessAuthorized =
                 security.isAccessAuthorized(kmelia.getComponentId(), kmelia.getUserId(), id,
                 "Publication");
             if (accessAuthorized) {
-              if (kmaxMode) {
-                request.setAttribute("FileAlreadyOpened", fileAlreadyOpened);
-                destination = getDestination("ViewPublication", kmelia, request);
-              } else if (toolboxMode) {
-                processPath(kmelia, id);
-                // we have to find which page contains the right publication
-                List<UserPublication> publications =
-                    new ArrayList<UserPublication>(kmelia.getSessionTopic().getPublicationDetails());
-                UserPublication publication = null;
-                int pubIndex = -1;
-                for (int p = 0; p < publications.size() && pubIndex == -1; p++) {
-                  publication = publications.get(p);
-                  if (id.equals(publication.getPublication().getPK().getId())) {
-                    pubIndex = p;
-                  }
-                }
-                int nbPubliPerPage = kmelia.getNbPublicationsPerPage();
-                if (nbPubliPerPage == 0) {
-                  nbPubliPerPage = pubIndex;
-                }
-                int ipage = pubIndex / nbPubliPerPage;
-                kmelia.setIndexOfFirstPubToDisplay(Integer.toString(ipage * nbPubliPerPage));
-                request.setAttribute("PubIdToHighlight", id);
-                destination = getDestination("GoToCurrentTopic", kmelia, request);
-              } else {
-                request.setAttribute("FileAlreadyOpened", fileAlreadyOpened);
-                processPath(kmelia, id);
-                destination = getDestination("ViewPublication", kmelia, request);
-              }
+            	if(type.equals("Attachment")) {
+            		String attachmentId = request.getParameter("AttachmentId");
+            		request.setAttribute("AttachmentId", attachmentId);
+            		destination = getDestination("ViewPublication", kmelia, request);
+            	} else if(type.equals("Document")) {
+            		String documentId = request.getParameter("DocumentId");
+            		request.setAttribute("DocumentId", documentId);
+            		destination = getDestination("ViewPublication", kmelia, request);
+            	} else {
+	              if (kmaxMode) {
+	                request.setAttribute("FileAlreadyOpened", fileAlreadyOpened);
+	                destination = getDestination("ViewPublication", kmelia, request);
+	              } else if (toolboxMode) {
+	                processPath(kmelia, id);
+	                // we have to find which page contains the right publication
+	                List<UserPublication> publications =
+	                    new ArrayList<UserPublication>(kmelia.getSessionTopic().getPublicationDetails());
+	                UserPublication publication = null;
+	                int pubIndex = -1;
+	                for (int p = 0; p < publications.size() && pubIndex == -1; p++) {
+	                  publication = publications.get(p);
+	                  if (id.equals(publication.getPublication().getPK().getId())) {
+	                    pubIndex = p;
+	                  }
+	                }
+	                int nbPubliPerPage = kmelia.getNbPublicationsPerPage();
+	                if (nbPubliPerPage == 0) {
+	                  nbPubliPerPage = pubIndex;
+	                }
+	                int ipage = pubIndex / nbPubliPerPage;
+	                kmelia.setIndexOfFirstPubToDisplay(Integer.toString(ipage * nbPubliPerPage));
+	                request.setAttribute("PubIdToHighlight", id);
+	                destination = getDestination("GoToCurrentTopic", kmelia, request);
+	              } else {
+	                request.setAttribute("FileAlreadyOpened", fileAlreadyOpened);
+	                processPath(kmelia, id);
+	                destination = getDestination("ViewPublication", kmelia, request);
+	              }
+            	}
             } else {
               destination = "/admin/jsp/accessForbidden.jsp";
             }
@@ -611,10 +625,18 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
           String fileAlreadyOpened = (String) request.getAttribute("FileAlreadyOpened");
           boolean alreadyOpened = "1".equals(fileAlreadyOpened);
+          String attachmentId = (String) request.getAttribute("AttachmentId");
+          String documentId = (String) request.getAttribute("DocumentId");
           if (!alreadyOpened && kmelia.openSingleAttachmentAutomatically()
               && !kmelia.isCurrentPublicationHaveContent()) {
             request.setAttribute("SingleAttachmentURL", kmelia.
                 getFirstAttachmentURLOfCurrentPublication(request.getContextPath()));
+          } else if (!alreadyOpened && attachmentId != null) {
+        	  request.setAttribute("SingleAttachmentURL", kmelia.
+                      getAttachmentURL(request.getContextPath(), attachmentId));
+          } else if (!alreadyOpened && documentId != null) {
+        	  request.setAttribute("SingleAttachmentURL", kmelia.
+                      getAttachmentURL(request.getContextPath(), documentId));
           }
 
           destination = rootDestination + "publication.jsp";
@@ -652,23 +674,48 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("paste")) {
         kmelia.paste();
         destination = URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp";
-      }/*************************************************************/
-      /** SCO - 26/12/2002 Integration AlertUser et AlertUserPeas **/
-      /*************************************************************/
-      else if (function.startsWith("ToAlertUser")) { // utilisation de alertUser et alertUserPeas
-        SilverTrace.debug("kmelia", "KmeliaRequestRooter.getDestination()",
+      } else if (function.startsWith("ToAlertUserAttachment")) { // utilisation de alertUser et alertUserPeas
+          SilverTrace.debug("kmelia", "KmeliaRequestRooter.getDestination()",
+              "root.MSG_GEN_PARAM_VALUE", "ToAlertUserAttachment: function = " + function + " spaceId="
+              + kmelia.getSpaceId() + " componentId=" + kmelia.getComponentId());
+          try {
+        	 String attachmentId = request.getParameter("AttachmentOrDocumentId");
+             destination = kmelia.initAlertUserAttachment(attachmentId, false);
+          } catch (Exception e) {
+            SilverTrace.warn("kmelia", "KmeliaRequestRooter.getDestination()",
+                "root.EX_USERPANEL_FAILED", "function = " + function, e);
+          }
+          SilverTrace.debug("kmelia", "KmeliaRequestRooter.getDestination()",
+              "root.MSG_GEN_PARAM_VALUE", "ToAlertUserAttachment: function = " + function + "=> destination="
+              + destination);
+        } else if (function.startsWith("ToAlertUserDocument")) { // utilisation de alertUser et alertUserPeas
+            SilverTrace.debug("kmelia", "KmeliaRequestRooter.getDestination()",
+                    "root.MSG_GEN_PARAM_VALUE", "ToAlertUserDocument: function = " + function + " spaceId="
+                    + kmelia.getSpaceId() + " componentId=" + kmelia.getComponentId());
+            try {
+          	  String documentId = request.getParameter("AttachmentOrDocumentId");
+              destination = kmelia.initAlertUserAttachment(documentId, true);
+            } catch (Exception e) {
+              SilverTrace.warn("kmelia", "KmeliaRequestRooter.getDestination()",
+                  "root.EX_USERPANEL_FAILED", "function = " + function, e);
+            }
+            SilverTrace.debug("kmelia", "KmeliaRequestRooter.getDestination()",
+                "root.MSG_GEN_PARAM_VALUE", "ToAlertUserDocument: function = " + function + "=> destination="
+                + destination);
+        } else if (function.startsWith("ToAlertUser")) { // utilisation de alertUser et alertUserPeas
+            	  SilverTrace.debug("kmelia", "KmeliaRequestRooter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "ToAlertUser: function = " + function + " spaceId="
             + kmelia.getSpaceId() + " componentId=" + kmelia.getComponentId());
-        try {
-          destination = kmelia.initAlertUser();
-        } catch (Exception e) {
-          SilverTrace.warn("kmelia", "KmeliaRequestRooter.getDestination()",
-              "root.EX_USERPANEL_FAILED", "function = " + function, e);
+	        try {
+	          destination = kmelia.initAlertUser();
+	        } catch (Exception e) {
+	          SilverTrace.warn("kmelia", "KmeliaRequestRooter.getDestination()",
+	              "root.EX_USERPANEL_FAILED", "function = " + function, e);
+	        }
+	        SilverTrace.debug("kmelia", "KmeliaRequestRooter.getDestination()",
+	            "root.MSG_GEN_PARAM_VALUE", "ToAlertUser: function = " + function + "=> destination="
+	            + destination);
         }
-        SilverTrace.debug("kmelia", "KmeliaRequestRooter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "ToAlertUser: function = " + function + "=> destination="
-            + destination);
-      }/*************************************************************/
       else if (function.equals("ReadingControl")) {
         PublicationDetail publication =
             kmelia.getSessionPublication().getPublication().getPublicationDetail();

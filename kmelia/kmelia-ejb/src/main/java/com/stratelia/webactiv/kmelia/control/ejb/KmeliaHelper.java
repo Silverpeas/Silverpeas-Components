@@ -28,9 +28,11 @@
  */
 package com.stratelia.webactiv.kmelia.control.ejb;
 
+import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.webactiv.SilverpeasRole;
 import java.io.Serializable;
 
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.indexEngine.model.IndexManager;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
@@ -110,6 +112,16 @@ public class KmeliaHelper implements Serializable {
   public static String getNodeUrl(NodeDetail nodeDetail) {
     return "/Rkmelia/" + nodeDetail.getNodePK().getInstanceId()
         + "/searchResult?Type=Node&Id=" + nodeDetail.getNodePK().getId();
+  }
+  
+  public static String getAttachmentUrl(PublicationDetail pubDetail, AttachmentDetail attDetail) {
+	    return "/Rkmelia/" + attDetail.getPK().getInstanceId()
+	        + "/searchResult?Type=Attachment&Id=" + pubDetail.getPK().getId() + "&AttachmentId=" + attDetail.getPK().getId()+"&FileOpened=0";
+  }
+  
+  public static String getDocumentUrl(PublicationDetail pubDetail, Document document) {
+	    return "/Rkmelia/" + document.getPk().getInstanceId()
+	        + "/searchResult?Type=Document&Id=" + pubDetail.getPK().getId() + "&DocumentId=" + document.getPk().getId()+"&FileOpened=0";
   }
 
   public static boolean isToolbox(String componentId) {

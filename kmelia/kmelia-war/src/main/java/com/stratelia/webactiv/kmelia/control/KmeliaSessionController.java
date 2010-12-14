@@ -24,6 +24,7 @@
 package com.stratelia.webactiv.kmelia.control;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -1748,10 +1749,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             1, "Publication");
     pub.setNbAccess(nbAccess);
   }
-
-  /*************************************************************/
-  /** SCO - 26/12/2002 Integration AlertUser et AlertUserPeas **/
-  /*************************************************************/
+ 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String pubId)
       throws RemoteException {
     NotificationMetaData metaData = null;
@@ -1768,7 +1766,37 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return metaData;
   }
 
-  /*************************************************************/
+  private synchronized NotificationMetaData getAlertNotificationMetaData(String pubId, String attachmentOrDocumentId, boolean isVersionning)
+  	throws RemoteException {
+	  NotificationMetaData metaData = null;
+	  if(isVersionning) {
+		  DocumentPK documentPk = new DocumentPK(Integer.parseInt(attachmentOrDocumentId), getSpaceId(), getComponentId());
+		  if (isKmaxMode) {
+			  metaData =
+			      getKmeliaBm().getAlertNotificationMetaData(getPublicationPK(pubId), documentPk, null,
+			          getUserDetail().getDisplayedName());
+			} else {
+			  metaData =
+			      getKmeliaBm().getAlertNotificationMetaData(getPublicationPK(pubId), documentPk, 
+			          getSessionTopic().getNodePK(), getUserDetail().getDisplayedName());
+			}
+	  } else {
+		  AttachmentPK attachmentPk = new AttachmentPK(attachmentOrDocumentId, getSpaceId(), getComponentId());
+		  if (isKmaxMode) {
+			  metaData =
+			      getKmeliaBm().getAlertNotificationMetaData(getPublicationPK(pubId), attachmentPk, null,
+			          getUserDetail().getDisplayedName());
+			} else {
+			  metaData =
+			      getKmeliaBm().getAlertNotificationMetaData(getPublicationPK(pubId), attachmentPk, 
+			          getSessionTopic().getNodePK(), getUserDetail().getDisplayedName());
+			}
+	  }
+	  metaData.setSender(getUserId());
+	  return metaData;
+	}
+
+  
   /**************************************************************************************/
   /* KMELIA - Reindexation */
   /**************************************************************************************/
@@ -2278,9 +2306,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return Selection.getSelectionURL(Selection.TYPE_USERS_GROUPS);
   }
 
-  /*************************************************************/
-  /** SCO - 26/12/2002 Integration AlertUser et AlertUserPeas **/
-  /*************************************************************/
   public String initAlertUser() throws RemoteException {
     String pubId = getSessionPublication().getPublication().getPublicationDetail().getPK().getId();
 
@@ -2313,8 +2338,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     // l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
     return AlertUser.getAlertUserURL();
   }
+  
+  public String initAlertUserAttachment(String attachmentOrDocumentId, boolean isVersionning) throws RemoteException {
+	    
+	  initAlertUser();
+	  
+	  AlertUser sel = getAlertUser();
+	  String pubId = getSessionPublication().getPublication().getPublicationDetail().getPK().getId();
+	  sel.setNotificationMetaData(getAlertNotificationMetaData(pubId, attachmentOrDocumentId, isVersionning)); // set NotificationMetaData
+	  return AlertUser.getAlertUserURL();
+  }
 
-  /*************************************************************/
   public void toRecoverUserId() {
     Selection sel = getSelection();
     idSelectedUser =
@@ -4026,6 +4060,22 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       }
     }
     return url;
+  }
+  
+  public String getAttachmentURL(String webContext, String attachmentOrDocumentId) throws RemoteException {
+	    String url = null;
+	    if (isVersionControlled()) {
+	      VersioningUtil versioningUtil = new VersioningUtil();
+	      Document document = versioningUtil.getDocument(new DocumentPK(Integer.parseInt(attachmentOrDocumentId)));
+	      DocumentVersion documentVersion = versioningUtil.getLastPublicVersion(new DocumentPK(Integer.parseInt(attachmentOrDocumentId)));
+	      url = webContext + 
+	    	  versioningUtil.getDocumentVersionURL(document.getInstanceId(), documentVersion.
+                  getLogicalName(), document.getPk().getId(), documentVersion.getPk().getId());
+	    } else {
+	    	AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(attachmentOrDocumentId));
+	    	url = webContext + attachment.getAttachmentURL();
+	    }
+	    return url;
   }
 
   public boolean useUpdateChain() {
