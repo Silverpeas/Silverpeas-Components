@@ -189,11 +189,12 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public int[] getForumSonsIds(int forumId) {
     int[] sonsIds = new int[0];
     try {
+      @SuppressWarnings("unchecked")
       List<String> ids = getForumsBM().getForumSonsIds(getForumPK(forumId));
       int n = ids.size();
       sonsIds = new int[n];
       for (int i = 0; i < n; i++) {
-        sonsIds[i] = Integer.parseInt((String) ids.get(i));
+        sonsIds[i] = Integer.parseInt(ids.get(i));
       }
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
@@ -210,7 +211,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public void deployForum(int id) {
-//    deployedForums.add(Integer.valueOf(id));
     deployedForums.add(id);
   }
 
@@ -222,28 +222,10 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public void undeployForum(int id) {
-//    if (!deployedForums.isEmpty()) {
-//      Iterator<Integer> iter = deployedForums.iterator();
-//      while (iter.hasNext()) {
-//        Integer value = iter.next();
-//        if (value.intValue() == id) {
-//          iter.remove();
-//          return;
-//        }
-//      }
-//    }
     deployedForums.remove(id);
   }
 
   public boolean forumIsDeployed(int id) {
-//    if (!deployedForums.isEmpty()) {
-//      for (Integer forum : deployedForums) {
-//        if (forum.intValue() == id) {
-//          return true;
-//        }
-//      }
-//    }
-//    return false;
     return deployedForums.contains(id);
   }
 
@@ -267,18 +249,18 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Cree un nouveau forum dans la datasource
-   * @param String nom du forum
-   * @param String description du forum
-   * @param String l'id du createur du forum
-   * @param int l'id du forum parent
+   * @param forumName nom du forum
+   * @param forumDescription description du forum
+   * @param forumCreator l'id du createur du forum
+   * @param forumParent l'id du forum parent
+   * @param keywords the keywords.
    * @return l'id du forum nouvellement cree
    * @author frageade
    * @since 02 Octobre 2000
    */
-  public int createForum(String forumName, String forumDescription,
-      String forumCreator, int forumParent, String keywords) {
-    return createForum(forumName, forumDescription, forumCreator, forumParent,
-        "0", keywords);
+  public int createForum(String forumName, String forumDescription, String forumCreator,
+      int forumParent, String keywords) {
+    return createForum(forumName, forumDescription, forumCreator, forumParent, "0", keywords);
   }
 
   public int createForum(String forumName, String forumDescription,
@@ -298,15 +280,16 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Met a jour les informations sur un forum dans la datasource
-   * @param int l'ID du forum dans la datasource
-   * @param String nom du forum
-   * @param String description du forum
-   * @param int l'id du forum parent
+   * @param forumId l'ID du forum dans la datasource
+   * @param forumName nom du forum
+   * @param forumDescription description du forum
+   * @param forumParent l'id du forum parent
+   * @param keywords the keywords.
    * @author frageade
    * @since 03 Octobre 2000
    */
-  public void updateForum(int forumId, String forumName,
-      String forumDescription, int forumParent, String keywords) {
+  public void updateForum(int forumId, String forumName, String forumDescription, int forumParent,
+      String keywords) {
     updateForum(forumId, forumName, forumDescription, forumParent, null,
         keywords);
   }
@@ -326,7 +309,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Supprime un forum et tous ses sous-forums a partir de son ID
-   * @param int l'ID du forum dans la datasource
+   * @param forumId l'ID du forum dans la datasource
    * @author frageade
    * @since 3 Octobre 2000
    */
@@ -1015,13 +998,13 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   private String truncateTextField(String s) {
-    return (s.length() >= DBUtil.TextFieldLength ? s.substring(0,
-        DBUtil.TextFieldLength - 1) : s);
+    return (s.length() >= DBUtil.getTextFieldLength() ? s.substring(0,
+        DBUtil.getTextFieldLength() - 1) : s);
   }
 
   private String truncateTextArea(String s) {
-    return (s.length() >= DBUtil.TextAreaLength ? s.substring(0,
-        DBUtil.TextAreaLength - 1) : s);
+    return (s.length() >= DBUtil.getTextAreaLength() ? s.substring(0,
+        DBUtil.getTextAreaLength() - 1) : s);
   }
 
   public boolean isPdcUsed() {
