@@ -64,9 +64,9 @@ import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.thumbnail.service.ThumbnailServiceImpl;
+import com.silverpeas.ui.UIHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.silverpeas.comment.service.CommentService;
@@ -700,12 +700,12 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
     Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
     ResourceLocator message = new ResourceLocator(
-        "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", I18NHelper.defaultLanguage);
+        "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", UIHelper.getDefaultLanguage());
     String subject = message.getString("kmelia.NewTopic");
     NotificationMetaData notifMetaData =
         new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
             "notificationCreateTopic");
-    for (String lang : getAllLanguages()) {
+    for (String lang : UIHelper.getLanguages()) {
       SilverpeasTemplate template = getNewTemplate();
       templates.put(lang, template);
       template.setAttribute("path", getHTMLNodePath(fatherPK, lang));
@@ -2216,7 +2216,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
           Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
           ResourceLocator message = new ResourceLocator(
-              "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", I18NHelper.defaultLanguage);
+              "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", UIHelper.getDefaultLanguage());
           String subject = message.getString("Subscription");
           String fileName = "notificationSubscriptionCreate";
           if (update) {
@@ -2225,7 +2225,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
           NotificationMetaData notifMetaData =
               new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, fileName);
-          for (String lang : getAllLanguages()) {
+          for (String lang : UIHelper.getLanguages()) {
             SilverpeasTemplate template = getNewTemplate();
             templates.put(lang, template);
             template.setAttribute("path", getHTMLNodePath(fatherPK, lang));
@@ -2741,7 +2741,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       if (userId != null) {
         Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
         ResourceLocator message = new ResourceLocator(
-            "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", I18NHelper.defaultLanguage);
+            "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", UIHelper.getDefaultLanguage());
         String fileName = "notificationRefused";
         String subject = message.getString("PublicationRefused");
         if (!StringUtil.isDefined(refusalMotive)) {
@@ -2750,7 +2750,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         }
         NotificationMetaData notifMetaData =
             new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, fileName);
-        for (String lang : getAllLanguages()) {
+        for (String lang : UIHelper.getLanguages()) {
           SilverpeasTemplate template = getNewTemplate();
           templates.put(lang, template);
           template.setAttribute("path", getHTMLNodePath(fatherPK, lang));
@@ -2829,14 +2829,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
         Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
         ResourceLocator message = new ResourceLocator(
-            "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", I18NHelper.defaultLanguage);
+            "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", UIHelper.getDefaultLanguage());
 
         String subject = message.getString("kmelia.SupervisorNotifSubject");
 
         NotificationMetaData notifMetaData =
             new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
                 "notificationSupervisor");
-        for (String lang : getAllLanguages()) {
+        for (String lang : UIHelper.getLanguages()) {
           SilverpeasTemplate template = getNewTemplate();
           templates.put(lang, template);
           template.setAttribute("path", getHTMLNodePath(fatherPK, lang));
@@ -3347,13 +3347,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       if (userId != null) {
         Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
         ResourceLocator message = new ResourceLocator(
-            "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", I18NHelper.defaultLanguage);
+            "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", UIHelper.getDefaultLanguage());
         String subject = message.getString("kmelia.PublicationSuspended");
 
         NotificationMetaData notifMetaData =
             new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
                 "notification");
-        for (String lang : getAllLanguages()) {
+        for (String lang : UIHelper.getLanguages()) {
           SilverpeasTemplate template = getNewTemplate();
           templates.put(lang, template);
           template.setAttribute("path", "");
@@ -3511,12 +3511,12 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
     ResourceLocator message = new ResourceLocator(
-        "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", I18NHelper.defaultLanguage);
+        "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", UIHelper.getDefaultLanguage());
     String subject = message.getString("Alert");
 
     NotificationMetaData notifMetaData =
         new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "notification");
-    for (String lang : getAllLanguages()) {
+    for (String lang : UIHelper.getLanguages()) {
       SilverpeasTemplate template = getNewTemplate();
       templates.put(lang, template);
       template.setAttribute("path", getHTMLNodePath(topicPK, lang));
@@ -3545,7 +3545,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     NotificationMetaData notifMetaData = getAlertNotificationMetaData(pubPK, topicPK, senderName);
     
     ResourceLocator message = new ResourceLocator(
-            "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", I18NHelper.defaultLanguage);
+            "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", UIHelper.getDefaultLanguage());
     String subject = message.getString("AlertAttachment");
     notifMetaData.setTitle(subject);
     notifMetaData.setFileName("notificationAttachment");
@@ -3554,7 +3554,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     
     Map<String, SilverpeasTemplate> templates = notifMetaData.getTemplates();
     SilverpeasTemplate template;
-    for (String lang : getAllLanguages()) {
+    for (String lang : UIHelper.getLanguages()) {
     	template = templates.get(lang);
     	template.setAttribute("attachment", attachmentDetail);
     	template.setAttribute("attachmentFileName", attachmentDetail.getLogicalName(lang));
@@ -3576,7 +3576,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     NotificationMetaData notifMetaData = getAlertNotificationMetaData(pubPK, topicPK, senderName);
     
     ResourceLocator message = new ResourceLocator(
-            "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", I18NHelper.defaultLanguage);
+            "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", UIHelper.getDefaultLanguage());
     String subject = message.getString("AlertDocument");
     notifMetaData.setTitle(subject);
     notifMetaData.setFileName("notificationAttachment");
@@ -3587,7 +3587,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     
     Map<String, SilverpeasTemplate> templates = notifMetaData.getTemplates();
     SilverpeasTemplate template;
-    for (String lang : getAllLanguages()) {
+    for (String lang : UIHelper.getLanguages()) {
     	template = templates.get(lang);
     	template.setAttribute("attachment", documentVersion);
     	template.setAttribute("attachmentFileName", documentVersion.getLogicalName());
@@ -3806,13 +3806,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     if (userId != null) {
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
       ResourceLocator message = new ResourceLocator(
-          "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", I18NHelper.defaultLanguage);
+          "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", UIHelper.getDefaultLanguage());
       String subject = message.getString("ToValidateForNotif");
 
       NotificationMetaData notifMetaData =
           new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
               "notificationToValidate");
-      for (String lang : getAllLanguages()) {
+      for (String lang : UIHelper.getLanguages()) {
         SilverpeasTemplate template = getNewTemplate();
         templates.put(lang, template);
         template.setAttribute("path", "");
@@ -3835,25 +3835,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
   }
 
-  private synchronized List<String> getAllLanguages() {
-    ResourceLocator resources = new ResourceLocator(
-        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings",
-        "");
-    List<String> allLanguages = new ArrayList<String>();
-    try {
-      StringTokenizer st = new StringTokenizer(
-          resources.getString("languages"), ",");
-      while (st.hasMoreTokens()) {
-        String langue = st.nextToken();
-        allLanguages.add(langue);
-      }
-    } catch (Exception e) {
-      SilverTrace.error("kmelia", "KmeliaBmEJB.getAllLanguages()",
-          "personalizationPeas.EX_CANT_GET_FAVORITE_LANGUAGE", e);
-    }
-    return allLanguages;
-  }
-
   private void sendModificationAlert(int modificationScope,
       PublicationDetail pubDetail) {
     String userId = pubDetail.getUpdaterId();
@@ -3863,7 +3844,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     if (StringUtil.isDefined(userId)) {
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
       ResourceLocator message = new ResourceLocator(
-          "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", I18NHelper.defaultLanguage);
+          "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", UIHelper.getDefaultLanguage());
       String subject = message.getString("kmelia.PublicationModified");
       String fileName = "notificationUpdateContent";
       if (modificationScope == KmeliaHelper.PUBLICATION_HEADER) {
@@ -3873,7 +3854,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       NotificationMetaData notifMetaData =
           new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
               fileName);
-      for (String lang : getAllLanguages()) {
+      for (String lang : UIHelper.getLanguages()) {
         SilverpeasTemplate template = getNewTemplate();
         templates.put(lang, template);
         template.setAttribute("path", "");

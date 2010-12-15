@@ -23,6 +23,24 @@
  */
 package com.silverpeas.classifieds.control.ejb;
 
+import static com.silverpeas.classifieds.ClassifiedUtil.getClassifiedUrl;
+import static com.silverpeas.classifieds.ClassifiedUtil.getMessage;
+import static com.silverpeas.classifieds.ClassifiedUtil.newTemplate;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.ejb.SessionBean;
+import javax.ejb.SessionContext;
+
 import com.silverpeas.classifieds.dao.ClassifiedsDAO;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
@@ -30,8 +48,8 @@ import com.silverpeas.classifieds.model.Subscribe;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.ui.UIHelper;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -52,19 +70,6 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import javax.ejb.SessionBean;
-import javax.ejb.SessionContext;
-import static com.silverpeas.classifieds.ClassifiedUtil.*;
 
 /**
  * @author
@@ -242,7 +247,7 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
       if (userId != null) {
 
         Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-        String subject = getValidationNotificationSubject(classified, I18NHelper.defaultLanguage);
+        String subject = getValidationNotificationSubject(classified, UIHelper.getDefaultLanguage());
         String templateName = "validated";
         if (!ClassifiedDetail.VALID.equals(classified.getStatus())) {
           templateName = "refused";
@@ -251,7 +256,7 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
             new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
                 templateName);
 
-        for (String language : I18NHelper.getAllSupportedLanguages()) {
+        for (String language : UIHelper.getLanguages()) {
           SilverpeasTemplate template = newTemplate(classified);
           template.setAttribute("refusalMotive", refusalMotive);
           templates.put(language, template);
@@ -284,9 +289,7 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
             new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
                 "subscription");
 
-        Iterator<String> languages = I18NHelper.getLanguages();
-        while (languages.hasNext()) {
-          String language = languages.next();
+        for (String language : UIHelper.getLanguages()) {
           SilverpeasTemplate template = newTemplate(classified);
           templates.put(language, template);
           notifMetaData.addLanguage(language, getMessage(
@@ -486,9 +489,7 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
             new NotificationMetaData(NotificationParameters.NORMAL, subject, templates,
                 "tovalidate");
 
-        Iterator<String> languages = I18NHelper.getLanguages();
-        while (languages.hasNext()) {
-          String language = languages.next();
+        for (String language : UIHelper.getLanguages()) {
           SilverpeasTemplate template = newTemplate(classified);
           templates.put(language, template);
           notifMetaData.addLanguage(language, getMessage(
