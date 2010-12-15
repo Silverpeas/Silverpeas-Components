@@ -112,7 +112,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   public AlmanachSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
     super(mainSessionCtrl, context,
-        "com.stratelia.webactiv.almanach.multilang.almanach", null,
+        "com.stratelia.webactiv.almanach.multilang.almanach",
+        "com.stratelia.webactiv.almanach.settings.almanachIcons",
         "com.stratelia.webactiv.almanach.settings.almanachSettings");
   }
 
@@ -723,6 +724,24 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       }
     }
     return almanachs;
+  }
+
+  /**
+   * Gets all almanachs others than the current one in the session as AlmanachDTO objects.
+   * @return a list of AlmanachDTO instances, each of them carrying some data about an almanach.
+   */
+  public List<AlmanachDTO> getOthersAlmanachsAsDTO() {
+    List<AlmanachDTO> othersAlmanachsAsDTO = new ArrayList<AlmanachDTO>();
+    ArrayList<List<String>> othersAlmanachs = getOthersAlmanachs();
+    for (List<String> almanach : othersAlmanachs) {
+      AlmanachDTO almanachDTO = new AlmanachDTO()
+          .setAgregated(isAlmanachAgregated(almanach.get(0)))
+          .setColor(almanach.get(2))
+          .setInstanceId(almanach.get(0))
+          .setLabel(almanach.get(1));
+      othersAlmanachsAsDTO.add(almanachDTO);
+    }
+    return othersAlmanachsAsDTO;
   }
 
   /**

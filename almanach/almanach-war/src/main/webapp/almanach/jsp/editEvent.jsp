@@ -28,17 +28,17 @@
 
 <%
 	String language = almanach.getLanguage();
-  
+
 	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
 
 	EventDetail event = (EventDetail) request.getAttribute("CompleteEvent");
 	Date dateDebutIteration = (Date) request.getAttribute("DateDebutIteration");
 	Date dateFinIteration = (Date) request.getAttribute("DateFinIteration");
-	
+
 	String dateDebutIterationString = DateUtil.date2SQLDate(dateDebutIteration);
-	
+
 	Periodicity periodicity = event.getPeriodicity();
-	
+
 	String description = "";
 	String id = event.getPK().getId();
 	String title = event.getTitle();
@@ -56,7 +56,7 @@
 	if(event.getStartDate() != null) {
 		day = resources.getInputDate(event.getStartDate());
 	}
-	
+
 %>
 
 <HTML>
@@ -115,7 +115,7 @@ function reallyUpdate() {
 	document.eventForm.MonthDayWeek[4].disabled = false;
 	document.eventForm.MonthDayWeek[5].disabled = false;
 	document.eventForm.MonthDayWeek[6].disabled = false;
-	
+
 	document.eventForm.Action.value = "ReallyUpdate";
 	document.eventForm.submit();
 }
@@ -184,13 +184,13 @@ function isCorrectForm() {
 	           }
 	       }
      }
-     
+
      if (!checkHour(beginHour))
      {
     	 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=almanach.getString("hourBegin")%>' <%=almanach.getString("MustContainsCorrectHour")%>\n";
 	     errorNb++;
      }
-		
+
      if (!isWhitespace(endDate)) {
            if (endDate.replace(re, "OK") != "OK") {
                  errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateEnd")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
@@ -216,7 +216,7 @@ function isCorrectForm() {
                  }
            }
      }
-     
+
      if (!checkHour(endHour))
      {
     	 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=almanach.getString("hourEnd")%>' <%=almanach.getString("MustContainsCorrectHour")%>\n";
@@ -275,7 +275,7 @@ function isCorrectForm() {
 			   }
 		 }
      }
-	 
+
      switch(errorNb) {
         case 0 :
             result = true;
@@ -324,55 +324,55 @@ function sendEventData() {
 	    			isChanged = 1;
 	    		}
 
-	    		var oldDesc = '<%=EncodeHelper.javaStringToJsString(description)%>';				
+	    		var oldDesc = '<%=EncodeHelper.javaStringToJsString(description)%>';
 				var desc = oEditor.GetXHTML(true);
 	    		if (oldDesc != desc)
 	    		{
 	    			isChanged = 1;
 	    		}
-	    		
+
 				var oldStartDate = '<%=resources.getOutputDate(dateDebutIteration)%>';
 	    		var startDate = document.eventForm.StartDate.value;
 	    		if (oldStartDate != startDate)
 	    		{
 	    			isChanged = 1;
 	    		}
-	    		
+
 	    		var oldStartHour = '<%=event.getStartHour()%>';
 	    		var startHour = document.eventForm.StartHour.value;
 	    		if (oldStartHour != startHour)
 	    		{
 	    			isChanged = 1;
 	    		}
-	    		
+
 				var oldEndDate = '<%=resources.getOutputDate(dateFinIteration)%>';
 	    		var endDate = document.eventForm.EndDate.value;
 	    		if (oldEndDate != endDate)
 	    		{
 	    			isChanged = 1;
 	    		}
-	    		
+
 	    		var oldEndHour = '<%=event.getEndHour()%>';
 	    		var endHour = document.eventForm.EndHour.value;
 	    		if (oldEndHour != endHour)
 	    		{
 	    			isChanged = 1;
 	    		}
-	    		
+
 	    		var oldPlace = '<%=EncodeHelper.javaStringToJsString(event.getPlace())%>';
 	    		var place = stripInitialWhitespace(document.eventForm.Place.value);
 	    		if (oldPlace != place)
 	    		{
 	    			isChanged = 1;
 	    		}
-	    		
+
 	    		var oldEventURL = '<%=EncodeHelper.javaStringToJsString(event.getEventUrl())%>';
 	    		var eventURL = stripInitialWhitespace(document.eventForm.EventUrl.value);
 	    		if (oldEventURL != eventURL)
 	    		{
 	    			isChanged = 1;
 	    		}
-	    		
+
 	    		var oldPriority = '<%=event.getPriority()%>';
 	    		var priority = 0;
 				if(document.eventForm.Priority.checked) {
@@ -386,7 +386,7 @@ function sendEventData() {
 
     		}
     	<% } %>
-    	
+
     	if (isChanged == 1)
     	{
     		displayBoxOnUpdate();
@@ -408,7 +408,7 @@ function changeUnity () {
 		document.eventForm.WeekDayWeek6.disabled = false;
 		document.eventForm.WeekDayWeek7.disabled = false;
 		document.eventForm.WeekDayWeek1.disabled = false;
-		
+
 		document.eventForm.ChoiceMonth[0].disabled = true;
 		document.eventForm.ChoiceMonth[1].disabled = true;
 		document.eventForm.MonthNumWeek.disabled = true;
@@ -419,7 +419,7 @@ function changeUnity () {
 		document.eventForm.MonthDayWeek[4].disabled = true;
 		document.eventForm.MonthDayWeek[5].disabled = true;
 		document.eventForm.MonthDayWeek[6].disabled = true;
-		
+
 	} else if (unity == "3") {
 		document.eventForm.WeekDayWeek2.disabled = true;
 		document.eventForm.WeekDayWeek3.disabled = true;
@@ -428,7 +428,7 @@ function changeUnity () {
 		document.eventForm.WeekDayWeek6.disabled = true;
 		document.eventForm.WeekDayWeek7.disabled = true;
 		document.eventForm.WeekDayWeek1.disabled = true;
-		
+
 		document.eventForm.ChoiceMonth[0].disabled = false;
 		document.eventForm.ChoiceMonth[1].disabled = false;
 		if(document.eventForm.ChoiceMonth[0].checked) {
@@ -458,7 +458,7 @@ function changeUnity () {
 		document.eventForm.WeekDayWeek6.disabled = true;
 		document.eventForm.WeekDayWeek7.disabled = true;
 		document.eventForm.WeekDayWeek1.disabled = true;
-		
+
 		document.eventForm.ChoiceMonth[0].disabled = true;
 		document.eventForm.ChoiceMonth[1].disabled = true;
 		document.eventForm.MonthNumWeek.disabled = true;
@@ -519,14 +519,14 @@ $(document).ready(function(){
 </script>
 </HEAD>
 <BODY MARGINHEIGHT="5" MARGINWIDTH="5" TOPMARGIN="5" LEFTMARGIN="5" onLoad="document.eventForm.Title.focus()">
-  <% 
+  <%
     Window 		window 		= graphicFactory.getWindow();
     Frame 		frame		= graphicFactory.getFrame();
     Board 		board 		= graphicFactory.getBoard();
     TabbedPane 	tabbedPane 	= graphicFactory.getTabbedPane();
-    
+
     OperationPane operationPane = window.getOperationPane();
-	
+
 	BrowseBar browseBar = window.getBrowseBar();
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "almanach.jsp");
@@ -548,26 +548,26 @@ $(document).ready(function(){
 %>
 <table CELLPADDING="5" WIDTH="100%">
 <FORM name="eventForm" action="ReallyUpdateEvent" method="POST">
-	    
-	  <tr> 
+
+	  <tr>
         <td nowrap valign="baseline" class="txtlibform"><%=resources.getString("GML.name")%> :</td>
-        <td align=left><input type="text" name="Title" size="60" maxlength="<%=DBUtil.TextFieldLength%>"		
+        <td align=left><input type="text" name="Title" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>"
 					<%if (event.getTitle()!=null) out.print("value=\""+ EncodeHelper.javaStringToHtmlString(event.getTitle()) + "\"");%>>
             &nbsp;<img src="icons/cube-rouge.gif" width="5" height="5">
         </td>
 	    </tr>
-      <tr> 
+      <tr>
         <td nowrap valign="top" class="txtlibform"><%=resources.getString("GML.description")%> :</td>
-        <td valign="top"> 
+        <td valign="top">
 					<textarea name="Description" id="Description"><%=description%></textarea>
          </td>
       </tr>
-	  <tr> 
+	  <tr>
           <td nowrap class="txtlibform"><%=resources.getString("GML.dateBegin")%> :</td>
-          <td valign="baseline"> 
-            <input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" 
+          <td valign="baseline">
+            <input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>"
 				value="<%=resources.getOutputDate(dateDebutIteration)%>"/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
-             <span class="txtlibform">&nbsp;<%=almanach.getString("ToHour")%>&nbsp;</span><input type="text" name="StartHour" 
+             <span class="txtlibform">&nbsp;<%=almanach.getString("ToHour")%>&nbsp;</span><input type="text" name="StartHour"
 									<%
              						if (event.getStartHour() != null) out.println("value=\""+
              							event.getStartHour()
@@ -575,10 +575,10 @@ $(document).ready(function(){
              						%> size="5" maxlength="5"> <span class="txtnote">(hh:mm)</span>&nbsp;<img src="icons/cube-rouge.gif" width="5" height="5">
           </td>
         </tr>
-	    <tr> 
+	    <tr>
           <td nowrap class="txtlibform"><%=resources.getString("GML.dateEnd")%> :</td>
-          <td align=left> 
-            <input type="text" class="dateToPick" name="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" 
+          <td align=left>
+            <input type="text" class="dateToPick" name="EndDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>"
 				value="<%=resources.getOutputDate(dateFinIteration)%>"/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
              <span class="txtlibform">&nbsp;<%=almanach.getString("ToHour")%>&nbsp;</span><input type="text" name="EndHour" <%
    						if (event.getEndHour() != null) out.println("value=\""+
@@ -589,15 +589,15 @@ $(document).ready(function(){
         </tr>
 		<tr>
         	<td nowrap class="txtlibform"><%=almanach.getString("lieuEvenement")%> :</td>
-        	<td align=left><input type="text" name="Place" size="60" maxlength="<%=DBUtil.TextFieldLength%>" 
+        	<td align=left><input type="text" name="Place" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>"
 						<%if (event.getPlace()!=null) out.print("value=\""+ EncodeHelper.javaStringToHtmlString(event.getPlace()) + "\"");%>>
 					</td>
         </tr>
-        <tr> 
+        <tr>
         	<td nowrap class="txtlibform"><%=almanach.getString("urlEvenement")%> :</td>
-        	<td align=left><input type="text" name="EventUrl" size="60" maxlength="<%=DBUtil.TextFieldLength%>" 
+        	<td align=left><input type="text" name="EventUrl" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>"
 			<%if (event.getEventUrl()!=null) out.print("value=\""+ EncodeHelper.javaStringToHtmlString(event.getEventUrl()) + "\"");%>></td>
-        </tr>                    
+        </tr>
         <tr>
           <td nowrap class="txtlibform"><%=resources.getString("GML.priority")%> :</td>
           <td align=left><input type="checkbox" name="Priority" value="checkbox" <%if (event.getPriority() != 0) out.print("CHECKED");%>></td>
@@ -616,14 +616,14 @@ $(document).ready(function(){
         <tr>
 	    <tr>
           <td nowrap align=right class="txtlibform"><%=resources.getString("frequency")%> :</td>
-		  <td align=left><input type="text" name="Frequency" size="5" maxlength="5" value="<% if(periodicity == null) out.print("1"); else out.print(periodicity.getFrequency());%>"></td> 
+		  <td align=left><input type="text" name="Frequency" size="5" maxlength="5" value="<% if(periodicity == null) out.print("1"); else out.print(periodicity.getFrequency());%>"></td>
         </tr>
 		<tr>
           <td nowrap align=right><%=resources.getString("choiceDaysWeek")%> :</td>
 		  <td align=left>
 			<%
 			if(periodicity == null ||
-				periodicity.getUnity() == Periodicity.UNIT_DAY || 
+				periodicity.getUnity() == Periodicity.UNIT_DAY ||
 				periodicity.getUnity() == Periodicity.UNIT_MONTH ||
 				periodicity.getUnity() == Periodicity.UNIT_YEAR) {
 			%>
@@ -649,17 +649,17 @@ $(document).ready(function(){
 			%>
 		  </td>
         </tr>
-		
+
 		<tr>
 			<%
 			if(periodicity == null ||
-				periodicity.getUnity() == Periodicity.UNIT_DAY || 
+				periodicity.getUnity() == Periodicity.UNIT_DAY ||
 				periodicity.getUnity() == Periodicity.UNIT_WEEK ||
 				periodicity.getUnity() == Periodicity.UNIT_YEAR) {
 			%>
 			  <td nowrap align=right>
 				<input type="radio" name="ChoiceMonth" value="MonthDate" disabled checked onClick="changeChoiceMonth();"><%=resources.getString("choiceDateMonth")%>&nbsp;</td>
-			  <td align=left>	
+			  <td align=left>
 				<input type="radio" name="ChoiceMonth" value="MonthDay" disabled onClick="changeChoiceMonth();"><%=resources.getString("choiceDayMonth")%> :
 				<select name="MonthNumWeek" size="1" disabled>
 				<option value="1"><%=resources.getString("first")%></option>
@@ -668,7 +668,7 @@ $(document).ready(function(){
 				<option value="4"><%=resources.getString("fourth")%></option>
 				<option value="-1"><%=resources.getString("fifth")%></option>
 				</select>
-				
+
 				<input type="radio" name="MonthDayWeek" value="2" disabled checked><%=resources.getString("GML.jour2")%>
 				<input type="radio" name="MonthDayWeek" value="3" disabled><%=resources.getString("GML.jour3")%>
 				<input type="radio" name="MonthDayWeek" value="4" disabled><%=resources.getString("GML.jour4")%>
@@ -676,13 +676,13 @@ $(document).ready(function(){
 				<input type="radio" name="MonthDayWeek" value="6" disabled><%=resources.getString("GML.jour6")%>
 				<input type="radio" name="MonthDayWeek" value="7" disabled><%=resources.getString("GML.jour7")%>
 				<input type="radio" name="MonthDayWeek" value="1" disabled><%=resources.getString("GML.jour1")%>
-			  </td> 
+			  </td>
 			<%
 			}  else if(periodicity != null && periodicity.getUnity() == Periodicity.UNIT_MONTH) {
 			%>
 			  <td nowrap align=right>
 				<input type="radio" name="ChoiceMonth" value="MonthDate" <%if(periodicity.getNumWeek() == 0) out.print("checked");%> onClick="changeChoiceMonth();"><%=resources.getString("choiceDateMonth")%>&nbsp;</td>
-			  <td align=left>	
+			  <td align=left>
 				<input type="radio" name="ChoiceMonth" value="MonthDay" <%if(periodicity.getNumWeek() != 0) out.print("checked");%> onClick="changeChoiceMonth();"><%=resources.getString("choiceDayMonth")%> :
 				<%if(periodicity.getNumWeek() == 0) {
 				%>
@@ -693,7 +693,7 @@ $(document).ready(function(){
 					<option value="4" disabled><%=resources.getString("fourth")%></option>
 					<option value="-1" disabled><%=resources.getString("fifth")%></option>
 					</select>
-					
+
 					<input type="radio" name="MonthDayWeek" value="2" disabled checked><%=resources.getString("GML.jour2")%>
 					<input type="radio" name="MonthDayWeek" value="3" disabled><%=resources.getString("GML.jour3")%>
 					<input type="radio" name="MonthDayWeek" value="4" disabled><%=resources.getString("GML.jour4")%>
@@ -711,7 +711,7 @@ $(document).ready(function(){
 					<option value="4" <%if (periodicity.getNumWeek() == 4) out.print("selected");%>><%=resources.getString("fourth")%></option>
 					<option value="-1" <%if (periodicity.getNumWeek() == -1) out.print("selected");%>><%=resources.getString("fifth")%></option>
 					</select>
-					
+
 					<input type="radio" name="MonthDayWeek" value="2" <%if(periodicity.getDay() == 2) out.print("checked");%>><%=resources.getString("GML.jour2")%>
 					<input type="radio" name="MonthDayWeek" value="3" <%if(periodicity.getDay() == 3) out.print("checked");%>><%=resources.getString("GML.jour3")%>
 					<input type="radio" name="MonthDayWeek" value="4" <%if(periodicity.getDay() == 4) out.print("checked");%>><%=resources.getString("GML.jour4")%>
@@ -722,33 +722,33 @@ $(document).ready(function(){
 				<%
 				}
 				%>
-			  </td> 
+			  </td>
 			<%
 			}
 			%>
         </tr>
-		<tr> 
+		<tr>
           <td  nowrap align=right class="txtlibform"><span><%=resources.getString("beginDatePeriodicity")%> :</span></td>
-          <td valign="baseline"> 
-            <input type="text" class="dateToPick" name="PeriodicityStartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" 
-			<% 
+          <td valign="baseline">
+            <input type="text" class="dateToPick" name="PeriodicityStartDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>"
+			<%
 			if (event.getStartDate() != null) out.print("value=\""+resources.getInputDate(event.getStartDate())+"\"");
 			%>/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
           </td>
         </tr>
-		<tr> 
+		<tr>
           <td  nowrap align=right class="txtlibform"><span><%=resources.getString("endDatePeriodicity")%> :</span></td>
-          <td valign="baseline"> 
-            <input type="text" class="dateToPick" name="PeriodicityUntilDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>"
-			<% 
+          <td valign="baseline">
+            <input type="text" class="dateToPick" name="PeriodicityUntilDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>"
+			<%
 			if (periodicity != null && periodicity.getUntilDatePeriod() != null) out.print("value=\""+resources.getInputDate(periodicity.getUntilDatePeriod())+"\"");
 			%>/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
           </td>
         </tr>
-        <tr> 
+        <tr>
           <td colspan="2" valign="baseline" class="txtnote">(<img src="icons/cube-rouge.gif" width="5" height="5"> =  <%=resources.getString("GML.requiredField")%>)</td>
         </tr>
-	  
+
 	<input type="hidden" name="Action">
    	<input type="hidden" name="Id" <%out.print("value=\""+event.getPK().getId()+"\"");%>>
 	<input type="hidden" name="DateDebutIteration" <%out.print("value=\""+dateDebutIterationString+"\"");%>>
@@ -777,20 +777,20 @@ $(document).ready(function(){
 	buttonPaneOnUpdate.addButton(graphicFactory.getFormButton(resources.getString("allEvents"), "javascript:onClick=sendEvent('ReallyUpdateEvent', 'ReallyUpdateSerial')", false));
 	buttonPaneOnUpdate.addButton(graphicFactory.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=closeMessage()", false));
 	%>
-	
+
 	<table><tr><td align="center"><br/><%=resources.getString("eventsToUpdate") %>
 	<br/><br/>
 	<center><%=buttonPaneOnUpdate.print() %></center>
 	</td></tr></table>
 </div>
 <div id="modalDialogOnDelete" style="display: none">
-	<% 
+	<%
 	ButtonPane buttonPaneOnDelete = graphicFactory.getButtonPane();
 	buttonPaneOnDelete.addButton(graphicFactory.getFormButton(resources.getString("occurenceOnly"), "javascript:onClick=sendEvent('RemoveEvent', 'ReallyDeleteOccurence')", false));
 	buttonPaneOnDelete.addButton(graphicFactory.getFormButton(resources.getString("allEvents"), "javascript:onClick=sendEvent('RemoveEvent', 'ReallyDelete')", false));
 	buttonPaneOnDelete.addButton(graphicFactory.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=closeMessage()", false));
 	%>
-	
+
 	<table><tr><td align="center"><br/><%=resources.getString("eventsToDelete") %>
 	<br/><br/>
 	<center><%=buttonPaneOnDelete.print()%></center>
@@ -798,7 +798,7 @@ $(document).ready(function(){
 </div>
 </BODY>
 </HTML>
-<%                    
+<%
 out.println("<script language=\"JavaScript\">");
 out.println("var oFCKeditor = new FCKeditor('Description');");
 out.println("oFCKeditor.Width = \"500\";");

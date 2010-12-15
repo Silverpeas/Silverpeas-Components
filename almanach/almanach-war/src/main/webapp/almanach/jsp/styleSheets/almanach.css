@@ -22,53 +22,61 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-.eventCells {
-	padding-right: 3px;
-	padding-left: 3px;
-	vertical-align: top;
-	background-color: #FFFFFF
-}
+/**
+ * TO SPECIFY CSS PROPERTIES TO THE CALENDAR, PLEASE EITHER MODIFY THE FULLCALENDAR.CSS FILE OR
+ * OVERIDDES THEM IN THIS CSS FILE.
+ * THE RECOMMANDED WAY IS TO ADAPT THE FULLCALENDAR.CSS FILE TO YOUR NEEDS.
+ */
 
-#almanachView {
-	float: left;
-	width: 100%;
-	margin-left: 10px;
-}
-
+/**
+ * The calendar navigation used to navigate between the different calendar time interval view
+ * (for example from one month to another one or from one week to another one).
+ */
 #navigation {
-	float: left;
-	margin-left: 10px;
-	margin-bottom: 10px;
+  float: left;
+  margin-left: 10px;
+  margin-bottom: 10px;
 }
 
+/**
+ * #curentScope: the current time interval displayed by the calendar (for example, december).
+ * #today: the selector to switch to the time interval view in which today is rendered.
+ * #others: the selector fo switching to other almanachs.
+ */
 #currentScope,
 #today,
 #others {
-	float: left;
-	border: 1px solid;
-	margin-right: 10px;
-	background-image:
-		url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
-	background-repeat: repeat-x;
-	white-space: nowrap;
-	padding: 5px;
+  float: left;
+  border: 1px solid;
+  margin-right: 10px;
+  background-image:
+    url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
+  background-repeat: repeat-x;
+  white-space: nowrap;
+  padding: 5px;
 }
 
 #currentScope {
-	width: 200px;
-	text-align: center;
+  width: 200px;
+  text-align: center;
 }
 
 #currentScope img {
-	margin-top: 2px;
+  margin-top: 2px;
 }
 
 #others form,
 #footer form {
-	margin: 0px;
-	padding: 0px;
+  margin: 0px;
+  padding: 0px;
 }
 
 #today {
-	padding: 7px;
+  padding: 7px;
+}
+
+/**
+ * Default CSS class when printing an almanach title in the agregation area
+ */
+.almanach {
 }

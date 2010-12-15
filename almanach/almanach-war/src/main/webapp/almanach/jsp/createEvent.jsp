@@ -28,7 +28,7 @@
 
 <%
 	String language = almanach.getLanguage();
-  
+
 	ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(language);
 
 	EventDetail event = (EventDetail) request.getAttribute("Event");
@@ -37,7 +37,7 @@
 	if(event.getStartDate() != null) {
 		day = resources.getInputDate(event.getStartDate());
 	}
-	
+
 %>
 
 <HTML>
@@ -89,7 +89,7 @@ function reallyAdd() {
 	document.eventForm.MonthDayWeek[4].disabled = false;
 	document.eventForm.MonthDayWeek[5].disabled = false;
 	document.eventForm.MonthDayWeek[6].disabled = false;
-		
+
 	document.eventForm.action = "ReallyAddEvent";
 	document.eventForm.submit();
 }
@@ -147,13 +147,13 @@ function isCorrectForm() {
 	           }
 	       }
      }
-     
+
      if (!checkHour(beginHour))
      {
     	 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=almanach.getString("hourBegin")%>' <%=almanach.getString("MustContainsCorrectHour")%>\n";
 	     errorNb++;
      }
-     
+
      if (!isWhitespace(endDate)) {
            if (endDate.replace(re, "OK") != "OK") {
                  errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateEnd")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
@@ -179,13 +179,13 @@ function isCorrectForm() {
                  }
            }
      }
-     
+
      if (!checkHour(endHour))
      {
     	 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=almanach.getString("hourEnd")%>' <%=almanach.getString("MustContainsCorrectHour")%>\n";
          errorNb++;
      }
-     
+
 	 if (unity != "0") {
 		if (isWhitespace(frequency)) {
      		errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("frequency")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
@@ -273,7 +273,7 @@ function changeUnity () {
 		document.eventForm.WeekDayWeek6.disabled = false;
 		document.eventForm.WeekDayWeek7.disabled = false;
 		document.eventForm.WeekDayWeek1.disabled = false;
-		
+
 		document.eventForm.ChoiceMonth[0].disabled = true;
 		document.eventForm.ChoiceMonth[1].disabled = true;
 		document.eventForm.MonthNumWeek.disabled = true;
@@ -284,7 +284,7 @@ function changeUnity () {
 		document.eventForm.MonthDayWeek[4].disabled = true;
 		document.eventForm.MonthDayWeek[5].disabled = true;
 		document.eventForm.MonthDayWeek[6].disabled = true;
-		
+
 	} else if (unity == "3") {
 		document.eventForm.WeekDayWeek2.disabled = true;
 		document.eventForm.WeekDayWeek3.disabled = true;
@@ -293,7 +293,7 @@ function changeUnity () {
 		document.eventForm.WeekDayWeek6.disabled = true;
 		document.eventForm.WeekDayWeek7.disabled = true;
 		document.eventForm.WeekDayWeek1.disabled = true;
-		
+
 		document.eventForm.ChoiceMonth[0].disabled = false;
 		document.eventForm.ChoiceMonth[1].disabled = false;
 		if(document.eventForm.ChoiceMonth[0].checked) {
@@ -323,7 +323,7 @@ function changeUnity () {
 		document.eventForm.WeekDayWeek6.disabled = true;
 		document.eventForm.WeekDayWeek7.disabled = true;
 		document.eventForm.WeekDayWeek1.disabled = true;
-		
+
 		document.eventForm.ChoiceMonth[0].disabled = true;
 		document.eventForm.ChoiceMonth[1].disabled = true;
 		document.eventForm.MonthNumWeek.disabled = true;
@@ -363,16 +363,16 @@ function changeChoiceMonth() {
 </script>
 </HEAD>
 <BODY MARGINHEIGHT="5" MARGINWIDTH="5" TOPMARGIN="5" LEFTMARGIN="5" onLoad="document.eventForm.Title.focus()">
-  <% 
+  <%
     Window 		window 		= graphicFactory.getWindow();
     Frame 		frame		= graphicFactory.getFrame();
     Board 		board 		= graphicFactory.getBoard();
     TabbedPane 	tabbedPane 	= graphicFactory.getTabbedPane();
-    
+
     OperationPane operationPane = window.getOperationPane();
-        
+
 	String bar = almanach.getString("accueil");
-	
+
 	BrowseBar browseBar = window.getBrowseBar();
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "almanach.jsp");
@@ -388,41 +388,41 @@ function changeChoiceMonth() {
 %>
 <table CELLPADDING=5 WIDTH="100%">
 <FORM name="eventForm" action="editEvent.jsp" method="POST">
-	<tr> 
+	<tr>
         <td class="txtlibform"><%=resources.getString("GML.name")%>&nbsp;:&nbsp;</td>
-        <td><input type="text" name="Title" size="60" maxlength="<%=DBUtil.TextFieldLength%>">&nbsp;<img src="icons/cube-rouge.gif" width="5" height="5">
+        <td><input type="text" name="Title" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img src="icons/cube-rouge.gif" width="5" height="5">
         </td>
 	    </tr>
-      <tr> 
+      <tr>
         <td nowrap valign="top" class="txtlibform"><%=resources.getString("GML.description")%>&nbsp;:&nbsp;</td>
-        <td valign="top"> 
+        <td valign="top">
 					<textarea name="Description" id="Description"></textarea>
          </td>
       </tr>
-        <tr> 
+        <tr>
           <td  nowrap class="txtlibform"><%=resources.getString("GML.dateBegin")%>&nbsp;:&nbsp;</td>
-          <td valign="baseline"> 
-            <input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <% 
+          <td valign="baseline">
+            <input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" <%
 						if (event.getStartDate() != null) out.print("value=\""+resources.getInputDate(event.getStartDate())+"\"");
-						%>/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span> 
+						%>/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
              <span class="txtlibform">&nbsp;<%=almanach.getString("ToHour")%>&nbsp;</span><input type="text" name="StartHour" size="5" maxlength="5"> <span class="txtnote">(hh:mm)</span>&nbsp;<img src="icons/cube-rouge.gif" width="5" height="5">
           </td>
         </tr>
-        <tr> 
+        <tr>
           <td  nowrap class="txtlibform"><%=resources.getString("GML.dateEnd")%>&nbsp;:&nbsp;</td>
-          <td> 
-            <input type="text" class="dateToPick" name="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>"/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
+          <td>
+            <input type="text" class="dateToPick" name="EndDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>"/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
              <span class="txtlibform">&nbsp;<%=almanach.getString("ToHour")%>&nbsp;</span><input type="text" name="EndHour"	size="5" maxlength="5"> <span class="txtnote">(hh:mm)</span>
           </td>
         </tr>
         <tr>
         	<td nowrap class="txtlibform"><%=almanach.getString("lieuEvenement")%>&nbsp;:&nbsp;</td>
-        	<td><input type="text" name="Place" size="60" maxlength="<%=DBUtil.TextFieldLength%>"></td>
+        	<td><input type="text" name="Place" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>"></td>
         </tr>
-        <tr> 
+        <tr>
         	<td nowrap class="txtlibform"><%=almanach.getString("urlEvenement")%>&nbsp;:&nbsp;</td>
-        	<td><input type="text" name="EventUrl" size="60" maxlength="<%=DBUtil.TextFieldLength%>"></td>
-        </tr>                    
+        	<td><input type="text" name="EventUrl" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>"></td>
+        </tr>
         <tr>
           <td nowrap class="txtlibform"><%=resources.getString("GML.priority")%>&nbsp;:&nbsp;</td>
           <td><input type="checkbox" name="Priority" value="checkbox"></td>
@@ -440,7 +440,7 @@ function changeChoiceMonth() {
         </tr>
 		<tr>
           <td nowrap align=right class="txtlibform"><%=resources.getString("frequency")%>&nbsp;:&nbsp;</td>
-		  <td><input type="text" name="Frequency" size="5" maxlength="5" value="1"></td> 
+		  <td><input type="text" name="Frequency" size="5" maxlength="5" value="1"></td>
         </tr>
 		<tr>
           <td nowrap align=right><%=resources.getString("choiceDaysWeek")%>&nbsp;:&nbsp;</td>
@@ -454,11 +454,11 @@ function changeChoiceMonth() {
 			<input type="checkbox" name="WeekDayWeek1" value="1" disabled><%=resources.getString("GML.jour1")%>
 		  </td>
         </tr>
-		
+
 		<tr>
           <td nowrap align=right>
 			<input type="radio" name="ChoiceMonth" value="MonthDate" disabled checked onClick="changeChoiceMonth();"><%=resources.getString("choiceDateMonth")%>&nbsp;</td>
-		  <td>	
+		  <td>
 			<input type="radio" name="ChoiceMonth" value="MonthDay" disabled onClick="changeChoiceMonth();"><%=resources.getString("choiceDayMonth")%>&nbsp;:&nbsp;
 			<select name="MonthNumWeek" size="1"  disabled>
 			<option value="1"><%=resources.getString("first")%></option>
@@ -467,7 +467,7 @@ function changeChoiceMonth() {
 			<option value="4"><%=resources.getString("fourth")%></option>
 			<option value="-1"><%=resources.getString("fifth")%></option>
 			</select>
-			
+
 			<input type="radio" name="MonthDayWeek" value="2" disabled checked><%=resources.getString("GML.jour2")%>
 			<input type="radio" name="MonthDayWeek" value="3" disabled><%=resources.getString("GML.jour3")%>
 			<input type="radio" name="MonthDayWeek" value="4" disabled><%=resources.getString("GML.jour4")%>
@@ -475,25 +475,25 @@ function changeChoiceMonth() {
 			<input type="radio" name="MonthDayWeek" value="6" disabled><%=resources.getString("GML.jour6")%>
 			<input type="radio" name="MonthDayWeek" value="7" disabled><%=resources.getString("GML.jour7")%>
 			<input type="radio" name="MonthDayWeek" value="1" disabled><%=resources.getString("GML.jour1")%>
-		  </td> 
+		  </td>
         </tr>
-	
-		<tr> 
+
+		<tr>
           <td  nowrap align=right class="txtlibform"><span><%=resources.getString("beginDatePeriodicity")%>&nbsp;:&nbsp;</td>
-          <td valign="baseline"> 
-            <input type="text" name="PeriodicityStartDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" readonly 
-			<% 
+          <td valign="baseline">
+            <input type="text" name="PeriodicityStartDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" readonly
+			<%
 			if (event.getStartDate() != null) out.print("value=\""+resources.getInputDate(event.getStartDate())+"\"");
 			%>>&nbsp;
           </td>
         </tr>
-		<tr> 
+		<tr>
           <td  nowrap align=right class="txtlibform"><span><%=resources.getString("endDatePeriodicity")%>&nbsp;:&nbsp;</td>
-          <td valign="baseline"> 
-            <input type="text" class="dateToPick" name="PeriodicityUntilDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>"/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
+          <td valign="baseline">
+            <input type="text" class="dateToPick" name="PeriodicityUntilDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>"/><span class="txtnote">(<%=resources.getString("GML.dateFormatExemple")%>)</span>
           </td>
         </tr>
-        <tr> 
+        <tr>
           <td colspan="2" valign="baseline" class="txtnote">(<img src="icons/cube-rouge.gif" width="5" height="5"> =  <%=resources.getString("GML.requiredField")%>)</td>
         </tr>
    	<input type="hidden" name="Action">
@@ -523,7 +523,7 @@ function changeChoiceMonth() {
 </form>
 </BODY>
 </HTML>
-<%                    
+<%
 out.println("<script language=\"JavaScript\">");
 out.println("var oFCKeditor = new FCKeditor('Description');");
 out.println("oFCKeditor.Width = \"500\";");

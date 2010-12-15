@@ -1,161 +1,332 @@
-<%--
-
-    Copyright (C) 2000 - 2009 Silverpeas
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "http://repository.silverpeas.com/legal/licensing"
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
---%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%
-response.setHeader("Cache-Control","no-store"); //HTTP 1.1
-response.setHeader("Pragma","no-cache"); //HTTP 1.0
-response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
-%>
-
-<%@ page import="javax.servlet.*"%>
-<%@ page import="javax.servlet.http.*"%>
-<%@ page import="javax.servlet.jsp.*"%>
-<%@ page import="java.io.PrintWriter"%>
-<%@ page import="java.io.IOException"%>
-<%@ page import="java.io.FileInputStream"%>
-<%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
-<%@ page import="java.beans.*"%>
-
-<%@ page import="java.util.*"%>
-<%@ page import="javax.ejb.*,java.sql.SQLException,javax.naming.*,javax.rmi.PortableRemoteObject"%>
-<%@ page import="com.stratelia.webactiv.util.*"%>
-<%@ page import="com.stratelia.webactiv.almanach.model.*"%>
-<%@ page import="com.stratelia.webactiv.almanach.control.*"%>
-<%@ page import="com.stratelia.webactiv.beans.admin.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.*"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.*"%>
-
-<%@ include file="checkAlmanach.jsp" %>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
+<%@ page import="com.stratelia.webactiv.almanach.control.AlmanachPdfGenerator"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
-  ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(almanach.getLanguage());
-
-  String form = request.getParameter("indiceForm");
-  String elem = (String) request.getParameter("indiceElem");
-  String nameElem 	= (String) request.getParameter("nameElem");
-  String jsFunction = (String) request.getParameter("JSCallback");
-  String action = (String) request.getParameter("Action");
-
-  if (action != null) {
-    if (action.equals("NextMonth")) {
-      almanach.nextMonth();
-    }
-    else if (action.equals("PreviousMonth")) {
-      almanach.previousMonth();
-    }
-  }
-
-Frame frame = graphicFactory.getFrame();
-Window window = graphicFactory.getWindow();
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
+
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<c:set var="browseContext" value="${requestScope.browseContext}"/>
+<c:set var="componentLabel" value="${browseContext[1]}"/>
+<c:set var="instanceId" value="${browseContext[3]}"/>
+
+<c:set var="rssUrl" value="${requestScope.RSSUrl}"/>
+<c:set var="almanach" value="${requestScope.almanach}"/>
+<c:set var="othersAlmanachs" value="${almanach.othersAlmanachsAsDTO}"/>
+<c:set var="accessibleInstances" value="${almanach.accessibleInstances}"/>
+<c:set var="events" value="${requestScope.events}" />
+<c:set var="year" value="${requestScope.currentYear}"/>
+<c:set var="month" value="${requestScope.currentMonth}"/>
+<c:set var="day" value="${requestScope.currentDay}"/>
+<c:set var="flag"><c:out value="${param['flag']}" default="user"/></c:set>
+<c:set var="navigationLabel" value="${requestScope.navigationLabel}"/>
+
 <html>
-<head>
-<%
-out.println(graphicFactory.getLookStyleSheet());
-%>
-<title><%=generalMessage.getString("GML.popupTitle")%></title>
-<script language="javascript" src="js/globalScript.js"></script>
-<script language="JavaScript">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <view:looknfeel />
+    <c:if test="${rssUrl ne null and not empty rssUrl}">
+      <link rel="alternate" type="application/rss+xml" title="<c:out value='${componentLabel}'/> : <fmt:message key='almanach.rssNext'/>" href="<c:url value='${rssUrl}'/>"/>
+    </c:if>
+    <link rel='stylesheet' type='text/css' href="<c:url value='/util/styleSheets/jquery/fullcalendar.css'/>" />
+    <link rel='stylesheet' type='text/css' href="<c:url value='/almanach/jsp/styleSheets/almanach.css'/>" />
+    <style type="text/css">
+      <c:forEach var="almanach" items="${othersAlmanachs}">
+        <c:out value=".${almanach.instanceId} { color: ${almanach.color}; }"/>
+        <c:out value=".fc-agenda .${almanach.instanceId} .fc-event-time, .${almanach.instanceId} a { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
+      </c:forEach>
+    </style>
+    <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
+    <script type="text/javascript" src="<c:url value='/util/javaScript/jquery/fullcalendar.min.js'/>"></script>
+    <script type="text/javascript">
 
-function selectDay(day) 
-{
-  var indiceF = "<%=form%>";
-  var indiceE = "<%=elem%>";
-  <% if (StringUtil.isDefined(nameElem)) { %>
-  	  nameElement = '<%=nameElem%>';
-	  window.opener.document.forms[indiceF].elements[nameElement].value = day;
-  <% } else if (StringUtil.isDefined(jsFunction)){ 
-	  out.println("window.opener."+jsFunction+"(day);");
-  } else { %>
-	  window.opener.document.forms[indiceF].elements[indiceE].value = day;
-  <% } %>
-  window.close();
-}
+      function nextMonth()
+      {
+        document.almanachForm.Action.value = "NextMonth";
+        document.almanachForm.submit();
+      }
 
-function nextMonth()
-{
-    document.calendarForm.Action.value = "NextMonth";
-    document.calendarForm.submit();
-}
+      function previousMonth()
+      {
+        document.almanachForm.Action.value = "PreviousMonth";
+        document.almanachForm.submit();
+      }
+      function goToDay()
+      {
+        document.almanachForm.Action.value = "GoToday";
+        document.almanachForm.submit();
+      }
 
-function previousMonth()
-{
-    document.calendarForm.Action.value = "PreviousMonth";
-    document.calendarForm.submit();
-}
+      function clickEvent(idEvent, date, componentId){
+        viewEvent(idEvent, date, componentId);
+      }
 
-</script>
-</head>
-<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5>
-<%
-	out.println(window.printBefore());
-	out.println(frame.printBefore());
-%>
-<center>
-<table width="98%" border="0" cellspacing="0" cellpadding="3" class=contourintfdcolor align="center"><!--tablcontour-->
+      function clickDay(day){
+        flag = "<c:out value='${flag}'/>";
+        if(flag == "publisher" || flag == "admin")
+          addEvent(day);
+      }
 
-  <tr align="center">
-   <td class="intfdcolor4">
-   		<table border="0" cellspacing="0" cellpadding="0" class="intfdcolor4" width="100%" align="center"><!--tabl1-->
-                    <tr> 
-                      <td class="intfdcolor3" nowrap align="center"><a href="javascript:onClick=previousMonth()" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('fle-211','','icons/cal_fle-gon.gif',1)"><img name="fle-211" border="0" src="icons/cal_fle-goff.gif" width="8" height="14"></a></td>
-                      <td class="intfdcolor3" nowrap align="center" colspan="5"><span class="txtnav4"><%=
-				almanach.getString("mois" + almanach.getCurrentDay().get(Calendar.MONTH)) + 
-				" " +
-				almanach.getCurrentDay().get(Calendar.YEAR)%></span></td>
-                      <td class="intfdcolor3" nowrap align="center"><a href="javascript:onClick=nextMonth()" onMouseOut="MM_swapImgRestore()" onMouseOver="MM_swapImage('fle-111','','icons/cal_fle-don.gif',1)"><img name="fle-111" border="0" src="icons/cal_fle-doff.gif" width="8" height="14"></a></td>
-                    </tr>
-                   <%
-                    CalendarDisplayer displayer = new CalendarDisplayer();
-                    out.print(displayer.displayCalendar(almanach, resources));
-                   %>
-                  </table>
-    </td>
-  </tr>
-</table>
-<br>
-<%
-  Button button = null;
-  button = graphicFactory.getFormButton(resources.getString("GML.close"), "javascript:onClick=window.close();", false);
-  out.println(button.print());
-%>
-</center>
-<%
-	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
-<FORM NAME="calendarForm" ACTION="calendar.jsp" METHOD=POST >
-  <input type="hidden" name="Action">
-  <input type="hidden" name="indiceForm" value="<%=form%>">
-  <input type="hidden" name="indiceElem" value="<%=elem%>">
-  <input type="hidden" name="nameElem" value="<%=nameElem%>">
-  <input type="hidden" name="JSCallback" value="<%=jsFunction%>">
-</FORM>
-</BODY>
-</HTML>
+      function openSPWindow(fonction, windowName){
+        pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '450','scrollbars=yes, resizable, alwaysRaised');
+      }
+
+      function viewEvent(id, date, componentId)
+      {
+        url = "<c:url value='/Ralmanach/'/>"+componentId+"/viewEventContent.jsp?Id="+id+"&Date="+date;
+        window.open(url,'_self');
+      }
+
+      function addEvent(day)
+      {
+        document.eventForm.Day.value = day;
+        document.eventForm.submit();
+      }
+
+      function printPdf(view)
+      {
+        window.open(view, "PdfGeneration", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
+      }
+
+      function viewEvents() {
+        pdcUtilizationWindow = SP_openWindow("ViewYearEventsPOPUP", "allEvents", '600', '400','scrollbars=yes,resizable,alwaysRaised');
+      }
+
+      <c:if test="${almanach.agregationUsed}">
+        var actionAll = false;
+        function updateAgregation(i)
+        {
+          if (document.agregateAlmanachs.chk_allalmanach)
+          {
+            newState = document.agregateAlmanachs.chk_allalmanach.checked;
+            //Avoid too much submit for each checkbox (trigger onClick) if click on all checkbox
+            if (!actionAll)
+            {
+              document.agregateAlmanachs.action = "UpdateAgregation";
+              document.agregateAlmanachs.submit();
+            }
+          }
+          else
+          {
+            document.agregateAlmanachs.action = "UpdateAgregation";
+            document.agregateAlmanachs.submit();
+          }
+        }
+
+        function agregateAll()
+        {
+          myForm = document.agregateAlmanachs;
+          var newState = true;
+          if (myForm.chk_allalmanach)
+            newState = myForm.chk_allalmanach.checked;
+
+          if (myForm.chk_almanach.length == null)
+          {
+            myForm.chk_almanach.checked = true;
+          }
+          else
+          {
+            for (i=0; i<myForm.chk_almanach.length; i++)
+            {
+              if (newState && !myForm.chk_almanach[i].checked)
+                myForm.chk_almanach[i].checked = true;
+              else if (!newState && myForm.chk_almanach[i].checked)
+                myForm.chk_almanach[i].checked = false;
+            }
+          }
+          document.agregateAlmanachs.action = "UpdateAgregation";
+          document.agregateAlmanachs.submit();
+        }
+      </c:if>
+
+        $(document).ready(function() {
+
+          // page is now ready, initialize the calendar...
+
+          $('#calendar').fullCalendar({
+            // put your options and callbacks here
+            monthNames: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
+              'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
+            dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
+            dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+            buttonText: {
+              prev:     '&nbsp;&#9668;&nbsp;',  // left triangle
+              next:     '&nbsp;&#9658;&nbsp;',  // right triangle
+              prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
+              nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
+              today:    "Aujourd'hui",
+              month:    'Moi',
+              week:     'Semaine',
+              day:      'Journée'
+            },
+            eventClick: function(calEvent, jsEvent, view) {
+              var date = calEvent.start.getFullYear() + '/';
+              if (calEvent.start.getMonth() < 10) date = date + '0' + (calEvent.start.getMonth() + 1) + '/';
+              else date = date + (calEvent.start.getMonth() + 1) + '/';
+              if (calEvent.start.getDate() < 10) date = date + '0' + calEvent.start.getDate() + '/';
+              else date = date + calEvent.start.getDate();
+              clickEvent(calEvent.id, date, calEvent.instanceId);
+            },
+            events: <c:out value='${events}' escapeXml='yes'/>
+      <c:if test='${almanach.weekendNotVisible}'>
+            , weekends: false
+      </c:if>
+          });
+
+          $('#calendar').fullCalendar('gotoDate', <c:out value="${year}"/>, <c:out value="${month}"/>, <c:out value="${day}"/>)
+
+        });
+    </script>
+  </head>
+  <body>
+    <view:operationPane>
+      <c:if test='${flag eq "admin" and almanach.pdcUsed}'>
+        <fmt:message key="GML.PDCParam" var="opLabel" />
+        <fmt:message key="almanach.icons.paramPdc" var="opIcon" bundle="${icons}"/>
+        <c:url var="opIcon" value="${opIcon}"/>
+        <c:set var="openPdc">
+          javascript:onClick=openSPWindow('<c:url value="/RpdcUtilization/jsp/Main?ComponentId=${instanceId}"/>','utilizationPdc1')
+        </c:set>
+        <view:operation altText="${opLabel}" icon="${opIcon}" action="${openPdc}"/>
+      </c:if>
+      <c:if test="${flag eq 'admin' or flag eq 'publisher'}">
+        <fmt:message key="creerEvenement" var="opLabel" />
+        <fmt:message key="almanach.icons.addEvent" var="opIcon" bundle="${icons}"/>
+        <c:url var="opIcon" value="${opIcon}"/>
+        <view:operation altText="${opLabel}" icon="${opIcon}" action="javascript:onClick=addEvent('')"/>
+        <view:operationSeparator/>
+      </c:if>
+
+      <fmt:message key="almanach.action.monthEvents" var="opLabel"/>
+      <fmt:message key="almanach.icons.printEvents" var="opIcon" bundle="${icons}"/>
+      <c:url var="opIcon" value="${opIcon}"/>
+      <view:operation altText="${opLabel}" icon="${opIcon}" action="ViewMonthEvents"/>
+
+      <fmt:message key="almanach.action.yearEvents" var="opLabel"/>
+      <view:operation altText="${opLabel}" icon="" action="ViewYearEvents"/>
+
+      <c:set var="opLabel"><fmt:message key="almanach.action.yearEvents"/> <fmt:message key="almanach.popup"/></c:set>
+      <view:operation altText="${opLabel}" icon="" action="ViewYearEvents"/>
+      <view:operationSeparator/>
+
+      <fmt:message key="genererPdfMoisComplet" var="opLabel"/>
+      <fmt:message key="almanach.icons.exportCalendarToPDF" var="opIcon" bundle="${icons}"/>
+      <c:set var="opAction"><%= AlmanachPdfGenerator.PDF_MONTH_ALLDAYS%></c:set>
+      <c:url var="opIcon" value="${opIcon}"/>
+      <view:operation altText="${opLabel}" icon="${opIcon}" action="javascript:onClick=printPdf('${opAction}')"/>
+
+      <fmt:message key="genererPdfJourEvenement" var="opLabel"/>
+      <fmt:message key="almanach.icons.exportEventsToPDF" var="opIcon" bundle="${icons}"/>
+      <c:set var="opAction"><%= AlmanachPdfGenerator.PDF_MONTH_EVENTSONLY%></c:set>
+      <c:url var="opIcon" value="${opIcon}"/>
+      <view:operation altText="${opLabel}" icon="${opIcon}" action="javascript:onClick=printPdf('${opAction}')"/>
+
+      <fmt:message key="almanach.genererPdfAnnee" var="opLabel"/>
+      <fmt:message key="almanach.icons.exportCalendarToPDF" var="opIcon"  bundle="${icons}"/>
+      <c:set var="opAction"><%= AlmanachPdfGenerator.PDF_YEAR_EVENTSONLY%></c:set>
+      <c:url var="opIcon" value="${opIcon}"/>
+      <view:operation altText="${opLabel}" icon="${opIcon}" action="javascript:onClick=printPdf('${opAction}')"/>
+    </view:operationPane>
+
+    <view:window>
+      <view:frame>
+        <div id="navigation">
+          <fmt:message key="almanach.icons.leftArrow" var="leftArrow" bundle="${icons}"/>
+          <fmt:message key="almanach.icons.rightArrow" var="rightArrow" bundle="${icons}"/>
+          <fmt:message key="auJour" var="today" />
+          <div id="currentScope">
+            <a href="javascript:onClick=previousMonth()"><img src="<c:url value='${leftArrow}'/>" border="0" alt="" align="top"/></a>
+            <span class="txtnav"><c:out value="${navigationLabel}" /></span>
+            <a href="javascript:onClick=nextMonth()"><img src="<c:url value='${rightArrow}'/>" border="0" alt="" align="top"/></a>
+          </div>
+          <div id="today">
+            <a href="javascript:onClick=goToDay()"><c:out value="${today}" /></a>
+          </div>
+          <c:if test="${accessibleInstances ne null}">
+            <div id="others">
+              <select name="select" onchange="window.open(this.options[this.selectedIndex].value,'_self')" class="selectNS">
+                <c:forEach var="instance" items="${accessibleInstances}">
+                  <c:set var="componentId" value="${instance[0]}"/>
+                  <c:set var="selected" value=""/>
+                  <c:if test="${componentId eq instanceId}">
+                    <c:set var="selected" value="selected='selected'"/>
+                  </c:if>
+                  <option value="<view:componentUrl componentId='${componentId}'/>Main" <c:out value="${selected}" escapeXml="false"/>><c:out value="${instance[2]} - ${instance[1]}"/></option>
+                </c:forEach>
+              </select>
+            </div>
+          </c:if>
+        </div>
+
+        <div id="calendar"></div>
+
+        <c:if test="${almanach.agregationUsed and not empty othersAlmanachs}">
+          <div id="agregatedAlmanachs">
+            <form name="agregateAlmanachs">
+              <table><tr><td><fmt:message key="otherAlmanachEvents"/></td>
+                  <c:forEach var="i" begin="0" end="${fn:length(othersAlmanachs) - 1}" step="1">
+                    <c:set var="otherAlmanach" value="${othersAlmanachs[i]}"/>
+                    <c:set var="checked" value=""/>
+                    <c:if test="${otherAlmanach.agregated}">
+                      <c:set var="checked" value="checked"/>
+                    </c:if>
+                    <c:if test="${i % 5 eq 0 and i >= 5}">
+                    </tr><tr><td>&nbsp;</td>
+                    </c:if>
+                    <td>
+                      <input onclick="updateAgregation(<c:out value='${i}'/>)" type="checkbox" name="chk_almanach" <c:out value='${checked}'/> value="<c:out value='${otherAlmanach.instanceId}'/>"/>
+                    </td>
+                    <td>
+                      <a class="almanach" href="<c:url value='/Ralmanach/${otherAlmanach.instanceId}/Main'/>">
+                        <span class="<c:out value='${otherAlmanach.instanceId}'/>"><b><c:out value='${otherAlmanach.label}'/></b></span>
+                      </a>
+                    </td>
+                    <td>&nbsp;</td>
+                  </c:forEach>
+                  <c:if test="${fn:length(othersAlmanachs) gt 1}">
+                    <c:set var="agregatedAlmanachs" value="${almanach.agregatedAlmanachs}"/>
+                    <c:set var="checked" value=""/>
+                    <c:if test="${agregatedAlmanachs ne null and fn:length(othersAlmanachs) eq fn:length(agregatedAlmanachs)}">
+                      <c:set var="checked" value="checked"/>
+                    </c:if>
+                    <td><input onClick="agregateAll()" <c:out value="${checked}"/> name="chk_allalmanach" type="checkbox"/></td>
+                    <td><b><fmt:message key="allAlmanachs"/></b></td>
+                  </c:if>
+                </tr>
+              </table>
+            </form>
+          </div>
+        </c:if>
+
+        <c:if test="${rssUrl ne null and not empty rssUrl}">
+          <table>
+            <tr>
+              <td><a href="<c:url value='${rssUrl}'/>"><img src="icons/rss.gif" border="0" alt="RSS"/></a></td>
+            </tr>
+          </table>
+          <fmt:message key="almanach.rssNext" var="rssNext"/>
+          <link rel="alternate" type="application/rss+xml" title="<c:out value='${componentLabel} : ${rssNext}'/>" href="<c:url value='${rssUrl}'/>"/>
+        </c:if>
+
+      </view:frame>
+    </view:window>
+
+    <form name="almanachForm" action="almanach.jsp" method="post">
+      <input type="hidden" name="Action"/>
+      <input type="hidden" name="Id"/>
+    </form>
+
+    <form name="eventForm" action="createEvent.jsp" method="post">
+      <input type="hidden" name="Day"/>
+    </form>
+  </body>
+</html>

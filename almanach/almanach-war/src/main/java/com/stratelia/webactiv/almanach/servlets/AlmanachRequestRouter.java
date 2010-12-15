@@ -36,6 +36,7 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.almanach.control.AlmanachDTO;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.Periodicity;
@@ -44,6 +45,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendar;
+import java.util.ArrayList;
 
 public class AlmanachRequestRouter extends ComponentRequestRouter {
 
@@ -125,21 +127,34 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         // initialisation d'un Calendar ical4j
         Calendar calendarAlmanach = almanach.getICal4jCalendar(almanach.getAllEventsAgregation());
         almanach.setCurrentICal4jCalendar(calendarAlmanach);
+
         List<Event> events = almanach.listCurrentMonthEvents();
+        java.util.Calendar currentDay = almanach.getCurrentDay();
+        request.setAttribute("currentYear", currentDay.get(java.util.Calendar.YEAR));
+        request.setAttribute("currentMonth", currentDay.get(java.util.Calendar.MONTH));
+        request.setAttribute("currentDay", currentDay.get(java.util.Calendar.DAY_OF_MONTH));
+        request.setAttribute("events", Event.toJavaScript(events));
+        String navigationLabel = almanach.getString("mois" + currentDay.get(
+            java.util.Calendar.MONTH))
+            + " " + String.valueOf(currentDay.get(java.util.Calendar.YEAR));
+        
+        request.setAttribute("navigationLabel", navigationLabel);
+
+        request.setAttribute("RSSUrl", almanach.getRSSUrl());
+
+        // OLD CODE. TODO: REMOVE IT AFTER ENDING THE MODIFICATION WITH THE FULLCALENDAR SUPPORT
         // transformation des VEvent du Calendar ical4j en Event du MonthCalendar
         monthC.addEvent(events);
         // initialisation de monthC avec la date courante issue de almanach
         monthC.setCurrentMonth(almanach.getCurrentDay().getTime());
-
         request.setAttribute("MonthCalendar", monthC);
-        request.setAttribute("RSSUrl", almanach.getRSSUrl());
-
         request.setAttribute("AccessibleInstances", almanach.getAccessibleInstances());
+        // OLD CODE -----------------------------------------------------------------------------
 
         if (function.startsWith("portlet")) {
-          destination = "/almanach/jsp/portletAlmanach.jsp?flag=" + flag;
+          destination = "/almanach/jsp/portletCalendar.jsp?flag=" + flag;
         } else {
-          destination = "/almanach/jsp/almanach.jsp?flag=" + flag;
+          destination = "/almanach/jsp/calendar.jsp?flag=" + flag;
         }
       } else if (function.startsWith("viewEventContent")) {
         // initialisation de l'objet event
