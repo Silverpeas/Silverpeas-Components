@@ -24,6 +24,7 @@
 package com.stratelia.silverpeas.infoLetter.control;
 
 import java.io.File;
+
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -55,6 +56,7 @@ import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.fileupload.FileItem;
 
+import com.silverpeas.ui.UIHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
 import com.silverpeas.util.csv.CSVWriter;
@@ -265,25 +267,6 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     return dataInterface.getInfoLetterPublication(publiPK);
   }
   
-  private synchronized List<String> getAllLanguages() {
-    ResourceLocator resources = new ResourceLocator(
-        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings",
-        "");
-    List<String> allLanguages = new ArrayList<String>();
-    try {
-      StringTokenizer st = new StringTokenizer(
-          resources.getString("languages"), ",");
-      while (st.hasMoreTokens()) {
-        String langue = st.nextToken();
-        allLanguages.add(langue);
-      }
-    } catch (Exception e) {
-      SilverTrace.error("infoLetter", "InfoLetterSessionController.getAllLanguages()",
-          "personalizationPeas.EX_CANT_GET_FAVORITE_LANGUAGE", e);
-    }
-    return allLanguages;
-  }
-  
   protected SilverpeasTemplate getNewTemplate() {
 	ResourceLocator rs =
         new ResourceLocator("com.stratelia.silverpeas.infoLetter.settings.infoLetterSettings", "");
@@ -327,7 +310,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
             new NotificationMetaData(NotificationParameters.NORMAL, sSubject, templates, "infoLetterNotification");
     	
     	String url = "/RinfoLetter/" + getComponentId() + "/View?parution=" + ilp.getPK().getId();
-    	for (String lang : getAllLanguages()) {
+    	for (String lang : UIHelper.getLanguages()) {
     		SilverpeasTemplate template = getNewTemplate();
     		templates.put(lang, template);
     		template.setAttribute("infoLetter", ilp);
