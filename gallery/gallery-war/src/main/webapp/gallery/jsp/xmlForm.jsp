@@ -45,7 +45,6 @@ String nbComments = nbCom.toString();
 <HTML>
 <HEAD>
 <% out.println(gef.getLookStyleSheet()); %>
-<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <% formUpdate.displayScripts(out, context); %>
 <script language="javaScript">
 function B_VALIDER_ONCLICK()

@@ -82,7 +82,6 @@
 <%
 	out.println(gef.getLookStyleSheet());
 %>
-<script type="text/javascript" src="<%=URLManager.getApplicationURL()%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>

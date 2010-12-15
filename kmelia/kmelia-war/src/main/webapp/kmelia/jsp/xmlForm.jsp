@@ -77,7 +77,6 @@
   <head>
   	<title></title>
     <% out.println(gef.getLookStyleSheet());%>
-    <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
     <% formUpdate.displayScripts(out, context);%>
     <script type="text/javascript">
       function topicGoTo(id) {

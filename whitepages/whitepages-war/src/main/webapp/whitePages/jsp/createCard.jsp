@@ -52,9 +52,6 @@
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <%
    out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
-<%
    updateForm.displayScripts(out, context);
 %>
 

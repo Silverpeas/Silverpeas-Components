@@ -55,7 +55,6 @@
 
 <HTML>
 <HEAD>
-<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <%
    out.println(gef.getLookStyleSheet());
