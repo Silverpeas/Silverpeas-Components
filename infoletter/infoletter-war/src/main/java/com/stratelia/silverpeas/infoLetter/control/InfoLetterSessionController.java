@@ -32,8 +32,10 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -57,6 +59,9 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
 import com.silverpeas.util.csv.CSVWriter;
 import com.silverpeas.util.csv.Variant;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
 import com.stratelia.silverpeas.infoLetter.InfoLetterPeasTrappedException;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
@@ -259,6 +264,37 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     currentPublicationId = publiPK.getId();
     return dataInterface.getInfoLetterPublication(publiPK);
   }
+  
+  private synchronized List<String> getAllLanguages() {
+    ResourceLocator resources = new ResourceLocator(
+        "com.stratelia.silverpeas.personalizationPeas.settings.personalizationPeasSettings",
+        "");
+    List<String> allLanguages = new ArrayList<String>();
+    try {
+      StringTokenizer st = new StringTokenizer(
+          resources.getString("languages"), ",");
+      while (st.hasMoreTokens()) {
+        String langue = st.nextToken();
+        allLanguages.add(langue);
+      }
+    } catch (Exception e) {
+      SilverTrace.error("infoLetter", "InfoLetterSessionController.getAllLanguages()",
+          "personalizationPeas.EX_CANT_GET_FAVORITE_LANGUAGE", e);
+    }
+    return allLanguages;
+  }
+  
+  protected SilverpeasTemplate getNewTemplate() {
+	ResourceLocator rs =
+        new ResourceLocator("com.stratelia.silverpeas.infoLetter.settings.infoLetterSettings", "");
+    Properties templateConfiguration = new Properties();
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs
+        .getString("templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs
+        .getString("customersTemplatePath"));
+	
+	return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
+  }
 
   // Notification des abonnes internes
   public void notifySuscribers(InfoLetterPublicationPdC ilp) {
@@ -267,8 +303,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     int i = 0;
     pk.setId(String.valueOf(ilp.getLetterId()));
     InfoLetter il = dataInterface.getInfoLetter(pk);
-	String sTitle = getString("infoLetter.emailSubject") + ilp.getName();
-	String sContent = getString("infoLetter.emailContent") + ilp.getName();
+	String sSubject = getString("infoLetter.emailSubject") + ilp.getName();
 
     Vector v = dataInterface.getInternalSuscribers(pk);
     Vector groups = (Vector) v.elementAt(0);
@@ -287,15 +322,36 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     String[] aToGroupIds = NotificationSender.getIdsArrayFromIdsLine(NotificationSender.
         getIdsLineFromGroupArray(t_groups));
     try {
-      NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-          sTitle, sContent);
-      notifMetaData.setSender(getUserId());
-      notifMetaData.addUserRecipients(aToUserIds);
-      notifMetaData.addGroupRecipients(aToGroupIds);
-      notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
-      notifMetaData.setLink("/RinfoLetter/" + getComponentId() + "/View?parution=" + ilp.getPK().
-          getId());
-      ns.notifyUser(notifMetaData);
+    	Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+    	NotificationMetaData notifMetaData =
+            new NotificationMetaData(NotificationParameters.NORMAL, sSubject, templates, "infoLetterNotification");
+    	
+    	String url = "/RinfoLetter/" + getComponentId() + "/View?parution=" + ilp.getPK().getId();
+    	for (String lang : getAllLanguages()) {
+    		SilverpeasTemplate template = getNewTemplate();
+    		templates.put(lang, template);
+    		template.setAttribute("infoLetter", ilp);
+    		template.setAttribute("infoLetterTitle", ilp.getName(lang));
+    		String desc = ilp.getDescription(lang);
+    		if("".equals(desc)) {
+    			desc = null;
+    		}
+    		template.setAttribute("infoLetterDesc", desc);
+    		template.setAttribute("senderName", getUserDetail().getDisplayedName());    		
+    		template.setAttribute("silverpeasURL", url);
+      	
+    		ResourceLocator localizedMessage = new ResourceLocator(
+          "com.stratelia.silverpeas.infoLetter.multilang.infoLetterBundle", lang);
+    		notifMetaData.addLanguage(lang, localizedMessage.getString("infoLetter.emailSubject", getString("infoLetter.emailSubject")) + ilp.getName(), "");
+    	}
+    	notifMetaData.setSender(getUserId());
+        notifMetaData.addUserRecipients(aToUserIds);
+        notifMetaData.addGroupRecipients(aToGroupIds);
+        notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
+        notifMetaData.setLink(url);
+        
+        ns.notifyUser(notifMetaData);
+    	
     } catch (com.stratelia.silverpeas.notificationManager.NotificationManagerException e) {
       throw new InfoLetterException(
           "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
