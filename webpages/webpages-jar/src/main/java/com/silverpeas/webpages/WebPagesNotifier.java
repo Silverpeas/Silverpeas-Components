@@ -29,7 +29,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.silverpeas.webpages.model.WebPagesRuntimeException;
@@ -47,6 +46,7 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.subscribe.control.SubscribeBm;
 import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
+import com.silverpeas.ui.UIHelper;
 
 public class WebPagesNotifier {
 
@@ -66,14 +66,14 @@ public class WebPagesNotifier {
         String fileName = "notificationUpdateContent";
 
         ResourceLocator message = new ResourceLocator(
-              "com.silverpeas.webpages.multilang.webPagesBundle", I18NHelper.defaultLanguage);
+              "com.silverpeas.webpages.multilang.webPagesBundle", UIHelper.getDefaultLanguage());
         String subject = message.getString("webPages.subscription");
         NotificationMetaData notifMetaData = new NotificationMetaData(
               NotificationParameters.NORMAL, subject, templates, fileName);
         OrganizationController oc = new OrganizationController();
         String senderName = oc.getUserDetail(userId).getDisplayedName();
 
-        for (String lang : I18NHelper.getAllSupportedLanguages()) {
+        for (String lang : UIHelper.getLanguages()) {
           SilverpeasTemplate template = getNewTemplate();
           templates.put(lang, template);
           template.setAttribute("path", "");
