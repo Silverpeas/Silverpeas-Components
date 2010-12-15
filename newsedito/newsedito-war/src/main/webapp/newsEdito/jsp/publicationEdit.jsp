@@ -33,7 +33,7 @@
 <%!
 private ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "fr");
 
-void displaySelectPublicationModel(JspWriter out, Collection list, NewsEditoSessionController news, 
+void displaySelectPublicationModel(JspWriter out, Collection list, NewsEditoSessionController news,
 	ResourceLocator settings, ResourceLocator generalMessage, GraphicElementFactory graphicFactory)
   throws NewsEditoException, PublicationTemplateException
 {
@@ -72,25 +72,25 @@ void displaySelectPublicationModel(JspWriter out, Collection list, NewsEditoSess
 			 out.println("</TABLE>");
 			out.println("</td></tr></TABLE>");
 
-		  Button button = graphicFactory.getFormButton(news.getString("annuler"), 
+		  Button button = graphicFactory.getFormButton(news.getString("annuler"),
 			  "publication.jsp", false, settings.getString("formButtonIconUrl"));
 			out.println("<br><center>");
 		  out.println(button.print());
 			out.println("</center>");
 	}
 	catch(Exception e){
-		throw new NewsEditoException("publicationEdit_JSP.displaySelectPublicationModel",NewsEditoException.WARNING,"NewsEdito.EX_CANNOT_DISPLAY_MODEL_SELECTED",e);			
+		throw new NewsEditoException("publicationEdit_JSP.displaySelectPublicationModel",NewsEditoException.WARNING,"NewsEdito.EX_CANNOT_DISPLAY_MODEL_SELECTED",e);
 	}
 
 }
 
-void showReallySelectPublicationModel(JspWriter out, NewsEditoSessionController news, String modelId, String pubId) 
+void showReallySelectPublicationModel(JspWriter out, NewsEditoSessionController news, String modelId, String pubId)
 
   throws NewsEditoException, IOException
 {
         SilverTrace.info("NewsEdito", "Publication_JSP.showReallySelectPublicationModel", "NewsEdito.MSG_ENTRY_METHOD");
 
-	try{	
+	try{
 		if (! modelId.equals("wysiwyg") ) {
 			// affichage du formulaire XML
 			PublicationTemplateImpl pubTemplate = news.setPublicationXmlForm(modelId);
@@ -98,20 +98,20 @@ void showReallySelectPublicationModel(JspWriter out, NewsEditoSessionController 
 			RecordSet recordSet = pubTemplate.getRecordSet();
 			DataRecord data= recordSet.getEmptyRecord();
 			data.setId(pubId);
-			
+
 			PagesContext context = new PagesContext("myForm", "2", news.getLanguage(), false, news.getComponentId(), news.getUserId());
-			
-			formUpdate.display(out, context, data); 
-		} 
+
+			formUpdate.display(out, context, data);
+		}
 	}
 	catch(Exception e){
-		throw new NewsEditoException("publicationEdit_JSP.showReallySelectPublicationModel",NewsEditoException.WARNING,"NewsEdito.EX_PROBLEM_TO_SET_PUBLI",e);			
+		throw new NewsEditoException("publicationEdit_JSP.showReallySelectPublicationModel",NewsEditoException.WARNING,"NewsEdito.EX_PROBLEM_TO_SET_PUBLI",e);
 	}
 	out.println(news.getString("majModeleEffectuee"));
         SilverTrace.info("NewsEdito", "Publication_JSP.showReallySelectPublicationModel", "NewsEdito.MSG_EXIT_METHOD");
 }
 
-void  displayEditPublication(JspWriter out, String fatherId, PublicationDetail pub, String modelId,  
+void  displayEditPublication(JspWriter out, String fatherId, PublicationDetail pub, String modelId,
           NewsEditoSessionController news, ResourceLocator settings, ResourceLocator generalMessage, GraphicElementFactory graphicFactory, HttpServletRequest request) throws NewsEditoException, IOException
 {
  	try{
@@ -122,23 +122,23 @@ void  displayEditPublication(JspWriter out, String fatherId, PublicationDetail p
 		out.println("  <TABLE WIDTH=\"100%\">");
 		out.println("    <TR>");
 		out.println("      	<TD class=\"txtlibform\">"+news.getString("pubName")+"</TD>");
-		if (pub != null) 
-			out.println("      <TD><INPUT TYPE=TEXT SIZE=\"50\" NAME=\"Name\" maxlength=" + DBUtil.TextFieldLength + " VALUE=\"" +Encode.javaStringToHtmlString(pub.getName())+ "\">");
+		if (pub != null)
+			out.println("      <TD><INPUT TYPE=TEXT SIZE=\"50\" NAME=\"Name\" maxlength=" + DBUtil.getTextFieldLength() + " VALUE=\"" +Encode.javaStringToHtmlString(pub.getName())+ "\">");
 		else
-			out.println("      <TD><INPUT TYPE=TEXT SIZE=\"50\" NAME=\"Name\" maxlength=" + DBUtil.TextFieldLength + ">");
+			out.println("      <TD><INPUT TYPE=TEXT SIZE=\"50\" NAME=\"Name\" maxlength=" + DBUtil.getTextFieldLength() + ">");
 		out.println("     		<img border=\"0\" src=\""+settings.getString("mandatoryField")+"\" width=\"5\" height=\"5\">");
 		out.println("		</TD>");
 		out.println("    </TR>");
 		out.println("    <TR valign=\"top\">");
 		out.println("      <TD class=\"txtlibform\">"+news.getString("pubDescription")+"</TD>");
-		if (pub != null) 
+		if (pub != null)
 			out.println("      <TD><TEXTAREA ROWS=\"6\" COLS=\"50\" NAME=\"Description\" wrap=\"virtual\">" + Encode.javaStringToHtmlString(pub.getDescription()) + "</TEXTAREA>");
 		else
 			out.println("      <TD><TEXTAREA ROWS=\"6\" COLS=\"50\" NAME=\"Description\" wrap=\"virtual\"></TEXTAREA>");
-		
+
 		out.println("     </TD>");
 		out.println("    </TR>");
-		
+
 		if (modelId != null) {
 			out.println("    <TR>");
 			out.println("      <TD align=\"center\" colspan=\"2\">");
@@ -154,29 +154,29 @@ void  displayEditPublication(JspWriter out, String fatherId, PublicationDetail p
 		out.println("<br>");
 
 		Button button;
-		if (pub == null) 
+		if (pub == null)
 		{
-			button = graphicFactory.getFormButton(generalMessage.getString("GML.validate"), 
+			button = graphicFactory.getFormButton(generalMessage.getString("GML.validate"),
 			  "javascript:onClick=reallyAddPublication()", false, settings.getString("formButtonIconUrl"));
 		}
-		else 
+		else
 		{
-			button = graphicFactory.getFormButton(generalMessage.getString("GML.validate"), 
+			button = graphicFactory.getFormButton(generalMessage.getString("GML.validate"),
 			  "javascript:onClick=reallyUpdatePublication()", false, settings.getString("formButtonIconUrl"));
 		}
 
 		Button button2;
-		if (pub == null) 
+		if (pub == null)
 		{
-			button2 = graphicFactory.getFormButton(generalMessage.getString("GML.cancel"), 
+			button2 = graphicFactory.getFormButton(generalMessage.getString("GML.cancel"),
 		 	  "manageArticles.jsp?Action=SelectTitle&TitleId="+news.getTitleId(), false, settings.getString("formButtonIconUrl"));
-		} 
-		else 
+		}
+		else
 		{
-			button2 = graphicFactory.getFormButton(generalMessage.getString("GML.cancel"), 
+			button2 = graphicFactory.getFormButton(generalMessage.getString("GML.cancel"),
 			  "publication.jsp", false, settings.getString("formButtonIconUrl"));
 		}
-		
+
 		ButtonPane buttonPane = gef.getButtonPane();
 		buttonPane.addButton(button);
 		buttonPane.addButton(button2);
@@ -184,7 +184,7 @@ void  displayEditPublication(JspWriter out, String fatherId, PublicationDetail p
 		out.println("  <input type=\"hidden\" name=\"FatherId\" value=" + fatherId +">");
 	}
 	catch(Exception e){
-		throw new NewsEditoException("publicationEdit_JSP.displayEditPublication",NewsEditoException.WARNING,"NewsEdito.EX_CANNOT_DISPLAY_PUBLI",e);			
+		throw new NewsEditoException("publicationEdit_JSP.displayEditPublication",NewsEditoException.WARNING,"NewsEdito.EX_CANNOT_DISPLAY_PUBLI",e);
 	}
     SilverTrace.info("NewsEdito", "Publication_JSP.displayEditPublication", "NewsEdito.MSG_EXIT_METHOD");
 }
@@ -200,19 +200,19 @@ void displayEditXmlModel(JspWriter out, String modelId, String pubId, NewsEditoS
 				{
 					out.flush();
 					Form 				formUpdate 	= (Form) request.getAttribute("Form");
-					DataRecord 			data 		= (DataRecord) request.getAttribute("Data"); 
+					DataRecord 			data 		= (DataRecord) request.getAttribute("Data");
 					if (formUpdate != null)
 					{
 						PagesContext 		context 	= new PagesContext("myForm", "0", news.getLanguage(), false, news.getComponentId(), news.getUserId());
 						context.setObjectId(pubId);
 						context.setBorderPrinted(false);
-						
+
 						formUpdate.display(out, context, data);
 				    }
 				}
 			}
 			catch(Exception e){
-				throw new NewsEditoException("publicationEdit_JSP.displayEditXmlModel",NewsEditoException.WARNING,"NewsEdito.EX_CANNOT_DISPLAY_INFO_MODEL",e);			
+				throw new NewsEditoException("publicationEdit_JSP.displayEditXmlModel",NewsEditoException.WARNING,"NewsEdito.EX_CANNOT_DISPLAY_INFO_MODEL",e);
 			}
 		}
 
@@ -288,7 +288,7 @@ function reallySelectPublicationModel(modelId)
 
 function doConsult(){
     document.newsForm.Action.value = "Consult";
-    document.newsForm.submit();	
+    document.newsForm.submit();
 
 }
 
@@ -366,7 +366,7 @@ while (itemIter.hasNext()) {
         theText = item.getString();
         textOrder = new Integer(mpName.substring(8, mpName.length())).intValue();
         textDetails.add(new InfoTextDetail(infoPK, new Integer(textOrder).toString(), "?", theText));
-    }    
+    }
   } else  {
     // it's a file part
     logicalName = item.getName();
@@ -391,7 +391,7 @@ while (itemIter.hasNext()) {
 						errorFiles = news.getString("fichierIntrouvable") + " : " +  logicalName;
 				}
 
-	    } else { 
+	    } else {
 	      // the field did not contain a file
 				if (errorFiles != null)
 					errorFiles += "<BR> " + news.getString("pasFichierImage") + " : " + logicalName;
@@ -413,36 +413,36 @@ if (action.equals("ReallyAddPublication")) {
       out.println("</BODY>");
     } catch (CreateNewsEditoException e) {
       out.println("<BODY>");
-      displayGoBackBanner(out, e.getMessage(), 
-        "<A HREF=\"javascript:onClick=history.back()\">"+ 
-        news.getString("retour") + 
+      displayGoBackBanner(out, e.getMessage(),
+        "<A HREF=\"javascript:onClick=history.back()\">"+
+        news.getString("retour") +
         "</A>");
       out.println("</BODY>");
     }
 
   }
-  
+
   else if (action.equals("ReallyUpdatePublication")) {
     try {
 		if (errorFiles != null)
 				throw new CreateNewsEditoException("publicationEdit_JSP", NewsEditoException.WARNING, "NewsEdito.EX_ERRORFILE_NOT_EMPTY",errorFiles);
 
       news.updatePublication(name, description);
-      
+
       out.println("<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 onLoad=window.location.replace(\"publication.jsp\")>");
       out.println("</BODY>");
     }
     catch (CreateNewsEditoException e) {
       out.println("<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5>");
-      displayGoBackBanner(out, e.getMessage(), 
-        "<A HREF=\"javascript:onClick=history.back()\">"+ 
-        news.getString("retour") + 
+      displayGoBackBanner(out, e.getMessage(),
+        "<A HREF=\"javascript:onClick=history.back()\">"+
+        news.getString("retour") +
         "</A>");
       out.println("</BODY>");
     }
-  } 
-  
-  else { 
+  }
+
+  else {
 
 	Window window = gef.getWindow();
 
@@ -462,10 +462,10 @@ if (action.equals("ReallyAddPublication")) {
 	//Les onglets
     TabbedPane tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(consultationTP, "javaScript:doConsult()", false);
-    
+
     if (flag.equals("publisher") || flag.equals("admin"))
     	tabbedPane.addTab(organisationTP, "javaScript:doOrganize()", true);
-	
+
 	if (flag.equals("admin"))
 		tabbedPane.addTab(inLineSettingTP, "javaScript:doSetInLine()", false);
 
@@ -474,9 +474,9 @@ if (action.equals("ReallyAddPublication")) {
 
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
-	
+
 	out.println(frame.printBefore());
-	
+
 
 %>
 
@@ -494,15 +494,15 @@ if (action.equals("ReallyAddPublication")) {
   }
   if (action.equals("UpdatePublication")) {
     CompletePublication complete = news.getCompletePublication();
-    displayEditPublication(out, news.getTitleId(), complete.getPublicationDetail(), 
-              complete.getPublicationDetail().getInfoId(),  
+    displayEditPublication(out, news.getTitleId(), complete.getPublicationDetail(),
+              complete.getPublicationDetail().getInfoId(),
 	      news, settings, generalMessage, gef, request);
   }
   else
   if (action.equals("AddPublication")) {
     displayEditPublication(out, news.getTitleId(), null, null, news, settings, generalMessage, gef, request);
   }
-  
+
 %>
   <input type="hidden" name="Action">
   <input type="hidden" name="ModelId">

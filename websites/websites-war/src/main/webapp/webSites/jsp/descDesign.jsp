@@ -91,7 +91,7 @@ private String afficheArbo(ArrayPane arrayPane, String idNode, WebSiteSessionCon
             espace += "&nbsp;";
         }
         N += 4;
-    
+
         FolderDetail rootFolder = scc.getFolder(idNode);
 
         ArrayLine arrayLine = arrayPane.addArrayLine();
@@ -140,7 +140,7 @@ private int nbThemes(String idNode, WebSiteSessionController scc, int nb) throws
 %>
 
 
-<%  
+<%
     //CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
     String mandatoryField=m_context+"/util/icons/mandatoryField.gif";
 
@@ -175,7 +175,7 @@ function isCorrectNameFile(nom) {
         if (nom.indexOf(".") == 0) {
         return false;
     }
-    
+
     return true;
 
 }
@@ -186,7 +186,7 @@ function isCorrectNameFile(nom) {
 
 function isCorrect(nom) {
 
-    if (nom.indexOf("\\")>-1 || nom.indexOf("/")>-1 || nom.indexOf(":")>-1 || 
+    if (nom.indexOf("\\")>-1 || nom.indexOf("/")>-1 || nom.indexOf(":")>-1 ||
         nom.indexOf("*")>-1 || nom.indexOf("?")>-1 || nom.indexOf("\"")>-1 ||
         nom.indexOf("<")>-1 || nom.indexOf(">")>-1 || nom.indexOf("|")>-1 ||
         nom.indexOf("&")>-1 || nom.indexOf(";")>-1 || nom.indexOf("+")>-1 ||
@@ -198,7 +198,7 @@ function isCorrect(nom) {
         nom.indexOf("�")>-1) {
         return false;
     }
-    
+
     return true;
 
 }
@@ -231,45 +231,45 @@ function isCorrectForm() {
      var nomSite = stripInitialWhitespace(document.descriptionSite.nomSite.value);
      var description = document.descriptionSite.description;
      var nomPage = stripInitialWhitespace(document.descriptionSite.nomPage.value);
-     
-          
+
+
      if (isWhitespace(nomSite)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-       errorNb++; 
-     }  
-     
+       errorNb++;
+     }
+
      if (! isCorrectNameSite(nomSite)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n<%=Encode.javaStringToJsString(resources.getString("Char4"))%>\n";
-       errorNb++; 
-     }   
-     
+       errorNb++;
+     }
+
      if (! isValidTextArea(description)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.description")%>' <%=resources.getString("ContainsTooLargeText")+resources.getString("NbMaxTextArea")+resources.getString("Characters")%>\n";
-       errorNb++; 
-     } 
-     
+       errorNb++;
+     }
+
      if (isWhitespace(nomPage)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("NomPagePrincipale")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-       errorNb++; 
-     }          
-     
+       errorNb++;
+     }
+
      if (! isCorrect(nomPage)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("NomPagePrincipale")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n<%=Encode.javaStringToJsString(resources.getString("Char5"))%>\n";
-       errorNb++; 
+       errorNb++;
      }
-     
+
     if (! isCorrectNameFile(nomPage)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("NomPagePrincipale")%>' <%=resources.getString("MustContainFileName")%>\n";
-       errorNb++; 
+       errorNb++;
      }
- 
+
      // verify the extension
     if ( ! isCorrectExtension(nomPage) ){
         errorMsg += "<%=resources.getString("HTMLExtensionRequired")%>";
         errorNb++;
     }
 
-     
+
      switch(errorNb)
      {
         case 0 :
@@ -377,7 +377,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 
                 <tr>
                         <td class="intfdcolor4"><span class="txtlibform"><%=" "+resources.getString("GML.name")%> : </span></td>
-                        <td class="intfdcolor4"><input type="text" name="nomSite" size="60" maxlength="<%=DBUtil.TextFieldLength%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
+                        <td class="intfdcolor4"><input type="text" name="nomSite" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
                 </tr>
                 <tr>
                         <td class="intfdcolor4" valign=top><span class="txtlibform"><%=resources.getString("GML.description")%> : </span></td>
@@ -385,7 +385,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
                 </tr>
                 <tr>
                         <td class="intfdcolor4"><span class="txtlibform"><%=" "+resources.getString("NomPagePrincipale")%> : </span></td>
-                        <td class="intfdcolor4"><input type="text" name="nomPage" size="60" maxlength="<%=DBUtil.TextFieldLength%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
+                        <td class="intfdcolor4"><input type="text" name="nomPage" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
                 </tr>
                 <tr>
                         <td class="intfdcolor4"><span class="txtlibform"><%=resources.getString("GML.publisher")%> : </span></td>
@@ -404,7 +404,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
                <tr>
               			<td class="intfdcolor4"><span class="txtlibform"><%=resources.getString("OuvrirPopup")%> : </span></td>
                         <td class="intfdcolor4"><input type="checkbox" name="popup" checked></td>
-               </tr>                                   
+               </tr>
                <tr>
                         <td class="intfdcolor4" valign=top><span class="txtlibform"><%=resources.getString("IconesAssociees")%> : </span></td>
                         <td class="intfdcolor4">
@@ -414,7 +414,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 												//Iterator i = c.iterator();
 												Iterator i = allIcons.iterator();
                                                 i.next(); // on saute la premiere icone (site important)
-                                                
+
                                                 while (i.hasNext()) {
                                                     IconDetail icon = (IconDetail) i.next();
                                                     out.println("<input type=\"checkbox\" name=\"icon\" value = \""+icon.getIconPK().getId()+"\">&nbsp;");
@@ -427,8 +427,8 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
                 </tr>
 
                                 <tr>
-                        
-            <td height="10" colspan="2" class="intfdcolor4">(<img border="0" src="<%=mandatoryField%>" width="5" height="5"> 
+
+            <td height="10" colspan="2" class="intfdcolor4">(<img border="0" src="<%=mandatoryField%>" width="5" height="5">
               : <%=resources.getString("GML.requiredField")%>)</td>
                  </tr>
             </table>
@@ -457,7 +457,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 	ButtonPane buttonPane = gef.getButtonPane();
 	Button validerButton = null;
 	Button annulerButton = null;
-	
+
 	//CBO : UPDATE
 	//int size = c.size() - 1;
 	int size = allIcons.size() - 1;
@@ -466,7 +466,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 	annulerButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false);
 	buttonPane.addButton(validerButton);
 	buttonPane.addButton(annulerButton);
-	buttonPane.setHorizontalPosition(); 
+	buttonPane.setHorizontalPosition();
 
 	out.println("<br><center>"+buttonPane.print()+"</center><br>");
 
@@ -474,6 +474,6 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 	out.println(window.printAfter());
 
 %>
-</BODY>     
+</BODY>
 
 </HTML>

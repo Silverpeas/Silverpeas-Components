@@ -64,6 +64,7 @@
 <%@ page import="com.silverpeas.util.StringUtil"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@ page import="com.silverpeas.util.ForeignPK"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="java.util.Collection"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.Vector"%>
@@ -84,14 +85,14 @@
         getServletConfig().getServletContext().getRequestDispatcher(sessionTimeout).forward(request, response);
         return;
     }
-    
+
     ResourceLocator generalMessage = GeneralPropertiesManager.getGeneralMultilang(surveyScc.getLanguage());
-    
+
     String[] browseContext = (String[]) request.getAttribute("browseContext");
 	String spaceLabel 		= browseContext[0];
 	String componentLabel 	= browseContext[1];
 	String spaceId 			= browseContext[2];
 	String componentId 		= browseContext[3];
-    
+
     boolean pollingStationMode = (componentId != null && componentId.startsWith("pollingStation"));
 %>

@@ -613,7 +613,7 @@
                                         <input type="hidden" name="parentId" value="<%=messageId%>"/>
                                         <tr>
                                             <td align="left" valign="top"><span class="txtlibform"><%=resource.getString("messageTitle")%> :&nbsp;</span></td>
-                                            <td valign="top"><input type="text" name="messageTitle" value="Re : <%=Encode.javaStringToHtmlString(message.getTitle())%>" size="88" maxlength="<%=DBUtil.TextFieldLength%>"></td>
+                                            <td valign="top"><input type="text" name="messageTitle" value="Re : <%=Encode.javaStringToHtmlString(message.getTitle())%>" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>"></td>
                                         </tr>
                                         <tr>
                                             <td align="left" valign="top"><span class="txtlibform"><%=resource.getString("messageText")%> :&nbsp;</span></td>

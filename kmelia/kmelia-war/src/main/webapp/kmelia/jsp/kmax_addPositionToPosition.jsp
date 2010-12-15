@@ -80,11 +80,11 @@ function isCorrectForm() {
      var description = stripInitialWhitespace(document.axisForm.Description.value);
      if (isWhitespace(title)) {
        errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("ComponentTitle")%>' <%=kmeliaScc.getString("MustContainsText")%>\n";
-       errorNb++; 
+       errorNb++;
      }
 	if (!isValidTextArea(document.axisForm.Description)) {
-          errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("ComponentDescription")%>' <%=kmeliaScc.getString("ContainsTooLargeText")%> <%=DBUtil.TextAreaLength%> <%=kmeliaScc.getString("Characters")%>\n";
-          errorNb++; 
+          errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("ComponentDescription")%>' <%=kmeliaScc.getString("ContainsTooLargeText")%> <%=DBUtil.getTextAreaLength()%> <%=kmeliaScc.getString("Characters")%>\n";
+          errorNb++;
     }
      switch(errorNb)
      {
@@ -140,7 +140,7 @@ buttonPane.addButton(validateButton);
 buttonPane.addButton(cancelButton);
 out.println("<center><br>");
 out.println(buttonPane.print());
-out.println("<br><center>");	
+out.println("<br><center>");
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>

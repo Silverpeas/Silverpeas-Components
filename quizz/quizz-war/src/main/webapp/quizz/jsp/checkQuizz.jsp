@@ -88,7 +88,7 @@
 <%@ page import="java.io.File"%>
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
-
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page
 	import="com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane"%>
 <%@ page

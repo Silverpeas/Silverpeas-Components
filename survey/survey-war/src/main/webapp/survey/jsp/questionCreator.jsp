@@ -65,13 +65,13 @@
           out.println(board.printAfter());
     }
     catch( Exception e){
-        throw new  SurveyException("questionCreator_JSP.displaySurveyHeader",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_SURVEY_HEADER",e);           
+        throw new  SurveyException("questionCreator_JSP.displaySurveyHeader",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_SURVEY_HEADER",e);
     }
 
   }
 %>
 
-<% 
+<%
 String nextAction = "";
 String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
@@ -119,12 +119,12 @@ while (itemIter.hasNext()) {
     String mpName = item.getFieldName();
     if (mpName.startsWith("answer")) {
         answer = new Answer(null, null, item.getString(FileUploadUtil.DEFAULT_ENCODING), 0, 0, false, "", 0, false, null);
-        answers.add(answer);    
+        answers.add(answer);
     } else if ("suggestionLabel".equals(mpName)) {
         answer = new Answer(null, null, item.getString(FileUploadUtil.DEFAULT_ENCODING), 0, 0, false, "", 0, true, null);
         answers.add(answer);
     }
-    else if (mpName.startsWith("valueImageGallery")) 
+    else if (mpName.startsWith("valueImageGallery"))
     {
     	if (StringUtil.isDefined(item.getString()))
     	{
@@ -132,11 +132,11 @@ while (itemIter.hasNext()) {
     		if (!file)
     			answer.setImage(item.getString());
     	}
-    }     
-  } 
-  else 
+    }
+  }
+  else
   {
-    // it's a file   
+    // it's a file
     if (FileHelper.isCorrectFile(item)) {
       // the part actually contained a file
       logicalName = FileUploadUtil.getFileName(item);
@@ -152,7 +152,7 @@ while (itemIter.hasNext()) {
           answer.setImage(physicalName);
           file = true;
       }
-    } else { 
+    } else {
       // the field did not contain a file
       file = false;
     }
@@ -187,7 +187,7 @@ function checkAnswers() {
      var answerEmpty = false;
      var imageEmpty = false;
      var fieldsEmpty = "";
-     for (var i=0; i<document.surveyForm.length; i++) 
+     for (var i=0; i<document.surveyForm.length; i++)
      {
         inputName = document.surveyForm.elements[i].name.substring(0, 5);
         if (inputName == "answe" ) {
@@ -195,8 +195,8 @@ function checkAnswers() {
                   answerEmpty = true;
             }
         }
-        
-        if (inputName == "image") 
+
+        if (inputName == "image")
         {
             if (answerEmpty == true) {
                   if (isWhitespace(stripInitialWhitespace(document.surveyForm.elements[i].value))) {
@@ -205,8 +205,8 @@ function checkAnswers() {
             }
             answerEmpty = false;
         }
-        
-        if (inputName == "value") 
+
+        if (inputName == "value")
         {
             if (imageEmpty == true) {
                   if (isWhitespace(stripInitialWhitespace(document.surveyForm.elements[i].value))) {
@@ -248,12 +248,12 @@ function isCorrectForm() {
      var errorNb = 0;
      var question = stripInitialWhitespace(document.surveyForm.question.value);
      var nbAnswers = document.surveyForm.nbAnswers.value;
-     if (isWhitespace(question)) 
+     if (isWhitespace(question))
      {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationQuestion")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-           errorNb++; 
+           errorNb++;
      }
-     
+
      if (document.surveyForm.questionStyle.options[document.surveyForm.questionStyle.selectedIndex].value=="null") {
      	//choisir au moins un style
 	    	errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("survey.style")%>' <%=resources.getString("GML.MustBeFilled")%> \n";
@@ -289,11 +289,11 @@ function isCorrectForm() {
 	                         errorNb++;
 	                      }
 	                 }
-	          } 
+	          }
 	     } else {
 	          document.surveyForm.Action.value = "SendNewQuestion";
 	     }
-	 }    
+	 }
      switch(errorNb) {
         case 0 :
             result = true;
@@ -319,7 +319,7 @@ function goToEnd() {
 
 	var galleryWindow = window;
 	var currentAnswer;
-	
+
 	function choixGallery(liste, idAnswer)
 	{
 		currentAnswer = idAnswer;
@@ -339,22 +339,22 @@ function goToEnd() {
 			galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
 		}
 	}
-	
+
 	function deleteImage(idImage)
 	{
 		document.getElementById('imageGallery'+idImage).innerHTML = "";
 		document.getElementById('valueImageGallery'+idImage).value = "";
 	}
-	
+
 	function choixImageInGallery(url)
 	{
 		var newLink = document.createElement("a");
 		newLink.setAttribute("href", url);
 		newLink.setAttribute("target", "_blank");
-		
+
 		var newLabel = document.createTextNode("<%=resources.getString("survey.imageGallery")%>");
 		newLink.appendChild(newLabel);
-		
+
 		var removeLink =  document.createElement("a");
 		removeLink.setAttribute("href", "javascript:deleteImage('"+currentAnswer+"')");
 		var removeIcon = document.createElement("img");
@@ -363,15 +363,15 @@ function goToEnd() {
 		removeIcon.setAttribute("align", "absmiddle");
 		removeIcon.setAttribute("alt", "<%=resources.getString("GML.delete")%>");
 		removeIcon.setAttribute("title", "<%=resources.getString("GML.delete")%>");
-		
+
 		removeLink.appendChild(removeIcon);
-		
+
 		document.getElementById('imageGallery'+currentAnswer).appendChild(newLink);
 		document.getElementById('imageGallery'+currentAnswer).appendChild(removeLink);
-		   
+
 		document.getElementById('valueImageGallery'+currentAnswer).value = url;
 	}
-	
+
 	function showQuestionOptions(value)
 	{
 		if (value != "open")
@@ -380,7 +380,7 @@ function goToEnd() {
 			document.getElementById('trSuggestion').style.visibility = 'visible';
 		}
 	}
-	
+
 </script>
 </HEAD>
 <%
@@ -437,7 +437,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
             buttonPane.addButton(cancelButton);
             buttonPane.setHorizontalPosition();
       }
-      
+
       Window window = gef.getWindow();
       Frame frame = gef.getFrame();
 
@@ -456,27 +456,24 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 %>
       <!--DEBUT CORPS -->
       <br/>
-      
+
       <table border="0" cellPadding="3" cellSpacing="0" width="100%" class="intfdcolor4">
         <form name="surveyForm" Action="questionCreator.jsp" method="POST" ENCTYPE="multipart/form-data">
-        <tr><td class="txtlibform"><%=resources.getString("SurveyCreationQuestion")%> <%=questionNb%> :</td><td><input type="text" name="question" value="<%=Encode.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.TextFieldLength%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
+        <tr><td class="txtlibform"><%=resources.getString("SurveyCreationQuestion")%> <%=questionNb%> :</td><td><input type="text" name="question" value="<%=EncodeHelper.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
         <% if (action.equals("SendQuestionForm")) {
-                //if (openQuestion.equals("0")) {
-                if (!style.equals("open")) 
+                if (!style.equals("open"))
                 {
                 	// question fermée
                     out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("survey.style")+" :</td><td>"+resources.getString("survey."+style));
-                    //out.println("<tr style=\"visibility: hidden;\"><td class=\"txtlibform\" valign=top>"+resources.getString("survey.style")+" :</td><td>");
                 	out.println(" <select style=\"visibility: hidden;\" id=\"questionStyle\" name=\"questionStyle\" value="+style+"><option selected>"+style+"</option></select>");
                 	out.println("</td></tr>");
-                
+
                     out.println("<tr><td class=\"txtlibform\">"+resources.getString("SurveyCreationNbPossibleAnswer")+" :</td><td><input type=\"text\" name=\"nbAnswers\" value=\""+nbAnswers+"\" size=\"3\" disabled maxlength=\"2\">&nbsp;<img border=0 src=\""+mandatoryField+"\" width=5 height=5></td></tr>");
                     out.println("<tr><td class=\"txtlibform\">"+resources.getString("SuggestionAllowed")+" :</td><td><input type=\"checkbox\" name=\"suggestion\" value=\"\" "+suggestionCheck+" disabled></td></tr>");
-                    //out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("SurveyCreationQuestionTypeMany")+" :</td><td><input type=\"checkbox\" name=\"qcm\" value=\"1\" "+qcmCheck+"></td></tr>");
-                    nb = new Integer(nbAnswers).intValue();
+                    nb =  Integer.parseInt(nbAnswers);
                     String inputName = "";
                     int j=0;
-                    for (int i = 0; i < nb; i++) 
+                    for (int i = 0; i < nb; i++)
                     {
                         j = i + 1;
                         inputName = "answer"+i;
@@ -484,23 +481,23 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
                         out.println("<table cellpadding=0 cellspacing=5 width=\"100%\">");
                         	out.println("<tr><td class=\"intfdcolor\"><img src=\""+px+"\" border=\"0\"></td></tr>");
                         out.println("</table></td></tr>");
-                        out.println("<tr><td class=\"txtlibform\">"+resources.getString("SurveyCreationAnswerNb")+"&nbsp;"+j+" :</td><td><input type=\"text\" name=\""+inputName+"\" value=\"\" size=\"60\" maxlength=\""+DBUtil.TextFieldLength+"\"></td></tr>");
+                        out.println("<tr><td class=\"txtlibform\">"+resources.getString("SurveyCreationAnswerNb")+"&nbsp;"+j+" :</td><td><input type=\"text\" name=\""+inputName+"\" value=\"\" size=\"60\" maxlength=\""+DBUtil.getTextFieldLength()+"\"></td></tr>");
 
                         if (!style.equals("list"))
                         {
                         	// afficher les photos que si on est pas dans le choix d'une liste déroulante
                         	out.println("<tr><td class=\"txtlibform\">"+resources.getString("SurveyCreationAnswerImage")+"&nbsp;"+j+" :</td><td><input type=\"file\" name=\"image"+i+"\" size=\"60\"></td></tr>");
-                        
+
 	                     	//zone pour le lien vers l'image
 	                        out.println("<tr><td></td><td><span id=\"imageGallery"+i+"\"></span>");
 	                        out.println("<input type=\"hidden\" id=\"valueImageGallery"+i+"\" name=\"valueImageGallery"+i+"\" >");
-	
+
 	                        List galleries = surveyScc.getGalleries();
 	                        if (galleries != null)
 	    					{
 	    						out.println(" <select id=\"galleries\" name=\"galleries\" onchange=\"choixGallery(this, '"+i+"');this.selectedIndex=0;\"> ");
 	    						out.println(" <option selected>"+resources.getString("survey.galleries")+"</option> ");
-	   							for(int k=0; k < galleries.size(); k++ ) 
+	   							for(int k=0; k < galleries.size(); k++ )
 	   							{
 	   								ComponentInstLight gallery = (ComponentInstLight) galleries.get(k);
 	   								out.println(" <option value=\""+gallery.getId()+"\">"+gallery.getLabel()+"</option> ");
@@ -510,29 +507,26 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 	    					}
 	                    	out.println("</tr>");
                         }
-                     	
+
                     }
                     if (!suggestion.equals("0"))
                     {
                     	out.println("<tr><td colspan=2 align=center><table cellpadding=0 cellspacing=5 width=\"100%\">");
                         out.println("<tr><td class=\"intfdcolor\"><img src=\""+px+"\" border=\"0\"></td></tr>");
                         out.println("</table></td></tr>");
-                        out.println("<tr><td class=\"txtlibform\">"+resources.getString("OtherAnswer")+"&nbsp;:</td><td><input type=\"text\" name=\"suggestionLabel\" value=\""+resources.getString("SurveyCreationDefaultSuggestionLabel")+"\" size=\"60\" maxlength=\""+DBUtil.TextFieldLength+"\"></td></tr>");
+                        out.println("<tr><td class=\"txtlibform\">"+resources.getString("OtherAnswer")+"&nbsp;:</td><td><input type=\"text\" name=\"suggestionLabel\" value=\""+resources.getString("SurveyCreationDefaultSuggestionLabel")+"\" size=\"60\" maxlength=\""+DBUtil.getTextFieldLength()+"\"></td></tr>");
                     }
-                } 
-                else 
+                }
+                else
                 {
                 	// question ouverte
                 	out.println("<input type=\"hidden\" name=\"style\" value="+style+" >");
-                	//openQuestionCheck = "checked";
-                    //out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("SurveyCreationQuestionOpen")+" :</td><td><input type=\"checkbox\" name=\"openQuestion\" value=\"1\" "+openQuestionCheck+" onClick=\"javaScript:changeQuestionType()\"></td></tr>");
+
                 }
                 out.println("<tr><td>(<img border=0 src=\""+mandatoryField+"\" width=5 height=5>&nbsp;:&nbsp;"+generalMessage.getString("GML.requiredField")+")</td></tr>");
-           } 
-           else 
+           }
+           else
            {
-        	    
-                //out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("SurveyCreationQuestionOpen")+" :</td><td><input type=\"checkbox\" name=\"openQuestion\" value=\"1\" "+openQuestionCheck+" onClick=\"javaScript:changeQuestionType()\"></td></tr>");
                 // liste déroulante des choix possible
                 out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("survey.style")+" :</td><td>");
                 out.println(" <select id=\"questionStyle\" name=\"questionStyle\" onchange=\"showQuestionOptions(this.value);\"> ");
@@ -543,7 +537,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 				out.println(" <option value=\"list\">"+resources.getString("survey.list")+"</option> ");
     			out.println("</select>");
                 out.println("</td></tr>");
-                
+
                 out.println("<tr id=\"trNbQuestions\" style=\"visibility: hidden;\"><td class=\"txtlibform\">"+resources.getString("SurveyCreationNbPossibleAnswer")+" :</td><td><input type=\"text\" name=\"nbAnswers\" value=\""+nbAnswers+"\" size=\"3\"  maxlength=\"2\">&nbsp;<img border=0 src=\""+mandatoryField+"\" width=5 height=5></td></tr>");
                 out.println("<tr id=\"trSuggestion\" style=\"visibility: hidden;\"><td class=\"txtlibform\">"+resources.getString("SuggestionAllowed")+" :</td><td><input type=\"checkbox\" name=\"suggestion\" value=\"\" "+suggestionCheck+"></td></tr>");
 
@@ -551,13 +545,13 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
                 out.println("<tr><td><input type=\"hidden\" name=\""+inputName+"\"></td></tr>");
                 out.println("<tr><td>(<img border=0 src=\""+mandatoryField+"\" width=5 height=5>&nbsp;:&nbsp;"+generalMessage.getString("GML.requiredField")+")</td></tr>");
            }
-        %>                                                                             
+        %>
         <tr><td><input type="hidden" name="Action" value="<%=nextAction%>">
                 <input type="hidden" name="SuggestionAllowed" value="0"></td></tr>
       </form>
       </table>
        <!-- FIN CORPS -->
-      
+
 <%
 	  out.println(board.printAfter());
       out.println(frame.printMiddle());

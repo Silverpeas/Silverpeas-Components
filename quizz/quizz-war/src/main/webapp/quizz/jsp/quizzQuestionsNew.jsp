@@ -52,20 +52,20 @@ String displayQuizzHeader(QuizzSessionController quizzScc, QuestionContainerHead
         String title = quizzHeader.getTitle();
         String description = quizzHeader.getDescription();
         String comment = quizzHeader.getComment();
-        
+
         Board board = gef.getBoard();
         String r = "";
         r += "<center>";
         r += board.printBefore();
         r += "<table border=\"0\" cellspacing=\"3\" cellpadding=\"0\" width=\"100%\">";
         r += "<tr><td>";
-        r += "<span class=\"titreFenetre\">"+Encode.javaStringToHtmlString(title)+"</span>";
+        r += "<span class=\"titreFenetre\">"+EncodeHelper.javaStringToHtmlString(title)+"</span>";
         r += "<blockquote>";
-        r += "<span class=\"sousTitreFenetre\">"+Encode.javaStringToHtmlParagraphe(description)+"</span>";
+        r += "<span class=\"sousTitreFenetre\">"+EncodeHelper.javaStringToHtmlParagraphe(description)+"</span>";
         if (comment != null)
         {
           r += "<br><br><span class=txttitrecol>"+resources.getString("QuizzNotice")+"</span>&nbsp;&nbsp;";
-          r += Encode.javaStringToHtmlParagraphe(comment)+"";
+          r += EncodeHelper.javaStringToHtmlParagraphe(comment)+"";
         }
         r += "</blockquote>";
         r += "</td></tr></table>";
@@ -100,11 +100,11 @@ String displayQuizz(QuestionContainerDetail quizz, GraphicElementFactory gef, St
 				}
 			} else {
 				r += "<table><tr><td>"+resources.getString("QuizzUnavailable")+"</td></tr>";
-			} 
+			}
 		} catch (Exception e){
 			throw new QuizzException ("quizzQuestionNew_JSP.displayQuizz",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_QUIZZ",e);
 		}
-		
+
         return r;
 }
 
@@ -121,11 +121,11 @@ Vector displayQuestions(QuestionContainerDetail quizz, int roundId,GraphicElemen
 				int begin = end - nbQuestionsPerPage;
 				Collection questions = quizz.getQuestions();
 				int nbQuestions = 0;
-				if (end <= questions.size()) 	
+				if (end <= questions.size())
 					nbQuestions = nbQuestionsPerPage;
-				else 
+				else
 					nbQuestions = questions.size() % nbQuestionsPerPage;
-					
+
 				r += displayQuizzHeader(quizzScc, quizzHeader, resources, gef);
 
 				//Display the questions
@@ -150,7 +150,7 @@ Vector displayQuestions(QuestionContainerDetail quizz, int roundId,GraphicElemen
 				s += "<tr><td nowrap>";
 				s += "<table border=\"0\" cellspacing=\"3\" cellpadding=\"0\" width=\"100%\">";
 				s += "<tr><td>";
-			   
+
 				Button cancelButton = null;
 				Button voteButton = null;
 				if ((begin <= 0) && (end < questions.size())) {
@@ -204,7 +204,7 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
         r += "<br>";
         r += board.printBefore();
         r += "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\" >";
-   
+
         if (question.isOpen()) {
               Iterator itA = answers.iterator();
               while (itA.hasNext()) {
@@ -212,20 +212,20 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
                   String inputValue = answer.getPK().getId()+","+question.getPK().getId();
                   r += "<input type=\"hidden\" name=\"answer_"+i+"\" value=\""+inputValue+"\">";
                   r += "<tr><td colspan=\"2\" class=\"intfdcolor4\"><textarea name=\"openedAnswer_"+i+"\" cols=\"20\" rows=\"3\"></textarea></td></tr>";
-              } 
-        } 
-        else 
+              }
+        }
+        else
         {
         	String style = question.getStyle();
         	if (style.equals("list"))
         	{
         		// liste d�roulante
              	String selectedStr = "";
-             	
+
                 r += "<tr><td><select id=\"answer_"+i+"\" name=\"answer_"+i+"\" >";
-                          			
+
                 Iterator itA = answers.iterator();
-	            while (itA.hasNext()) 
+	            while (itA.hasNext())
 	            {
 	            	Answer answer = (Answer) itA.next();
 	            	String inputValue = answer.getPK().getId()+","+question.getPK().getId();
@@ -236,22 +236,22 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
         	else
          	{
 	            String inputType = "radio";
-	            if (style.equals("checkbox")) 
+	            if (style.equals("checkbox"))
 	            	inputType = "checkbox";
 	              Iterator itA = answers.iterator();
 	              int isOpened = 0;
-	              while (itA.hasNext()) 
+	              while (itA.hasNext())
 	              {
 	                  Answer answer = (Answer) itA.next();
 	                  r += "<tr><td colspan=\"2\"><table class=\"intfdcolor4\" width=\"98%\"><tr>";
 	                  String inputValue = answer.getPK().getId()+","+question.getPK().getId();
-	                  
+
 	                  // traitement de l'affichage des images
-	                  if (answer.getImage() == null) 
+	                  if (answer.getImage() == null)
 				      {
 	                	    r += "<td class=\"intfdcolor4\" align=\"left\">&nbsp;</td>";
-				      } 
-				      else 
+				      }
+				      else
 				      {
 					      	String imageUrl = answer.getImage();
 					        String url = "";
@@ -269,8 +269,8 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
 	                    //String url = FileServer.getUrl(answer.getPK().getSpace(), answer.getPK().getComponentName(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
 	                    //r += "<td class=\"intfdcolor4\" width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
 	                  //} else
-	                    //r += "<td class=\"intfdcolor4\" align=\"left\" width=\"50%\">&nbsp;</td>"; 
-	                  
+	                    //r += "<td class=\"intfdcolor4\" align=\"left\" width=\"50%\">&nbsp;</td>";
+
 	                  if (answer.isOpened()) {
 	                      isOpened = 1;
 	                      r += "<td align=\"left\" class=\"intfdcolor4\" width=\"1%\">";
@@ -286,7 +286,7 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
 	                  r += "</tr></table></td></tr>";
 	              }
         	}
-        } 
+        }
         r += "</table>";
         r += board.printAfter();
         return r;
@@ -294,7 +294,7 @@ String displayQuestion(QuizzSessionController quizzScc, Question question, int i
 
 
 Vector displayQuestionResult(QuestionContainerDetail quizz, Question question, int i, String m_context, ResourceLocator settings, QuizzSessionController quizzScc, boolean solutionAllowed, ResourcesWrapper resources) {
-     
+
         Collection answers = question.getAnswers();
         Collection questionResults = question.getQuestionResults();
         Vector displayQuestionResult = new Vector();
@@ -339,7 +339,7 @@ Vector displayQuestionResult(QuestionContainerDetail quizz, Question question, i
 			} else {
 				String style = question.getStyle();
 
-				// on est dans le cas de l'affichage, 
+				// on est dans le cas de l'affichage,
 				// alors on pr�sente les listes d�roulante sous forme de bouton radio
 				// pour faire apparaitre le chois de l'utilisateur et les commentaires
 				String inputType = "radio";
@@ -353,13 +353,13 @@ Vector displayQuestionResult(QuestionContainerDetail quizz, Question question, i
 					String inputStatus = "";
 					r += "<tr><td colspan=\"3\"><table><tr>";
 					String inputValue = answer.getPK().getId()+","+question.getPK().getId();
-						
+
 					// traitement de l'affichage des images
-	                  if (answer.getImage() == null) 
+	                  if (answer.getImage() == null)
 				      {
 	                	  r += "<td width=50>&nbsp;</td>";
-				      } 
-				      else 
+				      }
+				      else
 				      {
 					      	String imageUrl = answer.getImage();
 					        String url = "";
@@ -373,7 +373,7 @@ Vector displayQuestionResult(QuestionContainerDetail quizz, Question question, i
 					        }
 					        r += "<td><img src=\""+url+"\" align=\"left\"></td>";
 				      }
-							
+
 					if (answer.isOpened()) {
 						isOpened = 1;
 						r += "<td width=\"40px\" align=\"center\"><input disabled type=\""+inputType+"\" name=\"answer_"+i+"\" value=\""+inputValue+"\"></td><td align=\"left\">";
@@ -385,7 +385,7 @@ Vector displayQuestionResult(QuestionContainerDetail quizz, Question question, i
 					} else {
 						inputStatus = "";
 						if (qrUser!=null){
-							for (int cpt=0; cpt<qrUser.size(); cpt++){ 
+							for (int cpt=0; cpt<qrUser.size(); cpt++){
 								if (qrUser.get(cpt).equals(answer.getPK().getId())) {
 									inputStatus = "checked";
 								}
@@ -464,14 +464,14 @@ String displayQuizzPreview(QuestionContainerDetail quizz, GraphicElementFactory 
 					  i++;
 				}
 				r += "</form>";
-			
+
 			} else {
 				r += "<table><tr><td>"+resources.getString("QuizzUnavailable")+"</td></tr></table>";
 			}
 		} catch(Exception e){
 			throw new QuizzException ("quizzQuestionNew_JSP.displayQuizzPreview",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_QUIZZPREVIEW",e);
 		}
-        
+
 		return r;
 }
 
@@ -495,20 +495,20 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
         r += "</table><br>";
         r += board.printBefore();
         r += "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"3\" >";
-        
+
         String style = question.getStyle();
         if (style.equals("list"))
 		{
         	r += "<tr><td colspan=\"2\">";
             r += "<select id=\"answers\" name=\"answers\" >";
-            
+
         	Iterator itA = answers.iterator();
-        	while (itA.hasNext()) 
+        	while (itA.hasNext())
 	        {
 	            Answer answer = (Answer) itA.next();
 	           	r += "<option name=\"answer_"+i+"\" value=\"\">"+Encode.javaStringToHtmlString(answer.getLabel())+"</option>";
 	        }
-        	
+
          	r += "</td></tr>";
 		}
 		else
@@ -517,17 +517,17 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
 	        if (style.equals("checkbox"))
 	        	inputType = "checkbox";
 	        Iterator itA = answers.iterator();
-	        while (itA.hasNext()) 
+	        while (itA.hasNext())
 	        {
 	            Answer answer = (Answer) itA.next();
 	            r += "<tr><td colspan=\"2\"><table class=\"intfdcolor4\" width=\"98%\"><tr>";
-	            
+
 	            // traitement de l'affichage des images
-	            if (answer.getImage() == null) 
+	            if (answer.getImage() == null)
 			      {
 	            	r += "<td class=\"intfdcolor4\" align=\"left\">&nbsp;</td>";
-			      } 
-			      else 
+			      }
+			      else
 			      {
 				      	String imageUrl = answer.getImage();
 				        String url = "";
@@ -541,7 +541,7 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
 				        }
 				        r += "<td class=\"intfdcolor4\" width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
 			      }
-	         
+
 	            //if (answer.getImage() != null) {
 	              //String url = FileServer.getUrl(quizzScc.getSpaceId(), quizzScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
 	              //r += "<td class=\"intfdcolor4\" width=\"50%\"><img src=\""+url+"\" align=\"left\"></td>";
@@ -569,11 +569,11 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
 				QuestionContainerHeader quizzHeader = quizz.getHeader();
 				//Display the quizz header
 				r += displayQuizzHeader(quizzScc, quizzHeader, resources, gef);
-				
+
 				boolean solutionAllowed = false;
 				if (nb_user_votes >= quizzHeader.getNbParticipationsBeforeSolution())
 				  solutionAllowed = true;
-				
+
 				Collection questions = quizz.getQuestions();
 				//Display the quizz header
 				String quizzId = quizzHeader.getPK().getId();
@@ -613,17 +613,17 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
 				else if (winRate<=new Integer(winRate3).intValue())
 				winRateImg=winRateImg3;
 				else if (winRate<=new Integer(winRate4).intValue())
-				winRateImg=winRateImg4;	
+				winRateImg=winRateImg4;
 
 				r += "<table width=100% border=0 cellspacing=0 cellpadding=5><tr><td width=50% align=right valign=top class=\"txtnav\">"+resources.getString("TotalScoreLib")+" :</td>";
-				r += "<td width=\"50%\"><table border=0 cellspacing=0 cellpadding=0><tr>"; 
+				r += "<td width=\"50%\"><table border=0 cellspacing=0 cellpadding=0><tr>";
 				r += "<td rowspan=3><img src=\"icons/tableProf_1.gif\" width=7 height=70></td><td><img src=\"icons/tableProf_2.gif\" width=34 height=6></td>";
 				r += "<td rowspan=3><img src=\"icons/"+winRateImg+"\" width=79 height=70></td></tr>";
 				r += "<tr><td height=42 bgcolor=#387B80><span class=\"titreFenetre2\">"+quizzUserScore+"<br><img src=\"icons/1pxBlanc.gif\" width=30 height=1><br>"+quizzScoreMax+"</span></td></tr>";
 				r += "<tr><td><img src=\"icons/tableProf_3.gif\" width=34 height=22></td></tr></table></td></tr></table><br>";
 			} else {
 		        r += "<table><tr><td>"+resources.getString("QuizzUnavailable")+"</td></tr>";
-			} 
+			}
 		}catch( Exception e){
 			throw new QuizzException ("quizzQuestionNew_JSP.displayQuizzResult",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_RESULT",e);
 		}
@@ -678,17 +678,17 @@ String displayQuestionPreview(Question question, int i, String m_context, QuizzS
 				else if (winRate<=new Integer(winRate3).intValue())
 					winRateImg=winRateImg3;
 				else if (winRate<=new Integer(winRate4).intValue())
-					winRateImg=winRateImg4;	
+					winRateImg=winRateImg4;
 
 				r += "<table width=100% border=0 cellspacing=0 cellpadding=5><tr><td width=50% align=right valign=top class=\"txtnav\">"+resources.getString("TotalScoreLib")+" :</td>";
-				r += "<td width=\"50%\"><table border=0 cellspacing=0 cellpadding=0><tr>"; 
+				r += "<td width=\"50%\"><table border=0 cellspacing=0 cellpadding=0><tr>";
 				r += "<td rowspan=3><img src=\"icons/tableProf_1.gif\" width=7 height=70></td><td><img src=\"icons/tableProf_2.gif\" width=34 height=6></td>";
 				r += "<td rowspan=3><img src=\"icons/"+winRateImg+"\" width=79 height=70></td></tr>";
 				r += "<tr><td height=42 bgcolor=#387B80><span class=\"titreFenetre2\">"+quizzUserScore+"<br><img src=\"icons/1pxBlanc.gif\" width=30 height=1><br>"+quizzScoreMax+"</span></td></tr>";
 				r += "<tr><td><img src=\"icons/tableProf_3.gif\" width=34 height=22></td></tr></table></td></tr></table><br>";
 			} else {
 				r += "<table><tr><td>"+resources.getString("QuizzUnavailable")+"</td></tr>";
-			} 
+			}
 		} catch(Exception e){
 			throw new QuizzException ("quizzQuestionNew_JSP.displayQuizzResultAdmin",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_RESULT",e);
 		}
@@ -731,7 +731,7 @@ boolean isClosed = false;
 
 if (action.equals("PreviewQuizz") || action.equals("SubmitQuizz")) {
       quizz = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
-} 
+}
 else {
 	if (quizzId != null && quizzId.length() != 0) {
 		quizz = quizzScc.getQuizzDetail(quizzId);
@@ -746,7 +746,7 @@ else {
           roundId = "1";
       }
 	}
-	  
+
       boolean endDateReached = false;
       if (quizz.getHeader().getEndDate() != null) {
               endDateReached = (quizz.getHeader().getEndDate().compareTo(resources.getDBDate(new Date())) < 0);
@@ -780,7 +780,7 @@ function update_suggestion(quizz_id)
    if (!isWhitespace(document.quizz.txa_suggestion.value)) {
       if (!isValidTextArea(document.quizz.txa_suggestion)) {
             errorMsg = "<%=resources.getString("GML.ThisFormContain")%> 1 <%=resources.getString("GML.error")%> : \n";
-            errorMsg += "  - <%=resources.getString("GML.theField")%> '<%=resources.getString("EducationSuggestion")%>' <%=resources.getString("MustContainsLessCar")%> <%=DBUtil.TextAreaLength%> <%=resources.getString("Caracters")%>\n";
+            errorMsg += "  - <%=resources.getString("GML.theField")%> '<%=resources.getString("EducationSuggestion")%>' <%=resources.getString("MustContainsLessCar")%> <%=DBUtil.getTextAreaLength()%> <%=resources.getString("Caracters")%>\n";
             window.alert(errorMsg);
             return;
       }
@@ -835,7 +835,7 @@ function sendVote(roundId) {
 
 var exportWindow = window;
 
-function Export(url) 
+function Export(url)
 {
   windowName = "exportWindow";
     larg = "740";
@@ -898,14 +898,14 @@ if (action.equals("RecordQuestionsResponses")) {
               for (int j = 0; j < selectedAnswers.length; j++) {
                     String answerId = selectedAnswers[j].substring(0, selectedAnswers[j].indexOf(","));
                     v.add(answerId);
-              } 
+              }
               String openedAnswer = request.getParameter("openedAnswer_"+i);
               v.add("OA"+openedAnswer);
               hash.put(questionId, v);
            }
         }
-        quizzScc.recordReply(quizzId, hash); 
-        action = "ViewResult"; 
+        quizzScc.recordReply(quizzId, hash);
+        action = "ViewResult";
 } //End if action = ViewResult
 if (action.equals("SubmitQuizz")) {
         QuestionContainerDetail quizzDetail = (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction");
@@ -945,7 +945,7 @@ if (action.equals("SubmitQuizz")) {
         out.println("<br><br>"+frame.printAfter());
         out.println(window.printAfter());
 }
-if (action.equals("ViewQuizz")) {       
+if (action.equals("ViewQuizz")) {
         out.println("<BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor=\"#FFFFFF\">");
         Window window = gef.getWindow();
         BrowseBar browseBar = window.getBrowseBar();
@@ -959,29 +959,29 @@ if (action.equals("ViewQuizz")) {
         operationPane.addOperation(m_context + "/util/icons/quizz_print.gif",resources.getString("GML.print"),"javascript:window.print()");
         if (quizzScc.getNbVoters(quizz.getHeader().getPK().getId())==0||"admin".equals(quizzScc.getUserRoleLevel()))
         {
-        	operationPane.addLine(); 
+        	operationPane.addLine();
 	  		  operationPane.addOperation(m_context + "/util/icons/quizz_to_edit.gif",resources.getString("QuestionUpdate"),"quizzUpdate.jsp?Action=UpdateQuizzHeader&QuizzId="+quizz.getHeader().getPK().getId());
 	  	  }
-	  	
+
         if (profile.equals("admin")) {
           // export csv
           String url = "ExportCSV?QuizzId=" + quizz.getHeader().getPK().getId();
           operationPane.addOperation(exportSrc, resources.getString("GML.export"), "javaScript:onClick=Export('"+url+"')");
         }
-       
+
         // copier
         operationPane.addOperation(copySrc, resources.getString("GML.copy"), "javaScript:onClick=clipboardCopy('"+quizz.getHeader().getPK().getId()+"')");
 
         out.println(window.printBefore());
         Frame frame = gef.getFrame();
-        
+
 		if (quizzScc.isPdcUsed()){
 		    TabbedPane tabbedPane1 = gef.getTabbedPane();
 		    tabbedPane1.addTab(resources.getString("GML.head"),"quizzQuestionsNew.jsp?QuizzId="+quizz.getHeader().getId()+"&Action=ViewQuizz",true);
 		    tabbedPane1.addTab(resources.getString("GML.PDC"),"pdcPositions.jsp",false);
 		    out.println(tabbedPane1.print());
 		}
-		
+
         out.println(frame.printBefore());
         String quizzPart = displayQuizz(quizz,gef, m_context, quizzScc, resources, settings, out);
         out.println(quizzPart);
@@ -1030,8 +1030,8 @@ else if (action.equals("ViewResult")) {
         if (userId == null) {
           participationId += 1;
           quizz = quizzScc.getQuestionContainerForCurrentUserByParticipationId(quizzId, participationId);
-        } 
-        else 
+        }
+        else
         {
             quizz = quizzScc.getQuestionContainerByParticipationId(quizzId, userId, participationId);
         }
@@ -1057,14 +1057,14 @@ else if (action.equals("ViewResult")) {
           userScoreDetail= quizzScc.getCurrentUserScoreByFatherIdAndParticipationId(quizzId, participationId);
         } else
           userScoreDetail= quizzScc.getUserScoreByFatherIdAndParticipationId(quizzId, userId, participationId);
-  
+
         if ((userScoreDetail.getSuggestion()!=null) && (!userScoreDetail.getSuggestion().equals("")))
         {
 		quizzPart += "<center><table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\"><tr align=center><td><table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\"><tr><td valign=\"top\" class=\"intfdcolor4\"><img src=\"icons/silverProf_SuggPedago.gif\" align=\"left\"><span class=\"txtnav\">";
         quizzPart += resources.getString("EducationSuggestion") + " :</span><br>";
         quizzPart += Encode.javaStringToHtmlString(userScoreDetail.getSuggestion())+"</td></tr></table></td></tr></table>";
         }
-        
+
         out.println(quizzPart);
         out.println(frame.printMiddle());
 
@@ -1078,7 +1078,7 @@ else if (action.equals("ViewResult")) {
         out.println("</table>");
         out.println(frame.printAfter());
         out.println(window.printAfter());
-} 
+}
 else if (action.equals("ViewResultAdmin")) {
         out.println("<BODY>");
         String participation= (String) session.getAttribute("currentParticipationId");
@@ -1102,7 +1102,7 @@ else if (action.equals("ViewResultAdmin")) {
         browseBar.setComponentName(quizzScc.getComponentLabel());
         browseBar.setPath("<a href=\"Main.jsp\">"+resources.getString("QuizzList")+"</a>");
         browseBar.setExtraInformation(resources.getString("QuizzSeeResults"));
-        
+
         //operation pane
         OperationPane operationPane = window.getOperationPane();
         operationPane.addOperation(m_context + "/util/icons/quizz_print.gif",resources.getString("GML.print"),"javascript:window.print()");
@@ -1118,7 +1118,7 @@ else if (action.equals("ViewResultAdmin")) {
         } else
           userScoreDetail= quizzScc.getUserScoreByFatherIdAndParticipationId(quizzId, userId, participationId);
 
-         
+
         quizzPart += "<center><table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=\"intfdcolor4\"><tr align=center><td><table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\"><tr><td valign=\"top\" class=\"intfdcolor4\"><img src=\"icons/silverProf_SuggPedago.gif\" align=\"left\"><span class=\"txtnav\">";
         quizzPart += resources.getString("EducationSuggestion") + " :</span><br>";
         quizzPart += "<textarea name=\"txa_suggestion\" cols=\"120\" rows=\"4\">";
@@ -1128,7 +1128,7 @@ else if (action.equals("ViewResultAdmin")) {
         quizzPart += "</td></tr></table></td></tr></table>";
         quizzPart += "<input type=\"hidden\" name=\"UserId\" value=\""+userId+"\">";
         quizzPart += "<input type=\"hidden\" name=\"Page\" value=\""+origin+"\">";
- 
+
         out.println(quizzPart);
         out.println(frame.printMiddle());
         Button cancelButton=(Button) gef.getFormButton(resources.getString("GML.back"), "quizzAdmin.jsp", false);
@@ -1142,7 +1142,7 @@ else if (action.equals("ViewResultAdmin")) {
         out.println("</table>");
         out.println(frame.printAfter());
         out.println(window.printAfter());
-} 
+}
 else if (action.equals("UpdateSuggestion")) {
         String suggestion = (String) request.getParameter("txa_suggestion");
         participationId = new Integer((String) session.getAttribute("currentParticipationId")).intValue();

@@ -28,7 +28,7 @@
 <%@ include file="imports.jsp" %>
 <%@ include file="init.jsp.inc" %>
 
-<%!		
+<%!
 	String toStringList(java.util.Collection col)
 	{
 		Iterator i = col.iterator();
@@ -65,23 +65,23 @@ out.println(gef.getLookStyleSheet());
 		this.descriptionDrv = descriptionDrv;
 		this.jdbcUrls = jdbcUrls;
 	}
-	
-	<%	
+
+	<%
 		Collection drivers = connecteurJDBC.getAvailableDriversNames();
 		Collection driversDescriptions = connecteurJDBC.getDriversDescriptions();
 	%>
-	
+
 	drivers =new Array(<%= drivers.size()%>);
 	<%
 		Iterator di = drivers.iterator();
 		Iterator dd = driversDescriptions.iterator();
 		int indice = 0;
 		while (di.hasNext())
-		{		
+		{
 			String name = (String)di.next();
-			String desc = (String)dd.next();		
+			String desc = (String)dd.next();
 			Collection driversUrls = connecteurJDBC.getJDBCUrlsForDriver(name);
-			
+
 			%>
 			jdbcUrls = new Array(<%=toStringList(driversUrls)%>);
 			nameDrv = <%="\""+name+"\""%>;
@@ -91,9 +91,9 @@ out.println(gef.getLookStyleSheet());
 					indice ++;
 			}
 	%>
-	
+
 	function selectDriver()
-	{	
+	{
 		// efface le select des urls
 		for(i=document.processForm.JDBCUrlsSelect.options.length-1;i>=0;i--)
 		{
@@ -102,7 +102,7 @@ out.println(gef.getLookStyleSheet());
 		// rempli le select des urls
 		for(i=0;i<drivers[document.processForm.JDBCdriverNameSelect.selectedIndex].jdbcUrls.length;i++)
 			document.processForm.JDBCUrlsSelect.options[i]=new Option( drivers[document.processForm.JDBCdriverNameSelect.selectedIndex].jdbcUrls[i]);
-		
+
 		// mise � jour de la description
 		document.processForm.DescriptionDrv.value=drivers[document.processForm.JDBCdriverNameSelect.selectedIndex].descriptionDrv;
 		document.processForm.Login.value = "";
@@ -110,13 +110,13 @@ out.println(gef.getLookStyleSheet());
 	}
 
 	function selectUrl()
-	{	
+	{
 		// mise � jour de la description
 		document.processForm.DescriptionDrv.value=drivers[document.processForm.JDBCdriverNameSelect.selectedIndex].descriptionDrv;
 		document.processForm.Login.value="";
 		document.processForm.Password.value="";
 	}
-	
+
 	function processUpdate()
 	{
 		document.processForm.JDBCdriverName.value = document.processForm.JDBCdriverNameSelect.options[document.processForm.JDBCdriverNameSelect.selectedIndex].value;
@@ -153,10 +153,10 @@ out.println(gef.getLookStyleSheet());
 	//Les onglets
     tabbedPane = gef.getTabbedPane();
 	tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneConsultation"), "DoRequest", false);
-    
+
     if (flag.equals("publisher") || flag.equals("admin"))
     	tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneRequete"), "ParameterRequest",false );
-	
+
 	if (flag.equals("admin"))
 		tabbedPane.addTab(connecteurJDBC.getString("tabbedPaneParametresJDBC"), "ParameterConnection", true);
 
@@ -165,7 +165,7 @@ out.println(gef.getLookStyleSheet());
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
 	out.println(frame.printBefore());
-	
+
 %>
 <form name="processForm">
 		<input name="JDBCdriverName" type="hidden" >
@@ -177,9 +177,9 @@ out.println(gef.getLookStyleSheet());
 
 	Iterator i = connecteurJDBC.getAvailableDriversNames().iterator();
 	Iterator iDisplayNames = connecteurJDBC.getAvailableDriversDisplayNames().iterator();
-		
+
 	while (i.hasNext())
-	{	
+	{
 		String optionName = (String) i.next();
 		String optionDisplayName=(String) iDisplayNames.next();
 
@@ -188,12 +188,12 @@ out.println(gef.getLookStyleSheet());
 
 		if (!optionName.equals(currentDriver))
 			JDBCdriverNameSelectString+="<option value=\""+optionName+"\">"+optionDisplayName;
-  		else 
+  		else
   			JDBCdriverNameSelectString+="<option value=\""+optionName+"\" selected>"+optionDisplayName;
   	}
 
 	JDBCdriverNameSelectString+="</select>";
-	
+
 	String JDBCUrlsSelectString = "<select name=\"JDBCUrlsSelect\" onChange=selectUrl()>>";
 	String currentUrl = connecteurJDBC.getJDBCurl();
 	if (currentDriver != null )
@@ -202,11 +202,11 @@ out.println(gef.getLookStyleSheet());
 	{	String option = (String) i.next();
 		if (!option.equals(currentUrl))
 			JDBCUrlsSelectString+="<option >"+option;
-  		else 
+  		else
   			JDBCUrlsSelectString+="<option selected>"+option;
   	}
 	JDBCUrlsSelectString+="</select>";
-	
+
     Button validateButton = (Button) gef.getFormButton(connecteurJDBC.getString("boutonValider"), "javascript:onClick=processUpdate()", false);
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
@@ -228,14 +228,14 @@ out.println(gef.getLookStyleSheet());
 		<TD class="txtlibform"><%=connecteurJDBC.getString("champsDescription")%> :</TD>
 		<TD><input type="text" name="DescriptionDrv" size="50" disabled value = "<% if (currentDriver!=null) out.print(connecteurJDBC.getDescriptionForDriver(currentDriver));%>"></TD>
 	</TR>
-	
+
 	<TR>
 		<TD class="txtlibform"><%=connecteurJDBC.getString("champIdentifiant")%> :</TD>
-		<TD><input type="text" name="Login" size="50" maxlength="<%=DBUtil.TextFieldLength%>" value="<%if (connecteurJDBC.getLogin()!=null) out.print(connecteurJDBC.getLogin());%>"></TD>
+		<TD><input type="text" name="Login" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%if (connecteurJDBC.getLogin()!=null) out.print(connecteurJDBC.getLogin());%>"></TD>
 	</TR>
 	<TR>
 		<TD class="txtlibform"><%=connecteurJDBC.getString("champMotDePasse")%> :</TD>
-		<TD><input type="password" name="Password" size="50" maxlength="<%=DBUtil.TextFieldLength%>" value="<%if (connecteurJDBC.getPassword()!=null) out.print(connecteurJDBC.getPassword());%>"></TD>
+		<TD><input type="password" name="Password" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%if (connecteurJDBC.getPassword()!=null) out.print(connecteurJDBC.getPassword());%>"></TD>
 	</TR>
 	<TR>
 		<TD class="txtlibform"><%=connecteurJDBC.getString("champLignesMax")%> :</TD>

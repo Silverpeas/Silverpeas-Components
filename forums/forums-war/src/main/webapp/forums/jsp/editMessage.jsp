@@ -260,7 +260,7 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
                     <table border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor" width="100%">
                         <tr>
                             <td valign="top"><span class="txtlibform"><%=resource.getString("messageTitle")%> :</span></td>
-                            <td valign="top"><input type="text" name="messageTitle" size="88" maxlength="<%=DBUtil.TextFieldLength%>"></td>
+                            <td valign="top"><input type="text" name="messageTitle" size="88" maxlength="<%=DBUtil.getTextFieldLength()%>"></td>
                         </tr>
                         <tr>
                             <td valign="top"><span class="txtlibform"><%=resource.getString("messageText")%> : </span></td>

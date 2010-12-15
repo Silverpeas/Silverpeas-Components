@@ -92,7 +92,7 @@ private String afficheArbo(ArrayPane arrayPane, String idNode, WebSiteSessionCon
             espace += "&nbsp;";
         }
         N += 4;
-    
+
         FolderDetail rootFolder = scc.getFolder(idNode);
 
         ArrayLine arrayLine = arrayPane.addArrayLine();
@@ -142,7 +142,7 @@ private int nbThemes(String idNode, WebSiteSessionController scc, int nb) throws
 %>
 
 
-<%  
+<%
     //CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
     String mandatoryField=m_context+"/util/icons/mandatoryField.gif";
 
@@ -155,7 +155,7 @@ private int nbThemes(String idNode, WebSiteSessionController scc, int nb) throws
 %>
 
 <!-- descBookmark -->
-           
+
 <HTML>
 <HEAD>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
@@ -182,28 +182,28 @@ function isCorrectForm() {
      var nomSite = stripInitialWhitespace(document.descriptionSite.nomSite.value);
      var description = document.descriptionSite.description;
      var nomPage = stripInitialWhitespace(document.descriptionSite.nomPage.value);
-     
-          
+
+
      if (isWhitespace(nomSite)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-       errorNb++; 
-     }     
-     
+       errorNb++;
+     }
+
      if (! isValidTextArea(description)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.description")%>' <%=resources.getString("ContainsTooLargeText")+resources.getString("NbMaxTextArea")+resources.getString("Characters")%>\n";
-       errorNb++; 
-     } 
-     
+       errorNb++;
+     }
+
      if (isWhitespace(nomPage)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("URL")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-       errorNb++; 
-     }          
-     
+       errorNb++;
+     }
+
      if (! isCorrect(nomPage)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("URL")%>' <%=Encode.javaStringToJsString(resources.getString("MustNotContainSpecialChar"))%>\n<%=Encode.javaStringToJsString(resources.getString("Char1"))%>\n";
-       errorNb++; 
+       errorNb++;
      }
-     
+
      switch(errorNb)
      {
         case 0 :
@@ -230,7 +230,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 		f = "";
 		if (document.descriptionSite.radio[0].checked)
 			f += "0,";
-			
+
 		for (i=0; i<nbicones; i++) {
 		  if (document.descriptionSite.icon[i].checked)
 			  f += document.descriptionSite.icon[i].value + ",";
@@ -262,7 +262,7 @@ function B_SUGGERER_ONCLICK(nb, nom) {
 		f = "";
 		if (document.descriptionSite.radio[0].checked)
 			f += nom+",";
-				
+
 		for (i=0; i<nb; i++) {
 		  if (document.descriptionSite.icon[i].checked)
 			  f += document.descriptionSite.icon[i].value + ",";
@@ -327,7 +327,7 @@ function B_SUGGERER_ONCLICK(nb, nom) {
 
    //currentDate
    String creationDate = resources.getOutputDate(new Date());
-%> 
+%>
             <TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>
 			<FORM NAME="descriptionSite" ACTION="manage.jsp" METHOD="POST">
 			<input type="hidden" name="Action" value="addBookmark">
@@ -339,27 +339,27 @@ function B_SUGGERER_ONCLICK(nb, nom) {
 
                 <tr>
 
-                        
-            <td class="intfdcolor4"><span class="txtlibform"><%=" "+resources.getString("GML.name")%> 
+
+            <td class="intfdcolor4"><span class="txtlibform"><%=" "+resources.getString("GML.name")%>
               : </span></td>
-                        <td class="intfdcolor4"><input type="text" name="nomSite" size="60" maxlength="<%=DBUtil.TextFieldLength%>"
+                        <td class="intfdcolor4"><input type="text" name="nomSite" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>"
                                             >
               &nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
                 </tr>
 
                 <tr>
-                        
-            <td class="intfdcolor4"><span class="txtlibform"><%=resources.getString("GML.description")%> 
+
+            <td class="intfdcolor4"><span class="txtlibform"><%=resources.getString("GML.description")%>
               : </span></td>
-                        <td class="intfdcolor4"><textarea rows="6" name="description" cols="60" 
+                        <td class="intfdcolor4"><textarea rows="6" name="description" cols="60"
                                             ></textarea></td>
                 </tr>
 
                 <tr>
-                        
-            <td class="intfdcolor4"><span class="txtlibform"><%=" "+resources.getString("URL")+" (ex : www.lesite.com)"%> 
+
+            <td class="intfdcolor4"><span class="txtlibform"><%=" "+resources.getString("URL")+" (ex : www.lesite.com)"%>
               : </span></td>
-                        <td class="intfdcolor4"><input type="text" name="nomPage" size="60" maxlength="<%=DBUtil.TextFieldLength%>"
+                        <td class="intfdcolor4"><input type="text" name="nomPage" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>"
                                             >&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
 
                 </tr>
@@ -373,28 +373,28 @@ function B_SUGGERER_ONCLICK(nb, nom) {
                     <td class="intfdcolor4"><%=creationDate%></td>
                 </tr>
                 <tr>
-                        
-            <td class="intfdcolor4"><span class="txtlibform"><%=resources.getString("Reference")%> 
+
+            <td class="intfdcolor4"><span class="txtlibform"><%=resources.getString("Reference")%>
               : </span></td>
-                        <td class="intfdcolor4"><input type="radio" name="radio"  
-                                             
+                        <td class="intfdcolor4"><input type="radio" name="radio"
+
                                             value="">&nbsp;<%=resources.getString("GML.yes")%>&nbsp;&nbsp;
-                                        <input type="radio" name="radio"  
-                                             
+                                        <input type="radio" name="radio"
+
                                             value="" checked>&nbsp;<%=resources.getString("GML.no")%></td>
 
-                </tr>  
-                
-                
+                </tr>
+
+
                  <tr>
               			<td class="intfdcolor4"><span class="txtlibform"><%=resources.getString("OuvrirPopup")%> : </span></td>
                         <td class="intfdcolor4"><input type="checkbox" name="popup" checked>
 						</td>
-               </tr>                
+               </tr>
 
                    <tr>
-                        
-            <td class="intfdcolor4" valign=top><span class="txtlibform"><%=resources.getString("IconesAssociees")%> 
+
+            <td class="intfdcolor4" valign=top><span class="txtlibform"><%=resources.getString("IconesAssociees")%>
               : </span></td>
                         <td class="intfdcolor4">
 <%
@@ -405,13 +405,13 @@ function B_SUGGERER_ONCLICK(nb, nom) {
 
 							IconDetail icon = (IconDetail) i.next(); // on saute la premiere icone (site important)
 							String nameReference = resources.getString(icon.getName());
-							
+
 							while (i.hasNext()) {
 								icon = (IconDetail) i.next();
 								if (action.equals("suggest")) {
 									out.println("<input type=\"checkbox\" name=\"icon\" value = \""+resources.getString(icon.getName())+"\">&nbsp;");
 								}
-								else 
+								else
 									out.println("<input type=\"checkbox\" name=\"icon\" value = \""+icon.getIconPK().getId()+"\">&nbsp;");
 								out.println("<img src=\""+icon.getAddress()+"\" alt=\""+resources.getString(icon.getDescription())+"\" align=absmiddle title=\""+resources.getString(icon.getDescription())+"\">&nbsp;&nbsp;");
 								out.println(resources.getString(icon.getName())+"<BR>");
@@ -422,10 +422,10 @@ function B_SUGGERER_ONCLICK(nb, nom) {
                 </tr>
 
                                 <tr>
-                        
-            <td height="10" colspan="2" class="intfdcolor4">(<img border="0" src="<%=mandatoryField%>" width="5" height="5"> 
+
+            <td height="10" colspan="2" class="intfdcolor4">(<img border="0" src="<%=mandatoryField%>" width="5" height="5">
               : <%=resources.getString("GML.requiredField")%>)</td>
-                 </tr>		
+                 </tr>
 <%
 	if(action.equals("suggest")) {
 		out.println("</FORM>");
@@ -462,7 +462,7 @@ function B_SUGGERER_ONCLICK(nb, nom) {
 	  //CBO : UPDATE
 	  //int size = c.size() - 1;
 	  int size = allIcons.size() - 1;
-      
+
       if (action.equals("suggest")) {
           validerButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_SUGGERER_ONCLICK("+size+", '"+nameReference+"');", false);
           annulerButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "listSite_reader.jsp", false);
@@ -473,7 +473,7 @@ function B_SUGGERER_ONCLICK(nb, nom) {
       }
       buttonPane.addButton(validerButton);
       buttonPane.addButton(annulerButton);
-      buttonPane.setHorizontalPosition(); 
+      buttonPane.setHorizontalPosition();
 
 	out.println("<br><center>"+buttonPane.print()+"</center><br>");
 
@@ -491,6 +491,6 @@ function B_SUGGERER_ONCLICK(nb, nom) {
   <input type="hidden" name="ListeIcones">
 </FORM>
 
-</BODY>     
+</BODY>
 
 </HTML>

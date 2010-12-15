@@ -296,7 +296,7 @@ public void listFolders(JspWriter out, int rootId, int forumId, int parentId, St
                                             <span class="txtlibform"><%=resource.getString("forumName")%> :</span>
                                         </td>
                                         <td>
-                                            <input type="text" name="forumName" size="50" maxlength="<%=DBUtil.TextFieldLength%>"
+                                            <input type="text" name="forumName" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>"
                                                 <%if (update) {%>value="<%=Encode.javaStringToHtmlString(forum.getName())%>"<%}%>/>
                                             &nbsp;<img src="<%=context%>/util/icons/mandatoryField.gif" width="5" height="5">
                                         </td>

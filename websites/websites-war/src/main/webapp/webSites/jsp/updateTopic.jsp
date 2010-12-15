@@ -63,16 +63,13 @@ String description = "";
 String id = (String) request.getParameter("ChildId");
 String path = (String) request.getParameter("Path");
 
-//CBO : REMOVE String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-
 //Icons
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
 Button cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=window.close();", false);
 Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
 
-//CBO : UPDATE
-//NodeDetail folderDetail = scc.getFolderDetail(id);
+
 NodeDetail folderDetail = (NodeDetail) request.getAttribute("CurrentFolder");
 
 if (folderDetail != null) {
@@ -126,16 +123,16 @@ function isCorrectForm() {
      var description = stripInitialWhitespace(document.topicForm.Description.value);
      if (isWhitespace(title)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-       errorNb++; 
+       errorNb++;
      }
      if (isWhitespace(description)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.description")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-       errorNb++; 
+       errorNb++;
      }
      if (! isCorrect(title)) {
        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("MustNotContainSpecialChar")%>\n  <%=resources.getString("Char6")%>\n";
-       errorNb++; 
-     }         
+       errorNb++;
+     }
      switch(errorNb) {
         case 0 :
             result = true;
@@ -168,7 +165,7 @@ function isCorrectForm() {
 	//browseBar.setComponentName(scc.getComponentLabel());
 	browseBar.setComponentName(componentLabel);
     browseBar.setPath(resources.getString("FolderUpdateTitle"));
-    
+
     //Le cadre
     Frame frame = gef.getFrame();
 
@@ -188,36 +185,36 @@ function isCorrectForm() {
             <TD valign="top"><%
                           out.println(Encode.javaStringToHtmlString(path));
                              %>
-                        <input type="hidden" name="ChildId" value="<%=id%>" maxlength="<%=DBUtil.TextFieldLength%>"></TD>
+                        <input type="hidden" name="ChildId" value="<%=id%>" maxlength="<%=DBUtil.getTextFieldLength()%>"></TD>
         </TR>
-        
+
     <TR>
         <TD class="txtlibform"><%=resources.getString("GML.name")%> : </TD>
             <TD><input type="text" name="Name" value="<%=Encode.javaStringToHtmlString(name)%>" size="60" maxlength="50">
                 &nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5" maxlength="50"></TD>
         </TR>
-  
+
     <TR>
         <TD class="txtlibform"><%=resources.getString("GML.description")%> : </TD>
             <TD><input type="text" name="Description" value="<%=Encode.javaStringToHtmlString(description)%>" size="60" maxlength="50">
                 &nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5" maxlength="50"> </TD>
         </TR>
-          <TR> 
-            <TD colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5"> 
+          <TR>
+            <TD colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5">
               : <%=resources.getString("GML.requiredField")%>)</TD>
           </TR>
 	</FORM>
-    </TABLE>    
+    </TABLE>
 <!-- BUTTONS -->
 <%
     //fin du code
 	out.print(board.printAfter());
     out.println(frame.printMiddle());
-    
+
     ButtonPane buttonPane = gef.getButtonPane();
     buttonPane.addButton(validateButton);
     buttonPane.addButton(cancelButton);
-   
+
 	out.println("<br><center>"+buttonPane.print()+"</center><br>");
 
     out.println(frame.printAfter());

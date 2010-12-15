@@ -182,7 +182,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	boolean refChecked = false;
 	//CBO : REMOVE boolean uploadOk = true;
 	//CBO : REMOVE boolean searchOk = true;
-	
+
 	//CBO : ADD
 	int popup = 1;
 
@@ -600,17 +600,17 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 
                 <tr>
                         <td class="intfdcolor4"><span class="txtlibform"><%=" "+resources.getString("GML.name")%> : </span></td>
-                        <td class="intfdcolor4"><input type="text" name="nomSite" size="60" maxlength="<%=DBUtil.TextFieldLength%>" value="<%=nomSite%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
+                        <td class="intfdcolor4"><input type="text" name="nomSite" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=nomSite%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
                 </tr>
 
                 <tr>
                         <td class="intfdcolor4" valign=top><span class="txtlibform"><%=resources.getString("GML.description")%> : </span></td>
-                        <td class="intfdcolor4"><textarea rows="6" name="description" cols="60" maxlength="<%=DBUtil.TextFieldLength%>"><%=description%></textarea></td>
+                        <td class="intfdcolor4"><textarea rows="6" name="description" cols="60" maxlength="<%=DBUtil.getTextFieldLength()%>"><%=description%></textarea></td>
                 </tr>
 
                                 <tr>
                                             <td class="intfdcolor4"><span class="txtlibform"><%=" "+resources.getString("NomPagePrincipale")%> : </span></td>
-                                            <td class="intfdcolor4"><input type="text" name="nomPage" size="60" maxlength="<%=DBUtil.TextFieldLength%>" value="<%=nomPage%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
+                                            <td class="intfdcolor4"><input type="text" name="nomPage" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=nomPage%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
                                 </tr>
 
                                 <tr>
@@ -716,7 +716,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 
 
 		//CBO : REMOVE Collection c = scc.getAllIcons();
-		
+
 		//CBO : UPDATE
 		//Iterator j = c.iterator();
 		Iterator j = allIcons.iterator();
@@ -767,7 +767,7 @@ function B_VALIDER_ONCLICK(nbthemes, nbicones) {
 	ButtonPane buttonPane = gef.getButtonPane();
 	Button validerButton = null;
 	Button annulerButton = null;
-	
+
 	//CBO : UPDATE
 	//int size = c.size() - 1;
 	int size = allIcons.size() - 1;

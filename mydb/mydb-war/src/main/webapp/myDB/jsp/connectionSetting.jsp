@@ -40,7 +40,7 @@
 	{
 		password = "";
 	}
-	
+
 	out.println(gef.getLookStyleSheet());
 %>
 	<script type="text/javascript" src="<%=applicationURL%>/util/javaScript/checkForm.js"></script>
@@ -65,10 +65,10 @@
 	Iterator du;
 	StringBuffer driversUrlsSb;
 	while (di.hasNext())
-	{		
+	{
 		String name = (String)di.next();
 		String desc = (String)dd.next();
-		
+
 		driversUrls = driverManager.getJdbcUrlsForDriver(name);
 		du = driversUrls.iterator();
 		driversUrlsSb = new StringBuffer();
@@ -102,7 +102,7 @@
 	}
 %>
 		}
-		
+
 		function selectDriver()
 		{
 			var urlSelect = form.elements["jdbcUrlSelect"];
@@ -120,15 +120,15 @@
 			}
 			selectUrl();
 		}
-	
+
 		function selectUrl()
-		{	
+		{
 			// Description update.
 			form.elements["driverDescription"].value = drivers[form.elements["jdbcDriverNameSelect"].selectedIndex].driverDescription;
 			form.elements["login"].value = "";
 			form.elements["password"].value = "";
 		}
-		
+
 		function processUpdate()
 		{
 			form.elements["jdbcDriverName"].value = form.elements["jdbcDriverNameSelect"].value;
@@ -162,7 +162,7 @@
 	browseBar.setExtraInformation(resource.getString("PageTitleConnectionSetting")) ;
 
 	out.println(window.printBefore());
-	
+
 	// Current page tab index.
 	int tabIndex = 3;
 %>
@@ -189,7 +189,7 @@
 	String optionName;
 	String optionDisplayName;
 	while (driversNamesIter.hasNext())
-	{	
+	{
 		optionName = (String)driversNamesIter.next();
 		optionDisplayName = (String)driversDisplayNamesIter.next();
 		if (currentDriver == null || currentDriver.length() == 0)
@@ -205,7 +205,7 @@
 							<tr>
 								<td class="txtlibform"><%=resource.getString("Url")%> :</td>
 								<td><select name="jdbcUrlSelect" onchange="selectUrl();"><%
-								
+
 	String currentUrl = myDBSC.getJdbcUrl();
 	if (currentDriver != null)
 	{
@@ -214,7 +214,7 @@
 		{
 			String option = (String)iter.next();%>
 									<option <%if (option.equals(currentUrl)) {%>selected<%}%>><%=option%></option><%
-									
+
 	  	}
 	}
 							  %></select></td>
@@ -225,11 +225,11 @@
 							</tr>
 							<tr>
 								<td class="txtlibform"><%=resource.getString("Login")%> :</td>
-								<td><input type="text" name="login" size="50" maxlength="<%=DBUtil.TextFieldLength%>" value="<%=login%>"></td>
+								<td><input type="text" name="login" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=login%>"></td>
 							</tr>
 							<tr>
 								<td class="txtlibform"><%=resource.getString("Password")%> :</td>
-								<td><input type="password" name="password" size="50" maxlength="<%=DBUtil.TextFieldLength%>" value="<%=password%>"></td>
+								<td><input type="password" name="password" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=password%>"></td>
 							</tr>
 							<tr>
 								<td class="txtlibform"><%=resource.getString("MaxRows")%> :</td>

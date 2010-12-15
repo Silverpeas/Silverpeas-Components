@@ -66,7 +66,7 @@
     String anonymousAllowed = "";
     String anonymousCheck = "";
     String anonymous = FileUploadUtil.getOldParameter(items, "AnonymousAllowed");
-    
+
     //Mode anonyme -> force les votes à être tous anonymes
 	if(surveyScc.isAnonymousModeEnabled()) {
 		anonymous = "1";
@@ -191,7 +191,7 @@
               answerEmpty = true;
             }
           }
-        
+
           if (inputName == "image")
           {
             if (answerEmpty == true) {
@@ -201,7 +201,7 @@
             }
             answerEmpty = false;
           }
-        
+
           if (inputName == "value")
           {
             if (imageEmpty == true) {
@@ -357,7 +357,7 @@
 
           var galleryWindow = window;
           var currentAnswer;
-	
+
           function choixGallery(liste, idAnswer)
           {
             currentAnswer = idAnswer;
@@ -375,28 +375,28 @@
               galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
             }
           }
-	
+
           function deleteImage(idImage)
           {
             document.getElementById('imageGallery'+idImage).innerHTML = "";
             document.getElementById('valueImageGallery'+idImage).value = "";
           }
-	
+
           //function choixImageInGallery(url)
           //{
           //document.getElementById('imageGallery'+currentAnswer).innerHTML = "<a href=\""+url+"\" target=\"_blank\"><%=resources.getString("survey.imageGallery")%></a> <a href=\"javascript:deleteImage('"+currentAnswer+"')\"><img src=\"icons/questionDelete.gif\" border=\"0\" align=\"absmiddle\" alt=\"<%=resources.getString("GML.delete")%>\" title=\"<%=resources.getString("GML.delete")%>\"></a>";
           //document.getElementById('valueImageGallery'+currentAnswer).value = url;
           //}
-	
+
           function choixImageInGallery(url)
           {
             var newLink = document.createElement("a");
             newLink.setAttribute("href", url);
             newLink.setAttribute("target", "_blank");
-		
+
             var newLabel = document.createTextNode("<%=resources.getString("survey.imageGallery")%>");
             newLink.appendChild(newLabel);
-		
+
             var removeLink =  document.createElement("a");
             removeLink.setAttribute("href", "javascript:deleteImage('"+currentAnswer+"')");
             var removeIcon = document.createElement("img");
@@ -405,12 +405,12 @@
             removeIcon.setAttribute("align", "absmiddle");
             removeIcon.setAttribute("alt", "<%=resources.getString("GML.delete")%>");
             removeIcon.setAttribute("title", "<%=resources.getString("GML.delete")%>");
-		
+
             removeLink.appendChild(removeIcon);
-		
+
             document.getElementById('imageGallery'+currentAnswer).appendChild(newLink);
             document.getElementById('imageGallery'+currentAnswer).appendChild(removeLink);
-		   
+
             document.getElementById('valueImageGallery'+currentAnswer).value = url;
           }
 
@@ -460,11 +460,11 @@ disabledValue = "disabled";
     %>
     <table border=0 cellspacing=0 cellpadding=5 width="98%" align=center>
       <form name="pollForm" Action="pollCreator.jsp" method="POST" ENCTYPE="multipart/form-data">
-        <tr><td class="txtlibform"><%=resources.getString("GML.name")%> :</td><td><input type="text" name="title" size="60" maxlength="60" value="<%=Encode.javaStringToHtmlString(title)%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> </td></tr>
+        <tr><td class="txtlibform"><%=resources.getString("GML.name")%> :</td><td><input type="text" name="title" size="60" maxlength="60" value="<%=EncodeHelper.javaStringToHtmlString(title)%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> </td></tr>
         <tr><td class="txtlibform"><%=resources.getString("SurveyCreationDate")%> :</td><td><%=creationDate%></td></tr>
-        <tr><td class="txtlibform"><%=resources.getString("SurveyCreationBeginDate")%> :</td><td><input type="text" class="dateToPick" name="beginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.DateFieldLength%>"/></td></tr>
-        <tr><td class="txtlibform"><%=resources.getString("SurveyCreationEndDate")%> :</td><td><input type="text" class="dateToPick" name="endDate" size="12" value="<%=endDate%>" maxlength="<%=DBUtil.DateFieldLength%>"/></td></tr>
-        <tr><td class="txtlibform"><%=resources.getString("SurveyCreationQuestion")%> :</td><td><input type="text" name="question" value="<%=Encode.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.TextFieldLength%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> </td></tr>
+        <tr><td class="txtlibform"><%=resources.getString("SurveyCreationBeginDate")%> :</td><td><input type="text" class="dateToPick" name="beginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/></td></tr>
+        <tr><td class="txtlibform"><%=resources.getString("SurveyCreationEndDate")%> :</td><td><input type="text" class="dateToPick" name="endDate" size="12" value="<%=endDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/></td></tr>
+        <tr><td class="txtlibform"><%=resources.getString("SurveyCreationQuestion")%> :</td><td><input type="text" name="question" value="<%=Encode.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> </td></tr>
             <%if (disabledValue != "disabled") {%>
         <!--  type de question -->
         <tr><td class="txtlibform" valign=top><%=resources.getString("survey.style")%> :</td><td>
@@ -481,7 +481,7 @@ disabledValue = "disabled";
 
         <tr><td class="txtlibform"><%=resources.getString("SurveyCreationNbPossibleAnswer")%> :</td><td><input type="text" name="nbAnswers" value="<%=nbAnswers%>" size="3" maxlength="2" <%=disabledValue%>>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> </td></tr>
         <tr><td class="txtlibform"><%=resources.getString("SuggestionAllowed")%> :</td><td><input type="checkbox" name="suggestion" value="" <%=suggestionCheck%> <%=disabledValue%>></td></tr>
-        
+
         <%
         //Mode anonyme -> force les votes à être tous anonymes
         String anonymousDisabled = "";
@@ -490,7 +490,7 @@ disabledValue = "disabled";
 			anonymousDisabled = "disabled";
 		}
 		%>
-        
+
         <tr><td class="txtlibform"><%=resources.getString("survey.pollAnonymous")%> :</td><td><input type="checkbox" name="anonymous" value="" <%=anonymousCheck%> <%=disabledValue%> <%=anonymousDisabled%>></td></tr>
 
         <% if ("SendPollForm".equals(action)) {
@@ -501,7 +501,7 @@ for (int i = 0; i < nb; i++) {
   j = i + 1;
   inputName = "answer" + i;
   out.println(
-      "<tr><td class=\"txtlibform\">" + resources.getString("SurveyCreationAnswerNb") + "&nbsp;" + j + " :</td><td><input type=\"text\" name=\"" + inputName + "\" value=\"\" size=\"60\" maxlength=\"" + DBUtil.TextFieldLength + "\"></td></tr>");
+      "<tr><td class=\"txtlibform\">" + resources.getString("SurveyCreationAnswerNb") + "&nbsp;" + j + " :</td><td><input type=\"text\" name=\"" + inputName + "\" value=\"\" size=\"60\" maxlength=\"" + DBUtil.getTextFieldLength() + "\"></td></tr>");
   if (!style.equals("list")) {
     out.println(
         "<tr><td class=\"txtlibform\">" + resources.getString("SurveyCreationAnswerImage") + "&nbsp;" + j + " :</td><td><input type=\"file\" name=\"image" + i + "\" size=\"60\"></td></tr>");

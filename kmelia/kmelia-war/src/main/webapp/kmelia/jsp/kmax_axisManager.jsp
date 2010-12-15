@@ -50,7 +50,7 @@
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="kmax_axisReport.jsp" %>
 
-<% 
+<%
 String id = "";
 String name = "";
 String description = "";
@@ -129,11 +129,11 @@ function isCorrectAxisForm() {
 	 var description = stripInitialWhitespace(document.axisManagerForm.Description.value);
      if (isWhitespace(title)) {
        errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("AxisTitle")%>' <%=kmeliaScc.getString("MustContainsText")%>\n";
-       errorNb++; 
+       errorNb++;
      }
 	if (!isValidTextArea(document.axisManagerForm.Description)) {
-          errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("AxisDescription")%>' <%=kmeliaScc.getString("ContainsTooLargeText")%> <%=DBUtil.TextAreaLength%> <%=kmeliaScc.getString("Characters")%>\n";
-          errorNb++; 
+          errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("AxisDescription")%>' <%=kmeliaScc.getString("ContainsTooLargeText")%> <%=DBUtil.getTextAreaLength()%> <%=kmeliaScc.getString("Characters")%>\n";
+          errorNb++;
     }
      switch(errorNb) {
         case 0 :
@@ -196,7 +196,7 @@ function addPositionToAxis(axisId) {
     url = "kmax_addPositionToAxis.jsp?AxisId="+axisId+"&Translation=<%=translation%>";
     windowName = "componentAddWindow";
 	larg = "600";
-	haut = "250";	
+	haut = "250";
     windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
     if (!componentAddWindow.closed && componentAddWindow.name == "componentAddWindow")
         componentAddWindow.close();
@@ -225,11 +225,11 @@ function isCorrectComponentForm() {
 	 var description = stripInitialWhitespace(document.axisManagerForm.Description.value);
      if (isWhitespace(title)) {
        errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("ComponentTitle")%>' <%=kmeliaScc.getString("MustContainsText")%>\n";
-       errorNb++; 
+       errorNb++;
      }
 	if (!isValidTextArea(document.axisManagerForm.Description)) {
-          errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("ComponentDescription")%>' <%=kmeliaScc.getString("ContainsTooLargeText")%> <%=DBUtil.TextAreaLength%> <%=kmeliaScc.getString("Characters")%>\n";
-          errorNb++; 
+          errorMsg+="  - <%=kmeliaScc.getString("TheField")%> '<%=kmeliaScc.getString("ComponentDescription")%>' <%=kmeliaScc.getString("ContainsTooLargeText")%> <%=DBUtil.getTextAreaLength()%> <%=kmeliaScc.getString("Characters")%>\n";
+          errorNb++;
     }
      switch(errorNb) {
         case 0 :
@@ -274,36 +274,36 @@ function removeTranslation()
 	<%
 if (action.equals("KmaxViewAxis") || action.equals("KmaxManageAxis") || action.equals("KmaxManagePosition")) {
 	  Window window = gef.getWindow();
-	
+
 	  BrowseBar browseBar = window.getBrowseBar();
 	  browseBar.setDomainName(kmeliaScc.getSpaceLabel());
 	  browseBar.setComponentName(kmeliaScc.getComponentLabel(), "KmaxMain");
 	  browseBar.setExtraInformation(kmeliaScc.getString("AdminExplaination"));
 	  browseBar.setI18N("KmaxAxisManager?AxisId="+id, translation);
-	  
+
 	  OperationPane operationPane = window.getOperationPane();
 	  if (profile.equals("admin")) {
 		  operationPane.addOperation(axisAddSrc, kmeliaScc.getString("AddAxis"), "javascript:onClick=axisAdd()");
 		  operationPane.addLine();
 		  operationPane.addOperation(resources.getIcon("kmelia.modelUsed"), resources.getString("kmelia.ModelUsed"), "ModelUsed");
 	  }
-	
+
 	  TabbedPane tabbedPane = gef.getTabbedPane();
 	  tabbedPane.addTab(kmeliaScc.getString("Consultation"), "KmaxMain", false);
 	  tabbedPane.addTab(kmeliaScc.getString("Management"), "KmaxAxisManager", true);
-	
+
 	  Frame frame = gef.getFrame();
-	
+
 	  out.println(window.printBefore());
-	  
+
 	  frame.addTop(displayAxisToAdmins(kmeliaScc, gef, translation));
-	
+
 	  if (action.equals("KmaxManageAxis")) {
 	      String axisId = (String) request.getParameter("AxisId");
 		    NodeDetail nodeDetail = kmeliaScc.getNodeHeader(axisId);
 	      out.println(codeJSForTranslation(nodeDetail));
 	      frame.addBottom(displayAxisManageView(kmeliaScc, gef, axisId, mandatoryFieldSrc, resources, translation));
-		  
+
 	  } else if (action.equals("KmaxManagePosition")) {
 	      String positionPath = (String) request.getParameter("PositionId");
 		  String positionId = positionPath.substring(positionPath.lastIndexOf("/")+1, positionPath.length());
@@ -316,7 +316,7 @@ if (action.equals("KmaxViewAxis") || action.equals("KmaxManageAxis") || action.e
 	  } else {
 		  frame.addBottom("");
 	  }
-	
+
 	  out.println(tabbedPane.print());
 	  out.println(frame.print());
 	  out.println(window.printAfter());

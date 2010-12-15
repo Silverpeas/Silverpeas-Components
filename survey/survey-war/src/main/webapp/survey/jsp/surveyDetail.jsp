@@ -89,18 +89,18 @@
   }%>
 
 <%
-  //Récupération des paramètres
+  //Rï¿½cupï¿½ration des paramï¿½tres
   String action = (String) request.getParameter("Action");
   String surveyId = (String) request.getParameter("SurveyId");
   String roundId = (String) request.getParameter("RoundId");
   String profile = (String) request.getAttribute("Profile");
   String choice = (String) request.getParameter("Choice");
-  
+
   boolean participated = true;
   if (StringUtil.isDefined(request.getParameter("Participated"))) {
     participated = request.getParameter("Participated").equalsIgnoreCase("true");
   }
-  
+
   boolean isParticipationMultipleUsed = surveyScc.isParticipationMultipleUsed();
   boolean isParticipationMultipleAllowedForUser =
       surveyScc.isParticipationMultipleAllowedForUser();
@@ -111,8 +111,8 @@
   String m_context =
       GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
-  
-  
+
+
   //Icons
   String topicAddSrc = m_context + "/util/icons/folderAdd.gif";
   String alertSrc = m_context + "/util/icons/alert.gif";
@@ -351,21 +351,21 @@
 <script language="JavaScript1.2">
         function sendVote(roundId) {
           if (isCorrectForm()) {
-        	  
-        	 try 
+
+        	 try
         	 {
 				 document.survey.anonymousComment.disabled = false;
         		 if (document.survey.anonymousComment.checked)
         			 x = 1;
         		 else
-        			 x = 0; 
+        			 x = 0;
         		 document.survey.Comment.value = document.survey.Comment.value;
         		 document.survey.anonymousComment.value = x;
         	 } catch (e)
         	 {
-        		 //la zone commentaire n'est pas affichée pour la page courante
+        		 //la zone commentaire n'est pas affichï¿½e pour la page courante
         	 }
-        	 
+
         	 if (roundId == "end") {
                   document.survey.Action.value="SendVote";
                   document.survey.submit();
@@ -376,14 +376,14 @@
             }
           }
         }
-        
+
         function checkRadioAndCheckboxes()
         {
         	var ok = false;
         	var first = true;
         	var name = "";
         	var indice = 1;
-            for (var i=0; i<document.survey.length; i++) 
+            for (var i=0; i<document.survey.length; i++)
             {
             	// on passe sur toutes les zones du formulaire
             	name = document.survey.elements[i].name;
@@ -391,7 +391,7 @@
             	//alert(document.survey.elements[i].type+", "+name+", ok = "+ok+", indice = "+indice);
             	if (startName == "answer_")
             	{
-            		// on ne contrôle que les zones réponses
+            		// on ne contrï¿½le que les zones rï¿½ponses
             		endName = name.substr(7);
             		if (first)
             		{
@@ -400,18 +400,18 @@
             		}
             		if (endName != indice)
             		{
-            			// on a déjà contrôlé une question qui n'a pas de réponse, pas la peine de continuer
+            			// on a dï¿½jï¿½ contrï¿½lï¿½ une question qui n'a pas de rï¿½ponse, pas la peine de continuer
             			if (!ok)
             				return false;
-            			
+
             			ok = false;
             		}
-		           	if (document.survey.elements[i].type == "radio" || document.survey.elements[i].type == "checkbox") 
+		           	if (document.survey.elements[i].type == "radio" || document.survey.elements[i].type == "checkbox")
 		           	{
-		           		// contrôle des boutons radio et des cases à cocher (pas de contrôle pour les questions ouvertes)
+		           		// contrï¿½le des boutons radio et des cases ï¿½ cocher (pas de contrï¿½le pour les questions ouvertes)
 			           	if (document.survey.elements[i].checked)
 			           	{
-			           		// une case est cochée, valider la question
+			           		// une case est cochï¿½e, valider la question
 			           		ok = true;
 			           	}
 			           	indice = endName;
@@ -424,23 +424,23 @@
             }
             return ok;
         }
-       
+
         function isCorrectForm() {
              var errorMsg = "";
              var errorNb = 0;
-             
+
              ok = 1;
              for (var i=0; i<document.survey.length; i++) {
                   if (document.survey.elements[i].type == "textarea") {
                       if (!isValidTextArea(document.survey.elements[i])) {
                             ok = 0;
                             document.survey.elements[i].select();
-                            errorMsg+=" <%=resources.getString("GML.theField")%> <%=resources.getString("ContainsTooLargeText")%> <%=DBUtil.TextAreaLength%> <%=resources.getString("Characters")%>";
+                            errorMsg+=" <%=resources.getString("GML.theField")%> <%=resources.getString("ContainsTooLargeText")%> <%=DBUtil.getTextAreaLength()%> <%=resources.getString("Characters")%>";
                             errorNb++;
                       }
                   }
              }
-             // contrôle que toutes les questions aient au moins une réponse validée
+             // contrï¿½le que toutes les questions aient au moins une rï¿½ponse validï¿½e
 	         if (!checkRadioAndCheckboxes())
 	         {
 	          	 errorMsg+="<%=resources.getString("survey.NoResponse")%>";
@@ -468,10 +468,10 @@
             if (!input.checked)
                 input.click();
         }
-        
+
         var notifyWindow = window;
-        
-        function goToNotify(url) 
+
+        function goToNotify(url)
         {
         	windowName = "notifyWindow";
         	larg = "740";
@@ -585,7 +585,7 @@ body {
 <script type="text/javascript"
 	src="<%=iconsPath%>/util/javaScript/animation.js"></script>
 <script language="JavaScript1.2">
-        
+
  		function viewSuggestions(id) {
  		    url = "surveySuggestions.jsp?QuestionId="+id;
  		    windowName = "sugg";
@@ -594,13 +594,13 @@ body {
  		    windowParams = "directories=0,menubar=0,toolbar=0,resizable=1,scrollbars=1,alwaysRaised";
  		    suggestions = SP_openWindow(url, windowName, larg , haut, windowParams);
  		    suggestions.focus();
- 		} 
- 		
+ 		}
+
  		var notifyWindow = window;
  		var usersWindow = window;
  	  var exportWindow = window;
- 		
- 		function goToNotify(url) 
+
+ 		function goToNotify(url)
     {
  			  windowName = "notifyWindow";
         larg = "740";
@@ -611,7 +611,7 @@ body {
             notifyWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
     }
 
- 		function Export(url) 
+ 		function Export(url)
     {
  			  windowName = "exportWindow";
         larg = "740";
@@ -621,7 +621,7 @@ body {
                 exportWindow.close();
             exportWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
     }
-        
+
     function viewUsers(id)
     {
     	  url = "ViewListResult?AnswerId="+id;
@@ -658,11 +658,11 @@ body {
  		    suggestions = SP_openWindow(url, windowName, larg , haut, windowParams);
  		    suggestions.focus();
     }
-        
+
     function clipboardCopy() {
         top.IdleFrame.location.href = '../..<%=surveyScc.getComponentUrl()%>copy?Id=<%=survey.getHeader().getId()%>';
     }
- 				   
+
      	</script>
 </HEAD>
 <BODY>

@@ -114,9 +114,9 @@ if (action.equals("UpdateQuizzHeader")) {
           beginDate = resources.getInputDate(quizzHeader.getBeginDate());
       endDate = "";
       if (quizzHeader.getEndDate() != null)
-          endDate = resources.getInputDate(quizzHeader.getEndDate()); 
+          endDate = resources.getInputDate(quizzHeader.getEndDate());
       nbQuestions = new Integer(quizzHeader.getNbQuestionsPerPage()).toString();
-          
+
 	nbAnswersNeeded = new Integer(quizzHeader.getNbParticipationsBeforeSolution()).toString();
 	nbAnswersMax = new Integer(quizzHeader.getNbMaxParticipations()).toString() ;
 %>
@@ -146,32 +146,32 @@ function isCorrectForm() {
      var nbAnswersMax =  document.quizzForm.nbAnswersMax.value;
      var beginDate = document.quizzForm.beginDate.value;
      var endDate = document.quizzForm.endDate.value;
-     var yearBegin = extractYear(beginDate, '<%=quizzScc.getLanguage()%>'); 
+     var yearBegin = extractYear(beginDate, '<%=quizzScc.getLanguage()%>');
      var monthBegin = extractMonth(beginDate, '<%=quizzScc.getLanguage()%>');
      var dayBegin = extractDay(beginDate, '<%=quizzScc.getLanguage()%>');
-     var yearEnd = extractYear(endDate, '<%=quizzScc.getLanguage()%>'); 
+     var yearEnd = extractYear(endDate, '<%=quizzScc.getLanguage()%>');
      var monthEnd = extractMonth(endDate, '<%=quizzScc.getLanguage()%>');
      var dayEnd = extractDay(endDate, '<%=quizzScc.getLanguage()%>');
      var re = /(\d\d\/\d\d\/\d\d\d\d)/i;
 
      if (isWhitespace(title)) {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-           errorNb++; 
+           errorNb++;
      }
      if (isWhitespace(description)) {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.description")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-           errorNb++; 
+           errorNb++;
      }
      else
      {
         if (!isValidTextArea(document.quizzForm.description)) {
-           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.description")%>' <%=resources.getString("MustContainsLessCar")%> <%=DBUtil.TextAreaLength%> <%=resources.getString("Caracters")%>\n";
-           errorNb++; 
+           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.description")%>' <%=resources.getString("MustContainsLessCar")%> <%=DBUtil.getTextAreaLength()%> <%=resources.getString("Caracters")%>\n";
+           errorNb++;
         }
      }
      if (!isValidTextArea(document.quizzForm.notice)) {
-           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNotice")%>' <%=resources.getString("MustContainsLessCar")%> <%=DBUtil.TextAreaLength%> <%=resources.getString("Caracters")%>\n";
-           errorNb++; 
+           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNotice")%>' <%=resources.getString("MustContainsLessCar")%> <%=DBUtil.getTextAreaLength()%> <%=resources.getString("Caracters")%>\n";
+           errorNb++;
         }
 
      if (isWhitespace(beginDate)) {
@@ -201,17 +201,17 @@ function isCorrectForm() {
                             errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationEndDate")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
                             errorNb++;
                      }
-               }      
+               }
            }
 	   }
      }
      if (isWhitespace(nbQuestions)) {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbQuestionPerPage")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-           errorNb++; 
+           errorNb++;
      } else {
            if (isInteger(nbQuestions) == false) {
                errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbQuestionPerPage")%>' <%=resources.getString("GML.MustContainsFloat")%>\n";
-               errorNb++; 
+               errorNb++;
            } else {
                 if (nbQuestions <= 0) {
                    errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbQuestionPerPage")%>' <%=resources.getString("MustContainsPositiveNumber")%>\n";
@@ -222,8 +222,8 @@ function isCorrectForm() {
      if (!isWhitespace(nbAnswersMax)) {
            if (isInteger(nbAnswersMax) == false) {
                errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbPossibleAnswer")%>' <%=resources.getString("GML.MustContainsFloat")%>\n";
-               errorNb++; 
-           } 
+               errorNb++;
+           }
            else {
                 if (nbAnswersMax <= 0) {
                    errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbPossibleAnswer")%>' <%=resources.getString("MustContainsPositiveNumber")%>\n";
@@ -234,7 +234,7 @@ function isCorrectForm() {
      if (!isWhitespace(nbAnswersNeeded)) {
           if (isInteger(nbAnswersNeeded) == false) {
                errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbAnswerNeeded")%>' <%=resources.getString("GML.MustContainsFloat")%>\n";
-               errorNb++; 
+               errorNb++;
            } else {
                 if (nbAnswersNeeded <= 0) {
                    errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbAnswerNeeded")%>' <%=resources.getString("MustContainsPositiveNumber")%>\n";
@@ -250,7 +250,7 @@ function isCorrectForm() {
                 }
            }
      }
-          
+
      switch(errorNb) {
         case 0 :
             result = true;
@@ -292,14 +292,14 @@ function isCorrectForm() {
         out.println(frame.printBefore());
         out.println(board.printBefore());
 %>
-      
+
 <center>
 <table CELLPADDING=5 width="100%">
 	<form name="quizzForm" Action="quizzUpdate.jsp" method="POST">
-        <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("GML.name")%> :</td><td><input type="text" name="title" size="50" maxlength="<%=DBUtil.TextFieldLength%>" value="<%=title%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
+        <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("GML.name")%> :</td><td><input type="text" name="title" size="50" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=title%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
         <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationDate")%> :</td><td><%=creationDate%></td></tr>
-        <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationBeginDate")%> :</td><td><input type="text"  class="dateToPick" name="beginDate" size="11" maxlength="<%=DBUtil.DateFieldLength%>" value="<%=beginDate%>"/><img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
-        <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationEndDate")%> :</td><td><input type="text" class="dateToPick" name="endDate" size="11" maxlength="<%=DBUtil.DateFieldLength%>" value="<%=endDate%>"/></td></tr>
+        <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationBeginDate")%> :</td><td><input type="text"  class="dateToPick" name="beginDate" size="11" maxlength="<%=DBUtil.getDateFieldLength()%>" value="<%=beginDate%>"/><img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
+        <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationEndDate")%> :</td><td><input type="text" class="dateToPick" name="endDate" size="11" maxlength="<%=DBUtil.getDateFieldLength()%>" value="<%=endDate%>"/></td></tr>
         <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationNbQuestionPerPage")%> :</td><td><input type="text" name="nbQuestions" size="5" maxlength="3" value="<%=nbQuestions%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
         <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationNbPossibleAnswer")%> :</td><td><input type="text" name="nbAnswersMax" size="5" maxlength="3" value="<%=nbAnswersMax%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
         <tr><td class="txtlibform" valign="baseline" align=left><%=resources.getString("QuizzCreationNbAnswerNeeded")%> :</td><td><input type="text" name="nbAnswersNeeded" size="5" maxlength="3" value="<%=nbAnswersNeeded%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
@@ -307,7 +307,7 @@ function isCorrectForm() {
         <tr><td class="txtlibform" valign="top" align=left><%=resources.getString("QuizzCreationNotice")%> :</td><td><textarea name="notice" cols="50" wrap="VIRTUAL" rows="3"><%=notice%></textarea></td></tr>
         <tr><td><input type="hidden" name="Action" value="SendQuizzHeader">
                  <input type="hidden" name="QuizzId" value="<%=quizzId%>"></td></tr>
-		<tr><td class="intfdcolor4" valign="top" align=left colspan=2 nowrap><span class="txt">( <img src="<%=mandatoryField%>" width="5" height="5"> = <%=resources.getString("GML.requiredField")%> ) </span> 
+		<tr><td class="intfdcolor4" valign="top" align=left colspan=2 nowrap><span class="txt">( <img src="<%=mandatoryField%>" width="5" height="5"> = <%=resources.getString("GML.requiredField")%> ) </span>
 			</td>
 		</tr>
 	</form>

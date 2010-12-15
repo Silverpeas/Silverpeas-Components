@@ -33,11 +33,11 @@
 
 <%@ include file="check.jsp" %>
 
-<% 
+<%
 	ReservationDetail 	reservation 			= (ReservationDetail)request.getAttribute("reservation");
 	List 				listResourcesProblem 	= (List)request.getAttribute("listResourcesProblem");
 	String				defaultDate				= (String) request.getAttribute("DefaultDate");
-	
+
 	String dateBegin = "";
 	String dateEnd = "";
 	if (StringUtil.isDefined(defaultDate))
@@ -45,14 +45,14 @@
 		dateBegin 	= defaultDate;
 		dateEnd		= defaultDate;
 	}
-	
+
 	String event = "";
 	String reason = "";
 	String place = "";
 	String minuteHourDateBegin = "";
 	String minuteHourDateEnd = "";
 	String reservationId="";
-	
+
 	if(reservation != null){
 		reservationId = reservation.getId();
 		event = reservation.getEvent();
@@ -85,7 +85,7 @@ function verificationHour(hour){
 	      if(tab==null){
 	    	  return 0;
 	      }
-	      else 
+	      else
 	    	  return 1;
 	   }
 
@@ -94,7 +94,7 @@ function verificationDate(Date){
     if(tab==null){
   	  return 0;
     }
-    else 
+    else
   	  return 1;
  }
 
@@ -107,7 +107,7 @@ function validerNom(){
 		document.getElementById('validationNom').style.display='none';
 	}
 }
-function isCorrectForm() 
+function isCorrectForm()
 {
 	var errorNb = 0;
 	var errorMsg = "";
@@ -147,7 +147,7 @@ function isCorrectForm()
 		errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
 	}
 
-	switch(errorNb) 
+	switch(errorNb)
  	{
     	case 0 :
         	result = true;
@@ -162,7 +162,7 @@ function isCorrectForm()
         	window.alert(errorMsg);
         	result = false;
         	break;
- 	} 
+ 	}
 	return result;
 }
 
@@ -188,14 +188,14 @@ function getResourceProblem()
 	});
 }
 
-/* fonction permettant de vérifier que dateBegin,hourBegin est bien inférieur à dateEnd,hourEnd*/
+/* fonction permettant de vï¿½rifier que dateBegin,hourBegin est bien infï¿½rieur ï¿½ dateEnd,hourEnd*/
 function renverseStrDate(dateIn, hourIn) { //procedure renverse date
 	 var sOut = "";
-	 sOut = dateIn.charAt(6) + dateIn.charAt(7) + dateIn.charAt(8)+ dateIn.charAt(9) + "/" + dateIn.charAt(3)+ dateIn.charAt(4) + "/" + dateIn.charAt(0)+ dateIn.charAt(1) + "/" + hourIn.charAt(0)+ hourIn.charAt(1)+ "/" + hourIn.charAt(3)+ hourIn.charAt(4);    
+	 sOut = dateIn.charAt(6) + dateIn.charAt(7) + dateIn.charAt(8)+ dateIn.charAt(9) + "/" + dateIn.charAt(3)+ dateIn.charAt(4) + "/" + dateIn.charAt(0)+ dateIn.charAt(1) + "/" + hourIn.charAt(0)+ hourIn.charAt(1)+ "/" + hourIn.charAt(3)+ hourIn.charAt(4);
 	 return(sOut);
 }
 
-function isCorrectDateOrder(DateBegin, HourBegin, DateEnd, HourEnd) { // procedure du bouton vérifier
+function isCorrectDateOrder(DateBegin, HourBegin, DateEnd, HourEnd) { // procedure du bouton vï¿½rifier
 	if (renverseStrDate(DateBegin,HourBegin) < renverseStrDate(DateEnd,HourEnd)) {
 		return true;
 	} else {
@@ -227,40 +227,40 @@ buttonPane.addButton(cancelButton);
 <TABLE ALIGN="CENTER" CELLPADDING="3" CELLSPACING="0" BORDER="0" WIDTH="100%">
 	<tr>
 		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.evenement"));%> : </TD>
-		<TD width="100%"><input type="text" name="evenement" size="60" maxlength="60" id="evenement" onChange="validerNom()" value="<%=event%>" >&nbsp;<span id="validationNom" style="color:red"></span><IMG src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5" border="0"></TD>	
+		<TD width="100%"><input type="text" name="evenement" size="60" maxlength="60" id="evenement" onChange="validerNom()" value="<%=event%>" >&nbsp;<span id="validationNom" style="color:red"></span><IMG src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5" border="0"></TD>
 	</tr>
-	
+
 	<tr>
 		<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.dateBegin")%>&nbsp;:&nbsp;</td>
-		<td valign="baseline"> 
-		<input type="text" class="dateToPick" name="startDate" size="14" id="startDate" maxlength="<%=DBUtil.DateFieldLength%>" value="<%=dateBegin%>" onBlur="getResourceProblem();">&nbsp;<a href="javascript:calendar('0', '1');" onBlur="getResourceProblem();"><img src="<%=resource.getIcon("resourcesManager.calendrier")%>" border="0" align="middle" alt="Afficher le calendrier" title="Afficher le calendrier"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span> 
+		<td valign="baseline">
+		<input type="text" class="dateToPick" name="startDate" size="14" id="startDate" maxlength="<%=DBUtil.getDateFieldLength()%>" value="<%=dateBegin%>" onBlur="getResourceProblem();">&nbsp;<a href="javascript:calendar('0', '1');" onBlur="getResourceProblem();"><img src="<%=resource.getIcon("resourcesManager.calendrier")%>" border="0" align="middle" alt="Afficher le calendrier" title="Afficher le calendrier"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>
 		<span class="txtlibform">&nbsp;</span><input type="text" name="startHour" id="startHour" size="5" maxlength="5" value="<%=minuteHourDateBegin%>" onBlur="getResourceProblem();">&nbsp;<span class="txtnote">(hh:mm)</span>&nbsp;<img src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5">
 	</tr>
-		
+
 	<tr>
 		<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.dateEnd")%>&nbsp;:&nbsp;</td>
-		<td valign="baseline"> 
-		<input type="text" class="dateToPick" name="endDate" id="endDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" value="<%=dateEnd%>" onBlur="getResourceProblem();" >&nbsp;<a href="javascript:calendar('0', '3');" onBlur="getResourceProblem();"><img src="<%=resource.getIcon("resourcesManager.calendrier")%>" border="0" align="middle" alt="Afficher le calendrier" title="Afficher le calendrier"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span> 
+		<td valign="baseline">
+		<input type="text" class="dateToPick" name="endDate" id="endDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" value="<%=dateEnd%>" onBlur="getResourceProblem();" >&nbsp;<a href="javascript:calendar('0', '3');" onBlur="getResourceProblem();"><img src="<%=resource.getIcon("resourcesManager.calendrier")%>" border="0" align="middle" alt="Afficher le calendrier" title="Afficher le calendrier"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>
 		<span class="txtlibform">&nbsp;</span><input type="text" name="endHour" id="endHour" size="5" maxlength="5" value="<%=minuteHourDateEnd%>" onBlur="getResourceProblem();">&nbsp;<span class="txtnote">(hh:mm)</span>&nbsp;<img src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5">
 	</tr>
-	
+
 	<tr>
 		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.raisonReservation"));%> : </TD>
 		<TD><textarea name="raison" rows="6" cols="57" ><%=reason%></textarea></TD>
 	</tr>
-		
-	
+
+
 	<tr>
 		<TD class="txtlibform" nowrap="nowrap"><% out.println(resource.getString("resourcesManager.lieuReservation"));%> : </TD>
 		<TD><input type="text" name="lieu" size="60" maxlength="60" value="<%=place%>">&nbsp;</TD>
 	</tr>
 
-	
+
 	<tr>
 		<td colspan="2">( <img border="0" src=<%=resource.getIcon("resourcesManager.obligatoire")%> width="5" height="5"/> : <%=resource.getString("GML.requiredField")%> )</td>
 	</tr>
-	<!-- si le champs caché n est pas vide, cela signifie qu on est en train de modifier la reservation -->
-	<%if (reservation != null) 
+	<!-- si le champs cachï¿½ n est pas vide, cela signifie qu on est en train de modifier la reservation -->
+	<%if (reservation != null)
 	{
 		//out.println(reservationId);
 		%><input type="HIDDEN" name="reservationId" value="<%=reservationId%>"/>

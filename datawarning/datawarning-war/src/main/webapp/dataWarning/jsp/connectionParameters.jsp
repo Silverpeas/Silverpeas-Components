@@ -135,13 +135,13 @@ out.println(gef.getLookStyleSheet());
 				<TR>
 					<TD class="txtlibform"><%=resource.getString("champIdentifiant")%> :</TD>
 					<TD>
-						<input type="text" name="Login" size="100" maxlength="<%=DBUtil.TextFieldLength%>" value="<%=dataWarningObject.getLogin()%>">
+						<input type="text" name="Login" size="100" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=dataWarningObject.getLogin()%>">
 					</TD>
 				</TR>
 				<TR>
 					<TD class="txtlibform"><%=resource.getString("champMotDePasse")%> :</TD>
 					<TD>
-						<input type="password" name="Password" size="100" maxlength="<%=DBUtil.TextFieldLength%>" value="<%=dataWarningObject.getPwd()%>">
+						<input type="password" name="Password" size="100" maxlength="<%=DBUtil.getTextFieldLength()%>" value="<%=dataWarningObject.getPwd()%>">
 					</TD>
 				</TR>
 				<TR>

@@ -71,12 +71,12 @@
 		} catch (Exception e){
 			throw new QuizzException ("questionCreator_JSP.displayCredits",QuizzException.WARNING,"Quizz.EX_CANNOT_DISPLAY_QUESTION_HEADER",e);
 		}
-		
+
         return questionContainerHeaderHTML;
   }
 %>
 
-<% 
+<%
 
 //R�cup�ration des param�tres
 String nextAction = "";
@@ -141,7 +141,7 @@ function sendData2() {
     }
 }
 
-function isCorrectForm() 
+function isCorrectForm()
 {
      var errorMsg = "";
      var errorNb = 0;
@@ -152,26 +152,26 @@ function isCorrectForm()
      var nbPointsMin = document.quizzForm.nbPointsMin.value;
      var nbPointsMax = document.quizzForm.nbPointsMax.value;
 
-     if (isWhitespace(nbAnswers)) 
+     if (isWhitespace(nbAnswers))
      {
              errorMsg +="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbAnswers")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
              errorNb++;
-     } 
+     }
      if (document.quizzForm.questionStyle.options[document.quizzForm.questionStyle.selectedIndex].value=="null") {
      	//choisir au moins un style
 	    	errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("quizz.style")%>' <%=resources.getString("GML.MustBeFilled")%> \n";
 	    	errorNb++;
      }
-     else 
+     else
      {
-        if (isInteger(nbAnswers)==false) 
+        if (isInteger(nbAnswers)==false)
         {
             errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbAnswers")%>' <%=resources.getString("GML.MustContainsFloat")%>\n";
             errorNb++;
-        } 
-        else 
+        }
+        else
         {
-            if (nbAnswers <= 0) 
+            if (nbAnswers <= 0)
             {
                 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbAnswers")%>' <%=resources.getString("MustContainsPositiveNumber")%>\n";
                 errorNb++;
@@ -180,14 +180,14 @@ function isCorrectForm()
      }
     if (!isWhitespace(penalty))
     {
-        if (isInteger(penalty)==false) 
+        if (isInteger(penalty)==false)
         {
             errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzPenalty")%>' <%=resources.getString("GML.MustContainsFloat")%>\n";
             errorNb++;
-        } 
-        else 
+        }
+        else
         {
-            if (penalty <= 0) 
+            if (penalty <= 0)
             {
                 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzPenalty")%>' <%=resources.getString("MustContainsPositiveNumber")%>\n";
                 errorNb++;
@@ -196,33 +196,33 @@ function isCorrectForm()
         if (isWhitespace(clue))
         {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzClue")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-           errorNb++; 
+           errorNb++;
         }
-    }     
+    }
    if (!isWhitespace(clue))
     {
-        if (!isValidTextArea(document.quizzForm.clue)) 
+        if (!isValidTextArea(document.quizzForm.clue))
         {
-           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzClue")%>' <%=resources.getString("MustContainsLessCar")%> <%=DBUtil.TextAreaLength%> <%=resources.getString("Caracters")%>\n";
-           errorNb++; 
+           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzClue")%>' <%=resources.getString("MustContainsLessCar")%> <%=DBUtil.getTextAreaLength()%> <%=resources.getString("Caracters")%>\n";
+           errorNb++;
         }
         if (isWhitespace(penalty))
         {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzPenalty")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-           errorNb++; 
+           errorNb++;
         }
     }
 
     if (!isWhitespace(nbPointsMax))
     {
-        if (isSignedInteger(nbPointsMax)==false) 
+        if (isSignedInteger(nbPointsMax)==false)
         {
             errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbPointsMax")%>' <%=resources.getString("GML.MustContainsFloat")%>\n";
             errorNb++;
-        } 
-        else 
+        }
+        else
         {
-            if (nbPointsMax <= 0) 
+            if (nbPointsMax <= 0)
             {
                 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbPointsMax")%>' <%=resources.getString("MustContainsPositiveNumber")%>\n";
                 errorNb++;
@@ -231,12 +231,12 @@ function isCorrectForm()
     }
     if (!isWhitespace(nbPointsMin))
     {
-        if (isSignedInteger(nbPointsMin)==false) 
+        if (isSignedInteger(nbPointsMin)==false)
         {
             errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationNbPointsMin")%>' <%=resources.getString("GML.MustContainsFloat")%>\n";
             errorNb++;
-        } 
-        else 
+        }
+        else
         {
                 if (parseInt(nbPointsMin, 10) >= parseInt(nbPointsMax, 10))
                 {
@@ -248,7 +248,7 @@ function isCorrectForm()
 
      if (isWhitespace(question)) {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationQuestion")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-           errorNb++; 
+           errorNb++;
      }
      switch(errorNb) {
         case 0 :
@@ -267,31 +267,31 @@ function isCorrectForm()
      }
      return result;
 }
-function isCorrectForm2() 
+function isCorrectForm2()
 {
      var errorMsg = "";
      var errorNb = 0;
      var nb = Number(document.quizzForm.nbAnswers.value);
      var nbPointsMax = Number(document.quizzForm.nbPointsMax.value);
      var nbPointsMin = Number(document.quizzForm.nbPointsMin.value);
-     for (var i = 0; i < nb; i++) 
+     for (var i = 0; i < nb; i++)
      {
          var answer=document.quizzForm.elements[<%=nbZone%>*i+7].value;
          var nbPoints=document.quizzForm.elements[<%=nbZone%>*i+8].value;
          var comment=document.quizzForm.elements[<%=nbZone%>*i+9].value;
 
-         if (isWhitespace(nbPoints)) 
+         if (isWhitespace(nbPoints))
          {
                  errorMsg +="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzNbPoints")%> "+String(i+1)+"' <%=resources.getString("GML.MustBeFilled")%>\n";
                  errorNb++;
-         } 
-         else 
+         }
+         else
          {
-            if (isSignedInteger(nbPoints)==false) 
+            if (isSignedInteger(nbPoints)==false)
             {
                 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzNbPoints")%> "+String(i+1)+"' <%=resources.getString("GML.MustContainsFloat")%>\n";
                 errorNb++;
-            } 
+            }
 	    else
 	    {
 		if((document.quizzForm.nbPointsMax.value!='')&&(parseInt(nbPoints, 10) > parseInt(nbPointsMax, 10)))
@@ -312,12 +312,12 @@ function isCorrectForm2()
          }
          if (isWhitespace(answer)) {
                errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationAnswerNb")%> "+String(i+1)+"' <%=resources.getString("GML.MustBeFilled")%>\n";
-               errorNb++; 
+               errorNb++;
          }
-         if ((!isWhitespace(comment)) && (!isValidTextArea(document.quizzForm.elements[<%=nbZone%>*i+9]))) 
+         if ((!isWhitespace(comment)) && (!isValidTextArea(document.quizzForm.elements[<%=nbZone%>*i+9])))
           {
-               errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationAnswerComment")%>' <%=resources.getString("MustContainsLessCar")%> <%=DBUtil.TextAreaLength%> <%=resources.getString("Caracters")%>\n";
-               errorNb++; 
+               errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationAnswerComment")%>' <%=resources.getString("MustContainsLessCar")%> <%=DBUtil.getTextAreaLength()%> <%=resources.getString("Caracters")%>\n";
+               errorNb++;
           }
    }
    switch(errorNb) {
@@ -349,7 +349,7 @@ function confirmCancel()
 
 	var galleryWindow = window;
 	var currentAnswer;
-	
+
 	function choixGallery(liste, idAnswer)
 	{
 		currentAnswer = idAnswer;
@@ -367,22 +367,22 @@ function confirmCancel()
 			galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
 		}
 	}
-	
+
 	function deleteImage(idImage)
 	{
 		document.getElementById('imageGallery'+idImage).innerHTML = "";
 		document.getElementById('valueImageGallery'+idImage).value = "";
 	}
-	
+
 	function choixImageInGallery(url)
 	{
 		var newLink = document.createElement("a");
 		newLink.setAttribute("href", url);
 		newLink.setAttribute("target", "_blank");
-		
+
 		var newLabel = document.createTextNode("<%=resources.getString("quizz.imageGallery")%>");
 		newLink.appendChild(newLabel);
-		
+
 		var removeLink =  document.createElement("a");
 		removeLink.setAttribute("href", "javascript:deleteImage('"+currentAnswer+"')");
 		var removeIcon = document.createElement("img");
@@ -391,12 +391,12 @@ function confirmCancel()
 		removeIcon.setAttribute("align", "absmiddle");
 		removeIcon.setAttribute("alt", "<%=resources.getString("GML.delete")%>");
 		removeIcon.setAttribute("title", "<%=resources.getString("GML.delete")%>");
-		
+
 		removeLink.appendChild(removeIcon);
-		
+
 		document.getElementById('imageGallery'+currentAnswer).appendChild(newLink);
 		document.getElementById('imageGallery'+currentAnswer).appendChild(removeLink);
-		   
+
 		document.getElementById('valueImageGallery'+currentAnswer).value = url;
 	}
 </script>
@@ -414,13 +414,13 @@ if (action.equals("SendNewQuestion")) {
       int nbPointsMinInt=-1000;
       int nbPointsMaxInt=1000;
       if (!penalty.equals(""))
-        penaltyInt=new Integer(penalty).intValue();    
+        penaltyInt=new Integer(penalty).intValue();
       if (!nbPointsMin.equals(""))
         nbPointsMinInt=new Integer(nbPointsMin).intValue();
       if (!nbPointsMax.equals(""))
         nbPointsMaxInt=new Integer(nbPointsMax).intValue();
       Question questionObject = new Question(null, null, question, null, clue, null, 0, style,penaltyInt,0,questionNb, nbPointsMinInt, nbPointsMaxInt);
-    
+
       questionObject.setAnswers(answers);
       questionsV.add(questionObject);
       action = "CreateQuestion";
@@ -466,7 +466,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
             buttonPane.addButton(cancelButton);
             buttonPane.setHorizontalPosition();
       }
-      
+
       Window window = gef.getWindow();
       Frame frame = gef.getFrame();
 
@@ -476,7 +476,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
       browseBar.setExtraInformation(resources.getString("QuizzCreation"));
 
       out.println(window.printBefore());
-      
+
       out.println(frame.printBefore());
       out.println(displayQuestionContainerHeader(quizzScc, (QuestionContainerDetail) session.getAttribute("quizzUnderConstruction"), resources, out, gef));
 
@@ -484,16 +484,16 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
       %>
       <!--DEBUT CORPS -->
       <form name="quizzForm" Action="questionCreator.jsp" method="POST" ENCTYPE="multipart/form-data">
-      
+
         <br>
-        
+
         <% if (action.equals("SendQuestionForm")) {
                     out.println("<center>");
                     out.println(board.printBefore());
 		    	    out.println("<table border=\"0\" cellspacing=\"3\" cellpadding=\"0\" width=\"98%\">");
                     out.println("<tr><td class=\"textePetitBold\" valign=top>" + resources.getString("QuizzCreationQuestion") + questionNb + " :</td><td>" + Encode.javaStringToHtmlString(question) + "</td></tr>");
                     out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("quizz.style")+" :</td><td>"+resources.getString("quizz."+style)+"</td></tr>");
- 
+
                     out.println("<tr><td class=\"textePetitBold\" valign=top>"+resources.getString("QuizzCreationNbAnswers")+" :</td><td>"+nbAnswers+"</td></tr>");
                     if (!nbPointsMin.equals(""))
                       out.println("<tr><td class=\"textePetitBold\" valign=top>"+resources.getString("QuizzCreationNbPointsMin") + " :</td><td>"+nbPointsMin+"&nbsp;"+resources.getString("QuizzNbPoints")+"</td></tr>");
@@ -522,7 +522,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
                         out.println("<tr><td colspan=3><br></td></tr>");
                         out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzCreationAnswerNb")+"&nbsp;"+j+" :</td><td valign=top><textarea name=\""+inputName+"\" cols=\"49\" wrap=\"VIRTUAL\" rows=\"3\"></textarea>&nbsp;<img border=\"0\" src=\"" + mandatoryField + "\" width=\"5\" height=\"5\"></td><td class=\"txtlibform\" align=center valign=top><input type=\"text\" name=\"nbPoints"+i+"\" value=\"\" size=\"5\" maxlength=\"3\">&nbsp;"+resources.getString("QuizzNbPoints")+"&nbsp;<img border=\"0\" src=\"" + mandatoryField + "\" width=\"5\" height=\"5\"></td></tr>");
                         out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzCreationAnswerComment")+"&nbsp;"+j+" :</td><td><textarea name=\"comment"+i+"\" cols=\"49\" wrap=\"VIRTUAL\" rows=\"3\"></textarea></td><td></td></tr>");
-                        
+
                         String visibility = "visibility: visible;";
                         if (style.equals("list"))
                         {
@@ -536,7 +536,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 	                    	out.println("<input type=\"hidden\" id=\"valueImageGallery"+i+"\" name=\"valueImageGallery"+i+"\" >");
 							out.println(" <select id=\"galleries\" name=\"galleries\" onchange=\"choixGallery(this, '"+i+"');this.selectedIndex=0;\"> ");
 	    					out.println(" <option selected>"+resources.getString("quizz.galleries")+"</option> ");
-	   						for(int k=0; k < galleries.size(); k++ ) 
+	   						for(int k=0; k < galleries.size(); k++ )
 	   						{
 	   							ComponentInstLight gallery = (ComponentInstLight) galleries.get(k);
 	   							out.println(" <option value=\""+gallery.getId()+"\">"+gallery.getLabel()+"</option> ");
@@ -564,7 +564,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 				out.println(" <option value=\"list\">"+resources.getString("quizz.list")+"</option> ");
     			out.println("</select>");
                 out.println("</td></tr>");
-                	
+
                 out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzCreationNbAnswers")+" :</td><td><input type=\"text\" name=\"nbAnswers\" value=\""+nbAnswers+"\" size=\"5\" maxlength=\"3\">&nbsp;&nbsp;&nbsp;<img border=\"0\" src=\"" + mandatoryField + "\" width=\"5\" height=\"5\"></td></tr>");
                 out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzCreationNbPointsMin") + " :</td><td><input type=\"text\" name=\"nbPointsMin\" value=\""+nbPointsMin+"\" size=\"5\" maxlength=\"3\">&nbsp;"+resources.getString("QuizzNbPoints")+"</td></tr>");
                 out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("QuizzCreationNbPointsMax") + " :</td><td><input type=\"text\" name=\"nbPointsMax\" value=\""+nbPointsMax+"\" size=\"5\" maxlength=\"3\">&nbsp;"+resources.getString("QuizzNbPoints")+"</td></tr>");
@@ -576,15 +576,15 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
                 out.println("</table>");
                 out.println(board.printAfter());
            }
-        %>                                                                             
+        %>
 		<input type="hidden" name="Action" value="<%=nextAction%>">
       </form>
       <!-- FIN CORPS -->
 <%
-      out.println(frame.printMiddle()); 
+      out.println(frame.printMiddle());
             out.println("<br><center>"+buttonPane.print());
 out.println(frame.printAfter());
-      
+
       out.println(window.printAfter());
       out.println("</BODY></HTML>");
  } //End if action = ViewQuestion

@@ -38,28 +38,28 @@ void showAddNode(JspWriter out, String fatherId, NewsEditoSessionController news
 		showUpdateNode(out, null, fatherId, "", "", news, settings, generalMessage, graphicFactory);
 }
 
-void showUpdateNode(JspWriter out, String nodeId, String fatherId, 
+void showUpdateNode(JspWriter out, String nodeId, String fatherId,
   String name, String description, NewsEditoSessionController news, ResourceLocator settings, ResourceLocator generalMessage, GraphicElementFactory graphicFactory)
   throws NewsEditoException
 {
 	try{
 	  out.println("      <TD  class=\"txtlibform\">"+news.getString("nodeName")+"</TD>");
-	  out.println("      <TD><INPUT TYPE=TEXT  SIZE=\"50\" NAME=Name maxlength=" + DBUtil.TextFieldLength + " VALUE=\""+Encode.javaStringToHtmlString(name)+"\">&nbsp;<img border=\"0\" src=\""+settings.getString("mandatoryField")+"\" width=\"5\" height=\"5\"></TD>");
+	  out.println("      <TD><INPUT TYPE=TEXT  SIZE=\"50\" NAME=Name maxlength=" + DBUtil.getTextFieldLength() + " VALUE=\""+Encode.javaStringToHtmlString(name)+"\">&nbsp;<img border=\"0\" src=\""+settings.getString("mandatoryField")+"\" width=\"5\" height=\"5\"></TD>");
 	  out.println("    </TR>");
 	  out.println("    <TR>");
 	  out.println("      <TD  class=\"txtlibform\">"+news.getString("nodeDescription")+"</TD>");
-	  out.println("      <TD><INPUT TYPE=TEXT  SIZE=\"50\" NAME=Description maxlength=" + DBUtil.TextFieldLength + " VALUE=\""+Encode.javaStringToHtmlString(description)+"\"></TD>");
+	  out.println("      <TD><INPUT TYPE=TEXT  SIZE=\"50\" NAME=Description maxlength=" + DBUtil.getTextFieldLength() + " VALUE=\""+Encode.javaStringToHtmlString(description)+"\"></TD>");
 	  out.println("    </TR>");
 	  out.println("	   <TR><TD colspan=\"2\">( <img border=\"0\" src=\""+mandatoryField+"\" width=\"5\" height=\"5\"> = "+generalMessage.getString("GML.requiredField")+" )</TD></TR>");
 	  out.println("    <TR>");
 	}
 	catch(Exception e){
-		throw new NewsEditoException("newsEdit_JSP.showUpdateNode",NewsEditoException.WARNING,"NewsEdito.EX_CANNOT_SHOW_NODE_UPDATED",e);			
+		throw new NewsEditoException("newsEdit_JSP.showUpdateNode",NewsEditoException.WARNING,"NewsEdito.EX_CANNOT_SHOW_NODE_UPDATED",e);
 	}
 }
 
 
-void showReallyAddNode(JspWriter out, NewsEditoSessionController news, String fatherId, 
+void showReallyAddNode(JspWriter out, NewsEditoSessionController news, String fatherId,
   String name, String description)
   throws NewsEditoException, IOException
 {
@@ -69,16 +69,16 @@ void showReallyAddNode(JspWriter out, NewsEditoSessionController news, String fa
     out.println("</BODY>");
   } catch (CreateNewsEditoException e) {
     out.println("<BODY>");
-    displayGoBackBanner(out, e.getMessage(), 
+    displayGoBackBanner(out, e.getMessage(),
       "<A HREF=\"nodeEdit.jsp\">"
       + news.getString("retour")+"</A>");
     out.println("</BODY>");
 
   }
-} 
+}
 
 
-void showReallyUpdateNode(JspWriter out, NewsEditoSessionController news, String nodeId, 
+void showReallyUpdateNode(JspWriter out, NewsEditoSessionController news, String nodeId,
   String name, String description)
   throws NewsEditoException, IOException
 {
@@ -89,12 +89,12 @@ void showReallyUpdateNode(JspWriter out, NewsEditoSessionController news, String
     out.println("</BODY>");
   } catch (CreateNewsEditoException e) {
     out.println("<BODY>");
-    displayGoBackBanner(out, e.getMessage(), 
-      "<A HREF=\"nodeEdit.jsp\">"+ 
+    displayGoBackBanner(out, e.getMessage(),
+      "<A HREF=\"nodeEdit.jsp\">"+
       news.getString("retour")+"</A>");
     out.println("</BODY>");
   }
-} 
+}
 
 %>
 
@@ -112,13 +112,13 @@ function reallyClose()
       //window.opener.location.replace(window.opener.location.href);
       <%
       	String redirection="";
-      	// quand on ajoute un titre on selectionne l'archive dans laquelle le titre va être ajouté
-      	// quand on ajoute une archive on ne selectionne rien du tout -> la liste de toutes les archives sera affichée
+      	// quand on ajoute un titre on selectionne l'archive dans laquelle le titre va ï¿½tre ajoutï¿½
+      	// quand on ajoute une archive on ne selectionne rien du tout -> la liste de toutes les archives sera affichï¿½e
       	if (news.getArchiveId()!=null)
       	{
       		redirection="?Action=SelectArchive&ArchiveId="+ news.getArchiveId();
       	}
-      
+
       %>
       window.opener.location.replace("manageNews.jsp<%=redirection %>");
 
@@ -136,14 +136,14 @@ function cancel() {
 
 function reallyUpdate()
 {
-    
+
 
     if (checkString(document.nodeEditForm.Name,"<%=news.getString("champsObligatoireNonRenseigne")+" "+news.getString("nodeName") %>") )
     {
 	    if (!isValidTextField(document.nodeEditForm.Description)) {
 			  window.alert("<%=news.getString("champsDescriptionTropLong")%>");
 		}
-		else 
+		else
 		{
 	    	document.nodeEditForm.Action.value = "ReallyUpdate";
 	    	document.nodeEditForm.submit();
@@ -213,9 +213,9 @@ function viewArchive()
 	browseBar.setPath(news.getString((String) request.getParameter("ActionTitle")));
 
 	out.println(window.printBefore());
-	
+
 	Frame frame = gef.getFrame();
-	
+
 	out.println(frame.printBefore());
 %>
 <center>
@@ -243,27 +243,27 @@ function viewArchive()
   }
   else
     out.println("Error : unknown action = " + action);
- 
+
 %>
 			</table>
   	</td>
 	</tr>
 </table>
 <br>
-<%  
+<%
   Button button;
   Button buttonClose;
   if (nodeId == null) {
-    button = gef.getFormButton(generalMessage.getString("GML.validate"), 
+    button = gef.getFormButton(generalMessage.getString("GML.validate"),
       "javascript:onClick=reallyAdd()", false, settings.getString("formButtonIconUrl"));
   }
   else {
-    button = gef.getFormButton(generalMessage.getString("GML.validate"), 
+    button = gef.getFormButton(generalMessage.getString("GML.validate"),
       "javascript:onClick=reallyUpdate()", false, settings.getString("formButtonIconUrl"));
   }
-  buttonClose = gef.getFormButton(generalMessage.getString("GML.cancel"), 
+  buttonClose = gef.getFormButton(generalMessage.getString("GML.cancel"),
       "javascript:onClick=window.close()", false, settings.getString("formButtonIconUrl"));
-			
+
 	ButtonPane buttonPane = gef.getButtonPane();
 	buttonPane.addButton(button);
 	buttonPane.addButton(buttonClose);
@@ -272,11 +272,11 @@ function viewArchive()
 
   <input type="hidden" name="Action">
   <input type="hidden" name="NodeId" <%
-    if (nodeId != null) 
-      if (nodeId.length() > 0) 
+    if (nodeId != null)
+      if (nodeId.length() > 0)
         out.println("value=\""+nodeId+"\"");%>>
   <input type="hidden" name="FatherId" <%
-    if (fatherId != null) 
+    if (fatherId != null)
       if (fatherId.length() > 0)
         out.println("value=\""+fatherId+"\"");%>>
 </FORM>
