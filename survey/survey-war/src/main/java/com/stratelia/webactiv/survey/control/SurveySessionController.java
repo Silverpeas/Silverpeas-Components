@@ -28,18 +28,25 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 
 import javax.ejb.EJBException;
 import javax.ejb.RemoveException;
 
+import com.silverpeas.ui.UIHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -107,8 +114,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
       try {
         QuestionContainerBmHome questionContainerBmHome =
             (QuestionContainerBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.QUESTIONCONTAINERBM_EJBHOME,
-            QuestionContainerBmHome.class);
+                JNDINames.QUESTIONCONTAINERBM_EJBHOME,
+                QuestionContainerBmHome.class);
         this.questionContainerBm = questionContainerBmHome.create();
       } catch (Exception e) {
         throw new EJBException(e.getMessage());
@@ -125,8 +132,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
       try {
         QuestionResultBmHome questionResultBmHome =
             (QuestionResultBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.QUESTIONRESULTBM_EJBHOME,
-            QuestionResultBmHome.class);
+                JNDINames.QUESTIONRESULTBM_EJBHOME,
+                QuestionResultBmHome.class);
         this.questionResultBm = questionResultBmHome.create();
       } catch (Exception e) {
         throw new EJBException(e.getMessage());
@@ -167,7 +174,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
    */
   public boolean isParticipationMultipleUsed() {
     boolean participationMultipleUsed = false;
-    List userMultipleRole = new ArrayList();
+    List<String> userMultipleRole = new ArrayList<String>();
     userMultipleRole.add("userMultiple");
     // if we have people on userMultiple role, multiple participation is used
     if (getOrganizationController().getUsersIdsByRoleNames(getComponentId(), userMultipleRole).length > 0)
@@ -226,8 +233,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
       // No specific look is defined, get the default one
       monLook =
           new ResourceLocator(
-          "com.stratelia.webactiv.util.viewGenerator.settings.defaultLookSettings", "")
-          .getString("Initial");
+              "com.stratelia.webactiv.util.viewGenerator.settings.defaultLookSettings", "")
+              .getString("Initial");
     }
 
     ResourceLocator settings = new ResourceLocator(monLook, "");
@@ -355,7 +362,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     } catch (Exception e) {
       throw new SurveyException("SurveySessionClientController.createSurvey",
           SurveyException.WARNING, "Survey.EX_PROBLEM_TO_CREATE", "title = "
-          + surveyDetail.getHeader().getTitle(), e);
+              + surveyDetail.getHeader().getTitle(), e);
     }
   }
 
@@ -485,7 +492,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       Question question = (Question) it.next();
       Collection<QuestionResult> questionResult =
           getQuestionResultBm().getUserQuestionResultsToQuestion(userId,
-          new ForeignPK(question.getPK()));
+              new ForeignPK(question.getPK()));
       result.addAll(questionResult);
     }
     // ne récupérer que les id des réponses
@@ -731,7 +738,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     sel.setHostComponentName(hostComponentName);
     SilverTrace.debug("Survey", "SurveySessionController.initAlertUser()",
         "root.MSG_GEN_PARAM_VALUE", "name = " + hostComponentName + " componentId=" +
-        getComponentId());
+            getComponentId());
     sel.setNotificationMetaData(getAlertNotificationMetaData(surveyId)); // set NotificationMetaData
     // contenant les
     // informations à notifier
@@ -750,28 +757,35 @@ public class SurveySessionController extends AbstractComponentSessionController 
         "root.MSG_GEN_PARAM_VALUE", "survey = " + questionDetail.toString());
     String htmlPath = getQuestionContainerBm().getHTMLQuestionPath(questionDetail);
 
-    ResourceLocator message =
-        new ResourceLocator("com.stratelia.webactiv.survey.multilang.surveyBundle", "fr");
-    ResourceLocator message_en =
-        new ResourceLocator("com.stratelia.webactiv.survey.multilang.surveyBundle", "en");
+    // Get default resource bundle
+    String resource = "com.stratelia.webactiv.survey.multilang.surveyBundle";
+    ResourceLocator message = new ResourceLocator(resource, I18NHelper.defaultLanguage);
 
-    String subject = getNotificationSubject(message);
-    String body = getNotificationBody(questionDetail, htmlPath, message, senderName);
-    SilverTrace.debug("Survey", "SurveySessionController.getAlertNotificationMetaData()",
-        "root.MSG_GEN_PARAM_VALUE", "message = " + message.toString() + " message_en = " +
-        message_en.toString());
-    SilverTrace.debug("Survey", "SurveySessionController.getAlertNotificationMetaData()",
-        "root.MSG_GEN_PARAM_VALUE", "sujet = " + subject + " corps = " + body);
+    Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+    String subject = message.getString("survey.notifSubject");
 
-    // english notifications
-    String subject_en = getNotificationSubject(message_en);
-    String body_en = getNotificationBody(questionDetail, htmlPath, message_en, senderName);
     SilverTrace.debug("Survey", "SurveySessionController.getAlertNotificationMetaData()",
-        "root.MSG_GEN_PARAM_VALUE", "sujet_en = " + subject_en + " corps_en = " + body_en);
+        "root.MSG_GEN_PARAM_VALUE", "sujet = " + subject);
 
     NotificationMetaData notifMetaData =
-        new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
-    notifMetaData.addLanguage("en", subject_en, body_en);
+        new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "alertSurvey");
+    
+    List<String> languages = UIHelper.getLanguages();
+    for (String language : languages) {
+      // initialize new resource locator
+      message = new ResourceLocator(resource, language);
+
+      // Create a new silverpeas template
+      SilverpeasTemplate template = getNewTemplate();
+      template.setAttribute("userName", senderName);
+      template.setAttribute("SurveyDetail", questionDetail);
+      template.setAttribute("surveyName", questionDetail.getHeader().getName());
+      template.setAttribute("surveyDesc", questionDetail.getHeader().getDescription());
+      //template.setAttribute("message", message);
+      template.setAttribute("htmlPath", htmlPath);
+      templates.put(language, template);
+      notifMetaData.addLanguage(language, message.getString("survey.notifSubject", subject), "");
+    }
 
     notifMetaData.setLink(getSurveyUrl(questionDetail));
     notifMetaData.setComponentId(pk.getInstanceId());
@@ -780,9 +794,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
     return notifMetaData;
   }
 
-  private String getNotificationSubject(ResourceLocator message) {
-    return message.getString("survey.notifSubject");
-  }
 
   private String getNotificationBody(QuestionContainerDetail questionDetail, String htmlPath,
       ResourceLocator message, String senderName) {
@@ -810,15 +821,15 @@ public class SurveySessionController extends AbstractComponentSessionController 
     this.pollingStationMode = pollingStationMode;
   }
 
-  public List getGalleries() {
-    List galleries = null;
+  public List<ComponentInstLight> getGalleries() {
+    List<ComponentInstLight> galleries = null;
     OrganizationController orgaController = new OrganizationController();
     String[] compoIds = orgaController.getCompoId("gallery");
     for (int c = 0; c < compoIds.length; c++) {
       if ("yes".equalsIgnoreCase(orgaController.getComponentParameterValue("gallery" + compoIds[c],
           "viewInWysiwyg"))) {
         if (galleries == null)
-          galleries = new ArrayList();
+          galleries = new ArrayList<ComponentInstLight>();
 
         ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoIds[c]);
         galleries.add(gallery);
@@ -847,16 +858,16 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public void paste() throws Exception {
-    Collection clipObjects = getClipboardSelectedObjects();
-    Iterator clipObjectIterator = clipObjects.iterator();
+    Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
+    Iterator<ClipboardSelection> clipObjectIterator = clipObjects.iterator();
     while (clipObjectIterator.hasNext()) {
-      ClipboardSelection clipObject = (ClipboardSelection) clipObjectIterator.next();
+      ClipboardSelection clipObject = clipObjectIterator.next();
       if (clipObject != null) {
         if (clipObject
             .isDataFlavorSupported(QuestionContainerSelection.QuestionContainerDetailFlavor)) {
           QuestionContainerDetail survey =
               (QuestionContainerDetail) clipObject
-              .getTransferData(QuestionContainerSelection.QuestionContainerDetailFlavor);
+                  .getTransferData(QuestionContainerSelection.QuestionContainerDetailFlavor);
           pasteSurvey(survey);
         }
       }
@@ -915,5 +926,14 @@ public class SurveySessionController extends AbstractComponentSessionController 
       }
     }
     createSurvey(survey, componentId);
+  }
+  
+  protected SilverpeasTemplate getNewTemplate() {
+    ResourceLocator rs =
+        new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", "");
+    Properties templateConfiguration = new Properties();
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString("templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString("customersTemplatePath"));
+    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
 }
