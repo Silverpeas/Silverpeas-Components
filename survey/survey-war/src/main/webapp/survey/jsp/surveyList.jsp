@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
@@ -158,7 +159,7 @@
                 Encode.javaStringToHtmlString(survey.getTitle()) + "'",
                 "surveyList.jsp?Action=OpenSurvey&SurveyId=" + survey.getPK().getId());
           }
-          // mise à jour
+          // mise ï¿½ jour
           Icon updateIcon = iconPane.addIcon();
           updateIcon.setProperties(surveyUpdateSrc, resources.getString("GML.modify") + " '" +
               Encode.javaStringToHtmlString(survey.getTitle()) + "'", "javascript:updateSurvey('" +
@@ -313,7 +314,7 @@
   }%>
 
 <%
-  //Récupération des paramètres
+  //Rï¿½cupï¿½ration des paramï¿½tres
   String action = (String) request.getParameter("Action");
   String profile = (String) request.getParameter("Profile");
   String iconsPath =
@@ -479,7 +480,7 @@ function openSPWindow(fonction, windowName){
         buildSurveyArrayToUser(gef, surveyScc, view, surveys, resources, request, session,
         pollingStationMode);
 
-  //Récupération du tableau dans le haut du cadre          
+  //Rï¿½cupï¿½ration du tableau dans le haut du cadre          
   frame.addTop("<center><table cellpadding=0 cellspacing=0 border=0 width='98%'><tr><td>" +
       arrayPane.print() + "</td></tr></table></center>");
 

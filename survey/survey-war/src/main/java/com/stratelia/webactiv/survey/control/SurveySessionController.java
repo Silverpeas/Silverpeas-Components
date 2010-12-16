@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,6 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.stratelia.webactiv.survey.control;
 
 import java.io.File;
@@ -486,10 +487,10 @@ public class SurveySessionController extends AbstractComponentSessionController 
     Collection<QuestionResult> result = new ArrayList<QuestionResult>();
     Collection<String> resultId = new ArrayList<String>();
     QuestionContainerDetail survey = getSessionSurvey();
-    Collection questions = survey.getQuestions();
-    Iterator it = questions.iterator();
+    Collection<Question> questions = survey.getQuestions();
+    Iterator<Question> it = questions.iterator();
     while (it.hasNext()) {
-      Question question = (Question) it.next();
+      Question question = it.next();
       Collection<QuestionResult> questionResult =
           getQuestionResultBm().getUserQuestionResultsToQuestion(userId,
               new ForeignPK(question.getPK()));
@@ -769,7 +770,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
     NotificationMetaData notifMetaData =
         new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "alertSurvey");
-    
+
     List<String> languages = UIHelper.getLanguages();
     for (String language : languages) {
       // initialize new resource locator
@@ -781,7 +782,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       template.setAttribute("SurveyDetail", questionDetail);
       template.setAttribute("surveyName", questionDetail.getHeader().getName());
       template.setAttribute("surveyDesc", questionDetail.getHeader().getDescription());
-      //template.setAttribute("message", message);
+      // template.setAttribute("message", message);
       template.setAttribute("htmlPath", htmlPath);
       templates.put(language, template);
       notifMetaData.addLanguage(language, message.getString("survey.notifSubject", subject), "");
@@ -792,21 +793,6 @@ public class SurveySessionController extends AbstractComponentSessionController 
     notifMetaData.setSender(getUserId());
 
     return notifMetaData;
-  }
-
-
-  private String getNotificationBody(QuestionContainerDetail questionDetail, String htmlPath,
-      ResourceLocator message, String senderName) {
-    StringBuffer messageText = new StringBuffer();
-    messageText.append(senderName).append(" ");
-    messageText.append(message.getString("survey.notifInfo")).append("\n\n");
-    messageText.append(message.getString("survey.notifName")).append(" : ").append(
-        questionDetail.getHeader().getName()).append("\n");
-    messageText.append(message.getString("survey.notifDesc")).append(" : ").append(
-        questionDetail.getHeader().getDescription()).append("\n");
-    messageText.append(message.getString("survey.path")).append(" : ").append(htmlPath);
-
-    return messageText.toString();
   }
 
   private String getSurveyUrl(QuestionContainerDetail questionDetail) {
@@ -927,13 +913,15 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
     createSurvey(survey, componentId);
   }
-  
+
   protected SilverpeasTemplate getNewTemplate() {
     ResourceLocator rs =
         new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", "");
     Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString("templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString("customersTemplatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs
+        .getString("templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs
+        .getString("customersTemplatePath"));
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
 }

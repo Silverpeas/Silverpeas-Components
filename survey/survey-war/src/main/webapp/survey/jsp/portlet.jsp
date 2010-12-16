@@ -10,7 +10,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
@@ -47,7 +48,7 @@ String addSurveySrc = "";
 %>
 
 <% 
-//Récupération des paramètres
+//Rï¿½cupï¿½ration des paramï¿½tres
 String action = (String) request.getParameter("Action");
 String language = (String) request.getParameter("Language");
 String space = (String) request.getParameter("Space");
@@ -144,7 +145,7 @@ function goto_jsp(jsp, param)
 <% 
 	  int view = surveyScc.getViewType();
 	  Collection surveys = surveyScc.getSurveys();
-	  //Récupération du tableau dans le haut du cadre
+	  //Rï¿½cupï¿½ration du tableau dans le haut du cadre
 
 	Iterator i = surveys.iterator();
 	int index = 0;
