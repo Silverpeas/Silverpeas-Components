@@ -30,6 +30,7 @@
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.*"%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%
 	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
