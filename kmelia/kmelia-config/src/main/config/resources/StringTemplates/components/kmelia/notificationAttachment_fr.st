@@ -1,18 +1,22 @@
 $senderName$ vous informe de l'existence d'un document...
 $if(senderMessage)$
-Message :
-"$senderMessage$" 
+<br/>Message :
+"$senderMessage$"<br/> 
 $endif$
- 
-Vous trouverez ce document attaché à la publication "$publicationName$" ici : $path$
 
-Nom du document : $attachmentTitle$
-Description du document : $attachmentDesc$
-Nom du fichier : $attachmentFileName$
+Vous trouverez ce document attaché à la publication "$publicationName$" ici :
+$path$
+
+$if(attachmentTitle)$
+Nom du document : $attachmentTitle$<br/>
+$endif$
+$if(attachmentDesc)$
+Description du document : $attachmentDesc$<br/>
+$endif$
+Nom du fichier : $attachmentFileName$<br/>
 $if(attachment.majorNumber)$
-Version du document : $attachment.majorNumber$.$attachment.minorNumber$
+Version du document : $attachment.majorNumber$.$attachment.minorNumber$<br/>
 $endif$
-
 
 $if(notification_receiver_users)$
 Ce message a été envoyé

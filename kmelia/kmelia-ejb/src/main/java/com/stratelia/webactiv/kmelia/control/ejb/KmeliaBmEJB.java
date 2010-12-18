@@ -3558,8 +3558,12 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     	template = templates.get(lang);
     	template.setAttribute("attachment", attachmentDetail);
     	template.setAttribute("attachmentFileName", attachmentDetail.getLogicalName(lang));
-    	template.setAttribute("attachmentTitle", attachmentDetail.getTitle(lang));
-    	template.setAttribute("attachmentDesc", attachmentDetail.getDescription());
+    	if (StringUtil.isDefined(attachmentDetail.getTitle(lang))) {
+    	  template.setAttribute("attachmentTitle", attachmentDetail.getTitle(lang));
+    	}
+    	if (StringUtil.isDefined(attachmentDetail.getInfo(lang))) {
+    	  template.setAttribute("attachmentDesc", attachmentDetail.getInfo(lang));
+    	}
     	template.setAttribute("silverpeasURL", getAttachmentUrl(pubDetail, attachmentDetail));
     }
     notifMetaData.setLink(getAttachmentUrl(pubDetail, attachmentDetail));
@@ -3591,8 +3595,12 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     	template = templates.get(lang);
     	template.setAttribute("attachment", documentVersion);
     	template.setAttribute("attachmentFileName", documentVersion.getLogicalName());
-    	template.setAttribute("attachmentTitle", document.getName());
-    	template.setAttribute("attachmentDesc", document.getDescription());
+    	if (StringUtil.isDefined(document.getName())) {
+    	  template.setAttribute("attachmentTitle", document.getName());
+    	}
+    	if (StringUtil.isDefined(document.getDescription())) {
+    	  template.setAttribute("attachmentDesc", document.getDescription());
+    	}
     	template.setAttribute("silverpeasURL", getDocumentUrl(pubDetail, document));
     }
     notifMetaData.setLink(getDocumentUrl(pubDetail, document));
