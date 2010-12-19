@@ -59,6 +59,11 @@
         <servlet-name>KmeliaPublicationExportServlet</servlet-name>
         <servlet-class>com.stratelia.webactiv.kmelia.servlets.KmeliaPublicationExportServlet</servlet-class>
     </servlet>
+    <servlet>
+        <display-name>LastPublicationsServlet</display-name>
+        <servlet-name>LastPublicationsServlet</servlet-name>
+        <servlet-class>com.silverpeas.kmelia.RssLastPublicationsServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>KmeliaAjaxServlet</servlet-name>
         <url-pattern>/KmeliaAJAXServlet/*</url-pattern>
@@ -95,4 +100,8 @@
         <servlet-name>KmeliaPublicationExportServlet</servlet-name>
         <url-pattern>/exportPublication</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LastPublicationsServlet</servlet-name>
+        <url-pattern>/rsslastpublications</url-pattern>
+      </servlet-mapping>
 </web-app>

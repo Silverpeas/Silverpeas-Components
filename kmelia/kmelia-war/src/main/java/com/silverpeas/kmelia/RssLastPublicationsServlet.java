@@ -24,18 +24,19 @@
 
 package com.silverpeas.kmelia;
 
-import com.silverpeas.peasUtil.RssServlet;
 import com.silverpeas.util.StringUtil;
-import com.stratelia.silverpeas.peasCore.URLManager;
+import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.Domain;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.kmelia.KmeliaTransversal;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ItemIF;
@@ -49,161 +50,128 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 
 
 public class RssLastPublicationsServlet extends HttpServlet {
-  public static final String SPACE_ID_PARAM = "spaceid";
+  public static final String SPACE_ID_PARAM = "spaceId";
+  public static final String USER_ID_PARAM = "userId";
+  public static final String PASSWORD_PARAM = "password";
+  public static final String LOGIN_PARAM = "login";
+
+  private static final SilverpeasWebUtil util = new SilverpeasWebUtil();
   private static final OrganizationController orga = new OrganizationController();
+  private static final AdminController adminController = new AdminController(null);
+  private static final ResourceLocator settings = new ResourceLocator(
+      "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "");
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,
-      IOException {
+  public void doPost(HttpServletRequest request, HttpServletResponse response)
+      throws ServletException, IOException {
     String spaceId = request.getParameter(SPACE_ID_PARAM);
-    String userId = getUserId(request);
-    String login = getLogin(request);
-    String password = getPassword(request);
-      try {
-        // Vérification que le user a droit d'accès au composant
-        AdminController adminController = new AdminController(null);
-        UserFull user = adminController.getUserFull(userId);
-        if (user != null && login.equals(user.getLogin())
-            && password.equals(user.getPassword())
-            && isComponentAvailable(adminController, instanceId, userId)) {
+    String userId = request.getParameter(USER_ID_PARAM);
+    String login = request.getParameter(LOGIN_PARAM);
+    String password = request.getParameter(PASSWORD_PARAM);
+    try {
+      UserFull user = adminController.getUserFull(userId);
+      if (isUserAuthorized(user, login, password, spaceId)) {
 
-          String serverURL = getServerURL(adminController, user.getDomainId());
-          ChannelIF channel = new Channel();
+        String serverURL = getServerURL(user);
+        ChannelIF channel = new Channel();
+        MainSessionController mainSessionController = util.getMainSessionController(request);
+        KmeliaTransversal kmeliaTransversal = new KmeliaTransversal(mainSessionController);
 
-          // récupération de la liste des N éléments à remonter dans le flux
-          int nbReturnedElements = getNbReturnedElements();
-          Collection<T> listElements = getListElements(instanceId, nbReturnedElements);
+        // récupération de la liste des N éléments à remonter dans le flux
+        Collection<PublicationDetail> publications = getElements(kmeliaTransversal, user, spaceId);
 
-          // création d'une liste de ItemIF en fonction de la liste des éléments
-
-          for (T element : listElements) {
-            String title = getElementTitle(element, userId);
-            URL link = new URL(serverURL + getElementLink(element, userId));
-            String description = getElementDescription(element, userId);
-            Date dateElement = getElementDate(element);
-            String creatorId = getElementCreatorId(element);
-            ItemIF item = new Item();
-            item.setTitle(title);
-            item.setLink(link);
-            item.setDescription(description);
-            item.setDate(dateElement);
-
-            if (StringUtil.isDefined(creatorId)) {
-              UserDetail creator = adminController.getUserDetail(creatorId);
-              if (creator != null) {
-                item.setCreator(creator.getDisplayedName());
-              }
-            } else if (StringUtil.isDefined(getExternalCreatorId(element))) {
-              item.setCreator(getExternalCreatorId(element));
-            }
-            channel.addItem(item);
-          }
-
-          // construction de l'objet Channel
-          channel.setTitle(getChannelTitle(instanceId));
-          URL componentUrl = new URL(serverURL + URLManager.getApplicationURL()
-              + URLManager.getURL("useless", instanceId));
-          channel.setLocation(componentUrl);
-
-          // exportation du channel
-          res.setContentType("application/rss+xml");
-          res.setHeader("Content-Disposition", "inline; filename=feeds.rss");
-          Writer writer = res.getWriter();
-          RSS_2_0_Exporter rssExporter = new RSS_2_0_Exporter(writer, "UTF-8");
-          rssExporter.write(channel);
-
-          if (rssExporter == null) {
-            objectNotFound(req, res);
-          }
-        } else {
-          objectNotFound(req, res);
+        // création d'une liste de ItemIF en fonction de la liste des éléments
+        for (PublicationDetail publication : publications) {
+          channel.addItem(toRssItem(publication, mainSessionController.getFavoriteLanguage()));
         }
-      } catch (Exception e) {
-        objectNotFound(req, res);
+
+        // construction de l'objet Channel
+        channel.setTitle(getChannelTitle(spaceId));
+        // exportation du channel
+        response.setContentType("application/rss+xml");
+        response.setHeader("Content-Disposition", "inline; filename=feeds.rss");
+        Writer writer = response.getWriter();
+        RSS_2_0_Exporter rssExporter = new RSS_2_0_Exporter(writer, "UTF-8");
+        rssExporter.write(channel);
+
+        if (rssExporter == null) {
+          objectNotFound(request, response);
+        }
+      } else {
+        objectNotFound(request, response);
       }
-  }
-
-  @Override
-  public Collection<PublicationDetail> getListElements(String spaceId, int nbReturned)
-      throws RemoteException {
-    int maxAge = 0;
-    if(StringUtil.isInteger(pref.getValue("maxAge", "0"))) {
-      maxAge = Integer.parseInt(pref.getValue("maxAge","0"));
-    }
-    KmeliaTransversal kmeliaTransversal = new KmeliaTransversal(getMainSessionController());
-    List<PublicationDetail> publications;
-    if(maxAge > 0) {
-      maxAge = -1 * maxAge;
-      Calendar calendar = Calendar.getInstance();
-      calendar.add(Calendar.DAY_OF_MONTH, maxAge);
-      publications = kmeliaTransversal.getUpdatedPublications(spaceId, calendar.getTime(), nbReturned);
-    } else {
-      publications = kmeliaTransversal.getPublications(spaceId, nbReturned);
+    } catch (Exception e) {
+      SilverTrace.error("kmelia", "RssLastPublicationsServlet.doPost()", "root.MSG_GEN_PARAM_VALUE",
+          e);
+      objectNotFound(request, response);
     }
   }
 
-  @Override
-  public String getElementTitle(PublicationDetail element, String userId) {
-    return element.getTitle();
-  }
-
-  @Override
-  public String getElementLink(PublicationDetail element, String userId) {
-    return element.getURL();
-  }
-
-  @Override
-  public String getElementDescription(PublicationDetail element, String userId) {
-    return element.getDescription();
-  }
-
-  @Override
-  public Date getElementDate(PublicationDetail element) {
-    return element.getUpdateDate();
-  }
-
-  @Override
-  public String getElementCreatorId(PublicationDetail element) {
-    return element.getAuthor();
+  public Collection<PublicationDetail> getElements(KmeliaTransversal kmeliaTransversal,
+      UserFull user, String spaceId) throws RemoteException {
+    int maxAge = Long.valueOf(settings.getInteger("max.age.last.publication", 0L)).intValue();
+    int nbReturned = Long.valueOf(settings.getInteger("max.nb.last.publication", 10L)).intValue();
+    return kmeliaTransversal.getUpdatedPublications(spaceId, maxAge, nbReturned);
   }
 
 
-  protected String getUserId(HttpServletRequest request) {
-    return request.getParameter("userId");
+  public ItemIF toRssItem(PublicationDetail publication, String lang) throws MalformedURLException {
+    ItemIF item = new Item();
+    item.setTitle(publication.getTitle());
+    item.setLink(new URL(publication.getURL()));
+    item.setDescription(publication.getDescription(lang));
+    item.setDate(publication.getUpdateDate());
+    String creatorId = publication.getUpdaterId();
+    if (StringUtil.isDefined(creatorId)) {
+      UserDetail creator = adminController.getUserDetail(creatorId);
+      if (creator != null) {
+        item.setCreator(creator.getDisplayedName());
+      }
+    }
+    return item;
   }
 
-  protected String getLogin(HttpServletRequest request) {
-    return request.getParameter("login");
-  }
 
-  protected String getPassword(HttpServletRequest request) {
-    return request.getParameter("password");
-  }
-
-  public String getChannelTitle(String spaceId, String lang) {
+  public String getChannelTitle(String spaceId) {
     SpaceInstLight space = orga.getSpaceInstLightById(spaceId);
     if (space != null) {
-      return space.getName(lang);
+      return space.getName();
     }
     return "";
   }
 
-  public String getServerURL(AdminController admin, String domainId) {
-    Domain defaultDomain = admin.getDomain(domainId);
+  public String getServerURL(UserFull user) {
+    Domain defaultDomain = adminController.getDomain(user.getDomainId());
     return defaultDomain.getSilverpeasServerURL();
   }
 
-    public boolean isComponentAvailable(AdminController admin, String instanceId,
-      String userId) {
-    return admin.isComponentAvailable(instanceId, userId);
+  public boolean isUserAuthorized(UserFull user, String login, String password, String spaceId) {
+    return ((user != null) && login.equals(user.getLogin()) && password.equals(user.getPassword())
+        && isSpaceAvailable(spaceId, user.getId()));
   }
+
+  public boolean isSpaceAvailable(String spaceId, String userId) {
+    return adminController.isSpaceAvailable(spaceId, userId);
+  }
+
+
+  protected void objectNotFound(HttpServletRequest req, HttpServletResponse res)
+      throws IOException {
+    boolean isLoggedIn = util.getMainSessionController(req) != null;
+    if (!isLoggedIn) {
+      res.sendRedirect(GeneralPropertiesManager.getGeneralResourceLocator().getString(
+          "ApplicationURL") + "/admin/jsp/documentNotFound.jsp");
+      return;
+    }
+    res.sendRedirect("/weblib/notFound.html");
+  }
+
+
 }

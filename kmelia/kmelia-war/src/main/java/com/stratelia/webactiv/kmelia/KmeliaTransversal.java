@@ -26,6 +26,7 @@ package com.stratelia.webactiv.kmelia;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 
@@ -102,7 +103,18 @@ public class KmeliaTransversal implements PublicationHelper {
   }
   
   @Override
-  public List<PublicationDetail> getUpdatedPublications(String spaceId, Date since, int nbPublis) {
+  public List<PublicationDetail> getUpdatedPublications(String spaceId, int since, int nbReturned) {
+    int maxAge = since;
+        if (maxAge > 0) {
+      maxAge = -1 * maxAge;
+      Calendar calendar = Calendar.getInstance();
+      calendar.add(Calendar.DAY_OF_MONTH, maxAge);
+      return getUpdatedPublications(spaceId, calendar.getTime(), nbReturned);
+    }
+    return getPublications(spaceId, nbReturned);
+  }
+
+  protected List<PublicationDetail> getUpdatedPublications(String spaceId, Date since, int nbPublis) {
     SilverTrace.debug("kmelia", "KmeliaTransversal.getPublications()",
         "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId + ", nbPublis = "  + nbPublis);
     List<String> componentIds = getAvailableComponents(spaceId);
