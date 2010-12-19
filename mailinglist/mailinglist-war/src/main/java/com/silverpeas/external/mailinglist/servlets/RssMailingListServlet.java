@@ -34,46 +34,40 @@ import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.OrderBy;
 import com.silverpeas.peasUtil.RssServlet;
 
-public class RssMailingListServlet extends RssServlet {
+public class RssMailingListServlet extends RssServlet<Message> {
 
   @Override
-  public String getElementCreatorId(Object element) {
+  public String getElementCreatorId(Message element) {
     return null;
   }
 
   @Override
-  public String getExternalCreatorId(Object element) {
-    Message message = (Message) element;
+  public String getExternalCreatorId(Message message) {
     return message.getSender();
   }
 
   @Override
-  public Date getElementDate(Object element) {
-    Message message = (Message) element;
+  public Date getElementDate(Message message) {
     return message.getSentDate();
   }
 
   @Override
-  public String getElementDescription(Object element, String userId) {
-    Message message = (Message) element;
+  public String getElementDescription(Message message, String userId) {
     return message.getSummary();
   }
 
   @Override
-  public String getElementLink(Object element, String userId) {
-    Message message = (Message) element;
+  public String getElementLink(Message message, String userId) {
     return ServicesFactory.getNotificationFormatter().prepareUrl(message, false);
   }
 
   @Override
-  public String getElementTitle(Object element, String userId) {
-    Message message = (Message) element;
+  public String getElementTitle(Message message, String userId) {
     return message.getTitle();
   }
 
   @Override
-  public Collection getListElements(String instanceId, int nbReturned)
-      throws RemoteException {
+  public Collection getListElements(String instanceId, int nbReturned) throws RemoteException {
     MailingList mailingList = ServicesFactory.getMailingListService().findMailingList(instanceId);
     return ServicesFactory.getMessageService().listDisplayableMessages(mailingList, nbReturned,
         new OrderBy("sentDate", true));

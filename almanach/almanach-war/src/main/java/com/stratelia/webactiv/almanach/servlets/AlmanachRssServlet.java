@@ -42,7 +42,7 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class AlmanachRssServlet extends RssServlet {
+public class AlmanachRssServlet extends RssServlet<EventDetail> {
   
   private static final long serialVersionUID = -2142983612465351228L;
 
@@ -86,8 +86,7 @@ public class AlmanachRssServlet extends RssServlet {
    * @see com.silverpeas.peasUtil.RssServlet#getElementTitle(java.lang.Object,
    * java.lang.String)
    */
-  public String getElementTitle(Object element, String userId) {
-    EventDetail event = (EventDetail) element;
+  public String getElementTitle(EventDetail event, String userId) {
     return event.getName();
   }
 
@@ -97,8 +96,7 @@ public class AlmanachRssServlet extends RssServlet {
    * @see com.silverpeas.peasUtil.RssServlet#getElementLink(java.lang.Object,
    * java.lang.String)
    */
-  public String getElementLink(Object element, String userId) {
-    EventDetail event = (EventDetail) element;
+  public String getElementLink(EventDetail event, String userId) {
     return event.getPermalink();
   }
 
@@ -109,8 +107,7 @@ public class AlmanachRssServlet extends RssServlet {
    * com.silverpeas.peasUtil.RssServlet#getElementDescription(java.lang.Object,
    * java.lang.String)
    */
-  public String getElementDescription(Object element, String userId) {
-    EventDetail event = (EventDetail) element;
+  public String getElementDescription(EventDetail event, String userId) {
     return event.getDescription();
   }
 
@@ -119,8 +116,7 @@ public class AlmanachRssServlet extends RssServlet {
    *
    * @see com.silverpeas.peasUtil.RssServlet#getElementDate(java.lang.Object)
    */
-  public Date getElementDate(Object element) {
-    EventDetail event = (EventDetail) element;
+  public Date getElementDate(EventDetail event) {
     Calendar calElement = GregorianCalendar.getInstance();
     calElement.setTime(event.getStartDate());
     String hourMinute = event.getStartHour(); // hh:mm
@@ -144,8 +140,7 @@ public class AlmanachRssServlet extends RssServlet {
     return calElement.getTime();
   }
 
-  public String getElementCreatorId(Object element) {
-    EventDetail event = (EventDetail) element;
+  public String getElementCreatorId(EventDetail event) {
     return event.getCreatorId();
   }
 

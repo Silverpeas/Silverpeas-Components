@@ -39,24 +39,22 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class BlogRssServlet extends RssServlet {
+public class BlogRssServlet extends RssServlet<PostDetail> {
   /*
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getListElements(java.lang.String, int)
    */
-  public Collection getListElements(String instanceId, int nbReturned)
+  public Collection<PostDetail> getListElements(String instanceId, int nbReturned)
       throws RemoteException {
     // récupération de la liste des 10 prochains billets du Blog
-    Collection events = getBlogBm().getAllPosts(instanceId, nbReturned);
-    return events;
+    return getBlogBm().getAllPosts(instanceId, nbReturned);
   }
 
   /*
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getElementTitle(java.lang.Object, java.lang.String)
    */
-  public String getElementTitle(Object element, String userId) {
-    PostDetail post = (PostDetail) element;
+  public String getElementTitle(PostDetail post, String userId) {
     return post.getPublication().getName();
   }
 
@@ -64,8 +62,7 @@ public class BlogRssServlet extends RssServlet {
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getElementLink(java.lang.Object, java.lang.String)
    */
-  public String getElementLink(Object element, String userId) {
-    PostDetail post = (PostDetail) element;
+  public String getElementLink(PostDetail post, String userId) {
     return URLManager.getApplicationURL() + "/Publication/"
         + post.getPublication().getPK().getId();
   }
@@ -75,8 +72,7 @@ public class BlogRssServlet extends RssServlet {
    * @see com.silverpeas.peasUtil.RssServlet#getElementDescription(java.lang.Object,
    * java.lang.String)
    */
-  public String getElementDescription(Object element, String userId) {
-    PostDetail post = (PostDetail) element;
+  public String getElementDescription(PostDetail post, String userId) {
     return post.getPublication().getDescription();
   }
 
@@ -84,8 +80,7 @@ public class BlogRssServlet extends RssServlet {
    * (non-Javadoc)
    * @see com.silverpeas.peasUtil.RssServlet#getElementDate(java.lang.Object)
    */
-  public Date getElementDate(Object element) {
-    PostDetail post = (PostDetail) element;
+  public Date getElementDate(PostDetail post) {
     Calendar calElement = GregorianCalendar.getInstance();
     calElement.setTime(post.getPublication().getCreationDate());
     /*
@@ -96,8 +91,7 @@ public class BlogRssServlet extends RssServlet {
     return calElement.getTime();
   }
 
-  public String getElementCreatorId(Object element) {
-    PostDetail post = (PostDetail) element;
+  public String getElementCreatorId(PostDetail post) {
     return post.getPublication().getUpdaterId();
   }
 
