@@ -1,14 +1,12 @@
-$senderName$ inform you of a publication... 
+<div style="font-family:Arial;font-size:11px">
+$senderName$  has created a new document <b>$publicationName$</b> which is now available here : $path$
+
 $if(senderMessage)$
-Content  :
-"$senderMessage$" 
+<div style="background-color:#FFF9D7; border:1px solid #E2C822; padding:5px; width:390px;">" $senderMessage$ " </div>
 $endif$
 
-Access path of the publication "$publicationName$" was : $path$
-
 $if(notification_receiver_users)$
-This message has been sent
- to users : $notification_receiver_users$
+<i>This message has been sent to users : $notification_receiver_users$ </i>
 $endif$
 
 $if(notification_receiver_groups)$
@@ -17,3 +15,4 @@ $if(notification_receiver_groups)$
   $endif$
  to groups : $notification_receiver_groups$
 $endif$
+</div>
