@@ -73,8 +73,8 @@ public class LastPublicationsPortlet extends GenericPortlet implements FormNames
     KmeliaTransversal kmeliaTransversal = new KmeliaTransversal(mainSessionController);
     List<PublicationDetail> publications = kmeliaTransversal.getUpdatedPublications(spaceId, maxAge,
         nbPublis);
-    request.setAttribute("Publications", publications);
     String rssUrl = getRSSUrl(mainSessionController, spaceId);
+    request.setAttribute("Publications", publications);
     request.setAttribute("rssUrl", rssUrl);
     include(request, response, "portlet.jsp");
   }

@@ -27,6 +27,7 @@ package com.silverpeas.kmelia;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.Domain;
@@ -69,7 +70,7 @@ public class RssLastPublicationsServlet extends HttpServlet {
       "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "");
 
   @Override
-  public void doPost(HttpServletRequest request, HttpServletResponse response)
+  public void service(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     String spaceId = request.getParameter(SPACE_ID_PARAM);
     String userId = request.getParameter(USER_ID_PARAM);
@@ -89,7 +90,7 @@ public class RssLastPublicationsServlet extends HttpServlet {
 
         // création d'une liste de ItemIF en fonction de la liste des éléments
         for (PublicationDetail publication : publications) {
-          channel.addItem(toRssItem(publication, mainSessionController.getFavoriteLanguage()));
+          channel.addItem(toRssItem(publication, serverURL, mainSessionController.getFavoriteLanguage()));
         }
 
         // construction de l'objet Channel
@@ -122,10 +123,15 @@ public class RssLastPublicationsServlet extends HttpServlet {
   }
 
 
-  public ItemIF toRssItem(PublicationDetail publication, String lang) throws MalformedURLException {
+  public ItemIF toRssItem(PublicationDetail publication, String serverURL, String lang) throws MalformedURLException {
     ItemIF item = new Item();
     item.setTitle(publication.getTitle());
-    item.setLink(new URL(publication.getURL()));
+    StringBuilder url = new StringBuilder(256);
+    url.append(serverURL);
+    url.append(URLManager.getApplicationURL());
+    url.append(URLManager.getURL("kmelia", null,publication.getPK().getInstanceId()));
+    url.append(publication.getURL());
+    item.setLink(new URL(url.toString()));
     item.setDescription(publication.getDescription(lang));
     item.setDate(publication.getUpdateDate());
     String creatorId = publication.getUpdaterId();
@@ -154,11 +160,11 @@ public class RssLastPublicationsServlet extends HttpServlet {
 
   public boolean isUserAuthorized(UserFull user, String login, String password, String spaceId) {
     return ((user != null) && login.equals(user.getLogin()) && password.equals(user.getPassword())
-        && isSpaceAvailable(spaceId, user.getId()));
+        && isSpaceAvailable(user.getId(), spaceId));
   }
 
-  public boolean isSpaceAvailable(String spaceId, String userId) {
-    return adminController.isSpaceAvailable(spaceId, userId);
+  public boolean isSpaceAvailable(String userId, String spaceId) {
+    return adminController.isSpaceAvailable(userId, spaceId);
   }
 
 
