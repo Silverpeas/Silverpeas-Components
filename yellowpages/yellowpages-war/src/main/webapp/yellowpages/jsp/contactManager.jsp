@@ -38,7 +38,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkYellowpages.jsp" %>
 <%@ include file="modelUtils.jsp.inc" %>
-<%@ include file="contactsList.jsp.inc" %>
 <%@ include file="topicReport.jsp.inc" %>
 <%@ include file="tabManager.jsp.inc" %>
 
@@ -49,16 +48,16 @@ void displayUserView(GraphicElementFactory gef, CompleteContact contactComplete,
 	ContactDetail detail = contactComplete.getContactDetail();
    out.println("<table>");
    out.println("<tr><td class=\"txtlibform\">"+resources.getString("Contact")+" :</td>");
-   out.println("<td align=\"left\" class=\"txtnav\">"+Encode.javaStringToHtmlString(detail.getFirstName())+" "+Encode.javaStringToHtmlString(detail.getLastName())+"</td>");
+   out.println("<td align=\"left\" class=\"txtnav\">"+EncodeHelper.javaStringToHtmlString(detail.getFirstName())+" "+Encode.javaStringToHtmlString(detail.getLastName())+"</td>");
    out.println("</tr>");
    out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">"+resources.getString("GML.phoneNumber")+" :</td>");
-   out.println("<td align=\"left\">"+Encode.javaStringToHtmlString(detail.getPhone())+"</td>");
+   out.println("<td align=\"left\">"+EncodeHelper.javaStringToHtmlString(detail.getPhone())+"</td>");
    out.println("</tr>");
    out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">"+resources.getString("GML.faxNumber")+" :</td>");
-   out.println("<td align=\"left\">"+Encode.javaStringToHtmlString(detail.getFax())+"</td>");
+   out.println("<td align=\"left\">"+EncodeHelper.javaStringToHtmlString(detail.getFax())+"</td>");
    out.println("</tr>");
    out.println("<tr><td valign=\"baseline\" align=\"left\" class=\"txtlibform\">"+resources.getString("GML.eMail")+" :</td>");
-   out.println("<td align=\"left\"><a href=mailto:"+Encode.javaStringToHtmlString(detail.getEmail())+">"+Encode.javaStringToHtmlString(Encode.javaStringToHtmlString(detail.getEmail()))+"</A></td>");
+   out.println("<td align=\"left\"><a href=mailto:"+EncodeHelper.javaStringToHtmlString(detail.getEmail())+">"+Encode.javaStringToHtmlString(Encode.javaStringToHtmlString(detail.getEmail()))+"</A></td>");
    out.println("</tr>");
    out.println("</table>");
 }

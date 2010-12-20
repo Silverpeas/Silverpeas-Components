@@ -64,7 +64,7 @@
 <%@ page import="com.stratelia.webactiv.yellowpages.control.YellowpagesSessionController"%>
 <%@ page import="com.stratelia.webactiv.yellowpages.model.*"%>
 <%@page import="com.silverpeas.util.StringUtil"%>
-
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>

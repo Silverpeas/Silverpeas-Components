@@ -1,3 +1,4 @@
+<%@ page import="com.stratelia.webactiv.yellowpages.control.DisplayContactsHelper" %>
 <%--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -32,7 +33,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkYellowpages.jsp" %>
 <%@ include file="topicReport.jsp.inc" %>
-<%@ include file="contactsList.jsp.inc" %>
 
 <% 
 String rootId = Integer.toString(ROOT_TOPIC);
@@ -306,9 +306,9 @@ if (action.equals("Search")) {
 	out.println("<br>");
     
     if (!id.equals(TRASHCAN_ID))
-    	displayContactsAdmin(resources.getIcon("yellowpages.contact"), yellowpagesScc,profile,currentTopic.getContactDetails(), (currentTopic.getNodeDetail().getChildrenNumber() > 0), resources.getIcon("yellowpages.contactDelete"), gef, request, session, resources, out);
+    	DisplayContactsHelper.displayContactsAdmin(resources.getIcon("yellowpages.contact"), yellowpagesScc,profile,currentTopic.getContactDetails(), (currentTopic.getNodeDetail().getChildrenNumber() > 0), resources.getIcon("yellowpages.contactDelete"), gef, request, session, resources, out);
     else
-      	displayContactsAdmin(resources.getIcon("yellowpages.contact"), yellowpagesScc,profile,currentTopic.getContactDetails(), (currentTopic.getNodeDetail().getChildrenNumber() > 0), resources.getIcon("yellowpages.delete"), gef, request, session, resources, out);
+      	DisplayContactsHelper.displayContactsAdmin(resources.getIcon("yellowpages.contact"), yellowpagesScc,profile,currentTopic.getContactDetails(), (currentTopic.getNodeDetail().getChildrenNumber() > 0), resources.getIcon("yellowpages.delete"), gef, request, session, resources, out);
                   
     out.println(frame.printAfter());
     out.println(window.printAfter());

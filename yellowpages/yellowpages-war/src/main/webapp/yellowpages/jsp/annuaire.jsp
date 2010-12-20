@@ -1,3 +1,5 @@
+<%@ page import="com.silverpeas.util.EncodeHelper" %>
+<%@ page import="com.stratelia.webactiv.yellowpages.control.DisplayContactsHelper" %>
 <%--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -30,7 +32,6 @@
 			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%@ include file="checkYellowpages.jsp"%>
-<%@ include file="contactsList.jsp.inc" %>
 <%!
 private String afficheArbo(String idNodeSelected,
 			YellowpagesSessionController yellowpagesScc, int nbEsp)
@@ -96,8 +97,8 @@ private String afficheArbo(String idNodeSelected,
 				id = "group_" + group.getId();
 			}
 %>
-<HTML>
-<HEAD>
+<html>
+<head>
 <%
   out.println(gef.getLookStyleSheet());
 %>
@@ -182,7 +183,7 @@ function exportCSV(){
 	printWindow = SP_openWindow("ExportCSV", "printWindow", '400', '200', 'scrollbars=yes, alwayRaised');
 }
 </script>
-</HEAD>
+</head>
 <body id="<%=componentId %>">
 <%
   Window window = gef.getWindow();
@@ -232,8 +233,8 @@ function exportCSV(){
 						<td nowrap="nowrap" valign="middle"><span class="textePetitBold">
 						<img src="<%=resources.getIcon("yellowpages.aide")%>"
 							align="absbottom" border="0"
-							onmouseover="return overlib('<%=Encode.javaStringToJsString(resources
-					.getString("ExplikRecherche"))%>', CAPTION, '<%=Encode.javaStringToJsString(resources
+							onmouseover="return overlib('<%=EncodeHelper.javaStringToJsString(resources
+					.getString("ExplikRecherche"))%>', CAPTION, '<%=EncodeHelper.javaStringToJsString(resources
 					.getString("GML.search"))%>', WIDTH, 500);"
 							onmouseout="return nd();"> &nbsp; </span> <span class=selectNS>
 						<select name="selectTypeRech">
@@ -279,7 +280,7 @@ function exportCSV(){
 		  CompoSpace[] instances = yellowpagesScc.getYellowPagesInstances();
 					if ((instances != null) && (instances.length > 1)) {
 		%>
-		<td><!--Container--> <!--Accès aux autres annuaires-->
+		<td><!--Container--> <!--Accï¿½s aux autres annuaires-->
 		<table cellpadding="2" cellspacing="1" border="0" width="100%" id="otherComponents">
 			<tr>
 				<td align="center" nowrap="nowrap" width="100%" height="24"><span
@@ -316,7 +317,7 @@ function exportCSV(){
 		<%
 		  }
 		%>
-		<td><!--Accès aux categories-->
+		<td><!--Acces aux categories-->
 		<table cellpadding="2" cellspacing="1" border="0" width="100%">
 			<tr>
 				<td align="center" nowrap="nowrap" width="100%" height="24"><span
@@ -330,7 +331,7 @@ function exportCSV(){
 		<td width="100%">&nbsp;</td>
 	</tr>
 </table>
-<!--Description de la catégorie-->
+<!--Description de la categorie-->
 <%
   String nodeName = null;
 			String nodeDesc = null;
@@ -340,10 +341,8 @@ function exportCSV(){
 			} else {
 				if (!"0".equals(id)) {
 					NodeDetail nodeDetail = currentTopic.getNodeDetail();
-					nodeName = Encode.javaStringToHtmlString(nodeDetail
-							.getName().toUpperCase());
-					nodeDesc = Encode.javaStringToHtmlString(nodeDetail
-							.getDescription());
+					nodeName = EncodeHelper.javaStringToHtmlString(nodeDetail.getName().toUpperCase());
+					nodeDesc = EncodeHelper.javaStringToHtmlString(nodeDetail.getDescription());
 				}
 			}
 			if (nodeDesc != null && !nodeDesc.equals("")) {
@@ -355,8 +354,7 @@ function exportCSV(){
 
 			out.println(board.printAfter());
 			out.println("<br/>");
-			displayContactsUser(yellowpagesScc, contacts, id, componentLabel,
-					gef, request, session, resources, out);
+			DisplayContactsHelper.displayContactsUser(yellowpagesScc, contacts, id, componentLabel, gef, request, session, resources, out);
 
 			out.println(frame.printAfter());
 			out.println(window.printAfter());

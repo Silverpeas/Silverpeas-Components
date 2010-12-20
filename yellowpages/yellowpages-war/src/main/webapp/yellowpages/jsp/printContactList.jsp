@@ -1,3 +1,4 @@
+<%@ page import="com.stratelia.webactiv.yellowpages.control.DisplayContactsHelper" %>
 <%--
 
     Copyright (C) 2000 - 2009 Silverpeas
@@ -31,7 +32,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
 <%@ include file="checkYellowpages.jsp" %>
-<%@ include file="contactsList.jsp.inc" %>
 
 <%
 Collection contacts = (Collection) request.getAttribute("Contacts");
@@ -63,7 +63,7 @@ out.println(window.printBefore());
 out.println(frame.printBefore());
 out.println(board.printBefore());
 
-displayContactsUser(yellowpagesScc, contacts, null, componentLabel, gef, request, session, resources, out);
+DisplayContactsHelper.displayContactsUser(yellowpagesScc, contacts, null, componentLabel, gef, request, session, resources, out);
 
 out.println(board.printAfter());
 out.println(frame.printAfter());
