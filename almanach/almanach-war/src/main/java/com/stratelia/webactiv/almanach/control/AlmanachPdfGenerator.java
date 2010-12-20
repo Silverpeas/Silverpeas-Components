@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
  ---*/
 
 /*
@@ -91,12 +91,14 @@ public class AlmanachPdfGenerator {
       document.open();
 
       try {
+        Calendar currentDay = Calendar.getInstance();
+        currentDay.setTime(almanach.getCurrentDay());
         String sHeader = almanach.getString("events");
         if (mode.equals(PDF_MONTH_ALLDAYS) || mode.equals(PDF_MONTH_EVENTSONLY)) {
           sHeader +=
-              " " + almanach.getString("mois" + almanach.getCurrentDay().get(Calendar.MONTH));
+              " " + almanach.getString("mois" + currentDay.get(Calendar.MONTH));
         }
-        sHeader += " " + almanach.getCurrentDay().get(Calendar.YEAR);
+        sHeader += " " + currentDay.get(Calendar.YEAR);
         HeaderFooter header = new HeaderFooter(new Phrase(sHeader), false);
         HeaderFooter footer = new HeaderFooter(new Phrase("Page "), true);
         footer.setAlignment(Element.ALIGN_CENTER);
@@ -112,8 +114,8 @@ public class AlmanachPdfGenerator {
         Paragraph cTitle = new Paragraph(almanach.getString("Almanach")
             + " "
             + almanach.getString("mois"
-            + almanach.getCurrentDay().get(Calendar.MONTH)) + " "
-            + almanach.getCurrentDay().get(Calendar.YEAR), titleFont);
+            + currentDay.get(Calendar.MONTH)) + " "
+            + currentDay.get(Calendar.YEAR), titleFont);
         Chapter chapter = new Chapter(cTitle, 1);
 
         Collection<EventDetail> events = almanach.getListRecurrentEvent(mode.equals(PDF_YEAR_EVENTSONLY));
@@ -176,7 +178,7 @@ public class AlmanachPdfGenerator {
 
     int currentDay = -1;
     Calendar calendar = Calendar.getInstance();
-    calendar.setTime(almanach.getCurrentDay().getTime());
+    calendar.setTime(almanach.getCurrentDay());
     calendar.set(Calendar.DAY_OF_MONTH, 1);
     int currentMonth = calendar.get(Calendar.MONTH);
     int currentYear = calendar.get(Calendar.YEAR);
@@ -247,17 +249,20 @@ public class AlmanachPdfGenerator {
             && startHour.length() != 0) {
           eventTitle += " (" + startHour;
           if (endDay.compareTo(theDay) == 0 && endHour != null
-              && endHour.length() != 0)
+              && endHour.length() != 0) {
             eventTitle += "-" + endHour;
+          }
           eventTitle += ")";
         }
 
         section.add(new Paragraph(eventTitle, titleTextFont));
-        if (StringUtil.isDefined(event.getPlace()))
+        if (StringUtil.isDefined(event.getPlace())) {
           section.add(new Paragraph(event.getPlace(), titleTextFont));
-        if (StringUtil.isDefined(event.getDescription(almanach.getLanguage())))
+        }
+        if (StringUtil.isDefined(event.getDescription(almanach.getLanguage()))) {
           section.add(new Paragraph(event
               .getDescription(almanach.getLanguage()), textFont));
+        }
         section.add(new Paragraph("\n"));
 
       } // end for

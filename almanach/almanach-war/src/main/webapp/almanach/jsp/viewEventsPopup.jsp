@@ -60,7 +60,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	Collection events = (Collection) request.getAttribute("Events");
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -85,16 +85,16 @@ function viewEvent(componentId, id) {
 
 	out.println(window.printBefore());
 	out.println(frame.printBefore());
-		
+
 	int currentDay = -1;
 	Calendar calendar = Calendar.getInstance();
-	calendar.setTime(almanach.getCurrentDay().getTime());
+	calendar.setTime(almanach.getCurrentDay());
 	calendar.set(Calendar.DAY_OF_YEAR, 1);
 	int currentYear = calendar.get(Calendar.YEAR);
 	int currentMonth = calendar.get(Calendar.MONTH);
-		
+
 	java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd");
-	
+
 	ArrayPane arrayPane = graphicFactory.getArrayPane("YearEvents", "ViewYearEventsPOPUP", request, session);
 	arrayPane.setVisibleLineNumber(15);
   	arrayPane.setXHTML(true);
@@ -104,7 +104,7 @@ function viewEvent(componentId, id) {
   	column1.setWidth("100px");
   	ArrayColumn column2 = arrayPane.addArrayColumn(resources.getString("GML.dateEnd"));
   	column2.setWidth("100px");
-		
+
 	for (Iterator i = events.iterator(); i.hasNext(); ) {
 		EventDetail event = (EventDetail) i.next();
 		String startDay = dateFormat.format(event.getStartDate());
@@ -114,18 +114,18 @@ function viewEvent(componentId, id) {
 			endDay = dateFormat.format(event.getEndDate());
 		}
 		calendar.setTime(event.getStartDate());
-		
+
 		String title = EncodeHelper.javaStringToHtmlString(event.getTitle());
 		String description = null;
-			
+
 		if (StringUtil.isDefined(event.getWysiwyg())) {
 			description = event.getWysiwyg();
 		}
 	    else if (StringUtil.isDefined(event.getDescription())) {
      			 description = EncodeHelper.javaStringToHtmlParagraphe(event.getDescription());
 		}
-		
-		if (almanach.isAgregationUsed()) 
+
+		if (almanach.isAgregationUsed())
 		{
 			String eventColor = almanach.getAlmanachColor(event.getInstanceId());
 			title = "<b><span style=\"color :"+eventColor+"\">"+title+"</span></b>";
@@ -133,7 +133,7 @@ function viewEvent(componentId, id) {
 				description = "<span style=\"color :"+eventColor+"\">"+description+"</span>";
 			}
 		}
-		
+
 		ArrayLine line = arrayPane.addArrayLine();
 		ArrayCellText month = line.addArrayCellText(resources.getString("GML.mois"+calendar.get(Calendar.MONTH)));
 		month.setCompareOn(Integer.valueOf(calendar.get(Calendar.MONTH)));
@@ -144,12 +144,12 @@ function viewEvent(componentId, id) {
 		ArrayCellText end = line.addArrayCellText(resources.getOutputDate(endDay));
 		end.setCompareOn(endDay);
 	}
-	
+
 	out.println(arrayPane.print());
 
 	Button button = graphicFactory.getFormButton(resources.getString("GML.close"), "javascript:window.close()", false);
     out.print("<br/><center>"+button.print()+"</center>");
-	  
+
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>

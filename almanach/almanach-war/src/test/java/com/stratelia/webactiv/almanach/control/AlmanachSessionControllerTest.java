@@ -23,13 +23,13 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
+import java.util.Date;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
 import com.stratelia.webactiv.almanach.model.Periodicity;
-import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 import java.util.Calendar;
 import java.util.List;
 import net.fortuna.ical4j.model.DateTime;
@@ -40,7 +40,7 @@ import net.fortuna.ical4j.model.property.Uid;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Matchers;
-import org.mockito.Mockito;
+import static org.mockito.Mockito.*;
 
 /**
  *
@@ -56,12 +56,12 @@ public class AlmanachSessionControllerTest {
    */
   @Test
   public void testGetCurrentDay() {
-    MainSessionController mainController = Mockito.mock(MainSessionController.class);
-    ComponentContext context = Mockito.mock(ComponentContext.class);
+    MainSessionController mainController = mock(MainSessionController.class);
+    ComponentContext context = mock(ComponentContext.class);
     AlmanachSessionController instance = new AlmanachSessionController(mainController, context);
     Calendar expResult = Calendar.getInstance();
-    Calendar result = instance.getCurrentDay();
-    Assert.assertTrue(expResult.getTimeInMillis() - result.getTimeInMillis() < 1000l);
+    Date result = instance.getCurrentDay();
+    Assert.assertTrue(expResult.getTimeInMillis() - result.getTime() < 1000l);
   }
 
   /**
@@ -69,14 +69,14 @@ public class AlmanachSessionControllerTest {
    */
   @Test
   public void testSetCurrentDay() {
-    MainSessionController mainController = Mockito.mock(MainSessionController.class);
-    ComponentContext context = Mockito.mock(ComponentContext.class);
-    Mockito.when(context.getCurrentComponentId()).thenReturn("almanach121");
+    MainSessionController mainController = mock(MainSessionController.class);
+    ComponentContext context = mock(ComponentContext.class);
+    when(context.getCurrentComponentId()).thenReturn("almanach121");
     AlmanachSessionController instance = new AlmanachSessionController(mainController, context);
     Calendar expResult = Calendar.getInstance();
     instance.setCurrentDay(expResult.getTime());
-    Calendar result = instance.getCurrentDay();
-    Assert.assertEquals(expResult, result);
+    Date result = instance.getCurrentDay();
+    Assert.assertEquals(expResult.getTimeInMillis(), result.getTime());
   }
 
   /**
@@ -84,9 +84,9 @@ public class AlmanachSessionControllerTest {
    */
   @Test
   public void testNextMonth() {
-    MainSessionController mainController = Mockito.mock(MainSessionController.class);
-    ComponentContext context = Mockito.mock(ComponentContext.class);
-    Mockito.when(context.getCurrentComponentId()).thenReturn("almanach121");
+    MainSessionController mainController = mock(MainSessionController.class);
+    ComponentContext context = mock(ComponentContext.class);
+    when(context.getCurrentComponentId()).thenReturn("almanach121");
     AlmanachSessionController instance = new AlmanachSessionController(mainController, context);
     Calendar today = Calendar.getInstance();
     instance.setCurrentDay(today.getTime());
@@ -94,7 +94,7 @@ public class AlmanachSessionControllerTest {
     nextMonth.setTime(today.getTime());
     nextMonth.add(Calendar.MONTH, 1);
     instance.nextMonth();
-    Assert.assertEquals(nextMonth, instance.getCurrentDay());
+    Assert.assertEquals(nextMonth.getTimeInMillis(), instance.getCurrentDay().getTime());
   }
 
   /**
@@ -102,9 +102,9 @@ public class AlmanachSessionControllerTest {
    */
   @Test
   public void testPreviousMonth() {
-    MainSessionController mainController = Mockito.mock(MainSessionController.class);
-    ComponentContext context = Mockito.mock(ComponentContext.class);
-    Mockito.when(context.getCurrentComponentId()).thenReturn("almanach121");
+    MainSessionController mainController = mock(MainSessionController.class);
+    ComponentContext context = mock(ComponentContext.class);
+    when(context.getCurrentComponentId()).thenReturn("almanach121");
     AlmanachSessionController instance = new AlmanachSessionController(mainController, context);
     Calendar today = Calendar.getInstance();
     instance.setCurrentDay(today.getTime());
@@ -112,7 +112,7 @@ public class AlmanachSessionControllerTest {
     previousMonth.setTime(today.getTime());
     previousMonth.add(Calendar.MONTH, -1);
     instance.previousMonth();
-    Assert.assertEquals(previousMonth, instance.getCurrentDay());
+    Assert.assertEquals(previousMonth.getTimeInMillis(), instance.getCurrentDay().getTime());
   }
 
   /**
@@ -120,27 +120,27 @@ public class AlmanachSessionControllerTest {
    */
   @Test
   public void testToday() {
-    MainSessionController mainController = Mockito.mock(MainSessionController.class);
-    ComponentContext context = Mockito.mock(ComponentContext.class);
-    Mockito.when(context.getCurrentComponentId()).thenReturn("almanach121");
+    MainSessionController mainController = mock(MainSessionController.class);
+    ComponentContext context = mock(ComponentContext.class);
+    when(context.getCurrentComponentId()).thenReturn("almanach121");
     AlmanachSessionController instance = new AlmanachSessionController(mainController, context);
     instance.today();
     Calendar expResult = Calendar.getInstance();
     instance.setCurrentDay(expResult.getTime());
-    Calendar result = instance.getCurrentDay();
-    Assert.assertEquals(expResult, result);
+    Date result = instance.getCurrentDay();
+    Assert.assertEquals(expResult.getTimeInMillis(), result.getTime());
   }
 
   /**
    * Test of listCurrentMonthEvents method, of class AlmanachSessionController.
-   * @throws Exception 
+   * @throws Exception
    */
   @Test
   public void testListCurrentMonthEvents() throws Exception {
-    MainSessionController mainController = Mockito.mock(MainSessionController.class);
-    ComponentContext context = Mockito.mock(ComponentContext.class);
-    Mockito.when(context.getCurrentComponentId()).thenReturn("almanach121");   
-    
+    MainSessionController mainController = mock(MainSessionController.class);
+    ComponentContext context = mock(ComponentContext.class);
+    when(context.getCurrentComponentId()).thenReturn("almanach121");
+
     Calendar recurDate = Calendar.getInstance();
     recurDate.set(Calendar.YEAR, 2010);
     recurDate.set(Calendar.MONTH, Calendar.JUNE);
@@ -149,13 +149,13 @@ public class AlmanachSessionControllerTest {
     recurDate.set(Calendar.MINUTE, 0);
     recurDate.set(Calendar.SECOND, 0);
     recurDate.set(Calendar.MILLISECOND, 0);
-     
+
     Periodicity periodicity = new Periodicity();
     periodicity.setFrequency(1);
     periodicity.setUnity(Periodicity.UNIT_DAY);
-    periodicity.setUntilDatePeriod(recurDate.getTime());    
+    periodicity.setUntilDatePeriod(recurDate.getTime());
     RRule rrule = periodicity.generateRecurrenceRule();
-   
+
     Calendar eventDate = Calendar.getInstance();
     eventDate.set(Calendar.YEAR, 2010);
     eventDate.set(Calendar.MONTH, Calendar.JUNE);
@@ -174,10 +174,18 @@ public class AlmanachSessionControllerTest {
     detail.setPriority(5);
     detail.setStartHour("10:00");
     detail.setEndHour("11:00");
-    AlmanachBm almanach = Mockito.mock(AlmanachBm.class);
-    Mockito.when(almanach.getEventDetail(Matchers.any(EventPK.class))).thenReturn(detail);
+    AlmanachBm almanach = mock(AlmanachBm.class);
+    when(almanach.getEventDetail(Matchers.any(EventPK.class))).thenReturn(detail);
 
-    
+    net.fortuna.ical4j.model.Calendar icalCalendar = new net.fortuna.ical4j.model.Calendar();
+    icalCalendar.getProperties().add(CalScale.GREGORIAN);
+    VEvent event = new VEvent(startDate, endDate, "Daily recurence June Event");
+    Uid uid = new Uid("10");
+    event.getProperties().add(uid);
+    event.getProperties().add(rrule);
+    icalCalendar.getComponents().add(event);
+    when(almanach.getICal4jCalendar(anyCollectionOf(EventDetail.class), anyString())).thenReturn(icalCalendar);
+
     Calendar currentDay = Calendar.getInstance();
     currentDay.set(Calendar.YEAR, 2010);
     currentDay.set(Calendar.MONTH, Calendar.JUNE);
@@ -189,17 +197,9 @@ public class AlmanachSessionControllerTest {
 
     AlmanachSessionController instance = new AlmanachSessionController(mainController, context);
     instance.setCurrentDay(currentDay.getTime());
-    instance.almanachBm = almanach;
-    net.fortuna.ical4j.model.Calendar icalCalendar = new net.fortuna.ical4j.model.Calendar();
-    icalCalendar.getProperties().add(CalScale.GREGORIAN);
-    VEvent event = new VEvent(startDate, endDate, "Daily recurence June Event");
-    Uid uid = new Uid("10");
-    event.getProperties().add(uid);
-    event.getProperties().add(rrule);
-    icalCalendar.getComponents().add(event);
-    instance.setCurrentICal4jCalendar(icalCalendar);
+    instance.setAlmanachBm(almanach);
 
-    List<Event> events = instance.listCurrentMonthEvents();
+    List<EventOccurrenceDTO> events = instance.listCurrentMonthEvents();
     Assert.assertNotNull(events);
     Assert.assertEquals(30, events.size());
 

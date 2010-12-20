@@ -220,15 +220,11 @@ public class EventDAO {
     ResultSet rs = null;
     Statement selectStmt = null;
     String paramInstanceIds = "";
-    if (instanceIds != null) {
-      if (instanceIds.length > 0) {
+    if (instanceIds != null && instanceIds.length > 0) {
         paramInstanceIds = " (instanceId='" + pk.getComponentName() + "'";
         for (int i = 0; i < instanceIds.length; i++) {
           paramInstanceIds += " or instanceId='" + instanceIds[i] + "'";
         }
-      } else {
-        paramInstanceIds = " instanceId='" + pk.getComponentName() + "'";
-      }
     } else {
       paramInstanceIds = " (instanceId='" + pk.getComponentName() + "'";
     }

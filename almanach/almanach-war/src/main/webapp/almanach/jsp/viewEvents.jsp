@@ -61,7 +61,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	String function = (String) request.getAttribute("Function");
 %>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -134,22 +134,22 @@ out.println(graphicFactory.getLookStyleSheet());
   	} else if (function.equals("ViewMonthEvents")) {
   	  	browseBar.setPath(resources.getString("almanach.browsebar.monthEvents"));
   	}
-	
+
     OperationPane operationPane = window.getOperationPane();
     operationPane.addOperation(m_context + "/util/icons/almanach_to_print.gif", resources.getString("GML.print"), "javascript:onClick = window.print()");
 
 	out.println(window.printBefore());
 	out.println(frame.printBefore());
 	out.println(board.printBefore());
-	
+
 	int scope = 0; //0 = year
 	if (!"ViewYearEvents".equals(function)) {
 	  scope = 1; //1 = month
 	}
-	
+
 	int currentDay = -1;
 	Calendar calendar = Calendar.getInstance();
-	calendar.setTime(almanach.getCurrentDay().getTime());
+	calendar.setTime(almanach.getCurrentDay());
 	if (scope == 0) {
 		calendar.set(Calendar.DAY_OF_YEAR, 1);
 	} else {
@@ -165,13 +165,13 @@ out.println(graphicFactory.getLookStyleSheet());
 		<li class="month"><%=almanach.getString("mois" + calendar.get(Calendar.MONTH)) + " " + calendar.get(Calendar.YEAR) %></li>
 		<ul class="days">
 <%
-		
+
 		currentMonth = calendar.get(Calendar.MONTH);
-		
+
 		java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd");
-		
+
 		boolean firstBgColor = true;
-		
+
 		while (currentMonth == calendar.get(Calendar.MONTH)) {
 			for (Iterator i = events.iterator(); i.hasNext(); ) {
 				EventDetail event = (EventDetail) i.next();
@@ -185,7 +185,7 @@ out.println(graphicFactory.getLookStyleSheet());
 				if (event.getEndDate() != null)
 					endDay = dateFormat.format(event.getEndDate());
 				if (endDay.compareTo(theDay) < 0) continue;
-				
+
 				if (calendar.get(Calendar.DAY_OF_MONTH) != currentDay) {
 				   if (currentDay != -1) {
 				     	// if it's not the first print
@@ -198,10 +198,10 @@ out.println(graphicFactory.getLookStyleSheet());
 				   }
 				   firstBgColor = ! firstBgColor;
 				   %>
-						<%=almanach.getString("jour" + calendar.get(Calendar.DAY_OF_WEEK))+ 
-						" " + 
-						calendar.get(Calendar.DAY_OF_MONTH) + 
-						" " + 
+						<%=almanach.getString("jour" + calendar.get(Calendar.DAY_OF_WEEK))+
+						" " +
+						calendar.get(Calendar.DAY_OF_MONTH) +
+						" " +
 						almanach.getString("mois" + calendar.get(Calendar.MONTH)) +
 						" " +
 						calendar.get(Calendar.YEAR)%>
@@ -220,15 +220,15 @@ out.println(graphicFactory.getLookStyleSheet());
 					<%
 					String title = EncodeHelper.javaStringToHtmlString(event.getTitle());
 					String description = null;
-					
+
 					if (StringUtil.isDefined(event.getWysiwyg())) {
 						description = event.getWysiwyg();
 					}
 				    else if (StringUtil.isDefined(event.getDescription())) {
 		      			 description = EncodeHelper.javaStringToHtmlParagraphe(event.getDescription());
 					}
-					
-					if (almanach.isAgregationUsed()) 
+
+					if (almanach.isAgregationUsed())
 					{
 						String eventColor = almanach.getAlmanachColor(event.getInstanceId());
 						title = "<b><span style=\"color :"+eventColor+"\">"+title+"</span></b>";
@@ -242,7 +242,7 @@ out.println(graphicFactory.getLookStyleSheet());
 					if (StringUtil.isDefined(description)) {
 						out.println(description);
 					}
-					
+
 					if (startDay.compareTo(theDay) == 0 && startHour != null && startHour.length() != 0)
 					{
 						out.print(" (" + startHour);
@@ -269,7 +269,7 @@ out.println(graphicFactory.getLookStyleSheet());
 	out.println(board.printAfter());
 	Button button = graphicFactory.getFormButton(resources.getString("GML.back"), "almanach.jsp", false);
     out.print("<br/><center>"+button.print()+"</center>");
-	  
+
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>

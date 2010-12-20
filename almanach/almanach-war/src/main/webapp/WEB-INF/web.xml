@@ -25,7 +25,9 @@
 
 -->
 
-<web-app>
+<web-app version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
   <display-name>Almanach War</display-name>
 
   <servlet>
@@ -40,7 +42,7 @@
   </servlet>
   <servlet>
     <display-name>AlmanachRssServlet</display-name>
-    <servlet-name>AlmanachRssServlet</servlet-name>    
+    <servlet-name>AlmanachRssServlet</servlet-name>
     <servlet-class>com.stratelia.webactiv.almanach.servlets.AlmanachRssServlet</servlet-class>
   </servlet>
   <servlet-mapping>

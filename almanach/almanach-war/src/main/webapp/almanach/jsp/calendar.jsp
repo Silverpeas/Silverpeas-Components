@@ -24,9 +24,7 @@
 <c:set var="othersAlmanachs" value="${almanach.othersAlmanachsAsDTO}"/>
 <c:set var="accessibleInstances" value="${almanach.accessibleInstances}"/>
 <c:set var="events" value="${requestScope.events}" />
-<c:set var="year" value="${requestScope.currentYear}"/>
-<c:set var="month" value="${requestScope.currentMonth}"/>
-<c:set var="day" value="${requestScope.currentDay}"/>
+<c:set var="currentDay" value="${requestScope.currentDay}"/>
 <c:set var="flag"><c:out value="${param['flag']}" default="user"/></c:set>
 <c:set var="navigationLabel" value="${requestScope.navigationLabel}"/>
 
@@ -182,7 +180,7 @@
       </c:if>
           });
 
-          $('#calendar').fullCalendar('gotoDate', <c:out value="${year}"/>, <c:out value="${month}"/>, <c:out value="${day}"/>)
+          $('#calendar').fullCalendar('gotoDate', <c:out value="${currentDay.year}"/>, <c:out value="${currentDay.month}"/>, <c:out value="${currentDay.dayOfMonth}"/>)
 
         });
     </script>
@@ -293,12 +291,11 @@
                     <td>&nbsp;</td>
                   </c:forEach>
                   <c:if test="${fn:length(othersAlmanachs) gt 1}">
-                    <c:set var="agregatedAlmanachs" value="${almanach.agregatedAlmanachs}"/>
                     <c:set var="checked" value=""/>
-                    <c:if test="${agregatedAlmanachs ne null and fn:length(othersAlmanachs) eq fn:length(agregatedAlmanachs)}">
+                    <c:if test="${fn:length(othersAlmanachs) eq almanach.agregatedAlmanachsCount}">
                       <c:set var="checked" value="checked"/>
                     </c:if>
-                    <td><input onClick="agregateAll()" <c:out value="${checked}"/> name="chk_allalmanach" type="checkbox"/></td>
+                    <td><input onClick="javascript: agregateAll();" <c:out value="${checked}"/> name="chk_allalmanach" type="checkbox"/></td>
                     <td><b><fmt:message key="allAlmanachs"/></b></td>
                   </c:if>
                 </tr>

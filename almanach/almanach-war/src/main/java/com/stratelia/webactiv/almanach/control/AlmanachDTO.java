@@ -25,9 +25,10 @@
 package com.stratelia.webactiv.almanach.control;
 
 /**
- * A DTO on an almanach.
- * It is used to transfer almanach data to the view page.
- * By default, the almanach isn't agregated one.
+ * A DTO on an almanach instance.
+ * It is used to transfer almanach instance data to the view page.
+ * By default, the almanach instance isn't an agregated one, so don't forget to set this option in the case
+ * the DTO is about an agregated almanach.
  */
 public class AlmanachDTO {
 

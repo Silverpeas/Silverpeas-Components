@@ -46,7 +46,6 @@ import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
 import com.stratelia.webactiv.almanach.model.Periodicity;
 import com.stratelia.webactiv.almanach.model.PeriodicityException;
-import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
@@ -60,26 +59,19 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
-import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
-import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendar;
-import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.MonthCalendarWA1;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.RemoveException;
-import net.fortuna.ical4j.model.Component;
 import net.fortuna.ical4j.model.ComponentList;
-import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.Period;
-import net.fortuna.ical4j.model.PeriodList;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.DtEnd;
@@ -88,18 +80,20 @@ import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
 
 /**
- * @author squere
- * @version
+ * The AlmanachSessionController provides features to handle almanachs and theirs events.
+ * A such object wraps in fact the current almanach in the user session; in others words, the
+ * almanach the user works currently with. As the almanach is displayed in a given window time,
+ * the AlmanachSessionController instance maintains the current opened window time and provides
+ * a way to move this window front or back in the time.
  */
 public class AlmanachSessionController extends AbstractComponentSessionController {
 
-  public AlmanachBm almanachBm = null;
+  private AlmanachBm almanachBm = null;
   private Calendar currentDay = Calendar.getInstance();
-  private net.fortuna.ical4j.model.Calendar currentICal4jCalendar;
   private EventDetail currentEvent;
   private static final String AE_MSG1 = "almanach.ASC_NoSuchFindEvent";
   // Almanach Agregation
-  private String[] agregatedAlmanachsIds = null;
+  private List<String> agregatedAlmanachsIds = new ArrayList<String>();
   private static final String ALMANACHS_IN_SUBSPACES = "0";
   private static final String ALMANACHS_IN_SPACE_AND_SUBSPACES = "1";
   private static final String ALL_ALMANACHS = "2";
@@ -109,6 +103,11 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   private Map<String, String> colors = null;
   private OrganizationController organizationController = new OrganizationController();
 
+  /**
+   * Constructs a new AlmanachSessionController instance.
+   * @param mainSessionCtrl the main session controller of the user.
+   * @param context the context of the almanach component.
+   */
   public AlmanachSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) {
     super(mainSessionCtrl, context,
@@ -117,103 +116,116 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         "com.stratelia.webactiv.almanach.settings.almanachSettings");
   }
 
-  public Calendar getCurrentDay() {
-    return currentDay;
+  /**
+   * Gets the current day in the current window in time.
+   * @return the current day.
+   */
+  public Date getCurrentDay() {
+    return currentDay.getTime();
   }
 
+  /**
+   * Sets explicitly the new current day.
+   * @param date the date of the new current day.
+   */
   public void setCurrentDay(Date date) {
     currentDay.setTime(date);
   }
 
+  /**
+   * Gets the current event, selected by the user.
+   * @return the detail about the current selected event or null if no event is selected.
+   */
   public EventDetail getCurrentEvent() {
     return currentEvent;
   }
 
+  /**
+   * Sets the current event the user has selected.
+   * @param event the detail of the current selected event.
+   */
   public void setCurrentEvent(EventDetail event) {
     this.currentEvent = event;
   }
 
+  /**
+   * Moves the window in time to the next month.
+   */
   public void nextMonth() {
     currentDay.add(Calendar.MONTH, 1);
   }
 
+  /**
+   * Moves the window in time to the previous month.
+   */
   public void previousMonth() {
     currentDay.add(Calendar.MONTH, -1);
   }
 
+  /**
+   * Moves the window in time in a such way the current day is now today.
+   */
   public void today() {
     currentDay = Calendar.getInstance();
   }
 
   /**
-   * @return
-   * @throws AlmanachException
-   * @throws RemoteException
-   * @author David Lesimple
+   * Gets all events of the underlying almanach.
+   * @return a list with the details of the events registered in the almanach.
+   * @throws AlmanachException if an error occurs while getting the list of events.
+   * @throws RemoteException if the communication with the remote business object fails.
    */
-  public Collection<EventDetail> getMonthEvents(String[] instanceIds)
-      throws AlmanachException, RemoteException {
-    SilverTrace.info("almanach", "AlmanachSessionController.getMonthEvents()",
-        "root.MSG_GEN_ENTER_METHOD", "instanceIds=" + instanceIds);
-    List<EventDetail> events = (List<EventDetail>) getAlmanachBm().getMonthEvents(
-        new EventPK("", getSpaceId(), getComponentId()),
-        getCurrentDay().getTime(), instanceIds);
-
-    if (events != null) {
-      SilverTrace.info("almanach",
-          "AlmanachSessionController.getMonthEvents()",
-          "root.MSG_GEN_PARAM_VALUE", "# of events = " + events.size());
-    }
-
-    // tri
-    EventDetailBeginDateComparatorAsc comparateur = new EventDetailBeginDateComparatorAsc();
-    Collections.sort(events, comparateur);
-
-    SilverTrace.info("almanach", "AlmanachSessionController.getMonthEvents()",
-        "root.MSG_GEN_PARAM_VALUE", "# of events after sorting = "
-            + events.size());
-
-    return events;
-  }
-
-  /**
-   * @return
-   * @throws AlmanachException
-   * @throws RemoteException
-   */
-  public Collection<EventDetail> getAllEvents() throws AlmanachException, RemoteException {
+  public List<EventDetail> getAllEvents() throws AlmanachException, RemoteException {
     EventPK pk = new EventPK("", getSpaceId(), getComponentId());
-    return getAlmanachBm().getAllEvents(pk);
+    return new ArrayList<EventDetail>(getAlmanachBm().getAllEvents(pk));
   }
 
   /**
-   * @return
-   * @throws AlmanachException
-   * @throws RemoteException
+   * Gets all events of the agregation of the current almanach and others agregated ones.
+   * @return a list with the details of the all events in the agregation of several almanachs.
+   * @throws AlmanachException if an error occurs while getting the list of events.
+   * @throws RemoteException if the communication with the remote business object fails.
    */
-  public Collection<EventDetail> getAllEventsAgregation() throws AlmanachException,
+  public List<EventDetail> getAllAgregationEvents() throws AlmanachException,
       RemoteException {
     if (isAgregationUsed()) {
-      return getAllEvents(getAgregatedAlmanachs());
+      return getAllEvents(agregatedAlmanachsIds);
     } else {
       return getAllEvents();
     }
   }
 
-  private Collection<EventDetail> getAllEvents(String[] instanceIds)
-      throws AlmanachException, RemoteException {
-    EventPK pk = new EventPK("", getSpaceId(), getComponentId());
-    return getAlmanachBm().getAllEvents(pk, instanceIds);
+  /**
+   * Gets the count of almanachs agregated with the undermying one.
+   * @return the number of agregated almanachs.
+   */
+  public int getAgregatedAlmanachsCount() {
+    return agregatedAlmanachsIds.size();
   }
 
   /**
-   * @param id
-   * @return
-   * @throws AlmanachException
-   * @throws AlmanachNoSuchFindEventException
-   * @throws RemoteException
+   * Gets the events of the specified almanachs.
+   * @param instanceIds the identifiers of the almanachs.
+   * @return a list with the details of the events in the specified almanachs.
+   * @throws AlmanachException if an error occurs while getting the list of events.
+   * @throws RemoteException if the communication with the remote business object fails.
    */
-  public EventDetail getEventDetail(String id) throws AlmanachException,
+  private List<EventDetail> getAllEvents(final List<String> instanceIds)
+      throws AlmanachException, RemoteException {
+    EventPK pk = new EventPK("", getSpaceId(), getComponentId());
+    return new ArrayList<EventDetail>(getAlmanachBm().getAllEvents(pk,
+        instanceIds.toArray(new String[instanceIds.size()])));
+  }
+
+  /**
+   * Gets the detail of the event identified by the specified identifier.
+   * @param id the unique identifier of the event to get.
+   * @return the detail of the event.
+   * @throws AlmanachException if an error occurs while getting the detail of the event.
+   * @throws AlmanachNoSuchFindEventException if no event exists with a such identifier.
+   * @throws RemoteException if the communication with the remote business object fails.
+   */
+  public EventDetail getEventDetail(final String id) throws AlmanachException,
       AlmanachNoSuchFindEventException, RemoteException {
     EventDetail detail = getAlmanachBm().getEventDetail(
         new EventPK(id, getSpaceId(), getComponentId()));
@@ -225,13 +237,13 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * Delete event
-   * @param id
-   * @throws AlmanachException
-   * @throws RemoteException
-   * @throws UtilException
+   * Removes the event identified by the specified identifier.
+   * @param id the identifier of the event to remove.
+   * @throws AlmanachException if an error occurs while removing the event.
+   * @throws RemoteException if the communication with the remote business object fails.
+   * @throws UtilException if an error occurs while getting the WYSIWYG content of the event.
    */
-  public void removeEvent(String id) throws AlmanachException, RemoteException, UtilException {
+  public void removeEvent(final String id) throws AlmanachException, RemoteException, UtilException {
     SilverTrace.info("almanach", "AlmanachSessionController.removeEvent()",
         "root.MSG_GEN_ENTER_METHOD");
     EventPK pk = new EventPK(id, getSpaceId(), getComponentId());
@@ -244,113 +256,66 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       FileFolderManager.deleteFile(WysiwygController.getWysiwygPath(getComponentId(), id));
     }
 
-    // Suppression du VEvent du Calendar ical4j (pour gestion)
-    if (this.getCurrentICal4jCalendar() == null) {
-      // initialisation d'un Calendar ical4j
-      net.fortuna.ical4j.model.Calendar calendarAlmanach = this.getICal4jCalendar(this.
-          getAllEventsAgregation());
-      this.setCurrentICal4jCalendar(calendarAlmanach);
-    }
-    ComponentList listCompo = this.getCurrentICal4jCalendar().getComponents();
-    Iterator<VEvent> it = listCompo.iterator();
-    VEvent eventIcal4jCalendar = null;
-    while (it.hasNext()) {
-      eventIcal4jCalendar = it.next();
-      if (id.equals(eventIcal4jCalendar.getProperties().getProperty(
-          Property.UID).getValue())) {
-        break;
-      }
-    }
-    this.getCurrentICal4jCalendar().getComponents().remove(eventIcal4jCalendar);
-
     SilverTrace.info("almanach", "AlmanachSessionController.removeEvent()",
         "root.MSG_GEN_EXIT_METHOD");
   }
 
   /**
-   * Delete an occurence of event
-   * @param event
-   * @param dateDebutException
-   * @param dateFinException
-   * @throws ParseException
-   * @throws RemoteException
-   * @throws AlmanachException
+   * Removes just an occurrence of the specified event. The occurrence is identified by its start
+   * and end date.
+   * @param eventDetail the detail of the event to which the occurrence belongs.
+   * @param startDate the start date of the event occurrence.
+   * @param endDate the end date of the event occurrence.
+   * @throws ParseException if an error occurs while parsing date infomation.
+   * @throws RemoteException if the communication with the remote business object fails.
+   * @throws AlmanachException if an error occurs while removing the occurrence of the event.
    */
-  public void removeOccurenceEvent(EventDetail event,
-      String dateDebutException, String dateFinException)
+  public void removeOccurenceEvent(EventDetail eventDetail,
+      String startDate, String endDate)
       throws ParseException, RemoteException, AlmanachException {
     SilverTrace.info("almanach",
         "AlmanachSessionController.removeOccurenceEvent()",
         "root.MSG_GEN_ENTER_METHOD");
 
     PeriodicityException periodicityException = new PeriodicityException();
-    periodicityException.setPeriodicityId(new Integer(event.getPeriodicity().getPK().getId()).
+    periodicityException.setPeriodicityId(new Integer(eventDetail.getPeriodicity().getPK().getId()).
         intValue());
-    periodicityException.setBeginDateException(DateUtil.parse(dateDebutException));
-    periodicityException.setEndDateException(DateUtil.parse(dateFinException));
+    periodicityException.setBeginDateException(DateUtil.parse(startDate));
+    periodicityException.setEndDateException(DateUtil.parse(endDate));
 
     // add exception periodicity in DB
     getAlmanachBm().addPeriodicityException(periodicityException);
-
-    // Ajout de l'Exception de périodicité dans le VEvent du Calendar ical4j
-    // (pour gestion)
-    if (this.getCurrentICal4jCalendar() == null) {
-      // initialisation d'un Calendar ical4j
-      net.fortuna.ical4j.model.Calendar calendarAlmanach = this.getICal4jCalendar(this.
-          getAllEventsAgregation());
-      this.setCurrentICal4jCalendar(calendarAlmanach);
-    }
-    ComponentList listCompo = this.getCurrentICal4jCalendar().getComponents();
-    Iterator<VEvent> it = listCompo.iterator();
-    VEvent eventIcal4jCalendar = null;
-    while (it.hasNext()) {
-      eventIcal4jCalendar = it.next();
-      if (event.getId().equals(
-          eventIcal4jCalendar.getProperties().getProperty(Property.UID).getValue())) {
-        break;
-      }
-    }
-    eventIcal4jCalendar.getProperties().add(generateExceptionDate(event.getPeriodicity()));
     SilverTrace.info("almanach", "AlmanachSessionController.removeOccurenceEvent()",
         "root.MSG_GEN_EXIT_METHOD");
   }
 
   /**
-   * Add event
-   * @param event
-   * @throws AlmanachBadParamException
-   * @throws AlmanachException
-   * @throws RemoteException
-   * @throws WysiwygException
+   * Adds the specified event into the underlying almanach.
+   * @param eventDetail the detail of the event to add.
+   * @throws AlmanachBadParamException if the event detail isn't well defined.
+   * @throws AlmanachException if an error occurs while adding the event.
+   * @throws WysiwygException if an error occurs while parsing the WYSIWYG content of the event.
    */
-  public void addEvent(EventDetail event) throws AlmanachBadParamException, AlmanachException,
-      RemoteException, WysiwygException {
+  public void addEvent(EventDetail eventDetail) throws AlmanachBadParamException, AlmanachException,
+      WysiwygException {
     SilverTrace.info("almanach", "AlmanachSessionController.addEvent()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      event.setPK(new EventPK("", getSpaceId(), getComponentId()));
-      event.setDelegatorId(getUserId());
+      eventDetail.setPK(new EventPK("", getSpaceId(), getComponentId()));
+      eventDetail.setDelegatorId(getUserId());
       // Add the event
-      String eventId = getAlmanachBm().addEvent(event);
-      Date startDate = event.getStartDate();
+      String eventId = getAlmanachBm().addEvent(eventDetail);
+      Date startDate = eventDetail.getStartDate();
       // currentDay
       if (startDate != null) {
-        getCurrentDay().setTime(startDate);
+        setCurrentDay(startDate);
       }
       // Add the wysiwyg content
-      WysiwygController.createFileAndAttachment(event.getDescription(getLanguage()), getSpaceId(),
+      WysiwygController.createFileAndAttachment(eventDetail.getDescription(getLanguage()),
+          getSpaceId(),
           getComponentId(), eventId);
-      EventDetail savedEvent = getAlmanachBm().getEventDetail(new EventPK(eventId, getSpaceId(),
+      getAlmanachBm().getEventDetail(new EventPK(eventId, getSpaceId(),
           getComponentId()));
-      VEvent eventIcal4jCalendar = savedEvent.icalConversion(null);
-      if (this.getCurrentICal4jCalendar() == null) {
-        // initialisation d'un Calendar ical4j
-        net.fortuna.ical4j.model.Calendar calendarAlmanach = this.getICal4jCalendar(this.
-            getAllEventsAgregation());
-        this.setCurrentICal4jCalendar(calendarAlmanach);
-      }
-      this.getCurrentICal4jCalendar().getComponents().add(eventIcal4jCalendar);
-
     } catch (RemoteException e) {
       throw new AlmanachRuntimeException(
           "AlmanachSessionController.addEvent()",
@@ -361,44 +326,45 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * Update event
-   * @param event
-   * @throws AlmanachBadParamException
-   * @throws AlmanachException
-   * @throws RemoteException
+   * Updates the specified event into the underlying almanach.
+   * @param eventDetail the detail of the event to update.
+   * @throws AlmanachBadParamException if the event detail isn't well defined.
+   * @throws AlmanachException if an error occurs while updating the event.
+   * @throws WysiwygException if an error occurs while parsing the WYSIWYG content of the event.
    */
-  public void updateEvent(EventDetail event) throws AlmanachBadParamException, AlmanachException,
-      RemoteException, WysiwygException {
+  public void updateEvent(EventDetail eventDetail) throws AlmanachBadParamException,
+      AlmanachException,
+      WysiwygException {
     SilverTrace.info("almanach", "AlmanachSessionController.updateEvent()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      event.getPK().setSpace(getSpaceId());
-      event.getPK().setComponentName(getComponentId());
+      eventDetail.getPK().setSpace(getSpaceId());
+      eventDetail.getPK().setComponentName(getComponentId());
 
       // Update event
-      getAlmanachBm().updateEvent(event);
+      getAlmanachBm().updateEvent(eventDetail);
 
-      Date startDate = event.getStartDate();
-      String startHour = event.getStartHour();
-      Date endDate = event.getEndDate();
-      String endHour = event.getEndHour();
+      Date startDate = eventDetail.getStartDate();
+      String startHour = eventDetail.getStartHour();
+      Date endDate = eventDetail.getEndDate();
+      String endHour = eventDetail.getEndHour();
 
       // currentDay
       if (startDate != null) {
-        getCurrentDay().setTime(startDate);
+        setCurrentDay(startDate);
       }
 
       // Update the Wysiwyg if exists, create one otherwise
-      if (StringUtil.isDefined(event.getWysiwyg())) {
-        WysiwygController.updateFileAndAttachment(event.getDescription(getLanguage()),
+      if (StringUtil.isDefined(eventDetail.getWysiwyg())) {
+        WysiwygController.updateFileAndAttachment(eventDetail.getDescription(getLanguage()),
             getSpaceId(),
             getComponentId(),
-            event.getId(), getUserId());
+            eventDetail.getId(), getUserId());
       } else {
-        WysiwygController.createFileAndAttachment(event.getDescription(getLanguage()),
+        WysiwygController.createFileAndAttachment(eventDetail.getDescription(getLanguage()),
             getSpaceId(),
             getComponentId(),
-            event.getId());
+            eventDetail.getId());
       }
 
       // Mise à jour du VEvent du Calendar ical4j (pour gestion)
@@ -418,22 +384,17 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         }
       }
 
-      // retrouve l'event en question
-      if (this.getCurrentICal4jCalendar() == null) {
-        // initialisation d'un Calendar ical4j
-        net.fortuna.ical4j.model.Calendar calendarAlmanach = this.getICal4jCalendar(this.
-            getAllEventsAgregation());
-        this.setCurrentICal4jCalendar(calendarAlmanach);
-      }
-      ComponentList listCompo = this.getCurrentICal4jCalendar().getComponents();
-      Iterator<VEvent> it = listCompo.iterator();
+      net.fortuna.ical4j.model.Calendar calendarAlmanach = this.getICal4jCalendar(this.
+            getAllAgregationEvents());
+      ComponentList listCompo = calendarAlmanach.getComponents();
       VEvent eventIcal4jCalendar = null;
       boolean ok = false;
-      while (it.hasNext() && !ok) {
-        eventIcal4jCalendar = it.next();
-        if (event.getPK().getId().equals(
+      for (Object event : listCompo) {
+        eventIcal4jCalendar = (VEvent) event;
+        if (eventDetail.getPK().getId().equals(
             eventIcal4jCalendar.getProperties().getProperty(Property.UID).getValue())) {
           ok = true;
+          break;
         }
       }
 
@@ -447,15 +408,15 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
         // Périodicité
         Periodicity lastPeriodicity = getAlmanachBm().getPeriodicity(
-            event.getPK().getId());
-        Periodicity periodicity = event.getPeriodicity();
+            eventDetail.getPK().getId());
+        Periodicity periodicity = eventDetail.getPeriodicity();
         eventIcal4jCalendar.getProperties().remove(Property.RRULE);
 
         if (lastPeriodicity == null) {
           if (periodicity != null) {
 
             // Add the periodicity
-            periodicity.setEventId(new Integer(event.getPK().getId()).intValue());
+            periodicity.setEventId(new Integer(eventDetail.getPK().getId()).intValue());
             getAlmanachBm().addPeriodicity(periodicity);
             eventIcal4jCalendar.getProperties().add(generateRecurrenceRule(periodicity));
           }
@@ -466,12 +427,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
           } else {
             // Update the periodicity
             periodicity.setPK(lastPeriodicity.getPK());
-            periodicity.setEventId(Integer.parseInt(event.getPK().getId()));
+            periodicity.setEventId(Integer.parseInt(eventDetail.getPK().getId()));
             getAlmanachBm().updatePeriodicity(periodicity);
-
-            // Mise à jour du VEvent du Calendar ical4j (pour gestion)
-            eventIcal4jCalendar.getProperties().add(
-                generateRecurrenceRule(periodicity));
           }
         }
       }
@@ -484,9 +441,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * @param event
-   * @throws AlmanachException
-   * @throws RemoteException
+   * Indexes the specified event for the Silverpeas search engine.
+   * @param event the detail of the event to index.
+   * @throws AlmanachException if an error occurs while indexing the event.
+   * @throws RemoteException if the communication with the remote business object fails.
    */
   public void indexEvent(EventDetail event) throws AlmanachException,
       RemoteException {
@@ -494,13 +452,11 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * @return
+   * Gets the remote business object for handling almanachs and events.
+   * @return the remote business object.
+   * @throws AlmanachException if an error occurs while getting the remote object.
    */
-  public CompoSpace[] getAlmanachInstances() {
-    return getOrganizationController().getCompoForUser(getUserId(), "almanach");
-  }
-
-  private AlmanachBm getAlmanachBm() throws AlmanachException {
+  protected AlmanachBm getAlmanachBm() throws AlmanachException {
     if (almanachBm == null) {
       try {
         almanachBm = ((AlmanachBmHome) EJBUtilitaire.getEJBObjectRef(
@@ -514,11 +470,20 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * @param mode
-   * @param bCompleteMonth
-   * @return
+   * Sets a specific reference to a remote Almanach business object
+   * @param anAlmanachBm the reference to a remote business object.
    */
-  public String buildPdf(String mode) {
+  protected void setAlmanachBm(final AlmanachBm anAlmanachBm) {
+    this.almanachBm = anAlmanachBm;
+  }
+
+  /**
+   * Builds a PDF document with the events of the underlying almanach and that satisfy the specified
+   * criteria key.
+   * @param mode the criteria key.
+   * @return the content of the PDF document as a String.
+   */
+  public String buildPdf(final String mode) {
     String name = "almanach" + (new Date()).getTime() + ".pdf";
 
     try {
@@ -533,19 +498,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * return the MonthCalendar Object
-   * @return
-   */
-  public MonthCalendar getMonthCalendar() {
-    int numbersDays = 7;
-    if (isWeekendNotVisible()) {
-      numbersDays = 5;
-    }
-
-    return (new MonthCalendarWA1(getLanguage(), numbersDays));
-  }
-
-  /**
    * @return
    */
   public boolean isPdcUsed() {
@@ -553,9 +505,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     return "yes".equals(parameterValue.toLowerCase());
   }
 
-  // AJOUT : pour traiter l'affichage des semaines sur 5 ou 7 jours
   /**
-   * @return
+   * Is the weekend is taken in charge by the current underlying almanach?
+   * @return true if the weekend should be displayed for the current almanach, false otherwise.
    */
   public boolean isWeekendNotVisible() {
     String parameterValue = getComponentParameterValue("weekendNotVisible");
@@ -563,7 +515,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * @return
+   * Is RSS information exists for the events in the current underlying almanach?
+   * @return true if the RSS stream is supported for the current almanach, false otherwise.
    */
   private boolean isUseRss() {
     return "yes".equalsIgnoreCase(getComponentParameterValue("rss"));
@@ -582,14 +535,18 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * @return
-   * @author dlesimple
+   * Is the agregation is activated for the current underlying almanach?
+   * @return true if the agregation is used for the current almanach, false otherwise.
    */
   public boolean isAgregationUsed() {
     String parameterValue = getComponentParameterValue("useAgregation");
     return "yes".equalsIgnoreCase(parameterValue);
   }
 
+  /**
+   * Gets policy currently in use to access to the data of the current almanach.
+   * @return the policy identifier.
+   */
   private String getAccessPolicy() {
     String param = getComponentParameterValue("directAccess");
     if (!StringUtil.isDefined(param)) {
@@ -668,7 +625,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   public String getAlmanachColor(String instanceId) {
     if (colors == null) {
-      colors = new Hashtable<String, String>();
+      colors = new HashMap<String, String>();
       ArrayList<List<String>> almanachs = getOthersAlmanachs();
       if (almanachs != null) {
         for (Iterator<List<String>> iterator = almanachs.iterator(); iterator.hasNext();) {
@@ -677,7 +634,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         }
       }
     }
-    return (String) colors.get(instanceId);
+    return colors.get(instanceId);
   }
 
   /**
@@ -708,7 +665,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     SilverTrace.info("almanach",
         "AlmanachSessionController.getOthersAlmanachs()",
         "root.MSG_GEN_PARAM_VALUE", "instanceIds=" + instanceIds + " spaceId="
-            + getSpaceId());
+        + getSpaceId());
     for (int i = 0; i < instanceIds.length; i++) {
       SilverTrace.info("almanach",
           "AlmanachSessionController.getOthersAlmanachs()",
@@ -734,83 +691,50 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     List<AlmanachDTO> othersAlmanachsAsDTO = new ArrayList<AlmanachDTO>();
     ArrayList<List<String>> othersAlmanachs = getOthersAlmanachs();
     for (List<String> almanach : othersAlmanachs) {
-      AlmanachDTO almanachDTO = new AlmanachDTO()
-          .setAgregated(isAlmanachAgregated(almanach.get(0)))
-          .setColor(almanach.get(2))
-          .setInstanceId(almanach.get(0))
-          .setLabel(almanach.get(1));
+      AlmanachDTO almanachDTO = new AlmanachDTO().setAgregated(isAlmanachAgregated(almanach.get(0))).
+          setColor(almanach.get(2)).setInstanceId(almanach.get(0)).setLabel(almanach.get(1));
       othersAlmanachsAsDTO.add(almanachDTO);
     }
     return othersAlmanachsAsDTO;
   }
 
   /**
-   * Get agregated almanachs
-   * @author dlesimple
-   * @return String[] of almanachIds
+   * Is the specified almanach is agregated with the current underlying one.
+   * @param almanachId the unique identifier of the almanach instance.
+   * @return boolean true if the almanach is currently agregated with the current one.
    */
-  public String[] getAgregatedAlmanachs() {
-    return agregatedAlmanachsIds;
-  }
-
-  /**
-   * Return if an almanach is agregated
-   * @author dlesimple
-   * @param instanceId
-   * @return boolean
-   */
-  public boolean isAlmanachAgregated(String instanceId) {
-    boolean isAgregated = false;
-    if (agregatedAlmanachsIds != null) {
-      for (int i = 0; i < agregatedAlmanachsIds.length && !isAgregated; i++) {
-        if (agregatedAlmanachsIds[i].equals(instanceId)) {
-          isAgregated = true;
-        }
+  public boolean isAlmanachAgregated(final String almanachId) {
+    for (String anAlmanachId : agregatedAlmanachsIds) {
+      if (anAlmanachId.equals(almanachId)) {
+        return true;
       }
     }
-    return isAgregated;
+    return false;
   }
 
   /**
-   * Set almanachs to be agregated
-   * @author dlesimple
-   * @param String [] of instanceIds
+   * Clears the list of the agregated almanachs.
    */
-  private void setAgregatedAlmanachs(String[] instancesIds) {
-    agregatedAlmanachsIds = new String[instancesIds.length];
-    for (int i = 0; i < instancesIds.length; i++) {
-      agregatedAlmanachsIds[i] = instancesIds[i];
-    }
+  private void clearAgregatedAlmanachs() {
+    agregatedAlmanachsIds.clear();
   }
 
   /**
-   * Delete agregated almanachs
-   * @author dlesimple
-   */
-  private void deleteAgregatedAlmanachs() {
-    agregatedAlmanachsIds = null;
-  }
-
-  /**
-   * Update list of agregated almanachs
-   * @author dlesimple
-   * @param String [] of instanceIds
+   * Updates the list of the agregated almanachs with the specified ones.
+   * @param instancesIds the identifier of the new agregated almanachs.
    */
   public void updateAgregatedAlmanachs(String[] instanceIds) {
-    if (instanceIds != null) {
-      for (int i = 0; i < instanceIds.length; i++) {
-        setAgregatedAlmanachs(instanceIds);
-      }
-    } else {
-      deleteAgregatedAlmanachs();
+    clearAgregatedAlmanachs();
+    if (instanceIds != null && instanceIds.length > 0) {
+      agregatedAlmanachsIds.addAll(Arrays.asList(instanceIds));
     }
   }
 
   /**
-   * Get the color of an almanach
+   * Gets the color with which the events in an almanach should be rendered.
    * @author dlesimple
-   * @param position in the array
-   * @return almanachColor
+   * @param position in the array of supported colors
+   * @return the HTML/CSS code of the color.
    */
   private String getAlmanachColor(int pos) {
     String almanachColor = SilverpeasSettings.readString(getSettings(),
@@ -838,7 +762,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     sel.setHostComponentName(hostComponentName);
     SilverTrace.debug("almanach", "AlmanachSessionController.initAlertUser()",
         "root.MSG_GEN_PARAM_VALUE", "name = " + hostComponentName
-            + " componentId=" + getComponentId());
+        + " componentId=" + getComponentId());
     sel.setNotificationMetaData(getAlertNotificationEvent(eventId));
     // l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
     return AlertUser.getAlertUserURL();
@@ -870,7 +794,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     SilverTrace.debug("almanach",
         "AlamanachSessionController.getAlertNotificationEvent()",
         "root.MSG_GEN_PARAM_VALUE", "message = " + message.toString()
-            + " message_en = " + message_en.toString());
+        + " message_en = " + message_en.toString());
     SilverTrace.debug("almanach",
         "AlamanachSessionController.getAlertNotificationEvent()",
         "root.MSG_GEN_PARAM_VALUE", "sujet = " + subject + " corps = " + body);
@@ -882,7 +806,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     SilverTrace.debug("almanach",
         "AlmanachSessionController.getAlertNotificationEvent()",
         "root.MSG_GEN_PARAM_VALUE", "sujet_en = " + subject_en + " corps_en = "
-            + body_en);
+        + body_en);
 
     // création des notifications
     NotificationMetaData notifMetaData = new NotificationMetaData(
@@ -930,26 +854,12 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * @return
-   */
-  public net.fortuna.ical4j.model.Calendar getCurrentICal4jCalendar() {
-    return this.currentICal4jCalendar;
-  }
-
-  /**
-   * @param currentICal4jCalendar
-   */
-  public void setCurrentICal4jCalendar(net.fortuna.ical4j.model.Calendar currentICal4jCalendar) {
-    this.currentICal4jCalendar = currentICal4jCalendar;
-  }
-
-  /**
    * @param events
    * @return
    * @throws RemoteException
    * @throws AlmanachException
    */
-  public net.fortuna.ical4j.model.Calendar getICal4jCalendar(Collection<EventDetail> events) throws
+  protected net.fortuna.ical4j.model.Calendar getICal4jCalendar(Collection<EventDetail> events) throws
       RemoteException,
       AlmanachException {
     return getAlmanachBm().getICal4jCalendar(events, getLanguage());
@@ -1020,74 +930,88 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
+   * Gets the events defined in the underlying almanach.
+   * @param yearScope
    * @return
-   * @throws AlmanachException
    * @throws RemoteException
+   * @throws AlmanachException
    */
-  public Collection<EventDetail> getListRecurrentEvent() throws RemoteException, AlmanachException {
-    return getListRecurrentEvent(false);
-  }
-
   public Collection<EventDetail> getListRecurrentEvent(boolean yearScope) throws RemoteException,
       AlmanachException {
     // Récupère le Calendar ical4j
-    net.fortuna.ical4j.model.Calendar calendarAlmanach = getCurrentICal4jCalendar();
-
+    net.fortuna.ical4j.model.Calendar calendarAlmanach = getICal4jCalendar(getAllAgregationEvents());
     return getAlmanachBm().getListRecurrentEvent(calendarAlmanach,
-        getCurrentDay(), getSpaceId(), getComponentId(), yearScope);
+        currentDay, getSpaceId(), getComponentId(), yearScope);
 
   }
 
-  public List<Event> listCurrentMonthEvents() throws AlmanachException,
+  /**
+   * Gets the event occurrences of the events defined in the underlying calendar in the specified
+   * month.
+   * @param month the month as a Calendar instance.
+   * @return a list of event DTOs.
+   * @throws AlmanachException if an error occurs while getting the list of events.
+   * @throws AlmanachNoSuchFindEventException if a detail about an event in the underlying iCal
+   * calendar cannot be found.
+   * @throws RemoteException if the communication with the remote business object fails.
+   */
+  public List<EventOccurrenceDTO> listCurrentMonthEvents() throws AlmanachException,
       AlmanachNoSuchFindEventException, RemoteException {
-    List<Event> events = new ArrayList<Event>();
-    // transformation des VEvent du Calendar ical4j en Event du MonthCalendar
-    java.util.Calendar firstDayMonth = java.util.Calendar.getInstance();
-    firstDayMonth.set(java.util.Calendar.YEAR, getCurrentDay().get(java.util.Calendar.YEAR));
-    firstDayMonth.set(java.util.Calendar.DAY_OF_MONTH, 1);
-    firstDayMonth.set(java.util.Calendar.MONTH, getCurrentDay().get(java.util.Calendar.MONTH));
-    firstDayMonth.set(java.util.Calendar.HOUR_OF_DAY, 0);
-    firstDayMonth.set(java.util.Calendar.MINUTE, 0);
-    firstDayMonth.set(java.util.Calendar.SECOND, 0);
-    firstDayMonth.set(java.util.Calendar.MILLISECOND, 0);
-    java.util.Calendar lastDayMonth = java.util.Calendar.getInstance();
-    lastDayMonth.set(java.util.Calendar.YEAR, getCurrentDay().get(java.util.Calendar.YEAR));
-    lastDayMonth.set(java.util.Calendar.DAY_OF_MONTH, 1);
-    lastDayMonth.set(java.util.Calendar.MONTH, getCurrentDay().get(java.util.Calendar.MONTH));
-    lastDayMonth.set(java.util.Calendar.HOUR_OF_DAY, 0);
-    lastDayMonth.set(java.util.Calendar.MINUTE, 0);
-    lastDayMonth.set(java.util.Calendar.SECOND, 1);
-    lastDayMonth.set(java.util.Calendar.MILLISECOND, 0);
-    lastDayMonth.add(java.util.Calendar.MONTH, 1);
-    Period monthPeriod = new Period(new DateTime(firstDayMonth.getTime()),
-        new DateTime(lastDayMonth.getTime()));
-
-    ComponentList componentList = this.currentICal4jCalendar.getComponents(Component.VEVENT);
-    Iterator<VEvent> itVEvent = componentList.iterator();
-    while (itVEvent.hasNext()) {
-      VEvent eventIcal4jCalendar = itVEvent.next();
-      String idEvent = eventIcal4jCalendar.getProperties().getProperty(Property.UID).getValue();
-      // Récupère l'événement
-      EventDetail evtDetail = getEventDetail(idEvent);
-      PeriodList periodList = eventIcal4jCalendar.calculateRecurrenceSet(monthPeriod);
-      Iterator<Period> itPeriod = periodList.iterator();
-      while (itPeriod.hasNext()) {
-        Period recurrencePeriod = itPeriod.next();
-        // Construction de l'Event du MonthCalendar (pour affichage)
-        Event evt = new Event(idEvent, evtDetail.getName(), new java.util.Date(
-            recurrencePeriod.getStart().getTime()), new java.util.Date(
-            recurrencePeriod.getEnd().getTime()), evtDetail.getURL(),
-            evtDetail.getPriority());
-        evt.setStartHour(evtDetail.getStartHour());
-        evt.setEndHour(evtDetail.getEndHour());
-        evt.setPlace(evtDetail.getPlace());
-        if (isAgregationUsed()) {
-          evt.setColor(getAlmanachColor(evtDetail.getInstanceId()));
-        }
-        evt.setInstanceId(evtDetail.getInstanceId());
-        events.add(evt);
-      }
-    }
-    return events;
+    EventOccurrencesGenerator occurrencesGenerator = new EventOccurrencesGenerator(
+        getICal4jCalendar(getAllAgregationEvents()), getComponentId());
+    occurrencesGenerator.setAlmanachBm(getAlmanachBm());
+    return occurrencesGenerator.getEventOccurrencesInMonth(currentDay);
   }
+//  public List<Event> listCurrentMonthEvents() throws AlmanachException,
+//      AlmanachNoSuchFindEventException, RemoteException {
+//    List<Event> events = new ArrayList<Event>();
+//    // transformation des VEvent du Calendar ical4j en Event du MonthCalendar
+//    java.util.Calendar firstDayMonth = java.util.Calendar.getInstance();
+//    firstDayMonth.set(java.util.Calendar.YEAR, currentDay.get(java.util.Calendar.YEAR));
+//    firstDayMonth.set(java.util.Calendar.DAY_OF_MONTH, 1);
+//    firstDayMonth.set(java.util.Calendar.MONTH, currentDay.get(java.util.Calendar.MONTH));
+//    firstDayMonth.set(java.util.Calendar.HOUR_OF_DAY, 0);
+//    firstDayMonth.set(java.util.Calendar.MINUTE, 0);
+//    firstDayMonth.set(java.util.Calendar.SECOND, 0);
+//    firstDayMonth.set(java.util.Calendar.MILLISECOND, 0);
+//    java.util.Calendar lastDayMonth = java.util.Calendar.getInstance();
+//    lastDayMonth.set(java.util.Calendar.YEAR, currentDay.get(java.util.Calendar.YEAR));
+//    lastDayMonth.set(java.util.Calendar.DAY_OF_MONTH, 1);
+//    lastDayMonth.set(java.util.Calendar.MONTH, currentDay.get(java.util.Calendar.MONTH));
+//    lastDayMonth.set(java.util.Calendar.HOUR_OF_DAY, 0);
+//    lastDayMonth.set(java.util.Calendar.MINUTE, 0);
+//    lastDayMonth.set(java.util.Calendar.SECOND, 1);
+//    lastDayMonth.set(java.util.Calendar.MILLISECOND, 0);
+//    lastDayMonth.add(java.util.Calendar.MONTH, 1);
+//    Period monthPeriod = new Period(new DateTime(firstDayMonth.getTime()),
+//        new DateTime(lastDayMonth.getTime()));
+//
+//    ComponentList componentList = this.currentICal4jCalendar.getComponents(Component.VEVENT);
+//    Iterator<VEvent> itVEvent = componentList.iterator();
+//    while (itVEvent.hasNext()) {
+//      VEvent eventIcal4jCalendar = itVEvent.next();
+//      String idEvent = eventIcal4jCalendar.getProperties().getProperty(Property.UID).getValue();
+//      // Récupère l'événement
+//      EventDetail evtDetail = getEventDetail(idEvent);
+//      PeriodList periodList = eventIcal4jCalendar.calculateRecurrenceSet(monthPeriod);
+//      Iterator<Period> itPeriod = periodList.iterator();
+//      while (itPeriod.hasNext()) {
+//        Period recurrencePeriod = itPeriod.next();
+//        // Construction de l'Event du MonthCalendar (pour affichage)
+//        Event evt = new Event(idEvent, evtDetail.getName(), new java.util.Date(
+//            recurrencePeriod.getStart().getTime()), new java.util.Date(
+//            recurrencePeriod.getEnd().getTime()), evtDetail.getURL(),
+//            evtDetail.getPriority());
+//        evt.setStartHour(evtDetail.getStartHour());
+//        evt.setEndHour(evtDetail.getEndHour());
+//        evt.setPlace(evtDetail.getPlace());
+//        if (isAgregationUsed()) {
+//          evt.setColor(getAlmanachColor(evtDetail.getInstanceId()));
+//        }
+//        evt.setInstanceId(evtDetail.getInstanceId());
+//        events.add(evt);
+//      }
+//    }
+//    return events;
+//  }
 }

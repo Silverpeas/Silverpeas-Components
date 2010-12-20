@@ -41,9 +41,7 @@
 <c:set var="flag"><c:out value="${param['flag']}" default="user"/></c:set>
 <c:set var="almanach" value="${requestScope.almanach}"/>
 <c:set var="events" value="${requestScope.events}" />
-<c:set var="year" value="${requestScope.currentYear}"/>
-<c:set var="month" value="${requestScope.currentMonth}"/>
-<c:set var="day" value="${requestScope.currentDay}"/>
+<c:set var="currentDay" value="${requestScope.currentDay}"/>
 <c:set var="navigationLabel" value="${requestScope.navigationLabel}"/>
 
 <HTML>
@@ -130,7 +128,7 @@
       </c:if>
           });
 
-          $('#calendar').fullCalendar('gotoDate', <c:out value="${year}"/>, <c:out value="${month}"/>, <c:out value="${day}"/>)
+          $('#calendar').fullCalendar('gotoDate', <c:out value="${currentDay.year}"/>, <c:out value="${currentDay.month}"/>, <c:out value="${currentDay.dayOfMonth}"/>)
 
         });
     </script>
