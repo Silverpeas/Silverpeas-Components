@@ -113,7 +113,7 @@ public class QuestionManager {
     Connection con = null;
 
     try {
-      Collection recipients = question.readRecipients();
+      Collection<Recipient> recipients = question.readRecipients();
       SilverpeasBeanDAO daoQ = getQdao();
       con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
 
@@ -121,9 +121,9 @@ public class QuestionManager {
       createQuestionIndex(question);
       idQ = pkQ.getIdAsLong();
       if (recipients != null) {
-        Iterator it = recipients.iterator();
+        Iterator<Recipient> it = recipients.iterator();
         while (it.hasNext()) {
-          Recipient recipient = (Recipient) it.next();
+          Recipient recipient = it.next();
           recipient.setQuestionId(idQ);
           createRecipient(con, recipient);
         }

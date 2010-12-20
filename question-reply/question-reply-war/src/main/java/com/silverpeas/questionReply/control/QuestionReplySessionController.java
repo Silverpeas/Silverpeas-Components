@@ -31,8 +31,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.questionReply.QuestionReplyException;
@@ -40,7 +43,11 @@ import com.silverpeas.questionReply.model.Category;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Recipient;
 import com.silverpeas.questionReply.model.Reply;
+import com.silverpeas.ui.UIHelper;
 import com.silverpeas.util.ZipManager;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.silverpeas.whitePages.control.CardManager;
 import com.silverpeas.whitePages.model.Card;
 import com.stratelia.silverpeas.containerManager.ContainerContext;
@@ -118,8 +125,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   public Collection<Question> getQuestionsByCategory(String categoryId)
       throws QuestionReplyException {
-    Collection<Question> questions = getQuestionManager().getAllQuestionsByCategory(
-        getComponentId(), categoryId);
+    Collection<Question> questions =
+        getQuestionManager().getAllQuestionsByCategory(getComponentId(), categoryId);
     return questions;
   }
 
@@ -134,18 +141,16 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public Question getQuestion(long questionId) throws QuestionReplyException {
     Question question = getQuestionManager().getQuestion(questionId);
     setCurrentQuestion(question);
-    Collection<Reply> replies = new ArrayList<Reply>();
-    question.writeRecipients(getQuestionManager().getQuestionRecipients(questionId));   
+    question.writeRecipients(getQuestionManager().getQuestionRecipients(questionId));
     question.writeReplies(getRepliesForQuestion(questionId));
     return question;
   }
 
-  
   public Collection<Reply> getRepliesForQuestion(long id) throws QuestionReplyException {
-     SilverpeasRole role = SilverpeasRole.valueOf(userProfil);
+    SilverpeasRole role = SilverpeasRole.valueOf(userProfil);
     switch (role) {
       case user:
-       return getPublicRepliesForQuestion(id);
+        return getPublicRepliesForQuestion(id);
       case publisher:
         return getPrivateRepliesForQuestion(id);
       case writer:
@@ -180,7 +185,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   /*
-   * Récupère la réponse courante
+   * Retrieve current reply
    */
   public Reply getCurrentReply() {
     return this.currentReply;
@@ -209,9 +214,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public void setNewQuestionRecipients(Collection userIds) {
     Collection<Recipient> recipients = new ArrayList<Recipient>();
     if (userIds != null) {
-      Iterator it = userIds.iterator();
+      Iterator<String> it = userIds.iterator();
       while (it.hasNext()) {
-        String userId = (String) it.next();
+        String userId = it.next();
         Recipient recipient = new Recipient(userId);
         recipients.add(recipient);
       }
@@ -536,7 +541,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public String getUserProfil() {
     return this.userProfil;
   }
-  
+
   public SilverpeasRole getUserRole() {
     return SilverpeasRole.valueOf(this.userProfil);
   }
@@ -611,8 +616,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         + "/RquestionReply/" + getComponentId() + "/Main");
     PairObject hostPath1 = new PairObject(getCurrentQuestion().getTitle(),
         "/RquestionReply/" + getComponentId() + "/ConsultQuestionQuery?questionId="
-        + ((IdPK) getCurrentQuestion().getPK()).getId());
-    PairObject[] hostPath = {hostPath1};
+            + ((IdPK) getCurrentQuestion().getPK()).getId());
+    PairObject[] hostPath = { hostPath1 };
 
     gp.resetAll();
 
@@ -739,23 +744,96 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return availableUsers;
   }
 
-  /*
-   *
+  /**
+   * @param question the current question-reply question
+   * @param users list of users to notify
+   * @throws QuestionReplyException
    */
-  private void notify(String intro, String content, UserDetail[] users)
+  private void notifyTemplateQuestion(Question question, UserDetail[] users)
       throws QuestionReplyException {
     try {
       UserDetail user = getUserDetail(getUserId());
-      String subject = getString("questionReply.notification")
-          + getComponentLabel();
-      String message = user.getFirstName() + " " + user.getLastName() + intro
-          + " \n" + content + "\n \n";
+      String senderName = user.getFirstName() + " " + user.getLastName();
+      String subject = getString("questionReply.notification") + getComponentLabel();
+      // String message = senderName + intro + " \n" + content + "\n \n";
 
-      NotificationMetaData notifMetaData = new NotificationMetaData(
-          NotificationParameters.NORMAL, subject, message);
+      // Get default resource bundle
+      String resource = "com.silverpeas.questionReply.multilang.questionReplyBundle";
+      ResourceLocator message = new ResourceLocator(resource, I18NHelper.defaultLanguage);
+
+      // Initialize templates
+      Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+      NotificationMetaData notifMetaData =
+          new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "question");
+
+      List<String> languages = UIHelper.getLanguages();
+      for (String language : languages) {
+        // initialize new resource locator
+        message = new ResourceLocator(resource, language);
+
+        // Create a new silverpeas template
+        SilverpeasTemplate template = getNewTemplate();
+        template.setAttribute("senderName", senderName);
+        template.setAttribute("questionDetail", question);
+        template.setAttribute("questionTitle", question.getTitle());
+        template.setAttribute("questionContent", question.getContent());
+        template.setAttribute("url", question._getPermalink());
+        templates.put(language, template);
+        notifMetaData.addLanguage(language, message.getString("questionReply.notification", "") +
+            getComponentLabel(), "");
+      }
+      notifMetaData.setSender(getUserId());
+      notifMetaData.addUserRecipients(users);
+      //notifMetaData.setLink(question._getURL());
+      notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
+      getNotificationSender().notifyUser(notifMetaData);
+    } catch (Exception e) {
+      throw new QuestionReplyException("QuestionReplySessionController.notify()",
+          SilverpeasException.ERROR, "questionReply.EX_NOTIFICATION_MANAGER_FAILED", "", e);
+    }
+  }
+
+  /**
+   * @param question the current question-reply question
+   * @param users list of users to notify
+   * @throws QuestionReplyException
+   */
+  private void notifyTemplateReply(Question question, Reply reply, UserDetail[] users) throws QuestionReplyException {
+    try {
+      UserDetail user = getUserDetail(getUserId());
+      String senderName = user.getFirstName() + " " + user.getLastName();
+      String subject = getString("questionReply.notification") + getComponentLabel();
+      // String message = senderName + intro + " \n" + content + "\n \n";
+
+      // Get default resource bundle
+      String resource = "com.stratelia.webactiv.survey.multilang.surveyBundle";
+      ResourceLocator message = new ResourceLocator(resource, I18NHelper.defaultLanguage);
+
+      // Initialize templates
+      Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+      NotificationMetaData notifMetaData =
+          new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "reply");
+
+      List<String> languages = UIHelper.getLanguages();
+      for (String language : languages) {
+        // initialize new resource locator
+        message = new ResourceLocator(resource, language);
+
+        // Create a new silverpeas template
+        SilverpeasTemplate template = getNewTemplate();
+        template.setAttribute("senderName", senderName);
+        template.setAttribute("QuestionDetail", question);
+        template.setAttribute("ReplyDetail", reply);
+        template.setAttribute("ReplyTitle", reply.getTitle());
+        template.setAttribute("ReplyContent", reply.getContent());
+        templates.put(language, template);
+        notifMetaData.addLanguage(language, message.getString("questionReply.notification", "") +
+            getComponentLabel(), "");
+      }
       notifMetaData.setSender(getUserId());
       notifMetaData.addUserRecipients(users);
       notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
+      //notifMetaData.setLink(question._getURL());
       getNotificationSender().notifyUser(notifMetaData);
     } catch (Exception e) {
       throw new QuestionReplyException(
@@ -764,56 +842,52 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     }
   }
 
-  /*
-   *
+  /**
+   * @param question
+   * @throws QuestionReplyException
    */
   private void notifyQuestion(Question question) throws QuestionReplyException {
-    String message = getString("questionReply.Question") + question.getTitle()
-        + "\n" + question.getContent() + "\n";
-    Collection recipients = question.readRecipients();
+    Collection<Recipient> recipients = question.readRecipients();
 
     UserDetail[] users = new UserDetail[recipients.size()];
-    Iterator it = recipients.iterator();
+    Iterator<Recipient> it = recipients.iterator();
     int i = 0;
     while (it.hasNext()) {
-      Recipient recipient = (Recipient) it.next();
+      Recipient recipient = it.next();
       users[i] = getUserDetail(recipient.getUserId());
       i++;
     }
-    notify(getString("questionReply.msgQuestion"), message, users);
+    notifyTemplateQuestion(question, users);
   }
 
+  /**
+   * @param question
+   * @throws QuestionReplyException
+   */
   private void notifyQuestionFromExpert(Question question)
       throws QuestionReplyException {
-    String message = getString("questionReply.Question") + question.getTitle()
-        + "\n" + question.getContent() + "\n";
-
-    List profils = new ArrayList();
+    List<String> profils = new ArrayList<String>();
     profils.add("writer");
-    String[] usersIds = getOrganizationController().getUsersIdsByRoleNames(
-        getComponentId(), profils);
+    String[] usersIds =
+        getOrganizationController().getUsersIdsByRoleNames(getComponentId(), profils);
     UserDetail[] users = new UserDetail[usersIds.length];
     for (int i = 0; i < usersIds.length; i++) {
       users[i] = getUserDetail(usersIds[i]);
     }
-    notify(getString("questionReply.msgQuestion"), message, users);
+    // notify(getString("questionReply.msgQuestion"), message, users);
+    notifyTemplateQuestion(question, users);
   }
 
-  /*
-   *
+  /**
+   * @param reply
+   * @throws QuestionReplyException
    */
   private void notifyReply(Reply reply) throws QuestionReplyException {
-    String message = getString("questionReply.Question")
-        + getCurrentQuestion().getTitle() + "\n"
-        + getCurrentQuestion().getContent() + "\n\n"
-        + getString("questionReply.Reply") + reply.getTitle() + "\n"
-        + reply.getContent() + "\n";
-
-    UserDetail user = getOrganizationController().getUserDetail(
-        getCurrentQuestion().getCreatorId());
+    UserDetail user =
+        getOrganizationController().getUserDetail(getCurrentQuestion().getCreatorId());
     UserDetail[] users = new UserDetail[1];
     users[0] = user;
-    notify(getString("questionReply.msgReply"), message, users);
+    notifyTemplateReply(getCurrentQuestion(), reply, users);
   }
 
   /*
@@ -851,7 +925,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
         contentId = ""
             + contentManager.getSilverContentId(
-            currentQuestion.getPK().getId(), currentQuestion.getInstanceId());
+                currentQuestion.getPK().getId(), currentQuestion.getInstanceId());
       } catch (ContentManagerException ignored) {
         SilverTrace.error("questionReply", "QuestionReplySessionController",
             "questionReply.EX_UNKNOWN_CONTENT_MANAGER", ignored);
@@ -887,7 +961,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public String getReturnURL() {
     return returnURL;
   }
-  
+
   public boolean isReplyVisible(Question question, Reply reply) {
     return QuestionReplyExport.isReplyVisible(question, reply, getUserRole(), getUserId());
   }
@@ -1020,8 +1094,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         chemin = chemin.substring(8);
       }
       Collection<File> files = FileFolderManager.getAllFile(chemin);
-      for(File file : files) {
-        File newFile = new File(dir + File.separator + nameForFiles + File.separator + file.getName());
+      for (File file : files) {
+        File newFile =
+            new File(dir + File.separator + nameForFiles + File.separator + file.getName());
         FileRepositoryManager.copyFile(file.getPath(), newFile.getPath());
       }
     } catch (Exception ex) {
@@ -1178,5 +1253,19 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
           "QuestionReply.MSG_NODEBM_NOT_EXIST", e);
     }
     return nodeBm;
+  }
+
+  /**
+   * @return new SilverpeasTemplate
+   */
+  protected SilverpeasTemplate getNewTemplate() {
+    ResourceLocator rs =
+        new ResourceLocator("com.silverpeas.questionReply.settings.questionReplySettings", "");
+    Properties templateConfiguration = new Properties();
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs
+        .getString("templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs
+        .getString("customersTemplatePath"));
+    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
 }
