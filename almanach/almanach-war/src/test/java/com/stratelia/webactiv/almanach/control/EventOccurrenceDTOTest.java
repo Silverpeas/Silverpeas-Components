@@ -23,14 +23,14 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
 import com.stratelia.webactiv.util.DateUtil;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -81,26 +81,31 @@ public class EventOccurrenceDTOTest {
 
     EventOccurrenceDTO eventDTO = new EventOccurrenceDTO(detail, new Date(), new Date());
     assertEquals("The CSS class should be the almanach instance id", almanachId, eventDTO.
-        getCSSClass());
+        getCSSClasses().get(0));
   }
 
   /**
    * Check the JSON representation of a given event is the expected one.
+   * @throws Exception if an error occurs during the test execution.
    */
   @Test
   public void testJSONRepresentationOfAnEvent() throws Exception {
     EventDetail detail = getEventDetail();
-    Date startDate = DateUtil.parse("2010-10-12T12:00", EventOccurrenceDTO.ISO_DATE_FORMAT);
-    Date endDate = DateUtil.parse("2010-10-12T14:00", EventOccurrenceDTO.ISO_DATE_FORMAT);
+    Date startDate = DateUtil.parse("2010-10-12T12:00:00Z", DateUtil.ISO8601DATE_FORMATTER.
+        getPattern());
+    Date endDate = DateUtil.parse("2010-10-12T14:00:00Z",
+        DateUtil.ISO8601DATE_FORMATTER.getPattern());
 
     EventOccurrenceDTO eventDTO = new EventOccurrenceDTO(detail, startDate, endDate);
-    JSONObject jsonObject = JSONObject.fromObject(eventDTO.toJSON());
+    String eventInJSON = eventDTO.toJSON();
+    JSONObject jsonObject = new JSONObject(eventInJSON);
     assertEquals("The title should be the event title", eventDTO.getEventDetail().getTitle(), jsonObject.
         get("title"));
     assertEquals("The identifier should be the event id", eventDTO.getEventDetail().getId(), jsonObject.
         get("id"));
-    assertEquals("The CSS class should be the expected one", eventDTO.getCSSClass(), jsonObject.get(
-        "className"));
+    assertEquals("The CSS class should be the expected one", eventDTO.getCSSClasses().get(0), ((JSONArray) jsonObject.
+        get(
+        "className")).get(0));
     assertEquals("The start date should be the event start date", eventDTO.getStartDateTimeInISO(), jsonObject.
         get("start"));
     assertEquals("The end date should be the event end date", eventDTO.getEndDateTimeInISO(), jsonObject.
@@ -109,27 +114,41 @@ public class EventOccurrenceDTOTest {
 
   /**
    * Check the JSON representation of a list of events is the expected one.
+   * @throws Exception if an error occurs during the test execution.
    */
   @Test
   public void testJSONRepresentationOfAListOfEvents() throws Exception {
     EventDetail detail1 = getEventDetail();
-    Date startDate1 = DateUtil.parse("2010-10-12T12:00", EventOccurrenceDTO.ISO_DATE_FORMAT);
-    Date endDate1 = DateUtil.parse("2010-10-12T14:00", EventOccurrenceDTO.ISO_DATE_FORMAT);
+    Date startDate1 = DateUtil.parse("2010-10-12T12:00:00Z", DateUtil.ISO8601DATE_FORMATTER.
+        getPattern());
+    Date endDate1 = DateUtil.parse("2010-10-12T14:00:00Z",
+        DateUtil.ISO8601DATE_FORMATTER.getPattern());
     EventDetail detail2 = getEventDetail();
-    Date startDate2 = DateUtil.parse("2010-10-12T12:00", EventOccurrenceDTO.ISO_DATE_FORMAT);
-    Date endDate2 = DateUtil.parse("2010-10-12T14:00", EventOccurrenceDTO.ISO_DATE_FORMAT);
+    Date startDate2 = DateUtil.parse("2010-10-12T12:00:00Z", DateUtil.ISO8601DATE_FORMATTER.
+        getPattern());
+    Date endDate2 = DateUtil.parse("2010-10-12T14:00:00Z",
+        DateUtil.ISO8601DATE_FORMATTER.getPattern());
     EventDetail detail3 = getEventDetail();
-    Date startDate3 = DateUtil.parse("2010-10-12T12:00", EventOccurrenceDTO.ISO_DATE_FORMAT);
-    Date endDate3 = DateUtil.parse("2010-10-12T14:00", EventOccurrenceDTO.ISO_DATE_FORMAT);
+    Date startDate3 = DateUtil.parse("2010-10-12T12:00:00Z", DateUtil.ISO8601DATE_FORMATTER.
+        getPattern());
+    Date endDate3 = DateUtil.parse("2010-10-12T14:00:00Z",
+        DateUtil.ISO8601DATE_FORMATTER.getPattern());
 
     List<EventOccurrenceDTO> events = Arrays.asList(
         new EventOccurrenceDTO(detail1, startDate1, endDate1),
         new EventOccurrenceDTO(detail2, startDate2, endDate2),
         new EventOccurrenceDTO(detail3, startDate3, endDate3));
-    JSONArray jsonArray = JSONArray.fromObject(EventOccurrenceDTO.toJSON(events));
-    assertEquals("All events should be encoded in JSON", events.size(), jsonArray.size());
+    String eventsInJSON = EventOccurrenceDTO.toJSON(events);
+    JSONArray jsonArray = new org.json.JSONArray(eventsInJSON);
+    assertEquals("All events should be encoded in JSON", events.size(), jsonArray.length());
     for (EventOccurrenceDTO event : events) {
-      assertTrue(jsonArray.contains(event.toJSON()));
+      boolean found = false;
+      for (int i = 0; i < jsonArray.length() && !found; i++) {
+        if (jsonArray.getString(i).equals(event.toJSON())) {
+          found = true;
+        }
+      }
+      assertTrue(found);
     }
   }
 

@@ -39,10 +39,8 @@
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <c:set var="flag"><c:out value="${param['flag']}" default="user"/></c:set>
-<c:set var="almanach" value="${requestScope.almanach}"/>
-<c:set var="events" value="${requestScope.events}" />
-<c:set var="currentDay" value="${requestScope.currentDay}"/>
-<c:set var="navigationLabel" value="${requestScope.navigationLabel}"/>
+<c:set var="calendarView" value="${requestScope.calendarView}"/>
+<c:set var="currentDay" value="${calendarView.currentDay}"/>
 
 <HTML>
   <HEAD>
@@ -53,15 +51,15 @@
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
     <script type="text/javascript" src="<c:url value='/util/javaScript/jquery/fullcalendar.min.js'/>"></script>
     <script type="text/javascript">
-      function nextMonth()
+      function nextView()
       {
-        document.almanachForm.Action.value = "NextMonth";
+        document.almanachForm.Action.value = "NextView";
         document.almanachForm.submit();
       }
 
-      function previousMonth()
+      function previousView()
       {
-        document.almanachForm.Action.value = "PreviousMonth";
+        document.almanachForm.Action.value = "PreviousView";
         document.almanachForm.submit();
       }
       function goToDay()
@@ -99,31 +97,43 @@
         // page is now ready, initialize the calendar...
 
         $('#calendar').fullCalendar({
-          // put your options and callbacks here
-          monthNames: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
-            'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
-          dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
-          dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
-          buttonText: {
-            prev:     '&nbsp;&#9668;&nbsp;',  // left triangle
-            next:     '&nbsp;&#9658;&nbsp;',  // right triangle
-            prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
-            nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
-            today:    "Aujourd'hui",
-            month:    'Moi',
-            week:     'Semaine',
-            day:      'Journée'
-          },
-          eventClick: function(calEvent, jsEvent, view) {
-            var date = calEvent.start.getFullYear() + '/';
-            if (calEvent.start.getMonth() < 10) date = date + '0' + (calEvent.start.getMonth() + 1) + '/';
-            else date = date + (calEvent.start.getMonth() + 1) + '/';
-            if (calEvent.start.getDate() < 10) date = date + '0' + calEvent.start.getDate() + '/';
-            else date = date + calEvent.start.getDate();
-            clickEvent(calEvent.id, date, calEvent.instanceId);
-          },
-          events: <c:out value='${events}' escapeXml='yes'/>
-      <c:if test='${almanach.weekendNotVisible}'>
+            // put your options and callbacks here
+            monthNames: ['<fmt:message key="GML.mois0"/>', '<fmt:message key="GML.mois1"/>', '<fmt:message key="GML.mois2"/>', '<fmt:message key="GML.mois3"/>',
+              '<fmt:message key="GML.mois4"/>', '<fmt:message key="GML.mois5"/>', '<fmt:message key="GML.mois6"/>', '<fmt:message key="GML.mois7"/>',
+              '<fmt:message key="GML.mois8"/>', '<fmt:message key="GML.mois9"/>', '<fmt:message key="GML.mois10"/>', '<fmt:message key="GML.mois11"/>'],
+            dayNames: ['<fmt:message key="GML.jour1"/>', '<fmt:message key="GML.jour2"/>', '<fmt:message key="GML.jour3"/>', '<fmt:message key="GML.jour4"/>',
+              '<fmt:message key="GML.jour5"/>', '<fmt:message key="GML.jour6"/>', '<fmt:message key="GML.jour7"/>'],
+            dayNamesShort: ['<fmt:message key="GML.shortJour1"/>', '<fmt:message key="GML.shortJour2"/>', '<fmt:message key="GML.shortJour3"/>',
+              '<fmt:message key="GML.shortJour4"/>', '<fmt:message key="GML.shortJour5"/>', '<fmt:message key="GML.shortJour6"/>', '<fmt:message key="GML.shortJour7"/>'],
+            buttonText: {
+              prev:     '&nbsp;&#9668;&nbsp;',  // left triangle
+              next:     '&nbsp;&#9658;&nbsp;',  // right triangle
+              prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
+              nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
+              today:    "<fmt:message key='auJour'/>",
+              month:    '<fmt:message key="GML.month"/>',
+              week:     '<fmt:message key="GML.week"/>',
+              day:      '<fmt:message key="GML.day"/>'
+            },
+            allDaySlot: false,
+            allDayText: '',
+            allDayDefault: false,
+            axisFormat: 'HH:mm',
+            columnFormat: { agendaWeek: 'ddd d' },
+            minTime: 6,
+            maxTime: 21,
+            firstDay: <c:out value='${calendarView.firstDayOfWeek -1}' />,
+            defaultView: "<c:out value='${calendarView.viewType}'/>",
+            eventClick: function(calEvent, jsEvent, view) {
+              var date = calEvent.start.getFullYear() + '/';
+              if (calEvent.start.getMonth() < 10) date = date + '0' + (calEvent.start.getMonth() + 1) + '/';
+              else date = date + (calEvent.start.getMonth() + 1) + '/';
+              if (calEvent.start.getDate() < 10) date = date + '0' + calEvent.start.getDate() + '/';
+              else date = date + calEvent.start.getDate();
+              clickEvent(calEvent.id, date, calEvent.instanceId);
+            },
+            events: <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>
+      <c:if test='${not calendarView.weekendVisible}'>
             , weekends: false
       </c:if>
           });
@@ -163,9 +173,9 @@
                     <td>
                       <table cellpadding=0 cellspacing=1 border=0 width="100%" >
                         <tr>
-                          <td class=intfdcolor><a href="javascript:onClick=previousMonth()" onFocus="this.blur()"><img src="<c:url value='${leftArrow}'/>" border="0"></a></td>
-                          <td class=intfdcolor align=center nowrap width="100%" height="24"><span class="txtnav"><c:out value="${navigationLabel}" /></span></td>
-                          <td class=intfdcolor><a href="javascript:onClick=nextMonth()" onFocus="this.blur()"><img src="<c:url value='${rightArrow}'/>" border="0"></a></td>
+                          <td class=intfdcolor><a href="javascript:onClick=previousView()" onFocus="this.blur()"><img src="<c:url value='${leftArrow}'/>" border="0"></a></td>
+                          <td class=intfdcolor align=center nowrap width="100%" height="24"><span class="txtnav"><c:out value="${calendarView.label}" /></span></td>
+                          <td class=intfdcolor><a href="javascript:onClick=nextView()" onFocus="this.blur()"><img src="<c:url value='${rightArrow}'/>" border="0"></a></td>
                         </tr>
                       </table>
                     </td>
@@ -180,7 +190,7 @@
 
       </view:frame>
     </view:window>
-    <form name="almanachForm" action="../..<c:out value='${almanach.componentUrl}'/>almanach.jsp"  method="POST" target="MyMain">
+    <form name="almanachForm" action="../..<c:out value='${calendarView.almanach.url}'/>almanach.jsp"  method="POST" target="MyMain">
       <input type="hidden" name="Action"/>
       <input type="hidden" name="Id"/>
     </form>
@@ -190,7 +200,7 @@
       <input type="hidden" name="Date"/>
     </form>
 
-    <form name="createEventForm" action="../..<c:out value='${almanach.componentUrl}'/>createEvent.jsp" method="POST" target="MyMain">
+    <form name="createEventForm" action="../..<c:out value='${calendarView.almanach.url}'/>createEvent.jsp" method="POST" target="MyMain">
       <input type="hidden" name="Day"/>
     </form>
 

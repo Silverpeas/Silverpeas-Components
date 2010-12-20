@@ -25,8 +25,11 @@ package com.stratelia.webactiv.almanach.control;
 
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.util.DateUtil;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * A DTO on an event occurrence in a calendar.
@@ -35,14 +38,10 @@ import java.util.List;
  */
 public class EventOccurrenceDTO {
 
-  /**
-   * One of the ISO 8601 date format. The one use to represent an event date.
-   */
-  protected static final String ISO_DATE_FORMAT = "yyyy-MM-dd'T'HH:mm";
   private EventDetail eventDetail;
-  private String cssClass;
   private Date startDate;
   private Date endDate;
+  private boolean priority = false;
 
   /**
    * Constructs a new DTO about the specified event occurring at the specified start date and ending
@@ -59,7 +58,6 @@ public class EventOccurrenceDTO {
     this.eventDetail = eventDetail;
     this.startDate = startDate;
     this.endDate = endDate;
-    this.cssClass = eventDetail.getInstanceId();
   }
 
   public Date getEndDate() {
@@ -87,13 +85,19 @@ public class EventOccurrenceDTO {
   }
 
   /**
-   * Gets the CSS class to which the event belongs.
-   * The CSS class is set from the almanach instance identifier, so that all events within this
-   * almanach will be rendered in a coherent way.
-   * @return the CSS class of this event.
+   * Is this event has a priority?
+   * @return true if this event has a priority over others, false otherwise.
    */
-  public String getCSSClass() {
-    return cssClass;
+  public boolean isPriority() {
+    return priority;
+  }
+
+  /**
+   * Sets the priority of this event.
+   * @param priority the event priority.
+   */
+  public void setPriority(boolean priority) {
+    this.priority = priority;
   }
 
   /**
@@ -102,7 +106,7 @@ public class EventOccurrenceDTO {
    * @return the ISO 8601 format of the start date and time of this event.
    */
   public String getStartDateTimeInISO() {
-    return DateUtil.formatDate(getStartDate(), ISO_DATE_FORMAT);
+    return DateUtil.formatAsISO8601Date(getStartDate());
   }
 
   /**
@@ -111,7 +115,20 @@ public class EventOccurrenceDTO {
    * @return the ISO 8601 format of the end date and time of this event.
    */
   public String getEndDateTimeInISO() {
-    return DateUtil.formatDate(getEndDate(), ISO_DATE_FORMAT);
+    return DateUtil.formatAsISO8601Date(getEndDate());
+  }
+
+  /**
+   * Gets the CSS class(es) that is applied to this event rendering.
+   * @return a list with the CSS classes that are applied to this.
+   */
+  protected List<String> getCSSClasses() {
+    List<String> cssClasses = new ArrayList<String>(2);
+    cssClasses.add(getEventDetail().getInstanceId());
+    if (isPriority()) {
+      cssClasses.add("priority");
+    }
+    return cssClasses;
   }
 
   /**
@@ -119,10 +136,7 @@ public class EventOccurrenceDTO {
    * @return a JSON representation of this event.
    */
   public String toJSON() {
-    return "{ id: \"" + getEventDetail().getId() + "\", instanceId: \"" + getEventDetail().
-        getInstanceId() + "\", className: \"" + getEventDetail().getInstanceId() + "\" , title: \""
-        + getEventDetail().getTitle() + "\", start: \""
-        + getStartDateTimeInISO() + "\", end: \"" + getEndDateTimeInISO() + "\" }";
+    return toJSONObject().toString();
   }
 
   /**
@@ -131,14 +145,25 @@ public class EventOccurrenceDTO {
    * @return a JSON array with the JSON representation of all the specified events.
    */
   public static String toJSON(final List<EventOccurrenceDTO> events) {
-    StringBuilder descBuilder = new StringBuilder("[");
+    JSONArray jsonArray = new JSONArray();
     for (EventOccurrenceDTO event : events) {
-      descBuilder.append(event.toJSON()).append(", ");
+      jsonArray.put(event.toJSONObject());
     }
-    String desc = descBuilder.toString();
-    if (desc.endsWith(", ")) {
-      desc = desc.substring(0, desc.length() - 2);
-    }
-    return desc + " ]";
+    return jsonArray.toString();
+  }
+
+  /**
+   * Converts this event DTO into a JSON object.
+   * @return a JSON object of this event DTO.
+   */
+  protected JSONObject toJSONObject() {
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("id", getEventDetail().getId());
+    jsonObject.put("instanceId", getEventDetail().getInstanceId());
+    jsonObject.put("title", getEventDetail().getTitle());
+    jsonObject.put("start", getStartDateTimeInISO());
+    jsonObject.put("end", getEndDateTimeInISO());
+    jsonObject.put("className", new JSONArray(getCSSClasses()));
+    return jsonObject;
   }
 }

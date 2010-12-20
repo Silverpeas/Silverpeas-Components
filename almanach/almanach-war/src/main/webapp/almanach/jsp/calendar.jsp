@@ -20,13 +20,12 @@
 <c:set var="instanceId" value="${browseContext[3]}"/>
 
 <c:set var="rssUrl" value="${requestScope.RSSUrl}"/>
-<c:set var="almanach" value="${requestScope.almanach}"/>
-<c:set var="othersAlmanachs" value="${almanach.othersAlmanachsAsDTO}"/>
-<c:set var="accessibleInstances" value="${almanach.accessibleInstances}"/>
-<c:set var="events" value="${requestScope.events}" />
-<c:set var="currentDay" value="${requestScope.currentDay}"/>
+<c:set var="calendarView" value="${requestScope.calendarView}"/>
+<c:set var="othersAlmanachs" value="${requestScope.othersAlmanachs}"/>
+<c:set var="accessibleInstances" value="${requestScope.accessibleInstances}"/>
+<c:set var="currentDay" value="${calendarView.currentDay}"/>
 <c:set var="flag"><c:out value="${param['flag']}" default="user"/></c:set>
-<c:set var="navigationLabel" value="${requestScope.navigationLabel}"/>
+<fmt:message key="auJour" var="today" />
 
 <html>
   <head>
@@ -47,15 +46,27 @@
     <script type="text/javascript" src="<c:url value='/util/javaScript/jquery/fullcalendar.min.js'/>"></script>
     <script type="text/javascript">
 
-      function nextMonth()
+      function viewByMonth()
       {
-        document.almanachForm.Action.value = "NextMonth";
+        document.almanachForm.Action.value = "ViewByMonth";
         document.almanachForm.submit();
       }
 
-      function previousMonth()
+      function viewByWeek()
       {
-        document.almanachForm.Action.value = "PreviousMonth";
+        document.almanachForm.Action.value = "ViewByWeek";
+        document.almanachForm.submit();
+      }
+
+      function nextView()
+      {
+        document.almanachForm.Action.value = "NextView";
+        document.almanachForm.submit();
+      }
+
+      function previousView()
+      {
+        document.almanachForm.Action.value = "PreviousView";
         document.almanachForm.submit();
       }
       function goToDay()
@@ -152,20 +163,30 @@
 
           $('#calendar').fullCalendar({
             // put your options and callbacks here
-            monthNames: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
-              'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'],
-            dayNames: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
-            dayNamesShort: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+            monthNames: ['<fmt:message key="GML.mois0"/>', '<fmt:message key="GML.mois1"/>', '<fmt:message key="GML.mois2"/>', '<fmt:message key="GML.mois3"/>',
+              '<fmt:message key="GML.mois4"/>', '<fmt:message key="GML.mois5"/>', '<fmt:message key="GML.mois6"/>', '<fmt:message key="GML.mois7"/>',
+              '<fmt:message key="GML.mois8"/>', '<fmt:message key="GML.mois9"/>', '<fmt:message key="GML.mois10"/>', '<fmt:message key="GML.mois11"/>'],
+            dayNames: ['<fmt:message key="GML.jour1"/>', '<fmt:message key="GML.jour2"/>', '<fmt:message key="GML.jour3"/>', '<fmt:message key="GML.jour4"/>',
+              '<fmt:message key="GML.jour5"/>', '<fmt:message key="GML.jour6"/>', '<fmt:message key="GML.jour7"/>'],
+            dayNamesShort: ['<fmt:message key="GML.shortJour1"/>', '<fmt:message key="GML.shortJour2"/>', '<fmt:message key="GML.shortJour3"/>',
+              '<fmt:message key="GML.shortJour4"/>', '<fmt:message key="GML.shortJour5"/>', '<fmt:message key="GML.shortJour6"/>', '<fmt:message key="GML.shortJour7"/>'],
             buttonText: {
               prev:     '&nbsp;&#9668;&nbsp;',  // left triangle
               next:     '&nbsp;&#9658;&nbsp;',  // right triangle
               prevYear: '&nbsp;&lt;&lt;&nbsp;', // <<
               nextYear: '&nbsp;&gt;&gt;&nbsp;', // >>
-              today:    "Aujourd'hui",
-              month:    'Moi',
-              week:     'Semaine',
-              day:      'Journée'
+              today:    "${today}",
+              month:    '<fmt:message key="GML.month"/>',
+              week:     '<fmt:message key="GML.week"/>',
+              day:      '<fmt:message key="GML.day"/>'
             },
+            allDaySlot: false,
+            allDayText: '',
+            allDayDefault: false,
+            axisFormat: 'HH:mm',
+            columnFormat: { agendaWeek: 'ddd d' },
+            firstDay: <c:out value='${calendarView.firstDayOfWeek - 1}' />,
+            defaultView: "<c:out value='${calendarView.viewType}'/>",
             eventClick: function(calEvent, jsEvent, view) {
               var date = calEvent.start.getFullYear() + '/';
               if (calEvent.start.getMonth() < 10) date = date + '0' + (calEvent.start.getMonth() + 1) + '/';
@@ -174,8 +195,8 @@
               else date = date + calEvent.start.getDate();
               clickEvent(calEvent.id, date, calEvent.instanceId);
             },
-            events: <c:out value='${events}' escapeXml='yes'/>
-      <c:if test='${almanach.weekendNotVisible}'>
+            events: <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>
+      <c:if test='${not calendarView.weekendVisible}'>
             , weekends: false
       </c:if>
           });
@@ -236,15 +257,22 @@
     </view:operationPane>
 
     <view:window>
+
+      <view:tabs>
+        <fmt:message key="GML.month" var="opLabel" />
+        <view:tab label="${opLabel}" action="javascript:onClick=viewByMonth()" selected="${calendarView.viewType.monthlyView}"/>
+        <fmt:message key="GML.week" var="opLabel" />
+        <view:tab label="${opLabel}" action="javascript:onClick=viewByWeek()" selected="${calendarView.viewType.weeklyView}"/>
+      </view:tabs>
+
       <view:frame>
         <div id="navigation">
           <fmt:message key="almanach.icons.leftArrow" var="leftArrow" bundle="${icons}"/>
           <fmt:message key="almanach.icons.rightArrow" var="rightArrow" bundle="${icons}"/>
-          <fmt:message key="auJour" var="today" />
           <div id="currentScope">
-            <a href="javascript:onClick=previousMonth()"><img src="<c:url value='${leftArrow}'/>" border="0" alt="" align="top"/></a>
-            <span class="txtnav"><c:out value="${navigationLabel}" /></span>
-            <a href="javascript:onClick=nextMonth()"><img src="<c:url value='${rightArrow}'/>" border="0" alt="" align="top"/></a>
+            <a href="javascript:onClick=previousView()"><img src="<c:url value='${leftArrow}'/>" border="0" alt="" align="top"/></a>
+            <span class="txtnav"><c:out value="${calendarView.label}" /></span>
+            <a href="javascript:onClick=nextView()"><img src="<c:url value='${rightArrow}'/>" border="0" alt="" align="top"/></a>
           </div>
           <div id="today">
             <a href="javascript:onClick=goToDay()"><c:out value="${today}" /></a>
@@ -253,12 +281,12 @@
             <div id="others">
               <select name="select" onchange="window.open(this.options[this.selectedIndex].value,'_self')" class="selectNS">
                 <c:forEach var="instance" items="${accessibleInstances}">
-                  <c:set var="componentId" value="${instance[0]}"/>
+                  <c:set var="componentId" value="${instance.instanceId}"/>
                   <c:set var="selected" value=""/>
                   <c:if test="${componentId eq instanceId}">
                     <c:set var="selected" value="selected='selected'"/>
                   </c:if>
-                  <option value="<view:componentUrl componentId='${componentId}'/>Main" <c:out value="${selected}" escapeXml="false"/>><c:out value="${instance[2]} - ${instance[1]}"/></option>
+                  <option value="<c:out value='${instance.url}'/>Main" <c:out value="${selected}" escapeXml="false"/>><c:out value="${instance.spaceId} - ${instance.label}"/></option>
                 </c:forEach>
               </select>
             </div>

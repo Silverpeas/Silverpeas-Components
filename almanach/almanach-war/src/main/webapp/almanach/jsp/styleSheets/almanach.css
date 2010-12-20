@@ -80,3 +80,13 @@
  */
 .almanach {
 }
+
+/**
+ * CSS to apply to the events that have priority.
+ */
+.priority {
+  background-color: transparent;
+  background-image: url('util/urgent.gif');
+  background-repeat: no-repeat;
+  background-position: right top;
+}

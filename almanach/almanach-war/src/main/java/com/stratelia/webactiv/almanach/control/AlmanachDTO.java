@@ -32,9 +32,11 @@ package com.stratelia.webactiv.almanach.control;
  */
 public class AlmanachDTO {
 
-  private String instanceId;
-  private String label;
-  private String color;
+  private String spaceId = "";
+  private String instanceId = "";
+  private String url = "";
+  private String label = "";
+  private String color = "";
   private boolean agregated = false;
 
   /**
@@ -74,6 +76,24 @@ public class AlmanachDTO {
   }
 
   /**
+   * Gets the identifier of the workspace into which the almanach is defined.
+   * @return the workspace identifier.
+   */
+  public String getSpaceId() {
+    return spaceId;
+  }
+
+  /**
+   * Sets the workspace into which this almanach is defined.
+   * @param spaceId the identifier of the workspace.
+   * @return itself;
+   */
+  public AlmanachDTO setSpaceId(final String spaceId) {
+    this.spaceId = spaceId;
+    return this;
+  }
+
+  /**
    * Is this almanach an agregated one?
    * @return true if this almanach is an agregated one, false otherwise.
    */
@@ -106,6 +126,24 @@ public class AlmanachDTO {
    */
   public AlmanachDTO setLabel(String label) {
     this.label = label;
+    return this;
+  }
+
+  /**
+   * Gets the URL of this almanach instance.
+   * @return the URL of the almanach instance.
+   */
+  public String getUrl() {
+    return url;
+  }
+
+  /**
+   * Sets the URL of the almanach instance.
+   * @param url the almanach instance URL.
+   * @return itself.
+   */
+  public AlmanachDTO setUrl(final String url) {
+    this.url = url;
     return this;
   }
 

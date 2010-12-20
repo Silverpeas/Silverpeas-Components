@@ -80,7 +80,7 @@ public class AlmanachSessionControllerTest {
   }
 
   /**
-   * Test of nextMonth method, of class AlmanachSessionController.
+   * Test of nextView method, of class AlmanachSessionController.
    */
   @Test
   public void testNextMonth() {
@@ -93,12 +93,12 @@ public class AlmanachSessionControllerTest {
     Calendar nextMonth = Calendar.getInstance();
     nextMonth.setTime(today.getTime());
     nextMonth.add(Calendar.MONTH, 1);
-    instance.nextMonth();
+    instance.nextView();
     Assert.assertEquals(nextMonth.getTimeInMillis(), instance.getCurrentDay().getTime());
   }
 
   /**
-   * Test of previousMonth method, of class AlmanachSessionController.
+   * Test of previousView method, of class AlmanachSessionController.
    */
   @Test
   public void testPreviousMonth() {
@@ -111,7 +111,7 @@ public class AlmanachSessionControllerTest {
     Calendar previousMonth = Calendar.getInstance();
     previousMonth.setTime(today.getTime());
     previousMonth.add(Calendar.MONTH, -1);
-    instance.previousMonth();
+    instance.previousView();
     Assert.assertEquals(previousMonth.getTimeInMillis(), instance.getCurrentDay().getTime());
   }
 
@@ -203,6 +203,8 @@ public class AlmanachSessionControllerTest {
     Assert.assertNotNull(events);
     Assert.assertEquals(30, events.size());
 
-
+    events = instance.listCurrentWeekEvents();
+    Assert.assertNotNull(events);
+    Assert.assertEquals(7, events.size());
   }
 }

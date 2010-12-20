@@ -21,12 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.almanach.control;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
+import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * It defines a window in time of the calendar belonging to a given almanach instance.
@@ -35,48 +38,136 @@ import java.util.List;
  */
 public class AlmanachCalendarView {
 
-  /**
-   * The type of view of an AlmanachCalendarView.
-   */
-  public static enum ViewType {
-    MONTHLY("month"),
-    WEEKLY("agendaWeek");
-
-    /**
-     * Converts this view type in a string representation.
-     * The value of the string depends on the calendar view rendering engine. It should be a value
-     * that matches the view mode supported by the underlying calendar renderer.
-     * @return
-     */
-    @Override
-    public String toString() {
-      return fullCalendarView;
-    }
-
-    /**
-     * Constructs a view type with the specified view mode.
-     * @param modeView the view mode as defined in the underlying calendar renderer.
-     */
-    private ViewType(String viewMode) {
-      this.fullCalendarView = viewMode;
-    }
-
-    private String fullCalendarView;
-  }
-
   private AlmanachDTO almanach;
+  private AlmanachDay currentDay;
   private List<EventOccurrenceDTO> events = new ArrayList<EventOccurrenceDTO>();
-  private ViewType type = ViewType.MONTHLY;
-
+  private CalendarViewType type = MONTHLY;
+  private String label = "";
+  private boolean withWeekend = true;
+  private Locale locale = null;
 
   /**
    * Constructs a new calendar view of the specified almanach.
+   * By default, the week-end days are displayed.
    * @param almanach the DTO carrying information about the almanach instance this view is about.
+   * @param currentDay the current day in this calendar view.
    * @param viewType the type of view the calendar should be rendered.
    */
-  public AlmanachCalendarView(final AlmanachDTO almanach, final ViewType viewType) {
+  public AlmanachCalendarView(final AlmanachDTO almanach, final AlmanachDay currentDay,
+      final CalendarViewType viewType) {
     this.almanach = almanach;
+    this.currentDay = currentDay;
     this.type = viewType;
+  }
+
+  /**
+   * Gets the first day of weeks of the calendar with 1 meaning for sunday, 2 meaning for monday,
+   * and so on.
+   * The first day of weeks depends on the locale; the first day of weeks is monday for french
+   * whereas it is for sunday for US.
+   * @return the first day of week.
+   */
+  public int getFirstDayOfWeek() {
+    Calendar calendar;
+    if (locale == null) {
+      calendar = Calendar.getInstance();
+    } else {
+      calendar = Calendar.getInstance(locale);
+    }
+    return calendar.getFirstDayOfWeek();
+  }
+
+  /**
+   * Gets the first day of this calendar view.
+   * @return the first day of the window in time.
+   */
+  public AlmanachDay getFirstDay() {
+    AlmanachDay firstDay = null;
+    Calendar calendar = Calendar.getInstance();
+    switch (type) {
+      case MONTHLY:
+        calendar.setTime(currentDay.getDate());
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        firstDay = new AlmanachDay(calendar.getTime());
+        break;
+      case WEEKLY:
+        calendar.setTime(currentDay.getDate());
+        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+        firstDay = new AlmanachDay(calendar.getTime());
+        break;
+      default:
+        throw new UnsupportedOperationException("The type " + type.toString()
+            + " is not yet supported");
+    }
+    return firstDay;
+  }
+
+  /**
+   * Gets the last day of this calendar view.
+   * @return the last day of the window in time.
+   */
+  public AlmanachDay getLastDay() {
+    AlmanachDay lastDay = null;
+    Calendar calendar = Calendar.getInstance();
+    switch (type) {
+      case MONTHLY:
+        calendar.setTime(currentDay.getDate());
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        calendar.add(Calendar.MONTH, 1);
+        calendar.add(Calendar.DAY_OF_YEAR, -1);
+        lastDay = new AlmanachDay(calendar.getTime());
+        break;
+      case WEEKLY:
+        calendar.setTime(currentDay.getDate());
+        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+        calendar.add(Calendar.WEEK_OF_YEAR, 1);
+        calendar.add(Calendar.DAY_OF_YEAR, -1);
+        lastDay = new AlmanachDay(calendar.getTime());
+        break;
+      default:
+        throw new UnsupportedOperationException("The type " + type.toString()
+            + " is not yet supported");
+    }
+    return lastDay;
+  }
+
+  /**
+   * Unset the rendering of the week-end days.
+   */
+  public void unsetWeekend() {
+    withWeekend = false;
+  }
+
+  /**
+   * Is the week-end visible?
+   * @return true if the week-end days should be rendered, false otherwise.
+   */
+  public boolean isWeekendVisible() {
+    return withWeekend;
+  }
+
+  /**
+   * Gets the label of this calendar view to render.
+   * @return the calendar view label.
+   */
+  public String getLabel() {
+    return label;
+  }
+
+  /**
+   * Sets a label to this calendar view.
+   * @param label the label to set.
+   */
+  public void setLabel(final String label) {
+    this.label = label;
+  }
+
+  /**
+   * Gets the current day in this calendar view.
+   * @return the current day.
+   */
+  public AlmanachDay getCurrentDay() {
+    return currentDay;
   }
 
   /**
@@ -99,16 +190,35 @@ public class AlmanachCalendarView {
    * Gets the type of view of this calendar view.
    * @return the type of view.
    */
-  public ViewType getViewType() {
+  public CalendarViewType getViewType() {
     return type;
   }
 
   /**
-   * Adds an event to this calendar view.
-   * @param event the event to add.
+   * Sets the events that are defined in this calendar view.
+   * @param events a list of event DTOs.
    */
-  public void addEvent(final EventOccurrenceDTO event) {
-    this.events.add(event);
+  public void setEvents(final List<EventOccurrenceDTO> events) {
+    this.events.clear();
+    this.events.addAll(events);
   }
 
+  /**
+   * Gets the JSON representation of the event occurrences.
+   * @return a JSON representation of the list of event occurrences.
+   */
+  public String getEventsInJSON() {
+    return EventOccurrenceDTO.toJSON(events);
+  }
+
+  /**
+   * Sets the locale of this calendar view. According to the locale, some calendar properties will
+   * be set (for example, the first day of the week).
+   * @param locale the locale to take into account (fr for the french locale (fr_FR) for example).
+   */
+  public void setLocale(final String locale) {
+    if (isDefined(locale)) {
+      this.locale = new Locale(locale);
+    }
+  }
 }

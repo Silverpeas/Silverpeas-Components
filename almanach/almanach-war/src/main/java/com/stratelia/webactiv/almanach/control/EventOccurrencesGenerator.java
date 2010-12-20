@@ -77,8 +77,6 @@ public class EventOccurrencesGenerator {
    */
   public List<EventOccurrenceDTO> getEventOccurrencesInMonth(final java.util.Calendar month)
       throws AlmanachException, AlmanachNoSuchFindEventException, RemoteException {
-    List<EventOccurrenceDTO> events = new ArrayList<EventOccurrenceDTO>();
-
     java.util.Calendar firstDayMonth = java.util.Calendar.getInstance();
     firstDayMonth.set(java.util.Calendar.YEAR, month.get(java.util.Calendar.YEAR));
     firstDayMonth.set(java.util.Calendar.DAY_OF_MONTH, 1);
@@ -93,23 +91,75 @@ public class EventOccurrencesGenerator {
     lastDayMonth.set(java.util.Calendar.MONTH, month.get(java.util.Calendar.MONTH));
     lastDayMonth.set(java.util.Calendar.HOUR_OF_DAY, 0);
     lastDayMonth.set(java.util.Calendar.MINUTE, 0);
-    lastDayMonth.set(java.util.Calendar.SECOND, 1);
+    lastDayMonth.set(java.util.Calendar.SECOND, 0);
     lastDayMonth.set(java.util.Calendar.MILLISECOND, 0);
     lastDayMonth.add(java.util.Calendar.MONTH, 1);
     Period monthPeriod = new Period(new DateTime(firstDayMonth.getTime()),
         new DateTime(lastDayMonth.getTime()));
 
+    return generateEventOccurrences(monthPeriod);
+  }
+
+  /**
+   * Gets the event occurrences of the events defined in the underlying calendar in the specified
+   * week.
+   * @param week the week as a Calendar instance.
+   * @param instanceId the identifier of the component owning the calendar.
+   * @return a list of event DTOs.
+   * @throws AlmanachException if an error occurs while getting the list of events.
+   * @throws AlmanachNoSuchFindEventException if a detail about an event in the underlying iCal
+   * calendar cannot be found.
+   * @throws RemoteException if the communication with the remote business object fails.
+   */
+  public List<EventOccurrenceDTO> getEventOccurrencesInWeek(final java.util.Calendar week)
+      throws AlmanachException, AlmanachNoSuchFindEventException, RemoteException {
+    java.util.Calendar firstDayWeek = java.util.Calendar.getInstance();
+    firstDayWeek.setTime(week.getTime());
+    firstDayWeek.set(java.util.Calendar.DAY_OF_WEEK, week.getFirstDayOfWeek());
+    firstDayWeek.set(java.util.Calendar.HOUR_OF_DAY, 0);
+    firstDayWeek.set(java.util.Calendar.MINUTE, 0);
+    firstDayWeek.set(java.util.Calendar.SECOND, 0);
+    firstDayWeek.set(java.util.Calendar.MILLISECOND, 0);
+    java.util.Calendar lastDayWeek = java.util.Calendar.getInstance();
+    lastDayWeek.setTime(week.getTime());
+    lastDayWeek.set(java.util.Calendar.YEAR, week.get(java.util.Calendar.YEAR));
+    lastDayWeek.set(java.util.Calendar.MONTH, week.get(java.util.Calendar.MONTH));
+    lastDayWeek.set(java.util.Calendar.HOUR_OF_DAY, 0);
+    lastDayWeek.set(java.util.Calendar.MINUTE, 0);
+    lastDayWeek.set(java.util.Calendar.SECOND, 0);
+    lastDayWeek.set(java.util.Calendar.MILLISECOND, 0);
+    lastDayWeek.set(java.util.Calendar.DAY_OF_WEEK,  week.getFirstDayOfWeek());
+    lastDayWeek.add(java.util.Calendar.WEEK_OF_YEAR, 1);
+    Period weekPeriod = new Period(new DateTime(firstDayWeek.getTime()),
+        new DateTime(lastDayWeek.getTime()));
+
+    return generateEventOccurrences(weekPeriod);
+  }
+
+  /**
+   * Generates the occurrences of the events in the underlying calendar for the specified period.
+   * @param period the period.
+   * @return a list of event occurrences that occur in the specified period.
+   * @throws AlmanachException if an error occurs while getting the list of events.
+   * @throws AlmanachNoSuchFindEventException if a detail about an event in the underlying iCal
+   * calendar cannot be found.
+   * @throws RemoteException if the communication with the remote business object fails.
+   */
+  private List<EventOccurrenceDTO> generateEventOccurrences(final Period period) throws AlmanachException,
+      AlmanachNoSuchFindEventException, RemoteException {
+    List<EventOccurrenceDTO> events = new ArrayList<EventOccurrenceDTO>();
     ComponentList componentList = calendar.getComponents(Component.VEVENT);
     for (Object eventObject : componentList) {
       VEvent iCalEvent = (VEvent) eventObject;
       String idEvent = iCalEvent.getProperties().getProperty(Property.UID).getValue();
       EventDetail evtDetail = getEventDetail(idEvent);
-      PeriodList periodList = iCalEvent.calculateRecurrenceSet(monthPeriod);
+      PeriodList periodList = iCalEvent.calculateRecurrenceSet(period);
       for (Object recurrencePeriodObject : periodList) {
         Period recurrencePeriod = (Period) recurrencePeriodObject;
         EventOccurrenceDTO event = new EventOccurrenceDTO(evtDetail,
             new Date(recurrencePeriod.getStart().getTime()),
             new Date(recurrencePeriod.getEnd().getTime()));
+        event.setPriority(evtDetail.getPriority() > 0);
         events.add(event);
       }
     }

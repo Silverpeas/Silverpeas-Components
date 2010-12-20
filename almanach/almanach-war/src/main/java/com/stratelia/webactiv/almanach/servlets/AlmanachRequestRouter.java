@@ -35,14 +35,17 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.almanach.control.AlmanachCalendarView;
 import com.stratelia.webactiv.almanach.control.AlmanachDay;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
+import com.stratelia.webactiv.almanach.control.CalendarViewType;
 import com.stratelia.webactiv.almanach.control.EventOccurrenceDTO;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.Periodicity;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
 
 public class AlmanachRequestRouter extends ComponentRequestRouter {
 
@@ -110,23 +113,22 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         // (utile pour générer le Header)
         if (action == null || action.length() == 0) {
           action = "View";
-        } else if ("PreviousMonth".equals(action)) {
-          almanach.previousMonth();
-        } else if ("NextMonth".equals(action)) {
-          almanach.nextMonth();
+        } else if ("PreviousView".equals(action)) {
+          almanach.previousView();
+        } else if ("NextView".equals(action)) {
+          almanach.nextView();
         } else if ("GoToday".equals(action)) {
           almanach.today();
+        } else if ("ViewByMonth".equals(action)) {
+          almanach.setViewMode(MONTHLY);
+        }  else if ("ViewByWeek".equals(action)) {
+          almanach.setViewMode(WEEKLY);
         }
 
-        List<EventOccurrenceDTO> events = almanach.listCurrentMonthEvents();
-        AlmanachDay currentDay = new AlmanachDay(almanach.getCurrentDay());
-        request.setAttribute("events", EventOccurrenceDTO.toJSON(events));
-        request.setAttribute("currentDay", currentDay);
-
-        String navigationLabel = almanach.getString("mois" + currentDay.getMonth())
-            + " " + String.valueOf(currentDay.getYear());
-        request.setAttribute("navigationLabel", navigationLabel);
-
+        AlmanachCalendarView view = almanach.getAlmanachCalendarView();
+        request.setAttribute("calendarView", view);
+        request.setAttribute("othersAlmanachs", almanach.getOthersAlmanachs());
+        request.setAttribute("accessibleInstances", almanach.getAccessibleInstances());
         request.setAttribute("RSSUrl", almanach.getRSSUrl());
 
         if (function.startsWith("portlet")) {
