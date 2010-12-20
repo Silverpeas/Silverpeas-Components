@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -23,6 +23,11 @@
  */
 
 /* tableau Doodle */
+
+body {
+	margin: 20px 0 0 20px;
+}
+
 
 .questionResults th, .questionResults td, .questionResults tr {
 	padding:5px;
@@ -39,18 +44,19 @@
 	background-color:#FFFFFF;
 	border:none;
 	padding:3px;
+	
 }
 
 .questionResults tbody tr td:first-child {
-	display:block;
-	/*background-color:#E4E4E4;*/
-	border:#CCC 1px solid;
-	/*margin-right:5px;*/
+	
+	/*background-color:#E4E4E4;
+	border-bottom:#CCC 1px solid;
+	margin-right:5px;*/
 }
 
 .questionResults tbody tr td {
 	background-color:#F9F9F9;
-	border:#E9E9E9 1px solid;
+	border-top:1px solid #CCCCCC;
 	min-height:33px;
 }
 
@@ -63,7 +69,60 @@
 
 .questionResults tbody .questionResults-Non {
 	background-color:#FECBCB;
-	border:1px solid #FD433E;
+	border:1px solid #FF928F;
 	text-align:center;
 	font-size:12px;
+}
+
+
+/* tableau Doodle */
+
+.questionResults th,.questionResults td,.questionResults tr {
+	padding: 5px;
+	font-size: 12px;
+}
+
+.questionResults .questionResults-top th {
+	background-color: #E4E4E4;
+	width: 150px;
+}
+
+.questionResults .questionResults-top .questionResults-vide,.questionResults tbody .questionResults-vide
+	{
+	background-color: #FFFFFF;
+	border: none;
+	padding: 3px;
+	
+	border-top:1px solid #CCCCCC;
+}
+
+.questionResults .displayUserName,.questionResults .displayUserName a {
+	background-color: #E4E4E4;
+    font-size: 11px;
+    font-weight: 100;
+    line-height: 29px;
+    margin-right: 5px;
+    padding-left: 10px;
+}
+
+.questionResults tbody tr td {
+	background-color: #FFFFFF;
+	min-height: 33px;
+}
+
+.questionResults tbody .questionResults-Oui {
+	background-color: #D5FAC5;
+	text-align: center;
+	font-size: 10px;
+}
+
+.questionResults tbody .questionResults-Non {
+	background-color: #FECBCB;
+	text-align: center;
+	font-size: 10px;
+}
+
+.questionResults .labelAnswer {
+	text-align: left;
+	padding-right:40px;
 }
