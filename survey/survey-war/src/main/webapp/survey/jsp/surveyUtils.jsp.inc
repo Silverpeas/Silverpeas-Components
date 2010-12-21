@@ -911,7 +911,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
                 String userId = qR.getUserId();
                 UserDetail userDetail = surveyScc.getUserDetail(userId);
                 String userName = userDetail.getDisplayedName();
-                 r += "<tr><td class=\"displayUserName\"><a href=\"javaScript:onClick=viewResultByUser('"+userId+"','"+userName+"');\">"+Encode.javaStringToHtmlString(userName)+"</a></td><td align=\"left\" >"+answer+"<BR></td></tr>";
+                 r += "<tr><td class=\"displayUserName\" width=\"40%\"><a href=\"javaScript:onClick=viewResultByUser('"+userId+"','"+userName+"');\">"+Encode.javaStringToHtmlString(userName)+"</a></td><td class=\"freeAnswer\">"+answer+"</td></tr>";
             }
         }
         catch( Exception e){
