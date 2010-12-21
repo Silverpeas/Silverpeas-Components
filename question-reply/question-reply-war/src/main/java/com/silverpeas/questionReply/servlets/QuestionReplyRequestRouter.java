@@ -147,14 +147,14 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
       if (function.startsWith("Main")) {
         scc.setUserProfil();
         flag = scc.getUserProfil();
-        Collection allQuestions = scc.getAllQuestions();
+        Collection<Question> allQuestions = scc.getAllQuestions();
         request.setAttribute("questions", allQuestions);
         request.setAttribute("Flag", flag);
         request.setAttribute("UserId", scc.getUserId());
         request.setAttribute("Categories", scc.getAllCategories());
         destination = "/questionReply/jsp/listQuestionsDHTML.jsp";
       } else if (function.equals("MainQuestions")) {
-        Collection questions = scc.getQuestions();
+        Collection<Question> questions = scc.getQuestions();
         request.setAttribute("questions", questions);
         if(admin == role || writer == role) {
           destination = "/questionReply/jsp/listQExpertAdmin.jsp";
@@ -303,8 +303,8 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         }
       } else if (function.equals("DeleteReply")) {
         if (publisher == role) {
-          Collection replies = new ArrayList();
-          replies.add(new Long(request.getParameter("replyId")));
+          Collection<Long> replies = new ArrayList<Long>();
+          replies.add(Long.parseLong(request.getParameter("replyId")));
           scc.deleteReplies(replies);
           if (scc.getCurrentQuestion() == null) {
             request.setAttribute("urlToReload", "Main");
@@ -321,7 +321,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         scc.setCurrentQuestion(question);
         String id = request.getParameter("replyId");
         Long replyId = Long.valueOf(id);
-        Collection replies = new ArrayList();
+        Collection<Long> replies = new ArrayList<Long>();
         replies.add(replyId);
         scc.deleteR(replies);
         destination = getDestination("Main", componentSC, request);
@@ -547,7 +547,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         destination = "/questionReply/jsp/downloadZip.jsp";
       } else if (function.startsWith("portlet")) {
         scc.setUserProfil();
-        Collection allQuestions = scc.getAllQuestions();
+        Collection<Question> allQuestions = scc.getAllQuestions();
         request.setAttribute("questions", allQuestions);
         request.setAttribute("Flag", "user");
         request.setAttribute("UserId", scc.getUserId());

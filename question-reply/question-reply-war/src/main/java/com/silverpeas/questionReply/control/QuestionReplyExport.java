@@ -82,7 +82,6 @@ public class QuestionReplyExport {
 
     // affichage des réponses
     String aId = "a" + questionId;
-    @SuppressWarnings("unchecked")
     Collection<Reply> replies = question.readReplies();
     Iterator<Reply> itR = replies.iterator();
     boolean existe = false;

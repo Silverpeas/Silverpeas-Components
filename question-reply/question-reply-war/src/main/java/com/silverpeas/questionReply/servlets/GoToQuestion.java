@@ -36,6 +36,8 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class GoToQuestion extends GoTo {
+  private static final long serialVersionUID = 8074965533055941265L;
+
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     Question question = getQuestionManager().getQuestion(

@@ -27,7 +27,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Question;
@@ -49,8 +51,6 @@ import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
-import java.util.Collections;
-import java.util.List;
 
 public class QuestionManager {
 
@@ -273,16 +273,16 @@ public class QuestionManager {
   /*
    * Clos une liste de questions : updateQuestion
    */
-  public void closeQuestions(Collection questionIds)
+  public void closeQuestions(Collection<Long> questionIds)
       throws QuestionReplyException {
     if (questionIds != null) {
       boolean succeed = false;
       Connection con = null;
       try {
         con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
-        Iterator it = questionIds.iterator();
+        Iterator<Long> it = questionIds.iterator();
         while (it.hasNext()) {
-          long idQ = ((Long) it.next()).longValue();
+          long idQ = it.next();
           Question question = getQuestion(idQ);
           question.setStatus(2);
           updateQuestion(con, question);
@@ -298,16 +298,16 @@ public class QuestionManager {
     }
   }
 
-  public void openQuestions(Collection questionIds)
+  public void openQuestions(Collection<Long> questionIds)
       throws QuestionReplyException {
     if (questionIds != null) {
       boolean succeed = false;
       Connection con = null;
       try {
         con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
-        Iterator it = questionIds.iterator();
+        Iterator<Long> it = questionIds.iterator();
         while (it.hasNext()) {
-          long idQ = ((Long) it.next()).longValue();
+          long idQ = it.next();
           Question question = getQuestion(idQ);
           question.setStatus(1);
           updateQuestion(con, question);
@@ -331,13 +331,13 @@ public class QuestionManager {
     boolean succeed = false;
     Connection con = null;
     try {
-      Collection recipients = question.readRecipients();
+      Collection<Recipient> recipients = question.readRecipients();
       con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
       deleteRecipients(con, ((IdPK) question.getPK()).getIdAsLong());
       if (recipients != null) {
-        Iterator it = recipients.iterator();
+        Iterator<Recipient> it = recipients.iterator();
         while (it.hasNext()) {
-          Recipient recipient = (Recipient) it.next();
+          Recipient recipient = it.next();
           recipient.setQuestionId(((IdPK) question.getPK()).getIdAsLong());
           createRecipient(con, recipient);
         }
@@ -363,7 +363,7 @@ public class QuestionManager {
    * Affecte le nombre de réponses publiques de la question à 0 : updateQuestion si question en
    * attente, on a demandé à la supprimer : deleteQuestion
    */
-  public void updateQuestionRepliesPublicStatus(Collection questionIds)
+  public void updateQuestionRepliesPublicStatus(Collection<Long> questionIds)
       throws QuestionReplyException {
     boolean succeed = false;
     Connection con = null;
@@ -371,15 +371,15 @@ public class QuestionManager {
     try {
       con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
       if (questionIds != null) {
-        Iterator itQ = questionIds.iterator();
+        Iterator<Long> itQ = questionIds.iterator();
         while (itQ.hasNext()) {
-          long idQ = ((Long) itQ.next()).longValue();
+          long idQ = itQ.next();
           Question question = getQuestion(idQ);
-          Collection replies = getQuestionPublicReplies(idQ);
+          Collection<Reply> replies = getQuestionPublicReplies(idQ);
           if (replies != null) {
-            Iterator itR = replies.iterator();
+            Iterator<Reply> itR = replies.iterator();
             while (itR.hasNext()) {
-              Reply reply = (Reply) itR.next();
+              Reply reply = itR.next();
               reply.setPublicReply(0);
               addComponentId(reply, question.getPK().getInstanceId());
               updateReply(con, reply);
@@ -412,22 +412,18 @@ public class QuestionManager {
    * Affecte le status private à 0 de toutes les réponses d'une liste de questions : updateReply
    * Affecte le nombre de réponses privées de la question à 0 : updateQuestion
    */
-  public void updateQuestionRepliesPrivateStatus(Collection questionIds)
+  public void updateQuestionRepliesPrivateStatus(Collection<Long> questionIds)
       throws QuestionReplyException {
     boolean succeed = false;
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
       if (questionIds != null) {
-        Iterator itQ = questionIds.iterator();
-        while (itQ.hasNext()) {
-          long idQ = ((Long) itQ.next()).longValue();
+        for (Long idQ : questionIds) {
           Question question = getQuestion(idQ);
-          Collection replies = getQuestionPrivateReplies(idQ);
+          Collection<Reply> replies = getQuestionPrivateReplies(idQ);
           if (replies != null) {
-            Iterator itR = replies.iterator();
-            while (itR.hasNext()) {
-              Reply reply = (Reply) itR.next();
+            for (Reply reply : replies) {
               reply.setPrivateReply(0);
               addComponentId(reply, question.getPK().getInstanceId());
               updateReply(con, reply);
@@ -462,16 +458,14 @@ public class QuestionManager {
    * Affecte le status public à 0 d'une liste de réponses : updateReply Décremente le nombre de
    * réponses publiques de la question d'autant : updateQuestion
    */
-  public void updateRepliesPublicStatus(Collection replyIds, Question question)
+  public void updateRepliesPublicStatus(Collection<Long> replyIds, Question question)
       throws QuestionReplyException {
     boolean succeed = false;
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
       if (replyIds != null) {
-        Iterator itR = replyIds.iterator();
-        while (itR.hasNext()) {
-          long idR = ((Long) itR.next()).longValue();
+        for (Long idR : replyIds) {
           Reply reply = getReply(idR);
           if (reply != null) {
             reply.setPublicReply(0);
@@ -501,16 +495,14 @@ public class QuestionManager {
    * Affecte le status private à 0 d'une liste de réponses : updateReply Décremente le nombre de
    * réponses privées de la question d'autant : updateQuestion
    */
-  public void updateRepliesPrivateStatus(Collection replyIds, Question question)
+  public void updateRepliesPrivateStatus(Collection<Long> replyIds, Question question)
       throws QuestionReplyException {
     boolean succeed = false;
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
       if (replyIds != null) {
-        Iterator itR = replyIds.iterator();
-        while (itR.hasNext()) {
-          long idR = ((Long) itR.next()).longValue();
+        for (Long idR : replyIds) {
           Reply reply = getReply(idR);
           if (reply != null) {
             reply.setPrivateReply(0);
@@ -697,14 +689,12 @@ public class QuestionManager {
     }
   }
 
-  public void deleteQuestionAndReplies(Collection questionIds)
+  public void deleteQuestionAndReplies(Collection<Long> questionIds)
       throws QuestionReplyException {
     // pour chaque question
-    Iterator it = questionIds.iterator();
-    while (it.hasNext()) {
+    for (Long questionId : questionIds) {
       boolean succeed = false;
       Connection con = null;
-      Long questionId = (Long) it.next();
       try {
         con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
         long qId = questionId.longValue();
@@ -716,10 +706,8 @@ public class QuestionManager {
         String peasId = question.getInstanceId();
 
         // rechercher les réponses
-        Collection replies = getAllReplies(qId);
-        Iterator itR = replies.iterator();
-        while (itR.hasNext()) {
-          Reply reply = (Reply) itR.next();
+        Collection<Reply> replies = getAllReplies(qId);
+        for (Reply reply : replies) {
           long replyId = Long.parseLong(reply.getPK().getId());
           WAPrimaryKey pkR = reply.getPK();
           pkR.setComponentName(question.getInstanceId());
@@ -750,23 +738,23 @@ public class QuestionManager {
       } finally {
         closeConnection(con, succeed);
       }
+
     }
   }
 
-  private Collection getAllReplies(long questionId)
+  private Collection<Reply> getAllReplies(long questionId)
       throws QuestionReplyException {
-    Collection allReplies = new ArrayList();
+    Collection<Reply> allReplies = new ArrayList<Reply>();
     try {
-      Collection privateReplies = getQuestionPrivateReplies(questionId);
+      Collection<Reply> privateReplies = getQuestionPrivateReplies(questionId);
       allReplies.addAll(privateReplies);
-      Collection publicReplies = getQuestionPublicReplies(questionId);
+      Collection<Reply> publicReplies = getQuestionPublicReplies(questionId);
       allReplies.addAll(publicReplies);
 
       return allReplies;
     } catch (Exception e) {
-      throw new QuestionReplyException("QuestionManager.getAllReplies",
-          SilverpeasException.ERROR, "questionReply.EX_DELETE_QUESTION_FAILED",
-          "", e);
+      throw new QuestionReplyException("QuestionManager.getAllReplies", SilverpeasException.ERROR,
+          "questionReply.EX_DELETE_QUESTION_FAILED", "", e);
     }
   }
 
@@ -839,7 +827,7 @@ public class QuestionManager {
       IdPK pk = new IdPK();
       pk.setIdAsLong(questionId);
       question = (Question) daoQ.findByPrimaryKey(pk);
-      Collection replies = getQuestionReplies(questionId);
+      Collection<Reply> replies = getQuestionReplies(questionId);
       question.writeReplies(replies);
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestion",
@@ -849,7 +837,7 @@ public class QuestionManager {
     return question;
   }
 
-  public Collection getQuestionsByIds(ArrayList ids)
+  public Collection<Question> getQuestionsByIds(ArrayList ids)
       throws QuestionReplyException {
     StringBuffer where = new StringBuffer();
     int sizeOfIds = ids.size();
@@ -860,7 +848,7 @@ public class QuestionManager {
       where.append(" id = " + (String) ids.get(sizeOfIds - 1));
     }
 
-    Collection questions = new ArrayList();
+    Collection<Question> questions = new ArrayList<Question>();
     try {
       SilverpeasBeanDAO daoQ = getQdao();
       IdPK pk = new IdPK();
@@ -876,9 +864,9 @@ public class QuestionManager {
   /*
    * recupère la liste des réponses d'une question
    */
-  public Collection getQuestionReplies(long questionId)
+  public Collection<Reply> getQuestionReplies(long questionId)
       throws QuestionReplyException {
-    Collection replies = new ArrayList();
+    Collection<Reply> replies = new ArrayList<Reply>();
     try {
       SilverpeasBeanDAO daoR = getRdao();
       IdPK pk = new IdPK();
@@ -894,13 +882,13 @@ public class QuestionManager {
   /*
    * recupère la liste des réponses publiques d'une question
    */
-  public Collection getQuestionPublicReplies(long questionId)
+  public Collection<Reply> getQuestionPublicReplies(long questionId)
       throws QuestionReplyException {
-    Collection replies = new ArrayList();
+    Collection<Reply> replies = new ArrayList<Reply>();
     try {
       SilverpeasBeanDAO daoR = getRdao();
       IdPK pk = new IdPK();
-      replies = daoR.findByWhereClause(pk, " publicReply = 1 and questionId = "
+      replies = (Collection<Reply>) daoR.findByWhereClause(pk, " publicReply = 1 and questionId = "
           + new Long(questionId).toString());
     } catch (PersistenceException e) {
       throw new QuestionReplyException(
@@ -913,15 +901,15 @@ public class QuestionManager {
   /*
    * recupère la liste des réponses privées d'une question
    */
-  public Collection getQuestionPrivateReplies(long questionId)
+  public Collection<Reply> getQuestionPrivateReplies(long questionId)
       throws QuestionReplyException {
-    Collection replies = new ArrayList();
+    Collection<Reply> replies = new ArrayList<Reply>();
     try {
       SilverpeasBeanDAO daoR = getRdao();
       IdPK pk = new IdPK();
       replies = daoR.findByWhereClause(pk,
           " privateReply = 1 and questionId = "
-          + new Long(questionId).toString());
+              + new Long(questionId).toString());
     } catch (PersistenceException e) {
       throw new QuestionReplyException(
           "QuestionManager.getQuestionPrivateReplies",
@@ -933,9 +921,9 @@ public class QuestionManager {
   /*
    * recupère la liste des destinataires d'une question
    */
-  public Collection getQuestionRecipients(long questionId)
+  public Collection<Recipient> getQuestionRecipients(long questionId)
       throws QuestionReplyException {
-    Collection recipients = new ArrayList();
+    Collection<Recipient> recipients = new ArrayList<Recipient>();
     try {
       SilverpeasBeanDAO daoU = getUdao();
       IdPK pk = new IdPK();
@@ -970,9 +958,9 @@ public class QuestionManager {
    * Recupère la liste des questions emises par un utilisateur => Q dont il est l'auteur qui ne sont
    * pas closes ou closes avec réponses privées
    */
-  public Collection getSendQuestions(String userId, String instanceId)
+  public Collection<Question> getSendQuestions(String userId, String instanceId)
       throws QuestionReplyException {
-    Collection questions = new ArrayList();
+    Collection<Question> questions = new ArrayList<Question>();
     try {
       SilverpeasBeanDAO daoQ = getQdao();
       IdPK pk = new IdPK();
@@ -991,19 +979,20 @@ public class QuestionManager {
    * Recupère la liste des questions recues par un utilisateur => Q dont il est le destinataire et
    * qui ne sont pas closes
    */
-  public Collection getReceiveQuestions(String userId, String instanceId)
+  public Collection<Question> getReceiveQuestions(String userId, String instanceId)
       throws QuestionReplyException {
-    Collection questions = new ArrayList();
+    Collection<Question> questions = new ArrayList<Question>();
     try {
       SilverpeasBeanDAO daoQ = getQdao();
       IdPK pk = new IdPK();
       questions =
           daoQ.findByWhereClause(
-          pk,
-          " instanceId = '"
-          + instanceId
-          + "' and status <> 2 and id IN (select questionId from SC_QuestionReply_Recipient where userId = "
-          + userId + ")");
+              pk,
+              " instanceId = '"
+                  + instanceId
+                  +
+                  "' and status <> 2 and id IN (select questionId from SC_QuestionReply_Recipient where userId = "
+                  + userId + ")");
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getReceiveQuestions",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_QUESTIONS", "",
@@ -1072,9 +1061,9 @@ public class QuestionManager {
   /*
    * Recupère la liste des questions publiques avec réponses
    */
-  public Collection getPublicQuestions(String instanceId)
+  public Collection<Question> getPublicQuestions(String instanceId)
       throws QuestionReplyException {
-    Collection questions = new ArrayList();
+    Collection<Question> questions = new ArrayList<Question>();
     try {
       SilverpeasBeanDAO daoQ = getQdao();
       IdPK pk = new IdPK();
@@ -1154,7 +1143,7 @@ public class QuestionManager {
       IdPK pk = new IdPK();
       Collection replies = daoR.findByWhereClause(pk,
           " publicReply = 1 and questionId = "
-          + new Long(questionId).toString());
+              + new Long(questionId).toString());
       nb = replies.size();
     } catch (PersistenceException e) {
       throw new QuestionReplyException(
@@ -1175,7 +1164,7 @@ public class QuestionManager {
       IdPK pk = new IdPK();
       Collection replies = daoR.findByWhereClause(pk,
           " privateReply = 1 and questionId = "
-          + new Long(questionId).toString());
+              + new Long(questionId).toString());
       nb = replies.size();
     } catch (PersistenceException e) {
       throw new QuestionReplyException(
@@ -1199,6 +1188,7 @@ public class QuestionManager {
   }
 
   protected boolean isSortable(String instanceId) {
-    return StringUtil.getBooleanValue(controller.getComponentParameterValue(instanceId, "sortable"));
+    return StringUtil
+        .getBooleanValue(controller.getComponentParameterValue(instanceId, "sortable"));
   }
 }

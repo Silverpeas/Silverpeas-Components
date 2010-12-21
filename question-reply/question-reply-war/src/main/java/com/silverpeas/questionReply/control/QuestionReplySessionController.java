@@ -211,7 +211,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   /*
    * initialise les destinataires de la question à créer
    */
-  public void setNewQuestionRecipients(Collection userIds) {
+  public void setNewQuestionRecipients(Collection<String> userIds) {
     Collection<Recipient> recipients = new ArrayList<Recipient>();
     if (userIds != null) {
       Iterator<String> it = userIds.iterator();
@@ -331,7 +331,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     pk.setComponentName(getComponentId());
     newReply.setPK(pk);
     long replyId = getQuestionManager().createReply(newReply, getCurrentQuestion());
-    Collection replyIds = new ArrayList();
+    List<Long> replyIds = new ArrayList<Long>();
     replyIds.add(Long.valueOf(((IdPK) getCurrentReply().getPK()).getIdAsLong()));
     deletePublicReplies(replyIds);
     getReply(replyId);
@@ -373,7 +373,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * nombre de R publiques ou privées restantes est egal à 0 et que la question est close, la
    * question n'est plus visible => reSetCurrentQuestion sinon met en session la question
    */
-  public void deleteReplies(Collection replyIds) throws QuestionReplyException {
+  public void deleteReplies(Collection<Long> replyIds) throws QuestionReplyException {
     try {
       int rest = 0;
       if (userProfil.equals("publisher")) {
@@ -395,7 +395,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     }
   }
 
-  public void deleteR(Collection replyIds) throws QuestionReplyException {
+  public void deleteR(Collection<Long> replyIds) throws QuestionReplyException {
     try {
       int rest = 0;
       rest = deletePrivateReplies(replyIds);
@@ -428,13 +428,13 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   public void closeQuestion(long questionId) throws QuestionReplyException {
     Collection<Long> questionIds = new ArrayList<Long>();
-    questionIds.add(Long.valueOf(questionId));
+    questionIds.add(questionId);
     getQuestionManager().closeQuestions(questionIds);
   }
 
   public void openQuestion(long questionId) throws QuestionReplyException {
     Collection<Long> questionIds = new ArrayList<Long>();
-    questionIds.add(Long.valueOf(questionId));
+    questionIds.add(questionId);
     getQuestionManager().openQuestions(questionIds);
   }
 
@@ -442,7 +442,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Supprime les réponses publiques => getQuestionManager().updateRepliesPublicStatus() retourne le
    * nombre de réponses publiques restantes
    */
-  private int deletePublicReplies(Collection replyIds) throws QuestionReplyException {
+  private int deletePublicReplies(Collection<Long> replyIds) throws QuestionReplyException {
     getQuestionManager().updateRepliesPublicStatus(replyIds, getCurrentQuestion());
     return getCurrentQuestion().getPublicReplyNumber();
   }
@@ -451,7 +451,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Supprime les réponses privées => getQuestionManager().updateRepliesPrivateStatus() retourne le
    * nombre de réponses privées restantes
    */
-  private int deletePrivateReplies(Collection replyIds) throws QuestionReplyException {
+  private int deletePrivateReplies(Collection<Long> replyIds) throws QuestionReplyException {
     getQuestionManager().updateRepliesPrivateStatus(replyIds, getCurrentQuestion());
     return getCurrentQuestion().getPrivateReplyNumber();
   }
@@ -492,7 +492,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   /*
    * liste les réponses publiques d'une question
    */
-  @SuppressWarnings("unchecked")
   private Collection<Reply> getPublicRepliesForQuestion(long id) throws QuestionReplyException {
     return getQuestionManager().getQuestionPublicReplies(id);
   }
@@ -500,7 +499,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   /*
    * liste les réponses privées d'une question
    */
-  @SuppressWarnings("unchecked")
   private Collection<Reply> getPrivateRepliesForQuestion(long id) throws QuestionReplyException {
     return getQuestionManager().getQuestionPrivateReplies(id);
   }
@@ -508,7 +506,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   /*
    * liste les réponses à une question
    */
-  @SuppressWarnings("unchecked")
   private Collection<Reply> getAllRepliesForQuestion(long id) throws QuestionReplyException {
     return getQuestionManager().getQuestionReplies(id);
   }
@@ -662,15 +659,15 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   /*
    * Récupère la liste des experts du domaine de la question
    */
-  public Collection getCurrentQuestionWriters() throws QuestionReplyException {
+  public Collection<UserDetail> getCurrentQuestionWriters() throws QuestionReplyException {
     OrganizationController orga = getOrganizationController();
-    Collection arrayUsers = new ArrayList();
+    List<UserDetail> arrayUsers = new ArrayList<UserDetail>();
 
     try {
       ContentManager contentManager = new ContentManager();
       // recupere la liste de toutes les instances d'annuaire
       String[] instances = orga.getCompoId("whitePages");
-      ArrayList listeInstanceId = new ArrayList();
+      List<String> listeInstanceId = new ArrayList<String>();
       int i = 0;
       while (i < instances.length) {
         listeInstanceId.add("whitePages" + instances[i]);
@@ -680,34 +677,25 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       // recupere la liste de tous les experts du domaine de classement de la
       // question
       ContainerPositionInterface position = getSilverContentIdPosition();
-      if (position != null) {
-        if (!position.isEmpty()) {
-          List liste = containerContext.getSilverContentIdByPosition(position, listeInstanceId);
-          i = 0;
-          ArrayList arraySilverContentId = new ArrayList();
-          if (liste != null) {
-            arraySilverContentId = new ArrayList(liste);
-          }
+      if (position != null && !position.isEmpty()) {
+        List<Integer> liste =
+              containerContext.getSilverContentIdByPosition(position, listeInstanceId);
 
-          CardManager cardManager = CardManager.getInstance();
-          while (i < arraySilverContentId.size()) {
-            int silverContentId = ((Integer) arraySilverContentId.get(i)).intValue();
-            String internalContentId = contentManager.getInternalContentId(silverContentId);
-            Long userCardIdLong = new Long(internalContentId);
-            long userCardId = userCardIdLong.longValue();
-            Card card = cardManager.getCard(userCardId);
-            if (card != null) {
-              String idUser = card.getUserId();
-              UserDetail user = orga.getUserDetail(idUser);
-              if (!exist(user, arrayUsers)) {
-                arrayUsers.add(user);
-              }
+        CardManager cardManager = CardManager.getInstance();
+        for (Integer integer : liste) {
+          int silverContentId = integer.intValue();
+          String internalContentId = contentManager.getInternalContentId(silverContentId);
+          long userCardId = Long.parseLong(internalContentId);
+          Card card = cardManager.getCard(userCardId);
+          if (card != null) {
+            String idUser = card.getUserId();
+            UserDetail user = orga.getUserDetail(idUser);
+            if (!exist(user, arrayUsers)) {
+              arrayUsers.add(user);
             }
-            i++;
           }
         }
       }
-
     } catch (Exception e) {
       throw new QuestionReplyException(
           "QuestionReplySessionController.getCurrentQuestionWriters()",
@@ -721,18 +709,15 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   /*
    * Récupère la liste des experts du domaine de la question qui ne sont pas déjà destinataires
    */
-  public Collection getCurrentQuestionAvailableWriters()
+  public Collection<UserDetail> getCurrentQuestionAvailableWriters()
       throws QuestionReplyException {
-    Collection users = getCurrentQuestionWriters();
-    Collection availableUsers = new ArrayList();
-    Collection recipients = getCurrentQuestion().readRecipients();
-    Iterator it = users.iterator();
-    while (it.hasNext()) {
-      UserDetail user = (UserDetail) it.next();
-      Iterator itR = recipients.iterator();
+    Collection<UserDetail> users = getCurrentQuestionWriters();
+    Collection<UserDetail> availableUsers = new ArrayList<UserDetail>();
+    Collection<Recipient> recipients = getCurrentQuestion().readRecipients();
+
+    for (UserDetail user : users) {
       boolean isRecipient = false;
-      while (itR.hasNext()) {
-        Recipient recipient = (Recipient) itR.next();
+      for (Recipient recipient : recipients) {
         if (user.getId().equals(recipient.getUserId())) {
           isRecipient = true;
         }
@@ -784,7 +769,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       }
       notifMetaData.setSender(getUserId());
       notifMetaData.addUserRecipients(users);
-      //notifMetaData.setLink(question._getURL());
+      // notifMetaData.setLink(question._getURL());
       notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
       getNotificationSender().notifyUser(notifMetaData);
     } catch (Exception e) {
@@ -798,7 +783,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * @param users list of users to notify
    * @throws QuestionReplyException
    */
-  private void notifyTemplateReply(Question question, Reply reply, UserDetail[] users) throws QuestionReplyException {
+  private void notifyTemplateReply(Question question, Reply reply, UserDetail[] users)
+      throws QuestionReplyException {
     try {
       UserDetail user = getUserDetail(getUserId());
       String senderName = user.getFirstName() + " " + user.getLastName();
@@ -833,7 +819,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       notifMetaData.setSender(getUserId());
       notifMetaData.addUserRecipients(users);
       notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
-      //notifMetaData.setLink(question._getURL());
+      // notifMetaData.setLink(question._getURL());
       getNotificationSender().notifyUser(notifMetaData);
     } catch (Exception e) {
       throw new QuestionReplyException(
@@ -968,10 +954,10 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   // Gestion des catégories
   // ----------------------
-  public Collection getAllCategories() throws QuestionReplyException {
+  public Collection<NodeDetail> getAllCategories() throws QuestionReplyException {
     try {
       NodePK nodePK = new NodePK("0", getComponentId());
-      Collection categories = getNodeBm().getChildrenDetails(nodePK);
+      Collection<NodeDetail> categories = getNodeBm().getChildrenDetails(nodePK);
       return categories;
     } catch (Exception e) {
       throw new QuestionReplyException(
@@ -1028,10 +1014,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     try {
       // pour cette catégorie, rechercher les questions et mettre "" dans la
       // catégorie
-      Collection questions = getQuestionsByCategory(categoryId);
-      Iterator it = questions.iterator();
-      while (it.hasNext()) {
-        Question question = (Question) it.next();
+      Collection<Question> questions = getQuestionsByCategory(categoryId);
+      for (Question question : questions) {
         question.setCategoryId("");
         getQuestionManager().updateQuestion(question);
       }
@@ -1201,7 +1185,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       ParseException {
     StringBuilder sb = new StringBuilder();
     sb.append("<table width=\"100%\">\n");
-    @SuppressWarnings("unchecked")
     Collection<NodeDetail> categories = getAllCategories();
     QuestionReplyExport exporter = new QuestionReplyExport(resource, file);
     for (NodeDetail category : categories) {

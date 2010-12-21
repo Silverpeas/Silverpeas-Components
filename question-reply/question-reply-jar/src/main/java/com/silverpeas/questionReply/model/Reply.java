@@ -24,10 +24,13 @@
 
 package com.silverpeas.questionReply.model;
 
-import com.stratelia.webactiv.persistence.*;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.beans.admin.*;
 import java.util.Date;
+
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.persistence.SilverpeasBean;
+import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
+import com.stratelia.webactiv.util.DateUtil;
 
 public class Reply extends SilverpeasBean {
   private static final long serialVersionUID = 5638699228049557540L;

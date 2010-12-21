@@ -120,7 +120,7 @@ public final class QuestionHeader extends AbstractI18NBean implements SilverCont
     return this.date;
   }
 
-  public Iterator getLanguages() {
+  public Iterator<String> getLanguages() {
     return null;
   }
 }

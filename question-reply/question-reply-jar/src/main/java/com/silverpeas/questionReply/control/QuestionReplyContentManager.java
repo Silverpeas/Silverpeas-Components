@@ -48,13 +48,13 @@ public class QuestionReplyContentManager implements ContentInterface {
 
   /** Find all the SilverContent with the given SilverContentId */
   @Override
-  public List getSilverContentById(List ids, String peasId, String userId, List userRoles) {
+  public List getSilverContentById(List<Integer> ids, String peasId, String userId, List<String> userRoles) {
     return getHeaders(makeIdArray(ids), peasId);
   }
 
-  private ArrayList makeIdArray(List idList) {
-    ArrayList ids = new ArrayList(idList.size());
-    Iterator iter = idList.iterator();
+  private List<String> makeIdArray(List<Integer> idList) {
+    List<String> ids = new ArrayList<String>(idList.size());
+    Iterator<Integer> iter = idList.iterator();
 
     int contentId = 0;
     String id = null;
@@ -72,11 +72,11 @@ public class QuestionReplyContentManager implements ContentInterface {
     return ids;
   }
 
-  private List getHeaders(ArrayList ids, String instanceId) {
-    List headers = new ArrayList();
+  private List<QuestionHeader> getHeaders(List<String> ids, String instanceId) {
+    List<QuestionHeader> headers = new ArrayList<QuestionHeader>();
     try {
       Collection<Question> questions = (Collection<Question>)
-          QuestionManager.getInstance().getQuestionsByIds(ids);
+          QuestionManager.getInstance().getQuestionsByIds(new ArrayList<String>(ids));
       for (Question question : questions) {
         headers.add(new QuestionHeader(new Long(question.getPK().getId()).longValue(), question,
             instanceId, question.getCreationDate(), question.getCreatorId()));

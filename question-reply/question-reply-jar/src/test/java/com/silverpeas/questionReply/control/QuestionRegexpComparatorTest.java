@@ -28,11 +28,12 @@
  */
 package com.silverpeas.questionReply.control;
 
+import static org.junit.Assert.assertTrue;
+
 import java.util.Arrays;
-import org.apache.ecs.xhtml.label;
 import java.util.List;
+
 import com.silverpeas.questionReply.model.Question;
-import static org.junit.Assert.*;
 
 /**
  *

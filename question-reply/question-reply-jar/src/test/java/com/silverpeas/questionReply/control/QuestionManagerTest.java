@@ -4,25 +4,23 @@
  */
 package com.silverpeas.questionReply.control;
 
-import org.slf4j.Logger;
-import com.silverpeas.questionReply.model.Question;
-import javax.naming.NamingException;
-import java.sql.Statement;
-import com.silverpeas.util.StringUtil;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.sql.Statement;
+
+import javax.naming.NamingException;
+
 import org.dbunit.database.IDatabaseConnection;
-import com.silverpeas.components.model.AbstractTestDao;
-import com.silverpeas.jcrutil.RandomGenerator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.LoggerFactory;
-import static org.junit.Assert.*;
+
+import com.silverpeas.components.model.AbstractTestDao;
+import com.silverpeas.util.StringUtil;
 
 /**
  *
@@ -32,8 +30,6 @@ public class QuestionManagerTest extends AbstractTestDao {
 
   public QuestionManagerTest() {
   }
-  private static final String INSTANCE_ID = "questionReply12";
-
   @BeforeClass
   public static void generalSetUp() throws IOException, NamingException {
     AbstractTestDao.configureJNDIDatasource();

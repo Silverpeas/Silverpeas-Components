@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelProvider;
@@ -51,13 +52,13 @@ public class ExpertPanel extends PanelProvider {
 
   protected OrganizationController m_oc = new OrganizationController();
 
-  protected Hashtable m_AllUserDetail = new Hashtable();
+  protected Hashtable<String, UserDetail> m_AllUserDetail = new Hashtable<String, UserDetail>();
 
-  public ExpertPanel(String language, Collection allExperts) {
+  public ExpertPanel(String language, Collection<UserDetail> allExperts) {
     initAll(language, allExperts);
   }
 
-  public void initAll(String language, Collection allExperts) {
+  public void initAll(String language, Collection<UserDetail> allExperts) {
     String[] filters = new String[2];
 
     setAllExperts(allExperts);
@@ -97,13 +98,13 @@ public class ExpertPanel extends PanelProvider {
   }
 
   public void refresh(String[] filters) {
-    ArrayList ids = new ArrayList();
+    List<String> ids = new ArrayList<String>();
     boolean keepit;
-    Iterator it = m_AllUserDetail.values().iterator();
+    Iterator<UserDetail> it = m_AllUserDetail.values().iterator();
     UserDetail user;
 
     while (it.hasNext()) {
-      user = (UserDetail) it.next();
+      user = it.next();
       keepit = true;
       if ((filters[FILTER_FIRSTNAME] != null)
           && (filters[FILTER_FIRSTNAME].length() > 0)) {
@@ -141,9 +142,9 @@ public class ExpertPanel extends PanelProvider {
     verifIndexes();
   }
 
-  public void setAllExperts(Collection allExperts) {
+  public void setAllExperts(Collection<UserDetail> allExperts) {
     if (allExperts != null) {
-      Iterator itUser = allExperts.iterator();
+      Iterator<UserDetail> itUser = allExperts.iterator();
       UserDetail user;
 
       m_AllUserDetail.clear();
