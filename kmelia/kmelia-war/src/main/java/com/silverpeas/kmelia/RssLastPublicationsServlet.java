@@ -117,8 +117,8 @@ public class RssLastPublicationsServlet extends HttpServlet {
 
   public Collection<PublicationDetail> getElements(KmeliaTransversal kmeliaTransversal,
       UserFull user, String spaceId) throws RemoteException {
-    int maxAge = Long.valueOf(settings.getInteger("max.age.last.publication", 0L)).intValue();
-    int nbReturned = Long.valueOf(settings.getInteger("max.nb.last.publication", 10L)).intValue();
+    int maxAge = settings.getInteger("max.age.last.publication", 0);
+    int nbReturned = settings.getInteger("max.nb.last.publication", 10);
     return kmeliaTransversal.getUpdatedPublications(spaceId, maxAge, nbReturned);
   }
 
