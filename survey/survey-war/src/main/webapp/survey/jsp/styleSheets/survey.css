@@ -54,11 +54,12 @@ body {
 	margin-right:5px;*/
 }
 
-.questionResults tbody tr td {
+#survey-result-C .questionResults tbody tr td {
 	background-color:#F9F9F9;
-	border-top:1px solid #CCCCCC;
+	border-top:1px solid #DDDEEE;
 	min-height:33px;
 }
+
 
 .questionResults tbody .questionResults-Oui {
 	background-color:#D5FAC5;
