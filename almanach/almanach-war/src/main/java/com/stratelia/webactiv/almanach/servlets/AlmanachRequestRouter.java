@@ -24,7 +24,6 @@
 package com.stratelia.webactiv.almanach.servlets;
 
 import java.util.Collection;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,12 +35,10 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.control.AlmanachCalendarView;
-import com.stratelia.webactiv.almanach.control.AlmanachDay;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
-import com.stratelia.webactiv.almanach.control.CalendarViewType;
-import com.stratelia.webactiv.almanach.control.EventOccurrenceDTO;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.Periodicity;
+import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -121,7 +118,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
           almanach.today();
         } else if ("ViewByMonth".equals(action)) {
           almanach.setViewMode(MONTHLY);
-        }  else if ("ViewByWeek".equals(action)) {
+        } else if ("ViewByWeek".equals(action)) {
           almanach.setViewMode(WEEKLY);
         }
 
@@ -169,8 +166,11 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         if (day != null && day.length() > 0) {
           event.setStartDate(DateUtil.stringToDate(day, almanach.getLanguage()));
         }
-
+        request.setAttribute("Day", day);
         request.setAttribute("Event", event);
+        request.setAttribute("Language", almanach.getLanguage());
+        request.setAttribute("MaxDateFieldLength", DBUtil.getDateFieldLength());
+        request.setAttribute("MaxTextFieldLength", DBUtil.getTextFieldLength());
 
         if (flag.equals("publisher") || flag.equals("admin")) {
           destination = "/almanach/jsp/createEvent.jsp";
@@ -537,12 +537,13 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
     return flag;
   }
 
-  private String addValueBinary(String binary, String test) {
+  private String addValueBinary(final String binary, final String test) {
+    String result = binary;
     if (test != null) {
-      binary += "1";
+      result += "1";
     } else {
-      binary += "0";
+      result += "0";
     }
-    return binary;
+    return result;
   }
 }

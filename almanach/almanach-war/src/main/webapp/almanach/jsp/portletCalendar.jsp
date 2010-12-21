@@ -118,6 +118,7 @@
             allDaySlot: false,
             allDayText: '',
             allDayDefault: false,
+            timeFormat: 'HH:mm{ - HH:mm}',
             axisFormat: 'HH:mm',
             columnFormat: { agendaWeek: 'ddd d' },
             minTime: 6,

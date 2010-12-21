@@ -183,6 +183,7 @@
             allDaySlot: false,
             allDayText: '',
             allDayDefault: false,
+            timeFormat: 'HH:mm{ - HH:mm}',
             axisFormat: 'HH:mm',
             columnFormat: { agendaWeek: 'ddd d' },
             firstDay: <c:out value='${calendarView.firstDayOfWeek - 1}' />,
