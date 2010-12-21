@@ -42,6 +42,7 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.net.URLEncoder;
 import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
 
 public class AlmanachRequestRouter extends ComponentRequestRouter {
@@ -429,8 +430,13 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         // récupère l'Event
         EventDetail event = almanach.getEventDetail(id);
 
-        request.setAttribute("DateDebutIteration", DateUtil.parse(dateIteration));
+        request.setAttribute("DateDebutIteration", dateIteration);
         request.setAttribute("Event", event);
+        request.setAttribute("PdcUsed", almanach.isPdcUsed());
+
+        String componentUrl = almanach.getComponentUrl() + "editAttFiles.jsp?Id=" +
+            event.getPK().getId() + "&Date=" + dateIteration;
+        request.setAttribute("ComponentURL", URLEncoder.encode(componentUrl, "UTF-8"));
 
         destination = "/almanach/jsp/editAttFiles.jsp";
       } else if (function.startsWith("pdcPositions")) {

@@ -180,6 +180,8 @@
               week:     '<fmt:message key="GML.week"/>',
               day:      '<fmt:message key="GML.day"/>'
             },
+            minTime: 6,
+            maxTime: 22,
             allDaySlot: false,
             allDayText: '',
             allDayDefault: false,

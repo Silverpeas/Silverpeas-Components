@@ -115,14 +115,14 @@
               week:     '<fmt:message key="GML.week"/>',
               day:      '<fmt:message key="GML.day"/>'
             },
+            minTime: 6,
+            maxTime: 22,
             allDaySlot: false,
             allDayText: '',
             allDayDefault: false,
             timeFormat: 'HH:mm{ - HH:mm}',
             axisFormat: 'HH:mm',
             columnFormat: { agendaWeek: 'ddd d' },
-            minTime: 6,
-            maxTime: 21,
             firstDay: <c:out value='${calendarView.firstDayOfWeek -1}' />,
             defaultView: "<c:out value='${calendarView.viewType}'/>",
             eventClick: function(calEvent, jsEvent, view) {
