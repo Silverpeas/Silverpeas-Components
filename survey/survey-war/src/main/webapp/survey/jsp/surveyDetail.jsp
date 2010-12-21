@@ -90,12 +90,14 @@
   }%>
 
 <%
-  //R�cup�ration des param�tres
-  String action = (String) request.getParameter("Action");
-  String surveyId = (String) request.getParameter("SurveyId");
-  String roundId = (String) request.getParameter("RoundId");
+  String action = request.getParameter("Action");
+  String surveyId = request.getParameter("SurveyId");
+  String roundId = request.getParameter("RoundId");
   String profile = (String) request.getAttribute("Profile");
-  String choice = (String) request.getParameter("Choice");
+  String choice = request.getParameter("Choice");
+  if (!StringUtil.isDefined(choice)) {
+    choice = "D";
+  }
 
   boolean participated = true;
   if (StringUtil.isDefined(request.getParameter("Participated"))) {
@@ -364,7 +366,7 @@
         		 document.survey.anonymousComment.value = x;
         	 } catch (e)
         	 {
-        		 //la zone commentaire n'est pas affich�e pour la page courante
+        		 //la zone commentaire n'est pas affich?e pour la page courante
         	 }
 
         	 if (roundId == "end") {
@@ -392,7 +394,7 @@
             	//alert(document.survey.elements[i].type+", "+name+", ok = "+ok+", indice = "+indice);
             	if (startName == "answer_")
             	{
-            		// on ne contr�le que les zones r�ponses
+            		// on ne contr?le que les zones r?ponses
             		endName = name.substr(7);
             		if (first)
             		{
@@ -401,7 +403,7 @@
             		}
             		if (endName != indice)
             		{
-            			// on a d�j� contr�l� une question qui n'a pas de r�ponse, pas la peine de continuer
+            			// on a d?j? contr?l? une question qui n'a pas de r?ponse, pas la peine de continuer
             			if (!ok)
             				return false;
 
@@ -409,10 +411,10 @@
             		}
 		           	if (document.survey.elements[i].type == "radio" || document.survey.elements[i].type == "checkbox")
 		           	{
-		           		// contr�le des boutons radio et des cases � cocher (pas de contr�le pour les questions ouvertes)
+		           		// contr?le des boutons radio et des cases ? cocher (pas de contr?le pour les questions ouvertes)
 			           	if (document.survey.elements[i].checked)
 			           	{
-			           		// une case est coch�e, valider la question
+			           		// une case est coch?e, valider la question
 			           		ok = true;
 			           	}
 			           	indice = endName;
@@ -441,7 +443,7 @@
                       }
                   }
              }
-             // contr�le que toutes les questions aient au moins une r�ponse valid�e
+             // contr?le que toutes les questions aient au moins une r?ponse valid?e
 	         if (!checkRadioAndCheckboxes())
 	         {
 	          	 errorMsg+="<%=resources.getString("survey.NoResponse")%>";
@@ -523,69 +525,11 @@
 <HTML>
 <HEAD>
 <TITLE></TITLE>
-<style>
-body {
-	margin: 20px 0 0 20px;
-}
-
-/* tableau Doodle */
-.questionResults th {
-	border-top: #CCC 1px solid;
-}
-
-.questionResults th,.questionResults td,.questionResults tr {
-	padding: 5px;
-	font-size: 12px;
-}
-
-.questionResults .questionResults-top th {
-	background-color: #E4E4E4;
-	width: 150px;
-}
-
-.questionResults .questionResults-top .questionResults-vide,.questionResults tbody .questionResults-vide
-	{
-	background-color: #FFFFFF;
-	border: none;
-	padding: 3px;
-}
-
-.questionResults .displayUserName,.questionResults .displayUserName a {
-	/*display:block;*/
-	background-color: #E4E4E4;
-	margin-right: 5px;
-	font-size: 10px;
-	font-weight: bold;
-}
-
-.questionResults tbody tr td {
-	background-color: #FFFFFF;
-	min-height: 33px;
-}
-
-.questionResults tbody .questionResults-Oui {
-	background-color: #D5FAC5;
-	text-align: center;
-	font-size: 10px;
-}
-
-.questionResults tbody .questionResults-Non {
-	background-color: #FECBCB;
-	text-align: center;
-	font-size: 10px;
-}
-
-.questionResults .labelAnswer {
-	text-align: right;
-	width: 50%;
-}
-</style>
 <%
   out.println(gef.getLookStyleSheet());
 %>
-<script type="text/javascript"
-	src="<%=iconsPath%>/util/javaScript/animation.js"></script>
-<script language="JavaScript1.2">
+<script type="text/javascript" src="<%=iconsPath%>/util/javaScript/animation.js"></script>
+<script type="text/javascript">
 
  		function viewSuggestions(id) {
  		    url = "surveySuggestions.jsp?QuestionId="+id;
@@ -666,7 +610,7 @@ body {
 
      	</script>
 </HEAD>
-<BODY>
+<BODY id="survey-result-<%=choice%>">
 <%
   survey = surveyScc.getSurvey(surveyId);
 
@@ -696,8 +640,6 @@ body {
         "javaScript:onClick=clipboardCopy()");
 
     String alreadyVotes = displayAlreadyVotes(survey, surveyScc, gef, resources);
-    if (!StringUtil.isDefined(choice))
-      choice = "D";
     String surveyPart =
         displaySurveyResult(choice, survey, gef, m_context, surveyScc, resources, isClosed,
             settings, frame, participated);

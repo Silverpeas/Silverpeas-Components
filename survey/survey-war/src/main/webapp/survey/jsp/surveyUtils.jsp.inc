@@ -727,12 +727,12 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 				  		// l'enquête n'est pas anonyme, proposer le choix d'affichage
 			           	String selectedStr = "";
 		                r += "<tr><td class=\"textePetitBold\" nowrap>"+resources.getString("survey.choice")+" :</td>";
-	                   	if (choice.equals("D"))
-	                		choice = "C";
-	                	else
-	                		choice = "D";
+		                String otherChoice = "C";
+	                   	if (choice.equals("C")) {
+	                		otherChoice = "D";
+	                	}
 	                    r += "<td>";
-	                    r += "<a href=\"surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId+"&Choice="+choice+"\">";
+	                    r += "<a href=\"surveyDetail.jsp?Action=ViewResult&Participated="+participated+"&SurveyId="+surveyId+"&Choice="+otherChoice+"\">";
 	                    r += "Afficher la vue "+resources.getString("survey."+choice);
 	                    r +="</a></td></tr>";
 					}
@@ -1082,7 +1082,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
 	                	// completer la ligne avec des cases à "vide"
 		              	while (position <= rang)
 		              	{
-		              		r += "<td class=\"questionResults-Non\"> </td>";
+		              		r += "<td class=\"questionResults-Non\">&nbsp;</td>";
 		              		position = position + 1;
 		              	}
                 	}
