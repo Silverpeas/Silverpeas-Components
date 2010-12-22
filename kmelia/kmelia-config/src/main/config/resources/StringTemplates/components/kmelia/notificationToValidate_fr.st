@@ -1,4 +1,5 @@
-La publication <b>$publicationName$</b> doit être validée.
+<div style="font-family:Arial;font-size:11px">
+La publication <b>$publicationName$</b> doit être validée. 
 
 $if(notification_receiver_users)$
 Ce message a été envoyé
@@ -11,3 +12,4 @@ $if(notification_receiver_groups)$
   $endif$
  aux groupes : $notification_receiver_groups$
 $endif$
+</div>

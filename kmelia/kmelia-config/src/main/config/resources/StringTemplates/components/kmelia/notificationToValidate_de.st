@@ -1,4 +1,5 @@
-Zu genehmigende Veröffentlichungen $publicationName$
+<div style="font-family:Arial;font-size:11px">
+Zu genehmigende Veröffentlichungen <b>$publicationName$</b>
 
 $if(notification_receiver_users)$
 Diese Nachricht wurde gesendet
@@ -11,3 +12,4 @@ $if(notification_receiver_groups)$
   $endif$
  gruppen : $notification_receiver_groups$
 $endif$
+</div>

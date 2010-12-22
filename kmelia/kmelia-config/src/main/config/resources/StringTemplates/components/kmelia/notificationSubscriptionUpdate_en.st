@@ -1,5 +1,6 @@
-A new publication has been updated to one of your subscriptions.
-Name : "$publicationName$"
+<div style="font-family:Arial;font-size:11px">
+Publication <b>$publicationName$</b> has been updated.
+
 Path : $path$
 
 $if(notification_receiver_users)$
@@ -13,3 +14,4 @@ $if(notification_receiver_groups)$
   $endif$
  to groups : $notification_receiver_groups$
 $endif$
+</div>

@@ -1,5 +1,6 @@
-In einem Ihrer Abonnemente ist ein Dokument erstellt worden.
-Name der Veröffentlichung : "$publicationName$"
+<div style="font-family:Arial;font-size:11px">
+In einem Ihrer Abonnemente Dokument <b>$publicationName$</b> erstellt worden.
+
 Speicherort : $path$
 
 $if(notification_receiver_users)$
@@ -13,3 +14,4 @@ $if(notification_receiver_groups)$
   $endif$
  gruppen : $notification_receiver_groups$
 $endif$
+</div>

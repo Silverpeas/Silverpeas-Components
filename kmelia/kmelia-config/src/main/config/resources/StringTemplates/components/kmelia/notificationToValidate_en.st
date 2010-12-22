@@ -1,4 +1,5 @@
-Publication <b>$publicationName$</b> have to be validated.
+<div style="font-family:Arial;font-size:11px">
+Publication <b>$publicationName$</b> have to be validated. $path$
 
 $if(notification_receiver_users)$
 This message has been sent 
@@ -11,3 +12,4 @@ $if(notification_receiver_groups)$
   $endif$
  to groups : $notification_receiver_groups$
 $endif$
+</div>

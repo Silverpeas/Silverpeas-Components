@@ -1,5 +1,6 @@
-Un document a été mis à jour dans l'un de vos abonnements. 
-Nom de la publication : "$publicationName$"
+<div style="font-family:Arial;font-size:11px">
+Le document <b>$publicationName$</b> a été mis à jour. 
+
 Emplacement : $path$
 
 $if(notification_receiver_users)$
@@ -13,3 +14,4 @@ $if(notification_receiver_groups)$
   $endif$
  aux groupes : $notification_receiver_groups$
 $endif$
+</div>
