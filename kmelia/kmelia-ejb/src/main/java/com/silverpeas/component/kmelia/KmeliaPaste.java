@@ -25,10 +25,8 @@
 package com.silverpeas.component.kmelia;
 
 import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -73,10 +71,11 @@ public class KmeliaPaste implements ComponentPasteInterface {
     NodePK rootPK = getNodePK("0", fromComponentId);
     List<NodeDetail> firstLevelNodes = getNodeBm().getHeadersByLevel(rootPK, 2);
     HashMap<Integer, Integer> oldAndNewIds = new HashMap<Integer, Integer>();
-    for (int i = 0; i < firstLevelNodes.size(); i++) {
-      NodeDetail nodeToPaste = (NodeDetail) firstLevelNodes.get(i);
-      if (nodeToPaste.getId() > 2) // Don't take unbalanced and basket nodes
+    for (NodeDetail nodeToPaste : firstLevelNodes) {
+      if (nodeToPaste.getId() > 2) {
+        // Don't take unbalanced and basket nodes
         pasteNode(nodeToPaste, father, oldAndNewIds);
+      }
     }
     SilverTrace.debug("kmelia", "KmeliaPaste.paste()", "root.MSG_GEN_EXIT_METHOD");
   }
@@ -118,14 +117,12 @@ public class KmeliaPaste implements ComponentPasteInterface {
     // Set topic rights if necessary
     if (nodeToPaste.haveLocalRights()) {
       List<ProfileInst> topicProfiles = getTopicProfiles(nodeToPaste.getNodePK().getId());
-      for (int i = 0; i < topicProfiles.size(); i++) {
-        ProfileInst nodeToPasteProfile = (ProfileInst) topicProfiles.get(i);
+      for (ProfileInst nodeToPasteProfile : topicProfiles) {
         if (nodeToPasteProfile != null) {
           ProfileInst nodeProfileInst = (ProfileInst) nodeToPasteProfile.clone();
           nodeProfileInst.setId("-1");
           nodeProfileInst.setComponentFatherId(toComponentId);
-          nodeProfileInst.setObjectId(new Integer(nodePK.getId()).intValue());
-          nodeProfileInst.setObjectType(nodeToPasteProfile.getObjectType());
+          nodeProfileInst.setObjectId(Integer.parseInt(nodePK.getId()));
           nodeProfileInst.setObjectFatherId(father.getId());
           // Add the profile
           m_AdminCtrl.addProfileInst(nodeProfileInst, userId);
@@ -140,50 +137,19 @@ public class KmeliaPaste implements ComponentPasteInterface {
     // paste subtopics
     node = getNodeBm().getHeader(nodePK);
     Collection<NodeDetail> subtopics = getNodeBm().getDetail(nodeToPastePK).getChildrenDetails();
-    Iterator<NodeDetail> itSubTopics = subtopics.iterator();
-    NodeDetail subTopic = null;
-    while (itSubTopics != null && itSubTopics.hasNext()) {
-      subTopic = itSubTopics.next();
-      if (subTopic != null)
+    for (NodeDetail subTopic : subtopics) {
+      if (subTopic != null) {
         pasteNode(subTopic, node, oldAndNewIds);
+      }
     }
 
     SilverTrace.debug("kmelia", "KmeliaPaste.pasteNode()", "root.MSG_GEN_EXIT_METHOD");
   }
 
-  public List<ProfileInst> getTopicProfiles(String topicId) {
+  private List<ProfileInst> getTopicProfiles(String topicId) {
     SilverTrace.debug("kmelia", "KmeliaPaste.getTopicProfiles()", "root.MSG_GEN_ENTER_METHOD");
-    List<ProfileInst> alShowProfile = new ArrayList<ProfileInst>();
-    ProfileInst profile = null;
 
-    // profils dispo
-    String[] asAvailProfileNames = getAdmin().getAllProfilesNames("kmelia");
-
-    for (int nI = 0; nI < asAvailProfileNames.length; nI++) {
-      SilverTrace.info("kmelia", "KmeliaPaste.getTopicProfiles()", "root.MSG_GEN_PARAM_VALUE",
-          "asAvailProfileNames = " + asAvailProfileNames[nI]);
-      profile = getTopicProfile(asAvailProfileNames[nI], topicId);
-      profile.setLabel(getAdmin().getProfileLabelfromName("kmelia", asAvailProfileNames[nI]));
-      alShowProfile.add(profile);
-    }
-    SilverTrace.debug("kmelia", "KmeliaPaste.getTopicProfiles()", "root.MSG_GEN_EXIT_METHOD");
-    return alShowProfile;
-  }
-
-  public ProfileInst getTopicProfile(String role, String topicId) {
-    SilverTrace.debug("kmelia", "KmeliaPaste.getTopicProfile()", "root.MSG_GEN_ENTER_METHOD");
-    List<ProfileInst> profiles =
-        getAdmin().getProfilesByObject(topicId, ObjectType.NODE, fromComponentId);
-    for (int p = 0; profiles != null && p < profiles.size(); p++) {
-      ProfileInst profile = (ProfileInst) profiles.get(p);
-      if (profile.getName().equals(role))
-        return profile;
-    }
-
-    ProfileInst profile = new ProfileInst();
-    profile.setName(role);
-    SilverTrace.debug("kmelia", "KmeliaPaste.getTopicProfile()", "root.MSG_GEN_EXIT_METHOD");
-    return profile;
+    return getAdmin().getProfilesByObject(topicId, ObjectType.NODE, fromComponentId);
   }
 
   private NodeBm getNodeBm() {
@@ -199,16 +165,8 @@ public class KmeliaPaste implements ComponentPasteInterface {
     return nodeBm;
   }
 
-  public synchronized List<NodeDetail> getAllTopics() throws RemoteException {
-    return getNodeBm().getSubTree(getNodePK("0"));
-  }
-
   private NodePK getNodePK(String id, String componentId) {
     return new NodePK(id, componentId);
-  }
-
-  private NodePK getNodePK(String id) {
-    return new NodePK(id, fromComponentId);
   }
 
   private AdminController getAdmin() {
