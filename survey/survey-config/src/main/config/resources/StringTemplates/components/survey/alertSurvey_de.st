@@ -1,7 +1,7 @@
 <b>$userName$</b> informiert Sie, dass eine neue Untersuchung zur Ihrer Verfügung steht
 
 Name : $surveyName$
-Beschreibung : $surveyDesc$
+$if(surveyDesc)$Beschreibung : $surveyDesc$ $endif$
 Speicherort : $htmlPath$
 
 $if(senderMessage)$

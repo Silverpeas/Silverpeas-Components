@@ -1,10 +1,10 @@
 <b>$userName$</b> informs you that a new survey has been added
 
-Name : $surveyName$
-Description : $surveyDesc$
-Location : $htmlPath$
+Name : <surveyName>
+$if(surveyDesc)$Description : $surveyDesc$$endif$
+Location : <htmlPath>
 
-$if(senderMessage)$
+<if(senderMessage)>
 Message :
-$senderMessage$
-$endif$
+<senderMessage>
+<endif>

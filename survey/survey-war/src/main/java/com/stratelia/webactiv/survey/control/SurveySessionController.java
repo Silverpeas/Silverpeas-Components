@@ -752,7 +752,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String surveyId)
       throws RemoteException, SurveyException {
     QuestionContainerPK pk = new QuestionContainerPK(surveyId);
-    String senderName = getUserDetail().getDisplayedName();
+    UserDetail curUser = getUserDetail();
+    String senderName = curUser.getDisplayedName();
     QuestionContainerDetail questionDetail = getSurvey(surveyId);
     SilverTrace.debug("Survey", "SurveySessionController.getAlertNotificationMetaData()",
         "root.MSG_GEN_PARAM_VALUE", "survey = " + questionDetail.toString());
@@ -778,20 +779,23 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
       // Create a new silverpeas template
       SilverpeasTemplate template = getNewTemplate();
+      template.setAttribute("UserDetail", curUser);
       template.setAttribute("userName", senderName);
       template.setAttribute("SurveyDetail", questionDetail);
       template.setAttribute("surveyName", questionDetail.getHeader().getName());
-      template.setAttribute("surveyDesc", questionDetail.getHeader().getDescription());
+      String surveyDesc = questionDetail.getHeader().getDescription();
+      if (StringUtil.isDefined(surveyDesc)) {
+        template.setAttribute("surveyDesc", surveyDesc);
+      }
       // template.setAttribute("message", message);
       template.setAttribute("htmlPath", htmlPath);
       templates.put(language, template);
       notifMetaData.addLanguage(language, message.getString("survey.notifSubject", subject), "");
     }
-
+    notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
     notifMetaData.setLink(getSurveyUrl(questionDetail));
     notifMetaData.setComponentId(pk.getInstanceId());
     notifMetaData.setSender(getUserId());
-
     return notifMetaData;
   }
 
