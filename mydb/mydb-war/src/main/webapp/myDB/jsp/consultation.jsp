@@ -34,9 +34,14 @@
 	<link rel="stylesheet" type="text/css" href="<%=applicationURL%>/myDB/jsp/styleSheet/consultation.css">
 	<script type="text/javascript" src="<%=applicationURL%>/myDB/jsp/javaScript/consultation.js"></script>
 	<script type="text/javascript" src="<%=applicationURL%>/myDB/jsp/javaScript/util.js"></script>
+	<script type="text/javascript">
+	$(document).ready(function() {
+		init();
+	});
+	</script>
 </head>
 
-<body onload="init()" marginwidth="5" marginheight="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+<body marginwidth="5" marginheight="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
 <%
 	DbTable dbTable = myDBSC.getDbTable();
 	StringBuffer pageTitleSb = new StringBuffer(resource.getString("PageTitleConsultation"));	

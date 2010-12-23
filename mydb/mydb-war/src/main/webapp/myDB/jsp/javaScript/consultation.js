@@ -29,15 +29,19 @@ function resizeDiv()
     tableDiv.style.display = "none";
     
     var table = getParent(tableDiv, "TABLE");
-    tableDiv.style.width = table.offsetWidth - 10;
+    if (table) {
+        tableDiv.style.width = table.offsetWidth - 10;
+    }
     
     tableDiv.style.display = "";
 
     var center = getChild(tableDiv, "CENTER");
     table = getChild(center, "TABLE");
-    var height = table.offsetHeight;
-    if (height > 0)
-    {
-        tableDiv.style.height = height + 15;
+    if (table) {
+        var height = table.offsetHeight;
+        if (height > 0)
+        {
+            tableDiv.style.height = height + 15;
+        }
     }
 }

@@ -177,7 +177,9 @@ public class FormManager {
               ft.setReadOnly(readOnly);
               ft.setMandatory(!readOnly && !column.isNullable());
               if (column.hasDataSize()) {
-                ft.addParameter("maxLength", column.getDataSizeAsString());
+                if (columnType != Types.DATE) {
+                  ft.addParameter("maxLength", column.getDataSizeAsString());
+                }
               }
             }
           }
