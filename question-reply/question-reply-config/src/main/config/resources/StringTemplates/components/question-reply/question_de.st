@@ -1,4 +1,4 @@
-$senderName$, der Herausgeber der folgenden Frage bitte Sie diese zur Kenntnis nehmen  : 
+$userName$, der Herausgeber der folgenden Frage bitte Sie diese zur Kenntnis nehmen  : 
 
-Frage : $questionDetail.title$
-$questionDetail.content$
+Frage : $QuestionDetail.title$
+$QuestionDetail.content$

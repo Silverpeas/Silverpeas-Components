@@ -758,8 +758,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
         // Create a new silverpeas template
         SilverpeasTemplate template = getNewTemplate();
-        template.setAttribute("senderName", senderName);
-        template.setAttribute("questionDetail", question);
+        template.setAttribute("UserDetail", user);
+        template.setAttribute("userName", senderName);
+        template.setAttribute("QuestionDetail", question);
         template.setAttribute("questionTitle", question.getTitle());
         template.setAttribute("questionContent", question.getContent());
         template.setAttribute("url", question._getPermalink());
@@ -807,11 +808,12 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
         // Create a new silverpeas template
         SilverpeasTemplate template = getNewTemplate();
-        template.setAttribute("senderName", senderName);
+        template.setAttribute("UserDetail", user);
+        template.setAttribute("userName", senderName);
         template.setAttribute("QuestionDetail", question);
         template.setAttribute("ReplyDetail", reply);
-        template.setAttribute("ReplyTitle", reply.getTitle());
-        template.setAttribute("ReplyContent", reply.getContent());
+        template.setAttribute("replyTitle", reply.getTitle());
+        template.setAttribute("replyContent", reply.getContent());
         templates.put(language, template);
         notifMetaData.addLanguage(language, message.getString("questionReply.notification", "") +
             getComponentLabel(), "");
