@@ -35,26 +35,26 @@ public class MessagePK extends WAPrimaryKey {
    * Generated serial version identifier
    */
   private static final long serialVersionUID = 1454596772173738407L;
-  private String domain;
 
-  public MessagePK(String component, String domain, String id) {
+  public MessagePK(String component, String id) {
     super(id, component);
-    this.domain = domain;
   }
 
-  public MessagePK(String component, String domain) {
-    this(component, domain, "0");
+  public MessagePK(String component) {
+    this(component, "0");
   }
 
-  public String getDomain() {
-    return domain;
-  }
-
+  @Override
   public boolean equals(Object other) {
     return ((other instanceof MessagePK)
         && (getInstanceId().equals(((MessagePK) other).getInstanceId()))
-        && (domain.equals(((MessagePK) other).getDomain())) && (getId()
-        .equals(((MessagePK) other).getId())));
+        && (getId().equals(((MessagePK) other).getId())));
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 21;
+    return hash * super.hashCode();
   }
 
 }

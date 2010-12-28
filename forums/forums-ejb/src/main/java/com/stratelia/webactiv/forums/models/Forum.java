@@ -28,6 +28,7 @@ import java.io.Serializable;
 import com.stratelia.webactiv.forums.forumEntity.ejb.ForumPK;
 
 public class Forum implements Serializable {
+
   /**
    * Generated serial version identifier
    */
@@ -42,8 +43,7 @@ public class Forum implements Serializable {
   private String instanceId;
   private ForumPK pk;
 
-  public Forum(int id, String name, String description, boolean active,
-      int parentId, String category) {
+  public Forum(int id, String name, String description, boolean active, int parentId, String category) {
     this.id = id;
     this.name = name;
     this.description = description;
@@ -57,6 +57,7 @@ public class Forum implements Serializable {
     this(id, name, description, active, parentId, category);
     this.instanceId = instanceId;
     this.creationDate = creationDate;
+    this.pk = new ForumPK(instanceId, String.valueOf(id));
   }
 
   public int getId() {
@@ -131,4 +132,65 @@ public class Forum implements Serializable {
     this.pk = pk;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    Forum forum = (Forum) o;
+
+    if (active != forum.active) {
+      return false;
+    }
+    if (id != forum.id) {
+      return false;
+    }
+    if (parentId != forum.parentId) {
+      return false;
+    }
+    if (category != null ? !category.equals(forum.category) : forum.category != null) {
+      return false;
+    }
+    if (creationDate != null ? !creationDate.equals(
+        forum.creationDate) : forum.creationDate != null) {
+      return false;
+    }
+    if (description != null ? !description.equals(forum.description) : forum.description != null) {
+      return false;
+    }
+    if (instanceId != null ? !instanceId.equals(forum.instanceId) : forum.instanceId != null) {
+      return false;
+    }
+    if (name != null ? !name.equals(forum.name) : forum.name != null) {
+      return false;
+    }
+    if (pk != null ? !pk.equals(forum.pk) : forum.pk != null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = id;
+    result = 31 * result + (name != null ? name.hashCode() : 0);
+    result = 31 * result + (description != null ? description.hashCode() : 0);
+    result = 31 * result + (active ? 1 : 0);
+    result = 31 * result + parentId;
+    result = 31 * result + (category != null ? category.hashCode() : 0);
+    result = 31 * result + (creationDate != null ? creationDate.hashCode() : 0);
+    result = 31 * result + (instanceId != null ? instanceId.hashCode() : 0);
+    result = 31 * result + (pk != null ? pk.hashCode() : 0);
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "Forum{" + "id=" + id + ", name=" + name + ", description=" + description + ", active=" + active + ", parentId=" + parentId + ", category=" + category + ", creationDate=" + creationDate + ", instanceId=" + instanceId + ", pk=" + pk + '}';
+  }
 }

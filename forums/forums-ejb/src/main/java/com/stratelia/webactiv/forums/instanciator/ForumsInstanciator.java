@@ -47,6 +47,7 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
     super("com.stratelia.webactiv.forums");
   }
 
+  @Override
   public void create(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
     SilverTrace.info("forums", "ForumsInstanciator.create()",
@@ -61,6 +62,7 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
    * @param componentId (String) the instance id of the Silverpeas component forum.
    * @param userId (String) the owner of the component
    */
+  @Override
   public void delete(Connection con, String spaceId, String componentId,
       String userId) throws InstanciationException {
     SilverTrace.info("forums", "ForumsInstanciator.delete()",
@@ -68,15 +70,12 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
 
     // read the property file which contains all SQL queries to delete rows
     setDeleteQueries();
-
     deleteDataOfInstance(con, componentId, "Subscription");
     deleteDataOfInstance(con, componentId, "Rights");
     deleteDataOfInstance(con, componentId, "Message");
     deleteDataOfInstance(con, componentId, "Forum");
-
     // delete wysiwyg stuff
-    WysiwygInstanciator wysiwygI = new WysiwygInstanciator(
-        "uselessButMandatory :)");
+    WysiwygInstanciator wysiwygI = new WysiwygInstanciator("uselessButMandatory :)");
     wysiwygI.delete(con, spaceId, componentId, userId);
 
   }

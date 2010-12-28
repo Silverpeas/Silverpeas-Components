@@ -254,9 +254,8 @@ public class ForumsBMEJB implements SessionBean {
    */
   public void lockForum(ForumPK forumPK, int level) {
     ArrayList<String> sonsIds = getForumSonsIds(forumPK);
-    for (int i = 0; i < sonsIds.size(); i++) {
-      lockForum(new ForumPK(forumPK.getComponentName(), forumPK.getDomain(),
-          (String) sonsIds.get(i)), level);
+    for (String sonsId : sonsIds) {
+      lockForum(new ForumPK(forumPK.getComponentName(), sonsId), level);
     }
     Connection con = openConnection();
     try {
@@ -279,9 +278,8 @@ public class ForumsBMEJB implements SessionBean {
    */
   public int unlockForum(ForumPK forumPK, int level) {
     ArrayList<String> sonsIds = getForumSonsIds(forumPK);
-    for (int i = 0; i < sonsIds.size(); i++) {
-      unlockForum(new ForumPK(forumPK.getComponentName(), forumPK.getDomain(),
-          (String) sonsIds.get(i)), level);
+    for (String sonsId : sonsIds) {
+      unlockForum(new ForumPK(forumPK.getComponentName(), sonsId), level);
     }
 
     int result = 0;
@@ -305,9 +303,8 @@ public class ForumsBMEJB implements SessionBean {
    */
   public void deleteForum(ForumPK forumPK) {
     ArrayList<String> sonsIds = getForumSonsIds(forumPK);
-    for (int i = 0; i < sonsIds.size(); i++) {
-      deleteForum(new ForumPK(forumPK.getComponentName(), forumPK.getDomain(),
-          (String) sonsIds.get(i)));
+    for (String sonsId : sonsIds) {
+      deleteForum(new ForumPK(forumPK.getComponentName(), sonsId));
     }
 
     Connection con = openConnection();
@@ -322,9 +319,8 @@ public class ForumsBMEJB implements SessionBean {
       deleteIndex(forumPK);
 
       // Suppression de l'index de chaque message dans le moteur de recherches
-      for (int i = 0; i < messagesIds.size(); i++) {
-        deleteMessage(new MessagePK(forumPK.getComponentName(), forumPK
-            .getDomain(), (String) messagesIds.get(i)));
+      for (String messagesId : messagesIds) {
+        deleteMessage(new MessagePK(forumPK.getComponentName(), messagesId));
       }
 
       getForumsContentManager().deleteSilverContent(con, forumPK);
@@ -538,7 +534,7 @@ public class ForumsBMEJB implements SessionBean {
       String messageId;
       while (it.hasNext() && nbReturned != 0) {
         messageId = (String) it.next();
-        MessagePK messagePK = new MessagePK(instanceId, null, messageId);
+        MessagePK messagePK = new MessagePK(instanceId, messageId);
         messages.add(getMessageInfos(messagePK));
         nbReturned--;
       }
@@ -814,8 +810,7 @@ public class ForumsBMEJB implements SessionBean {
     }
     if (v.size() > 0) {
       for (int i = 0; i < v.size(); i++) {
-        deleteMessage(new MessagePK(messagePK.getComponentName(), messagePK
-            .getDomain(), (String) v.elementAt(i)));
+        deleteMessage(new MessagePK(messagePK.getComponentName(), (String) v.elementAt(i)));
       }
     }
     con = openConnection();
@@ -942,8 +937,7 @@ public class ForumsBMEJB implements SessionBean {
     }
     if (v.size() > 0) {
       for (int i = 0; i < v.size(); i++) {
-        moveMessage(new MessagePK(messagePK.getComponentName(), messagePK
-            .getDomain(), (String) v.elementAt(i)), forumPK);
+        moveMessage(new MessagePK(messagePK.getComponentName(), (String) v.elementAt(i)), forumPK);
       }
     }
     con = openConnection();
@@ -1296,8 +1290,7 @@ public class ForumsBMEJB implements SessionBean {
       for (int i = 0, n = forums.size(); i < n; i++) {
         forum = (Forum) forums.get(i);
         forumId = forum.getId();
-        ForumPK forumPK = new ForumPK(instanceId, null, Integer
-            .toString(forumId));
+        ForumPK forumPK = new ForumPK(instanceId, String.valueOf(forumId));
         updateForum(forumPK, forum.getName(), forum.getDescription(), forum
             .getParentId(), "0", null, false);
       }
@@ -1363,7 +1356,7 @@ public class ForumsBMEJB implements SessionBean {
         forumPKs = new ForumPK[forumsCount];
         String componentId = forumPK.getComponentName();
         for (int i = 0; i < forumsCount; i++) {
-          forumPKs[i] = new ForumPK(componentId, "", (String) forumsIds.get(i));
+          forumPKs[i] = new ForumPK(componentId, forumsIds.get(i));
         }
       } else {
         // Derniers threads du forum.

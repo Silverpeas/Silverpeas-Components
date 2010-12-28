@@ -36,26 +36,26 @@ public class ForumPK extends WAPrimaryKey {
    * Generated serial version identifier (Serializable class)
    */
   private static final long serialVersionUID = -6924058189303890284L;
-  private String domain;
 
-  public ForumPK(String component, String domain, String id) {
+  public ForumPK(String component, String id) {
     super(id, component);
-    this.domain = domain;
   }
 
-  public ForumPK(String component, String domain) {
-    this(component, domain, "0");
+  public ForumPK(String component) {
+    this(component, "0");
   }
 
-  public String getDomain() {
-    return domain;
-  }
-
+  @Override
   public boolean equals(Object other) {
     return ((other instanceof ForumPK)
         && (getInstanceId().equals(((ForumPK) other).getInstanceId()))
-        && (domain.equals(((ForumPK) other).getDomain())) && (getId()
-        .equals(((ForumPK) other).getId())));
+        && (getId().equals(((ForumPK) other).getId())));
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 7;
+    return hash * super.hashCode();
   }
 
 }

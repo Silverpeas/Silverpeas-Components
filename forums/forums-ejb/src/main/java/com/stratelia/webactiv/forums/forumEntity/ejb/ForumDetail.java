@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
 
 package com.stratelia.webactiv.forums.forumEntity.ejb;
 
@@ -31,8 +29,9 @@ import java.util.Date;
 import java.util.Iterator;
 
 import com.silverpeas.util.i18n.AbstractI18NBean;
-import com.stratelia.silverpeas.silvertrace.*;
-import com.stratelia.silverpeas.contentManager.*;
+import com.stratelia.silverpeas.contentManager.SilverContentInterface;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DateUtil;
 
 /**
  * This object contains the description of a forum
@@ -40,10 +39,7 @@ import com.stratelia.silverpeas.contentManager.*;
  * @version 1.0
  */
 public class ForumDetail extends AbstractI18NBean implements SilverContentInterface, Serializable {
-  /**
-   * Generated serial version identifier
-   */
-  private static final long serialVersionUID = 1L;
+
   private ForumPK pk;
   private String name;
   private String description;
@@ -97,7 +93,6 @@ public class ForumDetail extends AbstractI18NBean implements SilverContentInterf
     String result = "ForumDetail {" + "\n";
 
     result = result + "  getPK().getId() = " + getPK().getId() + "\n";
-    result = result + "  getPK().getDomain() = " + getPK().getDomain() + "\n";
     result = result + "  getPK().getComponent() = "
         + getPK().getComponentName() + "\n";
     result = result + "  getName() = " + getName() + "\n";
@@ -136,12 +131,9 @@ public class ForumDetail extends AbstractI18NBean implements SilverContentInterf
   }
 
   public String getDate() {
-    java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat(
-        "yyyy/MM/dd");
     String formattedDate = null;
-
     try {
-      formattedDate = formatter.format(getCreationDate());
+      formattedDate = DateUtil.formatDate(getCreationDate());
     } catch (Exception e) {
       SilverTrace.warn("publication", "ForumDetail.getDate()",
           "root.MSG_GEN_ENTER_METHOD", "date to format = "
@@ -176,5 +168,55 @@ public class ForumDetail extends AbstractI18NBean implements SilverContentInterf
 
   public Iterator getLanguages() {
     return null;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    ForumDetail that = (ForumDetail) o;
+
+    if (creationDate != null ? !creationDate.equals(
+        that.creationDate) : that.creationDate != null) {
+      return false;
+    }
+    if (creatorId != null ? !creatorId.equals(that.creatorId) : that.creatorId != null) {
+      return false;
+    }
+    if (description != null ? !description.equals(that.description) : that.description != null) {
+      return false;
+    }
+    if (iconUrl != null ? !iconUrl.equals(that.iconUrl) : that.iconUrl != null) {
+      return false;
+    }
+    if (name != null ? !name.equals(that.name) : that.name != null) {
+      return false;
+    }
+    if (pk != null ? !pk.equals(that.pk) : that.pk != null) {
+      return false;
+    }
+    if (silverObjectId != null ? !silverObjectId.equals(
+        that.silverObjectId) : that.silverObjectId != null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = pk != null ? pk.hashCode() : 0;
+    result = 31 * result + (name != null ? name.hashCode() : 0);
+    result = 31 * result + (description != null ? description.hashCode() : 0);
+    result = 31 * result + (creationDate != null ? creationDate.hashCode() : 0);
+    result = 31 * result + (creatorId != null ? creatorId.hashCode() : 0);
+    result = 31 * result + (silverObjectId != null ? silverObjectId.hashCode() : 0);
+    result = 31 * result + (iconUrl != null ? iconUrl.hashCode() : 0);
+    return result;
   }
 }

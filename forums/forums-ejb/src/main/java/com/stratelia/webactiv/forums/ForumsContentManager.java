@@ -175,7 +175,7 @@ public class ForumsContentManager implements ContentInterface {
 
       try {
         id = getContentManager().getInternalContentId(contentId);
-        forumPK = new ForumPK(peasId, null, id);
+        forumPK = new ForumPK(peasId, id);
         fks.add(forumPK);
       } catch (ClassCastException ignored) {
         // ignore unknown item

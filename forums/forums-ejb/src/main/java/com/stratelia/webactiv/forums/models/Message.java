@@ -145,4 +145,70 @@ public class Message implements Serializable {
     this.status = status;
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    Message message = (Message) o;
+
+    if (forumId != message.forumId) {
+      return false;
+    }
+    if (id != message.id) {
+      return false;
+    }
+    if (parentId != message.parentId) {
+      return false;
+    }
+    if (author != null ? !author.equals(message.author) : message.author != null) {
+      return false;
+    }
+    if (date != null ? !date.equals(message.date) : message.date != null) {
+      return false;
+    }
+    if (instanceId != null ? !instanceId.equals(message.instanceId) : message.instanceId != null) {
+      return false;
+    }
+    if (pk != null ? !pk.equals(message.pk) : message.pk != null) {
+      return false;
+    }
+    if (status != null ? !status.equals(message.status) : message.status != null) {
+      return false;
+    }
+    if (text != null ? !text.equals(message.text) : message.text != null) {
+      return false;
+    }
+    if (title != null ? !title.equals(message.title) : message.title != null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = id;
+    result = 31 * result + (title != null ? title.hashCode() : 0);
+    result = 31 * result + (author != null ? author.hashCode() : 0);
+    result = 31 * result + (date != null ? date.hashCode() : 0);
+    result = 31 * result + forumId;
+    result = 31 * result + parentId;
+    result = 31 * result + (text != null ? text.hashCode() : 0);
+    result = 31 * result + (instanceId != null ? instanceId.hashCode() : 0);
+    result = 31 * result + (pk != null ? pk.hashCode() : 0);
+    result = 31 * result + (status != null ? status.hashCode() : 0);
+    return result;
+  }
+
+  @Override
+  public String toString() {
+    return "Message{" + "id=" + id + ", title=" + title + ", author=" + author + ", date=" + date + ", forumId=" + forumId + ", parentId=" + parentId + ", text=" + text + ", instanceId=" + instanceId + ", pk=" + pk + ", status=" + status + '}';
+  }
+  
+  
 }
