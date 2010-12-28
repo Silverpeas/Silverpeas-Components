@@ -27,6 +27,7 @@ package com.silverpeas.projectManager;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import com.silverpeas.projectManager.control.ejb.ProjectManagerBm;
 import com.silverpeas.projectManager.control.ejb.ProjectManagerBmHome;
@@ -42,12 +43,12 @@ public class ProjectManagerStatistics implements ComponentStatisticsInterface {
 
   public Collection getVolume(String spaceId, String componentId)
       throws Exception {
-    ArrayList myArrayList = new ArrayList();
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
 
-    Collection tasks = getProjectManagerBm().getAllTasks(componentId, null);
-    Iterator iter = tasks.iterator();
+    Collection<TaskDetail> tasks = getProjectManagerBm().getAllTasks(componentId, null);
+    Iterator<TaskDetail> iter = tasks.iterator();
     while (iter.hasNext()) {
-      TaskDetail task = (TaskDetail) iter.next();
+      TaskDetail task = iter.next();
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
       myCouple.setUserId(Integer.toString(task.getOrganisateurId()));
       myCouple.setCountVolume(1);

@@ -41,7 +41,7 @@ import com.silverpeas.projectManager.model.TaskDetail;
  */
 public interface ProjectManagerBmBusinessSkeleton {
 
-  public List getProjects(String instanceId) throws RemoteException;
+  public List<TaskDetail> getProjects(String instanceId) throws RemoteException;
 
   public int addTask(TaskDetail task) throws RemoteException;
 
@@ -55,19 +55,19 @@ public interface ProjectManagerBmBusinessSkeleton {
   // public void putBackTask(TaskDetail task, Date previousTaskEndDate) throws
   // RemoteException;
 
-  public List getTasksByMotherId(String instanceId, int motherId)
+  public List<TaskDetail> getTasksByMotherId(String instanceId, int motherId)
       throws RemoteException;
 
-  public List getTasksByMotherId(String instanceId, int motherId, Filtre filtre)
+  public List<TaskDetail> getTasksByMotherId(String instanceId, int motherId, Filtre filtre)
       throws RemoteException;
 
-  public List getTasksNotCancelledByMotherId(String instanceId, int motherId,
+  public List<TaskDetail> getTasksNotCancelledByMotherId(String instanceId, int motherId,
       Filtre filtre) throws RemoteException;
 
-  public List getTasksByMotherIdAndPreviousId(String instanceId, int motherId,
+  public List<TaskDetail> getTasksByMotherIdAndPreviousId(String instanceId, int motherId,
       int previousId) throws RemoteException;
 
-  public List getAllTasks(String instanceId, Filtre filtre)
+  public List<TaskDetail> getAllTasks(String instanceId, Filtre filtre)
       throws RemoteException;
 
   public TaskDetail getTask(int id) throws RemoteException;

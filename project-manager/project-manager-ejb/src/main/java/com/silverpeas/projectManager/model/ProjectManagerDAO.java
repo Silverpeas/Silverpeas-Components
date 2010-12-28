@@ -35,6 +35,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -126,9 +127,8 @@ public class ProjectManagerDAO {
 
       // insertion des resources
       if (task.getResources() != null) {
-        Iterator it = task.getResources().iterator();
-        while (it.hasNext()) {
-          TaskResourceDetail resource = (TaskResourceDetail) it.next();
+        Collection<TaskResourceDetail> tasks = task.getResources();
+        for (TaskResourceDetail resource : tasks) {
           resource.setTaskId(id);
           resource.setInstanceId(task.getInstanceId());
           addResource(con, resource);
@@ -203,9 +203,9 @@ public class ProjectManagerDAO {
       deleteAllResources(con, task.getId(), task.getInstanceId());
 
       if (task.getResources() != null) {
-        Iterator it = task.getResources().iterator();
+        Iterator<TaskResourceDetail> it = task.getResources().iterator();
         while (it.hasNext()) {
-          TaskResourceDetail resource = (TaskResourceDetail) it.next();
+          TaskResourceDetail resource = it.next();
           resource.setTaskId(task.getId());
           resource.setInstanceId(task.getInstanceId());
           addResource(con, resource);

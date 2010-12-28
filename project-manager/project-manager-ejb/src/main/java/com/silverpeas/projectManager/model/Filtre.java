@@ -38,6 +38,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class Filtre implements Serializable {
 
+  private static final long serialVersionUID = -5172014425250531057L;
   private String actionFrom = null;
   private String actionTo = null;
   private String codeProjet = null;

@@ -35,6 +35,8 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
  */
 public class TaskPK extends WAPrimaryKey {
 
+  private static final long serialVersionUID = 341665047380031916L;
+
   public TaskPK(String id, String componentId) {
     super(id, null, componentId);
   }

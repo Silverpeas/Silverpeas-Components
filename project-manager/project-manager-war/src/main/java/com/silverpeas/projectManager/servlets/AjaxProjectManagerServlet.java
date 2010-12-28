@@ -40,6 +40,8 @@ import com.silverpeas.util.EncodeHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class AjaxProjectManagerServlet extends HttpServlet {
+  private static final long serialVersionUID = 798968548064856822L;
+
   public void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
     doPost(req, res);

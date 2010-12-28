@@ -26,18 +26,18 @@ package com.silverpeas.projectManager.model;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 
 import com.stratelia.webactiv.calendar.backbone.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
-import java.util.ArrayList;
-import java.util.List;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 
 /**
  * @author neysseri
  */
 public class TaskDetail implements Serializable {
-
+  private static final long serialVersionUID = -1211845237822053494L;
   public final static int IN_PROGRESS = 0;
   public final static int STOPPED = 1;
   public final static int CANCELLED = 2;
@@ -64,12 +64,12 @@ public class TaskDetail implements Serializable {
   private String path = "/";
   private int previousTaskId = -1;
   // les ressources (Collection de TaskResourceDetail)
-  private Collection resources = null;
+  private Collection<TaskResourceDetail> resources = null;
   private String responsableFullName;
   private String organisateurFullName;
   private String uiDateDebut;
   private String uiDateFin;
-  private List attachments = null;
+  private List<AttachmentDetail> attachments = null;
   private boolean isUnfold = false;
   private int level = 0;
   private boolean updateAvailable = false;
@@ -224,11 +224,11 @@ public class TaskDetail implements Serializable {
     return responsableId;
   }
 
-  public Collection getResources() {
+  public Collection<TaskResourceDetail> getResources() {
     return resources;
   }
 
-  public void setResources(Collection resources) {
+  public void setResources(Collection<TaskResourceDetail> resources) {
     this.resources = resources;
   }
 
@@ -414,7 +414,7 @@ public class TaskDetail implements Serializable {
     todo.setDelegatorId(new Integer(getOrganisateurId()).toString());
     Attendee attendee = new Attendee(String.valueOf(getResponsableId()));
     if (attendee != null) {
-      Vector attendees = new Vector();
+      Vector<Attendee> attendees = new Vector<Attendee>();
       attendees.add(attendee);
       todo.setAttendees(attendees);
     }
@@ -538,15 +538,15 @@ public class TaskDetail implements Serializable {
   /**
    * @return
    */
-  public List getAttachments() {
+  public List<AttachmentDetail> getAttachments() {
     return attachments;
   }
 
   /**
    * @param vector
    */
-  public void setAttachments(List vector) {
-    attachments = new ArrayList(vector);
+  public void setAttachments(List<AttachmentDetail> vector) {
+    attachments = vector;
   }
 
   /**

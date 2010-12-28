@@ -52,6 +52,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 
 public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
+  private static final long serialVersionUID = 5878086083042945518L;
+
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
@@ -94,7 +96,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
       if (function.startsWith("Main")) {
         String role = projectManagerSC.getRole();
         if (projectManagerSC.isProjectDefined()) {
-          List tasks = projectManagerSC.getTasks();
+          List<TaskDetail> tasks = projectManagerSC.getTasks();
           Filtre filtre = projectManagerSC.getFiltre();
 
           boolean filtreActif = projectManagerSC.isFiltreActif();
@@ -238,7 +240,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
           request.setAttribute("ActionMere", actionMere);
         }
 
-        List previousTasks = projectManagerSC.getPotentialPreviousTasks();
+        List<TaskDetail> previousTasks = projectManagerSC.getPotentialPreviousTasks();
 
         // ajout des pourcentages d'occupation des ressources
         projectManagerSC.updateOccupation(task);
@@ -261,7 +263,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
         String inputId = request.getParameter("InputId");
         String jsFunction = request.getParameter("JSFunction");
 
-        List holidays = projectManagerSC.getHolidayDates();
+        List<Date> holidays = projectManagerSC.getHolidayDates();
 
         HttpSession session = request.getSession(true);
         session.setAttribute("Silverpeas_NonSelectableDays", holidays);
@@ -312,7 +314,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
         destination = rootDestination + "refreshFromUserPanel.jsp";
       } else if (function.equals("ToSelectResources")) {
         // récupération de la liste des resources en cours
-        Collection currentResources = request2Resources(request);
+        Collection<TaskResourceDetail> currentResources = request2Resources(request);
         projectManagerSC.setCurrentResources(currentResources);
         try {
           destination = projectManagerSC.initUserSelect();
@@ -421,6 +423,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
         destination = rootDestination + "comments.jsp";
       } else if (function.equals("ToGantt")) {
+        //TODO retrieve all data to display GANT diagram.
         String id = request.getParameter("Id");
         String startDate = request.getParameter("StartDate");
         TaskDetail actionMere = null;
@@ -433,7 +436,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
           request.setAttribute("StartDate", projectManagerSC.uiDate2Date(startDate));
         }
 
-        List tasks = projectManagerSC.getTasksNotCancelled(id);
+        List<TaskDetail> tasks = projectManagerSC.getTasksNotCancelled(id);
         TaskDetail oldestAction = getOldestTask(tasks);
 
         // Le diagramme de Gantt doit faire apparaitre
@@ -486,7 +489,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
         destination = getDestination("ToCalendar", componentSC, request);
       } else if (function.equals("Export")) {
-        List tasks = projectManagerSC.getAllTasks();
+        List<TaskDetail> tasks = projectManagerSC.getAllTasks();
         request.setAttribute("Tasks", tasks);
         destination = rootDestination + "export.jsp";
       } else if (function.startsWith("searchResult")) {
@@ -641,7 +644,12 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
     projectManagerSC.updateCurrentProject();
   }
 
-  private TaskDetail getOldestTask(List tasks) {
+  /**
+   * 
+   * @param tasks
+   * @return the oldest task from a list of TaskDetail
+   */
+  private TaskDetail getOldestTask(List<TaskDetail> tasks) {
     TaskDetail oldest = null;
     TaskDetail task = null;
     for (int a = 0; a < tasks.size(); a++) {

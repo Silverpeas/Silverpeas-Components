@@ -28,6 +28,7 @@ import java.io.Serializable;
 
 public class TaskResourceDetail implements Serializable {
 
+  private static final long serialVersionUID = 8870203554320772747L;
   private int id;
   private int taskId;
   private String userId;
