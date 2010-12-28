@@ -230,7 +230,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public void lockForum(int id, int level) {
-    ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId(), String.valueOf(id));
+    ForumPK forumPK = new ForumPK(getComponentId(), String.valueOf(id));
     try {
       getForumsBM().lockForum(forumPK, level);
     } catch (RemoteException re) {
@@ -239,7 +239,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public int unlockForum(int id, int level) {
-    ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId(), String.valueOf(id));
+    ForumPK forumPK = new ForumPK(getComponentId(), String.valueOf(id));
     try {
       return getForumsBM().unlockForum(forumPK, level);
     } catch (RemoteException re) {
@@ -1276,11 +1276,11 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   private ForumPK getForumPK(int forumId) {
-    return new ForumPK(getComponentId(), getSpaceId(), String.valueOf(forumId));
+    return new ForumPK(getComponentId(), String.valueOf(forumId));
   }
 
   private MessagePK getMessagePK(int messageId) {
-    return new MessagePK(getComponentId(), getSpaceId(), String.valueOf(messageId));
+    return new MessagePK(getComponentId(), String.valueOf(messageId));
   }
 
   private NotationPK getForumNotationPk(int forumId) {
@@ -1301,7 +1301,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       while (currentForumId > 0) {
         currentForumId = getForumsBM().getForumParentId(currentForumId);
         ancestors.add(
-            getForumsBM().getForum(new ForumPK(instanceId, null, String.valueOf(currentForumId))));
+            getForumsBM().getForum(new ForumPK(instanceId, String.valueOf(currentForumId))));
 
       }
     } catch (RemoteException re) {
