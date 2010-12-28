@@ -354,6 +354,6 @@ public class ForumsDAOTest extends AbstractJndiCase {
     ForumPK forumPK = new ForumPK("forums130", "8");
     ForumsDAO.deleteForum(con, forumPK);
     Forum forum = ForumsDAO.getForum(con, forumPK);
-    assertThat(forum, null);
+    assertNull(forum);
   }
 }
