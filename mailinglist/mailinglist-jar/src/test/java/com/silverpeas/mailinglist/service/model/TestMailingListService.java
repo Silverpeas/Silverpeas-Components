@@ -42,18 +42,30 @@ import com.silverpeas.mailinglist.service.model.beans.ExternalUser;
 import com.silverpeas.mailinglist.service.model.beans.InternalUser;
 import com.silverpeas.mailinglist.service.model.beans.InternalUserSubscriber;
 import com.silverpeas.mailinglist.service.model.beans.MailingList;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
 
 public class TestMailingListService extends
     AbstractSilverpeasDatasourceSpringContextTests {
 
   private MailingListService mailingListService;
+  private OrganizationController organizationController;
 
+  public OrganizationController getOrganizationController() {
+    return organizationController;
+  }
+
+  public void setOrganizationController(OrganizationController organizationController) {
+    this.organizationController = organizationController;
+  }
+
+  @Override
   protected String[] getConfigLocations() {
     return new String[] { "spring-checker.xml", "spring-notification.xml",
         "spring-hibernate.xml", "spring-datasource.xml" };
   }
 
+  @Override
   protected void onTearDown() {
     IDatabaseConnection connection = null;
     try {
@@ -73,6 +85,7 @@ public class TestMailingListService extends
     }
   }
 
+  @Override
   protected void onSetUp() {
     IDatabaseConnection connection = null;
     try {
@@ -90,6 +103,7 @@ public class TestMailingListService extends
         }
       }
     }
+    organizationController.reloadAdminCache();
   }
 
   protected IDataSet getDataSet() throws DataSetException, IOException {
@@ -104,7 +118,7 @@ public class TestMailingListService extends
             .getResourceAsStream("test-mailinglist-service-dataset.xml")));
   }
 
-  public void testCreateMailingList() {
+  public void testCreateMailingList() {    
     MailingList mailingList = new MailingList();
     mailingList.setComponentId("100");
     ExternalUser tahiti = new ExternalUser();
