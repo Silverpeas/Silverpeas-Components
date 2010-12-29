@@ -72,6 +72,7 @@ public class TestMailingListService extends
       connection = getConnection();
       DatabaseOperation.DELETE_ALL.execute(connection, getDataSet());
       FileFolderManager.deleteFolder("c:\\tmp\\uploads\\componentId", false);
+      super.cleanJndi();
     } catch (Exception ex) {
       ex.printStackTrace();
     } finally {
@@ -87,6 +88,7 @@ public class TestMailingListService extends
 
   @Override
   protected void onSetUp() {
+    registerDatasource();
     IDatabaseConnection connection = null;
     try {
       connection = getConnection();
