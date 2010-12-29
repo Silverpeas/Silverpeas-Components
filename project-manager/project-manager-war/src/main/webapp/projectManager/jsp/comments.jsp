@@ -33,10 +33,9 @@ String 	url 		= (String) request.getAttribute("URL");
 String 	userId 		= (String) request.getAttribute("UserId");
 String 	role 		= (String) request.getAttribute("Role");
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html>
+<head>
+<title></title>
 <%
     out.println(gef.getLookStyleSheet());
 %>
@@ -44,8 +43,8 @@ String 	role 		= (String) request.getAttribute("Role");
 <script language="javascript">
 </script>
 
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
@@ -73,5 +72,5 @@ String 	role 		= (String) request.getAttribute("Role");
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

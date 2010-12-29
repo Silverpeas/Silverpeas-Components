@@ -70,27 +70,27 @@ out.println(frame.printBefore());
 Board board = gef.getBoard();
 out.println(board.printBefore());
 %>
-<table CELLPADDING=5>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.ProjetChef")%> :</TD>
-    <TD><%=orgaFullName%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.ProjetNom")%> <%=resource.getString("projectManager.Action")%> :</TD>
-    <TD><%=nom%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform" valign="top"><%=resource.getString("projectManager.TacheDescription")%> :</TD>
-    <TD><%=Encode.javaStringToHtmlParagraphe(description)%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.ProjetDateDebut")%> :</TD>
-    <TD><%=dateDebut%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.ProjetDateFin")%> :</TD>
-    <TD><%=dateFin%></TD>
-</TR>
+<table cellpadding="5">
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.ProjetChef")%> :</td>
+    <td><%=orgaFullName%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.ProjetNom")%> <%=resource.getString("projectManager.Action")%> :</td>
+    <td><%=nom%></td>
+</tr>
+<tr>
+	<td class="txtlibform" valign="top"><%=resource.getString("projectManager.TacheDescription")%> :</td>
+    <td><%=Encode.javaStringToHtmlParagraphe(description)%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.ProjetDateDebut")%> :</td>
+    <td><%=dateDebut%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.ProjetDateFin")%> :</td>
+    <td><%=dateFin%></td>
+</tr>
 </table>
 <%
 out.println(board.printAfter());
@@ -101,8 +101,8 @@ out.println(board.printAfter());
 	  	if (attachments.hasNext())
 	  	{
 	  		out.println(board.printBefore());
-	  		out.println("<TABLE width=\"200\">");
-	        out.println("<TR><TD align=\"center\"><img src=\""+m_context+"/util/icons/attachedFiles.gif\"></td></TR>");
+	  		out.println("<table width=\"200\">");
+	        out.println("<tr><td align=\"center\"><img src=\""+m_context+"/util/icons/attachedFiles.gif\"></td></tr>");
 	        
 	        AttachmentDetail attachmentDetail = null;
 	        String author 	= "";
@@ -113,16 +113,16 @@ out.println(board.printAfter());
 				title	= attachmentDetail.getTitle();
 				info	= attachmentDetail.getInfo();
 				if (attachmentDetail.getAuthor() != null && attachmentDetail.getAuthor().length() > 0) {
-					author = "<BR><i>"+attachmentDetail.getAuthor()+"</i>";
+					author = "<br><i>"+attachmentDetail.getAuthor()+"</i>";
 				}
-                out.println("<TR>");
-                out.println("<TD><IMG alt=\"\" src=\""+attachmentDetail.getAttachmentIcon()+"\" width=20>&nbsp;");
+                out.println("<tr>");
+                out.println("<td><img alt=\"\" src=\""+attachmentDetail.getAttachmentIcon()+"\" width=20>&nbsp;");
 				out.println("<A href=\""+m_context+attachmentDetail.getAttachmentURL()+"\" target=\"_blank\">");
 				if (title != null && title.length()>0)
 					out.println(title);
 				else
 					out.println(attachmentDetail.getLogicalName());
-				out.println("</A> "+author+"<BR>");
+				out.println("</A> "+author+"<br>");
 				if (title != null && title.length()>0) {
 					out.println(attachmentDetail.getLogicalName());
 					out.println(" / ");
@@ -130,17 +130,17 @@ out.println(board.printAfter());
                 out.println(attachmentDetail.getAttachmentFileSize()+" / "+attachmentDetail.getAttachmentDownloadEstimation()+"<br>");
 				if (info != null && info.length()>0)
 					out.println("<i>"+info+"</i>");
-				out.println("</TD></TR>");
-				out.println("<TR><TD>&nbsp;</TD></TR>");
+				out.println("</td></tr>");
+				out.println("<tr><td>&nbsp;</td></tr>");
 				author = "";
 	        }
-	        out.println("</TABLE>");
+	        out.println("</table>");
 	        out.println(board.printAfter());
 	    }
 	%>
 </td>
 </tr></table>
-<center>
+</center>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());

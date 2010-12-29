@@ -33,10 +33,9 @@ String 			url 		= (String) request.getAttribute("URL");
 String 			userId 		= (String) request.getAttribute("UserId");
 Boolean			showAttTab 	= (Boolean) request.getAttribute("AbleToAddAttachments");
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html>
+<head>
+<title></title>
 <%
     out.println(gef.getLookStyleSheet());
 %>
@@ -44,8 +43,8 @@ Boolean			showAttTab 	= (Boolean) request.getAttribute("AbleToAddAttachments");
 <script language="javascript">
 </script>
 
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
@@ -70,5 +69,5 @@ Boolean			showAttTab 	= (Boolean) request.getAttribute("AbleToAddAttachments");
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

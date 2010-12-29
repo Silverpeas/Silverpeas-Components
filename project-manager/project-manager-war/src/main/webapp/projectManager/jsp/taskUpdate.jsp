@@ -92,7 +92,7 @@ boolean	isOrganisateur = "admin".equals(role);
 <script type="text/javascript" src="<%=m_context%>/util/ajax/ricoAjax.js"></script>
 
 
-<SCRIPT LANGUAGE="JAVASCRIPT">
+<script language="javascript" type="text/javascript">
 
 var language = '<%=resource.getLanguage()%>';
 
@@ -615,43 +615,43 @@ out.println(frame.printBefore());
 Board board = gef.getBoard();
 out.println(board.printBefore());
 %>
-<table CELLPADDING=5>
-<FORM Name="actionForm" Action="UpdateTask" Method="POST">
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheNumero")%> :</TD>
-    <TD><%=task.getChrono()%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheOrganisateur")%> :</TD>
-    <TD><%=task.getOrganisateurFullName()%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheResponsable")%> :</TD>
-    <TD>
+<form name="actionForm" action="UpdateTask" method="post">
+<table cellpadding="5">
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheNumero")%> :</td>
+    <td><%=task.getChrono()%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheOrganisateur")%> :</td>
+    <td><%=task.getOrganisateurFullName()%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheResponsable")%> :</td>
+    <td>
     	<% if (isOrganisateur) { %>
 	    	<input type="text" name="Responsable" value="<%=task.getResponsableFullName()%>" size="60" disabled>
-	    	<a href="javascript:callUserPanel()"><img src="<%=resource.getIcon("projectManager.userPanel")%>" alt="<%=resource.getString("projectManager.SelectionnerResponsable")%>" border="0" align="absmiddle"></a>&nbsp;
+	    	<a href="javascript:callUserPanel()"><img src="<%=resource.getIcon("projectManager.userPanel")%>" alt="<%=resource.getString("projectManager.SelectionnerResponsable")%>" border="0" align="middle"></a>&nbsp;
 	    	<IMG src="<%=resource.getIcon("projectManager.mandatoryField")%>" width="5" height="5" border="0">
 	    	<input type="hidden" name="ResponsableName" value="<%=task.getResponsableFullName()%>">
 	    	<input type="hidden" name="ResponsableId" value="<%=task.getResponsableId()%>">&nbsp;
     	<% } else { %>
     		<%=task.getResponsableFullName()%>
     	<% } %>
-    </TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheNom")%> <%=resource.getString("projectManager.Tache")%> :</TD>
-    <TD>
+    </td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheNom")%> <%=resource.getString("projectManager.Tache")%> :</td>
+    <td>
     	<% if (isOrganisateur) { %>
 	    	<input type="text" name="Nom" value="<%=nom%>" size="60" maxlength="150">&nbsp;<IMG src="<%=resource.getIcon("projectManager.mandatoryField")%>" width="5" height="5" border="0">
 	    <% } else { %>
     		<%=nom%>
     	<% } %>
-    </TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TachePrecedente")%> :</TD>
-    <TD>
+    </td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TachePrecedente")%> :</td>
+    <td>
     	<% if (isOrganisateur) { %>
 	    	<select name="Precedente" size="1" onChange="javaScript:changePrevious();">
 	    	<%
@@ -676,34 +676,34 @@ out.println(board.printBefore());
 	    <% } else { %>
 	    	<%=previousName%>
 	    <% } %>
-    </TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheCharge")%> :</TD>
-    <TD>
+    </td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheCharge")%> :</td>
+    <td>
     	<% if (isOrganisateur) { %>
 	    	<input type="text" id="Charge" name="Charge" value="<%=charge%>" size="10" maxlength="10" onBlur="javascript:reloadDateFinAndOccupations();">&nbsp;<%=resource.getString("projectManager.TacheJours")%>&nbsp;<IMG src="<%=resource.getIcon("projectManager.mandatoryField")%>" width="5" height="5" border="0">
 	    <% } else { %>
     		<%=charge%>
     	<% } %>
-    </TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheConsomme")%> :</TD>
-    <TD><input type="text" name="Consomme" value="<%=consomme%>" size="10" maxlength="10" onBlur="this.value=formatNumericField(this.value);">&nbsp;<%=resource.getString("projectManager.TacheJours")%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheResteAFaire")%> :
-		<input type="hidden" name="TaskId" value="<%=task.getId()%>"></TD>
-    <TD><input type="text" name="Raf" value="<%=raf%>" size="10" maxlength="10" onBlur="this.value=formatNumericField(this.value);">&nbsp;<%=resource.getString("projectManager.TacheJours")%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheAvancement")%> :</TD>
-    <TD><%=avancement%> %</TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheStatut")%> :</TD>
-    <TD><select name="Statut" size="1">
+    </td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheConsomme")%> :</td>
+    <td><input type="text" name="Consomme" value="<%=consomme%>" size="10" maxlength="10" onBlur="this.value=formatNumericField(this.value);">&nbsp;<%=resource.getString("projectManager.TacheJours")%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheResteAFaire")%> :
+		<input type="hidden" name="TaskId" value="<%=task.getId()%>"></td>
+    <td><input type="text" name="Raf" value="<%=raf%>" size="10" maxlength="10" onBlur="this.value=formatNumericField(this.value);">&nbsp;<%=resource.getString("projectManager.TacheJours")%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheAvancement")%> :</td>
+    <td><%=avancement%> %</td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheStatut")%> :</td>
+    <td><select name="Statut" size="1">
     	<%
     		String 	label 	= "";
     		String 	statusSelected;
@@ -732,44 +732,44 @@ out.println(board.printBefore());
     		}
     	%>
     	</select>
-    </TD>
-</TR>
-<TR>
-	<TD class="txtlibform" valign="top"><%=resource.getString("projectManager.TacheDescription")%> :</TD>
-    <TD>
+    </td>
+</tr>
+<tr>
+	<td class="txtlibform" valign="top"><%=resource.getString("projectManager.TacheDescription")%> :</td>
+    <td>
     	<% if (isOrganisateur) { %>
 	    	<textarea name="Description" rows="5" cols="60"><%=description%></textarea>
 	    <% } else { %>
     		<%=description%>
     	<% } %>
-    </TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheDateDebut")%> :</TD>
-    <TD>
+    </td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheDateDebut")%> :</td>
+    <td>
     	<% if (isOrganisateur) { %>
 	    	<input type="text" name="DateDebut" id="DateDebut" size="12" maxlength="10" value="<%=dateDebut%>" onBlur="javascript:reloadDateFinAndOccupations();">&nbsp;<img src="<%=resource.getIcon("projectManager.mandatoryField")%>" width="5" height="5" valign="absmiddle">&nbsp;&nbsp;<a href="javascript:onClick=editDate(11)"><img src="<%=resource.getIcon("projectManager.calendrier")%>" border="0" align="absmiddle" alt="<%=resource.getString("GML.viewCalendar")%>"></a>&nbsp;<span class="txtnote"><%=resource.getString("GML.dateFormatExemple")%></span>
 	    <% } else { %>
 	       <%=resource.getOutputDate(task.getDateDebut())%>
     		<input type="hidden" id="DateDebut" value="<%=resource.getOutputDate(task.getDateDebut())%>"/>
     	<% } %>
-    </TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheDateFin")%> :</TD>
-    <TD>
+    </td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheDateFin")%> :</td>
+    <td>
     	<% if (isOrganisateur) { %>
     		<span id="DisplayDateFin"><%=dateFin%></span>
     		<input type="hidden" id="HiddenDateFin" name="DateFin" value="<%=dateFin%>"><input type="hidden" name="PreviousId"><input type="hidden" name="Id" value="<%=task.getId()%>">
     	<% } else { %>
     		<span id="DisplayDateFin"><%=resource.getOutputDate(task.getDateFin())%></span>
     	<% } %>
-    </TD>
-</TR>
+    </td>
+</tr>
 <!-- affichage des ressources --> 
-<TR>
-<TD class="txtlibform"><%=resource.getString("projectManager.TacheResources")%> :</TD>
-<TD><input type="hidden" name="allResources" /><div id="resources"> 
+<tr>
+<td class="txtlibform"><%=resource.getString("projectManager.TacheResources")%> :</td>
+<td><input type="hidden" name="allResources" /><div id="resources"> 
 <%
 	String resourceName = "";
 	
@@ -802,10 +802,10 @@ out.println(board.printBefore());
 		}
 		out.println("</table>");
 	} %>
-	</div></TD>
-</TR>
-</FORM>
+	</div></td>
+</tr>
 </table>
+</form>
 <%
 out.println(board.printAfter());
 %>

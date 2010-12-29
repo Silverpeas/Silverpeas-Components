@@ -134,14 +134,14 @@ String 	role 		= (String) request.getAttribute("Role");
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-<SCRIPT LANGUAGE="JAVASCRIPT">
+<script language="javascript">
 
 function goToTask(id) {
     document.taskForm.Id.value = id;
     document.taskForm.submit();
 }
 
-</SCRIPT>
+</script>
 </head>
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
 <%

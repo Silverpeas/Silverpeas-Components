@@ -59,7 +59,7 @@ if (project != null)
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-<SCRIPT LANGUAGE="JAVASCRIPT">
+<script language="javascript">
 function editDate(indiceElem)
 {
 		chemin = "<%=m_context%><%=URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm=0&indiceElem="+indiceElem;
@@ -165,30 +165,30 @@ out.println(frame.printBefore());
 Board board = gef.getBoard();
 out.println(board.printBefore());
 %>
-<table CELLPADDING=5>
-<FORM Name="projectForm" Action="<%=formAction%>" Method="POST">
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.ProjetChef")%> :</TD>
-    <TD><%=orgaFullName%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.ProjetNom")%> <%=resource.getString("projectManager.Action")%> :</TD>
-    <TD><input type="text" name="Nom" value="<%=nom%>" size="60" maxlength="150">&nbsp;<IMG src="<%=resource.getIcon("projectManager.mandatoryField")%>" width="5" height="5" border="0"></TD>
-</TR>
-<TR>
-	<TD class="txtlibform" valign="top"><%=resource.getString("projectManager.TacheDescription")%> :</TD>
-    <TD><textarea name="Description" rows="6" cols="70"><%=description%></textarea></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.ProjetDateDebut")%> :</TD>
-    <TD><input type="text" name="DateDebut" size="12" maxlength="10" value="<%=dateDebut%>">&nbsp;<img src="<%=resource.getIcon("projectManager.mandatoryField")%>" width="5" height="5">&nbsp;&nbsp;<a href="javascript:onClick=editDate(2);"><img src="<%=resource.getIcon("projectManager.calendrier")%>"  border=0 valign=absmiddle align="middle" alt="<%=resource.getString("GML.viewCalendar")%>"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.ProjetDateFin")%> :</TD>
-    <TD><%=dateFin%></TD>
-</TR>
-</FORM>
+<form name="projectForm" action="<%=formAction%>" method="post">
+<table cellpadding="5">
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.ProjetChef")%> :</td>
+    <td><%=orgaFullName%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.ProjetNom")%> <%=resource.getString("projectManager.Action")%> :</td>
+    <td><input type="text" name="Nom" value="<%=nom%>" size="60" maxlength="150">&nbsp;<img src="<%=resource.getIcon("projectManager.mandatoryField")%>" width="5" height="5" border="0"></td>
+</tr>
+<tr>
+	<td class="txtlibform" valign="top"><%=resource.getString("projectManager.TacheDescription")%> :</td>
+    <td><textarea name="Description" rows="6" cols="70"><%=description%></textarea></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.ProjetDateDebut")%> :</td>
+    <td><input type="text" name="DateDebut" size="12" maxlength="10" value="<%=dateDebut%>">&nbsp;<img src="<%=resource.getIcon("projectManager.mandatoryField")%>" width="5" height="5">&nbsp;&nbsp;<a href="javascript:onClick=editDate(2);"><img src="<%=resource.getIcon("projectManager.calendrier")%>"  border="0" align="top" alt="<%=resource.getString("GML.viewCalendar")%>"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.ProjetDateFin")%> :</td>
+    <td><%=dateFin%></td>
+</tr>
 </table>
+</form>
 <%
 out.println(board.printAfter());
 %>

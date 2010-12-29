@@ -32,9 +32,9 @@ String responsableFullName 	= (String) request.getAttribute("ResponsableFullName
 String responsableId 		= (String) request.getAttribute("ResponsableId");
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<html>
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
    out.println(gef.getLookStyleSheet());
 %>
@@ -52,7 +52,7 @@ function refresh() {
 	window.close();
 }
 </script>
-</HEAD>
-<BODY onLoad=refresh()>
-</BODY>
-</HTML>
+</head>
+<body onLoad=refresh()>
+</body>
+</html>

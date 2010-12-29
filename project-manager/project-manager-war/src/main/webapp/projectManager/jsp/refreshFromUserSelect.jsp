@@ -31,9 +31,9 @@
 Collection resources = (Collection) request.getAttribute("Resources");
 %>
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<html>
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
    out.println(gef.getLookStyleSheet());
 %>
@@ -144,7 +144,7 @@ function refresh()
 	window.close();
 }
 </script>
-</HEAD>
-<BODY onLoad=refresh()>
-</BODY>
-</HTML>
+</head>
+<body onLoad=refresh()>
+</body>
+</html>

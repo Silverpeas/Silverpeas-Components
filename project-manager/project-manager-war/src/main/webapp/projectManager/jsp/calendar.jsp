@@ -136,10 +136,9 @@ Date 				beginDate 	= (Date) request.getAttribute("BeginDate");
 Date 				endDate		= (Date) request.getAttribute("EndDate");
 List			 	holidays	= (List) request.getAttribute("HolidayDates");
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html>
+<head>
+<title></title>
 <%
     out.println(gef.getLookStyleSheet());
 %>
@@ -160,8 +159,8 @@ function changeDayStatus(year, month, day)
 }
 </script>
 
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
@@ -232,5 +231,5 @@ function changeDayStatus(year, month, day)
 	<input type="hidden" name="Month">
 	<input type="hidden" name="Year">
 </form>
-</BODY>
-</HTML>
+</body>
+</html>

@@ -52,10 +52,10 @@ out.println(frame.printBefore());
 Board board = gef.getBoard();
 out.println(board.printBefore());
 %>
-<table CELLPADDING=5>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.NotDefined")%></TD>
-</TR>
+<table cellpadding="5">
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.NotDefined")%></td>
+</tr>
 </table>
 <%
 out.println(board.printAfter());

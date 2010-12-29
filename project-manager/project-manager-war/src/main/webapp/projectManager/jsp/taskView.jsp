@@ -41,7 +41,7 @@ String		role				= (String) request.getAttribute("Role");
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-<SCRIPT LANGUAGE="JAVASCRIPT">
+<script language="javascript" type="text/javascript">
 function callUserPanel()
 {
 	SP_openWindow('ToUserPanel','', '750', '550','scrollbars=yes, resizable, alwaysRaised');
@@ -76,52 +76,52 @@ out.println(frame.printBefore());
 Board board = gef.getBoard();
 out.println(board.printBefore());
 %>
-<table CELLPADDING=5>
-<FORM Name="actionForm" Action="UpdateTask" Method="POST">
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheNumero")%> :</TD>
-    <TD><%=task.getChrono()%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheOrganisateur")%> :</TD>
-    <TD><%=task.getOrganisateurFullName()%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheResponsable")%> :</TD>
-    <TD><%=task.getResponsableFullName()%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheNom")%> <%=resource.getString("projectManager.Tache")%> :</TD>
-    <TD><%=task.getNom()%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TachePrecedente")%> :</TD>
-    <TD>
+<form name="actionForm" action="UpdateTask" method="post">
+<table cellpadding="5">
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheNumero")%> :</td>
+    <td><%=task.getChrono()%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheOrganisateur")%> :</td>
+    <td><%=task.getOrganisateurFullName()%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheResponsable")%> :</td>
+    <td><%=task.getResponsableFullName()%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheNom")%> <%=resource.getString("projectManager.Tache")%> :</td>
+    <td><%=task.getNom()%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TachePrecedente")%> :</td>
+    <td>
     <%
     	if (task.getPreviousTaskId() != -1)
     		out.println(task.getPreviousTaskName());
     %>
-    </TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheCharge")%> :</TD>
-    <TD><%=task.getCharge()%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheConsomme")%> :</TD>
-    <TD><%=task.getConsomme()%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheResteAFaire")%> :</TD>
-    <TD><%=task.getRaf()%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheAvancement")%> :</TD>
-    <TD><%=task.getAvancement()%> %</TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheStatut")%> :</TD>
-    <TD>
+    </td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheCharge")%> :</td>
+    <td><%=task.getCharge()%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheConsomme")%> :</td>
+    <td><%=task.getConsomme()%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheResteAFaire")%> :</td>
+    <td><%=task.getRaf()%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheAvancement")%> :</td>
+    <td><%=task.getAvancement()%> %</td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheStatut")%> :</td>
+    <td>
     	<%
 			String icon 	= "";
     		String statut 	= "";
@@ -148,25 +148,25 @@ out.println(board.printBefore());
 
 			}
 		%>
-    	<img src="<%=icon%>" border="0" align="absmiddle">&nbsp;<%=statut%>
-    </TD>
-</TR>
-<TR>
-	<TD class="txtlibform" valign="top"><%=resource.getString("projectManager.TacheDescription")%> :</TD>
-    <TD><%=Encode.javaStringToHtmlParagraphe(task.getUiDescription())%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheDateDebut")%> :</TD>
-    <TD><%=resource.getOutputDate(task.getDateDebut())%></TD>
-</TR>
-<TR>
-	<TD class="txtlibform"><%=resource.getString("projectManager.TacheDateFin")%> :</TD>
-    <TD><%=resource.getOutputDate(task.getDateFin())%></TD>
-</TR>
+    	<img src="<%=icon%>" border="0" align="middle">&nbsp;<%=statut%>
+    </td>
+</tr>
+<tr>
+	<td class="txtlibform" valign="top"><%=resource.getString("projectManager.TacheDescription")%> :</td>
+    <td><%=Encode.javaStringToHtmlParagraphe(task.getUiDescription())%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheDateDebut")%> :</td>
+    <td><%=resource.getOutputDate(task.getDateDebut())%></td>
+</tr>
+<tr>
+	<td class="txtlibform"><%=resource.getString("projectManager.TacheDateFin")%> :</td>
+    <td><%=resource.getOutputDate(task.getDateFin())%></td>
+</tr>
 <!-- affichage des ressources --> 
-<TR>
-<TD class="txtlibform"><%=resource.getString("projectManager.TacheResources")%> :</TD>
-<TD> 
+<tr>
+<td class="txtlibform"><%=resource.getString("projectManager.TacheResources")%> :</td>
+<td> 
 <%
 	String resourceName = "";
 	String resourceId = "";
@@ -199,10 +199,10 @@ out.println(board.printBefore());
 		}
 		out.println("</table>");
 	} %>
-	</TD>
-</TR>
-</FORM>
+	</td>
+</tr>
 </table>
+</FORM>
 <%
 out.println(board.printAfter());
 %>
@@ -214,7 +214,7 @@ out.println(board.printAfter());
 	%>
 </td>
 </tr></table>
-<center>
+</center>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());

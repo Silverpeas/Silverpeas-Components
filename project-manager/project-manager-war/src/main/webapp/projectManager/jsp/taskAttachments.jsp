@@ -31,18 +31,17 @@
 TaskDetail 	task 	= (TaskDetail) request.getAttribute("Task");
 String 		url 	= (String) request.getAttribute("URL");
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html>
+<head>
+<title></title>
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script language="javascript">
 </script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
     browseBar.setDomainName(spaceLabel);
     browseBar.setComponentName(componentLabel, "Main");
@@ -66,5 +65,5 @@ out.println(gef.getLookStyleSheet());
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

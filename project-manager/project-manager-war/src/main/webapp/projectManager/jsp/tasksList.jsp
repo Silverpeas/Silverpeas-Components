@@ -190,7 +190,7 @@ String imgUnfold 	= "<img src=\""+resource.getIcon("projectManager.treeMinus")+"
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-<SCRIPT LANGUAGE="JAVASCRIPT">
+<script language="javascript" type="text/javascript">
 function exportTasks(){
 	SP_openWindow('Export', 'exportTasks', '750', '550','scrollbars=yes, menubar=yes, resizable, alwaysRaised');
 }
@@ -279,7 +279,7 @@ function sendFilterData() {
          document.actionForm.submit();
      }
 }
-</SCRIPT>
+</script>
 </head>
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
 <%
@@ -311,11 +311,11 @@ out.println(frame.printBefore());
 <!--------------------------- FILTRE ----------------------------------------------->
 <!---------------------------------------------------------------------------------->
 <center>
-<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH="98%" CLASS=intfdcolor>
-<FORM NAME="actionForm" METHOD="POST" ACTION="ToFilterTasks">
+<form name="actionForm" method="post" action="ToFilterTasks">
+<table cellpadding=0 cellspacing=2 border=0 width="98%" class=intfdcolor>
 	<tr>
-		<td CLASS=intfdcolor4 NOWRAP>
-			<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH="100%">
+		<td class=intfdcolor4 nowrap>
+			<table cellpadding=0 cellspacing=0 border=0 width="100%">
 				<tr>
 					<td class="intfdcolor" rowspan="2" nowrap width="100%">
 						<img border="0" src="<%=resource.getIcon("projectManager.px") %>" width="5">
@@ -342,7 +342,7 @@ out.println(frame.printBefore());
 				if (filtreActif.booleanValue()) 
 				{
 			%>
-				<table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
+				<table cellpadding="5" cellspacing="0" border="0" width="100%">
 					<tr>
 						<td class="txtlibform"><%=resource.getString("projectManager.TacheNumero")%> <%=resource.getString("projectManager.Tache")%></td>
 						<td><%=resource.getString("projectManager.De")%> <input type="text" name="TaskFrom" size="6" value="<%=actionFrom%>"> <%=resource.getString("projectManager.A")%> <input type="text" name="TaskTo" size="6" value="<%=actionTo%>"></td>
@@ -459,8 +459,8 @@ out.println(frame.printBefore());
 			%>
 		</td>
 	</tr>
-</FORM>	
 </table>
+</form> 
 </center>
 <br>
 <% 
@@ -567,8 +567,8 @@ out.println(arrayPane.print());
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-<FORM name="listForm" Action="RemoveTask" method="POST">
+<form name="listForm" Action="RemoveTask" method="post">
 <input type="hidden" name="Id">
-</FORM>
+</form>
 </body>
 </html>
