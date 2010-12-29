@@ -66,11 +66,11 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   // Current resource collection
   private Collection<TaskResourceDetail> currentResources = null;
 
-  boolean filtreActif = false;
-  Filtre filtre = null;
+  private boolean filtreActif = false;
+  private Filtre filtre = null;
 
-  List<Integer> unfoldTasks = new ArrayList<Integer>();
-  Calendar calendar = null;
+  private List<Integer> unfoldTasks = new ArrayList<Integer>();
+  private Calendar calendar = null;
 
   public static int WORKING_DAY = 0;
   public static int HOLIDAY_DAY = 1;
@@ -94,7 +94,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public void removeUnfoldTask(String id) {
-    unfoldTasks.remove(new Integer(id));
+    unfoldTasks.remove(Integer.valueOf(id));
   }
 
   public List<Integer> getUnfoldTasks() {
@@ -102,21 +102,18 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   private boolean isUnfoldTask(int actionId) {
-    return unfoldTasks.contains(new Integer(actionId));
+    return unfoldTasks.contains(Integer.valueOf(actionId));
   }
 
   /*********************************************************************/
 
   public List<TaskDetail> getAllTasks() throws RemoteException {
-    List<TaskDetail> tasks = getProjectManagerBm().getAllTasks(getComponentId(),
-        getFiltre());
+    List<TaskDetail> tasks = getProjectManagerBm().getAllTasks(getComponentId(), getFiltre());
 
-    TaskDetail task = null;
-    for (int a = 0; a < tasks.size(); a++) {
-      task = (TaskDetail) tasks.get(a);
-
+    for (TaskDetail task : tasks) {
       enrichirTask(task);
     }
+
     return tasks;
   }
 
@@ -147,7 +144,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     enrichirTask(task);
 
     // fichiers joint à la tâche
-    task.setAttachments(getAttachments(new Integer(task.getId()).toString()));
+    task.setAttachments(getAttachments(Integer.toString(task.getId())));
 
     task.setLevel(level);
 
@@ -157,12 +154,11 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     } else {
       if (actionMere != null
           && getRole().equals("responsable")
-          && actionMere.getResponsableId() == new Integer(getUserId())
-              .intValue()) {
+          && actionMere.getResponsableId() == Integer.parseInt(getUserId())) {
         task.setDeletionAvailable(true);
         task.setUpdateAvailable(true);
       } else if (getRole().equals("responsable")
-          && task.getResponsableId() == new Integer(getUserId()).intValue()) {
+          && task.getResponsableId() == Integer.parseInt(getUserId())) {
         task.setUpdateAvailable(true);
       }
     }
@@ -189,10 +185,8 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   public List<TaskDetail> getTasks(String id) throws RemoteException {
     List<TaskDetail> tasks = getProjectManagerBm().getTasksByMotherId(getComponentId(),
-        new Integer(id).intValue(), getFiltre());
-    TaskDetail task = null;
-    for (int a = 0; a < tasks.size(); a++) {
-      task = (TaskDetail) tasks.get(a);
+        Integer.parseInt(id), getFiltre());
+    for (TaskDetail task : tasks) {
       enrichirTask(task);
     }
     return tasks;
@@ -200,7 +194,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   public List<TaskDetail> getTasksNotCancelled(String id) throws RemoteException {
     List<TaskDetail> tasks = getProjectManagerBm().getTasksNotCancelledByMotherId(
-        getComponentId(), new Integer(id).intValue(), getFiltre());
+        getComponentId(), Integer.parseInt(id), getFiltre());
     TaskDetail task = null;
     for (int a = 0; a < tasks.size(); a++) {
       task = (TaskDetail) tasks.get(a);
@@ -220,23 +214,22 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     // du projet
     if (getCurrentTask() != null) {
       // On est au niveau d'une tache
-      if (onCreation)
+      if (onCreation) {
         motherId = getCurrentTask().getId();
-      else
+      } else {
         motherId = getCurrentTask().getMereId();
+      }
     }
-    previousTasks = getProjectManagerBm().getTasksByMotherId(getComponentId(),
-        motherId);
+    previousTasks = getProjectManagerBm().getTasksByMotherId(getComponentId(), motherId);
 
     // calcul de la date de debut de la nouvelle tache
     // par rapport à la date de fin de la tache precedente
     TaskDetail previousTask = null;
     for (int t = 0; t < previousTasks.size(); t++) {
-      previousTask = (TaskDetail) previousTasks.get(t);
+      previousTask = previousTasks.get(t);
 
       previousTask.setCharge(previousTask.getCharge() + 1);
-      previousTask
-          .setUiDateDebutPlus1(date2UIDate(processEndDate(previousTask)));
+      previousTask.setUiDateDebutPlus1(date2UIDate(processEndDate(previousTask)));
       previousTask.setCharge(previousTask.getCharge() - 1);
     }
     return previousTasks;
@@ -284,11 +277,11 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public void enrichirTask(TaskDetail task) {
-    String responsableId = new Integer(task.getResponsableId()).toString();
+    String responsableId = Integer.toString(task.getResponsableId());
     UserDetail responsable = getUserDetail(responsableId);
     task.setResponsableFullName(getUserFullName(responsable));
 
-    String organisateurId = new Integer(task.getOrganisateurId()).toString();
+    String organisateurId = Integer.toString(task.getOrganisateurId());
     UserDetail cdp = getUserDetail(organisateurId);
     task.setOrganisateurFullName(getUserFullName(cdp));
 
@@ -301,7 +294,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     Iterator<TaskResourceDetail> it = resources.iterator();
     while (it.hasNext()) {
       TaskResourceDetail resource = it.next();
-      String userId = String.valueOf(resource.getUserId());
+      String userId = resource.getUserId();
       UserDetail user = getUserDetail(userId);
       resource.setUserName(getUserFullName(user));
     }
@@ -315,7 +308,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   public TaskDetail getTask(String id, boolean getAttachments)
       throws RemoteException {
-    currentTask = getProjectManagerBm().getTask(new Integer(id).intValue());
+    currentTask = getProjectManagerBm().getTask(Integer.parseInt(id));
 
     enrichirTask(currentTask);
 
@@ -347,7 +340,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public TaskDetail getTaskMere(String mereId) throws RemoteException {
-    return getTaskMere(new Integer(mereId).intValue());
+    return getTaskMere(Integer.parseInt(mereId));
   }
 
   public TaskDetail getTaskMere(int mereId) throws RemoteException {
@@ -361,7 +354,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public List<AttachmentDetail> getAttachments(int id) {
-    return getAttachments(new Integer(id).toString());
+    return getAttachments(Integer.toString(id));
   }
 
   private List<AttachmentDetail> getAttachments(String id) {
@@ -372,7 +365,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   public int addTask(TaskDetail task) throws RemoteException {
     task.setInstanceId(getComponentId());
-    task.setOrganisateurId(new Integer(getUserId()).intValue());
+    task.setOrganisateurId(Integer.parseInt(getUserId()));
     task.setEstDecomposee(0);
 
     // calcul la date de fin
@@ -411,8 +404,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
         "ProjectManagerSessionController.removeTask()",
         "root.MSG_GEN_ENTER_METHOD", "id=" + id);
 
-    getProjectManagerBm().removeTask(new Integer(id).intValue(),
-        getComponentId());
+    getProjectManagerBm().removeTask(Integer.parseInt(id), getComponentId());
 
     currentTask = null;
   }
@@ -426,11 +418,11 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    * UserPanel methods /
    ******************************************************************************************************************/
   public String initUserPanel() throws RemoteException {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
+    String urlContext =
+        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
     // String hostUrl = m_context+"/RprojectManager/jsp/FromUserPanel";
-    String hostUrl = m_context
-        + URLManager.getURL(getSpaceId(), getComponentId()) + "FromUserPanel";
+    String hostUrl =
+        urlContext + URLManager.getURL(getSpaceId(), getComponentId()) + "FromUserPanel";
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -460,11 +452,11 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public String initUserSelect() throws RemoteException {
-    String m_context = GeneralPropertiesManager.getGeneralResourceLocator()
-        .getString("ApplicationURL");
+    String urlContext =
+        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
     // String hostUrl = m_context+"/RprojectManager/jsp/FromUserSelect";
-    String hostUrl = m_context
-        + URLManager.getURL(getSpaceId(), getComponentId()) + "FromUserSelect";
+    String hostUrl =
+        urlContext + URLManager.getURL(getSpaceId(), getComponentId()) + "FromUserSelect";
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -540,10 +532,10 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     if (projectDefined == null) {
       List<TaskDetail> projects = getProjectManagerBm().getProjects(getComponentId());
       if (projects.size() > 0) {
-        projectDefined = new Boolean(true);
+        projectDefined = Boolean.TRUE;
         currentProject = projects.get(0);
       } else
-        projectDefined = new Boolean(false);
+        projectDefined = Boolean.FALSE;
     }
     return projectDefined.booleanValue();
   }
@@ -555,9 +547,9 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
     int currentProjectId = getProjectManagerBm().addTask(project);
 
-    this.currentProject = getTask(new Integer(currentProjectId).toString());
+    this.currentProject = getTask(Integer.toString(currentProjectId));
 
-    projectDefined = new Boolean(true);
+    projectDefined = Boolean.TRUE;
   }
 
   /**
@@ -572,12 +564,12 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   public Date getEndDateOfCurrentProjet() throws RemoteException {
-    TaskDetail mostDistantTask = getProjectManagerBm().getMostDistantTask(
-        getComponentId(), getCurrentProject().getId());
-    if (mostDistantTask != null)
+    TaskDetail mostDistantTask =
+        getProjectManagerBm().getMostDistantTask(getComponentId(), getCurrentProject().getId());
+    if (mostDistantTask != null) {
       return mostDistantTask.getDateFin();
-    else
-      return null;
+    }
+    return null;
   }
 
   public void updateCurrentProject() throws RemoteException {
@@ -596,7 +588,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    */
   public void changeDateStatus(String date, String nextStatus)
       throws RemoteException, ParseException {
-    int status = new Integer(nextStatus).intValue();
+    int status = Integer.parseInt(nextStatus);
     HolidayDetail holiday = new HolidayDetail(uiDate2Date(date),
         getCurrentProject().getId(), getComponentId());
     if (status == WORKING_DAY) {
@@ -618,16 +610,15 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
         "root.MSG_GEN_ENTER_METHOD", "year=" + year + ", month=" + month
             + ", day=" + day);
 
-    int iMonth = new Integer(month).intValue();
+    int iMonth = Integer.parseInt(month);
 
-    getCalendar().set(Calendar.YEAR, new Integer(year).intValue());
+    getCalendar().set(Calendar.YEAR, Integer.parseInt(year));
     getCalendar().set(Calendar.MONTH, iMonth);
     getCalendar().set(Calendar.DATE, 1);
 
     // on se place sur le premier jour du mois
     // correspondant au jour de la semaine passé en paramêtre
-    while (getCalendar().get(Calendar.DAY_OF_WEEK) != new Integer(day)
-        .intValue()) {
+    while (getCalendar().get(Calendar.DAY_OF_WEEK) != Integer.parseInt(day)) {
       getCalendar().add(Calendar.DATE, 1);
     }
 
@@ -637,8 +628,8 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
         "ProjectManagerSessionController.changeDayOfWeekStatus()",
         "root.MSG_GEN_PARAM_VALUE", "date=" + date.toString());
 
-    HolidayDetail holidayDate = new HolidayDetail(date, getCurrentProject()
-        .getId(), getComponentId());
+    HolidayDetail holidayDate =
+        new HolidayDetail(date, getCurrentProject().getId(), getComponentId());
     boolean isHoliday = getProjectManagerBm().isHolidayDate(holidayDate);
 
     List<HolidayDetail> holidayDates = new ArrayList<HolidayDetail>();
@@ -647,10 +638,11 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
           getComponentId()));
       getCalendar().add(Calendar.DATE, 7);
     }
-    if (isHoliday)
+    if (isHoliday) {
       getProjectManagerBm().removeHolidayDates(holidayDates);
-    else
+    } else {
       getProjectManagerBm().addHolidayDates(holidayDates);
+    }
 
     // recalcule pour toutes les tâches du projet
     // toutes les dates de début et de fin
@@ -671,25 +663,24 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
    * Méthodes utilitaires /
    ****************************************************************************/
   public Date uiDate2Date(String uiDate) throws ParseException {
-    if (uiDate != null && uiDate.length() > 0)
+    if (uiDate != null && uiDate.length() > 0) {
       return DateUtil.stringToDate(uiDate, getLanguage());
-    else
-      return null;
+    }
+    return null;
   }
 
   public String date2UIDate(Date date) {
-    if (date != null)
+    if (date != null) {
       return DateUtil.getInputDate(date, getLanguage());
-    else
-      return null;
+    }
+    return null;
   }
 
   public String getUserFullName(UserDetail user) {
-    if (user != null)
+    if (user != null) {
       return user.getFirstName() + " " + user.getLastName();
-    else
-      return getUserDetail().getFirstName() + " "
-          + getUserDetail().getLastName();
+    }
+    return getUserDetail().getFirstName() + " " + getUserDetail().getLastName();
   }
 
   public String getUserFullName() {
@@ -727,10 +718,12 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     for (int i = 0; i < roles.length; i++) {
       role = roles[i];
       // if admin, return it, we won't find a better profile
-      if (role.equals("admin"))
+      if (role.equals("admin")) {
         return role;
-      if (role.equals("responsable"))
+      }
+      if (role.equals("responsable")) {
         higherRole = role;
+      }
     }
     return higherRole;
   }

@@ -37,6 +37,11 @@ public class TaskPK extends WAPrimaryKey {
 
   private static final long serialVersionUID = 341665047380031916L;
 
+  /**
+   * TaskPK constructor
+   * @param id the task identifier
+   * @param componentId the component identifier
+   */
   public TaskPK(String id, String componentId) {
     super(id, null, componentId);
   }
@@ -45,11 +50,21 @@ public class TaskPK extends WAPrimaryKey {
     super(Integer.toString(id), null, componentId);
   }
 
+  /**
+   * Implementation of equals method for TaskPK object
+   */
   public boolean equals(Object other) {
-    if (!(other instanceof TaskPK))
+    if (!(other instanceof TaskPK)) {
       return false;
-    else
-      return (id.equals(((TaskPK) other).getId()))
-          && (componentName.equals(((TaskPK) other).getComponentName()));
+    }
+    return (id.equals(((TaskPK) other).getId()))
+        && (componentName.equals(((TaskPK) other).getComponentName()));
+  }
+
+  /**
+   * @return A hash code for this object
+   */
+  public int hashCode() {
+    return super.hashCode();
   }
 }

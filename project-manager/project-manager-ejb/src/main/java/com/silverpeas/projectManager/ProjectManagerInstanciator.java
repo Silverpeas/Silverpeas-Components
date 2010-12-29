@@ -41,8 +41,10 @@ import com.stratelia.webactiv.util.attachment.AttachmentInstanciator;
  */
 public class ProjectManagerInstanciator implements ComponentsInstanciatorIntf {
 
-  private final static String PROJECTMANAGER_TASKS_TABLENAME = "SC_ProjectManager_Tasks";
-  private final static String PROJECTMANAGER_CALENDAR_TABLENAME = "SC_ProjectManager_Calendar";
+  private final static String PROJECTMANAGER_DELETE_COMPONENT_TASKS =
+      "DELETE FROM SC_ProjectManager_Tasks WHERE instanceId = ? ";
+  private final static String PROJECTMANAGER_DELETE_COMPONENT_CALENDAR =
+      "DELETE FROM SC_ProjectManager_Calendar WHERE instanceId = ? ";
 
   public ProjectManagerInstanciator() {
   }
@@ -51,17 +53,17 @@ public class ProjectManagerInstanciator implements ComponentsInstanciatorIntf {
       String userId) throws InstanciationException {
     SilverTrace.info("projectManager", "ProjectManagerInstanciator.create()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-        + componentId + ", userId =" + userId);
+            + componentId + ", userId =" + userId);
 
     SilverTrace.info("projectManager", "ProjectManagerInstanciator.create()",
         "root.MSG_GEN_EXIT_METHOD");
   }
 
-  public void delete(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
+  public void delete(Connection con, String spaceId, String componentId, String userId)
+      throws InstanciationException {
     SilverTrace.info("projectManager", "ProjectManagerInstanciator.delete()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-        + componentId + ", userId =" + userId);
+            + componentId + ", userId =" + userId);
 
     // delete attachments
     AttachmentInstanciator attachments = new AttachmentInstanciator();
@@ -83,20 +85,16 @@ public class ProjectManagerInstanciator implements ComponentsInstanciatorIntf {
     PreparedStatement stmt = null;
     try {
       // delete tasks
-      StringBuffer deleteStatement = new StringBuffer(128);
-      deleteStatement.append("delete from ").append(
-          PROJECTMANAGER_TASKS_TABLENAME).append(" where instanceId = ? ");
+      String deleteStatement = PROJECTMANAGER_DELETE_COMPONENT_TASKS;
 
-      stmt = con.prepareStatement(deleteStatement.toString());
+      stmt = con.prepareStatement(deleteStatement);
       stmt.setString(1, componentId);
       stmt.executeUpdate();
 
       // delete holidays
-      StringBuffer holidaysStatement = new StringBuffer(128);
-      holidaysStatement.append("delete from ").append(
-          PROJECTMANAGER_CALENDAR_TABLENAME).append(" where instanceId = ? ");
+      String holidaysStatement = PROJECTMANAGER_DELETE_COMPONENT_CALENDAR;
 
-      stmt = con.prepareStatement(holidaysStatement.toString());
+      stmt = con.prepareStatement(holidaysStatement);
       stmt.setString(1, componentId);
       stmt.executeUpdate();
     } catch (Exception e) {

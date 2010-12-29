@@ -53,6 +53,7 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
   private static final long serialVersionUID = 5878086083042945518L;
+  private static final String COMPONENT_NAME = "projectManager";
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -61,7 +62,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
    */
   @Override
   public String getSessionControlBeanName() {
-    return "projectManager";
+    return COMPONENT_NAME;
   }
 
   @Override
@@ -87,10 +88,9 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
     ProjectManagerSessionController projectManagerSC =
         (ProjectManagerSessionController) componentSC;
-    SilverTrace.info("projectManager",
-        "ProjectManagerRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + projectManagerSC.getUserId()
-        + " Function=" + function);
+    SilverTrace.info(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "User=" + projectManagerSC.getUserId() + " Function=" +
+            function);
 
     try {
       if (function.startsWith("Main")) {
@@ -157,7 +157,8 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
         filtre.setAvancement(request.getParameter("Avancement"));
         filtre.setResponsableId(request.getParameter("ResponsableId"));
         filtre.setResponsableName(request.getParameter("ResponsableName"));
-        filtre.setDateDebutFrom(projectManagerSC.uiDate2Date(request.getParameter("DateDebutFrom")));
+        filtre
+            .setDateDebutFrom(projectManagerSC.uiDate2Date(request.getParameter("DateDebutFrom")));
         filtre.setDateDebutTo(projectManagerSC.uiDate2Date(request.getParameter("DateDebutTo")));
         filtre.setDateFinFrom(projectManagerSC.uiDate2Date(request.getParameter("DateFinFrom")));
         filtre.setDateFinTo(projectManagerSC.uiDate2Date(request.getParameter("DateFinTo")));
@@ -196,7 +197,8 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
         TaskDetail currentTask = projectManagerSC.getCurrentTask();
         if (projectManagerSC.isProjectDefined()) {
           TaskDetail currentProject = projectManagerSC.getCurrentProject();
-          request.setAttribute("DateDebProject", projectManagerSC.date2UIDate(currentProject.getDateDebut()));
+          request.setAttribute("DateDebProject", projectManagerSC.date2UIDate(currentProject
+              .getDateDebut()));
         }
         request.setAttribute("Organisateur", projectManagerSC.getUserFullName());
         request.setAttribute("CurrentTask", currentTask);
@@ -230,7 +232,8 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("ToUpdateTask")) {
         if (projectManagerSC.isProjectDefined()) {
           TaskDetail currentProject = projectManagerSC.getCurrentProject();
-          request.setAttribute("DateDebProject", projectManagerSC.date2UIDate(currentProject.getDateDebut()));
+          request.setAttribute("DateDebProject", projectManagerSC.date2UIDate(currentProject
+              .getDateDebut()));
         }
 
         String id = request.getParameter("Id");
@@ -275,39 +278,34 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
         try {
           destination = projectManagerSC.initUserPanel();
         } catch (Exception e) {
-          SilverTrace.warn("projectManager",
+          SilverTrace.warn(COMPONENT_NAME,
               "ProjectManagerRequestRouter.getDestination()",
               "root.EX_USERPANEL_FAILED", "function = " + function, e);
         }
       } else if (function.equals("FromUserPanel")) {
         // récupération des valeurs de userPanel par userPanelPeas
-        SilverTrace.debug("projectManager",
-            "ProjectManagerRequestRouter.getDestination()",
+        SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "FromUserPanel:");
         Selection sel = projectManagerSC.getSelection();
         // Get user selected in User Panel
         String[] userIds = SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), null);
-        SilverTrace.debug("projectManager",
-            "ProjectManagerRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "userIds:" + userIds.toString());
+        SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
+            "root.MSG_GEN_PARAM_VALUE", "userIds:" + userIds);
         if (userIds.length != 0) {
-          SilverTrace.debug("projectManager",
-              "ProjectManagerRequestRouter.getDestination()",
+          SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "userIds.length():" + userIds.length);
 
           UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(userIds);
-          SilverTrace.debug("projectManager",
-              "ProjectManagerRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "userDetails:"
-              + userDetails.toString());
+          SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
+              "root.MSG_GEN_PARAM_VALUE", "userDetails:" + userDetails);
           if (userDetails != null) {
-            SilverTrace.debug("projectManager",
-                "ProjectManagerRequestRouter.getDestination()",
+            SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
                 "root.MSG_GEN_PARAM_VALUE", "userDetails[0].getId():"
-                + userDetails[0].getId().toString());
+                    + userDetails[0].getId().toString());
             UserDetail userDetail = userDetails[0];
 
-            request.setAttribute("ResponsableFullName", projectManagerSC.getUserFullName(userDetail));
+            request.setAttribute("ResponsableFullName", projectManagerSC
+                .getUserFullName(userDetail));
             request.setAttribute("ResponsableId", userDetail.getId());
           }
         }
@@ -319,66 +317,55 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
         try {
           destination = projectManagerSC.initUserSelect();
         } catch (Exception e) {
-          SilverTrace.warn("projectManager",
-              "ProjectManagerRequestRouter.getDestination()",
+          SilverTrace.warn(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
               "root.EX_USERPANEL_FAILED", "function = " + function, e);
         }
       } else if (function.equals("FromUserSelect")) {
         // récupération des valeurs de userPanel par userPanelPeas
-        SilverTrace.debug("projectManager",
-            "ProjectManagerRequestRouter.getDestination()",
+        SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "FromUserSelect:");
         Selection sel = projectManagerSC.getSelection();
         // Get users selected in User Panel
         String[] userIds = SelectionUsersGroups.getDistinctUserIds(sel.getSelectedElements(), null);
-        SilverTrace.debug("projectManager",
-            "ProjectManagerRequestRouter.getDestination()",
-            "root.MSG_GEN_PARAM_VALUE", "userIds:" + userIds.toString());
+        SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
+            "root.MSG_GEN_PARAM_VALUE", "userIds:" + userIds);
         if (userIds.length != 0) {
-          SilverTrace.debug("projectManager",
-              "ProjectManagerRequestRouter.getDestination()",
+          SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
               "root.MSG_GEN_PARAM_VALUE", "userIds.length():" + userIds.length);
 
           UserDetail[] userDetails = SelectionUsersGroups.getUserDetails(userIds);
-          SilverTrace.debug("projectManager",
-              "ProjectManagerRequestRouter.getDestination()",
-              "root.MSG_GEN_PARAM_VALUE", "userDetails:"
-              + userDetails.toString());
+          SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
+              "root.MSG_GEN_PARAM_VALUE", "userDetails:" + userDetails.toString());
           // récupération de la liste des resources en cours
           Collection<TaskResourceDetail> currentResources = projectManagerSC.getCurrentResources();
           // création des resources à partir des users
           Collection<TaskResourceDetail> resources = new ArrayList<TaskResourceDetail>();
           for (int i = 0; i < userDetails.length; i++) {
-            SilverTrace.debug("projectManager",
-                "ProjectManagerRequestRouter.getDestination()",
-                "root.MSG_GEN_PARAM_VALUE", "userDetails[" + i + "].getId():"
-                + userDetails[i].getId().toString());
+            SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
+                "root.MSG_GEN_PARAM_VALUE", "userDetails[" + i + "].getId():" +
+                    userDetails[i].getId());
             UserDetail userDetail = userDetails[i];
             TaskResourceDetail resourceDetail = new TaskResourceDetail();
             resourceDetail.setUserId(userDetail.getId());
             resourceDetail.setUserName(projectManagerSC.getUserFullName(userDetail));
             // si la resource existant déjà, on conserve la charge
             if (currentResources != null) {
-              SilverTrace.debug("projectManager",
-                  "ProjectManagerRequestRouter.getDestination()",
+              SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
                   "root.MSG_GEN_PARAM_VALUE", "currentResource = "
-                  + currentResources.size());
+                      + currentResources.size());
               boolean trouve = false;
               Iterator<TaskResourceDetail> it = currentResources.iterator();
               while (it.hasNext() && !trouve) {
                 TaskResourceDetail res = it.next();
-                SilverTrace.debug("projectManager",
-                    "ProjectManagerRequestRouter.getDestination()",
-                    "root.MSG_GEN_PARAM_VALUE", "currentResource userId:"
-                    + res.getUserId() + " / " + res.getUserName());
+                SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
+                    "root.MSG_GEN_PARAM_VALUE", "currentResource userId:" + res.getUserId() +
+                        " / " + res.getUserName());
                 // si la resource existe déjà, on conserve la charge
                 if (res.getUserId().equals(userDetail.getId())) {
                   resourceDetail.setCharge(res.getCharge());
                   trouve = true;
-                  SilverTrace.debug("projectManager",
-                      "ProjectManagerRequestRouter.getDestination()",
-                      "root.MSG_GEN_PARAM_VALUE", "currentResource charge:"
-                      + res.getCharge());
+                  SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
+                      "root.MSG_GEN_PARAM_VALUE", "currentResource charge:" + res.getCharge());
                 }
               }
             }
@@ -423,12 +410,12 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
         destination = rootDestination + "comments.jsp";
       } else if (function.equals("ToGantt")) {
-        //TODO retrieve all data to display GANT diagram.
+        // TODO retrieve all data to display GANT diagram.
         String id = request.getParameter("Id");
         String startDate = request.getParameter("StartDate");
         TaskDetail actionMere = null;
         if (id == null || id.length() == 0 || id.equals("-1")) {
-          id = new Integer(projectManagerSC.getCurrentProject().getId()).toString();
+          id = Integer.toString(projectManagerSC.getCurrentProject().getId());
         } else {
           actionMere = projectManagerSC.getTaskMere(id);
         }
@@ -524,8 +511,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
       destination = "/admin/jsp/errorpageMain.jsp";
     }
 
-    SilverTrace.info("projectManager",
-        "ProjectManagerRequestRouter.getDestination()",
+    SilverTrace.info(COMPONENT_NAME, "ProjectManagerRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
   }
@@ -534,22 +520,21 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
       ProjectManagerSessionController projectManagerSC) throws RemoteException,
       ParseException {
     TaskDetail task = projectManagerSC.getCurrentTask();
-    SilverTrace.debug("projectManager",
-        "ProjectManagerRequestRouter.updateActionCourante()",
+    SilverTrace.debug(COMPONENT_NAME, "ProjectManagerRequestRouter.updateActionCourante()",
         "root.MSG_GEN_PARAM_VALUE", "Consomme = " + request.getParameter("Consomme") + " Raf = "
-        + request.getParameter("Raf") + " statut =  " + request.getParameter("Statut")
-        + " all resources = " + request.getParameter("allResources"));
+            + request.getParameter("Raf") + " statut =  " + request.getParameter("Statut")
+            + " all resources = " + request.getParameter("allResources"));
     if ("admin".equals(projectManagerSC.getRole())) {
-      task.setResponsableId(new Integer(request.getParameter("ResponsableId")).intValue());
+      task.setResponsableId(Integer.parseInt(request.getParameter("ResponsableId")));
       task.setNom(request.getParameter("Nom"));
-      task.setCharge(StringUtil.convertFloat(request.getParameter("Charge")));     
+      task.setCharge(StringUtil.convertFloat(request.getParameter("Charge")));
       task.setConsomme(StringUtil.convertFloat(request.getParameter("Consomme")));
       task.setRaf(StringUtil.convertFloat(request.getParameter("Raf")));
       task.setStatut(Integer.valueOf(request.getParameter("Statut")));
       task.setDescription(request.getParameter("Description"));
       task.setDateDebut(projectManagerSC.uiDate2Date(request.getParameter("DateDebut")));
       task.setDateFin(projectManagerSC.uiDate2Date(request.getParameter("DateFin")));
-      task.setPreviousTaskId(new Integer(request.getParameter("PreviousId")).intValue());
+      task.setPreviousTaskId(Integer.parseInt(request.getParameter("PreviousId")));
 
       task.setResources(request2Resources(request));
     } else if ("responsable".equals(projectManagerSC.getRole())) {
@@ -568,7 +553,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
     String id = request.getParameter("Id");
     if (id != null) {
-      task.setId(new Integer(id).intValue());
+      task.setId(Integer.parseInt(id));
     }
 
     task.setCodeProjet(request.getParameter("ProjetCode"));
@@ -583,11 +568,11 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
     task.setCharge(StringUtil.convertFloat(request.getParameter("Charge")));
     task.setConsomme(StringUtil.convertFloat(request.getParameter("Consomme")));
     task.setRaf(StringUtil.convertFloat(request.getParameter("Raf")));
-    task.setStatut(new Integer(request.getParameter("Statut")).intValue());
+    task.setStatut(Integer.parseInt(request.getParameter("Statut")));
     task.setDescription(request.getParameter("Description"));
     task.setDateDebut(projectManagerSC.uiDate2Date(request.getParameter("DateDebut")));
     task.setDateFin(projectManagerSC.uiDate2Date(request.getParameter("DateFin")));
-    task.setPreviousTaskId(new Integer(request.getParameter("PreviousId")).intValue());
+    task.setPreviousTaskId(Integer.parseInt(request.getParameter("PreviousId")));
     // liste des resources
     task.setResources(request2Resources(request));
 
@@ -607,7 +592,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
         resource.setCharge(charge);
         resource.setUserId(userId);
         resources.add(resource);
-        SilverTrace.info("projectManager",
+        SilverTrace.info(COMPONENT_NAME,
             "ProjectManagerRequestRouter.request2Resources()",
             "root.MSG_GEN_PARAM_VALUE", "Resource=" + resource.toString());
       }
@@ -621,7 +606,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
     String id = request.getParameter("Id");
     if (id != null) {
-      task.setId(new Integer(id).intValue());
+      task.setId(Integer.parseInt(id));
     }
 
     task.setNom(request.getParameter("Nom"));
@@ -645,7 +630,6 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
   }
 
   /**
-   * 
    * @param tasks
    * @return the oldest task from a list of TaskDetail
    */
@@ -665,10 +649,11 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
     return oldest;
   }
 
-  private Boolean isOrganiteurOrResponsable(
-      ProjectManagerSessionController projectManagerSC, TaskDetail task) {
+  private Boolean isOrganiteurOrResponsable(ProjectManagerSessionController projectManagerSC,
+      TaskDetail task) {
     String role = projectManagerSC.getRole();
-    return new Boolean("admin".equals(role)
-        || ("responsable".equals(role) && new Integer(projectManagerSC.getUserId()).intValue() == task.getResponsableId()));
+    return new Boolean("admin".equals(role) ||
+        ("responsable".equals(role) && Integer.parseInt(projectManagerSC.getUserId()) == task
+            .getResponsableId()));
   }
 }

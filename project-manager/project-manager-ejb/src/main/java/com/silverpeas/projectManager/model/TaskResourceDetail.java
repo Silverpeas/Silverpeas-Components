@@ -86,7 +86,7 @@ public class TaskResourceDetail implements Serializable {
 
   public void setCharge(String f) {
     if (f != null && f.length() > 0) {
-      charge = new Integer(f).intValue();
+      charge = Integer.parseInt(f);
     } else {
       charge = 0;
     }
@@ -98,7 +98,7 @@ public class TaskResourceDetail implements Serializable {
 
   public void setOccupation(String f) {
     if (f != null && f.length() > 0) {
-      occupation = new Integer(f).intValue();
+      occupation = Integer.parseInt(f);
     } else {
       occupation = 0;
     }

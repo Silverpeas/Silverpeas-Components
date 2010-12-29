@@ -70,7 +70,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
 
         SilverTrace.info("projectManager", "AjaxProjectManagerServlet",
             "root.MSG_GEN_PARAM_VALUE", "userId = " + userId + ", charge = "
-            + userCharge);
+                + userCharge);
 
         Date beginDate = null;
         try {
@@ -86,21 +86,22 @@ public class AjaxProjectManagerServlet extends HttpServlet {
 
         SilverTrace.info("projectManager", "AjaxProjectManagerServlet",
             "root.MSG_GEN_PARAM_VALUE", "beginDate = " + beginDate
-            + ", endDate = " + endDate);
+                + ", endDate = " + endDate);
 
         int occupation = projectManagerSC.checkOccupation(taskId, userId,
             beginDate, endDate);
 
         occupation += Integer.parseInt(userCharge);
 
-        if (occupation > 100)
-          output = "<font color=\"red\">"
-              + EncodeHelper.escapeXml(Integer.toString(occupation))
-              + " %</font>";
-        else
+        if (occupation > 100) {
+          output =
+              "<font color=\"red\">" + EncodeHelper.escapeXml(Integer.toString(occupation)) +
+                  " %</font>";
+        } else {
           output = "<font color=\"green\">"
               + EncodeHelper.escapeXml(Integer.toString(occupation))
               + " %</font>";
+        }
       } else if (action.equals("ProcessUserOccupationInit")) {
         // mise à jour de la charge en tenant compte de la modification des
         // dates de début et fin
@@ -116,7 +117,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
         }
         SilverTrace.info("projectManager", "AjaxProjectManagerServlet",
             "root.MSG_GEN_PARAM_VALUE", "userId = " + userId + ", charge = "
-            + userCharge);
+                + userCharge);
 
         Date endDate = null;
         try {
@@ -125,21 +126,21 @@ public class AjaxProjectManagerServlet extends HttpServlet {
         }
         SilverTrace.info("projectManager", "AjaxProjectManagerServlet",
             "root.MSG_GEN_PARAM_VALUE", "beginDate = " + beginDate
-            + ", endDate = " + endDate);
+                + ", endDate = " + endDate);
 
-        int occupation = projectManagerSC.checkOccupation(userId, beginDate,
-            endDate);
+        int occupation = projectManagerSC.checkOccupation(userId, beginDate, endDate);
 
         occupation += Integer.parseInt(userCharge);
 
-        if (occupation > 100)
+        if (occupation > 100) {
           output = "<font color=\"red\">"
               + EncodeHelper.escapeXml(Integer.toString(occupation))
               + " %</font>";
-        else
+        } else {
           output = "<font color=\"green\">"
               + EncodeHelper.escapeXml(Integer.toString(occupation))
               + " %</font>";
+        }
       } else if (action.equals("ProcessEndDate")) {
         String taskId = req.getParameter("TaskId");
         String charge = req.getParameter("Charge");
@@ -165,8 +166,7 @@ public class AjaxProjectManagerServlet extends HttpServlet {
         } catch (ParseException e) {
         }
 
-        Date endDate = projectManagerSC.processEndDate(charge, beginDate,
-            componentId);
+        Date endDate = projectManagerSC.processEndDate(charge, beginDate, componentId);
 
         output = EncodeHelper.escapeXml(projectManagerSC.date2UIDate(endDate));
       }

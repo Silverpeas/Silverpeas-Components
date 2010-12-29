@@ -508,8 +508,9 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
       }
 
       // on traite maintenant les sous tâches
-      List<TaskDetail> subTasks = ProjectManagerDAO.getTasksByMotherIdAndPreviousId(con,
-          task.getInstanceId(), task.getId(), -1);
+      List<TaskDetail> subTasks =
+          ProjectManagerDAO.getTasksByMotherIdAndPreviousId(con, task.getInstanceId(),
+              task.getId(), -1);
 
       Date beginDateSub = null;
       Date endDateSub = null;
@@ -583,7 +584,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
 
       // notifie le responsable
       if (task.getMereId() != -1
-          && !userId.equals(new Integer(task.getResponsableId()).toString())) {
+          && !userId.equals(Integer.toString(task.getResponsableId()))) {
         alertResource(task, false);
       }
     } catch (Exception re) {
@@ -614,9 +615,8 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
 
     NotificationMetaData notifMetaData = new NotificationMetaData(
         NotificationParameters.NORMAL, subject, body.toString());
-    notifMetaData.setSender(new Integer(task.getOrganisateurId()).toString());
-    notifMetaData.addUserRecipient(new Integer(task.getResponsableId())
-        .toString());
+    notifMetaData.setSender(Integer.toString(task.getOrganisateurId()));
+    notifMetaData.addUserRecipient(Integer.toString((task.getResponsableId())));
 
     String url = URLManager
         .getURL("projectManager", null, task.getInstanceId())
@@ -950,16 +950,15 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
         "root.MSG_GEN_ENTER_METHOD", "id = " + id + ", instanceId="
             + instanceId);
     TodoBackboneAccess todoBBA = new TodoBackboneAccess();
-    todoBBA.removeEntriesFromExternal("useless", instanceId, new Integer(id)
-        .toString());
+    todoBBA.removeEntriesFromExternal("useless", instanceId, Integer.toString(id));
   }
 
   private void updateTodo(TaskDetail task) {
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.updateTodo()",
         "root.MSG_GEN_ENTER_METHOD", "actionId=" + task.getId());
     TodoBackboneAccess todoBBA = new TodoBackboneAccess();
-    todoBBA.removeEntriesFromExternal("useless", task.getInstanceId(),
-        new Integer(task.getId()).toString());
+    todoBBA.removeEntriesFromExternal("useless", task.getInstanceId(), Integer.toString(task
+        .getId()));
     todoBBA.addEntry(task.toTodoDetail());
   }
 
@@ -973,8 +972,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
 
     FullIndexEntry indexEntry = null;
     // Index the Composed Task
-    indexEntry = new FullIndexEntry(task.getInstanceId(), "Action",
-        new Integer(task.getId()).toString());
+    indexEntry = new FullIndexEntry(task.getInstanceId(), "Action", Integer.toString(task.getId()));
     indexEntry.setTitle(task.getNom());
     indexEntry.setPreView(task.getDescription());
     IndexEngineProxy.addIndexEntry(indexEntry);
@@ -984,8 +982,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
     SilverTrace.info("projectManager", "ProjectManagerBmEJB.removeIndex()",
         "root.MSG_GEN_ENTER_METHOD", "actionId=" + id);
 
-    IndexEntryPK indexEntry = new IndexEntryPK(instanceId, "Action",
-        new Integer(id).toString());
+    IndexEntryPK indexEntry = new IndexEntryPK(instanceId, "Action", Integer.toString(id));
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
@@ -1032,7 +1029,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
       try {
         con.close();
       } catch (Exception e) {
-        SilverTrace.error("publication", "PublicationEJB.freeConnection()",
+        SilverTrace.error("publication", "ProjectManagerBmEJB.freeConnection()",
             "root.EX_CONNECTION_CLOSE_FAILED", "", e);
       }
     }
@@ -1042,8 +1039,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
   public int getOccupationByUser(String userId, Date dateDeb, Date dateFin) {
     Connection con = getConnection();
     try {
-      return ProjectManagerDAO.getOccupationByUser(con, userId, dateDeb,
-          dateFin);
+      return ProjectManagerDAO.getOccupationByUser(con, userId, dateDeb, dateFin);
     } catch (Exception re) {
       throw new ProjectManagerRuntimeException(
           "ProjectManagerBmEJB.isHolidayDate()",

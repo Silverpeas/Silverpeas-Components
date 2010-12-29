@@ -411,14 +411,14 @@ public class TaskDetail implements Serializable {
     todo.setSpaceId("useless");
     todo.setName(getNom());
     todo.setDescription(getDescription());
-    todo.setDelegatorId(new Integer(getOrganisateurId()).toString());
+    todo.setDelegatorId(Integer.toString(getOrganisateurId()));
     Attendee attendee = new Attendee(String.valueOf(getResponsableId()));
     if (attendee != null) {
       Vector<Attendee> attendees = new Vector<Attendee>();
       attendees.add(attendee);
       todo.setAttendees(attendees);
     }
-    todo.setExternalId(new Integer(getId()).toString());
+    todo.setExternalId(Integer.toString(getId()));
     todo.setStartDate(getDateDebut());
     todo.setEndDate(getDateFin());
     todo.setPercentCompleted(getAvancement());
@@ -474,25 +474,22 @@ public class TaskDetail implements Serializable {
   public String getUiCodeProjet() {
     if (getCodeProjet().equals("-1")) {
       return "";
-    } else {
-      return new Integer(getCodeProjet()).toString();
     }
+    return getCodeProjet();
   }
 
   public String getUiDescriptionProjet() {
     if (getDescriptionProjet() == null) {
       return "";
-    } else {
-      return getDescriptionProjet();
     }
+    return getDescriptionProjet();
   }
 
   public String getUiDescription() {
     if (getDescription() == null) {
       return "";
-    } else {
-      return getDescription();
     }
+    return getDescription();
   }
 
   @Override
