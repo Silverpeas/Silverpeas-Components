@@ -88,7 +88,7 @@
 	    <TABLE ALIGN=CENTER CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%" CLASS=intfdcolor4>
 	      <TR>
 	         <TD></TD>
-	         <TD valign="top"><%=Encode.javaStringToHtmlString(message.getTitle())%></TD>
+	         <TD valign="top"><%=EncodeHelper.javaStringToHtmlString(message.getTitle())%></TD>
 	      <TR>
 	         <TD class="txtlibform" valign=top><%=resource.getString("RefusalMotive")%> :</TD>
 	         <TD>
@@ -113,7 +113,6 @@
         resource.getString("valider"), "javascript:validateMessage();", false));
     String backUrl = ActionUrl.getUrl("viewMessage", "viewForum", 1, messageId, forumId);
     msgButtonPane.addButton(graphicFactory.getFormButton(resource.getString("annuler"), backUrl, false));
-    //msgButtonPane.addButton(graphicFactory.getFormButton(resource.getString("annuler"), "javascript:cancelMessage();", false));
     msgButtonPane.setHorizontalPosition();
     out.println("<center>" + msgButtonPane.print()+ "</center>");
 

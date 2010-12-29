@@ -34,7 +34,6 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.forums.models.Category;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.forums.sessionController.ForumsSessionController;
 import com.stratelia.webactiv.forums.url.ActionUrl;
@@ -67,6 +66,10 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
     ForumsSessionController forumsSC = (ForumsSessionController) componentSC;
 
     if ((function.startsWith("Main")) || (function.startsWith("main"))) {
+        String forumId = request.getParameter("forumId");
+        if (forumId != null) {
+          return ROOT_DEST + ActionUrl.getUrl("viewForum", "main", Integer.parseInt(forumId));
+        }
       destination = ROOT_DEST + "main.jsp";
     } else if (function.startsWith("external")) {
       forumsSC.setExternal(true);
@@ -97,6 +100,7 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
       request.setAttribute("currentForum", forumsSC.getForum(forumId));
       request.setAttribute("notation", forumsSC.getForumNotation(forumId));
       request.setAttribute("parents", forumsSC.getForumAncestors(forumId));
+      request.setAttribute("nbChildrens", forumsSC.getForumSonsNb(forumId));
       destination = ROOT_DEST + "viewForum.jsp";
     } else if (function.startsWith("editForumInfo")) {
       destination = ROOT_DEST + "editForumInfo.jsp";
@@ -153,22 +157,21 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
       // récupération des paramètres
       String name = request.getParameter("Name");
       String description = request.getParameter("Description");
-      NodeDetail node = new NodeDetail("unknown", name, description, null, null, null, "0",
+      NodeDetail category = new NodeDetail("unknown", name, description, null, null, null, "0",
           "unknown");
-      Category category = new Category(node);
       forumsSC.createCategory(category);
 
       destination = getDestination("ViewCategory", componentSC, request);
     } else if (function.equals("EditCategory")) {
       // récupération des paramètres
       String categoryId = request.getParameter("CategoryId");
-      Category category = forumsSC.getCategory(categoryId);
+      NodeDetail category = forumsSC.getCategory(categoryId);
       request.setAttribute("Category", category);
 
       destination = ROOT_DEST + "categoryManager.jsp";
     } else if (function.equals("UpdateCategory")) {
       String categoryId = request.getParameter("CategoryId");
-      Category category = forumsSC.getCategory(categoryId);
+      NodeDetail category = forumsSC.getCategory(categoryId);
       String name = request.getParameter("Name");
       category.setName(name);
       String desc = request.getParameter("Description");

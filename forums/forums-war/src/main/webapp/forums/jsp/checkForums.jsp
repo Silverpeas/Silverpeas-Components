@@ -30,13 +30,13 @@
 <%@ page import="java.util.Date"%>
 <%@ page import="java.util.Iterator"%>
 <%@ page import="com.silverpeas.util.StringUtil"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
 <%@ page import="com.stratelia.silverpeas.util.SilverpeasSettings"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 <%@ page import="com.stratelia.webactiv.forums.forumsException.ForumsException"%>
-<%@ page import="com.stratelia.webactiv.forums.models.Category"%>
 <%@ page import="com.stratelia.webactiv.forums.models.Forum"%>
 <%@ page import="com.stratelia.webactiv.forums.models.Message"%>
 <%@ page import="com.stratelia.webactiv.forums.sessionController.ForumsSessionController"%>
@@ -45,7 +45,6 @@
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.node.model.NodeDetail"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>

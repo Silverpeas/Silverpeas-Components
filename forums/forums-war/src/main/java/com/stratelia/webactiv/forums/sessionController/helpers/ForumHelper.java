@@ -25,6 +25,7 @@ package com.stratelia.webactiv.forums.sessionController.helpers;
 
 import com.silverpeas.notation.model.NotationDetail;
 import com.silverpeas.util.EncodeHelper;
+import com.silverpeas.util.web.RequestHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.forums.models.Message;
@@ -57,19 +58,12 @@ public class ForumHelper {
   public static final String STATUS_FOR_VALIDATION = "A";
   public static final String STATUS_REFUSED = "R";
 
-  public static int getIntParameter(HttpServletRequest request, String name) {
+  public static int getIntParameter(HttpServletRequest request, String name) {    
     return getIntParameter(request, name, -1);
   }
 
   public static int getIntParameter(HttpServletRequest request, String name, int defaultValue) {
-    String param = request.getParameter(name);
-    if (param != null) {
-      param = param.trim();
-      if (param.length() > 0) {
-        return Integer.parseInt(param);
-      }
-    }
-    return defaultValue;
+    return RequestHelper.getIntParameter(request, name, defaultValue);
   }
 
   public static String convertDate(Date date, ResourcesWrapper resources) {
@@ -82,13 +76,14 @@ public class ForumHelper {
 
   public static void addBodyOnload(JspWriter out, ForumsSessionController fsc, String call) {
     try {
+      String methodName = call;
       if (call == null) {
-        call = "";
+        methodName = "";
       }
       out.print("onload=\"");
-      out.print(call);
+      out.print(methodName);
       if (fsc.isResizeFrame()) {
-        if (call.length() > 0 && !call.endsWith(";")) {
+        if (methodName.length() > 0 && !methodName.endsWith(";")) {
           out.print(";");
         }
         out.print("resizeFrame();");

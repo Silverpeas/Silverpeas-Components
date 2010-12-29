@@ -29,35 +29,29 @@
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
     response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <%@ include file="checkForums.jsp" %>
-<%
-    Category category = (Category) request.getAttribute("Category");
-    String name;
-    String description;
-    String categoryId;
-    String creationDate;
-    String action;
-    if (category != null)
-    {
-        name = category.getName();
-        description = category.getDescription();
-        categoryId = category.getNodePK().getId();
-        creationDate = resources.getOutputDate(category.getCreationDate());
-        action = "UpdateCategory";
-    }
-    else
-    {
-        name = "";
-        description = "";
-        categoryId = "";
-        creationDate = resources.getOutputDate(new Date());
-        action = "CreateCategory";
-    }
-
-    Window window = graphicFactory.getWindow();
-    Frame frame = graphicFactory.getFrame();
-    Board board = graphicFactory.getBoard();
-%>
+<c:choose>
+  <c:when test="${requestScope.Category != null}">
+    <c:set var="action" value="UpdateCategory" />
+    <c:set var="name" value="${requestScope.Category.name}" />
+    <c:set var="description" value="${requestScope.Category.description}" />
+    <c:set var="categoryId" value="${requestScope.Category.nodePK.id}" />
+    <c:set var="creationDate"><%= resources.getOutputDate(((NodeDetail)request.getAttribute("Category")).getCreationDate()) %></c:set>
+  </c:when>
+  <c:otherwise>
+    <c:set var="action" value="CreateCategory" />
+     <c:set var="name" value="" />
+     <c:set var="description" value="" />
+      <c:set var="categoryId" value="" />
+      <c:set var="creationDate"><%= resources.getOutputDate(new Date()) %></c:set>
+  </c:otherwise>
+</c:choose> 
 <html>
     <head>
           <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
@@ -85,8 +79,7 @@
             var name = stripInitialWhitespace(document.categoryForm.Name.value);
             if (name == "")
             {
-                errorMsg += "  - '<%=resources.getString("GML.title")%>'  "
-                    + "<%=resources.getString("GML.MustBeFilled")%>\n";
+                errorMsg += "  - '<%=resources.getString("GML.title")%>'  " + "<%=resources.getString("GML.MustBeFilled")%>\n";
                 errorNb++;
             }
 
@@ -106,58 +99,55 @@
 </head>
 
 <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" <%addBodyOnload(out, fsc, "document.categoryForm.Name.focus();");%>>
-<%
-    BrowseBar browseBar = window.getBrowseBar();
-    browseBar.setDomainName(fsc.getSpaceLabel());
-    browseBar.setComponentName(fsc.getComponentLabel(), "Main");
-    browseBar.setPath(resources.getString(action.equals("CreateCategory")
-        ? "forums.addCategory" : "forums.editCategory"));
-
-    out.println(window.printBefore());
-    out.println(frame.printBefore());
-    out.println(board.printBefore());
-%>
+  <c:choose>
+  <c:when test="${'CreateCategory' eq action}">
+    <fmt:message var="barLabel" key="forums.addCategory" />
+  </c:when>
+    <c:otherwise>
+      <fmt:message var="barLabel" key="forums.editCategory" />
+    </c:otherwise>
+  </c:choose>
+  <view:browseBar>
+    <view:browseBarElt label="${barLabel}" link="#" />
+  </view:browseBar>
+  <view:window>
+    <view:frame>
+      <view:board>
     <table cellpadding="5" width="100%">
-      <form name="categoryForm" action="<%=action%>" method="POST" enctype="multipart/form-data;charset=UTF-8">
-                     <input type="hidden" name="CategoryId" value="<%=categoryId%>"/>
-                <input type="hidden" name="Langue" value="<%=resources.getLanguage()%>"/>
+      <form name="categoryForm" action="<c:out value="${pageScope.action}" />" method="POST" enctype="multipart/form-data;charset=UTF-8">
+        <input type="hidden" name="CategoryId" value="<c:out value="${categoryId}" />"/>
+        <input type="hidden" name="Langue" value="<%=resources.getLanguage()%>"/>
         <tr>
-            <td class="txtlibform"><%=resources.getString("GML.title")%> :</td>
-            <td><input type="text" name="Name" size="60" maxlength="150" value="<%=name%>">
-                <img src="<%=resources.getIcon("forums.obligatoire")%>" width="5" height="5" border="0"></td>
-
+          <td class="txtlibform"><%=resources.getString("GML.title")%> :</td>
+          <td><input type="text" name="Name" size="60" maxlength="150" value="<c:out value="${name}" />">
+            <img src="<%=resources.getIcon("forums.obligatoire")%>" width="5" height="5" border="0">
+          </td>
         </tr>
         <tr>
-            <td class="txtlibform"><%=resources.getString("GML.description")%> :</td>
-            <td><input type="text" name="Description" size="60" maxlength="150" value="<%=description%>" ></td>
+          <td class="txtlibform"><%=resources.getString("GML.description")%> :</td>
+          <td><input type="text" name="Description" size="60" maxlength="150" value="<c:out value="${description}" />" ></td>
         </tr>
         <tr>
-            <td class="txtlibform"><%=resources.getString("forums.creationDate")%> :</td>
-            <td><%=creationDate%>&nbsp;<span class="txtlibform"></td>
+          <td class="txtlibform"><%=resources.getString("forums.creationDate")%> :</td>
+          <td><c:out value="${creationDate}" />&nbsp;<span class="txtlibform"></td>
         </tr>
         <tr>
-            <td colspan="2">( <img border="0" src="<%=resources.getIcon("forums.obligatoire")%>" width="5" height="5"> : Obligatoire )</td>
+          <td colspan="2">( <img border="0" src="<%=resources.getIcon("forums.obligatoire")%>" width="5" height="5"> : Obligatoire )</td>
         </tr>
-    </form>
-    </table><%
-
-    out.println(board.printAfter());
-%>
-    <br>
-    <center><%
-
-    ButtonPane buttonPane = graphicFactory.getButtonPane();
-    buttonPane.addButton(graphicFactory.getFormButton(resources.getString("GML.validate"),
-        "javascript:onclick=sendData(" + action.equals("CreateCategory") + ")", false));
-    buttonPane.addButton(graphicFactory.getFormButton(
-        resources.getString("GML.cancel"), "Main", false));
-    out.println(buttonPane.print());
-%>
-    </center>
-    <br><%
-
-    out.println(frame.printAfter());
-    out.println(window.printAfter());
-%>
+      </form>
+    </table><br/>
+      <center>
+        <fmt:message var="validateLabel" key="GML.validate" />
+        <fmt:message var="cancelLabel" key="GML.cancel" />
+        <c:set var="validateAction">javascript:onclick=sendData(<c:out value="${'CreateCategory' eq action}" />)</c:set>
+        <view:buttonPane>
+          <view:button label="${validateLabel}" action="${validateAction}"/>
+          <view:button label="${cancelLabel}" action="Main"/>
+        </view:buttonPane>
+      </center>
+      <br>   
+    </view:board>
+  </view:frame>
+</view:window>
 </body>
 </html>

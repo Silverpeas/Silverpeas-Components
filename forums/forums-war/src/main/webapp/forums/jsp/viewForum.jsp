@@ -195,6 +195,43 @@
       </view:operationPane>
     </c:if>
     <view:window>
+      <c:if test="${requestScope.nbChildrens > 0}">
+      <view:frame>
+        <center>
+          <table width="95%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
+            <tr class="enteteTableau">
+              <td colspan="2" nowrap="nowrap" align="center"><fmt:message key="theme" /></td>
+              <td nowrap="nowrap" align="center"><fmt:message key="forums.nbSubjects" /></td>
+              <td nowrap="nowrap" align="center"><fmt:message key="forums.nbMessages" /></td>
+              <td nowrap="nowrap" align="center"><fmt:message key="forums.lastMessage" /></td>
+              <td nowrap="nowrap" align="center"><fmt:message key="forums.notation" /></td>
+              <c:if test="${isAdmin}">
+                <td nowrap="nowrap" align="center"><fmt:message key="operations" /></td>
+              </c:if>
+            </tr>
+            <c:forEach var="category" items="${sessionController.allCategories}">
+              <%
+                  NodeDetail category = (NodeDetail) pageContext.getAttribute("category");
+                  ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc, Integer.toString(category.getId()), category.getName(), category.getDescription());
+              %>
+            </c:forEach>
+            <%ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc, null, "", "");%>
+          </table>
+          <c:if test="${sessionController.external || ! isReader}">
+            <img src="icons/buletColoredGreen.gif" alt="<fmt:message key="forums.notNewMessageVisite" />" /> <fmt:message key="forums.notNewMessageVisite" />
+            <br />
+            <img src="icons/buletRed.gif" alt="<fmt:message key="forums.newMessageVisite" />" /> <fmt:message key="forums.newMessageVisite" />
+          </c:if>
+          <c:if test="${sessionController.useRss}">
+            <table align="center">
+              <tr>
+                <td><a href="<c:url value="${sessionController.RSSUrl}" />"><img src="icons/rss.gif" border="0" alt="rss"/></a></td>
+              </tr>
+            </table>
+          </c:if>
+        </center>
+      </view:frame>
+      </c:if>
       <view:frame>
         <table class="intfdcolor4" border="0" cellspacing="0" cellpadding="0" width="98%">
           <tr class="notationLine">

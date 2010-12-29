@@ -70,6 +70,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
     boolean isAdmin = fsc.isAdmin();
     boolean isUser = fsc.isUser();
     boolean isReader = fsc.isReader();
+    int forumId = ForumHelper.getIntParameter(request, "forumId", 0);
 
     boolean isModerator = false;
 
@@ -164,11 +165,11 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
             <c:forEach var="category" items="${sessionController.allCategories}">
               <%
                           NodeDetail category = (NodeDetail) pageContext.getAttribute("category");
-                          ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, 0, "main", fsc,
+                          ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc,
                               Integer.toString(category.getId()), category.getName(), category.getDescription());
               %>
             </c:forEach>
-            <%ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, 0, "main", fsc, null, "", "");%>
+            <%ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc, null, "", "");%>
           </table>
           <c:if test="${sessionController.external || ! isReader}">
             <img src="icons/buletColoredGreen.gif" alt="<fmt:message key="forums.notNewMessageVisite" />" /> <fmt:message key="forums.notNewMessageVisite" />

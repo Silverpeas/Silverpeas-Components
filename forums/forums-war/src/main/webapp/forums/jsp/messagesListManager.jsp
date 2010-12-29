@@ -24,18 +24,18 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.io.IOException"
-%><%@ page import="java.text.ParseException"
-%><%@ page import="java.util.Date"
-%><%@ page import="com.silverpeas.notation.model.NotationDetail"
-%><%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace"
-%><%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"
-%><%@ page import="com.stratelia.webactiv.forums.models.Message"
-%><%@ page import="com.stratelia.webactiv.forums.sessionController.ForumsSessionController"
-%><%@ page import="com.stratelia.webactiv.forums.url.ActionUrl"
-%><%@ page import="com.stratelia.webactiv.util.ResourceLocator"
-%><%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"
-%>
+<%@ page import="java.io.IOException"%>
+<%@ page import="java.text.ParseException"%>
+<%@ page import="java.util.Date"%>
+<%@ page import="com.silverpeas.notation.model.NotationDetail"%>
+<%@ page import="com.stratelia.silverpeas.silvertrace.SilverTrace"%>
+<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+<%@ page import="com.stratelia.webactiv.forums.models.Message"%>
+<%@ page import="com.stratelia.webactiv.forums.sessionController.ForumsSessionController"%>
+<%@ page import="com.stratelia.webactiv.forums.url.ActionUrl"%>
+<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="com.silverpeas.util.EncodeHelper"%>
+<%@ page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumHelper"%>
 <%!
 public void displayMessageLine(Message message, JspWriter out, ResourceLocator resource,
     String userId, boolean admin, boolean moderator, boolean reader, boolean view, int depth,
@@ -58,13 +58,13 @@ public void displayMessageLine(Message message, JspWriter out, ResourceLocator r
       int cellsCount = 0;
       String cellWidth = (simpleMode ? " width=\"15\"" : "");
       int lineHeight = ((fsc.isExternal() && reader) ? 16 : 24);
-    	// isAutorized : si l'utilisateur est autorisé à modifier le message
+    	// isAutorized : si l'utilisateur est autorisï¿½ ï¿½ modifier le message
       boolean isAutorized = admin || moderator || userId.equals(author);
     	
     	
 		
 		
-    if (STATUS_VALIDATE.equals(message.getStatus()) || (!STATUS_VALIDATE.equals(message.getStatus()) && isAutorized)) {
+    if (message.isValid() || (!message.isValid() && isAutorized)) {
       
 	      out.println("  <tr id=\"msgLine" + messageId + "\" height=\"" + lineHeight + "\">");
 	      
@@ -117,18 +117,18 @@ public void displayMessageLine(Message message, JspWriter out, ResourceLocator r
         }
 		    out.print("\">");
         out.print("<span class=\"message_"+message.getStatus()+"\"><b>");
-		    out.print(Encode.javaStringToHtmlString(messageTitle));
+		    out.print(EncodeHelper.javaStringToHtmlString(messageTitle));
         // Auteur du message
         out.print("</b>");
         out.print(simpleMode ? "&nbsp;" : "<br>");
             out.print("(" + messageAuthor);
         // Date de Creation
-            out.print("&nbsp;-&nbsp;" + convertDate(message.getDate(), resources));
+            out.print("&nbsp;-&nbsp;" + ForumHelper.convertDate(message.getDate(), resources));
         out.print(")");
-            if (message.getStatus().equals(STATUS_FOR_VALIDATION)) {
+            if (message.isToBeValidated()) {
               out.println(" - " + resource.getString("toValidate"));
             }
-            else if (message.getStatus().equals(STATUS_REFUSED)) {
+            else if (message.isRefused()) {
               out.println(" - " + resource.getString("refused"));
             }
         out.println("</span>");
@@ -156,22 +156,22 @@ public void displayMessageLine(Message message, JspWriter out, ResourceLocator r
     		if (lastMessage != null)
     		{
     			lastMessageId = Integer.parseInt((String)lastMessage[0]);
-    			lastMessageDate = convertDate((Date)lastMessage[1], resources);
+    			lastMessageDate = ForumHelper.convertDate((Date)lastMessage[1], resources);
     			lastMessageUser = (String)lastMessage[2];
     		}
             if (lastMessageDate != null)
     		{
     			out.print("<a href=\"" + ActionUrl.getUrl(
                     "viewMessage", call, 1, lastMessageId, forumId, true, false) + "\">");
-    			out.print(Encode.javaStringToHtmlString(lastMessageDate));
+    			out.print(EncodeHelper.javaStringToHtmlString(lastMessageDate));
     			out.print("<br/>");
-    			out.print(Encode.javaStringToHtmlString(lastMessageUser));
+    			out.print(EncodeHelper.javaStringToHtmlString(lastMessageUser));
     			out.print("</a>");
     		}
             out.println("</span></td>");
             cellsCount++;
             
-            // Nombres de réponses
+            // Nombres de rï¿½ponses
             out.print("    <td align=\"center\"><span class=\"txtnote\">");
             out.print(fsc.getNbResponses(forumId, messageId));
             out.println("</span></td>");
@@ -195,12 +195,12 @@ public void displayMessageLine(Message message, JspWriter out, ResourceLocator r
                 + cellLabel + "\"><span class=\"txtnote\">");
             for (int i = 1; i <= 5; i++) {
                 out.print("<img class=\"notation_" + (i <= globalNote ? "on" : "off")
-                    + "\" src=\"" + IMAGE_NOTATION_EMPTY + "\"/>");
+                    + "\" src=\"" + ForumHelper.IMAGE_NOTATION_EMPTY + "\"/>");
             }
             out.println("</span></td>");
         }
 		
-		// Opérations
+		// Opï¿½rations
 		if (isAutorized)
 		{
             int opCellWidth = 40;
@@ -217,7 +217,7 @@ public void displayMessageLine(Message message, JspWriter out, ResourceLocator r
 			{
 				out.print("<a href=\"");
 				out.print(ActionUrl.getUrl("editMessage", call, 3, messageId, forumId));
-				out.print("\"><img src=" + IMAGE_MOVE + " align=\"middle\" border=\"0\" alt=\""
+				out.print("\"><img src=" + ForumHelper.IMAGE_MOVE + " align=\"middle\" border=\"0\" alt=\""
 					+ resource.getString("moveMessage") + "\" title=\""
 					+ resource.getString("moveMessage") + "\"></a>");
 				out.print("&nbsp;");
@@ -226,13 +226,13 @@ public void displayMessageLine(Message message, JspWriter out, ResourceLocator r
 			if (!view)
 			{
 				out.print("<a href=\"javascript:editMessage(" + messageId + ")\">");
-				out.print("<img src=" + IMAGE_UPDATE + " align=\"middle\" border=\"0\" alt=\""
+				out.print("<img src=" + ForumHelper.IMAGE_UPDATE + " align=\"middle\" border=\"0\" alt=\""
 					+ resource.getString("editMessage") + "\" title=\""
 					+ resource.getString("editMessage") + "\"></a>");
 				out.print("&nbsp;");
 			}
 			out.print("<a href=\"javascript:deleteMessage(" + messageId + ", " + messageParent + ", false)\">");
-			out.print("<img src=" + IMAGE_DELETE + " align=\"middle\" border=\"0\" alt=\""
+			out.print("<img src=" + ForumHelper.IMAGE_DELETE + " align=\"middle\" border=\"0\" alt=\""
 				+ resource.getString("deleteMessage") + "\" title=\""
 				+ resource.getString("deleteMessage") + "\"></a>");
 			
@@ -242,7 +242,7 @@ public void displayMessageLine(Message message, JspWriter out, ResourceLocator r
     			out.print("&nbsp;");
     			out.print("<a href=\"");
     			out.print(ActionUrl.getUrl("editMessageKeywords", call, -1, messageId, forumId));
-    			out.print("\"><img src=" + IMAGE_WORD + " align=\"middle\" border=\"0\" alt=\""
+    			out.print("\"><img src=" + ForumHelper.IMAGE_WORD + " align=\"middle\" border=\"0\" alt=\""
     				+ resource.getString("editMessageKeywords") + "\" title=\""
     				+ resource.getString("editMessageKeywords") + "\"></a>");
 	        }
@@ -456,7 +456,7 @@ public int[] displayMessageNotation(JspWriter out, ResourcesWrapper resources, i
                 out.print(" id=\"notationImg" + i + "\"");
             }
             out.print(" style=\"margin-bottom: 0px\" class=\"notation_" + (i <= globalNote ? "on" : "off")
-                + "\" src=\"" + IMAGE_NOTATION_EMPTY + "\"/>");
+                + "\" src=\"" + ForumHelper.IMAGE_NOTATION_EMPTY + "\"/>");
         }
         out.print(" (" + notation.getNotesCount() + " " + resources.getString("forums.note"));
         if (userNote > 0) {

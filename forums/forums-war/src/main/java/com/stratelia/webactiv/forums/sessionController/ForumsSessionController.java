@@ -57,7 +57,6 @@ import com.stratelia.webactiv.forums.forumsException.ForumsException;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBMHome;
 import com.stratelia.webactiv.forums.messageEntity.ejb.MessagePK;
-import com.stratelia.webactiv.forums.models.Category;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.util.DBUtil;
@@ -66,6 +65,7 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
@@ -1042,7 +1042,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     }
   }
 
-  public Collection getAllCategories() {
+  public Collection<NodeDetail> getAllCategories() {
     try {
       return getForumsBM().getAllCategories(getComponentId());
     } catch (RemoteException re) {
@@ -1050,7 +1050,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     }
   }
 
-  public synchronized void createCategory(Category category) {
+  public synchronized void createCategory(NodeDetail category) {
     try {
       category.setCreationDate(DateUtil.date2SQLDate(new Date()));
       category.setCreatorId(getUserId());
@@ -1061,7 +1061,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     }
   }
 
-  public Category getCategory(String categoryId) {
+  public NodeDetail getCategory(String categoryId) {
     try {
       // rechercher la catégorie
       NodePK nodePK = new NodePK(categoryId, getComponentId());
@@ -1071,7 +1071,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     }
   }
 
-  public synchronized void updateCategory(Category category) {
+  public synchronized void updateCategory(NodeDetail category) {
     try {
       SilverTrace.error("forums", "ForumsSessionController.updateCategory", "",
           "category = " + category.getName());

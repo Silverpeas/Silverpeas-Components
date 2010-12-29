@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.io.IOException"
 %><%@ page import="java.util.Calendar"
@@ -50,7 +51,7 @@ public String navigationBar(int forumId, ResourceLocator resource, ForumsSession
     if (forumId != 0)
     {
         result = "<a href=\"" + ActionUrl.getUrl("viewForum", -1, forumId) + "\">"
-            + Encode.javaStringToHtmlString(fsc.getForumName(forumId))
+            + EncodeHelper.javaStringToHtmlString(fsc.getForumName(forumId))
             + "</a>";
         loop = true;
     }
@@ -67,7 +68,7 @@ public String navigationBar(int forumId, ResourceLocator resource, ForumsSession
         {
             String parentName = fsc.getForumName(forumParent);
             String line = "<a href=\"" + ActionUrl.getUrl("viewForum", -1, forumParent) + "\">"
-                + Encode.javaStringToHtmlString(parentName) + "</a> &gt; ";
+                + EncodeHelper.javaStringToHtmlString(parentName) + "</a> &gt; ";
             result = line + result;
             currentId = forumParent;
         }
@@ -125,24 +126,24 @@ public void displayForumLine(Forum forum, ResourcesWrapper resources, JspWriter 
         out.print("<td width=\"100%\" >");
         out.print("<a href=\"" + ActionUrl.getUrl("viewForum", call, forumId) + "\">");
         out.print("<span class=\"titreForum\">");
-        out.print(Encode.javaStringToHtmlString(forumName));
+        out.print(EncodeHelper.javaStringToHtmlString(forumName));
         out.print("</span>");
         out.print("<br>");
         // description du forum
         out.print("<span class=\"descriptionForum\">");
-        out.print(Encode.javaStringToHtmlString(forumDescription));
+        out.print(EncodeHelper.javaStringToHtmlString(forumDescription));
         out.print("</span>");
         out.print("</a>");
         out.println("</td>");
 
         // 3eme colonne : nombre de sujets
         out.print("<td align=\"center\" class=\"fondClair\"><span class=\"txtnote\">");
-        out.print(Encode.javaStringToHtmlString(nbSubjects));
+        out.print(EncodeHelper.javaStringToHtmlString(nbSubjects));
         out.println("</span></td>");
 
         // 4eme colonne : nombre de sujets
         out.print("<td align=\"center\" class=\"fondFonce\"><span class=\"txtnote\">");
-        out.print(Encode.javaStringToHtmlString(nbMessages));
+        out.print(EncodeHelper.javaStringToHtmlString(nbMessages));
         out.println("</span></td>");
 
         // 5eme colonne : dernier message
@@ -151,9 +152,9 @@ public void displayForumLine(Forum forum, ResourcesWrapper resources, JspWriter 
         {
             out.print("<a href=\"" + ActionUrl.getUrl(
                 "viewMessage", call, 1, lastMessageId, forumId, true, false) + "\">");
-            out.print(Encode.javaStringToHtmlString(lastMessageDate));
+            out.print(EncodeHelper.javaStringToHtmlString(lastMessageDate));
             out.print("<br/>");
-            out.print(Encode.javaStringToHtmlString(lastMessageUser));
+            out.print(EncodeHelper.javaStringToHtmlString(lastMessageUser));
             out.print("</a>");
         }
         out.println("</span></td>");
