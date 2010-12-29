@@ -25,7 +25,6 @@ package com.stratelia.webactiv.forums.forumsManager.ejb;
 
 import java.rmi.RemoteException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -37,7 +36,6 @@ import java.util.Vector;
 import javax.ejb.CreateException;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
-import javax.naming.NamingException;
 
 import com.silverpeas.notation.ejb.NotationBm;
 import com.silverpeas.notation.ejb.NotationBmHome;
@@ -59,7 +57,6 @@ import com.stratelia.webactiv.forums.forumEntity.ejb.ForumDetail;
 import com.stratelia.webactiv.forums.forumEntity.ejb.ForumPK;
 import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
 import com.stratelia.webactiv.forums.messageEntity.ejb.MessagePK;
-import com.stratelia.webactiv.forums.models.Category;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.util.DBUtil;
@@ -528,12 +525,11 @@ public class ForumsBMEJB implements SessionBean {
 
     try {
       // récupère la liste des id des messages
-      Collection allMessagesIds = ForumsDAO.getLastMessageRSS(con, instanceId);
-      Iterator it = allMessagesIds.iterator();
+      Collection<String> allMessagesIds = ForumsDAO.getLastMessageRSS(con, instanceId);
+      Iterator<String> it = allMessagesIds.iterator();
       // prendre que les nbReturned derniers
-      String messageId;
       while (it.hasNext() && nbReturned != 0) {
-        messageId = (String) it.next();
+        String messageId = (String) it.next();
         MessagePK messagePK = new MessagePK(instanceId, messageId);
         messages.add(getMessageInfos(messagePK));
         nbReturned--;
@@ -568,7 +564,7 @@ public class ForumsBMEJB implements SessionBean {
     }
   }
 
-  public Message getLastMessage(ForumPK forumPK, List messageParentIds, String status) {
+  public Message getLastMessage(ForumPK forumPK, List<String> messageParentIds, String status) {
     Connection con = openConnection();
     try {
       return ForumsDAO.getLastMessage(con, forumPK, messageParentIds, status);
@@ -1053,7 +1049,7 @@ public class ForumsBMEJB implements SessionBean {
    * @return
    * @see
    */
-  public Vector listAllSubscribers(MessagePK messagePK) {
+  public Vector<String> listAllSubscribers(MessagePK messagePK) {
     Connection con = openConnection();
     try {
       return ForumsDAO.listAllSubscribers(con, messagePK);
@@ -1257,10 +1253,9 @@ public class ForumsBMEJB implements SessionBean {
     return silverObjectId;
   }
 
-  public String createCategory(Category category) {
+  public String createCategory(NodeDetail category) {
     try {
-      NodePK nodePK = getNodeBm().createNode((NodeDetail) category,
-          new NodeDetail());
+      NodePK nodePK = getNodeBm().createNode(category, new NodeDetail());
       return nodePK.getId();
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.createCategory()",
@@ -1268,11 +1263,11 @@ public class ForumsBMEJB implements SessionBean {
     }
   }
 
-  public void updateCategory(Category category) {
+  public void updateCategory(NodeDetail category) {
     try {
       SilverTrace.error("forums", "ForumsBMEJB.updateCategory", "",
           "category = " + category.getName());
-      getNodeBm().setDetail((NodeDetail) category);
+      getNodeBm().setDetail(category);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.updateCategory()",
           SilverpeasRuntimeException.ERROR, "forums.MSG_CATEGORY_NOT_UPDATE", e);
@@ -1288,7 +1283,7 @@ public class ForumsBMEJB implements SessionBean {
       Forum forum;
       int forumId;
       for (int i = 0, n = forums.size(); i < n; i++) {
-        forum = (Forum) forums.get(i);
+        forum = forums.get(i);
         forumId = forum.getId();
         ForumPK forumPK = new ForumPK(instanceId, String.valueOf(forumId));
         updateForum(forumPK, forum.getName(), forum.getDescription(), forum
@@ -1304,16 +1299,16 @@ public class ForumsBMEJB implements SessionBean {
     }
   }
 
-  public Category getCategory(NodePK pk) {
+  public NodeDetail getCategory(NodePK pk) {
     try {
-      return new Category(getNodeBm().getDetail(pk));
+      return getNodeBm().getDetail(pk);
     } catch (Exception e) {
       throw new ForumsRuntimeException("ForumsBmEJB.getCategory()",
           SilverpeasRuntimeException.ERROR, "forums.MSG_CATEGORY_NOT_EXIST", e);
     }
   }
 
-  public Collection getAllCategories(String instanceId) {
+  public Collection<NodeDetail> getAllCategories(String instanceId) {
     try {
       return getNodeBm().getChildrenDetails(new NodePK("0", instanceId));
     } catch (Exception e) {

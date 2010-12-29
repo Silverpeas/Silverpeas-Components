@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.forums.forumsManager.ejb;
 
+import com.stratelia.webactiv.forums.forumEntity.ejb.ForumDetail;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -34,9 +35,9 @@ import javax.ejb.EJBObject;
 
 import com.stratelia.webactiv.forums.forumEntity.ejb.ForumPK;
 import com.stratelia.webactiv.forums.messageEntity.ejb.MessagePK;
-import com.stratelia.webactiv.forums.models.Category;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.Message;
+import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 
 /**
@@ -56,19 +57,19 @@ public interface ForumsBM extends EJBObject {
 
   public String getForumInstanceId(int forumId) throws RemoteException;
 
-  public Collection getForums(Collection forumPKs) throws RemoteException;
+  public Collection<ForumDetail> getForums(Collection<ForumPK> forumPKs) throws RemoteException;
 
-  public Collection getForumsList(Collection forumPKs) throws RemoteException;
+  public Collection<Forum> getForumsList(Collection<ForumPK> forumPKs) throws RemoteException;
 
-  public Collection getThreadsList(Collection messagePKs)
+  public Collection<Message> getThreadsList(Collection<MessagePK> messagePKs)
       throws RemoteException;
 
-  public ArrayList getForums(ForumPK forumPK) throws RemoteException;
+  public ArrayList<Forum> getForums(ForumPK forumPK) throws RemoteException;
 
-  public ArrayList getForumsByCategory(ForumPK forumPK, String categoryId)
+  public ArrayList<Forum> getForumsByCategory(ForumPK forumPK, String categoryId)
       throws RemoteException;
 
-  public ArrayList getForumSonsIds(ForumPK forumPK) throws RemoteException;
+  public ArrayList<String> getForumSonsIds(ForumPK forumPK) throws RemoteException;
 
   public int createForum(ForumPK forumPK, String forumName,
       String forumDescription, String forumCreator, int forumParent,
@@ -84,7 +85,7 @@ public interface ForumsBM extends EJBObject {
 
   public void deleteForum(ForumPK forumPK) throws RemoteException;
 
-  public Collection getMessages(ForumPK forumPK) throws RemoteException;
+  public Collection<Message> getMessages(ForumPK forumPK) throws RemoteException;
 
   public Message getMessage(MessagePK messagePK) throws RemoteException;
 
@@ -97,7 +98,7 @@ public interface ForumsBM extends EJBObject {
   public Message getLastMessage(ForumPK forumPK, int messageParentId, String status)
       throws RemoteException;
 
-  public Message getLastMessage(ForumPK forumPK, List messageParentId, String status)
+  public Message getLastMessage(ForumPK forumPK, List<String> messageParentId, String status)
       throws RemoteException;
 
   public Collection getLastMessageRSS(String instanceId, int nbReturned)
@@ -154,7 +155,7 @@ public interface ForumsBM extends EJBObject {
 
   public void removeAllSubscribers(MessagePK messagePK) throws RemoteException;
 
-  public Vector listAllSubscribers(MessagePK messagePK) throws RemoteException;
+  public Vector<String> listAllSubscribers(MessagePK messagePK) throws RemoteException;
 
   public boolean isSubscriber(MessagePK messagePK, String userId)
       throws RemoteException;
@@ -165,16 +166,16 @@ public interface ForumsBM extends EJBObject {
 
   public int getSilverObjectId(ForumPK forumPK) throws RemoteException;
 
-  public String createCategory(Category category) throws RemoteException;
+  public String createCategory(NodeDetail category) throws RemoteException;
 
   public void deleteCategory(String categoryId, String instanceId)
       throws RemoteException;
 
-  public void updateCategory(Category category) throws RemoteException;
+  public void updateCategory(NodeDetail category) throws RemoteException;
 
-  public Category getCategory(NodePK nodePK) throws RemoteException;
+  public NodeDetail getCategory(NodePK nodePK) throws RemoteException;
 
-  public Collection getAllCategories(String instanceId) throws RemoteException;
+  public Collection<NodeDetail> getAllCategories(String instanceId) throws RemoteException;
 
   public String getForumTags(ForumPK forumPK) throws RemoteException;
 
@@ -185,5 +186,4 @@ public interface ForumsBM extends EJBObject {
 
   public Collection getNotAnsweredLastThreads(ForumPK forumPK, int count)
       throws RemoteException;
-
 }

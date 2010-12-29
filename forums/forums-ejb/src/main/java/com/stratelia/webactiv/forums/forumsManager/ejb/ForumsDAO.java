@@ -1820,13 +1820,13 @@ public class ForumsDAO {
    * @return The list of ids of users who subscribe to the message corresponding to the primary key.
    * @throws SQLException An SQL exception.
    */
-  public static Vector listAllSubscribers(Connection con, MessagePK messagePK)
+  public static Vector<String> listAllSubscribers(Connection con, MessagePK messagePK)
       throws SQLException {
     SilverTrace.info("forums", "ForumsDAO.listAllSubscribers()",
         "root.MSG_GEN_PARAM_VALUE", "selectQuery  = "
         + QUERY_LIST_ALL_SUBSCRIBERS);
 
-    Vector userIds = new Vector();
+    Vector<String> userIds = new Vector<String>();
     PreparedStatement selectStmt = null;
     ResultSet rs = null;
     try {

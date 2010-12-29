@@ -30,8 +30,12 @@ import com.stratelia.webactiv.forums.messageEntity.ejb.MessagePK;
 
 public class Message implements Serializable {
 
-  private static final long serialVersionUID = 705520417746270396L;
+  public static final String STATUS_VALIDATE = "V";
+  public static final String STATUS_FOR_VALIDATION = "A";
+  public static final String STATUS_REFUSED = "R";
   
+  
+  private static final long serialVersionUID = 705520417746270396L;
   private int id;
   private String title;
   private String author;
@@ -58,7 +62,7 @@ public class Message implements Serializable {
     this(id, title, author, date, forumId, parentId);
     this.instanceId = instanceId;
   }
-  
+
   public Message(int id, String title, String author, Date date, int forumId,
       int parentId, String instanceId, String status) {
     this(id, title, author, date, forumId, parentId, instanceId);
@@ -144,6 +148,18 @@ public class Message implements Serializable {
   public void setStatus(String status) {
     this.status = status;
   }
+  
+  public boolean isValid() {
+    return STATUS_VALIDATE.equals(status);
+  }
+  
+  public boolean isToBeValidated() {
+    return STATUS_FOR_VALIDATION.equals(status);
+  }
+  
+   public boolean isRefused() {
+    return STATUS_REFUSED.equals(status);
+  }
 
   @Override
   public boolean equals(Object o) {
@@ -209,6 +225,4 @@ public class Message implements Serializable {
   public String toString() {
     return "Message{" + "id=" + id + ", title=" + title + ", author=" + author + ", date=" + date + ", forumId=" + forumId + ", parentId=" + parentId + ", text=" + text + ", instanceId=" + instanceId + ", pk=" + pk + ", status=" + status + '}';
   }
-  
-  
 }
