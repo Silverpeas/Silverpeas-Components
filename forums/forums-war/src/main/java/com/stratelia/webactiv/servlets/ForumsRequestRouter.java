@@ -67,7 +67,7 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
 
     if ((function.startsWith("Main")) || (function.startsWith("main"))) {
         String forumId = request.getParameter("forumId");
-        if (forumId != null) {
+        if (forumId != null && Integer.parseInt(forumId) > 0) {
           return ROOT_DEST + ActionUrl.getUrl("viewForum", "main", Integer.parseInt(forumId));
         }
       destination = ROOT_DEST + "main.jsp";
@@ -134,7 +134,7 @@ public class ForumsRequestRouter extends ComponentRequestRouter {
       destination = ROOT_DEST + "viewMessage.jsp";
     } else if (function.startsWith("editMessageKeywords")) {
       destination = ROOT_DEST + "editMessageKeywords.jsp";
-    } else if (function.startsWith("editMessage")) {
+    } else if (function.startsWith("editMessage")) {            
       destination = ROOT_DEST + "editMessage.jsp";
     } else if (function.startsWith("modifyMessage")) {
       destination = ROOT_DEST + "modifyMessage.jsp";

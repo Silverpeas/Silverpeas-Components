@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumListHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -30,8 +31,6 @@
     response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%@ include file="checkForums.jsp"%>
-<%@ include file="forumsListManager.jsp"%>
-<%@ include file="messagesListManager.jsp"%>
 <%
     int messageId = getIntParameter(request, "params");
     Message message = fsc.getMessage(messageId);
@@ -94,7 +93,7 @@
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(fsc.getSpaceLabel());
     browseBar.setComponentName(fsc.getComponentLabel(), ActionUrl.getUrl("main", -1, forumId));
-    browseBar.setPath(navigationBar(forumId, resource, fsc));
+    browseBar.setPath(ForumListHelper.navigationBar(forumId, resource, fsc));
 
     out.println(window.printBefore());
     out.println(frame.printBefore());
@@ -110,12 +109,6 @@
                         <tr>
                             <td valign="top">
                                 <table border="0" cellspacing="0" cellpadding="5" width="100%">
-                                    <!-- REPONSE -->
-                                    <!-- ligne separatrice
-                                    <tr>
-                                        <td colspan="2"><img src="<%=context%>/util/icons/colorPix/1px.gif" width="100%" height="1" class="intfdcolor"></td>
-                                    </tr>
-                                    -->
                                     <tr>
                                         <td colspan="2"><span class="txtnav"><!-- <img src="icons/fo_flechebas.gif" width="11" height="6">&nbsp;<%=resource.getString("repondre")%> --></span></td>
                                     </tr>

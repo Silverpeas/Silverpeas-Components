@@ -105,7 +105,7 @@ public class ForumListHelper {
         // rechercher si l'utilisateur a des messages non lus sur ce forum
         boolean isNewMessage = fsc.isNewMessageByForum(fsc.getUserId(), forumId);
         out.print(
-            "<img src=\"icons/" + (isNewMessage ? "buletRed" : "buletColoredGreen") + ".gif\">");
+            "<img src=\"icons/" + (isNewMessage ? "newMessage" : "noNewMessage") + ".gif\">");
       }
 
       // Icone de deploiement

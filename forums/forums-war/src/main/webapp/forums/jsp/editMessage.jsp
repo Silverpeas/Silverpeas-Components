@@ -23,7 +23,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumListHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <%@page import="com.silverpeas.util.EncodeHelper"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -31,7 +38,6 @@
     response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%@ include file="checkForums.jsp"%>
-<%@ include file="forumsListManager.jsp"%>
 <%!
 public void listFolders(JspWriter out, String userId, boolean admin, int rootId, int parentId,
         String indent, ResourceLocator resource, ForumsSessionController fsc)
@@ -72,6 +78,7 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     int reqForum = getIntParameter(request, "forumId", 0);
     String call = request.getParameter("call");
     String backURL = ActionUrl.getUrl(call, -1, reqForum);
+    pageContext.setAttribute("backURL", backURL);
 
     int params = getIntParameter(request, "params");
     int action = getIntParameter(request, "action", 1);
@@ -130,10 +137,7 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
 <html>
 <head>
     <title></title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<%
-    out.println(graphicFactory.getLookStyleSheet());
-%>
+    <view:looknfeel />
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
     <script type="text/javascript" src="<%=context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
@@ -194,7 +198,7 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     BrowseBar browseBar = window.getBrowseBar();
     browseBar.setDomainName(fsc.getSpaceLabel());
     browseBar.setComponentName(fsc.getComponentLabel(), ActionUrl.getUrl("main"));
-    browseBar.setPath(navigationBar(forumId, resource, fsc));
+    browseBar.setPath(ForumListHelper.navigationBar(forumId, resource, fsc));
 
     out.println(window.printBefore());
     Frame frame=graphicFactory.getFrame();
@@ -283,17 +287,15 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
         </form>
         </table>
     </center><br/>
-    <center><%
-
-    ButtonPane buttonPane = graphicFactory.getButtonPane();
-    buttonPane.addButton(graphicFactory.getFormButton(
-        resource.getString("valider"), "javascript:validateMessage();", false));
-    buttonPane.addButton(graphicFactory.getFormButton(
-        resource.getString("annuler"), backURL, false));
-    buttonPane.setHorizontalPosition();
-    out.println(buttonPane.print());
-%>
-    </center>
+    <center>
+      <center>
+        <fmt:message key="valider" var="validate"/>
+        <fmt:message key="annuler" var="cancel"/>
+          <view:buttonPane>
+            <view:button action="javascript:validateMessage();" label="${validate}" disabled="false" />
+            <view:button action="${pageScope.backURL}" label="${cancel}" disabled="false" />
+          </view:buttonPane>
+        </center>
     <br><%
 
     out.println(frame.printAfter());

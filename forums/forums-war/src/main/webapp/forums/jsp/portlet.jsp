@@ -23,6 +23,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumListHelper"%>
+<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumActionHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -31,13 +33,12 @@
 %>
 <%@ include file="checkForums.jsp" %>
 <%@ include file="forumsListManagerPortlet.jsp" %>
-<%@ include file="forumsListActionManager.jsp" %>
 <%
     String mailtoAdmin = context + "/util/icons/forums_mailtoAdmin.gif";
 
     Collection categories = fsc.getAllCategories();
     boolean isModerator = false;
-    actionManagement(request, isAdmin, isModerator, userId, resource, out, fsc);
+    ForumActionHelper.actionManagement(request, isAdmin, isModerator, userId, resource, out, fsc);
 %>
 <html>
 <head>
@@ -71,10 +72,7 @@
 </head>
 
 <body id="forum" marginheight="2" marginwidth="2" leftmargin="2" topmargin="2">
-    <center><%
-
-    //displayForumsList(spaceId, instanceId, out, resource, isAdmin, isModerator, 0, "main", fsc);
-%>
+    <center>
         <table width="95%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
             <tr class="enteteTableau">
                 <td colspan="2" nowrap="nowrap" align="center"><%=resources.getString("theme")%></td>
@@ -83,23 +81,23 @@
                 <td nowrap="nowrap" align="center"><%=resources.getString("forums.lastMessage")%></td>
             </tr><%      
 
-    // affichage des catégories et de leurs forums
+    // affichage des categories et de leurs forums
     if (categories != null)
     {
-        Iterator it = (Iterator) categories.iterator();
+        Iterator it = categories.iterator();
         while (it.hasNext()) 
         {
             NodeDetail uneCategory = (NodeDetail) it.next();
             int id = uneCategory.getId();
             String nom = uneCategory.getName();
             String description = uneCategory.getDescription();
-            displayForumsList(spaceId, instanceId, out, resources, isAdmin, isModerator, 0, "main",
+            ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, false, 0, "main",
                 fsc, Integer.toString(id), nom, description);
         }
     } 
 
-    // liste des forums sans catégories
-    displayForumsList(spaceId, instanceId, out, resources, isAdmin, isModerator, 0, "main", fsc,
+    // liste des forums sans categories
+    ForumListHelper.displayForumsList( out, resources, isAdmin, isModerator, false, 0, "main", fsc,
         null, "", "");
 %>
         </table>

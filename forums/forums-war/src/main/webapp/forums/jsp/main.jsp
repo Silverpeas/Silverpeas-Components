@@ -168,14 +168,14 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
           </table>
           <c:if test="${sessionController.external || ! isReader}">
             <br />
-            <img src="icons/buletColoredGreen.gif" alt="<fmt:message key="forums.notNewMessageVisite" />" /> <fmt:message key="forums.notNewMessageVisite" />
+            <img src="icons/noNewMessage.gif" alt="<fmt:message key="forums.notNewMessageVisite" />" /> <fmt:message key="forums.notNewMessageVisite" />
             <br />
-            <img src="icons/buletRed.gif" alt="<fmt:message key="forums.newMessageVisite" />" /> <fmt:message key="forums.newMessageVisite" />
+            <img src="icons/newMessage.gif" alt="<fmt:message key="forums.newMessageVisite" />" /> <fmt:message key="forums.newMessageVisite" />
           </c:if>
           <c:if test="${sessionController.useRss}">
             <table align="center">
               <tr>
-                <td><a href="<c:url value="${sessionController.RSSUrl}" />"><img src="icons/rss.gif" border="0" alt="rss"/></a></td>
+                <td><a href="<c:url value="${sessionController.RSSUrl}" />"><img src="<c:url value="/util/icons/rss.gif" />" border="0" alt="rss"/></a></td>
               </tr>
             </table>
           </c:if>

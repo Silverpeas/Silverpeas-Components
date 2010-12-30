@@ -126,12 +126,7 @@ public class ForumHelper {
       int lineHeight = ((fsc.isExternal() && reader) ? 16 : 24);
       // isAutorized : si l'utilisateur est autorisé à modifier le message
       boolean isAutorized = admin || moderator || userId.equals(author);
-
-
-
-
-      if (STATUS_VALIDATE.equals(message.getStatus()) || (!STATUS_VALIDATE.equals(
-          message.getStatus()) && isAutorized)) {
+      if (message.isValid() || (!message.isValid() && isAutorized)) {
 
         out.println("  <tr id=\"msgLine" + messageId + "\" height=\"" + lineHeight + "\">");
 
@@ -156,7 +151,7 @@ public class ForumHelper {
         if (messageParent == 0 && (!fsc.isExternal() || !reader)) {
           boolean isNewMessage = fsc.isNewMessage(userId, forumId, messageId);
           out.print(
-              "<img src=\"icons/" + (isNewMessage ? "buletRed" : "buletColoredGreen") + ".gif\">");
+              "<img src=\"icons/" + (isNewMessage ? "newMessage" : "noNewMessage") + ".gif\">");
         }
         out.println("</td>");
 
@@ -186,9 +181,9 @@ public class ForumHelper {
         // Date de Creation
         out.print("&nbsp;-&nbsp;" + convertDate(message.getDate(), resources));
         out.print(")");
-        if (message.getStatus().equals(STATUS_FOR_VALIDATION)) {
+        if (message.isToBeValidated()) {
           out.println(" - " + resource.getString("toValidate"));
-        } else if (message.getStatus().equals(STATUS_REFUSED)) {
+        } else if (message.isRefused()) {
           out.println(" - " + resource.getString("refused"));
         }
         out.println("</span>");

@@ -23,6 +23,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumHelper"%>
+<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumListHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="java.util.Hashtable"%>
 <%
@@ -31,8 +35,6 @@
     response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 <%@ include file="checkForums.jsp"%>
-<%@ include file="forumsListManager.jsp"%>
-<%@ include file="messagesListManager.jsp"%>
 <%
     int messageId = 0;
 
@@ -353,7 +355,7 @@
         BrowseBar browseBar = window.getBrowseBar();
         browseBar.setDomainName(fsc.getSpaceLabel());
         browseBar.setComponentName(fsc.getComponentLabel(), ActionUrl.getUrl("main"));
-        browseBar.setPath(navigationBar(reqForum, resource, fsc));
+        browseBar.setPath(ForumListHelper.navigationBar(reqForum, resource, fsc));
 
         out.println(window.printBefore());
         out.println(frame.printBefore());
@@ -391,17 +393,13 @@
               <input type="hidden" name="forumId" value="<%=forumId%>" />
             <tr class="notationLine">
                 <td align="right"><%
-
-        forumNotes = displayMessageNotation(out, resources, currentMessageId, fsc, isReader);
-
+        forumNotes = ForumHelper.displayMessageNotation(out, resources, currentMessageId, fsc, isReader);
               %></td>
             </tr>
             <tr>
                 <td valign="top"><%
-
-        displaySingleMessageList(out, resource, userId, isAdmin, isModerator, isReader,
-            false, folderId, messageId, true, "viewForum", fsc, resources);
-%>
+                ForumHelper.displaySingleMessageList(out, resource, userId, isAdmin, isModerator, isReader, false, folderId, messageId, true, "viewForum", fsc, resources);
+                %>
                 </td>
             </tr>
         </table><%
@@ -473,7 +471,7 @@
         String status;
         boolean isSubscriber;
         boolean hasChildren;
-        Hashtable authorNbMessages = new Hashtable();
+        Map authorNbMessages = new HashMap();
         int nbMessages;
         for (int i = 0, n = messages.length; i < n; i++)
         {
@@ -489,11 +487,11 @@
             }
             text = currentMessage.getText();
             isSubscriber = fsc.isSubscriber(currentId, userId);
-            hasChildren = hasMessagesChildren(messages, currentId);
+            hasChildren = ForumHelper.hasMessagesChildren(messages, currentId);
             if (!authorNbMessages.containsKey(author))
             {
                 nbMessages = fsc.getAuthorNbMessages(author);
-                authorNbMessages.put(author, new Integer(nbMessages));
+                authorNbMessages.put(author,  Integer.valueOf(nbMessages));
             }
             else
             {
@@ -562,7 +560,7 @@
               if (userId.equals(author) || isAdmin || isModerator)
               {
                 if (isModerator && STATUS_FOR_VALIDATION.equals(status)) {
-                  // afficher les ic�nes pour valider ou refuser un message
+                  // afficher les icones pour valider ou refuser un message
                   %>
                     <a href="javascript:valideMessage(<%=currentId%>)"><img
                       src="<%=context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("valideMessage")%>" title="<%=resource.getString("valideMessage")%>"></a>&nbsp;
@@ -600,14 +598,8 @@
                             <tr>
                                 <td valign="top">
                                     <table border="0" cellspacing="0" cellpadding="5" width="100%">
-                                        <!-- REPONSE -->
-                                        <!-- ligne s�paratrice
                                         <tr>
-                                            <td colspan="2"><img src="<%=context%>/util/icons/colorPix/1px.gif" width="100%" height="1" class="intfdcolor"></td>
-                                        </tr>
-                                        -->
-                                        <tr>
-                                            <td colspan="2"><span class="txtnav"><!-- <img src="icons/fo_flechebas.gif" width="11" height="6">&nbsp;<%=resource.getString("repondre")%> --></span></td>
+                                            <td colspan="2"></td>
                                         </tr>
                                         <input type="hidden" name="forumId" value="<%=message.getForumId()%>"/>
                                         <input type="hidden" name="parentId" value="<%=messageId%>"/>
