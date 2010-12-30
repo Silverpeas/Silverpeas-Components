@@ -41,10 +41,6 @@ select               { font-family: Verdana, Arial, Helvetica, sans-serif; font-
 .texteLabelForm      { font-size: 10px; color: #666666; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold }
 
 .txtnav              { font-size: 10pt; font-weight: bold; color: #000000 }
-
-.ArrayColumn         { background-color: #91C6CF}
-.ArrayCell           { font-size: 8pt; color: #000000}
-.ArrayCellHot        { font-size: 8pt; font-weight: bold; color: #FF0000}
 th {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: bold; color: #000000; background-color: #DFDFDF}
 .fondCartouche {  background-color: #E5E5E5}
 
@@ -52,8 +48,7 @@ th {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-
 .titreCateg {
     font-size: 11px;
     font-weight: bold;
-    background-image: url(/silverpeas/forums/jsp/icons/fondCateg.gif);
-    background-repeat: repeat-x;
+    background-color: #EAEAEA;
 }
 
 .titreForum {

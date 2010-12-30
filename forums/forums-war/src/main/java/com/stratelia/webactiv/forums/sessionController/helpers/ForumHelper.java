@@ -248,8 +248,7 @@ public class ForumHelper {
         if (userNote > 0) {
           cellLabel += " - " + resources.getString("forums.yourNote") + " : " + userNote;
         }
-        out.print("<td align=\"center\" alt=\"" + cellLabel + "\" title=\""
-            + cellLabel + "\"><span class=\"txtnote\">");
+        out.print("<td align=\"center\"  title=\"" + cellLabel + "\"><span class=\"txtnote\">");
         for (int i = 1; i <= 5; i++) {
           out.print("<img class=\"notation_" + (i <= globalNote ? "on" : "off")
               + "\" src=\"" + IMAGE_NOTATION_EMPTY + "\"/>");

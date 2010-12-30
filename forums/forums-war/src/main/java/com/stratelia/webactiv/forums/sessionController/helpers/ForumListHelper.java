@@ -99,7 +99,7 @@ public class ForumListHelper {
       out.println("<tr>");
 
       // 1ère colonne : état des messages (lus / non lus)
-      out.print("<td>");
+      out.print("<td class=\"ArrayCell\">");
 
       if (!fsc.isExternal() || !reader) {
         // rechercher si l'utilisateur a des messages non lus sur ce forum
@@ -116,7 +116,7 @@ public class ForumListHelper {
       out.println("</td>");
 
       // 2ème colonne : nom et description
-      out.print("<td width=\"100%\" >");
+      out.print("<td class=\"ArrayCell\" width=\"100%\" >");
       out.print("<a href=\"" + ActionUrl.getUrl("viewForum", call, forumId) + "\">");
       out.print("<span class=\"titreForum\">");
       out.print(EncodeHelper.javaStringToHtmlString(forumName));
@@ -130,18 +130,18 @@ public class ForumListHelper {
       out.println("</td>");
 
       // 3ème colonne : nombre de sujets
-      out.print("<td align=\"center\" class=\"fondClair\"><span class=\"txtnote\">");
+      out.print("<td class=\"ArrayCell\" ><span class=\"txtnote\">");
       out.print(EncodeHelper.javaStringToHtmlString(nbSubjects));
       out.println("</span></td>");
 
       // 4ème colonne : nombre de sujets
-      out.print("<td align=\"center\" class=\"fondFonce\"><span class=\"txtnote\">");
+      out.print("<td class=\"ArrayCell\" ><span class=\"txtnote\">");
       out.print(EncodeHelper.javaStringToHtmlString(nbMessages));
       out.println("</span></td>");
 
       // 5ème colonne : dernier message
       out.print(
-          "<td nowrap=\"nowrap\" align=\"center\" class=\"fondClair\"><span class=\"txtnote\">");
+          "<td nowrap=\"nowrap\" class=\"ArrayCell\" ><span class=\"txtnote\">");
       if (lastMessageDate != null) {
         out.print("<a href=\"" + ActionUrl.getUrl(
             "viewMessage", call, 1, lastMessageId, forumId, true, false) + "\">");
@@ -160,8 +160,7 @@ public class ForumListHelper {
       if (userNote > 0) {
         cellLabel += " - " + resources.getString("forums.yourNote") + " : " + userNote;
       }
-      out.print("<td align=\"center\" class=\"fondFonce\" alt=\"" + cellLabel + "\" title=\""
-          + cellLabel + "\"><span class=\"txtnote\">");
+      out.print("<td class=\"ArrayCell\" title=\"" + cellLabel + "\"><span class=\"txtnote\">");
       for (int i = 1; i <= 5; i++) {
         out.print("<img class=\"notation_" + (i <= globalNote ? "on" : "off")
             + "\" src=\"" + ForumHelper.IMAGE_NOTATION_EMPTY + "\"/>");
@@ -170,7 +169,7 @@ public class ForumListHelper {
 
       // 7ème colonne : boutons d'admin
       if (admin || moderator) {
-        out.print("<td align=\"center\" nowrap class=\"fondClair\">");
+        out.print("<td class=\"ArrayCell\" nowrap>");
 
         // icone de modification
         out.print("<a href=\"");

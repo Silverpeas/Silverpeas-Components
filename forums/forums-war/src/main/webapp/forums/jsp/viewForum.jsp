@@ -83,10 +83,6 @@
   <head>
     <title><c:out value="${currentForum.name}" /></title>
     <view:looknfeel />
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <c:if test="${sessionScope.SessionGraphicElementFactory.externalStylesheet == null}">
-      <link rel="stylesheet" type="text/css" href="styleSheets/forums.css">
-    </c:if>
     <script type="text/javascript" src="<c:url value="/forums/jsp/javaScript/forums.js" />" ></script>
     <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />" ></script>
     <script type="text/javascript">
