@@ -223,7 +223,7 @@ function unsubscribe(){
 
     <c:if test="${requestScope['mailinglistRss'] != null}">
       <br />
-      <a href="<c:url value="${requestScope.mailinglistRss}" />"><img src="<c:url value="/mailingList/jsp/icons/rss.gif" />" border="0"></a>
+      <a href="<c:url value="${requestScope.mailinglistRss}" />"><img src="<c:url value="/util/icons/rss.gif" />" border="0" alt="rss"/></a>
     </c:if></center>
   </view:frame>
 </view:window>

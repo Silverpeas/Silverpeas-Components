@@ -140,7 +140,7 @@ Button searchButton = gef.getFormButton(" OK ", "javascript:onClick=search();", 
 	<% if (StringUtil.isDefined(rssURL)) { %>
 	   <table>
 	       	<tr>
-	        	<td><a href="<%=m_context+rssURL%>"><img src="icons/rss.gif" border="0" alt="RSS"/></a></td>
+	        	<td><a href="<%=m_context+rssURL%>"><img src="<%=m_context+"/util/icons/rss.gif" %>" border="0" alt="rss"/></a></td>
 			</tr>
 	   </table>
 	<% } %>
