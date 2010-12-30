@@ -282,11 +282,7 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
             </tr>
         </form>
         </table>
-    </center><%
-
-    out.println(frame.printMiddle());
-%>
-    <br>
+    </center><br/>
     <center><%
 
     ButtonPane buttonPane = graphicFactory.getButtonPane();

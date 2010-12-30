@@ -23,27 +23,23 @@
  */
 package com.stratelia.webactiv.forums.forumsManager.ejb;
 
-import com.stratelia.webactiv.util.DBUtil;
 import java.util.Calendar;
 import com.google.common.collect.Lists;
 import com.silverpeas.components.model.AbstractJndiCase;
 import com.silverpeas.components.model.SilverpeasJndiCase;
 import com.silverpeas.jcrutil.RandomGenerator;
-import com.stratelia.webactiv.forums.forumEntity.ejb.ForumDetail;
+import com.stratelia.webactiv.forums.models.ForumDetail;
+import com.stratelia.webactiv.forums.models.ForumPK;
 import org.dbunit.database.IDatabaseConnection;
 import java.io.IOException;
 import javax.naming.NamingException;
-import com.stratelia.webactiv.forums.forumEntity.ejb.ForumPK;
-import com.stratelia.webactiv.forums.messageEntity.ejb.MessagePK;
+
 import com.stratelia.webactiv.forums.models.Forum;
-import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.util.DateUtil;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.List;
-import java.util.Vector;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;

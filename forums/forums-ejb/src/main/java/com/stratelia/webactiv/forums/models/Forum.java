@@ -25,8 +25,6 @@ package com.stratelia.webactiv.forums.models;
 
 import java.io.Serializable;
 
-import com.stratelia.webactiv.forums.forumEntity.ejb.ForumPK;
-
 public class Forum implements Serializable {
 
   /**

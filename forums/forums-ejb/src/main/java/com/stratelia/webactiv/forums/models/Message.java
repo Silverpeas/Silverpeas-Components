@@ -26,8 +26,6 @@ package com.stratelia.webactiv.forums.models;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.stratelia.webactiv.forums.messageEntity.ejb.MessagePK;
-
 public class Message implements Serializable {
 
   public static final String STATUS_VALIDATE = "V";

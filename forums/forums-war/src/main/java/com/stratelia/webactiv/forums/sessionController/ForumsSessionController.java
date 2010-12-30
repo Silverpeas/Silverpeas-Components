@@ -52,14 +52,15 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import static com.stratelia.webactiv.SilverpeasRole.*;
 import com.stratelia.webactiv.beans.admin.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.forums.forumEntity.ejb.ForumPK;
+import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.forumsException.ForumsException;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBMHome;
-import com.stratelia.webactiv.forums.messageEntity.ejb.MessagePK;
+import com.stratelia.webactiv.forums.models.MessagePK;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.Message;
 import static com.stratelia.webactiv.forums.models.Message.*;
+
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;

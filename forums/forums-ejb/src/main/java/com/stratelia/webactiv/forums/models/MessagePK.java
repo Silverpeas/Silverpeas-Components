@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv.forums.messageEntity.ejb;
+package com.stratelia.webactiv.forums.models;
 
 import com.stratelia.webactiv.util.WAPrimaryKey;
 

@@ -150,8 +150,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
     </c:if>
     <view:window>
       <view:frame>
-        <center>
-          <table width="95%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
+          <table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
             <tr class="enteteTableau">
               <td colspan="2" nowrap="nowrap" align="center"><fmt:message key="theme" /></td>
               <td nowrap="nowrap" align="center"><fmt:message key="forums.nbSubjects" /></td>
@@ -172,6 +171,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
             <%ForumListHelper.displayForumsList(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc, null, "", "");%>
           </table>
           <c:if test="${sessionController.external || ! isReader}">
+            <br />
             <img src="icons/buletColoredGreen.gif" alt="<fmt:message key="forums.notNewMessageVisite" />" /> <fmt:message key="forums.notNewMessageVisite" />
             <br />
             <img src="icons/buletRed.gif" alt="<fmt:message key="forums.newMessageVisite" />" /> <fmt:message key="forums.newMessageVisite" />
@@ -183,7 +183,6 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
               </tr>
             </table>
           </c:if>
-        </center>
       </view:frame>
     </view:window>
   </body>

@@ -40,10 +40,10 @@ import java.util.Vector;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.forums.forumEntity.ejb.ForumDetail;
-import com.stratelia.webactiv.forums.forumEntity.ejb.ForumPK;
+import com.stratelia.webactiv.forums.models.ForumDetail;
+import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.forumsException.ForumsRuntimeException;
-import com.stratelia.webactiv.forums.messageEntity.ejb.MessagePK;
+import com.stratelia.webactiv.forums.models.MessagePK;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.util.DBUtil;

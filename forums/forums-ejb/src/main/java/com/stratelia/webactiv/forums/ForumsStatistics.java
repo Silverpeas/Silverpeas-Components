@@ -34,7 +34,7 @@ import javax.ejb.EJBException;
 
 import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
 import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
-import com.stratelia.webactiv.forums.forumEntity.ejb.ForumPK;
+import com.stratelia.webactiv.forums.models.ForumPK;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBMHome;
 import com.stratelia.webactiv.forums.models.Forum;

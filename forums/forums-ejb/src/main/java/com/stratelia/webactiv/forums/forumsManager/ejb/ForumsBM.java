@@ -23,7 +23,7 @@
  */
 package com.stratelia.webactiv.forums.forumsManager.ejb;
 
-import com.stratelia.webactiv.forums.forumEntity.ejb.ForumDetail;
+import com.stratelia.webactiv.forums.models.ForumDetail;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,8 +33,8 @@ import java.util.Vector;
 
 import javax.ejb.EJBObject;
 
-import com.stratelia.webactiv.forums.forumEntity.ejb.ForumPK;
-import com.stratelia.webactiv.forums.messageEntity.ejb.MessagePK;
+import com.stratelia.webactiv.forums.models.ForumPK;
+import com.stratelia.webactiv.forums.models.MessagePK;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.Message;
 import com.stratelia.webactiv.util.node.model.NodeDetail;

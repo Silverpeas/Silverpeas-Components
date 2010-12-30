@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.stratelia.webactiv.forums.forumEntity.ejb;
+package com.stratelia.webactiv.forums.models;
 
 import java.io.Serializable;
 import java.util.Date;
