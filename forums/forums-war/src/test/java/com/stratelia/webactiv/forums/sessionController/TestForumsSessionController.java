@@ -10,7 +10,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.forums.forumEntity.ejb.ForumPK;
 import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBM;
-
+import static com.stratelia.webactiv.forums.models.Message.*;
 import static org.mockito.Mockito.*;
 
 public class TestForumsSessionController {
@@ -28,11 +28,11 @@ public class TestForumsSessionController {
     when(forum.isModerator(eq("5"), any(ForumPK.class))).thenReturn(false);
     when(forum.getForumParentId(forumId)).thenReturn(new Integer(0));
     controller.setForumsBM(forum);
-    boolean result = controller.isVisible(ForumsSessionController.STATUS_VALIDATE, forumId);
+    boolean result = controller.isVisible(STATUS_VALIDATE, forumId);
     assertEquals(true, result);
     verify(forum, times(1)).isModerator(eq("5"), any(ForumPK.class));
     verify(forum, times(1)).getForumParentId(forumId);
-    result = controller.isVisible(ForumsSessionController.STATUS_FOR_VALIDATION, forumId);
+    result = controller.isVisible(STATUS_FOR_VALIDATION, forumId);
     assertEquals(false, result);
     verify(forum, times(2)).isModerator(eq("5"), any(ForumPK.class));
     verify(forum, times(2)).getForumParentId(forumId);
@@ -40,11 +40,11 @@ public class TestForumsSessionController {
     when(forum.isModerator(eq("5"), any(ForumPK.class))).thenReturn(true);
     when(forum.getForumParentId(forumId)).thenReturn(new Integer(0));
     controller.setForumsBM(forum);
-    result = controller.isVisible(ForumsSessionController.STATUS_VALIDATE, forumId);
+    result = controller.isVisible(STATUS_VALIDATE, forumId);
     assertEquals(true, result);
     verify(forum, times(1)).isModerator(eq("5"), any(ForumPK.class));
     verify(forum, times(1)).getForumParentId(forumId);
-    result = controller.isVisible(ForumsSessionController.STATUS_FOR_VALIDATION, forumId);
+    result = controller.isVisible(STATUS_FOR_VALIDATION, forumId);
     assertEquals(true, result);
     verify(forum, times(2)).isModerator(eq("5"), any(ForumPK.class));
     verify(forum, times(2)).getForumParentId(forumId);

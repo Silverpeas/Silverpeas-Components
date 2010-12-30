@@ -49,7 +49,7 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.SilverpeasRole;
+import static com.stratelia.webactiv.SilverpeasRole.*;
 import com.stratelia.webactiv.beans.admin.CollectionUtil;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.forums.forumEntity.ejb.ForumPK;
@@ -59,6 +59,7 @@ import com.stratelia.webactiv.forums.forumsManager.ejb.ForumsBMHome;
 import com.stratelia.webactiv.forums.messageEntity.ejb.MessagePK;
 import com.stratelia.webactiv.forums.models.Forum;
 import com.stratelia.webactiv.forums.models.Message;
+import static com.stratelia.webactiv.forums.models.Message.*;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -105,17 +106,11 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   private boolean external = false;
   private String mailType = MAIL_TYPE;
   private boolean resizeFrame = false;
-  public static final String STATUS_VALIDATE = "V";
-  public static final String STATUS_FOR_VALIDATION = "A";
-  public static final String STATUS_REFUSED = "R";
 
   // Constructeur
-  public ForumsSessionController(MainSessionController mainSessionCtrl,
-      ComponentContext context) {
-    super(mainSessionCtrl, context,
-        "com.stratelia.webactiv.forums.multilang.forumsBundle",
+  public ForumsSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
+    super(mainSessionCtrl, context, "com.stratelia.webactiv.forums.multilang.forumsBundle",
         "com.stratelia.webactiv.forums.settings.forumsIcons");
-
     deployedMessages = new ArrayList<Integer>();
     deployedForums = new ArrayList<Integer>();
   }
@@ -129,7 +124,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public Forum[] getForumsList() {
     try {
-      @SuppressWarnings("unchecked")
       List<Forum> forums = getForumsBM().getForums(new ForumPK(getComponentId(), getSpaceId()));
       return forums.toArray(new Forum[forums.size()]);
     } catch (RemoteException re) {
@@ -143,7 +137,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     Forum[] result = new Forum[0];
     try {
       ForumPK forumPK = new ForumPK(getComponentId(), getSpaceId());
-      @SuppressWarnings("unchecked")
       List<Forum> forums = getForumsBM().getForumsByCategory(forumPK, categoryId);
       result = forums.toArray(new Forum[forums.size()]);
     } catch (RemoteException re) {
@@ -189,7 +182,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public int[] getForumSonsIds(int forumId) {
     int[] sonsIds = new int[0];
     try {
-      @SuppressWarnings("unchecked")
       List<String> ids = getForumsBM().getForumSonsIds(getForumPK(forumId));
       int n = ids.size();
       sonsIds = new int[n];
@@ -323,7 +315,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Indexe un forum a partir de son ID
-   * @param int l'ID du forum dans la datasource
+   * @param forumId l'ID du forum dans la datasource
    * @author frageade
    * @since 23 Aout 2001
    */
@@ -338,16 +330,14 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   // Methodes messages
   /**
    * Liste les messages d'un forum
-   * @param String id du forum
+   * @param forumId id du forum
    * @return Vector la liste des messages
    * @author frageade
    * @since 04 Octobre 2000
    */
-  @SuppressWarnings("unchecked")
   public Message[] getMessagesList(int forumId) {
     try {
-      Collection<Message> messages =
-          (Collection<Message>) getForumsBM().getMessages(getForumPK(forumId));
+      Collection<Message> messages = getForumsBM().getMessages(getForumPK(forumId));
       return messages.toArray(new Message[messages.size()]);
     } catch (RemoteException re) {
       throw new EJBException(re.getMessage());
@@ -393,7 +383,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Récupère le dernier message d'un forum
-   * @param String id du forum
+   * @param forumId id du forum
    * @return String les champs du dernier message
    * @author sfariello
    * @since
@@ -404,9 +394,12 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   public Object[] getLastMessage(int forumId, int messageId) {
     try {
-      Message message = (messageId != -1 ? getForumsBM().getLastMessage(
-          getForumPK(forumId), messageId, STATUS_VALIDATE) : getForumsBM().getLastMessage(getForumPK(
-          forumId), STATUS_VALIDATE));
+      Message message;
+      if (messageId != -1) {
+        message = getForumsBM().getLastMessage(getForumPK(forumId), messageId, STATUS_VALIDATE);
+      } else {
+        message = getForumsBM().getLastMessage(getForumPK(forumId), STATUS_VALIDATE);
+      }
       if (message != null) {
         UserDetail user = getUserDetail(message.getAuthor());
         SilverTrace.debug("forums", "ForumsSessioncontroller.getLastMessage()",
@@ -423,7 +416,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Nombre de sujets d'un forum
-   * @param String id du forum
+   * @param forumId id du forum
    * @return int le nombre de sujets
    * @author sfariello
    * @since 07 Décembre 2007
@@ -438,7 +431,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Nombre de messages d'un forum
-   * @param String id du forum
+   * @param forumId id du forum
    * @return int le nombre de messages
    * @author sfariello
    * @since 07 Décembre 2007
@@ -469,7 +462,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Recupere les infos d'un message
-   * @param String id du message
+   * @param messageId id du message
    * @return Vector la liste des champs du message
    * @author frageade
    * @since 04 Octobre 2000
@@ -500,18 +493,18 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Cree un nouveau message dans la datasource
-   * @param String titre du message
-   * @param String id de l'auteur du message
-   * @param Strinf id du forum
-   * @param String id du message parent
-   * @param String texte du message
+   * @param title titre du message
+   * @param author id de l'auteur du message
+   * @param forumId id du forum
+   * @param parentId id du message parent
+   * @param text texte du message
+   * @param keywords the keywords
    * @return String l'id du message créé
    * @author frageade
-   * @throws ForumsException
    * @since 04 Octobre 2000
    */
-  public int createMessage(String title, String author, int forumId,
-      int parentId, String text, String keywords) {
+  public int createMessage(String title, String author, int forumId, int parentId, String text,
+      String keywords) {
     String status = STATUS_FOR_VALIDATION;
 
     MessagePK messagePK = new MessagePK(getComponentId(), getSpaceId());
@@ -520,7 +513,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     try {
       if (!isValidationActive()
           || (getNbModerator(forumId) == 0 || isModerator(getUserId(), forumId)
-          || "admin".equals(getUserRoleLevel()))) {
+          || admin.isInRole(getUserRoleLevel()))) {
         status = STATUS_VALIDATE;
       }
       // creation du message dans la base
@@ -535,11 +528,11 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     // Send notification to subscribers
     try {
       // seulement si le message est valide
-      if (status.equals(STATUS_VALIDATE) && parentId != 0) {
+      if (STATUS_VALIDATE.equals(status) && parentId != 0) {
         sendNotification(title, text, parentId, messageId);
       }
       // envoie notification si demande de validation
-      if (status.equals(STATUS_FOR_VALIDATION)) {
+      if (STATUS_FOR_VALIDATION.equals(status)) {
         sendNotificationToValidate(title, text, parentId, messageId, forumId);
       }
     } catch (Exception e) {
@@ -563,7 +556,8 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       if (currentStatus == null) {
         currentStatus = STATUS_FOR_VALIDATION;
         if (!isValidationActive() || (getNbModerator(message.getForumId()) == 0
-            || isModerator(getUserId(), message.getForumId()) || "admin".equals(getUserRoleLevel()))) {
+            || isModerator(getUserId(), message.getForumId())
+            || admin.isInRole(getUserRoleLevel()))) {
           currentStatus = STATUS_VALIDATE;
         }
       }
@@ -624,9 +618,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     if (subscribers.size() > 0) {
       ResourceLocator resource = new ResourceLocator(
           "com.stratelia.webactiv.forums.settings.forumsMails", getLanguage());
-      // Preparation des donnees
-      String[] targetUserIds = (String[]) subscribers.toArray(new String[0]);
-
+      String[] targetUserIds = subscribers.toArray(new String[subscribers.size()]);
       Map<String, String> values = new HashMap<String, String>();
       values.put("title", title);
       values.put("text", text);
@@ -750,7 +742,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Indexe un message a partir de son ID
-   * @param String l'ID du message dans la datasource
+   * @param messageId l'ID du message dans la datasource
    * @author frageade
    * @since 23 Aout 2001
    */
@@ -764,7 +756,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
 
   /**
    * Supprime un message et tous ses sous-messages a partir de son ID
-   * @param String l'ID du message dans la datasource
+   * @param messageId l'ID du message dans la datasource
    * @author frageade
    * @since 04 Octobre 2000
    */
@@ -806,7 +798,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     if (!isAdmin() || isUser()) {
       String[] profiles = getUserRoles();
       for (String profile : profiles) {
-        if (SilverpeasRole.reader == SilverpeasRole.valueOf(profile)) {
+        if (reader.isInRole(profile)) {
           return true;
         }
       }
@@ -817,7 +809,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public boolean isUser() {
     String[] profiles = getUserRoles();
     for (String profile : profiles) {
-      if (SilverpeasRole.user == SilverpeasRole.valueOf(profile)) {
+      if (user.isInRole(profile)) {
         return true;
       }
     }
@@ -827,7 +819,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public boolean isAdmin() {
     String[] profiles = getUserRoles();
     for (String profile : profiles) {
-      if (SilverpeasRole.admin == SilverpeasRole.valueOf(profile)) {
+      if (admin.isInRole(profile)) {
         return true;
       }
     }
@@ -928,14 +920,10 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public List<String> listAllSubscribers(int messageId) {
     List<String> subscribers = new ArrayList<String>();
     try {
-      @SuppressWarnings("unchecked")
       List<String> forumSubscribers = getForumsBM().listAllSubscribers(getMessagePK(messageId));
       subscribers.addAll(forumSubscribers);
       int parentId = getMessageParentId(messageId);
       while (parentId != 0) {
-        @SuppressWarnings("unchecked")
-        List<String> parentForumSubscribers = getForumsBM().listAllSubscribers(
-            getMessagePK(parentId));
         subscribers.addAll(forumSubscribers);
         parentId = getMessageParentId(parentId);
       }
@@ -1208,7 +1196,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isValidationActive() {
-    return "yes".equalsIgnoreCase(getComponentParameterValue("isValidationActive"));
+    return StringUtil.getBooleanValue(getComponentParameterValue("isValidationActive"));
   }
 
   private PublicationBm getPublicationBm() {
