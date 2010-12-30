@@ -12,6 +12,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Calendar;
 import com.silverpeas.components.model.AbstractTestDao;
+import com.stratelia.webactiv.util.DateUtil;
+
 import static com.silverpeas.jcrutil.RandomGenerator.*;
 import java.sql.Connection;
 import java.util.Collection;
@@ -169,10 +171,10 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
     assertEquals("Project code should not be updated", "Silverpeas", result.getCodeProjet());
     assertEquals("Consomme is incorrect", detail.getConsomme(), result.getConsomme(), 0.01d);
     assertEquals("Raf is incorrect", detail.getRaf(), result.getRaf(), 0.01d);
-    assertEquals("Date de debut is incorrect", ProjectManagerDAO.date2DBDate(detail.getDateDebut()),
-        ProjectManagerDAO.date2DBDate(result.getDateDebut()));
-    assertEquals("Date de fin is incorrect", ProjectManagerDAO.date2DBDate(detail.getDateFin()),
-        ProjectManagerDAO.date2DBDate(result.getDateFin()));
+    assertEquals("Date de debut is incorrect", DateUtil.date2SQLDate(detail.getDateDebut()),
+        DateUtil.date2SQLDate(result.getDateDebut()));
+    assertEquals("Date de fin is incorrect", DateUtil.date2SQLDate(detail.getDateFin()),
+        DateUtil.date2SQLDate(result.getDateFin()));
     assertEquals("Description is incorrect", detail.getDescription(), result.getDescription());
     assertEquals("Project description should not be updated",
         "Silverpeas est un portail collaboratif",
@@ -579,17 +581,6 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
   /**
    * Test of date2DBDate method, of class ProjectManagerDAO.
    */
-  @org.junit.Test
-  public void testDate2DBDate() {
-    System.out.println("date2DBDate");
-    Calendar calendar = Calendar.getInstance();
-    calendar.set(Calendar.YEAR, 2010);
-    calendar.set(Calendar.MONTH, Calendar.MAY);
-    calendar.set(Calendar.DAY_OF_MONTH, 20);
-    String expResult = "2010/05/20";
-    String result = ProjectManagerDAO.date2DBDate(calendar.getTime());
-    assertEquals(expResult, result);
-  }
 
   public void assertResourcesAreEqual(TaskResourceDetail expected, TaskResourceDetail result) {
     assertEquals("Id should be the same", expected.getId(), result.getId());
@@ -607,11 +598,11 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
     assertEquals("Chrono should be the same", expected.getChrono(), result.getChrono());
     assertEquals("Code projet should be the same", expected.getCodeProjet(), result.getCodeProjet());
     assertEquals("Consomme should be the same", expected.getConsomme(), result.getConsomme(), 0.01d);
-    assertEquals("Date debut should be the same", ProjectManagerDAO.date2DBDate(expected.
+    assertEquals("Date debut should be the same", DateUtil.date2SQLDate(expected.
         getDateDebut()),
-        ProjectManagerDAO.date2DBDate(result.getDateDebut()));
-    assertEquals("Date fin should be the same", ProjectManagerDAO.date2DBDate(expected.getDateFin()),
-        ProjectManagerDAO.date2DBDate(result.getDateFin()));
+        DateUtil.date2SQLDate(result.getDateDebut()));
+    assertEquals("Date fin should be the same", DateUtil.date2SQLDate(expected.getDateFin()),
+        DateUtil.date2SQLDate(result.getDateFin()));
     assertEquals("Description should be the same", expected.getDescription(),
         result.getDescription());
     assertEquals("Description projet should be the same", expected.getDescriptionProjet(),

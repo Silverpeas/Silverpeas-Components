@@ -42,6 +42,7 @@ import java.util.List;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 /**
@@ -83,7 +84,8 @@ public class ProjectManagerDAO {
         "root.MSG_GEN_ENTER_METHOD", task.toString());
     StringBuilder insertStatement = new StringBuilder();
     insertStatement.append("INSERT INTO ").append(PROJECTMANAGER_TASKS_TABLENAME);
-    insertStatement.append("(id, mereid, chrono, nom, description, organisateurid, responsableid, ");
+    insertStatement
+        .append("(id, mereid, chrono, nom, description, organisateurid, responsableid, ");
     insertStatement.append("charge, consomme, raf, avancement, statut, datedebut, datefin, ");
     insertStatement.append("codeprojet, descriptionprojet, estdecomposee, instanceid, path, ");
     insertStatement.append("previousid) VALUES ( ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ? , ");
@@ -110,9 +112,9 @@ public class ProjectManagerDAO {
       prepStmt.setFloat(10, task.getRaf());
       prepStmt.setInt(11, task.getAvancement());
       prepStmt.setInt(12, task.getStatut());
-      prepStmt.setString(13, date2DBDate(task.getDateDebut()));
+      prepStmt.setString(13, DateUtil.date2SQLDate(task.getDateDebut()));
       if (task.getDateFin() != null) {
-        prepStmt.setString(14, date2DBDate(task.getDateFin()));
+        prepStmt.setString(14, DateUtil.date2SQLDate(task.getDateFin()));
       } else {
         prepStmt.setString(14, "9999/99/99");
       }
@@ -146,7 +148,8 @@ public class ProjectManagerDAO {
         "root.MSG_GEN_ENTER_METHOD", resource.toString());
     StringBuilder insertStatement = new StringBuilder();
     insertStatement.append("INSERT INTO ").append(PROJECTMANAGER_RESOURCES_TABLENAME);
-    insertStatement.append("(id , taskid, resourceid, charge, instanceid) VALUES ( ? , ? , ? , ? , ? )");
+    insertStatement
+        .append("(id , taskid, resourceid, charge, instanceid) VALUES ( ? , ? , ? , ? , ? )");
     PreparedStatement prepStmt = null;
     int id = -1;
     try {
@@ -187,9 +190,9 @@ public class ProjectManagerDAO {
       prepStmt.setFloat(6, task.getRaf());
       prepStmt.setInt(7, task.getAvancement());
       prepStmt.setInt(8, task.getStatut());
-      prepStmt.setString(9, date2DBDate(task.getDateDebut()));
+      prepStmt.setString(9, DateUtil.date2SQLDate(task.getDateDebut()));
       if (task.getDateFin() != null) {
-        prepStmt.setString(10, date2DBDate(task.getDateFin()));
+        prepStmt.setString(10, DateUtil.date2SQLDate(task.getDateFin()));
       } else {
         prepStmt.setString(10, "9999/99/99");
       }
@@ -314,7 +317,7 @@ public class ProjectManagerDAO {
         "root.MSG_GEN_PARAM_VALUE", query.toString());
     SilverTrace.info("projectManager", "ProjectManagerDAO.getResources()",
         "root.MSG_GEN_PARAM_VALUE", "taskId = " + taskId + " instanceId = "
-        + instanceId);
+            + instanceId);
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
@@ -616,7 +619,8 @@ public class ProjectManagerDAO {
     query.append("SELECT SUM(res.charge) AS somme FROM ").append(PROJECTMANAGER_TASKS_TABLENAME);
     query.append(" task, ").append(PROJECTMANAGER_RESOURCES_TABLENAME).append(" res");
     query.append(" WHERE res.taskId = task.id");
-    query.append(" AND ((dateDebut <= ? OR dateFin <= ?) AND (dateDebut >= ? OR dateFin >= ?)) AND resourceId = ? ");
+    query
+        .append(" AND ((dateDebut <= ? OR dateFin <= ?) AND (dateDebut >= ? OR dateFin >= ?)) AND resourceId = ? ");
     if (excludedTaskId > -1) {
       query.append(" AND task.id <> ? ");
     }
@@ -634,10 +638,10 @@ public class ProjectManagerDAO {
 
     try {
       stmt = con.prepareStatement(query.toString());
-      stmt.setString(1, date2DBDate(dateFin));
-      stmt.setString(2, date2DBDate(dateFin));
-      stmt.setString(3, date2DBDate(dateDeb));
-      stmt.setString(4, date2DBDate(dateDeb));
+      stmt.setString(1, DateUtil.date2SQLDate(dateFin));
+      stmt.setString(2, DateUtil.date2SQLDate(dateFin));
+      stmt.setString(3, DateUtil.date2SQLDate(dateDeb));
+      stmt.setString(4, DateUtil.date2SQLDate(dateDeb));
       stmt.setInt(5, Integer.parseInt(userId));
       if (excludedTaskId != -1) {
         stmt.setInt(6, excludedTaskId);
@@ -645,8 +649,7 @@ public class ProjectManagerDAO {
 
       rs = stmt.executeQuery();
       if (rs.next()) {
-        int somme = rs.getInt("somme");
-        return somme;
+        return rs.getInt("somme");
       }
     } finally {
       DBUtil.close(rs, stmt);
@@ -745,7 +748,7 @@ public class ProjectManagerDAO {
         sql.append(" AND ");
       }
       sql.append(" dateDebut >= '").append(
-          ProjectManagerDAO.date2DBDate(filtre.getDateDebutFrom())).append("' ");
+          DateUtil.date2SQLDate(filtre.getDateDebutFrom())).append("' ");
     }
 
     if (filtre.getDateDebutTo() != null) {
@@ -753,7 +756,7 @@ public class ProjectManagerDAO {
         sql.append(" AND ");
       }
       sql.append(" dateDebut <= '").append(
-          ProjectManagerDAO.date2DBDate(filtre.getDateDebutTo())).append("' ");
+          DateUtil.date2SQLDate(filtre.getDateDebutTo())).append("' ");
     }
 
     if (filtre.getDateFinFrom() != null) {
@@ -761,7 +764,7 @@ public class ProjectManagerDAO {
         sql.append(" AND ");
       }
       sql.append(" dateFin >= '").append(
-          ProjectManagerDAO.date2DBDate(filtre.getDateFinFrom())).append("' ");
+          DateUtil.date2SQLDate(filtre.getDateFinFrom())).append("' ");
     }
 
     if (filtre.getDateFinTo() != null) {
@@ -769,7 +772,7 @@ public class ProjectManagerDAO {
         sql.append(" AND ");
       }
       sql.append(" dateFin <= '").append(
-          ProjectManagerDAO.date2DBDate(filtre.getDateFinTo())).append("' ");
+          DateUtil.date2SQLDate(filtre.getDateFinTo())).append("' ");
     }
 
     if (filtre.getRetard() != null && !filtre.getRetard().equals("-1")) {
@@ -779,12 +782,11 @@ public class ProjectManagerDAO {
       Date today = new Date();
       if (filtre.getRetard().equals("1")) {
         // les tasks en retard
-        sql.append("( dateFin < '").append(ProjectManagerDAO.date2DBDate(today)).append(
+        sql.append("( dateFin < '").append(DateUtil.date2SQLDate(today)).append(
             "' AND avancement = 100 ) ");
       } else {
         // les tasks qui ne sont pas en retard
-        sql.append("( dateFin >= '").append(
-            ProjectManagerDAO.date2DBDate(today)).append(
+        sql.append("( dateFin >= '").append(DateUtil.date2SQLDate(today)).append(
             "' AND avancement = 100 ) ");
       }
     }
@@ -811,11 +813,6 @@ public class ProjectManagerDAO {
     }
 
     return sql.toString();
-  }
-
-  public static String date2DBDate(Date date) {
-    String dbDate = formatter.format(date);
-    return dbDate;
   }
 
   public static Date dbDate2Date(String dbDate, String fieldName)
