@@ -621,37 +621,51 @@ function addFavorite(name,description,url)
 		out.println("</td>");
 	    out.println("</tr>");
     	out.println("</table>");
+    	%>
 
-    	out.println("<center>");
-    	out.print("<span class=\"txtBaseline\">");
-    	if (kmeliaScc.isAuthorUsed() && pubDetail.getAuthor() != null && !pubDetail.getAuthor().equals("")) {
-			out.print("<br/>");
-			out.print(resources.getString("GML.author")+" : "+pubDetail.getAuthor());
+    	<span class="txtBaseline">
+    	<% if (kmeliaScc.isAuthorUsed() && StringUtil.isDefined(pubDetail.getAuthor())) {  %>
+    		<span id="authorInfo"><%=resources.getString("GML.author") %> : <%=pubDetail.getAuthor() %></span><br/>
+		<% } %>
+		<span id="creationInfo"><%= creatorName%> - <%=resources.getOutputDate(pubDetail.getCreationDate()) %></span>
+		<% if (updaterId != null) { %>
+			<span id="lastModificationInfo"> | <%=resources.getString("kmelia.LastModification") %> : <%= updaterName%> - <%=resources.getOutputDate(pubDetail.getUpdateDate()) %></span>
+		<% }
+		// Displaying all validator's name and final validation date 
+		if (PublicationDetail.VALID.equals(pubDetail.getStatus()) && StringUtil.isDefined(pubDetail.getValidatorId()) && pubDetail.getValidateDate() != null) {
+		  	String validators = "";
+		  	List validationSteps = pubComplete.getValidationSteps();
+		  	if (validationSteps != null && !validationSteps.isEmpty()) {
+		  	  	Collections.reverse(validationSteps); //display steps from in order of validation
+			 	for (int v=0; v<validationSteps.size(); v++) {
+			  	  if (v != 0) {
+			  	    validators += ", ";
+			  	  }
+			  	  ValidationStep vStep = (ValidationStep) validationSteps.get(v);
+			  	  if (vStep != null) {
+			  	    validators += kmeliaScc.getUserDetail(vStep.getUserId()).getDisplayedName();
+			  	  }
+			  	}
+		  	} else {
+		  	  validators = kmeliaScc.getUserDetail(pubDetail.getValidatorId()).getDisplayedName();
+		  	}
+		  	%>
+		  	<span id="validationInfo"> | <%=resources.getString("kmelia.validation") %> : <%= validators%> - <%=resources.getOutputDate(pubDetail.getValidateDate()) %></span>
+		  	<%
 		}
-    	out.print("<br/>");
-
-		out.print(creatorName+" - "+resources.getOutputDate(pubDetail.getCreationDate()));
-		if (updaterId != null) {
-			out.print(" | ");
-			out.print(resources.getString("kmelia.LastModification")+" : "+updaterName+" - "+resources.getOutputDate(pubDetail.getUpdateDate()));
-		}
-
-		out.print(" | ");
-		out.print(resources.getString("kmelia.consulted")+" "+pubDetail.getNbAccess()+" "+resources.getString("kmelia.time"));
-
-		if (URLManager.displayUniversalLinks()) {
+		%>
+		<span id="statInfo"> | <%=resources.getString("kmelia.consulted") %> <%= pubDetail.getNbAccess()%> <%=resources.getString("kmelia.time")%></span>
+		<% if (URLManager.displayUniversalLinks()) {
     		String link = null;
 			if (!pubDetail.getPK().getInstanceId().equals(contextComponentId)) {
 				link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId(), contextComponentId);
 			} else {
 				link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
-			}
-			out.print(" | <a href=\""+link+"\"><img src=\""+resources.getIcon("kmelia.link")+"\" border=\"0\" align=\"absmiddle\" alt=\""+Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))+"\" title=\""+Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))+"\"/></a>");
-    	}
-
-		out.print("</span>");
-		out.println("</center>");
-
+			} %>
+			<span id="permalinkInfo"> | <a href="<%=link%>"><img src="<%=resources.getIcon("kmelia.link")%>" align="absmiddle" alt="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>" title="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink")) %>"/></a></span>
+    	<% } %>
+		</span>
+<%
 		out.flush();
 
         out.println(frame.printAfter());

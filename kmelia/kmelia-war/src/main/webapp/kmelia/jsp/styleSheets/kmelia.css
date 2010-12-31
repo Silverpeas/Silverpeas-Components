@@ -244,3 +244,11 @@
 #thumbnailInputs img, #thumbnailInputs input, #thumbnailInputs select {
 	vertical-align: middle;
 }
+
+#preview .txtBaseline {
+	color: #666666;
+    font-size: 10px;
+    display: block;
+    text-align: center;
+ 	padding-top: 10px;   
+}

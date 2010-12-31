@@ -3016,9 +3016,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       }
 
       if (validationComplete) {
-        // remove validation steps cause it is complete
-        getPublicationBm().removeValidationSteps(pubPK);
-
         CompletePublication currentPub = getPublicationBm()
             .getCompletePublication(pubPK);
         PublicationDetail currentPubDetail = currentPub.getPublicationDetail();
