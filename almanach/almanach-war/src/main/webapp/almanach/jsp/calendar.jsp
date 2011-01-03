@@ -38,7 +38,7 @@
     <link rel='stylesheet' type='text/css' href="<c:url value='/almanach/jsp/styleSheets/almanach.css'/>" />
     <style type="text/css">
       <c:forEach var="almanach" items="${othersAlmanachs}">
-        <c:out value=".${almanach.instanceId} { color: ${almanach.color}; }"/>
+        <c:out value=".${almanach.instanceId} { border-color: ${almanach.color}; }"/>
         <c:out value=".fc-agenda .${almanach.instanceId} .fc-event-time, .${almanach.instanceId} a { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
       </c:forEach>
     </style>
