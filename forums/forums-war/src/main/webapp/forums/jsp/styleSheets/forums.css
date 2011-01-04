@@ -21,46 +21,32 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-<!--
 
-/*body                 { background-image: url(../icons/fond.gif)}*/
-td                   { font-family: Verdana, Arial, Helvetica, sans-serif}
-a                    { font-size: 10px; color: #000000 }
-input                { font-size: 10px; font-weight: normal; color: #000000 }
-select               { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000000 }
-/*textarea             {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; color: #000000 }*/
-.selectNS            { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: normal; color: #000000 }
 
-.domainName          { font-size: 13pt; font-weight: bold; color: #000000 }
+.selectNS            { font-size: 10px; font-weight: normal; color: #000000 }
+
+
 .componentName       { font-size: 13pt; font-weight: bold; color: #000000 }
 
-.titremodule         { font-size: 13pt; font-weight: bold; color: #000000 }
-.txtnote             { font-size: 10px; color: #000000 ; font-family: Verdana, Arial, Helvetica, sans-serif}
-.txtnote:hover       { font-size: 10px; color: #666699 ; font-family: Verdana, Arial, Helvetica, sans-serif}
-.txttitrecol         { font-size: 10px; color: #000000 ; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold }
-.texteLabelForm      { font-size: 10px; color: #666666; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold }
+.txtnote             { font-size: 10px; color: #000000 ;}
+.txtnote:hover       { font-size: 10px; color: #666699 ; }
+.txttitrecol         { font-size: 10px; color: #000000 ; font-weight: bold }
+.texteLabelForm      { font-size: 10px; color: #666666; font-weight: bold }
 
 .txtnav              { font-size: 10pt; font-weight: bold; color: #000000 }
-th {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-weight: bold; color: #000000; background-color: #DFDFDF}
-.fondCartouche {  background-color: #E5E5E5}
+
 
 
 .titreCateg {
     font-size: 11px;
     font-weight: bold;
     background-color: #EAEAEA;
+	text-align:left !important;
+	border-bottom:1px solid #CFCFCF;
 }
 
 .titreForum {
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.enteteTableau
-{    
-    background-image: url(/silverpeas/admin/jsp/icons/silverpeasV5/fondOn.gif);
-    background-repeat: repeat-x;
-    font-weight: bold;
+    font-size: 11px;
 }
 
 .fondClair {
@@ -75,6 +61,10 @@ th {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-
     border: 1px solid #CCCCCC;
 }
 
+.testTableau tr td:first-child.ArrayCell img:first-child { 
+	margin-left:20px;
+}
+
 #msgDiv {
     position: static;
     height: 120;
@@ -84,7 +74,7 @@ th {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-
 }
 
 .msgLine {
-    background-color : #eeeeee
+    background-color : #eaeaea
 }
 
 .msgText {
@@ -118,26 +108,15 @@ th {  font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 10px; font-
 	vertical-align: top
 }
 
-#notationImg1 {
-	cursor: pointer
-}
-
-#notationImg2 {
-	cursor: pointer
-}
-
-#notationImg3 {
-	cursor: pointer
-}
-
-#notationImg4 {
-	cursor: pointer
-}
-
+#notationImg1,
+#notationImg2,
+#notationImg3,
+#notationImg4,
 #notationImg5 {
 	cursor: pointer
 }
--->
+
+
 
 .message_A {
 	color: red

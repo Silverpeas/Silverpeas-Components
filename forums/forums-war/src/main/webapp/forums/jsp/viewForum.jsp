@@ -199,7 +199,7 @@
             <tr>
               <td valign="top">
                 <table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
-                  <tr class="enteteTableau">
+                  <tr class="ArrayColumn">
                     <td colspan="2" nowrap="nowrap" align="center"><fmt:message key="theme" /></td>
                     <td nowrap="nowrap" align="center"><fmt:message key="forums.nbSubjects" /></td>
                     <td nowrap="nowrap" align="center"><fmt:message key="forums.nbMessages" /></td>
@@ -233,7 +233,7 @@
                 <form name="nameForm" action="" method="post">
                       <table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
                         <%-- affichage de l'entete des colonnes --%>
-                        <tr class="enteteTableau">
+                        <tr class="ArrayColumn">
                           <td nowrap="nowrap" align="center" colspan="3"><fmt:message key="forums.nbSubjects"/></td>
                           <td nowrap="nowrap" align="center"><fmt:message key="forums.lastMessage"/></td>
                           <td nowrap="nowrap" align="center"><<fmt:message key="forums.nbMessages"/></td>
