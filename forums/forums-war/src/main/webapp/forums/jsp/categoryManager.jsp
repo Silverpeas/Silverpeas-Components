@@ -79,14 +79,14 @@
             var name = stripInitialWhitespace(document.categoryForm.Name.value);
             if (name == "")
             {
-                errorMsg += "  - '<%=resources.getString("GML.title")%>'  " + "<%=resources.getString("GML.MustBeFilled")%>\n";
+              errorMsg += "  - '<fmt:message key="GML.title" />'  " + "<fmt:message key="GML.MustBeFilled"/>\n";
                 errorNb++;
             }
 
             if (errorNb > 0)
             {
-                window.alert("<%=resources.getString("GML.ThisFormContains")%> " + errorNb
-                    + " " + (errorNb == 1 ? "<%=resources.getString("GML.error")%>" : "<%=resources.getString("GML.errors")%>")
+                window.alert("<fmt:message key="GML.ThisFormContains" /> " + errorNb
+                    + " " + (errorNb == 1 ? "<fmt:message key="GML.error" />" : "<fmt:message key="GML.errors"/>")
                     + " : \n" + errorMsg);
                 return false;
             }
@@ -118,17 +118,17 @@
         <input type="hidden" name="CategoryId" value="<c:out value="${categoryId}" />"/>
         <input type="hidden" name="Langue" value="<%=resources.getLanguage()%>"/>
         <tr>
-          <td class="txtlibform"><%=resources.getString("GML.title")%> :</td>
+          <td class="txtlibform"><fmt:message key="GML.title" /> :</td>
           <td><input type="text" name="Name" size="60" maxlength="150" value="<c:out value="${name}" />">
             <img src="<%=resources.getIcon("forums.obligatoire")%>" width="5" height="5" border="0">
           </td>
         </tr>
         <tr>
-          <td class="txtlibform"><%=resources.getString("GML.description")%> :</td>
+          <td class="txtlibform"><fmt:message key="GML.description" /> :</td>
           <td><input type="text" name="Description" size="60" maxlength="150" value="<c:out value="${description}" />" ></td>
         </tr>
         <tr>
-          <td class="txtlibform"><%=resources.getString("forums.creationDate")%> :</td>
+          <td class="txtlibform"><fmt:message key="forums.creationDate" /> :</td>
           <td><c:out value="${creationDate}" />&nbsp;<span class="txtlibform"></td>
         </tr>
         <tr>

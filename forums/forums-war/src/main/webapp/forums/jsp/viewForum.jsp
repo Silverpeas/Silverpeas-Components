@@ -87,14 +87,16 @@
     <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />" ></script>
     <script type="text/javascript">
       <c:if test="${isAdmin || isUser || isModerator}">
+        <fmt:message key="confirmDeleteForum" var="confirmationSuppressionForum" />
+          <fmt:message key="confirmDeleteMessage" var="confirmationSuppressionMessage" />
         function confirmDeleteForum(forumId) {
-          if (confirm("<%=EncodeHelper.javaStringToJsString(resource.getString("confirmDeleteForum"))%>"))
+          if (confirm("<view:encodeJs string="${confirmationSuppressionForum}"/>"))
           {
             window.location.href = "viewForum.jsp?action=4&params=" + forumId + "&forumId=<%=forumId%>";
           }
         }
         function deleteMessage(messageId, parentId, scroll) {
-          if (confirm("<%=EncodeHelper.javaStringToJsString(resource.getString("confirmDeleteMessage"))%>"))
+          if (confirm("<view:encodeJs string="${confirmationSuppressionMessage}"/>"))
           {
             window.location.href = "viewForum.jsp?action=9&params=" + messageId + "&forumId=<%=forumId%>";
           }

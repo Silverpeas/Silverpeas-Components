@@ -78,6 +78,8 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
 
     ForumActionHelper.actionManagement(request, isAdmin, isModerator, userId, resource, out, fsc);
 %>
+<fmt:message key="confirmDeleteForum" var="removeForum" />
+<fmt:message key="confirmDeleteCategory" var="removeCategory" />
 <html>
   <head>
     <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
@@ -87,7 +89,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
     <script type="text/javascript">
       function confirmDeleteForum(forumId)
       {
-        if (confirm("<fmt:message key='confirmDeleteForum' />"))
+        if (confirm("<view:encodeJs string="${removeForum}"/>"))
         {
           window.location.href = "main.jsp?action=4&params=" + forumId;
         }
@@ -95,7 +97,7 @@ ForumsSessionController fsc = (ForumsSessionController) request.getAttribute(
 
       function confirmDeleteCategory(categoryId)
       {
-        if (confirm("<fmt:message key='confirmDeleteCategory' />"))
+        if (confirm("<view:encodeJs string="${removeCategory}"/>"))
         {
           window.location.href = "DeleteCategory?CategoryId=" + categoryId;
         }
