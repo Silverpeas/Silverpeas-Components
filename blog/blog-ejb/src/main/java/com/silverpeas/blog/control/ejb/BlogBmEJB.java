@@ -26,13 +26,17 @@ package com.silverpeas.blog.control.ejb;
 
 
 import com.silverpeas.blog.BlogContentManager;
+
 import com.silverpeas.blog.dao.PostDAO;
 import com.silverpeas.blog.model.Archive;
 import com.silverpeas.blog.model.BlogRuntimeException;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
+import com.silverpeas.ui.UIHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.model.Comment;
@@ -78,9 +82,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
+
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
@@ -125,8 +133,20 @@ public class BlogBmEJB implements SessionBean {
       fermerCon(con);
     }
   }
+  
+  protected SilverpeasTemplate getNewTemplate() {
+	ResourceLocator rs =
+        new ResourceLocator("com.silverpeas.blog.settings.blogSettings", "");
+    Properties templateConfiguration = new Properties();
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs
+        .getString("templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs
+        .getString("customersTemplatePath"));
+	
+	return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
+  }
 
-  public void sendSubscriptionsNotification(NodePK fatherPK, PublicationDetail pubDetail,
+  public void sendSubscriptionsNotification(NodePK fatherPK, PostDetail post, Comment comment, 
       String type, String senderId) {
     // send email alerts
     try {
@@ -150,33 +170,62 @@ public class BlogBmEJB implements SessionBean {
         }
 
         if (newSubscribers.size() > 0) {
-          ResourceLocator message =
-              new ResourceLocator("com.silverpeas.blog.multilang.blogBundle", "fr");
-          ResourceLocator message_en =
-              new ResourceLocator("com.silverpeas.blog.multilang.blogBundle", "en");
-
-          // french notifications
-          String subject = message.getString("blog.subjectSubscription");
-          String body = getSubscriptionsNotificationBody(pubDetail, message, type);
-
-          // english notifications
-          String subject_en = message_en.getString("blog.subjectSubscription");
-          String body_en = getSubscriptionsNotificationBody(pubDetail, message_en, type);
-
-          NotificationMetaData notifMetaData =
-              new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
-          notifMetaData.addLanguage("en", subject_en, body_en);
-
-          notifMetaData.setUserRecipients(new ArrayList<String>(newSubscribers));
-          notifMetaData.setLink(getPostUrl(pubDetail));
-          notifMetaData.setComponentId(fatherPK.getInstanceId());
-          notifyUsers(notifMetaData, senderId);
+        	
+        	ResourceLocator message = new ResourceLocator(
+                    "com.silverpeas.blog.multilang.blogBundle", UIHelper.getDefaultLanguage());
+            String subject = message.getString("blog.subjectSubscription");
+                
+            Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+            String fileName = "";
+            if ("create".equals(type)) {
+            	fileName = "blogNotificationSubscriptionCreate";
+            } else if ("update".equals(type)) {
+            	fileName = "blogNotificationSubscriptionUpdate";
+            } else if ("commentCreate".equals(type)) {
+            	fileName = "blogNotificationSubscriptionCommentCreate";
+            } else if ("commentUpdate".equals(type)) {
+            	fileName = "blogNotificationSubscriptionCommentUpdate";
+            }
+            NotificationMetaData notifMetaData =
+                new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, fileName);
+            
+            PublicationDetail pubDetail = post.getPublication();
+        	String url = getPostUrl(pubDetail);
+        	for (String lang : UIHelper.getLanguages()) {
+        		SilverpeasTemplate template = getNewTemplate();
+        		templates.put(lang, template);
+        		template.setAttribute("blog", post);
+        		template.setAttribute("blogName", pubDetail.getName(lang));
+        		template.setAttribute("blogDate", DateUtil.getOutputDate(post.getDateEvent(),lang));
+        		template.setAttribute("comment", comment);
+        		String commentMessage = null;
+        		if(comment != null) {
+        			commentMessage = comment.getMessage();
+        		}
+        		template.setAttribute("commentMessage", commentMessage);
+        		Category categorie = post.getCategory();
+        		String categorieName = null;
+        		if(categorie != null) {
+        			categorieName = categorie.getName(lang);
+        		}
+        		template.setAttribute("blogCategorie", categorieName);
+        		template.setAttribute("senderName", "");    		
+        		template.setAttribute("silverpeasURL", url);
+          	
+        		ResourceLocator localizedMessage = new ResourceLocator(
+              "com.silverpeas.blog.multilang.blogBundle", lang);
+        		notifMetaData.addLanguage(lang, localizedMessage.getString("blog.subjectSubscription", subject), "");
+        	}
+        	notifMetaData.setUserRecipients(new ArrayList<String>(newSubscribers));
+        	notifMetaData.setLink(url);
+        	notifMetaData.setComponentId(fatherPK.getInstanceId());
+        	notifyUsers(notifMetaData, senderId);
         }
       }
     } catch (Exception e) {
       SilverTrace.warn("blog", "BlogBmEJB.sendSubscriptionsNotification()",
           "blog.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "fatherId = " + fatherPK.getId()
-          + ", pubId = " + pubDetail.getPK().getId(), e);
+          + ", pubId = " + post.getPublication().getPK().getId(), e);
     }
   }
 
@@ -203,22 +252,6 @@ public class BlogBmEJB implements SessionBean {
     }
   }
 
-  private String getSubscriptionsNotificationBody(PublicationDetail pubDetail,
-      ResourceLocator message, String type) {
-    StringBuilder messageText = new StringBuilder();
-    if ("create".equals(type)) {
-      messageText.append(message.getString("blog.bodySubscriptionCreate"));
-    } else if ("update".equals(type)) {
-      messageText.append(message.getString("blog.bodySubscriptionUpdate"));
-    } else if ("commentCreate".equals(type)) {
-      messageText.append(message.getString("blog.bodySubscriptionCommentCreate"));
-    } else if ("commentUpdate".equals(type)) {
-      messageText.append(message.getString("blog.bodySubscriptionCommentUpdate"));
-    }
-    messageText.append(" : ").append(pubDetail.getName(message.getLanguage())).append("\n");
-    return messageText.toString();
-  }
-
   public void updatePost(PostDetail post) {
     Connection con = initCon();
     try {
@@ -241,7 +274,7 @@ public class BlogBmEJB implements SessionBean {
       PublicationDetail pub = post.getPublication();
       if (pub.getStatus().equals(PublicationDetail.VALID)) {
         sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().
-            getInstanceId()), pub, "update", pub.getUpdaterId());
+            getInstanceId()), post, null, "update", pub.getUpdaterId());
       }
 
     } catch (Exception e) {
@@ -770,8 +803,9 @@ public class BlogBmEJB implements SessionBean {
 
       // envoie notification si abonnement
       if (pubDetail.getStatus().equals(PublicationDetail.VALID)) {
+    	  PostDetail post = getPost(pubPK);
         sendSubscriptionsNotification(new NodePK("0", pubPK.getSpaceId(), pubPK.getInstanceId()),
-            pubDetail, "update", pubDetail.getUpdaterId());
+        		post, null, "update", pubDetail.getUpdaterId());
       }
     } catch (RemoteException e) {
       SilverTrace.error("blog", getClass().getSimpleName() +
@@ -834,7 +868,7 @@ public class BlogBmEJB implements SessionBean {
       // envoie notification si abonnement
       if (pub.getStatus().equals(PublicationDetail.VALID)) {
         sendSubscriptionsNotification(new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().
-            getInstanceId()), pub, "create", pub.getUpdaterId());
+            getInstanceId()), post, null, "create", pub.getUpdaterId());
       }
     } catch (Exception e) {
       throw new BlogRuntimeException("BlogBmEJB.draftOutPost()",

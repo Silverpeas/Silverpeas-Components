@@ -24,6 +24,7 @@
 package com.silverpeas.blog.control.ejb;
 
 import java.rmi.RemoteException;
+
 import java.util.Collection;
 import java.util.Date;
 
@@ -32,9 +33,9 @@ import javax.ejb.EJBObject;
 import com.silverpeas.blog.model.Archive;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
+import com.silverpeas.comment.model.Comment;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
 /**
@@ -89,7 +90,7 @@ public interface BlogBm extends EJBObject {
 
   public void addSubscription(NodePK topicPK, String userId) throws RemoteException;
 
-  public void sendSubscriptionsNotification(NodePK fatherPK, PublicationDetail pubDetail,
+  public void sendSubscriptionsNotification(NodePK fatherPK, PostDetail post, Comment comment, 
       String type, String senderId) throws RemoteException;
   
   public void draftOutPost(PostDetail post) throws RemoteException;

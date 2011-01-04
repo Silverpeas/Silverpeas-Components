@@ -24,10 +24,14 @@
 package com.silverpeas.blog.control;
 
 import java.rmi.RemoteException;
+
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 import com.silverpeas.blog.control.ejb.BlogBm;
 import com.silverpeas.blog.control.ejb.BlogBmHome;
@@ -39,7 +43,9 @@ import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.myLinks.ejb.MyLinksBm;
 import com.silverpeas.myLinks.ejb.MyLinksBmHome;
 import com.silverpeas.myLinks.model.LinkDetail;
-import com.silverpeas.util.StringUtil;
+import com.silverpeas.ui.UIHelper;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
@@ -272,46 +278,57 @@ public class BlogSessionController extends AbstractComponentSessionController {
     // l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
     return AlertUser.getAlertUserURL();
   }
+  
+  protected SilverpeasTemplate getNewTemplate() {
+	ResourceLocator rs =
+        new ResourceLocator("com.silverpeas.blog.settings.blogSettings", "");
+    Properties templateConfiguration = new Properties();
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs
+        .getString("templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs
+        .getString("customersTemplatePath"));
+	
+	return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
+  }
 
   private synchronized NotificationMetaData getAlertNotificationMetaData(String postId)
       throws RemoteException {
-    String senderName = getUserDetail().getDisplayedName();
     PostDetail post = getPost(postId);
 
-    ResourceLocator message = new ResourceLocator("com.silverpeas.blog.multilang.blogBundle", "fr");
-    ResourceLocator message_en =
-        new ResourceLocator("com.silverpeas.blog.multilang.blogBundle", "en");
-
+    ResourceLocator message = new ResourceLocator(
+            "com.silverpeas.blog.multilang.blogBundle", UIHelper.getDefaultLanguage());
     String subject = message.getString("blog.notifSubject");
-    String body = getNotificationBody(post, message, senderName);
-
-    // english notifications
-    String subject_en = message_en.getString("blog.notifSubject");
-    String body_en = getNotificationBody(post, message_en, senderName);
-
-    NotificationMetaData notifMetaData =
-        new NotificationMetaData(NotificationParameters.NORMAL, subject, body);
-    notifMetaData.addLanguage("en", subject_en, body_en);
-
-    // TODO : post.getLink() à faire
-    notifMetaData.setLink(URLManager.getURL(null, getComponentId()) + post.getURL());
+        
+    Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+	NotificationMetaData notifMetaData =
+        new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "blogNotification");
+	String url = URLManager.getURL(null, getComponentId()) + post.getURL();
+	for (String lang : UIHelper.getLanguages()) {
+		SilverpeasTemplate template = getNewTemplate();
+		templates.put(lang, template);
+		template.setAttribute("blog", post);
+		template.setAttribute("blogName", post.getPublication().getName(lang));
+		template.setAttribute("blogDate", DateUtil.getOutputDate(post.getDateEvent(),lang));
+		Category categorie = post.getCategory();
+		String categorieName = null;
+		if(categorie != null) {
+			categorieName = categorie.getName(lang);
+		}
+		template.setAttribute("blogCategorie", categorieName);
+		template.setAttribute("senderName", getUserDetail().getDisplayedName());    		
+		template.setAttribute("silverpeasURL", url);
+  	
+		ResourceLocator localizedMessage = new ResourceLocator(
+      "com.silverpeas.blog.multilang.blogBundle", lang);
+		notifMetaData.addLanguage(lang, localizedMessage.getString("blog.notifSubject", subject), "");
+	}
+    
+	//TODO : post.getLink() à faire
+    notifMetaData.setLink(url);
     notifMetaData.setComponentId(getComponentId());
     notifMetaData.setSender(getUserId());
 
     return notifMetaData;
-  }
-
-  private String getNotificationBody(PostDetail post, ResourceLocator message, String senderName) {
-    StringBuilder messageText = new StringBuilder();
-    messageText.append(senderName).append(" ");
-    messageText.append(message.getString("blog.notifInfo")).append("\n\n");
-    messageText.append(message.getString("blog.notifName")).append(" : ").append(
-        post.getPublication().getName()).append("\n");
-    if (StringUtil.isDefined(post.getPublication().getDescription())) {
-      messageText.append(message.getString("blog.notifDesc")).append(" : ").append(
-          post.getPublication().getDescription()).append("\n");
-    }
-    return messageText.toString();
   }
 
   public synchronized void deletePost(String postId) {
@@ -433,7 +450,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
       PostDetail post = getPost(postId);
       PublicationDetail pub = post.getPublication();
       NodePK father = new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().getInstanceId());
-      getBlogBm().sendSubscriptionsNotification(father, pub, "commentCreate",
+      getBlogBm().sendSubscriptionsNotification(father, post, comment, "commentCreate",
           Integer.toString(comment.getOwnerId()));
 
     } catch (RemoteException e) {
@@ -449,7 +466,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
       PublicationDetail pub = post.getPublication();
       NodePK father = new NodePK("0", pub.getPK().getSpaceId(), pub.getPK().getInstanceId());
       Comment comment = getComment(commentId);
-      getBlogBm().sendSubscriptionsNotification(father, pub, type,
+      getBlogBm().sendSubscriptionsNotification(father, post, comment, type,
           Integer.toString(comment.getOwnerId()));
     } catch (RemoteException e) {
       throw new BlogRuntimeException("BlogSessionController.sendSubscriptionsNotification()",
