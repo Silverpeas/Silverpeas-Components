@@ -38,7 +38,7 @@
     <link rel='stylesheet' type='text/css' href="<c:url value='/almanach/jsp/styleSheets/almanach.css'/>" />
     <style type="text/css">
       <c:forEach var="almanach" items="${othersAlmanachs}">
-        <c:out value=".${almanach.instanceId} { border-color: ${almanach.color}; }"/>
+        <c:out value=".${almanach.instanceId} { border-color: ${almanach.color}; color: ${almanach.color}; }"/>
         <c:out value=".fc-agenda .${almanach.instanceId} .fc-event-time, .${almanach.instanceId} a { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
       </c:forEach>
     </style>
@@ -180,9 +180,7 @@
               week:     '<fmt:message key="GML.week"/>',
               day:      '<fmt:message key="GML.day"/>'
             },
-            minTime: 6,
-            maxTime: 22,
-            allDaySlot: false,
+            minHour: 8,
             allDayText: '',
             allDayDefault: false,
             timeFormat: 'HH:mm{ - HH:mm}',
@@ -190,13 +188,13 @@
             columnFormat: { agendaWeek: 'ddd d' },
             firstDay: <c:out value='${calendarView.firstDayOfWeek - 1}' />,
             defaultView: "<c:out value='${calendarView.viewType}'/>",
+            dayClick: function(date, allDay, jsEvent, view) {
+              var dayDate = $.fullCalendar.formatDate(date, "yyyy-MM-dd'T'HH:mm");
+              clickDay(dayDate);
+            },
             eventClick: function(calEvent, jsEvent, view) {
-              var date = calEvent.start.getFullYear() + '/';
-              if (calEvent.start.getMonth() < 10) date = date + '0' + (calEvent.start.getMonth() + 1) + '/';
-              else date = date + (calEvent.start.getMonth() + 1) + '/';
-              if (calEvent.start.getDate() < 10) date = date + '0' + calEvent.start.getDate() + '/';
-              else date = date + calEvent.start.getDate();
-              clickEvent(calEvent.id, date, calEvent.instanceId);
+              var eventDate = $.fullCalendar.formatDate(calEvent.start, "yyyy/MM/dd");
+              clickEvent(calEvent.id, eventDate, calEvent.instanceId);
             },
             events: <c:out value='${calendarView.eventsInJSON}' escapeXml='yes'/>
       <c:if test='${not calendarView.weekendVisible}'>
@@ -262,10 +260,10 @@
     <view:window>
 
       <view:tabs>
-        <fmt:message key="GML.month" var="opLabel" />
-        <view:tab label="${opLabel}" action="javascript:onClick=viewByMonth()" selected="${calendarView.viewType.monthlyView}"/>
         <fmt:message key="GML.week" var="opLabel" />
         <view:tab label="${opLabel}" action="javascript:onClick=viewByWeek()" selected="${calendarView.viewType.weeklyView}"/>
+        <fmt:message key="GML.month" var="opLabel" />
+        <view:tab label="${opLabel}" action="javascript:onClick=viewByMonth()" selected="${calendarView.viewType.monthlyView}"/>
       </view:tabs>
 
       <view:frame>
@@ -296,7 +294,17 @@
           </c:if>
         </div>
 
-        <div id="calendar"></div>
+       <c:if test="${rssUrl ne null and not empty rssUrl}">
+          <div class="rss">
+          <table>
+            <tr>
+              <td><a href="<c:url value='${rssUrl}'/>"><img src="icons/rss.gif" border="0" alt="RSS"/></a></td>
+            </tr>
+          </table>
+          <fmt:message key="almanach.rssNext" var="rssNext"/>
+          <link rel="alternate" type="application/rss+xml" title="<c:out value='${componentLabel} : ${rssNext}'/>" href="<c:url value='${rssUrl}'/>"/>
+          </div>
+        </c:if>
 
         <c:if test="${almanach.agregationUsed and not empty othersAlmanachs}">
           <div id="agregatedAlmanachs">
@@ -335,15 +343,7 @@
           </div>
         </c:if>
 
-        <c:if test="${rssUrl ne null and not empty rssUrl}">
-          <table>
-            <tr>
-              <td><a href="<c:url value='${rssUrl}'/>"><img src="icons/rss.gif" border="0" alt="RSS"/></a></td>
-            </tr>
-          </table>
-          <fmt:message key="almanach.rssNext" var="rssNext"/>
-          <link rel="alternate" type="application/rss+xml" title="<c:out value='${componentLabel} : ${rssNext}'/>" href="<c:url value='${rssUrl}'/>"/>
-        </c:if>
+        <div id="calendar"></div>
 
       </view:frame>
     </view:window>

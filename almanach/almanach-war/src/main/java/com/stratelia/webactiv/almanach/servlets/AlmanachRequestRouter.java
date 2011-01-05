@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.almanach.servlets;
 
+import com.stratelia.silverpeas.util.ResourcesWrapper;
 import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +35,6 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.almanach.control.AlmanachCalendarView;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
 import com.stratelia.webactiv.almanach.model.EventDetail;
@@ -165,11 +165,15 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         String day = request.getParameter("Day");
 
         EventDetail event = new EventDetail();
-        String startDay = "";
+        String[] startDay = {"", "" };
         if (day != null && day.length() > 0) {
-          event.setStartDate(DateUtil.stringToDate(day, almanach.getLanguage()));
+          event.setStartDate(DateUtil.parseISO8601Date(day));
           ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
-          startDay = resources.getInputDate(event.getStartDate());
+          startDay[0] = resources.getInputDate(event.getStartDate());
+          if (! day.endsWith("00:00")) {
+            startDay[1] = day.substring(day.indexOf("T") + 1);
+            event.setStartHour(startDay[1]);
+          }
         }
         request.setAttribute("Day", startDay);
         request.setAttribute("Event", event);

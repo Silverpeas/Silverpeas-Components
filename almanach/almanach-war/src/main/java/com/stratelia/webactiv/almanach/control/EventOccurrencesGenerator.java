@@ -29,12 +29,12 @@ import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachNoSuchFindEventException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
+import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
@@ -68,7 +68,6 @@ public class EventOccurrencesGenerator {
    * Gets the event occurrences of the events defined in the underlying calendar in the specified
    * month.
    * @param month the month as a Calendar instance.
-   * @param instanceId the identifier of the component owning the calendar.
    * @return a list of event DTOs.
    * @throws AlmanachException if an error occurs while getting the list of events.
    * @throws AlmanachNoSuchFindEventException if a detail about an event in the underlying iCal
@@ -104,7 +103,6 @@ public class EventOccurrencesGenerator {
    * Gets the event occurrences of the events defined in the underlying calendar in the specified
    * week.
    * @param week the week as a Calendar instance.
-   * @param instanceId the identifier of the component owning the calendar.
    * @return a list of event DTOs.
    * @throws AlmanachException if an error occurs while getting the list of events.
    * @throws AlmanachNoSuchFindEventException if a detail about an event in the underlying iCal
@@ -128,7 +126,7 @@ public class EventOccurrencesGenerator {
     lastDayWeek.set(java.util.Calendar.MINUTE, 0);
     lastDayWeek.set(java.util.Calendar.SECOND, 0);
     lastDayWeek.set(java.util.Calendar.MILLISECOND, 0);
-    lastDayWeek.set(java.util.Calendar.DAY_OF_WEEK,  week.getFirstDayOfWeek());
+    lastDayWeek.set(java.util.Calendar.DAY_OF_WEEK, week.getFirstDayOfWeek());
     lastDayWeek.add(java.util.Calendar.WEEK_OF_YEAR, 1);
     Period weekPeriod = new Period(new DateTime(firstDayWeek.getTime()),
         new DateTime(lastDayWeek.getTime()));
@@ -145,7 +143,8 @@ public class EventOccurrencesGenerator {
    * calendar cannot be found.
    * @throws RemoteException if the communication with the remote business object fails.
    */
-  private List<EventOccurrenceDTO> generateEventOccurrences(final Period period) throws AlmanachException,
+  private List<EventOccurrenceDTO> generateEventOccurrences(final Period period) throws
+      AlmanachException,
       AlmanachNoSuchFindEventException, RemoteException {
     List<EventOccurrenceDTO> events = new ArrayList<EventOccurrenceDTO>();
     ComponentList componentList = calendar.getComponents(Component.VEVENT);
@@ -157,8 +156,8 @@ public class EventOccurrencesGenerator {
       for (Object recurrencePeriodObject : periodList) {
         Period recurrencePeriod = (Period) recurrencePeriodObject;
         EventOccurrenceDTO event = new EventOccurrenceDTO(evtDetail,
-            new Date(recurrencePeriod.getStart().getTime()),
-            new Date(recurrencePeriod.getEnd().getTime()));
+            new DateDTO(DateUtil.formatAsISO8601Day(recurrencePeriod.getStart()), evtDetail.getStartHour()),
+            new DateDTO(DateUtil.formatAsISO8601Day(recurrencePeriod.getEnd()), evtDetail.getEndHour()));
         event.setPriority(evtDetail.getPriority() > 0);
         events.add(event);
       }
@@ -170,7 +169,6 @@ public class EventOccurrencesGenerator {
    * Gets the detail of the event identified by the specified identifier and defined in the calendar
    * identified by the specified identifier..
    * @param id the unique identifier of the event to get.
-   * @param instanceId the unique identifier of the calendar instance.
    * @return the detail of the event.
    * @throws AlmanachException if an error occurs while getting the detail of the event.
    * @throws AlmanachNoSuchFindEventException if no event exists with a such identifier.

@@ -393,9 +393,9 @@
               <tr>
                 <td  nowrap class="txtlibform"><fmt:message key='GML.dateBegin'/>&nbsp;:&nbsp;</td>
                 <td valign="baseline">
-                  <input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<c:out value='${day}'/>"/>
+                  <input type="text" class="dateToPick" name="StartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" value="<c:out value='${day[0]}'/>"/>
                   <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
-                  <span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span><input type="text" name="StartHour" size="5" maxlength="5"/> <span class="txtnote">(hh:mm)</span>&nbsp;<img src="icons/cube-rouge.gif" width="5" height="5"/>
+                  <span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span><input type="text" name="StartHour" size="5" maxlength="5" value="<c:out value='${day[1]}'/>"/> <span class="txtnote">(hh:mm)</span>&nbsp;<img src="icons/cube-rouge.gif" width="5" height="5"/>
                 </td>
               </tr>
               <tr>
@@ -473,7 +473,7 @@
               <tr>
                 <td  nowrap align=right class="txtlibform"><span><fmt:message key='beginDatePeriodicity'/>&nbsp;:&nbsp;</td>
                 <td valign="baseline">
-                  <input type="text" name="PeriodicityStartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" readonly="readonly" value="<c:out value='${day}'/>"/>&nbsp;
+                  <input type="text" name="PeriodicityStartDate" size="14" maxlength="<c:out value='${maxDateLength}'/>" readonly="readonly" value="<c:out value='${day[0]}'/>"/>&nbsp;
                 </td>
               </tr>
               <tr>

@@ -959,6 +959,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
     AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentAlmanachDay, viewMode);
     view.setLocale(getLanguage());
+    if (isWeekendNotVisible()) {
+      view.unsetWeekendVisible();
+    }
     String label = getString("mois" + currentAlmanachDay.getMonth())
             + " " + String.valueOf(currentAlmanachDay.getYear());
     switch (viewMode) {
@@ -978,7 +981,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   /**
    * Gets the event occurrences of the events defined in the underlying calendar in the current
    * selected month.
-   * @param month the month as a Calendar instance.
    * @return a list of event DTOs.
    * @throws AlmanachException if an error occurs while getting the list of events.
    * @throws AlmanachNoSuchFindEventException if a detail about an event in the underlying iCal
@@ -996,7 +998,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   /**
    * Gets the event occurrences of the events defined in the underlying calendar in the current
    * selected week.
-   * @param month the month as a Calendar instance.
    * @return a list of event DTOs.
    * @throws AlmanachException if an error occurs while getting the list of events.
    * @throws AlmanachNoSuchFindEventException if a detail about an event in the underlying iCal

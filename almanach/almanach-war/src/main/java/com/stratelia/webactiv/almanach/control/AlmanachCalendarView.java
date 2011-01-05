@@ -134,7 +134,7 @@ public class AlmanachCalendarView {
   /**
    * Unset the rendering of the week-end days.
    */
-  public void unsetWeekend() {
+  public void unsetWeekendVisible() {
     withWeekend = false;
   }
 

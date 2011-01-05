@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import java.util.ArrayList;
@@ -39,9 +40,10 @@ import org.json.JSONObject;
 public class EventOccurrenceDTO {
 
   private EventDetail eventDetail;
-  private Date startDate;
-  private Date endDate;
+  private DateDTO startDate;
+  private DateDTO endDate;
   private boolean priority = false;
+  private boolean allDay = false;
 
   /**
    * Constructs a new DTO about the specified event occurring at the specified start date and ending
@@ -54,26 +56,27 @@ public class EventOccurrenceDTO {
    * window in time in which the event should be rendered and on its datetime definition in the
    * eventDetail (periodicity, final end date of the event, and so one).
    */
-  public EventOccurrenceDTO(final EventDetail eventDetail, final Date startDate, final Date endDate) {
+  public EventOccurrenceDTO(final EventDetail eventDetail, final DateDTO startDate,
+      final DateDTO endDate) {
     this.eventDetail = eventDetail;
     this.startDate = startDate;
     this.endDate = endDate;
   }
 
-  public Date getEndDate() {
-    return new Date(endDate.getTime());
+  public DateDTO getEndDate() {
+    return endDate;
   }
 
-  public void setEndDate(final Date endDate) {
-    this.endDate = new Date(endDate.getTime());
+  public void setEndDate(final DateDTO endDate) {
+    this.endDate = endDate;
   }
 
-  public Date getStartDate() {
-    return new Date(startDate.getTime());
+  public DateDTO getStartDate() {
+    return startDate;
   }
 
-  public void setStartDate(final Date startDate) {
-    this.startDate = new Date(startDate.getTime());
+  public void setStartDate(final DateDTO startDate) {
+    this.startDate = startDate;
   }
 
   /**
@@ -101,21 +104,38 @@ public class EventOccurrenceDTO {
   }
 
   /**
+   * Is the event occurring all the day defined by its start and end date.
+   * @return true if the event is occurring all the day.
+   */
+  public boolean isAllDay() {
+    return ! StringUtil.isDefined(startDate.getTimeInDay()) ||
+        ! StringUtil.isDefined(endDate.getTimeInDay());
+  }
+
+  /**
+   * Specifies wether the event should occur all day.
+   * @param allDay the all day property to set.
+   */
+  public void setAllDay(boolean allDay) {
+    this.allDay = allDay;
+  }
+
+  /**
    * Gets the start date and time of this event in the ISO 8601 format
-   * For example: 2010-01-01T14:30:00
+   * For example: 2010-01-01T14:30:00.
    * @return the ISO 8601 format of the start date and time of this event.
    */
   public String getStartDateTimeInISO() {
-    return DateUtil.formatAsISO8601Date(getStartDate());
+    return startDate.getISO8601Date();
   }
 
   /**
    * Gets the end date and time of this event in the ISO 8601 format
-   * For example: 2010-01-01T14:30:00
+   * For example: 2010-01-01T14:30:00.
    * @return the ISO 8601 format of the end date and time of this event.
    */
   public String getEndDateTimeInISO() {
-    return DateUtil.formatAsISO8601Date(getEndDate());
+    return endDate.getISO8601Date();
   }
 
   /**
@@ -164,6 +184,7 @@ public class EventOccurrenceDTO {
     jsonObject.put("start", getStartDateTimeInISO());
     jsonObject.put("end", getEndDateTimeInISO());
     jsonObject.put("className", new JSONArray(getCSSClasses()));
+    jsonObject.put("allDay", isAllDay());
     return jsonObject;
   }
 }
