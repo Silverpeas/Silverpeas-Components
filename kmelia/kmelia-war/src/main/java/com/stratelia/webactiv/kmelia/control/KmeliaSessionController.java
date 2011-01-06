@@ -1654,8 +1654,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   // return a PublicationDetail collection
   public synchronized Collection<UserPublication> getPublications(List<ForeignPK> links)
       throws RemoteException {
-    return getKmeliaBm().getPublications(links, getUserId(),
-        true);
+    return getKmeliaBm().getPublications(links, getUserId(), true);
   }
 
   /**************************************************************************************/
@@ -2331,7 +2330,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (haveRights) {
       int rightsDependsOn = getSessionTopic().getNodeDetail().getRightsDependsOn();
       List<ProfileInst> profileInsts =
-          getAdmin().getProfilesByObject(Integer.toString(rightsDependsOn), ObjectType.NODE,
+          getAdmin().getProfilesByObject(Integer.toString(rightsDependsOn), ObjectType.NODE.getCode(),
               getComponentId());
       if (profileInsts != null) {
         ProfileInst profileInst = null;
@@ -3099,7 +3098,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     sel.setCancelURL(cancelUrl);
 
     List<ProfileInst> profiles =
-        getAdmin().getProfilesByObject(nodeId, ObjectType.NODE, getComponentId());
+        getAdmin().getProfilesByObject(nodeId, ObjectType.NODE.getCode(), getComponentId());
     ProfileInst topicProfile = getProfile(profiles, role);
 
     SelectionUsersGroups sug = new SelectionUsersGroups();
@@ -3164,7 +3163,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     } else {
       // Create the profile
       profile.setObjectId(Integer.parseInt(nodeId));
-      profile.setObjectType(ObjectType.NODE);
+      profile.setObjectType(ObjectType.NODE.getCode());
       profile.setComponentFatherId(getComponentId());
 
       profile.setGroupsAndUsers(getSelection().getSelectedSets(),
@@ -3183,7 +3182,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
       // Topic profiles must be removed
       List<ProfileInst> profiles =
-          getAdmin().getProfilesByObject(node.getNodePK().getId(), ObjectType.NODE,
+          getAdmin().getProfilesByObject(node.getNodePK().getId(), ObjectType.NODE.getCode(),
               getComponentId());
       for (int p = 0; profiles != null && p < profiles.size(); p++) {
         ProfileInst profile = profiles.get(p);
@@ -3200,7 +3199,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public ProfileInst getTopicProfile(String role, String topicId) {
     List<ProfileInst> profiles =
-        getAdmin().getProfilesByObject(topicId, ObjectType.NODE, getComponentId());
+        getAdmin().getProfilesByObject(topicId, ObjectType.NODE.getCode(), getComponentId());
     for (int p = 0; profiles != null && p < profiles.size(); p++) {
       ProfileInst profile = profiles.get(p);
       if (profile.getName().equals(role)) {

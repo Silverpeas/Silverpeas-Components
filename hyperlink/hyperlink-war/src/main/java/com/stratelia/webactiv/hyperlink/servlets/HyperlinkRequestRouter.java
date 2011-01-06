@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.stratelia.webactiv.hyperlink.servlets;
 
 import java.io.UnsupportedEncodingException;
@@ -42,7 +41,6 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 public class HyperlinkRequestRouter extends ComponentRequestRouter {
 
   private static final long serialVersionUID = -4334545961842905383L;
-  
   // Keyword for the parsing
   static private String s_sUserLogin = "%ST_USER_LOGIN%";
   static private String s_sUserPassword = "%ST_USER_PASSWORD%";
@@ -54,21 +52,20 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter {
   static private String s_sUserId = "%ST_USER_ID%";
   static private String s_sSessionId = "%ST_SESSION_ID%";
   static private String s_sUserPropertyPrefix = "%ST_USER_PROPERTY_";
-
   static private String ENCODING = "UTF-8";
 
+  @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {
-    ComponentSessionController component =
-        (ComponentSessionController) new HyperlinkSessionController(
-            mainSessionCtrl, context);
-    return component;
+    return new HyperlinkSessionController(mainSessionCtrl, context);
   }
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
+   * @return 
    */
+  @Override
   public String getSessionControlBeanName() {
     return "hyperlinkScc";
   }
@@ -81,29 +78,27 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter {
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
-  public String getDestination(String function,
-      ComponentSessionController componentSC, HttpServletRequest request) {
-
+  @Override
+  public String getDestination(String function, ComponentSessionController componentSC,
+      HttpServletRequest request) {
     SilverTrace.info("hyperlink", "HyperlinkRequestRooter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "function = " + function);
-
     String destination = "";
     HyperlinkSessionController hyperlinkSCC = (HyperlinkSessionController) componentSC;
 
     if (function.startsWith("Main") || function.startsWith("portlet")) {
 
       // Retrieves first the openNewWindow parameter
-      String winParam = hyperlinkSCC
-          .getComponentParameterValue("openNewWindow");
+      String winParam = hyperlinkSCC.getComponentParameterValue("openNewWindow");
 
       // Test the parameter
       if (StringUtil.isDefined(winParam)) {
-        if (winParam.equals("yes"))
+        if ("yes".equals(winParam)) {
           return "/hyperlink/jsp/redirect.jsp";
-        else
-          return getDestination("GoToURL", componentSC, request);
-      } else
+        }
         return getDestination("GoToURL", componentSC, request);
+      }
+      return getDestination("GoToURL", componentSC, request);
     } else if (function.startsWith("GoToURL")) {
       // Get the URL Parameter
       String urlParameter = hyperlinkSCC.getComponentParameterValue("URL");
@@ -113,19 +108,13 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter {
       boolean isInternalLink =
           ((StringUtil.isDefined(internalLinkParameter)) && (internalLinkParameter.equals("yes")));
 
-      if (urlParameter != null && !urlParameter.equals("")) {
+      if (StringUtil.isDefined(urlParameter)) {
         destination = parseDestination(urlParameter, isInternalLink, request);
-
         if ("yes".equalsIgnoreCase(sso)) {
-          request
-              .setAttribute("Login", hyperlinkSCC.getUserDetail().getLogin());
-          request.setAttribute("Domain", hyperlinkSCC
-              .getComponentParameterValue("domain"));
-
+          request.setAttribute("Login", hyperlinkSCC.getUserDetail().getLogin());
+          request.setAttribute("Domain", hyperlinkSCC.getComponentParameterValue("domain"));
           HttpSession session = request.getSession(false);
-          request.setAttribute("Password", (String) session
-              .getAttribute("Silverpeas_pwdForHyperlink"));
-
+          request.setAttribute("Password", session.getAttribute("Silverpeas_pwdForHyperlink"));
           request.setAttribute("URL", destination);
           return "/hyperlink/jsp/sso.jsp";
         } else if (hyperlinkSCC.isClientSSO()) {
@@ -136,55 +125,47 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter {
         } else {
           try {
             destination = this.getParsedDestination(destination, s_sUserLogin,
-                URLEncoder.encode(hyperlinkSCC.getUserDetail().getLogin(),
-                ENCODING));
+                URLEncoder.encode(hyperlinkSCC.getUserDetail().getLogin(), ENCODING));
             destination = this.getParsedDestination(destination, s_sUserEmail,
-                URLEncoder.encode(hyperlinkSCC.getUserDetail().geteMail(),
+                URLEncoder.encode(hyperlinkSCC.getUserDetail().geteMail(), ENCODING));
+            destination = this.getParsedDestination(destination, s_sUserFirstName,
+                URLEncoder.encode(hyperlinkSCC.getUserDetail().getFirstName(), ENCODING));
+            destination = this.getParsedDestination(destination,
+                s_sUserLastName, URLEncoder.encode(hyperlinkSCC.getUserDetail().getLastName(),
                 ENCODING));
             destination = this.getParsedDestination(destination,
-                s_sUserFirstName, URLEncoder.encode(hyperlinkSCC
-                .getUserDetail().getFirstName(), ENCODING));
-            destination = this.getParsedDestination(destination,
-                s_sUserLastName, URLEncoder.encode(hyperlinkSCC.getUserDetail()
-                .getLastName(), ENCODING));
-            destination = this.getParsedDestination(destination,
-                s_sUserFullName, URLEncoder.encode(hyperlinkSCC.getUserDetail()
-                .getDisplayedName(), ENCODING));
+                s_sUserFullName, URLEncoder.encode(hyperlinkSCC.getUserDetail().getDisplayedName(),
+                ENCODING));
             destination = this.getParsedDestination(destination, s_sUserId,
                 URLEncoder.encode(hyperlinkSCC.getUserId(), ENCODING));
             destination = this.getParsedDestination(destination, s_sSessionId,
                 URLEncoder.encode(request.getSession().getId(), ENCODING));
 
-            if ("true".equalsIgnoreCase(hyperlinkSCC.getSettings().getString(
-                "PasswordKeyEnable", "true"))) {
+            if (hyperlinkSCC.getSettings().getBoolean("PasswordKeyEnable", true)) {
               // !!!! Add the password : this is an uggly patch that use a
               // session variable set in the "AuthenticationServlet" servlet
               HttpSession session = request.getSession(false);
-              destination = this.getParsedDestination(destination,
-                  s_sUserPassword, URLEncoder.encode((String) session
-                  .getAttribute("Silverpeas_pwdForHyperlink"), ENCODING));
-              destination = this.getParsedDestination(destination,
-                  s_sUserEncodedPassword, URLEncoder.encode(hyperlinkSCC
-                  .getUserFull().getPassword(), ENCODING));
+              destination = this.getParsedDestination(destination, s_sUserPassword,
+                  URLEncoder.encode((String) session.getAttribute(
+                  "Silverpeas_pwdForHyperlink"), ENCODING));
+              destination = this.getParsedDestination(destination, s_sUserEncodedPassword,
+                  URLEncoder.encode(hyperlinkSCC.getUserFull().getPassword(), ENCODING));
             } else {
               destination = this.getParsedDestination(destination,
                   s_sUserPassword, URLEncoder.encode("??????", ENCODING));
             }
-
-            destination = getParsedDestinationWithExtraInfos(destination,
-                hyperlinkSCC);
+            destination = getParsedDestinationWithExtraInfos(destination, hyperlinkSCC);
           } catch (UnsupportedEncodingException e) {
             SilverTrace.error("hyperlink",
                 "HyperlinkRequestRooter.getDestination()",
                 "root.MSG_GEN_PARAM_VALUE", "destination = " + destination);
           }
         }
-      } else
-        SilverTrace.error("hyperlink",
-            "HyperlinkRequestRooter.getDestination()",
+      } else {
+        SilverTrace.error("hyperlink", "HyperlinkRequestRooter.getDestination()",
             "root.MSG_GEN_PARAM_VALUE", "destination = " + destination);
+      }
     }
-
     SilverTrace.info("hyperlink", "HyperlinkRequestRooter.getDestination()",
         "root.MSG_GEN_RETURN_VALUE", "destination = " + destination);
     return destination;
@@ -200,36 +181,18 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter {
   private String parseDestination(String urlParameter, boolean isInternalLink,
       HttpServletRequest request) {
     String destination = null;
-
-    /*
-     * Special case : www, just add http://
-     */
-    if (urlParameter.startsWith("www")) {
+    if (urlParameter.startsWith("www")) { // Special case : www, just add http://
       destination = "http://" + urlParameter;
-    }
-
-    /*
-     * Http://xxxx url
-     */
-    else {
-      /*
-       * internal link : must retain only uri
-       */
-      if (isInternalLink) {
-        String applicationURL =
-            GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
-        if (applicationURL.charAt(applicationURL.length() - 1) == '/') {
+    } else { //Http://xxxx url
+      if (isInternalLink) { //internal link : must retain only uri
+        String applicationURL = GeneralPropertiesManager.getString("ApplicationURL");
+        if (applicationURL.endsWith("/")) {
           applicationURL = applicationURL.substring(0, applicationURL.length() - 1);
         }
         String requestURL = request.getRequestURL().toString();
         String pertinentURL = urlParameter.substring(urlParameter.indexOf(applicationURL));
         destination = requestURL.substring(0, requestURL.indexOf(applicationURL)) + pertinentURL;
-      }
-
-      /*
-       * external link : nothing to do
-       */
-      else {
+      } else { // external link : nothing to do
         destination = urlParameter;
       }
     }
@@ -237,45 +200,38 @@ public class HyperlinkRequestRouter extends ComponentRequestRouter {
     return destination;
   }
 
-  private String getParsedDestination(String sDestination, String sKeyword,
-      String sValue) {
-    SilverTrace.info("hyperlink",
-        "HyperlinkRequestRooter.getParsedDestination()",
+  private String getParsedDestination(String sDestination, String sKeyword, String sValue) {
+    SilverTrace.info("hyperlink", "HyperlinkRequestRooter.getParsedDestination()",
         "root.MSG_GEN_PARAM_VALUE", "sDestination = " + sDestination);
-
+    String destination = sDestination;
     int nLoginIndex = sDestination.indexOf(sKeyword);
     while (nLoginIndex != -1) {
       // Replace the keyword with the actual value
-      String sParsed = sDestination.substring(0, nLoginIndex);
+      String sParsed = destination.substring(0, nLoginIndex);
       sParsed += sValue;
-      if (sDestination.length() > nLoginIndex + sKeyword.length()) {
-        sParsed += sDestination.substring(nLoginIndex + sKeyword.length(),
-            sDestination.length());
+      if (destination.length() > nLoginIndex + sKeyword.length()) {
+        sParsed += destination.substring(nLoginIndex + sKeyword.length(), destination.length());
       }
-      sDestination = sParsed;
-      nLoginIndex = sDestination.indexOf(sKeyword);
+      destination = sParsed;
+      nLoginIndex = destination.indexOf(sKeyword);
     }
-    SilverTrace.info("hyperlink",
-        "HyperlinkRequestRooter.getParsedDestination()",
-        "root.MSG_GEN_RETURN_VALUE", "sDestination = " + sDestination);
-    return sDestination;
+    SilverTrace.info("hyperlink", "HyperlinkRequestRooter.getParsedDestination()",
+        "root.MSG_GEN_RETURN_VALUE", "sDestination = " + destination);
+    return destination;
   }
 
   private String getParsedDestinationWithExtraInfos(String sDestination,
-      HyperlinkSessionController hyperlinkSC)
-      throws UnsupportedEncodingException {
+      HyperlinkSessionController hyperlinkSC) throws UnsupportedEncodingException {
     int i = sDestination.indexOf(s_sUserPropertyPrefix);
+    String destination = sDestination;
     while (i != -1) {
-      String keyword = sDestination.substring(i, sDestination.indexOf("%",
-          i + 1) + 1);
+      String keyword = destination.substring(i, destination.indexOf('%', i + 1) + 1);
       String property = extractPropertyName(keyword);
-
-      sDestination = getParsedDestination(sDestination, keyword, URLEncoder
-          .encode(hyperlinkSC.getUserFull().getValue(property), ENCODING));
-
-      i = sDestination.indexOf(s_sUserPropertyPrefix);
+      destination = getParsedDestination(destination, keyword, URLEncoder.encode(
+          hyperlinkSC.getUserFull().getValue(property), ENCODING));
+      i = destination.indexOf(s_sUserPropertyPrefix);
     }
-    return sDestination;
+    return destination;
   }
 
   private String extractPropertyName(String str) {

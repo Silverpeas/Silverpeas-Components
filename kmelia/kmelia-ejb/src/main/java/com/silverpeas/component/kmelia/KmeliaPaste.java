@@ -149,7 +149,7 @@ public class KmeliaPaste implements ComponentPasteInterface {
   private List<ProfileInst> getTopicProfiles(String topicId) {
     SilverTrace.debug("kmelia", "KmeliaPaste.getTopicProfiles()", "root.MSG_GEN_ENTER_METHOD");
 
-    return getAdmin().getProfilesByObject(topicId, ObjectType.NODE, fromComponentId);
+    return getAdmin().getProfilesByObject(topicId, ObjectType.NODE.getCode(), fromComponentId);
   }
 
   private NodeBm getNodeBm() {
