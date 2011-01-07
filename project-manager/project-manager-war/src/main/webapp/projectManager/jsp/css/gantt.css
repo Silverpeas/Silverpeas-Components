@@ -1,0 +1,468 @@
+/*- [ Gantt BEGIN ] --------------------------- */
+
+#gantt .sousNavBulle { 
+  margin-top:10px; 
+  width:98%
+}
+
+#navTemporelle {
+  background:transparent url(../../../util/icons/sep-2-tiraits.gif)  83px bottom no-repeat;
+  margin-bottom: 5px;
+  padding-bottom: 11px;
+}
+
+.sousNavBulle .sousNavCheck a { 
+  border:0;
+  color:#727272;
+  background:#EAEAEA url(../../../util/icons/check_off.png) 0px 0px no-repeat;
+  padding:0 12px;
+  margin:0 6px;
+}
+
+.sousNavBulle .sousNavCheck a:hover{
+  color:#5D5D5D;
+  background-image:url(../../../util/icons/check_on.png);
+  background-color:#EAEAEA;
+}
+ .sousNavBulle .sousNavCheck a:focus{
+   color:#5D5D5D;
+}
+
+.sousNavBulle .sousNavCheck a.active{
+  color:#333;
+  background-image:url(../../../util/icons/check_on.png);
+}
+
+.ganttMois {
+  border-bottom:1px solid #CCCCCC;
+  border-right:1px solid #CCCCCC;
+}
+
+#month_nav, #trimester_nav  {
+  text-align:center;
+  font-weight:bold; 
+  text-transform:uppercase;
+  font-size:11px;
+  background-color:#EAEAEA;
+  border-top:1px solid #CCCCCC;
+  border-left:1px solid #CCCCCC;
+  padding:4px 0;
+}
+
+#trimester_nav span { 
+  text-transform:none;
+  font-weight:100;
+  color:#666666;
+}
+
+
+
+#month_nav img , #trimester_nav img { 
+  vertical-align:middle;
+  margin:0 50px;
+  
+}
+
+.ganttMois tr { height:18px;}
+
+.ganttMois tbody tr:first-child td {
+  border-top:0px solid #CCCCCC;
+}
+
+.ganttMois tbody tr td {
+  border-top:1px solid #CCCCCC;
+}
+.ganttMois tbody tr td div {
+  position:relative;
+  }
+  
+.week_begin, .month_begin, .most_left{
+  border-left:1px solid #CCCCCC;
+}
+.ganttMois tbody tr.under_task td, .ganttMois tbody tr.under_taskN2 td, .ganttMois tbody tr.under_taskN3 td{
+  border-top:0px solid #CCCCCC;
+}
+
+.ganttMois thead td{ 
+  font-size:10px; 
+  color:#333;
+  border-bottom:1px solid #CCCCCC;
+}
+.ganttMois thead td.noBorder, .ganttMois thead tr.noBorder td{ 
+  border-bottom:0;
+}
+
+
+#week_number td, #month_wording td, td.week_number , td.month_number{ 
+  text-align:center; 
+}
+
+#day_number td {
+  color:#666;
+  padding:3px;
+  text-align:center; 
+}
+
+.day_odd {
+  background-color:#EBEBEB;
+}
+
+.state {
+  border-left:1px solid #CCCCCC;
+  padding-left:8px;
+  width:100px;
+}
+
+.task_wording {
+  white-space:nowrap;
+  width:250px;
+}
+.state p, .task_wording div, .percentage p{
+  white-space:nowrap;
+  overflow:hidden;
+  display:block;
+  margin:0;
+  padding:0;
+  }
+.ganttMois thead td.state, .ganttMois thead td.task_wording{
+  padding-left:8px;
+  color:#666;
+  font-size:11px;
+  border-left:0;
+}
+  
+.numerotation{
+  color:#666;
+  font-size:11px;
+  border:0;
+  padding-right:4px;
+  width:10px;
+}
+
+.ganttMois tbody tr td.numerotation {
+  border:0;
+}
+  
+.percentage {
+  border-left:1px solid #CCCCCC;
+  padding:0 8px;
+  text-align:right;
+  width:30px;
+}
+
+td.day { text-align:center; }
+
+.task_wording img { 
+  vertical-align:middle;
+}
+  
+
+
+
+.under_task .task_wording div{
+  margin-left:7px;
+}
+
+.level2  .task_wording div{
+    margin-left: 24px;
+}
+
+.level3  .task_wording div{
+    margin-left: 41px;
+}
+
+.level4  .task_wording div{
+    margin-left: 58px;
+}
+
+.level5  .task_wording div{
+    margin-left: 75px;
+}
+
+.level6  .task_wording div{
+  margin-left:92px;
+}
+
+
+.under_task .task_wording div{
+  background:transparent url(../../../util/icons/minusTreeT.gif) -7px 0px no-repeat  ;
+  padding:0 0 0 10px;
+  height:18px;
+  line-height:18px;
+}
+.last_child .task_wording div{
+  background-image:url(../../../util/icons/minusTreeL.gif);
+}
+
+#legendLabelId {
+	cursor:pointer;
+}
+
+#legende, #legende ul { 
+  list-style-type:none;
+  padding:0;
+  margin:10px 0 0 0;
+  display:none;
+}
+#legende li { 
+  display: block;
+  float: left;
+  margin-bottom: 10px;
+  width: 300px;
+}
+#legende li div { margin-right:10px;}
+#legende li.centPourcent, .centPourcent {
+  width: 100%;
+  }
+#legende ul {
+  margin:10px;
+}
+
+
+/* affichage des bandes qui symbolise les taches */
+
+/* Cas durée 1seul jour... */
+.ganttMois tbody tr td.lenght_oneDay div div{
+    background-color: #FFFFFF;
+    background-image: url("../icons/pack-gantt.png");
+    background-position: right 2px;
+  border-top:1px solid #FFF;
+    background-repeat: repeat-x;
+    height: 14px;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 20%;
+  float:none;
+  }
+
+.ganttMois tbody tr td.lenght_oneDay div div {
+  top:  /*\**/1px\9; 
+
+}
+  
+.day_odd .lenght_oneDay div{
+  background-color: #EBEBEB;
+  border-top:1px solid #EBEBEB;
+  }
+
+/* Not started (normal task)*/
+.task, .task_start , .task_end  { 
+  background-image:url(../icons/pack-gantt.png);
+  background-position:-5px 5px;
+  background-repeat:repeat-x;
+}
+
+.task_start { 
+  background-position:0px 5px;
+  background-repeat:no-repeat;
+}
+
+.task_end  { 
+  background-position: right 5px;
+  background-repeat:no-repeat;
+}
+  
+.task span, .task_start span , .task_end span{ display:none;}
+
+
+.task_start.day_unworked {
+  background-position:0px -395px;
+}
+
+.task_end.day_unworked {
+  background-position:right -395px;
+}
+
+.task.day_unworked {
+  background-position:-5px -395px;
+}
+
+#legende .task {
+  width:150px;
+  background-position:0px 2px;
+  float:left;}
+  
+#legende  .task.day_unworked {
+  width:30px;
+  background-position:-5px -397px;
+  float:left;
+}
+
+/* IN_PROGRESS */
+.in_progress .task {
+}
+.in_progress .task_start {
+}
+.in_progress .task_end {
+}
+
+.in_progress .task_start.day_unworked {
+}
+.in_progress .task_end.day_unworked {
+}
+.in_progress .task.day_unworked {
+}
+.in_progress .state { color:#7CBF23}
+
+
+/* DONE */
+.done .task {
+	 background-position:-5px -795px;
+}
+.done .task_start {
+	 background-position:0px -795px;
+}
+.done .task_end {
+	background-position:right -795px;
+}
+
+.done .task_start.day_unworked {
+	 background-position:0px -995px;
+}
+.done .task_end.day_unworked {
+	 background-position:right -995px;
+}
+.done .task.day_unworked {
+	background-position:-5px -995px;
+}
+.done .state { color:#217b63}
+.ganttMois tbody tr.done td.lenght_oneDay div div{
+  background-position: right -798px;
+}
+#legende .done {
+  width:150px;
+  background-position:0px -797px;
+  float:left;
+}
+
+/* NOT_STARTED */
+.not_started .task {
+	 background-position:-5px -895px;
+}
+.not_started .task_start {
+	 background-position:0px -895px;
+}
+.not_started .task_end {
+	 background-position:right -895px;
+}
+
+.not_started .task_start.day_unworked {
+	 background-position:0px -1095px;
+}
+.not_started .task_end.day_unworked {
+	 background-position:right -1095px;
+}
+.not_started .task.day_unworked {
+	 background-position:-5px -1095px;
+}
+.not_started .state { 
+  color:#9ba293;}
+
+.ganttMois tbody tr.not_started td.lenght_oneDay div div{
+  background-position: right -898px;
+}
+#legende .not_started {
+  width:150px;
+  background-position:0px -897px;
+  float:left;
+}
+
+
+/* LOST */
+.lost .task {
+  background-position:-5px -195px;
+}
+.lost .task_start {
+  background-position:0px -195px;
+}
+.lost .task_end {
+  background-position:right -195px;
+}
+
+.lost .task_start.day_unworked {
+  background-position:0px -595px;
+}
+.lost .task_end.day_unworked {
+  background-position:right -595px;
+}
+.lost .task.day_unworked {
+  background-position:-5px -595px;
+}
+.lost .state { color:#e54722}
+
+.ganttMois tbody tr.lost td.lenght_oneDay div div{
+  background-position: right -198px;
+}
+#legende .lost {
+  width:150px;
+  background-position:0px -197px;
+  float:left;
+}
+
+  
+/* WARNING */
+.warning .task {
+  background-position:-5px -95px;
+}
+.warning .task_start {
+  background-position:0px -95px;
+}
+.warning .task_end {
+  background-position:right -95px;
+}
+
+.warning .task_start.day_unworked {
+  background-position:0px -495px;
+}
+.warning .task_end.day_unworked {
+  background-position:right -495px;
+}
+.warning .task.day_unworked {
+  background-position:-5px -495px;
+} 
+.warning .state { color:#e99510}  
+
+.ganttMois tbody tr.warning td.lenght_oneDay div div{
+  background-position: right -98px;
+}
+#legende .warning {
+  width:150px;
+  background-position:0px -97px;
+  float:left;
+}
+
+
+/* FROZEN */
+.frost .task {
+  background-position:-5px -295px;
+}
+.frost .task_start {
+  background-position:0px -295px;
+}
+.frost .task_end {
+  background-position:right -295px;
+}
+
+.frost .task_start.day_unworked {
+  background-position:1px -695px;
+}
+.frost .task_end.day_unworked {
+  background-position:right -695px;
+}
+.frost .task.day_unworked {
+  background-position:-5px -695px;
+}
+.frost .state { color:#47B8D8}  
+
+.ganttMois tbody tr.frost td.lenght_oneDay div div{
+  background-position: right -298px;
+}
+#legende .frost {
+  width:150px;
+  background-position:0px -297px;
+  float:left;
+}
+
+
+/*- [ Gantt END ] --------------------------- */

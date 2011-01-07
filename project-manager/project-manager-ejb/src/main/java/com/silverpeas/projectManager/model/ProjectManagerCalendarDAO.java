@@ -59,9 +59,9 @@ public class ProjectManagerCalendarDAO {
 
     if (!isHolidayDate(con, holiday)) {
       StringBuilder insertStatement = new StringBuilder(128);
-      insertStatement.append("insert into ").append(
+      insertStatement.append("INSERT INTO ").append(
           PROJECTMANAGER_CALENDAR_TABLENAME);
-      insertStatement.append(" values ( ? , ? , ? )");
+      insertStatement.append(" VALUES ( ? , ? , ? )");
       PreparedStatement prepStmt = null;
 
       try {
@@ -136,10 +136,10 @@ public class ProjectManagerCalendarDAO {
       throws SQLException {
     List<Date> holidayDates = new ArrayList<Date>();
     StringBuilder query = new StringBuilder(128);
-    query.append("select * ");
-    query.append("from ").append(PROJECTMANAGER_CALENDAR_TABLENAME);
-    query.append(" where instanceId = ? ");
-    query.append("order by holidayDate ASC");
+    query.append("SELECT * ");
+    query.append("FROM ").append(PROJECTMANAGER_CALENDAR_TABLENAME);
+    query.append(" WHERE instanceId = ? ");
+    query.append("ORDER BY holidayDate ASC");
 
     SilverTrace.info("projectManager",
         "ProjectManagerCalendarDAO.getHolidayDates()",
@@ -153,8 +153,7 @@ public class ProjectManagerCalendarDAO {
       stmt.setString(1, instanceId);
       rs = stmt.executeQuery();
       while (rs.next()) {
-        holidayDates
-            .add(dbDate2Date(rs.getString("holidayDate"), "holidayDate"));
+        holidayDates.add(dbDate2Date(rs.getString("holidayDate"), "holidayDate"));
       }
     } finally {
       DBUtil.close(rs, stmt);
@@ -166,18 +165,16 @@ public class ProjectManagerCalendarDAO {
       Date beginDate, Date endDate) throws SQLException {
     List<Date> holidayDates = new ArrayList<Date>();
     StringBuilder query = new StringBuilder(128);
-    query.append("select * ");
-    query.append("from ").append(PROJECTMANAGER_CALENDAR_TABLENAME);
-    query.append(" where instanceId = ? ");
-    query.append(" and ? <= holidayDate ");
-    query.append(" and holidayDate <= ? ");
-    query.append("order by holidayDate ASC");
+    query.append("SELECT * ");
+    query.append("FROM ").append(PROJECTMANAGER_CALENDAR_TABLENAME);
+    query.append(" WHERE instanceId = ? ");
+    query.append(" AND ? <= holidayDate ");
+    query.append(" AND holidayDate <= ? ");
+    query.append("ORDER BY holidayDate ASC");
 
-    SilverTrace.info("projectManager",
-        "ProjectManagerCalendarDAO.getHolidayDates()",
-        "root.MSG_GEN_PARAM_VALUE", "instanceId = " + instanceId
-        + ", beginDate=" + beginDate.toString() + ", endDate="
-        + endDate.toString());
+    SilverTrace.info("projectManager", "ProjectManagerCalendarDAO.getHolidayDates()",
+        "root.MSG_GEN_PARAM_VALUE", "instanceId = " + instanceId + ", beginDate=" +
+            beginDate.toString() + ", endDate=" + endDate.toString());
 
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -189,8 +186,7 @@ public class ProjectManagerCalendarDAO {
       stmt.setString(3, date2DBDate(endDate));
       rs = stmt.executeQuery();
       while (rs.next()) {
-        holidayDates
-            .add(dbDate2Date(rs.getString("holidayDate"), "holidayDate"));
+        holidayDates.add(dbDate2Date(rs.getString("holidayDate"), "holidayDate"));
       }
     } finally {
       DBUtil.close(rs, stmt);
@@ -209,8 +205,8 @@ public class ProjectManagerCalendarDAO {
     try {
       date = formatter.parse(dbDate);
     } catch (ParseException e) {
-      throw new SQLException("ProjectManagerCalendarDAO : dbDate2Date("
-          + fieldName + ") : format unknown " + e.toString());
+      throw new SQLException("ProjectManagerCalendarDAO : dbDate2Date(" + fieldName +
+          ") : format unknown " + e.toString());
     }
     return date;
   }

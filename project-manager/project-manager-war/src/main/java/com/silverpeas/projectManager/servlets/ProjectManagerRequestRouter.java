@@ -39,6 +39,7 @@ import com.silverpeas.projectManager.control.ProjectManagerSessionController;
 import com.silverpeas.projectManager.model.Filtre;
 import com.silverpeas.projectManager.model.TaskDetail;
 import com.silverpeas.projectManager.model.TaskResourceDetail;
+import com.silverpeas.projectManager.vo.MonthVO;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
@@ -412,15 +413,38 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("ToGantt")) {
         // TODO retrieve all data to display GANT diagram.
         String id = request.getParameter("Id");
+        String viewMode = request.getParameter("viewMode");
+        if (!StringUtil.isDefined(viewMode)) {
+          viewMode = "month";
+        }
         String startDate = request.getParameter("StartDate");
+
         TaskDetail actionMere = null;
         if (id == null || id.length() == 0 || id.equals("-1")) {
           id = Integer.toString(projectManagerSC.getCurrentProject().getId());
         } else {
           actionMere = projectManagerSC.getTaskMere(id);
         }
+
+        Date curDate;
         if (startDate != null) {
-          request.setAttribute("StartDate", projectManagerSC.uiDate2Date(startDate));
+          curDate = projectManagerSC.uiDate2Date(startDate);
+        } else {
+          curDate = Calendar.getInstance().getTime();
+        }
+        request.setAttribute("StartDate", curDate);
+        
+        String viewDestination = "gantt.jsp";
+
+        if ("month".equalsIgnoreCase(viewMode)) {
+          MonthVO curMonth = projectManagerSC.getMonthVO(curDate);
+          request.setAttribute("MonthVO", curMonth);
+        } else if ("quarter".equalsIgnoreCase(viewMode)) {
+          request.setAttribute("MonthsVO", projectManagerSC.getQuarterMonth(curDate));
+          viewDestination = "gantt_months.jsp";
+        } else if ("year".equalsIgnoreCase(viewMode)) {
+          request.setAttribute("MonthsVO", projectManagerSC.getYearMonth(curDate));
+          viewDestination = "gantt_months.jsp";
         }
 
         List<TaskDetail> tasks = projectManagerSC.getTasksNotCancelled(id);
@@ -429,13 +453,14 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
         // Le diagramme de Gantt doit faire apparaitre
         // les jours non travaillés
         request.setAttribute("Holidays", projectManagerSC.getHolidayDates());
-
         request.setAttribute("Tasks", tasks);
         request.setAttribute("ActionMere", actionMere);
         request.setAttribute("OldestAction", oldestAction);
         request.setAttribute("Role", projectManagerSC.getRole());
+        request.setAttribute("ViewMode", viewMode);
 
-        destination = rootDestination + "gantt.jsp";
+        // redirect to gant JSP view
+        destination = rootDestination + viewDestination;
       } else if (function.equals("ToCalendar")) {
         TaskDetail project = projectManagerSC.getCurrentProject();
         Date beginDate = project.getDateDebut();
@@ -652,7 +677,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
   private Boolean isOrganiteurOrResponsable(ProjectManagerSessionController projectManagerSC,
       TaskDetail task) {
     String role = projectManagerSC.getRole();
-    return new Boolean("admin".equals(role) ||
+    return Boolean.valueOf("admin".equals(role) ||
         ("responsable".equals(role) && Integer.parseInt(projectManagerSC.getUserId()) == task
             .getResponsableId()));
   }

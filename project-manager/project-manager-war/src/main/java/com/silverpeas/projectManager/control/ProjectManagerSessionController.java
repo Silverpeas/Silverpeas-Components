@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -40,6 +41,9 @@ import com.silverpeas.projectManager.model.HolidayDetail;
 import com.silverpeas.projectManager.model.ProjectManagerRuntimeException;
 import com.silverpeas.projectManager.model.TaskDetail;
 import com.silverpeas.projectManager.model.TaskResourceDetail;
+import com.silverpeas.projectManager.vo.DayVO;
+import com.silverpeas.projectManager.vo.MonthVO;
+import com.silverpeas.projectManager.vo.WeekVO;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -53,6 +57,7 @@ import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
@@ -540,6 +545,11 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return projectDefined.booleanValue();
   }
 
+  /**
+   * Create a new project
+   * @param project the new TaskDetail project
+   * @throws RemoteException
+   */
   public void createProject(TaskDetail project) throws RemoteException {
     project.setInstanceId(getComponentId());
     project.setOrganisateurId(getUserId());
@@ -605,10 +615,8 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
 
   public void changeDayOfWeekStatus(String year, String month, String day)
       throws RemoteException, ParseException {
-    SilverTrace.info("projectManager",
-        "ProjectManagerSessionController.changeDayOfWeekStatus()",
-        "root.MSG_GEN_ENTER_METHOD", "year=" + year + ", month=" + month
-            + ", day=" + day);
+    SilverTrace.info("projectManager", "ProjectManagerSessionController.changeDayOfWeekStatus()",
+        "root.MSG_GEN_ENTER_METHOD", "year=" + year + ", month=" + month + ", day=" + day);
 
     int iMonth = Integer.parseInt(month);
 
@@ -694,6 +702,9 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return calendar;
   }
 
+  /**
+   * @return an instance of ProjectManagerBm (Project Manager Business Model class)
+   */
   private ProjectManagerBm getProjectManagerBm() {
     if (projectManagerBm == null) {
       try {
@@ -711,6 +722,9 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return projectManagerBm;
   }
 
+  /**
+   * @return String representation of highest user role
+   */
   public String getRole() {
     String[] roles = getUserRoles();
     String role = null;
@@ -728,10 +742,6 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return higherRole;
   }
 
-  /*
-   * public SimpleDateFormat getUiFormatter() { return uiFormatter; }
-   */
-
   public void index() throws RemoteException {
     getProjectManagerBm().index(getComponentId());
   }
@@ -744,6 +754,9 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return currentResources;
   }
 
+  /**
+   * @param task
+   */
   public void updateOccupation(TaskDetail task) {
     try {
       Date dateDeb = task.getDateDebut();
@@ -763,6 +776,11 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     }
   }
 
+  /**
+   * @param taskId
+   * @param userId
+   * @return
+   */
   public int checkOccupation(String taskId, String userId) {
     try {
       TaskDetail task = getTask(taskId);
@@ -778,11 +796,17 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     }
   }
 
-  public int checkOccupation(String taskId, String userId, Date beginDate,
-      Date endDate) {
+  /**
+   * @param taskId
+   * @param userId
+   * @param beginDate
+   * @param endDate
+   * @return
+   */
+  public int checkOccupation(String taskId, String userId, Date beginDate, Date endDate) {
     try {
-      return getProjectManagerBm().getOccupationByUser(userId, beginDate,
-          endDate, Integer.parseInt(taskId));
+      return getProjectManagerBm().getOccupationByUser(userId, beginDate, endDate,
+          Integer.parseInt(taskId));
     } catch (Exception e) {
       throw new ProjectManagerRuntimeException(
           "ProjectManagerSessionController.updateOccupation()",
@@ -790,14 +814,110 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     }
   }
 
+  /**
+   * @param userId
+   * @param beginDate
+   * @param endDate
+   * @return
+   */
   public int checkOccupation(String userId, Date beginDate, Date endDate) {
     try {
-      return getProjectManagerBm().getOccupationByUser(userId, beginDate,
-          endDate);
+      return getProjectManagerBm().getOccupationByUser(userId, beginDate, endDate);
     } catch (Exception e) {
       throw new ProjectManagerRuntimeException(
           "ProjectManagerSessionController.updateOccupation()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
   }
+
+  /**
+   * @param startDate the date from which we get the current month
+   * @return the Month Value Object of the date's month parameter.
+   */
+  public MonthVO getMonthVO(Date startDate) {
+    // Building Month ValueObject in order to prepare view
+    Calendar curDayCal = new GregorianCalendar();
+    curDayCal.setTime(startDate);
+    ResourceLocator resource =
+        new ResourceLocator("com.stratelia.webactiv.multilang.generalMultilang", this.getLanguage());
+    int nbDaysDisplayed = curDayCal.getActualMaximum(Calendar.DAY_OF_MONTH);
+    int currentWeek = -1;
+    int numWeekInYear = curDayCal.get(Calendar.WEEK_OF_YEAR);
+    int oldNumWeekInYear = numWeekInYear;
+    List<WeekVO> weeks = new ArrayList<WeekVO>();
+    List<DayVO> curDays = new ArrayList<DayVO>();
+    for (int i = 1; i < nbDaysDisplayed + 1; i++) {
+      curDayCal.set(Calendar.DAY_OF_MONTH, i);
+      int numDayinWeek = curDayCal.get(Calendar.DAY_OF_WEEK);
+      numWeekInYear = curDayCal.get(Calendar.WEEK_OF_YEAR);
+      // GML.jour || GML.shortJour
+      DayVO curDay =
+          new DayVO(Integer.toString(i), resource.getString("GML.jour" + numDayinWeek, "?"),
+              curDayCal.getTime());
+      if (numWeekInYear != currentWeek && currentWeek != -1) {
+        WeekVO week = new WeekVO(curDays, Integer.toString(oldNumWeekInYear));
+        weeks.add(week);
+        currentWeek = numWeekInYear;
+        curDays = new ArrayList<DayVO>();
+      } else {
+        currentWeek = numWeekInYear;
+      }
+      curDays.add(curDay);
+      if (i == nbDaysDisplayed) {
+        WeekVO week = new WeekVO(curDays, Integer.toString(numWeekInYear));
+        weeks.add(week);
+      }
+      oldNumWeekInYear = numWeekInYear;
+    }
+    MonthVO curMonth = new MonthVO(weeks, Integer.toString(curDayCal.get(Calendar.MONTH)), nbDaysDisplayed);
+    return curMonth;
+  }
+  
+  /**
+   * @param startDate If null parameter we get the current month system.
+   * @return a quarter which contains 3 month value object starting from start date month
+   * @throws ParseException
+   */
+  public List<MonthVO> getQuarterMonth(Date curDate) throws ParseException {
+    return getNbMonth(3, curDate);
+  }
+
+  /**
+   * @param startDate If null parameter we get the current month system.
+   * @return a quarter which contains 3 month value object starting from start date month
+   * @throws ParseException
+   */
+  public List<MonthVO> getYearMonth(Date curDate) throws ParseException {
+    return getNbMonth(12, curDate);
+  }
+
+  /**
+   * 
+   * @param nbMonth the number of month to return starting from curDate's month
+   * @param curDate the current starting month date. If null parameter we get the current month system.
+   * @return a list 
+   * @throws ParseException
+   */
+  private List<MonthVO> getNbMonth(int nbMonth, Date curDate) throws ParseException {
+    // Result list decaration
+    List<MonthVO> months = new ArrayList<MonthVO>();
+    
+    if (nbMonth <= 0) {
+      return months;
+    }
+
+    // Initialize date
+    Calendar curCal = Calendar.getInstance();
+    if (curDate != null) {
+      curCal.setTime(curDate);
+    }
+
+    for (int cptMonth = 0; cptMonth < nbMonth; cptMonth++) {
+      MonthVO curMonth = this.getMonthVO(curCal.getTime());
+      months.add(curMonth);
+      curCal.add(Calendar.MONTH, 1);
+    }
+    return months;
+  }
+
 }

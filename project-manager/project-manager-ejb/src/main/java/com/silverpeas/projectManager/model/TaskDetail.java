@@ -45,7 +45,7 @@ public class TaskDetail implements Serializable {
   public final static int IN_ALERT = 4;
   public final static int NOT_STARTED = 5;
   private int id;
-  private int mereId;
+  private int mereId = -1;
   private int chrono;
   private String nom;
   private String description;
@@ -425,7 +425,7 @@ public class TaskDetail implements Serializable {
     return todo;
   }
 
-  public void setResourceIds(Collection resources) {
+  public void setResourceIds(Collection<TaskResourceDetail> resources) {
     this.resources = resources;
   }
 

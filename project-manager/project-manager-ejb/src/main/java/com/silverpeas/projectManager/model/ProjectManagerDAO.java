@@ -626,12 +626,10 @@ public class ProjectManagerDAO {
     }
     query.append("GROUP BY res.resourceId");
 
-    SilverTrace.info("projectManager",
-        "ProjectManagerDAO.getOccupationByUser()", "root.MSG_GEN_ENTER_METHOD",
-        query.toString());
-    SilverTrace.info("projectManager",
-        "ProjectManagerDAO.getOccupationByUser()", "root.MSG_GEN_ENTER_METHOD",
-        "dateDebut < " + dateDeb + " and dateFin > " + dateFin);
+    SilverTrace.info("projectManager", "ProjectManagerDAO.getOccupationByUser()",
+        "root.MSG_GEN_ENTER_METHOD", query.toString());
+    SilverTrace.info("projectManager", "ProjectManagerDAO.getOccupationByUser()",
+        "root.MSG_GEN_ENTER_METHOD", "dateDebut < " + dateDeb + " and dateFin > " + dateFin);
 
     PreparedStatement stmt = null;
     ResultSet rs = null;

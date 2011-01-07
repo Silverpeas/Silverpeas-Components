@@ -43,12 +43,13 @@
   <c:set var="parentTaskId" value="${parentTask.id}" />
 </c:if>
 
-<%
-TaskDetail actionMere 	= (TaskDetail) request.getAttribute("ActionMere");
-TaskDetail oldest 		= (TaskDetail) request.getAttribute("OldestAction");
-String 		 role = (String) request.getAttribute("Role");
-Date 		   startDate	= (Date) request.getAttribute("StartDate");
+<c:set var="viewMode" value="${requestScope['ViewMode']}"/>
 
+<%
+TaskDetail actionMere   = (TaskDetail) request.getAttribute("ActionMere");
+TaskDetail oldest     = (TaskDetail) request.getAttribute("OldestAction");
+String     role = (String) request.getAttribute("Role");
+Date       startDate  = (Date) request.getAttribute("StartDate");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
@@ -59,6 +60,7 @@ Date 		   startDate	= (Date) request.getAttribute("StartDate");
 <script language="javascript" type="text/javascript">
 
 $(document).ready(function(){
+
   var triAll = true;
   $(".linkTri").click(function() {
     // Lien Toutes        
@@ -93,7 +95,7 @@ $(document).ready(function(){
     }
   });
 
-  // Tooltip over task in order to know the responsable
+  // By suppling no content attribute, the library uses each elements title attribute by default
   $('.task_wording a[href][title]').qtip({
     content: {
        text: false // Use each elements title attribute
@@ -118,53 +120,50 @@ $(document).ready(function(){
   });
 
   $('#legendLabelId').click(function() {
-	  if ($('#legende').is(':visible')) {
-		    $('#legende').hide();
-		} else {
-		    $('#legende').show();
-		}
-	});
-	
- });
+	    if ($('#legende').is(':visible')) {
+	        $('#legende').hide();
+	    } else {
+	        $('#legende').show();
+	    }
+  });
+
+});
 
 </script>
 </head>
 <body id="gantt">
 <fmt:message key="projectManager.gantt.label" var="browseBarLabel"></fmt:message>
 <view:browseBar>
-  <view:browseBarElt label="${browseBarLabel}" link="ToGantt?viewMode=${requestScope['ViewMode']}" />
+  <view:browseBarElt label="${browseBarLabel}" link="ToGantt?viewMode=${viewMode}" />
   <c:if test="${not empty(parentTask)}">
-    <view:browseBarElt label="${parentTask.nom}" link="ToGantt?viewMode=${requestScope['ViewMode']}&id=${parentTask.id}"/>
+    <view:browseBarElt label="${parentTask.nom}" link="ToGantt?viewMode=${viewMode}&id=${parentTask.id}"/>
   </c:if>
 </view:browseBar>
-
 <view:window>
-
-<fmt:message key="projectManager.Projet" var="pmProject" />
-<fmt:message key="projectManager.Taches" var="pmTasks" />
+<fmt:message key="projectManager.Projet" var="pmProject"  />
+<fmt:message key="projectManager.Taches" var="pmTasks"  />
 <fmt:message key="projectManager.Taches" var="pmAttachments" />
-<fmt:message key="projectManager.Commentaires" var="pmComments" />
-<fmt:message key="projectManager.Gantt" var="pmGantt" />
-<fmt:message key="projectManager.Calendrier" var="pmCalendar" />
+<fmt:message key="projectManager.Commentaires" var="pmComments"  />
+<fmt:message key="projectManager.Gantt" var="pmGantt"  />
+<fmt:message key="projectManager.Calendrier" var="pmCalendar"  />
 <view:tabs>
   <view:tab label="${pmProject}" selected="false" action="ToProject"></view:tab>
   <view:tab label="${pmTasks}" selected="false" action="Main"></view:tab>
   <c:if test="${fn:contains(requestScope['Role'],'admin')}">
-	  <view:tab label="<%=resource.getString("GML.attachments")%>" selected="false" action="ToAttachments"></view:tab>
-	</c:if>
+    <view:tab label="<%=resource.getString("GML.attachments")%>" selected="false" action="ToAttachments"></view:tab>
+  </c:if>
   <view:tab label="${pmComments}" selected="false" action="ToComments"></view:tab>
   <view:tab label="${pmGantt}" selected="true" action="#"></view:tab>
   <c:if test="${fn:contains(requestScope['Role'],'admin')}">
     <view:tab label="${pmCalendar}" selected="false" action="ToCalendar"></view:tab>
   </c:if>
 </view:tabs>
-
-  <view:frame>
-
+<view:frame>
 <!-- sousNavBulle -->
 <div class="sousNavBulle">
+
   <p id="navTemporelle">
-    <fmt:message key="projectManager.gantt.view"/>
+    <fmt:message key="projectManager.gantt.view" />
     <c:set var="monthClass" value="" />
     <c:set var="quarterClass" value="" />
     <c:set var="yearClass" value="" />
@@ -205,70 +204,72 @@ $(document).ready(function(){
 
 <%-- Import Legend --%>
 <c:import url="gantt_legend.jsp" />
-
+  
 <%
-	Date actionStartDate	= new Date();
-	Date actionEndDate		= null;
-	
-	if (actionMere != null)
-	{
-		actionStartDate		= actionMere.getDateDebut();
-		actionEndDate		= actionMere.getDateFin();
-	}
-	if (oldest != null)
-	{
-		actionStartDate		= oldest.getDateDebut();
-		actionEndDate		= oldest.getDateFin();
-	}
-	
-	if (startDate==null) {
-		startDate = actionStartDate;
-	}
+  Date actionStartDate  = new Date();
+  Date actionEndDate    = null;
+  
+  if (actionMere != null)
+  {
+    actionStartDate   = actionMere.getDateDebut();
+    actionEndDate   = actionMere.getDateFin();
+  }
+  if (oldest != null)
+  {
+    actionStartDate   = oldest.getDateDebut();
+    actionEndDate   = oldest.getDateFin();
+  }
+  
+  if (startDate==null) {
+    startDate = actionStartDate;
+  }
 
-	Calendar actionStartCalendar = new GregorianCalendar(1980, 1 , 1);
-	Calendar actionEndCalendar = new GregorianCalendar(1980, 1 , 1);
-	Calendar startCalendar = new GregorianCalendar(1980, 1 , 1);
-	Calendar endCalendar = new GregorianCalendar(1980, 1 , 1);
-	Calendar nextStartCalendar = new GregorianCalendar(1980, 1 , 1);
-	Calendar lastStartCalendar = new GregorianCalendar(1980, 1 , 1);
+  Calendar actionStartCalendar = new GregorianCalendar(1980, 1 , 1);
+  Calendar actionEndCalendar = new GregorianCalendar(1980, 1 , 1);
+  Calendar startCalendar = new GregorianCalendar(1980, 1 , 1);
+  Calendar endCalendar = new GregorianCalendar(1980, 1 , 1);
+  Calendar nextStartCalendar = new GregorianCalendar(1980, 1 , 1);
+  Calendar lastStartCalendar = new GregorianCalendar(1980, 1 , 1);
 
-	// If start or end date is not defined ==> let the dates at 1/1/1980
-	if (actionStartDate != null && actionEndDate != null) {
-		actionStartCalendar.setTime(actionStartDate);
-		actionEndCalendar.setTime(actionEndDate);
-	}
+  // If start or end date is not defined ==> let the dates at 1/1/1980
+  if (actionStartDate != null && actionEndDate != null) {
+    actionStartCalendar.setTime(actionStartDate);
+    actionEndCalendar.setTime(actionEndDate);
+  }
 
-	startCalendar.setTime(startDate);
-	startCalendar.set(GregorianCalendar.DATE, 1);
-	
-	endCalendar.setTime(startCalendar.getTime());
-	endCalendar.add(GregorianCalendar.MONTH, 1);
-	endCalendar.add(GregorianCalendar.DATE, -1);
-	
-	nextStartCalendar.setTime(startCalendar.getTime());
-	nextStartCalendar.add(GregorianCalendar.MONTH, 1);
-	
-	lastStartCalendar.setTime(startCalendar.getTime());
-	lastStartCalendar.add(GregorianCalendar.MONTH, -1);
-	
-	String dispStartDate = resource.getOutputDate(startCalendar.getTime());
-	String dispEndDate = resource.getOutputDate(endCalendar.getTime());
-	String strNextStartDate = resource.getInputDate(nextStartCalendar.getTime());
-	String strLastStartDate = resource.getInputDate(lastStartCalendar.getTime());
-	
-	int nbDaysDisplayed = endCalendar.get(GregorianCalendar.DATE)-startCalendar.get(GregorianCalendar.DATE);
-	nbDaysDisplayed = startCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-	
-	// Calculate width of cells
-	int cellWidth = 315/nbDaysDisplayed - 1;
+  startCalendar.setTime(startDate);
+  startCalendar.set(GregorianCalendar.DATE, 1);
+  
+  endCalendar.setTime(startCalendar.getTime());
+  endCalendar.add(GregorianCalendar.MONTH, 1);
+  endCalendar.add(GregorianCalendar.DATE, -1);
+  
+  nextStartCalendar.setTime(startCalendar.getTime());
+  nextStartCalendar.add(GregorianCalendar.MONTH, 1);
+  
+  lastStartCalendar.setTime(startCalendar.getTime());
+  lastStartCalendar.add(GregorianCalendar.MONTH, -1);
+  
+  String dispStartDate = resource.getOutputDate(startCalendar.getTime());
+  String dispEndDate = resource.getOutputDate(endCalendar.getTime());
+  String strNextStartDate = resource.getInputDate(nextStartCalendar.getTime());
+  String strLastStartDate = resource.getInputDate(lastStartCalendar.getTime());
+  
+  int nbDaysDisplayed = endCalendar.get(GregorianCalendar.DATE)-startCalendar.get(GregorianCalendar.DATE);
+  nbDaysDisplayed = startCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
 %>
 
-  
 <%-- -------------------------------------------------------------------------- --%>
-<%--                          MONTH VIEW                          --%>
+<%--                          YEAR VIEW                          --%>
 <%-- -------------------------------------------------------------------------- --%>
+<c:set var="months" value="${requestScope['MonthsVO']}" />
 
-<c:set var="curMonth" value="${requestScope['MonthVO']}" />
+<%-- Prepare totalDays variable --%>
+<c:set var="totalDays" value="0"/>
+<c:forEach var="curMonth" items="${months}">
+  <c:set var="totalDays" value="${totalDays + curMonth.nbDays}" />
+</c:forEach>
+
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tableFrame">
   <tr>
@@ -278,59 +279,50 @@ $(document).ready(function(){
           <!-- Display month link -->
           <tr>
             <td colspan="4" class="noBorder"></td>
-            <td colspan="31" id="month_nav" >
-                <a title="mois précédent" href="ToGantt?Id=<c:out value="${parentTaskId}"/>&StartDate=<%=strLastStartDate%>"><img alt="&lt;&lt;" src="<%=resource.getIcon("projectManager.gauche")%>" /></a>
-                <fmt:formatDate value="${requestScope['StartDate']}" pattern="MMMMMMMMMM yyyy" />
-                <a title="mois suivant" href="ToGantt?Id=<c:out value="${parentTaskId}"/>&StartDate=<%=strNextStartDate%>"><img alt="&gt;&gt;" src="<%=resource.getIcon("projectManager.droite")%>" /></a>
+            <td colspan="<c:out value="${totalDays}" />" id="month_nav" >
+               <a title="mois précédent" href="ToGantt?viewMode=<c:out value="${viewMode}" />&Id=<c:out value="${parentTaskId}"/>&StartDate=<%=strLastStartDate%>"><img alt="&lt;&lt;" src="<%=resource.getIcon("projectManager.gauche")%>" /></a>
+               <span><fmt:message  key="projectManager.gantt.view.quarter.year" /></span>&nbsp;<fmt:formatDate value="${requestScope['StartDate']}" pattern="MMMMMMMMMM yyyy" /> 
+               <a title="mois suivant" href="ToGantt?viewMode=<c:out value="${viewMode}" />&Id=<c:out value="${parentTaskId}"/>&StartDate=<%=strNextStartDate%>"><img alt="&gt;&gt;" src="<%=resource.getIcon("projectManager.droite")%>" /></a>
             </td>
           </tr>
-          <!-- Display Week number line -->
+          <!-- Display Month name -->
           <tr id="week_number">
-            <td colspan="4" class="noBorder">&nbsp;</td>
-<c:forEach var="curWeek" items="${curMonth.weeks}" varStatus="weekIndex">
-            <td colspan="<c:out value="${fn:length(curWeek.days)}" />" class="week_begin"><c:out value="${curWeek.number}" /></td>
-</c:forEach>
-          </tr>
-          
-          <!-- Display Day number line -->
-          <tr id="day_number">
-            <td colspan="4" class="noBorder" ></td>
-<c:forEach var="curWeek" items="${curMonth.weeks}" varStatus="weekIndex">
-  <c:forEach var="curDay" items="${curWeek.days}" varStatus="dayIndex">
-            <c:set var="columnClass" value="" />
-            <c:if test="${(curDay.number%2) == 0}">
-              <c:set var="columnClass" value="day_odd" />
-            </c:if>
-            <c:if test="${(dayIndex.first)}">
-              <c:set var="columnClass" value="${columnClass} week_begin"/>
-            </c:if>
-            <td class="<c:out value="${columnClass}"/>" width="15">
-            <c:if test="${curDay.number < 10}">0</c:if><c:out value="${curDay.number}" />
-            </td>
-  </c:forEach>
+            <td colspan="4" class="noBorder" width="20%">&nbsp;</td>
+<c:forEach var="curMonth" items="${months}" varStatus="monthIndex">
+<%-- ${fn:length(curMonth.weeks)} --%>
+            <td colspan="<c:out value="${curMonth.nbDays}" />" class="month_begin"><fmt:formatDate value="${curMonth.weeks[0].days[0].day}" pattern="MMMMMMMMMM yyyy" /></td>
 </c:forEach>
           </tr>
 
-          <!-- Display first day character line -->
-          <tr>
+          <!-- Display week number line -->
+          <tr id="day_number">
             <td>&nbsp;</td>
-            <td width="100px" height="20" class="task_wording"><fmt:message key="projectManager.Taches" /></td>
-            <td width="15px" colspan="2" class="state" ><fmt:message key="projectManager.gantt.tasks.state" /></td>
-<c:forEach var="curWeek" items="${curMonth.weeks}" varStatus="weekIndex">
-  <c:forEach var="curDay" items="${curWeek.days}" varStatus="dayIndex">
-            <c:set var="columnClass" value="day" />
-            <c:if test="${(curDay.number%2) == 0}">
+            <td width="100px" height="20" class="task_wording"><fmt:message  key="projectManager.Taches" /></td>
+            <td width="15px" colspan="2" class="state" ><fmt:message  key="projectManager.gantt.tasks.state" /></td>
+<c:forEach var="curMonth" items="${months}" varStatus="monthIndex">
+  <c:forEach var="curWeek" items="${curMonth.weeks}" varStatus="weekIndex">
+            <c:set var="columnClass" value="week_number" />
+            <c:if test="${(curWeek.number%2) == 0}">
               <c:set var="columnClass" value="${columnClass} day_odd" />
             </c:if>
-            <c:if test="${(dayIndex.first)}">
-              <c:set var="columnClass" value="${columnClass} week_begin"/>
+            <c:if test="${(weekIndex.first)}">
+              <c:set var="columnClass" value="${columnClass} month_begin"/>
             </c:if>
-            <td class="<c:out value="${columnClass}"/>"><c:out value="${fn:substring(curDay.firstDayChar, 0, 1)}" /></td><%--<c:out value="${fn:substring(curDay.firstDayChar, 0, 1)}" /> --%>
+            <c:set var="curWeekWidth" value="${fn:length(curWeek.days)}"/>
+            <td colspan="${curWeekWidth}" class="<c:out value="${columnClass}"/>"> <%--width="<c:out value="${curWeekWidth}"/>%" --%>
+            <c:choose>
+              <c:when test="${fn:length(curWeek.days) > 3}">
+                <c:out value="${curWeek.number}" />
+              </c:when>
+              <c:otherwise>&nbsp;
+              </c:otherwise>
+            </c:choose>
+            </td>
   </c:forEach>
 </c:forEach>
           </tr>
         </thead>
-        <tbody>
+          <tbody>
 <c:set var="curTasks" value="${requestScope['Tasks']}" />
 <c:forEach items="${curTasks}" var="task" varStatus="taskIndex">
   <%-- Prepare table row class BEGIN --%>
@@ -382,18 +374,18 @@ $(document).ready(function(){
     </c:otherwise>
   </c:choose>
   <%-- Prepare table row class END --%>
-  
+  <%-- DISPLAY TR --%>
     <tr class="<c:out value="${rowClass}" />" id="taskRow<c:out value="${task.id}" />">
       <td class="numerotation"><c:out value="${taskIndex.count}"/>.</td>
       <td class="task_wording">
         <div>
     <c:if test="${task.estDecomposee == 1}">
-      <a class="linkSee" href="ToGantt?Id=<c:out value="${task.id}" />"><img border="0" src="<%=resource.getIcon("projectManager.treePlus")%>" alt="plus"/></a>&nbsp;
+      <a class="linkSee" href="ToGantt?viewMode=<c:out value="${viewMode}" />&Id=<c:out value="${task.id}" />"><img border="0" src="<%=resource.getIcon("projectManager.treePlus")%>" alt="plus"/></a>&nbsp;
     </c:if>
       <a href="ViewTask?Id=<c:out value="${task.id}" />" title="<fmt:message key="projectManager.gantt.tasks.responsible"/> : <c:out value="${task.responsableFullName}" />"><c:out value="${task.nom}" /></a>
         </div>
       </td>
-      <td class="state"><p><c:out value="${taskStatusStr}"/>&nbsp;</p></td>
+      <td class="state" width="20px"><p><c:out value="${taskStatusStr}"/>&nbsp;</p></td>
       <td class="percentage" width="8px"><p>
   <c:choose>
     <c:when test="${task.consomme != 0}">
@@ -408,15 +400,19 @@ $(document).ready(function(){
   <fmt:formatDate value="${task.dateDebut}" pattern="yyyyMMdd" var="startDayStr"/>
   <fmt:formatDate value="${task.dateFin}" pattern="yyyyMMdd" var="endDayStr"/>
 
+<c:set var="cptCol" value="0"/>
+
+<c:forEach var="curMonth" items="${months}" varStatus="monthIndex">
   <c:forEach var="curWeek" items="${curMonth.weeks}" varStatus="weekIndex">
     <c:forEach var="curDay" items="${curWeek.days}" varStatus="dayIndex">
+      <c:set var="cptCol" value="${cptCol + 1}"/>
       <%-- Initialize column CSS class --%>
-			<c:set var="columnClass" value="" />
-			<c:if test="${(curDay.number%2) == 0}">
-			  <c:set var="columnClass" value="day_odd" />
-			</c:if>
-      <c:if test="${(dayIndex.first)}">
-        <c:set var="columnClass" value="${columnClass} week_begin"/>
+      <c:set var="columnClass" value="" />
+      <c:if test="${(curWeek.number%2) == 0}">
+        <c:set var="columnClass" value="day_odd" />
+      </c:if>
+      <c:if test="${weekIndex.first && dayIndex.first}">
+        <c:set var="columnClass" value="${columnClass} month_begin"/>
       </c:if>
       <fmt:formatDate value="${curDay.day}" pattern="yyyyMMdd" var="curDayStr"/>
       <c:set var="isTaskDay" value="false" />
@@ -426,7 +422,7 @@ $(document).ready(function(){
           <c:set var="isTaskDay" value="true" />
         </c:when>
         <c:when test="${curDayStr == startDayStr}">
-	        <c:set var="columnClass" value="${columnClass} task_start"/>
+          <c:set var="columnClass" value="${columnClass} task_start"/>
           <c:set var="isTaskDay" value="true" />
         </c:when>
         <c:when test="${curDayStr == endDayStr}">
@@ -448,25 +444,27 @@ $(document).ready(function(){
         </c:forEach>
       </c:if>
 
-      <td class="${columnClass}">
-      <c:if test="${isTaskDay}">
+      <td class="${columnClass}" id="taskCel${task.id}_${cptCol}">
+        <c:if test="${isTaskDay}">
         <div>&nbsp;<div><span>x</span></div></div>
-      </c:if>
+        </c:if>
       </td>
     </c:forEach>
-  </c:forEach>  
+  </c:forEach>
+</c:forEach>
     </tr>
 </c:forEach>
-          </tbody>
-        </table>    
+        </tbody>
+      </table>
     </td>
   </tr>
   <tr>
     <td colspan="3" class="milieuFrame">
+
     </td>
   </tr>
 </table>
-  </view:frame>
+</view:frame>
 </view:window>
 </body>
 </html>
