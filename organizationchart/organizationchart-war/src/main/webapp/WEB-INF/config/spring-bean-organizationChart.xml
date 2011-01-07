@@ -29,9 +29,9 @@
   xmlns:aop="http://www.springframework.org/schema/aop"
   xmlns:tx="http://www.springframework.org/schema/tx"
   xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 	<!--  ce ficheir est inclu via le web.xml du component mailing list qui inclut tous les spring-*.xml -->
   <bean id="organizationChartServicesFactory" name="organizationChartServicesFactory"
@@ -45,5 +45,5 @@
 
   <bean id="organizationChartController" name="organizationChartController"
     class="com.stratelia.webactiv.beans.admin.OrganizationController" />
-    
+
 </beans>

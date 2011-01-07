@@ -30,9 +30,9 @@
   xmlns:aop="http://www.springframework.org/schema/aop"
   xmlns:tx="http://www.springframework.org/schema/tx"
   xsi:schemaLocation="
-       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
 
   <bean id="messageService"
@@ -42,7 +42,7 @@
     </property>
     <property name="elementsPerPage" value="20" />
   </bean>
-  
+
    <bean id="mailingListDao"
     class="com.silverpeas.mailinglist.service.model.dao.MailingListDaoImpl">
     <property name="sessionFactory">
@@ -87,7 +87,7 @@
       <ref bean="dataSource" />
     </property>
   </bean>
-  <!-- 
+  <!--
     <bean id="MyDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
     <property name="jndiName"><value>jdbc/Silverpeas</value></property>
     </bean>
