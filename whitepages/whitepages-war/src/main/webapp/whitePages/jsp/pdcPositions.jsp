@@ -89,14 +89,9 @@ out.println(gef.getLookStyleSheet());
 
 	out.println(window.printBefore());
 
-	tabbedPane.addTab(resource.getString("whitePages.id"), routerUrl+"consultIdentity?userCardId="+userCardId, false, true);
-	tabbedPane.addTab(resource.getString("whitePages.fiche"), routerUrl+"consultCard?userCardId="+userCardId, false, true);
-	tabbedPane.addTab(resource.getString("whitePages.PdcClassification"), routerUrl+"ViewPdcPositions?userCardId="+userCardId, true, false);
-
 	ButtonPane buttonPane = gef.getButtonPane();
 	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.back"), routerUrl+"Main", false));
 	
-	out.println(tabbedPane.print());
 	out.println(frame.printBefore());
 
 	out.flush();

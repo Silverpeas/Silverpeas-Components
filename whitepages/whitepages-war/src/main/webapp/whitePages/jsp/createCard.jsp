@@ -28,24 +28,28 @@
 <%@ page import="java.util.*"%>
 <%@ page import="com.silverpeas.whitePages.model.*"%>
 <%@ page import="com.silverpeas.form.*"%>
+<%@ page import="com.silverpeas.whitePages.record.UserRecord"%>
 
 <%@ include file="checkWhitePages.jsp" %>
 
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "javascript:goToMain();");
-	browseBar.setPath(resource.getString("whitePages.usersList") + " > "+ resource.getString("whitePages.createCard"));
+	Card card = (Card) request.getAttribute("card");
 	
-	tabbedPane.addTab(resource.getString("whitePages.id"), routerUrl+"createIdentity", false, true);
+	UserRecord userRecord = card.readUserRecord();
+	String lastName = userRecord.getField("LastName").getValue(language);
+	String firstName = userRecord.getField("FirstName").getValue(language);
+	
+	browseBar.setPath(resource.getString("whitePages.usersList") + " > "+ resource.getString("whitePages.createCard") + " " + lastName + " " + firstName);
+	
 	tabbedPane.addTab(resource.getString("whitePages.fiche"), routerUrl+"createCard", true, false);
 	
-	Card card = (Card) request.getAttribute("card");
 	Collection whitePagesCards = (Collection) request.getAttribute("whitePagesCards");
 	Form updateForm = (Form) request.getAttribute("Form");
 	PagesContext context = (PagesContext) request.getAttribute("context"); 
 	DataRecord data = (DataRecord) request.getAttribute("data"); 
 %>
-
 
 <HTML>
 <HEAD>
@@ -54,7 +58,7 @@
    out.println(gef.getLookStyleSheet());
    updateForm.displayScripts(out, context);
 %>
-
+<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <script language="JavaScript">
 	function goToMain()
 	{

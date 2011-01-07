@@ -85,7 +85,7 @@ function openSPWindow(fonction, windowName){
 }
 /*****************************************************************************/
 function consult(idCard) {
-	location.href = "<%=routerUrl%>consultIdentity?userCardId="+idCard;
+	location.href = "<%=routerUrl%>consultCard?userCardId="+idCard;
 }
 /*****************************************************************************/
 function listCheckedCard(nbCard) {
@@ -138,8 +138,8 @@ function B_SHOW_ONCLICK(nbCard) {
 }
 
 /*****************************************************************************/
-function B_SEARCH_ONCLICK(nbCard) {
-	location.href = "<%=m_context%>/RpdcSearch/<%=scc.getComponentId()%>/Main";
+function B_SEARCH_ONCLICK() {
+	location.href = "<%=routerUrl%>searchInWhitePage?componentId=<%=scc.getComponentId()%>";
 }
 
 </script>

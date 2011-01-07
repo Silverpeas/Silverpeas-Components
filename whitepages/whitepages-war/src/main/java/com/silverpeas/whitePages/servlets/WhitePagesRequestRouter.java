@@ -28,6 +28,11 @@
 package com.silverpeas.whitePages.servlets;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -39,14 +44,22 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.whitePages.control.WhitePagesSessionController;
 import com.silverpeas.whitePages.filters.LoginFilter;
 import com.silverpeas.whitePages.model.Card;
+import com.silverpeas.whitePages.model.SearchField;
+import com.silverpeas.whitePages.model.SearchFieldsType;
 import com.silverpeas.whitePages.record.UserRecord;
 import com.stratelia.silverpeas.containerManager.ContainerContext;
+import com.stratelia.silverpeas.pdc.model.PdcException;
+import com.stratelia.silverpeas.pdc.model.SearchAxis;
+import com.stratelia.silverpeas.pdc.model.SearchContext;
+import com.stratelia.silverpeas.pdc.model.SearchCriteria;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 
 /**
  * Expert Locator request rooter.
@@ -135,7 +148,8 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
            * else redirects to card list
            */
           else {
-            destination = getDestination("search", componentSC, request);
+            request.setAttribute("Main", "true");
+            destination = getDestination("searchInWhitePage", componentSC, request);
           }
         } else
           destination = "/admin/jsp/errorpage.jsp";
@@ -180,7 +194,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
       /*
        * Card list.
        */
-      else if (function.equals("search")) {
+      /*else if (function.equals("search")) {
         request.setAttribute("IsEmailHidden", scc.isEmailHidden());
 
         if (flag.equals("admin")) {
@@ -191,7 +205,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
           destination = "/whitePages/jsp/listCardsUser.jsp";
         } else
           destination = "/admin/jsp/errorpage.jsp";
-      }
+      }*/
 
       /*
        * New card (administrator only) : redirects to user panel.
@@ -313,57 +327,6 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
         destination = getDestination("Main", componentSC, request);
       }
 
-      else if (function.equals("consultIdentity")) {
-        String userCardIdString = request.getParameter("userCardId");
-        if (!StringUtil.isDefined(userCardIdString)) {
-          // on vient de reverseHide
-          userCardIdString = (String) request.getAttribute("userCardId");
-        }
-        if (!StringUtil.isDefined(userCardIdString)) {
-          // on vient de pdc search
-          userCardIdString = request.getParameter("documentId");
-        }
-        if (!StringUtil.isDefined(userCardIdString)) {
-          // on vient de search
-          userCardIdString = request.getParameter("id");
-        }
-        long userCardId = new Long(userCardIdString).longValue();
-        Card card = scc.getCard(userCardId);
-
-        /*
-         * Owners and administrators only can edit user identity.
-         */
-        if ((flag.equals("admin"))
-            || (card != null && card.getUserId().equals(scc.getUserId()))) {
-
-          if (card == null) // user supprimé par appletAdmin
-          {
-            destination = "/whitePages/jsp/errorIdentity.jsp";
-          } else {
-            Form userForm = card.readUserForm();
-            PagesContext context = new PagesContext("myForm", "0", scc
-                .getLanguage());
-            context.setComponentId(card.getInstanceId());
-            context.setObjectId(card.getPK().getId());
-            context.setUserId(scc.getUserId());
-            UserRecord data = card.readUserRecord();
-            request.setAttribute("contentId", scc.getCurrentCardContentId());
-
-            // retourne un objet Card contenant les infos de la fiche y compris
-            // le form et le dataRecord.
-            request.setAttribute("card", card);
-            request.setAttribute("whitePagesCards", scc.getCurrentUserCards());
-            request.setAttribute("Form", userForm);
-            request.setAttribute("context", context);
-            request.setAttribute("data", data);
-            destination = "/whitePages/jsp/consultIdentity.jsp";
-          }
-        } else if (flag.equals("user")) {
-          destination = getDestination("viewIdentity", componentSC, request);
-        } else
-          destination = "/admin/jsp/errorpage.jsp";
-      }
-
       else if (function.equals("consultCard")) {
         String userCardIdString = request.getParameter("userCardId");
         if (!StringUtil.isDefined(userCardIdString)) {
@@ -377,8 +340,8 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
         /*
          * Owners and administrators only can edit a card.
          */
-        if (flag.equals("admin")
-            || (card != null && card.getUserId().equals(scc.getUserId()))) {
+        /*if (flag.equals("admin")
+            || (card != null && card.getUserId().equals(scc.getUserId()))) {*/
 
           if (card == null) {
             destination = "/whitePages/jsp/errorIdentity.jsp";
@@ -390,18 +353,19 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
             context.setObjectId(card.getPK().getId());
             context.setUserId(scc.getUserId());
             DataRecord data = card.readCardRecord();
-
             request.setAttribute("card", card);
             request.setAttribute("whitePagesCards", scc.getCurrentUserCards());
             request.setAttribute("Form", viewForm);
             request.setAttribute("context", context);
             request.setAttribute("data", data);
             request.setAttribute("contentId", scc.getCurrentCardContentId());
-
+            request.setAttribute("userFull", scc.getOrganizationController().getUserFull(card.getUserId()));
+            request.setAttribute("pdcPositions", scc.getPdcPositions(scc.getSilverObjectId(String.valueOf(userCardId))));
+            
             destination = "/whitePages/jsp/consultCard.jsp";
           }
-        } else
-          destination = "/admin/jsp/errorpage.jsp";
+        /*} else
+          destination = "/admin/jsp/errorpage.jsp";*/
       }
 
       else if (function.equals("updateCard")) {
@@ -469,7 +433,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
           }
           scc.delete(listToDelete);
 
-          destination = getDestination("search", componentSC, request);
+          destination = getDestination("Main", componentSC, request);
         } else
           destination = "/admin/jsp/errorpage.jsp";
       }
@@ -485,7 +449,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
             }
           }
           scc.hide(listToMask);
-          destination = getDestination("search", componentSC, request);
+          destination = getDestination("Main", componentSC, request);
         } else
           destination = "/admin/jsp/errorpage.jsp";
       }
@@ -501,7 +465,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
             }
           }
           scc.unHide(listToUnMask);
-          destination = getDestination("search", componentSC, request);
+          destination = getDestination("Main", componentSC, request);
         } else
           destination = "/admin/jsp/errorpage.jsp";
       }
@@ -509,7 +473,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
       /*
        * Acces externe via d'autres composants ou Acces interne role User
        */
-      else if (function.equals("viewIdentity")) {
+      /*else if (function.equals("viewIdentity")) {
         String userCardIdString = request.getParameter("userCardId");
         if (!StringUtil.isDefined(userCardIdString)) {
           // on vient de pdc search
@@ -579,9 +543,9 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
 
           destination = "/whitePages/jsp/viewIdentity.jsp";
         }
-      }
+      }*/
 
-      else if (function.equals("viewCard")) {
+      /*else if (function.equals("viewCard")) {
         String userCardIdString = request.getParameter("userCardId");
 
         String hostComponentName = null;
@@ -623,17 +587,13 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
 
           destination = "/whitePages/jsp/viewCard.jsp";
         }
-      }
+      }*/
 
       else if (function.equals("searchResult") || function.equals("Consult")) // pdc
       // search
       // result
       {
-        if (flag.equals("admin")) {
-          destination = getDestination("consultIdentity", componentSC, request);
-        } else {
-          destination = getDestination("viewIdentity", componentSC, request);
-        }
+        destination = getDestination("consultCard", componentSC, request);
       }
 
       else if (function.equals("ViewPdcPositions")) {
@@ -703,7 +663,83 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
         request.setAttribute("listCards", scc.getVisibleCards());
         destination = "/whitePages/jsp/portlet.jsp";
       }
-
+      
+      else if (function.equals("searchInWhitePage")) {
+        boolean isMain = false;
+        if(request.getAttribute("Main") != null){
+          isMain = "true".equals((String)request.getAttribute("Main"));
+        }
+        if(isMain){
+          // set default cards to see
+          if (flag.equals("admin")) {
+            request.setAttribute("cards", scc.getCards());
+          } else if (flag.equals("user")) {
+            request.setAttribute("cards", scc.getVisibleCards());
+          } else {
+            destination = "/admin/jsp/errorpage.jsp";
+          }
+        }else{
+          // get form fields values
+          SortedSet<SearchField> fields = scc.getSearchFields();
+          request.setAttribute("searchFields", fields);
+          
+          SearchContext searchContext = new SearchContext();
+          searchContext.setUserId(scc.getUserId());
+          
+          // primary axis for form 
+          List<SearchAxis> primaryPdcFields = scc.getUsedAxisList(searchContext, "P");
+          request.setAttribute("primaryPdcFields", primaryPdcFields);
+       
+          // secondary axis for form 
+          List<SearchAxis> secondaryPdcFields = scc.getUsedAxisList(searchContext, "S");
+          request.setAttribute("secondaryPdcFields", secondaryPdcFields);
+        }
+        
+        destination = "/whitePages/jsp/dynamicSearch.jsp";
+      }
+      
+      else if (function.equals("dynamicFieldsChoice")) {
+        
+        List<String> xmlFields = scc.getAllXmlFieldsForSearch();
+        request.setAttribute("xmlFields", xmlFields);
+        
+        List<String> ldapFields = scc.getLdapAttributesList();
+        request.setAttribute("ldapFields", ldapFields);
+        
+        Set<String> alreadySelectedFields = scc.getSearchFieldIds();
+        request.setAttribute("alreadySelectedFields", alreadySelectedFields);
+        
+        destination = "/whitePages/jsp/dynamicFieldsChoice.jsp";
+      }
+      
+      else if (function.equals("comfirmFieldsChoice")) {
+        
+        String[] fields = request.getParameterValues("checkedFields");
+        if(fields != null && fields.length > 0){
+          scc.confirmFieldsChoice(fields);
+        }        
+        return getDestination("searchInWhitePage", scc, request);
+      }
+      
+      else if (function.equals("getSearchResult")) {
+        
+        String query = request.getParameter("query");
+        if(query != null){
+          request.setAttribute("query", query);
+        }
+        
+        SearchContext pdcContext = getPdcContext(scc, request);
+        
+        Hashtable<String,String> xmlFields = getXmlFieldsQuery(scc, request);
+        List<FieldDescription> fieldsQuery =  getOthersFieldsQuery(scc, request);
+        
+        List<Card> cards = scc.getSearchResult(query, pdcContext, xmlFields, fieldsQuery);
+        request.setAttribute("cards", cards);
+        request.setAttribute("searchDone", "true"); // for no result case
+        
+        return getDestination("searchInWhitePage", scc, request);
+      }
+      
       else
         destination = "/admin/jsp/errorpage.jsp";
 
@@ -748,4 +784,111 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
     }
     request.setAttribute("ReturnURL", returnURL);
   }
+  
+private SearchContext getPdcContext(WhitePagesSessionController scc, HttpServletRequest request) throws PdcException{
+    
+    SearchContext pdcContext = null;
+    
+    // Axes primaires
+    SearchContext searchContext = new SearchContext();
+    searchContext.setUserId(scc.getUserId());
+    List<SearchAxis> primaryPdcFields = scc.getUsedAxisList(searchContext, "P");
+    if(primaryPdcFields != null && primaryPdcFields.size() > 0){
+      Iterator<SearchAxis> iterPrimaryPdcFields = primaryPdcFields.iterator();
+      while(iterPrimaryPdcFields.hasNext()){
+        SearchAxis current = iterPrimaryPdcFields.next();
+        String value = request.getParameter("Axis" + String.valueOf(current.getAxisId()));
+        if(value != null && value.length() > 0){
+          request.setAttribute("Axis" + String.valueOf(current.getAxisId()), value);
+          if(pdcContext == null){
+            pdcContext = new SearchContext();
+            pdcContext.setUserId(scc.getUserId());
+          }
+          SearchCriteria criteria = new SearchCriteria(current.getAxisId(), value);
+          pdcContext.addCriteria(criteria);
+        }
+      }
+    }
+    
+    // Axes secondaires
+    List<SearchAxis> secondaryPdcFields = scc.getUsedAxisList(searchContext, "S");
+    if(secondaryPdcFields != null && secondaryPdcFields.size() > 0){
+      Iterator<SearchAxis> iterSecondaryPdcFields = secondaryPdcFields.iterator();
+      while(iterSecondaryPdcFields.hasNext()){
+        SearchAxis current = iterSecondaryPdcFields.next();
+        String value = request.getParameter("Axis" + String.valueOf(current.getAxisId()));
+        if(value != null && value.length() > 0){
+          request.setAttribute("Axis" + String.valueOf(current.getAxisId()), value);
+          if(pdcContext == null){
+            pdcContext = new SearchContext();
+            pdcContext.setUserId(scc.getUserId());
+          }
+          SearchCriteria criteria = new SearchCriteria(current.getAxisId(), value);
+          pdcContext.addCriteria(criteria);
+        }
+      }
+    }
+    return pdcContext;
+  }
+  
+  
+  private Hashtable<String,String> getXmlFieldsQuery(WhitePagesSessionController scc, HttpServletRequest request) throws UtilException {
+    Hashtable<String, String> xmlFields = new Hashtable<String, String>();
+    
+    // champs personnalisables xml
+    SortedSet<SearchField> fields = scc.getSearchFields();
+    if(fields != null && fields.size() > 0){
+      Iterator<SearchField> iterFields = fields.iterator();
+      while(iterFields.hasNext()){
+        SearchField field = iterFields.next();
+        String fieldId = field.getFieldId();
+        String searchValue = request.getParameter(fieldId);
+        if( searchValue != null && searchValue.length() > 0){
+          if(fieldId.startsWith(SearchFieldsType.XML.getLabelType())){
+            request.setAttribute(fieldId, searchValue);
+            // champs XML
+            xmlFields.put(fieldId.substring(4,fieldId.length()), searchValue);
+          }
+        }
+      }
+    }
+    return xmlFields;
+  }
+  
+  private List<FieldDescription> getOthersFieldsQuery(WhitePagesSessionController scc, HttpServletRequest request) throws UtilException {
+    List<FieldDescription> othersFields = new ArrayList<FieldDescription>();
+    
+    // champs personnalisables non xml (user silverpeas ou ldap)
+    SortedSet<SearchField> fields = scc.getSearchFields();
+    if(fields != null && fields.size() > 0){
+      Iterator<SearchField> iterFields = fields.iterator();
+      while(iterFields.hasNext()){
+        SearchField field = iterFields.next();
+        String fieldId = field.getFieldId();
+        String searchValue = request.getParameter(fieldId);
+        if( searchValue != null && searchValue.length() > 0){
+          if(fieldId.startsWith(SearchFieldsType.LDAP.getLabelType())){
+            request.setAttribute(fieldId, searchValue);
+            // champs XML
+            FieldDescription fieldDescription = new FieldDescription(fieldId.substring(4,fieldId.length()), searchValue, scc.getLanguage());
+            othersFields.add(fieldDescription);
+          }else if(fieldId.startsWith(SearchFieldsType.USER.getLabelType())){
+            request.setAttribute(fieldId, searchValue);
+            if(fieldId.equals("USR_name")){
+              FieldDescription fieldDescription = new FieldDescription("LastName", searchValue, scc.getLanguage());
+              othersFields.add(fieldDescription);
+            }else if(fieldId.equals("USR_surname")){
+              FieldDescription fieldDescription = new FieldDescription("FirstName", searchValue, scc.getLanguage());
+              othersFields.add(fieldDescription);
+            }else if(fieldId.equals("USR_email")){
+              FieldDescription fieldDescription = new FieldDescription("Mail", searchValue, scc.getLanguage());
+              othersFields.add(fieldDescription);
+            }
+          }
+        }
+      }
+    }
+    return othersFields;
+  }
+  
 }

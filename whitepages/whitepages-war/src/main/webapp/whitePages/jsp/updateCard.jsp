@@ -50,6 +50,7 @@
    out.println(gef.getLookStyleSheet());
    updateForm.displayScripts(out, context);
 %>
+<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <script language="JavaScript">
 <!--	
 	function B_VALIDER_ONCLICK(idCard) {

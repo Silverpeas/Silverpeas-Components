@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.whitePages.service.ServicesFactory;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
@@ -77,6 +78,8 @@ public class WhitePagesInstanciator extends SQLRequest implements ComponentsInst
       throw new InstanciationException("WhitePagesInstanciator.delete()",
           SilverpeasException.ERROR, "whitePages.EX_CANT_REMOVE_TEMPLATE", e);
     }
+    
+    ServicesFactory.getInstance().getWhitePagesService().deleteFields(componentId);
 
   }
 

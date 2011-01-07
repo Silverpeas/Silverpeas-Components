@@ -1,0 +1,461 @@
+/* definition de style global pour utiliser dans différent composant */
+
+.txtchoixform { font-weight:100;}
+
+.linkMore {
+	display:block;
+	clear:both;
+	background:#EFF9E3 url(../icons/open.gif) right center no-repeat;
+	border-bottom:1px solid #CCCCCC;
+	border-top:1px solid #CCCCCC;
+	line-height:30px;
+	padding:0 15px;
+	margin:10px 0;
+	color:#4C4C4C;
+	font-size:11px;
+	}
+
+.linkMore:hover, .linkMore:focus  {
+	background-color:#E9F7D7;
+	}
+
+.zoneNavAndSearch{
+	background:#EAEAEA url(../icons/arrow/bg_tri.png) bottom left no-repeat;
+	padding:14px;
+ 	width: 96%;
+}
+
+/* util pour A B C D , pour Afficher : Categorie1 Catégorie2 */
+
+.abcdAndNavCategory a { 
+	border:1px solid #CECECE;
+	padding:2px 4px;
+	margin-right:3px;
+	background-color:#FFF;
+	color:#AFAFAF;
+	font-size: 12px;
+	text-decoration: none;
+	line-height:220%;
+}
+.abcdAndNavCategory  a.active {
+	background-color:#B5B5B5;
+	color:#FFF;
+}
+
+.abcdAndNavCategory  a:hover, 
+.abcdAndNavCategory  a:focus {
+	background-color:#BFBFBF;
+	color:#FFF;
+}
+
+/* util pour listing fiche utilisateur, presentation like annuaire */
+
+.listinUsers .message_list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.listinUsers .message_list li.intfdcolor  {
+  padding: 0px;
+  margin: 3px;
+  position:relative;
+  border:1px solid #CFCFCF;
+}
+
+
+.listinUsers {
+  float: left;
+  width: 98%;
+}
+
+.listinUsers .profilPhoto {
+ 	border:1px solid #CCCCCC;
+	float:left;
+	height:113px;
+	margin:7px;
+	overflow:hidden;
+	width:87px;
+}
+.listinUsers .profilPhoto img {
+	height:113px;
+}
+
+.listinUsers .action {
+	width:132px;
+	height:40px; 
+	position:absolute; 
+	bottom:10px; 
+	right:10px; 
+}
+
+.listinUsers #pagination {
+  	clear:both;
+	text-align:center;
+}
+
+/*
+-- Pour affichage 1 seule colonne
+.listinUsers .aff_colonnes li {
+	width:100%;
+}
+*/
+
+/* Par défaut, 2 colonnes */
+.listinUsers .aff_colonnes li {
+	float:left;
+	margin-right:1%;
+	margin-right:0.5%;
+	width:48.8%;
+}
+
+/*
+-- Pour affichage 3 colonnes
+.listinUsers .aff_colonnes li {
+	float:left;
+	margin-right:0.4%;
+	width:32.6%;
+}
+*/
+
+.listinUsers  .info ul {
+  margin: 0;
+  padding: 0;
+}
+
+.listinUsers  .info ul li {
+  display:list-item;
+  list-style-type:none;
+  width:100%;
+}
+
+.listinUsers  .info ul { 
+	padding:10px 0px 4px 5px; 
+	float:left;
+	color:#909090; font-size:11px;
+	width:60%;
+}
+.listinUsers  .info ul a {color:#909090; font-size:11px;}
+.listinUsers  .info ul a:hover {color:#000}
+
+.listinUsers  .info ul li.userName a {
+  	font-size:14px;
+  	color:#000;
+  	font-weight:bold;
+}
+
+.listinUsers  .info ul li.userName a:hover {
+	color:#444444;
+}
+
+.listinUsers  .info ul li.infoConnection img{
+  position:absolute;
+  top:10px; 
+  right:10px;
+}
+
+.listinUsers  .info ul li.userType {
+  color:#333333;
+  font-size:12px;
+  font-weight:bold;
+  padding-top:10px;
+}
+
+
+.listinUsers .mail {
+  text-decoration: underline;
+  color:#333366;
+}
+
+.listinUsers .link {
+  color:#333366;
+  border-bottom:1px solid #9E9ECF;
+  display:block;
+  padding:5px 0 3px 0; 
+  font-size:11px;
+}
+.listinUsers .link:hover, #directory .link:focus {
+  color:#000;
+  border-bottom:1px solid #000;
+  display:block;
+  padding:5px 0 3px 0; 
+  font-size:11px;
+}
+
+.listinUsers .action .invitation {
+	display: none;
+}
+
+.listinUsers .NameLink {
+  font-size: 14px;
+  color: blue;
+}
+
+
+/* util pour les fiches utilisateur like annuaire */
+
+.userProfil .info {
+	padding:8px;
+	height:100%;
+}
+.userProfil .info .userType {
+  color:#333333;
+  font-size:12px;
+  font-weight:bold;
+  padding-top:10px;
+}
+
+.userProfil .infoConnection img{
+  position:absolute;
+  top:10px; 
+  right:10px;
+}
+
+.userProfil .statut {
+	background:transparent url(images_annuaire/sep-2-tiraits.gif)  50% top no-repeat;
+	color:#333333; font-size:10px;
+	padding:10px 0 0;
+	margin:0;
+}
+
+.userProfil  .action .invitation {
+	display: none;
+}
+
+.userProfil { 
+   float: left;
+    position: relative;
+    width: 20%;
+}
+
+
+.userProfil address { font-style:normal;}
+
+.userProfil .action {
+	margin-top:5px;
+	}
+
+.userProfil  .action .link {
+  color:#333366;
+  border-bottom:1px solid #9E9ECF;
+  padding:0 0 3px 0; 
+  font-size:11px;
+  width:132px;
+  margin-bottom:8px;
+  float:right; clear:right;
+}
+.userProfil   .action .link:hover, .userProfil   .action .link:focus  {
+  color:#000;
+  border-bottom:1px solid #000;
+  
+}
+
+.sheet { 
+	width:78%; 
+	margin-left:15px; 
+	float:left;
+}
+.sheet address { font-style:normal;}
+
+
+/*- [ whitePages BEGIN ] --------------------------- */
+
+/*- Zone de recherche --------- */
+#whitePages #search ul, 
+#whitePages #search li, 
+#whitePages #search p , 
+#whitePages #search fieldset,
+#whitePagesSheet .sheet ul, 
+#whitePagesSheet .sheet li, 
+#whitePagesSheet .sheet p , 
+#whitePagesSheet .sheet fieldset{ padding:0; margin:0;}
+
+
+
+.txtexform { color:#999; font-size:11px;}
+
+#whitePages #search .txtexform { 
+	display:inline; 
+	line-height:20px; 
+	margin:0 0 0 10px;
+	padding:0;
+	}
+	
+#whitePages #search .txtexform span { font-style:italic;}
+
+#whitePages #search div { 
+	clear:both;
+	}
+#whitePages #search div div {
+	height:20px;}
+
+#whitePages #search .linkMore { 
+	background-position: 492px center;
+    width: 488px;
+	}
+
+#whitePages #search label { 
+	clear: left;
+    display: block;
+    float: left;
+    width: 180px; 
+	line-height:20px;
+	}
+#whitePages #search label.labelRadio , 
+#whitePages #search label.labelCheckbox{ 
+    display:inline;
+    float:none;
+    width:auto; 
+	padding-right:20px;
+	height:10px;
+	}	
+	
+#whitePages #search input, 
+#whitePages #search select {
+	float: left;
+	width: 280px;
+	margin-bottom:2px;
+	height:14px;
+	border:1px solid #CDCDCD;
+	
+	}
+	
+#whitePages #search select {
+	height:18px;
+	}
+
+	
+#whitePages #search input.checkbox, 
+#whitePages #search input.radio,
+.sheet input.checkbox, 
+.sheet input.radio  {
+	background-color:transparent;
+	border:0;
+	width:14px;
+	float:none;
+	display:inline;
+	height:14px;
+	vertical-align:middle;
+	}
+	
+#whitePages #search input.dateToPick {
+	width:50px;
+	}
+	
+#whitePages #search fieldset { 
+	clear:both;
+	border:0;
+	padding:8px 0 10px 225px;
+	}
+#whitePages #search  .arbre fieldset legend {
+	margin:10px 0 0 -216px;
+	background:transparent url(../icons/minusTreeT.gif) -8px 0   no-repeat;
+	padding-left:12px;
+	position:absolute;
+	}
+	
+* html #whitePages  #search .arbre fieldset legend {
+	margin:10px 0 0 -224px;
+	}
+*+html #whitePages #search .arbre fieldset legend {
+	margin:10px 0 0 -224px;} 
+
+#whitePages #search ul li, #whitePagesSheet .sheet ul li { 
+	list-style-type:none;
+	clear:left;
+	}
+
+#whitePages  #search .arbre {
+	background:transparent url(../icons/minusTreeI.gif) 8px 0px repeat-y;
+	margin-bottom:5px;
+	}
+	
+#whitePages  #search .arbre label {
+	padding-left:13px;
+	margin-left:9px;
+	width:159px;
+	background:transparent url(../icons/minusTreeT.gif) -8px 9px no-repeat;
+	display:inline;
+	}
+
+#whitePages  #search .arbre  fieldset label{ padding:0; margin:0; background-image:none;}
+
+
+#whitePages  #search #secondaryAxe, 
+#whitePages  #search #additionalElements { display:none;}
+
+#whitePages  #search #btnValidSearch { height:40px; width:530px;}
+#whitePages  #search #btnValidSearch table{ float:right; }
+
+#whitePages .abcdAndNavCategory {
+	background:transparent url(../icons/sep-2-tiraits.gif) center top no-repeat;
+	padding-top:8px;
+	}
+/*- Listing expert --------- */
+#whitePages form { padding:0; margin:0;}
+
+#whitePages .listinUsers input.check { 
+	position:absolute; 
+	top:2px; 
+	right:2px;
+	border:0; background-color:transparent;
+	}
+
+#whitePages .listinUsers .profilPhoto {
+ 	height:80px;
+	width:62px;
+}
+
+.profilPhoto img{
+ 	height:80px;
+	width:62px;
+}
+
+#whitePages .listinUsers .profilPhoto img {
+	height:80px;
+	}
+
+#whitePages .listinUsers .info ul li.infoConnection img {
+	width:10px;
+	right:30px;
+}
+	
+#whitePages .listinUsers  .info ul li.infoVisibility img{
+  position:absolute;
+  top:8px; 
+  right:50px;
+}
+
+.pdcPosition h3 { 
+	font-size:11px;
+	color:#26334A;
+	}
+
+.pdcPosition ul { 
+	background-color:#E9E9E9;
+	font-weight:bold;
+	color:#4D4D4D;
+	list-style-type:none;
+	padding:8px;
+	line-height:140%;
+	margin:0 0 5px 0;
+	}
+.pdcPosition ul li { padding:0; margin:0;}
+
+.pdcPosition ul ul {
+	font-weight:100;
+	padding:0 8px;
+	list-style-image:url(../icons/list-puce-green.gif);
+	}
+.pdcPosition ul ul li { margin-left:10px;}
+
+#theSheets .sousNavBulle { width:98%; margin-bottom:10px;}
+#theSheets .sousNavBulle img { vertical-align:middle; margin:0 5px;}
+
+.sheet table.oneSheet { margin-bottom:10px;}
+.sheet table.oneSheet td { border-bottom:1px solid #E5E5E5; padding-right:60px;}
+	
+/*- [ whitePages END ] --------------------------- */
+
+

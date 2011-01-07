@@ -75,7 +75,7 @@ function B_SEARCH_ONCLICK(nbCard) {
 
 </HEAD>
 <BODY marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
-<FORM NAME="liste_card" METHOD="POST" ACTION="<%=routerUrl%>consultIdentity">
+<FORM NAME="liste_card" METHOD="POST" ACTION="<%=routerUrl%>consultCard">
   <input type=hidden name=userCardId >
   <input type=hidden name=HostComponentName value="<%=Encode.javaStringToHtmlString(scc.getComponentLabel())%>">
   <input type=hidden name=HostUrl value="<%=Encode.javaStringToHtmlString(m_context + "/RwhitePages/"+scc.getComponentId()+"/Main")%>">

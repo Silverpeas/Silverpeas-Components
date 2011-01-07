@@ -25,46 +25,70 @@
 package com.silverpeas.whitePages.control;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.whitePages.WhitePagesException;
 import com.silverpeas.whitePages.model.Card;
+import com.silverpeas.whitePages.model.SearchField;
 import com.silverpeas.whitePages.model.WhitePagesCard;
 import com.silverpeas.whitePages.record.UserRecord;
 import com.silverpeas.whitePages.record.UserTemplate;
+import com.silverpeas.whitePages.service.ServicesFactory;
 import com.stratelia.silverpeas.containerManager.ContainerContext;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
+import com.stratelia.silverpeas.contentManager.GlobalSilverContent;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.pdc.control.PdcBm;
+import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
+import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
+import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.PdcException;
+import com.stratelia.silverpeas.pdc.model.SearchAxis;
+import com.stratelia.silverpeas.pdc.model.SearchContext;
+import com.stratelia.silverpeas.pdc.model.Value;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.SessionInfo;
+import com.stratelia.silverpeas.peasCore.SessionManager;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
+import com.stratelia.webactiv.beans.admin.AbstractDomainDriver;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.CompoSpace;
+import com.stratelia.webactiv.beans.admin.DomainDriverManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import com.stratelia.webactiv.util.exception.UtilException;
+import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 
 public class WhitePagesSessionController extends AbstractComponentSessionController {
 
@@ -96,6 +120,11 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   private final static ResourceLocator whitePagesSettings = new ResourceLocator(
       "com.silverpeas.whitePages.settings.settings", "");
 
+  private PdcBm pdcBm = null;
+  private SearchEngineBm searchEngine = null; // To retrieve items using
+  
+  private static DomainDriverManager m_DDManager = new DomainDriverManager();
+  
   /*
    * Recherche une fiche Retourne currentCard si son id est le même que celui de la fiche recherchée
    * Demande au CardManager la fiche sinon Affecte l'attribut ReadOnly de Card à false si la fiche
@@ -877,4 +906,169 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return new Boolean("no"
         .equalsIgnoreCase(getComponentParameterValue("isFicheVisible")));
   }
+  
+  public int getDomainId() {
+    int domainIdReturn = 0; // default value
+    
+    // pour recupèrer le domainId auquel rattaché l'annuaire
+    String domainId = getComponentParameterValue("domainId");
+    if(domainId != null && domainId.length() > 0){
+      try{
+        domainIdReturn = Integer.parseInt(domainId);
+      }catch(NumberFormatException nexp){
+        SilverTrace.error("whitePages", "WhitePagesSessionController",
+            "whitePages.EX_UNKNOWN_DOMAIN_ID", nexp);
+      }
+    }
+    return domainIdReturn;
+    
+  }
+  
+  public List<String> getAllXmlFieldsForSearch() throws WhitePagesException, PublicationTemplateException{
+    List<String> xmlFields = new ArrayList<String>();
+    PublicationTemplate template = getTemplate(getComponentId());
+    RecordTemplate recordTemplate = template.getRecordTemplate();
+    xmlFields = Arrays.asList(recordTemplate.getFieldNames());
+    return xmlFields;
+  }
+  
+  public List<SearchAxis> getUsedAxisList(SearchContext searchContext, String axisType) throws PdcException {
+    List<SearchAxis> searchAxis = getPdcBm().getPertinentAxisByInstanceId(searchContext, axisType ,getComponentId());
+    if(searchAxis != null && searchAxis.size() > 0){
+      for (int p = 0; p < searchAxis.size(); p++) {
+        SearchAxis axis = searchAxis.get(p);
+        axis.setValues(getPdcBm().getDaughters(Integer.toString(axis.getAxisId()), "0"));
+      }
+    }
+    return searchAxis;
+  }
+  
+  public List<String> getLdapAttributesList() throws Exception {
+    AbstractDomainDriver domainDriver = m_DDManager.getDomainDriver(getDomainId());
+    return domainDriver.getUserAttributes();
+  }
+  
+  public void confirmFieldsChoice(String[] fields) throws UtilException{
+    ServicesFactory.getWhitePagesService().createSearchFields(fields, getComponentId());
+  }
+  
+  public SortedSet<SearchField> getSearchFields() throws UtilException{
+    return ServicesFactory.getWhitePagesService().getSearchFields(getComponentId());
+  }
+  
+  public Set<String> getSearchFieldIds() throws UtilException{
+    Set<String> ids = new HashSet<String>();
+    SortedSet<SearchField> searchFields = getSearchFields();
+    if(searchFields != null && searchFields.size() > 0){
+      Iterator<SearchField> iter = searchFields.iterator();
+      while(iter.hasNext()){
+        SearchField field = iter.next();
+        ids.add(field.getFieldId());
+      }
+    }
+    return ids;
+  }
+  
+  public List<Card> getSearchResult(String query, SearchContext pdcContext, Hashtable<String, String> xmlFields, List<FieldDescription> fieldsQuery){
+    List<Card> cards = new ArrayList<Card>();
+    Collection<GlobalSilverContent> contents = null;
+    
+    try{
+      PublicationTemplate template = getTemplate(getComponentId());
+      String xmlTemplate = template.getName();
+      contents = ServicesFactory.getMixedSearchService().search(getSpaceId(), getComponentId(), getUserId(), query,
+          pdcContext, xmlFields, xmlTemplate, fieldsQuery, getLanguage());
+    }catch(Exception e){
+      SilverTrace.info("whitePages", "WhitePagesSessionController.getSearchResult", "whitePages.EX_SEARCH_GETRESULT", e);
+    }
+    
+    if(contents != null){
+      try{
+        Collection allCars = getCards();
+        HashMap<String, Card> map = new HashMap<String, Card>();
+        Iterator<Card> iter = allCars.iterator();
+        while(iter.hasNext()){
+          Card card = iter.next();
+          map.put(card.getPK().getId(), card);
+        }
+        
+        Iterator<GlobalSilverContent> iterator = contents.iterator();
+        while(iterator.hasNext()){
+          GlobalSilverContent content = iterator.next();
+          if(map.containsKey(content.getId())){
+            cards.add(map.get(content.getId()));
+          }
+        }
+        
+        if(cards != null){
+          
+          Iterator<Card> iterCards = cards.iterator();
+          while(iterCards.hasNext()){
+            Card card = iterCards.next();
+            UserRecord userRecord = card.readUserRecord();
+            if(userRecord != null){
+              Collection<SessionInfo> sessionInfos = SessionManager.getInstance().getConnectedUsersList();
+              for (SessionInfo varSi : sessionInfos) {
+                if ( varSi.m_User.equals(userRecord.getUserDetail())) {
+                  userRecord.setConnected(true);
+                  break;
+                }
+              }
+            }
+          }
+        }
+        
+      }catch(Exception e){
+        SilverTrace.info("whitePages", "WhitePagesSessionController.getSearchResult", "whitePages.EX_SEARCH_GETCARDS", e);
+      }
+    }
+    return cards;
+  }
+  
+  private PdcBm getPdcBm() {
+    if (pdcBm == null) {
+      pdcBm = (PdcBm) new PdcBmImpl();
+    }
+    return pdcBm;
+  }
+  
+  public HashMap<String, List<ClassifyValue>> getPdcPositions(int cardId) throws PdcException{
+    
+    HashMap<String, List<ClassifyValue>> result = new HashMap<String, List<ClassifyValue>>();
+    
+    List<ClassifyPosition> list = getPdcBm().getPositions(cardId, getComponentId());
+    
+    if(list != null && list.size() > 0){
+    
+      Iterator<ClassifyPosition> iter = list.iterator();
+      while(iter.hasNext()){
+        List        pathValues  = null;
+        String        path      = null;
+        ClassifyValue   value   = null;
+        ClassifyPosition position = iter.next();
+        List values = position.getValues();
+        for (int i = 0; i < values.size(); i++) {
+          value = (ClassifyValue)values.get(i);
+          pathValues  = value.getFullPath();
+          if(pathValues != null && pathValues.size() > 0){
+            List<ClassifyValue> valuesForPrincipal = null;
+            Value term = (Value) pathValues.get(0);
+            String principal = term.getName(getLanguage());
+            if(result.get(principal) != null){
+              valuesForPrincipal = result.get(principal);
+              valuesForPrincipal.add(value);
+              result.put(principal,valuesForPrincipal);
+            }else{
+              valuesForPrincipal =  new ArrayList<ClassifyValue>();
+              valuesForPrincipal.add(value);
+              result.put(principal,valuesForPrincipal);
+            }
+          }
+        }
+      }
+    }
+    return result;
+    
+  }
+  
 }

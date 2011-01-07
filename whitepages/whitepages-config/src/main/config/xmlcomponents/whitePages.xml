@@ -115,5 +115,15 @@
         <ParameterHelpEn></ParameterHelpEn>
       </ParameterHelp>
     </Parameter>
+    <Parameter>
+      <ParameterName>domainId</ParameterName>
+      <ParameterLabel>Domaine auquel rattachée l'annuaire</ParameterLabel>
+      <ParameterValue>0</ParameterValue>
+      <ParameterOrder>6</ParameterOrder>
+      <ParameterHelp>
+        <ParameterHelpFr>Définit le domaine auquel on souhaite rattacher l'annuaire.</ParameterHelpFr>
+        <ParameterHelpEn></ParameterHelpEn>
+      </ParameterHelp>
+    </Parameter>
   </Parameters>
 </WAComponent>

@@ -48,11 +48,7 @@ public class WhitePagesContentManager implements ContentInterface {
   /** Find all the SilverContent with the given SilverContentId */
   public List getSilverContentById(List ids, String peasId, String userId,
       List userRoles) {
-    if (isUser(userRoles)) {
-      boolean isAdmin = isAdmin(userRoles);
-      return getHeaders(makeIdArray(ids), isAdmin, peasId);
-    } else
-      return new ArrayList();
+      return getHeaders(makeIdArray(ids), peasId);
   }
 
   private ArrayList makeIdArray(List idList) {
@@ -97,7 +93,7 @@ public class WhitePagesContentManager implements ContentInterface {
     return false;
   }
 
-  private List getHeaders(List ids, boolean isAdmin, String instanceId) {
+  private List getHeaders(List ids, String instanceId) {
     Card card;
     ArrayList headers = new ArrayList();
     try {

@@ -34,6 +34,15 @@ import com.stratelia.webactiv.beans.admin.UserFull;
 
 public class UserRecord implements DataRecord {
   private UserDetail user = null;
+  private boolean connected = false;
+
+  public boolean isConnected() {
+    return connected;
+  }
+
+  public void setConnected(boolean connected) {
+    this.connected = connected;
+  }
 
   /**
    * A UserRecord is built from a UserDetail
