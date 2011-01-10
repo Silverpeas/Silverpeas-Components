@@ -294,17 +294,7 @@
           </c:if>
         </div>
 
-       <c:if test="${rssUrl ne null and not empty rssUrl}">
-          <div class="rss">
-          <table>
-            <tr>
-              <td><a href="<c:url value='${rssUrl}'/>"><img src="icons/rss.gif" border="0" alt="RSS"/></a></td>
-            </tr>
-          </table>
-          <fmt:message key="almanach.rssNext" var="rssNext"/>
-          <link rel="alternate" type="application/rss+xml" title="<c:out value='${componentLabel} : ${rssNext}'/>" href="<c:url value='${rssUrl}'/>"/>
-          </div>
-        </c:if>
+       
 
         <c:if test="${almanach.agregationUsed and not empty othersAlmanachs}">
           <div id="agregatedAlmanachs">
@@ -344,6 +334,20 @@
         </c:if>
 
         <div id="calendar"></div>
+		
+		
+		<c:if test="${rssUrl ne null and not empty rssUrl}">
+          <div class="rss">
+          <table>
+            <tr>
+              <td><a href="<c:url value='${rssUrl}'/>"><img src="icons/rss.gif" border="0" alt="RSS"/></a></td>
+            </tr>
+          </table>
+          <fmt:message key="almanach.rssNext" var="rssNext"/>
+          <link rel="alternate" type="application/rss+xml" title="<c:out value='${componentLabel} : ${rssNext}'/>" href="<c:url value='${rssUrl}'/>"/>
+          </div>
+        </c:if>
+
 
       </view:frame>
     </view:window>

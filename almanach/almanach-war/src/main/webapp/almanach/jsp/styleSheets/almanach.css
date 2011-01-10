@@ -33,10 +33,17 @@
  * (for example from one month to another one or from one week to another one).
  */
 #navigation {
-  float: left;
-  margin-left: 10px;
-  margin-bottom: 10px;
+ 	background-color:#EAEAEA;
+    padding: 5px;
+    width:99%;
+	height:24px;
+	position:relative;
 }
+
+.rss {  
+	position: relative;
+    float: right;
+    padding-top: 10px;}
 
 /**
  * #curentScope: the current time interval displayed by the calendar (for example, december).
@@ -47,18 +54,24 @@
 #today,
 #others {
   float: left;
-  border: 1px solid;
-  margin-right: 10px;
-  background-image:
-    url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
-  background-repeat: repeat-x;
+  margin-right:0px;
+  background:none no-repeat scroll left bottom #EAEAEA;
   white-space: nowrap;
   padding: 5px;
+  height:15px;
+  padding:0px 30px;
+  margin-top:7px;
+}
+#others {
+	position:absolute;
+	top:0px;
+	right:2px;
 }
 
 #currentScope {
-  width: 200px;
+  width: auto;
   text-align: center;
+  border-right:1px solid #CFCFCF;
 }
 
 #currentScope img {
@@ -71,10 +84,16 @@
   padding: 0px;
 }
 
-#today {
-  padding: 7px;
+#today a{ 
+	background-color: #FAD163;
+    color: #000000;
+    font-size: 11px;
+    font-weight: 100;
+    padding: 3px 11px;
 }
-
+#today a:hover, #today a:focus{ 
+	background-color: #FFFFCC;
+}
 /**
  * Default CSS class when printing an almanach title in the agregation area
  */
@@ -91,4 +110,19 @@
   background-position: right top;
 }
 
-#agregatedAlmanachs { clear:both;}
+#agregatedAlmanachs {
+	background: url("../../../util/icons/arrow/bg_tri.png") no-repeat scroll left bottom #EAEAEA;
+    padding: 5px 5px 14px;
+    width: 99%;
+	clear:both;
+	position:relative;
+	height:24px;
+}
+
+#agregatedAlmanachs table {
+	margin-right:30px;
+	float:right;
+	}
+	
+#agregatedAlmanachs input {
+	border:0;}
