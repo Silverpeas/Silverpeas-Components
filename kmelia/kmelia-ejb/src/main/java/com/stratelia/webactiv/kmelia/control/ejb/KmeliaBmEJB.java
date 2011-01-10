@@ -1682,10 +1682,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
     KmeliaHelper.checkIndex(pubDetail);
 
-    if (fathers == null
-        || fathers.isEmpty()
-        || (fathers.size() == 1 && ((NodePK) fathers.get(0)).getId()
-            .equals("1"))) {
+    if (fathers == null || fathers.isEmpty()
+        || (fathers.size() == 1 && "1".equals(fathers.get(0).getId()))) {
       // la publication est dans la corbeille
       pubDetail.setIndexOperation(IndexManager.NONE);
     }
@@ -1715,9 +1713,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         "root.MSG_GEN_ENTER_METHOD", "updateScope = " + updateScope);
     try {
       // if pubDetail is a clone
-      boolean isClone =
-          StringUtil.isDefined(pubDetail.getCloneId()) && !"-1".equals(pubDetail.getCloneId()) &&
-              !StringUtil.isDefined(pubDetail.getCloneStatus());
+      boolean isClone = StringUtil.isDefined(pubDetail.getCloneId()) && 
+          !"-1".equals(pubDetail.getCloneId()) && !StringUtil.isDefined(pubDetail.getCloneStatus());
       SilverTrace.info("kmelia", "KmeliaBmEJB.updatePublication()", "root.MSG_GEN_PARAM_VALUE",
           "This publication is clone ? " + isClone);
       if (isClone) {
@@ -1739,8 +1736,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           // la publication a été modifié par un superviseur
           // le créateur de la publi doit être averti
           String profile = KmeliaHelper.getProfile(getOrganizationController()
-              .getUserProfiles(pubDetail.getUpdaterId(),
-                  pubDetail.getPK().getInstanceId()));
+              .getUserProfiles(pubDetail.getUpdaterId(), pubDetail.getPK().getInstanceId()));
           if ("supervisor".equals(profile)) {
             sendModificationAlert(updateScope, pubDetail.getPK());
           }
@@ -3739,8 +3735,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     if (PublicationDetail.TO_VALIDATE.equals(pubDetail.getStatus())
         || PublicationDetail.TO_VALIDATE.equals(pubDetail.getCloneStatus())) {
       List<String> validators = getAllValidators(pubDetail.getPK(), -1);
-      String[] users = (String[]) validators.toArray(new String[validators
-          .size()]);
+      String[] users = (String[]) validators.toArray(new String[validators.size()]);
 
       // For each publisher create a todo
       addTodo(pubDetail, users);
@@ -3769,7 +3764,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       }
     }
     todo.setAttendees(attendees);
-    if (pubDetail.getUpdaterId() != null) {
+    if (StringUtil.isDefined(pubDetail.getUpdaterId())) {
       todo.setDelegatorId(pubDetail.getUpdaterId());
     } else {
       todo.setDelegatorId(pubDetail.getCreatorId());
@@ -3878,7 +3873,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       notifMetaData.addUserRecipient(userId);
       notifMetaData.setLink(getPublicationUrl(pubDetail));
       notifMetaData.setComponentId(pubDetail.getPK().getInstanceId());
-      notifyUsers(notifMetaData, pubDetail.getUpdaterId());
+      notifyUsers(notifMetaData, userId);
     }
   }
 
