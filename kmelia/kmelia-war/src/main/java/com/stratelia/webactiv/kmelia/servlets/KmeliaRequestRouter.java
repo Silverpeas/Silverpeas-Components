@@ -58,6 +58,7 @@ import com.silverpeas.thumbnail.control.ThumbnailController;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.ForeignPK;
+import com.silverpeas.util.MimeTypes;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.util.i18n.I18NHelper;
@@ -1989,12 +1990,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
     ResourceLocator attachmentResourceLocator = new ResourceLocator(
         "com.stratelia.webactiv.util.attachment.multilang.attachment",
         kmeliaScc.getLanguage());
-    // ResourceLocator multiparserResourceLocator = new
-    // ResourceLocator("com.stratelia.silverpeas.multipart.multipart","");
     FileItem fileItem = null;
     int versionType = DocumentVersion.TYPE_DEFAULT_VERSION;
-    // long maxFileSize = new
-    // Integer(multiparserResourceLocator.getString("MultipartParserMaxSize")).longValue();
+
     try {
       List<FileItem> items = FileUploadUtil.parseRequest(request);
       topicId = FileUploadUtil.getParameter(items, "topicId");
@@ -2038,7 +2036,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           // Zip contentType not detected under Firefox !
           if (request.getHeader("User-Agent") != null
               && request.getHeader("User-Agent").indexOf("MSIE") == -1) {
-            fileType = KmeliaSessionController.FILETYPE_ZIP1;
+            fileType = MimeTypes.ARCHIVE_MIME_TYPE;
           }
 
           fileSize = fileItem.getSize();
