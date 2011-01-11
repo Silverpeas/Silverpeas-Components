@@ -75,7 +75,7 @@ public class MetadataExtractorTest {
       MetaData meta = metadata.get(0);
       assertEquals("622", meta.getProperty());
       assertEquals("(IPTC) Crédit", meta.getLabel());
-      assertEquals("Crédit", meta.getValue().replace('ý', 'é'));
+      assertEquals("Crédit", meta.getValue().replace('ý', 'é').replace('È', 'é'));
 
       meta = metadata.get(1);
       assertEquals("634", meta.getProperty());
@@ -85,7 +85,8 @@ public class MetadataExtractorTest {
       meta = metadata.get(2);
       assertEquals("592", meta.getProperty());
       assertEquals("Créateur", meta.getLabel());
-      assertEquals("Nom du créateur : Tag_by_line", meta.getValue().replace('ý', 'é'));
+      assertEquals("Nom du créateur : Tag_by_line", 
+          meta.getValue().replace('ý', 'é').replace('È', 'é'));
 
 
 
