@@ -429,7 +429,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public boolean isImportFileAllowed() {
     String parameterValue = getComponentParameterValue("importFiles");
-    if (! StringUtil.isDefined(parameterValue)) {
+    if (!StringUtil.isDefined(parameterValue)) {
       return false;
     } else {
       if ("1".equalsIgnoreCase(parameterValue) || "3".equalsIgnoreCase(parameterValue)) {
@@ -498,15 +498,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     String parameterValue = this.getComponentParameterValue("useModifyOfficeFiles");
     if (parameterValue == null || parameterValue.length() <= 0) {
       return NO_UPDATE_MODE;
-    } else {
-      if (UPDATE_DIRECT_MODE.equalsIgnoreCase(parameterValue)) {
-        return UPDATE_DIRECT_MODE;
-      } else if (UPDATE_SHORTCUT_MODE.equalsIgnoreCase(parameterValue)) {
-        return UPDATE_SHORTCUT_MODE;
-      } else {
-        return NO_UPDATE_MODE;
-      }
     }
+    if (UPDATE_DIRECT_MODE.equalsIgnoreCase(parameterValue)) {
+      return UPDATE_DIRECT_MODE;
+    }
+    if (UPDATE_SHORTCUT_MODE.equalsIgnoreCase(parameterValue)) {
+      return UPDATE_SHORTCUT_MODE;
+    }
+    return NO_UPDATE_MODE;
   }
 
   public boolean isExportComponentAllowed() {
@@ -566,9 +565,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     String parameterValue = getComponentParameterValue("tabSeeAlso");
     if (!StringUtil.isDefined(parameterValue)) {
       return false;
-    } else {
-      return "yes".equals(parameterValue.toLowerCase());
     }
+    return "yes".equals(parameterValue.toLowerCase());
   }
 
   public boolean showUserNameInList() {
@@ -582,9 +580,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     String parameterValue = this.getComponentParameterValue("versionUseFileRights");
     if (parameterValue == null || parameterValue.length() <= 0) {
       return VER_USE_WRITERS_AND_READERS;
-    } else {
-      return parameterValue;
     }
+    return parameterValue;
   }
 
   public List<String> getInvisibleTabs() throws RemoteException {
@@ -761,6 +758,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   /**
    * **********************************************************************************
    */
+  /**
+   * 
+   * @param id
+   * @return
+   * @throws RemoteException 
+   */
   public synchronized TopicDetail getTopic(String id) throws RemoteException {
     return getTopic(id, true);
   }
@@ -770,8 +773,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (resetSessionPublication) {
       setSessionPublication(null);
     }
-    if (getSessionTopic() == null
-        || !id.equals(getSessionTopic().getNodeDetail().getNodePK().getId())) {
+    if (getSessionTopic() == null || !id.equals(
+        getSessionTopic().getNodeDetail().getNodePK().getId())) {
       indexOfFirstPubToDisplay = 0;
     }
 
@@ -788,27 +791,22 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     List<NodeDetail> treeview = null;
     if (isTreeviewEnabled() || displayNbPublis()) {
       if (isUserComponentAdmin()) {
-        treeview =
-            getKmeliaBm().getTreeview(getNodePK("0"), "admin", isCoWritingEnable(),
+        treeview = getKmeliaBm().getTreeview(getNodePK("0"), "admin", isCoWritingEnable(),
             isDraftVisibleWithCoWriting(), getUserId(), displayNbPublis(), false);
       } else {
-        treeview =
-            getKmeliaBm().getTreeview(getNodePK("0"), getProfile(), isCoWritingEnable(),
+        treeview = getKmeliaBm().getTreeview(getNodePK("0"), getProfile(), isCoWritingEnable(),
             isDraftVisibleWithCoWriting(), getUserId(), displayNbPublis(),
             isRightsOnTopicsEnabled());
       }
       setSessionTreeview(treeview);
     }
     if (displayNbPublis()) {
-      List<NodeDetail> children =
-          (List<NodeDetail>) currentTopic.getNodeDetail().getChildrenDetails();
-      for (int n = 0; n < children.size(); n++) {
-        NodeDetail node = children.get(n);
+      List<NodeDetail> children = (List<NodeDetail>) currentTopic.getNodeDetail().getChildrenDetails();
+      for (NodeDetail node : children) {
         if (node != null) {
           int index = treeview.indexOf(node);
           if (index != -1) {
             NodeDetail nodeTreeview = treeview.get(index);
-
             if (nodeTreeview != null) {
               node.setNbObjects(nodeTreeview.getNbObjects());
             }
@@ -822,16 +820,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public synchronized TopicDetail getPublicationTopic(String pubId) throws RemoteException {
-    TopicDetail currentTopic =
-        getKmeliaBm().getPublicationFather(getPublicationPK(pubId), isTreeStructure(), getUserId(),
-        isRightsOnTopicsEnabled());
+    TopicDetail currentTopic = getKmeliaBm().getPublicationFather(getPublicationPK(pubId),
+        isTreeStructure(), getUserId(), isRightsOnTopicsEnabled());
     setSessionTopic(currentTopic);
     applyVisibilityFilter();
     return currentTopic;
   }
 
   public synchronized List<NodeDetail> getAllTopics() throws RemoteException {
-    return getNodeBm().getSubTree(getNodePK("0"));
+    return getNodeBm().getSubTree(getNodePK(NodePK.ROOT_NODE_ID));
   }
 
   public synchronized List<NodeDetail> getTreeview() throws RemoteException {
@@ -844,12 +841,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public synchronized void flushTrashCan() throws RemoteException {
     SilverTrace.info("kmelia", "KmeliaSessionControl.flushTrashCan", "root.MSG_ENTRY_METHOD");
-    TopicDetail td =
-        getKmeliaBm().goTo(getNodePK("1"), getUserId(), false, getUserTopicProfile("1"),
-        isRightsOnTopicsEnabled());
+    TopicDetail td = getKmeliaBm().goTo(getNodePK(NodePK.BIN_NODE_ID), getUserId(), false,
+        getUserTopicProfile("1"), isRightsOnTopicsEnabled());
     Collection<UserPublication> pds = td.getPublicationDetails();
     Iterator<UserPublication> ipds = pds.iterator();
-
     SilverTrace.info("kmelia", "KmeliaSessionControl.flushTrashCan", "root.MSG_PARAM_VALUE",
         "NbPubli=" + pds.size());
     while (ipds.hasNext()) {
@@ -877,7 +872,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     nd.getNodePK().setSpace(getSpaceId());
     nd.getNodePK().setComponentName(getComponentId());
     nd.setCreatorId(getUserId());
-    // nd.setLanguage(getLanguage());
     return getKmeliaBm().addSubTopic(getNodePK(parentId), nd, alertType);
   }
 
@@ -890,10 +884,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       List<NodeDetail> treeview = getNodeBm().getSubTree(getNodePK(topicId));
       for (int n = 0; n < treeview.size(); n++) {
         node = treeview.get(n);
-
         deleteTopicRoles(node);
       }
-
       // Then, remove the topic itself
       getKmeliaBm().deleteTopic(getNodePK(topicId));
     }
@@ -909,12 +901,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     getKmeliaBm().changeTopicStatus(newStatus, getNodePK(topicId), recursiveChanges);
   }
 
-  /**************************************************************************************/
-  /* KMelia - Gestion des abonnements */
   /**
-   * **********************************************************************************
+   * 
+   * @return
+   * @throws RemoteException 
    */
-  public synchronized Collection getSubscriptionList() throws RemoteException {
+  public synchronized Collection<Collection<NodeDetail>> getSubscriptionList() throws
+      RemoteException {
     return getKmeliaBm().getSubscriptionList(getUserId(), getComponentId());
   }
 
@@ -926,10 +919,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     getKmeliaBm().addSubscription(getNodePK(topicId), getUserId());
   }
 
-  /**************************************************************************************/
-  /* KMelia - Gestion des publications */
   /**
-   * **********************************************************************************
+   * 
+   * @param pubId
+   * @return
+   * @throws RemoteException 
    */
   public synchronized PublicationDetail getPublicationDetail(String pubId) throws RemoteException {
     return getKmeliaBm().getPublicationDetail(getPublicationPK(pubId));
@@ -964,8 +958,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return result;
   }
 
-  public synchronized String createPublicationIntoTopic(PublicationDetail pubDetail,
-      String fatherId)
+  public synchronized String createPublicationIntoTopic(PublicationDetail pubDetail, String fatherId)
       throws RemoteException {
     pubDetail.getPK().setSpace(getSpaceId());
     pubDetail.getPK().setComponentName(getComponentId());
@@ -995,7 +988,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (isCloneNeeded()) {
       clonePublication(pubDetail);
     } else {
-      if (getSessionTopic() == null || getSessionTopic().getNodePK().getId().equals("1")) {
+      if (getSessionTopic() == null || NodePK.BIN_NODE_ID.equals(
+          getSessionTopic().getNodePK().getId())) {
         // la publication est dans la corbeille
         pubDetail.setIndexOperation(IndexManager.NONE);
       }
@@ -1075,7 +1069,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (getSessionTopic() != null) {
       nodeId = getSessionTopic().getNodeDetail().getNodePK().getId();
     }
-    if ("1".equals(nodeId)) {
+    if (NodePK.BIN_NODE_ID.equals(nodeId)) {
       // la publication sera supprimée définitivement, il faut donc supprimer les fichiers joints
       try {
         WysiwygController.deleteWysiwygAttachments(getSpaceId(), getComponentId(), pubId);
@@ -1125,11 +1119,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       String infoId = pubDetail.getInfoId();
       if (!isInteger(infoId)) {
         String xmlFormShortName = infoId;
-
-        PublicationTemplate pubTemplate =
-            getPublicationTemplateManager().getPublicationTemplate(
-            pubDetail.getPK().getInstanceId()
-            + ":" + xmlFormShortName);
+        PublicationTemplate pubTemplate = getPublicationTemplateManager().getPublicationTemplate(
+            pubDetail.getPK().getInstanceId() + ":" + xmlFormShortName);
 
         RecordSet set = pubTemplate.getRecordSet();
         DataRecord data = set.getRecord(pubDetail.getPK().getId());
@@ -1170,23 +1161,19 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return getKmeliaBm().getModelDetail(modelId);
   }
 
-  /*
-   * public synchronized void createInfoDetail(String pubId, String modelId, InfoDetail infos)
-   * throws RemoteException { getKmeliaBm().createInfoDetail(getPublicationPK(pubId), modelId,
-   * infos); }
-   */
   public synchronized void createInfoModelDetail(String pubId, String modelId, InfoDetail infos)
       throws RemoteException {
-    pubId = getSessionPubliOrClone().getPublication().getPublicationDetail().getPK().getId();
+    String currentPubId = pubId;
+    currentPubId = getSessionPubliOrClone().getPublication().getPublicationDetail().getPK().getId();
     if (isCloneNeeded()) {
-      pubId = clonePublication();
+      currentPubId = clonePublication();
     }
     if (getSessionClone() != null) {
-      ModelPK modelPK = new ModelPK(modelId, getPublicationPK(pubId));
-      getKmeliaBm().getPublicationBm().createInfoModelDetail(getPublicationPK(pubId), modelPK,
+      ModelPK modelPK = new ModelPK(modelId, getPublicationPK(currentPubId));
+      getKmeliaBm().getPublicationBm().createInfoModelDetail(getPublicationPK(currentPubId), modelPK,
           infos);
     } else {
-      getKmeliaBm().createInfoModelDetail(getPublicationPK(pubId), modelId, infos);
+      getKmeliaBm().createInfoModelDetail(getPublicationPK(currentPubId), modelId, infos);
     }
     refreshSessionPubliAndClone();
   }
@@ -1194,15 +1181,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public void refreshSessionPubliAndClone() throws RemoteException {
     if (getSessionClone() != null) {
       // refresh du clone
-      UserCompletePublication ucp =
-          getUserCompletePublication(getSessionClone().getPublication().getPublicationDetail().getPK().
-          getId());
+      UserCompletePublication ucp = getUserCompletePublication(getSessionClone().getPublication().
+          getPublicationDetail().getPK().getId());
       setSessionClone(ucp);
     } else {
       // refresh de la publi de référence
-      UserCompletePublication ucp =
-          getUserCompletePublication(getSessionPublication().getPublication().getPublicationDetail().
-          getPK().getId());
+      UserCompletePublication ucp = getUserCompletePublication(getSessionPublication().
+          getPublication().getPublicationDetail().getPK().getId());
       setSessionPublication(ucp);
     }
   }
@@ -1212,14 +1197,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public synchronized void updateInfoDetail(String pubId, InfoDetail infos) throws RemoteException {
-    pubId = getSessionPubliOrClone().getPublication().getPublicationDetail().getPK().getId();
+    String currentPubId = pubId;
+    currentPubId = getSessionPubliOrClone().getPublication().getPublicationDetail().getPK().getId();
     if (isCloneNeeded()) {
-      pubId = clonePublication();
+      currentPubId = clonePublication();
     }
     if (getSessionClone() != null) {
-      getKmeliaBm().getPublicationBm().updateInfoDetail(getPublicationPK(pubId), infos);
+      getKmeliaBm().getPublicationBm().updateInfoDetail(getPublicationPK(currentPubId), infos);
     } else {
-      getKmeliaBm().updateInfoDetail(getPublicationPK(pubId), infos);
+      getKmeliaBm().updateInfoDetail(getPublicationPK(currentPubId), infos);
     }
     refreshSessionPubliAndClone();
   }
@@ -1498,12 +1484,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         new PublicationPK("useless", getComponentId()), publication_default_sorting);
   }
 
-  public Collection<PublicationDetail> getAllPublicationsByTopic(PublicationPK pubPK,
-      List fatherIds)
+  public Collection<PublicationDetail> getAllPublicationsByTopic(PublicationPK pubPK, List fatherIds)
       throws RemoteException {
-    Collection<PublicationDetail> result =
-        getKmeliaBm().getPublicationBm().getDetailsByFatherIdsAndStatus((ArrayList) fatherIds,
-        pubPK,
+    Collection<PublicationDetail> result = getKmeliaBm().getPublicationBm().
+        getDetailsByFatherIdsAndStatus((ArrayList) fatherIds, pubPK,
         "P.pubUpdateDate desc, P.pubId desc", PublicationDetail.VALID);
     SilverTrace.info("kmelia", "KmeliaSessionController.getAllPublicationsByTopic()",
         "root.MSG_PARAM_VALUE", "publis=" + result.toString());
@@ -2083,8 +2067,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             new Document(new DocumentPK(-1, "useless", getComponentId()), getPublicationPK(pubId),
             attachment.getLogicalName(), attachment.getInfo(), 0,
             Integer.parseInt(getUserId()), new Date(), "", getComponentId(),
-            (ArrayList<Worker>) workers,
-            new ArrayList(), 0, 0);
+            (ArrayList<Worker>) workers, new ArrayList(), 0, 0);
 
         // Version creation
         version =
@@ -2141,10 +2124,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return infoLinks.size();
   }
 
-  /**************************************************************************************/
-  /* KMelia - Gestion des objets session */
   /**
-   * **********************************************************************************
+   * 
+   * @param topicDetail 
    */
   public void setSessionTopic(TopicDetail topicDetail) {
     this.sessionTopic = topicDetail;
@@ -2222,9 +2204,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public UserCompletePublication getSessionPubliOrClone() {
     if (getSessionClone() != null) {
       return getSessionClone();
-    } else {
-      return getSessionPublication();
     }
+    return getSessionPublication();
   }
 
   public String getSessionPath() {
@@ -2342,24 +2323,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     // param permettant de filtrer les users ayant acces
     // au composant)
     PairObject hostComponentName = new PairObject(getComponentLabel(), null); // set nom du
-    // composant pour
-    // browsebar
-    // (PairObject(nom_composant,
-    // lien_vers_composant))
-    // NB : seul le 1er
-    // element est
-    // actuellement
-    // utilisé
-    // (alertUserPeas est
-    // toujours présenté
-    // en popup => pas de
-    // lien sur nom du
-    // composant)
+    // composant pour browsebar (PairObject(nom_composant, lien_vers_composant))
+    // NB : seul le 1er element est actuellement utilisé (alertUserPeas est toujours présenté
+    // en popup => pas de lien sur nom du composant)
     sel.setHostComponentName(hostComponentName);
     sel.setNotificationMetaData(getAlertNotificationMetaData(pubId)); // set NotificationMetaData
-    // contenant les informations
-    // à notifier
-    // fin initialisation de AlertUser
+    // contenant les informations à notifier fin initialisation de AlertUser
     // l'url de nav vers alertUserPeas et demandée à AlertUser et retournée
     return AlertUser.getAlertUserURL();
   }
@@ -2372,7 +2341,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     AlertUser sel = getAlertUser();
     String pubId = getSessionPublication().getPublication().getPublicationDetail().getPK().getId();
     sel.setNotificationMetaData(getAlertNotificationMetaData(pubId, attachmentOrDocumentId,
-        isVersionning)); // set NotificationMetaData
+        isVersionning));
     return AlertUser.getAlertUserURL();
   }
 
@@ -2443,13 +2412,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public int getValidationType() {
     if (isTargetValidationEnable()) {
       return KmeliaHelper.VALIDATION_TARGET_1;
-    } else if (isTargetMultiValidationEnable()) {
-      return KmeliaHelper.VALIDATION_TARGET_N;
-    } else if (isCollegiateValidationEnable()) {
-      return KmeliaHelper.VALIDATION_COLLEGIATE;
-    } else {
-      return KmeliaHelper.VALIDATION_CLASSIC;
     }
+    if (isTargetMultiValidationEnable()) {
+      return KmeliaHelper.VALIDATION_TARGET_N;
+    }
+    if (isCollegiateValidationEnable()) {
+      return KmeliaHelper.VALIDATION_COLLEGIATE;
+    }
+    return KmeliaHelper.VALIDATION_CLASSIC;
   }
 
   public boolean isCoWritingEnable() {
@@ -2723,16 +2693,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public void setWizardLast(String wizardLast) {
     this.wizardLast = wizardLast;
   }
-
-  /**************************************************************************************
-   * /
-   **************************************************************************************/
-  /**************************************************************************************/
-  /* Specific methods for Kmax */
-  /***************************************************************************************/
-  /** Parameter of kmax **/
+  
   /**
    * Parameter for time Axis visibility
+   * @return 
    */
   public boolean isTimeAxisUsed() {
     return StringUtil.getBooleanValue(getComponentParameterValue("timeAxisUsed"));
@@ -2740,6 +2704,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   /**
    * Parameter for fields visibility of the publication
+   * @return 
    */
   public boolean isFieldDescriptionVisible() {
     String paramValue = getComponentParameterValue("useDescription");
@@ -2766,11 +2731,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         || getSettings().getBoolean("showPubVersion", true);
   }
 
-  /**************************************************************************************/
-  /* Interface - Gestion des axes */
-  /**
-   * **********************************************************************************
-   */
   public List<Integer> getTimeAxisKeys() {
     if (this.timeAxis == null) {
       ResourceLocator timeSettings =
@@ -2835,11 +2795,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return (List<UserPublication>) getKmeliaBm().getUnbalancedPublications(getComponentId());
   }
 
-  /*
-  /* Kmax - Positions under axis */
-  /**
-   * **********************************************************************************
-   */
   public synchronized NodePK addPosition(String fatherId, NodeDetail position)
       throws RemoteException {
     SilverTrace.info(
@@ -2858,11 +2813,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     getKmeliaBm().deletePosition(positionId, getComponentId());
   }
 
-  /*
-  /* Kmax - Reindexation */
-  /**
-   * **********************************************************************************
-   */
   public synchronized void indexKmax(String componentId) throws RemoteException {
     getKmeliaBm().indexKmax(componentId);
   }
@@ -3510,7 +3460,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     try {
       NodePK currentNodePK = nodePK;
       PublicationDetail publi = completePub.getPublicationDetail();
-      if(!isCutted) {
+      if (!isCutted) {
         publi.setCloneId(null);
         publi.setCloneStatus("");
       }
@@ -3538,7 +3488,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           getPublicationBm().removeAllFather(publi.getPK());
           getPublicationBm().addFather(publi.getPK(), currentNodePK);
         } else {
-          movePublication(completePub, nodePK, publi, fromId, fromComponentId, fromForeignPK,
+          movePublication(completePub, currentNodePK, publi, fromId, fromComponentId, fromForeignPK,
               fromPubPK, toForeignPK, toPubPK, imagesSubDirectory, thumbnailsSubDirectory,
               toAbsolutePath, fromAbsolutePath);
         }
@@ -3547,10 +3497,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         publi.setUpdaterId(getUserId()); // ignore initial parameters
 
         String id = null;
-        if (nodePK == null) {
+        if (currentNodePK == null) {
           id = createPublication(publi);
         } else {
-          id = createPublicationIntoTopic(publi, nodePK.getId());
+          id = createPublicationIntoTopic(publi, currentNodePK.getId());
           List<NodePK> fatherPKs = (List<NodePK>) getPublicationBm().getAllFatherPK(publi.getPK());
           if (nodePKsToPaste != null) {
             fatherPKs.removeAll(nodePKsToPaste);
@@ -3602,9 +3552,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
                 + xmlFormShortName, xmlFormShortName + ".xml");
 
             // Paste images
-            Hashtable<String, String> imageIds =
-                AttachmentController.copyAttachmentByCustomerPKAndContext(fromPubPK, fromPubPK,
-                "XMLFormImages");
+            Hashtable<String, String> imageIds = AttachmentController.
+                copyAttachmentByCustomerPKAndContext(fromPubPK, fromPubPK, "XMLFormImages");
 
             if (imageIds != null) {
               fileIds.putAll(imageIds);
@@ -3615,17 +3564,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             wysiwygField.cloneContents(fromComponentId, fromId, getComponentId(), id);
 
             // get xmlContent to paste
-            PublicationTemplate pubTemplateFrom =
-                getPublicationTemplateManager().getPublicationTemplate(fromComponentId + ":"
-                + xmlFormShortName);
-            IdentifiedRecordTemplate recordTemplateFrom =
-                (IdentifiedRecordTemplate) pubTemplateFrom.getRecordSet().getRecordTemplate();
+            PublicationTemplate pubTemplateFrom = getPublicationTemplateManager().
+                getPublicationTemplate(fromComponentId + ":" + xmlFormShortName);
+            IdentifiedRecordTemplate recordTemplateFrom = (IdentifiedRecordTemplate) pubTemplateFrom.
+                getRecordSet().getRecordTemplate();
 
-            PublicationTemplate pubTemplate =
-                getPublicationTemplateManager().getPublicationTemplate(getComponentId() + ":"
-                + xmlFormShortName);
-            IdentifiedRecordTemplate recordTemplate =
-                (IdentifiedRecordTemplate) pubTemplate.getRecordSet().getRecordTemplate();
+            PublicationTemplate pubTemplate = getPublicationTemplateManager().getPublicationTemplate(
+                getComponentId() + ":" + xmlFormShortName);
+            IdentifiedRecordTemplate recordTemplate = (IdentifiedRecordTemplate) pubTemplate.
+                getRecordSet().getRecordTemplate();
 
             // paste xml content
             GenericRecordSetManager.getInstance().cloneRecord(recordTemplateFrom, fromId,
@@ -3647,35 +3594,26 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private void pasteThumbnail(PublicationDetail publi, String thumbnailsSubDirectory,
       String toAbsolutePath, String fromAbsolutePath, String id, ThumbnailDetail vignette)
       throws IOException, ThumbnailException {
-    ThumbnailDetail thumbDetail =
-        new ThumbnailDetail(publi.getPK().getInstanceId(), Integer.valueOf(id),
-        ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-    String from =
-        fromAbsolutePath + thumbnailsSubDirectory + File.separator
+    ThumbnailDetail thumbDetail = new ThumbnailDetail(publi.getPK().getInstanceId(), Integer.valueOf(
+        id), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
+    String from = fromAbsolutePath + thumbnailsSubDirectory + File.separatorChar
         + vignette.getOriginalFileName();
 
-    String type =
-        vignette.getOriginalFileName().substring(
-        vignette.getOriginalFileName().indexOf(".") + 1,
-        vignette.getOriginalFileName().length());
-    String newOriginalImage =
-        new Long(new Date().getTime()).toString() + "." + type;
+    String type = vignette.getOriginalFileName().substring(vignette.getOriginalFileName().indexOf(
+        '.') + 1, vignette.getOriginalFileName().length());
+    String newOriginalImage = String.valueOf(System.currentTimeMillis()) + "." + type;
 
-    String to = toAbsolutePath + thumbnailsSubDirectory + File.separator + newOriginalImage;
+    String to = toAbsolutePath + thumbnailsSubDirectory + File.separatorChar + newOriginalImage;
     FileRepositoryManager.copyFile(from, to);
     thumbDetail.setOriginalFileName(newOriginalImage);
 
     // then copy thumnbnail image if exists
     if (vignette.getCropFileName() != null) {
-      from =
-          fromAbsolutePath + thumbnailsSubDirectory + File.separator
-          + vignette.getCropFileName();
-      type =
-          vignette.getCropFileName().substring(vignette.getCropFileName().indexOf(".") + 1,
-          vignette.getCropFileName().length());
-      String newThumbnailImage =
-          new Long(new Date().getTime()).toString() + "." + type;
-      to = toAbsolutePath + thumbnailsSubDirectory + File.separator + newThumbnailImage;
+      from = fromAbsolutePath + thumbnailsSubDirectory + File.separatorChar + vignette.
+          getCropFileName();
+      type = FilenameUtils.getExtension(vignette.getCropFileName());
+      String newThumbnailImage = String.valueOf(System.currentTimeMillis()) + "." + type;
+      to = toAbsolutePath + thumbnailsSubDirectory + File.separatorChar + newThumbnailImage;
       FileRepositoryManager.copyFile(from, to);
       thumbDetail.setCropFileName(newThumbnailImage);
     }
@@ -4014,7 +3952,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
                     false,
                     getUserId(),
                     false,
-                    StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(
+                    StringUtil.getBooleanValue(getOrganizationController().
+                    getComponentParameterValue(
                     instanceId, "rightsOnTopics")));
               }
 
@@ -4186,13 +4125,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isTopicHaveUpdateChainDescriptor(String id) {
+    String currentId = id;
     boolean haveDescriptor = false;
     // regarder si ce fichier existe
     if (useUpdateChain()) {
-      if (!StringUtil.isDefined(id)) {
-        id = getSessionTopic().getNodePK().getId();
+      if (!StringUtil.isDefined(currentId)) {
+        currentId = getSessionTopic().getNodePK().getId();
       }
-      File descriptorFile = new File(getUpdateChainDescriptorFilename(id));
+      File descriptorFile = new File(getUpdateChainDescriptorFilename(currentId));
       if (descriptorFile.exists()) {
         haveDescriptor = true;
       }
@@ -4308,12 +4248,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public String getWysiwygOnTopic(String id) {
+    String currentId = id;
     if (isWysiwygOnTopicsEnabled()) {
       try {
-        if (!StringUtil.isDefined(id)) {
-          id = getSessionTopic().getNodePK().getId();
+        if (!StringUtil.isDefined(currentId)) {
+          currentId = getSessionTopic().getNodePK().getId();
         }
-        return WysiwygController.load(getComponentId(), "Node_" + id, getLanguage());
+        return WysiwygController.load(getComponentId(), "Node_" + currentId, getLanguage());
       } catch (WysiwygException e) {
         return "";
       }
@@ -4397,7 +4338,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     OrganizationController orgaController = new OrganizationController();
     String[] compoIds = orgaController.getCompoId("gallery");
     for (int c = 0; c < compoIds.length; c++) {
-      if (StringUtil.getBooleanValue(orgaController.getComponentParameterValue("gallery" + compoIds[c],
+      if (StringUtil.getBooleanValue(orgaController.getComponentParameterValue(
+          "gallery" + compoIds[c],
           "viewInWysiwyg"))) {
         if (galleries == null) {
           galleries = new ArrayList<ComponentInstLight>();
