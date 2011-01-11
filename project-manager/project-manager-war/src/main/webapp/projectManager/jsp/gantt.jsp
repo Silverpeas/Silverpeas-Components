@@ -36,6 +36,7 @@
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <c:set var="parentTaskId" value="" />
 <c:if test="${not empty(requestScope['ActionMere'])}">
@@ -43,13 +44,6 @@
   <c:set var="parentTaskId" value="${parentTask.id}" />
 </c:if>
 
-<%
-TaskDetail actionMere 	= (TaskDetail) request.getAttribute("ActionMere");
-TaskDetail oldest 		= (TaskDetail) request.getAttribute("OldestAction");
-String 		 role = (String) request.getAttribute("Role");
-Date 		   startDate	= (Date) request.getAttribute("StartDate");
-
-%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
@@ -205,64 +199,6 @@ $(document).ready(function(){
 
 <%-- Import Legend --%>
 <c:import url="gantt_legend.jsp" />
-
-<%
-	Date actionStartDate	= new Date();
-	Date actionEndDate		= null;
-	
-	if (actionMere != null)
-	{
-		actionStartDate		= actionMere.getDateDebut();
-		actionEndDate		= actionMere.getDateFin();
-	}
-	if (oldest != null)
-	{
-		actionStartDate		= oldest.getDateDebut();
-		actionEndDate		= oldest.getDateFin();
-	}
-	
-	if (startDate==null) {
-		startDate = actionStartDate;
-	}
-
-	Calendar actionStartCalendar = new GregorianCalendar(1980, 1 , 1);
-	Calendar actionEndCalendar = new GregorianCalendar(1980, 1 , 1);
-	Calendar startCalendar = new GregorianCalendar(1980, 1 , 1);
-	Calendar endCalendar = new GregorianCalendar(1980, 1 , 1);
-	Calendar nextStartCalendar = new GregorianCalendar(1980, 1 , 1);
-	Calendar lastStartCalendar = new GregorianCalendar(1980, 1 , 1);
-
-	// If start or end date is not defined ==> let the dates at 1/1/1980
-	if (actionStartDate != null && actionEndDate != null) {
-		actionStartCalendar.setTime(actionStartDate);
-		actionEndCalendar.setTime(actionEndDate);
-	}
-
-	startCalendar.setTime(startDate);
-	startCalendar.set(GregorianCalendar.DATE, 1);
-	
-	endCalendar.setTime(startCalendar.getTime());
-	endCalendar.add(GregorianCalendar.MONTH, 1);
-	endCalendar.add(GregorianCalendar.DATE, -1);
-	
-	nextStartCalendar.setTime(startCalendar.getTime());
-	nextStartCalendar.add(GregorianCalendar.MONTH, 1);
-	
-	lastStartCalendar.setTime(startCalendar.getTime());
-	lastStartCalendar.add(GregorianCalendar.MONTH, -1);
-	
-	String dispStartDate = resource.getOutputDate(startCalendar.getTime());
-	String dispEndDate = resource.getOutputDate(endCalendar.getTime());
-	String strNextStartDate = resource.getInputDate(nextStartCalendar.getTime());
-	String strLastStartDate = resource.getInputDate(lastStartCalendar.getTime());
-	
-	int nbDaysDisplayed = endCalendar.get(GregorianCalendar.DATE)-startCalendar.get(GregorianCalendar.DATE);
-	nbDaysDisplayed = startCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-	
-	// Calculate width of cells
-	int cellWidth = 315/nbDaysDisplayed - 1;
-%>
-
   
 <%-- -------------------------------------------------------------------------- --%>
 <%--                          MONTH VIEW                          --%>
@@ -279,9 +215,9 @@ $(document).ready(function(){
           <tr>
             <td colspan="4" class="noBorder"></td>
             <td colspan="31" id="month_nav" >
-                <a title="mois précédent" href="ToGantt?Id=<c:out value="${parentTaskId}"/>&StartDate=<%=strLastStartDate%>"><img alt="&lt;&lt;" src="<%=resource.getIcon("projectManager.gauche")%>" /></a>
-                <fmt:formatDate value="${requestScope['StartDate']}" pattern="MMMMMMMMMM yyyy" />
-                <a title="mois suivant" href="ToGantt?Id=<c:out value="${parentTaskId}"/>&StartDate=<%=strNextStartDate%>"><img alt="&gt;&gt;" src="<%=resource.getIcon("projectManager.droite")%>" /></a>
+                <a title="<fmt:message key="projectManager.gantt.view.month.previous"/>" href="ToGantt?Id=<c:out value="${parentTaskId}"/>&StartDate=<fmt:formatDate value="${requestScope['BeforeMonth']}" pattern="dd/MM/yyyy" />"><img alt="&lt;" src="<c:out value="${ctxPath}"/><fmt:message key="projectManager.gauche" bundle="${icons}" />" /></a>
+                <fmt:formatDate value="${requestScope['StartDate']}" pattern="MMMMMMMMMM yyyy" /> 
+                <a title="<fmt:message key="projectManager.gantt.view.month.next"/>" href="ToGantt?Id=<c:out value="${parentTaskId}"/>&StartDate=<fmt:formatDate value="${requestScope['AfterMonth']}" pattern="dd/MM/yyyy" />"><img alt="&gt;" src="<c:out value="${ctxPath}"/><fmt:message key="projectManager.droite" bundle="${icons}" />" /></a>
             </td>
           </tr>
           <!-- Display Week number line -->
@@ -388,7 +324,7 @@ $(document).ready(function(){
       <td class="task_wording">
         <div>
     <c:if test="${task.estDecomposee == 1}">
-      <a class="linkSee" href="ToGantt?Id=<c:out value="${task.id}" />"><img border="0" src="<%=resource.getIcon("projectManager.treePlus")%>" alt="plus"/></a>&nbsp;
+      <a class="linkSee" href="ToGantt?Id=<c:out value="${task.id}" />"><img border="0" src="<c:out value="${ctxPath}"/><fmt:message key="projectManager.treePlus" bundle="${icons}"/>" alt="+"/></a>&nbsp;
     </c:if>
       <a href="ViewTask?Id=<c:out value="${task.id}" />" title="<fmt:message key="projectManager.gantt.tasks.responsible"/> : <c:out value="${task.responsableFullName}" />"><c:out value="${task.nom}" /></a>
         </div>

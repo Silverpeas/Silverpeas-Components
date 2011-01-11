@@ -36,6 +36,7 @@
 <%-- Set resource bundle --%>
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <c:set var="parentTaskId" value="" />
 <c:if test="${not empty(requestScope['ActionMere'])}">
@@ -45,12 +46,6 @@
 
 <c:set var="viewMode" value="${requestScope['ViewMode']}"/>
 
-<%
-TaskDetail actionMere   = (TaskDetail) request.getAttribute("ActionMere");
-TaskDetail oldest     = (TaskDetail) request.getAttribute("OldestAction");
-String     role = (String) request.getAttribute("Role");
-Date       startDate  = (Date) request.getAttribute("StartDate");
-%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
@@ -168,10 +163,10 @@ $(document).ready(function(){
     <c:set var="quarterClass" value="" />
     <c:set var="yearClass" value="" />
     <c:choose>
-      <c:when test="${fn:contains(requestScope['ViewMode'], 'year')}">
+      <c:when test="${fn:contains(viewMode, 'year')}">
         <c:set var="yearClass" value="active" />
       </c:when>
-      <c:when test="${fn:contains(requestScope['ViewMode'], 'quarter')}">
+      <c:when test="${fn:contains(viewMode, 'quarter')}">
         <c:set var="quarterClass" value="active" />
       </c:when>
       <c:otherwise>
@@ -204,60 +199,7 @@ $(document).ready(function(){
 
 <%-- Import Legend --%>
 <c:import url="gantt_legend.jsp" />
-  
-<%
-  Date actionStartDate  = new Date();
-  Date actionEndDate    = null;
-  
-  if (actionMere != null)
-  {
-    actionStartDate   = actionMere.getDateDebut();
-    actionEndDate   = actionMere.getDateFin();
-  }
-  if (oldest != null)
-  {
-    actionStartDate   = oldest.getDateDebut();
-    actionEndDate   = oldest.getDateFin();
-  }
-  
-  if (startDate==null) {
-    startDate = actionStartDate;
-  }
 
-  Calendar actionStartCalendar = new GregorianCalendar(1980, 1 , 1);
-  Calendar actionEndCalendar = new GregorianCalendar(1980, 1 , 1);
-  Calendar startCalendar = new GregorianCalendar(1980, 1 , 1);
-  Calendar endCalendar = new GregorianCalendar(1980, 1 , 1);
-  Calendar nextStartCalendar = new GregorianCalendar(1980, 1 , 1);
-  Calendar lastStartCalendar = new GregorianCalendar(1980, 1 , 1);
-
-  // If start or end date is not defined ==> let the dates at 1/1/1980
-  if (actionStartDate != null && actionEndDate != null) {
-    actionStartCalendar.setTime(actionStartDate);
-    actionEndCalendar.setTime(actionEndDate);
-  }
-
-  startCalendar.setTime(startDate);
-  startCalendar.set(GregorianCalendar.DATE, 1);
-  
-  endCalendar.setTime(startCalendar.getTime());
-  endCalendar.add(GregorianCalendar.MONTH, 1);
-  endCalendar.add(GregorianCalendar.DATE, -1);
-  
-  nextStartCalendar.setTime(startCalendar.getTime());
-  nextStartCalendar.add(GregorianCalendar.MONTH, 1);
-  
-  lastStartCalendar.setTime(startCalendar.getTime());
-  lastStartCalendar.add(GregorianCalendar.MONTH, -1);
-  
-  String dispStartDate = resource.getOutputDate(startCalendar.getTime());
-  String dispEndDate = resource.getOutputDate(endCalendar.getTime());
-  String strNextStartDate = resource.getInputDate(nextStartCalendar.getTime());
-  String strLastStartDate = resource.getInputDate(lastStartCalendar.getTime());
-  
-  int nbDaysDisplayed = endCalendar.get(GregorianCalendar.DATE)-startCalendar.get(GregorianCalendar.DATE);
-  nbDaysDisplayed = startCalendar.getActualMaximum(Calendar.DAY_OF_MONTH);
-%>
 
 <%-- -------------------------------------------------------------------------- --%>
 <%--                          YEAR VIEW                          --%>
@@ -276,13 +218,39 @@ $(document).ready(function(){
     <td colspan="3" class="hautFrame">
       <table class="ganttMois" width="100%" border="0" cellspacing="0" cellpadding="0">
         <thead>
+    <%-- Initialize view message--%> 
+    <c:set var="monthsHeader" value=""/>
+    <c:set var="monthsBefore" value=""/>
+    <c:set var="monthsAfter" value=""/>
+    <c:set var="dateBefore" value=""/>
+    <c:set var="dateAfter" value=""/>
+    <c:choose>
+      <c:when test="${fn:contains(viewMode, 'year')}">
+        <fmt:message var="monthsHeader" key="projectManager.gantt.view.year.header" />
+        <fmt:message var="monthsBefore" key="projectManager.gantt.view.year.previous" />
+        <fmt:message var="monthsAfter" key="projectManager.gantt.view.year.next" />
+        <fmt:formatDate var="dateBefore" value="${requestScope['BeforeYear']}" pattern="dd/MM/yyyy" />
+        <fmt:formatDate var="dateAfter" value="${requestScope['AfterYear']}" pattern="dd/MM/yyyy" />
+      </c:when>
+      <c:otherwise>
+		    <fmt:message var="monthsHeader" key="projectManager.gantt.view.quarter.header" />
+		    <fmt:message var="monthsBefore" key="projectManager.gantt.view.quarter.previous" />
+		    <fmt:message var="monthsAfter" key="projectManager.gantt.view.quarter.next" />
+        <fmt:formatDate var="dateBefore" value="${requestScope['BeforeQuarter']}" pattern="dd/MM/yyyy" />
+        <fmt:formatDate var="dateAfter" value="${requestScope['AfterQuarter']}" pattern="dd/MM/yyyy" />
+      </c:otherwise>
+    </c:choose>
+
           <!-- Display month link -->
           <tr>
             <td colspan="4" class="noBorder"></td>
             <td colspan="<c:out value="${totalDays}" />" id="month_nav" >
-               <a title="mois précédent" href="ToGantt?viewMode=<c:out value="${viewMode}" />&Id=<c:out value="${parentTaskId}"/>&StartDate=<%=strLastStartDate%>"><img alt="&lt;&lt;" src="<%=resource.getIcon("projectManager.gauche")%>" /></a>
-               <span><fmt:message  key="projectManager.gantt.view.quarter.year" /></span>&nbsp;<fmt:formatDate value="${requestScope['StartDate']}" pattern="MMMMMMMMMM yyyy" /> 
-               <a title="mois suivant" href="ToGantt?viewMode=<c:out value="${viewMode}" />&Id=<c:out value="${parentTaskId}"/>&StartDate=<%=strNextStartDate%>"><img alt="&gt;&gt;" src="<%=resource.getIcon("projectManager.droite")%>" /></a>
+              <a title="<c:out value="${monthsBefore}"/>" href="ToGantt?viewMode=<c:out value="${viewMode}" />&Id=<c:out value="${parentTaskId}"/>&StartDate=<c:out value="${dateBefore}"/>"><img alt="&lt;&lt;" src="<c:out value="${ctxPath}"/><fmt:message key="projectManager.left.double" bundle="${icons}" />" /></a>
+              <a title="<fmt:message key="projectManager.gantt.view.month.previous"/>" href="ToGantt?viewMode=<c:out value="${viewMode}" />&Id=<c:out value="${parentTaskId}"/>&StartDate=<fmt:formatDate value="${requestScope['BeforeMonth']}" pattern="dd/MM/yyyy" />"><img alt="&lt;" src="<c:out value="${ctxPath}"/><fmt:message key="projectManager.gauche" bundle="${icons}" />" /></a> 
+               <span><c:out value="${monthsHeader}" /> 
+               </span>&nbsp; <fmt:formatDate value="${requestScope['StartDate']}" pattern="MMMMMMMMMM yyyy" />
+               <a title="<fmt:message key="projectManager.gantt.view.month.next"/>" href="ToGantt?viewMode=<c:out value="${viewMode}" />&Id=<c:out value="${parentTaskId}"/>&StartDate=<fmt:formatDate value="${requestScope['AfterMonth']}" pattern="dd/MM/yyyy" />"><img alt="&gt;" src="<c:out value="${ctxPath}"/><fmt:message key="projectManager.droite" bundle="${icons}" />" /></a>
+               <a title="<c:out value="${monthsAfter}"/>" href="ToGantt?viewMode=<c:out value="${viewMode}" />&Id=<c:out value="${parentTaskId}"/>&StartDate=<c:out value="${dateAfter}"/>"><img alt="&gt;&gt;" src="<c:out value="${ctxPath}"/><fmt:message key="projectManager.right.double" bundle="${icons}" />" /></a>
             </td>
           </tr>
           <!-- Display Month name -->
@@ -380,7 +348,7 @@ $(document).ready(function(){
       <td class="task_wording">
         <div>
     <c:if test="${task.estDecomposee == 1}">
-      <a class="linkSee" href="ToGantt?viewMode=<c:out value="${viewMode}" />&Id=<c:out value="${task.id}" />"><img border="0" src="<%=resource.getIcon("projectManager.treePlus")%>" alt="plus"/></a>&nbsp;
+      <a class="linkSee" href="ToGantt?viewMode=<c:out value="${viewMode}" />&Id=<c:out value="${task.id}" />"><img border="0" src="<c:out value="${ctxPath}"/><fmt:message key="projectManager.treePlus" bundle="${icons}"/>" alt="+"/></a>&nbsp;
     </c:if>
       <a href="ViewTask?Id=<c:out value="${task.id}" />" title="<fmt:message key="projectManager.gantt.tasks.responsible"/> : <c:out value="${task.responsableFullName}" />"><c:out value="${task.nom}" /></a>
         </div>

@@ -63,7 +63,13 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
+/**
+ * This class contains all the business model for project manager component
+ */
 public class ProjectManagerSessionController extends AbstractComponentSessionController {
+  /**
+   * Project manager EJB
+   */
   private ProjectManagerBm projectManagerBm = null;
   private TaskDetail currentTask = null;
   private Boolean projectDefined = null;
@@ -197,6 +203,12 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
     return tasks;
   }
 
+  /**
+   * Retrieve the list of tasks which are not cancelled
+   * @param id the current root task identifier
+   * @return the list of tasks which are not cancelled
+   * @throws RemoteException
+   */
   public List<TaskDetail> getTasksNotCancelled(String id) throws RemoteException {
     List<TaskDetail> tasks = getProjectManagerBm().getTasksNotCancelledByMotherId(
         getComponentId(), Integer.parseInt(id), getFiltre());
@@ -869,10 +881,11 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       }
       oldNumWeekInYear = numWeekInYear;
     }
-    MonthVO curMonth = new MonthVO(weeks, Integer.toString(curDayCal.get(Calendar.MONTH)), nbDaysDisplayed);
+    MonthVO curMonth =
+        new MonthVO(weeks, Integer.toString(curDayCal.get(Calendar.MONTH)), nbDaysDisplayed);
     return curMonth;
   }
-  
+
   /**
    * @param startDate If null parameter we get the current month system.
    * @return a quarter which contains 3 month value object starting from start date month
@@ -892,16 +905,16 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   }
 
   /**
-   * 
    * @param nbMonth the number of month to return starting from curDate's month
-   * @param curDate the current starting month date. If null parameter we get the current month system.
-   * @return a list 
+   * @param curDate the current starting month date. If null parameter we get the current month
+   * system.
+   * @return a list
    * @throws ParseException
    */
   private List<MonthVO> getNbMonth(int nbMonth, Date curDate) throws ParseException {
     // Result list decaration
     List<MonthVO> months = new ArrayList<MonthVO>();
-    
+
     if (nbMonth <= 0) {
       return months;
     }
@@ -918,6 +931,95 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
       curCal.add(Calendar.MONTH, 1);
     }
     return months;
+  }
+
+  /**
+   * Retrieve the most relevant date if the current date parameter is null.<br/>
+   * @param startDate the string representation of the date. If null we will retrieve the most
+   * relevant date in order to display current tasks
+   * @return the most relevant date
+   * @throws ParseException
+   * @see getProjectManagerRelevantDate method
+   */
+  public Date getMostRelevantDate(String startDate) throws ParseException {
+    Date curDate;
+    if (startDate != null) {
+      curDate = this.uiDate2Date(startDate);
+    } else {
+      // Search for the most relevant date
+      curDate = getProjectManagerRelevantDate();
+    }
+    return curDate;
+  }
+
+  /**
+   * Here is a method which uses existing service to retrieve the most relevant date.
+   * We already uses this algorithm :<br/>
+   * <ol>
+   * <li>if tasks exist in the current month we return current date</li>
+   * <li>else if we display following months if contains tasks</li>
+   * <li>else if we display preceding months if contains tasks</li>
+   * <li>else if we dispay current month</li>
+   * </ol>
+   * @return the most relevant date.
+   */
+  private Date getProjectManagerRelevantDate() {
+    // Initialize date variable
+    Calendar cal = Calendar.getInstance();
+    Date relevantDate = cal.getTime();
+    cal.set(Calendar.DAY_OF_MONTH, 1);
+    Date firstDayMonth = cal.getTime();
+    cal.add(Calendar.MONTH, 1);
+    Date lastDayMonth = cal.getTime();
+    
+    // Initialize loop variable
+    Date nextDate = null;
+    Date precedingDate= null;
+    boolean isAfterCurrentMonth = false;
+    boolean isBeforeCurrentMonth = false;
+    
+    // Search for the most relevant date
+    try {
+      List<TaskDetail> tasks = this.getAllTasks();
+      for (TaskDetail taskDetail : tasks) {
+        if (taskDetail.getMereId() != -1) {
+          Date beginDate = taskDetail.getDateDebut();
+          Date endDate = taskDetail.getDateFin();
+          if (beginDate.after(lastDayMonth)) {
+            // Current task is after current month
+            isAfterCurrentMonth = true;
+            if (nextDate != null) {
+              if (beginDate.before(nextDate)) {
+                nextDate = beginDate;
+              }
+            } else {
+              nextDate = beginDate;
+            }
+          } else if (endDate.before(firstDayMonth)) {
+            isBeforeCurrentMonth = true;
+            if (precedingDate != null) {
+              if (endDate.after(precedingDate)) {
+                precedingDate = beginDate;
+              }
+            } else {
+              precedingDate = endDate;
+            }
+          } else {
+            //It's the current month so we return it and stop the algorithm
+            return firstDayMonth;
+          }          
+        }
+      }
+    } catch (RemoteException e) {
+      SilverTrace.warn(getComponentName(), ProjectManagerSessionController.class.getName(),
+          "Problem to retrieve all the tasks", e);
+    }
+    if (isAfterCurrentMonth) {
+      relevantDate = nextDate;
+    } else if (isBeforeCurrentMonth) {
+      relevantDate = precedingDate;
+    }
+    return relevantDate;
   }
 
 }

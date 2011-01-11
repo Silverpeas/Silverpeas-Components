@@ -411,7 +411,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
 
         destination = rootDestination + "comments.jsp";
       } else if (function.equals("ToGantt")) {
-        // TODO retrieve all data to display GANT diagram.
+        // retrieve all data to display GANT diagram.
         String id = request.getParameter("Id");
         String viewMode = request.getParameter("viewMode");
         if (!StringUtil.isDefined(viewMode)) {
@@ -426,27 +426,43 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
           actionMere = projectManagerSC.getTaskMere(id);
         }
 
-        Date curDate;
-        if (startDate != null) {
-          curDate = projectManagerSC.uiDate2Date(startDate);
-        } else {
-          curDate = Calendar.getInstance().getTime();
-        }
+        Date curDate = projectManagerSC.getMostRelevantDate(startDate);
         request.setAttribute("StartDate", curDate);
         
-        String viewDestination = "gantt.jsp";
+        // Prepare date navigation
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(curDate);
+        calendar.add(Calendar.MONTH, -1);
+        request.setAttribute("BeforeMonth", calendar.getTime());
+        calendar.add(Calendar.MONTH, 2);
+        request.setAttribute("AfterMonth", calendar.getTime());
 
+        // Compute view destination
+        String viewDestination = "gantt.jsp";
         if ("month".equalsIgnoreCase(viewMode)) {
           MonthVO curMonth = projectManagerSC.getMonthVO(curDate);
           request.setAttribute("MonthVO", curMonth);
         } else if ("quarter".equalsIgnoreCase(viewMode)) {
           request.setAttribute("MonthsVO", projectManagerSC.getQuarterMonth(curDate));
           viewDestination = "gantt_months.jsp";
+          //Prepare date navigation
+          calendar.setTime(curDate);
+          calendar.add(Calendar.MONTH, -3);
+          request.setAttribute("BeforeQuarter", calendar.getTime());
+          calendar.add(Calendar.MONTH, 6);
+          request.setAttribute("AfterQuarter", calendar.getTime());
         } else if ("year".equalsIgnoreCase(viewMode)) {
           request.setAttribute("MonthsVO", projectManagerSC.getYearMonth(curDate));
           viewDestination = "gantt_months.jsp";
+          //Prepare date navigation
+          calendar.setTime(curDate);
+          calendar.add(Calendar.YEAR, -1);
+          request.setAttribute("BeforeYear", calendar.getTime());
+          calendar.add(Calendar.YEAR, 2);
+          request.setAttribute("AfterYear", calendar.getTime());
         }
 
+        // Get all the tasks
         List<TaskDetail> tasks = projectManagerSC.getTasksNotCancelled(id);
         TaskDetail oldestAction = getOldestTask(tasks);
 

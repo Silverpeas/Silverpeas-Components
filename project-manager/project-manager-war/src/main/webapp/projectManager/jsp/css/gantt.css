@@ -196,6 +196,7 @@ td.day { text-align:center; }
 
 #legendLabelId {
 	cursor:pointer;
+	float:right;
 }
 
 #legende, #legende ul { 
