@@ -980,6 +980,10 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     UserDetail userDetail = getOrganizationController().getUserDetail(userId);
     return (userDetail != null ? (userDetail.getFirstName() + " " + userDetail.getLastName()).trim() : null);
   }
+  
+  public UserDetail getAuthor(String userId) {
+    return getOrganizationController().getUserDetail(userId);
+  }
 
   public String getAdminIds() {
     return NotificationSender.getIdsLineFromUserArray(getOrganizationController().getUsers(
