@@ -214,7 +214,19 @@ void displayUserOperations(String id, KmeliaSessionController kmeliaScc, Graphic
       TabbedPane tabbedPane = gef.getTabbedPane();
       tabbedPane.addTab(resources.getString("GML.publication"), routerUrl+"ViewPublication?PubId="+id, action.equals("View") || action.equals("ViewPublication"), enabled);
       if (invisibleTabs.indexOf(kmeliaScc.TAB_SEE_ALSO) == -1 && !kmaxMode) {
-      		String nbSeeAlso = Integer.toString(kmeliaScc.getSessionPublication().getPublication().getLinkList().size());
+    	  List seeAlsoList = kmeliaScc.getSessionPublication().getPublication().getLinkList();
+    	  List authorizedSeeAlsoList = new ArrayList();
+                ForeignPK curFPK = null;
+                String curComponentId = null;
+                for (int cpt=0; cpt < seeAlsoList.size(); cpt++) {
+                  curFPK = (ForeignPK) seeAlsoList.get(cpt);
+                  curComponentId = curFPK.getComponentName();
+                  if (curComponentId != null && kmeliaScc.getOrganizationController().isComponentAvailable(curComponentId, kmeliaScc.getUserId())) {
+                    authorizedSeeAlsoList.add(curFPK);
+                  }
+                }
+    	  
+              String nbSeeAlso = Integer.toString(authorizedSeeAlsoList.size());
 			tabbedPane.addTab(kmeliaScc.getString("PubReferenceeParAuteur")+" ("+nbSeeAlso+")", routerUrl+"SeeAlso?PubId="+id, action.equals("LinkAuthorView") || action.equals("SameSubjectView") || action.equals("SameTopicView"), enabled);
 			i++;
       }
