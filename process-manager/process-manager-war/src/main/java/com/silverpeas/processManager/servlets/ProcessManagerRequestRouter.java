@@ -574,11 +574,13 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       String strEnlightedStep = request.getParameter("enlightedStep");
       request.setAttribute("enlightedStep", strEnlightedStep);
 
+      HistoryStep[] steps = session.getCurrentProcessInstance().getHistorySteps();
       if ("all".equalsIgnoreCase(strEnlightedStep)) {
         List<HistoryStepContent> stepContents = new ArrayList<HistoryStepContent>();
         for (int i = 0; i < stepVisibles.length; i++) {
           com.silverpeas.form.Form form = session.getStepForm(i);
           PagesContext context = getFormContext("dummy", "0", session);
+          context.setObjectId("Step"+steps[i].getId());
           DataRecord data = session.getStepRecord(i);
 
           HistoryStepContent stepContent = new HistoryStepContent(form, context, data);
@@ -592,6 +594,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
           com.silverpeas.form.Form form = session.getStepForm(enlightedStep);
           request.setAttribute("form", form);
           PagesContext context = getFormContext("dummy", "0", session);
+          context.setObjectId("Step"+steps[enlightedStep].getId());
           request.setAttribute("context", context);
           DataRecord data = session.getStepRecord(enlightedStep);
           request.setAttribute("data", data);
