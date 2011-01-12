@@ -10,13 +10,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Statement;
 
-import javax.naming.NamingException;
 
 import org.dbunit.database.IDatabaseConnection;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.slf4j.LoggerFactory;
 
 import com.silverpeas.components.model.AbstractTestDao;
@@ -30,12 +25,7 @@ public class QuestionManagerTest extends AbstractTestDao {
 
   public QuestionManagerTest() {
   }
-  @BeforeClass
-  public static void generalSetUp() throws IOException, NamingException {
-    AbstractTestDao.configureJNDIDatasource();
-  }
 
-  @Before
   @Override
   public void setUp() throws Exception {
     configureJNDIDatasource();
@@ -49,12 +39,12 @@ public class QuestionManagerTest extends AbstractTestDao {
       Statement st = databaseConnection.getConnection().createStatement();
       st.execute(loadDDL(filename));
     } catch (Exception e) {
-      LoggerFactory.getLogger(QuestionManagerTest.class).error("Error creating tables", e); 
+      LoggerFactory.getLogger(QuestionManagerTest.class).error("Error creating tables", e);
     } finally {
       try {
         getDatabaseTester().closeConnection(databaseConnection);
       } catch (Exception e) {
-        // ignore  
+        // ignore
       }
     }
   }
@@ -74,14 +64,9 @@ public class QuestionManagerTest extends AbstractTestDao {
     return buffer.toString();
   }
 
-  @After
-  public void tearDown() {
-  }
-
   /**
    * Test of getInstance method, of class QuestionManager.
    */
-  @Test
   public void testGetInstance() {
     System.out.println("getInstance");
     QuestionManager expResult = QuestionManager.getInstance();
@@ -93,23 +78,22 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of createQuestion method, of class QuestionManager.
    */
-  /*@Test
+  /*
   public void testCreateQuestion() throws Exception {
-    System.out.println("createQuestion");
-    QuestionManager instance = QuestionManager.getInstance();
-    Question question = new Question("5", INSTANCE_ID);
-    assertEquals(1, getConnection().getRowCount(question._getTableName()));
-    question.setTitle(RandomGenerator.getRandomString());
-    long expResult = 0L;
-    long result = instance.createQuestion(question);
-    assertEquals(expResult, result);
-    assertEquals(2, getConnection().getRowCount(question._getTableName()));
+  System.out.println("createQuestion");
+  QuestionManager instance = QuestionManager.getInstance();
+  Question question = new Question("5", INSTANCE_ID);
+  assertEquals(1, getConnection().getRowCount(question._getTableName()));
+  question.setTitle(RandomGenerator.getRandomString());
+  long expResult = 0L;
+  long result = instance.createQuestion(question);
+  assertEquals(expResult, result);
+  assertEquals(2, getConnection().getRowCount(question._getTableName()));
   }*/
-
   /**
    * Test of deleteQuestionIndex method, of class QuestionManager.
    */
-  /* @Test
+  /*
   public void testDeleteQuestionIndex() {
   System.out.println("deleteQuestionIndex");
   Question question = null;
@@ -122,7 +106,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of createReply method, of class QuestionManager.
    */
-  /* @Test
+  /*
   public void testCreateReply() throws Exception {
   System.out.println("createReply");
   Reply reply = null;
@@ -137,7 +121,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of createReplyIndex method, of class QuestionManager.
    */
-  /* @Test
+  /*
   public void testCreateReplyIndex() {
   System.out.println("createReplyIndex");
   Reply reply = null;
@@ -149,7 +133,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of deleteReplyIndex method, of class QuestionManager.
    */
-  /*  @Test
+  /*
   public void testDeleteReplyIndex() {
   System.out.println("deleteReplyIndex");
   Reply reply = null;
@@ -161,7 +145,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of closeQuestions method, of class QuestionManager.
    */
-  /*  @Test
+  /*
   public void testCloseQuestions() throws Exception {
   System.out.println("closeQuestions");
   Collection questionIds = null;
@@ -173,7 +157,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of openQuestions method, of class QuestionManager.
    */
-  /*  @Test
+  /*
   public void testOpenQuestions() throws Exception {
   System.out.println("openQuestions");
   Collection questionIds = null;
@@ -185,7 +169,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of updateQuestionRecipients method, of class QuestionManager.
    */
-  /* @Test
+  /*
   public void testUpdateQuestionRecipients() throws Exception {
   System.out.println("updateQuestionRecipients");
   Question question = null;
@@ -197,7 +181,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of updateQuestionRepliesPublicStatus method, of class QuestionManager.
    */
-  /* @Test
+  /*
   public void testUpdateQuestionRepliesPublicStatus() throws Exception {
   System.out.println("updateQuestionRepliesPublicStatus");
   Collection questionIds = null;
@@ -209,7 +193,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of updateQuestionRepliesPrivateStatus method, of class QuestionManager.
    */
-  /* @Test
+  /*
   public void testUpdateQuestionRepliesPrivateStatus() throws Exception {
   System.out.println("updateQuestionRepliesPrivateStatus");
   Collection questionIds = null;
@@ -221,7 +205,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of updateRepliesPublicStatus method, of class QuestionManager.
    */
-  /*  @Test
+  /*
   public void testUpdateRepliesPublicStatus() throws Exception {
   System.out.println("updateRepliesPublicStatus");
   Collection replyIds = null;
@@ -234,7 +218,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of updateRepliesPrivateStatus method, of class QuestionManager.
    */
-  /* @Test
+  /*
   public void testUpdateRepliesPrivateStatus() throws Exception {
   System.out.println("updateRepliesPrivateStatus");
   Collection replyIds = null;
@@ -247,7 +231,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of updateQuestion method, of class QuestionManager.
    */
-  /* @Test
+  /*
   public void testUpdateQuestion() throws Exception {
   System.out.println("updateQuestion");
   Question question = null;
@@ -259,7 +243,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of updateReply method, of class QuestionManager.
    */
-  /*@Test
+  /*
   public void testUpdateReply() throws Exception {
   System.out.println("updateReply");
   Reply reply = null;
@@ -271,7 +255,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of deleteQuestionAndReplies method, of class QuestionManager.
    */
-  /* @Test
+  /*
   public void testDeleteQuestionAndReplies() throws Exception {
   System.out.println("deleteQuestionAndReplies");
   Collection questionIds = null;
@@ -283,7 +267,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of getQuestion method, of class QuestionManager.
    */
-  /* @Test
+  /*
   public void testGetQuestion() throws Exception {
   System.out.println("getQuestion");
   long questionId = 0L;
@@ -297,7 +281,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of getQuestionAndReplies method, of class QuestionManager.
    */
-  /*  @Test
+  /*
   public void testGetQuestionAndReplies() throws Exception {
   System.out.println("getQuestionAndReplies");
   long questionId = 0L;
@@ -311,7 +295,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of getQuestionsByIds method, of class QuestionManager.
    */
-  /* @Test
+  /*
   public void testGetQuestionsByIds() throws Exception {
   System.out.println("getQuestionsByIds");
   ArrayList ids = null;
@@ -325,7 +309,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of getQuestionReplies method, of class QuestionManager.
    */
-  /*@Test
+  /*
   public void testGetQuestionReplies() throws Exception {
   System.out.println("getQuestionReplies");
   long questionId = 0L;
@@ -339,7 +323,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of getQuestionPublicReplies method, of class QuestionManager.
    */
-  /*@Test
+  /*
   public void testGetQuestionPublicReplies() throws Exception {
   System.out.println("getQuestionPublicReplies");
   long questionId = 0L;
@@ -353,7 +337,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of getQuestionPrivateReplies method, of class QuestionManager.
    */
-  /* @Test
+  /*
   public void testGetQuestionPrivateReplies() throws Exception {
   System.out.println("getQuestionPrivateReplies");
   long questionId = 0L;
@@ -367,7 +351,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of getQuestionRecipients method, of class QuestionManager.
    */
-  /*@Test
+  /*
   public void testGetQuestionRecipients() throws Exception {
   System.out.println("getQuestionRecipients");
   long questionId = 0L;
@@ -381,7 +365,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of getReply method, of class QuestionManager.
    */
-  /*@Test
+  /*
   public void testGetReply() throws Exception {
   System.out.println("getReply");
   long replyId = 0L;
@@ -395,7 +379,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of getSendQuestions method, of class QuestionManager.
    */
-  /*@Test
+  /*
   public void testGetSendQuestions() throws Exception {
   System.out.println("getSendQuestions");
   String userId = "";
@@ -410,7 +394,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of getReceiveQuestions method, of class QuestionManager.
    */
-  /* @Test
+  /*
   public void testGetReceiveQuestions() throws Exception {
   System.out.println("getReceiveQuestions");
   String userId = "";
@@ -425,7 +409,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of getQuestions method, of class QuestionManager.
    */
-  /* @Test
+  /*
   public void testGetQuestions() throws Exception {
   System.out.println("getQuestions");
   String instanceId = "";
@@ -439,7 +423,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of getAllQuestions method, of class QuestionManager.
    */
-  /*@Test
+  /*
   public void testGetAllQuestions() throws Exception {
   System.out.println("getAllQuestions");
   String instanceId = "";
@@ -453,7 +437,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of getAllQuestionsByCategory method, of class QuestionManager.
    */
-  /*@Test
+  /*
   public void testGetAllQuestionsByCategory() throws Exception {
   System.out.println("getAllQuestionsByCategory");
   String instanceId = "";
@@ -468,7 +452,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of getPublicQuestions method, of class QuestionManager.
    */
-  /* @Test
+  /*
   public void testGetPublicQuestions() throws Exception {
   System.out.println("getPublicQuestions");
   String instanceId = "";
@@ -482,7 +466,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of createQuestionReply method, of class QuestionManager.
    */
-  /*@Test
+  /*
   public void testCreateQuestionReply() throws Exception {
   System.out.println("createQuestionReply");
   Question question = null;
@@ -497,7 +481,7 @@ public class QuestionManagerTest extends AbstractTestDao {
   /**
    * Test of isSortable method, of class QuestionManager.
    */
-  /*@Test
+  /*
   public void testIsSortable() {
   System.out.println("isSortable");
   String instanceId = "";

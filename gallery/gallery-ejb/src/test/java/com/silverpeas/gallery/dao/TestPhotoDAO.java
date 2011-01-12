@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.dbunit.database.IDatabaseConnection;
-import org.junit.Test;
 
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.gallery.model.PhotoDetail;
@@ -37,53 +36,41 @@ import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.gallery.model.PhotoWithStatus;
 import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
 import com.silverpeas.socialNetwork.model.SocialInformation;
-import java.io.IOException;
-import javax.naming.NamingException;
-import org.junit.Before;
-import org.junit.BeforeClass;
 
 public class TestPhotoDAO extends AbstractTestDao {
 
-  @BeforeClass
-  public static void generalSetUp() throws IOException, NamingException {
-    AbstractTestDao.configureJNDIDatasource();
-  }
-
-  @Before
-  @Override
-  public void setUp() throws Exception {
-    super.prepareData();
-  }
-
-  @Test
   public void testGetAllPhotosIdbyUserid() throws Exception {
     IDatabaseConnection connexion = null;
-    this.setUp();       
-    
+    this.setUp();
+
     String userid = "1";
     try {
       connexion = getConnection();
       PhotoDetail ciel = PhotoDAO.getPhoto(connexion.getConnection(), 0);
       PhotoDetail fleur = PhotoDAO.getPhoto(connexion.getConnection(), 3);
       PhotoDetail mer = PhotoDAO.getPhoto(connexion.getConnection(), 4);
-      SocialInformationGallery socialCiel = new SocialInformationGallery(new PhotoWithStatus(ciel, true));
-      SocialInformationGallery socialFleur = new SocialInformationGallery( new PhotoWithStatus(fleur, false));
-      SocialInformationGallery socialmer1 = new SocialInformationGallery(new PhotoWithStatus(mer, true));
-      SocialInformationGallery socialmer2 = new SocialInformationGallery( new PhotoWithStatus(mer, false));
-       
-      List<SocialInformation> photos = PhotoDAO.getAllPhotosIDbyUserid(connexion.getConnection(), userid, 0, 4);
+      SocialInformationGallery socialCiel = new SocialInformationGallery(new PhotoWithStatus(ciel,
+          true));
+      SocialInformationGallery socialFleur = new SocialInformationGallery(new PhotoWithStatus(fleur,
+          false));
+      SocialInformationGallery socialmer1 = new SocialInformationGallery(new PhotoWithStatus(mer,
+          true));
+      SocialInformationGallery socialmer2 = new SocialInformationGallery(new PhotoWithStatus(mer,
+          false));
+
+      List<SocialInformation> photos = PhotoDAO.getAllPhotosIDbyUserid(connexion.getConnection(),
+          userid, 0, 4);
       assertNotNull("Photos should exist", photos);
       assertEquals("Should have 4 date creation or update ", 4, photos.size());
       assertEquals(photos.get(0), socialmer1);
       assertEquals(photos.get(1), socialmer2);
       assertEquals(photos.get(2), socialFleur);
       assertEquals(photos.get(3), socialCiel);
-     } finally {
+    } finally {
       closeConnection(connexion);
     }
   }
-  
-  @Test
+
   public void testGetPhotoDetail() throws Exception {
     IDatabaseConnection connexion = null;
     this.setUp();
@@ -120,41 +107,43 @@ public class TestPhotoDAO extends AbstractTestDao {
       closeConnection(connexion);
     }
   }
-  
-  
-  @Test
-  public void testgetSocialInformationsList() throws Exception{
+
+  public void testgetSocialInformationsList() throws Exception {
     IDatabaseConnection connexion = null;
-    this.setUp();       
+    this.setUp();
     connexion = getConnection();
     List<String> availableList = new ArrayList<String>();
     availableList.add("gallery25");
     availableList.add("gallery26");
-    List <String> listOfuserId = new ArrayList<String>();
+    List<String> listOfuserId = new ArrayList<String>();
     listOfuserId.add("1");
     try {
-    PhotoDetail ciel = PhotoDAO.getPhoto(connexion.getConnection(), 0);
-    PhotoDetail fleur = PhotoDAO.getPhoto(connexion.getConnection(), 3);
-    PhotoDetail montagne= PhotoDAO.getPhoto(connexion.getConnection(), 2);
-    SocialInformationGallery socialCiel = new SocialInformationGallery(new PhotoWithStatus(ciel, true));
-    SocialInformationGallery socialFleur = new SocialInformationGallery( new PhotoWithStatus(fleur, false));
-    SocialInformationGallery socialmontagne = new SocialInformationGallery(new PhotoWithStatus(montagne, true));
+      PhotoDetail ciel = PhotoDAO.getPhoto(connexion.getConnection(), 0);
+      PhotoDetail fleur = PhotoDAO.getPhoto(connexion.getConnection(), 3);
+      PhotoDetail montagne = PhotoDAO.getPhoto(connexion.getConnection(), 2);
+      SocialInformationGallery socialCiel = new SocialInformationGallery(new PhotoWithStatus(ciel,
+          true));
+      SocialInformationGallery socialFleur = new SocialInformationGallery(new PhotoWithStatus(fleur,
+          false));
+      SocialInformationGallery socialmontagne = new SocialInformationGallery(new PhotoWithStatus(
+          montagne, true));
 
-     
-    List<SocialInformation> photos = PhotoDAO.getSocialInformationsListOfMyContacts(connexion.getConnection(), listOfuserId, null, 2,0);
-    assertNotNull("Photos should exist", photos);
-    photos = PhotoDAO.getSocialInformationsListOfMyContacts(connexion.getConnection(), listOfuserId, availableList, 4,0);
-    assertNotNull("Photos should exist", photos);
-    assertEquals(photos.size(),3);
-    assertEquals(photos.get(0),socialmontagne);
-    assertEquals(photos.get(1),socialCiel);
-    assertEquals(photos.get(2),socialFleur);
+
+      List<SocialInformation> photos = PhotoDAO.getSocialInformationsListOfMyContacts(connexion.
+          getConnection(), listOfuserId, null, 2, 0);
+      assertNotNull("Photos should exist", photos);
+      photos = PhotoDAO.getSocialInformationsListOfMyContacts(connexion.getConnection(),
+          listOfuserId, availableList, 4, 0);
+      assertNotNull("Photos should exist", photos);
+      assertEquals(photos.size(), 3);
+      assertEquals(photos.get(0), socialmontagne);
+      assertEquals(photos.get(1), socialCiel);
+      assertEquals(photos.get(2), socialFleur);
     } finally {
-     closeConnection(connexion);
-   }
-    
-  }
+      closeConnection(connexion);
+    }
 
+  }
 
   @Override
   protected String getDatasetFileName() {

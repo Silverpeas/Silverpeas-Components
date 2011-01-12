@@ -27,10 +27,6 @@
  */
 package com.silverpeas.wiki;
 
-import java.io.IOException;
-import javax.naming.NamingException;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import com.silverpeas.components.model.AbstractTestDao;
 import com.silverpeas.wiki.control.WikiPageDAO;
 import com.silverpeas.wiki.control.model.PageDetail;
@@ -39,7 +35,6 @@ import java.util.Collection;
 import java.util.Properties;
 import javax.naming.Context;
 import org.apache.commons.io.FileUtils;
-import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -50,8 +45,7 @@ import static org.mockito.Mockito.*;
  */
 public class WikiInstanciatorTest extends AbstractTestDao {
 
-  @Rule
-  public TemporaryFolder folder = new TemporaryFolder();
+  private TemporaryFolder folder = new TemporaryFolder();
 
   public WikiInstanciatorTest() {
   }
@@ -61,15 +55,9 @@ public class WikiInstanciatorTest extends AbstractTestDao {
     return "test-wiki-dao-dataset.xml";
   }
 
-  @BeforeClass
-  public static void generalSetUp() throws IOException, NamingException {
-    AbstractTestDao.configureJNDIDatasource();
-  }
-
-  @Before
   @Override
   public void setUp() throws Exception {
-    super.prepareData();
+    super.setUp();
     Properties props = new Properties();
     props.load(this.getClass().getClassLoader().getResourceAsStream(
         "jndi.properties"));
@@ -77,18 +65,16 @@ public class WikiInstanciatorTest extends AbstractTestDao {
     props = new Properties();
     props.load(this.getClass().getClassLoader().getResourceAsStream(
         "jdbc.properties"));
-    String jndiPath =  props.getProperty("jndi.name", "");
-    File jndiDir = new File(jndiBaseDir + File.separatorChar +
-            jndiPath.substring(0, jndiPath.lastIndexOf('/')));
+    String jndiPath = props.getProperty("jndi.name", "");
+    File jndiDir = new File(jndiBaseDir + File.separatorChar + jndiPath.substring(0, jndiPath.
+        lastIndexOf('/')));
     jndiDir.mkdirs();
     super.setUp();
   }
 
-
   /**
    * Test of createPages method, of class WikiInstanciator.
    */
-  @org.junit.Test
   public void testCreatePages() throws Exception {
     System.out.println("createPages");
     String instanceId = "wiki18";
@@ -108,10 +94,9 @@ public class WikiInstanciatorTest extends AbstractTestDao {
     verify(dao).createPage(aboutPage);
     verify(dao).createPage(approvalRequiredForPageChanges);
 
-    Collection  uncompressedFiles = FileUtils.listFiles(directory, new String[]{"txt"}, true);
+    Collection uncompressedFiles = FileUtils.listFiles(directory, new String[]{"txt"}, true);
     assertNotNull(uncompressedFiles.size());
     assertEquals(29, uncompressedFiles.size());
 
   }
-
 }

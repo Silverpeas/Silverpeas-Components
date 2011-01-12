@@ -30,17 +30,6 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
   public ProjectManagerDAOTest() {
   }
 
-  @BeforeClass
-  public static void generalSetUp() throws IOException, NamingException {
-    AbstractTestDao.configureJNDIDatasource();
-  }
-
-  @Before
-  @Override
-  public void setUp() throws Exception {
-    super.prepareData();
-  }
-
   @Override
   protected String getDatasetFileName() {
     return "test-projectmanager-dao-dataset.xml";
@@ -50,7 +39,6 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
    * Test of addTask method, of class ProjectManagerDAO.
    * @throws Exception
    */
-  @org.junit.Test
   public void testAddTask() throws Exception {
     String instanceId = "projectManager100";
     TaskDetail task = new TaskDetail();
@@ -83,7 +71,6 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
    * Test of addResource method, of class ProjectManagerDAO.
    * @throws Exception
    */
-  @org.junit.Test
   public void testAddResource() throws Exception {
     Connection con = getConnection().getConnection();
     int taskId = 1000;
@@ -111,9 +98,8 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
 
   /**
    * Test of updateTask method, of class ProjectManagerDAO.
-   * @throws Exception 
+   * @throws Exception
    */
-  @org.junit.Test
   public void testUpdateTask() throws Exception {
     Connection con = getConnection().getConnection();
     int taskId = 1000;
@@ -197,9 +183,8 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
 
   /**
    * Test of deleteAllResources method, of class ProjectManagerDAO.
-   * @throws Exception 
+   * @throws Exception
    */
-  @org.junit.Test
   public void testDeleteAllResources() throws Exception {
     Connection con = getConnection().getConnection();
     int taskId = 1010;
@@ -223,9 +208,8 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
 
   /**
    * Test of actionEstDecomposee method, of class ProjectManagerDAO.
-   * @throws Exception 
+   * @throws Exception
    */
-  @org.junit.Test
   public void testActionEstDecomposee() throws Exception {
     Connection con = getConnection().getConnection();
     int taskId = 1000;
@@ -249,7 +233,6 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
    * Test of removeTask method, of class ProjectManagerDAO.
    * @throws Exception
    */
-  @org.junit.Test
   public void testRemoveTask() throws Exception {
     Connection con = getConnection().getConnection();
     int id = 1000;
@@ -264,7 +247,6 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
    * Test of getTask method, of class ProjectManagerDAO.
    * @throws Exception
    */
-  @org.junit.Test
   public void testGetTaskByStringId() throws Exception {
     Connection con = getConnection().getConnection();
     String id = "1000";
@@ -303,7 +285,6 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
    * Test of getTask method, of class ProjectManagerDAO.
    * @throws Exception
    */
-  @org.junit.Test
   public void testGetTaskById() throws Exception {
     Connection con = getConnection().getConnection();
     int id = 1000;
@@ -342,7 +323,6 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
    * Test of getResources method, of class ProjectManagerDAO.
    * @throws Exception
    */
-  @org.junit.Test
   public void testGetResources() throws Exception {
     Connection con = getConnection().getConnection();
     int taskId = 1010;
@@ -364,7 +344,7 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
   /**
    * Test of getAllTasks method, of class ProjectManagerDAO.
    */
-  /*  @org.junit.Test
+  /*
   public void testGetAllTasks() throws Exception {
   System.out.println("getAllTasks");
   Connection con = null;
@@ -377,18 +357,18 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
   // TODO review the generated test code and remove the default call to fail.
   fail(
   "The test case is a prototype.");
-  
-  
+
+
   }*/
   /**
    * Test of getTasks method, of class ProjectManagerDAO.
    */
-  /*  @org.junit.Test
+  /*
   public void testGetTasks() throws Exception {
   System.out.println("getTasks");
   Connection con = null;
-  
-  
+
+
   int actionId = 0;
   Filtre filtre = null;
   String instanceId = "";
@@ -399,18 +379,18 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
   // TODO review the generated test code and remove the default call to fail.
   fail(
   "The test case is a prototype.");
-  
-  
+
+
   }*/
   /**
    * Test of getNextTasks method, of class ProjectManagerDAO.
    */
-  /* @org.junit.Test
+  /*
   public void testGetNextTasks() throws Exception {
   System.out.println("getNextTasks");
   Connection con = null;
-  
-  
+
+
   int taskId = 0;
   List expResult = null;
   List result = ProjectManagerDAO.getNextTasks(con, taskId);
@@ -419,19 +399,19 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
   // TODO review the generated test code and remove the default call to fail.
   fail(
   "The test case is a prototype.");
-  
-  
+
+
   }*/
   /**
    * Test of getMostDistantTask method, of class ProjectManagerDAO.
    */
-  /*  @org.junit.Test
+  /*
   public void testGetMostDistantTask() throws Exception {
   System.out.println("getMostDistantTask");
   Connection con = null;
   String instanceId = "";
-  
-  
+
+
   int taskId = 0;
   TaskDetail expResult = null;
   TaskDetail result = ProjectManagerDAO.getMostDistantTask(con, instanceId, taskId);
@@ -440,18 +420,18 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
   // TODO review the generated test code and remove the default call to fail.
   fail(
   "The test case is a prototype.");
-  
-  
+
+
   }*/
   /**
    * Test of getTree method, of class ProjectManagerDAO.
    */
-  /*  @org.junit.Test
+  /*
   public void testGetTree() throws Exception {
   System.out.println("getTree");
   Connection con = null;
-  
-  
+
+
   int actionId = 0;
   List expResult = null;
   List result = ProjectManagerDAO.getTree(con, actionId);
@@ -460,19 +440,19 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
   // TODO review the generated test code and remove the default call to fail.
   fail(
   "The test case is a prototype.");
-  
-  
+
+
   }*/
   /**
    * Test of getTasksByMotherId method, of class ProjectManagerDAO.
    */
-  /*  @org.junit.Test
+  /*
   public void testGetTasksByMotherId() throws Exception {
   System.out.println("getTasksByMotherId");
   Connection con = null;
   String instanceId = "";
-  
-  
+
+
   int motherId = 0;
   Filtre filtre = null;
   List expResult = null;
@@ -486,13 +466,13 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
   /**
    * Test of getTasksNotCancelledByMotherId method, of class ProjectManagerDAO.
    */
-  /* @org.junit.Test
+  /*
   public void testGetTasksNotCancelledByMotherId() throws Exception {
   System.out.println("getTasksNotCancelledByMotherId");
   Connection con = null;
   String instanceId = "";
-  
-  
+
+
   int motherId = 0;
   Filtre filtre = null;
   List expResult = null;
@@ -506,16 +486,16 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
   /**
    * Test of getTasksByMotherIdAndPreviousId method, of class ProjectManagerDAO.
    */
-  /*@org.junit.Test
+  /*
   public void testGetTasksByMotherIdAndPreviousId() throws Exception {
   System.out.println("getTasksByMotherIdAndPreviousId");
   Connection con = null;
   String instanceId = "";
-  
-  
+
+
   int motherId = 0;
-  
-  
+
+
   int previousId = 0;
   List expResult = null;
   List result = ProjectManagerDAO.getTasksByMotherIdAndPreviousId(con, instanceId, motherId, previousId);
@@ -524,13 +504,12 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
   // TODO review the generated test code and remove the default call to fail.
   fail(
   "The test case is a prototype.");
-  
-  
+
+
   }*/
   /**
    * Test of getOccupationByUser method, of class ProjectManagerDAO.
    */
-  @org.junit.Test
   public void testGetOccupationByUser() throws Exception {
     Connection con = getConnection().getConnection();
     String userId = "3";
@@ -555,7 +534,6 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
   /**
    * Test of getOccupationByUser method, of class ProjectManagerDAO.
    */
-  @org.junit.Test
   public void testGetOccupationByUserExludingTask() throws Exception {
     Connection con = getConnection().getConnection();
     String userId = "3";
@@ -570,7 +548,8 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
     Date dateFin = calend.getTime();
     int expResult = 3;
     int excludedTaskId = 1001;
-    int result = ProjectManagerDAO.getOccupationByUser(con, userId, dateDeb, dateFin, excludedTaskId);
+    int result =
+        ProjectManagerDAO.getOccupationByUser(con, userId, dateDeb, dateFin, excludedTaskId);
     assertEquals(expResult, result);
     userId = "5";
     expResult = 14;
@@ -581,7 +560,6 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
   /**
    * Test of date2DBDate method, of class ProjectManagerDAO.
    */
-
   public void assertResourcesAreEqual(TaskResourceDetail expected, TaskResourceDetail result) {
     assertEquals("Id should be the same", expected.getId(), result.getId());
     assertEquals("Charge should be the same", expected.getCharge(), result.getCharge());
@@ -598,8 +576,7 @@ public class ProjectManagerDAOTest extends AbstractTestDao {
     assertEquals("Chrono should be the same", expected.getChrono(), result.getChrono());
     assertEquals("Code projet should be the same", expected.getCodeProjet(), result.getCodeProjet());
     assertEquals("Consomme should be the same", expected.getConsomme(), result.getConsomme(), 0.01d);
-    assertEquals("Date debut should be the same", DateUtil.date2SQLDate(expected.
-        getDateDebut()),
+    assertEquals("Date debut should be the same", DateUtil.date2SQLDate(expected.getDateDebut()),
         DateUtil.date2SQLDate(result.getDateDebut()));
     assertEquals("Date fin should be the same", DateUtil.date2SQLDate(expected.getDateFin()),
         DateUtil.date2SQLDate(result.getDateFin()));
