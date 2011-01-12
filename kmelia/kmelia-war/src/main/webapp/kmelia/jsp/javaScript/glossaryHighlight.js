@@ -7,11 +7,8 @@ $(document).ready(function() {
 			   },				   
 		       style: 'silverpeas',
 		       position: {
-				corner: {
-				   target: 'topRight',
-				   tooltip: 'bottomLeft'
-				}
-			  }
+		    	   adjust: { screen: true }
+			   }
 		   });
 		});
 });
