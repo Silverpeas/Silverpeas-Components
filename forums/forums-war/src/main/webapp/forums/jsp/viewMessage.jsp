@@ -462,130 +462,118 @@
         {
             messages = new Message[] {message};
         }
-        Message currentMessage;
-        int currentId;
-        int parentId;
-        String author;
-        String authorLabel;
-        String text;
-        String status;
-        boolean isSubscriber;
-        boolean hasChildren;
+
         Map authorNbMessages = new HashMap();
         int nbMessages;
         for (int i = 0, n = messages.length; i < n; i++)
         {
-            currentMessage = messages[i];
-            currentId = currentMessage.getId();
-            parentId = currentMessage.getParentId();
-            author = currentMessage.getAuthor();
-            authorLabel = fsc.getAuthorName(author);
-            status = currentMessage.getStatus();
+            Message currentMessage = messages[i];
+            int currentId = currentMessage.getId();
+            int parentId = currentMessage.getParentId();
+            String authorId = currentMessage.getAuthor();
+            String authorLabel = fsc.getAuthorName(authorId);
+            String status = currentMessage.getStatus();
             if (authorLabel == null)
             {
                 authorLabel = resource.getString("inconnu");
             }
-            text = currentMessage.getText();
-            isSubscriber = fsc.isSubscriber(currentId, userId);
-            hasChildren = ForumHelper.hasMessagesChildren(messages, currentId);
-            if (!authorNbMessages.containsKey(author))
+            com.stratelia.webactiv.beans.admin.UserDetail author = fsc.getAuthor(authorId);
+            String avatar = "/directory/jsp/icons/avatar.png";
+            if(author != null) {
+               avatar = author.getAvatar();
+            }              
+            String text = currentMessage.getText();
+            boolean isSubscriber = fsc.isSubscriber(currentId, userId);
+            if (!authorNbMessages.containsKey(authorId))
             {
-                nbMessages = fsc.getAuthorNbMessages(author);
-                authorNbMessages.put(author,  Integer.valueOf(nbMessages));
+                nbMessages = fsc.getAuthorNbMessages(authorId);
+                authorNbMessages.put(authorId,  Integer.valueOf(nbMessages));
             }
             else
             {
-                nbMessages = ((Integer)authorNbMessages.get(author)).intValue();
+                nbMessages = ((Integer)authorNbMessages.get(authorId)).intValue();
             }
 %>
 
-                    <div id="msgContent<%=currentId%>">
+                    <div id="msgContent<%=currentId%>" class="contourintfdcolor">
                         <a name="msg<%=currentId%>"/>
-                        <table width="100%" border="0" cellspacing="0" cellpadding="5" class="contourintfdcolor">
-                            <tr>
-								<td valign="top" width="150px" bgcolor="#EEEEEE">
-									<span class="txtnav"><%=authorLabel%></span><br/>
-									<span class="txtnote"><%=resource.getString("forums.nbMessages")%> : <%=nbMessages%></span>
-								</td>
-                                <td valign="top">
-                                    <table border="0" cellspacing="0" cellpadding="5" width="100%">
+                          <div id="author<%=i%>" class="user">
+                            <div class="profilPhoto"><img src="<%=context + avatar%>" alt="<%=authorLabel%>" /></div>
+                            <div class="info">
+                              <ul>
+                                <li class="userName"><%=authorLabel%></li>
+                                <li class="nbMessage"><%=resource.getString("forums.nbMessages")%> : <%=nbMessages%></li>
+                              </ul>
+                            </div>
+                          </div>
+                              <div class="message">
+                                <table border="0" cellspacing="0" cellpadding="5" width="100%">
+                                  <tr>
+                                    <td><span class="txtnav"><%=currentMessage.getTitle()%></span>&nbsp;<span class="txtnote"><%=convertDate(currentMessage.getDate(), resources)%></span></td>
+                                    <td valign="top" align="right">&nbsp;
+                                      <%
+                                        if (displayAllMessages) {
+                                      %>
+                                          <a href="javascript:scrollTop()"><img src="<%=context%>/util/icons/arrow/arrowUp.gif" align="middle" border="0"></a>&nbsp;<%
+                                        }
+                                      %>
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td colspan="2"><img src="<%=context%>/util/icons/colorPix/1px.gif" width="100%" height="1" class="intfdcolor"></td>
+                                  </tr>
+                                  <tr>
+                                    <td colspan="2">
+                                      <table border="0" cellspacing="5" cellpadding="0" width="100%">
                                         <tr>
-                                            <td><span class="txtnav"><%=currentMessage.getTitle()%></span>&nbsp;<span class="txtnote"><%=convertDate(currentMessage.getDate(), resources)%></span></td>
-                                            <td valign="top" align="right">&nbsp;<%
-
-            if (displayAllMessages) {
-%>
-                                                <a href="javascript:scrollTop()"><img src="<%=context%>/util/icons/arrow/arrowUp.gif" align="middle" border="0"></a>&nbsp;<%
-
-            }
-%>
-                                            </td>
+                                          <td>&nbsp;</td>
+                                          <td width="100%" valign="top" class="msgText"><span class="txtnote"><%=text%></span></td>
+                                          <td>&nbsp;</td>
+                                        </tr>
+                                      </table>
+                                    </td>
+                                  </tr>
+                                  <%
+                                      if (!isReader) {
+                                  %>
+                                        <tr>
+                                          <td colspan="2"><img src="<%=context%>/util/icons/colorPix/1px.gif" width="100%" height="1" class="intfdcolor"></td>
                                         </tr>
                                         <tr>
-                                            <td colspan="2"><img src="<%=context%>/util/icons/colorPix/1px.gif" width="100%" height="1" class="intfdcolor"></td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="2">
-                                                <table border="0" cellspacing="5" cellpadding="0" width="100%">
-                                                    <tr>
-                                                        <td>&nbsp;</td>
-                                                        <td width="100%" valign="top" class="msgText"><span class="txtnote"><%=text%></span></td>
-                                                        <td>&nbsp;</td>
-                                                    </tr>
-                                                </table>
-                                            </td>
-                                        </tr><%
-
-            if (!isReader) {
-%>
-                                        <tr>
-                                            <td colspan="2"><img src="<%=context%>/util/icons/colorPix/1px.gif" width="100%" height="1" class="intfdcolor"></td>
-                                        </tr>
-                                        <tr>
-                                            <td valign="top" nowrap><input name="checkbox" type="checkbox" <%if (isSubscriber) {%>checked<%}%>
+                                          <td valign="top" nowrap><input name="checkbox" type="checkbox" <%if (isSubscriber) {%>checked<%}%>
                                                 onclick="javascript:window.location.href='viewMessage.jsp?action=<%=(isSubscriber ? 13 : 14)%>&params=<%=currentId%>&forumId=<%=forumId%>'">
                                                 <span class="texteLabelForm"><%=resource.getString("subscribeMessage")%></span></td>
-                                            <td valign="top" align="right">&nbsp;<%
-
-
-            if (forumActive)
-            {
-	            if (isAdmin || isUser)
-	            {
-				         %>
-				          <a href="javascript:replyMessage(<%=currentId%>)"><img
+                                          <td valign="top" align="right">&nbsp;<%
+                                              if (forumActive) {
+                                                if (isAdmin || isUser) {
+				    %>
+                                                  <a href="javascript:replyMessage(<%=currentId%>)"><img
 				           src="<%=context%>/util/icons/reply.gif" align="middle" border="0" alt="<%=resource.getString("replyMessage")%>" title="<%=resource.getString("replyMessage")%>"></a>&nbsp;
-				         <%
-	            }
-              if (userId.equals(author) || isAdmin || isModerator)
-              {
-                if (isModerator && STATUS_FOR_VALIDATION.equals(status)) {
-                  // afficher les icones pour valider ou refuser un message
-                  %>
-                    <a href="javascript:valideMessage(<%=currentId%>)"><img
-                      src="<%=context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("valideMessage")%>" title="<%=resource.getString("valideMessage")%>"></a>&nbsp;
-                    <a href="javascript:refuseMessage(<%=currentId%>)"><img
-                      src="<%=context%>/util/icons/wrong.gif" align="middle" border="0" alt="<%=resource.getString("refuseMessage")%>" title="<%=resource.getString("refuseMessage")%>"></a>&nbsp;
-                  <%
-
-                }
-%>
-                 <a href="javascript:editMessage(<%=currentId%>)"><img
-                   src="<%=context%>/util/icons/update.gif" align="middle" border="0" alt="<%=resource.getString("editMessage")%>" title="<%=resource.getString("editMessage")%>"></a>&nbsp;
-                 <a href="javascript:deleteMessage(<%=currentId%>, <%=parentId%>, true)"><img
-                   src="<%=context%>/util/icons/delete.gif" align="middle" border="0" alt="<%=resource.getString("deleteMessage")%>" title="<%=resource.getString("deleteMessage")%>"></a>&nbsp;<%
-                }
-
-               }
-            }
-%>
-                                            </td>
+				    <%  }
+                                                if (userId.equals(author) || isAdmin || isModerator) {
+                                                  if (isModerator && STATUS_FOR_VALIDATION.equals(status)) {
+                                            %>
+                                                    <a href="javascript:valideMessage(<%=currentId%>)"><img 
+                                                        src="<%=context%>/util/icons/ok.gif" align="middle" border="0" alt="<%=resource.getString("valideMessage")%>" title="<%=resource.getString("valideMessage")%>"></a>&nbsp;
+                                                    <a href="javascript:refuseMessage(<%=currentId%>)"><img
+                                                      src="<%=context%>/util/icons/wrong.gif" align="middle" border="0" alt="<%=resource.getString("refuseMessage")%>" title="<%=resource.getString("refuseMessage")%>"></a>&nbsp;
+                                            <%
+                                                  }
+                                            %>
+                                               <a href="javascript:editMessage(<%=currentId%>)"><img
+                                                 src="<%=context%>/util/icons/update.gif" align="middle" border="0" alt="<%=resource.getString("editMessage")%>" title="<%=resource.getString("editMessage")%>"></a>&nbsp;
+                                               <a href="javascript:deleteMessage(<%=currentId%>, <%=parentId%>, true)"><img
+                                                 src="<%=context%>/util/icons/delete.gif" align="middle" border="0" alt="<%=resource.getString("deleteMessage")%>" title="<%=resource.getString("deleteMessage")%>"></a>&nbsp;<%
+                                                }
+                                              }
+                                          %>                                            
+                                          </td>
                                         </tr>
-                                    </table>
-                                </td>
-                            </tr>
-                        </table>
-                        <br>
+                                    <% 
+                                      }
+                                    %>                                            
+                                </table>
+                              </div>
                     </div><%
 
         }

@@ -139,8 +139,7 @@
         return;
       }
 
-      String context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-          "ApplicationURL");
+      String context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 
       GraphicElementFactory graphicFactory = (GraphicElementFactory) session.getAttribute(
           "SessionGraphicElementFactory");
