@@ -198,8 +198,17 @@ function closeWindows() {
             displayLinkViewSelection(1, kmeliaScc, out);
                             
             List  targets = pubComplete.getLinkList();
-            
-            Collection linkedPublications = kmeliaScc.getPublications(targets);
+            List authorizedTarget = new ArrayList();
+            ForeignPK curFPK = null;
+            String curComponentId = null;
+            for (int cpt=0; cpt < targets.size(); cpt++) {
+              curFPK = (ForeignPK) targets.get(cpt);
+              curComponentId = curFPK.getComponentName();
+              if (curComponentId != null && kmeliaScc.getOrganizationController().isComponentAvailable(curComponentId, kmeliaScc.getUserId())) {
+                authorizedTarget.add(curFPK);
+              }
+            }
+            Collection linkedPublications = kmeliaScc.getPublications(authorizedTarget);
             displaySameSubjectPublications(linkedPublications, resources.getString("PubReferenceeParAuteur"), kmeliaScc, id, isOwner, resources, out);
         } else if (action.equals("SameTopicView")) {
             displayLinkViewSelection(3, kmeliaScc, out);
