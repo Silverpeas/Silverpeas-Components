@@ -41,7 +41,7 @@ String      dialogTitle     = resource.getString("classifieds.subscriptionsAdd")
 		$( "#subscription-adding" ).dialog({
             title: "<%= dialogTitle %>",
 			autoOpen: false,
-			height: 200,
+			height: 'auto',
 			width: 400,
 			modal: true,
 			buttons: {
