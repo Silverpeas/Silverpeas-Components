@@ -352,7 +352,7 @@ function getWidth() {
 
 function getHeight() {
 	  var myHeight = 0;
-	  if( typeof( window.innerWidth ) == 'number' ) {
+	  if( typeof( window.innerHeight ) == 'number' ) {
 	    //Non-IE
 	    myHeight = window.innerHeight;
 	  } else if( document.documentElement && document.documentElement.clientHeight) {
@@ -362,7 +362,7 @@ function getHeight() {
 	    //IE 4 compatible
 	    myHeight = document.body.clientHeight;
 	  }
-	  return myHeight;
+	  return (myHeight -20);
 }
 
 </script>
