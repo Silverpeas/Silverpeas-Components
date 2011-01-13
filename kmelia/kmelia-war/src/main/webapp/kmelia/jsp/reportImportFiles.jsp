@@ -54,7 +54,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <script language="javascript">
 	function refreshWindow()
 	{
-		window.opener.document.frm_report.submit();
+		window.opener.location.href="GoToCurrentTopic";
 		window.close();
 	}
 </script>

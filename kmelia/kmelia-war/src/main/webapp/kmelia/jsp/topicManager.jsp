@@ -495,9 +495,6 @@ function getHeight() {
 	<input type="hidden" name="Action" value="initial">
 </FORM>
 
-<form name="frm_report" action="GoToTopic">
-  	<input type="hidden" name="Id" value="<%=id%>">
-</form>
 <form name="updateChain" action="UpdateChainInit">
 </form>
 <script type="text/javascript">
