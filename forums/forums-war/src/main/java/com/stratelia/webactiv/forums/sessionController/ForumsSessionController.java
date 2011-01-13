@@ -103,7 +103,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   private PublicationBm publicationBm = null;
   private StatisticBm statisticBm = null;
   private NotationBm notationBm = null;
-  private boolean displayAllMessages = false;
+  private boolean displayAllMessages = true;
   private boolean external = false;
   private String mailType = MAIL_TYPE;
   private boolean resizeFrame = false;
@@ -1119,7 +1119,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   }
 
   public void resetDisplayAllMessages() {
-    displayAllMessages = false;
+    displayAllMessages = true;
   }
 
   public String getForumKeywords(int forumId) {

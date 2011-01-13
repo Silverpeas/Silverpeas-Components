@@ -23,17 +23,28 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="java.util.Map"%>
-<%@page import="java.util.HashMap"%>
-<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumHelper"%>
-<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumListHelper"%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@page import="java.util.Hashtable"%>
 <%
     response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
     response.setHeader("Pragma", "no-cache"); //HTTP 1.0
     response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<c:set var="sessionController" value="${requestScope.forumsSessionClientController}" />
+<c:set var="componentId" value="${sessionController.componentId}" />
+<c:set var="isReader" value="${sessionController.reader}" />
+<c:set var="isUser" value="${sessionController.user}" />
+<c:set var="isAdmin" value="${sessionController.admin}" />
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+<%@page import="java.util.Map"%>
+<%@page import="java.util.HashMap"%>
+<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumHelper"%>
+<%@page import="com.stratelia.webactiv.forums.sessionController.helpers.ForumListHelper"%>
+<%@page import="java.util.Hashtable"%>
 <%@ include file="checkForums.jsp"%>
 <%
     int messageId = 0;
@@ -50,7 +61,7 @@
     }
 
     boolean scrollToMessage = false;
-    boolean displayAllMessages = false;
+    boolean displayAllMessages = true;
 
     try
     {
@@ -88,7 +99,7 @@
                 {
                     if (params == -1)
                     {
-                        // Cr�ation
+                      
                         int result = fsc.createMessage(
                             messageTitle, userId, forumId, parentId, messageText, null);
                         messageId = result;
@@ -191,8 +202,7 @@
 
         forumActive = fsc.isForumActive(folderId);
 
-        String folderName = EncodeHelper.javaStringToHtmlString(
-            fsc.getForumName(folderId > 0 ? folderId : params));
+        String folderName = EncodeHelper.javaStringToHtmlString(fsc.getForumName(folderId > 0 ? folderId : params));
 
         ResourceLocator settings = fsc.getSettings();
         String configFile = SilverpeasSettings.readString(settings, "configFile",
@@ -206,20 +216,15 @@
             currentMessageId = parent;
             parent = fsc.getMessageParentId(currentMessageId);
         }
+        pageContext.setAttribute("title", message.getTitle());
         Message[] messages = fsc.getMessagesList(folderId, currentMessageId);
         int messagesCount = messages.length;
 %>
 
 <%@page import="java.util.List"%><html>
 <head>
-    <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><%
-        out.println(graphicFactory.getLookStyleSheet());
-        if (!graphicFactory.hasExternalStylesheet())
-        {
-		%>
-    		<link rel="stylesheet" type="text/css" href="styleSheets/forums.css">
-    	<% } %>
+    <title><c:out value="${pageScope.title}" /></title>
+    <view:looknfeel />
     <script type="text/javascript" src="<%=context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/forums.js"></script>
     <script type="text/javascript" src="<%=context%>/forums/jsp/javaScript/viewMessage.js"></script>
@@ -507,44 +512,29 @@
                             </div>
                           </div>
                               <div class="message">
-                                <table border="0" cellspacing="0" cellpadding="5" width="100%">
-                                  <tr>
-                                    <td><span class="txtnav"><%=currentMessage.getTitle()%></span>&nbsp;<span class="txtnote"><%=convertDate(currentMessage.getDate(), resources)%></span></td>
-                                    <td valign="top" align="right">&nbsp;
+                                <div class="messageHeader">
+                                  <span class="txtnav"><%=currentMessage.getTitle()%></span>&nbsp;<span class="txtnote"><%=convertDate(currentMessage.getDate(), resources)%></span>
                                       <%
                                         if (displayAllMessages) {
                                       %>
-                                          <a href="javascript:scrollTop()"><img src="<%=context%>/util/icons/arrow/arrowUp.gif" align="middle" border="0"></a>&nbsp;<%
+                                          <a href="javascript:scrollTop()"><img src="<%=context%>/util/icons/arrow/arrowUp.gif" align="middle" border="0"></a><%
                                         }
                                       %>
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td colspan="2"><img src="<%=context%>/util/icons/colorPix/1px.gif" width="100%" height="1" class="intfdcolor"></td>
-                                  </tr>
-                                  <tr>
-                                    <td colspan="2">
-                                      <table border="0" cellspacing="5" cellpadding="0" width="100%">
-                                        <tr>
-                                          <td>&nbsp;</td>
-                                          <td width="100%" valign="top" class="msgText"><span class="txtnote"><%=text%></span></td>
-                                          <td>&nbsp;</td>
-                                        </tr>
-                                      </table>
-                                    </td>
-                                  </tr>
+                                </div>
+                                    <div class="messageContent">
+                                      <span class="txtnote"><%=text%></span>
+                                    </div>
                                   <%
                                       if (!isReader) {
                                   %>
-                                        <tr>
-                                          <td colspan="2"><img src="<%=context%>/util/icons/colorPix/1px.gif" width="100%" height="1" class="intfdcolor"></td>
-                                        </tr>
-                                        <tr>
-                                          <td valign="top" nowrap><input name="checkbox" type="checkbox" <%if (isSubscriber) {%>checked<%}%>
+                                  <div class="messageFooter">
+                                        <input name="checkbox" type="checkbox" <%if (isSubscriber) {%>checked<%}%>
                                                 onclick="javascript:window.location.href='viewMessage.jsp?action=<%=(isSubscriber ? 13 : 14)%>&params=<%=currentId%>&forumId=<%=forumId%>'">
-                                                <span class="texteLabelForm"><%=resource.getString("subscribeMessage")%></span></td>
-                                          <td valign="top" align="right">&nbsp;<%
-                                              if (forumActive) {
+                                                <span class="texteLabelForm"><%=resource.getString("subscribeMessage")%></span>                                             
+                                             <%
+                                              if (forumActive) {%>
+                                              <div class="messageActions">
+                                              <%
                                                 if (isAdmin || isUser) {
 				    %>
                                                   <a href="javascript:replyMessage(<%=currentId%>)"><img
@@ -564,16 +554,16 @@
                                                  src="<%=context%>/util/icons/update.gif" align="middle" border="0" alt="<%=resource.getString("editMessage")%>" title="<%=resource.getString("editMessage")%>"></a>&nbsp;
                                                <a href="javascript:deleteMessage(<%=currentId%>, <%=parentId%>, true)"><img
                                                  src="<%=context%>/util/icons/delete.gif" align="middle" border="0" alt="<%=resource.getString("deleteMessage")%>" title="<%=resource.getString("deleteMessage")%>"></a>&nbsp;<%
-                                                }
-                                              }
-                                          %>                                            
-                                          </td>
-                                        </tr>
+                                                }%>
+                                              </div>
+                                           <%   }
+                                          %>  
+                                        </div>
                                     <% 
                                       }
-                                    %>                                            
-                                </table>
+                                    %> 
                               </div>
+                              <br clear="all"/>
                     </div><%
 
         }
@@ -628,10 +618,8 @@
         </form>
         </table>
     </center>
-<%
-        out.println(frame.printMiddle());
-%>
-    <br>
+
+    <br />
     <div id="backButton">
         <center>
 <%
