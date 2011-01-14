@@ -24,9 +24,12 @@
 
 package com.silverpeas.processManager;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
@@ -42,6 +45,7 @@ import com.silverpeas.form.Field;
 import com.silverpeas.form.FieldTemplate;
 import com.silverpeas.form.Form;
 import com.silverpeas.form.FormException;
+import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.fieldType.DateField;
 import com.silverpeas.form.form.HtmlForm;
@@ -231,6 +235,14 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    */
   public ProcessManagerException getFatalException() {
     return fatalException;
+  }
+
+  /**
+   * Set current Process instance to null
+   */
+  public void resetCurrentProcessInstance() {
+    this.setResumingInstance(false);
+    currentProcessInstance = null;
   }
 
   /**
@@ -1223,126 +1235,230 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     }
   }
 
-  /**
-   * Get the list of activities resolved in History Step of current process instance
-   * @return an array of string containing activity names
-   */
-  public String[] getStepActivities() {
-    HistoryStep[] steps = currentProcessInstance.getHistorySteps();
-    String[] activities = new String[steps.length];
-    State resolvedState = null;
 
-    for (int i = 0; i < steps.length; i++) {
-      if (steps[i].getResolvedState() != null) {
-        resolvedState = processModel.getState(steps[i].getResolvedState());
-        activities[i] = resolvedState.getLabel(currentRole, getLanguage());
-      } else
-        activities[i] = "";
+  public List<StepVO> getSteps(String strEnlightedStep) {
+    List<StepVO> stepsVO = new ArrayList<StepVO>();
+    
+    // get step from last recent to older
+    HistoryStep[] steps = getSortedHistorySteps(false);
+    
+    strEnlightedStep = (strEnlightedStep==null) ? steps[0].getId() : strEnlightedStep;
+    for (HistoryStep step : steps) {
+      
+      StepVO stepVO = new StepVO();
+      
+      stepVO.setStepId(step.getId());
+      
+      // Activity
+      String activity = "";
+      if (step.getResolvedState() != null) {
+        State resolvedState = processModel.getState(step.getResolvedState());
+        activity = resolvedState.getLabel(currentRole, getLanguage());
+      }
+      stepVO.setActivity(activity);
+      
+      // Actor Full Name
+      stepVO.setActorFullName(getStepActor(step));
+      
+      // Action name
+      stepVO.setActionName(getStepAction(step));
+      
+      // Step date
+      stepVO.setStepDate( DateUtil.getOutputDate(step.getActionDate(), getLanguage()) );
+     
+      // visibility
+      stepVO.setVisible( isStepVisible(step) );
+      
+      // Step data
+      if ( "all".equalsIgnoreCase(strEnlightedStep) || strEnlightedStep.equals(step.getId()) ) {
+        try {
+          // Form
+          Form form = getStepForm(step);
+          
+          // Context
+          PagesContext context = new PagesContext("dummy", "0", getLanguage(), false, getComponentId(), getUserId());
+          context.setVersioningUsed(isVersionControlled());
+          if (currentProcessInstance != null) {
+            context.setObjectId("Step"+step.getId());
+          }
+          
+          // DataRecord
+          DataRecord data = getStepRecord(step);
+          
+          HistoryStepContent stepContent = new HistoryStepContent(form, context, data);
+          stepVO.setContent(stepContent);
+        } catch (ProcessManagerException e) {
+          SilverTrace.error("processManager", "sessionController",
+              "processManager.ILL_DATA_STEP", e);
+        }
+      }
+      
+      stepsVO.add(stepVO);
     }
-
-    return activities;
+    
+    return stepsVO;
   }
 
-  public String[] getStepVisibles() {
+  public HistoryStep[] getSortedHistorySteps(final boolean ascending) {
     HistoryStep[] steps = currentProcessInstance.getHistorySteps();
-    String[] stepVisibles = new String[steps.length];
 
-    String stateName = null;
-    for (int i = 0; i < steps.length; i++) {
-      if (filterHistory()) {
-        stepVisibles[i] = "false";
-        stateName = steps[i].getResolvedState();
-        if (stateName != null) {
-          if (getActiveUsers(stateName).contains(getUserId()))
-            stepVisibles[i] = "true";
-        } else {
-          // action kind=create
-          try {
-            Action createAction = processModel.getCreateAction();
-            QualifiedUsers qualifiedUsers = createAction.getAllowedUsers();
-            if (getUsers(qualifiedUsers).contains(getUserId()))
-              stepVisibles[i] = "true";
-          } catch (WorkflowException we) {
-            // no action ok kind create
-            stepVisibles[i] = "true";
-          }
+    // Invert history to get newest history at the beginning
+    Arrays.sort(steps, new Comparator<HistoryStep>() {
+      public int compare(HistoryStep o1, HistoryStep o2) {
+        if (ascending) {
+          return o1.getId().compareTo(o2.getId());
         }
+        else {
+          return o2.getId().compareTo(o1.getId());
+        }
+      }
+    });
+    
+    return steps;
+  }
+  
+  public boolean isStepVisible(HistoryStep step) {
+    boolean visible = true;
+    String stateName = null;
+    if (filterHistory()) {
+      visible = false;
+      stateName = step.getResolvedState();
+      if (stateName != null) {
+        if (getActiveUsers(stateName).contains(getUserId()))
+          visible = true;
       } else {
-        stepVisibles[i] = "true";
+        // action kind=create
+        try {
+          Action createAction = processModel.getCreateAction();
+          QualifiedUsers qualifiedUsers = createAction.getAllowedUsers();
+          if (getUsers(qualifiedUsers).contains(getUserId()))
+            visible = true;
+        } catch (WorkflowException we) {
+          // no action ok kind create
+          visible = true;
+        }
       }
     }
-
-    return stepVisibles;
+    return visible;
   }
 
   /**
    * Get the list of actors in History Step of current process instance
    * @return an array of string containing actors full name
    */
-  public String[] getStepActors() {
-    HistoryStep[] steps = currentProcessInstance.getHistorySteps();
-    String[] actors = new String[steps.length];
-
-    for (int i = 0; i < steps.length; i++) {
-      try {
-        actors[i] = steps[i].getUser().getFullName();
-      } catch (WorkflowException we) {
-        actors[i] = "##";
-      }
+  public String getStepActor(HistoryStep step) {
+    String actorFullName = null;
+    
+    try {
+      actorFullName = step.getUser().getFullName();
+    } catch (WorkflowException we) {
+      actorFullName = "##";
     }
 
-    return actors;
+    return actorFullName;
   }
 
   /**
    * Get the list of actions in History Step of current process instance
    * @return an array of string containing actions names
    */
-  public String[] getStepActions() {
-    HistoryStep[] steps = currentProcessInstance.getHistorySteps();
-    String[] actions = new String[steps.length];
+  public String getStepAction(HistoryStep step) {
     Action action = null;
+    String actionName = null;
 
-    for (int i = 0; i < steps.length; i++) {
-      try {
-        if (steps[i].getAction().equals("#question#"))
-          actions[i] = getString("processManager.question");
+    try {
+      if (step.getAction().equals("#question#"))
+        actionName = getString("processManager.question");
 
-        else if (steps[i].getAction().equals("#response#"))
-          actions[i] = getString("processManager.response");
+      else if (step.getAction().equals("#response#"))
+        actionName = getString("processManager.response");
 
-        else if (steps[i].getAction().equals("#reAssign#"))
-          actions[i] = getString("processManager.reAffectation");
+      else if (step.getAction().equals("#reAssign#"))
+        actionName = getString("processManager.reAffectation");
 
-        else {
-          action = processModel.getAction(steps[i].getAction());
-          actions[i] = action.getLabel(currentRole, getLanguage());
-        }
-      } catch (WorkflowException we) {
-        actions[i] = "##";
+      else {
+        action = processModel.getAction(step.getAction());
+        actionName = action.getLabel(currentRole, getLanguage());
       }
+    } catch (WorkflowException we) {
+      actionName = "##";
     }
 
-    return actions;
+    return actionName;
   }
 
   /**
-   * Get the list of action dates in History Step of current process instance
-   * @return an array of string containing action dates
+   * Returns the form used to display the i-th step. Returns null if the step is unkwown.
+   * @throws ProcessManagerException 
    */
-  public String[] getStepDates() {
-    HistoryStep[] steps = currentProcessInstance.getHistorySteps();
-    String[] dates = new String[steps.length];
-    Date date = null;
-
-    for (int i = 0; i < steps.length; i++) {
-      date = steps[i].getActionDate();
-      dates[i] = DateUtil.getOutputDate(date, getLanguage());
-    }
-
-    return dates;
+  public Form getStepForm(HistoryStep step) throws ProcessManagerException {
+      try {
+        if (step.getAction().equals("#question#")
+            || step.getAction().equals("#response#")) {
+          return getQuestionForm(true);
+        } else
+          return processModel.getPresentationForm(step.getAction(),
+              currentRole, getLanguage());
+      } catch (WorkflowException e) {
+        SilverTrace.info("processManager", "sessionController",
+            "processManager.ILL_DATA_STEP", e);
+        return null;
+      }
   }
 
+  /**
+   * Returns the data filled during the given step. Returns null if the step is unkwown.
+   */
+  public DataRecord getStepRecord(HistoryStep step) {
+
+    try {
+      if (step.getAction().equals("#question#")) {
+        Question question = null;
+        Question[] questions = currentProcessInstance.getQuestions();
+        for (int j = 0; question == null && j < questions.length; j++) {
+          if (step.getResolvedState().equals(
+              questions[j].getFromState().getName())) {
+            if (((questions[j].getQuestionDate().getTime() - step
+                .getActionDate().getTime()) < 30000)
+                && ((questions[j].getQuestionDate().getTime() - step
+                .getActionDate().getTime()) > 0))
+              question = questions[j];
+          }
+        }
+
+        if (question == null)
+          return null;
+        else
+          return new QuestionRecord(question.getQuestionText());
+      } 
+      
+      else if (step.getAction().equals("#response#")) {
+        Question question = null;
+        Question[] questions = currentProcessInstance.getQuestions();
+        for (int j = 0; question == null && j < questions.length; j++) {
+          if (step.getResolvedState().equals(
+              questions[j].getTargetState().getName())) {
+            if (((questions[j].getResponseDate().getTime() - step
+                .getActionDate().getTime()) < 30000)
+                && ((questions[j].getResponseDate().getTime() - step
+                .getActionDate().getTime()) > 0))
+              question = questions[j];
+          }
+        }
+
+        if (question == null)
+          return null;
+        else
+          return new QuestionRecord(question.getResponseText());
+      } else
+        return step.getActionRecord();
+    } catch (WorkflowException e) {
+      SilverTrace.info("processManager", "sessionController",
+          "processManager.ILL_DATA_STEP", e);
+      return null;
+    }
+  }
+  
   /**
    * Get step saved by given user id.
    * @throws ProcessManagerException
@@ -1368,85 +1484,6 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       throw new ProcessManagerException("ProcessManagerSessionController",
           "processManager.EX_GET_SAVED_STEP_DATARECORD");
     }
-  }
-
-  /**
-   * Returns the form used to display the i-th step. Returns null if the step is unkwown.
-   */
-  public Form getStepForm(int index) throws ProcessManagerException {
-    HistoryStep[] steps = currentProcessInstance.getHistorySteps();
-
-    if (0 <= index && index < steps.length) {
-      try {
-        if (steps[index].getAction().equals("#question#")
-            || steps[index].getAction().equals("#response#")) {
-          return getQuestionForm(true);
-        } else
-          return processModel.getPresentationForm(steps[index].getAction(),
-              currentRole, getLanguage());
-      } catch (WorkflowException e) {
-        SilverTrace.info("processManager", "sessionController",
-            "processManager.ILL_DATA_STEP", e);
-
-        return null;
-      }
-    } else
-      return null;
-  }
-
-  /**
-   * Returns the data filled during the i-th step. Returns null if the step is unkwown.
-   */
-  public DataRecord getStepRecord(int index) throws ProcessManagerException {
-    HistoryStep[] steps = currentProcessInstance.getHistorySteps();
-
-    if (0 <= index && index < steps.length) {
-      try {
-        if (steps[index].getAction().equals("#question#")) {
-          Question question = null;
-          Question[] questions = currentProcessInstance.getQuestions();
-          for (int j = 0; question == null && j < questions.length; j++) {
-            if (steps[index].getResolvedState().equals(
-                questions[j].getFromState().getName())) {
-              if (((questions[j].getQuestionDate().getTime() - steps[index]
-                  .getActionDate().getTime()) < 30000)
-                  && ((questions[j].getQuestionDate().getTime() - steps[index]
-                  .getActionDate().getTime()) > 0))
-                question = questions[j];
-            }
-          }
-
-          if (question == null)
-            return null;
-          else
-            return new QuestionRecord(question.getQuestionText());
-        } else if (steps[index].getAction().equals("#response#")) {
-          Question question = null;
-          Question[] questions = currentProcessInstance.getQuestions();
-          for (int j = 0; question == null && j < questions.length; j++) {
-            if (steps[index].getResolvedState().equals(
-                questions[j].getTargetState().getName())) {
-              if (((questions[j].getResponseDate().getTime() - steps[index]
-                  .getActionDate().getTime()) < 30000)
-                  && ((questions[j].getResponseDate().getTime() - steps[index]
-                  .getActionDate().getTime()) > 0))
-                question = questions[j];
-            }
-          }
-
-          if (question == null)
-            return null;
-          else
-            return new QuestionRecord(question.getResponseText());
-        } else
-          return steps[index].getActionRecord();
-      } catch (WorkflowException e) {
-        SilverTrace.info("processManager", "sessionController",
-            "processManager.ILL_DATA_STEP", e);
-        return null;
-      }
-    } else
-      return null;
   }
 
   /**
@@ -2015,6 +2052,24 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     return isResumingInstance;
   }
 
+  public String getTrace(String function, String extraParam) {
+    StringBuffer trace = new StringBuffer();
+
+    try {
+      String processInstanceId = (currentProcessInstance==null) ? "N-C" : currentProcessInstance.getInstanceId();
+      trace.append("userId=").append(getUserId())
+      .append(",role=").append(getCurrentRole())
+      .append(",function=").append(function)
+      .append(",processInstanceId=").append(processInstanceId)
+      .append(",").append(extraParam);
+    } catch (Exception e) {
+      // a debug trace must not generate exception
+      trace.append(e.getClass() + " : " +e.getMessage());
+    }
+
+    return trace.toString();
+  }
+  
   /**
    * The session controller saves any fatal exception.
    */

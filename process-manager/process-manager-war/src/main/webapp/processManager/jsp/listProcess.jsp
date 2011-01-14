@@ -245,7 +245,12 @@ Item getItem(Item[] items, String itemName)
 			if (isProcessIdVisible)
 				cellId = arrayLine.addArrayCellText(instance.getId());
 			arrayLine.addArrayCellText("<img border=\"0\" width=\"15\" height=\"15\" alt=\"" + resource.getString("processManager.inError") + "\" src=\""  + resource.getIcon("processManager.inError") + "\">");
-			arrayLine.addArrayCellText(instance.getField(0).getValue(language));
+			if ("supervisor".equalsIgnoreCase(currentRole))
+			{
+				arrayLine.addArrayCellLink(instance.getField(0).getValue(language), "viewProcess?processId=" + instance.getId());
+			}else {
+				arrayLine.addArrayCellText(instance.getField(0).getValue(language));
+			}
 		}
 		else if (instance.isLockedByAdmin())
 		{

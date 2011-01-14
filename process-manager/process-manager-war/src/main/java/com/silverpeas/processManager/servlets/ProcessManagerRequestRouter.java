@@ -42,6 +42,7 @@ import com.silverpeas.processManager.HistoryStepContent;
 import com.silverpeas.processManager.ProcessFilter;
 import com.silverpeas.processManager.ProcessManagerException;
 import com.silverpeas.processManager.ProcessManagerSessionController;
+import com.silverpeas.processManager.StepVO;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.workflow.api.error.WorkflowError;
@@ -219,6 +220,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         throws ProcessManagerException {
       String processId = request.getParameter("processId");
 
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("adminRemoveProcess", "processId="+processId));
+
       session.removeProcess(processId);
 
       return listProcessHandler.getDestination(function, session, request);
@@ -237,6 +240,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       String processId = request.getParameter("processId");
 
       session.resetCurrentProcessInstance(processId);
+
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("adminViewErrors", "processId="+processId));
 
       WorkflowError[] errors = session.getProcessInstanceErrors(processId);
       request.setAttribute("errors", errors);
@@ -259,6 +264,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
 
       session.resetCurrentProcessInstance(processId);
 
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("adminReAssign", "processId="+processId));
+      
       // Get the associated form
       com.silverpeas.form.Form form = session.getAssignForm();
       request.setAttribute("form", form);
@@ -285,6 +292,9 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         ProcessManagerSessionController session,
         HttpServletRequest request)
         throws ProcessManagerException {
+
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("adminDoReAssign", ""));
+
       // Get the associated form
       com.silverpeas.form.Form form = session.getAssignForm();
       request.setAttribute("form", form);
@@ -319,6 +329,9 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         ProcessManagerSessionController session,
         HttpServletRequest request)
         throws ProcessManagerException {
+      
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("listProcess", ""));
+
       if (session.hasUserSettings() && !session.isUserSettingsOK()) {
         return editUserSettingsHandler.getDestination(function, session, request);
       }
@@ -363,6 +376,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         throws ProcessManagerException {
       request.setAttribute("dontreset", "no, dont");
 
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("listSomeProcess", ""));
+
       return listProcessHandler.getDestination(function, session, request);
     }
   };
@@ -379,6 +394,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       String roleName = request.getParameter("role");
       session.resetCurrentRole(roleName);
 
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("changeRole", "new role="+roleName));
+
       return listProcessHandler.getDestination(function, session, request);
     }
   };
@@ -392,6 +409,9 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         ProcessManagerSessionController session,
         HttpServletRequest request)
         throws ProcessManagerException {
+      
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("filterProcess", ""));
+
       ProcessFilter filter = session.getCurrentFilter();
       updateProcessFilter(session, request, filter);
 
@@ -413,6 +433,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       if (processId != null)
         session.resetCurrentProcessInstance(processId);
 
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("attachmentManager", ""));
+      
       setSharedAttributes(session, request);
       return "/processManager/jsp/attachmentManager.jsp";
     }
@@ -432,6 +454,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
 
       session.resetCurrentProcessInstance(processId);
 
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("viewProcess", "force="+force));
+      
       if ((force == null || !force.equals("true")) && (session.hasPendingQuestions()))
         return listQuestionsHandler.getDestination(function, session, request);
 
@@ -481,6 +505,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       String type = request.getParameter("Type");
       String todoId = request.getParameter("Id");
 
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("searchResult", "Type="+type+", Id="+todoId));
+      
       // Accept only links coming from todo details
       if (type == null ||
           (!type.equals("com.stratelia.webactiv.calendar.backbone.TodoDetail") && !type
@@ -496,6 +522,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         session.resetCurrentRole(roleName);
       } else {
         String roleName = request.getParameter("role");
+        SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("searchResult", "Changing role to :"+roleName));
         SilverTrace.debug("processManager",
             "ProcessManagerRequestRouter.getDestination",
             "root.MSG_GEN_PARAM_VALUE", "From notification, role="+roleName);
@@ -556,50 +583,13 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
 
       session.resetCurrentProcessInstance(processId);
 
-      String[] stepActivities = session.getStepActivities();
-      request.setAttribute("stepActivities", stepActivities);
-
-      String[] stepActors = session.getStepActors();
-      request.setAttribute("stepActors", stepActors);
-
-      String[] stepActions = session.getStepActions();
-      request.setAttribute("stepActions", stepActions);
-
-      String[] stepDates = session.getStepDates();
-      request.setAttribute("stepDates", stepDates);
-
-      String[] stepVisibles = session.getStepVisibles();
-      request.setAttribute("stepVisibles", stepVisibles);
-
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("viewHistory", ""));
+      
       String strEnlightedStep = request.getParameter("enlightedStep");
       request.setAttribute("enlightedStep", strEnlightedStep);
 
-      HistoryStep[] steps = session.getCurrentProcessInstance().getHistorySteps();
-      if ("all".equalsIgnoreCase(strEnlightedStep)) {
-        List<HistoryStepContent> stepContents = new ArrayList<HistoryStepContent>();
-        for (int i = 0; i < stepVisibles.length; i++) {
-          com.silverpeas.form.Form form = session.getStepForm(i);
-          PagesContext context = getFormContext("dummy", "0", session);
-          context.setObjectId("Step"+steps[i].getId());
-          DataRecord data = session.getStepRecord(i);
-
-          HistoryStepContent stepContent = new HistoryStepContent(form, context, data);
-          stepContents.add(stepContent);
-        }
-        request.setAttribute("StepsContent", stepContents);
-      } else {
-        int enlightedStep = intValue(strEnlightedStep, -1);
-
-        if (enlightedStep != -1) {
-          com.silverpeas.form.Form form = session.getStepForm(enlightedStep);
-          request.setAttribute("form", form);
-          PagesContext context = getFormContext("dummy", "0", session);
-          context.setObjectId("Step"+steps[enlightedStep].getId());
-          request.setAttribute("context", context);
-          DataRecord data = session.getStepRecord(enlightedStep);
-          request.setAttribute("data", data);
-        }
-      }
+      List<StepVO> steps = session.getSteps(strEnlightedStep);
+      request.setAttribute("steps", steps);
 
       setSharedAttributes(session, request);
       return "/processManager/jsp/viewHistory.jsp";
@@ -615,6 +605,11 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         ProcessManagerSessionController session,
         HttpServletRequest request)
         throws ProcessManagerException {
+      
+      session.resetCurrentProcessInstance();
+
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("createProcess", ""));
+
       com.silverpeas.form.Form form = session.getCreationForm();
       request.setAttribute("form", form);
 
@@ -650,6 +645,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
 
         boolean isDraft = StringUtil.getBooleanValue( FileUploadUtil.getParameter(items, "isDraft") );
         boolean isFirstTimeSaved = StringUtil.getBooleanValue( FileUploadUtil.getParameter(items, "isFirstTimeSaved") );
+
+        SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("saveCreation", "isDraft="+isDraft+", isFirstTimeSaved="+isFirstTimeSaved));
 
         String instanceId = session.createProcessInstance(data, isDraft, isFirstTimeSaved);
 
@@ -696,6 +693,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       String processId = request.getParameter("processId");
 
       ProcessInstance process = session.resetCurrentProcessInstance(processId);
+
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("listTasks", ""));
 
       // checking locking users
       List<User> lockingUsers = session.getLockingUsers();
@@ -770,10 +769,16 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         HttpServletRequest request)
         throws ProcessManagerException {
 
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("resumeAction", ""));
+
       // retrieve state name and action name
       HistoryStep savedStep = session.getSavedStep();
       String stateName = savedStep.getResolvedState();
       String actionName = savedStep.getAction();
+
+      // Assume that user switch to same role as saved action
+      String roleName = savedStep.getUserRoleName();
+      session.resetCurrentRole(roleName);
 
       State state = (stateName==null) ? new StateImpl("") : session.getState(stateName);
 
@@ -820,6 +825,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       // retrieve state name and action name
       String stateName = request.getParameter("state");
       String actionName = request.getParameter("action");
+
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("editAction", "stateName="+stateName+", actionName="+actionName));
 
       request.setAttribute("state", session.getState(stateName));
       request.setAttribute("action", session.getAction(actionName));
@@ -868,6 +875,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         boolean isDraft = StringUtil.getBooleanValue( FileUploadUtil.getParameter(items, "isDraft") );
         boolean isFirstTimeSaved = StringUtil.getBooleanValue( FileUploadUtil.getParameter(items, "isFirstTimeSaved") );
 
+        SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("saveAction", "stateName="+stateName+", actionName="+actionName+", isDraft="+isDraft+", isFirstTimeSaved="+isFirstTimeSaved));
+
         com.silverpeas.form.Form form = session.getActionForm(stateName, actionName);
         PagesContext context = getFormContext("actionForm", "0", session);
         DataRecord data = session.getActionRecord(stateName, actionName);
@@ -896,6 +905,13 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         throws ProcessManagerException {
       String stateName = request.getParameter("state");
 
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("cancelAction", "stateName="+stateName));
+
+      // special case : a cancel occured when resuming a precedent action (saved in draft)
+      if (session.isResumingInstance()) {
+        return listProcessHandler.getDestination(function, session, request);
+      }
+
       // unlock the process instance
       session.unlock(stateName);
 
@@ -914,6 +930,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         throws ProcessManagerException {
       String stateName = request.getParameter("state");
 
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("cancelResponse", "stateName="+stateName));
+
       // unlock the process instance
       session.unlock(stateName);
 
@@ -931,6 +949,9 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         HttpServletRequest request)
         throws ProcessManagerException {
       String stepId = request.getParameter("stepId");
+
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("editQuestion", "stepId="+stepId));
+
       request.setAttribute("stepId", stepId);
       request.setAttribute("step", session.getStep(stepId));
 
@@ -972,6 +993,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         String stepId = FileUploadUtil.getParameter(items, "stepId");
         String state = FileUploadUtil.getParameter(items, "state");
 
+        SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("saveQuestion", "stepId="+stepId+", state="+state));
+
         com.silverpeas.form.Form form = session.getQuestionForm(false);
         PagesContext context = getFormContext("questionForm", "0", session);
         DataRecord data = session.getEmptyQuestionRecord();
@@ -997,6 +1020,9 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         HttpServletRequest request)
         throws ProcessManagerException {
       String questionId = request.getParameter("questionId");
+      
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("editResponse", "questionId="+questionId));
+
       request.setAttribute("question", session.getQuestion(questionId));
 
       // Get the question form (readonly)
@@ -1042,6 +1068,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
 
         String questionId = FileUploadUtil.getParameter(items, "questionId");
 
+        SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("saveResponse", "questionId="+questionId));
+
         com.silverpeas.form.Form responseForm = session.getQuestionForm(false);
         PagesContext context = getFormContext("responseForm", "0", session);
         DataRecord responseData = session.getEmptyQuestionRecord();
@@ -1066,6 +1094,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         ProcessManagerSessionController session,
         HttpServletRequest request)
         throws ProcessManagerException {
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("editUserSettings", ""));
+
       // Get the user settings form
       com.silverpeas.form.Form form = session.getUserSettingsForm();
       request.setAttribute("form", form);
@@ -1096,6 +1126,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       PagesContext context = getFormContext("userSettingsForm", "0", session);
       DataRecord data = session.getEmptyUserSettingsRecord();
 
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("saveUserSettings", ""));
+
       try {
         List<FileItem> items = FileUploadUtil.parseRequest(request);
         form.update(items, data, context);
@@ -1122,6 +1154,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
 
       session.resetCurrentProcessInstance(processId);
 
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("listQuestions", ""));
+      
       // Get the question form (readonly)
       com.silverpeas.form.Form questionForm = session.getQuestionForm(true);
       request.setAttribute("form", questionForm);
@@ -1215,6 +1249,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         ProcessManagerSessionController session,
         HttpServletRequest request)
         throws ProcessManagerException {
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("printProcess", ""));
+
       // Get the print form
       com.silverpeas.form.Form form = session.getPrintForm(request);
       request.setAttribute("form", form);
@@ -1253,6 +1289,8 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
         HttpServletRequest request)
         throws ProcessManagerException {
       String csvFilename = session.exportListAsCSV();
+
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("exportCSV", ""));
 
       request.setAttribute("CSVFilename", csvFilename);
       if (StringUtil.isDefined(csvFilename)) {

@@ -29,35 +29,17 @@
 
 <%
 	ProcessInstance process 				= (ProcessInstance) request.getAttribute("process");
-	String[] 		stepActivities 			= (String[]) request.getAttribute("stepActivities");
-	String[] 		stepActors 				= (String[]) request.getAttribute("stepActors");
-	String[] 		stepActions 			= (String[]) request.getAttribute("stepActions");
-	String[] 		stepDates 				= (String[]) request.getAttribute("stepDates");
-	String[] 		stepVisibles 			= (String[]) request.getAttribute("stepVisibles");
+	List 			steps 					= (List) request.getAttribute("steps");
 	String   		enlightedStep 			= (String) request.getAttribute("enlightedStep");
 	List			stepContents			= (List) request.getAttribute("StepsContent");
 	Boolean 		isActiveUser 			= (Boolean) request.getAttribute("isActiveUser");
 	Boolean 		isAttachmentTabEnable 	= (Boolean) request.getAttribute("isAttachmentTabEnable");
 	boolean 		isProcessIdVisible 		= ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
-  boolean			isReturnEnabled = ((Boolean) request.getAttribute("isReturnEnabled")).booleanValue();
+    boolean			isReturnEnabled = ((Boolean) request.getAttribute("isReturnEnabled")).booleanValue();
 
-	int   currentStep = -1;
-	if (StringUtil.isDefined(enlightedStep))
-	{
-	   try
-		{
-		   currentStep = Integer.parseInt(enlightedStep);
-	   }
-		catch (NumberFormatException e) { }
-	}
-   com.silverpeas.form.Form form
-	      = (com.silverpeas.form.Form) request.getAttribute("form");
-   PagesContext context = (PagesContext) request.getAttribute("context");
-   DataRecord data = (DataRecord) request.getAttribute("data");
-	if (currentStep != -1)
-	{
-		if (form == null || data == null) currentStep = -1;
-	}
+	com.silverpeas.form.Form form  = (com.silverpeas.form.Form) request.getAttribute("form");
+	PagesContext context = (PagesContext) request.getAttribute("context");
+	DataRecord data = (DataRecord) request.getAttribute("data");
 
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
@@ -113,10 +95,9 @@
 </table>
 <CENTER>
 <% 
-	for (int i=0; i<stepActivities.length; i++) // boucle sur tous les process
+	for (int i=0; i<steps.size(); i++) // boucle sur tous les process
 	{
-		if ("supervisor".equalsIgnoreCase(currentRole))
-			stepVisibles[i] = "true";
+	  StepVO step = (StepVO) steps.get(i);
 %>
 <table CELLPADDING="0" CELLSPACING="2" BORDER="0" WIDTH="98%" CLASS="intfdcolor">
 <form name="formCollapse" action="viewHistory">
@@ -129,10 +110,10 @@
 						<img border="0" src="<%=resource.getIcon("processManager.px") %>" width="5">
 						<span class="txtNav">
 						<% 
-						if (stepActivities[i]!=null && !stepActivities[i].equals(""))
-							out.println(stepActivities[i]+" - ");
+						if ( StringUtil.isDefined( step.getActivity() ) )
+							out.println(step.getActivity()+" - ");
 						%>
-						<%= stepActions[i] %> (<%=stepActors[i]%> - <%= stepDates[i]%>)
+						<%= step.getActionName()%> (<%=step.getActorFullName()%> - <%=step.getStepDate()%>)
 						</span>
 					</td>
 					<td class="intfdcolor"><img border="0" height="10" src="<%=resource.getIcon("processManager.px") %>"></td>
@@ -142,10 +123,10 @@
 					<td height="0" class="intfdcolor" align="right" valign="bottom"><img border="0" src="<%=resource.getIcon("processManager.boxAngleLeft") %>"></td>
 					<td align="center" valign="bottom" nowrap>
 						<%
-						if (stepVisibles[i].equals("true"))
+						if ( (step.isVisible()) || ("supervisor".equalsIgnoreCase(currentRole)) )
 						{
-							if (i != currentStep && !"all".equalsIgnoreCase(enlightedStep)) {
-								out.println("<A href=\"viewHistory?enlightedStep="+i+"\"><img border=\"0\" src=\""+resource.getIcon("processManager.boxDown")+"\"></a>");
+							if (step.getContent() == null) {
+								out.println("<A href=\"viewHistory?enlightedStep="+step.getStepId()+"\"><img border=\"0\" src=\""+resource.getIcon("processManager.boxDown")+"\"></a>");
 							}
 							else{
 								out.println("<A href=\"viewHistory\"><img border=\"0\" src=\""+resource.getIcon("processManager.boxUp")+"\"></a>");
@@ -157,20 +138,13 @@
 				</tr>
 			</table>
 			<%
-			if (i == currentStep || "all".equalsIgnoreCase(enlightedStep)) 
+			if (step.getContent() != null) 
 			{
-				if ("all".equalsIgnoreCase(enlightedStep))
-				{
-					HistoryStepContent stepContent = (HistoryStepContent) stepContents.get(i);
-					if (stepContent != null)
-					{
-						form = stepContent.getForm();
-						context = stepContent.getPageContext();
-						data = stepContent.getRecord();
-					}
-				}
+				form = step.getContent().getForm();
+				context = step.getContent().getPageContext();
+				data = step.getContent().getRecord();
 				
-				if (form == null || data == null || !stepVisibles[i].equals("true"))
+				if (form == null || data == null || ( !step.isVisible() && !("supervisor".equalsIgnoreCase(currentRole))) )
 				{
 				%>
 					<table border="0" cellpadding="0" cellspacing="0"><tr><td class="intfdcolor4"></td><img border="0" src="<%=resource.getIcon("processManager.px") %>"></tr></table>

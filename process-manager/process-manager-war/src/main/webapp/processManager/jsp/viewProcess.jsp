@@ -126,6 +126,7 @@ function printProcess()
 
 </HEAD>
 <BODY class="yui-skin-sam">
+<div id="<%=componentId%>">
 <%
 	out.println(window.printBefore());
 	out.println(tabbedPane.print());
@@ -247,4 +248,5 @@ function printProcess()
    out.println(frame.printAfter());
    out.println(window.printAfter());
 %>
+</div>
 </BODY>
