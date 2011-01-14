@@ -124,7 +124,9 @@ public class KmeliaSecurityTest {
     PublicationBm validBm = mock(PublicationBm.class);
     PublicationDetail toValidatePublication = mock(PublicationDetail.class);
     when(toValidatePublication.getStatus()).thenReturn(PublicationDetail.TO_VALIDATE);
-    when(toValidatePublication.getCreatorId()).thenReturn(authorWriterId);
+    when(toValidatePublication.isValidationRequired()).thenReturn(Boolean.TRUE);
+    when(toValidatePublication.isValid()).thenReturn(Boolean.FALSE);
+    when(toValidatePublication.isPublicationEditor(authorWriterId)).thenReturn(Boolean.TRUE);
     PublicationPK toValidatePk = new PublicationPK("3000", null, instanceId);
     when(validBm.getDetail(toValidatePk)).thenReturn(toValidatePublication);
     instance.setPublicationBm(validBm);
@@ -168,7 +170,8 @@ public class KmeliaSecurityTest {
     PublicationBm validBm = mock(PublicationBm.class);
     PublicationDetail toValidatePublication = mock(PublicationDetail.class);
     when(toValidatePublication.getStatus()).thenReturn(PublicationDetail.DRAFT);
-    when(toValidatePublication.getCreatorId()).thenReturn(authorWriterId);
+     when(toValidatePublication.isDraft()).thenReturn(Boolean.TRUE);
+    when(toValidatePublication.isPublicationEditor(authorWriterId)).thenReturn(Boolean.TRUE);
     PublicationPK toValidatePk = new PublicationPK("4000", null, instanceId);
     when(validBm.getDetail(toValidatePk)).thenReturn(toValidatePublication);
     instance.setPublicationBm(validBm);
