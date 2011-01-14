@@ -24,7 +24,10 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<c:set var="sessionController" value="${requestScope.kmelia}" />
 <%
 response.setHeader("Cache-Control","no-store"); //HTTP 1.1
 response.setHeader("Pragma","no-cache"); //HTTP 1.0
@@ -36,88 +39,65 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="topicReport.jsp.inc" %>
 
 <%
-PublicationDetail 	pubDetail 	= kmeliaScc.getSessionPublication().getPublication().getPublicationDetail();
+PublicationDetail pubDetail  = kmeliaScc.getSessionPublication().getPublication().getPublicationDetail();
 
-String 	profile 	= (String) request.getParameter("Profile");
-String 	id 			= (String) request.getParameter("PubId");
-String 	wizard		= (String) request.getAttribute("Wizard");
-String	currentLang = (String) request.getAttribute("Language");
-
-String 	pubName		= pubDetail.getName(currentLang);
+String profile = request.getParameter("Profile");
+String id = request.getParameter("PubId");
+String wizard = (String) request.getAttribute("Wizard");
+String currentLang = (String) request.getAttribute("Language");
+String pubName = pubDetail.getName(currentLang);
+pageContext.setAttribute("pubName", pubName);
 
 //Vrai si le user connecte est le createur de cette publication ou si il est admin
-boolean isOwner = false;
-if (kmeliaScc.getSessionOwner())
-	isOwner = true;
-
+boolean isOwner = kmeliaScc.getSessionOwner();
 String linkedPathString = kmeliaScc.getSessionPath();
-
 String user_id = kmeliaScc.getUserId();
-
 %>
-<HTML>
-<HEAD>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<TITLE></TITLE>
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<html>
+<head>
+<title></title>
+<view:looknfeel />
 <script language="javascript">
 function topicGoTo(id) {
-	location.href="GoToTopic?Id="+id;
+  location.href="GoToTopic?Id="+id;
 }
 
 function sendOperation(operation) {
-    document.pubForm.Action.value = operation;
-    document.pubForm.submit();
+  document.pubForm.Action.value = operation;
+  document.pubForm.submit();
 }
 </script>
-</HEAD>
-<BODY>
-<%
-        Window window = gef.getWindow();
-        Frame frame = gef.getFrame();
-
-        Board boardHelp = gef.getBoard();
-        
-        BrowseBar browseBar = window.getBrowseBar();
-        browseBar.setDomainName(spaceLabel);
-        browseBar.setComponentName(componentLabel, "Main");
-        browseBar.setPath(linkedPathString);
-		browseBar.setExtraInformation(pubName);
-
-        out.println(window.printBefore());
-
-        if (isOwner)
-            displayAllOperations(id, kmeliaScc, gef, "ViewComment", resources, out, kmaxMode);
-        else
-            displayUserOperations(id, kmeliaScc, gef, "ViewComment", resources, out, kmaxMode);
-
-        out.println(frame.printBefore());
-        
-        if ("finish".equals(wizard))
-    	{
-    		//  cadre d'aide
-    	    out.println(boardHelp.printBefore());
-    		out.println("<table border=\"0\"><tr>");
-    		out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\""+resources.getIcon("kmelia.info")+"\"></td>");
-    		out.println("<td>"+kmeliaScc.getString("kmelia.HelpComment")+"</td>");
-    		out.println("</tr></table>");
-    	    out.println(boardHelp.printAfter());
-    	    out.println("<BR>");
-    	}
-        
-       	out.flush();
-
-       	String url = kmeliaScc.getComponentUrl()+"Comments";
-       	String indexIt = "0";
-	   	if (kmeliaScc.isIndexable(pubDetail))
-			indexIt = "1";
-
-       getServletConfig().getServletContext().getRequestDispatcher("/comment/jsp/comments.jsp?id="+id+"&userid="+user_id+"&profile="+profile+"&url="+url+"&component_id="+kmeliaScc.getComponentId()+"&IndexIt="+indexIt).include(request, response);
-
-       out.println(frame.printAfter());
-       out.println(window.printAfter());
+</head>
+<body>
+  <view:browseBar path="${sessionController.sessionPath}" extraInformations="${pageScope.pubName}" />
+  <view:window>
+    <view:frame>   
+<%        
+  Board boardHelp = gef.getBoard();
+  if (isOwner){
+    displayAllOperations(id, kmeliaScc, gef, "ViewComment", resources, out, kmaxMode);
+  } else {
+    displayUserOperations(id, kmeliaScc, gef, "ViewComment", resources, out, kmaxMode);
+  }
+  if ("finish".equals(wizard)) {
+    out.println(boardHelp.printBefore());
+    out.println("<table border=\"0\"><tr>");
+    out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\"" + resources.getIcon("kmelia.info") + "\"></td>");
+    out.println("<td>" + kmeliaScc.getString("kmelia.HelpComment") + "</td>");
+    out.println("</tr></table>");
+    out.println(boardHelp.printAfter());
+    out.println("<br/>");
+  }
+  out.flush();
+  String url = kmeliaScc.getComponentUrl() + "Comments";
+  String indexIt = "0";
+  if (kmeliaScc.isIndexable(pubDetail)) {
+    indexIt = "1";
+  }
+  getServletConfig().getServletContext().getRequestDispatcher("/comment/jsp/comments.jsp?id="+id+"&userid="+user_id+"&profile="+profile+"&url="+url+"&component_id="+kmeliaScc.getComponentId()+"&IndexIt="+indexIt).include(request, response);
 %>
-</BODY>
-</HTML>
+ </view:frame>
+    
+  </view:window>
+</body>
+</html>

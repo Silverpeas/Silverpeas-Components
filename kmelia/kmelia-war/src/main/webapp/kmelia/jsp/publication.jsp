@@ -47,48 +47,49 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());
 
 	//Recuperation des parametres
-	String 					profile 		= (String) request.getAttribute("Profile");
-	String					alias			= (String) request.getAttribute("IsAlias");
-	String 					action 			= (String) request.getAttribute("Action");
-	UserCompletePublication userPubComplete = (UserCompletePublication) request.getAttribute("Publication");
-	String 					wizard			= (String) request.getAttribute("Wizard");
-	Integer					rang			= (Integer) request.getAttribute("Rang");
-	Integer					nbPublis		= (Integer) request.getAttribute("NbPublis");
-	String					language		= (String) request.getAttribute("Language");
-	List					languages		= (List) request.getAttribute("Languages");
-	String					contentLanguage	= (String) request.getAttribute("ContentLanguage");
-	String					singleFileURL	= (String) request.getAttribute("SingleAttachmentURL");
-	ValidationStep			validation		= (ValidationStep) request.getAttribute("ValidationStep");
-	int						validationType	= ((Integer) request.getAttribute("ValidationType")).intValue();
+          String profile = (String) request.getAttribute("Profile");
+          String alias = (String) request.getAttribute("IsAlias");
+          String action = (String) request.getAttribute("Action");
+          UserCompletePublication userPubComplete = (UserCompletePublication) request.getAttribute(
+              "Publication");
+          String wizard = (String) request.getAttribute("Wizard");
+          Integer rang = (Integer) request.getAttribute("Rang");
+          Integer nbPublis = (Integer) request.getAttribute("NbPublis");
+          String language = (String) request.getAttribute("Language");
+          List languages = (List) request.getAttribute("Languages");
+          String contentLanguage = (String) request.getAttribute("ContentLanguage");
+          String singleFileURL = (String) request.getAttribute("SingleAttachmentURL");
+          ValidationStep validation = (ValidationStep) request.getAttribute("ValidationStep");
+          int validationType = ((Integer) request.getAttribute("ValidationType")).intValue();
 	boolean isWriterApproval = ((Boolean) request.getAttribute("WriterApproval")).booleanValue();
 	boolean notificationAllowed = ((Boolean) request.getAttribute("NotificationAllowed")).booleanValue();
 
 	if (action == null) {
-		action = "View";
+            action = "View";
 	}
 	
 	SilverTrace.info("kmelia","JSPdesign", "root.MSG_GEN_PARAM_VALUE","ACTION pubManager = "+action);
 
-	CompletePublication 		pubComplete 	= userPubComplete.getPublication();
-	PublicationDetail 			pubDetail 		= pubComplete.getPublicationDetail();
-	UserDetail 					ownerDetail 	= userPubComplete.getOwner();
-	String						pubName			= pubDetail.getName(language);
-	String 						id 				= pubDetail.getPK().getId();
+	CompletePublication pubComplete = userPubComplete.getPublication();            
+          PublicationDetail pubDetail = pubComplete.getPublicationDetail();
+          UserDetail ownerDetail = userPubComplete.getOwner();
+          String pubName = pubDetail.getName(language);
+          String id = pubDetail.getPK().getId();
 
 	String contextComponentId = componentId;
 	//surcharge le componentId du composant courant (cas de l'alias)
 	componentId = pubDetail.getPK().getInstanceId();
 
-	TopicDetail currentTopic 		= null;
-	String 		linkedPathString 	= kmeliaScc.getSessionPath();
-	String 		pathString 			= "";
-
-	boolean 	debut				= rang.intValue() == 0;
-	boolean 	fin					= rang.intValue() == nbPublis.intValue()-1;
-
-	boolean 	suppressionAllowed	= false;
-
-	Board boardHelp = gef.getBoard();
+          TopicDetail currentTopic = null;
+          String linkedPathString = kmeliaScc.getSessionPath();
+          String pathString = "";
+            
+          boolean debut = rang.intValue() == 0;
+          boolean fin = rang.intValue() == nbPublis.intValue() - 1;
+            
+          boolean suppressionAllowed = false;
+            
+          Board boardHelp = gef.getBoard();
 
 	//Icons
 	String pubValidateSrc	= m_context + "/util/icons/publicationValidate.gif";
@@ -157,7 +158,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
     String creationDate = resources.getOutputDate(pubDetail.getCreationDate());
 
-  	String status = pubDetail.getStatus();
   	String author = pubDetail.getAuthor();
 
   	String creatorId = pubDetail.getCreatorId();
@@ -283,56 +283,56 @@ function closeWindows() {
 
 function alertUsers()
 {
-	<% if (!"Valid".equals(pubDetail.getStatus())) { %>
-		if (window.confirm("<%=Encode.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>"))
-		{
-			goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
-		}
+	<% if (!pubDetail.isValid()) { %>
+              if (window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>"))
+              {
+                goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
+              }
 	<% } else { %>
-		goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
+              goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
 	<% } %>
 }
 
 function alertUsersAttachment(attachmentId)
 {
-	<% if (!"Valid".equals(pubDetail.getStatus())) { %>
-		if (window.confirm("<%=Encode.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>"))
-		{
-			goToOperationInAnotherWindow('ToAlertUserAttachment', '<%=id%>', attachmentId, 'ViewAlert');
-		}
+	<% if (!pubDetail.isValid()) { %>
+              if (window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>"))
+              {
+                goToOperationInAnotherWindow('ToAlertUserAttachment', '<%=id%>', attachmentId, 'ViewAlert');
+              }
 	<% } else { %>
-		goToOperationInAnotherWindow('ToAlertUserAttachment', '<%=id%>', attachmentId, 'ViewAlert');
+                goToOperationInAnotherWindow('ToAlertUserAttachment', '<%=id%>', attachmentId, 'ViewAlert');
 	<% } %>
 }
 
 function alertUsersDocument(documentId)
 {
-	<% if (!"Valid".equals(pubDetail.getStatus())) { %>
-		if (window.confirm("<%=Encode.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>"))
-		{
-			goToOperationInAnotherWindow('ToAlertUserDocument', '<%=id%>', documentId, 'ViewAlert');
-		}
+	<% if (!pubDetail.isValid()) { %>
+              if (window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.AlertButPubNotValid"))%>"))
+              {
+                goToOperationInAnotherWindow('ToAlertUserDocument', '<%=id%>', documentId, 'ViewAlert');
+              }
 	<% } else { %>
-		goToOperationInAnotherWindow('ToAlertUserDocument', '<%=id%>', documentId, 'ViewAlert');
+                goToOperationInAnotherWindow('ToAlertUserDocument', '<%=id%>', documentId, 'ViewAlert');
 	<% } %>
 }
 
 function openSingleAttachment() {
 <% if (StringUtil.isDefined(singleFileURL)) { 
-		out.print("url = \""+Encode.javaStringToJsString(singleFileURL)+"\";");
+      out.print("url = \""+EncodeHelper.javaStringToJsString(singleFileURL)+"\";");
 %>
-		windowName = "attachmentWindow";
-		windowParams = "directories=1,menubar=1,toolbar=1,location=1,resizable=1,scrollbars=1,status=1,alwaysRaised";
-		if (!attachmentWindow.closed && attachmentWindow.name== "attachmentWindow")
-    		attachmentWindow.close();
-
-    	attachmentWindow = SP_openWindow(url, windowName, "600", "400", windowParams);
+      windowName = "attachmentWindow";
+      windowParams = "directories=1,menubar=1,toolbar=1,location=1,resizable=1,scrollbars=1,status=1,alwaysRaised";
+      if (!attachmentWindow.closed && attachmentWindow.name== "attachmentWindow")
+        attachmentWindow.close();
+      
+      attachmentWindow = SP_openWindow(url, windowName, "600", "400", windowParams);
 <% } %>
 }
 
 function showTranslation(lang)
 {
-	location.href="ViewPublication?SwitchLanguage="+lang;
+  location.href="ViewPublication?SwitchLanguage="+lang;
 }
 
 function zipPublication() {
@@ -343,19 +343,20 @@ function zipPublication() {
 }
 
 function reloadPage() {
-	location.href= "<%=routerUrl%>ViewPublication";
+  location.href= "<%=routerUrl%>ViewPublication";
 }
 
 function addFavorite(name,description,url)
 {
-	urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
-    windowName = "favoriteWindow";
-	larg = "550";
-	haut = "250";
-    windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-    if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow")
-        favoriteWindow.close();
-    favoriteWindow = SP_openWindow(urlWindow, windowName, larg, haut, windowParams);
+  urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
+  windowName = "favoriteWindow";
+  larg = "550";
+  haut = "250";
+  windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
+  if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow")
+    favoriteWindow.close();
+  
+  favoriteWindow = SP_openWindow(urlWindow, windowName, larg, haut, windowParams);
 }
 
 </script>
@@ -374,68 +375,83 @@ function addFavorite(name,description,url)
     	browseBar.setComponentName(componentLabel, "Main");
     }
     browseBar.setPath(linkedPathString);
-	browseBar.setExtraInformation(pubName);
-	browseBar.setI18N(languages, contentLanguage);
-
-	// Publication to bookmarks
-	String urlPublication = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
-	pathString = pubDetail.getName(language);
-   	String namePath = spaceLabel + " > " + componentLabel;
-	if (StringUtil.isDefined(pathString)) {
-		namePath = namePath + " > " + pathString;
-	}
-
+    browseBar.setExtraInformation(pubName);
+    browseBar.setI18N(languages, contentLanguage);
+        
+     // Publication to bookmarks
+    String urlPublication = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
+    pathString = pubDetail.getName(language);
+    String namePath = spaceLabel + " > " + componentLabel;
+    if (StringUtil.isDefined(pathString)) {
+      namePath = namePath + " > " + pathString;
+    }
     OperationPane operationPane = window.getOperationPane();
 
     if (notificationAllowed) {
-    	operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:alertUsers()");
-    }
+        operationPane.addOperation(alertSrc, resources.getString("GML.notify"), 
+            "javaScript:alertUsers()");
+      }
     operationPane.addOperation(exportSrc, resources.getString("kmelia.DownloadPublication"), "javaScript:zipPublication()");
     if (!toolboxMode) {
- 		operationPane.addOperation(pdfSrc, resources.getString("GML.generatePDF"), "javascript:generatePdf()");
- 	}
-  	operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addFavorite('"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(pubDetail.getDescription(language)))+"','"+urlPublication+"')");
-	operationPane.addLine();
-
-  	if (isOwner) {
-			if (!"supervisor".equals(profile)) {
-				if (suppressionAllowed)	{
-                	operationPane.addOperation(deletePubliSrc, resources.getString("GML.delete"), "javaScript:pubDeleteConfirm()");
-                }
-				operationPane.addOperation("#", resources.getString("kmelia.AddFile"), "javaScript:AddAttachment()");
-
-				if (kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone()) {
-					if ("Draft".equals(pubDetail.getStatus())) {
-						operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"), "javaScript:pubDraftOut()");
-					} else {
-						operationPane.addOperation(pubDraftInSrc, resources.getString("PubDraftIn"), "javaScript:pubDraftIn()");
-					}
-				}
-				operationPane.addLine();
-            }
-		}
-
-		if (!kmaxMode) {
-        	operationPane.addOperation(resources.getIcon("kmelia.copy"), resources.getString("GML.copy"), "javaScript:clipboardCopy()");
-        	if (isOwner) {
-        		operationPane.addOperation(resources.getIcon("kmelia.cut"), resources.getString("GML.cut"), "javaScript:clipboardCut()");
-        	}
-		}
-        if (!toolboxMode && isOwner) {
-            if (profile.equals("admin") || profile.equals("publisher") || isWriterApproval) {
-				if ("ToValidate".equals(pubDetail.getStatus())) {
-					if (validation == null) {
-						operationPane.addLine();
-						operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javaScript:pubValidate()");
-						operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate()");
-					}
-				}
-            }
-            if (profile.equals("supervisor")) {
-            	operationPane.addLine();
-				operationPane.addOperation(pubUnvalidateSrc, resources.getString("kmelia.PubSuspend"), "javaScript:pubSuspend()");
-            }
+      operationPane.addOperation(pdfSrc, resources.getString("GML.generatePDF"),
+          "javascript:generatePdf()");
+    }
+    operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication") + " " + kmeliaScc.
+          getString("FavoritesAdd2"), "javaScript:addFavorite('" + EncodeHelper.
+          javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath)) + "','" + EncodeHelper.
+          javaStringToHtmlString(EncodeHelper.javaStringToJsString(
+          pubDetail.getDescription(language))) + "','" + urlPublication + "')");
+    operationPane.addLine();
+      
+    if (isOwner) {
+      if (!"supervisor".equals(profile)) {
+        if (suppressionAllowed) {
+          operationPane.addOperation(deletePubliSrc, resources.getString("GML.delete"),
+              "javaScript:pubDeleteConfirm()");
         }
+        operationPane.addOperation("#", resources.getString("kmelia.AddFile"),
+            "javaScript:AddAttachment()");
+              
+        if (kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone()) {
+          if ("Draft".equals(pubDetail.getStatus())) {
+            operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"),
+                "javaScript:pubDraftOut()");
+          } else {
+            operationPane.addOperation(pubDraftInSrc, resources.getString("PubDraftIn"),
+                "javaScript:pubDraftIn()");
+          }
+        }
+        operationPane.addLine();
+      }
+    }
+    if (!kmaxMode) {
+      operationPane.addOperation(resources.getIcon("kmelia.copy"), resources.getString(
+          "GML.copy"), "javaScript:clipboardCopy()");
+      if (isOwner) {
+        operationPane.addOperation(resources.getIcon("kmelia.cut"), resources.getString(
+            "GML.cut"), "javaScript:clipboardCut()");
+      }
+    }
+    if (!toolboxMode && isOwner) {
+      if (profile.equals("admin") || profile.equals("publisher") || isWriterApproval) {
+        if (pubDetail.isValidationRequired()) {
+          if (validation == null) {
+            operationPane.addLine();
+            operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"),
+                "javaScript:pubValidate()");
+            operationPane.addOperation(pubUnvalidateSrc, resources.getString(
+                "PubUnvalidate?"),
+                "javaScript:pubUnvalidate()");
+          }
+        }
+      }
+      if (profile.equals("supervisor")) {
+        operationPane.addLine();
+        operationPane.addOperation(pubUnvalidateSrc, resources.getString(
+            "kmelia.PubSuspend"),
+            "javaScript:pubSuspend()");
+      }
+    }
         out.println(window.printBefore());
         action = "View";
         if (isOwner) {
@@ -446,31 +462,29 @@ function addFavorite(name,description,url)
         out.println(frame.printBefore());
 
         if ("finish".equals(wizard)) {
-    		//  cadre d'aide
-    	    out.println(boardHelp.printBefore());
-    		out.println("<table border=\"0\"><tr>");
-    		out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\""+resources.getIcon("kmelia.info")+"\"></td>");
-    		out.println("<td>"+kmeliaScc.getString("kmelia.HelpPubli")+"</td>");
-    		out.println("</tr></table>");
-    	    out.println(boardHelp.printAfter());
-    	    out.println("<br/>");
-    	}
-
+          out.println(boardHelp.printBefore());
+          out.println("<table border=\"0\"><tr>");
+          out.println("<td valign=\"absmiddle\"><img border=\"0\" src=\"" + resources.getIcon(
+              "kmelia.info") + "\"></td>");
+          out.println("<td>" + kmeliaScc.getString("kmelia.HelpPubli") + "</td>");
+          out.println("</tr></table>");
+          out.println(boardHelp.printAfter());
+          out.println("<br/>");
+        }
         if (screenMessage != null && screenMessage.length()>0) {
-	    	out.println("<center>"+screenMessage+"</center>");
+          out.println("<center>" + screenMessage + "</center>");
         }
 
-        InfoDetail 			infos 	= pubComplete.getInfoDetail();
-    	ModelDetail 		model 	= pubComplete.getModelDetail();
+        InfoDetail infos = pubComplete.getInfoDetail();
+        ModelDetail model = pubComplete.getModelDetail();
+        int type = 0;
+        if (kmeliaScc.isVersionControlled()) {
+          type = 1; // Versioning
+        }
 
-	    int type 	= 0;
-	    if (kmeliaScc.isVersionControlled()) {
-	        type = 1; // Versioning
-	    }
-
-    /*********************************************************************************************************************/
-		/** Affichage du header de la publication																			**/
-		/*********************************************************************************************************************/
+        /*********************************************************************************************************************/
+        /** Affichage du header de la publication																			**/
+	/*********************************************************************************************************************/
     	out.println("<table border=\"0\" width=\"98%\" align=\"center\">");
     	out.println("<tr><td align=\"left\">");
 
@@ -479,23 +493,23 @@ function addFavorite(name,description,url)
     	out.println("</span>");
 
 		if (!"user".equals(profile)) {
-			if ("ToValidate".equals(status)) {
-				out.println("<img src=\""+outDraftSrc+"\" alt=\""+resources.getString("PubStateToValidate")+"\" align=\"absmiddle\" id=\"status\"/>");
-			} else if ("Draft".equals(status)) {
-				out.println("<img src=\""+inDraftSrc+"\" alt=\""+resources.getString("PubStateDraft")+"\" align=\"absmiddle\" id=\"status\"/>");
-			} else if ("Valid".equals(status)) {
-				out.println("<img src=\""+validateSrc+"\" alt=\""+resources.getString("PublicationValidated")+"\" align=\"absmiddle\" id=\"status\"/>");
-			} else if ("UnValidate".equals(status)) {
-				out.println("<img src=\""+refusedSrc+"\" alt=\""+resources.getString("PublicationRefused")+"\" align=\"absmiddle\" id=\"status\"/>");
-			}
+                      if (pubDetail.isValidationRequired()) {
+                        out.println("<img src=\""+outDraftSrc+"\" alt=\""+resources.getString("PubStateToValidate")+"\" align=\"absmiddle\" id=\"status\"/>");
+                      } else if (pubDetail.isDraft()) {
+                        out.println("<img src=\""+inDraftSrc+"\" alt=\""+resources.getString("PubStateDraft")+"\" align=\"absmiddle\" id=\"status\"/>");
+                      } else if (pubDetail.isValid()) {
+                        out.println("<img src=\""+validateSrc+"\" alt=\""+resources.getString("PublicationValidated")+"\" align=\"absmiddle\" id=\"status\"/>");
+                      } else if (pubDetail.isRefused()) {
+                        out.println("<img src=\""+refusedSrc+"\" alt=\""+resources.getString("PublicationRefused")+"\" align=\"absmiddle\" id=\"status\"/>");
+                      }
 		}
 
-		String description = Encode.javaStringToHtmlString(pubDetail.getDescription(language));
-		description = Encode.javaStringToHtmlParagraphe(description);
+		String description = EncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language));
+		description = EncodeHelper.javaStringToHtmlParagraphe(description);
 
 		out.println("<br/><span class=\"publiDesc\">"+description+"</span><br/><br/>");
 		
-		if ("UnValidate".equals(status)) { %>
+		if (pubDetail.isRefused()) { %>
 		  <div class="extraInformation_Refused"><%=resources.getString("PublicationRefused")%></div>
 		<% }
 
@@ -506,19 +520,17 @@ function addFavorite(name,description,url)
 		/*********************************************************************************************************************/
 		if (nbPublis.intValue() > 1) {
 	    %>
-			<!-- AFFICHAGE des boutons de navigation -->
-			<table border="0" cellspacing="0" cellpadding="0" id="pagination">
-				<tr>
-					<td align="center" width="15">
-						<%	if ( !debut ) { %>
-							<a href="PreviousPublication"><img src="<%=resources.getIcon("kmelia.previous")%>" align="middle" border="0" alt="<%=resources.getString("kmelia.previous")%>" title="<%=resources.getString("kmelia.previous")%>"/></a>
-						<% } else { %>
-							&nbsp;
-						<% } %>
-					</td>
-					<td nowrap="nowrap" class="txtnav">
-						<center><%=rang.intValue()+1%> / <%=nbPublis.intValue()%></center>
-				    </td>
+              <!-- AFFICHAGE des boutons de navigation -->
+              <table border="0" cellspacing="0" cellpadding="0" id="pagination">
+                <tr>
+                  <td align="center" width="15">
+                    <% if ( !debut ) { %>
+                      <a href="PreviousPublication"><img src="<%=resources.getIcon("kmelia.previous")%>" align="middle" border="0" alt="<%=resources.getString("kmelia.previous")%>" title="<%=resources.getString("kmelia.previous")%>"/></a>
+		<% } else { %>&nbsp;<% } %>
+                  </td>
+                  <td nowrap="nowrap" class="txtnav">
+                    <center><%=rang.intValue()+1%> / <%=nbPublis.intValue()%></center>
+                  </td>
 					<td align="center" width="15">
 						<% if ( !fin ) { %>
 							<a href="NextPublication"><img src="<%=resources.getIcon("kmelia.next")%>" align="middle" border="0" alt="<%=resources.getString("kmelia.next")%>" title="<%=resources.getString("kmelia.next")%>"/></a>
@@ -632,7 +644,7 @@ function addFavorite(name,description,url)
 			<span id="lastModificationInfo"> | <%=resources.getString("kmelia.LastModification") %> : <%= updaterName%> - <%=resources.getOutputDate(pubDetail.getUpdateDate()) %></span>
 		<% }
 		// Displaying all validator's name and final validation date 
-		if (PublicationDetail.VALID.equals(pubDetail.getStatus()) && StringUtil.isDefined(pubDetail.getValidatorId()) && pubDetail.getValidateDate() != null) {
+		if (pubDetail.isValid() && StringUtil.isDefined(pubDetail.getValidatorId()) && pubDetail.getValidateDate() != null) {
 		  	String validators = "";
 		  	List validationSteps = pubComplete.getValidationSteps();
 		  	if (validationSteps != null && !validationSteps.isEmpty()) {

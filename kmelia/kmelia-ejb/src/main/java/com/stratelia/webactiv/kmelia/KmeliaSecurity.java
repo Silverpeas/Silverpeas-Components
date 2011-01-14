@@ -51,14 +51,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import static com.stratelia.webactiv.SilverpeasRole.*;
-import static com.stratelia.webactiv.util.publication.model.PublicationDetail.*;
 
 public class KmeliaSecurity implements ComponentSecurity {
+
   public static final String PUBLICATION_TYPE = "Publication";
   public static final String NODE_TYPE = "Node";
-  
   public static final String RIGHTS_ON_TOPIC_PARAM = "rightsOnTopics";
-
   private PublicationBm publicationBm;
   private NodeBm nodeBm;
   private OrganizationController controller = null;
@@ -85,7 +83,8 @@ public class KmeliaSecurity implements ComponentSecurity {
     cacheEnabled = false;
   }
 
-  private void writeInCache(String objectId, String objectType, String componentId, boolean available) {
+  private void writeInCache(String objectId, String objectType, String componentId,
+      boolean available) {
     if (cacheEnabled) {
       cache.put(objectId + objectType + componentId, Boolean.valueOf(available));
     }
@@ -126,31 +125,31 @@ public class KmeliaSecurity implements ComponentSecurity {
             SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
       }
       if (publication != null) {
-        String status = publication.getStatus();
-        if (VALID.equalsIgnoreCase(status)) {
+        if (publication.isValid()) {
           return true;
-        } else if (TO_VALIDATE.equalsIgnoreCase(status)) {
+        }
+        if (publication.isValidationRequired()) {
           String profile = getProfile(userId, pk);
           if (user.isInRole(profile)) {
             return false;
-          } else if (writer.isInRole(profile)) {
-            return userId.equals(publication.getUpdaterId())
-                || userId.equals(publication.getCreatorId());
+          }
+          if (writer.isInRole(profile)) {
+            return publication.isPublicationEditor(userId);
           }
           return true;
-        } else if (REFUSED.equalsIgnoreCase(status)) {
+        }
+        if (publication.isRefused()) {
           String profile = getProfile(userId, pk);
           if (!user.isInRole(profile)) {
-            return userId.equals(publication.getUpdaterId())
-              || userId.equals(publication.getCreatorId()) || admin.isInRole(profile)
-              || publisher.isInRole(profile);
+            return publication.isPublicationEditor(userId) || admin.isInRole(profile)
+                || publisher.isInRole(profile);
           }
           return false;
-        } else if (DRAFT.equalsIgnoreCase(status)) {
+        }
+        if (publication.isDraft()) {
           String profile = getProfile(userId, pk);
           if (!user.isInRole(profile)) {
-            return userId.equals(publication.getUpdaterId()) 
-              || userId.equals(publication.getCreatorId());
+            return publication.isPublicationEditor(userId);
           }
           return false;
         }
@@ -167,9 +166,10 @@ public class KmeliaSecurity implements ComponentSecurity {
       String objectType) {
     if (isKmeliaObjectType(objectType)) {
       return isPublicationAvailable(new PublicationPK(objectId, componentId), userId);
-    } else if (NODE_TYPE.equalsIgnoreCase(objectType)) {
+    }
+    if (NODE_TYPE.equalsIgnoreCase(objectType)) {
       return isNodeAvailable(new NodePK(objectId, componentId), userId);
-    } 
+    }
     return true;
   }
 
@@ -201,7 +201,7 @@ public class KmeliaSecurity implements ComponentSecurity {
         objectAvailable = false;
       }
       for (NodePK fatherPK : fatherPKs) {
-        if (!"1".equals(fatherPK.getId())) {
+        if (!fatherPK.isTrash()) {
           objectAvailable = isNodeAvailable(fatherPK, userId);
         }
         if (objectAvailable) {
@@ -228,15 +228,14 @@ public class KmeliaSecurity implements ComponentSecurity {
         node = getNodeBm().getHeader(nodePK, false);
       } catch (RemoteException e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.isNodeAvailable()",
-            SilverpeasRuntimeException.ERROR,
-            "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
+            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
       }
       if (node != null) {
         if (!node.haveRights()) {
           objectAvailable = true;
         } else {
           objectAvailable = controller.isObjectAvailable(node.getRightsDependsOn(), ObjectType.NODE,
-                  nodePK.getInstanceId(), userId);
+              nodePK.getInstanceId(), userId);
         }
       } else {
         objectAvailable = false;
@@ -260,8 +259,7 @@ public class KmeliaSecurity implements ComponentSecurity {
         nodePKs = getPublicationBm().getAllFatherPK(pubPK);
       } catch (RemoteException e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.getProfile()",
-            SilverpeasRuntimeException.ERROR,
-            "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
+            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
       }
       List<String> lProfiles = new ArrayList<String>();
       for (NodePK nodePK : nodePKs) {
@@ -270,15 +268,14 @@ public class KmeliaSecurity implements ComponentSecurity {
           node = getNodeBm().getHeader(nodePK);
         } catch (RemoteException e) {
           throw new KmeliaRuntimeException("KmeliaSecurity.getProfile()",
-              SilverpeasRuntimeException.ERROR,
-              "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
+              SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", e);
         }
         if (node != null) {
           SilverTrace.debug("kmelia", "KmeliaSecurity.getProfile",
               "root.MSG_GEN_PARAM_VALUE", "nodePK = " + nodePK.toString());
           if (!node.haveRights()) {
-            lProfiles.addAll(Arrays.asList(controller.getUserProfiles(userId,
-                pubPK.getInstanceId())));
+            lProfiles.addAll(
+                Arrays.asList(controller.getUserProfiles(userId, pubPK.getInstanceId())));
           } else {
             lProfiles.addAll(Arrays.asList(controller.getUserProfiles(userId,
                 pubPK.getInstanceId(), node.getRightsDependsOn(), ObjectType.NODE)));
@@ -294,13 +291,12 @@ public class KmeliaSecurity implements ComponentSecurity {
     if (publicationBm == null) {
       try {
         PublicationBmHome publicationBmHome = (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(
-            JNDINames.PUBLICATIONBM_EJBHOME,
-            PublicationBmHome.class);
+            JNDINames.PUBLICATIONBM_EJBHOME, PublicationBmHome.class);
         setPublicationBm(publicationBmHome.create());
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.getPublicationBm()",
-            SilverpeasRuntimeException.ERROR,
-            "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME", e);
+            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_PUBLICATIONBM_HOME",
+            e);
       }
     }
     return publicationBm;
@@ -314,13 +310,12 @@ public class KmeliaSecurity implements ComponentSecurity {
         setNodeBm(nodeBmHome.create());
       } catch (Exception e) {
         throw new KmeliaRuntimeException("KmeliaSecurity.getNodeBm()",
-            SilverpeasRuntimeException.ERROR,
-            "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
+            SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
       }
     }
     return nodeBm;
   }
-  
+
   public synchronized boolean isCacheEnabled() {
     return cacheEnabled;
   }

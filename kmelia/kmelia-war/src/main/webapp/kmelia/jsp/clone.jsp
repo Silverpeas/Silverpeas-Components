@@ -122,7 +122,6 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 
     String creationDate = resources.getOutputDate(pubDetail.getCreationDate());
 
-  	String status	= pubDetail.getStatus();
   	String author 	= pubDetail.getAuthor();
 
   	String creatorId = pubDetail.getCreatorId();
@@ -185,7 +184,7 @@ function pubDeleteConfirm(id) {
 }
 
 function deleteCloneConfirm() {
-    if(window.confirm("<%=Encode.javaStringToJsString(resources.getString("kmelia.ConfirmDeleteClone"))%>")){
+    if(window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.ConfirmDeleteClone"))%>")){
           document.toRouterForm.action = "<%=routerUrl%>DeleteClone";
           document.toRouterForm.submit();
     }
@@ -261,35 +260,31 @@ function pubDraftOut() {
         browseBar.setDomainName(spaceLabel);
         browseBar.setComponentName(componentLabel, "javascript:onClick=topicGoTo('0')");
         browseBar.setPath(linkedPathString);
-		browseBar.setExtraInformation(pubName);
+        browseBar.setExtraInformation(pubName);
 
         OperationPane operationPane = window.getOperationPane();
-
-        //operationPane.addOperation(alertSrc, resources.getString("GML.notify"), "javaScript:onClick=goToOperationInAnotherWindow('ToAlertUser', '"+id+"', 'ViewAlert')");
-		//operationPane.addLine();
-		if (!"supervisor".equals(profile)) {
-               operationPane.addOperation(deletePubliSrc, resources.getString("kmelia.DeleteClone"), "javaScript:deleteCloneConfirm();");
-			if (kmeliaScc.isDraftEnabled()) {
-				if ("Draft".equals(pubDetail.getStatus())) {
-					operationPane.addLine();
-					operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"), "javaScript:pubDraftOut()");
-				}
-           	}
-		}
-		//operationPane.addOperation(pdfSrc, resources.getString("GML.generatePDF"), "javascript:generatePdf('"+id+"')");
-        if (profile.equals("admin") || profile.equals("publisher")) {
-			if ("Valid".equals(pubDetail.getStatus())) {
-				operationPane.addLine();
-				operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate('"+id+"')");
-			} else if ("ToValidate".equals(pubDetail.getStatus()) || "Clone".equals(pubDetail.getStatus())) {
-				operationPane.addLine();
-				operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javaScript:pubValidate('"+id+"')");
-				operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate('"+id+"')");
-			}
+        if (!"supervisor".equals(profile)) {
+          operationPane.addOperation(deletePubliSrc, resources.getString("kmelia.DeleteClone"), "javaScript:deleteCloneConfirm();");
+          if (kmeliaScc.isDraftEnabled()) {
+            if (pubDetail.isDraft()) {
+              operationPane.addLine();
+              operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"), "javaScript:pubDraftOut()");
+            }
+          }
         }
+        if (profile.equals("admin") || profile.equals("publisher")) {
+            if (pubDetail.isValid()) {
+              operationPane.addLine();
+              operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate('" + id + "')");
+            } else if (pubDetail.isValidationRequired() || pubDetail.isClone()) {
+              operationPane.addLine();
+              operationPane.addOperation(pubValidateSrc, resources.getString("PubValidate?"), "javaScript:pubValidate('" + id + "')");
+              operationPane.addOperation(pubUnvalidateSrc, resources.getString("PubUnvalidate?"), "javaScript:pubUnvalidate('" + id + "')");
+            }
+          }
         if (profile.equals("supervisor")) {
-          	operationPane.addLine();
-			operationPane.addOperation(pubUnvalidateSrc, resources.getString("kmelia.PubSuspend"), "javaScript:pubSuspend('"+id+"')");
+          operationPane.addLine();
+          operationPane.addOperation(pubUnvalidateSrc, resources.getString("kmelia.PubSuspend"), "javaScript:pubSuspend('"+id+"')");
         }
         out.println(window.printBefore());
 
@@ -298,11 +293,11 @@ function pubDraftOut() {
         out.println(frame.printBefore());
 
         if (screenMessage != null && screenMessage.length()>0) {
-	    	out.println("<center>"+screenMessage+"</center>");
+          out.println("<center>"+screenMessage+"</center>");
         }
-
-        InfoDetail 			infos 	= pubComplete.getInfoDetail();
-    	ModelDetail 		model 	= pubComplete.getModelDetail();
+          
+          InfoDetail infos = pubComplete.getInfoDetail();
+          ModelDetail model = pubComplete.getModelDetail();
 
 	    int type 	= 0;
 	    if (kmeliaScc.isVersionControlled()) {
@@ -315,20 +310,20 @@ function pubDraftOut() {
     	out.println("<TABLE border=\"0\" width=\"98%\" align=center>");
     	out.println("<TR><TD align=\"left\">");
 
-    	out.println("<span class=\"txtnav\"><b>"+Encode.convertHTMLEntities(pubDetail.getName())+"</b></span>");
-		if (!"user".equals(profile)) {
-			if ("ToValidate".equals(status)) {
-				out.println("<img src=\""+outDraftSrc+"\" alt=\""+resources.getString("PubStateToValidate")+"\" align=\"absmiddle\">");
-			} else if ("Draft".equals(status)) {
-				out.println("<img src=\""+inDraftSrc+"\" alt=\""+resources.getString("PubStateDraft")+"\" align=\"absmiddle\">");
-			} else if ("Valid".equals(status)) {
-				out.println("<img src=\""+validateSrc+"\" alt=\""+resources.getString("PublicationValidated")+"\" align=\"absmiddle\">");
-			} else if ("UnValidate".equals(status)) {
-				out.println("<img src=\""+refusedSrc+"\" alt=\""+resources.getString("PublicationRefused")+"\" align=\"absmiddle\">");
+    	out.println("<span class=\"txtnav\"><b>"+EncodeHelper.convertHTMLEntities(pubDetail.getName())+"</b></span>");
+          if (!"user".equals(profile)) {
+            if (pubDetail.isValidationRequired()) {
+                                out.println("<img src=\""+outDraftSrc+"\" alt=\""+resources.getString("PubStateToValidate")+"\" align=\"absmiddle\">");
+			} else if (pubDetail.isDraft()) {
+                                out.println("<img src=\""+inDraftSrc+"\" alt=\""+resources.getString("PubStateDraft")+"\" align=\"absmiddle\">");
+			} else if (pubDetail.isValid()) {
+                                out.println("<img src=\""+validateSrc+"\" alt=\""+resources.getString("PublicationValidated")+"\" align=\"absmiddle\">");
+			} else if (pubDetail.isRefused()) {
+                                out.println("<img src=\""+refusedSrc+"\" alt=\""+resources.getString("PublicationRefused")+"\" align=\"absmiddle\">");
 			}
 		}
 
-		out.println("<br><b>"+Encode.javaStringToHtmlParagraphe(Encode.convertHTMLEntities(pubDetail.getDescription()))+"<b><BR><BR>");
+		out.println("<br><b>"+EncodeHelper.javaStringToHtmlParagraphe(EncodeHelper.convertHTMLEntities(pubDetail.getDescription()))+"<b><BR><BR>");
 
 		out.println("</TD></TR></table>");
 
@@ -343,19 +338,20 @@ function pubDraftOut() {
     	} else if (infos != null && model != null) {
        	    displayViewInfoModel(out, model, infos, resources, publicationSettings, m_context);
     	} else {
-	    	Form			xmlForm 	= (Form) request.getAttribute("XMLForm");
-			DataRecord		xmlData		= (DataRecord) request.getAttribute("XMLData");
-			String			currentLang = (String) request.getAttribute("Language");
-			if (xmlForm != null) {
-				PagesContext xmlContext = new PagesContext("myForm", "0", resources.getLanguage(), false, componentId, kmeliaScc.getUserId());
-				xmlContext.setObjectId(id);
-				xmlContext.setNodeId(kmeliaScc.getSessionTopic().getNodeDetail().getNodePK().getId());
-				xmlContext.setBorderPrinted(false);
-				xmlContext.setContentLanguage(currentLang);
-
-		    	xmlForm.display(out, xmlContext, xmlData);
-		    }
-    	}
+            Form xmlForm = (Form) request.getAttribute("XMLForm");
+            DataRecord xmlData = (DataRecord) request.getAttribute("XMLData");
+            String currentLang = (String) request.getAttribute("Language");
+            if (xmlForm != null) {
+              PagesContext xmlContext = new PagesContext("myForm", "0", resources.getLanguage(),
+                  false, componentId, kmeliaScc.getUserId());
+              xmlContext.setObjectId(id);
+              xmlContext.setNodeId(kmeliaScc.getSessionTopic().getNodeDetail().getNodePK().getId());
+              xmlContext.setBorderPrinted(false);
+              xmlContext.setContentLanguage(currentLang);
+                
+              xmlForm.display(out, xmlContext, xmlData);
+            }
+          }
     	out.println("</TD>");
 
     	/*********************************************************************************************************************/
