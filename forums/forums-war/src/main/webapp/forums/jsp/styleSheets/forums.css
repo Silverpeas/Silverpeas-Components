@@ -51,10 +51,7 @@
   font-size: 10pt; font-weight: bold; color: #000000 
 }
 
-.contourintfdcolor{
-  position:relative;
-  margin-bottom: 10px;
-}
+
 
 .titreCateg {
   font-size: 11px;
@@ -139,19 +136,26 @@
   color: gray
 }
 
-.nbMessage {
-  color:#666666;
+.contourintfdcolor{
+  position:relative;
+  margin-bottom: 10px;
+  height:auto;
+  width:100%;
 }
+
+
 .user {
   width:13%;
   float:left;
   clear: both;
   border-right:1px solid #CCC;
+  overflow:hidden;
 }
 .message {
   width:86%;
   float:right;
 }
+
 
 .profilPhoto {
   border:1px solid #CCCCCC;
@@ -165,10 +169,14 @@
   width:100%;
 }
 
-.userName a, .nbMessage{
-  font-size:14px;
+.userName ,  .nbMessage, .userName a, .nbMessage a{
+  font-size:11px;
   color:#000;
   font-weight:bold;
+}
+.nbMessage, .nbMessage a{
+  color:#666666;
+  font-size:10px;
 }
 
 .info ul {
@@ -189,10 +197,6 @@
   width:60%;
 }
 
-.info ul a {
-  color:#909090; font-size:11px;
-}
-
 .info ul a:hover {
   color:#000
 }
@@ -204,6 +208,14 @@
   width: 86%;
 }
 
+* html .messageFooter {
+	width: 100%;
+}
+
+.messageFooter input {
+	border:0;
+	}
+
 .messageHeader img {
   position: absolute;
   top: 10px;
@@ -214,3 +226,6 @@
   float:right;
   margin-right: 10px;
 }
+
+
+
