@@ -463,7 +463,7 @@ public class ProjectManagerRequestRouter extends ComponentRequestRouter {
         }
 
         // Get all the tasks
-        List<TaskDetail> tasks = projectManagerSC.getTasksNotCancelled(id);
+        List<TaskDetail> tasks = projectManagerSC.getTasks(id);
         TaskDetail oldestAction = getOldestTask(tasks);
 
         // Le diagramme de Gantt doit faire apparaitre
