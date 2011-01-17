@@ -1,0 +1,17 @@
+.rss_exemple {
+	float:left;
+	width:200px;
+	height:130px;
+	margin:0 10px 10px 0;
+}
+
+.rss_exemple ul {
+	list-style-type:none;
+	margin:0;
+	padding:0;
+}
+
+.rss_exemple ul li a {
+	text-decoration:underline;
+	line-height:150%;
+}
