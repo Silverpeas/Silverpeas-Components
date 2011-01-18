@@ -1,6 +1,7 @@
 A comment has been created in the following post : 
 
-Comment : $commentMessage$
+<div style="background-color:#FFF9D7; border:1px solid #E2C822; padding:5px; width:390px;">$commentMessage$</div>
+
 Name of the post : $blogName$
 Date if the event : $blogDate$
 $if(blogCategorie)$
