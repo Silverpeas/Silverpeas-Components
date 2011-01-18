@@ -28,7 +28,7 @@
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
-     <dependency>
+    <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>silverstatistics</artifactId>
       <version>${core.version}</version>
@@ -66,12 +66,6 @@
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>favorit</artifactId>
-      <version>${core.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>formtemplate</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
@@ -88,7 +82,13 @@
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
-	<dependency>
+     <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>favorit</artifactId>
+      <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.lowagie</groupId>
       <artifactId>itext</artifactId>
     </dependency>

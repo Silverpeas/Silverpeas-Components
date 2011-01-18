@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -138,6 +138,7 @@ import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.info.model.ModelPK;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
+import com.stratelia.webactiv.util.publication.model.NodeTree;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.webactiv.util.publication.model.ValidationStep;
@@ -145,6 +146,8 @@ import com.stratelia.webactiv.util.statistic.control.StatisticBm;
 import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.subscribe.control.SubscribeBm;
 import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This is the KMelia EJB-tier controller of the MVC. It is implemented as a session EJB. It
@@ -1081,18 +1084,12 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       OrganizationController orga = getOrganizationController();
       if (isRightsOnTopicsUsed) {
         // filter allowed nodes
-        NodeDetail node2Check = null;
-        for (int t = 0; tree != null && t < tree.size(); t++) {
-          node2Check = tree.get(t);
+        for (NodeDetail node2Check : tree) {
           if (!node2Check.haveRights()) {
             allowedTree.add(node2Check);
-
-            if (t == 0) {
-              // case of root. Check if publications on root are
-              // allowed
+            if (node2Check.getNodePK().isRoot()) {// case of root. Check if publications on root are allowed
               int nbPublisOnRoot = Integer.parseInt(orga.getComponentParameterValue(nodePK.
-                  getInstanceId(),
-                  "nbPubliOnRoot"));
+                  getInstanceId(), "nbPubliOnRoot"));
               if (nbPublisOnRoot != 0) {
                 node2Check.setUserRole("user");
               }
@@ -1104,34 +1101,19 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
             if (profiles != null && profiles.length > 0) {
               node2Check.setUserRole(KmeliaHelper.getProfile(profiles));
               allowedTree.add(node2Check);
-            } else {
-              // check if at least one descendant is available
-              Iterator<NodeDetail> descendants = getNodeBm().getDescendantDetails(
-                  node2Check).iterator();
+            } else { // check if at least one descendant is available
+              Iterator<NodeDetail> descendants = getNodeBm().getDescendantDetails(node2Check).
+                  iterator();
               NodeDetail descendant = null;
               boolean node2CheckAllowed = false;
               while (!node2CheckAllowed && descendants.hasNext()) {
                 descendant = descendants.next();
-                if (descendant.getRightsDependsOn() == rightsDependsOn) {
-                  // same rights of father (which is not
-                  // available)
-                  // so it is not available too
-                } else {
-                  // different rights of father
-                  // check if it is available
+                if (descendant.getRightsDependsOn() != rightsDependsOn) {
+                  // different rights of father check if it is available
                   profiles = orga.getUserProfiles(userId, instanceId,
                       descendant.getRightsDependsOn(), ObjectType.NODE);
-                  if (profiles != null && profiles.length > 0) // if
-                  // (orga.isObjectAvailable(descendant.getRightsDependsOn(),
-                  // descendant.getNodePK().getInstanceId(),
-                  // userId))
-                  {
-                    // String[] profiles =
-                    // orga.getUserProfiles(userId,
-                    // instanceId,
-                    // descendant.getRightsDependsOn());
+                  if (profiles != null && profiles.length > 0) {
                     node2Check.setUserRole(KmeliaHelper.getProfile(profiles));
-
                     allowedTree.add(node2Check);
                     node2CheckAllowed = true;
                   }
@@ -1141,75 +1123,74 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           }
         }
       } else {
-        if (tree.size() > 0) {
+        if (tree != null && !tree.isEmpty()) {
           // case of root. Check if publications on root are allowed
-          String sNB = orga.getComponentParameterValue(nodePK.getInstanceId(),
-              "nbPubliOnRoot");
+          String sNB = orga.getComponentParameterValue(nodePK.getInstanceId(), "nbPubliOnRoot");
           if (!StringUtil.isDefined(sNB)) {
             sNB = "0";
           }
           int nbPublisOnRoot = Integer.parseInt(sNB);
           if (nbPublisOnRoot != 0) {
-            NodeDetail root = (NodeDetail) tree.get(0);
+            NodeDetail root = tree.get(0);
             root.setUserRole("user");
           }
         }
-
         allowedTree.addAll(tree);
       }
 
       if (displayNb) {
         boolean checkVisibility = false;
-        String statusSubQuery = null;
+        StringBuilder statusSubQuery = new StringBuilder();
         if (profile.equals("user")) {
           checkVisibility = true;
-          statusSubQuery = " AND P.pubStatus = 'Valid' ";
+          statusSubQuery.append(" AND sb_publication_publi.pubStatus = 'Valid' ");
         } else if (profile.equals("writer")) {
-          statusSubQuery = " AND (";
+          statusSubQuery.append(" AND (");
           if (coWritingEnable && draftVisibleWithCoWriting) {
-            statusSubQuery +=
-                "P.pubStatus = 'Valid' OR P.pubStatus = 'Draft' OR P.pubStatus = 'Unvalidate' ";
+            statusSubQuery.append("sb_publication_publi.pubStatus = 'Valid' OR ").append(
+                "sb_publication_publi.pubStatus = 'Draft' OR ").append(
+                "sb_publication_publi.pubStatus = 'Unvalidate' ");
           } else {
             checkVisibility = true;
-            statusSubQuery +=
-                "P.pubStatus = 'Valid' OR (P.pubStatus = 'Draft' AND P.pubUpdaterId = '"
-                + userId
-                + "') OR (P.pubStatus = 'Unvalidate' AND P.pubUpdaterId = '"
-                + userId + "') ";
+            statusSubQuery.append("sb_publication_publi.pubStatus = 'Valid' OR ").append(
+                "(sb_publication_publi.pubStatus = 'Draft' AND ").append(
+                "sb_publication_publi.pubUpdaterId = '").
+                append(userId).append("') OR (sb_publication_publi.pubStatus = 'Unvalidate' AND ").
+                append("sb_publication_publi.pubUpdaterId = '").append(userId).append("') ");
           }
-          statusSubQuery += "OR (P.pubStatus = 'ToValidate' AND P.pubUpdaterId = '"
-              + userId + "') ";
-          statusSubQuery += "OR P.pubUpdaterId = '" + userId + "'";
-          statusSubQuery += ")";
+          statusSubQuery.append("OR (sb_publication_publi.pubStatus = 'ToValidate' ").append(
+              "AND sb_publication_publi.pubUpdaterId = '").append(userId).append("') ");
+          statusSubQuery.append("OR sb_publication_publi.pubUpdaterId = '" + userId + "')");
         } else {
-          statusSubQuery = " AND (";
+          statusSubQuery.append(" AND (");
           if (coWritingEnable && draftVisibleWithCoWriting) {
-            statusSubQuery += "P.pubStatus IN ('Valid','ToValidate','Draft') ";
+            statusSubQuery.append(
+                "sb_publication_publi.pubStatus IN ('Valid','ToValidate','Draft') ");
           } else {
             if (profile.equals("publisher")) {
               checkVisibility = true;
             }
-            statusSubQuery +=
-                "P.pubStatus IN ('Valid','ToValidate') OR (P.pubStatus = 'Draft' AND P.pubUpdaterId = '"
-                + userId + "') ";
+            statusSubQuery.append("sb_publication_publi.pubStatus IN ('Valid','ToValidate') OR ").
+                append(
+                "(sb_publication_publi.pubStatus = 'Draft' AND sb_publication_publi.pubUpdaterId = '").
+                append(userId).append("') ");
           }
-          statusSubQuery += "OR P.pubUpdaterId = '" + userId + "'";
-          statusSubQuery += ")";
+          statusSubQuery.append("OR sb_publication_publi.pubUpdaterId = '").append(userId).append(
+              "')");
         }
 
-        Map<String, Integer> distribution = getPublicationBm().getDistribution(
-            nodePK.getInstanceId(), statusSubQuery, checkVisibility);
-
-        NodeDetail node = null;
-        for (int t = 0; t < allowedTree.size(); t++) {
-          node = allowedTree.get(t);
-          if (node.getNodePK().getId().equals("1")) {
-            Collection<PublicationDetail> pubs =
-                getPublicationsInBasket(node.getNodePK(), profile, userId);
-            node.setNbObjects(pubs.size());
-          } else {
-            node.setNbObjects(getNbPublis(node, distribution, allowedTree));
-          }
+        NodeTree root = getPublicationBm().getDistributionTree(nodePK.getInstanceId(),
+            statusSubQuery.toString(), checkVisibility);
+        Map<NodePK, NodeDetail> allowedNodes = new HashMap<NodePK, NodeDetail>(allowedTree.size());
+        for (NodeDetail allowedNode : allowedTree) {
+          allowedNodes.put(allowedNode.getNodePK(), allowedNode);
+        }
+        countPublisInNode(allowedNodes, root);
+        NodePK trashPk = new NodePK(NodePK.BIN_NODE_ID, nodePK.getInstanceId());
+        NodeDetail trash = allowedNodes.get(trashPk);
+        if (trash != null) {
+          Collection<PublicationDetail> pubs = getPublicationsInBasket(trashPk, profile, userId);
+          trash.setNbObjects(pubs.size());
         }
       }
       return allowedTree;
@@ -1227,8 +1208,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         "root.MSG_GEN_ENTER_METHOD", "pk = " + pk.toString() + ", userProfile = " + userProfile
         + ", userId = " + userId);
     try {
-      // Give the publications associated to basket topic and
-      // visibility period expired
+      // Give the publications associated to basket topic and visibility period expired
       if ("admin".equals(userProfile)) {
         // Admin can see all Publis in the basket.
         userId = null;
@@ -1244,21 +1224,45 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     return pubDetails;
   }
 
+  public int countPublisInNode(Map<NodePK, NodeDetail> allowedNodes, NodeTree currentNode) {
+    int result = currentNode.getNbPublications();
+    for (NodeTree child : currentNode.getChildren()) {
+      if (allowedNodes.containsKey(child.getKey())) {
+        result = result + countPublisInNode(allowedNodes, child);
+      }
+    }
+    NodeDetail node = allowedNodes.get(currentNode.getKey());
+    if (node != null) {
+      node.setNbObjects(result);
+    }
+    return result;
+  }
+
+  /*Il faut remplir les valeurs completes Map<String, INT> en calculat à partir d'un node tree
+  public int f(NodeDetail node, Map<String, NodeTree> distribution, Set<NodeDetail> allowedNodes) {
+  SilverTrace.debug("kmelia", "KmeliaBmEJB.getNbPublis()",
+  "root.MSG_GEN_ENTER_METHOD", "node = " + node.getNodePK().toString());
+  int result = 0;
+  for (Map.Entry<String, Integer> nodeEntry : distribution.entrySet()) {
+  String nodePath = nodeEntry.getKey();
+  if (nodePath.startsWith(node.getFullPath()) && isNodeAllowed(nodePath, allowedNodes)) {
+  Integer nb = nodeEntry.getValue();
+  if (nb != null) {
+  result += nb.intValue();
+  }
+  }
+  }
+  return result;
+  }*/
   private int getNbPublis(NodeDetail node, Map<String, Integer> distribution,
-      List<NodeDetail> allowedNodes) {
+      Set<NodeDetail> allowedNodes) {
     SilverTrace.debug("kmelia", "KmeliaBmEJB.getNbPublis()",
         "root.MSG_GEN_ENTER_METHOD", "node = " + node.getNodePK().toString());
     int result = 0;
-    // String nodeFullPath = node.getPath()+node.getNodePK().getId()+"/";
-    Integer nb = null;
-
     for (Map.Entry<String, Integer> nodeEntry : distribution.entrySet()) {
-      // SilverTrace.debug("kmelia","KmeliaBmEJB.getNbPublis()",
-      // "root.MSG_GEN_PARAM_VALUE", "nodePath = "+nodePath
       String nodePath = nodeEntry.getKey();
-      if (isNodeAllowed(nodePath, allowedNodes)
-          && nodePath.startsWith(node.getFullPath()) /* && !getLastNodeId(nodePath).equals("1") */) {
-        nb = nodeEntry.getValue();
+      if (nodePath.startsWith(node.getFullPath()) && isNodeAllowed(nodePath, allowedNodes)) {
+        Integer nb = nodeEntry.getValue();
         if (nb != null) {
           result += nb.intValue();
         }
@@ -1266,30 +1270,25 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
     return result;
   }
-  private List<String> tempAllowedNodes = new ArrayList<String>();
+  private Set<String> tempAllowedNodes = new HashSet<String>();
 
-  private boolean isNodeAllowed(String nodePath, List<NodeDetail> allowedNodes) {
+  private boolean isNodeAllowed(String nodePath, Set<NodeDetail> allowedNodes) {
     if (tempAllowedNodes.contains(nodePath)) {
       return true;
     }
 
-    Iterator<NodeDetail> it = allowedNodes.iterator();
-
-    NodeDetail node = null;
-    while (it.hasNext()) {
-      node = it.next();
+    for (NodeDetail node : allowedNodes) {
       if (nodePath.equals(node.getFullPath())) {
         tempAllowedNodes.add(nodePath);
         return true;
       }
     }
-
     return false;
   }
 
   private static String getLastNodeId(String path) {
-    path = path.substring(0, path.length() - 1); // remove last /
-    return path.substring(path.lastIndexOf("/") + 1);
+    String currentPath = path.substring(0, path.length() - 1); // remove last /
+    return currentPath.substring(currentPath.lastIndexOf('/') + 1);
   }
 
   /**************************************************************************************/
@@ -1306,13 +1305,10 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     SilverTrace.info("kmelia", "KmeliaBmEJB.getSubscriptionList()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      Collection<NodePK> list = getSubscribeBm().getUserSubscribePKsByComponent(userId,
-          componentId);
+      Collection<NodePK> list = getSubscribeBm().getUserSubscribePKsByComponent(userId, componentId);
       Collection<Collection<NodeDetail>> detailedList = new ArrayList<Collection<NodeDetail>>();
-      Iterator<NodePK> i = list.iterator();
       // For each favorite, get the path from root to favorite
-      while (i.hasNext()) {
-        NodePK pk = i.next();
+      for (NodePK pk : list) {
         Collection<NodeDetail> path = getNodeBm().getPath(pk);
         detailedList.add(path);
       }
