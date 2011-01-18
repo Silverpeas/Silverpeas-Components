@@ -50,6 +50,7 @@
 <view:looknfeel />
 <link href="<c:out value="${ctxPath}"/>/projectManager/jsp/css/gantt.css" type="text/css" rel="stylesheet" />
 <script type="text/javascript" src="<c:out value="${ctxPath}"/>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<c:out value="${ctxPath}"/>/projectManager/jsp/js/ajax_project.js"></script>
 <script language="javascript" type="text/javascript">
 
 $(document).ready(function(){
@@ -87,7 +88,24 @@ $(document).ready(function(){
     }
   });
 
-  // Tooltip over task in order to know the responsable
+  highlightResponsible();
+ 
+  $('#legendLabelId').click(function() {
+	  if ($('#legende').is(':visible')) {
+		    $('#legende').hide();
+		} else {
+		    $('#legende').show();
+		}
+	});
+
+  $("#ajaxLoadError").dialog('close');
+ });
+
+/**
+ * Add tooltip over task name
+ */
+function highlightResponsible() {
+  // Tooltip over task in order to know the responsible
   $('.task_wording a[href][title]').qtip({
     content: {
        text: false // Use each elements title attribute
@@ -110,16 +128,17 @@ $(document).ready(function(){
       }*/
     }
   });
+}
 
-  $('#legendLabelId').click(function() {
-	  if ($('#legende').is(':visible')) {
-		    $('#legende').hide();
-		} else {
-		    $('#legende').show();
-		}
-	});
-	
- });
+function getContext() {
+  return "<c:out value="${ctxPath}" />";
+}
+// global javascript variable
+var listHolidays = new Array();
+
+<c:forEach items="${requestScope['Holidays']}" var="holiday" varStatus="holidayIndex">
+listHolidays[<c:out value="${holidayIndex.index}" />] = '<fmt:formatDate value="${holiday}" pattern="yyyyMMdd"/>';
+</c:forEach>
 
 </script>
 </head>
@@ -204,6 +223,17 @@ $(document).ready(function(){
 <%--                          MONTH VIEW                          --%>
 <%-- -------------------------------------------------------------------------- --%>
 
+<input type="hidden" id="hiddenInProgressId" value="<fmt:message key="projectManager.gantt.view.tasks.inprogress" />" />
+<input type="hidden" id="hiddenFrozenId" value="<fmt:message key="projectManager.gantt.view.tasks.frozen" />" />
+<input type="hidden" id="hiddenCancelId" value="<fmt:message key="projectManager.gantt.view.tasks.cancel" />" />
+<input type="hidden" id="hiddenDoneId" value="<fmt:message key="projectManager.gantt.view.tasks.done" />" />
+<input type="hidden" id="hiddenWarningId" value="<fmt:message key="projectManager.gantt.view.tasks.alert" />" />
+<input type="hidden" id="hiddenNotStartedId" value="<fmt:message key="projectManager.gantt.view.tasks.notstarted" />" />
+<input type="hidden" id="hiddenResponsibleId" value="<fmt:message key="projectManager.gantt.tasks.responsible"/>" />
+<input type="hidden" id="hiddenExpandTreeImgId" value="<c:out value="${ctxPath}"/><fmt:message key="projectManager.treePlus" bundle="${icons}"/>" />
+<input type="hidden" id="hiddenCollapseTreeImgId" value="<c:out value="${ctxPath}"/><fmt:message key="projectManager.treeMinus" bundle="${icons}"/>" />
+<input type="hidden" id="hiddenComponentId" value="<c:out value="${requestScope['browseContext'][3]}"/>" />
+
 <c:set var="curMonth" value="${requestScope['MonthVO']}" />
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="tableFrame">
@@ -265,6 +295,22 @@ $(document).ready(function(){
   </c:forEach>
 </c:forEach>
           </tr>
+          
+          <%-- Add new empty line in order prepare ajax loading --%>
+          <tr id="emptyDays" style="display:none;">
+<c:forEach var="curWeek" items="${curMonth.weeks}" varStatus="weekIndex">
+  <c:forEach var="curDay" items="${curWeek.days}" varStatus="dayIndex">
+            <c:set var="columnClass" value="" />
+            <c:if test="${(curDay.number%2) == 0}">
+              <c:set var="columnClass" value="day_odd" />
+            </c:if>
+            <c:if test="${(dayIndex.first)}">
+              <c:set var="columnClass" value="${columnClass} week_begin"/>
+            </c:if>
+            <td class="<c:out value="${columnClass}"/>"><fmt:formatDate value="${curDay.day}" pattern="yyyyMMdd" /></td>
+  </c:forEach>
+</c:forEach>
+          </tr>
         </thead>
         <tbody>
 <c:set var="curTasks" value="${requestScope['Tasks']}" />
@@ -306,17 +352,16 @@ $(document).ready(function(){
     </c:otherwise>
   </c:choose>
   <c:set var="rowClass" value="${taskStatus}" />
-  <c:if test="${task.level > 0}">
-    <c:set var="rowClass" value="${rowClass} under_task last_child" />
+  <c:if test="${task.level > 1}">
+    <c:set var="rowClass" value="${rowClass} under_task" />
+	  <c:if test="${taskIndex.last}">
+	    <c:set var="rowClass" value="${rowClass} last_child" />
+	  </c:if>
+    <c:set var="rowClass" value="${rowClass} level${task.level}" />
   </c:if>
-  <c:choose>
-    <c:when test="${task.estDecomposee == 1}">
-      <c:set var="rowClass" value="${rowClass} level${task.level}" />
-    </c:when>
-    <c:otherwise>
-      <c:set var="rowClass" value="task_row ${rowClass}" />
-    </c:otherwise>
-  </c:choose>
+  <c:if test="${task.estDecomposee == 0}">
+    <c:set var="rowClass" value="${rowClass} task_row" />
+  </c:if>
   <%-- Prepare table row class END --%>
   
     <tr class="<c:out value="${rowClass}" />" id="taskRow<c:out value="${task.id}" />">
@@ -324,7 +369,7 @@ $(document).ready(function(){
       <td class="task_wording">
         <div>
     <c:if test="${task.estDecomposee == 1}">
-      <a class="linkSee" href="ToGantt?Id=<c:out value="${task.id}" />"><img border="0" src="<c:out value="${ctxPath}"/><fmt:message key="projectManager.treePlus" bundle="${icons}"/>" alt="+"/></a>&nbsp;
+      <a class="linkSee" href="javascript:loadTask('<c:out value="${task.id}" />', '<c:out value="${requestScope['browseContext'][3]}"/>');" id="taskLink<c:out value="${task.id}" />"><img id="taskLinkImg<c:out value="${task.id}" />" border="0" src="<c:out value="${ctxPath}"/><fmt:message key="projectManager.treePlus" bundle="${icons}"/>" alt="+"/></a>&nbsp;
     </c:if>
       <a href="ViewTask?Id=<c:out value="${task.id}" />" title="<fmt:message key="projectManager.gantt.tasks.responsible"/> : <c:out value="${task.responsableFullName}" />"><c:out value="${task.nom}" /></a>
         </div>
@@ -384,7 +429,7 @@ $(document).ready(function(){
         </c:forEach>
       </c:if>
 
-      <td class="${columnClass}">
+      <td class="${columnClass}" id="td<c:out value="${task.id}_${curDayStr}" />">
       <c:if test="${isTaskDay}">
         <div>&nbsp;<div><span>x</span></div></div>
       </c:if>
@@ -404,5 +449,8 @@ $(document).ready(function(){
 </table>
   </view:frame>
 </view:window>
+<div id="ajaxLoadError" style="display:none;">
+  <fmt:message key="projectManager.gantt.ajax.error.load" />
+</div>
 </body>
 </html>

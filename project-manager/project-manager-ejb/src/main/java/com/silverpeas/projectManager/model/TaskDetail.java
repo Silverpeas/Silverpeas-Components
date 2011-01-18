@@ -29,6 +29,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.stratelia.webactiv.calendar.backbone.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
@@ -103,6 +105,8 @@ public class TaskDetail implements Serializable {
     this.estDecomposee = estDecomposee;
     this.instanceId = instanceId;
     this.path = path;
+    // Initialize level because level has never been set before.
+    this.level = StringUtils.countMatches(this.path, "/") - 2;
   }
 
   /**
