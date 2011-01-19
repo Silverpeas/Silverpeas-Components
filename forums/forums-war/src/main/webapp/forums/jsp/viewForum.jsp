@@ -86,7 +86,7 @@
     <script type="text/javascript" src="<c:url value="/forums/jsp/javaScript/forums.js" />" ></script>
     <script type="text/javascript" src="<c:url value="/util/javaScript/animation.js" />" ></script>
     <script type="text/javascript">
-      <c:if test="${isAdmin || isUser || isModerator}">
+      <% if (isAdmin || isUser || isModerator) { %>
         <fmt:message key="confirmDeleteForum" var="confirmationSuppressionForum" />
           <fmt:message key="confirmDeleteMessage" var="confirmationSuppressionMessage" />
         function confirmDeleteForum(forumId) {
@@ -101,7 +101,7 @@
             window.location.href = "viewForum.jsp?action=9&params=" + messageId + "&forumId=<%=forumId%>";
           }
         }
-      </c:if>
+      <% } %>
 
         function loadNotation()
         {
@@ -192,7 +192,7 @@
         </c:if>
       </view:operationPane>
     </c:if>
-    <view:window>      
+    <view:window>
       <view:frame>
         <table class="intfdcolor4" border="0" cellspacing="0" cellpadding="0" width="98%">
           <c:if test="${requestScope.nbChildrens > 0}">
@@ -209,7 +209,7 @@
                       <td nowrap="nowrap" align="center"><fmt:message key="operations" /></td>
                     </c:if>
                   </tr>
-                  <%ForumListHelper.displayChildForums(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc);%>                     
+                  <%ForumListHelper.displayChildForums(out, resources, isAdmin, isModerator, isReader, forumId, "main", fsc);%>
                 </table>
               </td>
             </tr>
@@ -246,17 +246,17 @@
 fsc.deployAllMessages(forumId);
 ForumHelper.displayMessagesList(out, resource, userId, isAdmin, isModerator, isReader, true, forumId, false,
 "viewForum", fsc, resources);
-                        %>                        
-                      </table>                    
+                        %>
+                      </table>
                 </form>
             </td>
           </tr>
-        </table>          
-        <c:if test="${sessionController.external || ! isReader}">          
+        </table>
+        <c:if test="${sessionController.external || ! isReader}">
           <img src="icons/noNewMessage.gif" alt="<fmt:message key="forums.notNewMessageVisite" />" /> <fmt:message key="forums.notNewMessageVisite" />
           <br />
           <img src="icons/newMessage.gif" alt="<fmt:message key="forums.newMessageVisite" />" /> <fmt:message key="forums.newMessageVisite" />
-        </c:if>                   
+        </c:if>
         <br/>
         <center>
           <view:buttonPane>
