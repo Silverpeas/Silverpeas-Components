@@ -181,7 +181,7 @@ function ClipboardCopyOne() {
 	<table width="100%" border="0" cellspacing="0" cellpadding="3">
 	    <tr>
         	<td nowrap="nowrap" class="txtlibform"><%=resources.getString("GML.title")%>:</td>
-            <td><input type="text" size="97" id="Name" name="Name" maxlength="<%=DBUtil.TextFieldLength%>" <%
+            <td><input type="text" size="97" id="Name" name="Name" maxlength="<%=DBUtil.getTextFieldLength()%>" <%
                         if (quickInfoDetail != null)
                           out.println("value=\""+Encode.javaStringToHtmlString(quickInfoDetail.getName())+"\"");
                       %>/>
@@ -193,7 +193,7 @@ function ClipboardCopyOne() {
          </tr>
 		 <tr>
              <td class="txtlibform" nowrap="nowrap"><%=resources.getString("dateDebut")%> :</td>
-             <td><input class="dateToPick" type="text" id="BeginDate" name="BeginDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
+             <td><input class="dateToPick" type="text" id="BeginDate" name="BeginDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" <%
                         if (quickInfoDetail != null)
                           if (quickInfoDetail.getBeginDate() != null)
                             out.println("value=\""+resources.getInputDate(quickInfoDetail.getBeginDate())+"\"");
@@ -202,7 +202,7 @@ function ClipboardCopyOne() {
          </tr>
          <tr>
          	<td class="txtlibform" nowrap="nowrap"><%=resources.getString("dateFin")%> :</td>
-            <td><input class="dateToPick" type="text" id="EndDate" name="EndDate" size="14" maxlength="<%=DBUtil.DateFieldLength%>" <%
+            <td><input class="dateToPick" type="text" id="EndDate" name="EndDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" <%
                         if (quickInfoDetail != null)
                           if (quickInfoDetail.getEndDate() != null)
                             out.println("value=\""+resources.getInputDate(quickInfoDetail.getEndDate())+"\"");
