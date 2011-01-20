@@ -294,8 +294,6 @@
           </c:if>
         </div>
 
-       
-
         <c:if test="${almanach.agregationUsed and not empty othersAlmanachs}">
           <div id="agregatedAlmanachs">
             <form name="agregateAlmanachs">
@@ -340,7 +338,7 @@
           <div class="rss">
           <table>
             <tr>
-              <td><a href="<c:url value='${rssUrl}'/>"><img src="icons/rss.gif" border="0" alt="RSS"/></a></td>
+              <td><a href="<c:url value='${rssUrl}'/>" class="rss_link"><img src="<c:url value="/util/icons/rss.gif" />" border="0" alt="rss"/></a></td>
             </tr>
           </table>
           <fmt:message key="almanach.rssNext" var="rssNext"/>
