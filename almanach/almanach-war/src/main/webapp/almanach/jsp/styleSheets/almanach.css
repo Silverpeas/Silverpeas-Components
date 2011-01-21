@@ -94,21 +94,22 @@
 #today a:hover, #today a:focus{ 
 	background-color: #FFFFCC;
 }
-/**
- * Default CSS class when printing an almanach title in the agregation area
- */
-.almanach {
-}
+
 
 /**
  * CSS to apply to the events that have priority.
  */
-.priority {
-  background-color: transparent;
-  background-image: url('util/urgent.gif');
+.priority a{
+  background-image: url('/silverpeas/util/icons/important.gif');
   background-repeat: no-repeat;
-  background-position: right top;
+  background-position:top left;
+  padding:0 2px 0 12px ;
+  margin:0;
+  width:auto;
+  
 }
+.priority a span { 
+	display:block;}
 
 #agregatedAlmanachs {
 	background: url("../../../util/icons/arrow/bg_tri.png") no-repeat scroll left bottom #EAEAEA;
@@ -126,3 +127,63 @@
 	
 #agregatedAlmanachs input {
 	border:0;}
+
+/* Mise en forme des ViewMonthEvents */
+
+ul.months {
+	list-style-type:none;
+	padding:0;
+	margin:0;
+	}
+.month h3{
+	background-color: #EAEAEA;
+    border: 1px solid #CCCCCC;
+    border-bottom: 0px solid #CCCCCC;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 4px 0;
+    text-align: center;
+    text-transform: uppercase;
+	height:100%;
+	margin:0;
+	}
+
+ul.days{
+	list-style-type:none;
+	padding:0;
+	margin:0;
+	border: 1px solid #CCCCCC;
+	padding: 10px;
+	
+	}
+li.day {
+	border-bottom:1px solid #DFDFDF;
+	margin-bottom:10px;
+	
+	}
+
+ul.events {
+	float:right;
+	width:70%;
+	margin:0;
+	padding:0;
+	list-style-type:none;}
+	
+
+	
+div.eventDetail{
+	border-bottom:1px dashed #DFDFDF;
+	}
+div.eventDetail a{color:#274D9F;}
+.priorityEvent div.eventDetail{
+	  background:transparent url('/silverpeas/util/icons/important.gif') top right no-repeat;
+	 }
+
+div.description {
+	background-color: #EFEFEF;
+    border: 1px solid #DFDFDF;
+    margin: 5px 0;
+    padding: 10px;
+    text-align: left;}
+	
+div.description p {padding:0; margin:0;}

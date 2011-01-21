@@ -69,60 +69,11 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%
 out.println(graphicFactory.getLookStyleSheet());
 %>
-<style type="text/css">
-#listEvents .month {
-	font-weight: bold;
-}
-
-#listEvents ul.months, ul.days, ul.events {
-	list-style-type: none;
-}
-
-#listEvents ul.days {
-	margin: 1em 0 1em 0px;
-	padding: 0;
-}
-
-#listEvents ul.events {
-	margin: 1em 0 1em 40px;
-	padding: 0;
-}
-
-#listEvents li.event {
-	background-image: url(icons/flecheGrise.gif);
-	background-repeat: no-repeat;
-	background-position: 0px 0px;
-	padding-left: 14px;
-	margin-bottom:5px;
-	margin-top:5px;
-}
-
-#listEvents li.priorityEvent {
-	background-image: url(icons/flecheRouge.gif);
-	background-repeat: no-repeat;
-	background-position: 0px 0px;
-	padding-left: 14px;
-	margin-bottom:5px;
-	margin-top:5px;
-}
-
-#listEvents li.day {
-	background-image:url(/silverpeas/admin/jsp/icons/silverpeasV5/degrade20px.jpg);
-	background-repeat:repeat-x;
-	color:#000000;
-	font-size:10pt;
-	font-weight:bold;
-}
-
-#listEvents li.month {
-	color:#000000;
-	font-size:13pt;
-	font-weight:bold;
-}
-</style>
+<link rel='stylesheet' type='text/css' href="<c:url value='/almanach/jsp/styleSheets/almanach.css'/>" />
 </head>
 <body>
 <div id="listEvents">
+
 <%
 	Frame 	frame 	= graphicFactory.getFrame();
 	Window 	window 	= graphicFactory.getWindow();
@@ -162,7 +113,7 @@ out.println(graphicFactory.getLookStyleSheet());
 	<%
 	while ((scope == 1 && currentMonth == calendar.get(Calendar.MONTH)) || (scope == 0 && currentYear == calendar.get(Calendar.YEAR))) {
 %>
-		<li class="month"><%=almanach.getString("mois" + calendar.get(Calendar.MONTH)) + " " + calendar.get(Calendar.YEAR) %></li>
+		<li class="month"><h3><%=almanach.getString("mois" + calendar.get(Calendar.MONTH)) + " " + calendar.get(Calendar.YEAR) %></h3></li>
 		<ul class="days">
 <%
 
@@ -186,85 +137,94 @@ out.println(graphicFactory.getLookStyleSheet());
 					endDay = dateFormat.format(event.getEndDate());
 				if (endDay.compareTo(theDay) < 0) continue;
 
+
+				
+
 				if (calendar.get(Calendar.DAY_OF_MONTH) != currentDay) {
+				  
 				   if (currentDay != -1) {
 				     	// if it's not the first print
-						out.println("</ul>");
+							out.println("</ul><!-- END events --><br clear=\"all\" />&nbsp;</li><!-- END day -->");
 				   }
-				   if (firstBgColor) {
-				     %><li class="day"><%
-				   } else {
-				     %><li class="day"><%
-				   }
-				   firstBgColor = ! firstBgColor;
-				   %>
-						<%=almanach.getString("jour" + calendar.get(Calendar.DAY_OF_WEEK))+
-						" " +
-						calendar.get(Calendar.DAY_OF_MONTH) +
-						" " +
-						almanach.getString("mois" + calendar.get(Calendar.MONTH)) +
-						" " +
-						calendar.get(Calendar.YEAR)%>
-					</li>
+				  
+				     %><li class="day">
+					 <%=almanach.getString("jour" + calendar.get(Calendar.DAY_OF_WEEK))+
+								" " +
+								calendar.get(Calendar.DAY_OF_MONTH) +
+								" " +
+								almanach.getString("mois" + calendar.get(Calendar.MONTH)) +
+								" " +
+								calendar.get(Calendar.YEAR)%>
+						
+
 					<ul class="events">
 				   <%
 				   currentDay = calendar.get(Calendar.DAY_OF_MONTH);
 				}
 				%>
-					<%if (event.getPriority() == 1) {%>
-						<li class="priorityEvent">
-					<%} else {%>
-						<li class="event">
-					<%}%>
-					<span class="eventDetail">
-					<%
-					String title = EncodeHelper.javaStringToHtmlString(event.getTitle());
-					String description = null;
+								<%if (event.getPriority() == 1) {%>
+									<li class="priorityEvent">
+								<%} else {%>
+									<li class="event">
+								<%}%>
+										<div class="eventDetail">
+												<%
+												String title = EncodeHelper.javaStringToHtmlString(event.getTitle());
+												String description = null;
 
-					if (StringUtil.isDefined(event.getWysiwyg())) {
-						description = event.getWysiwyg();
-					}
-				    else if (StringUtil.isDefined(event.getDescription())) {
-		      			 description = EncodeHelper.javaStringToHtmlParagraphe(event.getDescription());
-					}
+												if (StringUtil.isDefined(event.getWysiwyg())) {
+													description = event.getWysiwyg();
+												}
+												else if (StringUtil.isDefined(event.getDescription())) {
+													 description = EncodeHelper.javaStringToHtmlParagraphe(event.getDescription());
+												}
 
-					if (almanach.isAgregationUsed())
-					{
-						String eventColor = almanach.getAlmanachColor(event.getInstanceId());
-						title = "<b><span style=\"color :"+eventColor+"\">"+title+"</span></b>";
-						if (StringUtil.isDefined(description)) {
-							description = "<span style=\"color :"+eventColor+"\">"+description+"</span>";
-						}
-					}
-					out.print("<a href=\""+url+"\">");
-					out.print(title);
-					out.println("</a>");
-					if (StringUtil.isDefined(description)) {
-						out.println(description);
-					}
+												if (almanach.isAgregationUsed())
+												{
+													String eventColor = almanach.getAlmanachColor(event.getInstanceId());
+													title = "<b class=\"titre\" style=\"color :"+eventColor+"\">"+title+"</b>";
+													if (StringUtil.isDefined(description)) {
+														description = "<div style=\"color :"+eventColor+"\">"+description+"</div>";
+													}
+												}
+												out.print("<a href=\""+url+"\">");
+												out.print(title);
+												out.println("</a>");
+												if (StringUtil.isDefined(event.getPlace())) { %>
+													<br/><%=almanach.getString("lieuEvenement")%> : <%=event.getPlace()%>
+												<% } 
+												if (startDay.compareTo(theDay) == 0 && startHour != null && startHour.length() != 0)
+												{
+													out.print(" (" + startHour);
+													if (endDay.compareTo(theDay) == 0 && endHour != null && endHour.length() != 0)
+														out.print("-" + endHour);
+													out.println(")");
+												}
+												if (StringUtil.isDefined(description)) {
+													out.println("<div class=\"description\">"+description+"</div>");
+												}
 
-					if (startDay.compareTo(theDay) == 0 && startHour != null && startHour.length() != 0)
-					{
-						out.print(" (" + startHour);
-						if (endDay.compareTo(theDay) == 0 && endHour != null && endHour.length() != 0)
-							out.print("-" + endHour);
-						out.println(")");
-					}
-					%>
-					<%if (StringUtil.isDefined(event.getPlace())) { %>
-						<br/><%=almanach.getString("lieuEvenement")%> : <%=event.getPlace()%>
-					<% } %>
-					</span>
-					</li>
+												
+												%>
+												
+										
+										</div>
+										<br clear="all" />
+								</li>
+
+				
 				<%
+
 			} //end for
 			calendar.add(Calendar.DAY_OF_MONTH, 1);
 		}// end while
+			currentDay = -1;
 %>
-	</ul>
+	</ul><!-- END events  --><br clear="all" />&nbsp;</li><!-- END day -->
+	<br clear="all" /></ul><!-- END days -->
 <% } %>
-</ul>
-	</div>
+</ul><!-- END Months -->
+	
 	<%
 	out.println(board.printAfter());
 	Button button = graphicFactory.getFormButton(resources.getString("GML.back"), "almanach.jsp", false);
@@ -273,5 +233,6 @@ out.println(graphicFactory.getLookStyleSheet());
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
+</div><!-- END listEvents -->
 </body>
 </html>
