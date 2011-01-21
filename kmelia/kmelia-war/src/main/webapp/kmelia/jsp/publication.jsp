@@ -42,6 +42,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.silverpeas.publicationTemplate.*"%>
 <%@ page import="com.silverpeas.form.*"%>
 <%@page import="com.stratelia.silverpeas.versioning.model.DocumentPK"%>
+<%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+
 <%
   	ResourceLocator uploadSettings 		= new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", resources.getLanguage());
   	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());
@@ -82,7 +84,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
           TopicDetail currentTopic = null;
           String linkedPathString = kmeliaScc.getSessionPath();
-          String pathString = "";
             
           boolean debut = rang.intValue() == 0;
           boolean fin = rang.intValue() == nbPublis.intValue() - 1;
@@ -180,6 +181,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 	boolean highlightFirst = resources.getSetting("highlightFirstOccurence", false);
 %>
+
 
 <html>
 <head>
@@ -346,17 +348,18 @@ function reloadPage() {
   location.href= "<%=routerUrl%>ViewPublication";
 }
 
-function addFavorite(name,description,url)
+function addFavorite()
 {
-  urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
-  windowName = "favoriteWindow";
-  larg = "550";
-  haut = "250";
-  windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-  if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow")
-    favoriteWindow.close();
+	var name = encodeURI($("#breadCrumb").text());
+	var description = encodeURI("<%=pubDetail.getDescription(language)%>");
+	var url = "<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId())%>";
+  	urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
   
-  favoriteWindow = SP_openWindow(urlWindow, windowName, larg, haut, windowParams);
+  	if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow") {
+    	favoriteWindow.close();
+  	}
+  
+  	favoriteWindow = SP_openWindow(urlWindow, "favoriteWindow", "550", "250", "directories=0,menubar=0,toolbar=0,alwaysRaised");
 }
 
 </script>
@@ -377,14 +380,7 @@ function addFavorite(name,description,url)
     browseBar.setPath(linkedPathString);
     browseBar.setExtraInformation(pubName);
     browseBar.setI18N(languages, contentLanguage);
-        
-     // Publication to bookmarks
-    String urlPublication = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
-    pathString = pubDetail.getName(language);
-    String namePath = spaceLabel + " > " + componentLabel;
-    if (StringUtil.isDefined(pathString)) {
-      namePath = namePath + " > " + pathString;
-    }
+    
     OperationPane operationPane = window.getOperationPane();
 
     if (notificationAllowed) {
@@ -396,11 +392,8 @@ function addFavorite(name,description,url)
       operationPane.addOperation(pdfSrc, resources.getString("GML.generatePDF"),
           "javascript:generatePdf()");
     }
-    operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication") + " " + kmeliaScc.
-          getString("FavoritesAdd2"), "javaScript:addFavorite('" + EncodeHelper.
-          javaStringToHtmlString(EncodeHelper.javaStringToJsString(namePath)) + "','" + EncodeHelper.
-          javaStringToHtmlString(EncodeHelper.javaStringToJsString(
-          pubDetail.getDescription(language))) + "','" + urlPublication + "')");
+    operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication") + " " + resources.
+          getString("FavoritesAdd2"), "javaScript:addFavorite()");
     operationPane.addLine();
       
     if (isOwner) {

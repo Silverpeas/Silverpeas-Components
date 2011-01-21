@@ -595,7 +595,7 @@ function addCurrentNodeAsFavorite() {
 		}
 		url = $("#topicPermalink").attr("href");
 	}
-	addFavorite(escape(path), escape(description), url);
+	addFavorite(encodeURI(path), encodeURI(description), url);
 }
 
 function getCurrentNodeId()
