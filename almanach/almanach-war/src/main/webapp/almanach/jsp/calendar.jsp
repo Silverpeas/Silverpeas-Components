@@ -235,7 +235,7 @@
       <view:operation altText="${opLabel}" icon="" action="ViewYearEvents"/>
 
       <c:set var="opLabel"><fmt:message key="almanach.action.yearEvents"/> <fmt:message key="almanach.popup"/></c:set>
-      <view:operation altText="${opLabel}" icon="" action="ViewYearEvents"/>
+      <view:operation altText="${opLabel}" icon="" action="javascript:viewEvents()"/>
       <view:operationSeparator/>
 
       <fmt:message key="genererPdfMoisComplet" var="opLabel"/>

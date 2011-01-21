@@ -96,7 +96,7 @@ function viewEvent(componentId, id) {
 	java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("yyyy/MM/dd");
 
 	ArrayPane arrayPane = graphicFactory.getArrayPane("YearEvents", "ViewYearEventsPOPUP", request, session);
-	arrayPane.setVisibleLineNumber(15);
+	arrayPane.setVisibleLineNumber(resources.getSetting("almanach.yeareventspopup.arraypagesize", 15));
   	arrayPane.setXHTML(true);
   	arrayPane.addArrayColumn(resources.getString("GML.month"));
   	arrayPane.addArrayColumn(resources.getString("GML.title"));
