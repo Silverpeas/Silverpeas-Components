@@ -48,6 +48,7 @@
 <%
 out.println(gef.getLookStyleSheet());
 %>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/formUtil.js"></script>
 <script type="text/javascript">
 function openSPWindow(fonction, windowName){
