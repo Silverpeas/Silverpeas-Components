@@ -56,7 +56,7 @@
 	String 		validateDate			= "";
 	String 		action 					= "CreateClassified";
 	
-	PagesContext 		context 		= new PagesContext("myForm", "0", resource.getLanguage(), false, instanceId, null);
+	PagesContext 		context 		= new PagesContext("classifiedForm", "0", resource.getLanguage(), false, instanceId, null);
 	context.setBorderPrinted(false);
 	context.setCurrentFieldIndex("11");
 	context.setIgnoreDefaultValues(true);
