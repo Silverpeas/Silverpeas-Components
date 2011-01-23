@@ -10,7 +10,7 @@ $path$
 $if(attachmentTitle)$
 Name of the document : $attachmentTitle$<br/>
 $endif$
-$if($attachmentDesc$)$
+$if(attachmentDesc)$
 Description of the document : $attachmentDesc$<br/>
 $endif$
 Name of the file : $attachmentFileName$<br/>

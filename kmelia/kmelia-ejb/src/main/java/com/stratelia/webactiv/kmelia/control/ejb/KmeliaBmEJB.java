@@ -3506,7 +3506,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     notifMetaData.setFileName("notificationAttachment");
 
     AttachmentDetail attachmentDetail = AttachmentController.searchAttachmentByPK(attachmentPk);
-
+    //TODO MANU Convertir en un objet transverse pour gérer attachment et versionning
     Map<String, SilverpeasTemplate> templates = notifMetaData.getTemplates();
     SilverpeasTemplate template;
     for (String lang : UIHelper.getLanguages()) {

@@ -154,8 +154,8 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
   public ContactBm getContactBm() {
     if (currentContactBm == null) {
       try {
-        ContactBmHome contactBmHome = (ContactBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.CONTACTBM_EJBHOME, ContactBmHome.class);
+        ContactBmHome contactBmHome = (ContactBmHome) EJBUtilitaire.getEJBObjectRef(
+            JNDINames.CONTACTBM_EJBHOME, ContactBmHome.class);
         currentContactBm = contactBmHome.create();
       } catch (Exception re) {
         throw new YellowpagesRuntimeException(
@@ -167,23 +167,19 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     return currentContactBm;
   }
 
-  private ArrayList<Integer> getRecursiveNbContact(NodeDetail nodeDetail)
-      throws RemoteException {
-    ArrayList<Integer> nbContactsByTopic = new ArrayList<Integer>();
+  private List<Integer> getRecursiveNbContact(NodeDetail nodeDetail) throws RemoteException {
+    List<Integer> nbContactsByTopic = new ArrayList<Integer>();
 
     Collection<NodeDetail> childrenPKs = nodeDetail.getChildrenDetails();
     if (childrenPKs != null) {
       // get groups
       // add groups to nodeDetail.childrens
       List<String> groupIds = getGroupIds(nodeDetail.getNodePK().getId());
-      String groupId = null;
-      Group group = null;
-      NodeDetail nodeGroup = null;
       for (int g = 0; g < groupIds.size(); g++) {
-        groupId = (String) groupIds.get(g);
-        group = getOrganizationController().getGroup(groupId);
+        String groupId = groupIds.get(g);
+        Group group = getOrganizationController().getGroup(groupId);
         if (group != null) {
-          nodeGroup = new NodeDetail();
+          NodeDetail nodeGroup = new NodeDetail();
           nodeGroup.getNodePK().setId("group_" + group.getId());
           nodeGroup.setName(group.getName());
           nodeGroup.setDescription(group.getDescription());
@@ -191,38 +187,28 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         }
       }
 
-      Iterator<NodeDetail> iterator = childrenPKs.iterator();
-      NodeDetail child;
-      NodePK childPK;
-      String childPath;
       int nbContacts = 0;
-      ArrayList<Integer> nbContactsBySubTopic = new ArrayList<Integer>();
+      List<Integer> nbContactsBySubTopic = new ArrayList<Integer>();
       Iterator<Integer> itSub;
       int nbSubContact = 0;
-      while (iterator.hasNext()) {
-        child = iterator.next();
-        childPK = child.getNodePK();
-        if (!childPK.getId().startsWith("group_")) // rubrique
-        {
-          childPath = child.getPath();
+      for (NodeDetail child : childrenPKs) {
+        NodePK childPK = child.getNodePK();
+        if (!childPK.getId().startsWith("group_")) {
+          String childPath = child.getPath();
           nbContacts = getContactBm().getNbPubByFatherPath(childPK, childPath);
-
           // traitement des sous-rubriques et des sous-groupes
-          nbContactsBySubTopic = getRecursiveNbContact(getNodeBm().getDetail(
-              childPK));
+          nbContactsBySubTopic = getRecursiveNbContact(getNodeBm().getDetail(childPK));
           itSub = nbContactsBySubTopic.iterator();
           while (itSub.hasNext()) {
-            nbSubContact = ((Integer) itSub.next()).intValue();
+            nbSubContact = itSub.next().intValue();
             nbContacts += nbSubContact;
           }
-        } else // groupe
-        {
-          groupId = childPK.getId().substring(childPK.getId().indexOf("_") + 1,
+        } else { // groupe
+          String groupId = childPK.getId().substring(childPK.getId().indexOf("_") + 1,
               childPK.getId().length());
-          nbContacts = getOrganizationController()
-              .getAllSubUsersNumber(groupId);
+          nbContacts = getOrganizationController().getAllSubUsersNumber(groupId);
         }
-        nbContactsByTopic.add(new Integer(nbContacts));
+        nbContactsByTopic.add(Integer.valueOf(nbContacts));
       }
     }
     return nbContactsByTopic;
@@ -239,19 +225,17 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
    * @exception java.sql.SQLException
    * @since 1.0
    */
+  @Override
   public TopicDetail goTo(String id) {
-    SilverTrace.info("yellowpages", "YellowpagesBmEJB.goTo()",
-        "root.MSG_GEN_ENTER_METHOD");
+    SilverTrace.info("yellowpages", "YellowpagesBmEJB.goTo()", "root.MSG_GEN_ENTER_METHOD");
     Collection<NodeDetail> newPath = new ArrayList<NodeDetail>();
-    Collection<ContactDetail> contactDetails = null;
-    NodeDetail nodeDetail = null;
-    ArrayList<ContactDetail> contactDetailsR = new ArrayList<ContactDetail>();
+    List<ContactDetail> contactDetailsR = new ArrayList<ContactDetail>();
     try {
       NodeBm nodeBm = getNodeBm();
       ContactBm contactBm = getContactBm();
       NodePK pk = new NodePK(id, this.space, this.componentId);
-      nodeDetail = nodeBm.getDetail(pk);
-
+      NodeDetail nodeDetail = nodeBm.getDetail(pk);
+      Collection<ContactDetail> contactDetails;
       if (id.equals("2")) {
         ContactPK contactPK = new ContactPK("unknown", this.space,
             this.componentId);
@@ -270,12 +254,9 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         OrganizationController orga = getOrganizationController();
         while (it.hasNext()) {
           ContactDetail contactDetail = (ContactDetail) it.next();
-          if (contactDetail.getUserId() != null) // contact de type user
-          // Silverpeas
-          {
+          if (contactDetail.getUserId() != null) {// contact de type user Silverpeas
             try {
-              UserDetail userDetail = orga.getUserDetail(contactDetail
-                  .getUserId());
+              UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
               if (userDetail != null) {
                 setContactAttributes(contactDetail, userDetail, orga, true);
                 contactDetailsR.add(contactDetail);
@@ -287,7 +268,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
             } catch (Exception e) {
               SilverTrace.warn("yellowpages", "YellowpagesBmEJB.goTo()",
                   "yellowpages.EX_GET_USER_DETAIL_FAILED", "contactDetail = "
-                      + contactDetail.toString(), e);
+                  + contactDetail.toString(), e);
             }
           } else {
             contactDetailsR.add(contactDetail);
@@ -305,10 +286,9 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         newPath = getNewPath(nodeDetail);
       }
 
-      ArrayList<Integer> nbContactsByTopic = getRecursiveNbContact(nodeDetail);
-
-      this.currentTopic = new TopicDetail(newPath, nodeDetail,
-          contactDetails2userPubs(contactDetailsR), nbContactsByTopic);
+      List<Integer> nbContactsByTopic = getRecursiveNbContact(nodeDetail);
+      this.currentTopic = new TopicDetail(newPath, nodeDetail, contactDetails2userPubs(
+          contactDetailsR), nbContactsByTopic);
 
     } catch (Exception re) {
       throw new YellowpagesRuntimeException("YellowpagesBmEJB.goTo()",
@@ -388,7 +368,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
               "YellowpagesBmEJB.getNewPath()",
               SilverpeasRuntimeException.ERROR,
               "yellowpages.EX_GET_PATH_FAILED", "pk = "
-                  + nd.getNodePK().toString(), re);
+              + nd.getNodePK().toString(), re);
         }
       }
     }
@@ -439,8 +419,8 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         node = (NodeDetail) tree.get(n);
         result.add(node);
         // pour chaque node, recuperer les groupes associes
-        List<String> groupIds = (List<String>) GroupDAO.getGroupIds(con, node.getNodePK()
-            .getId(), componentId);
+        List<String> groupIds = (List<String>) GroupDAO.getGroupIds(con, node.getNodePK().getId(),
+            componentId);
         String groupId = null;
         Group group = null;
         Iterator<String> gIterator = groupIds.iterator();
@@ -640,7 +620,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       }
       SilverTrace.info("yellowpages", "YellowpagesBmEJB.addSubTopic()",
           "root.MSG_GEN_RETURN_VALUE", "topic.getNodePK() = "
-              + topic.getNodePK());
+          + topic.getNodePK());
       SilverTrace.info("yellowpages", "YellowpagesBmEJB.addSubTopic()",
           "root.MSG_GEN_EXIT_METHOD");
       return topic.getNodePK();
@@ -689,7 +669,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
       throw new YellowpagesRuntimeException("YellowpagesBmEJB.isDescendant()",
           SilverpeasRuntimeException.ERROR,
           "yellowpages.EX_IS_DESCENDANT_FAILED", "descId = " + descId
-              + " , nodeId = " + nodeId, re);
+          + " , nodeId = " + nodeId, re);
     }
     return isDesc;
   }
@@ -844,8 +824,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
 
     Collection<ContactDetail> contactDetails = null;
     try {
-      contactDetails = getContactBm()
-          .getDetailsByLastNameOrFirstName(pk, query);
+      contactDetails = getContactBm().getDetailsByLastNameOrFirstName(pk, query);
     } catch (Exception e) {
       throw new YellowpagesRuntimeException(
           "YellowpagesBmEJB.getContactDetailsByLastNameOrFirstName()",
@@ -859,7 +838,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     SilverTrace.info("yellowpages",
         "YellowpagesBmEJB.getContactDetailsByLastNameAndFirstName()",
         "root.MSG_GEN_ENTER_METHOD", "lastName = " + lastName
-            + ", firstName = " + firstName);
+        + ", firstName = " + firstName);
 
     Collection<ContactDetail> contactDetails = null;
     try {
@@ -903,8 +882,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
           {
             try {
               OrganizationController orga = getOrganizationController();
-              UserDetail userDetail = orga.getUserDetail(contactDetail
-                  .getUserId());
+              UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
               if (userDetail != null) {
                 setContactAttributes(contactDetail, userDetail, orga, true);
                 contactDetailsR.add(contactFatherDetail);
@@ -917,16 +895,15 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
               SilverTrace.warn("yellowpages",
                   "YellowpagesBmEJB.getAllContactDetails()",
                   "yellowpages.EX_GET_CONTACTS_FAILED", "contactDetail = "
-                      + contactDetail.toString(), e);
+                  + contactDetail.toString(), e);
             }
           } else {
             contactDetailsR.add(contactFatherDetail);
           }
         }
       }
-      SilverTrace
-          .info("yellowpages", "YellowpagesBmEJB.getAllContactDetails()",
-              "root.MSG_GEN_EXIT_METHOD");
+      SilverTrace.info("yellowpages", "YellowpagesBmEJB.getAllContactDetails()",
+          "root.MSG_GEN_EXIT_METHOD");
       return contactDetailsR;
     } catch (Exception re) {
       throw new YellowpagesRuntimeException(
@@ -999,7 +976,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         "root.MSG_GEN_ENTER_METHOD");
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.createContact()",
         "root.MSG_GEN_PARAM_VALUE", "contactDetail = "
-            + contactDetail.toString());
+        + contactDetail.toString());
     ContactPK contactPK = null;
     contactDetail.getPK().setSpace(this.space);
     contactDetail.getPK().setComponentName(this.componentId);
@@ -1039,7 +1016,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         "root.MSG_GEN_ENTER_METHOD");
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.updateContact()",
         "root.MSG_GEN_PARAM_VALUE", "contactDetail = "
-            + contactDetail.toString());
+        + contactDetail.toString());
     contactDetail.getPK().setSpace(this.space);
     contactDetail.getPK().setComponentName(this.componentId);
 
@@ -1153,8 +1130,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     try {
       ContactBm contactBm = getContactBm();
       // delete all current user orphan contacts
-      contactBm.deleteOrphanContactsByCreatorId(contactPK, this.currentUser
-          .getId());
+      contactBm.deleteOrphanContactsByCreatorId(contactPK, this.currentUser.getId());
     } catch (Exception re) {
       throw new YellowpagesRuntimeException(
           "YellowpagesBmEJB.emptyDZByUserId()",
@@ -1228,7 +1204,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     SilverTrace.info("yellowpages",
         "YellowpagesBmEJB.deleteContactFromTopic()",
         "root.MSG_GEN_PARAM_VALUE", "ContactId=" + ContactId + " , fatherId="
-            + fatherId);
+        + fatherId);
     ContactPK contactPK = new ContactPK(ContactId, this.space, this.componentId);
     NodePK fatherPK = new NodePK(fatherId, this.space, this.componentId);
     try {
@@ -1239,9 +1215,8 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
           SilverpeasRuntimeException.ERROR,
           "yellowpages.EX_DELETE_CONTACT_FROM_TOPIC_FAILED", re);
     }
-    SilverTrace
-        .info("yellowpages", "YellowpagesBmEJB.deleteContactFromTopic()",
-            "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("yellowpages", "YellowpagesBmEJB.deleteContactFromTopic()",
+        "root.MSG_GEN_EXIT_METHOD");
   }
 
   /**
@@ -1259,11 +1234,10 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
         "root.MSG_GEN_ENTER_METHOD");
     SilverTrace.info("yellowpages", "YellowpagesBmEJB.createInfoModel()",
         "root.MSG_GEN_PARAM_VALUE", "ContactId = " + ContactId
-            + " , modelId = " + modelId);
+        + " , modelId = " + modelId);
     try {
       ContactBm contactBm = getContactBm();
-      ContactPK contactPK = new ContactPK(ContactId, currentTopic
-          .getNodeDetail().getNodePK());
+      ContactPK contactPK = new ContactPK(ContactId, currentTopic.getNodeDetail().getNodePK());
       contactBm.createInfoModel(contactPK, modelId);
     } catch (Exception re) {
       throw new YellowpagesRuntimeException(
@@ -1354,7 +1328,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
     SilverTrace.info("yellowpages",
         "YellowpagesBmEJB.getCompleteContactInNode()",
         "root.MSG_GEN_PARAM_VALUE", "ContactId = " + ContactId + ", NodeId="
-            + nodeId);
+        + nodeId);
     ContactPK contactPK = null;
     NodePK nodePK = null;
     CompleteContact completeContact = null;
@@ -1467,8 +1441,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
           {
             try {
               OrganizationController orga = getOrganizationController();
-              UserDetail userDetail = orga.getUserDetail(contactDetail
-                  .getUserId());
+              UserDetail userDetail = orga.getUserDetail(contactDetail.getUserId());
               if (userDetail != null) {
                 setContactAttributes(contactDetail, userDetail, orga, true);
                 contactDetailsR.add(contactDetail);
@@ -1478,11 +1451,10 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
                 sendContactToBasket(contactDetail.getPK().getId());
               }
             } catch (Exception e) {
-              SilverTrace
-                  .warn("yellowpages", "YellowpagesBmEJB.getContacts()",
-                      "yellowpages.EX_GET_USER_DETAIL_FAILED",
-                      "contactDetail.getUserId() = "
-                          + contactDetail.getUserId(), e);
+              SilverTrace.warn("yellowpages", "YellowpagesBmEJB.getContacts()",
+                  "yellowpages.EX_GET_USER_DETAIL_FAILED",
+                  "contactDetail.getUserId() = "
+                  + contactDetail.getUserId(), e);
             }
 
           } else {
@@ -1550,8 +1522,7 @@ public class YellowpagesBmEJB implements YellowpagesBmSkeleton, SessionBean {
             + contactDetail.getLastName());
         // indexEntry.setPreView(contactDetail.getDescription());
         indexEntry.setLang("fr");
-        indexEntry.setCreationDate(DateUtil.date2SQLDate(contactDetail
-            .getCreationDate()));
+        indexEntry.setCreationDate(DateUtil.date2SQLDate(contactDetail.getCreationDate()));
         indexEntry.setCreationUser(contactDetail.getCreatorId());
         // Index the Contact Content
         IndexEngineProxy.addIndexEntry(indexEntry);

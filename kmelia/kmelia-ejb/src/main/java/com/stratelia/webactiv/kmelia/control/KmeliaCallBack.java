@@ -43,7 +43,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
 /**
  * @author neysseri
  */
-public class KmeliaCallBack extends CallBack {
+public class KmeliaCallBack implements CallBack {
 
   private KmeliaBmHome kmeliaHome = null;
 

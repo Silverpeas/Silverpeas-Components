@@ -34,7 +34,7 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 
-public class BlogCallBack extends CallBack {
+public class BlogCallBack implements CallBack {
 
   private BlogBmHome blogHome = null;
 

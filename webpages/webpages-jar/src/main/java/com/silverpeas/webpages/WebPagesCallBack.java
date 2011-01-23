@@ -22,10 +22,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*
- * Created on 4 avr. 2005
- *
- */
 package com.silverpeas.webpages;
 
 import com.silverpeas.webpages.model.WebPagesRuntimeException;
@@ -39,7 +35,7 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 /**
  * @author dlesimple
  */
-public class WebPagesCallBack extends CallBack {
+public class WebPagesCallBack implements CallBack {
 
   private OrganizationController oc;
 
@@ -102,11 +98,7 @@ public class WebPagesCallBack extends CallBack {
   }
 
   private boolean isWebPageModified(String pubId, int action) {
-    if (!pubId.startsWith("Node")
-        && (action == CallBackManager.ACTION_ON_WYSIWYG))
-      return true;
-    else
-      return false;
+    return (!pubId.startsWith("Node") && (action == CallBackManager.ACTION_ON_WYSIWYG));
   }
 
   public void externalElementsOfWebPagesHaveChanged(String componentId,
