@@ -843,8 +843,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
   public void copySurvey(String surveyId) throws RemoteException, SurveyException {
     QuestionContainerDetail survey = getSurvey(surveyId);
     QuestionContainerSelection questionContainerSelect = new QuestionContainerSelection(survey);
-
-    getClipboardObjects().add((ClipboardSelection) questionContainerSelect);
+    
+    addClipboardSelection((ClipboardSelection) questionContainerSelect);
   }
 
   public void paste() throws Exception {
