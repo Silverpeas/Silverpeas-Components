@@ -293,7 +293,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         "com.stratelia.webactiv.util.publication.publicationSettings",
         kmeliaScc.getLanguage());
     boolean displayLinks = URLManager.displayUniversalLinks();
-    boolean showImportance = resources.getSetting("showImportance", true);
+    boolean showImportance = kmeliaScc.isFieldImportanceVisible();
     boolean showNoPublisMessage = resources.getSetting("showNoPublisMessage", true);
     boolean fileStorageShowExtraInfoPub =
         resources.getSetting("fileStorageShowExtraInfoPub", false);
@@ -319,7 +319,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write("<form name=\"publicationsForm\">");
     if (!pubs.isEmpty()) {
       out.write(board.printBefore());
-      displayPublicationsListHeader(nbPubs, sortAllowed, pagination, resources, out);
+      displayPublicationsListHeader(nbPubs, sortAllowed, pagination, resources, kmeliaScc, out);
       out.write("<ul>");
       for (UserPublication userPub : pubs) {
         PublicationDetail pub = userPub.getPublication();
@@ -643,7 +643,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         + "\"/></a>");
   }
 
-  void displaySortingListBox(ResourcesWrapper resources, Writer out)
+  void displaySortingListBox(ResourcesWrapper resources, KmeliaSessionController ksc, Writer out)
       throws IOException {
     out.write(
         "<select name=\"sortBy\" id=\"sortingList\" onChange=\"javascript:sortGoTo(this.selectedIndex);\">");
@@ -663,7 +663,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write("<option value=\"0\" id=\"sort0\">"
         + EncodeHelper.escapeXml(resources.getString("PubAuteur"))
         + "</option>");
-    if (!"no".equals(resources.getSetting("showImportance"))) {
+    if (ksc.isFieldImportanceVisible()) {
       out.write("<option value=\"3\" id=\"sort3\">"
           + EncodeHelper.escapeXml(resources.getString("PubImportance")) + "</option>");
     }
@@ -677,7 +677,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
   }
 
   void displayPublicationsListHeader(int nbPubs, boolean sortAllowed,
-      Pagination pagination, ResourcesWrapper resources, Writer out)
+      Pagination pagination, ResourcesWrapper resources, KmeliaSessionController ksc, Writer out)
       throws IOException {
     String publicationSrc = resources.getIcon("kmelia.publication");
     out.write("<div id=\"pubsHeader\">");
@@ -692,7 +692,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write("</span>");
     out.write("<span id=\"pubsSort\">");
     if (sortAllowed) {
-      displaySortingListBox(resources, out);
+      displaySortingListBox(resources, ksc, out);
     }
     out.write("</span>");
     out.write("</div>");
@@ -720,17 +720,17 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   private String displayImportance(int importance, int maxImportance, String fullStar,
       String emptyStar, Writer out) throws IOException {
-    String stars = "";
+    StringBuilder stars = new StringBuilder();
 
     // display full Stars
     for (int i = 0; i < importance; i++) {
-      stars += "<img src=\"" + fullStar + "\" align=\"absmiddle\" alt=\"\"/>";
+      stars.append("<img src=\"").append(fullStar).append("\" align=\"absmiddle\" alt=\"\"/>");
     }
     // display empty stars
     for (int i = importance + 1; i <= 5; i++) {
-      stars += "<img src=\"" + emptyStar + "\" align=\"absmiddle\" alt=\"\"/>";
+      stars.append("<img src=\"").append(emptyStar).append("\" align=\"absmiddle\" alt=\"\"/>");
     }
-    return stars;
+    return stars.toString();
   }
 
   private boolean isDefined(String param) {
@@ -756,7 +756,6 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     return publicationsToLink;
   }
 
-  @SuppressWarnings("unchecked")
   private String displayVersioning(PublicationDetail pubDetail, Writer out,
       ResourcesWrapper resources, boolean linkAttachment, boolean alias) throws IOException {
     VersioningUtil versioning = new VersioningUtil();

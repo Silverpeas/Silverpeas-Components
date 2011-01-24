@@ -2722,13 +2722,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isFieldImportanceVisible() {
-    return StringUtil.getBooleanValue(getComponentParameterValue("useImportance"))
-        || getSettings().getBoolean("showImportance", true);
+    if (isKmaxMode) {
+      return StringUtil.getBooleanValue(getComponentParameterValue("useImportance")); 
+    }
+    return getSettings().getBoolean("showImportance", true);
   }
 
   public boolean isFieldVersionVisible() {
-    return StringUtil.getBooleanValue(getComponentParameterValue("useVersion"))
-        || getSettings().getBoolean("showPubVersion", true);
+    if (isKmaxMode) {
+      return StringUtil.getBooleanValue(getComponentParameterValue("useVersion"));
+    }
+    return getSettings().getBoolean("showPubVersion", true);
   }
 
   public List<Integer> getTimeAxisKeys() {
