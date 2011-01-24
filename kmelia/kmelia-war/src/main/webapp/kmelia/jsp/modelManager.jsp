@@ -102,7 +102,7 @@ function sendModelData() {
         if (document.modelForm.elements[i].name.substring(0, 8) == "WATXTVAR") {
             if (!isValidTextMaxi(document.modelForm.elements[i])) {
                   document.modelForm.elements[i].select();
-                  window.alert("<%=resources.getString("TheSelectedField")%> <%=resources.getString("ContainsTooLargeText")%> <%=DBUtil.TextMaxiLength%> <%=resources.getString("Characters")%>");
+                  window.alert("<%=resources.getString("TheSelectedField")%> <%=resources.getString("ContainsTooLargeText")%> <%=DBUtil.getTextMaxiLength()%> <%=resources.getString("Characters")%>");
                   ok = 0;
                   document.modelForm.elements[i].select();
             }
