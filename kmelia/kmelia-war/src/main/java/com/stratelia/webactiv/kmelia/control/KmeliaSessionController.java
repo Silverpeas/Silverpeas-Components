@@ -4041,7 +4041,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (isVersionControlled()) {
       VersioningUtil versioning = new VersioningUtil();
       List<Document> documents = versioning.getDocuments(new ForeignPK(pubPK));
-      if (documents.isEmpty()) {
+      if (!documents.isEmpty()) {
         Document document = documents.get(0);
         DocumentVersion documentVersion = versioning.getLastPublicVersion(document.getPk());
         if (documentVersion != null) {
@@ -4053,7 +4053,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     } else {
       Vector<AttachmentDetail> attachments =
           AttachmentController.searchAttachmentByPKAndContext(pubPK, "Images");
-      if (attachments.isEmpty()) {
+      if (!attachments.isEmpty()) {
         AttachmentDetail attachment = attachments.get(0);
         url = webContext + attachment.getAttachmentURL();
       }
