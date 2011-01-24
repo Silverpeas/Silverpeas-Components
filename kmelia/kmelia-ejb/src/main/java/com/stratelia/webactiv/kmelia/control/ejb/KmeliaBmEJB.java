@@ -3360,12 +3360,10 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     notifMetaData.setFileName("notificationAttachment");
 
     AttachmentDetail attachmentDetail = AttachmentController.searchAttachmentByPK(attachmentPk);
-    //TODO MANU Convertir en un objet transverse pour gérer attachment et versionning
     Map<String, SilverpeasTemplate> templates = notifMetaData.getTemplates();
     SilverpeasTemplate template;
     for (String lang : UIHelper.getLanguages()) {
       template = templates.get(lang);
-      template.setAttribute("attachment", attachmentDetail);
       template.setAttribute("attachmentFileName", attachmentDetail.getLogicalName(lang));
       if (StringUtil.isDefined(attachmentDetail.getTitle(lang))) {
         template.setAttribute("attachmentTitle", attachmentDetail.getTitle(lang));
@@ -3373,6 +3371,10 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       if (StringUtil.isDefined(attachmentDetail.getInfo(lang))) {
         template.setAttribute("attachmentDesc", attachmentDetail.getInfo(lang));
       }
+      template.setAttribute("attachmentCreationDate", DateUtil.getOutputDate(attachmentDetail.getCreationDate(), lang));
+      template.setAttribute("attachmentSize", attachmentDetail.getAttachmentFileSize(lang));
+      UserDetail authorDetail = getOrganizationController().getUserDetail(attachmentDetail.getAuthor());
+      template.setAttribute("attachmentAuthor", authorDetail.getFirstName() + " "+authorDetail.getLastName());
       template.setAttribute("silverpeasURL", getAttachmentUrl(pubDetail, attachmentDetail));
     }
     notifMetaData.setLink(getAttachmentUrl(pubDetail, attachmentDetail));
@@ -3412,7 +3414,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     SilverpeasTemplate template;
     for (String lang : UIHelper.getLanguages()) {
       template = templates.get(lang);
-      template.setAttribute("attachment", documentVersion);
       template.setAttribute("attachmentFileName", documentVersion.getLogicalName());
       if (StringUtil.isDefined(document.getName())) {
         template.setAttribute("attachmentTitle", document.getName());
@@ -3420,6 +3421,12 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       if (StringUtil.isDefined(document.getDescription())) {
         template.setAttribute("attachmentDesc", document.getDescription());
       }
+      template.setAttribute("attachmentCreationDate", DateUtil.getOutputDate(documentVersion.getCreationDate(), lang));
+      template.setAttribute("attachmentSize", documentVersion.getDisplaySize());
+      UserDetail authorDetail = getOrganizationController().getUserDetail(Integer.toString(documentVersion.getAuthorId()));
+      template.setAttribute("attachmentAuthor", authorDetail.getFirstName() + " "+authorDetail.getLastName());
+      template.setAttribute("attachmentMajorNumber", documentVersion.getMajorNumber());
+      template.setAttribute("attachmentMinorNumber", documentVersion.getMinorNumber());
       template.setAttribute("silverpeasURL", getDocumentUrl(pubDetail, document));
     }
     notifMetaData.setLink(getDocumentUrl(pubDetail, document));

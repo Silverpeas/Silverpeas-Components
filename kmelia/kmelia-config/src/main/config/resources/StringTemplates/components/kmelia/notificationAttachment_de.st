@@ -1,6 +1,7 @@
 $senderName$ teilt Ihnen mit, dass Ihnen ein neues Dokument zur Verfügung steht...
+
 $if(senderMessage)$
-<br/>Message :
+Message :
 "$senderMessage$"<br/> 
 $endif$
 
@@ -13,9 +14,18 @@ $endif$
 $if(attachmentDesc)$
 Description of the document : $attachmentDesc$<br/>
 $endif$
-Name of the file : $attachmentFileName$<br/>
-$if(attachment.majorNumber)$
-Version of the document : $attachment.majorNumber$.$attachment.minorNumber$<br/>
+Name of the file : $attachmentFileName$
+$if(attachmentCreationDate)$
+Creation date : $attachmentCreationDate$<br/>
+$endif$
+$if(attachmentSize)$
+Size : $attachmentSize$<br/>
+$endif$
+$if(attachmentAuthor)$
+Author : $attachmentAuthor$<br/>
+$endif$
+$if(attachmentMajorNumber)$
+Version of the document : $attachmentMajorNumber$.$attachmentMinorNumber$<br/>
 $endif$
 
 $if(notification_receiver_users)$
