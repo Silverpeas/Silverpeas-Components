@@ -422,7 +422,7 @@ listHolidays[<c:out value="${holidayIndex.index}" />] = '<fmt:formatDate value="
       <td class="task_wording">
         <div>
     <c:if test="${task.estDecomposee == 1}">
-      <a class="linkSee" href="javascript:loadTask('<c:out value="${task.id}" />', '<c:out value="${requestScope['browseContext'][3]}"/>');" id="taskLink<c:out value="${task.id}" />"><img id="taskLinkImg<c:out value="${task.id}" />" border="0" src="<c:out value="${ctxPath}"/><fmt:message key="projectManager.treePlus" bundle="${icons}"/>" alt="+"/></a>&nbsp;
+      <a class="linkSee" href="javascript:loadTask('<c:out value="${task.id}" />', '<c:out value="${requestScope['browseContext'][3]}"/>');" id="taskLink<c:out value="${task.id}" />"><img id="taskLinkImg<c:out value="${task.id}" />" border="0" src="<c:out value="${ctxPath}"/><fmt:message key="projectManager.treePlus" bundle="${icons}"/>" alt="+"/></a>
     </c:if>
       <a href="ViewTask?Id=<c:out value="${task.id}" />" title="<fmt:message key="projectManager.gantt.tasks.responsible"/> : <c:out value="${task.responsableFullName}" />"><c:out value="${task.nom}" /></a>
         </div>
