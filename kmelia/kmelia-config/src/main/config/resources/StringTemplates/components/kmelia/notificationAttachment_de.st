@@ -2,7 +2,7 @@ $senderName$ teilt Ihnen mit, dass Ihnen ein neues Dokument zur Verfügung steht
 
 $if(senderMessage)$
 Message :
-"$senderMessage$"<br/> 
+<div style="background-color:#FFF9D7; border:1px solid #E2C822; padding:5px; width:390px;">" $senderMessage$ "</div>
 $endif$
 
 Access path of the document in the publication "$publicationName$" is :
