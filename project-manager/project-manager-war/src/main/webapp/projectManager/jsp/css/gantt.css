@@ -117,6 +117,8 @@
   white-space:nowrap;
   width:250px;
 }
+
+
 .state p, .task_wording div, .percentage p{
   white-space:nowrap;
   overflow:hidden;
@@ -152,46 +154,53 @@
 
 td.day { text-align:center; }
 
-.task_wording img { 
-  vertical-align:middle;
+
+.task_wording div { 
+	position:relative;
+	padding:0 0 0 15px;
 }
-  
 
+.task_wording div a.linkSee { 
+	position:absolute; 
+	top:-2px; left:0px; 
+	display:block;
+	}
 
+* html .task_wording div a.linkSee { left:-15px; }
 
+.task_wording div a.linkSee img{ 
+	vertical-align:top;
+	}
 .under_task .task_wording div{
-  margin-left:9px;
+	margin-left:25px;
+	
 }
 
 .level2  .task_wording div{
-    margin-left: 29px;
+    margin-left:50px;
 }
 
 .level3  .task_wording div{
-    margin-left: 49px;
+    margin-left:75px;
 }
 
 .level4  .task_wording div{
-    margin-left: 69px;
+    margin-left:100px;
 }
 
 .level5  .task_wording div{
-    margin-left: 89px;
+    margin-left:125px;
 }
 
 .level6  .task_wording div{
-  margin-left:109px;
+	margin-left:150px;
 }
 
 .level7  .task_wording div{
-  margin-left:129px;
+	margin-left:175px;
 }
 
-.under_task .task_wording div{
-  padding:0 0 0 13px;
-  height:18px;
-  line-height:18px;
-}
+
 
 #legendLabelId {
 	cursor:pointer;
