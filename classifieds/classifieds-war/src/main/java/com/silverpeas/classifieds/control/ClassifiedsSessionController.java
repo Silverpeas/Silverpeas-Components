@@ -57,7 +57,6 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public final class ClassifiedsSessionController extends AbstractComponentSessionController {
@@ -200,11 +199,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public Collection<Comment> getAllComments(String classifiedId) {
     CommentPK foreign_pk = new CommentPK(classifiedId, getComponentId());
-    List<Comment> allComments = getCommentService().getAllCommentsOnPublication(foreign_pk);
-    for (Comment comment : allComments) {
-      comment.setOwner(getUserDetail(Integer.toString(comment.getOwnerId())).getDisplayedName());
-    }
-    return allComments;
+    return getCommentService().getAllCommentsOnPublication(foreign_pk);
   }
 
   /**

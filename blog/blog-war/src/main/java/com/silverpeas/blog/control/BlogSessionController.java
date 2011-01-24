@@ -24,7 +24,6 @@
 package com.silverpeas.blog.control;
 
 import java.rmi.RemoteException;
-
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Collection;
@@ -40,6 +39,10 @@ import com.silverpeas.blog.model.BlogRuntimeException;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
 import com.silverpeas.comment.CommentRuntimeException;
+import com.silverpeas.comment.model.Comment;
+import com.silverpeas.comment.model.CommentPK;
+import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.myLinks.ejb.MyLinksBm;
 import com.silverpeas.myLinks.ejb.MyLinksBmHome;
 import com.silverpeas.myLinks.model.LinkDetail;
@@ -47,10 +50,6 @@ import com.silverpeas.ui.UIHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.alertUser.AlertUser;
-import com.silverpeas.comment.model.Comment;
-import com.silverpeas.comment.model.CommentPK;
-import com.silverpeas.comment.service.CommentService;
-import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -72,7 +71,6 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
-import java.util.List;
 
 public class BlogSessionController extends AbstractComponentSessionController {
 
@@ -349,11 +347,7 @@ public class BlogSessionController extends AbstractComponentSessionController {
 
   public Collection<Comment> getAllComments(String postId) {
     CommentPK foreign_pk = new CommentPK(postId, null, getComponentId());
-    List<Comment> allComments = getCommentService().getAllCommentsOnPublication(foreign_pk);
-    for (Comment comment : allComments) {
-      comment.setOwner(getUserDetail(Integer.toString(comment.getOwnerId())).getDisplayedName());
-    }
-    return allComments;
+    return getCommentService().getAllCommentsOnPublication(foreign_pk);
   }
 
   public Comment getComment(String commentId) {
@@ -443,8 +437,6 @@ public class BlogSessionController extends AbstractComponentSessionController {
       Comment comment =
           new Comment(pk, foreign_pk, Integer.parseInt(getUserId()), owner, message, date, date);
       getCommentService().createComment(comment);
-      SilverTrace.info("blog", "BlogSessionContreller.createPost()", "root.MSG_GEN_PARAM_VALUE",
-          "owner comment=" + comment.getOwner());
 
       // envoie notification si abonnement
       PostDetail post = getPost(postId);

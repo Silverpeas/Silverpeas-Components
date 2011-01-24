@@ -27,7 +27,7 @@
 <%@ include file="check.jsp" %>
 
 <% 
-	// récupération des paramètres :
+	// rï¿½cupï¿½ration des paramï¿½tres :
 	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
 	String 		profile			= (String) request.getAttribute("Profile");
 	String		userId 			= (String) request.getAttribute("UserId");
@@ -38,7 +38,7 @@
 	String 		XMLFormName		= (String) request.getAttribute("XMLFormName");
 	boolean		updateAllowed	= ((Boolean) request.getAttribute("UpdateImageAllowed")).booleanValue();
 		
-	// déclaration des variables :
+	// dï¿½claration des variables :
 	
 	String 		photoId			= new Integer(photo.getPhotoPK().getId()).toString();
 	String 		nbComments 		= nbCom.toString();
@@ -76,7 +76,7 @@
 	out.println(tabbedPane.print());
     out.println(frame.printBefore());
 
-	String url = URLManager.getURL("useless", componentId) + "Comments";
+	String url = URLManager.getURL("useless", componentId) + "Comments?PhotoId="+photoId;
 	out.flush();    
    	getServletConfig().getServletContext().getRequestDispatcher("/comment/jsp/comments.jsp?id="+photoId+"&userid="+userId+"&profile="+profile+"&url="+url+"&component_id="+componentId).include(request, response);
 

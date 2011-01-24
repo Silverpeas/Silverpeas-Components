@@ -25,9 +25,10 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
+<%@page import="com.silverpeas.util.StringUtil"%>
 
 <% 
-	// récupération des paramètres :
+	// rï¿½cupï¿½ration des paramï¿½tres :
 	boolean				isDraftEnabled 	= ((Boolean) request.getAttribute("IsDraftEnabled")).booleanValue();
 	ClassifiedDetail	classified		= (ClassifiedDetail) request.getAttribute("Classified");
 	String 				profile			= (String) request.getAttribute("Profile");
@@ -35,11 +36,11 @@
 
 	Collection 			comments		= (Collection) request.getAttribute("AllComments");
 	
-	// paramètres du formulaire
+	// paramï¿½tres du formulaire
 	Form		xmlForm 				= (Form) request.getAttribute("Form");
 	DataRecord	xmlData					= (DataRecord) request.getAttribute("Data");
 	
-	// déclaration des variables :
+	// dï¿½claration des variables :
 	String 		classifiedId 			= Integer.toString(classified.getClassifiedId());
 	String 		title 					= classified.getTitle();
 	String 		instanceId				= classified.getInstanceId();
@@ -73,7 +74,7 @@
 	
 	boolean isAutorized = userId.equals(creatorId) || profile.equals("admin");
 	
-	//déclaration des boutons
+	//dï¿½claration des boutons
 	Button validateComment 	= (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
 	Button cancelButton 	= (Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
 
@@ -81,7 +82,6 @@
 	Board board	= gef.getBoard();
 %>
 
-<%@page import="com.silverpeas.util.StringUtil"%>
 <html>
 <head>
 <%
@@ -208,7 +208,7 @@
 	if (isAutorized) {
 		operationPane.addOperation(resource.getIcon("classifieds.update"),resource.getString("classifieds.updateClassified"), "javaScript:updateClassified('"+classifiedId+"')");
 		operationPane.addOperation(resource.getIcon("classifieds.delete"),resource.getString("classifieds.deleteClassified"), "javaScript:deleteConfirm('"+classifiedId+"')");
-		// opérations du mode brouillon si option activée et si pas admin
+		// opï¿½rations du mode brouillon si option activï¿½e et si pas admin
 		if (isDraftEnabled) {
 			operationPane.addLine();
 			if ((ClassifiedDetail.DRAFT).equals(classified.getStatus()))
@@ -216,7 +216,7 @@
 			else
 				operationPane.addOperation(resource.getIcon("classifieds.draftIn"), resource.getString("classifieds.draftIn"), "javaScript:draftIn('"+classifiedId+"')");
 		}
-		// opérations de validation (ou refus)
+		// opï¿½rations de validation (ou refus)
 		if ("admin".equals(profile) && (ClassifiedDetail.TO_VALIDATE).equals(classified.getStatus())) {
 			operationPane.addLine();
 			operationPane.addOperation(resource.getIcon("classifieds.validate"), resource.getString("classifieds.validate"), "javaScript:validate('"+classifiedId+"')");
@@ -280,64 +280,62 @@
 <tr>
 	<td>
 		<!--Afficher les commentaires-->
-		<table width="98%" align="center" border="0" cellspacing="0" cellpadding="0">
-			<% if (comments != null) {
+		<div class="commentaires">
+
+			<form name="commentForm" action="AddComment" method="post">	
+						
+						<p class="txtlibform"><%=resource.getString("classifieds.addComment")%></p>
+						
+							<textarea rows="4" cols="100" name="Message"></textarea>
+							<input type="hidden" name="ClassifiedId" value="<%=classifiedId%>"/>
+							<input type="hidden" name="CommentId" value=""/>
+			</form>
+
+			<%
+			ButtonPane buttonPaneComment = gef.getButtonPane();
+			buttonPaneComment.addButton(validateComment);
+			buttonPaneComment.addButton(cancelButton);
+			out.println("<br/><center>"+buttonPaneComment.print()+"</center><br/>");
+			
+			%>
+
+		<hr />
+		
+		<% if (comments != null) {
 				Iterator itCom = (Iterator) comments.iterator();
 				while (itCom.hasNext()) {
 					Comment unComment = (Comment) itCom.next();
 					String commentDate = resource.getOutputDate(unComment.getCreationDate());
-					String commentAuthor = unComment.getOwner();
 					String ownerId = Integer.toString(unComment.getOwnerId());
 					%>
-					<tr>
-						<td><%=resource.getString("classifieds.from")%> <%=commentAuthor%> <%=resource.getString("classifieds.postOn")%> <%=commentDate%>  
-							<% if ("admin".equals(profile) || ownerId.equals(userId) ) { %>
-								<A href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=classifiedId%>)"><IMG SRC="<%=resource.getIcon("classifieds.smallUpdate") %>" border="0" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="absmiddle"/></A>
-								<A href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><IMG SRC="<%=resource.getIcon("classifieds.smallDelete") %>" border="0" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="absmiddle"/></A>
-							<% } %>
-						</td>
-					</tr>
-					<tr>
-						<td><%=Encode.javaStringToHtmlParagraphe(unComment.getMessage())%></td>
-					</tr>
-					<tr>
-						<td class="separateur">&nbsp;</td>
-					</tr>
+							<div class="oneComment">
+								<div>
+									<div class="avatar">
+										<img src="<%=m_context%><%=unComment.getOwnerDetail().getAvatar() %>"/>
+									</div>
+									<p class="author">
+										<%=unComment.getOwnerDetail().getDisplayedName()%>
+										<span class="date"> - <%=resource.getString("classifieds.postOn")%> <%=commentDate%></span>
+									</p>
+									<% if ("admin".equals(profile) || ownerId.equals(userId) ) { %>
+										<div class="action">
+											<A href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=classifiedId%>)"><IMG SRC="<%=resource.getIcon("classifieds.smallUpdate") %>" border="0" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="absmiddle"/></A>
+											<A href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><IMG SRC="<%=resource.getIcon("classifieds.smallDelete") %>" border="0" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="absmiddle"/></A>
+										</div>
+									<% } %>
+								
+									
+										<p class="message"><%=Encode.javaStringToHtmlParagraphe(unComment.getMessage())%></p>
+								</div>
+							
+							</div>						
 					<%
 				}
 			}
 			%>
-			<tr>
-				<td>
-					<form Name="commentForm" action="AddComment" Method="POST">	
-						<table width="100%" border="0" cellspacing="0" cellpadding="0">
-					    	<tr>
-					    		<td class="txtlibform"><%=resource.getString("classifieds.addComment")%></td>
-					    	</tr>
-							<tr>
-								<td><TEXTAREA ROWS="8" COLS="100" name="Message"></TEXTAREA>
-									<input type="hidden" name="ClassifiedId" value="<%=classifiedId%>">
-									<input type="hidden" name="CommentId" value="">
-								</td>
-					    	</tr>
-				    	</table>
-				   	</form>
-				</td>
-			</tr>
-			<tr>
-		   		<td>
-		    		<%
-				   	ButtonPane buttonPaneComment = gef.getButtonPane();
-		    		buttonPaneComment.addButton(validateComment);
-		    		buttonPaneComment.addButton(cancelButton);
-					out.println("<BR><center>"+buttonPaneComment.print()+"</center><BR>");
-					%>
-		   		</td>
-			</tr>
-			<tr>
-		 	  	<td class="separateur">&nbsp;</td>
-			</tr>
-		</table>
+		
+		</div><!-- End commentaires-->
+
 	</td>
 </tr>
 </table>

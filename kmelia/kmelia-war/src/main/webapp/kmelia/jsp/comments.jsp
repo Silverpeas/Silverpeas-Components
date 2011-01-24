@@ -89,7 +89,7 @@ function sendOperation(operation) {
     out.println("<br/>");
   }
   out.flush();
-  String url = kmeliaScc.getComponentUrl() + "Comments";
+  String url = kmeliaScc.getComponentUrl() + "Comments?PubId="+id;
   String indexIt = "0";
   if (kmeliaScc.isIndexable(pubDetail)) {
     indexIt = "1";

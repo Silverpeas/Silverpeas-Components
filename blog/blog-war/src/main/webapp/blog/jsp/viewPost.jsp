@@ -28,7 +28,7 @@
 <%@ include file="check.jsp" %>
 
 <% 
-// récupération des paramètres
+// rï¿½cupï¿½ration des paramï¿½tres
 PostDetail	post		= (PostDetail) request.getAttribute("Post");
 Collection	categories	= (Collection) request.getAttribute("Categories");
 Collection	archives	= (Collection) request.getAttribute("Archives");
@@ -40,7 +40,7 @@ String		rssURL		= (String) request.getAttribute("RSSUrl");
 List		events		= (List) request.getAttribute("Events");
 String 		dateCal		= (String) request.getAttribute("DateCalendar");
 
-//déclaration des boutons
+//dï¿½claration des boutons
 Button validateComment 	= (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
 Button cancelButton 	= (Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
 
@@ -74,7 +74,7 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 
 	var notifyWindow = window;
 	
-	// fonctions de contrôle des zones du formulaire avant validation
+	// fonctions de contrï¿½le des zones du formulaire avant validation
 	function sendData() 
 	{
 		if (isCorrectForm()) 
@@ -201,7 +201,7 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 		         <% } %>		       
 		       <span class="creatorTicket"> 
 	  	       &nbsp;|&nbsp;
-		         <% // date de création et de modification %>
+		         <% // date de crï¿½ation et de modification %>
 		         <%=resource.getString("GML.creationDate")%> <%=resource.getOutputDate(post.getPublication().getCreationDate())%> <%=resource.getString("GML.by")%> <%=post.getCreatorName() %>
 		         <% if (!resource.getOutputDate(post.getPublication().getCreationDate()).equals(resource.getOutputDate(post.getPublication().getUpdateDate())) || !post.getPublication().getCreatorId().equals(post.getPublication().getUpdaterId())) 
 		         {
@@ -215,63 +215,71 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 		       </span>
 		    </div>
 		    <div class="separateur"></div>
-			  <div class="commentaires">
-				  <!--Afficher les commentaires-->
-					<%
-					if (comments != null)
-					{
-					  ResourceLocator commentSettings = new ResourceLocator("com.stratelia.webactiv.util.comment.Comment","");
-						boolean adminAllowedToUpdate = commentSettings.getBoolean("AdminAllowedToUpdate", true);
-						Iterator itCom = (Iterator) comments.iterator();
-						while (itCom.hasNext()) 
-						{
-						  Comment unComment = (Comment) itCom.next();
-							String commentDate = resource.getOutputDate(unComment.getCreationDate());
-							String commentAuthor = unComment.getOwner();
-							String ownerId = Integer.toString(unComment.getOwnerId());
-							%>
-			   			<span class="versCommentaires"><%=resource.getString("blog.de")%> <%=commentAuthor%> <%=resource.getString("blog.postLe")%> <%=commentDate%> 
-							  <% if (ownerId.equals(userId)) 
-							  {%>
-								  <a href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=postId%>)"><img src="<%=resource.getIcon("blog.smallUpdate") %>" border="0" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="top"/></a>
-									<a href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><img src="<%=resource.getIcon("blog.smallDelete") %>" border="0" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="top"/></a>
-							  <% } 
-							  else if ("admin".equals(profile)) 
-							  {%>
-							    <% if (adminAllowedToUpdate) 
-							    { %>
-								    <a href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=postId%>)"><img src="<%=resource.getIcon("blog.smallUpdate") %>" border="0" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="top"/></a>
-								  <%} %>
-								  <a href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><img src="<%=resource.getIcon("blog.smallDelete") %>" border="0" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="top"/></a>
-							  <%} %>
-							</span>
-							<br/>
-							<span class="comment"><%=Encode.javaStringToHtmlParagraphe(unComment.getMessage())%></span>
-							<div class="separateur"></div>
-		  			<%}
-					}
-					if (!isUserGuest) 
-					{ %>
-		          		<div id="newComment">
-		              	<form name="commentForm" action="AddComment" method="post">	
-			   		    	<span class="newCommentLabel"><%=resource.getString("blog.addComment")%></span><br/>
-			  				<textarea rows="8" cols="80" name="Message"></textarea>
-	                		<input type="hidden" name="PostId" value="<%=postId%>"/><input type="hidden" name="CommentId" value=""/>
-	  			    	</form>
-			    		<%
-		  				   	ButtonPane buttonPaneComment = gef.getButtonPane();
-				    		buttonPaneComment.addButton(validateComment);
-				    		buttonPaneComment.addButton(cancelButton);
-							out.println("<br/><center>"+buttonPaneComment.print()+"</center><br/>");
+		      <!--Afficher les commentaires-->
+				<div class="commentaires">
+					<% if (!isUserGuest) { %> 
+						<form name="commentForm" action="AddComment" method="post">	
+							<p class="txtlibform"><%=resource.getString("blog.addComment")%></p>
+							<textarea rows="4" cols="100" name="Message"></textarea>
+							<input type="hidden" name="PostId" value="<%=postId%>"/>
+							<input type="hidden" name="CommentId" value=""/>
+						</form>
+	
+						<%
+						ButtonPane buttonPaneComment = gef.getButtonPane();
+						buttonPaneComment.addButton(validateComment);
+						buttonPaneComment.addButton(cancelButton);
+						out.println("<br/><center>"+buttonPaneComment.print()+"</center><br/>");
 						%>
-		        </div>
-		      <%} %>
-		    </div>		
+	
+						<hr />
+					<% } %>
+		
+					<% if (comments != null) {
+					  		ResourceLocator commentSettings = new ResourceLocator("com.stratelia.webactiv.util.comment.Comment","");
+							boolean adminAllowedToUpdate = commentSettings.getBoolean("AdminAllowedToUpdate", true);
+							Iterator itCom = (Iterator) comments.iterator();
+							while (itCom.hasNext()) {
+								Comment unComment = (Comment) itCom.next();
+								String commentDate = resource.getOutputDate(unComment.getCreationDate());
+								String ownerId = Integer.toString(unComment.getOwnerId());
+								%>
+									<div class="oneComment">
+										<div>
+											<div class="avatar">
+												<img src="<%=m_context%><%=unComment.getOwnerDetail().getAvatar() %>"/>
+											</div>
+											<p class="author">
+												<%=unComment.getOwnerDetail().getDisplayedName()%>
+												<span class="date"> - <%=resource.getString("blog.postOn")%> <%=commentDate%></span>
+											</p>
+											<% if (ownerId.equals(userId)) { %>
+												<div class="action">
+													<a href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=postId%>)"><img src="<%=resource.getIcon("blog.smallUpdate") %>" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="absmiddle"/></a>
+													<a href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><img src="<%=resource.getIcon("blog.smallDelete") %>" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="absmiddle"/></a>
+												</div>
+											<% } else if ("admin".equals(profile)) { %>
+												<div class="action">
+													<% if (adminAllowedToUpdate) { %>
+														<a href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=postId%>)"><img src="<%=resource.getIcon("blog.smallUpdate") %>" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="absmiddle"/></a>
+													<% } %>
+													<a href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><img src="<%=resource.getIcon("blog.smallDelete") %>" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="absmiddle"/></a>
+												</div>
+											<% } %>
+											<p class="message"><%=Encode.javaStringToHtmlParagraphe(unComment.getMessage())%></p>
+										</div>
+									</div>
+								<%
+							}
+						}
+						%>
+					
+					</div><!-- End commentaires-->
 			</div>
 				 
 			<div id="navBlog">
 				<% String myOperations = ""; 
-			  // ajouter les opérations dans cette chaine et la passer à afficher dans la colonneDroite.jsp.inc
+			  // ajouter les opï¿½rations dans cette chaine et la passer ï¿½ afficher dans la colonneDroite.jsp.inc
 			   if ("admin".equals(profile)) {
             myOperations += "<a href=\"EditPost?PostId="+postId+"\">"+resource.getString("blog.updatePost")+"</a><br/>";
             if (post.getPublication().getStatus().equals(PublicationDetail.DRAFT)) {
