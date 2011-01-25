@@ -70,7 +70,7 @@ out.println(gef.getLookStyleSheet());
 	OperationPane	operationPane	= window.getOperationPane();
 	BrowseBar		browseBar		= window.getBrowseBar();
 	
-	browseBar.setExtraInformation(Encode.javaStringToHtmlString(surveyName));
+	browseBar.setExtraInformation(surveyName);
 
 	operationPane.addOperation(m_context+"/pdcPeas/jsp/icons/pdcPeas_position_to_add.gif", resources.getString("GML.PDCNewPosition"), "javascript:openSPWindow('"+m_context+"/RpdcClassify/jsp/NewPosition','newposition')");
 	operationPane.addOperation(m_context+"/pdcPeas/jsp/icons/pdcPeas_position_to_del.gif", resources.getString("GML.PDCDeletePosition"), "javascript:getSelectedItems()");
