@@ -3245,14 +3245,17 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
       getPublicationBm().setDetail(pubDetail, forceUpdateDate);
 
-      // update visibility attribute on PDC
-      updateSilverContentVisibility(pubDetail);
-
+      // PDC and subcriptions are supported by kmelia and filebox only
+      if (!KmeliaHelper.isKmax(pubDetail.getInstanceId())) {
+        // update visibility attribute on PDC
+        updateSilverContentVisibility(pubDetail);
+        
+        // alert subscribers
+        sendSubscriptionsNotification(pubDetail, false);
+      }
+      
       // index all publication's elements
       indexExternalElementsOfPublication(pubDetail);
-
-      // alert subscribers
-      sendSubscriptionsNotification(pubDetail, false);
 
       // alert supervisors
       if (topicPK != null) {
