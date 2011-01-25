@@ -4538,16 +4538,23 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public String getPublicationPdfName(String pubId) throws RemoteException {
     String lang = getLanguage();
     StringBuilder pdfName = new StringBuilder(250);
-    TopicDetail topic = getPublicationTopic(pubId);
+    
+    // add space path to filename
     List<SpaceInst> listSpaces = getSpacePath();
     for (SpaceInst space : listSpaces) {
       pdfName.append(space.getName(lang)).append('-');
     }
+    // add component name to filename
     pdfName.append(getComponentLabel());
-    Collection<NodeDetail> path = topic.getPath();
-    for (NodeDetail node : path) {
-      pdfName.append('-').append(node.getName(lang));
+    
+    if (!isKmaxMode) {
+      TopicDetail topic = getPublicationTopic(pubId);
+      Collection<NodeDetail> path = topic.getPath();
+      for (NodeDetail node : path) {
+        pdfName.append('-').append(node.getName(lang));
+      }
     }
+    
     CompletePublication complete = getCompletePublication(pubId);
     pdfName.append('-').append(complete.getPublicationDetail().getTitle()).append('-');
     pdfName.append(pubId).append(".pdf");
