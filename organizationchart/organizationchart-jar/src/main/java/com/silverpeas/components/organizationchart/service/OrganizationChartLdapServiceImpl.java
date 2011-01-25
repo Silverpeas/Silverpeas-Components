@@ -541,7 +541,7 @@ private OrganizationalUnit[] getCategories(OrganizationalPerson[] arrayPerson) {
   private OrganizationalRole[] getRole(String parameterValue){
 	  OrganizationalRole[] roles = null;
 	  if(parameterValue != null && parameterValue.length() > 0){
-		  String[] roleCouple = parameterValue.toLowerCase().split(";");
+		  String[] roleCouple = parameterValue.split(";");
 		  
 		  // ex: labelRole1=keyRole1;labelRole2=keyRole2
 		  if(roleCouple!= null && roleCouple.length > 0){
