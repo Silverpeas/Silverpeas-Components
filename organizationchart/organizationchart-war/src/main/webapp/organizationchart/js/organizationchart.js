@@ -153,11 +153,14 @@ function buildCell(jCell)
 	td1.colSpan = 2;
 	td1.align = "center";
 	
-	if(jCell.upperLink != ""){
-    td1.innerHTML = jCell.name + "&nbsp;<a href=\"" + jCell.upperLink +"&chartType=0\">^</a>";
-  }else{
-    td1.innerHTML = jCell.name;
-  }
+	td1.innerHTML = jCell.name;
+	if(jCell.linkCenter){
+		td1.innerHTML = "<a href=\"" + jCell.url +"&chartType=0\">"+td1.innerHTML+"</a>";
+	}
+	if(jCell.upperLink != "")
+	{
+		td1.innerHTML = td1.innerHTML + "&nbsp;<a href=\"" + jCell.upperLink +"&chartType=0\">^</a>";
+	}
 	if(jCell.infoSup.length > 0){
 	  for (i = 0; i < jCell.infoSup.length; i++)
 	  {
@@ -179,10 +182,7 @@ function buildCell(jCell)
   	  var td4 = tr3.insertCell(-1);
   	  td4.className = "cellLinkRight";
   	  var centrer = "&nbsp;";
-  	  if(jCell.linkCenter){
-  		  centrer = "<a href=\"" + jCell.url +"&chartType=0\">Centrer</a>";
-  		}
-  		td3.innerHTML = centrer;
+  	  td3.innerHTML = centrer;
       var detail = "&nbsp;";
   	  if(jCell.linkDetails){
   		  detail = "<a href=\"" + jCell.url +"&chartType=1\">D&eacute;tails</a>";
