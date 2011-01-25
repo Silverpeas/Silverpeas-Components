@@ -944,7 +944,7 @@ public class ProjectManagerSessionController extends AbstractComponentSessionCon
   public Date getMostRelevantDate(String startDate) throws ParseException {
     Date curDate;
     if (startDate != null) {
-      curDate = this.uiDate2Date(startDate);
+      curDate = DateUtil.stringToDate(startDate, "fr");
     } else {
       // Search for the most relevant date
       curDate = getProjectManagerRelevantDate();
