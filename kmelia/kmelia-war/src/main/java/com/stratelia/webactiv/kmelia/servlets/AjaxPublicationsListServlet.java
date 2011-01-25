@@ -443,7 +443,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           out.write(pub.getPK().getId());
           out.write("')\"><b>");
           out.write(highlightClassBegin);
-          out.write(EncodeHelper.escapeXml(name));
+          out.write(name);
           out.write(highlightClassEnd);
           out.write("</b></a></font>");
         } else {
@@ -516,7 +516,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           out.write("&#160;-&#160;(");
           out.write(resources.getString("GML.author"));
           out.write(":&#160;");
-          out.write(EncodeHelper.escapeXml(pub.getAuthor()));
+          out.write(pub.getAuthor());
           out.write(")</span>");
         }
         // displays permalink
