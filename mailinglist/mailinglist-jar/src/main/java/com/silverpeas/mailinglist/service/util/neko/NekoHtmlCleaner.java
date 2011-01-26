@@ -34,7 +34,6 @@ import org.apache.xerces.xni.parser.XMLParserConfiguration;
 import org.cyberneko.html.HTMLConfiguration;
 import org.cyberneko.html.HTMLTagBalancer;
 import org.cyberneko.html.filters.ElementRemover;
-import org.cyberneko.html.filters.Writer;
 
 import com.silverpeas.mailinglist.service.util.HtmlCleaner;
 
