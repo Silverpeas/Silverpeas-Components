@@ -386,27 +386,30 @@ private OrganizationalUnit[] getCategories(OrganizationalPerson[] arrayPerson) {
 	  
 	 boolean finish = false;
 	 // right 
- 	 for (OrganizationalRole role : UNITSCHART_RIGHT_LABEL) {
-		  if (function != null && role != null && role.getLdapKey() != null && !role.getLdapKey().isEmpty() &&
-			  function.toLowerCase().indexOf(role.getLdapKey()) != -1) {
-			  	pers.setVisibleOnRight(true);
-			  	pers.setVisibleRightLabel(role.getLabel());
-			  	finish = true;
-			  	break;
-		  }
-     }
- 
-	 // left
-	 if(!finish){
-		 for (OrganizationalRole role : UNITSCHART_LEFT_LABEL) {
+	 if(UNITSCHART_RIGHT_LABEL!=null){
+	 	 for (OrganizationalRole role : UNITSCHART_RIGHT_LABEL) {
 			  if (function != null && role != null && role.getLdapKey() != null && !role.getLdapKey().isEmpty() &&
 				  function.toLowerCase().indexOf(role.getLdapKey()) != -1) {
-				  	pers.setVisibleOnLeft(true);
-				  	pers.setVisibleLeftLabel(role.getLabel());
+				  	pers.setVisibleOnRight(true);
+				  	pers.setVisibleRightLabel(role.getLabel());
 				  	finish = true;
 				  	break;
 			  }
 	     }
+	 }
+	 // left
+	 if(!finish){
+		 if(UNITSCHART_LEFT_LABEL!=null){
+			 for (OrganizationalRole role : UNITSCHART_LEFT_LABEL) {
+				  if (function != null && role != null && role.getLdapKey() != null && !role.getLdapKey().isEmpty() &&
+					  function.toLowerCase().indexOf(role.getLdapKey()) != -1) {
+					  	pers.setVisibleOnLeft(true);
+					  	pers.setVisibleLeftLabel(role.getLabel());
+					  	finish = true;
+					  	break;
+				  }
+		     }
+		 }
 	 }
 	 if(!finish){
 		 // central
