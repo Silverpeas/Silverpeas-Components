@@ -44,6 +44,7 @@ import com.silverpeas.components.organizationchart.model.OrganizationalChart;
 import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
 import com.silverpeas.components.organizationchart.model.OrganizationalRole;
 import com.silverpeas.components.organizationchart.model.OrganizationalUnit;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 
@@ -437,7 +438,7 @@ private OrganizationalUnit[] getCategories(OrganizationalPerson[] arrayPerson) {
 		 if(!finish){
 			 for (OrganizationalRole role : PERSONNSCHART_CATEGORIES_LABEL) {
 				  if (function != null && role != null && role.getLdapKey() != null && !role.getLdapKey().isEmpty() &&
-					  function.toLowerCase().indexOf(role.getLdapKey()) != -1) {
+					  function.toLowerCase().indexOf(role.getLdapKey().toLowerCase()) != -1) {
 					  	pers.setVisibleCategory(role.getLabel());
 					  	finish = true;
 					  	break;
@@ -500,18 +501,18 @@ private OrganizationalUnit[] getCategories(OrganizationalPerson[] arrayPerson) {
     
     // unit chart parameters
     String unitsCentral = controller.getComponentParameterValue(componentId, PARAM_UNITSCHART_CENTRAL_LABEL);
-    UNITSCHART_CENTRAL_LABEL = getRole(unitsCentral);
+    UNITSCHART_CENTRAL_LABEL = getRoles(unitsCentral);
     String unitsRight = controller.getComponentParameterValue(componentId, PARAM_UNITSCHART_RIGHT_LABEL);
-    UNITSCHART_RIGHT_LABEL = getRole(unitsRight);
+    UNITSCHART_RIGHT_LABEL = getRoles(unitsRight);
     String unitsLeft = controller.getComponentParameterValue(componentId, PARAM_UNITSCHART_LEFT_LABEL);
-    UNITSCHART_LEFT_LABEL = getRole(unitsLeft);
+    UNITSCHART_LEFT_LABEL = getRoles(unitsLeft);
     UNITSCHART_KEYSANDLABELOTHERSINFOS = getKeysAndLabel(controller.getComponentParameterValue(componentId, PARAM_UNITSCHART_OTHERSINFOS_KEYS));
     
     // detailled chart parameters
     String personnsCentral = controller.getComponentParameterValue(componentId, PARAM_PERSONNSCHART_CENTRAL_LABEL);
-    PERSONNSCHART_CENTRAL_LABEL = getRole(personnsCentral);
+    PERSONNSCHART_CENTRAL_LABEL = getRoles(personnsCentral);
     String personnsCategories = controller.getComponentParameterValue(componentId, PARAM_PERSONNSCHART_CATEGORIES_LABEL);
-    PERSONNSCHART_CATEGORIES_LABEL = getRole(personnsCategories);
+    PERSONNSCHART_CATEGORIES_LABEL = getRoles(personnsCategories);
     PERSONNSCHART_KEYSANDLABELOTHERSINFOS = getKeysAndLabel(controller.getComponentParameterValue(componentId, PARAM_PERSONNSCHART_OTHERSINFOS_KEYS));
     
     LDAP_ATT_ACTIF = controller.getComponentParameterValue(componentId, PARAM_LDAP_ATT_ACTIF);
@@ -538,7 +539,7 @@ private OrganizationalUnit[] getCategories(OrganizationalPerson[] arrayPerson) {
   }
   
   
-  private OrganizationalRole[] getRole(String parameterValue){
+  private OrganizationalRole[] getRoles(String parameterValue){
 	  OrganizationalRole[] roles = null;
 	  if(parameterValue != null && parameterValue.length() > 0){
 		  String[] roleCouple = parameterValue.split(";");
