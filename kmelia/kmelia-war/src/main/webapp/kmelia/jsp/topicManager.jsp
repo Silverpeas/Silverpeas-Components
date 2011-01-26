@@ -488,7 +488,7 @@ function getHeight() {
 
 <FORM NAME="pubForm" action="ViewPublication" METHOD="POST">
 	<input type="hidden" name="PubId">
-	<input type="hidden" name="CheckPath" value="1">
+	<input type="hidden" name="CheckPath">
 </FORM>
 
 <FORM NAME="fupload" ACTION="fileUpload.jsp" METHOD="POST" enctype="multipart/form-data" accept-charset="UTF-8">
