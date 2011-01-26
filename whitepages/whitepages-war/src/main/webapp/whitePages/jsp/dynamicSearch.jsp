@@ -1,4 +1,4 @@
-v<%--
+<%--
 
     Copyright (C) 2000 - 2009 Silverpeas
 
@@ -40,18 +40,15 @@ v<%--
 <%@ include file="checkWhitePages.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator"
-	prefix="view"%>	
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<HTML>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" var="LML" />
 <view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML" />
 <c:set var="browseContext" value="${requestScope.browseContext}" />
+
+<HTML>
 <HEAD>
-<link href="<%=m_context%>/util/styleSheets/globalSP_SilverpeasV5.css" type="text/css" rel="stylesheet" />
-<link href="<%=m_context%>/util/styleSheets/silverpeas_light_style.css" type="text/css" rel="stylesheet" />
-<link href="<%=m_context%>/whitePages/jsp/styleSheets/annuaire_Expert.css" type="text/css" rel="stylesheet" />
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <%
    out.println(gef.getLookStyleSheet());

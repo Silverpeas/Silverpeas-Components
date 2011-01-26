@@ -34,13 +34,13 @@
 <%@ page import="com.stratelia.silverpeas.notificationManager.NotificationParameters"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.ClassifyValue"%>
 <%@ page import="com.stratelia.silverpeas.pdc.model.Value"%>
+<%@ page import="com.stratelia.silverpeas.pdc.model.ClassifyPosition"%>
 
 <%@ include file="checkWhitePages.jsp" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator"
-	prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setPath(resource.getString("whitePages.usersList") + " > "+ resource.getString("whitePages.consultCard"));
@@ -99,25 +99,20 @@
 	buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.back"), routerUrl+"Main", false));
 %>
 
-
-
-<%@page import="com.stratelia.silverpeas.pdc.model.ClassifyPosition"%><HTML>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" var="LML" />
 <view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML" />
 <c:set var="browseContext" value="${requestScope.browseContext}" />
+
+<HTML>
 <HEAD>
-<link href="<%=m_context%>/util/styleSheets/globalSP_SilverpeasV5.css" type="text/css" rel="stylesheet" />
-<link href="<%=m_context%>/util/styleSheets/silverpeas_light_style.css" type="text/css" rel="stylesheet" />
-<link href="<%=m_context%>/whitePages/jsp/styleSheets/annuaire_Expert.css" type="text/css" rel="stylesheet" />
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <%
    out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<!-- JAVASCRIPT LANGUAGE -->
-<script language="JavaScript">
+<script type="text/javascript">
 
 var targetUserId = -1;
 
@@ -223,23 +218,12 @@ function openSPWindow(fonction,windowName){
 	       
       });
 </script>
-
 </HEAD>
-
-<BODY id="whitePagesSheet" marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
-<FORM NAME="choixFiche" METHOD="POST">
-	<input type="hidden" name="userCardId">
-</FORM>
-
-<FORM NAME="myForm" METHOD="POST" ACTION="<%=routerUrl%>effectiveCreate">
-
+<BODY id="whitePagesSheet">
 <%
 out.println(window.printBefore());
 out.println(frame.printBefore());
-%>
 
-<br>
-<%
 UserRecord userRecord = card.readUserRecord();
 String lastName = userRecord.getField("LastName").getValue(language);
 String firstName = userRecord.getField("FirstName").getValue(language);
@@ -410,9 +394,11 @@ if (userFull != null) {
 </div>
 
 <div class="divSee" id="sheetExpert">
+<form name="myForm" method="POST" action="<%=routerUrl%>effectiveCreate">
 <%	
 	viewForm.display(out, context, data);
 %>
+</form>
 </div>
 
 <br/>
@@ -425,6 +411,9 @@ if (userFull != null) {
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
+
+<FORM NAME="choixFiche" METHOD="POST">
+	<input type="hidden" name="userCardId">
 </FORM>
 <!-- Dialog to notify a user -->
 	<div id="directoryDialog">
