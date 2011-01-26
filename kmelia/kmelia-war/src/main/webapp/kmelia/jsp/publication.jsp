@@ -406,7 +406,7 @@ function addFavorite()
             "javaScript:AddAttachment()");
               
         if (kmeliaScc.isDraftEnabled() && !pubDetail.haveGotClone()) {
-          if ("Draft".equals(pubDetail.getStatus())) {
+          if (pubDetail.isDraft()) {
             operationPane.addOperation(pubDraftOutSrc, resources.getString("PubDraftOut"),
                 "javaScript:pubDraftOut()");
           } else {
