@@ -351,7 +351,7 @@ function reloadPage() {
 function addFavorite()
 {
 	var name = encodeURI($("#breadCrumb").text());
-	var description = encodeURI("<%=pubDetail.getDescription(language)%>");
+	var description = encodeURI("<%=EncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>");
 	var url = "<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId())%>";
   	urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
   
