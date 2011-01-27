@@ -28,7 +28,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class WhitePagesException extends SilverpeasException {
 
-  // constructors
+  private static final long serialVersionUID = 6116783004553455421L;
+
   /**
    * Constructor which calls the super constructor
    * @param callingClass (String) the name of the module which catchs the Exception
@@ -55,10 +56,6 @@ public class WhitePagesException extends SilverpeasException {
   public WhitePagesException(String callingClass, int errorLevel, String message) {
     this(callingClass, errorLevel, message, "", null);
   }
-
-  //
-  // public methods
-  //
 
   /**
    * Returns the name of this jobPeas

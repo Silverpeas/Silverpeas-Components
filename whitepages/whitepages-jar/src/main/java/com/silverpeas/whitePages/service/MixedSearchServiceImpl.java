@@ -86,9 +86,8 @@ public class MixedSearchServiceImpl implements MixedSearchService {
       ArrayList<String> alComponentIds = new ArrayList<String>();
       alComponentIds.add(componentId);
       
-      List alSilverContents = null;
       boolean visibilitySensitive = true;
-      alSilverContents = getPdcBm().findGlobalSilverContents(pdcContext, alComponentIds, true, visibilitySensitive);
+      List alSilverContents = getPdcBm().findGlobalSilverContents(pdcContext, alComponentIds, true, visibilitySensitive);
       
       GlobalSilverContent silverContent = null;
       if (queryString != null && queryString.length() > 0)

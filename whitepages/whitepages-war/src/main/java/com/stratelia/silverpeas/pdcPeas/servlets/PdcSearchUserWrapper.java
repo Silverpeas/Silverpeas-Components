@@ -42,6 +42,9 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
  * A simple wrapper for the userpanel.
  */
 public class PdcSearchUserWrapper extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = 3997262296536961121L;
+
   /**
    * Returns a new session controller
    */
@@ -90,9 +93,8 @@ public class PdcSearchUserWrapper extends ComponentRequestRouter {
         request.setAttribute("elementName", pdcSearchUserWrapperScc
             .getElementName());
 
-        List users = pdcSearchUserWrapperScc.getSelectedUsers();
+        List<GlobalSilverContent> users = pdcSearchUserWrapperScc.getSelectedUsers();
         if (users != null) {
-          GlobalSilverContent gsc = null;
           StringBuffer ids = new StringBuffer("");
           StringBuffer names = new StringBuffer("");
           String userCardId = null;
@@ -100,8 +102,7 @@ public class PdcSearchUserWrapper extends ComponentRequestRouter {
           CardManager cardM = CardManager.getInstance();
           Card card = null;
 
-          for (int i = 0; i < users.size(); i++) {
-            gsc = (GlobalSilverContent) users.get(i);
+          for (GlobalSilverContent gsc : users) {
             userCardId = gsc.getId();
 
             card = cardM.getCard(new Long(userCardId).longValue());

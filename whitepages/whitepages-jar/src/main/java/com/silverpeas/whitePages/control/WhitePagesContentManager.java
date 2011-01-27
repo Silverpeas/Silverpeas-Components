@@ -46,17 +46,17 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
  */
 public class WhitePagesContentManager implements ContentInterface {
   /** Find all the SilverContent with the given SilverContentId */
-  public List getSilverContentById(List ids, String peasId, String userId,
-      List userRoles) {
+  public List getSilverContentById(List<Integer> ids, String peasId, String userId,
+      List<String> userRoles) {
       return getHeaders(makeIdArray(ids), peasId);
   }
 
-  private ArrayList makeIdArray(List idList) {
-    ArrayList ids = new ArrayList();
-    Iterator iter = idList.iterator();
+  private ArrayList<String> makeIdArray(List<Integer> idList) {
+    ArrayList<String> ids = new ArrayList<String>();
+    Iterator<Integer> iter = idList.iterator();
     String id = null;
     while (iter.hasNext()) {
-      int contentId = ((Integer) iter.next()).intValue();
+      int contentId = iter.next().intValue();
       try {
         id = getContentManager().getInternalContentId(contentId);
         ids.add(id);
@@ -69,36 +69,11 @@ public class WhitePagesContentManager implements ContentInterface {
     return ids;
   }
 
-  private boolean isUser(List userRoles) {
-    Iterator iter = userRoles.iterator();
-    String role;
-    while (iter.hasNext()) {
-      role = (String) iter.next();
-      if ("user".equals(role))
-        return true;
-      if ("admin".equals(role))
-        return true;
-    }
-    return false;
-  }
-
-  private boolean isAdmin(List userRoles) {
-    Iterator iter = userRoles.iterator();
-    String role;
-    while (iter.hasNext()) {
-      role = (String) iter.next();
-      if ("admin".equals(role))
-        return true;
-    }
-    return false;
-  }
-
-  private List getHeaders(List ids, String instanceId) {
+  private List getHeaders(List<String> ids, String instanceId) {
     Card card;
-    ArrayList headers = new ArrayList();
+    ArrayList<CardHeader> headers = new ArrayList<CardHeader>();
     try {
-      ArrayList cards = (ArrayList) CardManager.getInstance().getCardsByIds(
-          (ArrayList) ids);
+      ArrayList<Card> cards = (ArrayList<Card>) CardManager.getInstance().getCardsByIds(ids);
       for (int i = 0; i < cards.size(); i++) {
         card = (Card) cards.get(i);
         headers.add(new CardHeader(new Long(card.getPK().getId()).longValue(),

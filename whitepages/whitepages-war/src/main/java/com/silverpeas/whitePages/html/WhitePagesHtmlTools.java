@@ -1,6 +1,5 @@
 package com.silverpeas.whitePages.html;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,25 +9,19 @@ import com.stratelia.silverpeas.pdc.model.Value;
 
 public class WhitePagesHtmlTools {
 
-public static String generateHtmlForPdc(List axis, String language, HttpServletRequest request) { 
+public static String generateHtmlForPdc(List<SearchAxis> axis, String language, HttpServletRequest request) { 
   StringBuffer result = new StringBuffer("");
-  Iterator iter = axis.iterator();
-  while(iter.hasNext()){
+  for (SearchAxis searchAxis : axis) {
     result.append("<div>");
-    SearchAxis searchAxis = (SearchAxis)iter.next();
       int axisId = searchAxis.getAxisId();
       String    valueInContext    = request.getAttribute("Axis" + String.valueOf(axisId)) != null ? (String)request.getAttribute("Axis" + String.valueOf(axisId)) : null;
-      Value   value       = null;
       String    increment     = "";
       String    selected      = "";
       String axisName = searchAxis.getAxisName();
       StringBuffer buffer = new StringBuffer("<select name=\"Axis"+axisId+"\" size=\"1\">");
       buffer.append("<option value=\"\"></option>");
-      List values = searchAxis.getValues();
-      for (int v=0; v<values.size(); v++)
-      {
-        value = (Value) values.get(v);
-        
+      List<Value> values = searchAxis.getValues();
+      for (Value value : values) {
         for (int inc=0; inc<value.getLevelNumber(); inc++)
         {
           increment += "&nbsp;&nbsp;&nbsp;&nbsp;";

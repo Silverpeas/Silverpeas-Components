@@ -29,6 +29,8 @@ import com.silverpeas.form.*;
 import com.silverpeas.whitePages.record.*;
 
 public class Card extends SilverpeasBean {
+  
+  private static final long serialVersionUID = -3513309887697109085L;
   private String userId;
   private int hideStatus = 0;
   private String instanceId;
