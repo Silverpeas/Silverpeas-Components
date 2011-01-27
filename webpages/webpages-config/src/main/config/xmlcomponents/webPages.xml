@@ -30,7 +30,7 @@
   <label>Designer de page web - WebPage Designer</label>
   <description>Permet de créer une page web via l'éditeur WYSIWYG</description>
   <suite>04 Gestion de contenu</suite>
-  <visible>@ComponentVisiblewebPages@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.silverpeas.webpages.WebPagesInstanciator</instanceClassName>
   <Profiles>
