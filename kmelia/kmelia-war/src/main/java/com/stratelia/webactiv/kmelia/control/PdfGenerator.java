@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
+import com.lowagie.text.BadElementException;
 import com.lowagie.text.Cell;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
@@ -46,7 +47,6 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfTemplate;
 import com.lowagie.text.pdf.PdfWriter;
-import com.lowagie.text.pdf.PdfTable;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentService;
@@ -265,7 +265,10 @@ public class PdfGenerator extends PdfPageEventHelper {
       } catch (MalformedURLException ex) {
         url = new URL(serverURL + logo);
       }
-      return Image.getInstance(url);
+      Image image = Image.getInstance(url);
+      float scale =  (24f   * 100) / image.getPlainHeight();
+      image.scalePercent(scale);
+      return image;
     } catch (Exception e) {
       SilverTrace.error("kmelia", "PdfGenerator.onOpenDocument", "root.EX_REMOTE_EXCEPTION", e);
     }
@@ -425,8 +428,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     }
   }
 
-  private void addRowImageToTable(Table tbl, String cell, Image image,
-      boolean isBorder) {
+  private void addRowImageToTable(Table tbl, String cell, Image image, boolean isBorder) {
     Cell cl = null;
     // cell 1
     Chunk chnk = new Chunk(cell, new Font(Font.HELVETICA, 10, Font.BOLD));
@@ -456,18 +458,19 @@ public class PdfGenerator extends PdfPageEventHelper {
     for (int i = 0; i < cells.length; i++) {
       Font font;
       if (i == 0 || i == 2) {
-        font = new Font(Font.HELVETICA, 10, Font.BOLD);
+        font = BOLD_FONT;
       } else {
-        font = new Font(Font.HELVETICA, 10, Font.NORMAL);
+        font = NORMAL_FONT;
       }
-      Chunk chnk = new Chunk(cells[i], font);
-      Cell cl = null;
       try {
-        cl = new Cell(chnk);
-      } catch (Exception ex) {
+        Cell cl =  new Cell(new Chunk(cells[i], font));
+        cl.setBorderWidth(0);
+        tbl.addCell(cl);
+      } catch(BadElementException ex)  {
+         Cell cl =  new Cell(cells[i]);
+        cl.setBorderWidth(0);
+        tbl.addCell(cl);
       }
-      cl.setBorderWidth(0);
-      tbl.addCell(cl);
     }
   }
 
@@ -526,8 +529,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     tbl.setBorderWidth(0);
     tbl.setAlignment(Element.ALIGN_LEFT);
     tbl.setWidth(100);
-    int headerwidths[] = {25, 75};
-    tbl.setWidths(headerwidths);
+    tbl.setWidths(new int[]{25, 75});
 
     // Emplacement
     addRowToTable(tbl, null, new String[]{message.getString("TopicPath") + " :", getTopicPath()},
@@ -557,6 +559,8 @@ public class PdfGenerator extends PdfPageEventHelper {
               getPublicationSettings().getString("imagesSubDirectory") + File.separatorChar
               + publicationDetail.getImage());
           Image image = Image.getInstance(vignette.toURI().toURL());
+          float scale = (100f   * 100) / image.getPlainHeight();
+          image.scalePercent(scale);
           addRowImageToTable(tbl, message.getString("Thumbnail") + " :", image, false);
         } catch (Exception e) {
           SilverTrace.error("kmelia", "PdfGenerator.onOpenDocument", "root.EX_REMOTE_EXCEPTION", e);
@@ -623,8 +627,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     tbl2.setBorderWidth(0);
     tbl2.setAlignment(Element.ALIGN_LEFT);
     tbl2.setWidth(100);
-    int headerwidths2[] = {25, 30, 15, 30};
-    tbl2.setWidths(headerwidths2);
+    tbl2.setWidths(new int[]{25, 30, 15, 30});
 
     String creatorName = "";
     UserDetail ownerDetail = kmelia.getUserCompletePublication(publicationDetail.getPK().getId()).
@@ -634,6 +637,10 @@ public class PdfGenerator extends PdfPageEventHelper {
     } else {
       creatorName = message.getString("UnknownAuthor");
     }
+    // Créé par,
+    addRowToTable(tbl2, new String[]{message.getString("PubDateCreation") + " :",
+          DateUtil.getOutputDate(publicationDetail.getCreationDate(), language)
+          + " " + message.getString("kmelia.By") + " " + creatorName});
 
     String messageUpdatedDate = "";
     String sUpdated = "";
@@ -646,18 +653,13 @@ public class PdfGenerator extends PdfPageEventHelper {
     if (updater != null) {
       updaterName = updater.getDisplayedName();
     }
-    if (updateDate != null && updateDate.length() > 0 && updaterName != null
-        && updaterName.length() > 0) {
+    if (StringUtil.isDefined(updateDate) && StringUtil.isDefined(updaterName)) {
       messageUpdatedDate = message.getString("PubDateUpdate") + " :";
       sUpdated = updateDate + " " + message.getString("kmelia.By") + " "
           + updaterName;
+      // Modifiée par
+      addRowToTable(tbl2, new String[]{messageUpdatedDate, sUpdated});
     }
-    // Créé par, Modifiée par
-    addRowToTable(tbl2, new String[]{message.getString("PubDateCreation") + " :",
-          DateUtil.getOutputDate(publicationDetail.getCreationDate(), language)
-          + " " + message.getString("kmelia.By") + " " + creatorName,
-          messageUpdatedDate, sUpdated});
-
     String beginDate = "";
     if (publicationDetail.getBeginDate() != null) {
       beginDate = DateUtil.getInputDate(publicationDetail.getBeginDate(),
@@ -934,7 +936,7 @@ public class PdfGenerator extends PdfPageEventHelper {
               if (importance.equals("")) {
                 importance = "1";
               }
-              sImportance = new Integer(importance).intValue();
+              sImportance = Integer.parseInt(importance);
               tabImage = new Image[5];
               // display full Stars
               for (int i = 0; i < sImportance; i++) {
