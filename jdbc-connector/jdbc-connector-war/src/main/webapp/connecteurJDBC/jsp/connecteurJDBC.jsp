@@ -165,6 +165,7 @@ out.println(gef.getLookStyleSheet());
 	 //Tableau
 	  ArrayPane arrayPane = gef.getArrayPane("ResultSet","",request,session);
 	  arrayPane.setSortable(true);
+	  arrayPane.setExportData(true);
 	
 	if (lastValidSqlReq!=null)
 	{	

@@ -98,6 +98,7 @@ function viewEvent(componentId, id) {
 	ArrayPane arrayPane = graphicFactory.getArrayPane("YearEvents", "ViewYearEventsPOPUP", request, session);
 	arrayPane.setVisibleLineNumber(resources.getSetting("almanach.yeareventspopup.arraypagesize", 15));
   	arrayPane.setXHTML(true);
+  	arrayPane.setExportData(true);
   	arrayPane.addArrayColumn(resources.getString("GML.month"));
   	arrayPane.addArrayColumn(resources.getString("GML.title"));
   	ArrayColumn column1 = arrayPane.addArrayColumn(resources.getString("GML.dateBegin"));
