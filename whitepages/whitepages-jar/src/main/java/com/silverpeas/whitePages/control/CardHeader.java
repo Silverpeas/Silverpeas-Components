@@ -40,6 +40,8 @@ import com.stratelia.webactiv.util.*;
  */
 public final class CardHeader extends AbstractI18NBean implements SilverContentInterface,
     Comparable {
+  
+  private static final long serialVersionUID = -8781512864589764317L;
   private long id;
   private String label;
   private String instanceId;
@@ -156,7 +158,7 @@ public final class CardHeader extends AbstractI18NBean implements SilverContentI
     return admin.getComponentParameterValue(instanceId, paramName);
   }
 
-  static Map templates = new HashMap();
+  static Map<String, UserTemplate> templates = new HashMap<String, UserTemplate>();
 
   public String getId() {
     return (new Long(id)).toString();

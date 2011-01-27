@@ -33,6 +33,8 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 
 public class UserRecord implements DataRecord {
+  
+  private static final long serialVersionUID = 4372981095216600600L;
   private UserDetail user = null;
   private boolean connected = false;
 

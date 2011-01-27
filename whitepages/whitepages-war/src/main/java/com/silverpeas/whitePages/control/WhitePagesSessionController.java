@@ -39,6 +39,8 @@ import java.util.SortedSet;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.fileupload.FileItem;
+
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.PagesContext;
@@ -83,7 +85,6 @@ import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.CompoSpace;
 import com.stratelia.webactiv.beans.admin.DomainDriverManager;
 import com.stratelia.webactiv.beans.admin.UserDetail;
-import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
@@ -96,14 +97,14 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   private CardManager cardManager = null;
   private Card currentCard = null; // fiche courante
   private Card currentCreateCard = null; // fiche en cours de création
-  private Collection currentUserCards = new ArrayList(); // liste des fiches
+  private Collection<WhitePagesCard> currentUserCards = new ArrayList<WhitePagesCard>(); // liste des fiches
   // (Collection de
   // WhitePagesCard)
   // inter-instance du
   // user de la fiche
   // courante
   // (currentCard.getUserId())
-  private Collection userInstanceIds = null; // liste des id des instances
+  private Collection<String> userInstanceIds = null; // liste des id des instances
   // d'annuaire pour lequel
   // l'utilisateur courant
   // (getUserId()) a des droits
@@ -121,7 +122,6 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       "com.silverpeas.whitePages.settings.settings", "");
 
   private PdcBm pdcBm = null;
-  private SearchEngineBm searchEngine = null; // To retrieve items using
   
   private static DomainDriverManager m_DDManager = new DomainDriverManager();
   
@@ -158,15 +158,16 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
         UserTemplate templateUser = getUserTemplate(card.getInstanceId());
         UserRecord userRecord = templateUser.getRecord(card.getUserId());
         if (userRecord.getUserDetail() == null) {
-          Collection cards = new ArrayList();
+          Collection<String> cards = new ArrayList<String>();
           cards.add(new Long(userCardId).toString());
           delete(cards);
           return null;
         }
         DataRecord cardRecord = template.getRecordSet().getRecord(
             new Long(userCardId).toString());
-        if (cardRecord == null)
+        if (cardRecord == null) {
           cardRecord = template.getRecordSet().getEmptyRecord();
+        }
         card.writeCardRecord(cardRecord);
         card.writeCardViewForm(template.getViewForm());
         card.writeUserForm(templateUser.getViewForm());
@@ -211,13 +212,14 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
             new Long(userCardId).toString());
         UserRecord userRecord = templateUser.getRecord(card.getUserId());
         if (userRecord.getUserDetail() == null) {
-          Collection cards = new ArrayList();
+          Collection<String> cards = new ArrayList<String>();
           cards.add(new Long(userCardId).toString());
           delete(cards);
           return null;
         }
-        if (cardRecord == null)
+        if (cardRecord == null) {
           cardRecord = template.getRecordSet().getEmptyRecord();
+        }
         card.writeCardRecord(cardRecord);
         card.writeCardViewForm(template.getViewForm());
         card.writeUserForm(templateUser.getViewForm());
@@ -252,12 +254,12 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    */
   public Card getUserCard(String userId) throws WhitePagesException {
     Card card = null;
-    Collection userCards = getWhitePagesCards(userId);
-    Iterator it = null;
+    Collection<WhitePagesCard> userCards = getWhitePagesCards(userId);
+    Iterator<WhitePagesCard> it = null;
     if (userCards != null) {
       it = userCards.iterator();
       if (it.hasNext()) {
-        WhitePagesCard wpc = (WhitePagesCard) it.next();
+        WhitePagesCard wpc = it.next();
         card = getCardReadOnly(wpc.getUserCardId());
       }
     }
@@ -270,11 +272,11 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * (currentCard.getUserId()) Sinon retourne currentUserCards (Collection de WhitePagesCard)
    * @param userId id d'un user
    */
-  private Collection getHomeWhitePagesCards(String userId)
+  private Collection<WhitePagesCard> getHomeWhitePagesCards(String userId)
       throws WhitePagesException {
-    if ((currentCard == null) || (!currentCard.getUserId().equals(userId))
-        || (getCurrentUserCards().size() <= 0)) {
-      Collection cards = getCardManager().getHomeUserCards(userId,
+    if (currentCard == null || !currentCard.getUserId().equals(userId)
+        || getCurrentUserCards().isEmpty()) {
+      Collection<WhitePagesCard> cards = getCardManager().getHomeUserCards(userId,
           getUserInstanceIds(), getComponentId());
       Collections.sort((List) cards);
       setCurrentUserCards(cards);
@@ -288,11 +290,11 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * currentUserCards (Collection de WhitePagesCard)
    * @param userId id d'un user
    */
-  private Collection getWhitePagesCards(String userId)
+  private Collection<WhitePagesCard> getWhitePagesCards(String userId)
       throws WhitePagesException {
-    if ((currentCard == null) || (!currentCard.getUserId().equals(userId))
-        || (getCurrentUserCards().size() <= 0)) {
-      Collection cards = getCardManager().getUserCards(userId,
+    if (currentCard == null || !currentCard.getUserId().equals(userId)
+        || getCurrentUserCards().isEmpty()) {
+      Collection<WhitePagesCard> cards = getCardManager().getUserCards(userId,
           getUserInstanceIds());
       Collections.sort((List) cards);
       setCurrentUserCards(cards);
@@ -310,14 +312,15 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     Card card = new Card(getComponentId());
     card.writeUserForm(getUserTemplate().getViewForm());
     UserRecord userRecord = getUserTemplate().getRecord(userDetail.getId());
-    if (userRecord.getUserDetail() == null)
+    if (userRecord.getUserDetail() == null) {
       return null;
+    }
     card.writeUserRecord(userRecord);
     card.writeReadOnly(false);
     setCurrentCreateCard(card);
-    setCurrentUserCards(new ArrayList());
+    setCurrentUserCards(new ArrayList<WhitePagesCard>());
     getWhitePagesCards(userDetail.getId());
-    ((ArrayList) getCurrentUserCards()).add(0, new WhitePagesCard(
+    ((ArrayList<WhitePagesCard>) getCurrentUserCards()).add(0, new WhitePagesCard(
         "Fiche en cours de création"));
     return getCurrentCreateCard();
   }
@@ -353,7 +356,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   public void setCardRecord(HttpServletRequest request)
       throws WhitePagesException {
     try {
-      List items = FileUploadUtil.parseRequest(request);
+      List<FileItem> items = FileUploadUtil.parseRequest(request);
       PagesContext pageContext = new PagesContext("", getLanguage());
       pageContext.setComponentId(getComponentId());
       pageContext.setObjectId(getCurrentCard().getPK().getId());
@@ -378,7 +381,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   public void updateCardRecord(HttpServletRequest request)
       throws WhitePagesException {
     try {
-      List items = FileUploadUtil.parseRequest(request);
+      List<FileItem> items = FileUploadUtil.parseRequest(request);
       PagesContext pageContext = new PagesContext("", getLanguage());
       pageContext.setComponentId(getComponentId());
       pageContext.setObjectId(getCurrentCard().getPK().getId());
@@ -411,7 +414,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       getCurrentCreateCard().readCardRecord().setId(userCardId);
       getCardTemplate().getRecordSet().save(
           getCurrentCreateCard().readCardRecord());
-      setCurrentUserCards(new ArrayList());
+      setCurrentUserCards(new ArrayList<WhitePagesCard>());
       SilverTrace.spy("whitePages", "WhitePagesSessionController.insertCard",
           getSpaceId(), getComponentId(), userCardId, getUserDetail().getId(),
           SilverTrace.SPY_ACTION_CREATE);
@@ -454,7 +457,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * Liste les fiches de l'annuaire
    * @return la liste de toutes les fiches de l'annuaire (Collection de Card)
    */
-  public Collection getCards() throws WhitePagesException {
+  public Collection<Card> getCards() throws WhitePagesException {
     return setUserRecords(getCardManager().getCards(getComponentId()));
   }
 
@@ -463,17 +466,14 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * @return la liste de toutes les fiches de l'annuaire (Collection de Card) non masquées
    * (hideStatus = 0)
    */
-  public Collection getVisibleCards() throws WhitePagesException {
+  public Collection<Card> getVisibleCards() throws WhitePagesException {
     return setUserRecords(getCardManager().getVisibleCards(getComponentId()));
   }
 
   public void indexVisibleCards() throws WhitePagesException {
-    Collection visibleCards = setUserRecordsAndCardRecords(getCardManager()
+    Collection<Card> visibleCards = setUserRecordsAndCardRecords(getCardManager()
         .getVisibleCards(getComponentId()));
-    Iterator it = visibleCards.iterator();
-    Card card = null;
-    while (it.hasNext()) {
-      card = (Card) it.next();
+    for (Card card : visibleCards) {
       getCardManager().indexCard(card);
     }
   }
@@ -481,20 +481,17 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   /*
    * Affecte les UserRecord à chaque Card d'une liste
    */
-  private Collection setUserRecords(Collection cards)
+  private Collection<Card> setUserRecords(Collection<Card> cards)
       throws WhitePagesException {
-    ArrayList listCards = new ArrayList();
+    List<Card> listCards = new ArrayList<Card>();
     try {
       if (cards != null) {
-        Iterator it = cards.iterator();
-        while (it.hasNext()) {
-          Card card = (Card) it.next();
-
+        for (Card card : cards) {
           if (getUserTemplate().getRecord(card.getUserId()).getUserDetail() == null) {// l'utilisateur
             // n'existe
             // plus
             String idCard = card.getPK().getId();
-            ArrayList listId = new ArrayList();
+            List<String> listId = new ArrayList<String>();
             listId.add(idCard);
             delete(listId);
           }
@@ -516,30 +513,28 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   /*
    * Affecte les UserRecord & CardRecord à chaque Card d'une liste
    */
-  private Collection setUserRecordsAndCardRecords(Collection cards)
+  private Collection<Card> setUserRecordsAndCardRecords(Collection<Card> cards)
       throws WhitePagesException {
-    ArrayList listCards = new ArrayList();
+    List<Card> listCards = new ArrayList<Card>();
     try {
       if (cards != null) {
         PublicationTemplate template = getTemplate(getComponentId());
         DataRecord cardRecord = null;
-        Card card = null;
         String idCard = null;
-        Iterator it = cards.iterator();
-        while (it.hasNext()) {
-          card = (Card) it.next();
+        for (Card card : cards) {
           idCard = card.getPK().getId();
           if (getUserTemplate().getRecord(card.getUserId()).getUserDetail() == null) {
             // l'utilisateur n'existe plus
-            ArrayList listId = new ArrayList();
+            List<String> listId = new ArrayList<String>();
             listId.add(idCard);
             delete(listId);
           } else {
             card.writeUserRecord(getUserTemplate().getRecord(card.getUserId()));
 
             cardRecord = template.getRecordSet().getRecord(idCard);
-            if (cardRecord == null)
+            if (cardRecord == null) {
               cardRecord = template.getRecordSet().getEmptyRecord();
+            }
             card.writeCardRecord(cardRecord);
             listCards.add(card);
           }
@@ -562,14 +557,11 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * Supprime une liste de fiches de l'annuaire + liste des cardRecord correspondant
    * @param userCardIds liste des identifiants des fiches à supprimer
    */
-  public void delete(Collection userCardIds) throws WhitePagesException {
+  public void delete(Collection<String> userCardIds) throws WhitePagesException {
 
     try {
       if (userCardIds != null) {
-        Iterator it = userCardIds.iterator();
-        while (it.hasNext()) {
-
-          String userCardId = (String) it.next();
+        for (String userCardId : userCardIds) {
           DataRecord data = getCardTemplate().getRecordSet().getRecord(
               userCardId);
           getCardTemplate().getRecordSet().delete(data);
@@ -594,7 +586,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * Masque une liste de fiches de l'annuaire
    * @param userCardIds liste des identifiants des fiches à masquer
    */
-  public void hide(Collection userCardIds) throws WhitePagesException {
+  public void hide(Collection<String> userCardIds) throws WhitePagesException {
     getCardManager().setHideStatus(userCardIds, 1);
   }
 
@@ -602,7 +594,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * De Masque une liste de fiches de l'annuaire
    * @param userCardIds liste des identifiants des fiches à de masquer
    */
-  public void unHide(Collection userCardIds) throws WhitePagesException {
+  public void unHide(Collection<String> userCardIds) throws WhitePagesException {
     getCardManager().setHideStatus(userCardIds, 0);
   }
 
@@ -610,7 +602,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
    * Reverse le statut Masqué d'une liste de fiches de l'annuaire
    * @param userCardIds liste des identifiants des fiches
    */
-  public void reverseHide(Collection userCardIds) throws WhitePagesException {
+  public void reverseHide(Collection<String> userCardIds) throws WhitePagesException {
     getCardManager().reverseHide(userCardIds);
     setCurrentCard(null);
   }
@@ -731,12 +723,12 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     setCurrentCard(card);
   }
 
-  private void setCurrentUserCards(Collection userCards) {
+  private void setCurrentUserCards(Collection<WhitePagesCard> userCards) {
     this.currentUserCards = userCards;
   }
 
   public void initCurrentUserCards() {
-    this.currentUserCards = new ArrayList();
+    this.currentUserCards = new ArrayList<WhitePagesCard>();
   }
 
   public Card getCurrentCard() {
@@ -747,7 +739,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return currentCreateCard;
   }
 
-  public Collection getCurrentUserCards() {
+  public Collection<WhitePagesCard> getCurrentUserCards() {
     return currentUserCards;
   }
 
@@ -793,9 +785,9 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return hostParameters;
   }
 
-  private Collection getUserInstanceIds() {
+  private Collection<String> getUserInstanceIds() {
     if (userInstanceIds == null) {
-      userInstanceIds = new ArrayList();
+      userInstanceIds = new ArrayList<String>();
       CompoSpace[] instances = getOrganizationController().getCompoForUser(
           getUserId(), "whitePages");
       for (int i = 0; i < instances.length; i++) {
@@ -934,9 +926,8 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   
   public List<SearchAxis> getUsedAxisList(SearchContext searchContext, String axisType) throws PdcException {
     List<SearchAxis> searchAxis = getPdcBm().getPertinentAxisByInstanceId(searchContext, axisType ,getComponentId());
-    if(searchAxis != null && searchAxis.size() > 0){
-      for (int p = 0; p < searchAxis.size(); p++) {
-        SearchAxis axis = searchAxis.get(p);
+    if(searchAxis != null && !searchAxis.isEmpty()){
+      for (SearchAxis axis : searchAxis) {
         axis.setValues(getPdcBm().getDaughters(Integer.toString(axis.getAxisId()), "0"));
       }
     }
@@ -959,10 +950,8 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
   public Set<String> getSearchFieldIds() throws UtilException{
     Set<String> ids = new HashSet<String>();
     SortedSet<SearchField> searchFields = getSearchFields();
-    if(searchFields != null && searchFields.size() > 0){
-      Iterator<SearchField> iter = searchFields.iterator();
-      while(iter.hasNext()){
-        SearchField field = iter.next();
+    if(searchFields != null && !searchFields.isEmpty()){
+      for (SearchField field : searchFields) {
         ids.add(field.getFieldId());
       }
     }
@@ -984,27 +973,20 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     
     if(contents != null){
       try{
-        Collection allCars = getCards();
+        Collection<Card> allCars = getCards();
         HashMap<String, Card> map = new HashMap<String, Card>();
-        Iterator<Card> iter = allCars.iterator();
-        while(iter.hasNext()){
-          Card card = iter.next();
+        for (Card card : allCars) {
           map.put(card.getPK().getId(), card);
         }
         
-        Iterator<GlobalSilverContent> iterator = contents.iterator();
-        while(iterator.hasNext()){
-          GlobalSilverContent content = iterator.next();
+        for (GlobalSilverContent content : contents) {
           if(map.containsKey(content.getId())){
             cards.add(map.get(content.getId()));
           }
         }
         
         if(cards != null){
-          
-          Iterator<Card> iterCards = cards.iterator();
-          while(iterCards.hasNext()){
-            Card card = iterCards.next();
+          for (Card card : cards) {
             UserRecord userRecord = card.readUserRecord();
             if(userRecord != null){
               Collection<SessionInfo> sessionInfos = SessionManager.getInstance().getConnectedUsersList();
@@ -1042,17 +1024,14 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     
       Iterator<ClassifyPosition> iter = list.iterator();
       while(iter.hasNext()){
-        List        pathValues  = null;
-        String        path      = null;
-        ClassifyValue   value   = null;
+        List<Value>      pathValues  = null;
         ClassifyPosition position = iter.next();
-        List values = position.getValues();
-        for (int i = 0; i < values.size(); i++) {
-          value = (ClassifyValue)values.get(i);
+        List<ClassifyValue> values = position.getValues();
+        for (ClassifyValue value : values) {
           pathValues  = value.getFullPath();
-          if(pathValues != null && pathValues.size() > 0){
+          if(pathValues != null && !pathValues.isEmpty()){
             List<ClassifyValue> valuesForPrincipal = null;
-            Value term = (Value) pathValues.get(0);
+            Value term = pathValues.get(0);
             String principal = term.getName(getLanguage());
             if(result.get(principal) != null){
               valuesForPrincipal = result.get(principal);

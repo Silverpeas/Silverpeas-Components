@@ -46,7 +46,6 @@ import com.silverpeas.whitePages.filters.LoginFilter;
 import com.silverpeas.whitePages.model.Card;
 import com.silverpeas.whitePages.model.SearchField;
 import com.silverpeas.whitePages.model.SearchFieldsType;
-import com.silverpeas.whitePages.record.UserRecord;
 import com.stratelia.silverpeas.containerManager.ContainerContext;
 import com.stratelia.silverpeas.pdc.model.PdcException;
 import com.stratelia.silverpeas.pdc.model.SearchAxis;
@@ -65,6 +64,8 @@ import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
  * Expert Locator request rooter.
  */
 public class WhitePagesRequestRouter extends ComponentRequestRouter {
+
+  private static final long serialVersionUID = 4102577993362198152L;
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -411,7 +412,7 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
           String retour = request.getParameter("returnPage"); // consultIdentity
           // ou consultCard
           String userCardIdString = request.getParameter("userCardId");
-          ArrayList arrayCards = new ArrayList();
+          List<String> arrayCards = new ArrayList<String>();
           arrayCards.add(userCardIdString);
           scc.reverseHide(arrayCards);
 
@@ -424,10 +425,9 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
       else if (function.equals("delete")) {
         if (flag.equals("admin")) {
           String[] checkCards = request.getParameterValues("checkedCard");
-          ArrayList listToDelete = new ArrayList();
+          List<String> listToDelete = new ArrayList<String>();
           if (checkCards != null) {
-            for (int i = 0; i < checkCards.length; i++) {
-              String userCardId = checkCards[i];
+            for (String userCardId : checkCards) {
               listToDelete.add(userCardId);
             }
           }
@@ -441,10 +441,9 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
       else if (function.equals("hide")) {
         if (flag.equals("admin")) {
           String[] checkCards = request.getParameterValues("checkedCard");
-          ArrayList listToMask = new ArrayList();
+          List<String> listToMask = new ArrayList<String>();
           if (checkCards != null) {
-            for (int i = 0; i < checkCards.length; i++) {
-              String userCardId = checkCards[i];
+            for (String userCardId : checkCards) {
               listToMask.add(userCardId);
             }
           }
@@ -457,10 +456,9 @@ public class WhitePagesRequestRouter extends ComponentRequestRouter {
       else if (function.equals("unHide")) {
         if (flag.equals("admin")) {
           String[] checkCards = request.getParameterValues("checkedCard");
-          ArrayList listToUnMask = new ArrayList();
+          List<String> listToUnMask = new ArrayList<String>();
           if (checkCards != null) {
-            for (int i = 0; i < checkCards.length; i++) {
-              String userCardId = checkCards[i];
+            for (String userCardId : checkCards) {
               listToUnMask.add(userCardId);
             }
           }
