@@ -48,7 +48,7 @@ function goToWysiwyg() {
 	out.println(window.printBefore());
 %>
 
-	<form name="toWysiwyg" Action="../../wysiwyg/jsp/htmlEditor.jsp" method="Post">
+	<form name="toWysiwyg" Action="<%=m_context %>/wysiwyg/jsp/htmlEditor.jsp" method="Post">
 	<input type="hidden" name="SpaceId" value="<%=spaceId%>">
 	<input type="hidden" name="SpaceName" value="<%=spaceLabel%>">
 	<input type="hidden" name="ComponentId" value="<%=componentId%>">
