@@ -30,7 +30,7 @@
   <label>Blog</label>
   <description>Permet de réunir des billets affichés par ordre antéchronologique et éventuellement classés par catégorie.</description>
   <suite>04 Gestion de contenu</suite>
-  <visible>@ComponentVisibleblog@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.silverpeas.blog.BlogInstanciator</instanceClassName>
   <Profiles>

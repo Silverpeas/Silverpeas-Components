@@ -32,7 +32,7 @@
   de nouvelles tables.
   </description>
   <suite>06 Connecteurs</suite>
-  <visible>@ComponentVisiblemyDB@</visible>
+  <visible>yes</visible>
   <portlet>no</portlet>
   <instanceClassName>com.silverpeas.mydb.MyDBInstanciator</instanceClassName>
   <Profiles>

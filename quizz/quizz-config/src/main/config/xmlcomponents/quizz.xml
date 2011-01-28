@@ -31,7 +31,7 @@
   <description>Permet d'évaluer la compréhension ou niveau de connaissance acquis d'un sujet.
   L'utilisateur peut se faire aider d'indices. Un scoring évalue sa performance.</description>
   <suite>02 Gestion Collaborative</suite>
-  <visible>@ComponentVisibleQuizz@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.stratelia.webactiv.quizz.QuizzInstanciator</instanceClassName>
   <tableList>

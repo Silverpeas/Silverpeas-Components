@@ -30,7 +30,7 @@
   <label>Forum</label>
   <description>Supporte les processus de communication asynchrone de type forum. Des salons peuvent être ouverts, sur des thèmes variés. L'escalade à plusieurs niveaux est possible sur chaque intervention d'un participant. Chaque salon est classable sur le plan de classement.</description>
   <suite>02 Gestion Collaborative</suite>
-  <visible>@ComponentVisibleForum@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.stratelia.webactiv.forums.instanciator.ForumsInstanciator</instanceClassName>
   <tableList>

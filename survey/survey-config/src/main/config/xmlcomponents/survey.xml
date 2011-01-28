@@ -31,7 +31,7 @@
   <description>Permet d'organiser des enquêtes d'opinion sur des questions ouvertes ou fermées, à
   choix multiples.. Une surveillance du niveau de participation et du résultat en cours est possible.</description>
   <suite>02 Gestion Collaborative</suite>
-  <visible>@ComponentVisibleSurvey@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.stratelia.webactiv.survey.SurveyInstanciator</instanceClassName>
   <tableList>

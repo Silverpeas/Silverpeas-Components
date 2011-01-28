@@ -30,7 +30,7 @@
   <label>Actualités - QuickInfo</label>
   <description>Permet de diffuser des brèves d'information. Les informations sont classées sur le Plan de Classement.</description>
   <suite>04 Gestion de contenu</suite>
-  <visible>@ComponentVisibleQuickInfo@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.stratelia.webactiv.quickinfo.QuickInfoInstanciator</instanceClassName>
   <tableList>

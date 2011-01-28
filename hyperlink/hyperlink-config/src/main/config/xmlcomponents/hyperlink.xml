@@ -31,7 +31,7 @@
   <description>Permet de créer un lien URL simple vers un document ou site Web.
   </description>
   <suite>04 Gestion de contenu</suite>
-  <visible>@ComponentVisibleHyperlink@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.stratelia.webactiv.hyperlink.HyperlinkInstanciator</instanceClassName>
   <Profiles>

@@ -30,7 +30,7 @@
   <label>Editorial - Journal périodique</label>
   <description>Permet de créer un journal d'entreprise, contenant des articles, éditoriaux, première page.</description>
   <suite>04 Gestion de contenu</suite>
-  <visible>@ComponentVisibleNewsEdito@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.stratelia.webactiv.newsEdito.NewsEditoInstanciator</instanceClassName>
   <tableList>

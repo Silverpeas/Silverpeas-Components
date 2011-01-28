@@ -32,7 +32,7 @@
   Des requêtes en langage SQL sont mises à disposition du gestionnaire, qui les traduit en requêtes
   directement exploitables en langage naturel.</description>
   <suite>06 Connecteurs</suite>
-  <visible>@ComponentVisibleConnecteurJDBC@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.stratelia.silverpeas.connecteurJDBC.control.ConnecteurJDBCInstanciator</instanceClassName>
   <tableList>

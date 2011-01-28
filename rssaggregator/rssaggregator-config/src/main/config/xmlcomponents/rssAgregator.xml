@@ -31,7 +31,7 @@
   <description>Permet d'afficher, au sein de Silverpeas, des informations provenant de sites web
   externes. Ce composant permet d'agréger plusieurs sources d'informations au format RSS.</description>
   <suite>06 Connecteurs</suite>
-  <visible>@ComponentVisibleRssAgregator@</visible>
+  <visible>yes</visible>
   <visibleInPersonalSpace>yes</visibleInPersonalSpace>
   <portlet>yes</portlet>
   <instanceClassName>com.silverpeas.rssAgregator.RssAgregatorInstanciator</instanceClassName>

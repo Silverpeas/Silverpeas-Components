@@ -30,7 +30,7 @@
   <label>Chat</label>
   <description>Supporte les processus de communication synchrone de type chat. Des salons peuvent être ouverts sur des thèmes variés. Des communications en mode 'privé' sont possibles, au sein d'un chat multi-participants.</description>
   <suite>02 Gestion Collaborative</suite>
-  <visible>@ComponentVisibleChat@</visible>
+  <visible>yes</visible>
   <portlet>no</portlet>
   <instanceClassName>com.stratelia.silverpeas.chat.ChatInstanciator</instanceClassName>
   <tableList>

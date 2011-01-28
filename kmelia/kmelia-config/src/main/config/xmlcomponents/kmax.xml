@@ -32,7 +32,7 @@
   L'utilisateur sélectionne les valeurs des différents axes pour retrouver les documents répondant à sa requête.
   </description>
   <suite>01 Gestion Documentaire</suite>
-  <visible>@ComponentVisibleKMax@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.stratelia.webactiv.kmelia.KmeliaInstanciator</instanceClassName>
   <tableList>
