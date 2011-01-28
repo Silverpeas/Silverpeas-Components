@@ -30,7 +30,7 @@
   <label>Almanach</label>
   <description>Permet de créer et de visualiser les différents agendas d'événements définis dans les espaces et sous-espaces collaboratifs. A chaque événement peuvent être associés des fichiers joints. La visualisation s'effectue sur plusieurs échelles de temps.</description>
   <suite>02 Gestion Collaborative</suite>
-  <visible>@ComponentVisibleAlmanach@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.stratelia.webactiv.almanach.AlmanachInstanciator</instanceClassName>
   <tableList>

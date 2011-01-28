@@ -33,7 +33,7 @@
   transforme en liste de diffusion.
   </description>
   <suite>02 Gestion Collaborative</suite>
-  <visible>@ComponentVisiblemailingList@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.silverpeas.mailinglist.MailingListInstanciator</instanceClassName>
   <Profiles>

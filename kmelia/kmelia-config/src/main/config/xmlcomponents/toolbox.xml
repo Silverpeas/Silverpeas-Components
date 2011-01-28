@@ -34,7 +34,7 @@
   Deux options d'usage sont possibles : visualisation via le portail Silverpeas d'une arborescence
   de fichiers stockés sur un serveur NT©, ou création d'une base de fichiers sous Silverpeas.</description>
   <suite>01 Gestion Documentaire</suite>
-  <visible>@ComponentVisibleToolbox@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.stratelia.webactiv.kmelia.KmeliaInstanciator</instanceClassName>
   <tableList>

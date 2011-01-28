@@ -30,7 +30,7 @@
   <label>Lettre informative</label>
   <description>Permet de créer une lettre d'information périodique, suivant un modèle de publication ré-utilisable. Gère les abonnements à la lettre.</description>
   <suite>04 Gestion de contenu</suite>
-  <visible>@ComponentVisibleInfoLetter@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.stratelia.silverpeas.infoLetter.InfoLetterInstanciator</instanceClassName>
   <Profiles>

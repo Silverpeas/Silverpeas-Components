@@ -30,7 +30,7 @@
   <description>Le composant SilverCrawler permet aux utilisateurs de naviguer et/ou rechercher des
   fichiers directement sur un serveur de fichiers.</description>
   <suite>06 Connecteurs</suite>
-  <visible>@ComponentVisiblesilverCrawler@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.silverpeas.silvercrawler.SilverCrawlerInstanciator</instanceClassName>
   <Profiles>

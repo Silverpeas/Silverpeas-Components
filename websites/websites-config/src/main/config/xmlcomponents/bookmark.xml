@@ -30,7 +30,7 @@
   <label>Annuaire de sites - Bookmark</label>
   <description>Permet de gérer un référentiel de sites Internet remarquables sur un thème donné.</description>
   <suite>04 Gestion de contenu</suite>
-  <visible>@ComponentVisibleBookmark@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.stratelia.webactiv.webSites.WebSitesInstanciator</instanceClassName>
   <tableList>

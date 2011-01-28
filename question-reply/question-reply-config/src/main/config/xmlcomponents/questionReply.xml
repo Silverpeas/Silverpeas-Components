@@ -33,7 +33,7 @@
   la distribution de la réponse vers les utilisateurs.</description>
   <suite>03 Gestion de la connaissance</suite>
   <portlet>yes</portlet>
-  <visible>@ComponentVisibleQuestionReply@</visible>
+  <visible>yes</visible>
   <instanceClassName>com.silverpeas.questionReply.QuestionReplyInstanciator</instanceClassName>
   <Profiles>
     <Profile name="admin">Animateur</Profile>

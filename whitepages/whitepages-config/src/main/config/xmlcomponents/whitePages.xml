@@ -35,7 +35,7 @@
 		rapidement une compétence.
   </description>
   <suite>03 Gestion de la connaissance</suite>
-  <visible>@ComponentVisibleWhitePages@</visible>
+  <visible>yes</visible>
   <portlet>yes</portlet>
   <instanceClassName>com.silverpeas.whitePages.WhitePagesInstanciator</instanceClassName>
   <Profiles>

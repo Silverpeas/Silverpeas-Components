@@ -35,7 +35,7 @@
   gestion de commentaires, abonnement à un dossier ou un fichier, alerte de publication.
   </description>
   <suite>01 Gestion Documentaire</suite>
-  <visible>@ComponentVisibleKMelia@</visible>
+  <visible>yes</visible>
   <visibleInPersonalSpace>yes</visibleInPersonalSpace>
   <portlet>yes</portlet>
   <instanceClassName>com.stratelia.webactiv.kmelia.KmeliaInstanciator</instanceClassName>

@@ -32,7 +32,7 @@
   de chaque membre de l'annuaire, ainsi que tout autre caractéristique.
   </description>
   <suite>02 Gestion Collaborative</suite>
-  <visible>@ComponentVisibleYellowPages@</visible>
+  <visible>yes</visible>
   <visibleInPersonalSpace>yes</visibleInPersonalSpace>
   <portlet>yes</portlet>
   <instanceClassName>com.stratelia.webactiv.yellowpages.YellowpagesInstanciator</instanceClassName>
