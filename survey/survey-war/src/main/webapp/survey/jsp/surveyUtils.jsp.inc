@@ -634,7 +634,7 @@ String displayQuestion(Question question, int i, int nbQuestionInPage, int nbTot
             }
             else
             {
-                r += "<BR>"+settings.getString("SurveyWithNoQuestions")+"<BR><BR>";
+                r += "<BR>"+settings.getString("SurveyWithNoQuestions", "")+"<BR><BR>";
             }
             r += "</center>";
             r += frame.printMiddle();
