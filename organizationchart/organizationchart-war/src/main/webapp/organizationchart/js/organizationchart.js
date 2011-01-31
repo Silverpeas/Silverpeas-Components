@@ -24,6 +24,7 @@ function JCell(id, name, infoSup, url, level, type, cellType, linkCenter, linkDe
 	this.linkDetails = linkDetails;
 	this.upperLink = upperLink;
 	this.downLinksAlreadyDone = 0;
+	this.gaps = new Array();
 }
 
 var cellRightNumber = -1;
@@ -36,7 +37,8 @@ function JLink(origin, destination, type, orientation)
 	this.origin = origin;
 	this.destination = destination;
 	this.type = type;
-	this.orientation = orientation; // 0 horizontal - 1 vertical - 2 right - 3 left
+	this.orientation = orientation; // 0 horizontal - 1 vertical - 2 right - 3
+									// left
 	if(orientation == 2){
     // cas on a une cellule droite
 		cellRightNumber = destination;
@@ -104,7 +106,8 @@ function chartinit()
 	  maxWidth = Math.max(maxWidth, div.offsetLeft + div.offsetWidth + 2);
   }
 	
-  // on centre le scroll sur la case 0 (moitié de la largeur max moins un demi écran moins une demi cellule)
+  // on centre le scroll sur la case 0 (moitié de la largeur max moins un
+	// demi écran moins une demi cellule)
   mainDiv.scrollLeft= parseInt( maxWidth / 2 - widthDiv / 2 - CELLSIZE / 2 );
   mainDiv.style.width = "95%";
 }
@@ -114,29 +117,29 @@ function buildCells()
 	var i;
 	for (i = 0; i < cellsCount; i++)
 	{
-    buildCell(jCells[i]);
+		buildCell(jCells[i]);
 	}
 	
 	if(jLinks.length > 0){
-	  var jLink;
-  	var jCell1;
-  	var jCell2;
-  	for (i = 0; i < jLinks.length; i++)
-  	{
-  		jLink = jLinks[i];
-  		jCell1 = getJCell(jLink.origin);
-  		jCell2 = getJCell(jLink.destination);
-  		if (jCell1.level < jCell2.level)
+	    var jLink;
+  		var jCell1;
+  		var jCell2;
+  		for (i = 0; i < jLinks.length; i++)
   		{
-  			jCell1.downLinks[jCell1.downLinks.length] = jLink;
-  			jCell2.upLinks[jCell2.upLinks.length] = jLink;
+	  		jLink = jLinks[i];
+	  		jCell1 = getJCell(jLink.origin);
+	  		jCell2 = getJCell(jLink.destination);
+	  		if (jCell1.level < jCell2.level)
+	  		{
+	  			jCell1.downLinks[jCell1.downLinks.length] = jLink;
+	  			jCell2.upLinks[jCell2.upLinks.length] = jLink;
+	  		}
+	  		else if (jCell1.level > jCell2.level)
+	  		{
+	  			jCell1.upLinks[jCell1.upLinks.length] = jLink;
+	  			jCell2.downLinks[jCell2.downLinks.length] = jLink;
+	  		}
   		}
-  		else if (jCell1.level > jCell2.level)
-  		{
-  			jCell1.upLinks[jCell1.upLinks.length] = jLink;
-  			jCell2.downLinks[jCell2.downLinks.length] = jLink;
-  		}
-  	}
 	}
 }
 
@@ -193,7 +196,8 @@ function buildCell(jCell)
 	div.appendChild(table);
 	mainDiv.appendChild(div);
 
-	div.style.width = CELLSIZE; //table.offsetWidth + 10; on fixe pour eviter les pbs
+	div.style.width = CELLSIZE; // table.offsetWidth + 10; on fixe pour eviter
+								// les pbs
 	jCell.div = div;
 }
 
@@ -242,15 +246,15 @@ function placeCells()
 		topGap += V_GAP + div.offsetHeight;
   }
   
-  //resizeBoxes(jLevels);
+  // resizeBoxes(jLevels);
   
-  moveHorizontalAndVertical(jLevels);
+	moveHorizontalAndVertical(jLevels);
   
-  mainDiv.style.height = topGap + V_MARGIN;
-  mainDiv.style.width = 800;
-  mainDiv.style.overflow="auto";
-  moveMain(jLevels);
-  var maxLevelWidth = 0;
+	mainDiv.style.height = topGap + V_MARGIN;
+	mainDiv.style.width = 800;
+	mainDiv.style.overflow="auto";
+	moveMain(jLevels);
+  	var maxLevelWidth = 0;
 	for (i = 0; i < jLevels.length; i++)
 	{
 		div = jLevels[i][jLevels[i].length - 1].div;
@@ -274,39 +278,40 @@ function placeCells()
 		maxCount--;
 		var gap = parseInt((maxLevelWidth - mainDiv.offsetWidth) / maxCount) + 5;
 		H_GAP = Math.max(H_GAP - gap, 5);
-    for (i = 0; i < jLevels.length; i++)
+		for (i = 0; i < jLevels.length; i++)
 		{
 			leftGap = H_GAP;
 			for (j = 0; j < jLevels[i].length; j++)
 			{
 				jCell = jLevels[i][j];
 				if (jCell.upLinks.length == 1)
-  			{
+				{
 					if(jCell.upLinks[0].orientation == 1)
-          {
-            // case orientation vertical du niveau
-            // on ne peut pas être recursif
-            // on recup la case du dessus
-            var currentOrigin = jCell.upLinks[0].origin;
-            var jcellorigin = getJCell(currentOrigin);
-            div = jLevels[i][j].div;
-            div.style.left = jcellorigin.div.offsetLeft;
-          }else{
-			      div = jLevels[i][j].div;
+					{
+			            // case orientation vertical du niveau
+			            // on ne peut pas être recursif
+			            // on recup la case du dessus
+			            var currentOrigin = jCell.upLinks[0].origin;
+			            var jcellorigin = getJCell(currentOrigin);
+			            div = jLevels[i][j].div;
+			            div.style.left = jcellorigin.div.offsetLeft;
+		            }else
+		            {
+				      div = jLevels[i][j].div;
+				      leftGap = parseInt(div.style.left) + H_GAP;
+				      div.style.left = leftGap;
+				    }
+				}else
+				{
+				  // case 0 -> no up link
+				  div = jLevels[i][j].div;
 			      div.style.left = leftGap;
 			      leftGap += div.offsetWidth + H_GAP;
 			    }
-				}else{
-				  // case 0 -> no up link
-				    div = jLevels[i][j].div;
-			      div.style.left = leftGap;
-			      leftGap += div.offsetWidth + H_GAP;
-			  }
 			}
 		}
 		moveMain(jLevels);
-		
-  }
+	}
     
   // on refait une passe si on a cellule droite ou gauche
 	// il faut que la case supérieur (case 0) soit bien placé
@@ -323,7 +328,9 @@ function placeCells()
 	          var originLeft = divOrigin.style.left;
 	          var origin = originLeft.substring(0,originLeft.length - 2);
 	          var intOrigin = parseInt(origin);
-	          div.style.left =  intOrigin + CELLSIZE; // on décalle d'une cellule si c'est possible
+	          div.style.left =  intOrigin + CELLSIZE; // on décalle d'une
+														// cellule si c'est
+														// possible
 	        }else if(cellLeftNumber != -1 && cellLeftNumber == jLevels[i][j].id){
 	          // la cellule est une cellule gauche
 	          div = jLevels[i][j].div;
@@ -333,7 +340,9 @@ function placeCells()
 	          var origin = originLeft.substring(0,originLeft.length - 2);
 	          var intOrigin = parseInt(origin);
 	          if(intOrigin > CELLSIZE){
-	               div.style.left = intOrigin - CELLSIZE; // on décalle d'une cellule si c'est possible
+	               div.style.left = intOrigin - CELLSIZE; // on décalle d'une
+															// cellule si c'est
+															// possible
 	          }
 			}
 		}
@@ -443,92 +452,123 @@ function getJCell(id)
 }
 
 function resizeBoxes(jLevels)
-		{
-		  // recuperation max
-      var maxWidth = new Array(jLevels.length);
-		  var maxHeight = new Array(jLevels.length);
-		  for (i = 0; i < jLevels.length; i++)
-			{
-			 for (j = 0; j < jLevels[i].length; j++)
+{
+	// recuperation max
+    var maxWidth = new Array(jLevels.length);
+	var maxHeight = new Array(jLevels.length);
+	for (i = 0; i < jLevels.length; i++)
+	{
+		 for (j = 0; j < jLevels[i].length; j++)
+		 {
+			 var div = jLevels[i][j].div;
+			 //largeur max
+		     if(div.style.width > maxWidth)
+		     {
+		        maxWidth[i] = div.offsetWidth;
+		     }
+		     // hauteur max
+			 if(div.style.height > maxHeight)
 			 {
-			   var div = jLevels[i][j].div;
-			   // largeur max
-         if(div.style.width > maxWidth){
-            maxWidth[i] = div.offsetWidth;
-         }
-         // hauteur max
-		     if(div.style.height > maxHeight){
-            maxHeight[i] = div.offsetHeight;
-         }
-			 }
-      }
-      
-      //resize all boxes
-      for (i = 0; i < jLevels.length; i++)
-			{
-			 for (j = 0; j < jLevels[i].length; j++)
-			 {
-          var div = jLevels[i][j].div;
-			    div.style.width = maxWidth[i];
-          div.style.height = maxHeight[i];
-       }
-      }  
-		}
+		        maxHeight[i] = div.offsetHeight;
+		     }
+		 }
+	}
+	// resize all boxes
+	for (i = 0; i < jLevels.length; i++)
+	{
+		 for (j = 0; j < jLevels[i].length; j++)
+		 {
+			 var div = jLevels[i][j].div;
+			 div.style.width = maxWidth[i];
+			 div.style.height = maxHeight[i];
+		 }
+	}  
+}
 		
-		function moveHorizontalAndVertical(jLevels)
-		{
-			var jCell;
-			var topGap;
-		  var leftGap;
-			var V_GAP_SAME_LEVEL = 20;
-			var H_GAP = 50;
-			
-			for (i = 0; i < jLevels.length; i++)
-			{
-				topGap = -1;
-				leftGap = 0;
-        
+function moveHorizontalAndVertical(jLevels)
+{
+	var jCell;
+	var topGap;
+    var leftGap;
+	var V_GAP_SAME_LEVEL = 20;
+	var H_GAP = 50;
+	
+	for (i = 0; i < jLevels.length; i++)
+	{
+		topGap = -1;
+		leftGap = 0;
+		
+		var maximumHeight = calculateMaximumHeight(jLevels[i]);
+		
         for (j = 0; j < jLevels[i].length; j++)
+		{
+            jCell = jLevels[i][j];
+            jLevels[i][j].gaps["y"]=0;
+            jLevels[i][j].gaps["x"]=0;
+            if (jCell.upLinks.length == 1)
+  			{
+  				var currentOrigin = jCell.upLinks[0].origin;
+				if(jCell.upLinks[0].orientation == 0) // same link on one
+														// level
 				{
-          jCell = jLevels[i][j];
-          
-          if (jCell.upLinks.length == 1)
-  				{
-  					var currentOrigin = jCell.upLinks[0].origin;
-  					if(jCell.upLinks[0].orientation == 0) //same link on one level 
-            {
-  					    // oriention horizontal uniquement
-                div = jCell.div;
-  					    div.style.left = leftGap;
-  					    leftGap += div.offsetWidth + V_GAP;
-            }else if(jCell.upLinks[0].orientation == 2)
-            {
-  					    // oriention droite -> horizontal
-                div = jCell.div;
-                div.style.left = - V_GAP_SIDEBOX;
-  					    leftGap += div.offsetWidth + H_GAP;
-            }else if(jCell.upLinks[0].orientation == 3) 
-            {
-  					    // oriention gauche -> horizontal
-                div = jCell.div;
-  					    div.style.left = + V_GAP_SIDEBOX;
-  					    leftGap += div.offsetWidth + H_GAP;
-  					}else{
-                // orientation vertical uniquement
-                div = jCell.div;
-                var jcellorigin = getJCell(currentOrigin);
-                leftGap = jcellorigin.div.offsetLeft;
-                topGap = jcellorigin.div.offsetTop + jcellorigin.div.offsetHeight + V_GAP_SAME_LEVEL + jcellorigin.downLinksAlreadyDone;
-                jcellorigin.downLinksAlreadyDone += jcellorigin.div.offsetHeight + V_GAP_SAME_LEVEL;
-                  
-                div.style.top = topGap;
-  					    div.style.left = leftGap;
-  					}
-  				}
-  			}
-			}
+					// oriention horizontal uniquement
+					div = jCell.div;
+					
+					if(j%2==0){
+						if(j>0){
+							jLevels[i][j].gaps["x"] = -1*parseInt(jLevels[i][j-1].div.style.width) / 4;
+						}
+					}
+					else{
+						jLevels[i][j].gaps["y"]=maximumHeight;
+						jLevels[i][j].gaps["x"] = -1*parseInt(jLevels[i][j-1].div.style.width) / 4;
+						div.style.top= parseInt(div.style.top) + maximumHeight + H_MARGIN;
+					}
+					div.style.left = leftGap + jCell.gaps["x"];
+					leftGap = leftGap + div.offsetWidth + jCell.gaps["x"];
+					
+	            }else if(jCell.upLinks[0].orientation == 2)
+	            {
+	            	// oriention droite -> horizontal
+	                div = jCell.div;
+	                div.style.left = - V_GAP_SIDEBOX;
+	  					    leftGap += div.offsetWidth + H_GAP;
+	            }else if(jCell.upLinks[0].orientation == 3) 
+	            {
+	  				// oriention gauche -> horizontal
+	                div = jCell.div;
+	  				div.style.left = + V_GAP_SIDEBOX;
+	  				leftGap += div.offsetWidth + H_GAP;
+	  			}else
+	  			{
+	                // orientation vertical uniquement
+	                div = jCell.div;
+	                var jcellorigin = getJCell(currentOrigin);
+	                leftGap = jcellorigin.div.offsetLeft;
+	                topGap = jcellorigin.div.offsetTop + jcellorigin.div.offsetHeight + V_GAP_SAME_LEVEL + jcellorigin.downLinksAlreadyDone;
+	                jcellorigin.downLinksAlreadyDone += jcellorigin.div.offsetHeight + V_GAP_SAME_LEVEL;
+	                div.style.top = topGap;
+	  				div.style.left = leftGap;
+	  			}
+	  		}
+	  	}
+	}
+}
+
+function calculateMaximumHeight(jLevel)
+{
+	var maximumHeight=0;
+	for (j = 0; j < jLevel.length; j++)
+	{
+		jCell = jLevel[j];
+		if(jCell.div.clientHeight > maximumHeight)
+		{
+			maximumHeight=jCell.div.clientHeight;
 		}
-		
+	}
+	return maximumHeight;
+}
+
 function buildLinks()
 {
   var X_DEC = 10;
@@ -560,66 +600,87 @@ function buildLinks()
 					jCell1 = jCell0;
 					jCell0 = jCellTmp;
 				}
-				if(jLink.orientation == 0){
-  				div0 = jCell0.div;
-  				x0 = parseInt(div0.offsetLeft + div0.offsetWidth / 2);
-  				y0 = div0.offsetTop + div0.offsetHeight - 2;
-  				div1 = jCell1.div;
-  				x1 = parseInt(div1.offsetLeft + div1.offsetWidth / 2);
-  				y1 = div1.offsetTop + 2;
-  				xDiff = Math.abs(x1 - x0);
-  				if (xDiff == 0)
-  				{
-  					buildLink(jLink.type, x0, y0, 0, y1 - y0);
-  				}
-  				else if (xDiff < 20 && jCell0.downLinks.length < 2)
-  				{
-  					buildLink(jLink.type, Math.min(x0, x1) + parseInt(xDiff / 2), y0, 0, y1 - y0);
-  				}else{
-    					
-    				 var part1y = parseInt((y1 - y0) * 2 / 3);
-    				 var part2y = parseInt((y1 - y0) * 1 / 3);
-    				 
-					   buildLink(jLink.type, x0, y0, 0, part1y); // premier lien vertical
-					   buildLink(jLink.type, x1, y1 - part2y, 0, part2y); // deuxième lien vertical
-					   buildLink(jLink.type, Math.min(x0, x1), y0 + part1y, Math.abs(x1 - x0), 0); // lien horizontal
+				if(jLink.orientation == 0)
+				{
+	  				div0 = jCell0.div;
+	  				x0 = parseInt(div0.offsetLeft + div0.offsetWidth / 2);
+	  				y0 = div0.offsetTop + div0.offsetHeight - 2;
+	  				div1 = jCell1.div;
+	  				x1 = parseInt(div1.offsetLeft + div1.offsetWidth / 2);
+	  				y1 = div1.offsetTop + 2;
+	  				xDiff = Math.abs(x1 - x0);
+	  				if (xDiff == 0)
+	  				{
+	  					buildLink(jLink.type, x0, y0, 0, y1 - y0);
+	  				}
+	  				else if (xDiff < 20 && jCell0.downLinks.length < 2)
+	  				{
+	  					buildLink(jLink.type, Math.min(x0, x1) + parseInt(xDiff / 2), y0, 0, y1 - y0);
+	  				}
+	  				else
+	  				{	
+	  					var part1y = 0;
+	  					if(jCell1.gaps["y"]>0)
+	  					{
+	  						part1y = parseInt((y1 - y0 - jCell1.gaps["y"]- H_MARGIN) * 2 / 3);
+	    				}
+	    				else
+	    				{
+	    					part1y = parseInt((y1 - y0) * 2 / 3);
+	    				}
+	  					 
+	    				var part2y = y1 - y0 - part1y;
+	    				 
+						   buildLink(jLink.type, x0, y0, 0, part1y); // premier
+																		// lien
+																		// vertical
+						   buildLink(jLink.type, x1, y0 + part1y, 0, part2y); // deuxième
+																				// lien
+																				// vertical
+						   buildLink(jLink.type, Math.min(x0, x1), y0 + part1y, Math.abs(x1 - x0), 0); // lien
+																										// horizontal
 					}
-			 }else if (jLink.orientation == 1){
-            // lien de type vertical
-            div0 = jCell0.div;
-						x0 = parseInt(div0.offsetLeft);
-						y0 = div0.offsetTop + div0.offsetHeight/2;
-						div1 = jCell1.div;
-						x1 = parseInt(div1.offsetLeft);
-						y1 = div1.offsetTop + div1.offsetHeight/2;
-						// ligne horizontale coté haut
-						buildLink(jLink.type, x0 - X_DEC, y0, X_DEC, 0);
-						// ligne droite verticals
-            buildLink(jLink.type, x0 - X_DEC, y0, 0, y1 - y0);
-						// ligne horizontale coté bas
-						buildLink(jLink.type, x1 - X_DEC, y1, X_DEC, 0);
-  			 }else if (jLink.orientation == 2){
-  			    // lien de type case à droite
-  			    div0 = jCell0.div;
-						x0 = parseInt(div0.offsetLeft + div0.offsetWidth / 2);
-						y0 = div0.offsetTop;
-						div1 = jCell1.div;
-						x1 = div1.offsetLeft;
-						y1 = parseInt(div1.offsetTop + div1.offsetHeight/2);
-						// ligne droite verticals
-            buildLink(jLink.type, x0, y0, 0, y1 - y0);
-						// ligne horizontale coté bas
-						buildLink(jLink.type, x0, y1, x1 - x0, 0);
-				 }else if (jLink.orientation == 3){
-  			    // lien de type case à gauche
-            div0 = jCell0.div;
+				}
+				else if (jLink.orientation == 1)
+				{
+					// lien de type vertical
+					div0 = jCell0.div;
+					x0 = parseInt(div0.offsetLeft);
+					y0 = div0.offsetTop + div0.offsetHeight/2;
+					div1 = jCell1.div;
+					x1 = parseInt(div1.offsetLeft);
+					y1 = div1.offsetTop + div1.offsetHeight/2;
+					// ligne horizontale coté haut
+					buildLink(jLink.type, x0 - X_DEC, y0, X_DEC, 0);
+					// ligne droite verticals
+					buildLink(jLink.type, x0 - X_DEC, y0, 0, y1 - y0);
+					// ligne horizontale coté bas
+					buildLink(jLink.type, x1 - X_DEC, y1, X_DEC, 0);
+				}
+				else if (jLink.orientation == 2)
+				{
+	  			    // lien de type case à droite
+	  			    div0 = jCell0.div;
+					x0 = parseInt(div0.offsetLeft + div0.offsetWidth / 2);
+					y0 = div0.offsetTop;
+					div1 = jCell1.div;
+					x1 = div1.offsetLeft;
+					y1 = parseInt(div1.offsetTop + div1.offsetHeight/2);
+					// ligne droite verticals
+					buildLink(jLink.type, x0, y0, 0, y1 - y0);
+					// ligne horizontale coté bas
+					buildLink(jLink.type, x0, y1, x1 - x0, 0);
+				}
+				else if (jLink.orientation == 3){
+	  			    	// lien de type case à gauche
+						div0 = jCell0.div;
 						x0 = parseInt(div0.offsetLeft + div0.offsetWidth / 2);
 						y0 = div0.offsetTop;
 						div1 = jCell1.div;
 						x1 = div1.offsetLeft;
 						y1 = div1.offsetTop + div1.offsetHeight/2;
 						// ligne droite verticale
-            buildLink(jLink.type, x0, y0, 0, y1 - y0);
+						buildLink(jLink.type, x0, y0, 0, y1 - y0);
 						// ligne horizontale coté bas
 						buildLink(jLink.type, x1, y1, x0 - x1, 0);
          }
@@ -646,7 +707,8 @@ function buildLinks()
 
 function buildLink(type, left, top, width, height)
 {
-	// contruire une ligne de type "type" depuis (left, top) sur une longueur de (width, height)
+	// contruire une ligne de type "type" depuis (left, top) sur une longueur de
+	// (width, height)
 	var div = document.createElement("DIV");
 	div.className = "link" + type;
 	div.style.left = left;
