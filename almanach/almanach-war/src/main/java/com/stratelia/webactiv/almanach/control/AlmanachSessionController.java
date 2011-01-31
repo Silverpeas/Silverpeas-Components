@@ -23,8 +23,18 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
+import com.silverpeas.calendar.Datable;
+import com.silverpeas.export.Exporter;
+import com.silverpeas.calendar.CalendarEvent;
+import com.silverpeas.calendar.CalendarEventRecurrence;
+import com.silverpeas.calendar.DayOfWeek;
+import com.silverpeas.calendar.DayOfWeekOccurrence;
+import com.silverpeas.calendar.TimeUnit;
+import com.silverpeas.export.ExportDescriptor;
+import com.silverpeas.export.ExporterFactory;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.silverpeas.export.ExportException;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -50,7 +60,6 @@ import com.stratelia.webactiv.almanach.model.PeriodicityException;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
-import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
@@ -60,6 +69,8 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -70,6 +81,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 import javax.ejb.RemoveException;
 import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.Property;
@@ -78,6 +90,10 @@ import net.fortuna.ical4j.model.property.DtEnd;
 import net.fortuna.ical4j.model.property.DtStart;
 import net.fortuna.ical4j.model.property.RRule;
 import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
+import static com.silverpeas.calendar.CalendarEvent.*;
+import static com.silverpeas.calendar.CalendarEventRecurrence.*;
+import static com.stratelia.webactiv.util.DateUtil.*;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * The AlmanachSessionController provides features to handle almanachs and theirs events.
@@ -100,6 +116,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   private static final String ACCESS_ALL = "0";
   private static final String ACCESS_SPACE = "1";
   private static final String ACCESS_NONE = "3";
+  private static final String ICS_PREFIX_FILENAME = "almanach";
   private Map<String, String> colors = null;
   private CalendarViewType viewMode = MONTHLY;
   private OrganizationController organizationController = new OrganizationController();
@@ -153,7 +170,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * Moves the window in time to the next calendar view according to the current view mode.
    */
   public void nextView() {
-    switch(viewMode) {
+    switch (viewMode) {
       case MONTHLY:
         currentDay.add(Calendar.MONTH, 1);
         break;
@@ -168,7 +185,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * Moves the window in time to the previous calendar view according to the current view mode.
    */
   public void previousView() {
-    switch(viewMode) {
+    switch (viewMode) {
       case MONTHLY:
         currentDay.add(Calendar.MONTH, -1);
         break;
@@ -304,8 +321,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     PeriodicityException periodicityException = new PeriodicityException();
     periodicityException.setPeriodicityId(new Integer(eventDetail.getPeriodicity().getPK().getId()).
         intValue());
-    periodicityException.setBeginDateException(DateUtil.parse(startDate));
-    periodicityException.setEndDateException(DateUtil.parse(endDate));
+    periodicityException.setBeginDateException(parse(startDate));
+    periodicityException.setEndDateException(parse(endDate));
 
     // add exception periodicity in DB
     getAlmanachBm().addPeriodicityException(periodicityException);
@@ -379,7 +396,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       }
 
       // Update the Wysiwyg if exists, create one otherwise
-      if (StringUtil.isDefined(eventDetail.getWysiwyg())) {
+      if (isDefined(eventDetail.getWysiwyg())) {
         WysiwygController.updateFileAndAttachment(eventDetail.getDescription(getLanguage()),
             getSpaceId(),
             getComponentId(),
@@ -394,17 +411,17 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       // Mise à jour du VEvent du Calendar ical4j (pour gestion)
       Calendar calStartDate = Calendar.getInstance();
       calStartDate.setTime(startDate);
-      if (StringUtil.isDefined(startHour)) {
-        calStartDate.set(Calendar.HOUR_OF_DAY, DateUtil.extractHour(startHour));
-        calStartDate.set(Calendar.MINUTE, DateUtil.extractMinutes(startHour));
+      if (isDefined(startHour)) {
+        calStartDate.set(Calendar.HOUR_OF_DAY, extractHour(startHour));
+        calStartDate.set(Calendar.MINUTE, extractMinutes(startHour));
       }
       Calendar calEndDate = Calendar.getInstance();
       calEndDate.setTime(startDate);
       if (endDate != null) {
         calEndDate.setTime(endDate);
-        if (StringUtil.isDefined(endHour)) {
-          calEndDate.set(Calendar.HOUR_OF_DAY, DateUtil.extractHour(endHour));
-          calEndDate.set(Calendar.MINUTE, DateUtil.extractMinutes(endHour));
+        if (isDefined(endHour)) {
+          calEndDate.set(Calendar.HOUR_OF_DAY, extractHour(endHour));
+          calEndDate.set(Calendar.MINUTE, extractMinutes(endHour));
         }
       }
 
@@ -573,7 +590,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   private String getAccessPolicy() {
     String param = getComponentParameterValue("directAccess");
-    if (!StringUtil.isDefined(param)) {
+    if (!isDefined(param)) {
       return ACCESS_ALL;
     }
     return param;
@@ -612,13 +629,11 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         if (keepIt) {
           SpaceInstLight si = organizationController.getSpaceInstLightById(almanachInst.
               getDomainFatherId());
-          String url = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL")
+          String url = GeneralPropertiesManager.getGeneralResourceLocator().getString(
+              "ApplicationURL")
               + URLManager.getURL(null, instanceId);
-          AlmanachDTO almanach = new AlmanachDTO()
-              .setInstanceId(instanceId)
-              .setLabel(almanachInst.getLabel())
-              .setSpaceId(si.getName())
-              .setUrl(url);
+          AlmanachDTO almanach = new AlmanachDTO().setInstanceId(instanceId).setLabel(almanachInst.
+              getLabel()).setSpaceId(si.getName()).setUrl(url);
           accessibleInstances.add(almanach);
         }
       }
@@ -686,11 +701,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       if (!instanceId.equals(getComponentId())) {
         ComponentInstLight almanachInst = organizationController.getComponentInstLight(
             instanceId);
-        AlmanachDTO almanach = new AlmanachDTO()
-            .setInstanceId(instanceId)
-            .setAgregated(isAlmanachAgregated(instanceId))
-            .setColor(getAlmanachColor(i))
-            .setLabel(almanachInst.getLabel());
+        AlmanachDTO almanach = new AlmanachDTO().setInstanceId(instanceId).setAgregated(isAlmanachAgregated(
+            instanceId)).setColor(getAlmanachColor(i)).setLabel(almanachInst.getLabel());
         othersAlmanachs.add(almanach);
       }
     }
@@ -721,7 +733,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
   /**
    * Updates the list of the agregated almanachs with the specified ones.
-   * @param instancesIds the identifier of the new agregated almanachs.
+   * @param instanceIds the identifier of the new agregated almanachs.
    */
   public void updateAgregatedAlmanachs(final String[] instanceIds) {
     clearAgregatedAlmanachs();
@@ -950,12 +962,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   public AlmanachCalendarView getAlmanachCalendarView() throws AlmanachException,
       AlmanachNoSuchFindEventException, RemoteException {
-    AlmanachDTO almanachDTO = new AlmanachDTO()
-        .setColor(getAlmanachColor(getComponentId()))
-        .setInstanceId(getComponentId())
-        .setLabel(getComponentLabel())
-        .setAgregated(isAgregationUsed())
-        .setUrl(getComponentUrl());
+    AlmanachDTO almanachDTO = new AlmanachDTO().setColor(getAlmanachColor(getComponentId())).
+        setInstanceId(getComponentId()).setLabel(getComponentLabel()).setAgregated(
+        isAgregationUsed()).setUrl(getComponentUrl());
     AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
     AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentAlmanachDay, viewMode);
     view.setLocale(getLanguage());
@@ -963,7 +972,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       view.unsetWeekendVisible();
     }
     String label = getString("mois" + currentAlmanachDay.getMonth())
-            + " " + String.valueOf(currentAlmanachDay.getYear());
+        + " " + String.valueOf(currentAlmanachDay.getYear());
     switch (viewMode) {
       case MONTHLY:
         view.setEvents(listCurrentMonthEvents());
@@ -976,6 +985,35 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         break;
     }
     return view;
+  }
+
+  /**
+   * Exports the current almanach in iCal format.
+   * The iCal file is generated into the temporary directory.
+   * If there is no events to export, a NoDataToExportException exception is then thrown.
+   * @return the iCal file name into which is generated the current alamanch.
+   * @throws ExportException if an error occurs while exporting the almanach in iCal format. The
+   * errors can come from a failure on getting the events to export, the fact there is no events
+   * to export (empty almanach) or the failure of the export process itself.
+   */
+  public String exportToICal() throws ExportException {
+    String icsFileName = ICS_PREFIX_FILENAME + "_" + getComponentId() + "_" + getUserId()
+        + ".ics";
+    String icsFilePath = FileRepositoryManager.getTemporaryPath() + icsFileName;
+    List<CalendarEvent> eventsToExport;
+    try {
+      eventsToExport = asCalendarEvents(getAllEvents());
+    } catch (Exception ex) {
+      SilverTrace.error("almanach", getClass().getSimpleName() + ".exportToICal()",
+          "almanach.EXE_GET_ALL_EVENTS_FAIL", ex);
+      throw new ExportException(ex.getMessage(), ex);
+    }
+
+    ExporterFactory exporterFactory = ExporterFactory.getFactory();
+    Exporter<CalendarEvent> iCalExporter = exporterFactory.getICalExporter();
+    iCalExporter.export(new ExportDescriptor(icsFilePath), eventsToExport);
+
+    return icsFileName;
   }
 
   /**
@@ -1010,5 +1048,135 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         getICal4jCalendar(getAllAgregationEvents()), getComponentId());
     occurrencesGenerator.setAlmanachBm(getAlmanachBm());
     return occurrencesGenerator.getEventOccurrencesInWeek(currentDay);
+  }
+
+  /**
+   * Converts the specified details on almanach events into a calendar event.
+   * @param eventDetails details about some events in one or several almanachs.
+   * @return the calendar events corresponding to the almanach events.
+   */
+  private List<CalendarEvent> asCalendarEvents(final List<EventDetail> eventDetails)
+      throws WysiwygException, MalformedURLException {
+    List<CalendarEvent> events = new ArrayList<CalendarEvent>();
+    TimeZone timeZone = TimeZone.getTimeZone(getSettings().getString("almanach.timezone"));
+    for (EventDetail eventDetail : eventDetails) {
+      Datable<?> startDate = asDatable(eventDetail.getStartDate(),
+          isDefined(eventDetail.getStartHour())).inTimeZone(timeZone);
+
+      CalendarEvent event = anEventAt(startDate).
+          withTitle(eventDetail.getName(getLanguage())).
+          withDescription(eventDetail.getWysiwyg()).
+          withPriority(eventDetail.getPriority());
+
+      Datable<?> endDate = null;
+      if (eventDetail.getEndDate() != null) {
+        endDate = asDatable(eventDetail.getEndDate(), isDefined(eventDetail.getEndHour())).
+            inTimeZone(timeZone);
+        event.endingAt(endDate);
+      }
+      if (isDefined(eventDetail.getPlace())) {
+        event.withLocation(eventDetail.getPlace());
+      }
+      if (isDefined(eventDetail.getEventUrl())) {
+        event.withUrl(new URL(eventDetail.getEventUrl()));
+      }
+
+      event.recur(asCalendarEventRecurrence(eventDetail.getPeriodicity()));
+      events.add(event);
+    }
+    return events;
+  }
+
+  /**
+   * Converts the specified almanach event periodicity into a calendar event recurrence.
+   * @param periodicity the periodicity to convert.
+   * @return the event recurrence corresponding to the specified periodicity.
+   */
+  private CalendarEventRecurrence asCalendarEventRecurrence(final Periodicity periodicity) {
+    TimeUnit timeUnit = null;
+    List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<DayOfWeekOccurrence>();
+    switch (periodicity.getUnity()) {
+      case Periodicity.UNIT_WEEK:
+        timeUnit = TimeUnit.WEEK;
+        daysOfWeek.addAll(extractWeeklyDaysOfWeek(periodicity));
+        break;
+      case Periodicity.UNIT_MONTH:
+        timeUnit = TimeUnit.MONTH;
+        daysOfWeek.addAll(extractMonthlyDaysOfWeek(periodicity));
+        break;
+      case Periodicity.UNIT_YEAR:
+        timeUnit = TimeUnit.YEAR;
+        break;
+      default:
+        timeUnit = TimeUnit.DAY;
+        break;
+    }
+    CalendarEventRecurrence recurrence = every(periodicity.getFrequency(), timeUnit).on(daysOfWeek);
+    if (periodicity.getUntilDatePeriod() != null) {
+      recurrence.upTo(asDatable(periodicity.getUntilDatePeriod(), true));
+    }
+
+    return recurrence;
+  }
+
+  /**
+   * Extracts from the specified periodicity the occurrences of day of week on which an event
+   * monthly recurs.
+   * @param periodicity the periodicity of an event.
+   * @return a list of day of week occurrences.
+   */
+  private List<DayOfWeekOccurrence> extractMonthlyDaysOfWeek(final Periodicity periodicity) {
+    List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<DayOfWeekOccurrence>();
+    int nth = periodicity.getNumWeek();
+    if (nth != 0) {
+      if (periodicity.getDay() == java.util.Calendar.MONDAY) {
+        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.MONDAY));
+      } else if (periodicity.getDay() == java.util.Calendar.TUESDAY) {// Tuesday
+        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.TUESDAY));
+      } else if (periodicity.getDay() == java.util.Calendar.WEDNESDAY) {
+        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.WEDNESDAY));
+      } else if (periodicity.getDay() == java.util.Calendar.THURSDAY) {
+        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.THURSDAY));
+      } else if (periodicity.getDay() == java.util.Calendar.FRIDAY) {
+        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.FRIDAY));
+      } else if (periodicity.getDay() == java.util.Calendar.SATURDAY) {
+        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.SATURDAY));
+      } else if (periodicity.getDay() == java.util.Calendar.SUNDAY) {
+        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.SUNDAY));
+      }
+    }
+    return daysOfWeek;
+  }
+
+  /**
+   * Extracts from the specified periodicity the days of week an event weekly recurs.
+   * @param periodicity the periodicity of an event.
+   * @return a list of days of week.
+   */
+  private List<DayOfWeekOccurrence> extractWeeklyDaysOfWeek(final Periodicity periodicity) {
+    List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<DayOfWeekOccurrence>();
+    String encodedDaysOfWeek = periodicity.getDaysWeekBinary();
+    if (encodedDaysOfWeek.charAt(0) == '1') {// Monday
+      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.MONDAY));
+    }
+    if (encodedDaysOfWeek.charAt(1) == '1') {// Tuesday
+      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.TUESDAY));
+    }
+    if (encodedDaysOfWeek.charAt(2) == '1') {
+      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.WEDNESDAY));
+    }
+    if (encodedDaysOfWeek.charAt(3) == '1') {
+      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.THURSDAY));
+    }
+    if (encodedDaysOfWeek.charAt(4) == '1') {
+      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.FRIDAY));
+    }
+    if (encodedDaysOfWeek.charAt(5) == '1') {
+      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.SATURDAY));
+    }
+    if (encodedDaysOfWeek.charAt(6) == '1') {
+      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.SUNDAY));
+    }
+    return daysOfWeek;
   }
 }

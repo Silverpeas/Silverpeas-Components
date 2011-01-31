@@ -27,7 +27,7 @@
 <c:set var="flag"><c:out value="${param['flag']}" default="user"/></c:set>
 <fmt:message key="auJour" var="today" />
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <view:looknfeel />
@@ -104,6 +104,10 @@
       function printPdf(view)
       {
         window.open(view, "PdfGeneration", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
+      }
+
+      function exportICal() {
+        SP_openWindow('exportToICal','iCalExport','500','230','scrollbars=no, noresize, alwaysRaised');
       }
 
       function viewEvents() {
@@ -255,6 +259,12 @@
       <c:set var="opAction"><%= AlmanachPdfGenerator.PDF_YEAR_EVENTSONLY%></c:set>
       <c:url var="opIcon" value="${opIcon}"/>
       <view:operation altText="${opLabel}" icon="${opIcon}" action="javascript:onClick=printPdf('${opAction}')"/>
+      <view:operationSeparator/>
+
+      <fmt:message key="almanach.exportToIcal" var="opLabel"/>
+      <fmt:message key="almanach.icons.exportToICal" var="opIcon"  bundle="${icons}"/>
+      <c:url var="opIcon" value="${opIcon}"/>
+      <view:operation altText="${opLabel}" icon="${opIcon}" action="javascript:onClick=exportICal();"/>
     </view:operationPane>
 
     <view:window>
@@ -332,8 +342,8 @@
         </c:if>
 
         <div id="calendar"></div>
-		
-		
+
+
 		<c:if test="${rssUrl ne null and not empty rssUrl}">
           <div class="rss">
           <table>
