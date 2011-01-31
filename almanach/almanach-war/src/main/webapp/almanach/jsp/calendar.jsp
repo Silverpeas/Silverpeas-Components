@@ -114,6 +114,10 @@
         pdcUtilizationWindow = SP_openWindow("ViewYearEventsPOPUP", "allEvents", '600', '400','scrollbars=yes,resizable,alwaysRaised');
       }
 
+      function exportIcal() {
+        SP_openWindow("ToExportICal", "ToExportICal",'500','230','scrollbars=no, noresize, alwaysRaised');
+      }
+
       <c:if test="${almanach.agregationUsed}">
         var actionAll = false;
         function updateAgregation(i)
