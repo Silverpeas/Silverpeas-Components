@@ -23,6 +23,9 @@
  */
 package com.stratelia.webactiv.almanach.servlets;
 
+import com.stratelia.webactiv.util.FileServerUtils;
+import com.silverpeas.export.ExportException;
+import com.silverpeas.export.NoDataToExportException;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import java.util.Collection;
 
@@ -525,6 +528,22 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         Collection<EventDetail> events = almanach.getListRecurrentEvent(true);
         request.setAttribute("Events", events);
         destination = "/almanach/jsp/viewEventsPopup.jsp";
+      } else if ("exportToICal".equals(function)) {
+        try {
+          String icsFile = almanach.exportToICal();
+          request.setAttribute("messageKey", "almanach.export.ical.success");
+          request.setAttribute("icsName", icsFile);
+          request.setAttribute("icsURL", FileServerUtils.getUrlToTempDir(icsFile));
+        } catch (NoDataToExportException ex) {
+          SilverTrace.info("almanach", getClass().getSimpleName() + ".getDestination()",
+              "root.EX_NO_MESSAGE", ex.getMessage());
+          request.setAttribute("messageKey", "almanach.export.ical.empty");
+        } catch (ExportException ex) {
+          SilverTrace.error("almanach", getClass().getSimpleName() + ".getDestination()",
+              "root.EX_NO_MESSAGE", ex.getMessage());
+          request.setAttribute("messageKey", "almanach.export.ical.failure");
+        }
+        destination = "/almanach/jsp/exportIcal.jsp";
       } else {
         destination = "/almanach/jsp/" + function;
       }
