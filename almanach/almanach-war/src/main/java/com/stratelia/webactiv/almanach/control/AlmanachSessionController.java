@@ -997,8 +997,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * to export (empty almanach) or the failure of the export process itself.
    */
   public String exportToICal() throws ExportException {
-    String icsFileName = ICS_PREFIX_FILENAME + "_" + getComponentId() + "_" + getUserId()
-        + ".ics";
+    String icsFileName = ICS_PREFIX_FILENAME + "-" + getComponentId() + ".ics";
     String icsFilePath = FileRepositoryManager.getTemporaryPath() + icsFileName;
     List<CalendarEvent> eventsToExport;
     try {
@@ -1008,7 +1007,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
           "almanach.EXE_GET_ALL_EVENTS_FAIL", ex);
       throw new ExportException(ex.getMessage(), ex);
     }
-
     ExporterFactory exporterFactory = ExporterFactory.getFactory();
     Exporter<CalendarEvent> iCalExporter = exporterFactory.getICalExporter();
     iCalExporter.export(new ExportDescriptor(icsFilePath), eventsToExport);
@@ -1060,8 +1058,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     List<CalendarEvent> events = new ArrayList<CalendarEvent>();
     TimeZone timeZone = TimeZone.getTimeZone(getSettings().getString("almanach.timezone"));
     for (EventDetail eventDetail : eventDetails) {
-      Datable<?> startDate = asDatable(eventDetail.getStartDate(),
-          isDefined(eventDetail.getStartHour())).inTimeZone(timeZone);
+      Datable<?> startDate = createDatable(eventDetail.getStartDate(), eventDetail.getStartHour()).
+          inTimeZone(timeZone);
 
       CalendarEvent event = anEventAt(startDate).
           withTitle(eventDetail.getName(getLanguage())).
@@ -1070,7 +1068,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
 
       Datable<?> endDate = null;
       if (eventDetail.getEndDate() != null) {
-        endDate = asDatable(eventDetail.getEndDate(), isDefined(eventDetail.getEndHour())).
+        endDate = createDatable(eventDetail.getEndDate(), eventDetail.getEndHour()).
             inTimeZone(timeZone);
         event.endingAt(endDate);
       }
@@ -1080,8 +1078,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       if (isDefined(eventDetail.getEventUrl())) {
         event.withUrl(new URL(eventDetail.getEventUrl()));
       }
+      if (eventDetail.getPeriodicity() != null) {
+        event.recur(asCalendarEventRecurrence(eventDetail.getPeriodicity()));
+      }
 
-      event.recur(asCalendarEventRecurrence(eventDetail.getPeriodicity()));
       events.add(event);
     }
     return events;
@@ -1178,5 +1178,27 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.SUNDAY));
     }
     return daysOfWeek;
+  }
+
+  /**
+   * Creates a Datable object from the specified date and time
+   * @param date the date (day in month in year).
+   * @param time the time if any. If the time is null or empty, then no time is defined and the
+   * returned datable is a Date.
+   * @return a Datable object corresponding to the specified date and time.
+   */
+  private Datable<?> createDatable(final Date date, final String time) {
+    Datable<?> datable = null;
+    if(isDefined(time)) {
+      String[] timeComponents = time.split(":");
+      Calendar dateAndTime = Calendar.getInstance();
+      dateAndTime.setTime(date);
+      dateAndTime.set(Calendar.HOUR_OF_DAY, Integer.valueOf(timeComponents[0]));
+      dateAndTime.set(Calendar.MINUTE, Integer.valueOf(timeComponents[1]));
+      datable = asDatable(dateAndTime.getTime(), true);
+    } else {
+      datable = asDatable(date, false);
+    }
+    return datable;
   }
 }
