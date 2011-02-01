@@ -79,7 +79,7 @@ public class AlmanachICSProducer {
    * @return the iCal almanach representation
    */
   @GET
-  @Produces("text/plain")
+  @Produces("text/calendar")
   public String getICS(@PathParam("almanachId") String almanachId) {
     StringWriter writer = new StringWriter();
 
