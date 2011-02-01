@@ -55,6 +55,11 @@
       <artifactId>geronimo-j2ee_1.4_spec</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.sun.jersey</groupId>
+      <artifactId>jersey-server</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.metaparadigm</groupId>
       <artifactId>json-rpc</artifactId>
       <scope>provided</scope>

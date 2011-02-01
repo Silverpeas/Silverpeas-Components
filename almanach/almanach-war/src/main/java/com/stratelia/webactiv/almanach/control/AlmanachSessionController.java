@@ -23,13 +23,9 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
-import com.silverpeas.calendar.Datable;
+import java.io.File;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.calendar.CalendarEvent;
-import com.silverpeas.calendar.CalendarEventRecurrence;
-import com.silverpeas.calendar.DayOfWeek;
-import com.silverpeas.calendar.DayOfWeekOccurrence;
-import com.silverpeas.calendar.TimeUnit;
 import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.ExporterFactory;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -69,8 +65,9 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -81,7 +78,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import javax.ejb.RemoveException;
 import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.Property;
@@ -89,9 +85,8 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.DtEnd;
 import net.fortuna.ical4j.model.property.DtStart;
 import net.fortuna.ical4j.model.property.RRule;
+import org.apache.commons.io.FileUtils;
 import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
-import static com.silverpeas.calendar.CalendarEvent.*;
-import static com.silverpeas.calendar.CalendarEventRecurrence.*;
 import static com.stratelia.webactiv.util.DateUtil.*;
 import static com.silverpeas.util.StringUtil.*;
 
@@ -116,7 +111,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   private static final String ACCESS_ALL = "0";
   private static final String ACCESS_SPACE = "1";
   private static final String ACCESS_NONE = "3";
-  private static final String ICS_PREFIX_FILENAME = "almanach";
+  private static final String ICS_PREFIX = "almanach";
   private Map<String, String> colors = null;
   private CalendarViewType viewMode = MONTHLY;
   private OrganizationController organizationController = new OrganizationController();
@@ -988,6 +983,16 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
+   * Gets the URL of the ICS representation of the current almamach.
+   * @return the URL of the almanach ICS.
+   */
+  public String getAlmanachICSURL() {
+    return "/services/almanach/ics/" + getComponentId() + "?userId="
+        + getUserId() + "&amp;login=" + getUserDetail().getLogin() + "&amp;password="
+        + organizationController.getUserFull(getUserId()).getPassword();
+  }
+
+  /**
    * Exports the current almanach in iCal format.
    * The iCal file is generated into the temporary directory.
    * If there is no events to export, a NoDataToExportException exception is then thrown.
@@ -995,9 +1000,11 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @throws ExportException if an error occurs while exporting the almanach in iCal format. The
    * errors can come from a failure on getting the events to export, the fact there is no events
    * to export (empty almanach) or the failure of the export process itself.
+   * @throws IOException if an error occurs while creating or opening the file into which the
+   * export will be done. Such errors can be come from a forbidden write granting, and so on.
    */
-  public String exportToICal() throws ExportException {
-    String icsFileName = ICS_PREFIX_FILENAME + "-" + getComponentId() + ".ics";
+  public String exportToICal() throws ExportException, IOException {
+    String icsFileName = ICS_PREFIX + "-" + getComponentId() + ".ics";
     String icsFilePath = FileRepositoryManager.getTemporaryPath() + icsFileName;
     List<CalendarEvent> eventsToExport;
     try {
@@ -1009,7 +1016,16 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     }
     ExporterFactory exporterFactory = ExporterFactory.getFactory();
     Exporter<CalendarEvent> iCalExporter = exporterFactory.getICalExporter();
-    iCalExporter.export(new ExportDescriptor(icsFilePath), eventsToExport);
+    FileWriter fileWriter = new FileWriter(icsFilePath);
+    try {
+      iCalExporter.export(new ExportDescriptor(fileWriter), eventsToExport);
+    } catch (ExportException ex) {
+      File fileToDelete = new File(icsFilePath);
+      if (fileToDelete.exists()) {
+        FileUtils.deleteQuietly(fileToDelete);
+      }
+      throw ex;
+    }
 
     return icsFileName;
   }
@@ -1055,150 +1071,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    */
   private List<CalendarEvent> asCalendarEvents(final List<EventDetail> eventDetails)
       throws WysiwygException, MalformedURLException {
-    List<CalendarEvent> events = new ArrayList<CalendarEvent>();
-    TimeZone timeZone = TimeZone.getTimeZone(getSettings().getString("almanach.timezone"));
-    for (EventDetail eventDetail : eventDetails) {
-      Datable<?> startDate = createDatable(eventDetail.getStartDate(), eventDetail.getStartHour()).
-          inTimeZone(timeZone);
-
-      CalendarEvent event = anEventAt(startDate).
-          withTitle(eventDetail.getName(getLanguage())).
-          withDescription(eventDetail.getWysiwyg()).
-          withPriority(eventDetail.getPriority());
-
-      Datable<?> endDate = null;
-      if (eventDetail.getEndDate() != null) {
-        endDate = createDatable(eventDetail.getEndDate(), eventDetail.getEndHour()).
-            inTimeZone(timeZone);
-        event.endingAt(endDate);
-      }
-      if (isDefined(eventDetail.getPlace())) {
-        event.withLocation(eventDetail.getPlace());
-      }
-      if (isDefined(eventDetail.getEventUrl())) {
-        event.withUrl(new URL(eventDetail.getEventUrl()));
-      }
-      if (eventDetail.getPeriodicity() != null) {
-        event.recur(asCalendarEventRecurrence(eventDetail.getPeriodicity()));
-      }
-
-      events.add(event);
-    }
-    return events;
-  }
-
-  /**
-   * Converts the specified almanach event periodicity into a calendar event recurrence.
-   * @param periodicity the periodicity to convert.
-   * @return the event recurrence corresponding to the specified periodicity.
-   */
-  private CalendarEventRecurrence asCalendarEventRecurrence(final Periodicity periodicity) {
-    TimeUnit timeUnit = null;
-    List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<DayOfWeekOccurrence>();
-    switch (periodicity.getUnity()) {
-      case Periodicity.UNIT_WEEK:
-        timeUnit = TimeUnit.WEEK;
-        daysOfWeek.addAll(extractWeeklyDaysOfWeek(periodicity));
-        break;
-      case Periodicity.UNIT_MONTH:
-        timeUnit = TimeUnit.MONTH;
-        daysOfWeek.addAll(extractMonthlyDaysOfWeek(periodicity));
-        break;
-      case Periodicity.UNIT_YEAR:
-        timeUnit = TimeUnit.YEAR;
-        break;
-      default:
-        timeUnit = TimeUnit.DAY;
-        break;
-    }
-    CalendarEventRecurrence recurrence = every(periodicity.getFrequency(), timeUnit).on(daysOfWeek);
-    if (periodicity.getUntilDatePeriod() != null) {
-      recurrence.upTo(asDatable(periodicity.getUntilDatePeriod(), true));
-    }
-
-    return recurrence;
-  }
-
-  /**
-   * Extracts from the specified periodicity the occurrences of day of week on which an event
-   * monthly recurs.
-   * @param periodicity the periodicity of an event.
-   * @return a list of day of week occurrences.
-   */
-  private List<DayOfWeekOccurrence> extractMonthlyDaysOfWeek(final Periodicity periodicity) {
-    List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<DayOfWeekOccurrence>();
-    int nth = periodicity.getNumWeek();
-    if (nth != 0) {
-      if (periodicity.getDay() == java.util.Calendar.MONDAY) {
-        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.MONDAY));
-      } else if (periodicity.getDay() == java.util.Calendar.TUESDAY) {// Tuesday
-        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.TUESDAY));
-      } else if (periodicity.getDay() == java.util.Calendar.WEDNESDAY) {
-        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.WEDNESDAY));
-      } else if (periodicity.getDay() == java.util.Calendar.THURSDAY) {
-        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.THURSDAY));
-      } else if (periodicity.getDay() == java.util.Calendar.FRIDAY) {
-        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.FRIDAY));
-      } else if (periodicity.getDay() == java.util.Calendar.SATURDAY) {
-        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.SATURDAY));
-      } else if (periodicity.getDay() == java.util.Calendar.SUNDAY) {
-        daysOfWeek.add(DayOfWeekOccurrence.nthOccurrence(nth, DayOfWeek.SUNDAY));
-      }
-    }
-    return daysOfWeek;
-  }
-
-  /**
-   * Extracts from the specified periodicity the days of week an event weekly recurs.
-   * @param periodicity the periodicity of an event.
-   * @return a list of days of week.
-   */
-  private List<DayOfWeekOccurrence> extractWeeklyDaysOfWeek(final Periodicity periodicity) {
-    List<DayOfWeekOccurrence> daysOfWeek = new ArrayList<DayOfWeekOccurrence>();
-    String encodedDaysOfWeek = periodicity.getDaysWeekBinary();
-    if (encodedDaysOfWeek.charAt(0) == '1') {// Monday
-      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.MONDAY));
-    }
-    if (encodedDaysOfWeek.charAt(1) == '1') {// Tuesday
-      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.TUESDAY));
-    }
-    if (encodedDaysOfWeek.charAt(2) == '1') {
-      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.WEDNESDAY));
-    }
-    if (encodedDaysOfWeek.charAt(3) == '1') {
-      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.THURSDAY));
-    }
-    if (encodedDaysOfWeek.charAt(4) == '1') {
-      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.FRIDAY));
-    }
-    if (encodedDaysOfWeek.charAt(5) == '1') {
-      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.SATURDAY));
-    }
-    if (encodedDaysOfWeek.charAt(6) == '1') {
-      daysOfWeek.add(DayOfWeekOccurrence.allOccurrences(DayOfWeek.SUNDAY));
-    }
-    return daysOfWeek;
-  }
-
-  /**
-   * Creates a Datable object from the specified date and time
-   * @param date the date (day in month in year).
-   * @param time the time if any. If the time is null or empty, then no time is defined and the
-   * returned datable is a Date.
-   * @return a Datable object corresponding to the specified date and time.
-   */
-  private Datable<?> createDatable(final Date date, final String time) {
-    Datable<?> datable = null;
-    if(isDefined(time)) {
-      String[] timeComponents = time.split(":");
-      Calendar dateAndTime = Calendar.getInstance();
-      dateAndTime.setTime(date);
-      dateAndTime.set(Calendar.HOUR_OF_DAY, Integer.valueOf(timeComponents[0]));
-      dateAndTime.set(Calendar.MINUTE, Integer.valueOf(timeComponents[1]));
-      datable = asDatable(dateAndTime.getTime(), true);
-    } else {
-      datable = asDatable(date, false);
-    }
-    return datable;
+    CalendarEventEncoder encoder = new CalendarEventEncoder();
+    return encoder.encode(eventDetails);
   }
 }
