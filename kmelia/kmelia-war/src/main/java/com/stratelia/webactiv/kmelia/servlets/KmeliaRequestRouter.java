@@ -634,13 +634,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           if (!alreadyOpened && kmelia.openSingleAttachmentAutomatically()
               && !kmelia.isCurrentPublicationHaveContent()) {
             request.setAttribute("SingleAttachmentURL", kmelia.
-                getFirstAttachmentURLOfCurrentPublication(request.getContextPath()));
+                getFirstAttachmentURLOfCurrentPublication());
           } else if (!alreadyOpened && attachmentId != null) {
-            request.setAttribute("SingleAttachmentURL", kmelia.getAttachmentURL(request.
-                getContextPath(), attachmentId));
+            request.setAttribute("SingleAttachmentURL", kmelia.getAttachmentURL(attachmentId));
           } else if (!alreadyOpened && documentId != null) {
-            request.setAttribute("SingleAttachmentURL", kmelia.getAttachmentURL(request.
-                getContextPath(), documentId));
+            request.setAttribute("SingleAttachmentURL", kmelia.getAttachmentURL(documentId));
           }
 
           destination = rootDestination + "publication.jsp";
@@ -2561,9 +2559,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Aliases", aliases);
 
         // url du fichier joint
-        request.setAttribute("FileUrl", kmelia.getFirstAttachmentURLOfCurrentPublication(request.
-            getContextPath()));
-
+        request.setAttribute("FileUrl", kmelia.getFirstAttachmentURLOfCurrentPublication());
         return rootDestination + "updateByChain.jsp";
       }
     } else if (function.equals("UpdateChainNextUpdate")) {

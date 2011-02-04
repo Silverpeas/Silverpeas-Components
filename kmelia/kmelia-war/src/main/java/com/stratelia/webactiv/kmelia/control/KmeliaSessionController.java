@@ -2693,7 +2693,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public void setWizardLast(String wizardLast) {
     this.wizardLast = wizardLast;
   }
-  
+
   /**
    * Parameter for time Axis visibility
    * @return 
@@ -2723,7 +2723,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public boolean isFieldImportanceVisible() {
     if (isKmaxMode) {
-      return StringUtil.getBooleanValue(getComponentParameterValue("useImportance")); 
+      return StringUtil.getBooleanValue(getComponentParameterValue("useImportance"));
     }
     return getSettings().getBoolean("showImportance", true);
   }
@@ -4034,8 +4034,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return KmeliaHelper.isToolbox(getComponentId());
   }
 
-  public String getFirstAttachmentURLOfCurrentPublication(String webContext)
-      throws RemoteException {
+  /**
+   * Return the url to the first attached file for the current publication.
+   * @return the url to the first attached file for the curent publication.
+   * @throws RemoteException 
+   */
+  public String getFirstAttachmentURLOfCurrentPublication() throws RemoteException {
     PublicationPK pubPK = getSessionPublication().getPublication().getPublicationDetail().getPK();
     String url = null;
     if (isVersionControlled()) {
@@ -4045,38 +4049,42 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         Document document = documents.get(0);
         DocumentVersion documentVersion = versioning.getLastPublicVersion(document.getPk());
         if (documentVersion != null) {
-          url =
-              versioning.getDocumentVersionURL(document.getInstanceId(), documentVersion.
-              getLogicalName(), document.getPk().getId(), documentVersion.getPk().getId());
+          url = URLManager.getApplicationURL() + versioning.getDocumentVersionURL(document.
+              getInstanceId(), documentVersion.getLogicalName(), document.getPk().getId(),
+              documentVersion.getPk().getId());
         }
       }
     } else {
-      Vector<AttachmentDetail> attachments =
-          AttachmentController.searchAttachmentByPKAndContext(pubPK, "Images");
+      Vector<AttachmentDetail> attachments = AttachmentController.searchAttachmentByPKAndContext(
+          pubPK, "Images");
       if (!attachments.isEmpty()) {
         AttachmentDetail attachment = attachments.get(0);
-        url = webContext + attachment.getAttachmentURL();
+        url = URLManager.getApplicationURL() + attachment.getAttachmentURL();
       }
     }
     return url;
   }
 
-  public String getAttachmentURL(String webContext, String attachmentOrDocumentId)
-      throws RemoteException {
+  /**
+   * Return the url to access the file
+   * @param fileId the id of the file (attachment or document id).
+   * @return the url to the file.
+   * @throws RemoteException 
+   */
+  public String getAttachmentURL(String fileId) throws RemoteException {
     String url = null;
     if (isVersionControlled()) {
       VersioningUtil versioningUtil = new VersioningUtil();
-      Document document = versioningUtil.getDocument(
-          new DocumentPK(Integer.parseInt(attachmentOrDocumentId)));
-      DocumentVersion documentVersion = versioningUtil.getLastPublicVersion(
-          new DocumentPK(Integer.parseInt(attachmentOrDocumentId)));
-      url = webContext
-          + versioningUtil.getDocumentVersionURL(document.getInstanceId(), documentVersion.
-          getLogicalName(), document.getPk().getId(), documentVersion.getPk().getId());
+      DocumentPK documentPk = new DocumentPK(Integer.parseInt(fileId));
+      Document document = versioningUtil.getDocument(documentPk);
+      DocumentVersion documentVersion = versioningUtil.getLastPublicVersion(documentPk);
+      url = URLManager.getApplicationURL() + versioningUtil.getDocumentVersionURL(document.
+          getInstanceId(), documentVersion.getLogicalName(), document.getPk().getId(), 
+          documentVersion.getPk().getId());
     } else {
-      AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(
-          new AttachmentPK(attachmentOrDocumentId));
-      url = webContext + attachment.getAttachmentURL();
+      AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
+          fileId));
+      url =  URLManager.getApplicationURL() + attachment.getAttachmentURL();
     }
     return url;
   }
@@ -4538,7 +4546,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public String getPublicationPdfName(String pubId) throws RemoteException {
     String lang = getLanguage();
     StringBuilder pdfName = new StringBuilder(250);
-    
+
     // add space path to filename
     List<SpaceInst> listSpaces = getSpacePath();
     for (SpaceInst space : listSpaces) {
@@ -4546,7 +4554,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
     // add component name to filename
     pdfName.append(getComponentLabel());
-    
+
     if (!isKmaxMode) {
       TopicDetail topic = getPublicationTopic(pubId);
       Collection<NodeDetail> path = topic.getPath();
@@ -4554,7 +4562,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         pdfName.append('-').append(node.getName(lang));
       }
     }
-    
+
     CompletePublication complete = getCompletePublication(pubId);
     pdfName.append('-').append(complete.getPublicationDetail().getTitle()).append('-');
     pdfName.append(pubId).append(".pdf");
