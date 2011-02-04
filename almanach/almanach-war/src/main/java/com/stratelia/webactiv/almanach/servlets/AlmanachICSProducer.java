@@ -34,6 +34,7 @@ import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
 import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -87,8 +88,8 @@ public class AlmanachICSProducer {
     AdminController adminController = new AdminController(null);
     UserFull user = adminController.getUserFull(userId);
     if (user != null && user.getLogin().equals(login)
-        && user.getPassword().equals(password)) {
-
+        && user.getPassword().equals(password) && adminController.isComponentAvailable(almanachId,
+        userId)) {
       CalendarEventEncoder encoder = new CalendarEventEncoder();
       try {
         List<EventDetail> allEventDetails = getAllEvents(almanachId);
