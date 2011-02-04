@@ -132,6 +132,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         request.setAttribute("othersAlmanachs", almanach.getOthersAlmanachs());
         request.setAttribute("accessibleInstances", almanach.getAccessibleInstances());
         request.setAttribute("RSSUrl", almanach.getRSSUrl());
+        request.setAttribute("almanachURL", almanach.getAlmanachICSURL());
 
         if (function.startsWith("portlet")) {
           destination = "/almanach/jsp/portletCalendar.jsp?flag=" + flag;

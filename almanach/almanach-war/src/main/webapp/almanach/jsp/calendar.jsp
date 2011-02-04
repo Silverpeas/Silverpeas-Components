@@ -20,6 +20,7 @@
 <c:set var="instanceId" value="${browseContext[3]}"/>
 
 <c:set var="rssUrl" value="${requestScope.RSSUrl}"/>
+<c:set var="almanachUrl" value="${requestScope.almanachURL}"/>
 <c:set var="calendarView" value="${requestScope.calendarView}"/>
 <c:set var="othersAlmanachs" value="${requestScope.othersAlmanachs}"/>
 <c:set var="accessibleInstances" value="${requestScope.accessibleInstances}"/>
@@ -347,19 +348,23 @@
 
         <div id="calendar"></div>
 
-
-		<c:if test="${rssUrl ne null and not empty rssUrl}">
-          <div class="rss">
+        <div class="rss">
           <table>
             <tr>
-              <td><a href="<c:url value='${rssUrl}'/>" class="rss_link"><img src="<c:url value="/util/icons/rss.gif" />" border="0" alt="rss"/></a></td>
+              <c:if test="${rssUrl ne null and not empty rssUrl}">
+                <td>
+                  <a href="<c:url value='${rssUrl}'/>" class="rss_link"><img src="<c:url value="/util/icons/rss.gif" />" border="0" alt="rss"/></a>
+                  <fmt:message key="almanach.rssNext" var="rssNext"/>
+                  <link rel="alternate" type="application/rss+xml" title="<c:out value='${componentLabel} : ${rssNext}'/>" href="<c:url value='${rssUrl}'/>"/>
+                </td>
+              </c:if>
+              <td>
+                <fmt:message key='almanach.ical.subscribe' var="icsTitle"/>
+                <a href="<c:url value='${almanachUrl}'/>" title="<c:out value='${icsTitle}'/>"><img align="top" src="icons/ical.gif" border="0" alt=""/></a>
+              </td>
             </tr>
           </table>
-          <fmt:message key="almanach.rssNext" var="rssNext"/>
-          <link rel="alternate" type="application/rss+xml" title="<c:out value='${componentLabel} : ${rssNext}'/>" href="<c:url value='${rssUrl}'/>"/>
-          </div>
-        </c:if>
-
+        </div>
 
       </view:frame>
     </view:window>
