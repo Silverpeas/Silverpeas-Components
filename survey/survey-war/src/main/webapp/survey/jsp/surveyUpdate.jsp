@@ -25,11 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%
-response.setHeader("Cache-Control","no-store"); //HTTP 1.1
-response.setHeader("Pragma","no-cache"); //HTTP 1.0
-response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
-%>
+
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
 <%@ page import="javax.servlet.jsp.*"%>
@@ -71,7 +67,7 @@ String topicAddSrc = m_context + "/util/icons/folderAdd.gif";
 String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 
 QuestionContainerDetail survey = null;
-if (action.equals("SendSurveyHeader")) {
+if ("SendSurveyHeader".equals(action)) {
       if (beginDate != null) {
           if (beginDate.length()>0)
             beginDate = resources.getDBDate(beginDate);
@@ -88,7 +84,7 @@ if (action.equals("SendSurveyHeader")) {
       surveyScc.updateSurveyHeader(surveyHeader, surveyId);
       action = "UpdateSurveyHeader";
 }
-if (action.equals("UpdateSurveyHeader"))
+if ("UpdateSurveyHeader".equals(action))
 {
           survey = surveyScc.getSurvey(surveyId);
           QuestionContainerHeader surveyHeader = survey.getHeader();
@@ -116,8 +112,8 @@ if (action.equals("UpdateSurveyHeader"))
 
 %>
 <html>
-<HEAD>
-<TITLE></TITLE>
+<head>
+<title></title>
 <% out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
@@ -226,8 +222,8 @@ function isCorrectForm() {
 }
 
 </script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
         Window window = gef.getWindow();
         Frame frame = gef.getFrame();
@@ -249,8 +245,8 @@ function isCorrectForm() {
         out.println(board.printBefore());
 %>
 <center>
-<table CELLPADDING=5 width="100%">
-  <form name="surveyForm" Action="surveyUpdate.jsp" method="POST">
+<form name="surveyForm" action="surveyUpdate.jsp" method="post">
+<table cellpadding="5" width="100%">
     <tr>
       <td class="txtlibform"><%=resources.getString("GML.name")%> :</td>
       <td>
@@ -320,8 +316,8 @@ function isCorrectForm() {
         <input type="hidden" name="SurveyId" value="<%=surveyId%>">
       </td>
     </tr>
-  </form>
 </table>
+</form>
 </center>
 <%
 		out.println(board.printAfter());
@@ -334,6 +330,6 @@ function isCorrectForm() {
         out.println(frame.printAfter());
         out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
 <% } %>

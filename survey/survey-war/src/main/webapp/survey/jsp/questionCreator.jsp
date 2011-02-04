@@ -162,9 +162,9 @@ while (itemIter.hasNext()) {
 }
 
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+<html>
+<head>
+<title></title>
 <%out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
@@ -383,7 +383,7 @@ function goToEnd() {
 	}
 
 </script>
-</HEAD>
+</head>
 <%
 if (action.equals("FirstQuestion")) {
       surveyScc.setSessionQuestions(new Vector(10, 2));
@@ -458,8 +458,8 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
       <!--DEBUT CORPS -->
       <br/>
 
+      <form name="surveyForm" action="questionCreator.jsp" method="post" enctype="multipart/form-data">
       <table border="0" cellPadding="3" cellSpacing="0" width="100%" class="intfdcolor4">
-        <form name="surveyForm" Action="questionCreator.jsp" method="POST" ENCTYPE="multipart/form-data">
         <tr><td class="txtlibform"><%=resources.getString("SurveyCreationQuestion")%> <%=questionNb%> :</td><td><input type="text" name="question" value="<%=EncodeHelper.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
         <% if (action.equals("SendQuestionForm")) {
                 if (!style.equals("open"))
@@ -549,8 +549,8 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
         %>
         <tr><td><input type="hidden" name="Action" value="<%=nextAction%>">
                 <input type="hidden" name="SuggestionAllowed" value="0"></td></tr>
-      </form>
       </table>
+      </form>
        <!-- FIN CORPS -->
 
 <%
@@ -564,18 +564,18 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
  } //End if action = ViewQuestion
 if (action.equals("End")) {
 %>
-<HTML>
-<HEAD>
+<html>
+<head>
 <script language="Javascript">
     function goToSurveyPreview() {
         document.questionForm.submit();
     }
 </script>
-</HEAD>
-<BODY onLoad="goToSurveyPreview()">
-<Form name="questionForm" Action="surveyDetail.jsp" Method="POST">
+</head>
+<body onload="goToSurveyPreview()">
+<form name="questionForm" action="surveyDetail.jsp" method="post">
 <input type="hidden" name="Action" value="PreviewSurvey">
-</Form>
-</BODY>
-</HTML>
+</form>
+</body>
+</html>
 <% } %>

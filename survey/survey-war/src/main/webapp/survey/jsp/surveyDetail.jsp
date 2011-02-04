@@ -310,19 +310,17 @@
 
   else if (action.equals("ViewComments")) {
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+<html>
+<head>
+<title></title>
 
 <%
   out.println(gef.getLookStyleSheet());
 %>
-<script type="text/javascript"
-	src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript"
-	src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-</HEAD>
-<BODY>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+</head>
+<body>
 <%
   Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
@@ -340,17 +338,15 @@
 
   else if (action.equals("ViewCurrentQuestions")) {
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+<html>
+<head>
+<title></title>
 
 <%
   out.println(gef.getLookStyleSheet());
 %>
-<script type="text/javascript"
-	src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript"
-	src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="JavaScript1.2">
         function sendVote(roundId) {
           if (isCorrectForm()) {
@@ -490,9 +486,9 @@
         }
 
         </script>
-</HEAD>
+</head>
 
-<BODY>
+<body>
 <%
   Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
@@ -522,9 +518,9 @@
         GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 %>
 
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+<html>
+<head>
+<title></title>
 <%
   out.println(gef.getLookStyleSheet());
 %>
@@ -609,8 +605,8 @@
     }
 
      	</script>
-</HEAD>
-<BODY id="survey-result-<%=choice%>">
+</head>
+<body id="survey-result-<%=choice%>">
 <%
   survey = surveyScc.getSurvey(surveyId);
 
@@ -650,18 +646,18 @@
     out.println(window.print());
   } else if (action.equals("SubmitAndUpdateSurvey")) {
 %>
-<HTML>
-<HEAD>
+<html>
+<head>
 <script language="Javascript">
             function Replace() {
               location.replace("surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=<%=surveyId%>");
             }
         </script>
-</HEAD>
-<BODY onLoad="Replace()">
+</head>
+<body onload="Replace()">
 <%
   }
 %>
 
-</BODY>
-</HTML>
+</body>
+</html>

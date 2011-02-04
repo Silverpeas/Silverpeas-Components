@@ -99,7 +99,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   private boolean pollingStationMode = false;
   private boolean participationMultipleAllowedForUser = false;
   private boolean hasAlreadyParticipated = false;
-  public static String COOKIE_NAME = "surpoll";
+  public static final String COOKIE_NAME = "surpoll";
 
   /** Creates new sessionClientController */
   public SurveySessionController(MainSessionController mainSessionCtrl,
@@ -115,11 +115,10 @@ public class SurveySessionController extends AbstractComponentSessionController 
       try {
         QuestionContainerBmHome questionContainerBmHome =
             (QuestionContainerBmHome) EJBUtilitaire.getEJBObjectRef(
-                JNDINames.QUESTIONCONTAINERBM_EJBHOME,
-                QuestionContainerBmHome.class);
+                JNDINames.QUESTIONCONTAINERBM_EJBHOME, QuestionContainerBmHome.class);
         this.questionContainerBm = questionContainerBmHome.create();
       } catch (Exception e) {
-        throw new EJBException(e.getMessage());
+        throw new EJBException(e.getMessage(), e);
       }
     }
   }
@@ -137,7 +136,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
                 QuestionResultBmHome.class);
         this.questionResultBm = questionResultBmHome.create();
       } catch (Exception e) {
-        throw new EJBException(e.getMessage());
+        throw new EJBException(e.getMessage(), e);
       }
     }
   }
@@ -148,8 +147,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   public boolean isPdcUsed() {
     String value = getComponentParameterValue("usePdc");
-    if (value != null)
+    if (value != null) {
       return "yes".equals(value.toLowerCase());
+    }
     return false;
   }
 
@@ -178,8 +178,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
     List<String> userMultipleRole = new ArrayList<String>();
     userMultipleRole.add("userMultiple");
     // if we have people on userMultiple role, multiple participation is used
-    if (getOrganizationController().getUsersIdsByRoleNames(getComponentId(), userMultipleRole).length > 0)
+    if (getOrganizationController().getUsersIdsByRoleNames(getComponentId(), userMultipleRole).length > 0) {
       participationMultipleUsed = true;
+    }
     return participationMultipleUsed;
   }
 
@@ -197,8 +198,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
    */
   public boolean isAnonymousModeEnabled() {
     String value = getComponentParameterValue("useAnonymousMode");
-    if (value != null)
+    if (value != null) {
       return "yes".equals(value.toLowerCase());
+    }
     return false;
   }
 
@@ -241,10 +243,10 @@ public class SurveySessionController extends AbstractComponentSessionController 
     ResourceLocator settings = new ResourceLocator(monLook, "");
     String guestId = settings.getString("guestId");
 
-    if (guestId != null && getUserId().equals(guestId)) {
-      if (getComponentId() != null) {
-        if (getOrganizationController().isComponentAvailable(getComponentId(), guestId))
-          userIsAnonymous = true;
+    if (getUserId().equals(guestId)) {
+      if (getComponentId() != null &&
+          getOrganizationController().isComponentAvailable(getComponentId(), guestId)) {
+        userIsAnonymous = true;
       }
     }
     return userIsAnonymous;
@@ -258,19 +260,22 @@ public class SurveySessionController extends AbstractComponentSessionController 
     return viewType;
   }
 
-  public Collection getSurveys() throws SurveyException {
+  public Collection<QuestionContainerHeader> getSurveys() throws SurveyException {
     SilverTrace.info("Survey", "SurveySessionClientController.getSurveys",
         "Survey.MSG_ENTRY_METHOD");
-    if (getViewType() == OPENED_SURVEYS_VIEW)
+    if (getViewType() == OPENED_SURVEYS_VIEW){
       return getOpenedSurveys();
-    if (getViewType() == CLOSED_SURVEYS_VIEW)
+    }
+    if (getViewType() == CLOSED_SURVEYS_VIEW) {
       return getClosedSurveys();
-    if (getViewType() == INWAIT_SURVEYS_VIEW)
+    }
+    if (getViewType() == INWAIT_SURVEYS_VIEW) {
       return getInWaitSurveys();
+    }
     return null;
   }
 
-  public Collection getOpenedSurveys() throws SurveyException {
+  public Collection<QuestionContainerHeader> getOpenedSurveys() throws SurveyException {
     SilverTrace.info("Survey", "SurveySessionClientController.getOpenedSurveys",
         "Survey.MSG_ENTRY_METHOD");
     try {
@@ -285,7 +290,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
-  public Collection getClosedSurveys() throws SurveyException {
+  public Collection<QuestionContainerHeader> getClosedSurveys() throws SurveyException {
     SilverTrace.info("Survey", "SurveySessionClientController.getClosedSurveys",
         "Survey.MSG_ENTRY_METHOD");
     try {
@@ -300,7 +305,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
-  public Collection getInWaitSurveys() throws SurveyException {
+  public Collection<QuestionContainerHeader> getInWaitSurveys() throws SurveyException {
     SilverTrace.info("Survey", "SurveySessionClientController.getInWaitSurveys",
         "Survey.MSG_ENTRY_METHOD");
     try {
@@ -369,11 +374,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   public void updateSurveyHeader(QuestionContainerHeader surveyHeader, String surveyId)
       throws SurveyException {
-    SilverTrace.info(
-        "Survey",
-        "SurveySessionClientController.updateSurveyHeader",
-        "Survey.MSG_ENTRY_METHOD",
-        "id = " + surveyId + ", title = " + surveyHeader.getTitle());
+    SilverTrace.info("Survey", "SurveySessionClientController.updateSurveyHeader",
+        "Survey.MSG_ENTRY_METHOD", "id = " + surveyId + ", title = " + surveyHeader.getTitle());
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       surveyHeader.setPK(qcPK);
@@ -388,7 +390,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
-  public void updateQuestions(Collection questions, String surveyId) throws SurveyException {
+  public void updateQuestions(Collection<Question> questions, String surveyId)
+      throws SurveyException {
     SilverTrace.info("Survey", "SurveySessionClientController.updateQuestions",
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
     try {
@@ -497,9 +500,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
       result.addAll(questionResult);
     }
     // ne récupérer que les id des réponses
-    Iterator itR = result.iterator();
+    Iterator<QuestionResult> itR = result.iterator();
     while (itR.hasNext()) {
-      QuestionResult question = (QuestionResult) itR.next();
+      QuestionResult question = itR.next();
       resultId.add(question.getAnswerPK().getId());
     }
     return resultId;
@@ -541,7 +544,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
-  public void recordReply(String surveyId, Hashtable reply) throws SurveyException {
+  public void recordReply(String surveyId, Hashtable<String, Vector<String>> reply)
+      throws SurveyException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerBm.recordReplyToQuestionContainerByUser(qcPK, getUserId(), reply);
@@ -552,7 +556,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
-  public void recordReply(String surveyId, Hashtable reply, String comment,
+  public void recordReply(String surveyId, Hashtable<String, Vector<String>> reply, String comment,
       boolean isAnonymousComment) throws SurveyException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
@@ -565,7 +569,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     }
   }
 
-  public Collection getSuggestions(String surveyId) throws SurveyException {
+  public Collection<QuestionResult> getSuggestions(String surveyId) throws SurveyException {
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       return questionContainerBm.getSuggestions(qcPK);
@@ -704,8 +708,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   public void close() {
     try {
-      if (questionContainerBm != null)
+      if (questionContainerBm != null) {
         questionContainerBm.remove();
+      }
     } catch (RemoteException e) {
       SilverTrace.error("surveySession", "SurveySessionController.close", "", e);
     } catch (RemoveException e) {
@@ -818,8 +823,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
     for (int c = 0; c < compoIds.length; c++) {
       if ("yes".equalsIgnoreCase(orgaController.getComponentParameterValue("gallery" + compoIds[c],
           "viewInWysiwyg"))) {
-        if (galleries == null)
+        if (galleries == null) {
           galleries = new ArrayList<ComponentInstLight>();
+        }
 
         ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoIds[c]);
         galleries.add(gallery);
@@ -834,8 +840,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
       survey = getSurvey(surveyId);
       return questionContainerBm.exportCSV(survey, false);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+      SilverTrace.error("Survey", SurveySessionController.class.getName(),
+          "exportSurveyCSV error surveyId=" + surveyId, e);
     }
     return null;
   }
@@ -843,7 +849,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
   public void copySurvey(String surveyId) throws RemoteException, SurveyException {
     QuestionContainerDetail survey = getSurvey(surveyId);
     QuestionContainerSelection questionContainerSelect = new QuestionContainerSelection(survey);
-    
+
     addClipboardSelection((ClipboardSelection) questionContainerSelect);
   }
 
@@ -889,7 +895,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
           ResourceLocator settings =
               new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", "");
           String type =
-              physicalName.substring(physicalName.indexOf(".") + 1, physicalName.length());
+              physicalName.substring(physicalName.indexOf('.') + 1, physicalName.length());
           String newPhysicalName =
               new Long(new Date().getTime()).toString() + attachmentSuffix + "." + type;
           attachmentSuffix = attachmentSuffix + 1;
