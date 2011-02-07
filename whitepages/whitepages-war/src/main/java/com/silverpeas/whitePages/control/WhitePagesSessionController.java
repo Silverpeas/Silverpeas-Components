@@ -122,9 +122,9 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       "com.silverpeas.whitePages.settings.settings", "");
 
   private PdcBm pdcBm = null;
-  
+
   private static DomainDriverManager m_DDManager = new DomainDriverManager();
-  
+
   /*
    * Recherche une fiche Retourne currentCard si son id est le même que celui de la fiche recherchée
    * Demande au CardManager la fiche sinon Affecte l'attribut ReadOnly de Card à false si la fiche
@@ -898,10 +898,10 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     return new Boolean("no"
         .equalsIgnoreCase(getComponentParameterValue("isFicheVisible")));
   }
-  
+
   public int getDomainId() {
     int domainIdReturn = 0; // default value
-    
+
     // pour recupèrer le domainId auquel rattaché l'annuaire
     String domainId = getComponentParameterValue("domainId");
     if(domainId != null && domainId.length() > 0){
@@ -913,9 +913,9 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       }
     }
     return domainIdReturn;
-    
+
   }
-  
+
   public List<String> getAllXmlFieldsForSearch() throws WhitePagesException, PublicationTemplateException{
     List<String> xmlFields = new ArrayList<String>();
     PublicationTemplate template = getTemplate(getComponentId());
@@ -923,7 +923,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     xmlFields = Arrays.asList(recordTemplate.getFieldNames());
     return xmlFields;
   }
-  
+
   public List<SearchAxis> getUsedAxisList(SearchContext searchContext, String axisType) throws PdcException {
     List<SearchAxis> searchAxis = getPdcBm().getPertinentAxisByInstanceId(searchContext, axisType ,getComponentId());
     if(searchAxis != null && !searchAxis.isEmpty()){
@@ -933,20 +933,20 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     }
     return searchAxis;
   }
-  
+
   public List<String> getLdapAttributesList() throws Exception {
     AbstractDomainDriver domainDriver = m_DDManager.getDomainDriver(getDomainId());
     return domainDriver.getUserAttributes();
   }
-  
+
   public void confirmFieldsChoice(String[] fields) throws UtilException{
     ServicesFactory.getWhitePagesService().createSearchFields(fields, getComponentId());
   }
-  
+
   public SortedSet<SearchField> getSearchFields() throws UtilException{
     return ServicesFactory.getWhitePagesService().getSearchFields(getComponentId());
   }
-  
+
   public Set<String> getSearchFieldIds() throws UtilException{
     Set<String> ids = new HashSet<String>();
     SortedSet<SearchField> searchFields = getSearchFields();
@@ -957,11 +957,11 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     }
     return ids;
   }
-  
+
   public List<Card> getSearchResult(String query, SearchContext pdcContext, Hashtable<String, String> xmlFields, List<FieldDescription> fieldsQuery){
     List<Card> cards = new ArrayList<Card>();
     Collection<GlobalSilverContent> contents = null;
-    
+
     try{
       PublicationTemplate template = getTemplate(getComponentId());
       String xmlTemplate = template.getName();
@@ -970,7 +970,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
     }catch(Exception e){
       SilverTrace.info("whitePages", "WhitePagesSessionController.getSearchResult", "whitePages.EX_SEARCH_GETRESULT", e);
     }
-    
+
     if(contents != null){
       try{
         Collection<Card> allCars = getCards();
@@ -978,20 +978,20 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
         for (Card card : allCars) {
           map.put(card.getPK().getId(), card);
         }
-        
+
         for (GlobalSilverContent content : contents) {
           if(map.containsKey(content.getId())){
             cards.add(map.get(content.getId()));
           }
         }
-        
+
         if(cards != null){
           for (Card card : cards) {
             UserRecord userRecord = card.readUserRecord();
             if(userRecord != null){
               Collection<SessionInfo> sessionInfos = SessionManager.getInstance().getConnectedUsersList();
               for (SessionInfo varSi : sessionInfos) {
-                if ( varSi.m_User.equals(userRecord.getUserDetail())) {
+                if ( varSi.getUserDetail().equals(userRecord.getUserDetail())) {
                   userRecord.setConnected(true);
                   break;
                 }
@@ -999,29 +999,29 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
             }
           }
         }
-        
+
       }catch(Exception e){
         SilverTrace.info("whitePages", "WhitePagesSessionController.getSearchResult", "whitePages.EX_SEARCH_GETCARDS", e);
       }
     }
     return cards;
   }
-  
+
   private PdcBm getPdcBm() {
     if (pdcBm == null) {
       pdcBm = (PdcBm) new PdcBmImpl();
     }
     return pdcBm;
   }
-  
+
   public HashMap<String, List<ClassifyValue>> getPdcPositions(int cardId) throws PdcException{
-    
+
     HashMap<String, List<ClassifyValue>> result = new HashMap<String, List<ClassifyValue>>();
-    
+
     List<ClassifyPosition> list = getPdcBm().getPositions(cardId, getComponentId());
-    
+
     if(list != null && list.size() > 0){
-    
+
       Iterator<ClassifyPosition> iter = list.iterator();
       while(iter.hasNext()){
         List<Value>      pathValues  = null;
@@ -1047,7 +1047,7 @@ public class WhitePagesSessionController extends AbstractComponentSessionControl
       }
     }
     return result;
-    
+
   }
-  
+
 }
