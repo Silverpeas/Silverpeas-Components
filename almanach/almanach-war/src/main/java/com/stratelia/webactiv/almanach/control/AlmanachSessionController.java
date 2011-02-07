@@ -26,7 +26,6 @@ package com.stratelia.webactiv.almanach.control;
 import java.io.File;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.calendar.CalendarEvent;
-import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.ExporterFactory;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.silverpeas.export.ExportException;
@@ -89,6 +88,7 @@ import org.apache.commons.io.FileUtils;
 import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
 import static com.stratelia.webactiv.util.DateUtil.*;
 import static com.silverpeas.util.StringUtil.*;
+import static com.silverpeas.export.ExportDescriptor.*;
 
 /**
  * The AlmanachSessionController provides features to handle almanachs and theirs events.
@@ -1018,7 +1018,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     Exporter<CalendarEvent> iCalExporter = exporterFactory.getICalExporter();
     FileWriter fileWriter = new FileWriter(icsFilePath);
     try {
-      iCalExporter.export(new ExportDescriptor(fileWriter), eventsToExport);
+      iCalExporter.export(withWriter(fileWriter), eventsToExport);
     } catch (ExportException ex) {
       File fileToDelete = new File(icsFilePath);
       if (fileToDelete.exists()) {
