@@ -23,6 +23,7 @@
  */
 package com.silverpeas.classifieds.servlets;
 
+import com.silverpeas.look.LookHelper;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -155,18 +156,21 @@ public class ClassifiedsRequestRouter
         request.setAttribute("Data", data);
         request.setAttribute("NbTotal", classifiedsSC.getNbTotalClassifieds());
         request.setAttribute("Validation", classifiedsSC.isValidationEnabled());
+        request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("ViewClassifiedToValidate")) {
         // récupérer les petites annonces à valider
         Collection<ClassifiedDetail> classifieds = classifiedsSC.getClassifiedsToValidate();
         request.setAttribute("Classifieds", classifieds);
         request.setAttribute("TitlePath", "classifieds.viewClassifiedToValidate");
+        request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
         destination = rootDest + "classifieds.jsp";
       } else if (function.equals("ViewMyClassifieds")) {
         // récupérer les petites annonces de l'utilisateur
         Collection<ClassifiedDetail> classifieds = classifiedsSC.getClassifiedsByUser();
         request.setAttribute("Classifieds", classifieds);
         request.setAttribute("TitlePath", "classifieds.myClassifieds");
+        request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
         destination = rootDest + "classifieds.jsp";
       } else if (function.equals("SearchClassifieds")) {
         if (FileUploadUtil.isRequestMultipart(request)) {
@@ -192,8 +196,10 @@ public class ClassifiedsRequestRouter
               Field field = data.getField(fieldName);
               String fieldValue = field.getStringValue();
               if (fieldValue != null && fieldValue.trim().length() > 0) {
-                String fieldQuery = fieldValue.trim().replaceAll("##", " AND "); // case à cocher multiple
-                query.addFieldQuery(new FieldDescription(templateName + "$$" + fieldName, fieldQuery,
+                String fieldQuery = fieldValue.trim().replaceAll("##", " AND "); // case à cocher
+                                                                                 // multiple
+                query.addFieldQuery(new FieldDescription(templateName + "$$" + fieldName,
+                    fieldQuery,
                     null));
               }
             }
@@ -232,6 +238,7 @@ public class ClassifiedsRequestRouter
         }
         // les commentaires sur cette annonce
         request.setAttribute("AllComments", classifiedsSC.getAllComments(classifiedId));
+        request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
         destination = rootDest + "viewClassified.jsp";
       } else if (function.equals("NewClassified")) {
         // récupération des paramètres
@@ -442,8 +449,6 @@ public class ClassifiedsRequestRouter
           // Ajout des résultats de la recherche dans la catégorie
           QueryDescription query = new QueryDescription();
           query.addFieldQuery(new FieldDescription(templateName + "$$" + label, fieldKey, null));
-          String values = pubTemplate.getRecordTemplate().getFieldTemplate(field).
-              getParameters(classifiedsSC.getLanguage()).get("values");
           try {
             classifieds = classifiedsSC.search(query);
           } catch (Exception e) {
@@ -455,6 +460,7 @@ public class ClassifiedsRequestRouter
         request.setAttribute("Classifieds", classifieds);
         request.setAttribute("TitlePath", "classifieds.viewByCategorie");
         request.setAttribute("Extra", categoryName);
+        request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
         destination = rootDest + "classifieds.jsp";
 
       } else {
@@ -499,8 +505,7 @@ public class ClassifiedsRequestRouter
    * Gets the template of the publication based on the classified XML form.
    * @param classifiedsSC the session controller.
    * @return the publication template for classifieds.
-   * @throws PublicationTemplateException if an error occurs while getting the publication
-   * template.
+   * @throws PublicationTemplateException if an error occurs while getting the publication template.
    */
   private PublicationTemplate getPublicationTemplate(
       final ClassifiedsSessionController classifiedsSC) throws PublicationTemplateException {
@@ -510,9 +515,10 @@ public class ClassifiedsRequestRouter
       String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf("/") + 1,
           xmlFormName.indexOf("."));
       pubTemplate =
-          (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(classifiedsSC.
-          getComponentId() + ":" + xmlFormShortName,
-          xmlFormName);
+          (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
+              classifiedsSC.
+                  getComponentId() + ":" + xmlFormShortName,
+              xmlFormName);
     }
     return pubTemplate;
   }
@@ -523,5 +529,13 @@ public class ClassifiedsRequestRouter
    */
   private PublicationTemplateManager getPublicationTemplateManager() {
     return PublicationTemplateManager.getInstance();
+  }
+
+  private boolean isAnonymousAccess(HttpServletRequest request) {
+    LookHelper lookHelper = (LookHelper) request.getSession().getAttribute("Silverpeas_LookHelper");
+    if (lookHelper != null) {
+      return lookHelper.isAnonymousAccess();
+    }
+    return false;
   }
 }
