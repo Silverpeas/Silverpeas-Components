@@ -229,8 +229,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         writer.write(board.printBefore());
         writer.write("<table width=\"100%\" border=\"0\" cellspacing=\"0\" align=\"center\">");
         writer.write("<tr>");
-        writer.write("<td>"
-            + EncodeHelper.escapeXml(resources.getString("GML.ForbiddenAccessContent")) + "</td>");
+        writer.write("<td>" + resources.getString("GML.ForbiddenAccessContent") + "</td>");
         writer.write("</tr>");
         writer.write("</table>");
         writer.write(board.printAfter());
@@ -456,7 +455,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           out.write("\"><b>");
           out.write(highlightClassBegin);
           out.write(ref);
-          out.write(EncodeHelper.escapeXml(name));
+          out.write(name);
           out.write(highlightClassEnd);
           out.write("</b></font>");
         }
@@ -465,7 +464,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           out.write("<span class=\"state_");
           out.write(pubState);
           out.write("\">(");
-          out.write(EncodeHelper.escapeXml(pubState));
+          out.write(pubState);
           out.write(")</span>");
         } else if (showImportance && !linkAttachment) {
           out.write("<span class=\"importance\"><nobr>");
@@ -577,8 +576,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write("<tr class=\"intfdcolor4\"><td colspan=\"2\">&#160;</td></tr>");
       out.write("<tr>");
       out.write("<td>&#160;</td>");
-      out.write("<td>"
-          + EncodeHelper.escapeXml(noPublications) + "</td>");
+      out.write("<td>" + noPublications + "</td>");
       out.write("</tr>");
       out.write("</table>");
       out.write(board.printAfter());
@@ -596,10 +594,10 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       out.write("<img src=\"" + vignette_url + "\" alt=\"\"/>&#160;");
     } else {
       vignette_url =
-          EncodeHelper.escapeXml(FileServerUtils.getUrl(pub.getPK().getSpace(), pub.getPK().
+          FileServerUtils.getUrl(pub.getPK().getSpace(), pub.getPK().
           getComponentName(),
           "vignette", pub.getImage(), pub.getImageMimeType(),
-          publicationSettings.getString("imagesSubDirectory")));
+          publicationSettings.getString("imagesSubDirectory"));
       String height = "";
       String width = "";
       if (!StringUtil.isDefined(pub.getThumbnail().getCropFileName())) {
@@ -637,9 +635,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         + "\"><img src=\""
         + resources.getIcon("kmelia.link")
         + "\" border=\"0\" align=\"absmiddle\" alt=\""
-        + EncodeHelper.escapeXml(resources.getString("kmelia.CopyPublicationLink"))
+        + resources.getString("kmelia.CopyPublicationLink")
         + "\" title=\""
-        + EncodeHelper.escapeXml(resources.getString("kmelia.CopyPublicationLink"))
+        + resources.getString("kmelia.CopyPublicationLink")
         + "\"/></a>");
   }
 
@@ -647,32 +645,22 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       throws IOException {
     out.write(
         "<select name=\"sortBy\" id=\"sortingList\" onChange=\"javascript:sortGoTo(this.selectedIndex);\">");
-    out.write("<option selected=\"selected\">"
-        + EncodeHelper.escapeXml(resources.getString("SortBy")) + "</option>");
+    out.write("<option selected=\"selected\">" + resources.getString("SortBy") + "</option>");
     out.write("<option>-------------------------------</option>");
-    out.write("<option value=\"1\" id=\"sort1\">"
-        + EncodeHelper.escapeXml(resources.getString("DateAsc")) + "</option>");
-    out.write("<option value=\"2\" id=\"sort2\">"
-        + EncodeHelper.escapeXml(resources.getString("DateDesc"))
-        + "</option>");
-    out.write("<option value=\"5\" id=\"sort5\">"
-        + EncodeHelper.escapeXml(resources.getString("CreateDateAsc")) + "</option>");
-    out.write("<option value=\"6\" id=\"sort6\">"
-        + EncodeHelper.escapeXml(resources.getString("CreateDateDesc"))
-        + "</option>");
-    out.write("<option value=\"0\" id=\"sort0\">"
-        + EncodeHelper.escapeXml(resources.getString("PubAuteur"))
-        + "</option>");
+    out.write("<option value=\"1\" id=\"sort1\">" + resources.getString("DateAsc") + "</option>");
+    out.write("<option value=\"2\" id=\"sort2\">" + resources.getString("DateDesc") + "</option>");
+    out.write("<option value=\"5\" id=\"sort5\">" + resources.getString("CreateDateAsc") +
+        "</option>");
+    out.write("<option value=\"6\" id=\"sort6\">" + resources.getString("CreateDateDesc") +
+        "</option>");
+    out.write("<option value=\"0\" id=\"sort0\">" + resources.getString("PubAuteur") + "</option>");
     if (ksc.isFieldImportanceVisible()) {
-      out.write("<option value=\"3\" id=\"sort3\">"
-          + EncodeHelper.escapeXml(resources.getString("PubImportance")) + "</option>");
+      out.write("<option value=\"3\" id=\"sort3\">" + resources.getString("PubImportance") +
+          "</option>");
     }
-    out.write("<option value=\"4\" id=\"sort4\">"
-        + EncodeHelper.escapeXml(resources.getString("PubTitre"))
-        + "</option>");
-    out.write("<option value=\"7\" id=\"sort7\">"
-        + EncodeHelper.escapeXml(resources.getString("PubDescription"))
-        + "</option>");
+    out.write("<option value=\"4\" id=\"sort4\">" + resources.getString("PubTitre") + "</option>");
+    out.write("<option value=\"7\" id=\"sort7\">" + resources.getString("PubDescription") +
+        "</option>");
     out.write("</select>");
   }
 
@@ -685,9 +673,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write("<span id=\"pubsCounter\">");
     out.write(pagination.printCounter());
     if (nbPubs > 1) {
-      out.write(EncodeHelper.escapeXml(resources.getString("GML.publications")));
+      out.write(resources.getString("GML.publications"));
     } else {
-      out.write(EncodeHelper.escapeXml(resources.getString("GML.publication")));
+      out.write(resources.getString("GML.publication"));
     }
     out.write("</span>");
     out.write("<span id=\"pubsSort\">");
@@ -715,7 +703,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     } else {
       userName = kmeliaScc.getString("kmelia.UnknownUser");
     }
-    return EncodeHelper.escapeXml(userName);
+    return userName;
   }
 
   private String displayImportance(int importance, int maxImportance, String fullStar,
@@ -867,62 +855,61 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     StringBuilder result = new StringBuilder();
 
     if (!attachmentLink) {
-      String link = "<A href=\"" + EncodeHelper.escapeXml(url) + "\" target=\"_blank\">";
-      result.append("<TR><TD valign=\"top\">");
+      String link = "<a href=\"" + url + "\" target=\"_blank\">";
+      result.append("<tr><td valign=\"top\">");
       // Add doc type icon
-      result.append(link).append("<IMG src=\"").append(icon).append(
-          "\" border=\"0\" align=\"absmiddle\"/></A>&#160;</TD>");
-      result.append("<TD valign=\"top\">").append(link);
+      result.append(link).append("<img src=\"").append(icon).append(
+          "\" border=\"0\" align=\"absmiddle\"/></a>&#160;</td>");
+      result.append("<td valign=\"top\">").append(link);
       if (title == null || title.length() == 0) {
-        result.append(EncodeHelper.escapeXml(logicalName));
+        result.append(logicalName);
       } else {
-        result.append(EncodeHelper.escapeXml(title));
+        result.append(title);
       }
-      result.append("</A>");
+      result.append("</a>");
 
       if (StringUtil.isDefined(permalink)) {
-        result.append("&#160;<a href=\"").append(EncodeHelper.escapeXml(permalink)).append(
+        result.append("&#160;<a href=\"").append(permalink).append(
             "\" target=\"_blank\"><img src=\"").append(resources.getIcon("kmelia.link")).append(
-            "\" border=\"0\" valign=\"absmiddle\" alt=\"").append(EncodeHelper.escapeXml(
-            resources.getString("toolbox.CopyFileLink"))).append("\" title=\"").append(
-            EncodeHelper.escapeXml(resources.getString("toolbox.CopyFileLink"))).append("\"/></a>");
+            "\" border=\"0\" valign=\"absmiddle\" alt=\"").append(
+            resources.getString("toolbox.CopyFileLink")).append("\" title=\"").append(
+            resources.getString("toolbox.CopyFileLink")).append("\"/></a>");
       }
 
       result.append("<br/>");
 
       result.append("<i>");
       if (StringUtil.isDefined(title) && !"no".equals(resources.getSetting("showTitle"))) {
-        result.append(EncodeHelper.escapeXml(logicalName)).append(" / ");
+        result.append(logicalName).append(" / ");
       }
       // Add file size
       if (!"no".equals(resources.getSetting("showFileSize"))) {
-        result.append(EncodeHelper.escapeXml(size));
+        result.append(size);
       }
       // and download estimation
       if (!"no".equals(resources.getSetting("showDownloadEstimation"))) {
-        result.append(" / ").append(EncodeHelper.escapeXml(downloadTime)).append(" / ").append(
+        result.append(" / ").append(downloadTime).append(" / ").append(
             resources.getOutputDate(creationDate));
       }
       result.append("</i>");
 
       // Add info
       if (StringUtil.isDefined(info) && !"no".equals(resources.getSetting("showInfo"))) {
-        result.append("<BR/>").append(
-            EncodeHelper.javaStringToHtmlParagraphe(EncodeHelper.escapeXml(info)));
+        result.append("<br/>").append(EncodeHelper.javaStringToHtmlParagraphe(info));
       }
-      result.append("</TD></TR>");
+      result.append("</td></tr>");
 
     } else {
       // determines the label to display
       String displayedTitle = "";
       if (title == null || title.length() == 0) {
-        displayedTitle = EncodeHelper.escapeXml(logicalName);
+        displayedTitle = logicalName;
       } else {
-        displayedTitle = EncodeHelper.escapeXml(title);
+        displayedTitle = title;
       }
       // create the javascript which allows the attachment link selecting
       String javascriptFunction =
-          "selectAttachment('" + EncodeHelper.escapeXml(url) + "','" + icon + "','"
+          "selectAttachment('" + url + "','" + icon + "','"
           + displayedTitle
           + "')";
       String link = "<a href=\"javascript:" + javascriptFunction + "\" >";
@@ -939,30 +926,29 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
       // inserts permalink
       if (StringUtil.isDefined(permalink)) {
-        result.append("&#160;<a href=\"").append(EncodeHelper.escapeXml(permalink)).append(
+        result.append("&#160;<a href=\"").append(permalink).append(
             "\" target=\"_blank\"><img src=\"").append(resources.getIcon("kmelia.link")).append(
-            "\" border=\"0\" valign=\"absmiddle\" alt=\"").append(EncodeHelper.escapeXml(
-            resources.getString("toolbox.CopyFileLink"))).append("\" title=\"").append(
-            EncodeHelper.escapeXml(resources.getString("toolbox.CopyFileLink"))).append("\"/></a>");
+            "\" border=\"0\" valign=\"absmiddle\" alt=\"").append(
+            resources.getString("toolbox.CopyFileLink")).append("\" title=\"").append(
+            resources.getString("toolbox.CopyFileLink")).append("\"/></a>");
       }
       result.append("<br/>");
       // displays extra information if parameter is true
       if (resources.getSetting("fileStorageShowExtraInfoAttachment", false)) {
         result.append("<i>");
         if (StringUtil.isDefined(title)) {
-          result.append(EncodeHelper.escapeXml(logicalName)).append(" / ");
+          result.append(logicalName).append(" / ");
         }
         // Add file size
-        result.append(EncodeHelper.escapeXml(size));
+        result.append(size);
 
         // and download estimation
-        result.append(" / ").append(EncodeHelper.escapeXml(downloadTime)).append(" / ").append(
+        result.append(" / ").append(downloadTime).append(" / ").append(
             resources.getOutputDate(creationDate));
         result.append("</i>");
         // Add info
         if (StringUtil.isDefined(info)) {
-          result.append("<br/>").append(
-              EncodeHelper.javaStringToHtmlParagraphe(EncodeHelper.escapeXml(info)));
+          result.append("<br/>").append(EncodeHelper.javaStringToHtmlParagraphe(info));
         }
       }
 
