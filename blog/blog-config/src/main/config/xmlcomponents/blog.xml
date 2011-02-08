@@ -28,55 +28,79 @@
 <WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>blog</name>
-  <label>Blog</label>
-  <description>Permet de réunir des billets affichés par ordre antéchronologique et éventuellement classés par catégorie.</description>
-  <suite>04 Gestion de contenu</suite>
+  <label>
+    <fr>Blog</fr>
+    <en>Blog</en>
+  </label>
+  <description>
+    <fr>Permet de réunir des billets affichés par ordre antéchronologique et éventuellement classés par catégorie.</fr>
+    <en>A blog component, displaying posts by categories or by time.</en>
+  </description>
+  <suite>
+    <fr>04 Gestion de contenu</fr>
+    <en>04 Content Management</en>
+  </suite>
   <visible>Y</visible>
   <portlet>Y</portlet>
   <instanceClassName>com.silverpeas.blog.BlogInstanciator</instanceClassName>
-  <Profiles>
-    <Profile name="admin">Bloggeur</Profile>
-    <Profile name="user">Lecteur</Profile>
-  </Profiles>
-  <Parameters>
-    <Parameter>
-      <ParameterName>rss</ParameterName>
-      <ParameterLabel>Flux RSS</ParameterLabel>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterValue>N</ParameterValue>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>1</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Permet de générer un flux RSS de ce blog.</ParameterHelpFr>
-        <ParameterHelpEn>.</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>usePdc</ParameterName>
-      <ParameterLabel>Classification PDC</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>2</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Les billets créés au sein de cette instance pourront être classées sur le Plan de Classement</ParameterHelpFr>
-        <ParameterHelpEn>Post would be classified on PDC</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>draftVisible</ParameterName>
-      <ParameterLabel>Brouillon visible</ParameterLabel>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>3</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Le brouillon sera visible entre bloggeurs.</ParameterHelpFr>
-        <ParameterHelpEn>.</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-  </Parameters>
+  <profiles>
+    <profile name="admin">
+      <fr>Bloggeur</fr>
+      <en>Author</en>
+    </profile>
+    <profile name="user">
+      <fr>Lecteur</fr>
+      <en>Reader</en>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>rss</name>
+      <label>
+        <fr>Flux RSS</fr>
+        <en>RSS</en>
+      </label>
+      <order>1</order>
+      <mandatory>N</mandatory>
+      <value>N</value>
+      <type>checkbox</type>      
+      <updatable>always</updatable>      
+      <help>
+        <fr>Permet de générer un flux RSS de ce blog.</fr>
+        <en>Produce a RSS stream for the events of this almanah.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>usePdc</name>
+      <label>
+        <fr>Classification PDC</fr>
+        <en>Classification Scheme</en>
+      </label>
+      <order>2</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>     
+      <updatable>always</updatable>      
+      <help>
+        <fr>Les billets créés au sein de cette instance pourront être classées sur le Plan de Classement</fr>
+        <en>Post would be classified on the classification scheme.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>draftVisible</name>
+      <label>
+        <fr>Brouillon visible</fr>
+        <en>Display drafts</en>
+      </label>
+      <order>3</order>      
+      <mandatory>Y</mandatory>
+      <value>no</value>    
+      <type>checkbox</type>        
+      <updatable>always</updatable>      
+      <help>
+        <fr>Le brouillon sera visible entre bloggeurs.</fr>
+        <en>Authors will be able to see ddraft posts.</en>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>
