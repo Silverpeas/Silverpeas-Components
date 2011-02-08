@@ -37,6 +37,7 @@
 	  action = "Display";
 	}
 	boolean haveGotContent = ((Boolean)request.getAttribute("haveGotContent")).booleanValue();
+	boolean isAnonymous = ((Boolean)request.getAttribute("AnonymousAccess")).booleanValue();
 	
 	Form form = (Form) request.getAttribute("Form");
 	DataRecord data = (DataRecord) request.getAttribute("Data");
@@ -44,6 +45,8 @@
 	PagesContext context = new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, "useless");
  	context.setObjectId("0");
 	context.setBorderPrinted(false);
+	
+	boolean operationsVisibles = !action.equals("Portlet") && webPagesScc.isSubscriptionUsed() && !isAnonymous;
 %>
 
 <html>
@@ -55,8 +58,7 @@ out.println(gef.getLookStyleSheet());
 </head>
 <body>
 <%
-	if (!action.equals("Portlet") && webPagesScc.isSubscriptionUsed())
-	{
+	if (operationsVisibles) {
 	 	if (!isSubscriber) {
 	 		operationPane.addOperation("useless", resource.getString("webPages.subscriptionAdd"), "AddSubscription");
 	 	} else {
@@ -64,7 +66,7 @@ out.println(gef.getLookStyleSheet());
 	 	}
 	}
 	
-	if (action.equals("Preview") || (!action.equals("Portlet") && webPagesScc.isSubscriptionUsed())) {
+	if (action.equals("Preview") || operationsVisibles) {
 		out.println(window.printBefore());
 	}
 
@@ -104,7 +106,7 @@ out.println(gef.getLookStyleSheet());
 		out.println(frame.printAfter());
 	}
 		
-	if (action.equals("Preview") || (!action.equals("Portlet") && webPagesScc.isSubscriptionUsed())) {
+	if (action.equals("Preview") || operationsVisibles) {
 		out.println(window.printAfter());
 	}
 %>	

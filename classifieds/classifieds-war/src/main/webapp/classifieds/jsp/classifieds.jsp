@@ -30,6 +30,7 @@
 Collection	classifieds		= (Collection) request.getAttribute("Classifieds");
 String      title         = (String) request.getAttribute("TitlePath");
 String      extra         = (String) request.getAttribute("Extra");
+boolean		anonymousAccess	= ((Boolean) request.getAttribute("AnonymousAccess")).booleanValue();
 
 if (!StringUtil.isDefined(title)) {
   title = "classifieds.myClassifieds";
@@ -68,7 +69,9 @@ function openSPWindow(fonction, windowName){
 	}
 	
 	// affichage des options
-	operationPane.addOperation(resource.getIcon("classifieds.addClassified"),resource.getString("classifieds.addClassified"), "NewClassified");
+	if (!anonymousAccess) {
+		operationPane.addOperation(resource.getIcon("classifieds.addClassified"),resource.getString("classifieds.addClassified"), "NewClassified");
+	}
 	
 	out.println(window.printBefore());
     out.println(frame.printBefore());
