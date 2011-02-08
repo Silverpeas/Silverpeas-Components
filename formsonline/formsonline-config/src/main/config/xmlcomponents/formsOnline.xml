@@ -25,13 +25,14 @@
 
 -->
 
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>formsOnline</name>
   <label>Formulaires en ligne</label>
   <description>Mise en ligne de formulaires</description>
   <suite>02 Gestion Collaborative</suite>
-  <visible>yes</visible>
-  <portlet>no</portlet>
+  <visible>Y</visible>
+  <portlet>N</portlet>
   <instanceClassName>com.silverpeas.formsonline.FormsOnlineInstanciator</instanceClassName>
   <Profiles>
     <Profile name="Administrator">Gestionnaires</Profile>

@@ -25,13 +25,15 @@
 
 -->
 
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>almanach</name>
   <label>Almanach</label>
   <description>Permet de créer et de visualiser les différents agendas d'événements définis dans les espaces et sous-espaces collaboratifs. A chaque événement peuvent être associés des fichiers joints. La visualisation s'effectue sur plusieurs échelles de temps.</description>
   <suite>02 Gestion Collaborative</suite>
-  <visible>yes</visible>
-  <portlet>yes</portlet>
+  <visible>Y</visible>
+  <portlet>Y</portlet>
   <instanceClassName>com.stratelia.webactiv.almanach.AlmanachInstanciator</instanceClassName>
   <tableList>
     <tabletpl>event</tabletpl>
@@ -84,11 +86,11 @@
     <Parameter>
       <ParameterName>rss</ParameterName>
       <ParameterLabel>Flux RSS</ParameterLabel>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterValue>N</ParameterValue>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>4</ParameterOrder>
+      <ParameterValue>N</ParameterValue>
+      <ParameterType>checkbox</ParameterType>      
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>      
       <ParameterHelp>
         <ParameterHelpFr>Permet de générer un flux RSS des événements de cet Almanach.</ParameterHelpFr>
         <ParameterHelpEn>.</ParameterHelpEn>
@@ -97,11 +99,11 @@
     <Parameter>
       <ParameterName>directAccess</ParameterName>
       <ParameterLabel>Accès transversal</ParameterLabel>
-      <ParameterType>select</ParameterType>
-      <ParameterValue>0</ParameterValue>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
       <ParameterOrder>5</ParameterOrder>
+      <ParameterValue>0</ParameterValue>
+      <ParameterType>select</ParameterType>
+      <ParameterMandatory>N</ParameterMandatory>
+      <ParameterUpdatable>always</ParameterUpdatable>      
       <ParameterHelp>
         <ParameterHelpFr>Permet de choisir quelles autres instances du composant Almanach sont accessibles depuis la liste déroulante.</ParameterHelpFr>
         <ParameterHelpEn>.</ParameterHelpEn>
