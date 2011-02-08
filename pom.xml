@@ -8,9 +8,9 @@
   </parent>
 
   <scm>
-    <connection>scm:svn:https://www.silverpeas.org/svn/silverpeas/components/trunk</connection>
-    <developerConnection>scm:svn:https://www.silverpeas.org/svn/silverpeas/components/trunk</developerConnection>
-    <url>https://www.silverpeas.org/redmine/repositories/show/silverpeas-components</url>
+    <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Components.git</connection>
+    <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Components.git</developerConnection>
+    <url>http://gitub.com/Silverpeas/Silverpeas-Components.git</url>
   </scm>
 
   <repositories>
