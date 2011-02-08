@@ -6,21 +6,17 @@
     <artifactId>process-manager</artifactId>
     <version>5.6-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.components.process-manager</groupId>
   <artifactId>process-manager-ejb</artifactId>
   <packaging>ejb</packaging>
   <name>EJB process-manager</name>
-  
+
   <dependencies>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-j2ee_1.4_spec</artifactId>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
