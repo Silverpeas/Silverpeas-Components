@@ -6,7 +6,7 @@
     <artifactId>mailinglist</artifactId>
     <version>5.6-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.components.mailinglist</groupId>
   <artifactId>mailinglist-war</artifactId>
   <packaging>war</packaging>
@@ -33,10 +33,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
-    <dependency>
       <groupId>httpunit</groupId>
       <artifactId>httpunit</artifactId>
     </dependency>
@@ -48,7 +44,7 @@
       <groupId>javax.mail</groupId>
       <artifactId>mail</artifactId>
       <scope>provided</scope>
-    </dependency> 
+    </dependency>
     <dependency>
       <groupId>org.jvnet.mock-javamail</groupId>
       <artifactId>mock-javamail</artifactId>
@@ -93,7 +89,7 @@
     </dependency>
   </dependencies>
 
-  
+
   <build>
     <testResources>
       <testResource>

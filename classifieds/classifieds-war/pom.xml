@@ -25,10 +25,6 @@
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
-	<dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
 	 <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>comment</artifactId>
@@ -41,10 +37,6 @@
       <classifier>client</classifier>
       <version>${project.version}</version>
       <scope>provided</scope>
-    </dependency>
-        <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-j2ee_1.4_spec</artifactId>
     </dependency>
   </dependencies>
 
