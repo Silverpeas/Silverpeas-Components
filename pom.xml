@@ -8,9 +8,9 @@
   </parent>
 
   <scm>
-    <connection>scm:svn:https://www.silverpeas.org/svn/silverpeas/components/tags/components-5.5</connection>
-    <developerConnection>scm:svn:https://www.silverpeas.org/svn/silverpeas/components/tags/components-5.5</developerConnection>
-    <url>https://www.silverpeas.org/redmine/repositories/show/silverpeas-components/tags/components-5.5</url>
+    <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</connection>
+    <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Core.git</developerConnection>
+    <url>http://gitub.com/Silverpeas/Silverpeas-Core.git</url>
   </scm>
 
   <repositories>
@@ -19,19 +19,23 @@
       <layout>default</layout>
       <name>Silverpeas Repository</name>
       <url>http://www.silverpeas.org/nexus/content/groups/silverpeas</url>
-      <releases><enabled>true</enabled></releases>
-      <snapshots><enabled>true</enabled></snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
     </repository>
   </repositories>
 
   <groupId>com.silverpeas</groupId>
   <artifactId>components</artifactId>
-  <version>5.5</version>
+  <version>5.5.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Silverpeas Components</name>
 
   <properties>
-    <core.version>5.5</core.version>
+    <core.version>5.5.1-SNAPSHOT</core.version>
   </properties>
 
   <build>
@@ -40,7 +44,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
-          <descriptors><descriptor>assemblies/assembly.xml</descriptor></descriptors>
+          <descriptors>
+            <descriptor>assemblies/assembly.xml</descriptor>
+          </descriptors>
           <appendAssemblyId>true</appendAssemblyId>
           <attach>true</attach>
           <skipAssembly>true</skipAssembly>
@@ -76,7 +82,7 @@
           </execution>
         </executions>
       </plugin>
-     </plugins>
+    </plugins>
   </build>
 
 
