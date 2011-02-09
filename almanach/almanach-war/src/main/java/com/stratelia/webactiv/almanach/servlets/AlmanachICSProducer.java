@@ -24,7 +24,6 @@
 package com.stratelia.webactiv.almanach.servlets;
 
 import com.silverpeas.calendar.CalendarEvent;
-import com.silverpeas.export.ExportDescriptor;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterFactory;
 import com.stratelia.webactiv.almanach.control.CalendarEventEncoder;
@@ -34,7 +33,6 @@ import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.almanach.model.EventPK;
 import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
@@ -53,6 +51,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+import static com.silverpeas.export.ExportDescriptor.*;
 
 /**
  * A producer of an ICS resource from a given almanach.
@@ -97,7 +96,7 @@ public class AlmanachICSProducer {
 
         ExporterFactory exporterFactory = ExporterFactory.getFactory();
         Exporter<CalendarEvent> iCalExporter = exporterFactory.getICalExporter();
-        iCalExporter.export(new ExportDescriptor(writer), allEvents);
+        iCalExporter.export(withWriter(writer), allEvents);
       } catch (Exception ex) {
         throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
       }
