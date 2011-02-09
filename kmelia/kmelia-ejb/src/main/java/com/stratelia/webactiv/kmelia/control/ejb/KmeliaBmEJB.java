@@ -575,29 +575,19 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   private String displayPath(Collection<NodeDetail> path, int beforeAfter, String language) {
-    String pathString = new String();
-    int nbItemInPath = path.size();
-    Iterator<NodeDetail> iterator = path.iterator();
-    boolean alreadyCut = false;
-    int nb = 0;
+    StringBuilder pathString = new StringBuilder();
+    boolean first = true;
 
-    NodeDetail nodeInPath = null;
-    while (iterator.hasNext()) {
-      nodeInPath = iterator.next();
-      if ((nb <= beforeAfter) || (nb + beforeAfter >= nbItemInPath - 1)) {
-        pathString = nodeInPath.getName(language) + " " + pathString;
-        if (iterator.hasNext()) {
-          pathString = " > " + pathString;
-        }
-      } else {
-        if (!alreadyCut) {
-          pathString += " ... > ";
-          alreadyCut = true;
-        }
+    List<NodeDetail> pathAsList = new ArrayList<NodeDetail>(path);
+    Collections.reverse(pathAsList); // reverse path from root to node
+    for (NodeDetail nodeInPath : pathAsList) {
+      if (!first) {
+        pathString.append(" > ");
       }
-      nb++;
+      first = false;
+      pathString.append(nodeInPath.getName(language));
     }
-    return pathString;
+    return pathString.toString();
   }
 
   private void notifyUsers(NotificationMetaData notifMetaData, String senderId) {
@@ -649,7 +639,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     for (String lang : UIHelper.getLanguages()) {
       SilverpeasTemplate template = getNewTemplate();
       templates.put(lang, template);
-      template.setAttribute("path", getHTMLNodePath(fatherPK, lang));
+      template.setAttribute("path", getHTMLNodePath(nodeDetail.getFatherPK(), lang));
       template.setAttribute("topic", nodeDetail);
       template.setAttribute("topicName", nodeDetail.getName(lang));
       template.setAttribute("topicDescription", nodeDetail.getDescription(lang));
@@ -1497,7 +1487,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         "KmeliaBmEJB.changePublicationStatusOnCreation()",
         "root.MSG_GEN_ENTER_METHOD", "status = " + pubDetail.getStatus());
     String status = pubDetail.getStatus();
-    if (status == null || status.equalsIgnoreCase("")) {
+    if (!StringUtil.isDefined(status)) {
       status = PublicationDetail.TO_VALIDATE;
 
       boolean draftModeUsed = isDraftModeUsed(pubDetail.getPK().getInstanceId());
@@ -2644,8 +2634,10 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           path.remove(path.size() - 1);
         }
         htmlPath = getSpacesPath(nodePK.getInstanceId(), language)
-            + getComponentLabel(nodePK.getInstanceId(), language) + " > "
-            + displayPath(path, 10, language);
+            + getComponentLabel(nodePK.getInstanceId(), language);
+        if (!path.isEmpty()) {
+          htmlPath += " > " + displayPath(path, 10, language);
+        }
       } catch (RemoteException re) {
         throw new KmeliaRuntimeException("KmeliaBmEJB.getHTMLNodePath()",
             SilverpeasRuntimeException.ERROR,
@@ -5179,21 +5171,25 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // paste vignette
       String vignette = refPub.getImage();
       if (vignette != null) {
-        String thumbnailsSubDirectory = publicationSettings.getString("imagesSubDirectory");
-        String from = absolutePath + thumbnailsSubDirectory + File.separator + vignette;
-
-        String type = vignette.substring(vignette.lastIndexOf(".") + 1, vignette.length());
-        String newVignette = new Long(new java.util.Date().getTime()).toString() + "." + type;
-
-        String to = absolutePath + thumbnailsSubDirectory + File.separator + newVignette;
-        FileRepositoryManager.copyFile(from, to);
-
         ThumbnailDetail thumbDetail = new ThumbnailDetail(
             clone.getPK().getInstanceId(),
             Integer.valueOf(clone.getPK().getId()),
             ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-        thumbDetail.setOriginalFileName(newVignette);
         thumbDetail.setMimeType(refPub.getImageMimeType());
+        if (vignette.startsWith("/")) {
+          thumbDetail.setOriginalFileName(vignette);
+        } else {
+          String thumbnailsSubDirectory = publicationSettings.getString("imagesSubDirectory");
+          String from = absolutePath + thumbnailsSubDirectory + File.separator + vignette;
+
+          String type = FilenameUtils.getExtension(vignette);
+          String newVignette = new Long(new java.util.Date().getTime()).toString() + "." + type;
+
+          String to = absolutePath + thumbnailsSubDirectory + File.separator + newVignette;
+          FileRepositoryManager.copyFile(from, to);
+
+          thumbDetail.setOriginalFileName(newVignette);
+        }
 
         new ThumbnailServiceImpl().createThumbnail(thumbDetail);
       }

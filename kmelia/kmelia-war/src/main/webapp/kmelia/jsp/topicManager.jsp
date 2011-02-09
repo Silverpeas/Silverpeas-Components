@@ -834,13 +834,12 @@ function loadNodeData(node, fnLoadComplete)  {
 			$.get('<%=m_context%>/KmeliaAJAXServlet', {ComponentId:'<%=componentId%>',Action:'EmptyTrash'},
 					function(data){
 						$.closeProgressMessage();
-						if (data == "ok")
-						{
-							displayPublications("1");
-							//alert("Corbeille vid?e avec succ?s !");
-						}
-						else
-						{
+						if (data == "ok") {
+							var basketNode = oTreeView.getNodeByProperty("labelElId", "basket");
+							basketNode.label = "<%=resources.getString("kmelia.basket")%> (0)";
+							displayTopicContent("1");
+							oTreeView.draw();
+						} else {
 							alert(data);
 						}
 					});

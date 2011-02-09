@@ -28,11 +28,11 @@
 <%@page import="com.silverpeas.util.StringUtil"%>
 
 <% 
-	// r�cup�ration des param�tres :
 	boolean				isDraftEnabled 	= ((Boolean) request.getAttribute("IsDraftEnabled")).booleanValue();
 	ClassifiedDetail	classified		= (ClassifiedDetail) request.getAttribute("Classified");
 	String 				profile			= (String) request.getAttribute("Profile");
 	String 				userId			= (String) request.getAttribute("UserId");
+	boolean				anonymousAccess	= ((Boolean) request.getAttribute("AnonymousAccess")).booleanValue();
 
 	Collection 			comments		= (Collection) request.getAttribute("AllComments");
 	
@@ -74,7 +74,6 @@
 	
 	boolean isAutorized = userId.equals(creatorId) || profile.equals("admin");
 	
-	//d�claration des boutons
 	Button validateComment 	= (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
 	Button cancelButton 	= (Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
 
@@ -82,13 +81,14 @@
 	Board board	= gef.getBoard();
 %>
 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <%
 	out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 
 	var refusalMotiveWindow = window;
 	
@@ -198,7 +198,7 @@
 	
 </script>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body id="classified-view">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
@@ -227,53 +227,46 @@
 	out.println(window.printBefore());
     out.println(frame.printBefore());
 %>
-<table CELLPADDING=5 WIDTH="100%">
+<table cellpadding="5" width="100%">
 <tr>
 	<td>
-	<%=board.printBefore()%>
-	<table width="600" align="center">
-		<%if ( title != null ) {	%>
-			<tr>
-				<td class="txtlibform" colspan="2" align="center"><%=title%></td>
-			</tr>
-		<%	} %>
-		<tr>
-			<td class="txtlibform"><%=resource.getString("classifieds.annonceur")%> : </td><td><%=creatorName%> (<%=Encode.javaStringToHtmlString(creatorEmail)%>)</td>
-		</tr>
-		<tr>
-			<td class="txtlibform"><%=resource.getString("classifieds.parutionDate")%> : </td><td><%=creationDate%></td>
-		</tr>
-		<tr>
+		<div class="tableBoard" id="classified-view-header">
+			<h1 class="titreFenetre" id="classified-title"><%=title%></h1>				
+			<div id="classified-view-header-owner">
+				<span class="txtlibform"><%=resource.getString("classifieds.annonceur")%> : </span>
+				<span class="txtvalform"><%=creatorName%> (<%=Encode.javaStringToHtmlString(creatorEmail)%>) </span>
+			</div>
+			<div id="classified-view-header-parutionDate">
+				<span class="txtlibform"><%=resource.getString("classifieds.parutionDate")%> : </span>
+				<span class="txtvalform"><%=creationDate%> </span>
+			</div>
 			<% if (StringUtil.isDefined(updateDate)) { %>
-				<td class="txtlibform"><%=resource.getString("classifieds.updateDate")%> : </td><td><%=updateDate%></td>
+				<div id="classified-view-header-updateDate">
+					<span class="txtlibform"><%=resource.getString("classifieds.updateDate")%> : </span>
+					<span class="txtvalform"><%=updateDate%></span>
+				</div>
 			<% } %>
-		</tr>
-		<% if (StringUtil.isDefined(validateDate) && StringUtil.isDefined(validatorName)) { %>
-			<tr>
-				<td class="txtlibform"><%=resource.getString("classifieds.validateDate")%> :</td>
-				<TD><%=validateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("classifieds.by")%></span>&nbsp;<%=validatorName%></TD>
-			</tr>
-		<% } %>
-	</table>
-	<%=board.printAfter()%>	
+			<% if (StringUtil.isDefined(validateDate) && StringUtil.isDefined(validatorName)) { %>
+				<div id="classified-view-header-validateDate">
+					<span class="txtlibform"><%=resource.getString("classifieds.validateDate")%> : </span>
+					<span class="txtvalform"><%=validateDate%> &nbsp; <span><%=resource.getString("classifieds.by")%></span>&nbsp;<%=validatorName%></span>
+				</div>
+			<% } %>
+		<hr class="clear" />
+		</div>
+
 	<% if (xmlForm != null) { %>
-		<br/>
-		<%=board.printBefore()%>
-		<table border="0" width="50%">
-			<!-- AFFICHAGE du formulaire -->
-			<tr>
-				<td colspan="2">
-				<%
-					PagesContext xmlContext = new PagesContext("myForm", "0", resource.getLanguage(), false, instanceId, null);
-					xmlContext.setBorderPrinted(false);
-					xmlContext.setIgnoreDefaultValues(true);
-					
-			    	xmlForm.display(out, xmlContext, xmlData);
-			    %>
-				</td>	
-			</tr>
-		</table>
-		<%=board.printAfter()%>
+		<div class="tableBoard" id="classified-view-content">
+		<!-- AFFICHAGE du formulaire -->
+		<%
+			PagesContext xmlContext = new PagesContext("myForm", "0", resource.getLanguage(), false, instanceId, null);
+			xmlContext.setBorderPrinted(false);
+			xmlContext.setIgnoreDefaultValues(true);
+			
+	    	xmlForm.display(out, xmlContext, xmlData);
+	    %>
+		<hr class="clear" />
+		</div>
 	<% } %>	
 	</td>
 </tr>
@@ -281,14 +274,12 @@
 	<td>
 		<!--Afficher les commentaires-->
 		<div class="commentaires">
-
+		<% if (!anonymousAccess) { %>
 			<form name="commentForm" action="AddComment" method="post">	
-						
-						<p class="txtlibform"><%=resource.getString("classifieds.addComment")%></p>
-						
-							<textarea rows="4" cols="100" name="Message"></textarea>
-							<input type="hidden" name="ClassifiedId" value="<%=classifiedId%>"/>
-							<input type="hidden" name="CommentId" value=""/>
+				<p class="txtlibform"><%=resource.getString("classifieds.addComment")%></p>
+				<textarea rows="4" cols="100" name="Message"></textarea>
+				<input type="hidden" name="ClassifiedId" value="<%=classifiedId%>"/>
+				<input type="hidden" name="CommentId" value=""/>
 			</form>
 
 			<%
@@ -296,11 +287,10 @@
 			buttonPaneComment.addButton(validateComment);
 			buttonPaneComment.addButton(cancelButton);
 			out.println("<br/><center>"+buttonPaneComment.print()+"</center><br/>");
-			
 			%>
-
-		<hr />
-		
+			<hr />
+		<% } %>
+			
 		<% if (comments != null) {
 				Iterator itCom = (Iterator) comments.iterator();
 				while (itCom.hasNext()) {
@@ -308,27 +298,24 @@
 					String commentDate = resource.getOutputDate(unComment.getCreationDate());
 					String ownerId = Integer.toString(unComment.getOwnerId());
 					%>
-							<div class="oneComment">
-								<div>
-									<div class="avatar">
-										<img src="<%=m_context%><%=unComment.getOwnerDetail().getAvatar() %>"/>
-									</div>
-									<p class="author">
-										<%=unComment.getOwnerDetail().getDisplayedName()%>
-										<span class="date"> - <%=resource.getString("classifieds.postOn")%> <%=commentDate%></span>
-									</p>
-									<% if ("admin".equals(profile) || ownerId.equals(userId) ) { %>
-										<div class="action">
-											<A href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=classifiedId%>)"><IMG SRC="<%=resource.getIcon("classifieds.smallUpdate") %>" border="0" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="absmiddle"/></A>
-											<A href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><IMG SRC="<%=resource.getIcon("classifieds.smallDelete") %>" border="0" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="absmiddle"/></A>
-										</div>
-									<% } %>
-								
-									
-										<p class="message"><%=Encode.javaStringToHtmlParagraphe(unComment.getMessage())%></p>
+					<div class="oneComment">
+						<div>
+							<div class="avatar">
+								<img src="<%=m_context%><%=unComment.getOwnerDetail().getAvatar() %>"/>
+							</div>
+							<p class="author">
+								<%=unComment.getOwnerDetail().getDisplayedName()%>
+								<span class="date"> - <%=resource.getString("classifieds.postOn")%> <%=commentDate%></span>
+							</p>
+							<% if ("admin".equals(profile) || ownerId.equals(userId) ) { %>
+								<div class="action">
+									<a href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=classifiedId%>)"><img src="<%=resource.getIcon("classifieds.smallUpdate") %>" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="absmiddle"/></a>
+									<a href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><img src="<%=resource.getIcon("classifieds.smallDelete") %>" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="absmiddle"/></a>
 								</div>
-							
-							</div>						
+							<% } %>
+							<p class="message"><%=Encode.javaStringToHtmlParagraphe(unComment.getMessage())%></p>
+						</div>
+					</div>
 					<%
 				}
 			}
@@ -344,8 +331,8 @@
 	out.println(window.printAfter());
 %>	
 
-<form name="classifiedForm" action="" Method="POST">
-	<input type="hidden" name="ClassifiedId">
+<form name="classifiedForm" action="" method="post">
+	<input type="hidden" name="ClassifiedId"/>
 </form>
 </body>
 </html>

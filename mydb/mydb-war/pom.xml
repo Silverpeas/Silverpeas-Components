@@ -6,7 +6,7 @@
     <artifactId>mydb</artifactId>
     <version>5.6-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.components.mydb</groupId>
   <artifactId>mydb-war</artifactId>
   <packaging>war</packaging>
@@ -32,10 +32,6 @@
        <version>${core.version}</version>
        <classifier>client</classifier>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-j2ee_1.4_spec</artifactId>
     </dependency>
   </dependencies>
 

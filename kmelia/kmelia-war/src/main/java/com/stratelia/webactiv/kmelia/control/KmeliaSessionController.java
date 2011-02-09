@@ -843,6 +843,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     SilverTrace.info("kmelia", "KmeliaSessionControl.flushTrashCan", "root.MSG_ENTRY_METHOD");
     TopicDetail td = getKmeliaBm().goTo(getNodePK(NodePK.BIN_NODE_ID), getUserId(), false,
         getUserTopicProfile("1"), isRightsOnTopicsEnabled());
+    setSessionTopic(td);
     Collection<UserPublication> pds = td.getPublicationDetails();
     Iterator<UserPublication> ipds = pds.iterator();
     SilverTrace.info("kmelia", "KmeliaSessionControl.flushTrashCan", "root.MSG_PARAM_VALUE",
@@ -958,12 +959,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return result;
   }
 
-  public synchronized String createPublicationIntoTopic(PublicationDetail pubDetail, String fatherId)
+  private String createPublicationIntoTopic(PublicationDetail pubDetail, String fatherId)
       throws RemoteException {
     pubDetail.getPK().setSpace(getSpaceId());
     pubDetail.getPK().setComponentName(getComponentId());
     pubDetail.setCreatorId(getUserId());
     pubDetail.setCreationDate(new Date());
+
+    if (KmeliaHelper.ROLE_WRITER.equals(getUserTopicProfile(fatherId))) {
+      // in case of writers, status of new publication must be processed
+      pubDetail.setStatus(null);
+    }
 
     String result = getKmeliaBm().createPublicationIntoTopic(pubDetail, getNodePK(fatherId));
     SilverTrace.spy("kmelia",
@@ -2693,7 +2699,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public void setWizardLast(String wizardLast) {
     this.wizardLast = wizardLast;
   }
-  
+
   /**
    * Parameter for time Axis visibility
    * @return 
@@ -2723,7 +2729,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public boolean isFieldImportanceVisible() {
     if (isKmaxMode) {
-      return StringUtil.getBooleanValue(getComponentParameterValue("useImportance")); 
+      return StringUtil.getBooleanValue(getComponentParameterValue("useImportance"));
     }
     return getSettings().getBoolean("showImportance", true);
   }
@@ -3481,13 +3487,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       String thumbnailsSubDirectory = getPublicationSettings().getString("imagesSubDirectory");
       String toAbsolutePath = FileRepositoryManager.getAbsolutePath(getComponentId());
       String fromAbsolutePath = FileRepositoryManager.getAbsolutePath(fromComponentId);
+      
+      if (currentNodePK == null) {
+        // Ajoute au thème courant
+        currentNodePK = getSessionTopic().getNodePK();
+      }
 
       if (isCutted) {
-        if (currentNodePK == null) {
-          // Ajoute au thème courant
-          currentNodePK = getSessionTopic().getNodePK();
-        }
-
         if (fromComponentId.equals(getComponentId())) {
           getPublicationBm().removeAllFather(publi.getPK());
           getPublicationBm().addFather(publi.getPK(), currentNodePK);
@@ -3499,16 +3505,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       } else {
         // paste the publicationDetail
         publi.setUpdaterId(getUserId()); // ignore initial parameters
-
-        String id = null;
-        if (currentNodePK == null) {
-          id = createPublication(publi);
-        } else {
-          id = createPublicationIntoTopic(publi, currentNodePK.getId());
-          List<NodePK> fatherPKs = (List<NodePK>) getPublicationBm().getAllFatherPK(publi.getPK());
-          if (nodePKsToPaste != null) {
-            fatherPKs.removeAll(nodePKsToPaste);
-          }
+        
+        String id = createPublicationIntoTopic(publi, currentNodePK.getId());
+        List<NodePK> fatherPKs = (List<NodePK>) getPublicationBm().getAllFatherPK(publi.getPK());
+        if (nodePKsToPaste != null) {
+          fatherPKs.removeAll(nodePKsToPaste);
         }
         // paste vignette
         ThumbnailDetail vignette =
@@ -3600,32 +3601,37 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       throws IOException, ThumbnailException {
     ThumbnailDetail thumbDetail = new ThumbnailDetail(publi.getPK().getInstanceId(), Integer.valueOf(
         id), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-    String from = fromAbsolutePath + thumbnailsSubDirectory + File.separatorChar
-        + vignette.getOriginalFileName();
+    
+    if (vignette.getOriginalFileName().startsWith("/")) {
+      thumbDetail.setOriginalFileName(vignette.getOriginalFileName());
+      thumbDetail.setMimeType(vignette.getMimeType());
+    } else {
+      String from = fromAbsolutePath + thumbnailsSubDirectory + File.separatorChar
+          + vignette.getOriginalFileName();
 
-    String type = vignette.getOriginalFileName().substring(vignette.getOriginalFileName().indexOf(
-        '.') + 1, vignette.getOriginalFileName().length());
-    String newOriginalImage = String.valueOf(System.currentTimeMillis()) + "." + type;
+      String type = FilenameUtils.getExtension(vignette.getOriginalFileName());
+      String newOriginalImage = String.valueOf(System.currentTimeMillis()) + "." + type;
 
-    String to = toAbsolutePath + thumbnailsSubDirectory + File.separatorChar + newOriginalImage;
-    FileRepositoryManager.copyFile(from, to);
-    thumbDetail.setOriginalFileName(newOriginalImage);
-
-    // then copy thumnbnail image if exists
-    if (vignette.getCropFileName() != null) {
-      from = fromAbsolutePath + thumbnailsSubDirectory + File.separatorChar + vignette.
-          getCropFileName();
-      type = FilenameUtils.getExtension(vignette.getCropFileName());
-      String newThumbnailImage = String.valueOf(System.currentTimeMillis()) + "." + type;
-      to = toAbsolutePath + thumbnailsSubDirectory + File.separatorChar + newThumbnailImage;
+      String to = toAbsolutePath + thumbnailsSubDirectory + File.separatorChar + newOriginalImage;
       FileRepositoryManager.copyFile(from, to);
-      thumbDetail.setCropFileName(newThumbnailImage);
+      thumbDetail.setOriginalFileName(newOriginalImage);
+
+      // then copy thumnbnail image if exists
+      if (vignette.getCropFileName() != null) {
+        from = fromAbsolutePath + thumbnailsSubDirectory + File.separatorChar + vignette.
+            getCropFileName();
+        type = FilenameUtils.getExtension(vignette.getCropFileName());
+        String newThumbnailImage = String.valueOf(System.currentTimeMillis()) + "." + type;
+        to = toAbsolutePath + thumbnailsSubDirectory + File.separatorChar + newThumbnailImage;
+        FileRepositoryManager.copyFile(from, to);
+        thumbDetail.setCropFileName(newThumbnailImage);
+      }
+      thumbDetail.setMimeType(type);
+      thumbDetail.setXLength(vignette.getXLength());
+      thumbDetail.setYLength(vignette.getYLength());
+      thumbDetail.setXStart(vignette.getXStart());
+      thumbDetail.setYStart(vignette.getYStart());
     }
-    thumbDetail.setMimeType(type);
-    thumbDetail.setXLength(vignette.getXLength());
-    thumbDetail.setYLength(vignette.getYLength());
-    thumbDetail.setXStart(vignette.getXStart());
-    thumbDetail.setYStart(vignette.getYStart());
     getThumbnailService().createThumbnail(thumbDetail);
   }
 
@@ -4034,8 +4040,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return KmeliaHelper.isToolbox(getComponentId());
   }
 
-  public String getFirstAttachmentURLOfCurrentPublication(String webContext)
-      throws RemoteException {
+  /**
+   * Return the url to the first attached file for the current publication.
+   * @return the url to the first attached file for the curent publication.
+   * @throws RemoteException 
+   */
+  public String getFirstAttachmentURLOfCurrentPublication() throws RemoteException {
     PublicationPK pubPK = getSessionPublication().getPublication().getPublicationDetail().getPK();
     String url = null;
     if (isVersionControlled()) {
@@ -4045,38 +4055,42 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         Document document = documents.get(0);
         DocumentVersion documentVersion = versioning.getLastPublicVersion(document.getPk());
         if (documentVersion != null) {
-          url =
-              versioning.getDocumentVersionURL(document.getInstanceId(), documentVersion.
-              getLogicalName(), document.getPk().getId(), documentVersion.getPk().getId());
+          url = URLManager.getApplicationURL() + versioning.getDocumentVersionURL(document.
+              getInstanceId(), documentVersion.getLogicalName(), document.getPk().getId(),
+              documentVersion.getPk().getId());
         }
       }
     } else {
-      Vector<AttachmentDetail> attachments =
-          AttachmentController.searchAttachmentByPKAndContext(pubPK, "Images");
+      Vector<AttachmentDetail> attachments = AttachmentController.searchAttachmentByPKAndContext(
+          pubPK, "Images");
       if (!attachments.isEmpty()) {
         AttachmentDetail attachment = attachments.get(0);
-        url = webContext + attachment.getAttachmentURL();
+        url = URLManager.getApplicationURL() + attachment.getAttachmentURL();
       }
     }
     return url;
   }
 
-  public String getAttachmentURL(String webContext, String attachmentOrDocumentId)
-      throws RemoteException {
+  /**
+   * Return the url to access the file
+   * @param fileId the id of the file (attachment or document id).
+   * @return the url to the file.
+   * @throws RemoteException 
+   */
+  public String getAttachmentURL(String fileId) throws RemoteException {
     String url = null;
     if (isVersionControlled()) {
       VersioningUtil versioningUtil = new VersioningUtil();
-      Document document = versioningUtil.getDocument(
-          new DocumentPK(Integer.parseInt(attachmentOrDocumentId)));
-      DocumentVersion documentVersion = versioningUtil.getLastPublicVersion(
-          new DocumentPK(Integer.parseInt(attachmentOrDocumentId)));
-      url = webContext
-          + versioningUtil.getDocumentVersionURL(document.getInstanceId(), documentVersion.
-          getLogicalName(), document.getPk().getId(), documentVersion.getPk().getId());
+      DocumentPK documentPk = new DocumentPK(Integer.parseInt(fileId));
+      Document document = versioningUtil.getDocument(documentPk);
+      DocumentVersion documentVersion = versioningUtil.getLastPublicVersion(documentPk);
+      url = URLManager.getApplicationURL() + versioningUtil.getDocumentVersionURL(document.
+          getInstanceId(), documentVersion.getLogicalName(), document.getPk().getId(), 
+          documentVersion.getPk().getId());
     } else {
-      AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(
-          new AttachmentPK(attachmentOrDocumentId));
-      url = webContext + attachment.getAttachmentURL();
+      AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
+          fileId));
+      url =  URLManager.getApplicationURL() + attachment.getAttachmentURL();
     }
     return url;
   }
@@ -4538,7 +4552,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public String getPublicationPdfName(String pubId) throws RemoteException {
     String lang = getLanguage();
     StringBuilder pdfName = new StringBuilder(250);
-    
+
     // add space path to filename
     List<SpaceInst> listSpaces = getSpacePath();
     for (SpaceInst space : listSpaces) {
@@ -4546,7 +4560,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
     // add component name to filename
     pdfName.append(getComponentLabel());
-    
+
     if (!isKmaxMode) {
       TopicDetail topic = getPublicationTopic(pubId);
       Collection<NodeDetail> path = topic.getPath();
@@ -4554,7 +4568,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         pdfName.append('-').append(node.getName(lang));
       }
     }
-    
+
     CompletePublication complete = getCompletePublication(pubId);
     pdfName.append('-').append(complete.getPublicationDetail().getTitle()).append('-');
     pdfName.append(pubId).append(".pdf");

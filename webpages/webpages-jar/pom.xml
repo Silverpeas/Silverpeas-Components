@@ -33,9 +33,5 @@
       <classifier>client</classifier>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-j2ee_1.4_spec</artifactId>
-    </dependency>
   </dependencies>
 </project>

@@ -36,6 +36,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 
+import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.silverpeas.webpages.control.*;
 import com.silverpeas.webpages.model.WebPagesException;
@@ -112,22 +113,20 @@ public class WebPagesRequestRouter extends ComponentRequestRouter {
           request.setAttribute("Form", webPagesSC.getViewForm());
           request.setAttribute("Data", webPagesSC.getDataRecord());
         }
-
-        String profile = webPagesSC.getProfile();
-        if (!profile.equals(USER)) {
-          request.setAttribute("Action", "Preview");
-        } else {
-          request.setAttribute("Action", "Display");
+        
+        if (!"Portlet".equals(request.getAttribute("Action"))) {
+          if (!USER.equals(webPagesSC.getProfile())) {
+            request.setAttribute("Action", "Preview");
+          } else {
+            request.setAttribute("Action", "Display");
+          }
         }
 
+        request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
         destination = rootDestination + "display.jsp";
-      } else if (function.startsWith("portlet")) {
-        processHaveGotContent(webPagesSC, request);
-
-        request.setAttribute("IsSubscriber", webPagesSC.isSubscriber());
+      } else if (function.startsWith("portlet")) {       
         request.setAttribute("Action", "Portlet");
-
-        destination = rootDestination + "display.jsp";
+        destination = getDestination("Preview", componentSC, request);
       } else if (function.startsWith("AddSubscription")) {
         webPagesSC.addSubscription();
         destination = getDestination("Main", componentSC, request);
@@ -169,6 +168,14 @@ public class WebPagesRequestRouter extends ComponentRequestRouter {
     }
     request.setAttribute("haveGotContent", haveGotContent);
     return haveGotContent;
+  }
+  
+  private boolean isAnonymousAccess(HttpServletRequest request) {
+    LookHelper lookHelper = (LookHelper) request.getSession().getAttribute("Silverpeas_LookHelper");
+    if (lookHelper != null) {
+      return lookHelper.isAnonymousAccess();
+    }
+    return false;
   }
 
 }
