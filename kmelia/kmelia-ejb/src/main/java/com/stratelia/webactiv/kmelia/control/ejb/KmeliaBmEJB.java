@@ -5171,21 +5171,25 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // paste vignette
       String vignette = refPub.getImage();
       if (vignette != null) {
-        String thumbnailsSubDirectory = publicationSettings.getString("imagesSubDirectory");
-        String from = absolutePath + thumbnailsSubDirectory + File.separator + vignette;
-
-        String type = vignette.substring(vignette.lastIndexOf(".") + 1, vignette.length());
-        String newVignette = new Long(new java.util.Date().getTime()).toString() + "." + type;
-
-        String to = absolutePath + thumbnailsSubDirectory + File.separator + newVignette;
-        FileRepositoryManager.copyFile(from, to);
-
         ThumbnailDetail thumbDetail = new ThumbnailDetail(
             clone.getPK().getInstanceId(),
             Integer.valueOf(clone.getPK().getId()),
             ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-        thumbDetail.setOriginalFileName(newVignette);
         thumbDetail.setMimeType(refPub.getImageMimeType());
+        if (vignette.startsWith("/")) {
+          thumbDetail.setOriginalFileName(vignette);
+        } else {
+          String thumbnailsSubDirectory = publicationSettings.getString("imagesSubDirectory");
+          String from = absolutePath + thumbnailsSubDirectory + File.separator + vignette;
+
+          String type = FilenameUtils.getExtension(vignette);
+          String newVignette = new Long(new java.util.Date().getTime()).toString() + "." + type;
+
+          String to = absolutePath + thumbnailsSubDirectory + File.separator + newVignette;
+          FileRepositoryManager.copyFile(from, to);
+
+          thumbDetail.setOriginalFileName(newVignette);
+        }
 
         new ThumbnailServiceImpl().createThumbnail(thumbDetail);
       }
