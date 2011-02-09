@@ -47,7 +47,7 @@ xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonne
   <profiles>
     <profile name="admin">
       <fr>Gestionnaire</fr>
-      <en>Manager</en>
+      <en>Administrator</en>
     </profile>
     <profile name="publisher">
       <fr>Publieur</fr>
@@ -72,7 +72,7 @@ xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonne
       <updatable>always</updatable>
       <help>
         <fr>Les événements saisis au sein de cette instance pourront être classés sur le Plan de Classement</fr>
-        <en>The events could be classified on the classification scheme.</en>
+        <en>The events will be classified on the classification scheme.</en>
       </help>
     </parameter>
     <parameter>
