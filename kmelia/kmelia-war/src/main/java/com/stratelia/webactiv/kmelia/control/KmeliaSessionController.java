@@ -843,6 +843,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     SilverTrace.info("kmelia", "KmeliaSessionControl.flushTrashCan", "root.MSG_ENTRY_METHOD");
     TopicDetail td = getKmeliaBm().goTo(getNodePK(NodePK.BIN_NODE_ID), getUserId(), false,
         getUserTopicProfile("1"), isRightsOnTopicsEnabled());
+    setSessionTopic(td);
     Collection<UserPublication> pds = td.getPublicationDetails();
     Iterator<UserPublication> ipds = pds.iterator();
     SilverTrace.info("kmelia", "KmeliaSessionControl.flushTrashCan", "root.MSG_PARAM_VALUE",
