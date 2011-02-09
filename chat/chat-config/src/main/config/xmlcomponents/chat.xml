@@ -28,33 +28,51 @@
 <WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>chat</name>
-  <label>Chat</label>
-  <description>Supporte les processus de communication synchrone de type chat. Des salons peuvent être ouverts sur des thèmes variés. Des communications en mode 'privé' sont possibles, au sein d'un chat multi-participants.</description>
-  <suite>02 Gestion Collaborative</suite>
-  <visible>yes</visible>
-  <portlet>no</portlet>
-  <instanceClassName>com.stratelia.silverpeas.chat.ChatInstanciator</instanceClassName>
-  <tableList>
-    <tabletpl>Node</tabletpl>
-  </tableList>
-  <Profiles>
-    <Profile name="admin">Administrateurs</Profile>
-    <Profile name="publisher">Animateurs</Profile>
-    <Profile name="user">Chatteurs</Profile>
-  </Profiles>
-  <Parameters>
-    <Parameter>
-      <ParameterName>usePdc</ParameterName>
-      <ParameterLabel>Classification PDC</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterOrder>0</ParameterOrder>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterHelp>
-        <ParameterHelpFr>Les salons créés au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-  </Parameters>
+  <label>
+    <fr>Dscussion en ligne</fr>
+    <en>Online chat</en>
+  </label>
+  <description>
+    <fr>Supporte les processus de communication synchrone de type chat. Des salons peuvent être ouverts sur des thèmes variés. Des communications en mode 'privé' sont possibles, au sein d'un chat multi-participants.</fr>
+    <en>Supporte les processus de communication synchrone de type chat. Des salons peuvent être ouverts sur des thèmes variés. Des communications en mode 'privé' sont possibles, au sein d'un chat multi-participants.</en>
+  </description>
+  <suite>
+    <fr>02 Gestion Collaborative</fr>
+    <en>02 Collaborative Management</en>
+  </suite>
+  <visible>Y</visible>
+  <portlet>N</portlet>
+  <instanceClassName>com.stratelia.silverpeas.chat.ChatInstanciator</instanceClassName> 
+  <profiles>
+    <profile name="admin">
+      <fr>Administrateurs</fr>
+      <en>Administrators</en>
+    </profile>
+    <profile name="publisher">
+      <fr>Animateurs</fr>
+      <en>Animators</en>
+    </profile>
+    <profile name="user">
+      <fr>Chatteurs</fr>
+      <en>Chaters</en>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>usePdc</name>
+      <label>
+        <fr>Classification PDC</fr>
+        <en>Classification Scheme</en>
+      </label>
+      <order>0</order>     
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Les salons créés au sein de cette instance pourront être classés sur le Plan de Classement</fr>
+        <en>The chats will be classified on the classification scheme.</en>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>

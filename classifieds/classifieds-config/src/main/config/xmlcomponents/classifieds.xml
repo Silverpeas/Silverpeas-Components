@@ -28,83 +28,113 @@
 <WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>classifieds</name>
-  <label>Petites annonces - classifieds</label>
-  <description>Les petites annonces seront classées par catégories et type</description>
-  <suite>04 Gestion de contenu</suite>
-  <visible>yes</visible>
-  <portlet>no</portlet>
+  <label>
+    <fr>Petites annonces</fr>
+    <en>Classifieds</en>
+  </label>
+  <description>
+    <fr>Les petites annonces seront classées par catégories et type</fr>
+    <en> Classified adds organized by type and category</en>
+  </description>
+  <suite>
+    <fr>04 Gestion de contenu</fr>
+    <en>04 Content Management</en>
+  </suite>
+  <visible>Y</visible>
+  <portlet>N</portlet>
   <instanceClassName>com.silverpeas.classifieds.ClassifiedsInstanciator</instanceClassName>
-  <Profiles>
-    <Profile name="admin">Gestionnaire</Profile>
-    <Profile name="publisher">Annonceur</Profile>
-  </Profiles>
-  <Parameters>
-    <Parameter>
-      <ParameterName>XMLFormName</ParameterName>
-      <ParameterLabel>Formulaire XML</ParameterLabel>
-      <ParameterValue>classifieds.xml</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>xmltemplates</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>1</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Nom du formulaire XML associé aux petites annonces</ParameterHelpFr>
-        <ParameterHelpEn>Form XML name attached to classifieds</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>searchFields1</ParameterName>
-      <ParameterLabel>Champs recherche 1</ParameterLabel>
-      <ParameterValue>category</ParameterValue>
-      <ParameterType>text</ParameterType>
-      <ParameterSize>25</ParameterSize>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>2</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Premier champs de recherche</ParameterHelpFr>
-        <ParameterHelpEn>First search fields</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>searchFields2</ParameterName>
-      <ParameterLabel>Champs recherche 2</ParameterLabel>
-      <ParameterValue>type</ParameterValue>
-      <ParameterSize>25</ParameterSize>
-      <ParameterType>text</ParameterType>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>3</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Second champs de recherche</ParameterHelpFr>
-        <ParameterHelpEn>Second search fields</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>draft</ParameterName>
-      <ParameterLabel>Mode brouillon</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>4</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Le mode brouillon permet de travailler sur une annonce sans que personne d'autre ne puisse la voir.</ParameterHelpFr>
-        <ParameterHelpEn>Draft mode enables you to work on a classified whilst being invisible to other users.</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>validation</ParameterName>
-      <ParameterLabel>Validation</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>5</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Permet d'activer la validation des annonces par les gestionnaires</ParameterHelpFr>
-        <ParameterHelpEn>Enables validation of classified ads by the managers</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-  </Parameters>
+  <profiles>
+    <profile name="admin">
+      <fr>Gestionnaire</fr>
+      <en>Administrator</en>
+    </profile>
+    <profile name="publisher">
+      <fr>Annonceur</fr>
+      <en>Author</en>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>XMLFormName</name>
+      <label>
+        <fr>Formulaire XML</fr>
+        <en>XML Form</en>
+      </label>
+      <order>1</order>
+      <mandatory>Y</mandatory>
+      <value>classifieds.xml</value>
+      <type>xmltemplates</type>
+      <updatable>always</updatable>      
+      <help>
+        <fr>Nom du formulaire XML associé aux petites annonces</fr>
+        <en>Form XML name attached to classifieds</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>searchFields1</name>
+      <label>
+        <fr>Champs recherche 1</fr>
+        <en>Search field 1</en>
+      </label>
+      <order>2</order>
+      <mandatory>N</mandatory>
+      <value>category</value>
+      <type>text</type>
+      <size>25</size>     
+      <updatable>always</updatable>      
+      <help>
+        <fr>Premier champs de recherche</fr>
+        <en>First search field</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>searchFields2</name>
+      <label>
+        <fr>Champs recherche 2</fr>
+        <en>Search field 2</en>
+      </label>
+      <order>3</order>
+      <mandatory>N</mandatory>
+      <value>category</value>
+      <type>text</type>
+      <size>25</size>     
+      <updatable>always</updatable>      
+      <help>
+        <fr>Second champs de recherche</fr>
+        <en>Second search field</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>draft</name>
+      <label>
+        <fr>Mode brouillon</fr>
+        <en>Draf</en>
+      </label>
+      <order>4</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>      
+      <type>checkbox</type>
+      <updatable>always</updatable>      
+      <help>
+        <fr>Le mode brouillon permet de travailler sur une annonce sans que personne d'autre ne puisse la voir.</fr>
+        <en>Draft mode enables you to work on a classified whilst being invisible to other users.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>validation</name>
+      <label>
+        <fr>Validation</fr>
+        <en>Validation</en>
+      </label>
+      <order>5</order>      
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>      
+      <help>
+        <fr>Permet d'activer la validation des annonces par les gestionnaires</fr>
+        <en>Enables validation of classified ads by the managers</en>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>

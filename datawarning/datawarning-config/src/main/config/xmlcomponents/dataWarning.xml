@@ -27,15 +27,33 @@
 <WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>dataWarning</name>
-  <label>DataWarning</label>
-  <description>DataWarning</description>
-  <suite>80 Nouveau composant</suite>
-  <visible>@ComponentVisibleDataWarning@</visible>
-  <portlet>no</portlet>
+  <label>
+    <fr>DataWarning</fr>
+    <en>DataWarning</en>
+  </label>
+  <description>
+    <fr>Alerte en cas de dépassement de seuil.</fr>
+    <en>Warn when the data are beyond a specified level.</en>
+  </description>
+  <suite>
+    <fr>80 Nouveau composant</fr>
+    <en>80 New components</en>
+  </suite>
+  <visible>N</visible>
+  <portlet>N</portlet>
   <instanceClassName>com.silverpeas.dataWarning.DataWarningInstanciator</instanceClassName>
-  <Profiles>
-    <Profile name="admin">Gestionnaire</Profile>
-    <Profile name="publisher">Analyste</Profile>
-    <Profile name="user">Lecteur</Profile>
-  </Profiles>
+  <profiles>
+    <profile name="admin">
+      <fr>Gestionnaire</fr>
+      <en>Administrator</en>
+    </profile>
+    <profile name="publisher">
+      <fr>Analyste</fr>
+      <en>Analyst</en>
+    </profile>
+    <profile name="user">
+      <fr>Lecteur</fr>
+      <en>Reader</en>
+    </profile>
+  </profiles>
 </WAComponent>

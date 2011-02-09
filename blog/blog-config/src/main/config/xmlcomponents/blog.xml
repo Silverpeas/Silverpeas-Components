@@ -83,7 +83,7 @@
       <updatable>always</updatable>      
       <help>
         <fr>Les billets créés au sein de cette instance pourront être classées sur le Plan de Classement</fr>
-        <en>Post would be classified on the classification scheme.</en>
+        <en>Post will be classified on the classification scheme.</en>
       </help>
     </parameter>
     <parameter>
