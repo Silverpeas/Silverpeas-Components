@@ -1891,6 +1891,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
   private void processVignette(List<FileItem> parameters, KmeliaSessionController kmelia,
       String instanceId, int pubId)
       throws Exception {
+    // First, check if image have been uploaded
     FileItem file = FileUploadUtil.getFile(parameters, "WAIMGVAR0");
     String mimeType = null;
     String physicalName = null;
@@ -1912,6 +1913,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         }
       }
     }
+    
+    // If no image have been uploaded, check if one have been picked up from a gallery
     if (physicalName == null) {
       // on a pas d'image, regarder s'il y a une provenant de la galerie
       String nameImageFromGallery = FileUploadUtil.getParameter(parameters, "valueImageGallery");
@@ -1919,7 +1922,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         physicalName = nameImageFromGallery;
         mimeType = "image/jpeg";
       }
-    } else {
+    } 
+    
+    // If one image is defined, save it through Thumbnail service
+    if (StringUtil.isDefined(physicalName)) {
       ThumbnailDetail detail = new ThumbnailDetail(instanceId, pubId,
           ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
       detail.setOriginalFileName(physicalName);
