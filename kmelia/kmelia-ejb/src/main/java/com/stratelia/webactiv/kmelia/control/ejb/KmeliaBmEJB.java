@@ -1487,7 +1487,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         "KmeliaBmEJB.changePublicationStatusOnCreation()",
         "root.MSG_GEN_ENTER_METHOD", "status = " + pubDetail.getStatus());
     String status = pubDetail.getStatus();
-    if (status == null || status.equalsIgnoreCase("")) {
+    if (!StringUtil.isDefined(status)) {
       status = PublicationDetail.TO_VALIDATE;
 
       boolean draftModeUsed = isDraftModeUsed(pubDetail.getPK().getInstanceId());

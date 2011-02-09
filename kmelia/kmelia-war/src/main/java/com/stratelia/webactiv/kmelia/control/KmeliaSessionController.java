@@ -958,12 +958,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return result;
   }
 
-  public synchronized String createPublicationIntoTopic(PublicationDetail pubDetail, String fatherId)
+  private String createPublicationIntoTopic(PublicationDetail pubDetail, String fatherId)
       throws RemoteException {
     pubDetail.getPK().setSpace(getSpaceId());
     pubDetail.getPK().setComponentName(getComponentId());
     pubDetail.setCreatorId(getUserId());
     pubDetail.setCreationDate(new Date());
+
+    if (KmeliaHelper.ROLE_WRITER.equals(getUserTopicProfile(fatherId))) {
+      // in case of writers, status of new publication must be processed
+      pubDetail.setStatus(null);
+    }
 
     String result = getKmeliaBm().createPublicationIntoTopic(pubDetail, getNodePK(fatherId));
     SilverTrace.spy("kmelia",
@@ -3481,13 +3486,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       String thumbnailsSubDirectory = getPublicationSettings().getString("imagesSubDirectory");
       String toAbsolutePath = FileRepositoryManager.getAbsolutePath(getComponentId());
       String fromAbsolutePath = FileRepositoryManager.getAbsolutePath(fromComponentId);
+      
+      if (currentNodePK == null) {
+        // Ajoute au thème courant
+        currentNodePK = getSessionTopic().getNodePK();
+      }
 
       if (isCutted) {
-        if (currentNodePK == null) {
-          // Ajoute au thème courant
-          currentNodePK = getSessionTopic().getNodePK();
-        }
-
         if (fromComponentId.equals(getComponentId())) {
           getPublicationBm().removeAllFather(publi.getPK());
           getPublicationBm().addFather(publi.getPK(), currentNodePK);
@@ -3499,16 +3504,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       } else {
         // paste the publicationDetail
         publi.setUpdaterId(getUserId()); // ignore initial parameters
-
-        String id = null;
-        if (currentNodePK == null) {
-          id = createPublication(publi);
-        } else {
-          id = createPublicationIntoTopic(publi, currentNodePK.getId());
-          List<NodePK> fatherPKs = (List<NodePK>) getPublicationBm().getAllFatherPK(publi.getPK());
-          if (nodePKsToPaste != null) {
-            fatherPKs.removeAll(nodePKsToPaste);
-          }
+        
+        String id = createPublicationIntoTopic(publi, currentNodePK.getId());
+        List<NodePK> fatherPKs = (List<NodePK>) getPublicationBm().getAllFatherPK(publi.getPK());
+        if (nodePKsToPaste != null) {
+          fatherPKs.removeAll(nodePKsToPaste);
         }
         // paste vignette
         ThumbnailDetail vignette =
@@ -3600,32 +3600,37 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       throws IOException, ThumbnailException {
     ThumbnailDetail thumbDetail = new ThumbnailDetail(publi.getPK().getInstanceId(), Integer.valueOf(
         id), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-    String from = fromAbsolutePath + thumbnailsSubDirectory + File.separatorChar
-        + vignette.getOriginalFileName();
+    
+    if (vignette.getOriginalFileName().startsWith("/")) {
+      thumbDetail.setOriginalFileName(vignette.getOriginalFileName());
+      thumbDetail.setMimeType(vignette.getMimeType());
+    } else {
+      String from = fromAbsolutePath + thumbnailsSubDirectory + File.separatorChar
+          + vignette.getOriginalFileName();
 
-    String type = vignette.getOriginalFileName().substring(vignette.getOriginalFileName().indexOf(
-        '.') + 1, vignette.getOriginalFileName().length());
-    String newOriginalImage = String.valueOf(System.currentTimeMillis()) + "." + type;
+      String type = FilenameUtils.getExtension(vignette.getOriginalFileName());
+      String newOriginalImage = String.valueOf(System.currentTimeMillis()) + "." + type;
 
-    String to = toAbsolutePath + thumbnailsSubDirectory + File.separatorChar + newOriginalImage;
-    FileRepositoryManager.copyFile(from, to);
-    thumbDetail.setOriginalFileName(newOriginalImage);
-
-    // then copy thumnbnail image if exists
-    if (vignette.getCropFileName() != null) {
-      from = fromAbsolutePath + thumbnailsSubDirectory + File.separatorChar + vignette.
-          getCropFileName();
-      type = FilenameUtils.getExtension(vignette.getCropFileName());
-      String newThumbnailImage = String.valueOf(System.currentTimeMillis()) + "." + type;
-      to = toAbsolutePath + thumbnailsSubDirectory + File.separatorChar + newThumbnailImage;
+      String to = toAbsolutePath + thumbnailsSubDirectory + File.separatorChar + newOriginalImage;
       FileRepositoryManager.copyFile(from, to);
-      thumbDetail.setCropFileName(newThumbnailImage);
+      thumbDetail.setOriginalFileName(newOriginalImage);
+
+      // then copy thumnbnail image if exists
+      if (vignette.getCropFileName() != null) {
+        from = fromAbsolutePath + thumbnailsSubDirectory + File.separatorChar + vignette.
+            getCropFileName();
+        type = FilenameUtils.getExtension(vignette.getCropFileName());
+        String newThumbnailImage = String.valueOf(System.currentTimeMillis()) + "." + type;
+        to = toAbsolutePath + thumbnailsSubDirectory + File.separatorChar + newThumbnailImage;
+        FileRepositoryManager.copyFile(from, to);
+        thumbDetail.setCropFileName(newThumbnailImage);
+      }
+      thumbDetail.setMimeType(type);
+      thumbDetail.setXLength(vignette.getXLength());
+      thumbDetail.setYLength(vignette.getYLength());
+      thumbDetail.setXStart(vignette.getXStart());
+      thumbDetail.setYStart(vignette.getYStart());
     }
-    thumbDetail.setMimeType(type);
-    thumbDetail.setXLength(vignette.getXLength());
-    thumbDetail.setYLength(vignette.getYLength());
-    thumbDetail.setXStart(vignette.getXStart());
-    thumbDetail.setYStart(vignette.getYStart());
     getThumbnailService().createThumbnail(thumbDetail);
   }
 
