@@ -26,6 +26,7 @@ package com.stratelia.webactiv.almanach.control;
 import java.io.File;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.calendar.CalendarEvent;
+import com.silverpeas.calendar.Datable;
 import com.silverpeas.export.ExporterFactory;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.silverpeas.export.ExportException;
@@ -1073,5 +1074,27 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       throws WysiwygException, MalformedURLException {
     CalendarEventEncoder encoder = new CalendarEventEncoder();
     return encoder.encode(eventDetails);
+  }
+
+  /**
+   * Creates a Datable object from the specified date and time
+   * @param date the date (day in month in year).
+   * @param time the time if any. If the time is null or empty, then no time is defined and the
+   * returned datable is a Date.
+   * @return a Datable object corresponding to the specified date and time.
+   */
+  private Datable<?> createDatable(final Date date, final String time) {
+    Datable<?> datable = null;
+    if(isDefined(time)) {
+      String[] timeComponents = time.split(":");
+      Calendar dateAndTime = Calendar.getInstance();
+      dateAndTime.setTime(date);
+      dateAndTime.set(Calendar.HOUR_OF_DAY, Integer.valueOf(timeComponents[0]));
+      dateAndTime.set(Calendar.MINUTE, Integer.valueOf(timeComponents[1]));
+      datable = asDatable(dateAndTime.getTime(), true);
+    } else {
+      datable = asDatable(date, false);
+    }
+    return datable;
   }
 }
