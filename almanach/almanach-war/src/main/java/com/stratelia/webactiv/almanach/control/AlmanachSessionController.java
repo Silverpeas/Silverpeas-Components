@@ -26,6 +26,7 @@ package com.stratelia.webactiv.almanach.control;
 import java.io.File;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.calendar.CalendarEvent;
+import com.silverpeas.calendar.Datable;
 import com.silverpeas.export.ExporterFactory;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.silverpeas.export.ExportException;
