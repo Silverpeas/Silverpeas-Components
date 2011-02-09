@@ -28,14 +28,29 @@
 <WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>formsOnline</name>
-  <label>Formulaires en ligne</label>
-  <description>Mise en ligne de formulaires</description>
-  <suite>02 Gestion Collaborative</suite>
+  <label>
+    <fr>Formulaires en ligne</fr>
+    <en>Online Forms</en>
+  </label>
+  <description>
+    <fr>Mise en ligne de formulaires</fr>
+    <en>Online forms</en>
+  </description>
+  <suite>
+    <fr>02 Gestion Collaborative</fr>
+    <en>02 Collaborative Management</en>
+  </suite>
   <visible>Y</visible>
   <portlet>N</portlet>
   <instanceClassName>com.silverpeas.formsonline.FormsOnlineInstanciator</instanceClassName>
-  <Profiles>
-    <Profile name="Administrator">Gestionnaires</Profile>
-    <Profile name="SenderReceiver">Emetteurs et Récepteurs</Profile>
-  </Profiles>
+  <profiles>
+    <profile name="Administrator">
+      <fr>Gestionnaire</fr>
+      <en>Administrator</en>
+    </profile>
+    <profile name="SenderReceiver">
+      <fr>Emetteur et Récepteur</fr>
+      <en>Sender and Recipient</en>
+    </profile>
+  </profiles>
 </WAComponent>

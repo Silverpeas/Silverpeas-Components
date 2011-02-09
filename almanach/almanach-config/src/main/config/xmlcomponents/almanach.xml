@@ -120,7 +120,7 @@ xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonne
       <updatable>always</updatable>      
       <help>
         <fr>Permet de générer un flux RSS des événements de cet Almanach.</fr>
-        <en>Produce a RSS stream for the events of this almanah.</en>
+        <en>Produce a RSS stream for the events of this almanach.</en>
       </help>
     </parameter>
     <parameter>

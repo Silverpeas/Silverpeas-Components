@@ -28,74 +28,99 @@
 <WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>forums</name>
-  <label>Forum</label>
-  <description>Supporte les processus de communication asynchrone de type forum. Des salons peuvent être ouverts, sur des thèmes variés. L'escalade à plusieurs niveaux est possible sur chaque intervention d'un participant. Chaque salon est classable sur le plan de classement.</description>
-  <suite>02 Gestion Collaborative</suite>
+  <label>
+    <fr>Forum</fr>
+    <en>Forum</en>
+  </label>
+  <description>
+    <fr>Supporte les processus de communication asynchrone de type forum. Des salons peuvent être ouverts, sur des thèmes variés. L'escalade à plusieurs niveaux est possible sur chaque intervention d'un participant. Chaque salon est classable sur le plan de classement.</fr>
+    <en>Forums can be created on diverse themes. You can answer on every point in the thread. Froums can be classified on the classification scheme.</en>
+  </description>
+  <suite>
+    <fr>02 Gestion Collaborative</fr>
+    <en>02 Collaborative Management</en>
+  </suite>
   <visible>Y</visible>
   <portlet>Y</portlet>
   <instanceClassName>com.stratelia.webactiv.forums.instanciator.ForumsInstanciator</instanceClassName>
-  <tableList>
-    <tabletpl>Forum</tabletpl>
-    <tabletpl>Message</tabletpl>
-    <tabletpl>Rights</tabletpl>
-  </tableList>
-  <Profiles>
-    <Profile name="admin">Gestionnaire</Profile>
-    <Profile name="user">Participant</Profile>
-    <Profile name="reader">Lecteur</Profile>
-  </Profiles>
-  <Parameters>
-    <Parameter>
-      <ParameterName>usePdc</ParameterName>
-      <ParameterLabel>Classification PDC</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>2</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Les forums créés au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>forumInsideForum</ParameterName>
-      <ParameterLabel>Arborescence de forums</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>3</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Un forum peut contenir d'autres forums</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>rss</ParameterName>
-      <ParameterLabel>Flux RSS</ParameterLabel>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterValue>N</ParameterValue>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>4</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Permet de générer un flux RSS de ces forums.</ParameterHelpFr>
-        <ParameterHelpEn>.</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>isValidationActive</ParameterName>
-      <ParameterLabel>Validation</ParameterLabel>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterValue>N</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>5</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Si ce paramètre est activé, les messages seront soumis à validation par les modérateurs.</ParameterHelpFr>
-        <ParameterHelpEn>.</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-  </Parameters>
+  <profiles>
+    <profile name="admin">
+      <fr>Gestionnaire</fr>
+      <en>Administrator</en>
+    </profile>
+    <profile name="user">
+      <fr>Participant</fr>
+      <en>Participant</en>
+    </profile>
+    <profile name="reader">
+      <fr>Lecteur</fr>
+      <en>Reader</en>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>usePdc</name>
+      <label>
+        <fr>Classification PDC</fr>
+        <en>Classification Scheme</en>
+      </label>
+      <order>2</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>      
+      <type>checkbox</type>
+      <updatable>always</updatable>      
+      <help>
+        <fr>Les forums créés au sein de cette instance pourront être classés sur le Plan de Classement</fr>
+        <en>The forums will be classified on the classification scheme.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>forumInsideForum</name>
+      <label>
+        <fr>Arborescence de forums</fr>
+        <en>Tree of forums</en>
+      </label>
+      <order>3</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>      
+      <help>
+        <fr>Un forum peut contenir d'autres forums</fr>
+        <en>A forum can be created inside another forum.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>rss</name>
+      <label>
+        <fr>Flux RSS</fr>
+        <en>RSS</en>
+      </label>
+      <order>4</order>
+      <mandatory>N</mandatory>
+      <value>N</value>
+      <type>checkbox</type>       
+      <updatable>always</updatable>      
+      <help>
+        <fr>Permet de générer un flux RSS de ces forums.</fr>
+        <en>Produce a RSS stream for the forums.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>isValidationActive</name>
+      <label>
+        <fr>Validation</fr>
+        <en>Validation</en>
+      </label>
+      <order>5</order>
+      <mandatory>Y</mandatory>
+      <value>N</value>     
+      <type>checkbox</type>      
+      <updatable>always</updatable>      
+      <help>
+        <fr>Si ce paramètre est activé, les messages seront soumis à validation par les modérateurs.</fr>
+        <en>Posts will be moderated.</en>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>
