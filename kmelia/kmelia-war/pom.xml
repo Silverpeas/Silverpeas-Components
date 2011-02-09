@@ -44,10 +44,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-j2ee_1.4_spec</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.lowagie</groupId>
       <artifactId>itext</artifactId>
     </dependency>
@@ -131,6 +127,11 @@
     <dependency>
       <groupId>com.metaparadigm</groupId>
       <artifactId>json-rpc</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.portlet</groupId>
+      <artifactId>portlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>
