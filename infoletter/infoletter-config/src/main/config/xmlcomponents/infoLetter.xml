@@ -33,7 +33,7 @@
   </label>
   <description>
     <fr>Permet de créer une lettre d'information périodique, suivant un modèle de publication ré-utilisable. Gère les abonnements à la lettre.</fr>
-    <fr>Create a periodic information according to a publication template re-usable. The subscritpions to thee letter are managed here also.</fr>
+    <en>Create a periodic information according to a publication template re-usable. The subscritpions to thee letter are managed here also.</en>
   </description>
   <suite>
     <fr>04 Gestion de contenu</fr>
@@ -43,9 +43,18 @@
   <portlet>Y</portlet>
   <instanceClassName>com.stratelia.silverpeas.infoLetter.InfoLetterInstanciator</instanceClassName>
   <profiles>
-    <profile name="admin">Gestionnaire</profile>
-    <profile name="publisher">Publieur</profile>
-    <profile name="user">Lecteur</profile>
+    <profile name="admin">
+      <fr>Gestionnaire</fr>
+      <en>Administrator</en>
+    </profile>
+    <profile name="publisher">
+      <fr>Publieur</fr>
+      <en>Publisher</en>
+    </profile>
+    <profile name="user">
+      <fr>Lecteur</fr>
+      <en>Reader</en>
+    </profile>
   </profiles>
   <parameters>
     <parameter>
