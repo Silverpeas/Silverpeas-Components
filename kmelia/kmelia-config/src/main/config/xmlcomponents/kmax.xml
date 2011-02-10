@@ -113,7 +113,7 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Pour pouvoir mettre des commentaires sur une publication</fr>
+        <fr>Pour commenter une publication</fr>
         <en>Enable to comment a publication</en>
       </help>
     </parameter>
@@ -219,7 +219,7 @@
       <updatable>always</updatable>
       <help>
         <fr>Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Auteur'.</fr>
-        <en>Publication ahve a field to enter the name of the author.</en>
+        <en>Publication have a field to enter the name of the 'author'.</en>
       </help>
     </parameter>
     <parameter>

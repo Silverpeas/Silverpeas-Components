@@ -228,7 +228,7 @@
         <fr>Les lecteurs peuvent laisser des commentaires sur chaque image</fr>
         <en>Readers are able to post comments on an image</en>
       </help>
-      <usedForPersonalSpace>N</usedForPersonalSpace>
+      <personalSpaceValue>no</personalSpaceValue>
     </parameter>
     <parameter>
       <name>privateSearch</name>
@@ -245,7 +245,7 @@
         <fr>Si ce paramètre est activé, les images indexées ne seront pas retrouvables par le moteur de recherche général mais uniquement par le moteur de recherche dédié à ce composant.</fr>
         <en>If this parameter is enabled, indexed images will not be findable by global search engine but only by the dedicated search engine of this component.</en>
       </help>
-      <usedForPersonalSpace>Y</usedForPersonalSpace>
+      <personalSpaceValue>yes</personalSpaceValue>
     </parameter>
     <parameter>
       <name>download</name>
