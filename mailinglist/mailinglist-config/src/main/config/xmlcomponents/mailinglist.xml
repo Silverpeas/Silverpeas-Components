@@ -25,86 +25,124 @@
 
 -->
 
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>mailinglist</name>
-  <label>Archivage d'e-mails</label>
-  <description>Ce composant permet d'archiver les emails reçus à une adresse de messagerie donnée.
+  <label>
+    <fr>Archivage d'e-mails</fr>
+    <en>Email archiver</en>
+  </label>
+  <description>
+    <fr>Ce composant permet d'archiver les emails reçus à une adresse de messagerie donnée.
   Les messages peuvent être soumis à modération. Grâce au paramètre Diffusion, le composant se
   transforme en liste de diffusion.
+    </fr>
+    <en>This component archives emails received on a specific email address. The messages may be moderated. Using the 'Diffusion list'parameter,
+  this component can be transformed into a mailing-list.
+    </en>
   </description>
-  <suite>02 Gestion Collaborative</suite>
-  <visible>yes</visible>
-  <portlet>yes</portlet>
+  <suite>
+    <fr>02 Gestion Collaborative</fr>
+    <en>02 Collaborative Management</en>
+  </suite>
+  <visible>Y</visible>
+  <portlet>Y</portlet>
   <instanceClassName>com.silverpeas.mailinglist.MailingListInstanciator</instanceClassName>
-  <Profiles>
-    <Profile name="admin">Gestionnaires</Profile>
-    <Profile name="moderator">Modérateurs</Profile>
-    <Profile name="reader">Lecteurs</Profile>
-  </Profiles>
-  <Parameters>
-    <Parameter>
-      <ParameterName>moderated</ParameterName>
-      <ParameterLabel>Modération</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>3</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Active/Désactive la modération de la liste de diffusion</ParameterHelpFr>
-        <ParameterHelpEn>Activate/Deactivate moderation</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>open</ParameterName>
-      <ParameterLabel>Liste ouverte</ParameterLabel>
-      <ParameterValue>yes</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>4</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Indique que tout le monde peut envoyer un message à la liste</ParameterHelpFr>
-        <ParameterHelpEn>Authorizes everyone to send a message to the list</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>subscribedAddress</ParameterName>
-      <ParameterLabel>Adresse e-mail</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>1</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Adresse email dont les messages seront archivés</ParameterHelpFr>
-        <ParameterHelpEn>Email address for the mailing list</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>notify</ParameterName>
-      <ParameterLabel>Liste de diffusion</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>2</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Indique s'il s'agit d'une liste de diffusion ou d'archivage</ParameterHelpFr>
-        <ParameterHelpEn>Indicates if the mailing list will be for storage only or with diffusion</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>rss</ParameterName>
-      <ParameterLabel>Flux RSS</ParameterLabel>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterValue>yes</ParameterValue>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>5</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Permet de générer un flux RSS des derniers messages</ParameterHelpFr>
-        <ParameterHelpEn>.</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-  </Parameters>
+  <profiles>
+    <profile name="admin">
+      <fr>Gestionnaire</fr>
+      <en>Administrator</en>
+    </profile>
+    <profile name="moderator">
+      <fr>Modérateur</fr>
+      <en>Moderator</en>
+    </profile>
+    <profile name="reader">
+      <fr>Lecteurs</fr>
+      <en>Reader</en>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>moderated</name>
+      <label>
+        <fr>Modération</fr>
+        <en>Moderation</en>
+      </label>
+      <order>3</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Active/Désactive la modération de la liste de diffusion</fr>
+        <en>Activate/Deactivate moderation</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>open</name>
+      <label>
+        <fr>Liste ouverte</fr>
+        <en>Open list</en>
+      </label>
+      <order>4</order>
+      <mandatory>Y</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Indique que tout le monde peut envoyer un message à la liste</fr>
+        <en>Authorizes everyone to send a message to the list</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>subscribedAddress</name>
+      <label>
+        <fr>Adresse e-mail</fr>
+        <en>Email address for the list</en>
+      </label>
+      <order>1</order>
+      <mandatory>Y</mandatory>
+      <value></value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Adresse email dont les messages seront archivés</fr>
+        <en>Email address for the mailing list</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>notify</name>
+      <label>
+        <fr>Liste de diffusion</fr>
+        <en>Diffusion list</en>
+      </label>
+      <order>2</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Indique s'il s'agit d'une liste de diffusion ou d'archivage</fr>
+        <en>Indicates if the mailing list will be for storage only or with diffusion</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>rss</name>
+      <label>
+        <fr>Flux RSS</fr>
+        <en>RSS</en>
+      </label>
+      <order>5</order>
+      <mandatory>N</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Permet de générer un flux RSS des derniers messages.</fr>
+         <en>Produce a RSS stream for the events of this almanach.</en>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>
