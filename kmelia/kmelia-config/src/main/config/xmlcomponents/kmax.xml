@@ -25,222 +25,320 @@
 
 -->
 
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>kmax</name>
-  <label>Gestion de contenu multi-axes - Multi-level Tracker</label>
-  <description>Permet de créer une base documentaire classée suivant plusieurs axes.
-  L'utilisateur sélectionne les valeurs des différents axes pour retrouver les documents répondant à sa requête.
+  <label>
+    <fr>Gestion de contenu multi-axes</fr>
+    <en>Multi-level Tracker</en>
+  </label>
+  <description>
+    <fr>Permet de créer une base documentaire classée suivant plusieurs axes.
+      L'utilisateur sélectionne les valeurs des différents axes pour retrouver les documents
+      répondant à sa requête.
+    </fr>
+    <en>Create a document database where documents are classified according to various
+      classification scheme. The user select
+      les values of the various axis to find the documents he was looking for.
+    </en>
   </description>
-  <suite>01 Gestion Documentaire</suite>
-  <visible>yes</visible>
-  <portlet>yes</portlet>
+  <suite>
+    <fr>01 Gestion Documentaire</fr>
+    <en>01 Document Management</en>
+  </suite>
+  <visible>Y</visible>
+  <portlet>Y</portlet>
   <instanceClassName>com.stratelia.webactiv.kmelia.KmeliaInstanciator</instanceClassName>
-  <tableList>
-    <tabletpl>Node</tabletpl>
-    <tabletpl>Publication</tabletpl>
-    <tabletpl>PublicationFather</tabletpl>
-    <tabletpl>Model</tabletpl>
-    <tabletpl>Info</tabletpl>
-    <tabletpl>InfoText</tabletpl>
-    <tabletpl>InfoAttachment</tabletpl>
-    <tabletpl>InfoImage</tabletpl>
-    <tabletpl>InfoLink</tabletpl>
-    <tabletpl>History</tabletpl>
-  </tableList>
-  <Profiles>
-    <Profile name="admin">Gestionnaire</Profile>
-    <Profile name="publisher">Publieur</Profile>
-    <Profile name="writer">Rédacteur</Profile>
-    <Profile name="user">Lecteur</Profile>
-  </Profiles>
-  <Parameters>
-    <Parameter>
-      <ParameterName>tabContent</ParameterName>
-      <ParameterLabel>Contenu</ParameterLabel>
-      <ParameterValue>yes</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>1</ParameterOrder>
-    </Parameter>
-    <Parameter>
-      <ParameterName>tabAttachments</ParameterName>
-      <ParameterLabel>Fichiers Joints</ParameterLabel>
-      <ParameterValue>yes</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>2</ParameterOrder>
-    </Parameter>
-    <Parameter>
-      <ParameterName>tabComments</ParameterName>
-      <ParameterLabel>Commentaires</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>3</ParameterOrder>
-    </Parameter>
-    <Parameter>
-      <ParameterName>tabReadersList</ParameterName>
-      <ParameterLabel>Contrôles de Lecture</ParameterLabel>
-      <ParameterValue>yes</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>4</ParameterOrder>
-    </Parameter>
-    <Parameter>
-      <ParameterName>draft</ParameterName>
-      <ParameterLabel>Mode brouillon</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>5</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Le mode brouillon permet de travailler sur une publication sans que personne d'autre puisse la voir.</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>useDescription</ParameterName>
-      <ParameterLabel>Champ Description</ParameterLabel>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterType>radio</ParameterType>
-      <ParameterOrder>6</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Visibilité du champ Description</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-      <ParameterOptions>
-        <ParameterOption>
-          <Name>Non</Name>
-          <Value>0</Value>
-        </ParameterOption>
-        <ParameterOption>
-          <Name>Saisie facultative</Name>
-          <Value>1</Value>
-        </ParameterOption>
-        <ParameterOption>
-          <Name>Saisie obligatoire</Name>
-          <Value>2</Value>
-        </ParameterOption>
-      </ParameterOptions>
-    </Parameter>
-    <Parameter>
-      <ParameterName>useKeywords</ParameterName>
-      <ParameterLabel>Champ Mots-clés</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>7</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Mots clés'.</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>useAuthor</ParameterName>
-      <ParameterLabel>Champ Auteur</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>8</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Auteur'.</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>useImportance</ParameterName>
-      <ParameterLabel>Champ Importance</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>9</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Importance'.</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>useVersion</ParameterName>
-      <ParameterLabel>Champ Version</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>10</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Version'.</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>timeAxisUsed</ParameterName>
-      <ParameterLabel>Axe de période de publication</ParameterLabel>
-      <ParameterValue>yes</ParameterValue>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>11</ParameterOrder>
-    </Parameter>
-    <Parameter>
-      <ParameterName>wizardEnabled</ParameterName>
-      <ParameterLabel>Assistant de publication</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterOrder>12</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Dédié aux utilisateurs débutants, cet assistant permet de créer une publication pas à pas.</ParameterHelpFr>
-        <ParameterHelpEn>For beginners only. This wizard allows the user to create a publication step by step.</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>nbDayForReservation</ParameterName>
-      <ParameterLabel>Gestion des retards</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterSize>5</ParameterSize>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>13</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Cette option permet de choisir un délais de réservation des fichiers joints et d'en gérer les retards. Ce délais est exprimé en jours et ne tiens pas compte des samedis et dimanches.</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>exportComponent</ParameterName>
-      <ParameterLabel>Exportation du composant</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterOrder>14</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Cette fonction permet d'exporter toutes les publications visibles du composant.</ParameterHelpFr>
-        <ParameterHelpEn>This function allow the user to export all the visible publications in the component</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>useFileSharing</ParameterName>
-      <ParameterLabel>Fichiers partageables</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>never</ParameterUpdatable>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterOrder>37</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail</ParameterHelpFr>
-        <ParameterHelpEn>This feature allows to activate file sharing with persons who have no access to the portal</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-  </Parameters>
+  <profiles>
+    <profile name="admin">
+      <fr>Gestionnaire</fr>
+      <en>Administrator</en>
+    </profile>
+    <profile name="publisher">
+      <fr>Publieur</fr>
+      <en>Publisher</en>
+    </profile>
+    <profile name="writer">
+      <fr>Rédacteur</fr>
+      <en>Writer</en>
+    </profile>
+    <profile name="user">
+      <fr>Lecteur</fr>
+      <en>Reader</en>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>tabContent</name>
+      <label>
+        <fr>Contenu</fr>
+        <en>Content</en>
+      </label>
+      <order>1</order>
+      <mandatory>Y</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Pour pouvoir ajouter un contenu aux publication</fr>
+        <en>Add some content to a publication</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>tabAttachments</name>
+      <label>
+        <fr>Fichiers Joints</fr>
+        <en>Attachments</en>
+      </label>
+      <order>2</order>
+      <mandatory>Y</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Pour pouvoir joindre des fichiers à une publication</fr>
+        <en>Add attachments to a publication</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>tabComments</name>
+      <label>
+        <fr>Commentaires</fr>
+        <en>Comments</en>
+      </label>
+      <order>3</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Pour pouvoir mettre des commentaires sur une publication</fr>
+        <en>Enable to comment a publication</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>tabReadersList</name>
+      <label>
+        <fr>Contrôles de Lecture</fr>
+        <en>Readers list</en>
+      </label>
+      <order>4</order>
+      <mandatory>Y</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Affiche la liste des personnes ayant lu une publication</fr>
+        <en>Display the list of people having read a publication</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>draft</name>
+      <label>
+        <fr>Mode brouillon</fr>
+        <en>Draf</en>
+      </label>
+      <order>5</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Le mode brouillon permet de travailler sur une publication sans que personne d'autre
+          puisse la voir.
+        </fr>
+        <en>A publication in draft mode is visible only to the author, so he can work on it.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>useDescription</name>
+      <label>
+        <fr>Champ Description</fr>
+        <en>Description field</en>
+      </label>
+      <order>6</order>
+      <mandatory>Y</mandatory>
+      <value>2</value>
+      <options>
+        <option>
+          <name>
+            <fr>Non</fr>
+            <en>No</en>
+          </name>
+          <value>0</value>
+        </option>
+        <option>
+          <name>
+            <fr>Saisie facultative</fr>
+            <en>Optionnal entry</en>
+          </name>
+          <value>1</value>
+        </option>
+        <option>
+          <name>
+            <fr>Saisie obligatoire</fr>
+            <en>Mandatory entry</en>
+          </name>
+          <value>2</value>
+        </option>
+      </options>
+      <type>radio</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Visibilité du champ Description</fr>
+        <en>Display a field to describe the publication.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>useKeywords</name>
+      <label>
+        <fr>Champ Mots-clés</fr>
+        <en>Keywords</en>
+      </label>
+      <order>7</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Mots clés'.</fr>
+        <en>Publications have a field to enter keywords.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>useAuthor</name>
+      <label>
+        <fr>Champ Auteur</fr>
+        <en>Author field</en>
+      </label>
+      <order>8</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Auteur'.</fr>
+        <en>Publication ahve a field to enter the name of the author.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>useImportance</name>
+      <label>
+        <fr>Champ Importance</fr>
+        <en>Importance field</en>
+      </label>
+      <order>9</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Importance'. </fr>
+        <en>Publications have a field to define their 'importance'.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>useVersion</name>
+      <label>
+        <fr>Champ Version</fr>
+        <en>Version field</en>
+      </label>
+      <order>10</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Les documents créés au sein de cette instance pourront comporter un champ supplémentaire 'Version'. </fr>
+        <en>Publications have a field to define their version.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>timeAxisUsed</name>
+      <label>
+        <fr>Axe de période de publication</fr>
+        <en>Publication date axis</en>
+      </label>
+      <order>11</order>
+      <mandatory>N</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Axe de classements des publications selon leur date de creation/modification.</fr>
+        <en>Classification axis on the publication creation/modification date.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>wizardEnabled</name>
+      <label>
+        <fr>Assistant de publication</fr>
+        <en>Publication creation wizard</en>
+      </label>
+      <order>12</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Dédié aux utilisateurs débutants, cet assistant permet de créer une publication pas à pas. </fr>
+        <en>For beginners only. This wizard allows the user to create a publication step by step. </en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>nbDayForReservation</name>
+      <label>
+        <fr>Gestion des retards</fr>
+        <en>Backlog management</en>
+      </label>
+      <order>13</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>5</size>
+      <updatable>always</updatable>
+      <help>
+        <fr>Cette option permet de choisir un délais de réservation des fichiers joints
+          et d'en gérer les retards. Ce délais est exprimé en jours et ne tiens pas compte des
+          samedis et dimanches.
+        </fr>
+        <en>This option defines a maximum duration for booking a file and managing the backlog.
+        This duration is expressed in days, and week-ends are not taken into account.
+        </en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>exportComponent</name>
+      <label>
+        <fr>Exportation du composant</fr>
+        <en>Export component</en>
+      </label>
+      <order>14</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Cette fonction permet d'exporter toutes les publications visibles du composant.</fr>
+        <en>This function allow the user to export all the visible publications in the component.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>useFileSharing</name>
+      <label>
+        <fr>Fichiers partageables</fr>
+        <en>Share attachments</en>
+      </label>
+      <order>15</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>never</updatable>
+      <help>
+        <fr>Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail</fr>
+        <en>This feature allows to activate file sharing with persons who have no access to the portal</en>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>
