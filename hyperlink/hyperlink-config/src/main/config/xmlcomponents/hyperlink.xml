@@ -25,259 +25,328 @@
 
 -->
 
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>hyperlink</name>
-  <label>Hyperlink - Hyperlien</label>
-  <description>Permet de créer un lien URL simple vers un document ou site Web.
+  <label>
+    <fr>Hyperlien</fr>
+    <en>Hyperlink</en>
+  </label>
+  <description>
+    <fr>Permet de créer un lien URL simple vers un document ou site Web.</fr>
+    <en>Create a link to a document or a web site.</en>
   </description>
-  <suite>04 Gestion de contenu</suite>
-  <visible>yes</visible>
-  <portlet>yes</portlet>
+  <suite>
+    <fr>04 Gestion de contenu</fr>
+    <en>04 Content Management</en>
+  </suite>
+  <visible>Y</visible>
+  <portlet>Y</portlet>
   <instanceClassName>com.stratelia.webactiv.hyperlink.HyperlinkInstanciator</instanceClassName>
-  <Profiles>
-    <Profile name="user">Lecteur</Profile>
-  </Profiles>
-  <Parameters>
-    <Parameter>
-      <ParameterName>URL</ParameterName>
-      <ParameterLabel>URL</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterHelp>
-        <ParameterHelpFr>Saisissez ici l'adresse web du site cible</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>clientSSO</ParameterName>
-      <ParameterLabel>SSO Client</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>Always</ParameterUpdatable>
-      <ParameterOrder>2</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Activation du SSO Client.</ParameterHelpFr>
-        <ParameterHelpEn />
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>openNewWindow</ParameterName>
-      <ParameterLabel>Ouvrir dans une nouvelle fenetre</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>Always</ParameterUpdatable>
-      <ParameterHelp>
-        <ParameterHelpFr>Le lien peut s'ouvrir soit dans Silverpeas, soit
-					dans une nouvelle fenêtre.
-        </ParameterHelpFr>
-        <ParameterHelpEn />
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>isInternalLink</ParameterName>
-      <ParameterLabel>Il s'agit d'un lien interne</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>Always</ParameterUpdatable>
-      <ParameterHelp>
-        <ParameterHelpFr>Cocher cette case s'il s'agit d'un lien interne :
-		  le lien sera alors analysé pour ne garder que le partie concernant Silverpeas
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>login</ParameterName>
-      <ParameterLabel>Login SSO</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterSize>25</ParameterSize>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterOrder>4</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>login de l'application SSO Client.
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>password</ParameterName>
-      <ParameterLabel>Mot de passe SSO</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterSize>25</ParameterSize>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterOrder>5</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Mot de passe de l'application SSO Client.
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>method</ParameterName>
-      <ParameterLabel>Attribut Method du formulaire</ParameterLabel>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterType>select</ParameterType>
-      <ParameterOrder>6</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Attribut Method à passer au formulaire de
-					soumission de l'application SSO Client.
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-      <ParameterOptions>
-        <ParameterOption>
-          <Name>Post</Name>
-          <Value>POST</Value>
-        </ParameterOption>
-        <ParameterOption>
-          <Name>Get</Name>
-          <Value>GET</Value>
-        </ParameterOption>
-      </ParameterOptions>
-    </Parameter>
-    <Parameter>
-      <ParameterName>nameParam1</ParameterName>
-      <ParameterLabel>Paramètre sup 1</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterSize>25</ParameterSize>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterOrder>7</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>nom du paramètre supplémentaire pour l'application
-					SSO Client.
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>valueParam1</ParameterName>
-      <ParameterLabel>Valeur paramètre 1</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterSize>25</ParameterSize>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterOrder>8</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>valeur du paramètre supplémentaire pour
-					l'application SSO Client.
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>nameParam2</ParameterName>
-      <ParameterLabel>Paramètre sup 2</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterSize>25</ParameterSize>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterOrder>9</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>nom du paramètre supplémentaire pour l'application
-					SSO Client.
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>valueParam2</ParameterName>
-      <ParameterLabel>Valeur paramètre 2</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterSize>25</ParameterSize>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterOrder>10</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>valeur du paramètre supplémentaire pour
-					l'application SSO Client.
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>nameParam3</ParameterName>
-      <ParameterLabel>paramètre sup 3</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterSize>25</ParameterSize>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterOrder>11</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>nom du paramètre supplémentaire pour l'application
-					SSO Cleint.
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>valueParam3</ParameterName>
-      <ParameterLabel>Valeur paramètre 3</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterSize>25</ParameterSize>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterOrder>12</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>valeur du paramètre supplémentaire pour
-					l'application SSO Client.
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>nameParam4</ParameterName>
-      <ParameterLabel>paramètre sup 4</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterSize>25</ParameterSize>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterOrder>13</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>nom du paramètre supplémentaire pour l'application
-					SSO Cleint.
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>valueParam4</ParameterName>
-      <ParameterLabel>Valeur paramètre 4</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterSize>25</ParameterSize>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterOrder>14</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>valeur du paramètre supplémentaire pour
-					l'application SSO Client.
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>nameParam5</ParameterName>
-      <ParameterLabel>paramètre sup 5</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterSize>25</ParameterSize>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterOrder>15</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>nom du paramètre supplémentaire pour l'application
-					SSO Cleint.
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>valueParam5</ParameterName>
-      <ParameterLabel>Valeur paramètre 5</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterSize>25</ParameterSize>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterOrder>16</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>valeur du paramètre supplémentaire pour
-					l'application SSO Client.
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-  </Parameters>
+  <profiles>
+    <profile name="user">
+      <fr>Lecteur</fr>
+      <en>Reader</en>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>URL</name>
+      <label>
+        <fr>URL</fr>
+        <en>URL</en>
+      </label>
+      <order>0</order>
+      <mandatory>Y</mandatory>
+      <value></value>      
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Saisissez ici l'adresse web du site cible</fr>
+        <en>Enter the web site address.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>clientSSO</name>
+      <label>
+        <fr>Authentification automatique sur le site cible.</fr>
+        <en>Authenticate on the destination site</en>
+      </label>
+      <order>1</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Activation du SSO Client.</fr>
+        <en>Automcatci authentication on the destination site.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>openNewWindow</name>
+      <label>
+        <fr>Ouvrir dans une nouvelle fenetre</fr>
+        <en>Open the link in a new window</en>
+      </label>
+      <order>2</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Le lien peut s'ouvrir soit dans Silverpeas, soit dans une nouvelle fenêtre. </fr>
+        <en>Open th new page inside Silverpeas or in a new window.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>isInternalLink</name>
+      <label>
+        <fr>Il s'agit d'un lien interne</fr>
+        <en>Internal link</en>
+      </label>
+      <order>3</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Cocher cette case s'il s'agit d'un lien interne : le lien sera alors analysé pour ne garder que le partie concernant Silverpeas </fr>
+        <en>Check to indicate that the link is internal, thus removing the unecessary url part.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>login</name>
+      <label>
+        <fr>Nom du champ de login pour le site cible.</fr>
+        <en>Login field name for the destination site.</en>
+      </label>      
+      <order>4</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>25</size>      
+      <updatable>always</updatable>
+      <help>
+        <fr>Nom du champ pour passer le login du site cible</fr>
+        <en>name of the field used to pass the login to the target site.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>password</name>
+      <label>
+        <fr>Nom du champ Mot de passe pour le site cible.</fr>
+        <en>Password field name for the destination site</en>
+      </label>      
+      <order>5</order>
+      <mandatory>N</mandatory>
+      <value></value>      
+      <type>text</type>
+      <size>25</size>
+      <updatable>always</updatable>
+      <help>
+        <fr>Nom du champ pour passer le mot de passe du site cible</fr>
+        <en>name of the field used to pass the password to the target site.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>method</name>
+      <label>
+        <fr>Attribut Method du formulaire</fr>
+        <en>Method used by the form to submit data</en>
+      </label>
+      <order>6</order>
+      <mandatory>Y</mandatory>
+      <value>GET</value>
+      <options>
+        <option>
+          <name>
+            <fr>Post</fr>
+            <en>Post</en>
+          </name>
+          <value>POST</value>
+        </option>
+        <option>
+          <name>
+            <fr>Get</fr>
+            <en>Get</en>
+          </name>
+          <value>GET</value>
+        </option>
+      </options>
+      <type>select</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Attribut Method à passer au formulaire de soumission de l'application SSO Client.</fr>
+        <en>Method used by the form to submit data to the target site.</en>
+      </help>      
+    </parameter>
+    <parameter>
+      <name>nameParam1</name>
+      <label>
+        <fr>Paramètre sup 1</fr>
+        <en>Extra parameter 1</en>
+      </label>
+      <order>7</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>25</size>   
+      <updatable>always</updatable>
+      <help>
+        <fr>Nom du paramètre supplémentaire pour l'application SSO Client. </fr>
+        <en>Name of the first extra parameter for the target site authentication form.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>valueParam1</name>
+      <label>
+        <fr>Valeur paramètre 1</fr>
+        <en>Value of the first extra parameter</en>
+      </label>
+      <order>8</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>25</size>
+      <updatable>always</updatable>
+      <help>
+        <fr>Valeur du paramètre supplémentaire pourl'application SSO Client.</fr>
+        <en>Value of the first extra parameter</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>nameParam2</name>
+      <label>
+        <fr>Paramètre sup 2</fr>
+        <en>Extra parameter 2</en>
+      </label>
+      <order>9</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>25</size>
+      <updatable>always</updatable>
+      <help>
+        <fr>Nom du paramètre supplémentaire pour l'applicationSSO Client.</fr>
+        <en>Name of the second extra parameter for the target site authentication form.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>valueParam2</name>
+      <label>
+        <fr>Valeur paramètre 1</fr>
+        <en>Value of the second extra parameter</en>
+      </label>
+      <order>10</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>25</size>
+      <updatable>always</updatable>
+      <help>
+        <fr>Valeur du paramètre supplémentaire pour l'application SSO Client. </fr>
+        <en>Value of the second extra parameter</en>
+      </help>
+    </parameter>
+   <parameter>
+      <name>nameParam3</name>
+      <label>
+        <fr>Paramètre sup 3</fr>
+        <en>Extra parameter 3</en>
+      </label>
+      <order>11</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>25</size>   
+      <updatable>always</updatable>
+      <help>
+        <fr>Nom du paramètre supplémentaire pour l'application SSO Client. </fr>
+        <en>Name of the third extra parameter for the target site authentication form.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>valueParam3</name>
+      <label>
+        <fr>Valeur paramètre 3</fr>
+        <en>Value of the third extra parameter</en>
+      </label>
+      <order>12</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>25</size>
+      <updatable>always</updatable>
+      <help>
+        <fr>Valeur du paramètre supplémentaire pourl'application SSO Client.</fr>
+        <en>Value of the third extra parameter</en>
+      </help>
+    </parameter><parameter>
+      <name>nameParam4</name>
+      <label>
+        <fr>Paramètre sup 4</fr>
+        <en>Extra parameter 4</en>
+      </label>
+      <order>13</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>25</size>   
+      <updatable>always</updatable>
+      <help>
+        <fr>Nom du paramètre supplémentaire pour l'application SSO Client. </fr>
+        <en>Name of the fourth extra parameter for the target site authentication form.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>valueParam4</name>
+      <label>
+        <fr>Valeur paramètre 4</fr>
+        <en>Value of the fourth extra parameter</en>
+      </label>
+      <order>14</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>25</size>
+      <updatable>always</updatable>
+      <help>
+        <fr>Valeur du paramètre supplémentaire pourl'application SSO Client.</fr>
+        <en>Value of the fourth extra parameter</en>
+      </help>
+    </parameter><parameter>
+      <name>nameParam5</name>
+      <label>
+        <fr>Paramètre sup 5</fr>
+        <en>Extra parameter 5</en>
+      </label>
+      <order>15</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>25</size>   
+      <updatable>always</updatable>
+      <help>
+        <fr>Nom du paramètre supplémentaire pour l'application SSO Client. </fr>
+        <en>Name of the fifth extra parameter for the target site authentication form.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>valueParam1</name>
+      <label>
+        <fr>Valeur paramètre 5</fr>
+        <en>Value of the fifth extra parameter</en>
+      </label>
+      <order>16</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>25</size>
+      <updatable>always</updatable>
+      <help>
+        <fr>Valeur du paramètre supplémentaire pourl'application SSO Client.</fr>
+        <en>Value of the fifth extra parameter</en>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>
