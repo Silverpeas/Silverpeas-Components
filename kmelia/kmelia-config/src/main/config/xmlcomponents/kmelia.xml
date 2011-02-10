@@ -620,7 +620,7 @@
       <updatable>always</updatable>
       <help>
         <fr>Affiche le nombre de publications par thème.</fr>
-        <en>Display the number of publications by topic.</en>
+        <en>Display the number of publications per theme.</en>
       </help>
     </parameter>
     <parameter>
@@ -767,7 +767,7 @@
       <name>wysiwygOnTopics</name>
       <label>
         <fr>Description riche</fr>
-        <en>Riche description</en>
+        <en>Rich description</en>
       </label>
       <order>36</order>
       <mandatory>Y</mandatory>
@@ -775,12 +775,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>
-          Ce paramètre permet de saisir une description Wysiwyg sur un thème qui sera affichée dans le thème
-        </fr>
-        <en>
-          This feature allows to make a rich description of a theme.
-        </en>
+        <fr>Ce paramètre permet de saisir une description Wysiwyg sur un thème qui sera affichée dans le thème.</fr>
+        <en>This feature allows to make a rich description of a theme.</en>
       </help>
     </parameter>
     <parameter>
@@ -795,8 +791,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail</fr>
-        <en>This feature allows to activate file sharing with persons who have no access to the portal</en>
+        <fr>Ce paramètre permet d'activer le partage de fichiers à des tiers non utilisateurs du portail.</fr>
+        <en>This feature allows to activate file sharing with persons who have no access to the portal.</en>
       </help>
       <personalSpaceValue>yes</personalSpaceValue>
     </parameter>
