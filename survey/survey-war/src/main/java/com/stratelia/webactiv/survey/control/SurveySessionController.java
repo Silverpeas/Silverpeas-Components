@@ -991,7 +991,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
    */
   public List<String> getListQuestionStyle() {
     List<String> questionStyles = new ArrayList<String>();
-    questionStyles.add("open");
+    if (!this.isPollingStationMode()) {
+      questionStyles.add("open");
+    }
     questionStyles.add("radio");
     questionStyles.add("checkbox");
     questionStyles.add("list");

@@ -122,138 +122,138 @@ function sendData() {
 }
 
 function checkAnswers() {
-   var errorMsg = "";
-   var errorNb = 0;
-   var answerEmpty = false;
-   var imageEmpty = false;
-   var fieldsEmpty = "";
-   if ($("#questionStyle").val() != "open") {
+  var errorMsg = "";
+  var errorNb = 0;
+  var answerEmpty = false;
+  var imageEmpty = false;
+  var fieldsEmpty = "";
+  if ($("#questionStyle").val() != "open") {
          
-     for (var i=0; i<document.surveyForm.length; i++)
-     {
-        inputName = document.surveyForm.elements[i].name.substring(0, 5);
-        if (inputName == "answe" ) {
-            if (isWhitespace(stripInitialWhitespace(document.surveyForm.elements[i].value))) {
-                  answerEmpty = true;
-            }
-        }
-
-        if (inputName == "image")
-        {
-            if (answerEmpty == true) {
-                  if (isWhitespace(stripInitialWhitespace(document.surveyForm.elements[i].value))) {
-                        imageEmpty = true;
-                  }
-            }
-            answerEmpty = false;
-        }
-
-        if (inputName == "value")
-        {
-            if (imageEmpty == true) {
-                  if (isWhitespace(stripInitialWhitespace(document.surveyForm.elements[i].value))) {
-                        fieldsEmpty += (parseInt(document.surveyForm.elements[i].name.substring(17, document.surveyForm.elements[i].name.length))+1)+",";
-                        errorNb++;
-                  }
-            }
-            imageEmpty = false;
+    for (var i=0; i<document.surveyForm.length; i++) 
+    {
+      inputName = document.surveyForm.elements[i].name.substring(0, 5);
+      if (inputName == "answe" ) {
+        if (isWhitespace(stripInitialWhitespace(document.surveyForm.elements[i].value))) {
+          answerEmpty = true;
         }
       }
+    
+      if (inputName == "image")
+      {
+        if (answerEmpty == true) {
+          if (isWhitespace(stripInitialWhitespace(document.surveyForm.elements[i].value))) {
+            imageEmpty = true;
+          }
+        }
+        answerEmpty = false;
+      }
+    
+      if (inputName == "value")
+      {
+        if (imageEmpty == true) {
+          if (isWhitespace(stripInitialWhitespace(document.surveyForm.elements[i].value))) {
+            fieldsEmpty += (parseInt(document.surveyForm.elements[i].name.substring(17, document.surveyForm.elements[i].name.length))+1)+",";
+            errorNb++;
+          }
+        }
+        imageEmpty = false;
+      }
+    }
   }
  <c:if test="${!suggestion && action == 'SendQuestionForm'}">
   if (isWhitespace(stripInitialWhitespace(document.surveyForm.suggestionLabel.value))) {
        errorNb++;
   }
  </c:if>
-     switch(errorNb) {
-        case 0 :
-            result = true;
-            break;
-        default :
-            fields = fieldsEmpty.split(",");
-            for (var i=0; i < fields.length-1; i++) {
-                errorMsg += "<fmt:message key="SurveyCreationAnswerNb" /> "+fields[i]+" \n";
-            }
-            <c:if test="${!suggestion && action == 'SendQuestionForm'}">
-                if (isWhitespace(stripInitialWhitespace($("#suggestionId").val()))) {
-                    errorMsg += "<fmt:message key="OtherAnswer" /> \n";
-                }
-            </c:if>
-            window.alert("<fmt:message key="EmptyAnswerNotAllowed" /> \n" + errorMsg);
-            result = false;
-            break;
-     }
+  switch(errorNb) {
+    case 0 :
+        result = true;
+        break;
+    default :
+        fields = fieldsEmpty.split(",");
+        for (var i=0; i < fields.length-1; i++) {
+          errorMsg += "<fmt:message key="SurveyCreationAnswerNb" /> "+fields[i]+" \n";
+        }
+    <c:if test="${!suggestion && action == 'SendQuestionForm'}">
+        if (isWhitespace(stripInitialWhitespace($("#suggestionId").val()))) {
+          errorMsg += "<fmt:message key="OtherAnswer" /> \n";
+        }
+    </c:if>
+        window.alert("<fmt:message key="EmptyAnswerNotAllowed" /> \n" + errorMsg);
+        result = false;
+        break;
+  }
   return result;
 }
 
 function isCorrectForm() {
-     var errorMsg = "";
-     var errorNb = 0;
-     var question = stripInitialWhitespace(document.surveyForm.question.value);
-     var nbAnswers = document.surveyForm.nbAnswers.value;
-     if (isWhitespace(question)) {
-           errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="SurveyCreationQuestion"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+  var errorMsg = "";
+  var errorNb = 0;
+  var question = stripInitialWhitespace(document.surveyForm.question.value);
+  var nbAnswers = document.surveyForm.nbAnswers.value;
+  if (isWhitespace(question)) {
+    errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="SurveyCreationQuestion"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+    errorNb++;
+  }
+  if (document.surveyForm.questionStyle.options[document.surveyForm.questionStyle.selectedIndex].value=="null") {
+    //choisir au moins un style
+    errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="survey.style"/>' <fmt:message key="GML.MustBeFilled"/> \n";
+    errorNb++;
+  }
+  else
+  {
+    if (document.surveyForm.questionStyle.options[document.surveyForm.questionStyle.selectedIndex].value != "open") {
+        //Closed Question
+        if (isWhitespace(nbAnswers)) {
+           errorMsg +="  - <fmt:message key="GML.theField"/> '<fmt:message key="SurveyCreationNbPossibleAnswer"/>' <fmt:message key="GML.MustBeFilled"/>\n";
            errorNb++;
+        } else {
+               if (isInteger(nbAnswers)==false) {
+                 errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="SurveyCreationNbPossibleAnswer"/>' <fmt:message key="GML.MustContainsFloat"/>\n";
+                 errorNb++;
+               } else {
+                    if (document.surveyForm.suggestion.checked) {
+                        //nb min answers = 1
+                        if (nbAnswers <= 0) {
+                           errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="SurveyCreationNbPossibleAnswer"/>' <fmt:message key="MustContainsNumberGreaterThan"/> 1\n";
+                           errorNb++;
+                        }
+                    } else {
+                        //nb min answers = 2
+                        if (nbAnswers <= 1) {
+                           errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="SurveyCreationNbPossibleAnswer"/>' <fmt:message key="MustContainsNumberGreaterThan"/> 2\n";
+                           errorNb++;
+                        }
+                    }
+                    if (nbAnswers > <%=nbMaxAnswers%>) {
+                       errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="SurveyCreationNbPossibleAnswer"/>' <fmt:message key="MustContainsNumberLessThan"/> <%=nbMaxAnswers%>\n";
+                         errorNb++;
+                      }
+                 }
+          }
      }
-     if (document.surveyForm.questionStyle.options[document.surveyForm.questionStyle.selectedIndex].value=="null") {
-     	//choisir au moins un style
-    	errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="survey.style"/>' <fmt:message key="GML.MustBeFilled"/> \n";
-    	errorNb++;
-     }
-     else
-     {
-	     if (document.surveyForm.questionStyle.options[document.surveyForm.questionStyle.selectedIndex].value != "open") {
-	          //Closed Question
-	          if (isWhitespace(nbAnswers)) {
-	             errorMsg +="  - <fmt:message key="GML.theField"/> '<fmt:message key="SurveyCreationNbPossibleAnswer"/>' <fmt:message key="GML.MustBeFilled"/>\n";
-	             errorNb++;
-	          } else {
-	                 if (isInteger(nbAnswers)==false) {
-	                   errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="SurveyCreationNbPossibleAnswer"/>' <fmt:message key="GML.MustContainsFloat"/>\n";
-	                   errorNb++;
-	                 } else {
-	                      if (document.surveyForm.suggestion.checked) {
-	                          //nb min answers = 1
-	                          if (nbAnswers <= 0) {
-	                             errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="SurveyCreationNbPossibleAnswer"/>' <fmt:message key="MustContainsNumberGreaterThan"/> 1\n";
-	                             errorNb++;
-	                          }
-	                      } else {
-	                          //nb min answers = 2
-	                          if (nbAnswers <= 1) {
-	                             errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="SurveyCreationNbPossibleAnswer"/>' <fmt:message key="MustContainsNumberGreaterThan"/> 2\n";
-	                             errorNb++;
-	                          }
-	                      }
-	                      if (nbAnswers > <%=nbMaxAnswers%>) {
-	                         errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="SurveyCreationNbPossibleAnswer"/>' <fmt:message key="MustContainsNumberLessThan"/> <%=nbMaxAnswers%>\n";
-	                         errorNb++;
-	                      }
-	                 }
-	          }
-	     }
-	 }
-     switch(errorNb) {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
+  }
+  switch(errorNb) {
+    case 0 :
+        result = true;
+        break;
+    case 1 :
+        errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
+        window.alert(errorMsg);
+        result = false;
+        break;
+    default :
+        errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
+        window.alert(errorMsg);
+        result = false;
+        break;
+  }
+  return result;
 }
 
 function goToEnd() {
-    document.surveyForm.Action.value = "End";
-    document.surveyForm.submit();
+  document.surveyForm.Action.value = "End";
+  document.surveyForm.submit();
 }
 
 var galleryWindow = window;
@@ -280,8 +280,8 @@ function choixGallery(liste, idAnswer)
 
 function deleteImage(idImage)
 {
-	document.getElementById('imageGallery'+idImage).innerHTML = "";
-	document.getElementById('valueImageGallery'+idImage).value = "";
+  document.getElementById('imageGallery'+idImage).innerHTML = "";
+  document.getElementById('valueImageGallery'+idImage).value = "";
 }
 
 function choixImageInGallery(url)
@@ -448,18 +448,6 @@ function insertHTMLAnswer(answerId) {
 <view:browseBar extraInformations="${browseBarLabel}">
 </view:browseBar>
 
-
-<c:choose>
-  <c:when test="${not empty questionId}">
-      Trying to change question information: <c:out value="${questionId}"/>
-  </c:when>
-  <c:otherwise>
-      Create a new question: <c:out value="${questionLabel}"/>
-  </c:otherwise>
-</c:choose>
-<br/>
-Is Polling = <c:out value="${isPolling}"/>
-
 <view:window>
   <view:frame>
    <center>
@@ -507,17 +495,7 @@ Is Polling = <c:out value="${isPolling}"/>
         
     <c:forEach var="answer" items="${answers}" varStatus="answerStatus">
       <c:if test="${!answer.opened}">
-        <%--
-        <tr>
-          <td colspan="2" align="center">
-            <table cellpadding="0" cellspacing="5" width="100%">
-              <tr>
-                <td class="intfdcolor"><img src="<%= px%>" border="0"></td>
-              </tr>
-            </table>
-          </td>
-        </tr>
-         --%>
+
         <tr id="answerNotOpenAnswerNb<c:out value="${answerStatus.index}"/>">
           <td class="txtlibform"><fmt:message key="SurveyCreationAnswerNb" />&nbsp;<c:out value="${answerStatus.index + 1}"/> :</td>
           <td><input type="text" name="<c:out value="answer${answerStatus.index}"/>" value="<c:out value="${answer.label}"/>" size="60" maxlength="<%=DBUtil.getTextFieldLength() %>"></td>

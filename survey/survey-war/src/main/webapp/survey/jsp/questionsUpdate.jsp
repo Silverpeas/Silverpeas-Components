@@ -52,6 +52,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <%--<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />--%>
 
+<c:set var="isPolling" value="${requestScope['PollingStationMode']}" />
 <c:set var="action" value="${requestScope['Action']}" />
 <c:set var="surveyName" value="${requestScope['SurveyName']}" />
 
@@ -96,7 +97,9 @@ function updateQuestion(questionId) {
 %>
 <%-- //TODO add the operation Pane only if there is no question (depends on vote or survey) --%>
 <view:operationPane>
-  <view:operation altText="<%=resources.getString("QuestionAdd")%>" icon="icons/questionAdd.gif" action="javaScript:addQuestion();"></view:operation>
+  <c:if test="${!isPolling}">
+    <view:operation altText="<%=resources.getString("QuestionAdd")%>" icon="icons/questionAdd.gif" action="javaScript:addQuestion();"></view:operation>
+  </c:if>
 </view:operationPane>
 <fmt:message var="extraInfoBB" key="SurveyUpdate"/>
 <c:set var="extraInfoBB" value="${extraInfoBB} '${surveyName}'" />
@@ -151,7 +154,9 @@ try
                   operations += "<a href=\"questionsUpdate.jsp?Action=DownQuestion&QId="+j+"\"><img src=\""+questionDownSrc+"\" border=\"0\" alt=\""+resources.getString("QuestionDown")+"\" title=\""+resources.getString("QuestionDown")+"\" align=\"absmiddle\"></a> ";
               }
               operations += "<a href=\"javascript:updateQuestion('"+j+"');\"><img src=\""+questionUpdateSrc+"\" border=\"0\" alt=\""+surveyScc.getString("survey.update")+"\" title=\""+surveyScc.getString("survey.update")+"\"></a> ";
-              operations += "<a href=\"questionsUpdate.jsp?Action=DeleteQuestion&QId="+j+"\"><img src=\""+questionDeleteSrc+"\" border=\"0\" alt=\""+resources.getString("GML.delete")+"\" title=\""+resources.getString("GML.delete")+"\"></a> ";
+              if (!surveyScc.isPollingStationMode()) {
+                operations += "<a href=\"questionsUpdate.jsp?Action=DeleteQuestion&QId="+j+"\"><img src=\""+questionDeleteSrc+"\" border=\"0\" alt=\""+resources.getString("GML.delete")+"\" title=\""+resources.getString("GML.delete")+"\"></a> ";
+              }
 
               out.println(board.printBefore());
               %>
