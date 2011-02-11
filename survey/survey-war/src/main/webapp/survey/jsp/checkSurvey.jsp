@@ -37,6 +37,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.survey.control.SurveySessionController "%>
 
 <%@ page import="java.util.*"%>
+<%@ page import="java.util.Collection"%>
+<%@ page import="java.util.Iterator"%>
+<%@ page import="java.util.Vector"%>
 <%@ page import="java.lang.Math"%>
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="java.text.ParseException"%>
@@ -49,22 +52,31 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.util.question.model.Question "%>
 <%@ page import="com.stratelia.webactiv.util.questionResult.model.QuestionResult "%>
 <%@ page import="com.stratelia.webactiv.util.answer.model.Answer "%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
+
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.board.Board"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttonPanes.ButtonPane"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.buttons.Button"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
+
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
 <%@ page import="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader "%>
 <%@ page import="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerDetail "%>
 <%@ page import="com.stratelia.webactiv.util.questionResult.model.QuestionResult "%>
+
 <%@ page import="com.stratelia.webactiv.survey.SurveyException"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
-<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
 <%@ page import="com.stratelia.webactiv.util.FileServerUtils"%>
+<%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
 <%@ page import="com.silverpeas.util.web.servlet.FileUploadUtil"%>
 <%@ page import="org.apache.commons.fileupload.FileItem"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
@@ -73,9 +85,6 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 <%@ page import="com.silverpeas.util.ForeignPK"%>
 <%@ page import="com.silverpeas.util.EncodeHelper"%>
-<%@ page import="java.util.Collection"%>
-<%@ page import="java.util.Iterator"%>
-<%@ page import="java.util.Vector"%>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager"%>
 <%@ page import="com.stratelia.webactiv.quizz.QuestionHelper"%>
 <%@ page import="com.stratelia.webactiv.quizz.QuestionForm"%>
@@ -83,7 +92,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 
 <%
-    SurveySessionController surveyScc = (SurveySessionController) request.getAttribute("surveyScc");
+    SurveySessionController surveyScc = (SurveySessionController) request.getAttribute("survey");
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
     ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
 

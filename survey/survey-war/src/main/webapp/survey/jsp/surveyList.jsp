@@ -33,43 +33,21 @@
 <%@ page import="java.io.File"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
 
-<%@ page import="java.util.*"%>
-<%@ page import="java.text.ParseException"%>
-<%@ page
-	import="javax.naming.Context,javax.naming.InitialContext,javax.rmi.PortableRemoteObject"%>
-<%@ page
-	import="javax.ejb.RemoveException,javax.ejb.CreateException,java.sql.SQLException,javax.naming.NamingException,java.rmi.RemoteException,javax.ejb.FinderException"%>
-<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
-<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.Encode"%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBar"%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane"%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine"%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.iconPanes.IconPane"%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.icons.Icon"%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.operationPanes.OperationPane"%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.window.Window"%>
-<%@ page
-	import="com.stratelia.webactiv.util.viewGenerator.html.frame.Frame"%>
-<%@ page
-	import="com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader"%>
-
 <%@ include file="checkSurvey.jsp"%>
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%--
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+--%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<c:set var="ctxPath" value="${pageContext.request.contextPath}" />
+<%-- Set resource bundle --%>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 
 <%!String lockSrc = "";
@@ -151,26 +129,26 @@
           if (view == SurveySessionController.OPENED_SURVEYS_VIEW) {
             Icon closeIcon = iconPane.addIcon();
             closeIcon.setProperties(lockSrc, resources.getString("GML.lock") + " '" +
-                Encode.javaStringToHtmlString(survey.getTitle()) + "'",
+                EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
                 "surveyList.jsp?Action=CloseSurvey&SurveyId=" + survey.getPK().getId());
           } else {
             Icon openIcon = iconPane.addIcon();
             openIcon.setProperties(unlockSrc, resources.getString("GML.unlock") + " '" +
-                Encode.javaStringToHtmlString(survey.getTitle()) + "'",
+                EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
                 "surveyList.jsp?Action=OpenSurvey&SurveyId=" + survey.getPK().getId());
           }
           // mise � jour
           Icon updateIcon = iconPane.addIcon();
           updateIcon.setProperties(surveyUpdateSrc, resources.getString("GML.modify") + " '" +
-              Encode.javaStringToHtmlString(survey.getTitle()) + "'", "javascript:updateSurvey('" +
+              EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'", "javascript:updateSurvey('" +
               survey.getPK().getId() + "','" +
-              Encode.javaStringToHtmlString(Encode.javaStringToJsString(survey.getTitle())) + "')");
+              EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(survey.getTitle())) + "')");
           // suppression
           Icon deleteIcon = iconPane.addIcon();
           deleteIcon.setProperties(surveyDeleteSrc, resources.getString("GML.delete") + " '" +
-              Encode.javaStringToHtmlString(survey.getTitle()) + "'", "javaScript:deleteSurvey('" +
+              EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'", "javaScript:deleteSurvey('" +
               survey.getPK().getId() + "','" +
-              Encode.javaStringToHtmlString(Encode.javaStringToJsString(survey.getTitle())) + "')");
+              EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(survey.getTitle())) + "')");
           iconPane.setSpacing("30px");
           arrayLine.addArrayCellIconPane(iconPane);
         } else {
@@ -210,13 +188,13 @@
           IconPane iconPane = gef.getIconPane();
           Icon updateIcon = iconPane.addIcon();
           updateIcon.setProperties(surveyUpdateSrc, resources.getString("GML.modify") + " '" +
-              Encode.javaStringToHtmlString(survey.getTitle()) + "'",
+              EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
               "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=" + survey.getPK().getId());
           Icon deleteIcon = iconPane.addIcon();
           deleteIcon.setProperties(surveyDeleteSrc, resources.getString("GML.delete") + " '" +
-              Encode.javaStringToHtmlString(survey.getTitle()) + "'", "javaScript:deleteSurvey('" +
+              EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'", "javaScript:deleteSurvey('" +
               survey.getPK().getId() + "','" +
-              Encode.javaStringToHtmlString(Encode.javaStringToJsString(survey.getTitle())) + "')");
+              EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(survey.getTitle())) + "')");
           iconPane.setSpacing("30px");
           arrayLine.addArrayCellIconPane(iconPane);
         }
@@ -314,7 +292,7 @@
   }%>
 
 <%
-  //R�cup�ration des param�tres
+  //Retrieve parameters
   String action = (String) request.getParameter("Action");
   String profile = (String) request.getParameter("Profile");
   String iconsPath =
@@ -327,12 +305,13 @@
   surveyUpdateSrc = iconsPath + "/util/icons/update.gif";
   pdcUtilizationSrc = iconsPath + "/pdcPeas/jsp/icons/pdcPeas_paramPdc.gif";
   linkSrc = iconsPath + "/util/icons/link.gif";
-  if (pollingStationMode)
+  if (pollingStationMode) {
     addSurveySrc = iconsPath + "/util/icons/polling_to_add.gif";
-  else
+  } else {
     addSurveySrc = iconsPath + "/util/icons/survey_to_add.gif";
+  }
 
-  //Mise a jour de l'espace
+  //Update space
   if (action == null) {
     action = "ViewOpenedSurveys";
   }
@@ -367,9 +346,7 @@
 <html>
 <head>
 <title></title>
-<%
-  out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel />
 <script type="text/javascript" src="<%=iconsPath%>/util/javaScript/animation.js"></script>
 <script language="javascript1.2">
 function viewOpenedSurveys() {
@@ -397,16 +374,16 @@ function createPollingStation() {
 	}
 
 function deleteSurvey(surveyId, name) {
-  if(window.confirm("<%=Encode.javaStringToJsString(resources.getString("ConfirmDeleteSurvey"))%> '" + name + "' ?")){
+  if(window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString("ConfirmDeleteSurvey"))%> '" + name + "' ?")){
       document.surveysForm.Action.value = "DeleteSurvey";
       document.surveysForm.SurveyId.value = surveyId;
       document.surveysForm.submit();
   }
-}survey.confirmUpdateSurvey
+}
 
 function updateSurvey(surveyId, name)
 {
-	if(window.confirm("<%=Encode.javaStringToJsString(resources.getString("survey.confirmUpdateSurvey"))%> '" + name + "' ?")) {
+	if(window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString("survey.confirmUpdateSurvey"))%> '" + name + "' ?")) {
 		document.updateForm.action = "UpdateSurvey";
       	document.updateForm.Action.value = "UpdateSurveyHeader";
       	document.updateForm.SurveyId.value = surveyId;
@@ -415,7 +392,7 @@ function updateSurvey(surveyId, name)
 }
 
 function clipboardPaste() {     
-	  top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RSurvey&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("surveyList"))%>&TargetFrame=MyMain&message=REFRESH');
+	  top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RSurvey&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("surveyList", "UTF-8"))%>&TargetFrame=MyMain&message=REFRESH');
 	}
 
 function openSPWindow(fonction, windowName){
@@ -439,12 +416,13 @@ function openSPWindow(fonction, windowName){
           surveyScc.getComponentId() + "','utilizationPdc1')");
       operationPane.addLine();
     }
-    if (pollingStationMode)
+    if (pollingStationMode) {
       operationPane.addOperation(addSurveySrc, resources.getString("PollingStationNewVote"),
           "javaScript:createPollingStation()");
-    else
+    } else {
       operationPane.addOperation(addSurveySrc, resources.getString("SurveyNewSurvey"),
           "javaScript:createSurvey()");
+    }
     operationPane.addOperation(resources.getIcon("survey.paste"), resources
         .getString("GML.paste"), "javascript:onClick=clipboardPaste()");
   }
@@ -470,16 +448,17 @@ function openSPWindow(fonction, windowName){
   Frame frame = gef.getFrame();
 
   ArrayPane arrayPane = null;
-  if (profile.equals("admin") || profile.equals("publisher"))
+  if (profile.equals("admin") || profile.equals("publisher")) {
     arrayPane =
         buildSurveyArrayToAdmin(gef, surveyScc, view, surveys, resources, request, session,
         pollingStationMode);
-  else
+  } else {
     arrayPane =
         buildSurveyArrayToUser(gef, surveyScc, view, surveys, resources, request, session,
         pollingStationMode);
+  }
 
-  //R�cup�ration du tableau dans le haut du cadre          
+  //Retrieve array in the top corner           
   frame.addTop("<center><table cellpadding=0 cellspacing=0 border=0 width='98%'><tr><td>" +
       arrayPane.print() + "</td></tr></table></center>");
 

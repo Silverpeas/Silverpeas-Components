@@ -41,7 +41,7 @@
 <%@ include file="surveyUtils.jsp.inc" %>
 
 <%
-//R�cup�ration des param�tres
+//Retrieve parameter
 String action = request.getParameter("Action");
 String surveyId = request.getParameter("SurveyId");
 
@@ -53,7 +53,7 @@ String endDate = request.getParameter("endDate");
 String nbQuestions = request.getParameter("nbQuestions");
 String anonymousString = request.getParameter("anonymous");
 
-//Mode anonyme -> force les enqu�tes � �tre toutes anonymes
+//Anonymous mode -> force all the survey to be anonymous
 if(surveyScc.isAnonymousModeEnabled()) {
 	anonymousString = "true";
 }
