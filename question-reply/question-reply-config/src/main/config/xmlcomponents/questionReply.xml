@@ -24,49 +24,82 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
+ 
   <name>questionReply</name>
-  <label>Questions/Réponses - Questions aux experts</label>
-  <description>Permet de gérer la base de connaissances des questions posées par les utilisateurs
+  <label>
+    <fr>Questions/Réponses - Questions aux experts</fr>
+    <en>Questions/Answers - Questions to experts</en>
+  </label>
+  <description>
+    <fr>Permet de gérer la base de connaissances des questions posées par les utilisateurs
   vers les experts, localiser automatiquement l'expert apte à répondre à une question et gérer
-  la distribution de la réponse vers les utilisateurs.</description>
-  <suite>03 Gestion de la connaissance</suite>
-  <portlet>yes</portlet>
-  <visible>yes</visible>
+  la distribution de la réponse vers les utilisateurs.
+    </fr>
+    <en>Create a knowledge database, with questions asked by users to experts. 
+    The users can locate the experts that have the best chance of knowing the answer.
+    The expert manage the diffusion of answers towards the users.
+    </en>
+  </description>
+  <suite>
+    <fr>03 Gestion de la connaissance</fr>
+    <en>03 Knowledge management</en>
+  </suite>
+  <visible>Y</visible>
+  <portlet>Y</portlet>
   <instanceClassName>com.silverpeas.questionReply.QuestionReplyInstanciator</instanceClassName>
-  <Profiles>
-    <Profile name="admin">Animateur</Profile>
-    <Profile name="publisher">Demandeur</Profile>
-    <Profile name="writer">Expert</Profile>
-    <Profile name="user">Lecteur</Profile>
-  </Profiles>
-  <Parameters>
-    <Parameter>
-      <ParameterName>privateRepliesUsed</ParameterName>
-      <ParameterLabel>Utilisation des réponses privées</ParameterLabel>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>1</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Possibilité de créer des réponses privées</ParameterHelpFr>
-        <ParameterHelpEn>Private answer re authorized</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>sortable</ParameterName>
-      <ParameterLabel>Questions triées par ordre</ParameterLabel>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>2</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Possibilité de trier les questions</ParameterHelpFr>
-        <ParameterHelpEn>Questions are sortable</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-  </Parameters>
+  <profiles>
+    <profile name="admin">
+      <fr>Animateur</fr>
+      <en>Quizmaster</en>
+    </profile>
+    <profile name="publisher">
+      <fr>Demandeur</fr>
+      <en>Applicant</en>
+    </profile>
+    <profile name="writer">
+      <fr>Expert</fr>
+      <en>Expert</en>
+    </profile>
+    <profile name="user">
+      <fr>Lecteur</fr>
+      <en>Reader</en>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>privateRepliesUsed</name>
+      <label>
+        <fr>Utilisation des réponses privées</fr>
+        <en>Private answers</en>
+      </label>
+      <order>1</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Possibilité de créer des réponses privées.</fr>
+        <en>Experts can send private answers.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>sortable</name>
+      <label>
+        <fr>Questions triées par ordre</fr>
+        <en>Sort by questions</en>
+      </label>
+      <order>2</order>
+      <mandatory>N</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Possibilité de trier les questions.</fr>
+        <en>Questions are sortable.</en>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>

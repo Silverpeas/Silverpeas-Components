@@ -24,32 +24,40 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>yellowpages</name>
-  <label>Contacts - Annuaire Yellow pages</label>
-  <description>Permet de créer un annuaire de contact. Un formulaire XML associé décrit l'identité
+  <label>
+    <fr>Contacts</fr>
+    <en>Yellow pages directory</en>
+  </label>
+  <description>
+    <fr>Permet de créer un annuaire de contact. Un formulaire XML associé décrit l'identité
   de chaque membre de l'annuaire, ainsi que tout autre caractéristique.
+    </fr>
+    <en>Create a contact directory whith an XML form describing all the inos on every member of the directory.</en>
   </description>
-  <suite>02 Gestion Collaborative</suite>
-  <visible>yes</visible>
-  <visibleInPersonalSpace>yes</visibleInPersonalSpace>
-  <portlet>yes</portlet>
+  <suite>
+    <fr>02 Gestion Collaborative</fr>
+    <en>02 Collaborative Management</en>
+  </suite>
+  <visible>Y</visible>
+  <visibleInPersonalSpace>Y</visibleInPersonalSpace>
+  <portlet>Y</portlet>
   <instanceClassName>com.stratelia.webactiv.yellowpages.YellowpagesInstanciator</instanceClassName>
-  <tableList>
-    <tabletpl>Node</tabletpl>
-    <tabletpl>Contact</tabletpl>
-    <tabletpl>ContactFather</tabletpl>
-    <tabletpl>Model_contact</tabletpl>
-    <tabletpl>Info</tabletpl>
-    <tabletpl>InfoText</tabletpl>
-    <tabletpl>InfoAttachment</tabletpl>
-    <tabletpl>InfoImage</tabletpl>
-    <tabletpl>InfoLink</tabletpl>
-  </tableList>
-  <Profiles>
-    <Profile name="admin">Gestionnaire</Profile>
-    <Profile name="publisher">Publieur</Profile>
-    <Profile name="user">Lecteur</Profile>
-  </Profiles>
+  <profiles>
+    <profile name="admin">
+      <fr>Gestionnaire</fr>
+      <en>Administrator</en>
+    </profile>
+    <profile name="publisher">
+      <fr>Publieur</fr>
+      <en>Publisher</en>
+    </profile>
+    <profile name="user">
+      <fr>Lecteur</fr>
+      <en>Reader</en>
+    </profile>
+  </profiles>
 </WAComponent>

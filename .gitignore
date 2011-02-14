@@ -3,3 +3,4 @@
 *.iml
 */**/target/*
 wiki/wiki-jar/Test de base/
+/scheduleevent/scheduleevent-config/.settings/

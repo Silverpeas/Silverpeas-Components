@@ -25,34 +25,55 @@
 
 -->
 
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>quickinfo</name>
-  <label>Actualités - QuickInfo</label>
-  <description>Permet de diffuser des brèves d'information. Les informations sont classées sur le Plan de Classement.</description>
-  <suite>04 Gestion de contenu</suite>
-  <visible>yes</visible>
-  <portlet>yes</portlet>
+  <label>
+    <fr>Actualités</fr>
+    <en>QuickInfo</en>
+  </label>
+  <description>
+    <fr>Permet de diffuser des brèves d'information. Les informations sont classées sur le Plan de Classement.</fr>
+    <en>Create and broadcast news. These pieces of information can be classified on the classification scheme.</en>
+  </description>
+  <suite>
+    <fr>04 Gestion de contenu</fr>
+    <en>04 Content management</en>
+  </suite>
+  <visible>Y</visible>
+  <portlet>Y</portlet>
   <instanceClassName>com.stratelia.webactiv.quickinfo.QuickInfoInstanciator</instanceClassName>
-  <tableList>
-    <tabletpl>publication</tabletpl>
-  </tableList>
-  <Profiles>
-    <Profile name="admin">Gestionnaire</Profile>
-    <Profile name="publisher">Publieur</Profile>
-    <Profile name="user">Lecteur</Profile>
-  </Profiles>
-  <Parameters>
-    <Parameter>
-      <ParameterName>usePdc</ParameterName>
-      <ParameterLabel>Classification PDC</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterHelp>
-        <ParameterHelpFr>Les brèves créées au sein de cette instance pourront Être classées sur le Plan de Classement</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-  </Parameters>
+  <profiles>
+    <profile name="admin">
+      <fr>Gestionnaire</fr>
+      <en>Adinistrator</en>
+    </profile>
+    <profile name="publisher">
+      <fr>Publieur</fr>
+      <en>Publisher</en>
+    </profile>
+    <profile name="user">
+      <fr>Lecteur</fr>
+      <en>Reader</en>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>usePdc</name>
+      <label>
+        <fr>Classification PDC</fr>
+        <en>Classficiation scheme</en>
+      </label>
+      <order>1</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Les brèves créées au sein de cette instance pourront Être classées sur le Plan de Classement.</fr>
+        <en>News cerated in thsi component will be classified on the classification scheme.</en>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>

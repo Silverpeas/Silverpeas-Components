@@ -25,40 +25,58 @@
 
 -->
 
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
+
   <name>quizz</name>
-  <label>Quiz</label>
-  <description>Permet d'évaluer la compréhension ou niveau de connaissance acquis d'un sujet.
-  L'utilisateur peut se faire aider d'indices. Un scoring évalue sa performance.</description>
-  <suite>02 Gestion Collaborative</suite>
-  <visible>yes</visible>
-  <portlet>yes</portlet>
+  <label>
+    <fr>Quiz</fr>
+    <en>Quizz</en>
+  </label>
+  <description>
+    <fr>Permet d'évaluer la compréhension ou niveau de connaissance acquis d'un sujet.
+  L'utilisateur peut se faire aider d'indices. Un scoring évalue sa performance.
+    </fr>
+    <en>Evaluates the understanding or the knowledge on a subject. The user can use hints lowering his score.</en>
+  </description>
+  <suite>
+    <fr>02 Gestion Collaborative</fr>
+    <en>02 Collaborative Management</en>
+  </suite>
+  <visible>Y</visible>
+  <portlet>Y</portlet>
   <instanceClassName>com.stratelia.webactiv.quizz.QuizzInstanciator</instanceClassName>
-  <tableList>
-    <tabletpl>Quizz</tabletpl>
-    <tabletpl>Question</tabletpl>
-    <tabletpl>Answer</tabletpl>
-    <tabletpl>QuestionResult</tabletpl>
-    <tabletpl>QuizzComment</tabletpl>
-  </tableList>
-  <Profiles>
-    <Profile name="admin">Gestionnaire</Profile>
-    <Profile name="publisher">Publieur</Profile>
-    <Profile name="user">Lecteur</Profile>
-  </Profiles>
-  <Parameters>
-    <Parameter>
-      <ParameterName>usePdc</ParameterName>
-      <ParameterLabel>Classification PDC</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterHelp>
-        <ParameterHelpFr>Les quizz créés au sein de cette instance pourront être classés sur le
-        Plan de Classement</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-  </Parameters>
+  <profiles>
+    <profile name="admin">
+      <fr>Gestionnaire</fr>
+      <en>Administrator</en>
+    </profile>
+    <profile name="publisher">
+      <fr>Publieur</fr>
+      <en>Publisher</en>
+    </profile>
+    <profile name="user">
+      <fr>Lecteur</fr>
+      <en>Reader</en>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>usePdc</name>
+      <label>
+        <fr>Classification PDC</fr>
+        <en>Classification Scheme</en>
+      </label>
+      <order>1</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Les quizz créés au sein de ce composant pourront être classés sur le Plan de Classement.</fr>
+        <en>The quizz will be classified on the classification scheme.</en>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>

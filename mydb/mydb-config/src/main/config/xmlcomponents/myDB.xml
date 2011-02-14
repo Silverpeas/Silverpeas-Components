@@ -25,19 +25,40 @@
 
 -->
 
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
+
   <name>myDB</name>
-  <label>My DB</label>
-  <description>Permet de consulter, modifier ou supprimer le contenu de données en base et de créer
+  <label>
+    <fr>My DB</fr>
+    <en>My DB</en>
+  </label>
+  <description>
+    <fr>Permet de consulter, modifier ou supprimer le contenu de données en base et de créer
   de nouvelles tables.
+    </fr>
+    <en>An easy way to create tables, consult, modify or delete data stored in a database.</en>
   </description>
-  <suite>06 Connecteurs</suite>
-  <visible>yes</visible>
-  <portlet>no</portlet>
+  <suite>
+    <fr>06 Connecteurs</fr>
+    <en>06 Connectors</en>
+  </suite>
+  <visible>Y</visible>
+  <portlet>N</portlet>
   <instanceClassName>com.silverpeas.mydb.MyDBInstanciator</instanceClassName>
-  <Profiles>
-    <Profile name="admin">Gestionnaire</Profile>
-    <Profile name="publisher">Publieur</Profile>
-    <Profile name="user">Lecteur</Profile>
-  </Profiles>
+  <profiles>
+    <profile name="admin">
+      <fr>Gestionnaire</fr>
+      <en>Administrator</en>
+    </profile>
+    <profile name="publisher">
+      <fr>Publieur</fr>
+      <en>Publisher</en>
+    </profile>
+    <profile name="user">
+      <fr>Lecteur</fr>
+      <en>Reader</en>
+    </profile>
+  </profiles>
 </WAComponent>

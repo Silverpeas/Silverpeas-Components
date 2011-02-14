@@ -24,44 +24,87 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>demandeCongesSimple</name>
-  <label>Demande de congés simplifiée</label>
-  <description>Processus : Demande de congés simplifiée</description>
-  <suite>05 Workflow</suite>
-  <visible>yes</visible>
-  <portlet>no</portlet>
-  <requestRouter>RprocessManager</requestRouter>
+  <label>
+    <fr>Demande de congés simplifiée</fr>
+    <en>Simple workflow to ask for a vacation leave</en>
+  </label>
+  <description>
+    <fr>Processus : Demande de congés simplifiée</fr>
+    <en>Workflow : ask for a vacation leave</en>
+  </description>
+  <suite>
+    <fr>05 Workflow</fr>
+    <en>05 Workflow</en>
+  </suite>
+  <visible>Y</visible>
+  <portlet>N</portlet>
+  <!-- <requestRouter>RprocessManager</requestRouter> -->
   <instanceClassName>com.silverpeas.processManager.ProcessManagerInstanciator</instanceClassName>
-  <Profiles>
-    <Profile name="Employe">Collaborateurs</Profile>
-    <Profile name="Responsable">Responsables</Profile>
-    <Profile name="supervisor">Superviseurs</Profile>
-  </Profiles>
+  <profiles>
+    <profile name="Employe">
+      <fr>Collaborateur</fr>
+      <en>Employee</en>
+    </profile>
+    <profile name="Responsable">
+      <fr>Responsable</fr>
+      <en>Manager</en>
+    </profile>
+    <profile name="supervisor">
+      <fr>Superviseur</fr>
+      <en>Supervisor</en>
+    </profile>
+  </profiles>
   <Parameters>
     <Parameter>
-      <ParameterName>XMLFileName</ParameterName>
-      <ParameterLabel>Modèle abstrait</ParameterLabel>
-      <ParameterValue>DemandeCongesSimple/DemandeCongesSimple.xml</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterOrder>1</ParameterOrder>
+      <name>XMLFileName</name>
+      <label>
+        <fr>Modèle abstrait</fr>
+        <fr>Abstract model</fr>
+      </label>
+      <order>1</order>
+      <mandatory>Y</mandatory>
+      <value>DemandeCongesSimple/DemandeCongesSimple.xml</value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Nom du fichier XML contenant le modèle du processsus.</fr>
+        <en>XMl file containing the model of the workflow.</en>  
+      </help>
     </Parameter>
     <Parameter>
-      <ParameterName>exportCSV</ParameterName>
-      <ParameterLabel>Export CSV</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>2</ParameterOrder>
+      <name>exportCSV</name>
+      <label>
+        <fr>Export CSV</fr>
+        <en>CSV export</en>
+      </label>
+      <order>2</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Export des données sous forme d'un fichier CSV.</fr>
+        <en>Exporting the workflow data in a CSV file.</en>  
+      </help>
     </Parameter>
     <Parameter>
-      <ParameterName>fieldsToExport</ParameterName>
-      <ParameterLabel>Champs à exporter</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>3</ParameterOrder>
+      <name>fieldsToExport</name>
+      <label>
+        <fr>Champs à exporter</fr>
+      </label>
+      <order>3</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Les champs du workflow à exporter.</fr>
+        <en>The fields to be exported.</en>  
+      </help>
     </Parameter>
   </Parameters>
 </WAComponent>

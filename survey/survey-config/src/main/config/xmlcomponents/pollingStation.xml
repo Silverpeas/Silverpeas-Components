@@ -25,51 +25,73 @@
 
 -->
 
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>pollingStation</name>
-  <label>Vote - QuickVote</label>
-  <description>Permet d'organiser des votes ou referendum sur une question unique, auprès d'une
-  audience ciblée. Une surveillance du niveau de participation et du résultat en cours est possible.</description>
-  <suite>02 Gestion Collaborative</suite>
-  <visible>yes</visible>
-  <portlet>yes</portlet>
-  <instanceClassName>com.stratelia.webactiv.survey.SurveyInstanciator</instanceClassName>
-  <tableList>
-    <tabletpl>Survey</tabletpl>
-    <tabletpl>Question</tabletpl>
-    <tabletpl>Answer</tabletpl>
-    <tabletpl>QuestionResult</tabletpl>
-    <tabletpl>SurveyComment</tabletpl>
-  </tableList>
-  <Profiles>
-    <Profile name="admin">Gestionnaire</Profile>
-    <Profile name="publisher">Publieur</Profile>
-    <Profile name="user">Lecteur</Profile>
-  </Profiles>
-  <Parameters>
-    <Parameter>
-      <ParameterName>usePdc</ParameterName>
-      <ParameterLabel>Classification PDC</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>Always</ParameterUpdatable>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterHelp>
-        <ParameterHelpFr>Les votes créés au sein de cette instance pourront être classés sur le Plan de Classement</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>useAnonymousMode</ParameterName>
-      <ParameterLabel>Mode anonyme</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterHelp>
-        <ParameterHelpFr>Les participations à tous les votes créées au sein de cette instance seront anonymes</ParameterHelpFr>
-        <ParameterHelpEn>Entries in all polls created in this instance will be anonymous</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-  </Parameters>
+  <label>
+    <fr>Vote</fr>
+    <en>QuickVote</en>
+  </label>
+  <description>
+    <fr>Permet d'organiser des votes ou referendum sur une question unique, auprès d'une
+  audience ciblée. Une surveillance du niveau de participation et du résultat en cours est possible.
+    </fr>
+    <en>Organize votes or a referendum on a unique question to a chosen audience. You have feedback on the participation level or the current trend.</en>
+  </description>
+  <suite>
+    <fr>02 Gestion Collaborative</fr>
+    <en>02 Collaborative Management</en>
+  </suite>
+  <visible>Y</visible>
+  <portlet>Y</portlet>
+  <instanceClassName>com.stratelia.webactiv.survey.SurveyInstanciator</instanceClassName>  
+  <profiles>
+    <profile name="admin">
+      <fr>Gestionnaire</fr>
+      <en>Administrator</en>
+    </profile>
+    <profile name="publisher">
+      <fr>Publieur</fr>
+      <en>Publisher</en>
+    </profile>
+    <profile name="user">
+      <fr>Lecteur</fr>
+      <en>Reader</en>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>usePdc</name>
+      <label>
+        <fr>Classification PDC</fr>
+        <en>Classification Scheme</en>
+      </label>
+      <order>1</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Les votes créés au sein de cette instance pourront être classés sur le Plan de Classement.</fr>
+        <en>The pools created in this instance may be classified on the classification scheme.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>useAnonymousMode</name>
+            <label>
+        <fr>Mode anonyme</fr>
+        <en>Anonymous mode</en>
+      </label>
+      <order>2</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Les participations à tous les votes créées au sein de cette instance seront anonymes.</fr>
+        <en>Entries in all polls created in this instance will be anonymous.</en>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>

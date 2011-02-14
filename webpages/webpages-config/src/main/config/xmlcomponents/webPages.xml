@@ -25,43 +25,67 @@
 
 -->
 
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>webPages</name>
-  <label>Designer de page web - WebPage Designer</label>
-  <description>Permet de créer une page web via l'éditeur WYSIWYG</description>
-  <suite>04 Gestion de contenu</suite>
-  <visible>yes</visible>
-  <portlet>yes</portlet>
+  <label>
+    <fr>Designer de page web</fr>
+    <en>WebPage Designer</en>
+  </label>
+  <description>
+    <fr>Permet de créer une page web via l'éditeur WYSIWYG</fr>
+    <en>Create a web page using the WYSIWYG editor</en>
+  </description>
+  <suite>
+    <fr>04 Gestion de contenu</fr>
+    <en>04 Content Management</en>
+  </suite>
+  <visible>Y</visible>
+  <portlet>Y</portlet>
   <instanceClassName>com.silverpeas.webpages.WebPagesInstanciator</instanceClassName>
-  <Profiles>
-    <Profile name="publisher">Publieurs</Profile>
-    <Profile name="user">Lecteurs</Profile>
-  </Profiles>
-  <Parameters>
-    <Parameter>
-      <ParameterName>useSubscription</ParameterName>
-      <ParameterLabel>Gestion de l'abonnement</ParameterLabel>
-      <ParameterValue>yes</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>1</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Permet d'envoyer une notification aux utilisateurs abonnés à la page Web</ParameterHelpFr>
-        <ParameterHelpEn>Allows to send a notification to the users who have subscribed to the Web page</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>xmlTemplate</ParameterName>
-      <ParameterLabel>Formulaire utilisé</ParameterLabel>
-      <ParameterMandatory>N</ParameterMandatory>
-      <ParameterType>xmltemplates</ParameterType>
-      <ParameterUpdatable>OnCreationOnly</ParameterUpdatable>
-      <ParameterOrder>2</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Permet d'utiliser un formulaire comme masque de saisie</ParameterHelpFr>
-        <ParameterHelpEn>Allows you to use a form as an input mask</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-  </Parameters>
-</WAComponent>
+  <profiles>
+    <profile name="publisher">
+      <fr>Publieur</fr>
+      <en>Publisher</en>
+    </profile>
+    <profile name="user">
+      <fr>Lecteur</fr>
+      <en>Reader</en>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>useSubscription</name>
+      <label>
+        <fr>Gestion de l'abonnement</fr>
+        <en>Manage subscription</en>
+      </label>
+      <order>1</order>      
+      <mandatory>Y</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Permet d'envoyer une notification aux utilisateurs abonnés à la page Web.</fr>
+        <en>Allows to send a notification to the users who have subscribed to the Web page.</en>
+        </help>
+      </parameter>
+      <parameter>
+        <name>xmlTemplate</name>
+        <label>
+          <fr>Formulaire utilisé</fr>
+          <en>XML form</en>
+        </label>
+        <order>2</order>
+        <mandatory>N</mandatory>
+        <value></value>
+        <type>xmltemplates</type>
+        <updatable>creation</updatable>
+        <help>
+          <fr>Permet d'utiliser un formulaire comme masque de saisie.</fr>
+          <en>Allows you to use a form as an input mask.</en>
+        </help>
+      </parameter>
+    </parameters>
+  </WAComponent>

@@ -24,259 +24,382 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>organizationchart</name>
-  <label>organigramme</label>
-  <description>Ce composant permet l'affichage d'un organigramme à partir d'un annuaire LDAP</description>
-  <suite>04 Gestion de contenu</suite>
-  <visible>organizationchart</visible>
-  <portlet>no</portlet>
+  <label>
+    <fr>Organigramme</fr>
+    <en>Organization chart</en>
+  </label>
+  <description>
+    <fr>Ce composant permet l'affichage d'un organigramme à partir d'un annuaire LDAP.</fr>
+    <en>This component display an organization chart based on the data from a LDAP server.</en>
+  </description>
+  <suite>
+    <fr>04 Gestion de contenu</fr>
+    <en>04 Content management</en>
+  </suite>
+  <visible>N</visible>
+  <portlet>N</portlet>
   <instanceClassName>com.silverpeas.components.organizationchart.OrganizationChartInstanciator</instanceClassName>
- <Profiles>
-    <Profile name="admin">Gestionnaire</Profile>
-    <Profile name="publisher">Publieur</Profile>
-    <Profile name="user">Lecteur</Profile>
-  </Profiles>
-  <Parameters>
-	<Parameter>
-      <ParameterName>serverURL</ParameterName>
-      <ParameterLabel>adresse serveur LDAP</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>1</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Adresse du serveur LDAP (ex : ldap://serveur:389/)</ParameterHelpFr>
-        <ParameterHelpEn>LDAP server adress (ex : ldap://serveur:389/)</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>initialContextFactory</ParameterName>
-      <ParameterLabel>context factory</ParameterLabel>
-      <ParameterValue>com.sun.jndi.ldap.LdapCtxFactory</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>2</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>nom de classe factory utilisée lors l'initialisation du contexte</ParameterHelpFr>
-        <ParameterHelpEn>Class name of the factory class that will create an initial context</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>authenticationMode</ParameterName>
-      <ParameterLabel>mode d'authentification</ParameterLabel>
-      <ParameterValue>simple</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>3</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>mode d'authentification au serveur LDAP (none, simple ou strong)</ParameterHelpFr>
-        <ParameterHelpEn>security level for LDAP server authentication (none, simple or strong)</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>principal</ParameterName>
-      <ParameterLabel>principal</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterMandatory>F</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>4</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>identité du principal pour authentification (ex : cn=Manager,dc=mondomain,dc=com)</ParameterHelpFr>
-        <ParameterHelpEn>identity of the principal for authenticating the caller to the service</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>credentials</ParameterName>
-      <ParameterLabel>mot de passe</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterMandatory>F</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>5</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>mot de passe du principal pour authentification</ParameterHelpFr>
-        <ParameterHelpEn>password of the principal for authentication</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>ldapRoot</ParameterName>
-      <ParameterLabel>noeud racine ldap</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>7</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>noeud racine de l'annauire ldap (ex : o=monEntreprise,dc=mondomain,dc=com)</ParameterHelpFr>
-        <ParameterHelpEn>root node on LDAP directory (ex : o=mycompany,dc=mydomain,dc=com)</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>ldapClassPerson</ParameterName>
-      <ParameterLabel>classe ldap des personnes</ParameterLabel>
-      <ParameterValue>organizationalPerson</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>8</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>object class des personnes</ParameterHelpFr>
-        <ParameterHelpEn>object class of person</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>ldapClassUnit</ParameterName>
-      <ParameterLabel>class ldap des services</ParameterLabel>
-      <ParameterValue>organizationalUnit</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>9</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>object class des services</ParameterHelpFr>
-        <ParameterHelpEn>object class of unit</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>ldapAttUnit</ParameterName>
-      <ParameterLabel>attribut designant le nom du service</ParameterLabel>
-      <ParameterValue>ou</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>11</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>nom de l'attribut désignant le nom du service</ParameterHelpFr>
-        <ParameterHelpEn>attribut name of the name's unit</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>ldapAttName</ParameterName>
-      <ParameterLabel>attribut désignant le nom</ParameterLabel>
-      <ParameterValue>cn</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>10</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>nom de l'attribut désignant le nom de l'utilisateur</ParameterHelpFr>
-        <ParameterHelpEn>attribut name of the name's user</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>ldapAttTitle</ParameterName>
-      <ParameterLabel>attribut désignant le titre</ParameterLabel>
-      <ParameterValue>title</ParameterValue>
-      <ParameterMandatory>F</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>12</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>nom de l'attribut désignant le titre de l'utilisateur</ParameterHelpFr>
-        <ParameterHelpEn>attribut name of the title's user</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>ldapAttDesc</ParameterName>
-      <ParameterLabel>attribut désignant la description</ParameterLabel>
-      <ParameterValue>description</ParameterValue>
-      <ParameterMandatory>F</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>13</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>nom de l'attribut désignant la description de l'utilisateur</ParameterHelpFr>
-        <ParameterHelpEn>attribut name of the description's user</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>unitsChartCentralLabel</ParameterName>
-      <ParameterLabel>attribut désignant le(s) role(s) du service principal (organigramme service)</ParameterLabel>
-      <ParameterValue>Role(s) principal(s)</ParameterValue>
-      <ParameterMandatory>F</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>14</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>attribut désignant le(s) role(s) des personnes à afficher avec le service principal (organigramme service)</ParameterHelpFr>
-        <ParameterHelpEn>attribut name of the main unit positions (units organization chart)</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>unitsChartRightLabel</ParameterName>
-      <ParameterLabel>attribut désignant le(s) role(s) du bloc droite (organigramme service)</ParameterLabel>
-      <ParameterValue>Role(s) droite</ParameterValue>
-      <ParameterMandatory>F</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>15</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>attribut désignant le(s) role(s) des personnes à afficher dans la case droite (organigramme service)</ParameterHelpFr>
-        <ParameterHelpEn>attribut name for the function to be placed in the right cell (units organization chart)</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>unitsChartLeftLabel</ParameterName>
-      <ParameterLabel>attribut désignant le(s) role(s) du bloc gauche (organigramme service)</ParameterLabel>
-      <ParameterValue>Role(s) gauche</ParameterValue>
-      <ParameterMandatory>F</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>16</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>attribut désignant le(s) role(s) des personnes à afficher dans la case gauche (organigramme service)</ParameterHelpFr>
-        <ParameterHelpEn>attribut name for the function to be placed in the left cell (units organization chart)</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>ldapAttActif</ParameterName>
-      <ParameterLabel>attribut indiquant si la personne est active</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterMandatory>F</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>17</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>nom de l'attribut indiquant si la personne est active (attribut booléen)</ParameterHelpFr>
-        <ParameterHelpEn>name of the indicating attribute if the person is active (boolean attribut)</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>personnsChartCentralLabel</ParameterName>
-      <ParameterLabel>attribut désignant le(s) role(s) du service principal (organigramme détaillé)</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterMandatory>F</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>18</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>attribut désignant le(s) role(s) des personnes à afficher avec le service principal (organigramme détaillé)</ParameterHelpFr>
-        <ParameterHelpEn>attribut name of the main unit positions (detailled organization chart)</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>personnsChartCategoriesLabel</ParameterName>
-      <ParameterLabel>attribut désignant le(s) sous-role(s) d'un service (organigramme détaillé)</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterMandatory>F</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>19</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>attribut désignant le(s) sous-role(s) d'un service (organigramme détaillé)</ParameterHelpFr>
-        <ParameterHelpEn>attribut name of the main sub-functions in a unit (detailled organization chart)</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>unitsChartOthersInfosKeys</ParameterName>
-      <ParameterLabel>attribut désignant le(s) champ(s) ldap d'informations à afficher (organigramme service)</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterMandatory>F</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>20</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>attribut désignant le(s) champ(s) ldap d'informations à afficher (organigramme service)</ParameterHelpFr>
-        <ParameterHelpEn>ldap fields for the personn information details (units organization chart)</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-	<Parameter>
-      <ParameterName>personnsChartOthersInfosKeys</ParameterName>
-      <ParameterLabel>attribut désignant le(s) champ(s) ldap d'informations à afficher (organigramme détaillé)</ParameterLabel>
-      <ParameterValue></ParameterValue>
-      <ParameterMandatory>F</ParameterMandatory>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterOrder>21</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>attribut désignant le(s) champ(s) ldap d'informations à afficher (organigramme détaillé)</ParameterHelpFr>
-        <ParameterHelpEn>ldap fields for the personn information details (detailled organization chart)</ParameterHelpEn>
-      </ParameterHelp>
-	</Parameter>
-  </Parameters>
+  <profiles>
+    <profile name="admin">
+      <fr>Gestionnaire</fr>
+      <en>Administrator</en>
+    </profile>
+    <profile name="publisher">
+      <fr>Publieur</fr>
+      <en>Publisher</en>
+    </profile>
+    <profile name="user">
+      <fr>Lecteur</fr>
+      <en>Reader</en>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>serverURL</name>
+      <label>
+        <fr>adresse serveur LDAP</fr>
+        <en>LDAP server address</en>
+      </label>
+      <order>1</order>
+      <mandatory>Y</mandatory>
+      <value></value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Adresse du serveur LDAP (ex : ldap://serveur:389/)</fr>
+        <en>LDAP server adress (ex : ldap://serveur:389/)</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>initialContextFactory</name>
+      <label>
+        <fr>Context factory</fr>
+        <en>Context factory</en>
+      </label>
+      <order>2</order>
+      <mandatory>Y</mandatory>
+      <value>com.sun.jndi.ldap.LdapCtxFactory</value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Nom de classe factory utilisée lors l'initialisation du contexte.</fr>
+        <en>Class name of the factory class that will create an initial context.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>authenticationMode</name>
+      <label>
+        <fr>Mode d'authentification</fr>
+        <en>Authentcation mode</en>
+      </label>
+      <order>3</order>
+      <mandatory>Y</mandatory>
+      <value>simple</value>
+      <options>
+        <option>
+          <name>
+            <fr>Aucune</fr>
+            <en>None</en>
+          </name>
+          <value>none</value>
+        </option>
+        <option>
+          <name>
+            <fr>Simple</fr>
+            <en>Simple</en>
+          </name>
+          <value>simple</value>
+        </option>
+        <option>
+          <name>
+            <fr>Forte</fr>
+            <en>Strong</en>
+          </name>
+          <value>strong</value>
+        </option>        
+      </options>
+      <type>select</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Mode d'authentification au serveur LDAP (none, simple ou strong).</fr>
+        <en>Security level for LDAP server authentication (none, simple or strong).</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>principal</name>
+      <label>
+        <fr>Identifiant</fr>
+        <en>Principal</en>
+      </label>
+      <order>4</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Odentité du principal pour authentification (ex : cn=Manager,dc=mondomain,dc=com).</fr>
+        <en>Principal for authenticating the caller to the service (ex : cn=Manager,dc=mondomain,dc=com).</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>credentials</name>
+      <label>
+        <fr>Mot de passe</fr>
+        <en>Credentials</en>
+      </label>
+      <order>5</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Mt de passe du principal pour authentification.</fr>
+        <en>Credentials of the principal for authentication.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>ldapRoot</name>
+      <label>
+        <fr>Noeud racine ldap</fr>
+        <en>Root Ldap node</en>
+      </label>
+      <order>7</order>
+      <mandatory>Y</mandatory>
+      <value></value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Noeud racine de l'annauire ldap (ex : o=monEntreprise,dc=mondomain,dc=com).</fr>
+        <en>Root Ldap node (ex : o=mycompany,dc=mydomain,dc=com).</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>ldapClassPerson</name>
+      <label>
+        <fr>Classe ldap des personnes</fr>
+        <en>Ldap class for person</en>
+      </label>
+      <order>8</order>
+      <mandatory>Y</mandatory>
+      <value>organizationalPerson</value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Object class des personnes</fr>
+        <en>Oject class of person</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>ldapClassUnit</name>
+      <label>
+        <fr>Classe ldap des services/groupes</fr>
+        <en>Ldap class for departments or services.</en>
+      </label>
+      <order>9</order>
+      <mandatory>Y</mandatory>
+      <value>organizationalUnit</value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Object class des services/groupes</fr>
+        <en>Object class of departments or services.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>ldapAttUnit</name>
+      <label>
+        <fr>Attribut designant le nom du service</fr>
+        <en>Attribute containing the name of the organizational unit.</en>
+      </label>
+      <order>11</order>
+      <mandatory>Y</mandatory>
+      <value>ou</value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Nom de l'attribut désignant le nom du service</fr>
+        <en>Name of the attribute containing the name of the service or department.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>ldapAttName</name>
+      <label>
+        <fr>Attribut désignant le nom d'une personne.</fr>
+        <en>Attribute for the last name of a person</en>
+      </label>
+      <order>10</order>
+      <mandatory>Y</mandatory>
+      <value>cn</value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Nom de l'attribut désignant le nom de l'utilisateur</fr>
+        <en>Name of the attribut for a person's last name.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>ldapAttTitle</name>
+      <label>
+        <fr>Attribut désignant le titre</fr>
+        <en>Name of the attribute containing the title</en>
+      </label>
+      <order>12</order>
+      <mandatory>N</mandatory>
+      <value>title</value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Nom de l'attribut désignant le titre de l'utilisateur</fr>
+        <en>Name of the attribut for a person's title.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>ldapAttDesc</name>
+      <label>
+        <fr>Attribut désignant la description</fr>
+        <en>Name of the attribute containing the description</en>
+      </label>      
+      <order>13</order>
+      <mandatory>N</mandatory>
+      <value>description</value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Nom de l'attribut désignant la description de l'utilisateur</fr>
+        <en>Name of the attribut for a person's description.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>unitsChartCentralLabel</name>
+      <label>
+        <fr>Attribut désignant le(s) role(s) du service principal (organigramme service)</fr>
+        <en>Attribute containing the role(s) of the main organization unit</en>
+      </label>
+      <order>14</order>
+      <mandatory>N</mandatory>
+      <value>Role(s) principal(s)</value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Attribut désignant le(s) role(s) des personnes à afficher avec le service principal (organigramme service)</fr>
+        <en>Attribute containing the role(s) of the main organization unit positions (units organization chart)</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>unitsChartRightLabel</name>
+      <label>
+        <fr>Attribut désignant le(s) role(s) du bloc droite (organigramme service)</fr>
+        <en>Attribute for the role(s) on the right block</en>
+      </label>
+      <order>15</order>
+      <mandatory>N</mandatory>
+      <value>Role(s) droite</value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Attribut désignant le(s) role(s) des personnes à afficher dans la case droite (organigramme service)</fr>
+        <en>Attribute name for the function to be placed in the right cell (units organization chart)</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>unitsChartLeftLabel</name>
+      <label>
+        <fr>Attribut désignant le(s) role(s) du bloc gauche (organigramme service)</fr>
+        <en>Attribute for the role(s) on the left block</en>
+      </label>      
+      <order>16</order>
+      <mandatory>N</mandatory>
+      <value>Role(s) gauche</value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Attribut désignant le(s) role(s) des personnes à afficher dans la case gauche (organigramme service)</fr>
+        <en>Attribute name for the function to be placed in the left cell (units organization chart)</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>ldapAttActif</name>
+      <label>
+        <fr>Attribut indiquant si la personne est active</fr>
+        <en>Attribute containing the status of a person</en>
+      </label>
+      <order>17</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>nom de l'attribut indiquant si la personne est active (attribut booléen)</fr>
+        <en>Name of the attribute indicating if the person is active (boolean attribut)</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>personnsChartCentralLabel</name>
+      <label>
+        <fr>Attribut désignant le(s) role(s) du service principal (organigramme détaillé)</fr>
+        <en>Attribute for the positions du of the main organization unit detailled organization chart)</en>
+      </label>
+      <order>18</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Attribut désignant le(s) role(s) des personnes à afficher avec le service principal (organigramme détaillé).</fr>
+        <en>Attribute name of the main unit positions (detailled organization chart).</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>personnsChartCategoriesLabel</name>
+      <label>
+        <fr>Attribut désignant le(s) sous-role(s) d'un service (organigramme détaillé)</fr>
+        <en>Attribute of the main sub-functions in a unit (detailled organization chart)</en>
+      </label>      
+      <order>19</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>attribut désignant le(s) sous-role(s) d'un service (organigramme détaillé).</fr>
+        <en>Attribute name of the main sub-functions in a unit (detailled organization chart).</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>unitsChartOthersInfosKeys</name>
+      <label>
+        <fr>Attribut désignant le(s) champ(s) ldap d'informations à afficher (organigramme service)</fr>
+        <en>>Ldap fields for the person information details (units organization chart)</en>
+      </label>
+      <order>20</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Attribut désignant le(s) champ(s) ldap d'informations à afficher (organigramme service).</fr>
+        <en>Ldap fields for the person information details (units organization chart).</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>personnsChartOthersInfosKeys</name>
+      <label>
+        <fr>Attribut désignant le(s) champ(s) ldap d'informations à afficher (organigramme détaillé)</fr>
+        <en>ldap fields for the personn information details (detailled organization chart).</en>
+      </label>
+      <order>21</order>
+      <mandatory>N</mandatory>
+      <value></value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Attribut désignant le(s) champ(s) ldap d'informations à afficher (organigramme détaillé).</fr>
+        <en>Ldap fields for the personn information details (detailled organization chart).</en>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>

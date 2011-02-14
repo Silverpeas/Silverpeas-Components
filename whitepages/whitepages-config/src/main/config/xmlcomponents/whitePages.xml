@@ -25,105 +25,141 @@
 
 -->
 
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>whitePages</name>
-  <label>Annuaire d'experts - Annuaire</label>
+  <label>
+    <fr>Annuaire d'experts</fr>
+    <en>Expert directory</en>
+  </label>
   <description>
-		Permet de créer un annuaire de compétences. A chaque expert est
-		associé un formulaire décrivant ses domaines d'expertise.
-		L'indexation du CV sur le plan de classement permet de trouver
-		rapidement une compétence.
+    <fr>
+      Permet de créer un annuaire de compétences. A chaque expert est associé un formulaire décrivant ses domaines d'expertise.
+      L'indexation du CV sur le plan de classement permet de trouver rapidement une compétence.
+    </fr>
+    <en>
+      Create a directory of skills, whith each expert described by an xm form. The resume is classified on the classification scheme 
+      to search quickly for a skill.
+    </en>
   </description>
-  <suite>03 Gestion de la connaissance</suite>
-  <visible>yes</visible>
-  <portlet>yes</portlet>
+  <suite>
+    <fr>03 Gestion de la connaissance</fr>
+    <en>03 Knowledge Management</en>
+  </suite>
+  <visible>Y</visible>
+  <portlet>Y</portlet>
   <instanceClassName>com.silverpeas.whitePages.WhitePagesInstanciator</instanceClassName>
-  <Profiles>
-    <Profile name="admin">Gestionnaire</Profile>
-    <Profile name="user">Lecteur</Profile>
-  </Profiles>
-  <Parameters>
-    <Parameter>
-      <ParameterName>cardTemplate</ParameterName>
-      <ParameterLabel>Modèle de fiche</ParameterLabel>
-      <ParameterValue>whitePages/annuaire.xml</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterUpdatable>OnCreationOnly</ParameterUpdatable>
-      <ParameterHelp>
-        <ParameterHelpFr>
-					Modèle xml spécifique permettant de saisir des
-					informations sur l'expert
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-      <ParameterOrder>1</ParameterOrder>
-    </Parameter>
-    <Parameter>
-      <ParameterName>userTemplate</ParameterName>
-      <ParameterLabel>Modèle d'identité</ParameterLabel>
-      <ParameterValue>whitePages/annuaire.html</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterHelp>
-        <ParameterHelpFr>
-					Fichier html permettant de présenter les
-					informations de l'expert
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-      <ParameterOrder>3</ParameterOrder>
-    </Parameter>
-    <Parameter>
-      <ParameterName>isEmailHidden</ParameterName>
-      <ParameterLabel>Masquage de l'email</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterOrder>2</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>
-					Active le masquage des mails dans l'IHM. Les
-					notifications envoyées à partir de ce composant
-					auront un expéditeur générique.
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>isForcedCardFilling</ParameterName>
-      <ParameterLabel>Forcer le remplissage de la fiche</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterOrder>4</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Si ce paramètre est activé, l'utilisateur n'aura accès qu'à l'écran de
-        création de sa fiche. Le reste du portail lui sera innaccessible tant qu'il n'aura pas
-        rempli sa fiche.
-        </ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>isFicheVisible</ParameterName>
-      <ParameterLabel>Masquage de l'onglet fiche</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterOrder>5</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Active le masquage de l'onglet fiche pour les lecteurs.</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>domainId</ParameterName>
-      <ParameterLabel>Domaine auquel rattachée l'annuaire</ParameterLabel>
-      <ParameterValue>0</ParameterValue>
-      <ParameterOrder>6</ParameterOrder>
-      <ParameterHelp>
-        <ParameterHelpFr>Définit le domaine auquel on souhaite rattacher l'annuaire.</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-  </Parameters>
+  <profiles>
+    <profile name="admin">
+      <fr>Gestionnaire</fr>
+      <en>Administrator</en>
+    </profile>
+    <profile name="user">
+      <fr>Lecteur</fr>
+      <en>Reader</en>
+    </profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>cardTemplate</name>
+      <label>
+        <fr>Modèle de fiche</fr>
+        <en>Template card</en>
+      </label>
+      <order>1</order>
+      <mandatory>Y</mandatory>
+      <value>whitePages/annuaire.xml</value>
+      <type>text</type>
+      <updatable>creation</updatable>
+      <help>
+        <fr>Modèle xml spécifique permettant de saisir des informations sur l'expert.</fr>
+        <en>XML form to describe the skills of an expert.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>userTemplate</name>
+      <label>
+        <fr>Modèle d'identité</fr>
+        <en>Display template</en>
+      </label>
+      <order>3</order>
+      <mandatory>Y</mandatory>
+      <value>whitePages/annuaire.html</value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Fichier html permettant de présenter les informations de l'expert.</fr>
+        <en>HTML file used for displaying the expert's skills.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>isEmailHidden</name>
+      <label>
+        <fr>Masquage de l'email</fr>
+        <en>Hide the email address</en>
+      </label>      
+      <order>2</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Active le masquage des mails dans l'IHM. Les notifications envoyées à partir de ce composant auront un expéditeur générique.</fr>
+        <en>Hide the emailaddress. The sender of notifications will be generic.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>isForcedCardFilling</name>
+      <label>
+        <fr>Forcer le remplissage de la fiche</fr>
+        <en>Force filling of the card</en>
+      </label>        
+      <order>4</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Si ce paramètre est activé, l'utilisateur n'aura accès qu'à l'écran de création de sa fiche. 
+        Le reste du portail lui sera innaccessible tant qu'il n'aura pas rempli sa fiche.
+        </fr>
+        <en>          
+        The user will have access only to his card until he has filled it.
+        </en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>isFicheVisible</name>
+      <label>
+        <fr>Masquage de l'onglet fiche</fr>
+        <en>Hide the card tab</en>
+      </label>
+      <order>5</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Active le masquage de l'onglet fiche pour les lecteurs.</fr>
+        <en>Hide the tab displaying the expert card for readers.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>domainId</name>
+      <label>
+        <fr>Domaine auquel rattachée l'annuaire</fr>
+        <en>Silverpeas's domains to which the directory is attached</en>
+      </label>      
+      <order>6</order>
+      <mandatory>Y</mandatory>
+      <value>0</value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Définit le domaine auquel on souhaite rattacher l'annuaire.</fr>
+        <en>Define the Silverpeas's domain attached to the directory.</en>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>

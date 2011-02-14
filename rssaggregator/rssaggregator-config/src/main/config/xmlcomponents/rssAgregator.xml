@@ -25,18 +25,36 @@
 
 -->
 
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
   <name>rssAgregator</name>
-  <label>Agregateur RSS</label>
-  <description>Permet d'afficher, au sein de Silverpeas, des informations provenant de sites web
-  externes. Ce composant permet d'agréger plusieurs sources d'informations au format RSS.</description>
-  <suite>06 Connecteurs</suite>
-  <visible>yes</visible>
-  <visibleInPersonalSpace>yes</visibleInPersonalSpace>
-  <portlet>yes</portlet>
+  <label>
+    <fr>Agregateur RSS</fr>
+    <en>RSS aggregator</en>
+  </label>
+  <description>
+    <fr>Permet d'afficher, au sein de Silverpeas, des informations provenant de sites web
+  externes. Ce composant permet d'agréger plusieurs sources d'informations au format RSS.
+    </fr>
+    <en>Aggregate inside Silverpeas data from external web sites using their RSS streams.</en>
+  </description>
+  <suite>
+    <fr>06 Connecteurs</fr>
+    <en>06 Connectors</en>
+  </suite>
+  <visible>Y</visible>
+  <visibleInPersonalSpace>Y</visibleInPersonalSpace>
+  <portlet>Y</portlet>
   <instanceClassName>com.silverpeas.rssAgregator.RssAgregatorInstanciator</instanceClassName>
-  <Profiles>
-    <Profile name="admin">Gestionnaire</Profile>
-    <Profile name="user">Lecteur</Profile>
-  </Profiles>
+  <profiles>
+    <profile name="admin">
+      <fr>Gestionnaire</fr>
+      <en>Administrator</en>
+    </profile>
+    <profile name="user">
+      <fr>Lecteur</fr>
+      <en>Reader</en>
+    </profile>
+  </profiles>
 </WAComponent>

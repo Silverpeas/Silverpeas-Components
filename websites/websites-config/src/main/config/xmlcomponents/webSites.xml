@@ -25,48 +25,66 @@
 
 -->
 
-<WAComponent>
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
+
   <name>webSites</name>
-  <label>Designer de site web - WebSite Designer</label>
-  <description>Idem à l'annuaire de sites. Propose également des services pour créer un site Web,
-  via un éditeur WYSIWYG. Permet enfin de télécharger un site statique.</description>
-  <suite>04 Gestion de contenu</suite>
-  <visible>yes</visible>
-  <portlet>yes</portlet>
-  <instanceClassName>com.stratelia.webactiv.webSites.WebSitesInstanciator</instanceClassName>
-  <tableList>
-    <tabletpl>site</tabletpl>
-  </tableList>
-  <Profiles>
-    <Profile name="Admin">Gestionnaires</Profile>
-    <Profile name="Publisher">Publieurs</Profile>
-    <Profile name="Reader">Lecteurs</Profile>
-  </Profiles>
-  <Parameters>
-    <Parameter>
-      <ParameterName>usePdc</ParameterName>
-      <ParameterLabel>Classification PDC</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterHelp>
-        <ParameterHelpFr>Les bookmarks et/ou sites saisis au sein de cette instance pourront être
-        classés sur le Plan de Classement</ParameterHelpFr>
-        <ParameterHelpEn></ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-    <Parameter>
-      <ParameterName>sortedTopics</ParameterName>
-      <ParameterLabel>Thèmes / liens ordonés</ParameterLabel>
-      <ParameterValue>no</ParameterValue>
-      <ParameterMandatory>Y</ParameterMandatory>
-      <ParameterType>checkbox</ParameterType>
-      <ParameterUpdatable>always</ParameterUpdatable>
-      <ParameterHelp>
-        <ParameterHelpFr>Ce paramï¿½tre permet d'ordonner les thèmes et les liens</ParameterHelpFr>
-        <ParameterHelpEn>This parameter allows to order topics and links</ParameterHelpEn>
-      </ParameterHelp>
-    </Parameter>
-  </Parameters>
+  <label>
+    <fr>Designer de site web</fr>
+    <en>WebSite Designer</en>
+  </label>
+  <description>
+    <fr>Idem à l'annuaire de sites. Propose également des services pour créer un site Web,
+  via un éditeur WYSIWYG. Permet enfin de télécharger un site statique.
+    </fr>
+    <en>A bit like the bookmaks component, but it also allow you to create web pages with a WYSIWYG editor.
+    Those pages can be downloaded to create a static web site.
+    </en>
+  </description>
+  <suite>
+    <fr>04 Gestion de contenu</fr>
+    <en>04 Content Management</en>
+  </suite>
+  <visible>Y</visible>
+  <portlet>Y</portlet>
+  <instanceClassName>com.stratelia.webactiv.webSites.WebSitesInstanciator</instanceClassName>  
+  <profiles>
+    <profile name="Admin"><fr>Gestionnaire</fr><en>Administrator</en></profile>
+    <profile name="Publisher"><fr>Publieur</fr><en>Publisher></en></profile>
+    <profile name="Reader"><fr>Lecteur</fr><en>Reader</en></profile>
+  </profiles>
+  <parameters>
+    <parameter>
+      <name>usePdc</name>
+      <label>
+        <fr>Classification PDC</fr>
+        <en>Classification Scheme</en>
+      </label>
+      <order>1</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Les bookmarks et/ou sites saisis au sein de cette instance pourront être classés sur le Plan de Classement.</fr>
+        <en>The bookmarks ansdd websites will be classified on the classification scheme.</en>
+      </help>
+    </parameter>
+    <parameter>
+      <name>sortedTopics</name>
+      <label><fr>Thèmes / liens ordonés</fr>
+        <en>Topics/Links sorted</en>
+      </label>
+      <order>2</order>
+      <mandatory>Y</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <fr>Ce paramètre permet d'ordonner les thèmes et les liens</fr>
+        <en>This parameter allows to order topics and links.</en>
+      </help>
+    </parameter>
+  </parameters>
 </WAComponent>
