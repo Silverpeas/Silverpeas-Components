@@ -25,10 +25,8 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
-
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>myDB</name>
   <label>
     <fr>My DB</fr>
@@ -44,8 +42,8 @@
     <fr>06 Connecteurs</fr>
     <en>06 Connectors</en>
   </suite>
-  <visible>Y</visible>
-  <portlet>N</portlet>
+  <visible>true</visible>
+  <portlet>false</portlet>
   <instanceClassName>com.silverpeas.mydb.MyDBInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">

@@ -24,9 +24,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
+
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>kmelia</name>
   <label>
     <fr>Gestion documentaire I</fr>
@@ -51,9 +51,9 @@
     <fr>01 Gestion Documentaire</fr>
     <en>01 Document Management</en>
   </suite>
-  <visible>Y</visible>
-  <visibleInPersonalSpace>Y</visibleInPersonalSpace>
-  <portlet>Y</portlet>
+  <visible>true</visible>
+  <visibleInPersonalSpace>true</visibleInPersonalSpace>
+  <portlet>true</portlet>
   <instanceClassName>com.stratelia.webactiv.kmelia.KmeliaInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
@@ -81,7 +81,7 @@
         <en>Number of last publications</en>
       </label>
       <order>1</order>
-      <mandatory>Y</mandatory>      
+      <mandatory>true</mandatory>      
       <value>15</value>
       <type>text</type>
       <size>5</size>
@@ -105,7 +105,7 @@
         <en>Number of publications per page.</en>
       </label>      
       <order>2</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>5</size>
@@ -122,7 +122,7 @@
         <en>Tree view</en>
       </label>
       <order>3</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
       <updatable>creation</updatable>
@@ -138,7 +138,7 @@
         <en>Classification Scheme</en>
       </label>
       <order>4</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -154,7 +154,7 @@
         <en>Content</en>
       </label>
       <order>5</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -170,7 +170,7 @@
         <en>Attachments</en>
       </label>
       <order>6</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -186,7 +186,7 @@
         <en>See also</en>
       </label>
       <order>7</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -202,7 +202,7 @@
         <en>Multiple locations</en>
       </label>
       <order>8</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -219,7 +219,7 @@
         <en>Readers list</en>
       </label>
       <order>9</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -236,7 +236,7 @@
         <en>Comments</en>
       </label>
       <order>10</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -252,7 +252,7 @@
         <en>Versioned attachments</en>
       </label>
       <order>11</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>creation</updatable>
@@ -268,7 +268,7 @@
         <en>Rights on versioned attachments</en>
       </label>
       <order>12</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>0</value>
       <options>
         <option>
@@ -318,7 +318,7 @@
         <en>Draf</en>
       </label>
       <order>13</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -336,7 +336,7 @@
         <en>Content for web</en>
       </label>
       <order>14</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -352,7 +352,7 @@
         <en>Theme management delegation</en>
       </label>
       <order>16</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>never</updatable>
@@ -368,7 +368,7 @@
         <en>Author field</en>
       </label>
       <order>17</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -384,7 +384,7 @@
         <en>Directly open attachments</en>
       </label>
       <order>18</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -400,7 +400,7 @@
         <en>Importing document(s)</en>
       </label>
       <order>19</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>0</value>
       <options>
         <option>
@@ -446,7 +446,7 @@
         <en>Publication validation</en>
       </label>
       <order>20</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>0</value>
       <options>
         <option>
@@ -501,7 +501,7 @@
         <en>Export component</en>
       </label>
       <order>21</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <options>
         <option>
@@ -547,7 +547,7 @@
         <en>Drag And Drop</en>
       </label>
       <order>22</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -563,7 +563,7 @@
         <en>Co-writing</en>
       </label>
       <order>23</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -582,7 +582,7 @@
         <en>Publication always visible</en>
       </label>
       <order>24</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -598,7 +598,7 @@
         <en>Wizard for creating a publication</en>
       </label>
       <order>25</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -614,7 +614,7 @@
         <en>Display the number of publications</en>
       </label>
       <order>27</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -630,7 +630,7 @@
         <en>Rigths on themes</en>
       </label>
       <order>28</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -646,7 +646,7 @@
         <en>Backlog management</en>
       </label>
       <order>29</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>5</size>
@@ -667,7 +667,7 @@
         <en>Unique code</en>
       </label>
       <order>30</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -683,7 +683,7 @@
         <en>Restricted suppression</en>
       </label>
       <order>31</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -699,7 +699,7 @@
         <en>Modifications in a row</en>
       </label>
       <order>32</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>never</updatable>
@@ -715,7 +715,7 @@
         <en>XML form for metadata on attachments</en>
       </label>
       <order>33</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>xmltemplates</type>
       <updatable>always</updatable>
@@ -731,7 +731,7 @@
         <en>Notifictions</en>
       </label>
       <order>34</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -748,7 +748,7 @@
         <en>Excluded from the main search engine</en>
       </label>
       <order>35</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -770,7 +770,7 @@
         <en>Rich description</en>
       </label>
       <order>36</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -786,7 +786,7 @@
         <en>Share attachments</en>
       </label>
       <order>37</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -803,7 +803,7 @@
         <en>List attachments</en>
       </label>
       <order>38</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -819,7 +819,7 @@
         <en>Re-usable files.</en>
       </label>
       <order>39</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -843,7 +843,7 @@
         <en>Glossary</en>
       </label>
       <order>40</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>5</size>
@@ -866,7 +866,7 @@
         <en>Search on themes</en>
       </label>
       <order>41</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -882,7 +882,7 @@
         <en>Mandatory thumbnail</en>
       </label>
       <order>42</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -898,7 +898,7 @@
         <en>Thumbnail's width</en>
       </label>
       <order>43</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>5</size>
@@ -915,7 +915,7 @@
         <en>Thumbnail's height</en>
       </label>
       <order>44</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>5</size>

@@ -25,9 +25,8 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>webPages</name>
   <label>
     <fr>Designer de page web</fr>
@@ -41,8 +40,8 @@
     <fr>04 Gestion de contenu</fr>
     <en>04 Content Management</en>
   </suite>
-  <visible>Y</visible>
-  <portlet>Y</portlet>
+  <visible>true</visible>
+  <portlet>true</portlet>
   <instanceClassName>com.silverpeas.webpages.WebPagesInstanciator</instanceClassName>
   <profiles>
     <profile name="publisher">
@@ -62,7 +61,7 @@
         <en>Manage subscription</en>
       </label>
       <order>1</order>      
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -78,7 +77,7 @@
           <en>XML form</en>
         </label>
         <order>2</order>
-        <mandatory>N</mandatory>
+        <mandatory>false</mandatory>
         <value></value>
         <type>xmltemplates</type>
         <updatable>creation</updatable>

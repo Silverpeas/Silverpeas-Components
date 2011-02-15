@@ -26,7 +26,7 @@
 -->
 
 <WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>hyperlink</name>
   <label>
     <fr>Hyperlien</fr>
@@ -40,8 +40,8 @@
     <fr>04 Gestion de contenu</fr>
     <en>04 Content Management</en>
   </suite>
-  <visible>Y</visible>
-  <portlet>Y</portlet>
+  <visible>true</visible>
+  <portlet>true</portlet>
   <instanceClassName>com.stratelia.webactiv.hyperlink.HyperlinkInstanciator</instanceClassName>
   <profiles>
     <profile name="user">
@@ -57,7 +57,7 @@
         <en>URL</en>
       </label>
       <order>0</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value></value>      
       <type>text</type>
       <updatable>always</updatable>
@@ -73,7 +73,7 @@
         <en>Authenticate on the destination site</en>
       </label>
       <order>1</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -89,7 +89,7 @@
         <en>Open the link in a new window</en>
       </label>
       <order>2</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -105,7 +105,7 @@
         <en>Internal link</en>
       </label>
       <order>3</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -121,7 +121,7 @@
         <en>Login field name for the destination site.</en>
       </label>      
       <order>4</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>25</size>      
@@ -138,7 +138,7 @@
         <en>Password field name for the destination site</en>
       </label>      
       <order>5</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>      
       <type>text</type>
       <size>25</size>
@@ -155,7 +155,7 @@
         <en>Method used by the form to submit data</en>
       </label>
       <order>6</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>GET</value>
       <options>
         <option>
@@ -187,7 +187,7 @@
         <en>Extra parameter 1</en>
       </label>
       <order>7</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>25</size>   
@@ -204,7 +204,7 @@
         <en>Value of the first extra parameter</en>
       </label>
       <order>8</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>25</size>
@@ -221,7 +221,7 @@
         <en>Extra parameter 2</en>
       </label>
       <order>9</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>25</size>
@@ -238,7 +238,7 @@
         <en>Value of the second extra parameter</en>
       </label>
       <order>10</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>25</size>
@@ -255,7 +255,7 @@
         <en>Extra parameter 3</en>
       </label>
       <order>11</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>25</size>   
@@ -272,7 +272,7 @@
         <en>Value of the third extra parameter</en>
       </label>
       <order>12</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>25</size>
@@ -288,7 +288,7 @@
         <en>Extra parameter 4</en>
       </label>
       <order>13</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>25</size>   
@@ -305,7 +305,7 @@
         <en>Value of the fourth extra parameter</en>
       </label>
       <order>14</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>25</size>
@@ -321,7 +321,7 @@
         <en>Extra parameter 5</en>
       </label>
       <order>15</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>25</size>   
@@ -338,7 +338,7 @@
         <en>Value of the fifth extra parameter</en>
       </label>
       <order>16</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>25</size>

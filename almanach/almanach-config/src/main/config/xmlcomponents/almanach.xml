@@ -24,10 +24,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>almanach</name>
   <label>
     <fr>Almanach</fr>
@@ -46,8 +44,8 @@
     <fr>02 Gestion Collaborative</fr>
     <en>02 Collaborative Management</en>
   </suite>
-  <visible>Y</visible>
-  <portlet>Y</portlet>
+  <visible>true</visible>
+  <portlet>true</portlet>
   <instanceClassName>com.stratelia.webactiv.almanach.AlmanachInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
@@ -71,7 +69,7 @@
         <en>Classification Scheme</en>
       </label>
       <order>1</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -89,7 +87,7 @@
         <en>Almanach Aggregation</en>
       </label>
       <order>2</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -109,7 +107,7 @@
         <en>Hide week-ends</en>
       </label>
       <order>3</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -125,7 +123,7 @@
         <en>RSS</en>
       </label>
       <order>4</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value>N</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -141,7 +139,7 @@
         <en>Aggregation type</en>
       </label>
       <order>5</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value>0</value>
       <options>
         <option>

@@ -26,7 +26,7 @@
 -->
 
 <WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>gallery</name>
   <label>
     <fr>Galerie d'images</fr>
@@ -40,9 +40,9 @@
     <fr>04 Gestion de contenu</fr>
     <en>04 Content Management</en>
   </suite>
-  <visible>Y</visible>
-  <visibleInPersonalSpace>Y</visibleInPersonalSpace>
-  <portlet>Y</portlet>
+  <visible>true</visible>
+  <visibleInPersonalSpace>true</visibleInPersonalSpace>
+  <portlet>true</portlet>
   <instanceClassName>com.silverpeas.gallery.GalleryInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
@@ -74,7 +74,7 @@
         <en>Slideshow</en>
       </label>
       <order>1</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>5</value>
       <type>text</type>      
       <size>5</size>      
@@ -91,8 +91,8 @@
         <en>Drag and Drop</en>
       </label>
       <order>2</order>
-      <mandatory>N</mandatory>
-      <value>N</value>
+      <mandatory>false</mandatory>
+      <value>false</value>
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
@@ -107,7 +107,7 @@
         <en>Classification Scheme</en>
       </label>
       <order>4</order>      
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>     
@@ -123,7 +123,7 @@
         <en>Metadata</en>
       </label>
       <order>5</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>      
@@ -139,7 +139,7 @@
         <en>View albums as list</en>
       </label>
       <order>6</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -155,7 +155,7 @@
         <en>Watermark</en>
       </label>
       <order>7</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>     
@@ -171,7 +171,7 @@
         <en>Number of days before the images are no longer visible.</en>
       </label>      
       <order>8</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>3</value>
       <type>text</type>
       <size>5</size>
@@ -188,7 +188,7 @@
         <en>XML Form</en>
       </label>
       <order>9</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>xmltemplates</type>
       <updatable>always</updatable>
@@ -204,7 +204,7 @@
         <en>Reusable images</en>
       </label>
       <order>10</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -220,7 +220,7 @@
         <en>Comments</en>
       </label>
       <order>11</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -237,7 +237,7 @@
         <en>Dedicated search engine</en>
       </label>
       <order>12</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -254,7 +254,7 @@
         <en>Enable the download of the original image</en>
       </label>
       <order>13</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value>yes</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -270,7 +270,7 @@
         <en>Preview format</en>
       </label>
       <order>14</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>preview</value>
       <options>
         <option>
@@ -309,8 +309,8 @@
         <en>Put a watermark on the original picture</en>
       </label>
       <order>15</order>
-      <mandatory>N</mandatory>
-      <value>N</value>
+      <mandatory>false</mandatory>
+      <value>false</value>
       <type>text</type>
       <size>25</size>
       <updatable>always</updatable>
@@ -326,7 +326,7 @@
         <en>Use iptc data for Watermark</en>
       </label>
       <order>16</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>25</size>
@@ -343,7 +343,7 @@
         <en>Baket</en>
       </label>
       <order>17</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -359,7 +359,7 @@
         <en>Ask for an image</en>
       </label>
       <order>18</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -375,7 +375,7 @@
         <en>XML Form to ask for pictures.</en>
       </label>
       <order>19</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>xmltemplates</type>
       <updatable>always</updatable>
@@ -391,7 +391,7 @@
         <en>URL to the charter</en>
       </label>
       <order>20</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>25</size>

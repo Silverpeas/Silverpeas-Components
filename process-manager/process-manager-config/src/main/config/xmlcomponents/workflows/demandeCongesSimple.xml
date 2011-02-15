@@ -24,9 +24,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
+
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>demandeCongesSimple</name>
   <label>
     <fr>Demande de congés simplifiée</fr>
@@ -40,8 +40,8 @@
     <fr>05 Workflow</fr>
     <en>05 Workflow</en>
   </suite>
-  <visible>Y</visible>
-  <portlet>N</portlet>
+  <visible>true</visible>
+  <portlet>false</portlet>
   <!-- <requestRouter>RprocessManager</requestRouter> -->
   <instanceClassName>com.silverpeas.processManager.ProcessManagerInstanciator</instanceClassName>
   <profiles>
@@ -58,15 +58,15 @@
       <en>Supervisor</en>
     </profile>
   </profiles>
-  <Parameters>
-    <Parameter>
+  <parameters>
+    <parameter>
       <name>XMLFileName</name>
       <label>
         <fr>Modèle abstrait</fr>
-        <fr>Abstract model</fr>
+        <en>Abstract model</en>
       </label>
       <order>1</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>DemandeCongesSimple/DemandeCongesSimple.xml</value>
       <type>text</type>
       <updatable>always</updatable>
@@ -74,15 +74,15 @@
         <fr>Nom du fichier XML contenant le modèle du processsus.</fr>
         <en>XMl file containing the model of the workflow.</en>  
       </help>
-    </Parameter>
-    <Parameter>
+    </parameter>
+    <parameter>
       <name>exportCSV</name>
       <label>
         <fr>Export CSV</fr>
         <en>CSV export</en>
       </label>
       <order>2</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -90,14 +90,15 @@
         <fr>Export des données sous forme d'un fichier CSV.</fr>
         <en>Exporting the workflow data in a CSV file.</en>  
       </help>
-    </Parameter>
-    <Parameter>
+    </parameter>
+    <parameter>
       <name>fieldsToExport</name>
       <label>
         <fr>Champs à exporter</fr>
+        <en>Fields to export</en>
       </label>
       <order>3</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <updatable>always</updatable>
@@ -105,6 +106,6 @@
         <fr>Les champs du workflow à exporter.</fr>
         <en>The fields to be exported.</en>  
       </help>
-    </Parameter>
-  </Parameters>
+    </parameter>
+  </parameters>
 </WAComponent>

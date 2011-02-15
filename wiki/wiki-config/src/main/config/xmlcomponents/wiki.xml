@@ -24,9 +24,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
+
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>wiki</name>
   <label>
     <fr>Wiki</fr>
@@ -42,8 +42,8 @@
     <fr>04 Gestion de contenu</fr>
     <en>04 Content Management</en>
   </suite>
-  <visible>Y</visible>
-  <portlet>N</portlet>
+  <visible>true</visible>
+  <portlet>false</portlet>
   <instanceClassName>com.silverpeas.wiki.WikiInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">

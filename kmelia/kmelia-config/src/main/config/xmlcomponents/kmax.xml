@@ -24,10 +24,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+  <name>classifieds</name>
   <name>kmax</name>
   <label>
     <fr>Gestion de contenu multi-axes</fr>
@@ -47,8 +46,8 @@
     <fr>01 Gestion Documentaire</fr>
     <en>01 Document Management</en>
   </suite>
-  <visible>Y</visible>
-  <portlet>Y</portlet>
+  <visible>true</visible>
+  <portlet>true</portlet>
   <instanceClassName>com.stratelia.webactiv.kmelia.KmeliaInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
@@ -76,7 +75,7 @@
         <en>Content</en>
       </label>
       <order>1</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -92,7 +91,7 @@
         <en>Attachments</en>
       </label>
       <order>2</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -108,7 +107,7 @@
         <en>Comments</en>
       </label>
       <order>3</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -124,7 +123,7 @@
         <en>Readers list</en>
       </label>
       <order>4</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>yes</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -140,7 +139,7 @@
         <en>Draf</en>
       </label>
       <order>5</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -158,7 +157,7 @@
         <en>Description field</en>
       </label>
       <order>6</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>2</value>
       <options>
         <option>
@@ -197,7 +196,7 @@
         <en>Keywords</en>
       </label>
       <order>7</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -213,7 +212,7 @@
         <en>Author field</en>
       </label>
       <order>8</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -229,7 +228,7 @@
         <en>Importance field</en>
       </label>
       <order>9</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -245,7 +244,7 @@
         <en>Version field</en>
       </label>
       <order>10</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -261,7 +260,7 @@
         <en>Publication date axis</en>
       </label>
       <order>11</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value>yes</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -277,7 +276,7 @@
         <en>Publication creation wizard</en>
       </label>
       <order>12</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -293,7 +292,7 @@
         <en>Backlog management</en>
       </label>
       <order>13</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <size>5</size>
@@ -315,7 +314,7 @@
         <en>Export component</en>
       </label>
       <order>14</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -331,7 +330,7 @@
         <en>Share attachments</en>
       </label>
       <order>15</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>never</updatable>

@@ -25,9 +25,8 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>whitePages</name>
   <label>
     <fr>Annuaire d'experts</fr>
@@ -47,8 +46,8 @@
     <fr>03 Gestion de la connaissance</fr>
     <en>03 Knowledge Management</en>
   </suite>
-  <visible>Y</visible>
-  <portlet>Y</portlet>
+  <visible>true</visible>
+  <portlet>true</portlet>
   <instanceClassName>com.silverpeas.whitePages.WhitePagesInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
@@ -68,7 +67,7 @@
         <en>Template card</en>
       </label>
       <order>1</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>whitePages/annuaire.xml</value>
       <type>text</type>
       <updatable>creation</updatable>
@@ -84,7 +83,7 @@
         <en>Display template</en>
       </label>
       <order>3</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>whitePages/annuaire.html</value>
       <type>text</type>
       <updatable>always</updatable>
@@ -100,7 +99,7 @@
         <en>Hide the email address</en>
       </label>      
       <order>2</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -116,7 +115,7 @@
         <en>Force filling of the card</en>
       </label>        
       <order>4</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -136,7 +135,7 @@
         <en>Hide the card tab</en>
       </label>
       <order>5</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -152,7 +151,7 @@
         <en>Silverpeas's domains to which the directory is attached</en>
       </label>      
       <order>6</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>0</value>
       <type>text</type>
       <updatable>always</updatable>

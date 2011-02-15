@@ -25,10 +25,8 @@
 
 -->
 
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
-
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>webSites</name>
   <label>
     <fr>Designer de site web</fr>
@@ -46,8 +44,8 @@
     <fr>04 Gestion de contenu</fr>
     <en>04 Content Management</en>
   </suite>
-  <visible>Y</visible>
-  <portlet>Y</portlet>
+  <visible>true</visible>
+  <portlet>true</portlet>
   <instanceClassName>com.stratelia.webactiv.webSites.WebSitesInstanciator</instanceClassName>  
   <profiles>
     <profile name="Admin"><fr>Gestionnaire</fr><en>Administrator</en></profile>
@@ -62,7 +60,7 @@
         <en>Classification Scheme</en>
       </label>
       <order>1</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>
@@ -77,7 +75,7 @@
         <en>Topics/Links sorted</en>
       </label>
       <order>2</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>no</value>
       <type>checkbox</type>
       <updatable>always</updatable>

@@ -24,9 +24,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
+
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>connecteurJDBC</name>
   <label>
     <fr>Connecteur JDBC</fr>
@@ -46,8 +46,8 @@
     <fr>06 Connecteurs</fr>
     <en>06 Connectors</en>
   </suite>
-  <visible>Y</visible>
-  <portlet>Y</portlet>
+  <visible>true</visible>
+  <portlet>true</portlet>
   <instanceClassName>com.stratelia.silverpeas.connecteurJDBC.control.ConnecteurJDBCInstanciator
   </instanceClassName>
   <profiles>

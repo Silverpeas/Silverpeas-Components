@@ -24,9 +24,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<WAComponent xmlns="http://silverpeas.org/xml/ns/component"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="http://silverpeas.org/xml/ns/component file:///home/ehugonnet/silverpeas_dev/core/config-core/src/main/config/xmlcomponents/component.xsd">
+
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>organizationchart</name>
   <label>
     <fr>Organigramme</fr>
@@ -40,8 +40,8 @@
     <fr>04 Gestion de contenu</fr>
     <en>04 Content management</en>
   </suite>
-  <visible>N</visible>
-  <portlet>N</portlet>
+  <visible>false</visible>
+  <portlet>false</portlet>
   <instanceClassName>com.silverpeas.components.organizationchart.OrganizationChartInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
@@ -65,7 +65,7 @@
         <en>LDAP server address</en>
       </label>
       <order>1</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value></value>
       <type>text</type>
       <updatable>always</updatable>
@@ -81,7 +81,7 @@
         <en>Context factory</en>
       </label>
       <order>2</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>com.sun.jndi.ldap.LdapCtxFactory</value>
       <type>text</type>
       <updatable>always</updatable>
@@ -97,7 +97,7 @@
         <en>Authentcation mode</en>
       </label>
       <order>3</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>simple</value>
       <options>
         <option>
@@ -136,7 +136,7 @@
         <en>Principal</en>
       </label>
       <order>4</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <updatable>always</updatable>
@@ -152,7 +152,7 @@
         <en>Credentials</en>
       </label>
       <order>5</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <updatable>always</updatable>
@@ -168,7 +168,7 @@
         <en>Root Ldap node</en>
       </label>
       <order>7</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value></value>
       <type>text</type>
       <updatable>always</updatable>
@@ -184,7 +184,7 @@
         <en>Ldap class for person</en>
       </label>
       <order>8</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>organizationalPerson</value>
       <type>text</type>
       <updatable>always</updatable>
@@ -200,7 +200,7 @@
         <en>Ldap class for departments or services.</en>
       </label>
       <order>9</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>organizationalUnit</value>
       <type>text</type>
       <updatable>always</updatable>
@@ -216,7 +216,7 @@
         <en>Attribute containing the name of the organizational unit.</en>
       </label>
       <order>11</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>ou</value>
       <type>text</type>
       <updatable>always</updatable>
@@ -232,7 +232,7 @@
         <en>Attribute for the last name of a person</en>
       </label>
       <order>10</order>
-      <mandatory>Y</mandatory>
+      <mandatory>true</mandatory>
       <value>cn</value>
       <type>text</type>
       <updatable>always</updatable>
@@ -248,7 +248,7 @@
         <en>Name of the attribute containing the title</en>
       </label>
       <order>12</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value>title</value>
       <type>text</type>
       <updatable>always</updatable>
@@ -264,7 +264,7 @@
         <en>Name of the attribute containing the description</en>
       </label>      
       <order>13</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value>description</value>
       <type>text</type>
       <updatable>always</updatable>
@@ -280,7 +280,7 @@
         <en>Attribute containing the role(s) of the main organization unit</en>
       </label>
       <order>14</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value>Role(s) principal(s)</value>
       <type>text</type>
       <updatable>always</updatable>
@@ -296,7 +296,7 @@
         <en>Attribute for the role(s) on the right block</en>
       </label>
       <order>15</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value>Role(s) droite</value>
       <type>text</type>
       <updatable>always</updatable>
@@ -312,7 +312,7 @@
         <en>Attribute for the role(s) on the left block</en>
       </label>      
       <order>16</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value>Role(s) gauche</value>
       <type>text</type>
       <updatable>always</updatable>
@@ -328,7 +328,7 @@
         <en>Attribute containing the status of a person</en>
       </label>
       <order>17</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <updatable>always</updatable>
@@ -344,7 +344,7 @@
         <en>Attribute for the positions du of the main organization unit detailled organization chart)</en>
       </label>
       <order>18</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <updatable>always</updatable>
@@ -360,7 +360,7 @@
         <en>Attribute of the main sub-functions in a unit (detailled organization chart)</en>
       </label>      
       <order>19</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <updatable>always</updatable>
@@ -376,7 +376,7 @@
         <en>>Ldap fields for the person information details (units organization chart)</en>
       </label>
       <order>20</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <updatable>always</updatable>
@@ -392,7 +392,7 @@
         <en>ldap fields for the personn information details (detailled organization chart).</en>
       </label>
       <order>21</order>
-      <mandatory>N</mandatory>
+      <mandatory>false</mandatory>
       <value></value>
       <type>text</type>
       <updatable>always</updatable>
