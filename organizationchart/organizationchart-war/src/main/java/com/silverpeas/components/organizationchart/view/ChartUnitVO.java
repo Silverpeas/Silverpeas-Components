@@ -22,19 +22,60 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.components.organizationchart.service;
+package com.silverpeas.components.organizationchart.view;
 
-import java.util.Map;
+import java.util.List;
 
-import com.silverpeas.components.organizationchart.model.OrganizationalChart;
-import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
-import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
+public class ChartUnitVO extends ChartVO {
+  private CategoryBox leftRole = null;
+  private CategoryBox rightRole = null;
+  private List<OrganizationBox> subOrganizations = null;
 
-public interface OrganizationChartService {
+  /**
+   * @return the leftRole
+   */
+  public CategoryBox getLeftRole() {
+    return leftRole;
+  }
 
-  public OrganizationalChart getOrganizationChart(String baseOu, OrganizationalChartType type);
+  /**
+   * @param leftRole the leftRole to set
+   */
+  public void setLeftRole(CategoryBox leftRole) {
+    this.leftRole = leftRole;
+  }
 
-  public Map<String, String> getOrganizationalPersonDetails(OrganizationalPerson[] org, int id);
+  /**
+   * @return the rightRole
+   */
+  public CategoryBox getRightRole() {
+    return rightRole;
+  }
 
-  public void configure(OrganizationChartConfiguration config);
+  /**
+   * @param rightRole the rightRole to set
+   */
+  public void setRightRole(CategoryBox rightRole) {
+    this.rightRole = rightRole;
+  }
+
+  /**
+   * @return the subOrganizations
+   */
+  public List<OrganizationBox> getSubOrganizations() {
+    return subOrganizations;
+  }
+
+  /**
+   * @param subOrganizations the subOrganizations to set
+   */
+  public void setSubOrganizations(List<OrganizationBox> subOrganizations) {
+    this.subOrganizations = subOrganizations;
+  }
+
+  @Override
+  public int getChartType() {
+    return 0;
+  }
+
 }

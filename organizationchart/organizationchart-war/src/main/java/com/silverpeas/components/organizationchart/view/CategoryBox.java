@@ -22,19 +22,40 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.components.organizationchart.service;
+package com.silverpeas.components.organizationchart.view;
 
-import java.util.Map;
+import java.util.List;
 
-import com.silverpeas.components.organizationchart.model.OrganizationalChart;
-import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
-import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
+public class CategoryBox {
+  private String name = null;
+  private List<UserVO> users = null;
 
-public interface OrganizationChartService {
+  /**
+   * @return the name
+   */
+  public String getName() {
+    return name;
+  }
 
-  public OrganizationalChart getOrganizationChart(String baseOu, OrganizationalChartType type);
+  /**
+   * @param name the name to set
+   */
+  public void setName(String name) {
+    this.name = name;
+  }
 
-  public Map<String, String> getOrganizationalPersonDetails(OrganizationalPerson[] org, int id);
+  /**
+   * @return the users
+   */
+  public List<UserVO> getUsers() {
+    return users;
+  }
 
-  public void configure(OrganizationChartConfiguration config);
+  /**
+   * @param users the users to set
+   */
+  public void setUsers(List<UserVO> users) {
+    this.users = users;
+  }
+
 }

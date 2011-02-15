@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -39,7 +39,7 @@ public class OrganizationChartInstanciator implements ComponentsInstanciatorIntf
       throws InstanciationException {
     SilverTrace.info("organizationchart", "OrganizationChartInstanciator.create()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = " + componentId +
-            ", userId =" + userId);
+        ", userId =" + userId);
 
     // aucune information stockée en base pour organigramme via LDAP
 
@@ -51,7 +51,7 @@ public class OrganizationChartInstanciator implements ComponentsInstanciatorIntf
       throws InstanciationException {
     SilverTrace.info("organizationchart", "OrganizationChartInstanciator.delete()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = " + componentId +
-            ", userId =" + userId);
+        ", userId =" + userId);
 
     // aucune information stockée en base pour organigramme via LDAP
 
