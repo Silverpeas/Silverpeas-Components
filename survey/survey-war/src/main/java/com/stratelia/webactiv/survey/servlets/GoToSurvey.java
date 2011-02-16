@@ -40,6 +40,9 @@ import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHead
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerPK;
 
 public class GoToSurvey extends GoTo {
+  private static final long serialVersionUID = 3757409211987594743L;
+  private static final String UTF8 = "UTF-8"; // encoding
+
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     QuestionContainerPK questionContainerPK = new QuestionContainerPK(objectId);
@@ -55,7 +58,7 @@ public class GoToSurvey extends GoTo {
 
       String gotoURL = URLManager.getURL(null, componentId) + survey.getURL();
 
-      return "goto=" + URLEncoder.encode(gotoURL);
+      return "goto=" + URLEncoder.encode(gotoURL, UTF8);
     }
     return null;
   }

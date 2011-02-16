@@ -32,13 +32,19 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
 import com.stratelia.webactiv.survey.control.SurveySessionController;
 import com.stratelia.webactiv.util.questionContainer.model.QuestionContainerHeader;
-
+/**
+ * This class is the main entry point to index the content of survey component
+ *
+ */
 public class SurveyIndexer implements ComponentIndexerInterface {
 
   private SurveySessionController scc = null;
 
-  public void index(MainSessionController mainSessionCtrl,
-      ComponentContext context) throws SurveyException {
+  /**
+   * Implementation of component indexer interface
+   */
+  public void index(MainSessionController mainSessionCtrl, ComponentContext context)
+      throws SurveyException {
 
     scc = new SurveySessionController(mainSessionCtrl, context);
 
@@ -48,25 +54,24 @@ public class SurveyIndexer implements ComponentIndexerInterface {
   }
 
   private void indexOpenedSurveys() throws SurveyException {
-    Collection surveys = scc.getOpenedSurveys();
+    Collection<QuestionContainerHeader> surveys = scc.getOpenedSurveys();
     indexSurveys(surveys);
   }
 
   private void indexClosedSurveys() throws SurveyException {
-    Collection surveys = scc.getClosedSurveys();
+    Collection<QuestionContainerHeader> surveys = scc.getClosedSurveys();
     indexSurveys(surveys);
   }
 
   private void indexInWaitSurveys() throws SurveyException {
-    Collection surveys = scc.getInWaitSurveys();
+    Collection<QuestionContainerHeader> surveys = scc.getInWaitSurveys();
     indexSurveys(surveys);
   }
 
-  private void indexSurveys(Collection surveys) throws SurveyException {
-    Iterator it = surveys.iterator();
+  private void indexSurveys(Collection<QuestionContainerHeader> surveys) throws SurveyException {
+    Iterator<QuestionContainerHeader> it = surveys.iterator();
     while (it.hasNext()) {
-      QuestionContainerHeader surveyHeader = (QuestionContainerHeader) it
-          .next();
+      QuestionContainerHeader surveyHeader = it.next();
       scc.updateSurveyHeader(surveyHeader, surveyHeader.getPK().getId());
     }
   }

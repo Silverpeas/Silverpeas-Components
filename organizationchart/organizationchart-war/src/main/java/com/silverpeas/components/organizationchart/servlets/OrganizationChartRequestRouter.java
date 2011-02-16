@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -64,23 +64,23 @@ public class OrganizationChartRequestRouter extends ComponentRequestRouter {
    */
   public String getDestination(String function, ComponentSessionController componentSC,
       HttpServletRequest request) {
-    String destination = "";
+
     SilverTrace.info("organizationchart", "OrganizationChartRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
 
+    String destination = "";
+    OrganizationChartSessionController orgaSC = (OrganizationChartSessionController) componentSC;
+
     try {
-      if (function.startsWith("Main")) {// affichage de l'organigramme
+      if (function.startsWith("Main")) {
         destination = OrganizationChartProcessor.processOrganizationChart(
-            request, componentSC.getComponentId());
-      } else if (function.startsWith("id")) {
-        OrganizationChartSessionController organizationchartSC =
-            (OrganizationChartSessionController) componentSC;
+            request, orgaSC);
+      } else if (function.startsWith("Details")) {
         destination =
-            OrganizationChartProcessor.processPerson(request, function, organizationchartSC);
+            OrganizationChartProcessor.processSilverpeasUser(request, orgaSC);
       } else {// affichage de l'organigramme
         destination = OrganizationChartProcessor.processOrganizationChart(
-            request, componentSC.getComponentId());
-        // destination = "/organizationchart/jsp/welcome.jsp";
+            request, orgaSC);
       }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);

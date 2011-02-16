@@ -49,9 +49,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 %>
 
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+<html>
+<head>
+<title></title>
 <style>
 
 			html, body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset, textarea, p, blockquote, th, td, img, hr, embed, object {
@@ -138,8 +138,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     }
  				   
 </script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <%     
 	Window window = gef.getWindow();
     Frame frame = gef.getFrame();
@@ -151,5 +151,5 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
     out.println(window.print());
 %>
 
-</BODY>
-</HTML>
+</body>
+</html>

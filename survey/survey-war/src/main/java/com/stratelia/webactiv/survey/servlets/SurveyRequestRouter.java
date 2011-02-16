@@ -45,10 +45,7 @@ import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
 public class SurveyRequestRouter extends ComponentRequestRouter {
 
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -1921269596127652643L;
 
   public String getFlag(String[] profiles) {
     String flag = "user";
@@ -62,8 +59,9 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
       }
 
       // if admin, return it, we won't find a better profile
-      if (profiles[i].equals("admin"))
+      if (profiles[i].equals("admin")) {
         return profiles[i];
+      }
     }
     return flag;
   }
@@ -72,7 +70,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     ComponentSessionController component =
         (ComponentSessionController) new SurveySessionController(
-        mainSessionCtrl, componentContext);
+            mainSessionCtrl, componentContext);
     return component;
   }
 
@@ -99,8 +97,9 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
     String flag = getFlag(componentSC.getUserRoles());
     String rootDest = "/survey/jsp/";
     SurveySessionController surveySC = (SurveySessionController) componentSC;
-    if (flag.equals("userMultiple"))
+    if (flag.equals("userMultiple")) {
       surveySC.setParticipationMultipleAllowedForUser(true);
+    }
 
     SilverTrace.info("Survey", "SurveyRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
         "surveyId=" + surveySC.getSessionSurveyId());
@@ -113,7 +112,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
     if ("pollingStation".equals(surveySC.getComponentRootName())) {
       surveySC.setPollingStationMode(true);
     }
-    request.setAttribute("PollingStationMode", new Boolean(surveySC.isPollingStationMode()));
+    request.setAttribute("PollingStationMode", Boolean.valueOf(surveySC.isPollingStationMode()));
 
     // Set status for this vote or survey
     setAnonymousParticipationStatus(request, surveySC);
@@ -144,6 +143,8 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
         SilverTrace.warn("Survey", "SurveyRequestRouter.getDestination()",
             "root.EX_USERPANEL_FAILED", "function = " + function, e);
       }
+      //TODO prepare data before transmitting to the view
+      //TODO get business rules that are already defined inside JSP view.
       destination = rootDest + "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=" + surveyId;
     }
     /*
@@ -197,7 +198,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
     } else if (function.equals("ToAlertUser")) {
       SilverTrace.debug("Survey", "SurveyRequestRouter.getDestination()",
           "root.MSG_GEN_PARAM_VALUE", "ToAlertUser: function = " + function + " spaceId=" +
-          surveySC.getSpaceId() + " componentId=" + surveySC.getComponentId());
+              surveySC.getSpaceId() + " componentId=" + surveySC.getComponentId());
       String surveyId = request.getParameter("SurveyId");
       try {
         destination = surveySC.initAlertUser(surveyId);
@@ -208,7 +209,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
 
       SilverTrace.debug("Survey", "SurveyRequestRouter.getDestination()",
           "root.MSG_GEN_PARAM_VALUE", "ToAlertUser: function = " + function + "=> destination=" +
-          destination);
+              destination);
     } else if (function.equals("ExportCSV")) {
       String surveyId = request.getParameter("SurveyId");
       String csvFilename = surveySC.exportSurveyCSV(surveyId);
@@ -258,20 +259,22 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
 
   /**
    * Read cookie from anonymous user and set status of anonymous user to allow him to vote or not
-   * @param request
-   * @param surveyScc
+   * @param request the current HttpServletRequest
+   * @param surveySC the survey session controller
    */
   private void setAnonymousParticipationStatus(HttpServletRequest request,
       SurveySessionController surveySC) {
     surveySC.hasAlreadyParticipated(false);
-    if (request.getParameter("SurveyId") != null) {
+    String surveyId = request.getParameter("SurveyId");
+    if (surveyId != null) {
       Cookie[] cookies = request.getCookies();
+      String cookieName = SurveySessionController.COOKIE_NAME + surveyId;
       for (int i = 0; i < cookies.length; i++) {
         Cookie currentCookie = cookies[i];
-        if (currentCookie.getName().equals(
-            SurveySessionController.COOKIE_NAME
-            + request.getParameter("SurveyId")))
+        if (currentCookie.getName().equals(cookieName)) {
           surveySC.hasAlreadyParticipated(true);
+          break;
+        }
       }
     }
   }

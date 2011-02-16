@@ -73,9 +73,9 @@ if (action == null) {
 }
 
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+<html>
+<head>
+<title></title>
 <% out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
@@ -188,8 +188,8 @@ function isCorrectForm() {
 }
 
 </script>
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
 if (action.equals("SendNewSurvey")) {
       if (beginDate != null) {
@@ -236,8 +236,8 @@ else if (action.equals("CreateSurvey")) {
       out.println(board.printBefore());
 %>
       <center>
-<table CELLPADDING=5 width="100%">
-    <form name="surveyForm" Action="surveyCreator.jsp" method="POST">
+<form name="surveyForm" action="surveyCreator.jsp" method="post">
+  <table cellpadding="5" width="100%">
     <tr><td class="txtlibform"><%=resources.getString("GML.name")%> :</td><td><input type="text" name="title" size="60" value="<%=EncodeHelper.javaStringToHtmlString(title)%>" maxlength="100">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
    	<tr><td class="txtlibform" valign="top"><%=resources.getString("SurveyCreationDescription")%> :</td><td><textarea name="description" cols="50" rows="4"><%=description%></textarea></td></tr>
     <tr><td class="txtlibform"><%=resources.getString("SurveyCreationDate")%> :</td><td><%=creationDate%></td></tr>
@@ -263,8 +263,8 @@ else if (action.equals("CreateSurvey")) {
     </tr>
     <tr><td colspan="2">(<img border="0" src="<%=mandatoryField%>" width="5" height="5"> : <%=generalMessage.getString("GML.requiredField")%>)</td></tr>
     <tr><td><input type="hidden" name="Action" value="<%=nextAction%>"></td></tr>
-    </form>
-</table>
+  </table>
+</form>
 </center>
 <%
 	  out.println(board.printAfter());
@@ -280,18 +280,18 @@ else if (action.equals("CreateSurvey")) {
  } //End if action = ViewQuestion
 if (action.equals("SendNewSurvey")) {
 %>
-<HTML>
-<HEAD>
-<script language="Javascript">
+<html>
+<head>
+<script language="javascript">
     function goToQuestionCreator() {
         document.questionForm.submit();
     }
 </script>
-</HEAD>
-<BODY onLoad="goToQuestionCreator()">
-<Form name="questionForm" Action="questionCreator.jsp" Method="POST" ENCTYPE="multipart/form-data">
+</head>
+<body onload="goToQuestionCreator()">
+<form name="questionForm" action="questionCreator.jsp" method="post" enctype="multipart/form-data">
 <input type="hidden" name="Action" value="FirstQuestion">
-</Form>
-</BODY>
-</HTML>
+</form>
+</body>
+</html>
 <% } %>

@@ -153,271 +153,271 @@
     }
 
 %>
-<HTML>
-  <HEAD>
-    <TITLE></TITLE>
+<html>
+  <head>
+    <title></title>
     <%
         out.println(gef.getLookStyleSheet());
     %>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-    <script language="JavaScript1.2">
-      function sendData()
-      {
-        if (isCorrectForm()) {
-          if (checkAnswers()) {
-            if (window.document.pollForm.suggestion.checked)
-              window.document.pollForm.SuggestionAllowed.value = "1";
-            window.document.pollForm.anonymous.disabled = false;
-            if (window.document.pollForm.anonymous.checked)
-                window.document.pollForm.AnonymousAllowed.value = "1";
-            window.document.pollForm.submit();
-          }
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script language="JavaScript1.2">
+  function sendData()
+  {
+    if (isCorrectForm()) {
+      if (checkAnswers()) {
+        if (window.document.pollForm.suggestion.checked)
+          window.document.pollForm.SuggestionAllowed.value = "1";
+        window.document.pollForm.anonymous.disabled = false;
+        if (window.document.pollForm.anonymous.checked)
+            window.document.pollForm.AnonymousAllowed.value = "1";
+        window.document.pollForm.submit();
+      }
+    }
+  }
+
+  function checkAnswers()
+  {
+    var errorMsg = "";
+    var errorNb = 0;
+    var answerEmpty = false;
+    var imageEmpty = false;
+    var fieldsEmpty = "";
+    for (var i=0; i<document.pollForm.length; i++)
+    {
+      inputName = document.pollForm.elements[i].name.substring(0, 5);
+      if (inputName == "answe" ) {
+        if (isWhitespace(stripInitialWhitespace(document.pollForm.elements[i].value))) {
+          answerEmpty = true;
         }
       }
 
-      function checkAnswers()
+      if (inputName == "image")
       {
-        var errorMsg = "";
-        var errorNb = 0;
-        var answerEmpty = false;
-        var imageEmpty = false;
-        var fieldsEmpty = "";
-        for (var i=0; i<document.pollForm.length; i++)
-        {
-          inputName = document.pollForm.elements[i].name.substring(0, 5);
-          if (inputName == "answe" ) {
-            if (isWhitespace(stripInitialWhitespace(document.pollForm.elements[i].value))) {
-              answerEmpty = true;
-            }
+        if (answerEmpty == true) {
+          if (isWhitespace(stripInitialWhitespace(document.pollForm.elements[i].value))) {
+            imageEmpty = true;
           }
+        }
+        answerEmpty = false;
+      }
 
-          if (inputName == "image")
-          {
-            if (answerEmpty == true) {
-              if (isWhitespace(stripInitialWhitespace(document.pollForm.elements[i].value))) {
-                imageEmpty = true;
-              }
-            }
-            answerEmpty = false;
+      if (inputName == "value")
+      {
+        if (imageEmpty == true) {
+          if (isWhitespace(stripInitialWhitespace(document.pollForm.elements[i].value))) {
+            fieldsEmpty += (parseInt(document.pollForm.elements[i].name.substring(17, document.pollForm.elements[i].name.length))+1)+",";
+            errorNb++;
           }
-
-          if (inputName == "value")
-          {
-            if (imageEmpty == true) {
-              if (isWhitespace(stripInitialWhitespace(document.pollForm.elements[i].value))) {
-                fieldsEmpty += (parseInt(document.pollForm.elements[i].name.substring(17, document.pollForm.elements[i].name.length))+1)+",";
-                errorNb++;
-              }
-            }
-            imageEmpty = false;
-          }
+        }
+        imageEmpty = false;
+      }
+    }
+    if(<%=!"0".equals(suggestion) && "SendQuestionForm".equals(action)%>){
+      if (isWhitespace(stripInitialWhitespace(document.pollForm.suggestionLabel.value))) {
+        errorNb++;
+      }
+    }
+    switch(errorNb) {
+      case 0 :
+        result = true;
+        break;
+      default :
+        fields = fieldsEmpty.split(",");
+        for (var i=0; i < fields.length-1; i++) {
+          errorMsg += "<%=resources.getString("SurveyCreationAnswerNb")%> "+fields[i]+" \n";
         }
         if(<%=!"0".equals(suggestion) && "SendQuestionForm".equals(action)%>){
           if (isWhitespace(stripInitialWhitespace(document.pollForm.suggestionLabel.value))) {
-            errorNb++;
+            errorMsg += "<%=resources.getString("OtherAnswer")%> \n";
           }
         }
-        switch(errorNb) {
-          case 0 :
-            result = true;
-            break;
-          default :
-            fields = fieldsEmpty.split(",");
-            for (var i=0; i < fields.length-1; i++) {
-              errorMsg += "<%=resources.getString("SurveyCreationAnswerNb")%> "+fields[i]+" \n";
-            }
-            if(<%=!"0".equals(suggestion) && "SendQuestionForm".equals(action)%>){
-              if (isWhitespace(stripInitialWhitespace(document.pollForm.suggestionLabel.value))) {
-                errorMsg += "<%=resources.getString("OtherAnswer")%> \n";
-              }
-            }
-            window.alert("<%=resources.getString("EmptyAnswerNotAllowed")%> \n" + errorMsg);
-            result = false;
-            break;
+        window.alert("<%=resources.getString("EmptyAnswerNotAllowed")%> \n" + errorMsg);
+        result = false;
+        break;
+      }
+      return result;
+    }
+
+    function isCorrectForm() {
+      var errorMsg = "";
+      var errorNb = 0;
+      var title = stripInitialWhitespace(window.document.pollForm.title.value);
+      var question = stripInitialWhitespace(window.document.pollForm.question.value);
+      var nbAnswers = window.document.pollForm.nbAnswers.value;
+
+      var re = /(\d\d\/\d\d\/\d\d\d\d)/i;
+
+      var beginDate = window.document.pollForm.beginDate.value;
+      var yearBegin = extractYear(window.document.pollForm.beginDate.value, '<%=surveyScc.getLanguage()%>');
+      var monthBegin = extractMonth(window.document.pollForm.beginDate.value, '<%=surveyScc.getLanguage()%>');
+      var dayBegin = extractDay(window.document.pollForm.beginDate.value, '<%=surveyScc.getLanguage()%>');
+
+      var endDate = window.document.pollForm.endDate.value;
+      var yearEnd = extractYear(window.document.pollForm.endDate.value, '<%=surveyScc.getLanguage()%>');
+      var monthEnd = extractMonth(window.document.pollForm.endDate.value, '<%=surveyScc.getLanguage()%>');
+      var dayEnd = extractDay(window.document.pollForm.endDate.value, '<%=surveyScc.getLanguage()%>');
+
+      var beginDateOK = true;
+
+      if (isWhitespace(title)) {
+        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+        errorNb++;
+      }
+      if (window.document.pollForm.questionStyle.options[window.document.pollForm.questionStyle.selectedIndex].value=="null") {
+        //choisir au moins un style
+        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("survey.style")%>' <%=resources.getString("GML.MustBeFilled")%> \n";
+        errorNb++;
+      }
+      if (isWhitespace(beginDate)) {
+      } else {
+        if (beginDate.replace(re, "OK") != "OK") {
+          errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationBeginDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+          errorNb++;
+          beginDateOK = false;
+        } else {
+          if (isCorrectDate(yearBegin, monthBegin, dayBegin)==false) {
+            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationBeginDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+            errorNb++;
+            beginDateOK = false;
           }
-          return result;
         }
-
-        function isCorrectForm() {
-          var errorMsg = "";
-          var errorNb = 0;
-          var title = stripInitialWhitespace(window.document.pollForm.title.value);
-          var question = stripInitialWhitespace(window.document.pollForm.question.value);
-          var nbAnswers = window.document.pollForm.nbAnswers.value;
-
-          var re = /(\d\d\/\d\d\/\d\d\d\d)/i;
-
-          var beginDate = window.document.pollForm.beginDate.value;
-          var yearBegin = extractYear(window.document.pollForm.beginDate.value, '<%=surveyScc.getLanguage()%>');
-          var monthBegin = extractMonth(window.document.pollForm.beginDate.value, '<%=surveyScc.getLanguage()%>');
-          var dayBegin = extractDay(window.document.pollForm.beginDate.value, '<%=surveyScc.getLanguage()%>');
-
-          var endDate = window.document.pollForm.endDate.value;
-          var yearEnd = extractYear(window.document.pollForm.endDate.value, '<%=surveyScc.getLanguage()%>');
-          var monthEnd = extractMonth(window.document.pollForm.endDate.value, '<%=surveyScc.getLanguage()%>');
-          var dayEnd = extractDay(window.document.pollForm.endDate.value, '<%=surveyScc.getLanguage()%>');
-
-          var beginDateOK = true;
-
-          if (isWhitespace(title)) {
-            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+      }
+      if (isWhitespace(endDate)) {
+      } else {
+        if (endDate.replace(re, "OK") != "OK") {
+          errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+          errorNb++;
+        } else {
+          if (isCorrectDate(yearEnd, monthEnd, dayEnd)==false) {
+            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
             errorNb++;
-          }
-          if (window.document.pollForm.questionStyle.options[window.document.pollForm.questionStyle.selectedIndex].value=="null") {
-            //choisir au moins un style
-            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("survey.style")%>' <%=resources.getString("GML.MustBeFilled")%> \n";
-            errorNb++;
-          }
-          if (isWhitespace(beginDate)) {
           } else {
-            if (beginDate.replace(re, "OK") != "OK") {
-              errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationBeginDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-              errorNb++;
-              beginDateOK = false;
-            } else {
-              if (isCorrectDate(yearBegin, monthBegin, dayBegin)==false) {
-                errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationBeginDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+            if ((isWhitespace(beginDate) == false) && (isWhitespace(endDate) == false)) {
+              if (beginDateOK && isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin, monthBegin, dayBegin) == false) {
+                errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("MustContainsPostDateToBeginDate")%>\n";
                 errorNb++;
-                beginDateOK = false;
               }
-            }
-          }
-          if (isWhitespace(endDate)) {
-          } else {
-            if (endDate.replace(re, "OK") != "OK") {
-              errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-              errorNb++;
             } else {
-              if (isCorrectDate(yearEnd, monthEnd, dayEnd)==false) {
-                errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-                errorNb++;
-              } else {
-                if ((isWhitespace(beginDate) == false) && (isWhitespace(endDate) == false)) {
-                  if (beginDateOK && isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin, monthBegin, dayBegin) == false) {
-                    errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("MustContainsPostDateToBeginDate")%>\n";
-                    errorNb++;
-                  }
-                } else {
-                  if ((isWhitespace(beginDate) == true) && (isWhitespace(endDate) == false)) {
-                    //window.alert("ici");
-                    if (isFutureDate(yearEnd, monthEnd, dayEnd) == false) {
-                      errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("MustContainsPostDate")%>\n";
-                      errorNb++;
-                    }
-                  }
-                }
-              }
-            }
-          }
-          if (isWhitespace(question)) {
-            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationQuestion")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-            errorNb++;
-          }
-          if (isWhitespace(nbAnswers)) {
-            errorMsg +="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationNbPossibleAnswer")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
-            errorNb++;
-          } else {
-            if (isInteger(nbAnswers)==false) {
-              errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationNbPossibleAnswer")%>' <%=resources.getString("GML.MustContainsFloat")%>\n";
-              errorNb++;
-            } else {
-              if (window.document.pollForm.suggestion.checked) {
-                //nb min answers = 1
-                if (nbAnswers <= 0) {
-                  errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationNbPossibleAnswer")%>' <%=resources.getString("MustContainsPositiveNumber")%>\n";
-                  errorNb++;
-                }
-              } else {
-                //nb min answers = 2
-                if (nbAnswers <= 1) {
-                  errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationNbPossibleAnswer")%>' <%=resources.getString("MustContainsNumberGreaterThan2")%>\n";
+              if ((isWhitespace(beginDate) == true) && (isWhitespace(endDate) == false)) {
+                //window.alert("ici");
+                if (isFutureDate(yearEnd, monthEnd, dayEnd) == false) {
+                  errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("MustContainsPostDate")%>\n";
                   errorNb++;
                 }
               }
             }
           }
-          switch(errorNb) {
-            case 0 :
-              result = true;
-              break;
-            case 1 :
-              errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
-              window.alert(errorMsg);
-              result = false;
-              break;
-            default :
-              errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
-              window.alert(errorMsg);
-              result = false;
-              break;
+        }
+      }
+      if (isWhitespace(question)) {
+        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationQuestion")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+        errorNb++;
+      }
+      if (isWhitespace(nbAnswers)) {
+        errorMsg +="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationNbPossibleAnswer")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
+        errorNb++;
+      } else {
+        if (isInteger(nbAnswers)==false) {
+          errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationNbPossibleAnswer")%>' <%=resources.getString("GML.MustContainsFloat")%>\n";
+          errorNb++;
+        } else {
+          if (window.document.pollForm.suggestion.checked) {
+            //nb min answers = 1
+            if (nbAnswers <= 0) {
+              errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationNbPossibleAnswer")%>' <%=resources.getString("MustContainsPositiveNumber")%>\n";
+              errorNb++;
             }
-            return result;
-          }
-
-          var galleryWindow = window;
-          var currentAnswer;
-
-          function choixGallery(liste, idAnswer)
-          {
-            currentAnswer = idAnswer;
-            index = liste.selectedIndex;
-            var componentId = liste.options[index].value;
-            if (index != 0)
-            {
-              url = "<%=m_context%>/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=<%=surveyScc.getLanguage()%>";
-              windowName = "galleryWindow";
-              larg = "820";
-              haut = "600";
-              windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-              if (!galleryWindow.closed && galleryWindow.name=="galleryWindow")
-                galleryWindow.close();
-              galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+          } else {
+            //nb min answers = 2
+            if (nbAnswers <= 1) {
+              errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationNbPossibleAnswer")%>' <%=resources.getString("MustContainsNumberGreaterThan2")%>\n";
+              errorNb++;
             }
           }
+        }
+      }
+      switch(errorNb) {
+        case 0 :
+          result = true;
+          break;
+        case 1 :
+          errorMsg = "<%=resources.getString("GML.ThisFormContains")%> 1 <%=resources.getString("GML.error")%> : \n" + errorMsg;
+          window.alert(errorMsg);
+          result = false;
+          break;
+        default :
+          errorMsg = "<%=resources.getString("GML.ThisFormContains")%> " + errorNb + " <%=resources.getString("GML.errors")%> :\n" + errorMsg;
+          window.alert(errorMsg);
+          result = false;
+          break;
+        }
+        return result;
+      }
 
-          function deleteImage(idImage)
-          {
-            document.getElementById('imageGallery'+idImage).innerHTML = "";
-            document.getElementById('valueImageGallery'+idImage).value = "";
-          }
+      var galleryWindow = window;
+      var currentAnswer;
 
-          //function choixImageInGallery(url)
-          //{
-          //document.getElementById('imageGallery'+currentAnswer).innerHTML = "<a href=\""+url+"\" target=\"_blank\"><%=resources.getString("survey.imageGallery")%></a> <a href=\"javascript:deleteImage('"+currentAnswer+"')\"><img src=\"icons/questionDelete.gif\" border=\"0\" align=\"absmiddle\" alt=\"<%=resources.getString("GML.delete")%>\" title=\"<%=resources.getString("GML.delete")%>\"></a>";
-          //document.getElementById('valueImageGallery'+currentAnswer).value = url;
-          //}
+      function choixGallery(liste, idAnswer)
+      {
+        currentAnswer = idAnswer;
+        index = liste.selectedIndex;
+        var componentId = liste.options[index].value;
+        if (index != 0)
+        {
+          url = "<%=m_context%>/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=<%=surveyScc.getLanguage()%>";
+          windowName = "galleryWindow";
+          larg = "820";
+          haut = "600";
+          windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
+          if (!galleryWindow.closed && galleryWindow.name=="galleryWindow")
+            galleryWindow.close();
+          galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+        }
+      }
 
-          function choixImageInGallery(url)
-          {
-            var newLink = document.createElement("a");
-            newLink.setAttribute("href", url);
-            newLink.setAttribute("target", "_blank");
+      function deleteImage(idImage)
+      {
+        document.getElementById('imageGallery'+idImage).innerHTML = "";
+        document.getElementById('valueImageGallery'+idImage).value = "";
+      }
 
-            var newLabel = document.createTextNode("<%=resources.getString("survey.imageGallery")%>");
-            newLink.appendChild(newLabel);
+      //function choixImageInGallery(url)
+      //{
+      //document.getElementById('imageGallery'+currentAnswer).innerHTML = "<a href=\""+url+"\" target=\"_blank\"><%=resources.getString("survey.imageGallery")%></a> <a href=\"javascript:deleteImage('"+currentAnswer+"')\"><img src=\"icons/questionDelete.gif\" border=\"0\" align=\"absmiddle\" alt=\"<%=resources.getString("GML.delete")%>\" title=\"<%=resources.getString("GML.delete")%>\"></a>";
+      //document.getElementById('valueImageGallery'+currentAnswer).value = url;
+      //}
 
-            var removeLink =  document.createElement("a");
-            removeLink.setAttribute("href", "javascript:deleteImage('"+currentAnswer+"')");
-            var removeIcon = document.createElement("img");
-            removeIcon.setAttribute("src", "icons/questionDelete.gif");
-            removeIcon.setAttribute("border", "0");
-            removeIcon.setAttribute("align", "absmiddle");
-            removeIcon.setAttribute("alt", "<%=resources.getString("GML.delete")%>");
-            removeIcon.setAttribute("title", "<%=resources.getString("GML.delete")%>");
+      function choixImageInGallery(url)
+      {
+        var newLink = document.createElement("a");
+        newLink.setAttribute("href", url);
+        newLink.setAttribute("target", "_blank");
 
-            removeLink.appendChild(removeIcon);
+        var newLabel = document.createTextNode("<%=resources.getString("survey.imageGallery")%>");
+        newLink.appendChild(newLabel);
 
-            document.getElementById('imageGallery'+currentAnswer).appendChild(newLink);
-            document.getElementById('imageGallery'+currentAnswer).appendChild(removeLink);
+        var removeLink =  document.createElement("a");
+        removeLink.setAttribute("href", "javascript:deleteImage('"+currentAnswer+"')");
+        var removeIcon = document.createElement("img");
+        removeIcon.setAttribute("src", "icons/questionDelete.gif");
+        removeIcon.setAttribute("border", "0");
+        removeIcon.setAttribute("align", "absmiddle");
+        removeIcon.setAttribute("alt", "<%=resources.getString("GML.delete")%>");
+        removeIcon.setAttribute("title", "<%=resources.getString("GML.delete")%>");
 
-            document.getElementById('valueImageGallery'+currentAnswer).value = url;
-          }
+        removeLink.appendChild(removeIcon);
 
-    </script>
-  </HEAD>
-  <BODY>
+        document.getElementById('imageGallery'+currentAnswer).appendChild(newLink);
+        document.getElementById('imageGallery'+currentAnswer).appendChild(removeLink);
+
+        document.getElementById('valueImageGallery'+currentAnswer).value = url;
+      }
+
+</script>
+  </head>
+  <body>
     <%
         if ((action.equals("CreatePoll")) || (action.equals("SendPollForm"))) {
           cancelButton = (Button) gef.getFormButton(generalMessage.getString("GML.cancel"), "Main.jsp", false);
@@ -459,8 +459,8 @@ if (action.equals("SendPollForm")) {
 disabledValue = "disabled";
 }
     %>
-    <table border=0 cellspacing=0 cellpadding=5 width="98%" align=center>
-      <form name="pollForm" Action="pollCreator.jsp" method="POST" ENCTYPE="multipart/form-data">
+    <form name="pollForm" action="pollCreator.jsp" method="post" enctype="multipart/form-data">
+      <table border=0 cellspacing=0 cellpadding=5 width="98%" align=center>
         <tr><td class="txtlibform"><%=resources.getString("GML.name")%> :</td><td><input type="text" name="title" size="60" maxlength="60" value="<%=EncodeHelper.javaStringToHtmlString(title)%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> </td></tr>
         <tr><td class="txtlibform"><%=resources.getString("SurveyCreationDate")%> :</td><td><%=creationDate%></td></tr>
         <tr><td class="txtlibform"><%=resources.getString("SurveyCreationBeginDate")%> :</td><td><input type="text" class="dateToPick" name="beginDate" size="12" value="<%=beginDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/></td></tr>
@@ -477,7 +477,7 @@ disabledValue = "disabled";
             </select>
           </td></tr>
           <% } else {%>
-        <select style="visibility: hidden;" id="questionStyle" name="questionStyle" value="<%=style%>"><option selected><%=style%></option></select>
+        <select style="visibility: hidden;" id="questionStyle" name="questionStyle"><option selected><%=style%></option></select>
         <%}%>
 
         <tr><td class="txtlibform"><%=resources.getString("SurveyCreationNbPossibleAnswer")%> :</td><td><input type="text" name="nbAnswers" value="<%=nbAnswers%>" size="3" maxlength="2" <%=disabledValue%>>&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"> </td></tr>
@@ -538,8 +538,8 @@ if (!"0".equals(suggestion)) {
             <input type="hidden" name="SuggestionAllowed" value="0">
              <input type="hidden" name="AnonymousAllowed" value="0">
          </td></tr>
-      </form>
-    </table>
+      </table>
+    </form>
 
     <!-- FIN CORPS -->
     <%
@@ -581,18 +581,18 @@ if (!"0".equals(suggestion)) {
           surveyScc.createSurvey(surveyDetail);
           surveyScc.setSessionSurveyUnderConstruction(surveyDetail);
     %>
-  <HTML>
-    <HEAD>
+  <html>
+    <head>
       <script language="Javascript">
             function goToList() {
               document.questionForm.submit();
             }
       </script>
-    </HEAD>
-    <BODY onLoad="goToList()">
-      <Form name="questionForm" Action="surveyList.jsp" Method="POST">
+    </head>
+    <body onLoad="goToList()">
+      <form name="questionForm" action="surveyList.jsp" method="post">
         <input type="hidden" name="Action" value="View">
-      </Form>
-    </BODY>
-  </HTML>
+      </form>
+    </body>
+  </html>
   <% }%>

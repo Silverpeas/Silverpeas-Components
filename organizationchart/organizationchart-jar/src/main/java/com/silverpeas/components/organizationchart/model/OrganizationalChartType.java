@@ -22,19 +22,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.silverpeas.components.organizationchart.service;
+/**
+ * 
+ */
+package com.silverpeas.components.organizationchart.model;
 
-import java.util.Map;
+/**
+ * @author ludovic
+ */
+public enum OrganizationalChartType {
+  TYPE_UNITCHART(0), TYPE_PERSONNCHART(1);
 
-import com.silverpeas.components.organizationchart.model.OrganizationalChart;
-import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
-import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
+  private int id = -1;
 
-public interface OrganizationChartService {
+  private OrganizationalChartType(int id) {
+    this.id = id;
+  }
 
-  public OrganizationalChart getOrganizationChart(String baseOu, OrganizationalChartType type);
+  public static OrganizationalChartType fromString(String idAsString) {
+    if ("1".equals(idAsString)) {
+      return TYPE_PERSONNCHART;
+    } else {
+      return TYPE_UNITCHART;
+    }
+  }
 
-  public Map<String, String> getOrganizationalPersonDetails(OrganizationalPerson[] org, int id);
-
-  public void configure(OrganizationChartConfiguration config);
+  public int getId() {
+    return id;
+  }
 }

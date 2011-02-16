@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://repository.silverpeas.com/legal/licensing"
  *
@@ -21,92 +21,155 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package com.silverpeas.components.organizationchart.servlets;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.components.organizationchart.control.OrganizationChartSessionController;
 import com.silverpeas.components.organizationchart.model.OrganizationalChart;
-import com.silverpeas.components.organizationchart.model.OrganizationalPerson;
-import com.silverpeas.components.organizationchart.service.ServicesFactory;
+import com.silverpeas.components.organizationchart.model.OrganizationalChartType;
+import com.silverpeas.components.organizationchart.view.CategoryBox;
+import com.silverpeas.components.organizationchart.view.ChartPersonnVO;
+import com.silverpeas.components.organizationchart.view.ChartUnitVO;
+import com.silverpeas.components.organizationchart.view.ChartVO;
+import com.silverpeas.components.organizationchart.view.OrganizationBox;
+import com.silverpeas.components.organizationchart.view.UserVO;
 
 public class OrganizationChartProcessor {
 
-  public static String JSP_BASE = "/organizationchart/jsp/";
+  public static final String JSP_BASE = "/organizationchart/jsp/";
   public static final String DESTINATION_DISPLAY_CHART = "chart.jsp";
   public static final String DESTINATION_PERSON = "person.jsp";
   public static final String DESTINATION_ERROR = "check.jsp";
 
-  public static String processOrganizationChart(HttpServletRequest request, String componentId) {
-	  request.removeAttribute("error");
-      String rootOu = request.getParameter("baseOu");
-      
-      String chartType = request.getParameter("chartType");
-      int type = OrganizationalChart.UNITCHART;
-      if(chartType != null){
-    	  try{
-    		  type = Integer.valueOf(chartType);
-    	  }catch(NumberFormatException e){
-    		  type = OrganizationalChart.UNITCHART;
-    	  }
-      }
-      
-      OrganizationalChart result = ServicesFactory.getOrganizationChartService().
-          getOrganizationChart(componentId, rootOu, type);
-      if (result != null) {
-        if(result.getUnits() == null || result.getUnits().length == 0){
-        	// if no sub-units, force to personn chart
-        	type = OrganizationalChart.PERSONNCHART;
-        	result = ServicesFactory.getOrganizationChartService().getOrganizationChart(componentId, rootOu, type);
-        	 if (result == null) {
-        		 request.setAttribute("error", "Une erreur s'est produite lors du chargement des donnees (redirection automatique organigramme personnes)");
-        	 }
-        } 
-    	request.getSession().setAttribute("organigramme", result);
-        request.getSession().setAttribute("orgId", componentId);
-        request.getSession().setAttribute("chartType", type);
-      } else {
-        request.setAttribute("error", "une erreur s'est produite lors du chargement des donnÃ©es");
-      }   
-      return JSP_BASE + DESTINATION_DISPLAY_CHART;
+  public static final String PARAM_DOMAINID = "chartDomainSilverpeas";
+
+  public static String processOrganizationChart(HttpServletRequest request,
+      OrganizationChartSessionController controller) {
+    request.removeAttribute("error");
+    String rootOu = request.getParameter("baseOu");
+
+    String chartType = request.getParameter("chartType");
+    ChartVO chart = controller.getChart(rootOu, OrganizationalChartType.fromString(chartType));
+
+    request.getSession().setAttribute("organigramme", chart);
+    // request.getSession().setAttribute("organigramme", buildFakePersonUnit());
+
+    return JSP_BASE + DESTINATION_DISPLAY_CHART;
   }
 
-  public static String processPerson(HttpServletRequest request, String idStr,
+  public static String processSilverpeasUser(HttpServletRequest request,
       OrganizationChartSessionController organizationchartSC) {
-    request.removeAttribute("error");
-    try {
-      OrganizationalPerson[] org =
-          (OrganizationalPerson[]) request.getSession().getAttribute("organigramme");
-      if (org != null) {
-        int id = new Integer(idStr.substring(2)).intValue();
-        Map<String, String> persDetail =
-            ServicesFactory.getOrganizationChartService().getOrganizationalPerson(org, id);
-        if (persDetail != null) {
-          List<String> details = new ArrayList<String>();
-          for (Map.Entry<String, String> det : persDetail.entrySet()) {
-            String lib = organizationchartSC.getLibelleAttribut(det.getKey());
-            if (lib != null) {
-              details.add(lib + " : ");
-              details.add(det.getValue());
-            }
-          }
-          String[] dets = new String[details.size()];
-          details.toArray(dets);
-          request.setAttribute("person", dets);
-        }
-        return JSP_BASE + DESTINATION_PERSON;
+    String domainId = organizationchartSC.getComponentParameterValue(PARAM_DOMAINID);
+    String login = request.getParameter("login");
+
+    if (login != null) {
+      String userId = organizationchartSC.getUserIdFromLogin(login);
+
+      if (userId != null) {
+        return "/Rprofil/jsp/Main?userId=" + userId;
       } else {
-        request.setAttribute("error", "impossible d'aficher le dÃ©tail de cette personne");
+        request.setAttribute("error", "impossible de trouver cette personne '" + login +
+            "' dans le domaine Silverpeas '" + organizationchartSC.getDomainId() + "'");
         return JSP_BASE + DESTINATION_ERROR;
       }
-    } catch (Exception ex) {
-      request.setAttribute("error", "impossible d'aficher le dÃ©tail de cette personne : \n" +
-          ex.getMessage());
+    } else {
+      request.setAttribute("error", "impossible de recupèrer les bons paramètres - pas de login");
       return JSP_BASE + DESTINATION_ERROR;
     }
+  }
+
+  private static ChartUnitVO buildFakeChartUnit() {
+    ChartUnitVO chart = new ChartUnitVO();
+
+    OrganizationBox rootOrganization = new OrganizationBox();
+    List<UserVO> mainActors = new ArrayList<UserVO>();
+    mainActors.add(new UserVO("Laurent Morel", "l.morel", "Directeur"));
+    mainActors.add(new UserVO("Dupond Jean", "j.dupond", "Directeur associé"));
+    rootOrganization.setName("DGS");
+    rootOrganization.setCenterLinkActive(false);
+    rootOrganization.setDetailLinkActive(true);
+    rootOrganization.setDn("OU=DGS,OU=Issy,dc=mondomain,dc=com");
+    rootOrganization.setMainActors(mainActors);
+    rootOrganization.setParentDn("OU=Issy,dc=mondomain,dc=com");
+    chart.setRootOrganization(rootOrganization);
+
+    CategoryBox leftRole = new CategoryBox();
+    leftRole.setName("Secrétaire");
+    List<UserVO> letusers = new ArrayList<UserVO>();
+    letusers.add(new UserVO("Murielle Dus", "m.duc", null));
+    letusers.add(new UserVO("Camille Bet", "c.bet", null));
+    leftRole.setUsers(letusers);
+    chart.setLeftRole(leftRole);
+
+    CategoryBox rightRole = new CategoryBox();
+    rightRole.setName("Adjoints");
+    List<UserVO> rightusers = new ArrayList<UserVO>();
+    rightusers.add(new UserVO("Jeanne Calment", "m.duc", null));
+    rightusers.add(new UserVO("Pierre Le Bon", "p.lebon", null));
+    rightRole.setUsers(rightusers);
+    chart.setRightRole(rightRole);
+
+    List<OrganizationBox> subOrganizations = new ArrayList<OrganizationBox>();
+    OrganizationBox firstOrganization = new OrganizationBox();
+    List<UserVO> mainActors1 = new ArrayList<UserVO>();
+    mainActors1.add(new UserVO("Laurent1 Morel", "l.morel1", "Directeur1"));
+    mainActors1.add(new UserVO("Dupond1 Jean", "j.dupond1", "Directeur associé1"));
+    firstOrganization.setName("Elus");
+    firstOrganization.setCenterLinkActive(true);
+    firstOrganization.setDetailLinkActive(true);
+    firstOrganization.setDn("OU=Elus,OU=DGS,OU=Issy,dc=mondomain,dc=com");
+    firstOrganization.setMainActors(mainActors);
+    firstOrganization.setParentDn("OU=DGS,OU=Issy,dc=mondomain,dc=com");
+    subOrganizations.add(firstOrganization);
+    subOrganizations.add(firstOrganization);
+    subOrganizations.add(firstOrganization);
+    subOrganizations.add(firstOrganization);
+    subOrganizations.add(firstOrganization);
+    subOrganizations.add(firstOrganization);
+    subOrganizations.add(firstOrganization);
+    subOrganizations.add(firstOrganization);
+    chart.setSubOrganizations(subOrganizations);
+
+    return chart;
+  }
+
+  private static ChartPersonnVO buildFakePersonUnit() {
+    ChartPersonnVO chart = new ChartPersonnVO();
+
+    OrganizationBox rootOrganization = new OrganizationBox();
+    List<UserVO> mainActors = new ArrayList<UserVO>();
+    mainActors.add(new UserVO("Laurent Morel", "l.morel", "Directeur"));
+    mainActors.add(new UserVO("Dupond Jean", "j.dupond", "Directeur associé"));
+    rootOrganization.setName("DGS");
+    rootOrganization.setDn("OU=DGS,OU=Issy,dc=mondomain,dc=com");
+    rootOrganization.setMainActors(mainActors);
+    rootOrganization.setParentDn("OU=Issy,dc=mondomain,dc=com");
+    chart.setRootOrganization(rootOrganization);
+
+    CategoryBox category1 = new CategoryBox();
+    category1.setName("Secrétaire");
+    List<UserVO> letusers = new ArrayList<UserVO>();
+    letusers.add(new UserVO("Murielle Dus", "m.duc", null));
+    letusers.add(new UserVO("Camille Bet", "c.bet", null));
+    category1.setUsers(letusers);
+
+    CategoryBox category2 = new CategoryBox();
+    category2.setName("Adjoints");
+    List<UserVO> rightusers = new ArrayList<UserVO>();
+    rightusers.add(new UserVO("Jeanne Calment", "m.duc", null));
+    rightusers.add(new UserVO("Pierre Le Bon", "p.lebon", null));
+    category2.setUsers(rightusers);
+
+    List<CategoryBox> categories = new ArrayList<CategoryBox>();
+    categories.add(category1);
+    categories.add(category2);
+    chart.setCategories(categories);
+
+    return chart;
   }
 }

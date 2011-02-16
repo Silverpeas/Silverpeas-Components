@@ -66,8 +66,8 @@ private String displayUnexpectedError(SurveySessionController surveyScc) {
 <%=gef.getLookStyleSheet() %>
 </head> 
 <body>
-<TABLE>
-<TR><TD>
+<table>
+<tr><td>
 <h2><%=surveyScc.getString("GML.error")%></h2>
 <h3><%=surveyScc.getString("RequestUncomplete")%></h3>
 <p>
@@ -91,7 +91,7 @@ private String displayUnexpectedError(SurveySessionController surveyScc) {
 <font color="red" size="3"><b><em><%= exception.getClass().getName() +"  "+ exception.getMessage() %></em></b></font>
 <p><%=surveyScc.getString("ErrorTransmitAdmin")%> <%=surveyScc.getString("Thanks")%></p>
 <p><a href="Main.jsp"><%=surveyScc.getString("BackToMainPage")%></a></p>
-</TD></TR>
-</TABLE>
+</td></tr>
+</table>
 </body>
 </html>
