@@ -37,7 +37,6 @@
 
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
 <fmt:message var="status" key="${requestScope.messageKey}"/>
 <c:set var="icsName" value="${requestScope.icsName}"/>
@@ -47,27 +46,24 @@
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <view:looknfeel />
-    <link rel='stylesheet' type='text/css' href="<c:url value='/almanach/jsp/styleSheets/almanach.css'/>" />
-    <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
   </head>
-
   <body>
+  	<view:browseBar clickable="false"/>
     <view:window>
       <view:frame>
-        <table width="100%" cellpadding="2" cellspacing="2" border="0">
-          <tr>
-            <td align="center"><span class="txtlibform"><c:out value="${status}"/></span></td>
-          </tr>
-          <c:if test="${icsName ne null and fn:length(icsName) > 0}">
-            <tr>
-              <td align="center"><a href="<c:out value='${icsURL}'/>"><c:out value="${icsName}"/></a></td>
-            </tr>
-          </c:if>
-        </table>
+      	<c:if test="${icsName ne null and fn:length(icsName) > 0}">
+      		<div class="inlineMessage-ok">
+      			<b><c:out value="${status}"/></b><br/><br/>
+      			<a href="<c:out value='${icsURL}'/>"><c:out value="${icsName}"/></a>
+      		</div>	
+      	</c:if>
+      	<c:if test="${icsName eq null or fn:length(icsName) == 0}">
+      		<div class="inlineMessage-nok">
+      			<b><c:out value="${status}"/></b>
+      		</div>	
+      	</c:if>
       </view:frame>
     </view:window>
-    <view:progressMessage/>
   </body>
 </html>
