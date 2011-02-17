@@ -423,9 +423,9 @@ function placeCells()
 		topGap += V_GAP + div.offsetHeight;
   }
 
-   resizeBoxes(jLevels);
+   //resizeBoxes(jLevels);
 
-	moveHorizontalAndVertical(jLevels);
+moveHorizontalAndVertical(jLevels);
 
 	mainDiv.style.height = topGap + V_MARGIN * 3;
 
