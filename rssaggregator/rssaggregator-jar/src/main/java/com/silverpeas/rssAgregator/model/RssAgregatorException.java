@@ -24,9 +24,12 @@
 
 package com.silverpeas.rssAgregator.model;
 
-import com.stratelia.webactiv.util.exception.*;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class RssAgregatorException extends SilverpeasException {
+  
+  private static final long serialVersionUID = 270659414571080250L;
+
   public RssAgregatorException(String callingClass, int errorLevel,
       String message) {
     super(callingClass, errorLevel, message);
