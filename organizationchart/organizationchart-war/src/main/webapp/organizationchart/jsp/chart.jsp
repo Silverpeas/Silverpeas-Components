@@ -68,6 +68,15 @@
   </head>
   <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5" onload="chartinit();">
   <div id="userDetailDialog"/>
+
+	<fmt:message key="organizationchart.icons.print" var="printIcon" bundle="${icons}" />
+	<fmt:message key="organizationchart.message.print" var="printMessageAltText" />
+	<c:url var="printIconUrl" value="${printIcon}" />
+
+	<view:operationPane>
+		<view:operation altText="${printMessageAltText}" icon="${printIconUrl}" action="javascript: window.print();" />
+	</view:operationPane>
+
     <view:window>
       <view:frame>
         <view:board>
