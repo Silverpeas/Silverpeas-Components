@@ -69,11 +69,11 @@
 			document.<%=context.getFormName()%>.submit();
 		}
 	}
-	
+
 	function B_ANNULER_ONCLICK() {
-		location.href = "cancelAction?state=<%=state%>";
+		location.href = "cancelAction?state=<%=state%>&processManagertokenId=${currentTokenId}";
 	}
-	
+
 //-->
 </SCRIPT>
 
@@ -84,6 +84,7 @@
    out.println(frame.printBefore());
 %>
 <FORM NAME="<%=context.getFormName()%>" METHOD="POST" ACTION="saveQuestion" ENCTYPE="multipart/form-data">
+<input type="hidden" name="processManagertokenId" value="${currentTokenId}"/>
 <CENTER>
 	<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH="98%">
 	<tr>

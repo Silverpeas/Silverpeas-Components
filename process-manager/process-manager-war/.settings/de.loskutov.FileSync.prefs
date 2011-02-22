@@ -1,0 +1,8 @@
+#Mon Feb 21 09:12:08 CET 2011
+WARNING=DO NOT MODIFY THIS FILE IF YOU DON'T UNDERSTAND
+defaultDestination=/home/ludovic/dev/SilverpeasINPI/jboss/server/default/deploy/silverpeas.ear/war-ic.war
+defaultVariables=
+eclipse.preferences.version=1
+includeTeamPrivateFiles=false
+map|0=src/main/webapp|,|,|,|,
+useCurrentDateForDestinationFiles=false

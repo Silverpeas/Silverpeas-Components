@@ -80,12 +80,12 @@
 		$.progressMessage();
 		var field = document.getElementById("isDraft");
 		field.value = "yes";
-		
+
     	setTimeout("document.<%=context.getFormName()%>.submit();", 500);
 	}
 
 	function B_ANNULER_ONCLICK() {
-		location.href = "listProcess";
+		location.href = "listProcess?cancel=true";
 	}
 //-->
 </SCRIPT>
@@ -97,6 +97,7 @@
    out.println(frame.printBefore());
 %>
 <FORM NAME="<%=context.getFormName()%>" METHOD="POST" ACTION="saveCreation" ENCTYPE="multipart/form-data">
+<input type="hidden" name="processManagertokenId" value="${currentTokenId}"/>
 <input type="hidden" id="isDraft" name="isDraft" value="No"/>
 <input type="hidden" id="isFirstTimeSaved" name="isFirstTimeSaved" value="yes"/>
 <CENTER>

@@ -39,12 +39,12 @@
    PagesContext context = (PagesContext) request.getAttribute("context");
    DataRecord data = (DataRecord) request.getAttribute("data");
    String isFirstTimeSaved = (String) request.getAttribute("isFirstTimeSaved");
-   
+
    boolean 		isProcessIdVisible 		= ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
 
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
-	
+
 	String processId = "";
 	if (isProcessIdVisible)
 		processId = "#"+process.getInstanceId()+" > ";
@@ -91,9 +91,9 @@
 		setTimeout("document.<%=context.getFormName()%>.submit();", 500);
 	<% } %>
 	}
-	
+
 	function B_ANNULER_ONCLICK() {
-		location.href = "cancelAction?state=<%=state.getName()%>";
+		location.href = "cancelAction?state=<%=state.getName()%>&cancel=true";
 	}
 
 	function B_SAUVEGARDER_ONCLICK()
@@ -101,7 +101,7 @@
 		$.progressMessage();
 		var field = document.getElementById("isDraft");
 		field.value = "yes";
-		
+
     	setTimeout("document.<%=context.getFormName()%>.submit();", 500);
 	}
 </SCRIPT>
@@ -113,6 +113,7 @@
    out.println(frame.printBefore());
 %>
 <FORM NAME="<%=context.getFormName()%>" METHOD="POST" ACTION="saveAction" ENCTYPE="multipart/form-data">
+<input type="hidden" name="processManagertokenId" value="${currentTokenId}"/>
 <input type="hidden" id="isDraft" name="isDraft" value="No"/>
 <input type="hidden" id="isFirstTimeSaved" name="isFirstTimeSaved" value="<%=isFirstTimeSaved%>"/>
 <CENTER>
@@ -132,7 +133,7 @@
 				</td>
 			</tr><tr><td>&nbsp;</td></tr></table>
 		</td>
-	</tr>	
+	</tr>
 </table>
 <% } %>
    <INPUT type="hidden" name="state" value="<%=state.getName()%>">
