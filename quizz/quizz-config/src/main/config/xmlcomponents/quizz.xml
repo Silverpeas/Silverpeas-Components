@@ -29,42 +29,60 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>quizz</name>
   <label>
-    <fr>Quiz</fr>
-    <en>Quizz</en>
+    <message lang="fr">Quiz</message>
+    <message lang="en">Quizz</message>
   </label>
   <description>
-    <fr>Permet d'évaluer la compréhension ou niveau de connaissance acquis d'un sujet.
+    <message lang="fr">Permet d'évaluer la compréhension ou niveau de connaissance acquis d'un sujet.
   L'utilisateur peut se faire aider d'indices. Un scoring évalue sa performance.
-    </fr>
-    <en>Evaluates the understanding or the knowledge on a subject. The user can use hints lowering his score.</en>
+    </message>
+    <message lang="en">Evaluates the understanding or the knowledge on a subject. The user can use hints lowering his score.</message>
   </description>
   <suite>
-    <fr>02 Gestion Collaborative</fr>
-    <en>02 Collaborative Management</en>
+    <message lang="fr">02 Gestion Collaborative</message>
+    <message lang="en">02 Collaborative Management</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <instanceClassName>com.stratelia.webactiv.quizz.QuizzInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <fr>Gestionnaire</fr>
-      <en>Administrator</en>
+      <label>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </label>
+      <help>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </help>
     </profile>
     <profile name="publisher">
-      <fr>Publieur</fr>
-      <en>Publisher</en>
+      <label>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </label>
+      <help>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
   <parameters>
     <parameter>
       <name>usePdc</name>
       <label>
-        <fr>Classification PDC</fr>
-        <en>Classification Scheme</en>
+        <message lang="fr">Classification PDC</message>
+        <message lang="en">Classification Scheme</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -72,8 +90,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Les quizz créés au sein de ce composant pourront être classés sur le Plan de Classement.</fr>
-        <en>The quizz will be classified on the classification scheme.</en>
+        <message lang="fr">Les quizz créés au sein de ce composant pourront être classés sur le Plan de Classement.</message>
+        <message lang="en">The quizz will be classified on the classification scheme.</message>
       </help>
     </parameter>
   </parameters>

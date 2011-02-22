@@ -29,18 +29,18 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>rssAgregator</name>
   <label>
-    <fr>Agregateur RSS</fr>
-    <en>RSS aggregator</en>
+    <message lang="fr">Agregateur RSS</message>
+    <message lang="en">RSS aggregator</message>
   </label>
   <description>
-    <fr>Permet d'afficher, au sein de Silverpeas, des informations provenant de sites web
+    <message lang="fr">Permet d'afficher, au sein de Silverpeas, des informations provenant de sites web
   externes. Ce composant permet d'agréger plusieurs sources d'informations au format RSS.
-    </fr>
-    <en>Aggregate inside Silverpeas data from external web sites using their RSS streams.</en>
+    </message>
+    <message lang="en">Aggregate inside Silverpeas data from external web sites using their RSS streams.</message>
   </description>
   <suite>
-    <fr>06 Connecteurs</fr>
-    <en>06 Connectors</en>
+    <message lang="fr">06 Connecteurs</message>
+    <message lang="en">06 Connectors</message>
   </suite>
   <visible>true</visible>
   <visibleInPersonalSpace>true</visibleInPersonalSpace>
@@ -48,12 +48,24 @@
   <instanceClassName>com.silverpeas.rssAgregator.RssAgregatorInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <fr>Gestionnaire</fr>
-      <en>Administrator</en>
+      <label>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </label>
+      <help>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
 </WAComponent>

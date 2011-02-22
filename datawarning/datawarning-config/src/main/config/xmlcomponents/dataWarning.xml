@@ -29,32 +29,50 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>dataWarning</name>
   <label>
-    <fr>DataWarning</fr>
-    <en>DataWarning</en>
+    <message lang="fr">DataWarning</message>
+    <message lang="en">DataWarning</message>
   </label>
   <description>
-    <fr>Alerte en cas de dépassement de seuil.</fr>
-    <en>Warn when the data are beyond a specified level.</en>
+    <message lang="fr">Alerte en cas de dépassement de seuil.</message>
+    <message lang="en">Warn when the data are beyond a specified level.</message>
   </description>
   <suite>
-    <fr>80 Nouveau composant</fr>
-    <en>80 New components</en>
+    <message lang="fr">80 Nouveau composant</message>
+    <message lang="en">80 New components</message>
   </suite>
   <visible>false</visible>
   <portlet>false</portlet>
   <instanceClassName>com.silverpeas.dataWarning.DataWarningInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <fr>Gestionnaire</fr>
-      <en>Administrator</en>
+      <label>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </label>
+      <help> 
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </help>
     </profile>
     <profile name="publisher">
-      <fr>Analyste</fr>
-      <en>Analyst</en>
+      <label>
+        <message lang="fr">Analyste</message>
+        <message lang="en">Analyst</message>
+      </label>
+      <help>
+        <message lang="fr">Analyste</message>
+        <message lang="en">Analyst</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
 </WAComponent>

@@ -29,40 +29,58 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>quickinfo</name>
   <label>
-    <fr>Actualités</fr>
-    <en>QuickInfo</en>
+    <message lang="fr">Actualités</message>
+    <message lang="en">QuickInfo</message>
   </label>
   <description>
-    <fr>Permet de diffuser des brèves d'information. Les informations sont classées sur le Plan de Classement.</fr>
-    <en>Create and broadcast news. These pieces of information can be classified on the classification scheme.</en>
+    <message lang="fr">Permet de diffuser des brèves d'information. Les informations sont classées sur le Plan de Classement.</message>
+    <message lang="en">Create and broadcast news. These pieces of information can be classified on the classification scheme.</message>
   </description>
   <suite>
-    <fr>04 Gestion de contenu</fr>
-    <en>04 Content management</en>
+    <message lang="fr">04 Gestion de contenu</message>
+    <message lang="en">04 Content management</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <instanceClassName>com.stratelia.webactiv.quickinfo.QuickInfoInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <fr>Gestionnaire</fr>
-      <en>Adinistrator</en>
+      <label>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Adinistrator</message>
+      </label>
+      <help>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Adinistrator</message>
+      </help>
     </profile>
     <profile name="publisher">
-      <fr>Publieur</fr>
-      <en>Publisher</en>
+      <label>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </label>
+      <help>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
   <parameters>
     <parameter>
       <name>usePdc</name>
       <label>
-        <fr>Classification PDC</fr>
-        <en>Classficiation scheme</en>
+        <message lang="fr">Classification PDC</message>
+        <message lang="en">Classficiation scheme</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -70,8 +88,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Les brèves créées au sein de cette instance pourront Être classées sur le Plan de Classement.</fr>
-        <en>News cerated in thsi component will be classified on the classification scheme.</en>
+        <message lang="fr">Les brèves créées au sein de cette instance pourront Être classées sur le Plan de Classement.</message>
+        <message lang="en">News cerated in thsi component will be classified on the classification scheme.</message>
       </help>
     </parameter>
   </parameters>

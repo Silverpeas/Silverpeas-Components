@@ -29,36 +29,48 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>blog</name>
   <label>
-    <fr>Blog</fr>
-    <en>Blog</en>
+    <message lang="fr">Blog</message>
+    <message lang="en">Blog</message>
   </label>
   <description>
-    <fr>Permet de réunir des billets affichés par ordre antéchronologique et éventuellement classés par catégorie.</fr>
-    <en>A blog component, displaying posts by categories or by time.</en>
+    <message lang="fr">Permet de réunir des billets affichés par ordre antéchronologique et éventuellement classés par catégorie.</message>
+    <message lang="en">A blog component, displaying posts by categories or by time.</message>
   </description>
   <suite>
-    <fr>04 Gestion de contenu</fr>
-    <en>04 Content Management</en>
+    <message lang="fr">04 Gestion de contenu</message>
+    <message lang="en">04 Content Management</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <instanceClassName>com.silverpeas.blog.BlogInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <fr>Bloggeur</fr>
-      <en>Author</en>
+      <label>
+        <message lang="fr">Bloggeur</message>
+        <message lang="en">Author</message>
+      </label>
+      <help>
+        <message lang="fr">Bloggeur</message>
+        <message lang="en">Author</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
   <parameters>
     <parameter>
       <name>rss</name>
       <label>
-        <fr>Flux RSS</fr>
-        <en>RSS</en>
+        <message lang="fr">Flux RSS</message>
+        <message lang="en">RSS</message>
       </label>
       <order>1</order>
       <mandatory>false</mandatory>
@@ -66,15 +78,15 @@
       <type>checkbox</type>      
       <updatable>always</updatable>      
       <help>
-        <fr>Permet de générer un flux RSS de ce blog.</fr>
-        <en>Produce a RSS stream for the events of this almanah.</en>
+        <message lang="fr">Permet de générer un flux RSS de ce blog.</message>
+        <message lang="en">Produce a RSS stream for the events of this almanah.</message>
       </help>
     </parameter>
     <parameter>
       <name>usePdc</name>
       <label>
-        <fr>Classification PDC</fr>
-        <en>Classification Scheme</en>
+        <message lang="fr">Classification PDC</message>
+        <message lang="en">Classification Scheme</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -82,15 +94,15 @@
       <type>checkbox</type>     
       <updatable>always</updatable>      
       <help>
-        <fr>Les billets créés au sein de cette instance pourront être classées sur le Plan de Classement</fr>
-        <en>Post will be classified on the classification scheme.</en>
+        <message lang="fr">Les billets créés au sein de cette instance pourront être classées sur le Plan de Classement</message>
+        <message lang="en">Post will be classified on the classification scheme.</message>
       </help>
     </parameter>
     <parameter>
       <name>draftVisible</name>
       <label>
-        <fr>Brouillon visible</fr>
-        <en>Display drafts</en>
+        <message lang="fr">Brouillon visible</message>
+        <message lang="en">Display drafts</message>
       </label>
       <order>3</order>      
       <mandatory>true</mandatory>
@@ -98,8 +110,8 @@
       <type>checkbox</type>        
       <updatable>always</updatable>      
       <help>
-        <fr>Le brouillon sera visible entre bloggeurs.</fr>
-        <en>Authors will be able to see ddraft posts.</en>
+        <message lang="fr">Le brouillon sera visible entre bloggeurs.</message>
+        <message lang="en">Authors will be able to see ddraft posts.</message>
       </help>
     </parameter>
   </parameters>

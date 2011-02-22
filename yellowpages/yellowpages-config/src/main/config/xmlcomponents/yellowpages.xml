@@ -29,18 +29,18 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>yellowpages</name>
   <label>
-    <fr>Contacts</fr>
-    <en>Yellow pages directory</en>
+    <message lang="fr">Contacts</message>
+    <message lang="en">Yellow pages directory</message>
   </label>
   <description>
-    <fr>Permet de créer un annuaire de contact. Un formulaire XML associé décrit l'identité
+    <message lang="fr">Permet de créer un annuaire de contact. Un formulaire XML associé décrit l'identité
   de chaque membre de l'annuaire, ainsi que tout autre caractéristique.
-    </fr>
-    <en>Create a contact directory whith an XML form describing all the inos on every member of the directory.</en>
+    </message>
+    <message lang="en">Create a contact directory whith an XML form describing all the inos on every member of the directory.</message>
   </description>
   <suite>
-    <fr>02 Gestion Collaborative</fr>
-    <en>02 Collaborative Management</en>
+    <message lang="fr">02 Gestion Collaborative</message>
+    <message lang="en">02 Collaborative Management</message>
   </suite>
   <visible>true</visible>
   <visibleInPersonalSpace>true</visibleInPersonalSpace>
@@ -48,16 +48,34 @@
   <instanceClassName>com.stratelia.webactiv.yellowpages.YellowpagesInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <fr>Gestionnaire</fr>
-      <en>Administrator</en>
+      <label>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </label>
+      <help>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </help>
     </profile>
     <profile name="publisher">
-      <fr>Publieur</fr>
-      <en>Publisher</en>
+      <label>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </label>
+      <help>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
 </WAComponent>

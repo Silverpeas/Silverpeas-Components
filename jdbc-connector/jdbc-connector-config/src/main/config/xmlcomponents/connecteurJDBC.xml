@@ -29,22 +29,22 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>connecteurJDBC</name>
   <label>
-    <fr>Connecteur JDBC</fr>
-    <en>JDBC Connector</en>
+    <message lang="fr">Connecteur JDBC</message>
+    <message lang="en">JDBC Connector</message>
   </label>
   <description>
-    <fr>Permet d'interroger une base de données et afficher des tableaux d'information.
+    <message lang="fr">Permet d'interroger une base de données et afficher des tableaux d'information.
       Des requêtes en langage SQL sont mises à disposition du gestionnaire, qui les traduit en
       requêtes
       directement exploitables en langage naturel.
-    </fr>
-    <en>Allow to connect and request a database; displaying results in tables. The administrator
+    </message>
+    <message lang="en">Allow to connect and request a database; displaying results in tables. The administrator
       create SQL request and translate them in natural language request.
-    </en>
+    </message>
   </description>
   <suite>
-    <fr>06 Connecteurs</fr>
-    <en>06 Connectors</en>
+    <message lang="fr">06 Connecteurs</message>
+    <message lang="en">06 Connectors</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -52,16 +52,34 @@
   </instanceClassName>
   <profiles>
     <profile name="admin">
-      <fr>Gestionnaire</fr>
-      <en>Administrator</en>
+      <label>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </label>
+      <help>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </help>
     </profile>
     <profile name="publisher">
-      <fr>Publieur</fr>
-      <en>Publisher</en>
+      <label>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </label>
+      <help>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
 </WAComponent>

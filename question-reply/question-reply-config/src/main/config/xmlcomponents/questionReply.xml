@@ -29,50 +29,74 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>questionReply</name>
   <label>
-    <fr>Questions/Réponses - Questions aux experts</fr>
-    <en>Questions/Answers - Questions to experts</en>
+    <message lang="fr">Questions/Réponses - Questions aux experts</message>
+    <message lang="en">Questions/Answers - Questions to experts</message>
   </label>
   <description>
-    <fr>Permet de gérer la base de connaissances des questions posées par les utilisateurs
+    <message lang="fr">Permet de gérer la base de connaissances des questions posées par les utilisateurs
   vers les experts, localiser automatiquement l'expert apte à répondre à une question et gérer
   la distribution de la réponse vers les utilisateurs.
-    </fr>
-    <en>Create a knowledge database, with questions asked by users to experts. 
+    </message>
+    <message lang="en">Create a knowledge database, with questions asked by users to experts. 
     The users can locate the experts that have the best chance of knowing the answer.
     The expert manage the diffusion of answers towards the users.
-    </en>
+    </message>
   </description>
   <suite>
-    <fr>03 Gestion de la connaissance</fr>
-    <en>03 Knowledge management</en>
+    <message lang="fr">03 Gestion de la connaissance</message>
+    <message lang="en">03 Knowledge management</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <instanceClassName>com.silverpeas.questionReply.QuestionReplyInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <fr>Animateur</fr>
-      <en>Quizmaster</en>
+      <label>
+        <message lang="fr">Animateur</message>
+        <message lang="en">Quiz master</message>
+      </label>
+      <help>
+        <message lang="fr">Animateur</message>
+        <message lang="en">Quiz master</message>
+      </help>
     </profile>
     <profile name="publisher">
-      <fr>Demandeur</fr>
-      <en>Applicant</en>
+      <label>
+        <message lang="fr">Demandeur</message>
+        <message lang="en">Applicant</message>
+      </label>
+      <help>
+        <message lang="fr">Demandeur</message>
+        <message lang="en">Applicant</message>
+      </help>
     </profile>
     <profile name="writer">
-      <fr>Expert</fr>
-      <en>Expert</en>
+      <label>
+        <message lang="fr">Expert</message>
+        <message lang="en">Expert</message>
+      </label>
+      <help>
+        <message lang="fr">Expert</message>
+        <message lang="en">Expert</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
   <parameters>
     <parameter>
       <name>privateRepliesUsed</name>
       <label>
-        <fr>Utilisation des réponses privées</fr>
-        <en>Private answers</en>
+        <message lang="fr">Utilisation des réponses privées</message>
+        <message lang="en">Private answers</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -80,15 +104,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Possibilité de créer des réponses privées.</fr>
-        <en>Experts can send private answers.</en>
+        <message lang="fr">Possibilité de créer des réponses privées.</message>
+        <message lang="en">Experts can send private answers.</message>
       </help>
     </parameter>
     <parameter>
       <name>sortable</name>
       <label>
-        <fr>Questions triées par ordre</fr>
-        <en>Sort by questions</en>
+        <message lang="fr">Questions triées par ordre</message>
+        <message lang="en">Sort by questions</message>
       </label>
       <order>2</order>
       <mandatory>false</mandatory>
@@ -96,8 +120,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Possibilité de trier les questions.</fr>
-        <en>Questions are sortable.</en>
+        <message lang="fr">Possibilité de trier les questions.</message>
+        <message lang="en">Questions are sortable.</message>
       </help>
     </parameter>
   </parameters>

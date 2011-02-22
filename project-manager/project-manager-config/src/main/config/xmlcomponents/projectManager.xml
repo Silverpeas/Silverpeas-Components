@@ -29,32 +29,50 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>projectManager</name>
   <label>
-    <fr>Gestion de projet</fr>
-    <en>Project Manager</en>
+    <message lang="fr">Gestion de projet</message>
+    <message lang="en">Project Manager</message>
   </label>
   <description>
-    <fr>Ce composant permet de gérer la notion de précédence entre deux tâches de même niveau.</fr>
-    <en>This component create hierarchies of tasks affectd to users.</en>
+    <message lang="fr">Ce composant permet de gérer la notion de précédence entre deux tâches de même niveau.</message>
+    <message lang="en">This component create hierarchies of tasks affectd to users.</message>
   </description>
   <suite>
-    <fr>02 Gestion Collaborative</fr>
-    <en>02 Collaborative Management</en>
+    <message lang="fr">02 Gestion Collaborative</message>
+    <message lang="en">02 Collaborative Management</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <instanceClassName>com.silverpeas.projectManager.ProjectManagerInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <fr>Chefs de Projet</fr>
-      <en>Project manager</en>
+      <label>
+        <message lang="fr">Chef de Projet</message>
+        <message lang="en">Project manager</message>
+      </label>
+      <help>
+        <message lang="fr">Chef de Projet</message>
+        <message lang="en">Project manager</message>
+      </help>
     </profile>
     <profile name="responsable">
-      <fr>Ressources</fr>
-      <en>Resource</en>
+      <label>
+        <message lang="fr">Ressources</message>
+        <message lang="en">Resource</message>
+      </label>
+      <help>
+        <message lang="fr">Ressources</message>
+        <message lang="en">Resource</message>
+      </help>
     </profile>
     <profile name="lecteur">
-      <fr>Lecteurs</fr>
-      <en>Readers</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
 </WAComponent>

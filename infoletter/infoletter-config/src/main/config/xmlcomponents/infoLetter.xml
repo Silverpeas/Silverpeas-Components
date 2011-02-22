@@ -29,40 +29,58 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>infoLetter</name>
   <label>
-    <fr>Lettre informative</fr>
-    <en>Information letter</en>
+    <message lang="fr">Lettre informative</message>
+    <message lang="en">Information letter</message>
   </label>
   <description>
-    <fr>Permet de créer une lettre d'information périodique, suivant un modèle de publication ré-utilisable. Gère les abonnements à la lettre.</fr>
-    <en>Create a periodic information according to a publication template re-usable. The subscritpions to thee letter are managed here also.</en>
+    <message lang="fr">Permet de créer une lettre d'information périodique, suivant un modèle de publication ré-utilisable. Gère les abonnements à la lettre.</message>
+    <message lang="en">Create a periodic information according to a publication template re-usable. The subscritpions to thee letter are managed here also.</message>
   </description>
   <suite>
-    <fr>04 Gestion de contenu</fr>
-    <en>04 Content Management</en>
+    <message lang="fr">04 Gestion de contenu</message>
+    <message lang="en">04 Content Management</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <instanceClassName>com.stratelia.silverpeas.infoLetter.InfoLetterInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <fr>Gestionnaire</fr>
-      <en>Administrator</en>
+      <label>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </label>
+      <help>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </help>
     </profile>
     <profile name="publisher">
-      <fr>Publieur</fr>
-      <en>Publisher</en>
+      <label>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </label>
+      <help>  
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
   <parameters>
     <parameter>
       <name>usePdc</name>
       <label>
-        <fr>Classification PDC</fr>
-        <en>Classification Scheme</en>
+        <message lang="fr">Classification PDC</message>
+        <message lang="en">Classification Scheme</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -70,8 +88,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Les newsletter créées au sein de cette instance pourront être classées sur le Plan de Classement</fr>
-        <en>Newsletters created here are classified on the classification scheme.</en>
+        <message lang="fr">Les newsletter créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
+        <message lang="en">Newsletters created here are classified on the classification scheme.</message>
       </help>
     </parameter>
   </parameters>

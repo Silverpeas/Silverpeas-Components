@@ -28,40 +28,58 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>chat</name>
   <label>
-    <fr>Dscussion en ligne</fr>
-    <en>Online chat</en>
+    <message lang="fr">Dscussion en ligne</message>
+    <message lang="en">Online chat</message>
   </label>
   <description>
-    <fr>Supporte les processus de communication synchrone de type chat. Des salons peuvent être ouverts sur des thèmes variés. Des communications en mode 'privé' sont possibles, au sein d'un chat multi-participants.</fr>
-    <en>Supporte les processus de communication synchrone de type chat. Des salons peuvent être ouverts sur des thèmes variés. Des communications en mode 'privé' sont possibles, au sein d'un chat multi-participants.</en>
+    <message lang="fr">Supporte les processus de communication synchrone de type chat. Des salons peuvent être ouverts sur des thèmes variés. Des communications en mode 'privé' sont possibles, au sein d'un chat multi-participants.</message>
+    <message lang="en">Supporte les processus de communication synchrone de type chat. Des salons peuvent être ouverts sur des thèmes variés. Des communications en mode 'privé' sont possibles, au sein d'un chat multi-participants.</message>
   </description>
   <suite>
-    <fr>02 Gestion Collaborative</fr>
-    <en>02 Collaborative Management</en>
+    <message lang="fr">02 Gestion Collaborative</message>
+    <message lang="en">02 Collaborative Management</message>
   </suite>
   <visible>true</visible>
   <portlet>false</portlet>
   <instanceClassName>com.stratelia.silverpeas.chat.ChatInstanciator</instanceClassName> 
   <profiles>
     <profile name="admin">
-      <fr>Administrateurs</fr>
-      <en>Administrators</en>
+      <label>
+        <message lang="fr">Administrateurs</message>
+        <message lang="en">Administrators</message>
+      </label>
+      <help>
+        <message lang="fr">Administrateurs</message>
+        <message lang="en">Administrators</message>
+      </help>
     </profile>
     <profile name="publisher">
-      <fr>Animateurs</fr>
-      <en>Animators</en>
+      <label>
+        <message lang="fr">Animateurs</message>
+        <message lang="en">Animators</message>
+      </label>
+      <help>
+        <message lang="fr">Animateurs</message>
+        <message lang="en">Animators</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Chatteurs</fr>
-      <en>Chaters</en>
+      <label>
+        <message lang="fr">Chatteurs</message>
+        <message lang="en">Chaters</message>
+      </label>
+      <help>
+        <message lang="fr">Chatteurs</message>
+        <message lang="en">Chaters</message>
+      </help>
     </profile>
   </profiles>
   <parameters>
     <parameter>
       <name>usePdc</name>
       <label>
-        <fr>Classification PDC</fr>
-        <en>Classification Scheme</en>
+        <message lang="fr">Classification PDC</message>
+        <message lang="en">Classification Scheme</message>
       </label>
       <order>0</order>     
       <mandatory>true</mandatory>
@@ -69,9 +87,9 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Les salons créés au sein de cette instance pourront être classés sur le Plan de Classement</fr>
-        <en>The chats will be classified on the classification scheme.</en>
+        <message lang="fr">Les salons créés au sein de cette instance pourront être classés sur le Plan de Classement</message>
+        <message lang="en">The chats will be classified on the classification scheme.</message>
       </help>
     </parameter>
-      </parameters>
+  </parameters>
 </WAComponent>

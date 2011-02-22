@@ -29,35 +29,62 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>webSites</name>
   <label>
-    <fr>Designer de site web</fr>
-    <en>WebSite Designer</en>
+    <message lang="fr">Designer de site web</message>
+    <message lang="en">WebSite Designer</message>
   </label>
   <description>
-    <fr>Idem à l'annuaire de sites. Propose également des services pour créer un site Web,
+    <message lang="fr">Idem à l'annuaire de sites. Propose également des services pour créer un site Web,
   via un éditeur WYSIWYG. Permet enfin de télécharger un site statique.
-    </fr>
-    <en>A bit like the bookmaks component, but it also allow you to create web pages with a WYSIWYG editor.
+    </message>
+    <message lang="en">A bit like the bookmaks component, but it also allow you to create web pages with a WYSIWYG editor.
     Those pages can be downloaded to create a static web site.
-    </en>
+    </message>
   </description>
   <suite>
-    <fr>04 Gestion de contenu</fr>
-    <en>04 Content Management</en>
+    <message lang="fr">04 Gestion de contenu</message>
+    <message lang="en">04 Content Management</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <instanceClassName>com.stratelia.webactiv.webSites.WebSitesInstanciator</instanceClassName>  
   <profiles>
-    <profile name="Admin"><fr>Gestionnaire</fr><en>Administrator</en></profile>
-    <profile name="Publisher"><fr>Publieur</fr><en>Publisher></en></profile>
-    <profile name="Reader"><fr>Lecteur</fr><en>Reader</en></profile>
+    <profile name="Admin">
+      <label>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </label>
+      <help>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </help>
+    </profile>
+    <profile name="Publisher">
+      <label>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher></message>
+      </label>
+      <help>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher></message>
+      </help>
+    </profile>
+    <profile name="Reader">
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
+    </profile>
   </profiles>
   <parameters>
     <parameter>
       <name>usePdc</name>
       <label>
-        <fr>Classification PDC</fr>
-        <en>Classification Scheme</en>
+        <message lang="fr">Classification PDC</message>
+        <message lang="en">Classification Scheme</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -65,14 +92,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Les bookmarks et/ou sites saisis au sein de cette instance pourront être classés sur le Plan de Classement.</fr>
-        <en>The bookmarks ansdd websites will be classified on the classification scheme.</en>
+        <message lang="fr">Les bookmarks et/ou sites saisis au sein de cette instance pourront être classés sur le Plan de Classement.</message>
+        <message lang="en">The bookmarks ansdd websites will be classified on the classification scheme.</message>
       </help>
     </parameter>
     <parameter>
       <name>sortedTopics</name>
-      <label><fr>Thèmes / liens ordonés</fr>
-        <en>Topics/Links sorted</en>
+      <label>
+        <message lang="fr">Thèmes / liens ordonés</message>
+        <message lang="en">Topics/Links sorted</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -80,8 +108,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Ce paramètre permet d'ordonner les thèmes et les liens</fr>
-        <en>This parameter allows to order topics and links.</en>
+        <message lang="fr">Ce paramètre permet d'ordonner les thèmes et les liens</message>
+        <message lang="en">This parameter allows to order topics and links.</message>
       </help>
     </parameter>
   </parameters>

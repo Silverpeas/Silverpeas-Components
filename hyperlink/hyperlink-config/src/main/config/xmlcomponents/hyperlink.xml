@@ -29,32 +29,38 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>hyperlink</name>
   <label>
-    <fr>Hyperlien</fr>
-    <en>Hyperlink</en>
+    <message lang="fr">Hyperlien</message>
+    <message lang="en">Hyperlink</message>
   </label>
   <description>
-    <fr>Permet de créer un lien URL simple vers un document ou site Web.</fr>
-    <en>Create a link to a document or a web site.</en>
+    <message lang="fr">Permet de créer un lien URL simple vers un document ou site Web.</message>
+    <message lang="en">Create a link to a document or a web site.</message>
   </description>
   <suite>
-    <fr>04 Gestion de contenu</fr>
-    <en>04 Content Management</en>
+    <message lang="fr">04 Gestion de contenu</message>
+    <message lang="en">04 Content Management</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <instanceClassName>com.stratelia.webactiv.hyperlink.HyperlinkInstanciator</instanceClassName>
   <profiles>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
   <parameters>
     <parameter>
       <name>URL</name>
       <label>
-        <fr>URL</fr>
-        <en>URL</en>
+        <message lang="fr">URL</message>
+        <message lang="en">URL</message>
       </label>
       <order>0</order>
       <mandatory>true</mandatory>
@@ -62,15 +68,15 @@
       <type>text</type>
       <updatable>always</updatable>
       <help>
-        <fr>Saisissez ici l'adresse web du site cible</fr>
-        <en>Enter the web site address.</en>
+        <message lang="fr">Saisissez ici l'adresse web du site cible</message>
+        <message lang="en">Enter the web site address.</message>
       </help>
     </parameter>
     <parameter>
       <name>clientSSO</name>
       <label>
-        <fr>Authentification automatique sur le site cible.</fr>
-        <en>Authenticate on the destination site</en>
+        <message lang="fr">Authentification automatique sur le site cible.</message>
+        <message lang="en">Authenticate on the destination site</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -78,15 +84,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Activation du SSO Client.</fr>
-        <en>Automcatci authentication on the destination site.</en>
+        <message lang="fr">Activation du SSO Client.</message>
+        <message lang="en">Automcatci authentication on the destination site.</message>
       </help>
     </parameter>
     <parameter>
       <name>openNewWindow</name>
       <label>
-        <fr>Ouvrir dans une nouvelle fenetre</fr>
-        <en>Open the link in a new window</en>
+        <message lang="fr">Ouvrir dans une nouvelle fenetre</message>
+        <message lang="en">Open the link in a new window</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -94,15 +100,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Le lien peut s'ouvrir soit dans Silverpeas, soit dans une nouvelle fenêtre. </fr>
-        <en>Open th new page inside Silverpeas or in a new window.</en>
+        <message lang="fr">Le lien peut s'ouvrir soit dans Silverpeas, soit dans une nouvelle fenêtre. </message>
+        <message lang="en">Open th new page inside Silverpeas or in a new window.</message>
       </help>
     </parameter>
     <parameter>
       <name>isInternalLink</name>
       <label>
-        <fr>Il s'agit d'un lien interne</fr>
-        <en>Internal link</en>
+        <message lang="fr">Il s'agit d'un lien interne</message>
+        <message lang="en">Internal link</message>
       </label>
       <order>3</order>
       <mandatory>true</mandatory>
@@ -110,15 +116,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Cocher cette case s'il s'agit d'un lien interne : le lien sera alors analysé pour ne garder que le partie concernant Silverpeas </fr>
-        <en>Check to indicate that the link is internal, thus removing the unecessary url part.</en>
+        <message lang="fr">Cocher cette case s'il s'agit d'un lien interne : le lien sera alors analysé pour ne garder que le partie concernant Silverpeas </message>
+        <message lang="en">Check to indicate that the link is internal, thus removing the unecessary url part.</message>
       </help>
     </parameter>
     <parameter>
       <name>login</name>
       <label>
-        <fr>Nom du champ de login pour le site cible.</fr>
-        <en>Login field name for the destination site.</en>
+        <message lang="fr">Nom du champ de login pour le site cible.</message>
+        <message lang="en">Login field name for the destination site.</message>
       </label>      
       <order>4</order>
       <mandatory>false</mandatory>
@@ -127,15 +133,15 @@
       <size>25</size>      
       <updatable>always</updatable>
       <help>
-        <fr>Nom du champ pour passer le login du site cible</fr>
-        <en>name of the field used to pass the login to the target site.</en>
+        <message lang="fr">Nom du champ pour passer le login du site cible</message>
+        <message lang="en">name of the field used to pass the login to the target site.</message>
       </help>
     </parameter>
     <parameter>
       <name>password</name>
       <label>
-        <fr>Nom du champ Mot de passe pour le site cible.</fr>
-        <en>Password field name for the destination site</en>
+        <message lang="fr">Nom du champ Mot de passe pour le site cible.</message>
+        <message lang="en">Password field name for the destination site</message>
       </label>      
       <order>5</order>
       <mandatory>false</mandatory>
@@ -144,15 +150,15 @@
       <size>25</size>
       <updatable>always</updatable>
       <help>
-        <fr>Nom du champ pour passer le mot de passe du site cible</fr>
-        <en>name of the field used to pass the password to the target site.</en>
+        <message lang="fr">Nom du champ pour passer le mot de passe du site cible</message>
+        <message lang="en">name of the field used to pass the password to the target site.</message>
       </help>
     </parameter>
     <parameter>
       <name>method</name>
       <label>
-        <fr>Attribut Method du formulaire</fr>
-        <en>Method used by the form to submit data</en>
+        <message lang="fr">Attribut Method du formulaire</message>
+        <message lang="en">Method used by the form to submit data</message>
       </label>
       <order>6</order>
       <mandatory>true</mandatory>
@@ -160,15 +166,15 @@
       <options>
         <option>
           <name>
-            <fr>Post</fr>
-            <en>Post</en>
+            <message lang="fr">Post</message>
+            <message lang="en">Post</message>
           </name>
           <value>POST</value>
         </option>
         <option>
           <name>
-            <fr>Get</fr>
-            <en>Get</en>
+            <message lang="fr">Get</message>
+            <message lang="en">Get</message>
           </name>
           <value>GET</value>
         </option>
@@ -176,15 +182,15 @@
       <type>select</type>
       <updatable>always</updatable>
       <help>
-        <fr>Attribut Method à passer au formulaire de soumission de l'application SSO Client.</fr>
-        <en>Method used by the form to submit data to the target site.</en>
+        <message lang="fr">Attribut Method à passer au formulaire de soumission de l'application SSO Client.</message>
+        <message lang="en">Method used by the form to submit data to the target site.</message>
       </help>      
     </parameter>
     <parameter>
       <name>nameParam1</name>
       <label>
-        <fr>Paramètre sup 1</fr>
-        <en>Extra parameter 1</en>
+        <message lang="fr">Paramètre sup 1</message>
+        <message lang="en">Extra parameter 1</message>
       </label>
       <order>7</order>
       <mandatory>false</mandatory>
@@ -193,15 +199,15 @@
       <size>25</size>   
       <updatable>always</updatable>
       <help>
-        <fr>Nom du paramètre supplémentaire pour l'application SSO Client. </fr>
-        <en>Name of the first extra parameter for the target site authentication form.</en>
+        <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO Client. </message>
+        <message lang="en">Name of the first extra parameter for the target site authentication form.</message>
       </help>
     </parameter>
     <parameter>
       <name>valueParam1</name>
       <label>
-        <fr>Valeur paramètre 1</fr>
-        <en>Value of the first extra parameter</en>
+        <message lang="fr">Valeur paramètre 1</message>
+        <message lang="en">Value of the first extra parameter</message>
       </label>
       <order>8</order>
       <mandatory>false</mandatory>
@@ -210,15 +216,15 @@
       <size>25</size>
       <updatable>always</updatable>
       <help>
-        <fr>Valeur du paramètre supplémentaire pourl'application SSO Client.</fr>
-        <en>Value of the first extra parameter</en>
+        <message lang="fr">Valeur du paramètre supplémentaire pourl'application SSO Client.</message>
+        <message lang="en">Value of the first extra parameter</message>
       </help>
     </parameter>
     <parameter>
       <name>nameParam2</name>
       <label>
-        <fr>Paramètre sup 2</fr>
-        <en>Extra parameter 2</en>
+        <message lang="fr">Paramètre sup 2</message>
+        <message lang="en">Extra parameter 2</message>
       </label>
       <order>9</order>
       <mandatory>false</mandatory>
@@ -227,15 +233,15 @@
       <size>25</size>
       <updatable>always</updatable>
       <help>
-        <fr>Nom du paramètre supplémentaire pour l'applicationSSO Client.</fr>
-        <en>Name of the second extra parameter for the target site authentication form.</en>
+        <message lang="fr">Nom du paramètre supplémentaire pour l'applicationSSO Client.</message>
+        <message lang="en">Name of the second extra parameter for the target site authentication form.</message>
       </help>
     </parameter>
     <parameter>
       <name>valueParam2</name>
       <label>
-        <fr>Valeur paramètre 1</fr>
-        <en>Value of the second extra parameter</en>
+        <message lang="fr">Valeur paramètre 1</message>
+        <message lang="en">Value of the second extra parameter</message>
       </label>
       <order>10</order>
       <mandatory>false</mandatory>
@@ -244,15 +250,15 @@
       <size>25</size>
       <updatable>always</updatable>
       <help>
-        <fr>Valeur du paramètre supplémentaire pour l'application SSO Client. </fr>
-        <en>Value of the second extra parameter</en>
+        <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO Client. </message>
+        <message lang="en">Value of the second extra parameter</message>
       </help>
     </parameter>
-   <parameter>
+    <parameter>
       <name>nameParam3</name>
       <label>
-        <fr>Paramètre sup 3</fr>
-        <en>Extra parameter 3</en>
+        <message lang="fr">Paramètre sup 3</message>
+        <message lang="en">Extra parameter 3</message>
       </label>
       <order>11</order>
       <mandatory>false</mandatory>
@@ -261,15 +267,15 @@
       <size>25</size>   
       <updatable>always</updatable>
       <help>
-        <fr>Nom du paramètre supplémentaire pour l'application SSO Client. </fr>
-        <en>Name of the third extra parameter for the target site authentication form.</en>
+        <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO Client. </message>
+        <message lang="en">Name of the third extra parameter for the target site authentication form.</message>
       </help>
     </parameter>
     <parameter>
       <name>valueParam3</name>
       <label>
-        <fr>Valeur paramètre 3</fr>
-        <en>Value of the third extra parameter</en>
+        <message lang="fr">Valeur paramètre 3</message>
+        <message lang="en">Value of the third extra parameter</message>
       </label>
       <order>12</order>
       <mandatory>false</mandatory>
@@ -278,14 +284,15 @@
       <size>25</size>
       <updatable>always</updatable>
       <help>
-        <fr>Valeur du paramètre supplémentaire pourl'application SSO Client.</fr>
-        <en>Value of the third extra parameter</en>
+        <message lang="fr">Valeur du paramètre supplémentaire pourl'application SSO Client.</message>
+        <message lang="en">Value of the third extra parameter</message>
       </help>
-    </parameter><parameter>
+    </parameter>
+    <parameter>
       <name>nameParam4</name>
       <label>
-        <fr>Paramètre sup 4</fr>
-        <en>Extra parameter 4</en>
+        <message lang="fr">Paramètre sup 4</message>
+        <message lang="en">Extra parameter 4</message>
       </label>
       <order>13</order>
       <mandatory>false</mandatory>
@@ -294,15 +301,15 @@
       <size>25</size>   
       <updatable>always</updatable>
       <help>
-        <fr>Nom du paramètre supplémentaire pour l'application SSO Client. </fr>
-        <en>Name of the fourth extra parameter for the target site authentication form.</en>
+        <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO Client. </message>
+        <message lang="en">Name of the fourth extra parameter for the target site authentication form.</message>
       </help>
     </parameter>
     <parameter>
       <name>valueParam4</name>
       <label>
-        <fr>Valeur paramètre 4</fr>
-        <en>Value of the fourth extra parameter</en>
+        <message lang="fr">Valeur paramètre 4</message>
+        <message lang="en">Value of the fourth extra parameter</message>
       </label>
       <order>14</order>
       <mandatory>false</mandatory>
@@ -311,14 +318,15 @@
       <size>25</size>
       <updatable>always</updatable>
       <help>
-        <fr>Valeur du paramètre supplémentaire pourl'application SSO Client.</fr>
-        <en>Value of the fourth extra parameter</en>
+        <message lang="fr">Valeur du paramètre supplémentaire pourl'application SSO Client.</message>
+        <message lang="en">Value of the fourth extra parameter</message>
       </help>
-    </parameter><parameter>
+    </parameter>
+    <parameter>
       <name>nameParam5</name>
       <label>
-        <fr>Paramètre sup 5</fr>
-        <en>Extra parameter 5</en>
+        <message lang="fr">Paramètre sup 5</message>
+        <message lang="en">Extra parameter 5</message>
       </label>
       <order>15</order>
       <mandatory>false</mandatory>
@@ -327,15 +335,15 @@
       <size>25</size>   
       <updatable>always</updatable>
       <help>
-        <fr>Nom du paramètre supplémentaire pour l'application SSO Client. </fr>
-        <en>Name of the fifth extra parameter for the target site authentication form.</en>
+        <message lang="fr">Nom du paramètre supplémentaire pour l'application SSO Client. </message>
+        <message lang="en">Name of the fifth extra parameter for the target site authentication form.</message>
       </help>
     </parameter>
     <parameter>
       <name>valueParam1</name>
       <label>
-        <fr>Valeur paramètre 5</fr>
-        <en>Value of the fifth extra parameter</en>
+        <message lang="fr">Valeur paramètre 5</message>
+        <message lang="en">Value of the fifth extra parameter</message>
       </label>
       <order>16</order>
       <mandatory>false</mandatory>
@@ -344,8 +352,8 @@
       <size>25</size>
       <updatable>always</updatable>
       <help>
-        <fr>Valeur du paramètre supplémentaire pourl'application SSO Client.</fr>
-        <en>Value of the fifth extra parameter</en>
+        <message lang="fr">Valeur du paramètre supplémentaire pourl'application SSO Client.</message>
+        <message lang="en">Value of the fifth extra parameter</message>
       </help>
     </parameter>
   </parameters>

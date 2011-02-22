@@ -29,16 +29,16 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>gallery</name>
   <label>
-    <fr>Galerie d'images</fr>
-    <en>Image Gallery</en>
+    <message lang="fr">Galerie d'images</message>
+    <message lang="en">Image Gallery</message>
   </label>
   <description>
-    <fr>Les images sont classées dans des albums. La création des albums est facilitée par la fonction de glisser/déposer.</fr>
-    <en>Images are stored into albums. Creating albums and uploading images is easy with the drag and drop.</en>
+    <message lang="fr">Les images sont classées dans des albums. La création des albums est facilitée par la fonction de glisser/déposer.</message>
+    <message lang="en">Images are stored into albums. Creating albums and uploading images is easy with the drag and drop.</message>
   </description>
   <suite>
-    <fr>04 Gestion de contenu</fr>
-    <en>04 Content Management</en>
+    <message lang="fr">04 Gestion de contenu</message>
+    <message lang="en">04 Content Management</message>
   </suite>
   <visible>true</visible>
   <visibleInPersonalSpace>true</visibleInPersonalSpace>
@@ -46,32 +46,62 @@
   <instanceClassName>com.silverpeas.gallery.GalleryInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <fr>Gestionnaire</fr>
-      <en>Administrator</en>
+      <label>     
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </label>
+      <help>     
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </help>
     </profile>
     <profile name="publisher">
-      <fr>Publieur</fr>
-      <en>Publisher</en>
+      <label>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </label>
+      <help>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </help>
     </profile>
     <profile name="writer">
-      <fr>Contributeur</fr>
-      <en>Contributor</en>
+      <label>
+        <message lang="fr">Contributeur</message>
+        <message lang="en">Contributor</message>
+      </label>
+      <help>
+        <message lang="fr">Contributeur</message>
+        <message lang="en">Contributor</message>
+      </help>
     </profile>
     <profile name="privilegedUser">
-      <fr>Lecteur privilégié</fr>
-      <en>Reader with priviledge</en>
+      <label>
+        <message lang="fr">Lecteur privilégié</message>
+        <message lang="en">Reader with priviledge</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur privilégié</message>
+        <message lang="en">Reader with priviledge</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
   <parameters>
     <parameter>
       <name>slideshow</name>
       <label>
-        <fr>Diaporama</fr>
-        <en>Slideshow</en>
+        <message lang="fr">Diaporama</message>
+        <message lang="en">Slideshow</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -80,15 +110,15 @@
       <size>5</size>      
       <updatable>always</updatable>      
       <help>
-        <fr>Temps d'attente entre deux images (en secondes)</fr>
-        <en>Time wait between two images (in seconds)</en>
+        <message lang="fr">Temps d'attente entre deux images (en secondes)</message>
+        <message lang="en">Time wait between two images (in seconds)</message>
       </help>
     </parameter>
     <parameter>
       <name>dragAndDrop</name>
       <label>
-        <fr>Glisser/déposer</fr>
-        <en>Drag and Drop</en>
+        <message lang="fr">Glisser/déposer</message>
+        <message lang="en">Drag and Drop</message>
       </label>
       <order>2</order>
       <mandatory>false</mandatory>
@@ -96,15 +126,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Permet de publier très rapidement des images par glisser/déposer. Les fichiers zip sont également pris en charge.</fr>
-        <en>Allow you to quickly publish some images by drag and drop. Zip files are also allowed.</en>
+        <message lang="fr">Permet de publier très rapidement des images par glisser/déposer. Les fichiers zip sont également pris en charge.</message>
+        <message lang="en">Allow you to quickly publish some images by drag and drop. Zip files are also allowed.</message>
       </help>
     </parameter>
     <parameter>
       <name>usePdc</name>
       <label>
-        <fr>Classification PDC</fr>
-        <en>Classification Scheme</en>
+        <message lang="fr">Classification PDC</message>
+        <message lang="en">Classification Scheme</message>
       </label>
       <order>4</order>      
       <mandatory>true</mandatory>
@@ -112,15 +142,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>     
       <help>
-        <fr>Les images créées au sein de cette instance pourront être classées sur le Plan de Classement</fr>
-        <en>Images would be classified on PDC</en>
+        <message lang="fr">Les images créées au sein de cette instance pourront être classées sur le Plan de Classement</message>
+        <message lang="en">Images would be classified on PDC</message>
       </help>
     </parameter>
     <parameter>
       <name>viewMetadata</name>
       <label>
-        <fr>Méta-données</fr>
-        <en>Metadata</en>
+        <message lang="fr">Méta-données</message>
+        <message lang="en">Metadata</message>
       </label>
       <order>5</order>
       <mandatory>true</mandatory>
@@ -128,15 +158,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>      
       <help>
-        <fr>Permet d'afficher les Méta données (EXIF, IPTC, Windows) de chaque photo</fr>
-        <en>Display image meta data (EXIF, IPTC, Windows)</en>
+        <message lang="fr">Permet d'afficher les Méta données (EXIF, IPTC, Windows) de chaque photo</message>
+        <message lang="en">Display image meta data (EXIF, IPTC, Windows)</message>
       </help>
     </parameter>
     <parameter>
       <name>viewList</name>
       <label>
-        <fr>Albums sous forme de liste</fr>
-        <en>View albums as list</en>
+        <message lang="fr">Albums sous forme de liste</message>
+        <message lang="en">View albums as list</message>
       </label>
       <order>6</order>
       <mandatory>true</mandatory>
@@ -144,15 +174,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Permet de visualiser les images détaillées pour le format 266x150</fr>
-        <en>Display a detailed list of image (size 266x150 only)</en>
+        <message lang="fr">Permet de visualiser les images détaillées pour le format 266x150</message>
+        <message lang="en">Display a detailed list of image (size 266x150 only)</message>
       </help>
     </parameter>
     <parameter>
       <name>watermark</name>
       <label>
-        <fr>Watermark</fr>
-        <en>Watermark</en>
+        <message lang="fr">Watermark</message>
+        <message lang="en">Watermark</message>
       </label>
       <order>7</order>
       <mandatory>true</mandatory>
@@ -160,15 +190,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>     
       <help>
-        <fr>Permet d'insérer le nom du photographe sous forme de watermark sur les images</fr>
-        <en>Insert photographer's name into image as watermark</en>
+        <message lang="fr">Permet d'insérer le nom du photographe sous forme de watermark sur les images</message>
+        <message lang="en">Insert photographer's name into image as watermark</message>
       </help>
     </parameter>
     <parameter>
       <name>dayBeforeEndVisible</name>
       <label>
-        <fr>Nb de jours avant fin de visibilité</fr>
-        <en>Number of days before the images are no longer visible.</en>
+        <message lang="fr">Nb de jours avant fin de visibilité</message>
+        <message lang="en">Number of days before the images are no longer visible.</message>
       </label>      
       <order>8</order>
       <mandatory>true</mandatory>
@@ -177,15 +207,15 @@
       <size>5</size>
       <updatable>always</updatable>
       <help>
-        <fr>Nombre de jours avant l'envoi du message au gestionnaire quand une photo arrive en fin de visibilité</fr>
-        <en>Number of days before sending an alert when an image will expired</en>
+        <message lang="fr">Nombre de jours avant l'envoi du message au gestionnaire quand une photo arrive en fin de visibilité</message>
+        <message lang="en">Number of days before sending an alert when an image will expired</message>
       </help>
     </parameter>
     <parameter>
       <name>XMLFormname</name>
       <label>
-        <fr>Formulaire XML</fr>
-        <en>XML Form</en>
+        <message lang="fr">Formulaire XML</message>
+        <message lang="en">XML Form</message>
       </label>
       <order>9</order>
       <mandatory>false</mandatory>
@@ -193,15 +223,15 @@
       <type>xmltemplates</type>
       <updatable>always</updatable>
       <help>
-        <fr>Nom du formulaire XML associé à la photothèque</fr>
-        <en>Form XML name attached to this gallery</en>
+        <message lang="fr">Nom du formulaire XML associé à la photothèque</message>
+        <message lang="en">Form XML name attached to this gallery</message>
       </help>
     </parameter>
     <parameter>
       <name>viewInWysiwyg</name>
       <label>
-        <fr>Images réutilisables</fr>
-        <en>Reusable images</en>
+        <message lang="fr">Images réutilisables</message>
+        <message lang="en">Reusable images</message>
       </label>
       <order>10</order>
       <mandatory>true</mandatory>
@@ -209,15 +239,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Permet d'utiliser les images de ce composant depuis l'éditeur Wysiwyg et les composants Vote et Enquête</fr>
-        <en>Images will be available from Wysiwyg editor and Vote and Survey components</en>
+        <message lang="fr">Permet d'utiliser les images de ce composant depuis l'éditeur Wysiwyg et les composants Vote et Enquête</message>
+        <message lang="en">Images will be available from Wysiwyg editor and Vote and Survey components</message>
       </help>
     </parameter>
     <parameter>
       <name>comments</name>
       <label>
-        <fr>Commentaires</fr>
-        <en>Comments</en>
+        <message lang="fr">Commentaires</message>
+        <message lang="en">Comments</message>
       </label>
       <order>11</order>
       <mandatory>true</mandatory>
@@ -225,16 +255,16 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Les lecteurs peuvent laisser des commentaires sur chaque image</fr>
-        <en>Readers are able to post comments on an image</en>
+        <message lang="fr">Les lecteurs peuvent laisser des commentaires sur chaque image</message>
+        <message lang="en">Readers are able to post comments on an image</message>
       </help>
       <personalSpaceValue>no</personalSpaceValue>
     </parameter>
     <parameter>
       <name>privateSearch</name>
       <label>
-        <fr>Moteur de recherche dédié</fr>
-        <en>Dedicated search engine</en>
+        <message lang="fr">Moteur de recherche dédié</message>
+        <message lang="en">Dedicated search engine</message>
       </label>
       <order>12</order>
       <mandatory>false</mandatory>
@@ -242,16 +272,16 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Si ce paramètre est activé, les images indexées ne seront pas retrouvables par le moteur de recherche général mais uniquement par le moteur de recherche dédié à ce composant.</fr>
-        <en>If this parameter is enabled, indexed images will not be findable by global search engine but only by the dedicated search engine of this component.</en>
+        <message lang="fr">Si ce paramètre est activé, les images indexées ne seront pas retrouvables par le moteur de recherche général mais uniquement par le moteur de recherche dédié à ce composant.</message>
+        <message lang="en">If this parameter is enabled, indexed images will not be findable by global search engine but only by the dedicated search engine of this component.</message>
       </help>
       <personalSpaceValue>yes</personalSpaceValue>
     </parameter>
     <parameter>
       <name>download</name>
       <label>
-        <fr>Image originale téléchargeable</fr>
-        <en>Enable the download of the original image</en>
+        <message lang="fr">Image originale téléchargeable</message>
+        <message lang="en">Enable the download of the original image</message>
       </label>
       <order>13</order>
       <mandatory>false</mandatory>
@@ -259,15 +289,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Si ce paramètre est activé, les images seront téléchargeables, par defaut, dans leur format original. Ce paramètre pourra être changé à tout moment sur chaque photo.</fr>
-        <en>If this parameter is enabled, original pictures will be downloadable.</en>
+        <message lang="fr">Si ce paramètre est activé, les images seront téléchargeables, par defaut, dans leur format original. Ce paramètre pourra être changé à tout moment sur chaque photo.</message>
+        <message lang="en">If this parameter is enabled, original pictures will be downloadable.</message>
       </help>
     </parameter>
     <parameter>
       <name>previewSize</name>
       <label>
-        <fr>Format de prévisualisation</fr>
-        <en>Preview format</en>
+        <message lang="fr">Format de prévisualisation</message>
+        <message lang="en">Preview format</message>
       </label>
       <order>14</order>
       <mandatory>true</mandatory>
@@ -275,22 +305,22 @@
       <options>
         <option>
           <name>
-            <fr>600x400</fr>
-            <en>600x400</en>
+            <message lang="fr">600x400</message>
+            <message lang="en">600x400</message>
           </name>
           <value>preview</value>
         </option>
         <option>
           <name>
-            <fr>266x150</fr>
-            <en>266x150</en>
+            <message lang="fr">266x150</message>
+            <message lang="en">266x150</message>
           </name>
           <value>266x150</value>
         </option>
         <option>
           <name>
-            <fr>133x100</fr>
-            <en>133x100</en>
+            <message lang="fr">133x100</message>
+            <message lang="en">133x100</message>
           </name>
           <value>133x100</value>
         </option>
@@ -298,15 +328,15 @@
       <type>select</type>
       <updatable>always</updatable>
       <help>
-        <fr>Choix de la taille du format de la preview</fr>
-        <en>Choice ofthe preview size</en>
+        <message lang="fr">Choix de la taille du format de la preview</message>
+        <message lang="en">Choice ofthe preview size</message>
       </help>
     </parameter>
     <parameter>
       <name>WatermarkHD</name>
       <label>
-        <fr>Watermark image originale</fr>
-        <en>Put a watermark on the original picture</en>
+        <message lang="fr">Watermark image originale</message>
+        <message lang="en">Put a watermark on the original picture</message>
       </label>
       <order>15</order>
       <mandatory>false</mandatory>
@@ -315,15 +345,15 @@
       <size>25</size>
       <updatable>always</updatable>
       <help>
-        <fr>Numéro de la donnée IPTC à mettre comme Watermark sur les images haute définition</fr>
-        <en>IPTC number to be used for watermarking on High definition picture</en>
+        <message lang="fr">Numéro de la donnée IPTC à mettre comme Watermark sur les images haute définition</message>
+        <message lang="en">IPTC number to be used for watermarking on High definition picture</message>
       </help>
     </parameter>
     <parameter>
       <name>WatermarkOther</name>
       <label>
-        <fr>Watermark autres</fr>
-        <en>Use iptc data for Watermark</en>
+        <message lang="fr">Watermark autres</message>
+        <message lang="en">Use iptc data for Watermark</message>
       </label>
       <order>16</order>
       <mandatory>false</mandatory>
@@ -332,15 +362,15 @@
       <size>25</size>
       <updatable>always</updatable>
       <help>
-        <fr>Numéro de la donnée IPTC à mettre comme Watermark sur les vignettes</fr>
-        <en>IPTC number to be used for watermarking.</en>
+        <message lang="fr">Numéro de la donnée IPTC à mettre comme Watermark sur les vignettes</message>
+        <message lang="en">IPTC number to be used for watermarking.</message>
       </help>
     </parameter>
     <parameter>
       <name>basket</name>
       <label>
-        <fr>Panier</fr>
-        <en>Baket</en>
+        <message lang="fr">Panier</message>
+        <message lang="en">Baket</message>
       </label>
       <order>17</order>
       <mandatory>false</mandatory>
@@ -348,15 +378,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Si ce paramètre est activé, les lecteurs aurons la possibilité de mettre des photos dans leur panier</fr>
-        <en>Readers can put images into their basket.</en>
+        <message lang="fr">Si ce paramètre est activé, les lecteurs aurons la possibilité de mettre des photos dans leur panier</message>
+        <message lang="en">Readers can put images into their basket.</message>
       </help>
     </parameter>
     <parameter>
       <name>order</name>
       <label>
-        <fr>Demandes de photos</fr>
-        <en>Ask for an image</en>
+        <message lang="fr">Demandes de photos</message>
+        <message lang="en">Ask for an image</message>
       </label>
       <order>18</order>
       <mandatory>false</mandatory>
@@ -364,15 +394,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Si ce paramètre est activé, les lecteurs aurons la possibilité de faire des demandes de photos</fr>
-        <en>Readers can ask for the HD image.</en>
+        <message lang="fr">Si ce paramètre est activé, les lecteurs aurons la possibilité de faire des demandes de photos</message>
+        <message lang="en">Readers can ask for the HD image.</message>
       </help>
     </parameter>
     <parameter>
       <name>XMLOrderFormname</name>
       <label>
-        <fr>Formulaire XML associé aux demandes</fr>
-        <en>XML Form to ask for pictures.</en>
+        <message lang="fr">Formulaire XML associé aux demandes</message>
+        <message lang="en">XML Form to ask for pictures.</message>
       </label>
       <order>19</order>
       <mandatory>false</mandatory>
@@ -380,15 +410,15 @@
       <type>xmltemplates</type>
       <updatable>always</updatable>
       <help>
-        <fr>Nom du formulaire XML associé aux demandes de photos</fr>
-        <en>Form XML name attached to the order</en>
+        <message lang="fr">Nom du formulaire XML associé aux demandes de photos</message>
+        <message lang="en">Form XML name attached to the order</message>
       </help>
     </parameter>
     <parameter>
       <name>UrlCharte</name>
       <label>
-        <fr>Url de la charte</fr>
-        <en>URL to the charter</en>
+        <message lang="fr">Url de la charte</message>
+        <message lang="en">URL to the charter</message>
       </label>
       <order>20</order>
       <mandatory>false</mandatory>
@@ -397,8 +427,8 @@
       <size>25</size>
       <updatable>always</updatable>
       <help>
-        <fr>Url de la charte associée aux demandes des photos</fr>
-        <en>URL to the charter defining the usage of the images.</en>
+        <message lang="fr">Url de la charte associée aux demandes des photos</message>
+        <message lang="en">URL to the charter defining the usage of the images.</message>
       </help>
     </parameter>
   </parameters>

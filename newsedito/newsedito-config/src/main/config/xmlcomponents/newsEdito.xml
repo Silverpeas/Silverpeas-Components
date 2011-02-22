@@ -29,32 +29,50 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>newsEdito</name>
   <label>
-    <fr>Journal périodique</fr>
-    <en>Editorial</en>
+    <message lang="fr">Journal périodique</message>
+    <message lang="en">Editorial</message>
   </label>
   <description>
-    <fr>Permet de créer un journal d'entreprise, contenant des articles, éditoriaux, première page.</fr>
-    <en>Create an enterprise journal with articles, editorials, first page.</en>
+    <message lang="fr">Permet de créer un journal d'entreprise, contenant des articles, éditoriaux, première page.</message>
+    <message lang="en">Create an enterprise journal with articles, editorials, first page.</message>
   </description>
   <suite>
-    <fr>04 Gestion de contenu</fr>
-    <en>04 Content management</en>
+    <message lang="fr">04 Gestion de contenu</message>
+    <message lang="en">04 Content management</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <instanceClassName>com.stratelia.webactiv.newsEdito.NewsEditoInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <fr>Gestionnaire</fr>
-      <en>Administrator</en>
+      <label>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </label>
+      <help>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </help>
     </profile>
     <profile name="publisher">
-      <fr>Rédacteur</fr>
-      <en>Writer</en>
+      <label>
+        <message lang="fr">Rédacteur</message>
+        <message lang="en">Writer</message>
+      </label>
+      <help>
+        <message lang="fr">Rédacteur</message>
+        <message lang="en">Writer</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
 </WAComponent>

@@ -29,36 +29,48 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>webPages</name>
   <label>
-    <fr>Designer de page web</fr>
-    <en>WebPage Designer</en>
+    <message lang="fr">Designer de page web</message>
+    <message lang="en">WebPage Designer</message>
   </label>
   <description>
-    <fr>Permet de créer une page web via l'éditeur WYSIWYG</fr>
-    <en>Create a web page using the WYSIWYG editor</en>
+    <message lang="fr">Permet de créer une page web via l'éditeur WYSIWYG</message>
+    <message lang="en">Create a web page using the WYSIWYG editor</message>
   </description>
   <suite>
-    <fr>04 Gestion de contenu</fr>
-    <en>04 Content Management</en>
+    <message lang="fr">04 Gestion de contenu</message>
+    <message lang="en">04 Content Management</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <instanceClassName>com.silverpeas.webpages.WebPagesInstanciator</instanceClassName>
   <profiles>
     <profile name="publisher">
-      <fr>Publieur</fr>
-      <en>Publisher</en>
+      <label>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </label>
+      <help>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
   <parameters>
     <parameter>
       <name>useSubscription</name>
       <label>
-        <fr>Gestion de l'abonnement</fr>
-        <en>Manage subscription</en>
+        <message lang="fr">Gestion de l'abonnement</message>
+        <message lang="en">Manage subscription</message>
       </label>
       <order>1</order>      
       <mandatory>true</mandatory>
@@ -66,25 +78,25 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Permet d'envoyer une notification aux utilisateurs abonnés à la page Web.</fr>
-        <en>Allows to send a notification to the users who have subscribed to the Web page.</en>
-        </help>
-      </parameter>
-      <parameter>
-        <name>xmlTemplate</name>
-        <label>
-          <fr>Formulaire utilisé</fr>
-          <en>XML form</en>
-        </label>
-        <order>2</order>
-        <mandatory>false</mandatory>
-        <value></value>
-        <type>xmltemplates</type>
-        <updatable>creation</updatable>
-        <help>
-          <fr>Permet d'utiliser un formulaire comme masque de saisie.</fr>
-          <en>Allows you to use a form as an input mask.</en>
-        </help>
-      </parameter>
-    </parameters>
-  </WAComponent>
+        <message lang="fr">Permet d'envoyer une notification aux utilisateurs abonnés à la page Web.</message>
+        <message lang="en">Allows to send a notification to the users who have subscribed to the Web page.</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>xmlTemplate</name>
+      <label>
+        <message lang="fr">Formulaire utilisé</message>
+        <message lang="en">XML form</message>
+      </label>
+      <order>2</order>
+      <mandatory>false</mandatory>
+      <value></value>
+      <type>xmltemplates</type>
+      <updatable>creation</updatable>
+      <help>
+        <message lang="fr">Permet d'utiliser un formulaire comme masque de saisie.</message>
+        <message lang="en">Allows you to use a form as an input mask.</message>
+      </help>
+    </parameter>
+  </parameters>
+</WAComponent>

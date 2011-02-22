@@ -29,42 +29,54 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>whitePages</name>
   <label>
-    <fr>Annuaire d'experts</fr>
-    <en>Expert directory</en>
+    <message lang="fr">Annuaire d'experts</message>
+    <message lang="en">Expert directory</message>
   </label>
   <description>
-    <fr>
+    <message lang="fr">
       Permet de créer un annuaire de compétences. A chaque expert est associé un formulaire décrivant ses domaines d'expertise.
       L'indexation du CV sur le plan de classement permet de trouver rapidement une compétence.
-    </fr>
-    <en>
+    </message>
+    <message lang="en">
       Create a directory of skills, whith each expert described by an xm form. The resume is classified on the classification scheme 
       to search quickly for a skill.
-    </en>
+    </message>
   </description>
   <suite>
-    <fr>03 Gestion de la connaissance</fr>
-    <en>03 Knowledge Management</en>
+    <message lang="fr">03 Gestion de la connaissance</message>
+    <message lang="en">03 Knowledge Management</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <instanceClassName>com.silverpeas.whitePages.WhitePagesInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <fr>Gestionnaire</fr>
-      <en>Administrator</en>
+      <label>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </label>
+      <help>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
   <parameters>
     <parameter>
       <name>cardTemplate</name>
       <label>
-        <fr>Modèle de fiche</fr>
-        <en>Template card</en>
+        <message lang="fr">Modèle de fiche</message>
+        <message lang="en">Template card</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -72,15 +84,15 @@
       <type>text</type>
       <updatable>creation</updatable>
       <help>
-        <fr>Modèle xml spécifique permettant de saisir des informations sur l'expert.</fr>
-        <en>XML form to describe the skills of an expert.</en>
+        <message lang="fr">Modèle xml spécifique permettant de saisir des informations sur l'expert.</message>
+        <message lang="en">XML form to describe the skills of an expert.</message>
       </help>
     </parameter>
     <parameter>
       <name>userTemplate</name>
       <label>
-        <fr>Modèle d'identité</fr>
-        <en>Display template</en>
+        <message lang="fr">Modèle d'identité</message>
+        <message lang="en">Display template</message>
       </label>
       <order>3</order>
       <mandatory>true</mandatory>
@@ -88,15 +100,15 @@
       <type>text</type>
       <updatable>always</updatable>
       <help>
-        <fr>Fichier html permettant de présenter les informations de l'expert.</fr>
-        <en>HTML file used for displaying the expert's skills.</en>
+        <message lang="fr">Fichier html permettant de présenter les informations de l'expert.</message>
+        <message lang="en">HTML file used for displaying the expert's skills.</message>
       </help>
     </parameter>
     <parameter>
       <name>isEmailHidden</name>
       <label>
-        <fr>Masquage de l'email</fr>
-        <en>Hide the email address</en>
+        <message lang="fr">Masquage de l'email</message>
+        <message lang="en">Hide the email address</message>
       </label>      
       <order>2</order>
       <mandatory>true</mandatory>
@@ -104,15 +116,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Active le masquage des mails dans l'IHM. Les notifications envoyées à partir de ce composant auront un expéditeur générique.</fr>
-        <en>Hide the emailaddress. The sender of notifications will be generic.</en>
+        <message lang="fr">Active le masquage des mails dans l'IHM. Les notifications envoyées à partir de ce composant auront un expéditeur générique.</message>
+        <message lang="en">Hide the emailaddress. The sender of notifications will be generic.</message>
       </help>
     </parameter>
     <parameter>
       <name>isForcedCardFilling</name>
       <label>
-        <fr>Forcer le remplissage de la fiche</fr>
-        <en>Force filling of the card</en>
+        <message lang="fr">Forcer le remplissage de la fiche</message>
+        <message lang="en">Force filling of the card</message>
       </label>        
       <order>4</order>
       <mandatory>true</mandatory>
@@ -120,19 +132,19 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Si ce paramètre est activé, l'utilisateur n'aura accès qu'à l'écran de création de sa fiche. 
+        <message lang="fr">Si ce paramètre est activé, l'utilisateur n'aura accès qu'à l'écran de création de sa fiche. 
         Le reste du portail lui sera innaccessible tant qu'il n'aura pas rempli sa fiche.
-        </fr>
-        <en>          
+        </message>
+        <message lang="en">          
         The user will have access only to his card until he has filled it.
-        </en>
+        </message>
       </help>
     </parameter>
     <parameter>
       <name>isFicheVisible</name>
       <label>
-        <fr>Masquage de l'onglet fiche</fr>
-        <en>Hide the card tab</en>
+        <message lang="fr">Masquage de l'onglet fiche</message>
+        <message lang="en">Hide the card tab</message>
       </label>
       <order>5</order>
       <mandatory>true</mandatory>
@@ -140,15 +152,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Active le masquage de l'onglet fiche pour les lecteurs.</fr>
-        <en>Hide the tab displaying the expert card for readers.</en>
+        <message lang="fr">Active le masquage de l'onglet fiche pour les lecteurs.</message>
+        <message lang="en">Hide the tab displaying the expert card for readers.</message>
       </help>
     </parameter>
     <parameter>
       <name>domainId</name>
       <label>
-        <fr>Domaine auquel rattachée l'annuaire</fr>
-        <en>Silverpeas's domains to which the directory is attached</en>
+        <message lang="fr">Domaine auquel rattachée l'annuaire</message>
+        <message lang="en">Silverpeas's domains to which the directory is attached</message>
       </label>      
       <order>6</order>
       <mandatory>true</mandatory>
@@ -156,8 +168,8 @@
       <type>text</type>
       <updatable>always</updatable>
       <help>
-        <fr>Définit le domaine auquel on souhaite rattacher l'annuaire.</fr>
-        <en>Define the Silverpeas's domain attached to the directory.</en>
+        <message lang="fr">Définit le domaine auquel on souhaite rattacher l'annuaire.</message>
+        <message lang="en">Define the Silverpeas's domain attached to the directory.</message>
       </help>
     </parameter>
   </parameters>

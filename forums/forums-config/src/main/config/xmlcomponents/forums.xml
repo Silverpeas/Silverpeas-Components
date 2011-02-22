@@ -29,40 +29,58 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>forums</name>
   <label>
-    <fr>Forum</fr>
-    <en>Forum</en>
+    <message lang="fr">Forum</message>
+    <message lang="en">Forum</message>
   </label>
   <description>
-    <fr>Supporte les processus de communication asynchrone de type forum. Des salons peuvent être ouverts, sur des thèmes variés. L'escalade à plusieurs niveaux est possible sur chaque intervention d'un participant. Chaque salon est classable sur le plan de classement.</fr>
-    <en>Forums can be created on diverse themes. You can answer on every point in the thread. Froums can be classified on the classification scheme.</en>
+    <message lang="fr">Supporte les processus de communication asynchrone de type forum. Des salons peuvent être ouverts, sur des thèmes variés. L'escalade à plusieurs niveaux est possible sur chaque intervention d'un participant. Chaque salon est classable sur le plan de classement.</message>
+    <message lang="en">Forums can be created on diverse themes. You can answer on every point in the thread. Froums can be classified on the classification scheme.</message>
   </description>
   <suite>
-    <fr>02 Gestion Collaborative</fr>
-    <en>02 Collaborative Management</en>
+    <message lang="fr">02 Gestion Collaborative</message>
+    <message lang="en">02 Collaborative Management</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <instanceClassName>com.stratelia.webactiv.forums.instanciator.ForumsInstanciator</instanceClassName>
   <profiles>
     <profile name="admin">
-      <fr>Gestionnaire</fr>
-      <en>Administrator</en>
+      <label>      
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </label>
+      <help>      
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Participant</fr>
-      <en>Participant</en>
+      <label>
+        <message lang="fr">Participant</message>
+        <message lang="en">Participant</message>
+      </label>
+      <help>
+        <message lang="fr">Participant</message>
+        <message lang="en">Participant</message>
+      </help>
     </profile>
     <profile name="reader">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
   <parameters>
     <parameter>
       <name>usePdc</name>
       <label>
-        <fr>Classification PDC</fr>
-        <en>Classification Scheme</en>
+        <message lang="fr">Classification PDC</message>
+        <message lang="en">Classification Scheme</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -70,15 +88,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>      
       <help>
-        <fr>Les forums créés au sein de cette instance pourront être classés sur le Plan de Classement</fr>
-        <en>The forums will be classified on the classification scheme.</en>
+        <message lang="fr">Les forums créés au sein de cette instance pourront être classés sur le Plan de Classement</message>
+        <message lang="en">The forums will be classified on the classification scheme.</message>
       </help>
     </parameter>
     <parameter>
       <name>forumInsideForum</name>
       <label>
-        <fr>Arborescence de forums</fr>
-        <en>Tree of forums</en>
+        <message lang="fr">Arborescence de forums</message>
+        <message lang="en">Tree of forums</message>
       </label>
       <order>3</order>
       <mandatory>true</mandatory>
@@ -86,15 +104,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>      
       <help>
-        <fr>Un forum peut contenir d'autres forums</fr>
-        <en>A forum can be created inside another forum.</en>
+        <message lang="fr">Un forum peut contenir d'autres forums</message>
+        <message lang="en">A forum can be created inside another forum.</message>
       </help>
     </parameter>
     <parameter>
       <name>rss</name>
       <label>
-        <fr>Flux RSS</fr>
-        <en>RSS</en>
+        <message lang="fr">Flux RSS</message>
+        <message lang="en">RSS</message>
       </label>
       <order>4</order>
       <mandatory>false</mandatory>
@@ -102,15 +120,15 @@
       <type>checkbox</type>       
       <updatable>always</updatable>      
       <help>
-        <fr>Permet de générer un flux RSS de ces forums.</fr>
-        <en>Produce a RSS stream for the forums.</en>
+        <message lang="fr">Permet de générer un flux RSS de ces forums.</message>
+        <message lang="en">Produce a RSS stream for the forums.</message>
       </help>
     </parameter>
     <parameter>
       <name>isValidationActive</name>
       <label>
-        <fr>Validation</fr>
-        <en>Validation</en>
+        <message lang="fr">Validation</message>
+        <message lang="en">Validation</message>
       </label>
       <order>5</order>
       <mandatory>true</mandatory>
@@ -118,8 +136,8 @@
       <type>checkbox</type>      
       <updatable>always</updatable>      
       <help>
-        <fr>Si ce paramètre est activé, les messages seront soumis à validation par les modérateurs.</fr>
-        <en>Posts will be moderated.</en>
+        <message lang="fr">Si ce paramètre est activé, les messages seront soumis à validation par les modérateurs.</message>
+        <message lang="en">Posts will be moderated.</message>
       </help>
     </parameter>
   </parameters>

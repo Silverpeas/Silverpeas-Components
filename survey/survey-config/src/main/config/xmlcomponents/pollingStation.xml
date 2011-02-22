@@ -29,42 +29,60 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>pollingStation</name>
   <label>
-    <fr>Vote</fr>
-    <en>QuickVote</en>
+    <message lang="fr">Vote</message>
+    <message lang="en">QuickVote</message>
   </label>
   <description>
-    <fr>Permet d'organiser des votes ou referendum sur une question unique, auprès d'une
+    <message lang="fr">Permet d'organiser des votes ou referendum sur une question unique, auprès d'une
   audience ciblée. Une surveillance du niveau de participation et du résultat en cours est possible.
-    </fr>
-    <en>Organize votes or a referendum on a unique question to a chosen audience. You have feedback on the participation level or the current trend.</en>
+    </message>
+    <message lang="en">Organize votes or a referendum on a unique question to a chosen audience. You have feedback on the participation level or the current trend.</message>
   </description>
   <suite>
-    <fr>02 Gestion Collaborative</fr>
-    <en>02 Collaborative Management</en>
+    <message lang="fr">02 Gestion Collaborative</message>
+    <message lang="en">02 Collaborative Management</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
   <instanceClassName>com.stratelia.webactiv.survey.SurveyInstanciator</instanceClassName>  
   <profiles>
     <profile name="admin">
-      <fr>Gestionnaire</fr>
-      <en>Administrator</en>
+      <label>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </label>
+      <help>
+        <message lang="fr">Gestionnaire</message>
+        <message lang="en">Administrator</message>
+      </help>
     </profile>
     <profile name="publisher">
-      <fr>Publieur</fr>
-      <en>Publisher</en>
+      <label>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </label>
+      <help>
+        <message lang="fr">Publieur</message>
+        <message lang="en">Publisher</message>
+      </help>
     </profile>
     <profile name="user">
-      <fr>Lecteur</fr>
-      <en>Reader</en>
+      <label>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </label>
+      <help>
+        <message lang="fr">Lecteur</message>
+        <message lang="en">Reader</message>
+      </help>
     </profile>
   </profiles>
   <parameters>
     <parameter>
       <name>usePdc</name>
       <label>
-        <fr>Classification PDC</fr>
-        <en>Classification Scheme</en>
+        <message lang="fr">Classification PDC</message>
+        <message lang="en">Classification Scheme</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -72,15 +90,15 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Les votes créés au sein de cette instance pourront être classés sur le Plan de Classement.</fr>
-        <en>The pools created in this instance may be classified on the classification scheme.</en>
+        <message lang="fr">Les votes créés au sein de cette instance pourront être classés sur le Plan de Classement.</message>
+        <message lang="en">The pools created in this instance may be classified on the classification scheme.</message>
       </help>
     </parameter>
     <parameter>
       <name>useAnonymousMode</name>
-            <label>
-        <fr>Mode anonyme</fr>
-        <en>Anonymous mode</en>
+      <label>
+        <message lang="fr">Mode anonyme</message>
+        <message lang="en">Anonymous mode</message>
       </label>
       <order>2</order>
       <mandatory>true</mandatory>
@@ -88,8 +106,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <fr>Les participations à tous les votes créées au sein de cette instance seront anonymes.</fr>
-        <en>Entries in all polls created in this instance will be anonymous.</en>
+        <message lang="fr">Les participations à tous les votes créées au sein de cette instance seront anonymes.</message>
+        <message lang="en">Entries in all polls created in this instance will be anonymous.</message>
       </help>
     </parameter>
   </parameters>
