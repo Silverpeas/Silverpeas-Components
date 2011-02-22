@@ -6,7 +6,7 @@
     <artifactId>newsedito</artifactId>
     <version>5.6-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.components.newsedito</groupId>
   <artifactId>newsedito-war</artifactId>
   <packaging>war</packaging>
@@ -74,12 +74,8 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.geronimo.specs</groupId>
-      <artifactId>geronimo-j2ee_1.4_spec</artifactId>
+      <groupId>com.lowagie</groupId>
+      <artifactId>itext</artifactId>
     </dependency>
   </dependencies>
 

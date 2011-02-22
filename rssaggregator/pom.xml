@@ -6,7 +6,7 @@
     <artifactId>components</artifactId>
     <version>5.6-SNAPSHOT</version>
   </parent>
-  
+
   <groupId>com.silverpeas.components</groupId>
   <artifactId>rssaggregator</artifactId>
   <packaging>pom</packaging>
@@ -17,17 +17,13 @@
     <module>rssaggregator-war</module>
     <module>rssaggregator-config</module>
   </modules>
-  
+
   <dependencies>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
     </dependency>
   </dependencies>
 </project>

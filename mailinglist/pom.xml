@@ -6,7 +6,7 @@
     <artifactId>components</artifactId>
     <version>5.6-SNAPSHOT</version>
   </parent>
-  
+
   <groupId>com.silverpeas.components</groupId>
   <artifactId>mailinglist</artifactId>
   <packaging>pom</packaging>
@@ -24,7 +24,7 @@
       <artifactId>lib-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
-    </dependency>   
+    </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
       <artifactId>calendar</artifactId>

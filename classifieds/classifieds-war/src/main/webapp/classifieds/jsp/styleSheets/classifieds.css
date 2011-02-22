@@ -33,7 +33,6 @@
 
 #classifieds #categories {
 	padding-top: 20px;
-	float: left;
 }
 
 #classifieds #categories #categoryleft {
@@ -118,4 +117,50 @@
 .categoryContent .date {
 	color: #BFBFBF;
 	font-size: 10px;
+}
+
+#classified-view-header * {
+    margin:0;
+    padding:0;
+    line-height:100%;
+}
+   
+#classified-view-header h1 {
+    padding:5px;
+    margin-bottom:5px;   
+}
+
+#classified-view-header div {
+	height:100%;
+}
+
+#classified-view-header .txtlibform { 
+	display:inline-block;
+	float:left;
+	clear:left;
+	width:20%;
+	max-width:150px;
+	padding:5px;
+}
+
+#classified-view-header .txtvalform { 
+	float:left;
+	padding:5px;
+	display:inline-block;
+	width:70%;
+}
+
+hr.clear {
+    border: 0 none;
+    clear: both;
+    display: block;
+    height: 0;
+    margin:0;
+    padding: 0;
+    line-height:0;
+    visibility: hidden;
+}
+
+div.tableBoard {
+	padding:10px;
 }

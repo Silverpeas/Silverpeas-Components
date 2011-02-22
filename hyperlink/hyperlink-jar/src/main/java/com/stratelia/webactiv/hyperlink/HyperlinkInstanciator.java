@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,20 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * HyperlinkInstanciator.java
- *
- * Created on 22 juin 2001, 09:54
- */
-
 package com.stratelia.webactiv.hyperlink;
 
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.InstanciationException;
 import java.sql.Connection;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 
 /**
  * @author nchaix
@@ -47,16 +40,16 @@ public class HyperlinkInstanciator extends Object implements ComponentsInstancia
   }
 
   @Override
-  public void create(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
-    SilverTrace.info("hyperlink", "HyperlinkInstanciator.create()",
-        "root.MSG_GEN_PARAM_VALUE", "space = " + spaceId);
+  public void create(Connection con, String spaceId, String componentId, String userId) throws
+      InstanciationException {
+    SilverTrace.info("hyperlink", "HyperlinkInstanciator.create()", "root.MSG_GEN_PARAM_VALUE",
+        "space = " + spaceId);
   }
 
   @Override
-  public void delete(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
-    SilverTrace.info("hyperlink", "HyperlinkInstanciator.delete()",
-        "root.MSG_GEN_PARAM_VALUE", "space = " + spaceId);
+  public void delete(Connection con, String spaceId, String componentId, String userId) throws
+      InstanciationException {
+    SilverTrace.info("hyperlink", "HyperlinkInstanciator.delete()", "root.MSG_GEN_PARAM_VALUE",
+        "space = " + spaceId);
   }
 }

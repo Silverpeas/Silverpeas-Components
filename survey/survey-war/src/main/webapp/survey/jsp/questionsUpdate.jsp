@@ -25,11 +25,7 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%
-response.setHeader("Cache-Control","no-store"); //HTTP 1.1
-response.setHeader("Pragma","no-cache"); //HTTP 1.0
-response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
-%>
+
 <%@ page import="javax.servlet.*"%>
 <%@ page import="javax.servlet.http.*"%>
 <%@ page import="javax.servlet.jsp.*"%>
@@ -43,9 +39,16 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkSurvey.jsp" %>
 <%@ include file="surveyUtils.jsp.inc" %>
+<%--
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+--%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
 
 <%
-//R�cup�ration des param�tres
+//Retrieve parameter
 String action = (String) request.getParameter("Action");
 String surveyId = (String) request.getParameter("SurveyId");
 String surveyName = "";
@@ -59,7 +62,7 @@ String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", surveyScc.getLanguage());
 
 QuestionContainerDetail survey = null;
-if (action.equals("UpQuestion")) {
+if ("UpQuestion".equals(action)) {
       int qId = new Integer((String) request.getParameter("QId")).intValue();
       Vector qV = surveyScc.getSessionQuestions();
       Question q1 = (Question) qV.get(qId);
@@ -69,7 +72,7 @@ if (action.equals("UpQuestion")) {
       surveyScc.setSessionQuestions(qV);
       action = "UpdateQuestions";
       
-} else if (action.equals("DownQuestion")) {
+} else if ("DownQuestion".equals(action)) {
       int qId = new Integer((String) request.getParameter("QId")).intValue();
       Vector qV = surveyScc.getSessionQuestions();
       Question q1 = (Question) qV.get(qId);
@@ -78,31 +81,31 @@ if (action.equals("UpQuestion")) {
       qV.set(qId, q2);
       surveyScc.setSessionQuestions(qV);
       action = "UpdateQuestions";
-} else if (action.equals("DeleteQuestion")) {
+} else if ("DeleteQuestion".equals(action)) {
       int qId = new Integer((String) request.getParameter("QId")).intValue();
       Vector qV = surveyScc.getSessionQuestions();
       qV.remove(qId);
       surveyScc.setSessionQuestions(qV);
       action = "UpdateQuestions";
 }
-if (action.equals("SendQuestions")) {
+if ("SendQuestions".equals(action)) {
       Vector qV = surveyScc.getSessionQuestions();
       surveyId = surveyScc.getSessionSurveyId();
       surveyScc.updateQuestions(qV, surveyId);
       action = "UpdateQuestions";
 }
-if (action.equals("UpdateQuestions")) {
+if ("UpdateQuestions".equals(action)) {
 %>
-<HTML>
-<HEAD>
-<% out.println(gef.getLookStyleSheet()); %>
-</HEAD>
-<Script language="javaScript1.2">
+<html>
+<head>
+<view:looknfeel />
+<script language="javaScript1.2">
 function addQuestion() {
     document.questionForm.submit();
 }
 </script>
-<BODY>
+</head>
+<body>
 <%
           Vector questionsV = null;
           if (surveyId != null) {
@@ -138,15 +141,19 @@ function addQuestion() {
           tabbedPane.addTab(resources.getString("GML.head"), "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId="+surveyId, action.equals("UpdateSurveyHeader"), true);
           tabbedPane.addTab(resources.getString("SurveyQuestions"), "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId="+surveyId, action.equals("UpdateQuestions"), false);
           out.println(tabbedPane.print());
-         
+
+
+          
+          
           out.println(displayQuestionsUpdateView(surveyScc, questionsV, gef, m_context, settings, resources));
+          
 %>
-          <Form name="questionForm" Action="questionCreatorBis.jsp" Method="POST" ENCTYPE="multipart/form-data">
+          <form name="questionForm" action="questionCreatorBis.jsp" method="post" enctype="multipart/form-data">
           <input type="hidden" name="Action" value="CreateQuestion">
-          </Form>
+          </form>
 <%
           out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>
 <% } %>

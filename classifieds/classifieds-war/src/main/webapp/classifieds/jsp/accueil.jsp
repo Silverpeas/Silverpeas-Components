@@ -34,6 +34,7 @@ String 		nbTotal			= (String) request.getAttribute("NbTotal");
 //DataRecord	data 			= (DataRecord) request.getAttribute("Data"); 
 String		componentInstanceId		= (String) request.getAttribute("InstanceId");
 boolean		validation		= ((Boolean) request.getAttribute("Validation")).booleanValue();
+boolean		anonymousAccess	= ((Boolean) request.getAttribute("AnonymousAccess")).booleanValue();
 
 // d�claration des boutons
 Button validateButton = (Button) gef.getFormButton(resource.getString("GML.search")+" dans <b>"+nbTotal+"</b> "+resource.getString("classifieds.classifieds"), "javascript:onClick=sendData();", false);
@@ -70,11 +71,13 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 	browseBar.setComponentName(componentLabel, "Main");
 	
 	// affichage des options
-	operationPane.addOperation(resource.getIcon("classifieds.addClassified"),resource.getString("classifieds.addClassified"), "NewClassified");
-	operationPane.addOperation(resource.getIcon("classifieds.myClassifieds"), resource.getString("classifieds.myClassifieds"), "ViewMyClassifieds");
-	operationPane.addLine();
-	operationPane.addOperation(resource.getIcon("classifieds.subscriptionsAdd"),resource.getString("classifieds.addSubscription"), "javaScript:addSubscription()");
-	operationPane.addOperation(resource.getIcon("classifieds.mySubscriptions"), resource.getString("classifieds.mySubscriptions"), "ViewMySubscriptions");
+	if (!anonymousAccess) {
+		operationPane.addOperation(resource.getIcon("classifieds.addClassified"),resource.getString("classifieds.addClassified"), "NewClassified");
+		operationPane.addOperation(resource.getIcon("classifieds.myClassifieds"), resource.getString("classifieds.myClassifieds"), "ViewMyClassifieds");
+		operationPane.addLine();
+		operationPane.addOperation(resource.getIcon("classifieds.subscriptionsAdd"),resource.getString("classifieds.addSubscription"), "javaScript:addSubscription()");
+		operationPane.addOperation(resource.getIcon("classifieds.mySubscriptions"), resource.getString("classifieds.mySubscriptions"), "ViewMySubscriptions");
+	}
 	if ("admin".equals(profile) && validation) {
 	  	operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("classifieds.viewClassifiedToValidate"),resource.getString("classifieds.viewClassifiedToValidate"), "ViewClassifiedToValidate");
@@ -168,9 +171,11 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
           <div id="ViewAllClassifiedsByCategory"><a href="ViewAllClassifiedsByCategory?CategoryName=<%=categoryName%>&FieldKey=<%=category.getKey()%>"><%=resource.getString("classifieds.viewAllClassifiedsByCategory")%></a></div>
         <%
 				// lien pour la saisie d'une nouvelle annonce
+				if (!anonymousAccess) {
 				%>
 					<div id="newClassified"><a href="NewClassified?FieldKey=<%=category.getKey()%>"><%=resource.getString("classifieds.newClassified")%></a></div>
 				<%
+				}
 				
 				out.print("</div>");
 				if ("left".equals(leftOrRight))

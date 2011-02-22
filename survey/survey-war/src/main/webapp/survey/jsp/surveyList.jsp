@@ -364,15 +364,14 @@
   surveyScc.removeSessionSurvey();
   surveyScc.removeSessionResponses();
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+<html>
+<head>
+<title></title>
 <%
   out.println(gef.getLookStyleSheet());
 %>
-<script type="text/javascript"
-	src="<%=iconsPath%>/util/javaScript/animation.js"></script>
-<SCRIPT Language="JavaScript1.2">
+<script type="text/javascript" src="<%=iconsPath%>/util/javaScript/animation.js"></script>
+<script language="javascript1.2">
 function viewOpenedSurveys() {
   document.surveysForm.Action.value = "ViewOpenedSurveys";
   document.surveysForm.submit();
@@ -422,9 +421,9 @@ function clipboardPaste() {
 function openSPWindow(fonction, windowName){
 	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
 }
-</SCRIPT>
-</HEAD>
-<BODY>
+</script>
+</head>
+<body>
 <%
   Window window = gef.getWindow();
 
@@ -490,20 +489,23 @@ function openSPWindow(fonction, windowName){
   out.println(window.print());
 %>
 
-<FORM NAME="surveysForm" ACTION="surveyList.jsp" METHOD="POST"><input
-	type="hidden" name="Action" value=""> <input type="hidden"
-	name="SurveyId" value=""></FORM>
+<form name="surveysForm" action="surveyList.jsp" method="post">
+  <input type="hidden" name="Action" value=""> 
+  <input type="hidden" name="SurveyId" value="">
+</form>
 
-<FORM NAME="updateForm" ACTION="UpdateSurvey" METHOD="POST"><input
-	type="hidden" name="Action" value=""> <input type="hidden"
-	name="SurveyId" value=""></FORM>
+<form name="updateForm" action="UpdateSurvey" method="post">
+  <input type="hidden" name="Action" value=""> 
+  <input type="hidden" name="SurveyId" value="">
+</FORM>
 
-<FORM NAME="newSurveyForm" ACTION="surveyCreator.jsp" METHOD="POST">
-<input type="hidden" name="Action" value=""></FORM>
+<form name="newSurveyForm" action="surveyCreator.jsp" method="post">
+  <input type="hidden" name="Action" value="">
+</form>
 
-<FORM NAME="newPollingStationForm" ACTION="pollCreator.jsp"
-	METHOD="POST" ENCTYPE="multipart/form-data"><input type="hidden"
-	name="Action" value=""></FORM>
+<form name="newPollingStationForm" action="pollCreator.jsp" method="post" enctype="multipart/form-data">
+  <input type="hidden" name="Action" value="">
+</form>
 
-</BODY>
-</HTML>
+</body>
+</html>

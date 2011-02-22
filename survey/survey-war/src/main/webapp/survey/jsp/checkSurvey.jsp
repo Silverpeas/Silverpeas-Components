@@ -25,6 +25,12 @@
 --%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%
+response.setHeader("Cache-Control","no-store"); //HTTP 1.1
+response.setHeader("Pragma","no-cache"); //HTTP 1.0
+response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
+%>
+
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
@@ -58,6 +64,7 @@
 <%@ page import="com.stratelia.webactiv.survey.SurveyException"%>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager"%>
 <%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
+<%@ page import="com.stratelia.webactiv.util.FileServerUtils"%>
 <%@ page import="com.silverpeas.util.web.servlet.FileUploadUtil"%>
 <%@ page import="org.apache.commons.fileupload.FileItem"%>
 <%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>

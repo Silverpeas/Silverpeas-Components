@@ -53,17 +53,17 @@ if (StringUtil.isDefined(request.getParameter("Participated"))) {
 }
 
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+<html>
+<head>
+<title></title>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <%
 out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 
-</HEAD>
-<BODY>
+</head>
+<body>
 <%
 	Window			window			= gef.getWindow();
 	Frame			frame			= gef.getFrame();
@@ -89,8 +89,8 @@ out.println(gef.getLookStyleSheet());
 	out.println(window.printAfter());
 %>
 
-<FORM NAME="toComponent" ACTION="pdcPositions.jsp" METHOD=POST >
+<form name="toComponent" action="pdcPositions.jsp" method="post" >
 	<input type="hidden" name="Action" value="ViewPdcPositions">
-</FORM>
-</BODY>
-</HTML>
+</form>
+</body>
+</html>

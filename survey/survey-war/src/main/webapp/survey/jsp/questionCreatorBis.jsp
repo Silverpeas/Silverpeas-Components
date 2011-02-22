@@ -145,9 +145,9 @@ Iterator itemIter = items.iterator();
 }
 
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+<html>
+<head>
+<title></title>
 <% out.println(gef.getLookStyleSheet()); %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
@@ -363,7 +363,7 @@ var galleryWindow = window;
 	}
 
 </script>
-</HEAD>
+</head>
 <%
 if (action.equals("SendNewQuestion")) {
       Question questionObject = new Question(null, null, question, "", "", null, style, 0);
@@ -426,8 +426,8 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
       out.println(board.printBefore());
 %>
       <!--DEBUT CORPS -->
-      <table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
-        <form name="surveyForm" Action="questionCreatorBis.jsp" method="POST" ENCTYPE="multipart/form-data">
+      <form name="surveyForm" action="questionCreatorBis.jsp" method="post" enctype="multipart/form-data">
+      <table cellpadding="5" cellspacing="0" border="0" width="100%">
         <tr><td class="txtlibform"><%=resources.getString("SurveyCreationQuestion")%> <%=questionNb%> :</td><td><input type="text" name="question" value="<%=EncodeHelper.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
 		<%
 		String inputName = "";
@@ -515,9 +515,8 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
         %>
         <tr><td><input type="hidden" name="Action" value="<%=nextAction%>">
                 <input type="hidden" name="SuggestionAllowed" value="0"></td></tr>
+      </table>
       </form>
-
-</table>
       <!-- FIN CORPS -->
 <%
 	  out.println(board.printAfter());
@@ -530,18 +529,18 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
  } //End if action = ViewQuestion
 if (action.equals("SendNewQuestion")) {
 %>
-<HTML>
-<HEAD>
+<html>
+<head>
 <script language="Javascript">
     function goToQuestionsUpdate() {
         document.questionForm.submit();
     }
 </script>
-</HEAD>
-<BODY onLoad="goToQuestionsUpdate()">
-<Form name="questionForm" Action="questionsUpdate.jsp" Method="POST">
+</head>
+<body onload="goToQuestionsUpdate()">
+<form name="questionForm" action="questionsUpdate.jsp" method="post">
 <input type="hidden" name="Action" value="UpdateQuestions">
-</Form>
-</BODY>
-</HTML>
+</form>
+</body>
+</html>
 <% } %>

@@ -64,14 +64,14 @@ String questionId = (String) request.getParameter("QuestionId");
 
 Button closeButton = (Button) gef.getFormButton(generalMessage.getString("GML.close"), "javascript:onClick=window.close();", false);
 %>
-<HTML>
-<HEAD>
-<TITLE><%out.println(generalMessage.getString("GML.popupTitle"));%></TITLE>
+<html>
+<head>
+<title><%out.println(generalMessage.getString("GML.popupTitle"));%></TITLE>
 <%
 out.println(gef.getLookStyleSheet());
 %>
-</HEAD>
-<BODY>
+</head>
+<body>
 <% 
 Window window = gef.getWindow();
 
@@ -108,5 +108,5 @@ out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

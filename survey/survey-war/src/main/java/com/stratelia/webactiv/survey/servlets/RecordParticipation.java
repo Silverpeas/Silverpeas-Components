@@ -36,6 +36,8 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
 public class RecordParticipation extends HttpServlet {
+  private static final long serialVersionUID = -1833168544559333059L;
+
   /**
    * Method invoked when called from a form or directly by URL
    */

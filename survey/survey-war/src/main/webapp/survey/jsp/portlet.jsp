@@ -103,11 +103,11 @@ surveyScc.removeSessionResponses();
 ResourceLocator message = new ResourceLocator("com.stratelia.webactiv.survey.multilang.surveyBundle", surveyScc.getLanguage());
 
 %>
-<HTML>
-<HEAD>
-<TITLE></TITLE>
+<html>
+<head>
+<title></title>
 <% out.println(gef.getLookStyleSheet()); %>
-<SCRIPT Language="JavaScript1.2">
+<script language="JavaScript1.2">
 function viewOpenedSurveys() {
   document.surveysForm.Action.value = "ViewOpenedSurveys";
   document.surveysForm.submit();
@@ -139,9 +139,9 @@ function goto_jsp(jsp, param)
 	window.open("../../Rsurvey/<%=spaceId%>_<%=componentId%>/"+jsp+"?"+param,"MyMain");
 }
 
-</SCRIPT>
-</HEAD>
-<BODY marginheight=2 marginwidth=2 leftmargin=2 topmargin=2>
+</script>
+</head>
+<body marginheight="2" marginwidth="2" leftmargin="2" topmargin="2">
 <% 
 	  int view = surveyScc.getViewType();
 	  Collection surveys = surveyScc.getSurveys();
@@ -188,14 +188,14 @@ function goto_jsp(jsp, param)
     
   </table>
 
-<FORM NAME="surveysForm" ACTION="../../Rsurvey/jsp/surveyList.jsp?Space=<%=spaceId%>&Component=<%=componentId%>&Profile=<%=profile%>" METHOD="POST" target="MyMain">
+<form name="surveysForm" action="../../Rsurvey/jsp/surveyList.jsp?Space=<%=spaceId%>&Component=<%=componentId%>&Profile=<%=profile%>" method="post" target="MyMain">
 <input type="hidden" name="Action" value="">
 <input type="hidden" name="SurveyId" value="">
-</FORM>
+</form>
 
-<FORM NAME="newSurveyForm" ACTION="../../Rsurvey/jsp/surveyCreator.jsp?Space=<%=spaceId%>&Component=<%=componentId%>&Profile=<%=profile%>" METHOD="POST" target="MyMain">
+<form name="newSurveyForm" action="../../Rsurvey/jsp/surveyCreator.jsp?Space=<%=spaceId%>&Component=<%=componentId%>&Profile=<%=profile%>" method="post" target="MyMain">
 <input type="hidden" name="Action" value="">
-</FORM>
+</form>
 
-</BODY>
-</HTML>
+</body>
+</html>

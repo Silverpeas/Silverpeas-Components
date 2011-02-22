@@ -11,7 +11,7 @@
     As a special exception to the terms and conditions of version 3.0 of
     the GPL, you may redistribute this Program in connection with Free/Libre
     Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have recieved a copy of the text describing
+    FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
     "http://repository.silverpeas.com/legal/licensing"
 
@@ -417,6 +417,38 @@
       <help>
         <message lang="fr">Attribut désignant le(s) champ(s) ldap d'informations à afficher (organigramme détaillé).</message>
         <message lang="en">Ldap fields for the personn information details (detailled organization chart).</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>chartDomainSilverpeas</name>
+      <label>
+        <message lang="fr">Attribut désignant le domaine silverpeas des utilisateurs présents dans l'organigramme.</message>
+        <message lang="en">Which Silverpeas 's domain will be used for the organization chart.</message>
+      </label>
+      <order>22</order>
+      <mandatory>false</mandatory>
+      <value></value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">attribut désignant le domaine silverpeas ou se trouvent les utilisateurs présents dans l'organigramme</message>
+        <message lang="en">domain Silverpeas where organization chart users is defined</message>
+      </help>
+    </parameter>
+    <parameter>
+      <name>ldapAttAccount</name>
+      <label>
+        <message lang="fr">Attribut désignant le compte Silverpeas.</message>
+        <message lang="en">Name of the attribute for the user login.</message>
+      </label>      
+      <order>23</order>
+      <mandatory>false</mandatory>
+      <value>sAMAccountName</value>
+      <type>text</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Nom de l'attribut désignant le login utilisateur</message>
+        <message lang="en">Attribut name of the user login</message>
       </help>
     </parameter>
   </parameters>

@@ -6,7 +6,7 @@
     <artifactId>quickinfo</artifactId>
     <version>5.6-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.components.quickinfo</groupId>
   <artifactId>quickinfo-war</artifactId>
   <packaging>war</packaging>
@@ -18,7 +18,7 @@
       <artifactId>web-core</artifactId>
       <version>${core.version}</version>
       <scope>provided</scope>
-    </dependency>    
+    </dependency>
     <dependency>
       <groupId>com.silverpeas.components.quickinfo</groupId>
       <artifactId>quickinfo-jar</artifactId>
@@ -30,6 +30,11 @@
       <artifactId>clipboard</artifactId>
       <classifier>client</classifier>
       <version>${core.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.portlet</groupId>
+      <artifactId>portlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>
