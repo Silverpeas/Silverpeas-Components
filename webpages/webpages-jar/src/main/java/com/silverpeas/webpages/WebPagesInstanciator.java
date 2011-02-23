@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,9 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.webpages;
 
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.InstanciationException;
 import java.sql.Connection;
 
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
@@ -32,8 +33,6 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class WebPagesInstanciator implements ComponentsInstanciatorIntf {
@@ -41,19 +40,18 @@ public class WebPagesInstanciator implements ComponentsInstanciatorIntf {
   public WebPagesInstanciator() {
   }
 
-  public void create(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
-    // do nothing
+  @Override
+  public void create(Connection con, String spaceId, String componentId, String userId) throws
+      InstanciationException {
   }
 
-  public void delete(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
-    SilverTrace.info("webPages", "WebPagesInstanciator.delete()",
-        "root.MSG_GEN_ENTER_METHOD", "componentId = " + componentId + ", userId =" + userId);
-
+  @Override
+  public void delete(Connection con, String spaceId, String componentId, String userId) throws
+      InstanciationException {
+    SilverTrace.info("webPages", "WebPagesInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
+        "componentId = " + componentId + ", userId =" + userId);
     removeWysiwygContent(componentId);
     removeXMLContent(componentId);
-
     SilverTrace.info("webPages", "WebPagesInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
   }
 
@@ -67,12 +65,11 @@ public class WebPagesInstanciator implements ComponentsInstanciatorIntf {
   }
 
   private void removeXMLContent(String componentId) throws InstanciationException {
-    String xmlFormName =
-        new OrganizationController().getComponentParameterValue(componentId, "xmlTemplate");
+    String xmlFormName = new OrganizationController().getComponentParameterValue(componentId,
+        "xmlTemplate");
     if (StringUtil.isDefined(xmlFormName)) {
-      String xmlShortName =
-          xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
-
+      String xmlShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.indexOf(
+          '.'));
       try {
         PublicationTemplateManager.getInstance().removePublicationTemplate(
             componentId + ":" + xmlShortName);

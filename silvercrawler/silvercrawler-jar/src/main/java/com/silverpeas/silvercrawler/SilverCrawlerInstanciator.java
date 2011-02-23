@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,37 +23,33 @@
  */
 package com.silverpeas.silvercrawler;
 
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.InstanciationException;
 import java.sql.Connection;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 
 public class SilverCrawlerInstanciator implements ComponentsInstanciatorIntf {
 
   public SilverCrawlerInstanciator() {
   }
 
-  public void create(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
+  @Override
+  public void create(Connection con, String spaceId, String componentId, String userId) throws
+      InstanciationException {
     SilverTrace.info("silverCrawler", "SilverCrawlerInstanciator.create()",
-        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-            + componentId + ", userId =" + userId);
-
-    // insert your code here !
+        "root.MSG_GEN_ENTER_METHOD",
+        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
 
   }
 
-  public void delete(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
+  @Override
+  public void delete(Connection con, String spaceId, String componentId, String userId) throws
+      InstanciationException {
     SilverTrace.info("silverCrawler", "SilverCrawlerInstanciator.delete()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-            + componentId + ", userId =" + userId);
-
-    // insert your code here !
-
+        + componentId + ", userId =" + userId);
     SilverTrace.info("silverCrawler", "SilverCrawlerInstanciator.delete()",
         "root.MSG_GEN_EXIT_METHOD");
   }
-
 }

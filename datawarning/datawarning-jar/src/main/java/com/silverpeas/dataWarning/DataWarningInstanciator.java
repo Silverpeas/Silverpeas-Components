@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http:/www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,13 +23,15 @@
  */
 package com.silverpeas.dataWarning;
 
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.InstanciationException;
+import com.silverpeas.dataWarning.model.DataWarning;
+import com.silverpeas.dataWarning.model.DataWarningDataManager;
+import com.silverpeas.dataWarning.model.DataWarningQuery;
+import com.silverpeas.dataWarning.model.DataWarningScheduler;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.sql.Connection;
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
-
-import com.stratelia.silverpeas.silvertrace.*;
-import com.silverpeas.dataWarning.model.*;
-import com.stratelia.webactiv.util.exception.*;
 
 /**
  *

@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,6 +23,8 @@
  */
 package com.silverpeas.wiki;
 
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.InstanciationException;
 import com.silverpeas.util.ConfigurationClassLoader;
 import java.io.File;
 import java.io.IOException;
@@ -37,8 +39,6 @@ import com.silverpeas.wiki.control.WikiException;
 import com.silverpeas.wiki.control.WikiPageDAO;
 import com.silverpeas.wiki.control.model.PageDetail;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import java.util.zip.ZipInputStream;
 
@@ -57,48 +57,43 @@ public class WikiInstanciator implements ComponentsInstanciatorIntf {
   }
 
   @Override
-  public void create(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
-    SilverTrace.info("wiki", "WikiInstanciator.create()",
-        "root.MSG_GEN_PARAM_VALUE", "spaceId = " + spaceId
-        + " , componentId = " + componentId);
+  public void create(Connection con, String spaceId, String componentId, String userId) throws
+      InstanciationException {
+    SilverTrace.info("wiki", "WikiInstanciator.create()", "root.MSG_GEN_PARAM_VALUE",
+        "spaceId = " + spaceId + " , componentId = " + componentId);
     try {
       File directory = getComponentDirectory(componentId);
       directory.mkdirs();
       createPages(directory, componentId);
     } catch (WikiException e) {
-      SilverTrace.error("wiki", "WikiInstanciator.create()",
-          "root.EX_RECORD_INSERT_FAILED", "componentId " + componentId, e);
+      SilverTrace.error("wiki", "WikiInstanciator.create()", "root.EX_RECORD_INSERT_FAILED",
+          "componentId " + componentId, e);
       throw new InstanciationException("root.EX_RECORD_INSERT_FAILED");
     } catch (IOException e) {
-      SilverTrace.error("wiki", "WikiInstanciator.create()",
-          "root.EX_RECORD_INSERT_FAILED", "componentId " + componentId, e);
+      SilverTrace.error("wiki", "WikiInstanciator.create()", "root.EX_RECORD_INSERT_FAILED",
+          "componentId " + componentId, e);
       throw new InstanciationException("root.EX_RECORD_INSERT_FAILED");
     }
   }
 
   @Override
-  public void delete(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
-    SilverTrace.info("wiki", "WikiInstanciator.delete()",
-        "root.MSG_GEN_PARAM_VALUE", "spaceId = " + spaceId
-        + " , componentId = " + componentId);
-    // delete wiki metadata from database
+  public void delete(Connection con, String spaceId, String componentId, String userId) throws
+      InstanciationException {
+    SilverTrace.info("wiki", "WikiInstanciator.delete()", "root.MSG_GEN_PARAM_VALUE",
+        "spaceId = " + spaceId + " , componentId = " + componentId);
     try {
       wikiDAO.deleteAllPages(componentId);
     } catch (Exception e) {
-      SilverTrace.info("wiki", "WikiInstanciator.delete()",
-          "root.EX_RECORD_DELETE_FAILED", "componentId " + componentId, e);
+      SilverTrace.info("wiki", "WikiInstanciator.delete()", "root.EX_RECORD_DELETE_FAILED",
+          "componentId " + componentId, e);
     }
-    // delete versioning infos
     VersioningInstanciator version = new VersioningInstanciator();
     version.delete(con, spaceId, componentId, userId);
-    // delete files from filesystem
     try {
       FileUtils.forceDelete(getComponentDirectory(componentId));
     } catch (Exception e) {
-      SilverTrace.info("wiki", "WikiInstanciator.delete()",
-          "root.EX_RECORD_DELETE_FAILED", "componentId " + componentId, e);
+      SilverTrace.info("wiki", "WikiInstanciator.delete()", "root.EX_RECORD_DELETE_FAILED",
+          "componentId " + componentId, e);
     }
   }
 
@@ -106,9 +101,7 @@ public class WikiInstanciator implements ComponentsInstanciatorIntf {
     return new File(FileRepositoryManager.getAbsolutePath(componentId));
   }
 
-  protected void createPages(File directory, String componentId) throws IOException,
-      WikiException {
-
+  protected void createPages(File directory, String componentId) throws IOException, WikiException {
     ZipInputStream zipFile = new ZipInputStream(loader.getResourceAsStream("pages.zip"));
     ZipEntry page = zipFile.getNextEntry();
     while (page != null) {

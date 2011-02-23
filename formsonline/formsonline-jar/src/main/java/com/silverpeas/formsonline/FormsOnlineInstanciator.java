@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,9 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.formsonline;
 
+
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.InstanciationException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,8 +37,6 @@ import java.util.List;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class FormsOnlineInstanciator implements ComponentsInstanciatorIntf {
@@ -44,33 +44,25 @@ public class FormsOnlineInstanciator implements ComponentsInstanciatorIntf {
   public FormsOnlineInstanciator() {
   }
 
-  public void create(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
-    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.create()",
-        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId
-        + ", componentId = " + componentId + ", userId ="
-        + userId);
-
-    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.create()",
-        "root.MSG_GEN_EXIT_METHOD");
+  @Override
+  public void create(Connection con, String spaceId, String componentId, String userId) throws
+      InstanciationException {
+    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.create()", "root.MSG_GEN_ENTER_METHOD",
+        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
+    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.create()", "root.MSG_GEN_EXIT_METHOD");
   }
 
-  public void delete(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
-    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.delete()",
-        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId
-        + ", componentId = " + componentId + ", userId ="
-        + userId);
-
+  @Override
+  public void delete(Connection con, String spaceId, String componentId, String userId) throws
+      InstanciationException {
+    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.delete()", "root.MSG_GEN_ENTER_METHOD",
+        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
     deleteFormsData(con, componentId);
-
     deleteDataOfInstance(con, componentId, "UserRights");
     deleteDataOfInstance(con, componentId, "GroupRights");
     deleteDataOfInstance(con, componentId, "FormInstances");
     deleteDataOfInstance(con, componentId, "Forms");
-
-    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.delete()",
-        "root.MSG_GEN_EXIT_METHOD");
+    SilverTrace.info("formsOnline", "FormsOnlineInstanciator.delete()", "root.MSG_GEN_EXIT_METHOD");
   }
 
   private void deleteFormsData(Connection con, String componentId) throws InstanciationException {
@@ -78,84 +70,64 @@ public class FormsOnlineInstanciator implements ComponentsInstanciatorIntf {
     String query = "select distinct xmlFormName from SC_FormsOnline_Forms where instanceId = ?";
     PreparedStatement stmt = null;
     ResultSet rs = null;
-
-    // find templates used by component instance
     try {
       stmt = con.prepareStatement(query);
       stmt.setString(1, componentId);
       rs = stmt.executeQuery();
-
       while (rs.next()) {
         xmlFormNames.add(rs.getString("xmlFormName"));
       }
       stmt.close();
     } catch (SQLException se) {
-      throw new InstanciationException(
-          "FormsOnlineInstanciator.deleteFormsData()",
-          SilverpeasException.ERROR,
-          "root.DELETING_DATA_OF_INSTANCE_FAILED", "componentId = "
+      throw new InstanciationException("FormsOnlineInstanciator.deleteFormsData()",
+          SilverpeasException.ERROR, "root.DELETING_DATA_OF_INSTANCE_FAILED", "componentId = "
           + componentId + " deleteQuery = " + query, se);
     } finally {
       try {
         stmt.close();
       } catch (SQLException err_closeStatement) {
-        throw new InstanciationException(
-            "FormsOnlineInstanciator.deleteFormsData()",
-            SilverpeasException.ERROR,
-            "root.EX_RESOURCE_CLOSE_FAILED", "componentId = "
-            + componentId + " deleteQuery = " + query,
-            err_closeStatement);
+        throw new InstanciationException("FormsOnlineInstanciator.deleteFormsData()",
+            SilverpeasException.ERROR, "root.EX_RESOURCE_CLOSE_FAILED", "componentId = "
+            + componentId + " deleteQuery = " + query, err_closeStatement);
       }
     }
-
     try {
       // delete records from each template found
       Iterator<String> it = xmlFormNames.iterator();
       while (it.hasNext()) {
         String xmlFormName = it.next();
-        String xmlFormShortName = xmlFormName.substring(xmlFormName
-            .indexOf("/") + 1, xmlFormName.indexOf("."));
-
-        // form data fetching (through DataRecord)
-        PublicationTemplateManager.getInstance().
-                removePublicationTemplate(componentId + ":" + xmlFormShortName);
+        String xmlFormShortName = xmlFormName.substring(xmlFormName.indexOf('/') + 1, xmlFormName.
+            indexOf('.'));
+        PublicationTemplateManager.getInstance().removePublicationTemplate(
+            componentId + ":" + xmlFormShortName);
       }
     } catch (PublicationTemplateException e) {
-      throw new InstanciationException(
-          "FormsOnlineInstanciator.deleteFormsData()",
-          SilverpeasException.ERROR,
-          "root.DELETING_DATA_OF_INSTANCE_FAILED", "componentId = "
-          + componentId, e);
+      throw new InstanciationException("FormsOnlineInstanciator.deleteFormsData()",
+          SilverpeasException.ERROR, "root.DELETING_DATA_OF_INSTANCE_FAILED",
+          "componentId = " + componentId, e);
     }
   }
 
-  private void deleteDataOfInstance(Connection con, String componentId,
-      String suffix) throws InstanciationException {
-    String query = "delete from SC_FormsOnline_" + suffix
-        + " where instanceId = ?";
+  private void deleteDataOfInstance(Connection con, String componentId, String suffix) throws
+      InstanciationException {
+    String query = "delete from SC_FormsOnline_" + suffix + " where instanceId = ?";
     PreparedStatement stmt = null;
-    // execute the delete query
     try {
       stmt = con.prepareStatement(query);
       stmt.setString(1, componentId);
       stmt.executeUpdate();
       stmt.close();
     } catch (SQLException se) {
-      throw new InstanciationException(
-          "FormsOnlineInstanciator.removeInstanceData()",
-          SilverpeasException.ERROR,
-          "root.DELETING_DATA_OF_INSTANCE_FAILED", "componentId = "
+      throw new InstanciationException("FormsOnlineInstanciator.removeInstanceData()",
+          SilverpeasException.ERROR, "root.DELETING_DATA_OF_INSTANCE_FAILED", "componentId = "
           + componentId + " deleteQuery = " + query, se);
     } finally {
       try {
         stmt.close();
       } catch (SQLException err_closeStatement) {
-        throw new InstanciationException(
-            "FormsOnlineInstanciator.removeInstanceData()",
-            SilverpeasException.ERROR,
-            "root.EX_RESOURCE_CLOSE_FAILED", "componentId = "
-            + componentId + " deleteQuery = " + query,
-            err_closeStatement);
+        throw new InstanciationException("FormsOnlineInstanciator.removeInstanceData()",
+            SilverpeasException.ERROR, "root.EX_RESOURCE_CLOSE_FAILED", "componentId = "
+            + componentId + " deleteQuery = " + query, err_closeStatement);
       }
     }
   }

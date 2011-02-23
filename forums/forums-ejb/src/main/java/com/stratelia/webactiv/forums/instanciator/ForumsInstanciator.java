@@ -21,14 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*
- * ForumsInstanciator.java
- *
- * Cree le 27 Septembre 2000 
- */
-
 package com.stratelia.webactiv.forums.instanciator;
 
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.InstanciationException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -36,8 +32,6 @@ import java.sql.Statement;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.WysiwygInstanciator;
 import com.stratelia.webactiv.beans.admin.SQLRequest;
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 public class ForumsInstanciator extends SQLRequest implements ComponentsInstanciatorIntf {
@@ -48,11 +42,11 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
   }
 
   @Override
-  public void create(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
+  public void create(Connection con, String spaceId, String componentId, String userId) throws
+      InstanciationException {
     SilverTrace.info("forums", "ForumsInstanciator.create()",
-        "forums.MSG_CREATE_WITH_SPACE_AND_COMPONENT", "space : " + spaceId
-        + "component : " + componentId);
+        "forums.MSG_CREATE_WITH_SPACE_AND_COMPONENT",
+        "space : " + spaceId + "component : " + componentId);
   }
 
   /**
@@ -63,10 +57,10 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
    * @param userId (String) the owner of the component
    */
   @Override
-  public void delete(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
-    SilverTrace.info("forums", "ForumsInstanciator.delete()",
-        "forums.MSG_DELETE_WITH_SPACE", "spaceId : " + spaceId);
+  public void delete(Connection con, String spaceId, String componentId, String userId) throws
+      InstanciationException {
+    SilverTrace.info("forums", "ForumsInstanciator.delete()", "forums.MSG_DELETE_WITH_SPACE",
+        "spaceId : " + spaceId);
 
     // read the property file which contains all SQL queries to delete rows
     setDeleteQueries();
@@ -86,23 +80,18 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
    * @param componentId (String) the instance id of the Silverpeas component forum.
    * @param suffixName (String) the suffixe of a Forum table
    */
-  private void deleteDataOfInstance(Connection con, String componentId,
-      String suffixName) throws InstanciationException {
-
+  private void deleteDataOfInstance(Connection con, String componentId, String suffixName) throws
+      InstanciationException {
     Statement stmt = null;
-
-    // get the delete query from the external file
     String deleteQuery = getDeleteQuery(componentId, suffixName);
-
-    // execute the delete query
     try {
       stmt = con.createStatement();
       stmt.executeUpdate(deleteQuery);
       stmt.close();
     } catch (SQLException se) {
       InstanciationException ie = new InstanciationException(
-          "ForumsInstanciator.deleteDataOfInstance()",
-          SilverpeasException.ERROR, "root.DELETING_DATA_OF_INSTANCE_FAILED",
+          "ForumsInstanciator.deleteDataOfInstance()", SilverpeasException.ERROR,
+          "root.DELETING_DATA_OF_INSTANCE_FAILED",
           "componentId = " + componentId + " deleteQuery = " + deleteQuery, se);
       throw ie;
     } finally {
@@ -110,10 +99,9 @@ public class ForumsInstanciator extends SQLRequest implements ComponentsInstanci
         stmt.close();
       } catch (SQLException err_closeStatement) {
         InstanciationException ie = new InstanciationException(
-            "ForumsInstanciator.deleteDataOfInstance()",
-            SilverpeasException.ERROR, "root.EX_RESOURCE_CLOSE_FAILED",
-            "componentId = " + componentId + " deleteQuery = " + deleteQuery,
-            err_closeStatement);
+            "ForumsInstanciator.deleteDataOfInstance()", SilverpeasException.ERROR,
+            "root.EX_RESOURCE_CLOSE_FAILED",
+            "componentId = " + componentId + " deleteQuery = " + deleteQuery, err_closeStatement);
         throw ie;
       }
     }

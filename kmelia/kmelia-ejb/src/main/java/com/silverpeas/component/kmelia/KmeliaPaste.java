@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,9 +21,10 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.component.kmelia;
 
+import com.silverpeas.admin.components.ComponentPasteInterface;
+import com.silverpeas.admin.components.PasteDetail;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,8 +35,6 @@ import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentPasteInterface;
-import com.stratelia.webactiv.beans.admin.instance.control.PasteDetail;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -49,7 +48,6 @@ import com.stratelia.webactiv.util.node.model.NodePK;
 public class KmeliaPaste implements ComponentPasteInterface {
 
   private AdminController m_AdminCtrl = null;
-
   String fromComponentId;
   String toComponentId;
   String userId;
@@ -65,10 +63,10 @@ public class KmeliaPaste implements ComponentPasteInterface {
     userId = pasteDetail.getUserId();
 
     // Get root node Detail
-    NodeDetail father = getNodeBm().getDetail(getNodePK("0", toComponentId));
+    NodeDetail father = getNodeBm().getDetail(getNodePK(NodePK.ROOT_NODE_ID, toComponentId));
 
     // Get level 1 nodes
-    NodePK rootPK = getNodePK("0", fromComponentId);
+    NodePK rootPK = getNodePK(NodePK.ROOT_NODE_ID, fromComponentId);
     List<NodeDetail> firstLevelNodes = getNodeBm().getHeadersByLevel(rootPK, 2);
     HashMap<Integer, Integer> oldAndNewIds = new HashMap<Integer, Integer>();
     for (NodeDetail nodeToPaste : firstLevelNodes) {
@@ -133,7 +131,6 @@ public class KmeliaPaste implements ComponentPasteInterface {
     // paste wysiwyg attached to node
     WysiwygController.copy(null, nodeToPastePK.getInstanceId(), "Node_" + nodeToPastePK.getId(),
         null, toComponentId, "Node_" + nodePK.getId(), userId);
-
     // paste subtopics
     node = getNodeBm().getHeader(nodePK);
     Collection<NodeDetail> subtopics = getNodeBm().getDetail(nodeToPastePK).getChildrenDetails();
@@ -142,7 +139,6 @@ public class KmeliaPaste implements ComponentPasteInterface {
         pasteNode(subTopic, node, oldAndNewIds);
       }
     }
-
     SilverTrace.debug("kmelia", "KmeliaPaste.pasteNode()", "root.MSG_GEN_EXIT_METHOD");
   }
 
@@ -155,8 +151,8 @@ public class KmeliaPaste implements ComponentPasteInterface {
   private NodeBm getNodeBm() {
     NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome =
-          (NodeBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
+      NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.NODEBM_EJBHOME,
+          NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {
       throw new KmeliaRuntimeException("PasteDetail.getNodeBm()", SilverpeasRuntimeException.ERROR,
@@ -170,10 +166,10 @@ public class KmeliaPaste implements ComponentPasteInterface {
   }
 
   private AdminController getAdmin() {
-    if (m_AdminCtrl == null)
+    if (m_AdminCtrl == null) {
       m_AdminCtrl = new AdminController(userId);
+    }
 
     return m_AdminCtrl;
   }
-
 }

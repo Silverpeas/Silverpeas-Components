@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,17 +21,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.projectManager;
 
+import com.silverpeas.admin.components.ComponentsInstanciatorIntf;
+import com.silverpeas.admin.components.InstanciationException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
 import com.silverpeas.comment.CommentInstanciator;
 import com.silverpeas.versioning.VersioningInstanciator;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.instance.control.ComponentsInstanciatorIntf;
-import com.stratelia.webactiv.beans.admin.instance.control.InstanciationException;
 import com.stratelia.webactiv.calendar.backbone.TodoBackboneAccess;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.attachment.AttachmentInstanciator;
@@ -49,51 +48,38 @@ public class ProjectManagerInstanciator implements ComponentsInstanciatorIntf {
   public ProjectManagerInstanciator() {
   }
 
-  public void create(Connection con, String spaceId, String componentId,
-      String userId) throws InstanciationException {
+  @Override
+  public void create(Connection con, String spaceId, String componentId, String userId) throws
+      InstanciationException {
     SilverTrace.info("projectManager", "ProjectManagerInstanciator.create()",
-        "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-            + componentId + ", userId =" + userId);
+        "root.MSG_GEN_ENTER_METHOD",
+        "space = " + spaceId + ", componentId = " + componentId + ", userId =" + userId);
 
     SilverTrace.info("projectManager", "ProjectManagerInstanciator.create()",
         "root.MSG_GEN_EXIT_METHOD");
   }
 
+  @Override
   public void delete(Connection con, String spaceId, String componentId, String userId)
       throws InstanciationException {
     SilverTrace.info("projectManager", "ProjectManagerInstanciator.delete()",
         "root.MSG_GEN_ENTER_METHOD", "space = " + spaceId + ", componentId = "
-            + componentId + ", userId =" + userId);
-
-    // delete attachments
+        + componentId + ", userId =" + userId);
     AttachmentInstanciator attachments = new AttachmentInstanciator();
     attachments.delete(con, spaceId, componentId, userId);
-
-    // delete versioning infos
     VersioningInstanciator version = new VersioningInstanciator();
     version.delete(con, spaceId, componentId, userId);
-
-    // delete comments
     CommentInstanciator comment = new CommentInstanciator();
     comment.delete(con, spaceId, componentId, userId);
-
-    // delete todos
     TodoBackboneAccess tbba = new TodoBackboneAccess();
     tbba.removeEntriesByInstanceId(componentId);
-
-    // delete tasks and holidays
     PreparedStatement stmt = null;
     try {
-      // delete tasks
       String deleteStatement = PROJECTMANAGER_DELETE_COMPONENT_TASKS;
-
       stmt = con.prepareStatement(deleteStatement);
       stmt.setString(1, componentId);
       stmt.executeUpdate();
-
-      // delete holidays
       String holidaysStatement = PROJECTMANAGER_DELETE_COMPONENT_CALENDAR;
-
       stmt = con.prepareStatement(holidaysStatement);
       stmt.setString(1, componentId);
       stmt.executeUpdate();
@@ -103,7 +89,6 @@ public class ProjectManagerInstanciator implements ComponentsInstanciatorIntf {
     } finally {
       DBUtil.close(stmt);
     }
-
     SilverTrace.info("projectManager", "ProjectManagerInstanciator.delete()",
         "root.MSG_GEN_EXIT_METHOD");
   }
