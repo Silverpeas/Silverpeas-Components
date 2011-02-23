@@ -87,7 +87,7 @@ import com.stratelia.webactiv.util.node.model.NodeDetail;
 public class GalleryRequestRouter extends ComponentRequestRouter {
 
   /**
-   * 
+   *
    */
   private static final long serialVersionUID = 1L;
 
@@ -2246,7 +2246,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
     request.setAttribute("ComponentId", gallery.getComponentId());
     return "/admin/jsp/documentNotFound.jsp";
   }
-  
+
   private PublicationTemplateManager getPublicationTemplateManager() {
     return PublicationTemplateManager.getInstance();
   }
