@@ -54,8 +54,10 @@ import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 
 public class ClassifiedsRequestRouter
@@ -197,7 +199,7 @@ public class ClassifiedsRequestRouter
               String fieldValue = field.getStringValue();
               if (fieldValue != null && fieldValue.trim().length() > 0) {
                 String fieldQuery = fieldValue.trim().replaceAll("##", " AND "); // case à cocher
-                                                                                 // multiple
+                // multiple
                 query.addFieldQuery(new FieldDescription(templateName + "$$" + fieldName,
                     fieldQuery,
                     null));
@@ -223,7 +225,30 @@ public class ClassifiedsRequestRouter
         if (!StringUtil.isDefined(classifiedId)) {
           classifiedId = (String) request.getAttribute("ClassifiedId");
         }
+        ResourcesWrapper resources = classifiedsSC.getResources();
+        ClassifiedDetail classified = classifiedsSC.getClassified(classifiedId);
         request.setAttribute("Classified", classifiedsSC.getClassified(classifiedId));
+        String creationDate = null;
+        if (classified.getCreationDate() != null) {
+          creationDate = resources.getOutputDateAndHour(classified.getCreationDate());
+        } else {
+          creationDate = "";
+        }
+        request.setAttribute("CreationDate", creationDate);
+        String updateDate = null;
+        if (classified.getUpdateDate() != null) {
+          updateDate = resources.getOutputDateAndHour(classified.getUpdateDate());
+        } else {
+          updateDate = "";
+        }
+        request.setAttribute("UpdateDate", updateDate);
+        String validateDate = null;
+        if (classified.getValidateDate() != null) {
+          validateDate = resources.getOutputDateAndHour(classified.getValidateDate());
+        } else {
+          validateDate = "";
+        }
+        request.setAttribute("ValidateDate", validateDate);
         Form formView = null;
         DataRecord data = null;
         PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
@@ -232,13 +257,16 @@ public class ClassifiedsRequestRouter
           RecordSet recordSet = pubTemplate.getRecordSet();
           data = recordSet.getRecord(classifiedId);
           if (data != null) {
+            PagesContext xmlContext = new PagesContext("myForm", "0", resources.getLanguage(),
+                false, classified.getInstanceId(), null);
+            xmlContext.setBorderPrinted(false);
+            xmlContext.setIgnoreDefaultValues(true);
             request.setAttribute("Form", formView);
             request.setAttribute("Data", data);
+            request.setAttribute("Context", xmlContext);
           }
         }
-        // les commentaires sur cette annonce
-        request.setAttribute("AllComments", classifiedsSC.getAllComments(classifiedId));
-        request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
+
         destination = rootDest + "viewClassified.jsp";
       } else if (function.equals("NewClassified")) {
         // récupération des paramètres
@@ -516,9 +544,8 @@ public class ClassifiedsRequestRouter
           xmlFormName.indexOf("."));
       pubTemplate =
           (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-              classifiedsSC.
-                  getComponentId() + ":" + xmlFormShortName,
-              xmlFormName);
+          classifiedsSC.getComponentId() + ":" + xmlFormShortName,
+          xmlFormName);
     }
     return pubTemplate;
   }
