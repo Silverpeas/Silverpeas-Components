@@ -71,8 +71,11 @@ function sendOperation(operation) {
 <body>
   <view:browseBar path="${sessionController.sessionPath}" extraInformations="${pageScope.pubName}" />
   <view:window>
-    <view:frame>   
-<%        
+    <view:frame>
+      <script type="text/javascript">
+        var commentCount = 0;
+      </script>
+<%
   Board boardHelp = gef.getBoard();
   if (isOwner){
     displayAllOperations(id, kmeliaScc, gef, "ViewComment", resources, out, kmaxMode);
@@ -94,10 +97,22 @@ function sendOperation(operation) {
   if (kmeliaScc.isIndexable(pubDetail)) {
     indexIt = "1";
   }
-  getServletConfig().getServletContext().getRequestDispatcher("/comment/jsp/comments.jsp?id="+id+"&userid="+user_id+"&profile="+profile+"&url="+url+"&component_id="+kmeliaScc.getComponentId()+"&IndexIt="+indexIt).include(request, response);
+
+  String callback = "function( event ) { " +
+      "if (event.type === 'listing') { " +
+        "commentCount = event.comments.length; $('#comment-tab').html('" + resources.getString("Comments") + " ( ' + event.comments.length + ')'); }" +
+      "else if (event.type === 'deletion') { commentCount--; $('#comment-tab').html('" + resources.getString("Comments") + " ( ' + commentCount + ')'); }" +
+      "else if (event.type === 'addition') { commentCount++; $('#comment-tab').html('" + resources.getString("Comments") + " ( ' + commentCount + ')'); } }";
+  //getServletConfig().getServletContext().getRequestDispatcher("/comment/jsp/comments.jsp?id="+id+"&userid="+user_id+"&profile="+profile+"&url="+url+"&component_id="+kmeliaScc.getComponentId()+"&IndexIt="+indexIt).include(request, response);
 %>
+<view:board>
+
+  <view:comments userId="<%= user_id%>" componentId="<%= kmeliaScc.getComponentId() %>" resourceId="<%= id %>" indexed="<%= indexIt %>"
+                callback="<%= callback %>"/>
+
+</view:board>
  </view:frame>
-    
+
   </view:window>
 </body>
 </html>
