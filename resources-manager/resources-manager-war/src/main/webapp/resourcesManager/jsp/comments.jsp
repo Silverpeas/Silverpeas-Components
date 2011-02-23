@@ -23,63 +23,53 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="check.jsp" %>
-<%
-ResourceDetail myResource = (ResourceDetail)request.getAttribute("resource");
-String idCategory = myResource.getCategoryId();
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-String resourceId = (String)request.getAttribute("resourceId");
-String userId = (String)request.getAttribute("UserId");
-String profile = (String)request.getAttribute("Profile");
-String url = (String)request.getAttribute("Url") + "Comments";
-String provenance = (String)request.getAttribute("provenance");
-String indexIt = "0";
+<%
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
+
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<fmt:message var="extraInfo" key="resourcesManager.informationResource"/>
+<fmt:message var="resourceTab" key="resourcesManager.resource"/>
+<fmt:message var="commentTab" key="resourcesManager.commentaires"/>
+
+<c:set var="browseContext" value="${requestScope.browseContext}"/>
+<c:set var="componentLabel" value="${browseContext[1]}"/>
+<c:set var="instanceId" value="${browseContext[3]}"/>
+<c:set var="resourceName" value="${requestScope.resourceName}"/>
+<c:set var="resourceId" value="${requestScope.resourceId}"/>
+<c:set var="userId" value="${requestScope.UserId}"/>
+<c:set var="path" value="${requestScope.Path}"/>
+<c:set var="indexation" value="0"/>
+
 <html>
-<head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
-</head>
-<body>
-<%
-browseBar.setDomainName(spaceLabel);
-browseBar.setComponentName(componentLabel,"Main");
-if(provenance.equals("resources")){
-	// on vient de resources
-	String chemin = "<a href=\"ViewCategories\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.listCategorie"))+"</a>";
-	String chemin2 ="<a href=\"ViewResources?id="+ idCategory + "\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.categorie"))+"</a>";
-	chemin = chemin + " > " + chemin2;
-	browseBar.setPath(chemin);
-}
-else if (provenance.equals("reservation")){
-	// on vient du récapitulatif de la réservation
-	String chemin ="<a href=\"ViewReservation\">" + EncodeHelper.javaStringToHtmlString(resource.getString("resourcesManager.recapitulatifReservation"))+"</a>";
-	browseBar.setPath(chemin);
-}
-browseBar.setExtraInformation(resource.getString("resourcesManager.informationResource") + " " + myResource.getName());
+  <head>
+    <view:looknfeel/>
+  </head>
+  <body>
+    <view:browseBar componentId="${componentLabel}" path="${path}" ignoreComponentLink="true "extraInformations="${extraInfo} ${resourceName}"></view:browseBar>
 
-tabbedPane.addTab(resource.getString("resourcesManager.resource"), "ViewResource", false);
-tabbedPane.addTab(resource.getString("resourcesManager.commentaires"), "#", true);
+    <view:window>
+      <view:tabs>
+        <view:tab action="ViewResource" label="${resourceTab}" selected="false"/>
+        <view:tab action="#" label="${commentTab}" selected="true"/>
+      </view:tabs>
 
-out.println(window.printBefore());
-out.println(tabbedPane.print());
-out.println(frame.printBefore());
+      <view:frame>
 
-out.flush(); 
-getServletConfig().
-getServletContext().
-getRequestDispatcher("/comment/jsp/comments.jsp?id="+resourceId
-+"&userid="+userId
-+"&profile="+profile
-+"&url="+url
-+"&component_id="+componentId
-+"&IndexIt="+indexIt).
-include(request, response);
+        <view:comments userId="${userId}" componentId="${instanceId}" resourceId="${resourceId}" indexed="${indexation}"/>
 
-out.println(frame.printAfter());
-out.println(window.printAfter());
-%>
-</body>
+      </view:frame>
+    </view:window>
+  </body>
 </html>
