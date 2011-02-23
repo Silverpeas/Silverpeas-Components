@@ -43,7 +43,7 @@ import com.silverpeas.questionReply.model.Category;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Recipient;
 import com.silverpeas.questionReply.model.Reply;
-import com.silverpeas.ui.UIHelper;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.ZipManager;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
@@ -751,7 +751,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       NotificationMetaData notifMetaData =
           new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "question");
 
-      List<String> languages = UIHelper.getLanguages();
+      List<String> languages = DisplayI18NHelper.getLanguages();
       for (String language : languages) {
         // initialize new resource locator
         message = new ResourceLocator(resource, language);
@@ -801,7 +801,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       NotificationMetaData notifMetaData =
           new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "reply");
 
-      List<String> languages = UIHelper.getLanguages();
+      List<String> languages = DisplayI18NHelper.getLanguages();
       for (String language : languages) {
         // initialize new resource locator
         message = new ResourceLocator(resource, language);

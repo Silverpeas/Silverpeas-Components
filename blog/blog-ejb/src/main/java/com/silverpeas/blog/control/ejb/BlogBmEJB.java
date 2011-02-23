@@ -32,7 +32,7 @@ import com.silverpeas.blog.model.Archive;
 import com.silverpeas.blog.model.BlogRuntimeException;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
-import com.silverpeas.ui.UIHelper;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
@@ -172,7 +172,7 @@ public class BlogBmEJB implements SessionBean {
         if (newSubscribers.size() > 0) {
         	
         	ResourceLocator message = new ResourceLocator(
-                    "com.silverpeas.blog.multilang.blogBundle", UIHelper.getDefaultLanguage());
+                    "com.silverpeas.blog.multilang.blogBundle", DisplayI18NHelper.getDefaultLanguage());
             String subject = message.getString("blog.subjectSubscription");
                 
             Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
@@ -191,7 +191,7 @@ public class BlogBmEJB implements SessionBean {
             
             PublicationDetail pubDetail = post.getPublication();
         	String url = getPostUrl(pubDetail);
-        	for (String lang : UIHelper.getLanguages()) {
+        	for (String lang : DisplayI18NHelper.getLanguages()) {
         		SilverpeasTemplate template = getNewTemplate();
         		templates.put(lang, template);
         		template.setAttribute("blog", post);
@@ -262,8 +262,7 @@ public class BlogBmEJB implements SessionBean {
       getPublicationBm().setDetail(post.getPublication());
 
       // Ajout de la nouvelle category
-      if (!(post.getCategoryId().equals("")) && (post.getCategoryId() != null)
-          && (!post.getCategoryId().equals("null"))) {
+      if (StringUtil.isDefined(post.getCategoryId())) {
         setCategory(post.getPublication().getPK(), post.getCategoryId());
       }
 

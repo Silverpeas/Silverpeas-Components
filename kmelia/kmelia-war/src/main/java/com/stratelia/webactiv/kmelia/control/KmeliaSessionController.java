@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -3176,27 +3176,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public List<ProfileInst> getTopicProfiles(String topicId) {
     List<ProfileInst> alShowProfile = new ArrayList<ProfileInst>();
-    ProfileInst profile = null;
-
-    // profils dispo
     String[] asAvailProfileNames = getAdmin().getAllProfilesNames("kmelia");
-
     for (int nI = 0; nI < asAvailProfileNames.length; nI++) {
-      SilverTrace.info("jobStartPagePeas",
-          "JobStartPagePeasSessionController.getAllProfilesNames()", "root.MSG_GEN_PARAM_VALUE",
-          "asAvailProfileNames = " + asAvailProfileNames[nI]);
-      // boolean bFound = false;
-
-      profile = getTopicProfile(asAvailProfileNames[nI], topicId);
-      /*
-       * if (profile != null) { bFound = true;
-       * profile.setLabel(getAdmin().getProfileLabelfromName("kmelia", asAvailProfileNames[nI]));
-       * alShowProfile.add(profile); } if (!bFound) { profile = new ProfileInst();
-       * profile.setName(asAvailProfileNames[nI]);
-       * profile.setLabel(getAdmin().getProfileLabelfromName("kmelia", asAvailProfileNames[nI]));
-       * alShowProfile.add(profile); }
-       */
-      profile.setLabel(getAdmin().getProfileLabelfromName("kmelia", asAvailProfileNames[nI]));
+      SilverTrace.info("jobStartPagePeas", "JobStartPagePeasSessionController.getAllProfilesNames()",
+          "root.MSG_GEN_PARAM_VALUE", "asAvailProfileNames = " + asAvailProfileNames[nI]);
+      ProfileInst profile = getTopicProfile(asAvailProfileNames[nI], topicId);
+      profile.setLabel(getAdmin().getProfileLabelfromName("kmelia", asAvailProfileNames[nI],
+          getLanguage()));
       alShowProfile.add(profile);
     }
 
@@ -3220,15 +3206,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public List<String> userIds2Users(List<String> userIds) {
     List<String> res = new ArrayList<String>();
-    UserDetail user = null;
-
     for (int nI = 0; userIds != null && nI < userIds.size(); nI++) {
-      user = getUserDetail(userIds.get(nI));
+      UserDetail user = getUserDetail(userIds.get(nI));
       if (user != null) {
         res.add(user.getDisplayedName());
       }
     }
-
     return res;
   }
 
@@ -3236,14 +3219,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (m_AdminCtrl == null) {
       m_AdminCtrl = new AdminController(getUserId());
     }
-
     return m_AdminCtrl;
   }
 
   private ProfileInst getProfile(List<ProfileInst> profiles, String role) {
-    ProfileInst profile = null;
     for (int p = 0; p < profiles.size(); p++) {
-      profile = profiles.get(p);
+      ProfileInst profile = profiles.get(p);
       if (role.equals(profile.getName())) {
         return profile;
       }
@@ -3254,7 +3235,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public void copyPublication(String pubId) throws RemoteException {
     CompletePublication pub = getCompletePublication(pubId);
     PublicationSelection pubSelect = new PublicationSelection(pub);
-
     SilverTrace.info("kmelia", "KmeliaSessionController.copyPublication()",
         "root.MSG_GEN_PARAM_VALUE",
         "clipboard = " + getClipboardName() + "' count=" + getClipboardCount());
@@ -3487,7 +3467,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       String thumbnailsSubDirectory = getPublicationSettings().getString("imagesSubDirectory");
       String toAbsolutePath = FileRepositoryManager.getAbsolutePath(getComponentId());
       String fromAbsolutePath = FileRepositoryManager.getAbsolutePath(fromComponentId);
-      
+
       if (currentNodePK == null) {
         // Ajoute au thème courant
         currentNodePK = getSessionTopic().getNodePK();
@@ -3505,7 +3485,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       } else {
         // paste the publicationDetail
         publi.setUpdaterId(getUserId()); // ignore initial parameters
-        
+
         String id = createPublicationIntoTopic(publi, currentNodePK.getId());
         List<NodePK> fatherPKs = (List<NodePK>) getPublicationBm().getAllFatherPK(publi.getPK());
         if (nodePKsToPaste != null) {
@@ -3599,9 +3579,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private void pasteThumbnail(PublicationDetail publi, String thumbnailsSubDirectory,
       String toAbsolutePath, String fromAbsolutePath, String id, ThumbnailDetail vignette)
       throws IOException, ThumbnailException {
-    ThumbnailDetail thumbDetail = new ThumbnailDetail(publi.getPK().getInstanceId(), Integer.valueOf(
+    ThumbnailDetail thumbDetail = new ThumbnailDetail(publi.getPK().getInstanceId(),
+        Integer.valueOf(
         id), ThumbnailDetail.THUMBNAIL_OBJECTTYPE_PUBLICATION_VIGNETTE);
-    
+
     if (vignette.getOriginalFileName().startsWith("/")) {
       thumbDetail.setOriginalFileName(vignette.getOriginalFileName());
       thumbDetail.setMimeType(vignette.getMimeType());
@@ -4085,12 +4066,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       Document document = versioningUtil.getDocument(documentPk);
       DocumentVersion documentVersion = versioningUtil.getLastPublicVersion(documentPk);
       url = URLManager.getApplicationURL() + versioningUtil.getDocumentVersionURL(document.
-          getInstanceId(), documentVersion.getLogicalName(), document.getPk().getId(), 
+          getInstanceId(), documentVersion.getLogicalName(), document.getPk().getId(),
           documentVersion.getPk().getId());
     } else {
       AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
           fileId));
-      url =  URLManager.getApplicationURL() + attachment.getAttachmentURL();
+      url = URLManager.getApplicationURL() + attachment.getAttachmentURL();
     }
     return url;
   }

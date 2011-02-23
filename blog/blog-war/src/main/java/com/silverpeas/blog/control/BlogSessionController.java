@@ -46,7 +46,7 @@ import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.myLinks.ejb.MyLinksBm;
 import com.silverpeas.myLinks.ejb.MyLinksBmHome;
 import com.silverpeas.myLinks.model.LinkDetail;
-import com.silverpeas.ui.UIHelper;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.alertUser.AlertUser;
@@ -294,14 +294,14 @@ public class BlogSessionController extends AbstractComponentSessionController {
     PostDetail post = getPost(postId);
 
     ResourceLocator message = new ResourceLocator(
-            "com.silverpeas.blog.multilang.blogBundle", UIHelper.getDefaultLanguage());
+            "com.silverpeas.blog.multilang.blogBundle", DisplayI18NHelper.getDefaultLanguage());
     String subject = message.getString("blog.notifSubject");
         
     Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
 	NotificationMetaData notifMetaData =
         new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "blogNotification");
 	String url = URLManager.getURL(null, getComponentId()) + post.getURL();
-	for (String lang : UIHelper.getLanguages()) {
+	for (String lang : DisplayI18NHelper.getLanguages()) {
 		SilverpeasTemplate template = getNewTemplate();
 		templates.put(lang, template);
 		template.setAttribute("blog", post);

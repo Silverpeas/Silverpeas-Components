@@ -21,10 +21,8 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.webpages;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -46,72 +44,66 @@ import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.subscribe.control.SubscribeBm;
 import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
-import com.silverpeas.ui.UIHelper;
+import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.StringUtil;
+import java.util.List;
 
 public class WebPagesNotifier {
 
   public WebPagesNotifier() {
-
   }
 
   public void sendSubscriptionsNotification(NodePK nodePK, String userId) {
     try {
 
-      ArrayList<String> subscriberIds =
-          (ArrayList<String>) getSubscribeBm().getNodeSubscriberDetails(
-              nodePK);
+      List<String> subscriberIds = (List<String>) getSubscribeBm().getNodeSubscriberDetails(nodePK);
 
-      if (subscriberIds != null && subscriberIds.size() > 0) {
+      if (subscriberIds != null && !subscriberIds.isEmpty()) {
         Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
         String fileName = "notificationUpdateContent";
 
         ResourceLocator message = new ResourceLocator(
-              "com.silverpeas.webpages.multilang.webPagesBundle", UIHelper.getDefaultLanguage());
+            "com.silverpeas.webpages.multilang.webPagesBundle",
+            DisplayI18NHelper.getDefaultLanguage());
         String subject = message.getString("webPages.subscription");
         NotificationMetaData notifMetaData = new NotificationMetaData(
-              NotificationParameters.NORMAL, subject, templates, fileName);
+            NotificationParameters.NORMAL, subject, templates, fileName);
         OrganizationController oc = new OrganizationController();
         String senderName = oc.getUserDetail(userId).getDisplayedName();
 
-        for (String lang : UIHelper.getLanguages()) {
+        for (String lang : DisplayI18NHelper.getLanguages()) {
           SilverpeasTemplate template = getNewTemplate();
           templates.put(lang, template);
           template.setAttribute("path", "");
           template.setAttribute("senderName", senderName);
-          template.setAttribute("silverpeasURL", URLManager.getURL(null, null, nodePK
-                .getInstanceId())
-                + "Main");
+          template.setAttribute("silverpeasURL", URLManager.getURL(null, null,
+              nodePK.getInstanceId()) + "Main");
           ResourceLocator localizedMessage = new ResourceLocator(
-                "com.silverpeas.webpages.multilang.webPagesBundle", lang);
+              "com.silverpeas.webpages.multilang.webPagesBundle", lang);
           notifMetaData.addLanguage(lang, localizedMessage.getString("webPages.subscription",
-              subject)
-                , "");
+              subject), "");
         }
         notifMetaData.setUserRecipients(subscriberIds);
-        notifMetaData.setLink(URLManager.getURL(null, null, nodePK
-              .getInstanceId())
-              + "Main");
+        notifMetaData.setLink(URLManager.getURL(null, null, nodePK.getInstanceId()) + "Main");
         notifMetaData.setComponentId(nodePK.getInstanceId());
         notifyUsers(notifMetaData, userId);
       }
     } catch (Exception e) {
-      SilverTrace.warn("webPages",
-            "WebPagesCallback.sendSubscriptionsNotification()",
-            "webPages.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "nodeId = "
-                + nodePK.getId(), e);
+      SilverTrace.warn("webPages", "WebPagesCallback.sendSubscriptionsNotification()",
+          "webPages.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "nodeId = " + nodePK.getId(), e);
     }
   }
 
   private void notifyUsers(NotificationMetaData notifMetaData, String senderId) {
     try {
-      if (notifMetaData.getSender() == null
-            || notifMetaData.getSender().length() == 0)
+      if (!StringUtil.isDefined(notifMetaData.getSender())) {
         notifMetaData.setSender(senderId);
+      }
       getNotificationSender(notifMetaData.getComponentId()).notifyUser(
-            notifMetaData);
+          notifMetaData);
     } catch (NotificationManagerException e) {
       SilverTrace.warn("webPages", "WebPagesCallback.notifyUsers()",
-            "webPages.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", e);
+          "webPages.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", e);
     }
   }
 
@@ -124,25 +116,25 @@ public class WebPagesNotifier {
   public SubscribeBm getSubscribeBm() {
     SubscribeBm subscribeBm = null;
     try {
-      SubscribeBmHome subscribeBmHome = (SubscribeBmHome) EJBUtilitaire
-            .getEJBObjectRef(JNDINames.SUBSCRIBEBM_EJBHOME, SubscribeBmHome.class);
+      SubscribeBmHome subscribeBmHome = (SubscribeBmHome) EJBUtilitaire.getEJBObjectRef(
+          JNDINames.SUBSCRIBEBM_EJBHOME, SubscribeBmHome.class);
       subscribeBm = subscribeBmHome.create();
     } catch (Exception e) {
       throw new WebPagesRuntimeException("WebPagesCallback.getSubscribeBm()",
-            SilverpeasRuntimeException.ERROR,
-            "webPages.EX_IMPOSSIBLE_DE_FABRIQUER_SUBSCRIBEBM_HOME", e);
+          SilverpeasRuntimeException.ERROR,
+          "webPages.EX_IMPOSSIBLE_DE_FABRIQUER_SUBSCRIBEBM_HOME", e);
     }
     return subscribeBm;
   }
 
   protected SilverpeasTemplate getNewTemplate() {
     ResourceLocator rs =
-          new ResourceLocator("com.silverpeas.webpages.settings.webPagesSettings", "");
+        new ResourceLocator("com.silverpeas.webpages.settings.webPagesSettings", "");
     Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs
-        .getString("templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs
-        .getString("customersTemplatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString(
+        "templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString(
+        "customersTemplatePath"));
 
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }

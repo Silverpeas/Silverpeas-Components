@@ -56,12 +56,11 @@ import javax.mail.internet.MimeMultipart;
 
 import org.apache.commons.fileupload.FileItem;
 
-import com.silverpeas.ui.UIHelper;
+import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.csv.CSVReader;
 import com.silverpeas.util.csv.CSVWriter;
 import com.silverpeas.util.csv.Variant;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.infoLetter.InfoLetterException;
@@ -83,10 +82,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
-import com.stratelia.webactiv.beans.admin.AdminController;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.Group;
-import com.stratelia.webactiv.beans.admin.ProfileInst;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.FileRepositoryManager;
@@ -175,8 +171,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     }
     sel.setSelectedElements(t_users);
     sel.setSelectedSets(t_groups);
-    if (((t_users == null) || (t_users.length == 0)) &&
-        ((t_groups == null) || (t_groups.length == 0))) {
+    if (t_users.length == 0 && t_groups.length == 0) {
       sel.setFirstPage(Selection.FIRST_PAGE_BROWSE);
     } else {
       sel.setFirstPage(Selection.FIRST_PAGE_CART);
@@ -310,7 +305,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
             new NotificationMetaData(NotificationParameters.NORMAL, sSubject, templates, "infoLetterNotification");
     	
     	String url = "/RinfoLetter/" + getComponentId() + "/View?parution=" + ilp.getPK().getId();
-    	for (String lang : UIHelper.getLanguages()) {
+    	for (String lang : DisplayI18NHelper.getLanguages()) {
     		SilverpeasTemplate template = getNewTemplate();
     		templates.put(lang, template);
     		template.setAttribute("infoLetter", ilp);
