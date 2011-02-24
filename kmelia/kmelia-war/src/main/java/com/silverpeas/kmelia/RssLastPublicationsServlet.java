@@ -21,11 +21,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.kmelia;
 
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
+import com.stratelia.silverpeas.peasCore.PeasCoreRuntimeException;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -36,8 +36,13 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.kmelia.KmeliaTransversal;
+import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBm;
+import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBmHome;
+import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ItemIF;
@@ -56,13 +61,12 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Collection;
 
-
 public class RssLastPublicationsServlet extends HttpServlet {
+
   public static final String SPACE_ID_PARAM = "spaceId";
   public static final String USER_ID_PARAM = "userId";
   public static final String PASSWORD_PARAM = "password";
   public static final String LOGIN_PARAM = "login";
-
   private static final SilverpeasWebUtil util = new SilverpeasWebUtil();
   private static final OrganizationController orga = new OrganizationController();
   private static final AdminController adminController = new AdminController(null);
@@ -83,14 +87,22 @@ public class RssLastPublicationsServlet extends HttpServlet {
         String serverURL = getServerURL(user);
         ChannelIF channel = new Channel();
         MainSessionController mainSessionController = util.getMainSessionController(request);
-        KmeliaTransversal kmeliaTransversal = new KmeliaTransversal(mainSessionController);
+        KmeliaTransversal kmeliaTransversal;
+        String preferredLanguage;
+        if (mainSessionController != null) {
+          kmeliaTransversal = new KmeliaTransversal(mainSessionController);
+          preferredLanguage = mainSessionController.getFavoriteLanguage();
+        } else {
+          kmeliaTransversal = new KmeliaTransversal(userId);
+          preferredLanguage = getPersonalization(userId).getFavoriteLanguage();
+        } 
 
         // récupération de la liste des N éléments à remonter dans le flux
         Collection<PublicationDetail> publications = getElements(kmeliaTransversal, user, spaceId);
 
         // création d'une liste de ItemIF en fonction de la liste des éléments
         for (PublicationDetail publication : publications) {
-          channel.addItem(toRssItem(publication, serverURL, mainSessionController.getFavoriteLanguage()));
+          channel.addItem(toRssItem(publication, serverURL, preferredLanguage));
         }
 
         // construction de l'objet Channel
@@ -122,14 +134,14 @@ public class RssLastPublicationsServlet extends HttpServlet {
     return kmeliaTransversal.getUpdatedPublications(spaceId, maxAge, nbReturned);
   }
 
-
-  public ItemIF toRssItem(PublicationDetail publication, String serverURL, String lang) throws MalformedURLException {
+  public ItemIF toRssItem(PublicationDetail publication, String serverURL, String lang) throws
+      MalformedURLException {
     ItemIF item = new Item();
     item.setTitle(publication.getTitle());
     StringBuilder url = new StringBuilder(256);
     url.append(serverURL);
     url.append(URLManager.getApplicationURL());
-    url.append(URLManager.getURL("kmelia", null,publication.getPK().getInstanceId()));
+    url.append(URLManager.getURL("kmelia", null, publication.getPK().getInstanceId()));
     url.append(publication.getURL());
     item.setLink(new URL(url.toString()));
     item.setDescription(publication.getDescription(lang));
@@ -143,7 +155,6 @@ public class RssLastPublicationsServlet extends HttpServlet {
     }
     return item;
   }
-
 
   public String getChannelTitle(String spaceId) {
     SpaceInstLight space = orga.getSpaceInstLightById(spaceId);
@@ -167,7 +178,6 @@ public class RssLastPublicationsServlet extends HttpServlet {
     return adminController.isSpaceAvailable(userId, spaceId);
   }
 
-
   protected void objectNotFound(HttpServletRequest req, HttpServletResponse res)
       throws IOException {
     boolean isLoggedIn = util.getMainSessionController(req) != null;
@@ -179,5 +189,23 @@ public class RssLastPublicationsServlet extends HttpServlet {
     res.sendRedirect("/weblib/notFound.html");
   }
 
-
+  /** Return the personalization EJB
+   * @param userId
+   * @return  
+   */
+  public synchronized PersonalizationBm getPersonalization(String userId) {
+    PersonalizationBm persoBm = null;
+    try {
+      PersonalizationBmHome personalizationBmHome = EJBUtilitaire.getEJBObjectRef(
+          JNDINames.PERSONALIZATIONBM_EJBHOME, PersonalizationBmHome.class);
+      persoBm = personalizationBmHome.create();
+      persoBm.setActor(userId);
+    } catch (Exception e) {
+      SilverTrace.error("peasCore", "MainSessionController.getPersonalization()",
+          "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new PeasCoreRuntimeException("MainSessionController.getPersonalization()",
+          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+    return persoBm;
+  }
 }
