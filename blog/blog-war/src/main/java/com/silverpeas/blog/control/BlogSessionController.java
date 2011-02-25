@@ -466,11 +466,6 @@ public class BlogSessionController extends AbstractComponentSessionController {
     }
   }
 
-  public void deleteComment(String commentId) {
-    CommentPK pk = new CommentPK(commentId, "useless", getComponentId());
-    getCommentService().deleteComment(pk);
-  }
-
   public Collection<PostDetail> getResultSearch(String word) {
     try {
       SilverTrace.info("blog", "BlogSessionController.getResultSearch()",

@@ -46,6 +46,9 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.viewGenerator.html.monthCalendar.Event;
 
 public class BlogRequestRouter extends ComponentRequestRouter {
+  
+  private static final long serialVersionUID = 1L;
+
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
@@ -190,12 +193,12 @@ public class BlogRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("ViewPost")) {
         // visualisation d'un billet avec les commentaires
         String postId = request.getParameter("PostId");
-        if (postId == null || postId.length() == 0 || "null".equals(postId))
+        if (!StringUtil.isDefined(postId)) {
           postId = (String) request.getAttribute("PostId");
+        }
         PostDetail post = blogSC.getPost(postId);
         request.setAttribute("Post", post);
         setCommonParam(blogSC, request);
-        request.setAttribute("AllComments", blogSC.getAllComments(postId));
         // creation d'une liste d'event par rapport à posts
         String beginDate = blogSC.getCurrentBeginDateAsString();
         String endDate = blogSC.getCurrentEndDateAsString();
@@ -204,16 +207,6 @@ public class BlogRequestRouter extends ComponentRequestRouter {
         request.setAttribute("Events", events);
         request.setAttribute("DateCalendar", beginDate);
         destination = rootDest + "viewPost.jsp";
-      } else if (function.equals("DeleteComment")) {
-        String id = request.getParameter("CommentId");
-        blogSC.deleteComment(id);
-        destination = getDestination("ViewPost", componentSC, request);
-      } else if (function.equals("UpdateComment")) {
-        String postId = request.getParameter("PostId");
-        String commentId = request.getParameter("CommentId");
-        blogSC.sendSubscriptionsNotification(postId, "commentUpdate", commentId);
-        request.setAttribute("PostId", postId);
-        destination = getDestination("ViewPost", componentSC, request);
       } else if (function.equals("PostByCategory")) {
         // récupération des paramètres
         String categoryId = request.getParameter("CategoryId");
@@ -282,14 +275,6 @@ public class BlogRequestRouter extends ComponentRequestRouter {
         request.setAttribute("BeginDate", blogSC.getCurrentBeginDateAsString());
         request.setAttribute("EndDate", blogSC.getCurrentEndDateAsString());
         destination = getDestination("PostByArchive", blogSC, request);
-      } else if (function.equals("AddComment")) {
-        // récupération des paramètres
-        String message = request.getParameter("Message");
-        String postId = (String) request.getParameter("PostId");
-        // ajout du commentaire
-        blogSC.addComment(postId, message);
-        // retour à la page de visualisation du billet
-        destination = getDestination("ViewPost", blogSC, request);
       } else if (function.equals("ViewCategory")) {
         request.setAttribute("Categories", blogSC.getAllCategories());
         destination = rootDest + "viewCategory.jsp";

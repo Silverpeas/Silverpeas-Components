@@ -24,6 +24,7 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@page import="java.util.GregorianCalendar"%>
 <%@ include file="check.jsp" %>
 
@@ -33,16 +34,11 @@ PostDetail	post		= (PostDetail) request.getAttribute("Post");
 Collection	categories	= (Collection) request.getAttribute("Categories");
 Collection	archives	= (Collection) request.getAttribute("Archives");
 Collection	links		= (Collection) request.getAttribute("Links");
-Collection 	comments	= (Collection) request.getAttribute("AllComments");
 String 		profile		= (String) request.getAttribute("Profile");
 String		blogUrl		= (String) request.getAttribute("Url");
 String		rssURL		= (String) request.getAttribute("RSSUrl");
 List		events		= (List) request.getAttribute("Events");
 String 		dateCal		= (String) request.getAttribute("DateCalendar");
-
-//d�claration des boutons
-Button validateComment 	= (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-Button cancelButton 	= (Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
 
 Date 	   dateCalendar	= new Date(dateCal);
 
@@ -71,74 +67,8 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript">
-
 	var notifyWindow = window;
-	
-	// fonctions de contr�le des zones du formulaire avant validation
-	function sendData() 
-	{
-		if (isCorrectForm()) 
-		{
-			document.commentForm.action = "AddComment";
-			document.commentForm.submit();
-		}
-	}
-
-	function isCorrectForm() 
-	{
-     	var errorMsg = "";
-     	var errorNb = 0;
-     	var message = stripInitialWhitespace(document.commentForm.Message.value);
-
-     	if (message == "") 
-     	{ 
-			errorMsg+="  - '<%=resource.getString("blog.message")%>'  <%=resource.getString("GML.MustBeFilled")%>\n";
-           	errorNb++;
-     	}
-   				     			     				    
-     	switch(errorNb) 
-     	{
-        	case 0 :
-            	result = true;
-            	break;
-        	case 1 :
-            	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            	window.alert(errorMsg);
-            	result = false;
-            	break;
-        	default :
-            	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            	window.alert(errorMsg);
-            	result = false;
-            	break;
-     	} 
-     	return result;
-	}
-
-	function updateComment(id, postId)
-	{
-	    SP_openWindow("<%=m_context%>/comment/jsp/newComment.jsp?id="+id+"&amp;IndexIt=1", "blank", "600", "250","scrollbars=no, resizable, alwaysRaised");
-	    document.commentForm.action = "UpdateComment";
-	    document.commentForm.CommentId.value = id;
-	   	document.commentForm.PostId.value = postId;
-		document.commentForm.submit();
-	}
-	
-	function removeComment(id)
-	{
-	    if (window.confirm("<%=resource.getString("blog.confirmDeleteComment")%>"))
-	    {
-	    	document.commentForm.action = "DeleteComment";
-	    	document.commentForm.CommentId.value = id;
-			document.commentForm.submit();
-	    }
-	}
-
-	function commentCallBack()
-	{
-		location.href="<%=m_context+URLManager.getURL("useless", instanceId)%>ViewPost?PostId=<%=postId%>";
-	}
-	
+		
 	function goToNotify(url) 
 	{
 		windowName = "notifyWindow";
@@ -215,66 +145,7 @@ boolean isUserGuest = "G".equals(m_MainSessionCtrl.getCurrentUserDetail().getAcc
 		       </span>
 		    </div>
 		    <div class="separateur"></div>
-		      <!--Afficher les commentaires-->
-				<div class="commentaires">
-					<% if (!isUserGuest) { %> 
-						<form name="commentForm" action="AddComment" method="post">	
-							<p class="txtlibform"><%=resource.getString("blog.addComment")%></p>
-							<textarea rows="4" cols="100" name="Message"></textarea>
-							<input type="hidden" name="PostId" value="<%=postId%>"/>
-							<input type="hidden" name="CommentId" value=""/>
-						</form>
-	
-						<%
-						ButtonPane buttonPaneComment = gef.getButtonPane();
-						buttonPaneComment.addButton(validateComment);
-						buttonPaneComment.addButton(cancelButton);
-						out.println("<br/><center>"+buttonPaneComment.print()+"</center><br/>");
-						%>
-	
-						<hr />
-					<% } %>
-		
-					<% if (comments != null) {
-					  		ResourceLocator commentSettings = new ResourceLocator("com.stratelia.webactiv.util.comment.Comment","");
-							boolean adminAllowedToUpdate = commentSettings.getBoolean("AdminAllowedToUpdate", true);
-							Iterator itCom = (Iterator) comments.iterator();
-							while (itCom.hasNext()) {
-								Comment unComment = (Comment) itCom.next();
-								String commentDate = resource.getOutputDate(unComment.getCreationDate());
-								String ownerId = Integer.toString(unComment.getOwnerId());
-								%>
-									<div class="oneComment">
-										<div>
-											<div class="avatar">
-												<img src="<%=m_context%><%=unComment.getOwnerDetail().getAvatar() %>"/>
-											</div>
-											<p class="author">
-												<%=unComment.getOwnerDetail().getDisplayedName()%>
-												<span class="date"> - <%=resource.getString("blog.postOn")%> <%=commentDate%></span>
-											</p>
-											<% if (ownerId.equals(userId)) { %>
-												<div class="action">
-													<a href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=postId%>)"><img src="<%=resource.getIcon("blog.smallUpdate") %>" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="absmiddle"/></a>
-													<a href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><img src="<%=resource.getIcon("blog.smallDelete") %>" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="absmiddle"/></a>
-												</div>
-											<% } else if ("admin".equals(profile)) { %>
-												<div class="action">
-													<% if (adminAllowedToUpdate) { %>
-														<a href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=postId%>)"><img src="<%=resource.getIcon("blog.smallUpdate") %>" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="absmiddle"/></a>
-													<% } %>
-													<a href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><img src="<%=resource.getIcon("blog.smallDelete") %>" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="absmiddle"/></a>
-												</div>
-											<% } %>
-											<p class="message"><%=Encode.javaStringToHtmlParagraphe(unComment.getMessage())%></p>
-										</div>
-									</div>
-								<%
-							}
-						}
-						%>
-					
-					</div><!-- End commentaires-->
+		    <view:comments userId="<%=userId %>" componentId="<%=instanceId %>" resourceId="<%=postId %>" indexed="true"/>
 			</div>
 				 
 			<div id="navBlog">
