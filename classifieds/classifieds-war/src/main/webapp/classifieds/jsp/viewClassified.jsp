@@ -23,316 +23,196 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="check.jsp" %>
-<%@page import="com.silverpeas.util.StringUtil"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored ="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ page import="com.silverpeas.form.Form,
+         com.silverpeas.form.DataRecord,
+         com.silverpeas.form.PagesContext"%>
 
-<% 
-	boolean				isDraftEnabled 	= ((Boolean) request.getAttribute("IsDraftEnabled")).booleanValue();
-	ClassifiedDetail	classified		= (ClassifiedDetail) request.getAttribute("Classified");
-	String 				profile			= (String) request.getAttribute("Profile");
-	String 				userId			= (String) request.getAttribute("UserId");
-	boolean				anonymousAccess	= ((Boolean) request.getAttribute("AnonymousAccess")).booleanValue();
+<%
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+%>
 
-	Collection 			comments		= (Collection) request.getAttribute("AllComments");
-	
-	// param�tres du formulaire
-	Form		xmlForm 				= (Form) request.getAttribute("Form");
-	DataRecord	xmlData					= (DataRecord) request.getAttribute("Data");
-	
-	// d�claration des variables :
-	String 		classifiedId 			= Integer.toString(classified.getClassifiedId());
-	String 		title 					= classified.getTitle();
-	String 		instanceId				= classified.getInstanceId();
-	String 		creatorId				= classified.getCreatorId();
-	String 		creatorName				= classified.getCreatorName();
-	String		creatorEmail			= classified.getCreatorEmail();
-	String 		creationDate			= null;
-	if (classified.getCreationDate() != null){
-		creationDate = resource.getOutputDateAndHour(classified.getCreationDate());
-	}
-  	else {
-  		creationDate = "";
-  	}
-	String 		updateDate		= null;
-	if (classified.getUpdateDate() != null){
-		updateDate = resource.getOutputDateAndHour(classified.getUpdateDate());
-	}
-  	else {
-  		updateDate = "";
-  	}
-	String 		status				= classified.getStatus();
-	String 		validatorId			= classified.getValidatorId();
-	String 		validatorName		= classified.getValidatorName();
-	String 		validateDate		= null;
-	if (classified.getValidateDate() != null) {
-		validateDate = resource.getOutputDateAndHour(classified.getValidateDate());
-	}
-  	else {
-  		validateDate = "";
-  	}
-	
-	boolean isAutorized = userId.equals(creatorId) || profile.equals("admin");
-	
-	Button validateComment 	= (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-	Button cancelButton 	= (Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 
-
-	Board board	= gef.getBoard();
+<c:set var="browseContext" value="${requestScope.browseContext}"/>
+<c:set var="componentLabel" value="${browseContext[1]}"/>
+<c:set var="isDraftEnabled" value="${requestScope.IsDraftEnabled}"/>
+<c:set var="profile"    value="${requestScope.Profile}"/>
+<c:set var="creationDate" value="${requestScope.CreationDate}"/>
+<c:set var="updateDate" value="${requestScope.UpdateDate}"/>
+<c:set var="validationDate" value="${requestScope.ValidateDate}"/>
+<c:set var="userId" value="${requestScope.UserId}"/>
+<c:set var="classified" value="${requestScope.Classified}"/>
+<c:set var="instanceId" value="${classified.instanceId}"/>
+<c:set var="creatorId"  value="${classified.creatorId}"/>
+<%
+  // paramètres du formulaire
+  Form xmlForm = (Form) request.getAttribute("Form");
+  DataRecord xmlData = (DataRecord) request.getAttribute("Data");
+  PagesContext xmlContext = (PagesContext) request.getAttribute("Context");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
-<head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript">
+  <head>
+    <view:looknfeel/>
+    <script type="text/javascript" src=" <c:url value='/util/javaScript/animation.js'/>"></script>
+    <fmt:message var="deletionConfirm" key="classifieds.confirmDeleteClassified"/>
+    <script type="text/javascript">
 
-	var refusalMotiveWindow = window;
-	
-	function deleteConfirm(id) 
-	{
-		// confirmation de suppression de l'annonce
-		if(window.confirm("<%=resource.getString("classifieds.confirmDeleteClassified")%>"))
-		{
-  			document.classifiedForm.action = "DeleteClassified";
-  			document.classifiedForm.ClassifiedId.value = id;
-  			document.classifiedForm.submit();
-		}
-	}
+      var refusalMotiveWindow = window;
 
-	function updateClassified(id) 
-	{
-		document.classifiedForm.action = "EditClassified";
-		document.classifiedForm.ClassifiedId.value = id;
-		document.classifiedForm.submit();
-	}
-	function sendData() 
-	{
-		//if (isCorrectForm()) 
-		//{
-			document.commentForm.action = "AddComment";
-			document.commentForm.submit();
-		//}
-	}
+      function deleteConfirm(id)
+      {
+        // confirmation de suppression de l'annonce
+        if(window.confirm("<c:out value='${deletionConfirm}'/>"))
+        {
+          document.classifiedForm.action = "DeleteClassified";
+          document.classifiedForm.ClassifiedId.value = id;
+          document.classifiedForm.submit();
+        }
+      }
 
-	function isCorrectForm() 
-	{
-     	var errorMsg = "";
-     	var errorNb = 0;
-     	var message = stripInitialWhitespace(document.commentForm.Message.value);
-		window.alert("message = " + message);
-     	if (message == "") 
-     	{ 
-			errorMsg+="  - '<%=resource.getString("classifieds.comment")%>'  <%=resource.getString("GML.MustBeFilled")%>\n";
-           	errorNb++;
-     	}
-   				     			     				    
-     	switch(errorNb) 
-     	{
-        	case 0 :
-            	result = true;
-            	break;
-        	case 1 :
-            	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            	window.alert(errorMsg);
-            	result = false;
-            	break;
-        	default :
-            	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            	window.alert(errorMsg);
-            	result = false;
-            	break;
-     	} 
-     	return result;
-	}
+      function updateClassified(id)
+      {
+        document.classifiedForm.action = "EditClassified";
+        document.classifiedForm.ClassifiedId.value = id;
+        document.classifiedForm.submit();
+      }
 
-	function updateComment(id, classifiedId)
-	{
-	    SP_openWindow("<%=m_context%>/comment/jsp/newComment.jsp?id="+id+"&IndexIt=1", "blank", "600", "250","scrollbars=no, resizable, alwaysRaised");
-	    document.commentForm.action = "UpdateComment";
-	   	document.commentForm.ClassifiedId.value = classifiedId;
-		document.commentForm.submit();
-	}
-	
-	function removeComment(id)
-	{
-	    if (window.confirm("<%=resource.getString("classifieds.confirmDeleteComment")%>"))
-	    {
-	    	document.commentForm.action = "DeleteComment";
-	    	document.commentForm.CommentId.value = id;
-			document.commentForm.submit();
-	    }
-	}
+      function draftIn(id) {
+        location.href = "<view:componentUrl componentId='${instanceId}'/>DraftIn?ClassifiedId="+id;
+      }
 
-	function commentCallBack()
-	{
-		location.href="<%=m_context+URLManager.getURL("useless", instanceId)%>ViewClassified?ClassifiedId=<%=classifiedId%>";
-	}
-	
-	function draftIn(id) {
-		location.href = "<%=m_context+URLManager.getURL("useless", instanceId)%>DraftIn?ClassifiedId="+id;
-	}
+      function draftOut(id) {
+        location.href = "<view:componentUrl componentId='${instanceId}'/>DraftOut?ClassifiedId="+id;
+      }
 
-	function draftOut(id) {
-		location.href = "<%=m_context+URLManager.getURL("useless", instanceId)%>DraftOut?ClassifiedId="+id;
-	}
-	
-	function validate(id) {
-		location.href = "<%=m_context+URLManager.getURL("useless", instanceId)%>ValidateClassified?ClassifiedId="+id;
-	}
+      function validate(id) {
+        location.href = "<view:componentUrl componentId='${instanceId}'/>ValidateClassified?ClassifiedId="+id;
+      }
 
-	function refused(id) {
-		url = "WantToRefuseClassified?ClassifiedId="+id;
-	    windowName = "refusalMotiveWindow";
-		larg = "550";
-		haut = "350";
-	    windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-	    if (!refusalMotiveWindow.closed && refusalMotiveWindow.name== "refusalMotiveWindow")
-	        refusalMotiveWindow.close();
-	    refusalMotiveWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
-	}
-	
-	
-</script>
-</head>
-<body id="classified-view">
-<%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-	browseBar.setPath(resource.getString("classifieds.classified"));
-	
-	// affichage des options
-	if (isAutorized) {
-		operationPane.addOperation(resource.getIcon("classifieds.update"),resource.getString("classifieds.updateClassified"), "javaScript:updateClassified('"+classifiedId+"')");
-		operationPane.addOperation(resource.getIcon("classifieds.delete"),resource.getString("classifieds.deleteClassified"), "javaScript:deleteConfirm('"+classifiedId+"')");
-		// op�rations du mode brouillon si option activ�e et si pas admin
-		if (isDraftEnabled) {
-			operationPane.addLine();
-			if ((ClassifiedDetail.DRAFT).equals(classified.getStatus()))
-				operationPane.addOperation(resource.getIcon("classifieds.draftOut"), resource.getString("classifieds.draftOut"), "javaScript:draftOut('"+classifiedId+"')");
-			else
-				operationPane.addOperation(resource.getIcon("classifieds.draftIn"), resource.getString("classifieds.draftIn"), "javaScript:draftIn('"+classifiedId+"')");
-		}
-		// op�rations de validation (ou refus)
-		if ("admin".equals(profile) && (ClassifiedDetail.TO_VALIDATE).equals(classified.getStatus())) {
-			operationPane.addLine();
-			operationPane.addOperation(resource.getIcon("classifieds.validate"), resource.getString("classifieds.validate"), "javaScript:validate('"+classifiedId+"')");
-			operationPane.addOperation(resource.getIcon("classifieds.refused"), resource.getString("classifieds.refused"), "javaScript:refused('"+classifiedId+"')");
-		}
-	}
+      function refused(id) {
+        url = "WantToRefuseClassified?ClassifiedId="+id;
+        windowName = "refusalMotiveWindow";
+        larg = "550";
+        haut = "350";
+        windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
+        if (!refusalMotiveWindow.closed && refusalMotiveWindow.name== "refusalMotiveWindow")
+          refusalMotiveWindow.close();
+        refusalMotiveWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+      }
 
-	out.println(window.printBefore());
-    out.println(frame.printBefore());
-%>
-<table cellpadding="5" width="100%">
-<tr>
-	<td>
-		<div class="tableBoard" id="classified-view-header">
-			<h1 class="titreFenetre" id="classified-title"><%=title%></h1>				
-			<div id="classified-view-header-owner">
-				<span class="txtlibform"><%=resource.getString("classifieds.annonceur")%> : </span>
-				<span class="txtvalform"><%=creatorName%> (<%=Encode.javaStringToHtmlString(creatorEmail)%>) </span>
-			</div>
-			<div id="classified-view-header-parutionDate">
-				<span class="txtlibform"><%=resource.getString("classifieds.parutionDate")%> : </span>
-				<span class="txtvalform"><%=creationDate%> </span>
-			</div>
-			<% if (StringUtil.isDefined(updateDate)) { %>
-				<div id="classified-view-header-updateDate">
-					<span class="txtlibform"><%=resource.getString("classifieds.updateDate")%> : </span>
-					<span class="txtvalform"><%=updateDate%></span>
-				</div>
-			<% } %>
-			<% if (StringUtil.isDefined(validateDate) && StringUtil.isDefined(validatorName)) { %>
-				<div id="classified-view-header-validateDate">
-					<span class="txtlibform"><%=resource.getString("classifieds.validateDate")%> : </span>
-					<span class="txtvalform"><%=validateDate%> &nbsp; <span><%=resource.getString("classifieds.by")%></span>&nbsp;<%=validatorName%></span>
-				</div>
-			<% } %>
-		<hr class="clear" />
-		</div>
 
-	<% if (xmlForm != null) { %>
-		<div class="tableBoard" id="classified-view-content">
-		<!-- AFFICHAGE du formulaire -->
-		<%
-			PagesContext xmlContext = new PagesContext("myForm", "0", resource.getLanguage(), false, instanceId, null);
-			xmlContext.setBorderPrinted(false);
-			xmlContext.setIgnoreDefaultValues(true);
-			
-	    	xmlForm.display(out, xmlContext, xmlData);
-	    %>
-		<hr class="clear" />
-		</div>
-	<% } %>	
-	</td>
-</tr>
-<tr>
-	<td>
-		<!--Afficher les commentaires-->
-		<div class="commentaires">
-		<% if (!anonymousAccess) { %>
-			<form name="commentForm" action="AddComment" method="post">	
-				<p class="txtlibform"><%=resource.getString("classifieds.addComment")%></p>
-				<textarea rows="4" cols="100" name="Message"></textarea>
-				<input type="hidden" name="ClassifiedId" value="<%=classifiedId%>"/>
-				<input type="hidden" name="CommentId" value=""/>
-			</form>
+    </script>
+  </head>
+  <body id="classified-view">
+    <fmt:message var="classifiedPath" key="classifieds.classified"/>
+    <view:browseBar>
+      <view:browseBarElt label="${classifiedPath}" link=""/>
+    </view:browseBar>
+    <c:if test="${userId == creatorId or profile == 'admin'}">
+      <fmt:message var="updateOp" key="classifieds.updateClassified"/>
+      <fmt:message var="updateIcon"  key="classifieds.update" bundle="${icons}"/>
+      <fmt:message var="deleteOp" key="classifieds.deleteClassified"/>
+      <fmt:message var="deleteIcon" key="classifieds.delete" bundle="${icons}"/>
+      <view:operationPane>
+        <view:operation action="javascript:updateClassified('${classified.classifiedId}');"
+                        altText="${updateOp}" icon="${updateIcon}"/>
+        <view:operation action="javascript:deleteConfirm('${classified.classifiedId}');"
+                        altText="${deleteOp}" icon="${deleteIcon}"/>
 
-			<%
-			ButtonPane buttonPaneComment = gef.getButtonPane();
-			buttonPaneComment.addButton(validateComment);
-			buttonPaneComment.addButton(cancelButton);
-			out.println("<br/><center>"+buttonPaneComment.print()+"</center><br/>");
-			%>
-			<hr />
-		<% } %>
-			
-		<% if (comments != null) {
-				Iterator itCom = (Iterator) comments.iterator();
-				while (itCom.hasNext()) {
-					Comment unComment = (Comment) itCom.next();
-					String commentDate = resource.getOutputDate(unComment.getCreationDate());
-					String ownerId = Integer.toString(unComment.getOwnerId());
-					%>
-					<div class="oneComment">
-						<div>
-							<div class="avatar">
-								<img src="<%=m_context%><%=unComment.getOwnerDetail().getAvatar() %>"/>
-							</div>
-							<p class="author">
-								<%=unComment.getOwnerDetail().getDisplayedName()%>
-								<span class="date"> - <%=resource.getString("classifieds.postOn")%> <%=commentDate%></span>
-							</p>
-							<% if ("admin".equals(profile) || ownerId.equals(userId) ) { %>
-								<div class="action">
-									<a href="javascript:updateComment(<%=unComment.getCommentPK().getId()%>,<%=classifiedId%>)"><img src="<%=resource.getIcon("classifieds.smallUpdate") %>" alt="<%=resource.getString("GML.update")%>" title="<%=resource.getString("GML.update")%>" align="absmiddle"/></a>
-									<a href="javascript:removeComment(<%=unComment.getCommentPK().getId()%>)"><img src="<%=resource.getIcon("classifieds.smallDelete") %>" alt="<%=resource.getString("GML.delete")%>" title="<%=resource.getString("GML.delete")%>" align="absmiddle"/></a>
-								</div>
-							<% } %>
-							<p class="message"><%=Encode.javaStringToHtmlParagraphe(unComment.getMessage())%></p>
-						</div>
-					</div>
-					<%
-				}
-			}
-			%>
-		
-		</div><!-- End commentaires-->
+        <c:if test="${isDraftEnabled}">
+          <view:operationSeparator/>
+          <c:choose>
+            <c:when test="${'Draft' == classified.status}">
+              <fmt:message var="draftOutOp" key="classifieds.draftOut"/>
+              <fmt:message var="draftOutIcon" key="classifieds.draftOut" bundle="${icons}"/>
+              <view:operation action="javascript:draftOut('${classified.classifiedId}');"
+                              altText="${draftOutOp}" icon="${draftOutIcon}"/>
+            </c:when>
+            <c:otherwise>
+              <fmt:message var="draftInOp" key="classifieds.draftIn"/>
+              <fmt:message var="draftInIcon" key="classifieds.draftIn" bundle="${icons}"/>
+              <view:operation action="javascript:draftIn('${classified.classifiedId}');"
+                              altText="${draftInOp}" icon="${draftInIcon}"/>
+            </c:otherwise>
+          </c:choose>
+        </c:if>
+        <c:if test="${'admin' == profile and 'ToValidate' == classified.status}">
+          <view:operationSeparator/>
+          <fmt:message var="validateOp" key="classifieds.validate"/>
+          <fmt:message var="validateIcon" key="classifieds.validate" bundle="${icons}"/>
+          <fmt:message var="refuseOp" key="classifieds.refused"/>
+          <fmt:message var="refuseIcon" key="classifieds.refused" bundle="${icons}"/>
+          <view:operation action="javascript:validate('${classified.classifiedId}');"
+                          altText="${validateOp}" icon="${validateIcon}"/>
+          <view:operation action="javascript:refused('${classified.classifiedId}');"
+                          altText="${refuseOp}" icon="${refuseIcon}"/>
+        </c:if>
+      </view:operationPane>
+    </c:if>
 
-	</td>
-</tr>
-</table>
-<% 
-  	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>	
+    <view:window>
+      <view:frame>
+        <table cellpadding="5" width="100%">
+          <tr>
+            <td>
+              <div class="tableBoard" id="classified-view-header">
+                <h1 class="titreFenetre" id="classified-title"><c:out value="${classified.title}"/></h1>
+                <div id="classified-view-header-owner">
+                  <span class="txtlibform"><fmt:message key="classifieds.annonceur"/>: </span>
+                  <span class="txtvalform"><c:out value="${classified.creatorName} (${classified.creatorEmail})"/></span>
+                </div>
+                <div id="classified-view-header-parutionDate">
+                  <span class="txtlibform"><fmt:message key="classifieds.parutionDate"/>: </span>
+                  <span class="txtvalform"><c:out value="${creationDate}"/></span>
+                </div>
+                <c:if test="${fn:length(updateDate) > 0}">
+                  <div id="classified-view-header-updateDate">
+                    <span class="txtlibform"><fmt:message key="classifieds.updateDate"/>: </span>
+                    <span class="txtvalform"><c:out value="${updateDate}"/></span>
+                  </div>
+                </c:if>
+                <c:if test="${fn:length(validationDate) > 0 and classified.validatorName != null and fn:length(classified.validatorName) > 0}">
+                  <div id="classified-view-header-validateDate">
+                    <span class="txtlibform"><fmt:message key="classifieds.validateDate"/>: </span>
+                    <span class="txtvalform"><c:out value="${validationDate}"/>&nbsp;<span><fmt:message key="classifieds.by"/></span>&nbsp;<c:out value="${classified.validatorName}"/></span>
+                  </div>
+                </c:if>
+                <hr class="clear" />
+              </div>
 
-<form name="classifiedForm" action="" method="post">
-	<input type="hidden" name="ClassifiedId"/>
-</form>
-</body>
+              <% if (xmlForm != null) {%>
+              <div class="tableBoard" id="classified-view-content">
+                <!-- AFFICHAGE du formulaire -->
+                <%
+                  xmlForm.display(out, xmlContext, xmlData);
+                %>
+                <hr class="clear" />
+              </div>
+              <% }%>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <!--Afficher les commentaires-->
+              <view:comments userId="${userId}" componentId="${instanceId}" resourceId="${classified.classifiedId}" />
+            </td>
+          </tr>
+        </table>
+      </view:frame>
+    </view:window>
+    <form name="classifiedForm" action="" method="post">
+      <input type="hidden" name="ClassifiedId"/>
+    </form>
+  </body>
 </html>

@@ -23,54 +23,64 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<%@ include file="check.jsp" %>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
-String	instanceId 	= (String) request.getAttribute("InstanceId");
-String 	url 		= (String) request.getAttribute("URL");
-String 	userId 		= (String) request.getAttribute("UserId");
-String 	role 		= (String) request.getAttribute("Role");
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
+
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<fmt:message var="projectTab" key="projectManager.Projet"/>
+<fmt:message var="taskTab" key="projectManager.Taches"/>
+<fmt:message var="attachmentTab" key="GML.attachments"/>
+<fmt:message var="commentTab" key="projectManager.Commentaires"/>
+<fmt:message var="ganttTab" key="projectManager.Gantt"/>
+<fmt:message var="calendarTab" key="projectManager.Calendrier"/>
+
+<c:set var="instanceId" value="${requestScope.InstanceId}"/>
+<c:set var="userId" value="${requestScope.UserId}"/>
+<c:set var="role" value="${requestScope.Role}"/>
+
 <html>
-<head>
-<title></title>
-<%
-    out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
-</script>
+  <head>
+    <title></title>
+    <view:looknfeel/>
+    <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
+    <script language="javascript">
+    </script>
 
-</head>
-<body>
-<%
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel, "Main");
-    
-    out.println(window.printBefore());
-    
-    TabbedPane tabbedPane = gef.getTabbedPane();
-    
-	tabbedPane.addTab(resource.getString("projectManager.Projet"), "ToProject", false);
-    tabbedPane.addTab(resource.getString("projectManager.Taches"), "Main", false);
-    if ("admin".equals(role))
-		tabbedPane.addTab(resource.getString("GML.attachments"), "ToAttachments", false);
-	tabbedPane.addTab(resource.getString("projectManager.Commentaires"), "#", true);
-	tabbedPane.addTab(resource.getString("projectManager.Gantt"), "ToGantt", false);
-	if ("admin".equals(role))
-		tabbedPane.addTab(resource.getString("projectManager.Calendrier"), "ToCalendar", false);
-	
-    out.println(tabbedPane.print());
-    
-    out.println(frame.printBefore());
-    out.flush();
+  </head>
+  <body>
+    <view:browseBar></view:browseBar>
+    <view:window>
 
-    getServletConfig().getServletContext().getRequestDispatcher("/comment/jsp/comments.jsp?id=-1&component_id="+instanceId+"&userid="+userId+"&url="+url).include(request, response);
+      <view:tabs>
+        <view:tab action="ToProject" label="${projectTab}" selected="false"/>
+        <view:tab action="Main" label="${taskTab}" selected="false"/>
+        <c:if test="${'admin' == role}">
+          <view:tab action="ToAttachments" label="${attachmentTab}" selected="false"/>
+        </c:if>
+        <view:tab action="#" label="${commentTab}" selected="true"/>
+        <view:tab action="ToGantt" label="${ganttTab}" selected="false"/>
+        <c:if test="${'admin' == role}">
+          <view:tab action="ToCalendar" label="${calendarTab}" selected="false"/>
+        </c:if>
+      </view:tabs>
 
-    out.println(frame.printAfter());
-    out.println(window.printAfter());
-%>
-</body>
+      <view:frame>
+
+        <view:comments userId="${userId}" componentId="${instanceId}" resourceId="-1"/>
+
+      </view:frame>
+    </view:window>
+  </body>
 </html>

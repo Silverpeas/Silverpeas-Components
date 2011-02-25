@@ -23,65 +23,75 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="check.jsp" %>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<% 
-	// r�cup�ration des param�tres :
-	PhotoDetail photo			= (PhotoDetail) request.getAttribute("Photo");
-	String 		profile			= (String) request.getAttribute("Profile");
-	String		userId 			= (String) request.getAttribute("UserId");
-	List  	path 			= (List) request.getAttribute("Path");
-	String 		galleryUrl		= (String) request.getAttribute("Url");
-	Integer		nbCom			= (Integer) request.getAttribute("NbComments");
-	Boolean		isUsePdc		= (Boolean) request.getAttribute("IsUsePdc");
-	String 		XMLFormName		= (String) request.getAttribute("XMLFormName");
-	boolean		updateAllowed	= ((Boolean) request.getAttribute("UpdateImageAllowed")).booleanValue();
-		
-	// d�claration des variables :
-	
-	String 		photoId			= new Integer(photo.getPhotoPK().getId()).toString();
-	String 		nbComments 		= nbCom.toString();
-	
-	boolean 	pdc				= isUsePdc.booleanValue();
+<%
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
+
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<fmt:message var="photoTab" key="gallery.photo"/>
+<fmt:message var="infoTab" key="gallery.info"/>
+<fmt:message var="commentTab" key="gallery.comments"/>
+<fmt:message var="accessTab" key="gallery.accessPath"/>
+<fmt:message var="pdcTab" key="GML.PDC"/>
+
+<c:set var="browseContext" value="${requestScope.browseContext}"/>
+<c:set var="instanceId" value="${browseContext[3]}"/>
+<c:set var="photo" value="${requestScope.Photo}"/>
+<c:set var="photoId" value="${photo.photoPK.id}"/>
+<c:set var="userId" value="${requestScope.UserId}"/>
+<c:set var="nodePath"  value="${requestScope.Path}"/>
+<c:set var="commentCount" value="${requestScope.NbComments}"/>
+<c:set var="updateAllowed" value="${requestScope.UpdateImageAllowed}"/>
+<c:set var="pdc" value="${requestScope.IsUsePdc}"/>
+<c:set var="callback">function( event ) { if (event.type === 'listing') { commentCount = event.comments.length; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + event.comments.length + ')'); } else if (event.type === 'deletion') { commentCount--; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } else if (event.type === 'addition') { commentCount++; $('#comment-tab').html('<c:out value="${commentTab}"/> ( ' + commentCount + ')'); } }</c:set>
 
 <html>
-<head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
-</head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-<%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-	displayPath(path, browseBar);
+  <head>
+    <view:looknfeel/>
+  </head>
+  <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+    <view:browseBar>
+      <c:if test="${nodePath != null}">
+        <c:forEach var="node" items="${nodePath}">
+          <c:if test="${node.id != 0}">
+            <view:browseBarElt label="${node.name}" link="ViewAlbum?Id=${node.nodePK.id}" id="${node.nodePK.id}"/>
+          </c:if>
+        </c:forEach>
+      </c:if>
+    </view:browseBar>
 
-   	TabbedPane tabbedPane = gef.getTabbedPane();
-	tabbedPane.addTab(resource.getString("gallery.photo"), "PreviewPhoto?PhotoId="+photoId, false);
-	if (updateAllowed)
-	{
-		tabbedPane.addTab(resource.getString("gallery.info"), "EditInformation?PhotoId="+photoId, false);
-	}
-	tabbedPane.addTab(resource.getString("gallery.comments")+" ("+nbComments+")", "#", true);
-	if (updateAllowed)
-	{
-		tabbedPane.addTab(resource.getString("gallery.accessPath"), "AccessPath?PhotoId="+photoId, false);
-		if (pdc)
-			tabbedPane.addTab(resource.getString("GML.PDC"), "PdcPositions?PhotoId="+photoId, false);
-	}
-	
-	out.println(window.printBefore());
-	out.println(tabbedPane.print());
-    out.println(frame.printBefore());
+    <view:window>
 
-	String url = URLManager.getURL("useless", componentId) + "Comments?PhotoId="+photoId;
-	out.flush();    
-   	getServletConfig().getServletContext().getRequestDispatcher("/comment/jsp/comments.jsp?id="+photoId+"&userid="+userId+"&profile="+profile+"&url="+url+"&component_id="+componentId).include(request, response);
+      <view:tabs>
+        <view:tab action="PreviewPhoto?PhotoId=${photoId}" label="${photoTab}" selected="false"/>
+        <c:if test="${updateAllowed}">
+          <view:tab action="EditInformation?PhotoId=${photoId}" label="${infoTab}" selected="false"/>
+        </c:if>
+        <view:tab action="#" label="<span id='comment-tab'>${commentTab} (${commentCount})</span>" selected="true"/>
+        <c:if test="${updateAllowed}">
+          <view:tab action="AccessPath?PhotoId=${photoId}" label="${accessTab}" selected="false"/>
+          <c:if test="${pdc}">
+            <view:tab action="PdcPositions?PhotoId=${photoId}" label="${pdcTab}" selected="false"/>
+          </c:if>
+        </c:if>
+      </view:tabs>
 
-  	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
-</body>
+      <view:frame>
+
+        <view:comments userId="${userId}" componentId="${instanceId}" resourceId="${photoId}" callback="${callback}"/>
+
+      </view:frame>
+    </view:window>
+  </body>
 </html>

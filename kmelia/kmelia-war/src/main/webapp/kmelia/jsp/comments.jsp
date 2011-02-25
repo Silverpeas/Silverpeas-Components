@@ -103,7 +103,6 @@ function sendOperation(operation) {
         "commentCount = event.comments.length; $('#comment-tab').html('" + resources.getString("Comments") + " ( ' + event.comments.length + ')'); }" +
       "else if (event.type === 'deletion') { commentCount--; $('#comment-tab').html('" + resources.getString("Comments") + " ( ' + commentCount + ')'); }" +
       "else if (event.type === 'addition') { commentCount++; $('#comment-tab').html('" + resources.getString("Comments") + " ( ' + commentCount + ')'); } }";
-  //getServletConfig().getServletContext().getRequestDispatcher("/comment/jsp/comments.jsp?id="+id+"&userid="+user_id+"&profile="+profile+"&url="+url+"&component_id="+kmeliaScc.getComponentId()+"&IndexIt="+indexIt).include(request, response);
 %>
 <view:board>
 

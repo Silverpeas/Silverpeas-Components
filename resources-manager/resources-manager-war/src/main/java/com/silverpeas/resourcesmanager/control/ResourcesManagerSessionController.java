@@ -50,6 +50,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.util.PairObject;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.EJBUtilitaire;
@@ -81,6 +82,8 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
   private String currentReservation;
 
   private NotificationSender notifSender = null;
+
+  private ResourcesWrapper resources = null;
 
   private static String STATUS_VALIDATE = "V";
   private static String STATUS_REFUSED = "R";
@@ -989,6 +992,17 @@ public class ResourcesManagerSessionController extends AbstractComponentSessionC
     notifMetaData.setSender(user);
     // 2. envoie de la notification
     getNotificationSender().notifyUser(notifMetaData);
+  }
+
+  /**
+   * Gets the resources associated with this session controller.
+   * @return all of the resources (messages, settings, icons, ...)
+   */
+  public synchronized  ResourcesWrapper getResources() {
+    if (resources == null) {
+      resources = new ResourcesWrapper(getMultilang(), getIcon(), getSettings(), getLanguage());
+    }
+    return resources;
   }
 
 }
