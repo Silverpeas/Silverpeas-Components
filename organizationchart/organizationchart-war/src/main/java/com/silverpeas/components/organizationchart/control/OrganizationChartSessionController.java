@@ -78,6 +78,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
   private static final String PARAM_LDAP_ATT_ACTIF = "ldapAttActif";
   private static final String PARAM_DOMAIN_ID = "chartDomainSilverpeas";
 
+  private OrganizationChartConfiguration config =null;
   /**
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
@@ -90,7 +91,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
         "com.silverpeas.components.organizationchart.multilang.OrganizationChartBundle",
         "com.silverpeas.components.organizationchart.settings.OrganizationChartIcons");
 
-    OrganizationChartConfiguration config = loadConfiguration();
+    config = loadConfiguration();
     service = ServicesFactory.getOrganizationChartService();
     service.configure(config);
   }
@@ -135,7 +136,11 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     OrganizationBox rootOrganization = new OrganizationBox();
     chartVO.setRootOrganization(rootOrganization);
     rootOrganization.setName(chart.getRoot().getName());
-    rootOrganization.setParentDn(chart.getRoot().getParentOu());
+
+    // Prevents user to go upper that the base DN
+    if (!config.getLdapRoot().equalsIgnoreCase( chart.getRoot().getCompleteName() )) {
+      rootOrganization.setParentDn(chart.getRoot().getParentOu());
+    }
 
     // Looks for specific users
     List<UserVO> leftUsers = new ArrayList<UserVO>();
