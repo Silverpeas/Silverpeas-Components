@@ -40,8 +40,16 @@
 <%@ include file="checkSurvey.jsp" %>
 <%@ include file="surveyUtils.jsp.inc" %>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<%-- Set resource bundle --%>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+
 <%
-//R�cup�ration des param�tres
+//Retrieve parameter
 String action = request.getParameter("Action");
 String surveyId = request.getParameter("SurveyId");
 
@@ -53,7 +61,7 @@ String endDate = request.getParameter("endDate");
 String nbQuestions = request.getParameter("nbQuestions");
 String anonymousString = request.getParameter("anonymous");
 
-//Mode anonyme -> force les enqu�tes � �tre toutes anonymes
+//Anonymous mode -> force all the survey to be anonymous
 if(surveyScc.isAnonymousModeEnabled()) {
 	anonymousString = "true";
 }
@@ -83,6 +91,7 @@ if ("SendSurveyHeader".equals(action)) {
       QuestionContainerHeader surveyHeader = new QuestionContainerHeader(null, title, description, null, null, beginDate, endDate, false, 0, new Integer(nbQuestions).intValue(), anonymous);
       surveyScc.updateSurveyHeader(surveyHeader, surveyId);
       action = "UpdateSurveyHeader";
+      request.setAttribute("UpdateSucceed", "true");
 }
 if ("UpdateSurveyHeader".equals(action))
 {
@@ -100,7 +109,7 @@ if ("UpdateSurveyHeader".equals(action))
           nbQuestions = new Integer(surveyHeader.getNbQuestionsPerPage()).toString();
           anonymous = surveyHeader.isAnonymous();
 
-          //Mode anonyme -> force les enqu�tes � �tre toutes anonymes
+          //Mode anonyme -> force les enquetes a etre toutes anonymes
 		  if(surveyScc.isAnonymousModeEnabled()) {
 			anonymous = true;
 		  }
@@ -114,7 +123,7 @@ if ("UpdateSurveyHeader".equals(action))
 <html>
 <head>
 <title></title>
-<% out.println(gef.getLookStyleSheet()); %>
+<view:looknfeel />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script language="JavaScript1.2">
@@ -238,12 +247,27 @@ function isCorrectForm() {
 
         TabbedPane tabbedPane = gef.getTabbedPane();
         tabbedPane.addTab(resources.getString("GML.head"), "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId="+surveyId, action.equals("UpdateSurveyHeader"), false);
-        tabbedPane.addTab(resources.getString("SurveyQuestions"), "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId="+surveyId, action.equals("UpdateQuestions"), true);
+        String surveyTabPanelLabel = resources.getString("SurveyQuestions");
+        if (surveyScc.isPollingStationMode()) {
+          surveyTabPanelLabel = resources.getString("SurveyQuestion");
+        }
+        tabbedPane.addTab(surveyTabPanelLabel, "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId="+surveyId, action.equals("UpdateQuestions"), true);
         out.println(tabbedPane.print());
+        %>
+<c:choose>
+  <c:when test="${requestScope['UpdateSucceed']}">
+    <div class="inlineMessage inlineMessage-ok">
+      <fmt:message key="survey.update.header.succeed" />
+    </div><br clear="all"/>
+  </c:when>
+</c:choose>
+<%
 
         out.println(frame.printBefore());
         out.println(board.printBefore());
 %>
+
+
 <center>
 <form name="surveyForm" action="surveyUpdate.jsp" method="post">
 <table cellpadding="5" width="100%">
@@ -293,7 +317,7 @@ function isCorrectForm() {
     	anonymousCheck = "checked";
     }
 
-    //Mode anonyme -> force les enqu�tes � �tre toutes anonymes
+    //Mode anonyme -> force les enquetes a etre toutes anonymes
 	String anonymousDisabled = "";
 	if(surveyScc.isAnonymousModeEnabled()) {
 		anonymousDisabled = "disabled";

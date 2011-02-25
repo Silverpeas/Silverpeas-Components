@@ -53,6 +53,10 @@ public class KmeliaTransversal implements PublicationHelper {
 
   public KmeliaTransversal() {
   }
+  
+  public KmeliaTransversal(String userId) {
+    this.userId = userId;
+  }
 
   public KmeliaTransversal(MainSessionController mainSC) {
     userId = mainSC.getUserId();

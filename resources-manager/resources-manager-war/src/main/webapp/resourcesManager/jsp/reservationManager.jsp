@@ -185,7 +185,7 @@ function getResourceProblem()
 	var endHour = document.getElementById("endHour").value;
 	$.post("<%=m_context%>/RAjaxResourcesManagerServlet/dummy", {ComponentId:'<%=componentId%>',reservationId:'<%=reservationId%>',beginDate:beginDate,beginHour:beginHour,endDate:endDate,endHour:endHour}, function(data){
 		$("#listResourceProblem").html(data);
-	});
+	}, 'html');
 }
 
 /* fonction permettant de v�rifier que dateBegin,hourBegin est bien inf�rieur � dateEnd,hourEnd*/

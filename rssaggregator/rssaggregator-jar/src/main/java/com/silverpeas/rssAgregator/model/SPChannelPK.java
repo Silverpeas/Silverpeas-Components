@@ -28,10 +28,7 @@ import com.stratelia.webactiv.util.WAPrimaryKey;
 
 public class SPChannelPK extends WAPrimaryKey {
 
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -3412580197458003232L;
 
   public SPChannelPK(String id) {
     super(id);

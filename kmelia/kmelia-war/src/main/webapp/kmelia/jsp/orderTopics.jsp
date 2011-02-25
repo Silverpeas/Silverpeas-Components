@@ -148,7 +148,7 @@ function sortItems(orderedList)
 					window.opener.reloadPage(<%=fatherId%>);
 					window.close();
 				}
-			});
+			}, 'text');
 }
 </script>
 </body>

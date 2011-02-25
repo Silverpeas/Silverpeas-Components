@@ -38,14 +38,23 @@
 <%@ page import="java.beans.*"%>
 
 <%@ include file="checkSurvey.jsp" %>
-<%@ include file="surveyUtils.jsp.inc" %>
-<%--
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%--
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 --%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
+<c:set var="ctxPath" value="${pageContext.request.contextPath}" />
+<%-- Set resource bundle --%>
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<%--<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />--%>
+
+<c:set var="isPolling" value="${requestScope['PollingStationMode']}" />
+<c:set var="action" value="${requestScope['Action']}" />
+<c:set var="surveyName" value="${requestScope['SurveyName']}" />
 
 <%
 //Retrieve parameter
@@ -62,98 +71,251 @@ String mandatoryField = m_context + "/util/icons/mandatoryField.gif";
 ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", surveyScc.getLanguage());
 
 QuestionContainerDetail survey = null;
-if ("UpQuestion".equals(action)) {
-      int qId = new Integer((String) request.getParameter("QId")).intValue();
-      Vector qV = surveyScc.getSessionQuestions();
-      Question q1 = (Question) qV.get(qId);
-      Question q2 = (Question) qV.get(qId-1);
-      qV.set(qId-1, q1);
-      qV.set(qId, q2);
-      surveyScc.setSessionQuestions(qV);
-      action = "UpdateQuestions";
-      
-} else if ("DownQuestion".equals(action)) {
-      int qId = new Integer((String) request.getParameter("QId")).intValue();
-      Vector qV = surveyScc.getSessionQuestions();
-      Question q1 = (Question) qV.get(qId);
-      Question q2 = (Question) qV.get(qId+1);
-      qV.set(qId+1, q1);
-      qV.set(qId, q2);
-      surveyScc.setSessionQuestions(qV);
-      action = "UpdateQuestions";
-} else if ("DeleteQuestion".equals(action)) {
-      int qId = new Integer((String) request.getParameter("QId")).intValue();
-      Vector qV = surveyScc.getSessionQuestions();
-      qV.remove(qId);
-      surveyScc.setSessionQuestions(qV);
-      action = "UpdateQuestions";
-}
-if ("SendQuestions".equals(action)) {
-      Vector qV = surveyScc.getSessionQuestions();
-      surveyId = surveyScc.getSessionSurveyId();
-      surveyScc.updateQuestions(qV, surveyId);
-      action = "UpdateQuestions";
-}
-if ("UpdateQuestions".equals(action)) {
+
 %>
 <html>
 <head>
 <view:looknfeel />
-<script language="javaScript1.2">
+<script type="text/javascript">
 function addQuestion() {
-    document.questionForm.submit();
+  document.questionForm.submit();
 }
+function updateQuestion(questionId) {
+  $("#questionFormActionId").val("UpdateQuestion");
+  $("#questionFormQuestionId").val(questionId);
+  //alert("value= " +$("#questionFormActionId").val());
+  document.questionForm.submit();
+}
+function deleteQuestion(questionId) {
+  $("#delQuestionFormId").val(questionId);
+  $("#ui-dialog-title-modalDialogContentDivId").html($("#questionTitle"+ questionId).text());
+  $("#modalDialogContentDivId").dialog("open");
+
+  /*
+  if(confirm("<fmt:message key="survey.question.delete.confirm"/>")) {
+  }
+  */
+}
+// Jquery dialog message
+$(document).ready(function(){
+  // Your code here
+  $( "#dialog:ui-dialog" ).dialog("destroy");
+  
+  $( "#modalDialogContentDivId" ).dialog({
+    resizable: false,
+    height:140,
+    modal: true,
+    autoOpen: false,
+    buttons: {
+	  "<fmt:message key="GML.delete"/>": function() {
+      document.deleteQuestionForm.submit();
+      },
+      "<fmt:message key="GML.cancel"/>": function() {
+        $(this).dialog( "close" );
+      }
+    }
+  });
+});
+
 </script>
 </head>
 <body>
 <%
-          Vector questionsV = null;
-          if (surveyId != null) {
-              surveyScc.removeSessionSurveyId();
-              surveyScc.removeSessionQuestions();
-              surveyScc.removeSessionSurveyName();
-                            
-              survey = surveyScc.getSurvey(surveyId);
-              Collection questions = survey.getQuestions();
-              //questions collection to questions vector
-              questionsV = new Vector(questions);
-              surveyScc.setSessionQuestions(questionsV);
-              surveyScc.setSessionSurveyId(surveyId);
-              surveyScc.setSessionSurveyName(survey.getHeader().getTitle());
-          }
-          questionsV = surveyScc.getSessionQuestions();
-          surveyId = surveyScc.getSessionSurveyId();
-          surveyName = surveyScc.getSessionSurveyName();
+  List questionsV = surveyScc.getSessionQuestions();
+  surveyId = surveyScc.getSessionSurveyId();
 
-          Window window = gef.getWindow();
+  Window window = gef.getWindow();
+%>
+<%-- //TODO add the operation Pane only if there is no question (depends on vote or survey) --%>
+<view:operationPane>
+  <c:if test="${!isPolling}">
+    <view:operation altText="<%=resources.getString("QuestionAdd")%>" icon="icons/questionAdd.gif" action="javaScript:addQuestion();"></view:operation>
+  </c:if>
+</view:operationPane>
+<fmt:message var="extraInfoBB" key="SurveyUpdate"/>
+<c:set var="extraInfoBB" value="${extraInfoBB} '${surveyName}'" />
+<view:browseBar extraInformations="${extraInfoBB}">
+</view:browseBar>
 
-          BrowseBar browseBar = window.getBrowseBar();
-          browseBar.setDomainName(surveyScc.getSpaceLabel());
-          browseBar.setComponentName(surveyScc.getComponentLabel(),"surveyList.jsp?Action=View");
-          browseBar.setExtraInformation(resources.getString("SurveyUpdate")+" '"+surveyName+"'");
+<view:window>
+<%          
 
-          OperationPane operationPane = window.getOperationPane();
-          operationPane.addOperation("icons/questionAdd.gif", resources.getString("QuestionAdd"), "javaScript:addQuestion()");
-          
-          out.println(window.printBefore());
+TabbedPane tabbedPane = gef.getTabbedPane();
+tabbedPane.addTab(resources.getString("GML.head"), "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId="+surveyId, "UpdateSurveyHeader".equals(action), true);
+String surveyTabPanelLabel = resources.getString("SurveyQuestions");
+if (surveyScc.isPollingStationMode()) {
+  surveyTabPanelLabel = resources.getString("SurveyQuestion");
+}
+tabbedPane.addTab(surveyTabPanelLabel, "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId="+surveyId, "UpdateQuestions".equals(action), false);
+out.println(tabbedPane.print());
 
-          TabbedPane tabbedPane = gef.getTabbedPane();
-          tabbedPane.addTab(resources.getString("GML.head"), "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId="+surveyId, action.equals("UpdateSurveyHeader"), true);
-          tabbedPane.addTab(resources.getString("SurveyQuestions"), "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId="+surveyId, action.equals("UpdateQuestions"), false);
-          out.println(tabbedPane.print());
+//out.println(displayQuestionsUpdateView(surveyScc, questionsV, gef, m_context, settings, resources));
 
+String questionUpSrc = "icons/arrowUp.gif";
+String questionDownSrc = "icons/arrowDown.gif";
+String questionDeleteSrc = m_context + "/util/icons/delete.gif";
+String questionUpdateSrc = m_context + "/util/icons/update.gif";
+Question question = null;
+Collection answers = null;
+String operations = "";
+Board board = gef.getBoard();
+try
+{
+    Frame frame = gef.getFrame();
+    out.println(frame.printBefore());
+    %>
 
-          
-          
-          out.println(displayQuestionsUpdateView(surveyScc, questionsV, gef, m_context, settings, resources));
+<c:choose>
+  <c:when test="${requestScope['UpdateSucceed']}">
+    <div class="inlineMessage inlineMessage-ok">
+      <fmt:message key="survey.update.succeed" />
+    </div><br clear="all"/>
+  </c:when>
+</c:choose>
+    
+    <center>
+    <%
+    if (questionsV != null && questionsV.size() > 0)
+    {
+        //Display the questions
+      %>
+<form name="survey" action="questionsUpdate.jsp" method="post" />
+  <input type="hidden" name="Action" value="SubmitQuestions" />
+        <%
+        Iterator itQ = questionsV.iterator();
+        int i = 1;
+        for (int j=0; j<questionsV.size(); j++)
+        {
+              question = (Question) questionsV.get(j);
+              answers = question.getAnswers();
+
+              //check available operations to current question
+              operations = " ";
+              if (j!=0) {
+                  operations += "<a href=\"questionsUpdate.jsp?Action=UpQuestion&QId="+j+"\"><img src=\""+questionUpSrc+"\" border=\"0\" alt=\""+resources.getString("QuestionUp")+"\" title=\""+resources.getString("QuestionUp")+"\" align=\"absmiddle\"></a> ";
+              }
+              if (j+1!=questionsV.size()) {
+                  operations += "<a href=\"questionsUpdate.jsp?Action=DownQuestion&QId="+j+"\"><img src=\""+questionDownSrc+"\" border=\"0\" alt=\""+resources.getString("QuestionDown")+"\" title=\""+resources.getString("QuestionDown")+"\" align=\"absmiddle\"></a> ";
+              }
+              operations += "<a href=\"javascript:updateQuestion('"+j+"');\"><img src=\""+questionUpdateSrc+"\" border=\"0\" alt=\""+surveyScc.getString("survey.update")+"\" title=\""+surveyScc.getString("survey.update")+"\"></a> ";
+              if (!surveyScc.isPollingStationMode()) {
+                operations += "<a href=\"javascript:deleteQuestion('" + j + "');\"><img src=\""+questionDeleteSrc+"\" border=\"0\" alt=\""+resources.getString("GML.delete")+"\" title=\""+resources.getString("GML.delete")+"\"></a> ";
+              }
+
+              out.println(board.printBefore());
+              %>
+              <table border="0" width="100%">
+                <tr>
+                  <td colspan="2" align="left"><b>&#149; <u><span id="questionTitle<%=j%>"><%=EncodeHelper.javaStringToHtmlString(question.getLabel())%></span></u></b>
+                    <div id="surveyOperationId"><%=operations%></div><br/>
+                  </td>
+                </tr>
+              <%
+              // Switch on question type
+              String style = question.getStyle();
+
+              //if (question.isOpen())
+              if (style.equals("open"))
+              {
+              		// Open question
+                    Iterator itA = answers.iterator();
+                    int isOpened = 0;
+                    out.println("<tr><td colspan=\"2\"><textarea name=\"openedAnswer_"+i+"\" cols=\"60\" rows=\"4\"></textarea></td></tr>");
+              }
+              else
+              {
+               		if (style.equals("list"))
+               		{
+               			// drop down list
+               			out.println("<tr><td><select id=\"answers\" name=\"answers\" onchange=\"if(this.value=='openanswer_"+i+"'){document.getElementById('openanswer"+i+"').style.display='block'}else{document.getElementById('openanswer"+i+"').style.display='none'};\">");
+
+               			Iterator itA = answers.iterator();
+                        while (itA.hasNext())
+                        {
+                            Answer answer = (Answer) itA.next();
+                      	    if (answer.isOpened()) {
+                                out.println("<option name=\"openanswer_"+i+"\" value=\"openanswer_"+i+"\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"</option>");
+                      	    } else {
+                      	      out.println("<option name=\"answer_"+i+"\" value=\"\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"</option>");
+                      	    }
+                        }
+                        out.println("<input type=\"text\" id=\"openanswer"+i+"\" name=\"answer_"+i+"\" value=\"\" style=\"display:none\"/>");
+                        out.println("</td></tr>");
+                	}
+                  	else
+                  	{
+                    	String inputType = "radio";
+                    	if (style.equals("checkbox")) {
+                          inputType = "checkbox";
+                        }
+                     	Iterator itA = answers.iterator();
+                    	int isOpened = 0;
+                    	while (itA.hasNext())
+                    	{
+                        	Answer answer = (Answer) itA.next();
+                        	if (answer.isOpened())
+                        	{
+                            	isOpened = 1;
+                            	out.println("<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"<BR><input type=\"text\" size=\"20\" name=\"openedAnswer_"+i+"\"></td></tr>");
+                        	}
+                        	else
+                        	{
+                            	if (answer.getImage() == null) {
+                                  	out.println("<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\" width=\"100%\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"</td></tr>");
+                            	} else {
+                                  	String url = "";
+        	                      	if (answer.getImage().startsWith("/"))
+        	                      	{
+        	                      		url = answer.getImage()+"&Size=266x150";
+        	                      	}
+        	                      	else
+        	                      	{
+                                        url = FileServerUtils.getUrl(surveyScc.getSpaceId(), surveyScc.getComponentId(), answer.getImage(), answer.getImage(), "image/gif", settings.getString("imagesSubDirectory"));
+                                    }
+                                    out.println("<tr><td width=\"40px\" align=\"center\"><input type=\""+inputType+"\" name=\"answer_"+i+"\" value=\"\" checked></td><td align=\"left\">"+EncodeHelper.javaStringToHtmlString(answer.getLabel())+"<br>");
+                                    out.println("<img src=\""+url+"\" border=\"0\"></td><td>");
+                              	}
+                        	}
+                    	} // {while}
+                  }
+              }
+              i++;
+              %>
+              </table>
+              <%
+              out.println(board.printAfter());
+              if (j<questionsV.size()-1) {
+                out.println("<br>");
+              }
+          } // {for}
+%>
+</form>
+<% } else { %>
+        <br><fmt:message key="SurveyWithNoQuestions" /><br><br>
+<% } %>
+    </center>
+    <%
+    out.println(frame.printMiddle());
+    Button voteButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "questionsUpdate.jsp?Action=SendQuestions", false);
+    out.println("<center>"+voteButton.print()+"</center>");
+    out.println(frame.printAfter());
+} catch( Exception e){
+    throw new SurveyException("SurveyUtils_JSP.displayQuestionsUpdateView",SurveyException.WARNING,"Survey.EX_CANNOT_DISPLAY_UPDATEVIEW",e);
+}
           
 %>
-          <form name="questionForm" action="questionCreatorBis.jsp" method="post" enctype="multipart/form-data">
-          <input type="hidden" name="Action" value="CreateQuestion">
-          </form>
-<%
-          out.println(window.printAfter());
-%>
+    <!-- questionCreatorBis.jsp -->
+    <form name="questionForm" action="manageQuestions.jsp" method="post" enctype="multipart/form-data">
+      <input type="hidden" name="Action" value="CreateQuestion" id="questionFormActionId">
+      <input type="hidden" name="QuestionId" value="" id="questionFormQuestionId">
+    </form>
+    <form name="deleteQuestionForm" action="questionsUpdate.jsp" method="get">
+      <input type="hidden" name="QId" value="" id="delQuestionFormId">
+      <input type="hidden" name="Action" value="DeleteQuestion">
+    </form>
+</view:window>
+<div id="modalDialogContentDivId" title="" style="display:none;">
+  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span><fmt:message key="survey.question.delete.confirm"/></p>
+</div>
 </body>
 </html>
-<% } %>

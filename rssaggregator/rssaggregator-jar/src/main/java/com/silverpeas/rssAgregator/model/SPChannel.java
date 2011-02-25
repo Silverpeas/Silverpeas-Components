@@ -35,10 +35,8 @@ import de.nava.informa.impl.basic.Channel;
  * @author neysseri
  */
 public class SPChannel extends SilverpeasBean implements Serializable {
-  /**
-   * 
-   */
-  private static final long serialVersionUID = 1L;
+
+  private static final long serialVersionUID = 2610576839907057656L;
   private String instanceId;
   private String url;
   private int nbDisplayedItems = 100;
@@ -48,30 +46,45 @@ public class SPChannel extends SilverpeasBean implements Serializable {
   private String creationDate;
   private Channel channel;
 
+  /**
+   * Default constructor
+   */
   public SPChannel() {
     super();
   }
 
   public SPChannel(String url) {
     setPK(new SPChannelPK("undefined"));
-    setUrl(url);
+    this.url = url;
   }
 
   public SPChannel(String id, String url) {
     setPK(new SPChannelPK(id));
-    setUrl(url);
+    this.url = url;
   }
 
+  /**
+   * Constructor with parameters
+   * @param id the channel identifier
+   * @param url the RSS url
+   * @param instanceId the instance identifier
+   */
   public SPChannel(String id, String url, String instanceId) {
-    setPK(new SPChannelPK(id));
-    setInstanceId(instanceId);
-    setUrl(url);
+    this(id, url);
+    this.instanceId = instanceId;
   }
 
+  /**
+   * @return String representation URL
+   */
   public String getUrl() {
     return url;
   }
 
+  /**
+   * Set url
+   * @param url the url to set
+   */
   public void setUrl(String url) {
     this.url = url;
   }
@@ -84,49 +97,49 @@ public class SPChannel extends SilverpeasBean implements Serializable {
   }
 
   /**
-   * @return
+   * @return the creator identifier
    */
   public String getCreatorId() {
     return creatorId;
   }
 
   /**
-   * @return
+   * @return number of displayed items
    */
   public int getNbDisplayedItems() {
     return nbDisplayedItems;
   }
 
   /**
-   * @param string
+   * @param creationDate the creation date
    */
   public void setCreationDate(String creationDate) {
     this.creationDate = creationDate;
   }
 
   /**
-   * @param string
+   * @param creatorId the creator identifier
    */
   public void setCreatorId(String creatorId) {
     this.creatorId = creatorId;
   }
 
   /**
-   * @param i
+   * @param nbDisplayedItems
    */
-  public void setNbDisplayedItems(int i) {
-    this.nbDisplayedItems = i;
+  public void setNbDisplayedItems(int nbDisplayedItems) {
+    this.nbDisplayedItems = nbDisplayedItems;
   }
 
   /**
-   * @return
+   * @return the instance identifier
    */
   public String getInstanceId() {
     return instanceId;
   }
 
   /**
-   * @param string
+   * @param instanceId the instance identifier to set
    */
   public void setInstanceId(String instanceId) {
     this.instanceId = instanceId;
@@ -137,10 +150,11 @@ public class SPChannel extends SilverpeasBean implements Serializable {
   }
 
   public int compareTo(Object obj) {
-    if (!(obj instanceof SPChannel))
+    if (!(obj instanceof SPChannel)) {
       return 0;
-    return (String.valueOf(getPK().getId())).compareTo(String
-        .valueOf(((SPChannel) obj).getPK().getId()));
+    }
+    return (String.valueOf(getPK().getId())).compareTo(String.valueOf(((SPChannel) obj).getPK()
+        .getId()));
   }
 
   public String _getTableName() {

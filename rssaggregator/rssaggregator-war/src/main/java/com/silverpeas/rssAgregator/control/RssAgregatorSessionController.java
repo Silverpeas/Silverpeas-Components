@@ -31,14 +31,18 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 
 import com.silverpeas.rssAgregator.model.RssAgregatorException;
 import com.silverpeas.rssAgregator.model.SPChannel;
 import com.silverpeas.rssAgregator.model.SPChannelPK;
+import com.silverpeas.util.template.SilverpeasTemplate;
+import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 
 import de.nava.informa.core.ParseException;
@@ -47,7 +51,7 @@ import de.nava.informa.impl.basic.ChannelBuilder;
 import de.nava.informa.parsers.FeedParser;
 
 /**
- * Standard Session Controller Constructeur
+ * Standard Session Controller Constructor
  * @author neysseri
  * @since 27/08/2004
  * @param mainSessionCtrl The user's profile
@@ -156,7 +160,7 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
     SilverTrace.debug("rssAgregator",
         "RssAgregatorSessionController.updateChannel",
         "root.MSG_GEN_PARAM_VALUE", "channelPK = "
-        + currentChannel.getPK().getId());
+            + currentChannel.getPK().getId());
     if (currentChannel != null
         && currentChannel.getPK().getId().equals(channel.getPK().getId())) {
       urlHaveChanged = !currentChannel.getUrl().equals(channel.getUrl());
@@ -211,21 +215,16 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
         channel = (Channel) FeedParser.parse(channelBuilder, url);
       }
     } catch (MalformedURLException e) {
-      throw new RssAgregatorException(
-          "RssAgregatorSessionController.getChannelFromUrl",
+      throw new RssAgregatorException("RssAgregatorSessionController.getChannelFromUrl",
           SilverpeasException.WARNING, "RssAgregator.EX_URL_IS_NOT_VALID", e);
     } catch (IOException e) {
-      throw new RssAgregatorException(
-          "RssAgregatorSessionController.getChannelFromUrl",
-          SilverpeasException.WARNING, "RssAgregator.EX_URL_IS_NOT_REATCHABLE",
-          e);
+      throw new RssAgregatorException("RssAgregatorSessionController.getChannelFromUrl",
+          SilverpeasException.WARNING, "RssAgregator.EX_URL_IS_NOT_REATCHABLE", e);
     } catch (ParseException e) {
-      throw new RssAgregatorException(
-          "RssAgregatorSessionController.getChannelFromUrl",
+      throw new RssAgregatorException("RssAgregatorSessionController.getChannelFromUrl",
           SilverpeasException.WARNING, "RssAgregator.EX_RSS_BAD_FORMAT", e);
     }
-    SilverTrace.debug("rssAgregator",
-        "RssAgregatorSessionController.getChannelFromUrl",
+    SilverTrace.debug("rssAgregator", "RssAgregatorSessionController.getChannelFromUrl",
         "root.MSG_GEN_EXIT_METHOD");
     return channel;
   }
@@ -247,4 +246,26 @@ public class RssAgregatorSessionController extends AbstractComponentSessionContr
     return dateFormatter;
   }
 
+  /**
+   * 
+   * @return HTML string content of RSS presentation
+   */
+  public String getRSSIntroductionContent() {
+    SilverpeasTemplate rssTemplate = getNewTemplate();
+    return rssTemplate.applyFileTemplate("introductionRSS_" + this.getLanguage());
+  }
+  
+  /**
+   * @return an RSS aggregator Silverpeas Template
+   */
+  private SilverpeasTemplate getNewTemplate() {
+    ResourceLocator rs =
+        new ResourceLocator("com.silverpeas.rssAgregator.settings.rssAgregatorSettings", "");
+    Properties templateConfiguration = new Properties();
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs
+        .getString("templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs
+        .getString("customersTemplatePath"));
+    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
+  }
 }

@@ -822,7 +822,7 @@ function loadNodeData(node, fnLoadComplete)  {
 						{
 							alert(data);
 						}
-					});
+					}, 'text');
 		}
 	}
 
@@ -842,7 +842,7 @@ function loadNodeData(node, fnLoadComplete)  {
 						} else {
 							alert(data);
 						}
-					});
+					}, 'text');
 		}
 	}
 
@@ -907,7 +907,7 @@ function loadNodeData(node, fnLoadComplete)  {
 					{
 						alert(data);
 					}
-				});
+				}, 'text');
 	}
 
 	function pasteFromOperations()
@@ -1378,7 +1378,7 @@ function loadNodeData(node, fnLoadComplete)  {
 					//display dNd according rights
 					checkDnD(id, data);
 					checkOperations(id, data);
-				});
+				}, 'text');
 	}
 
 	function displayPublications(id)

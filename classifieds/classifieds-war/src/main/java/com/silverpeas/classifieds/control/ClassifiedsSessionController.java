@@ -49,6 +49,7 @@ import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
@@ -65,6 +66,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   private Map<String, String> fields1 = createListField(getSearchFields1());
   private Map<String, String> fields2 = createListField(getSearchFields2());
   private CommentService commentService = null;
+  private ResourcesWrapper resources = null;
 
   /**
    * Standard Session Controller Constructeur
@@ -92,6 +94,17 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
             SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
     }
+  }
+
+  /**
+   * Gets the resources associated with this session controller.
+   * @return all of the resources (messages, settings, icons, ...)
+   */
+  public synchronized  ResourcesWrapper getResources() {
+    if (resources == null) {
+      resources = new ResourcesWrapper(getMultilang(), getIcon(), getSettings(), getLanguage());
+    }
+    return resources;
   }
 
   /**

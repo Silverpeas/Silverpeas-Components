@@ -59,35 +59,18 @@ public class RssAgregatorCache {
    * Get an instance of RssAgregatorCache
    */
   public final static RssAgregatorCache getInstance() {
-    if (instance == null)
+    if (instance == null) {
       instance = new RssAgregatorCache();
+    }
     return instance;
   }
-
-  /**
-   * Add or replace a content in the cache
-   */
-  /*
-   * public void addContentToCache(String id, StringBuffer content) { // Store content informations
-   * to cache cache.put(id, content); // Store time of content informations storage long currentTime
-   * = System.currentTimeMillis(); cacheLastRefresh.put(id, new Long(currentTime)); }
-   */
 
   /**
    * Get a cached content. If content is not cached, return null.
    */
   public SPChannel getChannelFromCache(SPChannelPK key) {
-    return (SPChannel) cache.get(key);
+    return cache.get(key);
   }
-
-  /**
-   * Add or replace a content in the cache
-   */
-  /*
-   * public void addChannelsToCache(String instanceId, List channels) { // Store channels to cache
-   * cache.put(instanceId, channels); // Store time of content informations storage long currentTime
-   * = System.currentTimeMillis(); cacheNextRefresh.put(instanceId, new Long(currentTime)); }
-   */
 
   /**
    * Add or replace a content in the cache
@@ -105,20 +88,17 @@ public class RssAgregatorCache {
     cacheNextRefresh.put(key, new Long(currentTime + refreshRate));
   }
 
+  /**
+   * 
+   * @param key of the channel to remove from the cache
+   */
   public void removeChannelFromCache(SPChannelPK key) {
     cache.remove(key);
     cacheNextRefresh.remove(key);
   }
 
   /**
-   * Get a cached content. If content is not cached, return null.
-   */
-  /*
-   * public StringBuffer getContentFromCache(String id) { return (StringBuffer) cache.get(id); }
-   */
-
-  /**
-   * Return true if a cached content need to be updated or a content is not cached.
+   * @return true if a cached content need to be updated or a content is not cached.
    */
   public boolean isContentNeedToRefresh(SPChannelPK key) {
     if (cache.get(key) == null) {

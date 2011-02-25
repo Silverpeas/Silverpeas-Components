@@ -23,51 +23,54 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<%@ include file="check.jsp" %>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%
-TaskDetail 		task 		= (TaskDetail) request.getAttribute("Task");
-String 			url 		= (String) request.getAttribute("URL");
-String 			userId 		= (String) request.getAttribute("UserId");
-Boolean			showAttTab 	= (Boolean) request.getAttribute("AbleToAddAttachments");
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
+
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<fmt:message var="defTab" key="projectManager.Definition"/>
+<fmt:message var="attachmentTab" key="GML.attachments"/>
+<fmt:message var="commentTab" key="projectManager.Commentaires"/>
+
+<c:set var="userId" value="${requestScope.UserId}"/>
+<c:set var="task" value="${requestScope.Task}"/>
+<c:set var="showAttTab" value="${requestScope.AbleToAddAttachments}"/>
+
 <html>
-<head>
-<title></title>
-<%
-    out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script language="javascript">
-</script>
+  <head>
+    <title></title>
+    <view:looknfeel/>
+    <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
 
-</head>
-<body>
-<%
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel, "Main");
-    browseBar.setExtraInformation(task.getNom());
-    
-    out.println(window.printBefore());
-    
-    TabbedPane tabbedPane = gef.getTabbedPane(1);
-    
-    tabbedPane.addTab(resource.getString("projectManager.Definition"), "ViewTask?Id="+task.getId(), false);
-    if (showAttTab.booleanValue())
-		tabbedPane.addTab(resource.getString("GML.attachments"), "ToTaskAttachments", false);
-	tabbedPane.addTab(resource.getString("projectManager.Commentaires"), "#", true);
-	
-    out.println(tabbedPane.print());
-    
-    out.println(frame.printBefore());
-    out.flush();
+  </head>
+  <body>
+    <view:browseBar extraInformations="${task.nom}"/>
+    <view:window>
 
-    getServletConfig().getServletContext().getRequestDispatcher("/comment/jsp/comments.jsp?id="+task.getId()+"&component_id="+task.getInstanceId()+"&userid="+userId+"&url="+url).include(request, response);
+      <view:tabs>
+        <view:tab action="ViewTask?Id=${task.id}" label="${defTab}" selected="false"/>
+        <c:if test="${showAttTab}">
+          <view:tab action="ToAttachments" label="${attachmentTab}" selected="false"/>
+        </c:if>
+        <view:tab action="#" label="${commentTab}" selected="true"/>
+      </view:tabs>
 
-    out.println(frame.printAfter());
-    out.println(window.printAfter());
-%>
-</body>
+      <view:frame>
+
+        <view:comments userId="${userId}" componentId="${task.instanceId}" resourceId="${task.id}"/>
+
+      </view:frame>
+    </view:window>
+  </body>
 </html>

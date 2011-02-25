@@ -3,4 +3,19 @@
 *.iml
 */**/target/*
 wiki/wiki-jar/Test de base/
+<<<<<<< HEAD
 /scheduleevent/scheduleevent-config/.settings/
+=======
+
+/survey/survey-config/.settings
+/survey/survey-jar/.settings
+/survey/survey-war/.settings
+/rssaggregator/rssaggregator-config/.settings
+/rssaggregator/rssaggregator-jar/.settings
+/rssaggregator/rssaggregator-war/.settings
+/rssaggregator/rssaggregator-jar/.classpath
+/rssaggregator/rssaggregator-jar/.project
+/rssaggregator/rssaggregator-war/.project
+/rssaggregator/rssaggregator-war/.classpath
+/rssaggregator/rssaggregator-config/.project
+>>>>>>> master
