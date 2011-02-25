@@ -47,6 +47,12 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
 
   private static final long serialVersionUID = -1921269596127652643L;
 
+  private static final String COMPONENT_NAME = "survey";
+
+  /**
+   * @param profiles
+   * @return string representation of current user flag
+   */
   public String getFlag(String[] profiles) {
     String flag = "user";
     for (int i = 0; i < profiles.length; i++) {
@@ -57,7 +63,6 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
           flag = profiles[i];
         }
       }
-
       // if admin, return it, we won't find a better profile
       if (profiles[i].equals("admin")) {
         return profiles[i];
@@ -66,33 +71,30 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
     return flag;
   }
 
+  @Override
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
-    ComponentSessionController component =
-        (ComponentSessionController) new SurveySessionController(
-            mainSessionCtrl, componentContext);
-    return component;
+    return new SurveySessionController(mainSessionCtrl, componentContext);
   }
 
-  /**
-   * This method has to be implemented in the component request rooter class. returns the session
-   * control bean name to be put in the request object ex : for almanach, returns "almanach"
-   */
+  @Override
   public String getSessionControlBeanName() {
-    return "surveyScc";
+    return COMPONENT_NAME;
   }
 
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
    * @param function The entering request function (ex : "Main.jsp")
-   * @param componentSC The component Session Control, build and initialised.
+   * @param componentSC The component Session Control, build and initialized.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
+  @Override
   public String getDestination(String function, ComponentSessionController componentSC,
       HttpServletRequest request) {
-    SilverTrace.info("Survey", "SurveyRequestRouter.getDestination", "Survey.MSG_ENTRY_METHOD");
+    SilverTrace.info(COMPONENT_NAME, "SurveyRequestRouter.getDestination",
+        "Survey.MSG_ENTRY_METHOD");
 
     String flag = getFlag(componentSC.getUserRoles());
     String rootDest = "/survey/jsp/";
@@ -101,13 +103,14 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
       surveySC.setParticipationMultipleAllowedForUser(true);
     }
 
-    SilverTrace.info("Survey", "SurveyRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-        "surveyId=" + surveySC.getSessionSurveyId());
-    SilverTrace.info("Survey", "SurveyRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-        "surveyId=" + request.getParameter("SurveyId"));
+    SilverTrace.info(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "surveyId=" + surveySC.getSessionSurveyId());
+    SilverTrace.info(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE", "surveyId=" + request.getParameter("SurveyId"));
 
     surveySC.setPollingStationMode(false);
-    SilverTrace.info("Survey", "SurveyRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
+    SilverTrace.info(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
+        "root.MSG_GEN_PARAM_VALUE",
         "getComponentRootName() = " + surveySC.getComponentRootName());
     if ("pollingStation".equals(surveySC.getComponentRootName())) {
       surveySC.setPollingStationMode(true);
@@ -132,33 +135,23 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
       }
     } else if (function.equals("UpdateSurvey")) {
       String surveyId = request.getParameter("SurveyId");
-
       try {
         // vérouiller l'enquête
         surveySC.closeSurvey(surveyId);
-
         // supprimer les participations
         surveySC.deleteVotes(surveyId);
       } catch (Exception e) {
-        SilverTrace.warn("Survey", "SurveyRequestRouter.getDestination()",
+        SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
             "root.EX_USERPANEL_FAILED", "function = " + function, e);
       }
-      //TODO prepare data before transmitting to the view
-      //TODO get business rules that are already defined inside JSP view.
       destination = rootDest + "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId=" + surveyId;
-    }
-    /*
-     * else if (function.startsWith("AfterSendVote")) { String id = request.getParameter("Id");
-     * request.setAttribute("Profile", flag); destination = rootDest +
-     * "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId="+id; }
-     */
-    else if (function.equals("ViewListResult")) {
+    } else if (function.equals("ViewListResult")) {
       String answerId = request.getParameter("AnswerId");
       Collection<String> users = new ArrayList<String>();
       try {
         users = surveySC.getUsersByAnswer(answerId);
       } catch (Exception e) {
-        SilverTrace.warn("Survey", "SurveyRequestRouter.getDestination()",
+        SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
             "root.EX_USERPANEL_FAILED", "function = " + function, e);
       }
       request.setAttribute("Users", users);
@@ -169,7 +162,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
       try {
         users = surveySC.getUsersBySurvey(surveyId);
       } catch (Exception e) {
-        SilverTrace.warn("Survey", "SurveyRequestRouter.getDestination()",
+        SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
             "root.EX_USERPANEL_FAILED", "function = " + function, e);
       }
       request.setAttribute("Users", users);
@@ -182,7 +175,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
       try {
         result = surveySC.getResultByUser(userId);
       } catch (Exception e) {
-        SilverTrace.warn("Survey", "SurveyRequestRouter.getDestination()",
+        SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
             "root.EX_USERPANEL_FAILED", "function = " + function, e);
       }
       request.setAttribute("ResultUser", result);
@@ -196,18 +189,18 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
       request.setAttribute("Profile", flag);
       destination = rootDest + "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId=" + id;
     } else if (function.equals("ToAlertUser")) {
-      SilverTrace.debug("Survey", "SurveyRequestRouter.getDestination()",
+      SilverTrace.debug(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
           "root.MSG_GEN_PARAM_VALUE", "ToAlertUser: function = " + function + " spaceId=" +
               surveySC.getSpaceId() + " componentId=" + surveySC.getComponentId());
       String surveyId = request.getParameter("SurveyId");
       try {
         destination = surveySC.initAlertUser(surveyId);
       } catch (Exception e) {
-        SilverTrace.warn("Survey", "SurveyRequestRouter.getDestination()",
+        SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
             "root.EX_USERPANEL_FAILED", "function = " + function, e);
       }
 
-      SilverTrace.debug("Survey", "SurveyRequestRouter.getDestination()",
+      SilverTrace.debug(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
           "root.MSG_GEN_PARAM_VALUE", "ToAlertUser: function = " + function + "=> destination=" +
               destination);
     } else if (function.equals("ExportCSV")) {
@@ -227,8 +220,8 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
       try {
         surveySC.copySurvey(surveyId);
       } catch (Exception e) {
-        SilverTrace.warn("Survey", "SurveyRequestRouter.getDestination()", "root.EX_COPY_FAILED",
-            "function = " + function, e);
+        SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
+            "root.EX_COPY_FAILED", "function = " + function, e);
       }
       destination =
           URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp?message=REFRESHCLIPBOARD";
@@ -236,10 +229,26 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
       try {
         surveySC.paste();
       } catch (Exception e) {
-        SilverTrace.warn("Survey", "SurveyRequestRouter.getDestination()", "root.EX_CUT_FAILED",
-            "function = " + function, e);
+        SilverTrace.warn(COMPONENT_NAME, "SurveyRequestRouter.getDestination()",
+            "root.EX_CUT_FAILED", "function = " + function, e);
       }
       destination = URLManager.getURL(URLManager.CMP_CLIPBOARD) + "Idle.jsp";
+    } else if ("questionsUpdate.jsp".equals(function)) {
+      // Retrieve current action
+      surveySC.questionsUpdateBusinessModel(request);
+
+      request.setAttribute("SurveyName", surveySC.getSessionSurveyName());
+      request.setAttribute("Questions", surveySC.getSessionQuestions());
+      request.setAttribute("Profile", flag);
+      destination = rootDest + function;
+    } else if ("questionCreatorBis.jsp".equals(function) || "manageQuestions.jsp".equals(function)) {
+      request.setAttribute("Gallery", surveySC.getGalleries());
+      request.setAttribute("QuestionStyles", surveySC.getListQuestionStyle());
+      request.setAttribute("Profile", flag);
+      String view = surveySC.manageQuestionBusiness(function, request);
+      request.setAttribute("Questions", surveySC.getSessionQuestions());
+      request.setAttribute("SurveyName", surveySC.getSessionSurveyName());
+      destination = rootDest + view;
     } else {
       request.setAttribute("Profile", flag);
       destination = rootDest + function;
@@ -250,10 +259,6 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
           GeneralPropertiesManager.getGeneralResourceLocator().getString("sessionTimeout");
       destination = sessionTimeout;
     }
-    // else {
-    // destination = "/survey/jsp/" + destination;
-    // }
-
     return destination;
   }
 

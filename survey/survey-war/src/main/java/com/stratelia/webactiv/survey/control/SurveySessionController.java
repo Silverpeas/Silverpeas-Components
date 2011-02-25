@@ -25,6 +25,8 @@
 package com.stratelia.webactiv.survey.control;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,6 +42,9 @@ import java.util.Vector;
 
 import javax.ejb.EJBException;
 import javax.ejb.RemoveException;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.ui.UIHelper;
 import com.silverpeas.util.ForeignPK;
@@ -48,6 +53,7 @@ import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.silverpeas.util.web.servlet.FileUploadUtil;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -62,11 +68,14 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.survey.SurveyException;
+import com.stratelia.webactiv.survey.servlets.SurveyRequestRouter;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.answer.model.Answer;
+import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.question.model.Question;
 import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBm;
 import com.stratelia.webactiv.util.questionContainer.control.QuestionContainerBmHome;
@@ -78,6 +87,9 @@ import com.stratelia.webactiv.util.questionResult.control.QuestionResultBm;
 import com.stratelia.webactiv.util.questionResult.control.QuestionResultBmHome;
 import com.stratelia.webactiv.util.questionResult.model.QuestionResult;
 
+/**
+ * This class contains business layer of survey component
+ */
 public class SurveySessionController extends AbstractComponentSessionController {
 
   private QuestionContainerBm questionContainerBm = null;
@@ -85,8 +97,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   private QuestionContainerDetail sessionSurveyUnderConstruction = null;
   private QuestionContainerDetail sessionSurvey = null;
-  private Vector sessionQuestions = null;
-  private Hashtable sessionResponses = null;
+  private List<Question> sessionQuestions = null;
+  private Hashtable<String, Vector<String>> sessionResponses = null;
   private String sessionSurveyId = null;
   private String sessionSurveyName = null;
 
@@ -110,6 +122,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   }
 
+  /**
+   * Instantiate a question Container Bean Manager
+   */
   private void setQuestionContainerBm() {
     if (questionContainerBm == null) {
       try {
@@ -260,10 +275,14 @@ public class SurveySessionController extends AbstractComponentSessionController 
     return viewType;
   }
 
+  /**
+   * @return a list of survey of the current instance of component.
+   * @throws SurveyException
+   */
   public Collection<QuestionContainerHeader> getSurveys() throws SurveyException {
-    SilverTrace.info("Survey", "SurveySessionClientController.getSurveys",
+    SilverTrace.info("Survey", "SurveySessionController.getSurveys",
         "Survey.MSG_ENTRY_METHOD");
-    if (getViewType() == OPENED_SURVEYS_VIEW){
+    if (getViewType() == OPENED_SURVEYS_VIEW) {
       return getOpenedSurveys();
     }
     if (getViewType() == CLOSED_SURVEYS_VIEW) {
@@ -276,52 +295,48 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public Collection<QuestionContainerHeader> getOpenedSurveys() throws SurveyException {
-    SilverTrace.info("Survey", "SurveySessionClientController.getOpenedSurveys",
+    SilverTrace.info("Survey", "SurveySessionController.getOpenedSurveys",
         "Survey.MSG_ENTRY_METHOD");
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
       return questionContainerBm.getOpenedQuestionContainers(qcPK);
     } catch (Exception e) {
-      throw new SurveyException(
-          "SurveySessionClientController.getOpenedSurveys",
-          SurveyException.WARNING,
-          "Survey.EX_NO_OPENED_SURVEY",
-          e);
+      throw new SurveyException("SurveySessionController.getOpenedSurveys",
+          SurveyException.WARNING, "Survey.EX_NO_OPENED_SURVEY", e);
     }
   }
 
   public Collection<QuestionContainerHeader> getClosedSurveys() throws SurveyException {
-    SilverTrace.info("Survey", "SurveySessionClientController.getClosedSurveys",
+    SilverTrace.info("Survey", "SurveySessionController.getClosedSurveys",
         "Survey.MSG_ENTRY_METHOD");
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
       return questionContainerBm.getClosedQuestionContainers(qcPK);
     } catch (Exception e) {
-      throw new SurveyException(
-          "SurveySessionClientController.getClosedSurveys",
-          SurveyException.WARNING,
-          "Survey.EX_NO_CLOSED_SURVEY",
-          e);
+      throw new SurveyException("SurveySessionController.getClosedSurveys",
+          SurveyException.WARNING, "Survey.EX_NO_CLOSED_SURVEY", e);
     }
   }
 
   public Collection<QuestionContainerHeader> getInWaitSurveys() throws SurveyException {
-    SilverTrace.info("Survey", "SurveySessionClientController.getInWaitSurveys",
+    SilverTrace.info("Survey", "SurveySessionController.getInWaitSurveys",
         "Survey.MSG_ENTRY_METHOD");
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
       return questionContainerBm.getInWaitQuestionContainers(qcPK);
     } catch (Exception e) {
-      throw new SurveyException(
-          "SurveySessionClientController.getInWaitSurveys",
-          SurveyException.WARNING,
-          "Survey.EX_NO_WAIT_SURVEY",
-          e);
+      throw new SurveyException("SurveySessionController.getInWaitSurveys",
+          SurveyException.WARNING, "Survey.EX_NO_WAIT_SURVEY", e);
     }
   }
 
+  /**
+   * @param surveyId the survey identifier
+   * @return the question container detail of the survey given in parameter
+   * @throws SurveyException
+   */
   public QuestionContainerDetail getSurvey(String surveyId) throws SurveyException {
-    SilverTrace.info("Survey", "SurveySessionClientController.getSurvey",
+    SilverTrace.info("Survey", "SurveySessionController.getSurvey",
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
@@ -329,129 +344,98 @@ public class SurveySessionController extends AbstractComponentSessionController 
       qc.getHeader().setNbRegistered(getNbRegistered());
       return qc;
     } catch (Exception e) {
-      throw new SurveyException(
-          "SurveySessionClientController.getSurvey",
-          SurveyException.WARNING,
-          "Survey.EX_NO_SURVEY",
-          "id = " + surveyId,
-          e);
+      throw new SurveyException("SurveySessionController.getSurvey", SurveyException.WARNING,
+          "Survey.EX_NO_SURVEY", "id = " + surveyId, e);
     }
   }
 
   public QuestionContainerPK createSurvey(QuestionContainerDetail surveyDetail)
       throws SurveyException {
-    SilverTrace.info(
-        "Survey",
-        "SurveySessionClientController.createSurvey",
-        "Survey.MSG_ENTRY_METHOD",
+    SilverTrace.info("Survey", "SurveySessionController.createSurvey", "Survey.MSG_ENTRY_METHOD",
         "title = " + surveyDetail.getHeader().getTitle());
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(null, getSpaceId(), getComponentId());
       return questionContainerBm.createQuestionContainer(qcPK, surveyDetail, getUserId());
     } catch (Exception e) {
-      throw new SurveyException(
-          "SurveySessionClientController.createSurvey",
-          SurveyException.WARNING,
-          "Survey.EX_PROBLEM_TO_CREATE",
-          "title = " + surveyDetail.getHeader().getTitle(),
-          e);
+      throw new SurveyException("SurveySessionController.createSurvey", SurveyException.WARNING,
+          "Survey.EX_PROBLEM_TO_CREATE", "title = " + surveyDetail.getHeader().getTitle(), e);
     }
   }
 
   public QuestionContainerPK createSurvey(QuestionContainerDetail surveyDetail, String componentId)
       throws SurveyException {
-    SilverTrace.info("Survey", "SurveySessionClientController.createSurvey",
+    SilverTrace.info("Survey", "SurveySessionController.createSurvey",
         "Survey.MSG_ENTRY_METHOD", "title = " + surveyDetail.getHeader().getTitle());
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(null, null, componentId);
       return questionContainerBm.createQuestionContainer(qcPK, surveyDetail, getUserId());
     } catch (Exception e) {
-      throw new SurveyException("SurveySessionClientController.createSurvey",
-          SurveyException.WARNING, "Survey.EX_PROBLEM_TO_CREATE", "title = "
-              + surveyDetail.getHeader().getTitle(), e);
+      throw new SurveyException("SurveySessionController.createSurvey", SurveyException.WARNING,
+          "Survey.EX_PROBLEM_TO_CREATE", "title = " + surveyDetail.getHeader().getTitle(), e);
     }
   }
 
   public void updateSurveyHeader(QuestionContainerHeader surveyHeader, String surveyId)
       throws SurveyException {
-    SilverTrace.info("Survey", "SurveySessionClientController.updateSurveyHeader",
+    SilverTrace.info("Survey", "SurveySessionController.updateSurveyHeader",
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId + ", title = " + surveyHeader.getTitle());
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       surveyHeader.setPK(qcPK);
       questionContainerBm.updateQuestionContainerHeader(surveyHeader);
     } catch (Exception e) {
-      throw new SurveyException(
-          "SurveySessionClientController.updateSurveyHeader",
-          SurveyException.WARNING,
-          "Survey.EX_PROBLEM_TO_UPDATE_SURVEY",
-          "id = " + surveyId + ", title = " + surveyHeader.getTitle(),
-          e);
+      throw new SurveyException("SurveySessionController.updateSurveyHeader",
+          SurveyException.WARNING, "Survey.EX_PROBLEM_TO_UPDATE_SURVEY", "id = " + surveyId +
+              ", title = " + surveyHeader.getTitle(), e);
     }
   }
 
   public void updateQuestions(Collection<Question> questions, String surveyId)
       throws SurveyException {
-    SilverTrace.info("Survey", "SurveySessionClientController.updateQuestions",
+    SilverTrace.info("Survey", "SurveySessionController.updateQuestions",
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerBm.updateQuestions(qcPK, questions);
     } catch (Exception e) {
-      throw new SurveyException(
-          "SurveySessionClientController.updateQuestions",
-          SurveyException.WARNING,
-          "Survey.EX_PROBLEM_TO_UPDATE_QUESTION",
-          "id = " + surveyId,
-          e);
+      throw new SurveyException("SurveySessionController.updateQuestions", SurveyException.WARNING,
+          "Survey.EX_PROBLEM_TO_UPDATE_QUESTION", "id = " + surveyId, e);
     }
   }
 
   public void deleteSurvey(String surveyId) throws SurveyException {
-    SilverTrace.info("Survey", "SurveySessionClientController.deleteSurvey",
+    SilverTrace.info("Survey", "SurveySessionController.deleteSurvey",
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerBm.deleteQuestionContainer(qcPK);
     } catch (Exception e) {
-      throw new SurveyException(
-          "SurveySessionClientController.deleteSurvey",
-          SurveyException.WARNING,
-          "Survey.EX_PROBLEM_TO_DELETE_SURVEY",
-          "id = " + surveyId,
-          e);
+      throw new SurveyException("SurveySessionController.deleteSurvey", SurveyException.WARNING,
+          "Survey.EX_PROBLEM_TO_DELETE_SURVEY", "id = " + surveyId, e);
     }
   }
 
   public void deleteVotes(String surveyId) throws SurveyException {
-    SilverTrace.info("Survey", "SurveySessionClientController.deleteVotes",
+    SilverTrace.info("Survey", "SurveySessionController.deleteVotes",
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerBm.deleteVotes(qcPK);
     } catch (Exception e) {
-      throw new SurveyException(
-          "SurveySessionClientController.deleteSurvey",
-          SurveyException.WARNING,
-          "Survey.EX_PROBLEM_TO_DELETE_SURVEY",
-          "id = " + surveyId,
-          e);
+      throw new SurveyException("SurveySessionController.deleteSurvey", SurveyException.WARNING,
+          "Survey.EX_PROBLEM_TO_DELETE_SURVEY", "id = " + surveyId, e);
     }
   }
 
   public void deleteResponse(String surveyId) throws SurveyException {
-    SilverTrace.info("Survey", "SurveySessionClientController.deleteQuestions",
+    SilverTrace.info("Survey", "SurveySessionController.deleteQuestions",
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerBm.deleteQuestionContainer(qcPK);
     } catch (Exception e) {
-      throw new SurveyException(
-          "SurveySessionClientController.deleteSurvey",
-          SurveyException.WARNING,
-          "Survey.EX_PROBLEM_TO_DELETE_SURVEY",
-          "id = " + surveyId,
-          e);
+      throw new SurveyException("SurveySessionController.deleteSurvey", SurveyException.WARNING,
+          "Survey.EX_PROBLEM_TO_DELETE_SURVEY", "id = " + surveyId, e);
     }
   }
 
@@ -461,12 +445,13 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   public Collection<String> getUserByQuestion(ForeignPK questionPK, boolean withName)
       throws RemoteException {
+    // return list declaration
+    Collection<String> users = new LinkedHashSet<String>();
     Collection<QuestionResult> results =
         getQuestionResultBm().getQuestionResultToQuestion(questionPK);
-    Collection<String> users = new LinkedHashSet<String>();
     Iterator<QuestionResult> it = results.iterator();
     while (it.hasNext()) {
-      QuestionResult result = (QuestionResult) it.next();
+      QuestionResult result = it.next();
 
       if (result != null) {
         String userName = "";
@@ -499,7 +484,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
               new ForeignPK(question.getPK()));
       result.addAll(questionResult);
     }
-    // ne récupérer que les id des réponses
+    // Only retrieve response identifiers
     Iterator<QuestionResult> itR = result.iterator();
     while (itR.hasNext()) {
       QuestionResult question = itR.next();
@@ -513,34 +498,26 @@ public class SurveySessionController extends AbstractComponentSessionController 
   }
 
   public void closeSurvey(String surveyId) throws SurveyException {
-    SilverTrace.info("Survey", "SurveySessionClientController.closeSurvey",
+    SilverTrace.info("Survey", "SurveySessionController.closeSurvey",
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerBm.closeQuestionContainer(qcPK);
     } catch (Exception e) {
-      throw new SurveyException(
-          "SurveySessionClientController.closeSurvey",
-          SurveyException.WARNING,
-          "Survey.EX_PROBLEM_TO_CLOSE_SURVEY",
-          "id = " + surveyId,
-          e);
+      throw new SurveyException("SurveySessionController.closeSurvey", SurveyException.WARNING,
+          "Survey.EX_PROBLEM_TO_CLOSE_SURVEY", "id = " + surveyId, e);
     }
   }
 
   public void openSurvey(String surveyId) throws SurveyException {
-    SilverTrace.info("Survey", "SurveySessionClientController.openSurvey",
+    SilverTrace.info("Survey", "SurveySessionController.openSurvey",
         "Survey.MSG_ENTRY_METHOD", "id = " + surveyId);
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerBm.openQuestionContainer(qcPK);
     } catch (Exception e) {
-      throw new SurveyException(
-          "SurveySessionClientController.openSurvey",
-          SurveyException.WARNING,
-          "Survey.EX_PROBLEM_TO_OPEN_SURVEY",
-          "id = " + surveyId,
-          e);
+      throw new SurveyException("SurveySessionController.openSurvey", SurveyException.WARNING,
+          "Survey.EX_PROBLEM_TO_OPEN_SURVEY", "id = " + surveyId, e);
     }
   }
 
@@ -550,8 +527,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerBm.recordReplyToQuestionContainerByUser(qcPK, getUserId(), reply);
     } catch (Exception e) {
-      throw new SurveyException("SurveySessionClientController.recordReply",
-          SurveyException.WARNING,
+      throw new SurveyException("SurveySessionController.recordReply", SurveyException.WARNING,
           "Survey.EX_RECORD_REPLY_FAILED", "id = " + surveyId, e);
     }
   }
@@ -563,8 +539,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       questionContainerBm.recordReplyToQuestionContainerByUser(qcPK, getUserId(), reply, comment,
           isAnonymousComment);
     } catch (Exception e) {
-      throw new SurveyException("SurveySessionClientController.recordReply",
-          SurveyException.WARNING,
+      throw new SurveyException("SurveySessionController.recordReply", SurveyException.WARNING,
           "Survey.EX_RECORD_REPLY_FAILED", "id = " + surveyId, e);
     }
   }
@@ -574,12 +549,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       return questionContainerBm.getSuggestions(qcPK);
     } catch (Exception e) {
-      throw new SurveyException(
-          "SurveySessionClientController.getSuggestions",
-          SurveyException.WARNING,
-          "Survey.EX_PROBLEM_TO_RETURN_SUGGESTION",
-          "id = " + surveyId,
-          e);
+      throw new SurveyException("SurveySessionController.getSuggestions", SurveyException.WARNING,
+          "Survey.EX_PROBLEM_TO_RETURN_SUGGESTION", "id = " + surveyId, e);
     }
   }
 
@@ -622,12 +593,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
       QuestionContainerPK qcPK = new QuestionContainerPK(objectId, getSpaceId(), getComponentId());
       silverObjectId = questionContainerBm.getSilverObjectId(qcPK);
     } catch (Exception e) {
-      SilverTrace.error(
-          "survey",
-          "SurveySessionClientController.getSilverObjectId()",
-          "root.EX_CANT_GET_LANGUAGE_RESOURCE",
-          "objectId=" + objectId,
-          e);
+      SilverTrace.error("survey", "SurveySessionController.getSilverObjectId()",
+          "root.EX_CANT_GET_LANGUAGE_RESOURCE", "objectId=" + objectId, e);
     }
     return silverObjectId;
   }
@@ -658,11 +625,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
     setSessionSurvey(null);
   }
 
-  public Vector getSessionQuestions() {
+  public List<Question> getSessionQuestions() {
     return this.sessionQuestions;
   }
 
-  public void setSessionQuestions(Vector questions) {
+  public void setSessionQuestions(List<Question> questions) {
     this.sessionQuestions = questions;
   }
 
@@ -670,11 +637,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
     setSessionQuestions(null);
   }
 
-  public Hashtable getSessionResponses() {
+  public Hashtable<String, Vector<String>> getSessionResponses() {
     return this.sessionResponses;
   }
 
-  public void setSessionResponses(Hashtable responses) {
+  public void setSessionResponses(Hashtable<String, Vector<String>> responses) {
     this.sessionResponses = responses;
   }
 
@@ -816,9 +783,12 @@ public class SurveySessionController extends AbstractComponentSessionController 
     this.pollingStationMode = pollingStationMode;
   }
 
+  /**
+   * @return a list of component instance light of the silverpeas gallery
+   */
   public List<ComponentInstLight> getGalleries() {
     List<ComponentInstLight> galleries = null;
-    OrganizationController orgaController = new OrganizationController();
+    OrganizationController orgaController = getOrganizationController();
     String[] compoIds = orgaController.getCompoId("gallery");
     for (int c = 0; c < compoIds.length; c++) {
       if ("yes".equalsIgnoreCase(orgaController.getComponentParameterValue("gallery" + compoIds[c],
@@ -853,6 +823,10 @@ public class SurveySessionController extends AbstractComponentSessionController 
     addClipboardSelection((ClipboardSelection) questionContainerSelect);
   }
 
+  /**
+   * Paste surveys which are in the clipboard selection
+   * @throws Exception
+   */
   public void paste() throws Exception {
     Collection<ClipboardSelection> clipObjects = getClipboardSelectedObjects();
     Iterator<ClipboardSelection> clipObjectIterator = clipObjects.iterator();
@@ -871,6 +845,11 @@ public class SurveySessionController extends AbstractComponentSessionController 
     clipboardPasteDone();
   }
 
+  /**
+   * Paste a survey
+   * @param survey the QuestionContanerDetail to paste
+   * @throws Exception
+   */
   private void pasteSurvey(QuestionContainerDetail survey) throws Exception {
     String componentId = "";
     if (survey.getHeader().getInstanceId().equals(getComponentId())) {
@@ -924,6 +903,9 @@ public class SurveySessionController extends AbstractComponentSessionController 
     createSurvey(survey, componentId);
   }
 
+  /**
+   * @return a SilverpeasTemplate
+   */
   protected SilverpeasTemplate getNewTemplate() {
     ResourceLocator rs =
         new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", "");
@@ -934,4 +916,257 @@ public class SurveySessionController extends AbstractComponentSessionController 
         .getString("customersTemplatePath"));
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
+
+  /**
+   * prepare data inside session controller before sending them to the view layer
+   * @param request the current HttpServletRequest
+   */
+  public void questionsUpdateBusinessModel(HttpServletRequest request) {
+    String action = request.getParameter("Action");
+    String surveyId = request.getParameter("SurveyId");
+
+    if ("UpQuestion".equals(action)) {
+      // Move a question up
+      int qId = Integer.parseInt(request.getParameter("QId"));
+      List<Question> qV = this.getSessionQuestions();
+      Question q1 = qV.get(qId);
+      Question q2 = qV.get(qId - 1);
+      qV.set(qId - 1, q1);
+      qV.set(qId, q2);
+      this.setSessionQuestions(qV);
+      action = "UpdateQuestions";
+    } else if ("DownQuestion".equals(action)) {
+      // Move a question down
+      int qId = Integer.parseInt(request.getParameter("QId"));
+      List<Question> qV = this.getSessionQuestions();
+      Question q1 = (Question) qV.get(qId);
+      Question q2 = (Question) qV.get(qId + 1);
+      qV.set(qId + 1, q1);
+      qV.set(qId, q2);
+      this.setSessionQuestions(qV);
+      action = "UpdateQuestions";
+    } else if ("DeleteQuestion".equals(action)) {
+      // Delete a question
+      int qId = Integer.parseInt(request.getParameter("QId"));
+      List<Question> qV = this.getSessionQuestions();
+      if (qV != null && qV.size() >= qId + 1) {
+        qV.remove(qId);
+        this.setSessionQuestions(qV);
+      } else {
+        StringBuilder message = new StringBuilder();
+        message.append("Trying to delete a wrong question, questionIndexToDelete=").append(qId)
+            .append(", questions list size=").append(qV.size());
+        SilverTrace.warn("Survey", "SurveySessionController.questionsUpdateBusinessModel",message.toString());
+      }
+      action = "UpdateQuestions";
+    } else if ("SendQuestions".equals(action)) {
+      List<Question> qV = this.getSessionQuestions();
+      surveyId = this.getSessionSurveyId();
+      try {
+        this.updateQuestions(qV, surveyId);
+        request.setAttribute("UpdateSucceed", Boolean.TRUE);
+      } catch (SurveyException e) {
+        SilverTrace.error(this.getComponentName(), SurveyRequestRouter.class.getName(),
+            "update question error", e);
+        request.setAttribute("UpdateSucceed", Boolean.FALSE);
+      }
+      action = "UpdateQuestions";
+    }
+
+    if (StringUtil.isDefined(surveyId)) {
+      this.removeSessionSurveyId();
+      this.removeSessionQuestions();
+      this.removeSessionSurveyName();
+      List<Question> questionsV = new ArrayList<Question>();
+      QuestionContainerDetail survey = null;
+      try {
+        survey = this.getSurvey(surveyId);
+        Collection<Question> questions = survey.getQuestions();
+        // Cast Collection to List
+        questionsV = new ArrayList<Question>(questions);
+      } catch (SurveyException e) {
+        SilverTrace.error("survey", SurveyRequestRouter.class.getName(),
+            "getDestination error when retrieving a survey", e);
+      }
+      this.setSessionQuestions(questionsV);
+      this.setSessionSurveyId(surveyId);
+      this.setSessionSurveyName(survey.getHeader().getTitle());
+    }
+  }
+
+  /**
+   * Change this code with an enum list of question style using for
+   * @return a list of question styles
+   */
+  public List<String> getListQuestionStyle() {
+    List<String> questionStyles = new ArrayList<String>();
+    if (!this.isPollingStationMode()) {
+      questionStyles.add("open");
+    }
+    questionStyles.add("radio");
+    questionStyles.add("checkbox");
+    questionStyles.add("list");
+    return questionStyles;
+  }
+
+  /**
+   * @param function
+   * @param request
+   * @return the view to display
+   */
+  public String manageQuestionBusiness(String function, HttpServletRequest request) {
+    String view = "";
+    // Get component settings
+    ResourceLocator surveySettings =
+        new ResourceLocator("com.stratelia.webactiv.survey.surveySettings", this
+            .getLanguage());
+
+    String surveyImageDirectory =
+        FileServerUtils.getUrl(this.getSpaceId(), this.getComponentId(), "REPLACE_FILE_NAME",
+            "REPLACE_FILE_NAME", "image/gif", surveySettings.getString("imagesSubDirectory"));
+
+    request.setAttribute("ImageDirectory", surveyImageDirectory);
+    // Parameter variable declaration
+    String action = "";
+    String question = "";
+    String nbAnswers = "";
+    String answerInput = "";
+    String suggestion = "";
+    String style = "";
+    String questionId = null;
+    File dir = null;
+    String logicalName = null;
+    String type = null;
+    String physicalName = null;
+    boolean file = false;
+    long size = 0;
+    int attachmentSuffix = 0;
+    List<Answer> answers = new ArrayList<Answer>();
+    Answer answer = null;
+
+    // Retrieve all the parameter from request
+    try {
+      List<FileItem> items = FileUploadUtil.parseRequest(request);
+      for (FileItem item : items) {
+        if (item.isFormField()) {
+          String mpName = item.getFieldName();
+          if ("Action".equals(mpName)) {
+            action = item.getString();
+          } else if ("question".equals(mpName)) {
+            question = item.getString(FileUploadUtil.DEFAULT_ENCODING);
+          } else if ("nbAnswers".equals(mpName)) {
+            nbAnswers = item.getString(FileUploadUtil.DEFAULT_ENCODING);
+          } else if ("SuggestionAllowed".equals(mpName)) {
+            suggestion = item.getString(FileUploadUtil.DEFAULT_ENCODING);
+          } else if ("questionStyle".equals(mpName)) {
+            style = item.getString(FileUploadUtil.DEFAULT_ENCODING);
+          } else if (mpName.startsWith("answer")) {
+            answerInput = item.getString(FileUploadUtil.DEFAULT_ENCODING);
+            answer = new Answer(null, null, answerInput, 0, 0, false, "", 0, false, null);
+            answers.add(answer);
+          } else if ("suggestionLabel".equals(mpName)) {
+            answerInput = item.getString(FileUploadUtil.DEFAULT_ENCODING);
+            answer = new Answer(null, null, answerInput, 0, 0, false, "", 0, true, null);
+            answers.add(answer);
+          } else if (mpName.startsWith("valueImageGallery")) {
+            if (StringUtil.isDefined(item.getString(FileUploadUtil.DEFAULT_ENCODING))) {
+              // traiter les images venant de la gallery si pas d'image externe
+              if (!file) {
+                answer.setImage(item.getString(FileUploadUtil.DEFAULT_ENCODING));
+              }
+            }
+          } else if ("QuestionId".equals(mpName)) {
+            questionId = item.getString(FileUploadUtil.DEFAULT_ENCODING);
+          }
+          // String value = paramPart.getStringValue();
+        } else {
+          // it's a file part
+          if (FileHelper.isCorrectFile(item)) {
+            // the part actually contained a file
+            logicalName = item.getName();
+            type = logicalName.substring(logicalName.indexOf(".") + 1, logicalName.length());
+            physicalName = Long.toString(new Date().getTime()) + attachmentSuffix + "." + type;
+            attachmentSuffix = attachmentSuffix + 1;
+            dir =
+                new File(FileRepositoryManager.getAbsolutePath(this.getComponentId()) +
+                    surveySettings.getString("imagesSubDirectory") + File.separator +
+                    physicalName);
+            FileUploadUtil.saveToFile(dir, item);
+            size = item.getSize();
+            if (size > 0) {
+              answer.setImage(physicalName);
+              file = true;
+            }
+          } else {
+            // the field did not contain a file
+            file = false;
+          }
+          // out.flush();
+        }
+      }
+    } catch (UtilException e) {
+      SilverTrace.error("Survey", SurveyRequestRouter.class.getName(),
+          "getDestination error with updateQuestion branch", e);
+    } catch (UnsupportedEncodingException e) {
+      SilverTrace.error("Survey", SurveyRequestRouter.class.getName(),
+          "getDestination error with updateQuestion branch", e);
+    } catch (IOException e) {
+      SilverTrace.error("Survey", SurveyRequestRouter.class.getName(),
+          "getDestination error with updateQuestion branch", e);
+    }
+
+    if ("SendUpdateQuestion".equals(action) || "SendNewQuestion".equals(action)) {
+      // Remove answer for open question
+      if ("open".equals(style)) {
+        answers.clear();
+      }
+      // Remove the suggestion answer from the list
+      if ("0".equals(suggestion)) {
+        for (Answer curAnswer : answers) {
+          if (curAnswer.isOpened()) {
+            answers.remove(curAnswer);
+            break;
+          }
+        }
+      }
+      if ("SendNewQuestion".equals(action)) {
+        Question questionObject = new Question(null, null, question, "", "", null, style, 0);
+        questionObject.setAnswers(answers);
+        List<Question> questionsV = this.getSessionQuestions();
+        questionsV.add(questionObject);
+        this.setSessionQuestions(questionsV);
+      } else if (action.equals("SendUpdateQuestion")) {
+        Question questionObject = new Question(null, null, question, "", "", null, style, 0);
+        questionObject.setAnswers(answers);
+        List<Question> questionsV = this.getSessionQuestions();
+        questionsV.set(Integer.parseInt(questionId), questionObject);
+        this.setSessionQuestions(questionsV);
+      }
+    } else if (action.equals("End")) {
+      QuestionContainerDetail surveyDetail = this.getSessionSurveyUnderConstruction();
+      // Vector 2 Collection
+      List<Question> questionsV = this.getSessionQuestions();
+      surveyDetail.setQuestions(questionsV);
+    }
+    if ((action.equals("SendQuestionForm")) || "UpdateQuestion".equals(action)) {
+      if (action.equals("SendQuestionForm")) {
+        request.setAttribute("NbAnswers", nbAnswers);
+      } else if ("UpdateQuestion".equals(action)) {
+        request.setAttribute("QuestionId", questionId);
+      }
+    }
+    // Prepare destination request attribute
+    if ("SendNewQuestion".equals(action) || "SendUpdateQuestion".equals(action)) {
+      request.setAttribute("Action", "UpdateQuestions");
+      request.setAttribute("SurveyName", this.getSessionSurveyName());
+      view = "questionsUpdate.jsp";
+    } else {
+      request.setAttribute("Suggestion", suggestion);
+      request.setAttribute("Style", style);
+      request.setAttribute("Action", action);
+      view = function;
+    }
+    return view;
+  }
+
 }

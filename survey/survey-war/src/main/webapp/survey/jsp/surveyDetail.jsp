@@ -239,7 +239,7 @@
   if (action.equals("SubmitSurvey")) {
     QuestionContainerDetail surveyDetail = surveyScc.getSessionSurveyUnderConstruction();
     //Vector 2 Collection
-    Vector questionsV = surveyScc.getSessionQuestions();
+    List questionsV = surveyScc.getSessionQuestions();
     ArrayList q = new ArrayList();
     for (int j = 0; j < questionsV.size(); j++) {
       q.add((Question) questionsV.get(j));
@@ -254,7 +254,7 @@
   } else if (action.equals("SubmitAndUpdateSurvey")) {
     QuestionContainerDetail surveyDetail = surveyScc.getSessionSurveyUnderConstruction();
     //Vector 2 Collection
-    Vector questionsV = surveyScc.getSessionQuestions();
+    List questionsV = surveyScc.getSessionQuestions();
     ArrayList q = new ArrayList();
     for (int j = 0; j < questionsV.size(); j++) {
       q.add((Question) questionsV.get(j));
@@ -263,11 +263,11 @@
     surveyId = surveyScc.createSurvey(surveyDetail).getId();
     surveyScc.removeSessionSurveyUnderConstruction();
   } else if (action.equals("PreviewSurvey")) {
-    out.println("<HTML>");
-    out.println("<HEAD>");
+    out.println("<html>");
+    out.println("<head>");
     out.println(gef.getLookStyleSheet());
-    out.println("</HEAD>");
-    out.println("<BODY>");
+    out.println("</head>");
+    out.println("<body>");
 
     Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();
@@ -282,11 +282,11 @@
     out.println(window.print());
   }
   if (action.equals("ViewSurvey")) {
-    out.println("<HTML>");
-    out.println("<HEAD>");
+    out.println("<html>");
+    out.println("<head>");
     out.println(gef.getLookStyleSheet());
-    out.println("</HEAD>");
-    out.println("<BODY>");
+    out.println("</head>");
+    out.println("<body>");
 
     Window window = gef.getWindow();
     BrowseBar browseBar = window.getBrowseBar();

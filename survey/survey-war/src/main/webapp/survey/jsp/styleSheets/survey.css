@@ -23,9 +23,8 @@
  */
 
 /* tableau Doodle */
-
 body {
-	margin: 20px 0 0 20px;
+	margin: 0 0 0 0;
 }
 
 
@@ -130,4 +129,8 @@ body {
 
 .questionResults .freeAnswer {
 	background-color: #EFEFEF;
+}
+
+#surveyOperationId {
+	float:right;
 }

@@ -30,10 +30,7 @@
 <%@ page import="java.io.File"%>
 <%@ page import="java.io.FileInputStream"%>
 <%@ page import="java.io.ObjectInputStream"%>
-<%@ page import="java.util.Vector"%>
 <%@ page import="java.beans.*"%>
-<%@ page import="org.apache.commons.fileupload.FileItem" %>
-<%@ page import="com.silverpeas.util.web.servlet.FileUploadUtil" %>
 <%@ page import="com.stratelia.webactiv.survey.control.FileHelper" %>
 <%@ include file="checkSurvey.jsp" %>
 
@@ -41,7 +38,7 @@
   void displaySurveyHeader(QuestionContainerDetail surveyDetail, ResourcesWrapper resources, SurveySessionController surveyScc, JspWriter out, GraphicElementFactory gef) throws SurveyException {
     try{
           QuestionContainerHeader surveyHeader = surveyDetail.getHeader();
-          String title = Encode.javaStringToHtmlString(surveyHeader.getTitle());
+          String title = EncodeHelper.javaStringToHtmlString(surveyHeader.getTitle());
           String creationDate = resources.getOutputDate(new Date());
           String beginDate = "&nbsp;";
           if (surveyHeader.getBeginDate() != null)
@@ -318,99 +315,96 @@ function goToEnd() {
     document.surveyForm.submit();
 }
 
-	var galleryWindow = window;
-	var currentAnswer;
+var galleryWindow = window;
+var currentAnswer;
 
-	function choixGallery(liste, idAnswer)
+function choixGallery(liste, idAnswer)
+{
+	currentAnswer = idAnswer;
+	index = liste.selectedIndex;
+	var componentId = liste.options[index].value;
+	if (index != 0)
 	{
-		currentAnswer = idAnswer;
-		index = liste.selectedIndex;
-		var componentId = liste.options[index].value;
-		if (index != 0)
+		url = "<%=m_context%>/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=<%=surveyScc.getLanguage()%>";
+		windowName = "galleryWindow";
+		larg = "820";
+		haut = "600";
+		windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
+		if (!galleryWindow.closed && galleryWindow.name=="galleryWindow")
 		{
-			url = "<%=m_context%>/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=<%=surveyScc.getLanguage()%>";
-			windowName = "galleryWindow";
-			larg = "820";
-			haut = "600";
-			windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-			if (!galleryWindow.closed && galleryWindow.name=="galleryWindow")
-			{
-				galleryWindow.close();
-			}
-			galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+			galleryWindow.close();
 		}
+		galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
 	}
+}
 
-	function deleteImage(idImage)
-	{
-		document.getElementById('imageGallery'+idImage).innerHTML = "";
-		document.getElementById('valueImageGallery'+idImage).value = "";
-	}
+function deleteImage(idImage)
+{
+	document.getElementById('imageGallery'+idImage).innerHTML = "";
+	document.getElementById('valueImageGallery'+idImage).value = "";
+}
 
-	function choixImageInGallery(url)
-	{
-		var newLink = document.createElement("a");
-		newLink.setAttribute("href", url);
-		newLink.setAttribute("target", "_blank");
+function choixImageInGallery(url)
+{
+	var newLink = document.createElement("a");
+	newLink.setAttribute("href", url);
+	newLink.setAttribute("target", "_blank");
 
-		var newLabel = document.createTextNode("<%=resources.getString("survey.imageGallery")%>");
-		newLink.appendChild(newLabel);
+	var newLabel = document.createTextNode("<%=resources.getString("survey.imageGallery")%>");
+	newLink.appendChild(newLabel);
 
-		var removeLink =  document.createElement("a");
-		removeLink.setAttribute("href", "javascript:deleteImage('"+currentAnswer+"')");
-		var removeIcon = document.createElement("img");
-		removeIcon.setAttribute("src", "icons/questionDelete.gif");
-		removeIcon.setAttribute("border", "0");
-		removeIcon.setAttribute("align", "absmiddle");
-		removeIcon.setAttribute("alt", "<%=resources.getString("GML.delete")%>");
-		removeIcon.setAttribute("title", "<%=resources.getString("GML.delete")%>");
+	var removeLink =  document.createElement("a");
+	removeLink.setAttribute("href", "javascript:deleteImage('"+currentAnswer+"')");
+	var removeIcon = document.createElement("img");
+	removeIcon.setAttribute("src", "icons/questionDelete.gif");
+	removeIcon.setAttribute("border", "0");
+	removeIcon.setAttribute("align", "absmiddle");
+	removeIcon.setAttribute("alt", "<%=resources.getString("GML.delete")%>");
+	removeIcon.setAttribute("title", "<%=resources.getString("GML.delete")%>");
 
-		removeLink.appendChild(removeIcon);
+	removeLink.appendChild(removeIcon);
 
-		document.getElementById('imageGallery'+currentAnswer).appendChild(newLink);
-		document.getElementById('imageGallery'+currentAnswer).appendChild(removeLink);
+	document.getElementById('imageGallery'+currentAnswer).appendChild(newLink);
+	document.getElementById('imageGallery'+currentAnswer).appendChild(removeLink);
 
-		document.getElementById('valueImageGallery'+currentAnswer).value = url;
-	}
+	document.getElementById('valueImageGallery'+currentAnswer).value = url;
+}
 
-	function showQuestionOptions(value)
-	{
-		if (value != "open")
-		{
-			document.getElementById('trNbQuestions').style.visibility = 'visible';
-			document.getElementById('trSuggestion').style.visibility = 'visible';
-		}
-	}
-
+function showQuestionOptions(value)
+{
+  if (value != "open" && value!= "null") {
+    $("#trNbQuestions").show();
+    $("#trSuggestion").show();
+  } else {
+    $("#trNbQuestions").hide();
+    $("#trSuggestion").hide();
+  }
+}
 </script>
 </head>
 <%
 if (action.equals("FirstQuestion")) {
-      surveyScc.setSessionQuestions(new Vector(10, 2));
+      surveyScc.setSessionQuestions(new ArrayList());
       action = "CreateQuestion";
 }
 if (action.equals("SendNewQuestion")) {
       Question questionObject = new Question(null, null, question, "", "", null, style, 0);
       questionObject.setAnswers(answers);
-      Vector questionsV = surveyScc.getSessionQuestions();
+      List questionsV = surveyScc.getSessionQuestions();
       questionsV.add(questionObject);
       action = "CreateQuestion";
 } //End if action = ViewResult
 else if (action.equals("End")) {
-      out.println("<BODY>");
+      out.println("<body>");
       QuestionContainerDetail surveyDetail = surveyScc.getSessionSurveyUnderConstruction();
       //Vector 2 Collection
-      Vector questionsV = surveyScc.getSessionQuestions();
-      ArrayList q = new ArrayList();
-      for (int j = 0; j < questionsV.size(); j++) {
-            q.add((Question) questionsV.get(j));
-      }
-      surveyDetail.setQuestions(q);
-      out.println("</BODY></HTML>");
+      List questionsV = surveyScc.getSessionQuestions();
+      surveyDetail.setQuestions(questionsV);
+      out.println("</body></html>");
 }
 if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
-      out.println("<BODY>");
-      Vector questionsV = surveyScc.getSessionQuestions();
+      out.println("<body>");
+      List questionsV = surveyScc.getSessionQuestions();
       int questionNb = questionsV.size() + 1;
       cancelButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "Main.jsp", false);
       buttonPane = gef.getButtonPane();
@@ -451,7 +445,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
       out.println(frame.printBefore());
       out.println("<center>");
       displaySurveyHeader(surveyScc.getSessionSurveyUnderConstruction(), resources, surveyScc, out, gef);
-      out.println("<BR>");
+      out.println("<br>");
       Board board = gef.getBoard();
       out.println(board.printBefore());
 %>
@@ -460,17 +454,31 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 
       <form name="surveyForm" action="questionCreator.jsp" method="post" enctype="multipart/form-data">
       <table border="0" cellPadding="3" cellSpacing="0" width="100%" class="intfdcolor4">
-        <tr><td class="txtlibform"><%=resources.getString("SurveyCreationQuestion")%> <%=questionNb%> :</td><td><input type="text" name="question" value="<%=EncodeHelper.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td></tr>
+        <tr>
+          <td class="txtlibform" width="30%"><%=resources.getString("SurveyCreationQuestion")%> <%=questionNb%> :</td>
+          <td width="70%"><input type="text" name="question" value="<%=EncodeHelper.javaStringToHtmlString(question)%>" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5"></td>
+        </tr>
         <% if (action.equals("SendQuestionForm")) {
                 if (!style.equals("open"))
                 {
-                	// question fermée
-                    out.println("<tr><td class=\"txtlibform\" valign=top>"+resources.getString("survey.style")+" :</td><td>"+resources.getString("survey."+style));
-                	out.println(" <select style=\"visibility: hidden;\" id=\"questionStyle\" name=\"questionStyle\" value="+style+"><option selected>"+style+"</option></select>");
-                	out.println("</td></tr>");
-
-                    out.println("<tr><td class=\"txtlibform\">"+resources.getString("SurveyCreationNbPossibleAnswer")+" :</td><td><input type=\"text\" name=\"nbAnswers\" value=\""+nbAnswers+"\" size=\"3\" disabled maxlength=\"2\">&nbsp;<img border=0 src=\""+mandatoryField+"\" width=5 height=5></td></tr>");
-                    out.println("<tr><td class=\"txtlibform\">"+resources.getString("SuggestionAllowed")+" :</td><td><input type=\"checkbox\" name=\"suggestion\" value=\"\" "+suggestionCheck+" disabled></td></tr>");
+                  // question fermée
+                  %>
+                    <tr>
+                      <td class="txtlibform" valign="top"><%= resources.getString("survey.style")%> :</td>
+                      <td><%=resources.getString("survey."+style)%>
+                	    <select style="visibility: hidden;" id="questionStyle" name="questionStyle"><option selected><%=style%></option></select>
+                	  </td>
+                    </tr>
+                    <tr>
+                      <td class="txtlibform"><%=resources.getString("SurveyCreationNbPossibleAnswer")%> :</td><td>
+                        <input type="text" name="nbAnswers" value="<%=nbAnswers%>" size="3" disabled maxlength="2">&nbsp;<img border="0" src="<%=mandatoryField%>" width="5" height="5" />
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="txtlibform"><%=resources.getString("SuggestionAllowed")%> :</td>
+                      <td><input type="checkbox" name="suggestion" value="" <%=suggestionCheck%> disabled></td>
+                    </tr>
+                    <% 
                     nb =  Integer.parseInt(nbAnswers);
                     String inputName = "";
                     int j=0;
@@ -480,7 +488,7 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
                         inputName = "answer"+i;
                         out.println("<tr><td colspan=2 align=center>");
                         out.println("<table cellpadding=0 cellspacing=5 width=\"100%\">");
-                        	out.println("<tr><td class=\"intfdcolor\"><img src=\""+px+"\" border=\"0\"></td></tr>");
+                        out.println("<tr><td class=\"intfdcolor\"><img src=\""+px+"\" border=\"0\"></td></tr>");
                         out.println("</table></td></tr>");
                         out.println("<tr><td class=\"txtlibform\">"+resources.getString("SurveyCreationAnswerNb")+"&nbsp;"+j+" :</td><td><input type=\"text\" name=\""+inputName+"\" value=\"\" size=\"60\" maxlength=\""+DBUtil.getTextFieldLength()+"\"></td></tr>");
 
@@ -511,18 +519,25 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 
                     }
                     if (!suggestion.equals("0"))
-                    {
-                    	out.println("<tr><td colspan=2 align=center><table cellpadding=0 cellspacing=5 width=\"100%\">");
-                        out.println("<tr><td class=\"intfdcolor\"><img src=\""+px+"\" border=\"0\"></td></tr>");
-                        out.println("</table></td></tr>");
-                        out.println("<tr><td class=\"txtlibform\">"+resources.getString("OtherAnswer")+"&nbsp;:</td><td><input type=\"text\" name=\"suggestionLabel\" value=\""+resources.getString("SurveyCreationDefaultSuggestionLabel")+"\" size=\"60\" maxlength=\""+DBUtil.getTextFieldLength()+"\"></td></tr>");
+                    {%>
+                    <tr>
+                      <td colspan="2" align="center">
+                        <table cellpadding="0" cellspacing="5" width="100%">
+                          <tr><td class="intfdcolor"><img src="<%=px%>" border="0"></td></tr>
+                        </table>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="txtlibform"><%=resources.getString("OtherAnswer")%>&nbsp;:</td>
+                      <td><input type="text" name="suggestionLabel" value="<%=resources.getString("SurveyCreationDefaultSuggestionLabel")%>" size="60" maxlength="<%=DBUtil.getTextFieldLength()%>"></td>
+                    </tr>
+                        <%
                     }
                 }
                 else
                 {
                 	// question ouverte
                 	out.println("<input type=\"hidden\" name=\"style\" value="+style+" >");
-
                 }
                 out.println("<tr><td>(<img border=0 src=\""+mandatoryField+"\" width=5 height=5>&nbsp;:&nbsp;"+generalMessage.getString("GML.requiredField")+")</td></tr>");
            }
@@ -539,8 +554,8 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
     			out.println("</select>");
                 out.println("</td></tr>");
 
-                out.println("<tr id=\"trNbQuestions\" style=\"visibility: hidden;\"><td class=\"txtlibform\">"+resources.getString("SurveyCreationNbPossibleAnswer")+" :</td><td><input type=\"text\" name=\"nbAnswers\" value=\""+nbAnswers+"\" size=\"3\"  maxlength=\"2\">&nbsp;<img border=0 src=\""+mandatoryField+"\" width=5 height=5></td></tr>");
-                out.println("<tr id=\"trSuggestion\" style=\"visibility: hidden;\"><td class=\"txtlibform\">"+resources.getString("SuggestionAllowed")+" :</td><td><input type=\"checkbox\" name=\"suggestion\" value=\"\" "+suggestionCheck+"></td></tr>");
+                out.println("<tr id=\"trNbQuestions\" style=\"display:none;\"><td class=\"txtlibform\">"+resources.getString("SurveyCreationNbPossibleAnswer")+" :</td><td><input type=\"text\" name=\"nbAnswers\" value=\""+nbAnswers+"\" size=\"3\"  maxlength=\"2\">&nbsp;<img border=0 src=\""+mandatoryField+"\" width=5 height=5></td></tr>");
+                out.println("<tr id=\"trSuggestion\" style=\"display:none;\"><td class=\"txtlibform\">"+resources.getString("SuggestionAllowed")+" :</td><td><input type=\"checkbox\" name=\"suggestion\" value=\"\" "+suggestionCheck+"></td></tr>");
 
                 String inputName = "answer"+0;
                 out.println("<tr><td><input type=\"hidden\" name=\""+inputName+"\"></td></tr>");
@@ -556,11 +571,11 @@ if ((action.equals("CreateQuestion")) || (action.equals("SendQuestionForm"))) {
 <%
 	  out.println(board.printAfter());
       out.println(frame.printMiddle());
-      out.println("<BR><center>"+buttonPane.print()+"</center>");
+      out.println("<br><center>"+buttonPane.print()+"</center>");
       out.println("</center>");
       out.println(frame.printAfter());
       out.println(window.printAfter());
-      out.println("</BODY></HTML>");
+      out.println("</body></html>");
  } //End if action = ViewQuestion
 if (action.equals("End")) {
 %>
