@@ -49,6 +49,7 @@
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
+<fmt:message var="surveyConfirmUpdateLabel" key="survey.confirmUpdateSurvey" />
 
 <%!String lockSrc = "";
   String unlockSrc = "";
@@ -74,12 +75,13 @@
       arrayPane.addArrayColumn(resources.getString("GML.name"));
       arrayPane.addArrayColumn(resources.getString("SurveyClosingDate"));
 
-      if (pollingStationMode)
+      if (pollingStationMode) {
         arrayPane.addArrayColumn(resources.getString("PollingStationNbVoters"));
-      else if (surveyScc.isParticipationMultipleUsed()) {
+      } else if (surveyScc.isParticipationMultipleUsed()) {
         arrayPane.addArrayColumn(resources.getString("SurveyNbParticipations"));
-      } else
+      } else {
         arrayPane.addArrayColumn(resources.getString("SurveyNbVoters"));
+      }
       ArrayColumn arrayColumn = arrayPane.addArrayColumn(resources.getString("GML.operation"));
       arrayColumn.setSortable(false);
     } else {
@@ -98,12 +100,13 @@
         String link = "";
         if ((view == SurveySessionController.OPENED_SURVEYS_VIEW) ||
             (view == SurveySessionController.CLOSED_SURVEYS_VIEW)) {
-          if (survey.getPermalink() != null)
+          if (survey.getPermalink() != null) {
             link =
                 "&nbsp;<a href=\"" + survey.getPermalink() + "\"><img src=\"" + linkSrc +
                 "\" border=\"0\" align=\"bottom\" alt=\"" +
                 resources.getString("survey.CopySurveyLink") + "\" title=\"" +
                 resources.getString("survey.CopySurveyLink") + "\"></a>";
+          }
 
           //arrayLine.addArrayCellLink(survey.getTitle()+link, "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId="+survey.getPK().getId());
           ArrayCellText arrayCellText0 =
@@ -122,8 +125,8 @@
           }
 
           ArrayCellText arrayCellText2 =
-              arrayLine.addArrayCellText(new Integer(survey.getNbVoters()).toString());
-          arrayCellText2.setCompareOn(new Integer(survey.getNbVoters()));
+              arrayLine.addArrayCellText(Integer.toString(survey.getNbVoters()));
+          arrayCellText2.setCompareOn(Integer.valueOf(survey.getNbVoters()));
 
           IconPane iconPane = gef.getIconPane();
           if (view == SurveySessionController.OPENED_SURVEYS_VIEW) {
@@ -137,12 +140,12 @@
                 EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'",
                 "surveyList.jsp?Action=OpenSurvey&SurveyId=" + survey.getPK().getId());
           }
-          // mise � jour
+          // mise à jour
           Icon updateIcon = iconPane.addIcon();
           updateIcon.setProperties(surveyUpdateSrc, resources.getString("GML.modify") + " '" +
               EncodeHelper.javaStringToHtmlString(survey.getTitle()) + "'", "javascript:updateSurvey('" +
               survey.getPK().getId() + "','" +
-              EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(survey.getTitle())) + "')");
+              EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(survey.getTitle())) + "','" + survey.getNbVoters() + "')");
           // suppression
           Icon deleteIcon = iconPane.addIcon();
           deleteIcon.setProperties(surveyDeleteSrc, resources.getString("GML.delete") + " '" +
@@ -154,12 +157,13 @@
         } else {
           //arrayLine.addArrayCellLink(survey.getTitle(), "surveyDetail.jsp?Action=ViewCurrentQuestions&SurveyId="+survey.getPK().getId());
 
-          if (survey.getPermalink() != null)
+          if (survey.getPermalink() != null) {
             link =
                 "&nbsp;<a href=\"" + survey.getPermalink() + "\"><img src=\"" + linkSrc +
                 "\" border=\"0\" align=\"bottom\" alt=\"" +
                 resources.getString("survey.CopySurveyLink") + "\" title=\"" +
                 resources.getString("survey.CopySurveyLink") + "\"></a>";
+          }
 
           ArrayCellText arrayCellText =
               arrayLine
@@ -167,18 +171,18 @@
               survey.getPK().getId() + "\">" + survey.getTitle() + "</a>" + link);
           arrayCellText.setCompareOn(survey.getTitle());
 
-          if (survey.getBeginDate() == null)
+          if (survey.getBeginDate() == null) {
             arrayLine.addArrayCellText("&nbsp;");
-          else {
+          } else {
             Date date = DateUtil.parse(survey.getBeginDate());
             ArrayCellText arrayCellText0 =
                 arrayLine.addArrayCellText(resources.getOutputDate(date));
             arrayCellText0.setCompareOn(date);
           }
 
-          if (survey.getEndDate() == null)
+          if (survey.getEndDate() == null) {
             arrayLine.addArrayCellText("&nbsp;");
-          else {
+          } else {
             Date date = DateUtil.parse(survey.getEndDate());
             ArrayCellText arrayCellText1 =
                 arrayLine.addArrayCellText(resources.getOutputDate(date));
@@ -217,12 +221,13 @@
       arrayPane.addArrayColumn(resources.getString("GML.name"));
       arrayPane.addArrayColumn(resources.getString("SurveyClosingDate"));
 
-      if (pollingStationMode)
+      if (pollingStationMode) {
         arrayPane.addArrayColumn(resources.getString("PollingStationNbVoters"));
-      else if (surveyScc.isParticipationMultipleUsed()) {
+      } else if (surveyScc.isParticipationMultipleUsed()) {
         arrayPane.addArrayColumn(resources.getString("SurveyNbParticipations"));
-      } else
+      } else {
         arrayPane.addArrayColumn(resources.getString("SurveyNbVoters"));
+      }
 
     } else {
       arrayPane.addArrayColumn(resources.getString("GML.name"));
@@ -381,14 +386,15 @@ function deleteSurvey(surveyId, name) {
   }
 }
 
-function updateSurvey(surveyId, name)
+function updateSurvey(surveyId, name, nbVotes)
 {
-	if(window.confirm("<%=EncodeHelper.javaStringToJsString(resources.getString("survey.confirmUpdateSurvey"))%> '" + name + "' ?")) {
-		document.updateForm.action = "UpdateSurvey";
-      	document.updateForm.Action.value = "UpdateSurveyHeader";
-      	document.updateForm.SurveyId.value = surveyId;
-      	document.updateForm.submit();
-    }
+  var voteNumbers = parseInt(nbVotes);
+  if(voteNumbers == 0 || window.confirm("<view:encodeJs string="${surveyConfirmUpdateLabel}" /> '" + name + "' ?")) {
+    document.updateForm.action = "UpdateSurvey";
+    document.updateForm.Action.value = "UpdateSurveyHeader";
+    document.updateForm.SurveyId.value = surveyId;
+    document.updateForm.submit();
+  }
 }
 
 function clipboardPaste() {     
@@ -400,6 +406,7 @@ function openSPWindow(fonction, windowName){
 }
 </script>
 </head>
+
 <body>
 <%
   Window window = gef.getWindow();
@@ -450,12 +457,10 @@ function openSPWindow(fonction, windowName){
   ArrayPane arrayPane = null;
   if (profile.equals("admin") || profile.equals("publisher")) {
     arrayPane =
-        buildSurveyArrayToAdmin(gef, surveyScc, view, surveys, resources, request, session,
-        pollingStationMode);
+        buildSurveyArrayToAdmin(gef, surveyScc, view, surveys, resources, request, session, pollingStationMode);
   } else {
     arrayPane =
-        buildSurveyArrayToUser(gef, surveyScc, view, surveys, resources, request, session,
-        pollingStationMode);
+        buildSurveyArrayToUser(gef, surveyScc, view, surveys, resources, request, session, pollingStationMode);
   }
 
   //Retrieve array in the top corner           
@@ -476,7 +481,7 @@ function openSPWindow(fonction, windowName){
 <form name="updateForm" action="UpdateSurvey" method="post">
   <input type="hidden" name="Action" value=""> 
   <input type="hidden" name="SurveyId" value="">
-</FORM>
+</form>
 
 <form name="newSurveyForm" action="surveyCreator.jsp" method="post">
   <input type="hidden" name="Action" value="">

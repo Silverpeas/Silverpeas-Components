@@ -247,6 +247,7 @@ public class SurveyRequestRouter extends ComponentRequestRouter {
       request.setAttribute("Profile", flag);
       String view = surveySC.manageQuestionBusiness(function, request);
       request.setAttribute("Questions", surveySC.getSessionQuestions());
+      request.setAttribute("SurveyName", surveySC.getSessionSurveyName());
       destination = rootDest + view;
     } else {
       request.setAttribute("Profile", flag);

@@ -86,6 +86,37 @@ function updateQuestion(questionId) {
   //alert("value= " +$("#questionFormActionId").val());
   document.questionForm.submit();
 }
+function deleteQuestion(questionId) {
+  $("#delQuestionFormId").val(questionId);
+  $("#ui-dialog-title-modalDialogContentDivId").html($("#questionTitle"+ questionId).text());
+  $("#modalDialogContentDivId").dialog("open");
+
+  /*
+  if(confirm("<fmt:message key="survey.question.delete.confirm"/>")) {
+  }
+  */
+}
+// Jquery dialog message
+$(document).ready(function(){
+  // Your code here
+  $( "#dialog:ui-dialog" ).dialog("destroy");
+  
+  $( "#modalDialogContentDivId" ).dialog({
+    resizable: false,
+    height:140,
+    modal: true,
+    autoOpen: false,
+    buttons: {
+      "<fmt:message key="GML.cancel"/>": function() {
+        $(this).dialog( "close" );
+      },
+      "<fmt:message key="GML.delete"/>": function() {
+        document.deleteQuestionForm.submit();
+      }
+    }
+  });
+});
+
 </script>
 </head>
 <body>
@@ -111,7 +142,11 @@ function updateQuestion(questionId) {
 
 TabbedPane tabbedPane = gef.getTabbedPane();
 tabbedPane.addTab(resources.getString("GML.head"), "surveyUpdate.jsp?Action=UpdateSurveyHeader&SurveyId="+surveyId, "UpdateSurveyHeader".equals(action), true);
-tabbedPane.addTab(resources.getString("SurveyQuestions"), "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId="+surveyId, "UpdateQuestions".equals(action), false);
+String surveyTabPanelLabel = resources.getString("SurveyQuestions");
+if (surveyScc.isPollingStationMode()) {
+  surveyTabPanelLabel = resources.getString("SurveyQuestion");
+}
+tabbedPane.addTab(surveyTabPanelLabel, "questionsUpdate.jsp?Action=UpdateQuestions&SurveyId="+surveyId, "UpdateQuestions".equals(action), false);
 out.println(tabbedPane.print());
 
 //out.println(displayQuestionsUpdateView(surveyScc, questionsV, gef, m_context, settings, resources));
@@ -129,6 +164,15 @@ try
     Frame frame = gef.getFrame();
     out.println(frame.printBefore());
     %>
+
+<c:choose>
+  <c:when test="${requestScope['UpdateSucceed']}">
+    <div class="inlineMessage inlineMessage-ok">
+      <fmt:message key="survey.update.succeed" />
+    </div>
+  </c:when>
+</c:choose>
+    
     <center>
     <%
     if (questionsV != null && questionsV.size() > 0)
@@ -155,14 +199,14 @@ try
               }
               operations += "<a href=\"javascript:updateQuestion('"+j+"');\"><img src=\""+questionUpdateSrc+"\" border=\"0\" alt=\""+surveyScc.getString("survey.update")+"\" title=\""+surveyScc.getString("survey.update")+"\"></a> ";
               if (!surveyScc.isPollingStationMode()) {
-                operations += "<a href=\"questionsUpdate.jsp?Action=DeleteQuestion&QId="+j+"\"><img src=\""+questionDeleteSrc+"\" border=\"0\" alt=\""+resources.getString("GML.delete")+"\" title=\""+resources.getString("GML.delete")+"\"></a> ";
+                operations += "<a href=\"javascript:deleteQuestion('" + j + "');\"><img src=\""+questionDeleteSrc+"\" border=\"0\" alt=\""+resources.getString("GML.delete")+"\" title=\""+resources.getString("GML.delete")+"\"></a> ";
               }
 
               out.println(board.printBefore());
               %>
               <table border="0" width="100%">
                 <tr>
-                  <td colspan="2" align="left"><b>&#149; <u><%=EncodeHelper.javaStringToHtmlString(question.getLabel())%></u></b>
+                  <td colspan="2" align="left"><b>&#149; <u><span id="questionTitle<%=j%>"><%=EncodeHelper.javaStringToHtmlString(question.getLabel())%></span></u></b>
                     <div id="surveyOperationId"><%=operations%></div><br/>
                   </td>
                 </tr>
@@ -262,9 +306,16 @@ try
 %>
     <!-- questionCreatorBis.jsp -->
     <form name="questionForm" action="manageQuestions.jsp" method="post" enctype="multipart/form-data">
-      <input type="hidden" name="Action" value="CreateQuestion" id="questionFormActionId" />
-      <input type="hidden" name="QuestionId" value="" id="questionFormQuestionId" />
+      <input type="hidden" name="Action" value="CreateQuestion" id="questionFormActionId">
+      <input type="hidden" name="QuestionId" value="" id="questionFormQuestionId">
+    </form>
+    <form name="deleteQuestionForm" action="questionsUpdate.jsp" method="get">
+      <input type="hidden" name="QId" value="" id="delQuestionFormId">
+      <input type="hidden" name="Action" value="DeleteQuestion">
     </form>
 </view:window>
+<div id="modalDialogContentDivId" title="" style="display:none;">
+  <p><span class="ui-icon ui-icon-alert" style="float:left; margin:0 7px 20px 0;"></span><fmt:message key="survey.question.delete.confirm"/></p>
+</div>
 </body>
 </html>

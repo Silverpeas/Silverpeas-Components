@@ -949,17 +949,26 @@ public class SurveySessionController extends AbstractComponentSessionController 
       // Delete a question
       int qId = Integer.parseInt(request.getParameter("QId"));
       List<Question> qV = this.getSessionQuestions();
-      qV.remove(qId);
-      this.setSessionQuestions(qV);
+      if (qV != null && qV.size() >= qId + 1) {
+        qV.remove(qId);
+        this.setSessionQuestions(qV);
+      } else {
+        StringBuilder message = new StringBuilder();
+        message.append("Trying to delete a wrong question, questionIndexToDelete=").append(qId)
+            .append(", questions list size=").append(qV.size());
+        SilverTrace.warn("Survey", "SurveySessionController.questionsUpdateBusinessModel",message.toString());
+      }
       action = "UpdateQuestions";
     } else if ("SendQuestions".equals(action)) {
       List<Question> qV = this.getSessionQuestions();
       surveyId = this.getSessionSurveyId();
       try {
         this.updateQuestions(qV, surveyId);
+        request.setAttribute("UpdateSucceed", Boolean.TRUE);
       } catch (SurveyException e) {
         SilverTrace.error(this.getComponentName(), SurveyRequestRouter.class.getName(),
             "update question error", e);
+        request.setAttribute("UpdateSucceed", Boolean.FALSE);
       }
       action = "UpdateQuestions";
     }

@@ -51,6 +51,7 @@
 <c:set var="questionId" value="${requestScope['QuestionId']}"/>
 <c:set var="styles" value="${requestScope['QuestionStyles']}" />
 <c:set var="uploadDirectory" value="${requestScope['ImageDirectory']}"/>
+<c:set var="surveyName" value="${requestScope['SurveyName']}" />
 
 <%--var="suggestion" ${requestScope['Suggestion']}" --%>
 
@@ -81,6 +82,10 @@
     </c:if>
   </c:forEach>
   <c:set var="nbQuestion" value="${questionId + 1}" />
+</c:if>
+<c:if test="${empty questionId}">
+  <%-- New question form --%>
+  <c:set var="answerNb" value="2" />
 </c:if>
 <c:set var="suggestionCheckLabel" value=""/>
 <c:if test="${suggestion}">
@@ -119,6 +124,14 @@ function sendData() {
       document.surveyForm.submit();
     }
   }
+}
+
+function cancelUpdate() {
+  document.cancelForm.submit();
+}
+
+function backQuestions() {
+  cancelUpdate();
 }
 
 function checkAnswers() {
@@ -228,8 +241,8 @@ function isCorrectForm() {
                     if (nbAnswers > <%=nbMaxAnswers%>) {
                        errorMsg+="  - <fmt:message key="GML.theField"/> '<fmt:message key="SurveyCreationNbPossibleAnswer"/>' <fmt:message key="MustContainsNumberLessThan"/> <%=nbMaxAnswers%>\n";
                          errorNb++;
-                      }
-                 }
+                    }
+               }
           }
      }
   }
@@ -358,6 +371,7 @@ function updateQuestionForm() {
     $("#suggestionTRId").hide();
   }
 }
+
 /**
  * This method add or remove answer respecting the number of answer to display
  * @param nbAnswer: the number of answer to diplay
@@ -445,13 +459,27 @@ function insertHTMLAnswer(answerId) {
   <c:set var="addQuestion" value="false"/> 
   <c:set var="nextAction" value="SendUpdateQuestion" /> 
 </c:if>
+
+<%-- Add browsebar label --%>
+<fmt:message var="bbElt" key="SurveyUpdate"/>
+<c:set var="bbElt" value="${bbElt} '${surveyName}'" />
 <view:browseBar extraInformations="${browseBarLabel}">
+  <view:browseBarElt label="${bbElt}" link="javascript:backQuestions();"></view:browseBarElt>
 </view:browseBar>
 
 <view:window>
   <view:frame>
    <center>
   <view:board>
+
+<c:choose>
+  <c:when test="${requestScope['UpdateSucceed']}">
+    <div class="inlineMessage inlineMessage-ok">
+      <fmt:message key="survey.update.succeed" />
+    </div>
+  </c:when>
+</c:choose>
+  
     <!-- SURVEY FORM BEGIN -->
     <form name="surveyForm" action="manageQuestions.jsp" method="post" enctype="multipart/form-data">
       <table cellpadding="5" cellspacing="0" border="0" width="100%">
@@ -589,6 +617,30 @@ function insertHTMLAnswer(answerId) {
             </c:if>
           </td>
         </tr>
+        <tr id="answerNotOpenAnswerNb1" style="display:none;">
+          <td class="txtlibform"><fmt:message key="SurveyCreationAnswerNb" />&nbsp;2 :</td>
+          <td><input type="text" name="answer1" value="" size="60" maxlength="<%=DBUtil.getTextFieldLength() %>"></td>
+        </tr>
+        <tr id="answerNotOpenImage1" style="display:none;">
+          <td class="txtlibform"><fmt:message key="SurveyCreationAnswerImage"/>&nbsp;2 :</td>
+          <td><input type="file" name="image1" size="60"></td>
+        </tr>
+        <!-- zone to display link on image -->
+        <tr id="answerNotOpenGallery1" style="display:none;">
+          <td></td>
+          <td><span id="imageGallery1"></span>
+            <input type="hidden" id="valueImageGallery1" name="valueImageGallery1" />
+            <c:set var="gallery" value="${requestScope['Gallery']}" />
+            <c:if test="${not empty(gallery)}">
+              <select id="galleries" name="galleries" onchange="javascript:choixGallery(this, '0');this.selectedIndex=0;">
+                <option selected><fmt:message key="survey.galleries" /></option>
+              <c:forEach var="curGal" items="${gallery}" varStatus="galIndex">
+                 <option value="<c:out value="${curGal.id}"/>"><c:out value="${curGal.label}"/></option> 
+              </c:forEach>
+              </select>
+            </c:if>
+          </td>
+        </tr>
 </c:otherwise>
 </c:choose>
 
@@ -640,8 +692,8 @@ function insertHTMLAnswer(answerId) {
   <fmt:message key="GML.cancel" var="cancelButtonLabel"></fmt:message>
   <fmt:message key="GML.validate" var="validateButtonLabel"></fmt:message>
   <view:buttonPane>
-    <view:button label="${cancelButtonLabel}" action="javascript:onClick=history.back();" disabled="false"></view:button>
     <view:button label="${validateButtonLabel}" action="javascript:sendData();" disabled="false"></view:button>
+    <view:button label="${cancelButtonLabel}" action="javascript:onClick=cancelUpdate();" disabled="false"></view:button>
   </view:buttonPane>
 </center>
    
@@ -650,7 +702,8 @@ function insertHTMLAnswer(answerId) {
   </view:frame>
 </view:window>
 
-
+<form name="cancelForm" action="questionsUpdate.jsp" method="get" >
+</form>
 
 
 </body>
