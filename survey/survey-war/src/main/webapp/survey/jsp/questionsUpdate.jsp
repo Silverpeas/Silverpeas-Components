@@ -107,11 +107,11 @@ $(document).ready(function(){
     modal: true,
     autoOpen: false,
     buttons: {
+	  "<fmt:message key="GML.delete"/>": function() {
+      document.deleteQuestionForm.submit();
+      },
       "<fmt:message key="GML.cancel"/>": function() {
         $(this).dialog( "close" );
-      },
-      "<fmt:message key="GML.delete"/>": function() {
-        document.deleteQuestionForm.submit();
       }
     }
   });
@@ -169,7 +169,7 @@ try
   <c:when test="${requestScope['UpdateSucceed']}">
     <div class="inlineMessage inlineMessage-ok">
       <fmt:message key="survey.update.succeed" />
-    </div>
+    </div><br clear="all"/>
   </c:when>
 </c:choose>
     

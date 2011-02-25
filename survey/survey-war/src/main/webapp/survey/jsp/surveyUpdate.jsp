@@ -258,7 +258,7 @@ function isCorrectForm() {
   <c:when test="${requestScope['UpdateSucceed']}">
     <div class="inlineMessage inlineMessage-ok">
       <fmt:message key="survey.update.header.succeed" />
-    </div>
+    </div><br clear="all"/>
   </c:when>
 </c:choose>
 <%
