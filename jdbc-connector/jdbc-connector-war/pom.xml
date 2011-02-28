@@ -27,6 +27,13 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>pdc</artifactId>
+      <version>${core.version}</version>
+      <classifier>client</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.silverpeas.components.jdbc-connector</groupId>
       <artifactId>jdbc-connector-ejb</artifactId>
       <classifier>client</classifier>
