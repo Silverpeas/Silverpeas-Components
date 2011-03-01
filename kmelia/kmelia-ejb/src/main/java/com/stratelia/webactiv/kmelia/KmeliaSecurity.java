@@ -31,12 +31,14 @@ import java.util.List;
 
 import com.silverpeas.util.security.ComponentSecurity;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
@@ -54,6 +56,8 @@ import static com.stratelia.webactiv.SilverpeasRole.*;
 
 public class KmeliaSecurity implements ComponentSecurity {
 
+  private static final String CO_WRITING_PARAM = "coWriting";
+  private static final String DRAFT_VISIBLE_WITH_CO_WRITING_PARAM = "draftVisibleWithCoWriting";
   public static final String PUBLICATION_TYPE = "Publication";
   public static final String NODE_TYPE = "Node";
   public static final String RIGHTS_ON_TOPIC_PARAM = "rightsOnTopics";
@@ -62,6 +66,7 @@ public class KmeliaSecurity implements ComponentSecurity {
   private OrganizationController controller = null;
   private Map<String, Boolean> cache = Collections.synchronizedMap(new HashMap<String, Boolean>());
   private volatile boolean cacheEnabled = false;
+  private ResourceLocator kmeliaSettings = new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "fr");
 
   public KmeliaSecurity() {
     this.controller = new OrganizationController();
@@ -149,7 +154,14 @@ public class KmeliaSecurity implements ComponentSecurity {
         if (publication.isDraft()) {
           String profile = getProfile(userId, pk);
           if (!user.isInRole(profile)) {
-            return publication.isPublicationEditor(userId);
+            if (isCoWritingEnable(componentId)
+                  && isDraftVisibleWithCoWriting()
+                  && !reader.isInRole(profile)) {
+              return true;
+            }
+            else {
+              return publication.isPublicationEditor(userId);
+            }
           }
           return false;
         }
@@ -182,6 +194,16 @@ public class KmeliaSecurity implements ComponentSecurity {
     String param = controller.getComponentParameterValue(componentId, RIGHTS_ON_TOPIC_PARAM);
     return StringUtil.getBooleanValue(param);
   }
+
+  protected boolean isDraftVisibleWithCoWriting() {
+    return kmeliaSettings.getBoolean(DRAFT_VISIBLE_WITH_CO_WRITING_PARAM, false);
+  }
+
+  protected boolean isCoWritingEnable(String componentId) {
+    String param = controller.getComponentParameterValue(componentId,CO_WRITING_PARAM);
+    return StringUtil.getBooleanValue(param);
+  }
+
 
   protected boolean isPublicationAvailable(PublicationPK pk, String userId) {
     Boolean fromCache = readFromCache(pk.getId(), PUBLICATION_TYPE, pk.getInstanceId());
