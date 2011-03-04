@@ -331,26 +331,25 @@ public class StubCalendarBm implements CalendarBm {
 
   @Override
   public List<JournalHeader> getNextEventsForUser(String day, String userId, String classification,
-      int limit, int offset) throws RemoteException {
+      Date begin, Date end) throws RemoteException {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
   public List<SocialInformationEvent> getNextEventsForMyContacts(String day, String myId,
-      List<String> myContactsIds, int numberOfElement, int firstIndex) throws RemoteException {
+      List<String> myContactsIds, Date begin, Date end) throws RemoteException {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
   public List<SocialInformationEvent> getLastEventsForMyContacts(String day, String myId,
-      List<String> myContactsIds, int numberOfElement, int firstIndex) throws RemoteException {
+      List<String> myContactsIds, Date begin, Date end) throws RemoteException {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
   @Override
-  public List<SocialInformationEvent> getMyLastEvents(String day, String myId, int numberOfElement,
-      int firstIndex) throws RemoteException {
+  public List<SocialInformationEvent> getMyLastEvents(String day, String myId, Date begin,
+      Date end) throws RemoteException {
     throw new UnsupportedOperationException("Not supported yet.");
   }
-
 }
