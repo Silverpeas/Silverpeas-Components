@@ -547,11 +547,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           }
         }
 
-        boolean checkPath = StringUtil.getBooleanValue(request.getParameter("CheckPath"));
-        if (checkPath) {
-          processPath(kmelia, id);
-        } else {
-          processPath(kmelia, null);
+        if (!kmaxMode) {
+          boolean checkPath = StringUtil.getBooleanValue(request.getParameter("CheckPath"));
+          if (checkPath) {
+            processPath(kmelia, id);
+          } else {
+            processPath(kmelia, null);
+          }
         }
 
         UserCompletePublication userPubComplete = null;
