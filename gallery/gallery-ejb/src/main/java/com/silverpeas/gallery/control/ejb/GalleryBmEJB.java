@@ -998,11 +998,10 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
    * @param int numberOfElement, int firstIndex
    */
   @Override
-  public List<SocialInformation> getAllPhotosByUserid(String userId, int firstIndex,
-      int nbElement) {
+  public List<SocialInformation> getAllPhotosByUserid(String userId, Date begin, Date end) {
     Connection con = initCon();
     try {
-      return PhotoDAO.getAllPhotosIDbyUserid(con, userId, firstIndex, nbElement);
+      return PhotoDAO.getAllPhotosIDbyUserid(con, userId, begin, end);
     } catch (ParseException e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
@@ -1025,11 +1024,11 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
    */
   @Override
   public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> listOfuserId,
-      List<String> availableComponent, int numberOfElement, int firstIndex) {
+      List<String> availableComponent, Date begin, Date end) {
     Connection con = initCon();
     try {
       return PhotoDAO.getSocialInformationsListOfMyContacts(con, listOfuserId, availableComponent,
-          numberOfElement, firstIndex);
+          begin, end);
     } catch (ParseException e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);

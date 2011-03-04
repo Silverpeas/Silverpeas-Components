@@ -116,8 +116,8 @@ public interface GalleryBmBusinessSkeleton {
    * @param int numberOfElement, int firstIndex
    * @throws RemoteException
    */
-  public List<SocialInformation> getAllPhotosByUserid(String userId, int firstIndex,
-      int numberOfElement) throws RemoteException;
+  public List<SocialInformation> getAllPhotosByUserid(String userId, Date begin, Date end)
+      throws RemoteException;
 
   /**
    * get list of SocialInformationGallery of my contacts
@@ -130,5 +130,5 @@ public interface GalleryBmBusinessSkeleton {
    * @throws RemoteException
    */
   public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> listOfuserId,
-      List<String> availableComponent, int numberOfElement, int firstIndex) throws RemoteException;
+      List<String> availableComponent, Date begin, Date end) throws RemoteException;
 }

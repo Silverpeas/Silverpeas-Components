@@ -36,6 +36,7 @@ import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.gallery.model.PhotoWithStatus;
 import com.silverpeas.gallery.socialNetwork.SocialInformationGallery;
 import com.silverpeas.socialNetwork.model.SocialInformation;
+import com.stratelia.webactiv.util.DateUtil;
 
 public class TestPhotoDAO extends AbstractTestDao {
 
@@ -58,8 +59,10 @@ public class TestPhotoDAO extends AbstractTestDao {
       SocialInformationGallery socialmer2 = new SocialInformationGallery(new PhotoWithStatus(mer,
           false));
 
+      Date begin = DateUtil.parse("2010/05/01");
+      Date end = DateUtil.parse("2010/08/31");
       List<SocialInformation> photos = PhotoDAO.getAllPhotosIDbyUserid(connexion.getConnection(),
-          userid, 0, 4);
+          userid, begin, end);
       assertNotNull("Photos should exist", photos);
       assertEquals("Should have 4 date creation or update ", 4, photos.size());
       assertEquals(photos.get(0), socialmer1);
@@ -120,25 +123,23 @@ public class TestPhotoDAO extends AbstractTestDao {
     try {
       PhotoDetail ciel = PhotoDAO.getPhoto(connexion.getConnection(), 0);
       PhotoDetail fleur = PhotoDAO.getPhoto(connexion.getConnection(), 3);
-      PhotoDetail montagne = PhotoDAO.getPhoto(connexion.getConnection(), 2);
       SocialInformationGallery socialCiel = new SocialInformationGallery(new PhotoWithStatus(ciel,
           true));
       SocialInformationGallery socialFleur = new SocialInformationGallery(new PhotoWithStatus(fleur,
           false));
-      SocialInformationGallery socialmontagne = new SocialInformationGallery(new PhotoWithStatus(
-          montagne, true));
 
+      Date begin = DateUtil.parse("2010/05/01");
+      Date end = DateUtil.parse("2010/08/31");
 
       List<SocialInformation> photos = PhotoDAO.getSocialInformationsListOfMyContacts(connexion.
-          getConnection(), listOfuserId, null, 2, 0);
+          getConnection(), listOfuserId, null, begin, end);
       assertNotNull("Photos should exist", photos);
       photos = PhotoDAO.getSocialInformationsListOfMyContacts(connexion.getConnection(),
-          listOfuserId, availableList, 4, 0);
+          listOfuserId, availableList, begin, end);
       assertNotNull("Photos should exist", photos);
-      assertEquals(photos.size(), 3);
-      assertEquals(photos.get(0), socialmontagne);
-      assertEquals(photos.get(1), socialCiel);
-      assertEquals(photos.get(2), socialFleur);
+      assertEquals(photos.size(), 2);
+      assertEquals(photos.get(0), socialCiel);
+      assertEquals(photos.get(1), socialFleur);
     } finally {
       closeConnection(connexion);
     }

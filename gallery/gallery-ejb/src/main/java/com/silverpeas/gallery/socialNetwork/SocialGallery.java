@@ -33,6 +33,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.silverpeas.calendar.Date;
 import com.silverpeas.gallery.control.ejb.GalleryBm;
 import com.silverpeas.gallery.control.ejb.GalleryBmHome;
 import com.silverpeas.gallery.model.GalleryRuntimeException;
@@ -57,10 +58,9 @@ public class SocialGallery implements SocialGalleryInterface {
    * @throws SilverpeasException
    */
   @Override
-  public List<SocialInformation> getSocialInformationsList(String userId, int numberOfElement,
-      int firstIndex) {
+  public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end) {
     try {
-      return getGalleryBm().getAllPhotosByUserid(userId, firstIndex, numberOfElement);
+      return getGalleryBm().getAllPhotosByUserid(userId, begin, end);
     } catch (RemoteException rex) {
       throw new GalleryRuntimeException("SocialGallery.getSocialInformationsList()",
           SilverpeasException.ERROR, "Error obtaining all photos fo user", rex);
@@ -78,12 +78,11 @@ public class SocialGallery implements SocialGalleryInterface {
    * @throws SilverpeasException
    */
   @Override
-  public List getSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
-      int numberOfElement, int firstIndex) throws SilverpeasException {
+  public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId, List<String> myContactsIds,
+      Date begin, Date end) throws SilverpeasException {
     try {
       return getGalleryBm().getSocialInformationsListOfMyContacts(myContactsIds, this.
-          getListAvailable(myId),
-          numberOfElement, firstIndex);
+          getListAvailable(myId), begin, end);
     } catch (RemoteException rex) {
       throw new GalleryRuntimeException("SocialGallery.getSocialInformationsListOfMyContacts()",
           SilverpeasException.ERROR, "Error obtaining all photos fo user", rex);
