@@ -22,17 +22,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.silverpeas.questionReply.control;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.List;
-
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.genericPanel.PanelLine;
 import com.stratelia.silverpeas.genericPanel.PanelProvider;
 import com.stratelia.silverpeas.genericPanel.PanelSearchEdit;
@@ -43,6 +35,13 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 public class ExpertPanel extends PanelProvider {
   protected static final int FILTER_LASTNAME = 0;
   protected static final int FILTER_FIRSTNAME = 1;
@@ -50,47 +49,34 @@ public class ExpertPanel extends PanelProvider {
   protected static final int COL_LASTNAME = 0;
   protected static final int COL_FIRSTNAME = 1;
 
-  protected OrganizationController m_oc = new OrganizationController();
+  protected static final OrganizationController organizationController = new OrganizationController();
 
-  protected Hashtable<String, UserDetail> m_AllUserDetail = new Hashtable<String, UserDetail>();
+  protected Map<String, UserDetail> allUserDetails = new HashMap<String, UserDetail>();
 
   public ExpertPanel(String language, Collection<UserDetail> allExperts) {
     initAll(language, allExperts);
   }
 
-  public void initAll(String language, Collection<UserDetail> allExperts) {
+  public void initAll(String lang, Collection<UserDetail> allExperts) {
     String[] filters = new String[2];
-
     setAllExperts(allExperts);
-
     // Set the language
-    m_Language = language;
-
-    ResourceLocator message = GeneralPropertiesManager
-        .getGeneralMultilang(m_Language);
-
+    this.language = lang;
+    ResourceLocator message = GeneralPropertiesManager.getGeneralMultilang(language);
     // Set the resource locator for columns header
-    m_rs = new ResourceLocator(
-        "com.silverpeas.questionReply.multilang.questionReplyBundle",
-        m_Language);
-
+    resourceLocator = new ResourceLocator("com.silverpeas.questionReply.multilang.questionReplyBundle",
+        language);
     // Set the Page name
-    m_PageName = m_rs.getString("questionReply.experts");
-    m_PageSubTitle = m_rs.getString("questionReply.experts");
-
+    pageName = resourceLocator.getString("questionReply.experts");
+    pageSubTitle = resourceLocator.getString("questionReply.experts");
     // Set column headers
-    m_ColumnsHeader = new String[2];
-    m_ColumnsHeader[COL_LASTNAME] = message.getString("GML.lastName");
-    m_ColumnsHeader[COL_FIRSTNAME] = message.getString("GML.firstName");
-
+    columnHeaders = new String[2];
+    columnHeaders[COL_LASTNAME] = message.getString("GML.lastName");
+    columnHeaders[COL_FIRSTNAME] = message.getString("GML.firstName");
     // Build search tokens
-    m_SearchTokens = new PanelSearchToken[2];
-
-    m_SearchTokens[FILTER_LASTNAME] = new PanelSearchEdit(0, message
-        .getString("GML.lastName"), "");
-    m_SearchTokens[FILTER_FIRSTNAME] = new PanelSearchEdit(1, message
-        .getString("GML.firstName"), "");
-
+    searchTokens = new PanelSearchToken[2];
+    searchTokens[FILTER_LASTNAME] = new PanelSearchEdit(0, message.getString("GML.lastName"), "");
+    searchTokens[FILTER_FIRSTNAME] = new PanelSearchEdit(1, message.getString("GML.firstName"), "");
     // Set filters and get Ids
     filters[FILTER_FIRSTNAME] = "";
     filters[FILTER_LASTNAME] = "";
@@ -98,19 +84,12 @@ public class ExpertPanel extends PanelProvider {
   }
 
   public void refresh(String[] filters) {
-    List<String> ids = new ArrayList<String>();
-    boolean keepit;
-    Iterator<UserDetail> it = m_AllUserDetail.values().iterator();
-    UserDetail user;
-
-    while (it.hasNext()) {
-      user = it.next();
-      keepit = true;
-      if ((filters[FILTER_FIRSTNAME] != null)
-          && (filters[FILTER_FIRSTNAME].length() > 0)) {
+    List<String> currentIds = new ArrayList<String>();
+    for (UserDetail user : allUserDetails.values()) {
+      boolean keepit = true;
+      if (StringUtil.isDefined(filters[FILTER_FIRSTNAME])) {
         if ((user.getFirstName() == null)
-            || (filters[FILTER_FIRSTNAME].length() > user.getFirstName()
-            .length())
+            || (filters[FILTER_FIRSTNAME].length() > user.getFirstName().length())
             || (!user.getFirstName().substring(0,
             filters[FILTER_FIRSTNAME].length()).equalsIgnoreCase(
             filters[FILTER_FIRSTNAME]))) {
@@ -118,56 +97,41 @@ public class ExpertPanel extends PanelProvider {
         }
       }
 
-      if ((filters[FILTER_LASTNAME] != null)
-          && (filters[FILTER_LASTNAME].length() > 0)) {
-        if ((user.getLastName() == null)
-            || (filters[FILTER_LASTNAME].length() > user.getLastName().length())
-            || (!user.getLastName().substring(0,
-            filters[FILTER_LASTNAME].length()).equalsIgnoreCase(
-            filters[FILTER_LASTNAME]))) {
-          keepit = false;
-        }
+      if (StringUtil.isDefined(filters[FILTER_LASTNAME])) {
+        keepit = !(user.getLastName() == null || filters[FILTER_LASTNAME].length() > user.getLastName().length()
+            || !user.getLastName().substring(0, filters[FILTER_LASTNAME].length()).equalsIgnoreCase(
+            filters[FILTER_LASTNAME]));
       }
       if (keepit) {
-        ids.add(user.getId());
+        currentIds.add(user.getId());
       }
     }
-    m_Ids = (String[]) ids.toArray(new String[0]);
+    ids = currentIds.toArray(new String[currentIds.size()]);
 
     // Set search tokens values
-    ((PanelSearchEdit) m_SearchTokens[FILTER_FIRSTNAME]).m_Text =
-        getSureString(filters[FILTER_FIRSTNAME]);
-    ((PanelSearchEdit) m_SearchTokens[FILTER_LASTNAME]).m_Text =
-        getSureString(filters[FILTER_LASTNAME]);
+    ((PanelSearchEdit) searchTokens[FILTER_FIRSTNAME]).m_Text = getSureString(filters[FILTER_FIRSTNAME]);
+    ((PanelSearchEdit) searchTokens[FILTER_LASTNAME]).m_Text = getSureString(filters[FILTER_LASTNAME]);
     verifIndexes();
   }
 
   public void setAllExperts(Collection<UserDetail> allExperts) {
     if (allExperts != null) {
-      Iterator<UserDetail> itUser = allExperts.iterator();
-      UserDetail user;
-
-      m_AllUserDetail.clear();
-      while (itUser.hasNext()) {
-        user = (UserDetail) itUser.next();
+      allUserDetails.clear();
+      for (UserDetail user : allExperts) {
         if (user != null) {
-          m_AllUserDetail.put(user.getId(), user);
+          allUserDetails.put(user.getId(), user);
         }
       }
     }
   }
 
   public PanelLine getElementInfos(String id) {
-    UserDetail theUser = (UserDetail) m_AllUserDetail.get(id);
-    String[] theValues;
-    PanelLine valret = null;
-
+    UserDetail theUser = allUserDetails.get(id);
     SilverTrace.info("questionReply", "ExpertPanel.getElementInfos()",
         "root.GEN_MSG_PARAM_VALUE", "id=" + id);
-    theValues = new String[2];
+    String[] theValues = new String[2];
     theValues[COL_LASTNAME] = theUser.getLastName();
     theValues[COL_FIRSTNAME] = theUser.getFirstName();
-    valret = new PanelLine(theUser.getId(), theValues, false);
-    return valret;
+    return new PanelLine(theUser.getId(), theValues, false);
   }
 }
