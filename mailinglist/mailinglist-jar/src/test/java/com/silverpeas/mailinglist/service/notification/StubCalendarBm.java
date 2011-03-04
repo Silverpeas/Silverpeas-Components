@@ -348,8 +348,8 @@ public class StubCalendarBm implements CalendarBm {
   }
 
   @Override
-  public List<SocialInformationEvent> getMyLastEvents(String day, String myId, int numberOfElement,
-      int firstIndex) throws RemoteException {
+  public List<SocialInformationEvent> getMyLastEvents(String day, String myId, Date begin,
+      Date end) throws RemoteException {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
