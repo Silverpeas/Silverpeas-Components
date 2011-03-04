@@ -136,6 +136,9 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     OrganizationBox rootOrganization = new OrganizationBox();
     chartVO.setRootOrganization(rootOrganization);
     rootOrganization.setName(chart.getRoot().getName());
+    rootOrganization.setDetailLinkActive(chart.getRoot().hasMembers());
+    rootOrganization.setDn(chart.getRoot().getCompleteName());
+
 
     // Prevents user to go upper that the base DN
     if (!config.getLdapRoot().equalsIgnoreCase( chart.getRoot().getCompleteName() )) {
