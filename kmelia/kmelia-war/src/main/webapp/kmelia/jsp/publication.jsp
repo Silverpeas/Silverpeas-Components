@@ -49,48 +49,48 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());
 
 	//Recuperation des parametres
-          String profile = (String) request.getAttribute("Profile");
-          String alias = (String) request.getAttribute("IsAlias");
-          String action = (String) request.getAttribute("Action");
-          UserCompletePublication userPubComplete = (UserCompletePublication) request.getAttribute(
-              "Publication");
-          String wizard = (String) request.getAttribute("Wizard");
-          Integer rang = (Integer) request.getAttribute("Rang");
-          Integer nbPublis = (Integer) request.getAttribute("NbPublis");
-          String language = (String) request.getAttribute("Language");
-          List languages = (List) request.getAttribute("Languages");
-          String contentLanguage = (String) request.getAttribute("ContentLanguage");
-          String singleFileURL = (String) request.getAttribute("SingleAttachmentURL");
-          ValidationStep validation = (ValidationStep) request.getAttribute("ValidationStep");
-          int validationType = ((Integer) request.getAttribute("ValidationType")).intValue();
+	String profile = (String) request.getAttribute("Profile");
+    String alias = (String) request.getAttribute("IsAlias");
+    String action = (String) request.getAttribute("Action");
+    UserCompletePublication userPubComplete = (UserCompletePublication) request.getAttribute("Publication");
+    String wizard = (String) request.getAttribute("Wizard");
+   	Integer rang = (Integer) request.getAttribute("Rang");
+    Integer nbPublis = (Integer) request.getAttribute("NbPublis");
+    String language = (String) request.getAttribute("Language");
+    List languages = (List) request.getAttribute("Languages");
+    String contentLanguage = (String) request.getAttribute("ContentLanguage");
+    String singleFileURL = (String) request.getAttribute("SingleAttachmentURL");
+    ValidationStep validation = (ValidationStep) request.getAttribute("ValidationStep");
+    int validationType = ((Integer) request.getAttribute("ValidationType")).intValue();
 	boolean isWriterApproval = ((Boolean) request.getAttribute("WriterApproval")).booleanValue();
 	boolean notificationAllowed = ((Boolean) request.getAttribute("NotificationAllowed")).booleanValue();
+	boolean attachmentsEnabled = ((Boolean) request.getAttribute("AttachmentsEnabled")).booleanValue();
 
 	if (action == null) {
-            action = "View";
+		action = "View";
 	}
 	
 	SilverTrace.info("kmelia","JSPdesign", "root.MSG_GEN_PARAM_VALUE","ACTION pubManager = "+action);
 
 	CompletePublication pubComplete = userPubComplete.getPublication();            
-          PublicationDetail pubDetail = pubComplete.getPublicationDetail();
-          UserDetail ownerDetail = userPubComplete.getOwner();
-          String pubName = pubDetail.getName(language);
-          String id = pubDetail.getPK().getId();
+    PublicationDetail pubDetail = pubComplete.getPublicationDetail();
+    UserDetail ownerDetail = userPubComplete.getOwner();
+    String pubName = pubDetail.getName(language);
+    String id = pubDetail.getPK().getId();
 
 	String contextComponentId = componentId;
 	//surcharge le componentId du composant courant (cas de l'alias)
 	componentId = pubDetail.getPK().getInstanceId();
 
-          TopicDetail currentTopic = null;
-          String linkedPathString = kmeliaScc.getSessionPath();
-            
-          boolean debut = rang.intValue() == 0;
-          boolean fin = rang.intValue() == nbPublis.intValue() - 1;
-            
-          boolean suppressionAllowed = false;
-            
-          Board boardHelp = gef.getBoard();
+    TopicDetail currentTopic = null;
+    String linkedPathString = kmeliaScc.getSessionPath();
+      
+    boolean debut = rang.intValue() == 0;
+    boolean fin = rang.intValue() == nbPublis.intValue() - 1;
+      
+    boolean suppressionAllowed = false;
+      
+    Board boardHelp = gef.getBoard();
 
 	//Icons
 	String pubValidateSrc	= m_context + "/util/icons/publicationValidate.gif";
@@ -571,59 +571,49 @@ function addFavorite()
     	}
     	out.println("</td>");
 
-    	/*********************************************************************************************************************/
-		/** Affichage des fichiers joints																					**/
-		/*********************************************************************************************************************/
-
-		boolean showTitle 				= true;
-		boolean showFileSize 			= true;
-		boolean showDownloadEstimation 	= true;
-		boolean showInfo 				= true;
-		if ("no".equals(resources.getSetting("showTitle"))) {
-			showTitle = false;
-		}
-		if ("no".equals(resources.getSetting("showFileSize"))) {
-			showFileSize = false;
-		}
-		if ("no".equals(resources.getSetting("showDownloadEstimation"))) {
-			showDownloadEstimation = false;
-		}
-		if ("no".equals(resources.getSetting("showInfo"))) {
-			showInfo = false;
-		}
-		boolean showIcon = true;
-	    if (!"bottom".equals(resources.getSetting("attachmentPosition"))) {
-			out.println("<td valign=\"top\" align=\"center\">");
-			out.println("<a name=\"attachments\"></a>");
-	   	}
-	   	else {
-			out.println("</tr><tr>");
-			out.println("<td valign=\"top\" align=\"left\">");
-			out.println("<a name=\"attachments\"></a>");
-	    }
-		try {
-			out.flush();
-			boolean	indexIt 	= kmeliaScc.isIndexable(pubDetail);
-			String	pIndexIt	= "0";
-			if (indexIt) {
-				pIndexIt = "1";
+    	if (attachmentsEnabled) {
+	    	/*********************************************************************************************************************/
+			/** Affichage des fichiers joints																					**/
+			/*********************************************************************************************************************/
+	
+			boolean showTitle 				= resources.getSetting("showTitle", true);
+			boolean showFileSize 			= resources.getSetting("showFileSize", true);
+			boolean showDownloadEstimation 	= resources.getSetting("showDownloadEstimation", true);
+			boolean showInfo 				= resources.getSetting("showInfo", true);
+			boolean showIcon = true;
+		    if (!"bottom".equals(resources.getSetting("attachmentPosition"))) {
+				out.println("<td valign=\"top\" align=\"center\">");
+				out.println("<a name=\"attachments\"></a>");
+		   	}
+		   	else {
+				out.println("</tr><tr>");
+				out.println("<td valign=\"top\" align=\"left\">");
+				out.println("<a name=\"attachments\"></a>");
+		    }
+			try {
+				out.flush();
+				boolean	indexIt 	= kmeliaScc.isIndexable(pubDetail);
+				String	pIndexIt	= "0";
+				if (indexIt) {
+					pIndexIt = "1";
+				}
+				if (kmeliaScc.isVersionControlled(componentId)) {
+					getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+id+"&ComponentId="+componentId+"&Alias="+alias+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Profile="+kmeliaScc.getProfile()+"&NodeId="+kmeliaScc.getSessionTopic().getNodePK().getId()+"&TopicRightsEnabled="+kmeliaScc.isRightsOnTopicsEnabled()+"&VersionningFileRightsMode="+kmeliaScc.getVersionningFileRightsMode()+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewPublication&IndexIt="+pIndexIt+"&ShowMenuNotif="+true).include(request, response);
+				} else {
+				  	String attProfile = kmeliaScc.getProfile();
+				  	if (!isOwner || pubDetail.haveGotClone()) {
+				  	  // Attachments can be updated in both cases only : 
+				  	  //  - on clone (if "publication always visible" is used)
+				  	  //  - if current user can modified publication
+				  	  attProfile = "user";
+				  	}
+				  	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+id+"&ComponentId="+componentId+"&Alias="+alias+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Language="+language+"&Profile="+attProfile+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewPublication&IndexIt="+pIndexIt+"&ShowMenuNotif="+true).include(request, response);
+				}
+			} catch (Exception e) {
+				throw new KmeliaException("JSPpublicationManager.displayUserModelAndAttachmentsView()",SilverpeasException.ERROR,"root.EX_DISPLAY_ATTACHMENTS_FAILED", e);
 			}
-			if (kmeliaScc.isVersionControlled(componentId)) {
-				getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+id+"&ComponentId="+componentId+"&Alias="+alias+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Profile="+kmeliaScc.getProfile()+"&NodeId="+kmeliaScc.getSessionTopic().getNodePK().getId()+"&TopicRightsEnabled="+kmeliaScc.isRightsOnTopicsEnabled()+"&VersionningFileRightsMode="+kmeliaScc.getVersionningFileRightsMode()+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewPublication&IndexIt="+pIndexIt+"&ShowMenuNotif="+true).include(request, response);
-			} else {
-			  	String attProfile = kmeliaScc.getProfile();
-			  	if (!isOwner || pubDetail.haveGotClone()) {
-			  	  // Attachments can be updated in both cases only : 
-			  	  //  - on clone (if "publication always visible" is used)
-			  	  //  - if current user can modified publication
-			  	  attProfile = "user";
-			  	}
-			  	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+id+"&ComponentId="+componentId+"&Alias="+alias+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Language="+language+"&Profile="+attProfile+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewPublication&IndexIt="+pIndexIt+"&ShowMenuNotif="+true).include(request, response);
-			}
-		} catch (Exception e) {
-			throw new KmeliaException("JSPpublicationManager.displayUserModelAndAttachmentsView()",SilverpeasException.ERROR,"root.EX_DISPLAY_ATTACHMENTS_FAILED", e);
-		}
-		out.println("</td>");
+			out.println("</td>");
+		} 
 	    out.println("</tr>");
     	out.println("</table>");
     	%>

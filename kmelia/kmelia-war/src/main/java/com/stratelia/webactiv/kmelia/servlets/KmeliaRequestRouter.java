@@ -642,6 +642,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           } else if (!alreadyOpened && documentId != null) {
             request.setAttribute("SingleAttachmentURL", kmelia.getAttachmentURL(documentId));
           }
+          
+          // Attachments area must be displayed or not ?
+          request.setAttribute("AttachmentsEnabled", kmelia.isAttachmentsEnabled());
 
           destination = rootDestination + "publication.jsp";
         }
