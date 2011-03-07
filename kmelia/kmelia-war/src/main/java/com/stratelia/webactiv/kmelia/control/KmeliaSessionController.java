@@ -4428,6 +4428,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public boolean isSearchOnTopicsEnabled() {
     return "yes".equals(getComponentParameterValue("searchOnTopics").toLowerCase());
   }
+  
+  public boolean isAttachmentsEnabled() {
+    return StringUtil.getBooleanValue(getComponentParameterValue(TAB_ATTACHMENTS));
+  }
 
   /**
    * Get publications and aliases of this topic and its subtopics answering to the query
