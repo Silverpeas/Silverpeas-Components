@@ -45,9 +45,9 @@
 	if (isProcessIdVisible)
 		processId = "#"+process.getInstanceId()+" > ";
 	browseBar.setPath(processId+process.getTitle(currentRole, language));
-	
+
 	String toto = process.getInstanceId();
-	
+
 	tabbedPane.addTab(resource.getString("processManager.details"), "viewProcess?processId=" + process.getInstanceId()+"&force=true", false, true);
 	if (isAttachmentTabEnable.booleanValue() && isActiveUser != null && isActiveUser.booleanValue())
 		tabbedPane.addTab(resource.getString("processManager.attachments"), "attachmentManager?processId=" + process.getInstanceId(), false, true);
@@ -57,7 +57,7 @@
 	}
 	if (isHistoryTabEnable.booleanValue())
 		tabbedPane.addTab(resource.getString("processManager.history"), "viewHistory?processId=" + process.getInstanceId(), false, true);
-	
+
 %>
 
 <HTML>
@@ -104,25 +104,25 @@
 			Action[] actions = state.getFilteredActions();
 	   		for (int j=0; actions!=null && j<actions.length ; j++)
 			{
-				buttonPane.addButton((Button) gef.getFormButton(actions[j].getLabel(currentRole,language), "editAction?state="+state.getName()+"&action="+actions[j].getName() , false));			
+				buttonPane.addButton((Button) gef.getFormButton(actions[j].getLabel(currentRole,language), "editAction?state="+state.getName()+"&action="+actions[j].getName()+"&processId="+process.getInstanceId() , false));
 			}
 
-	   	// affichage des boutons "retour" si autoris�
+	   	// affichage des boutons "retour" si autorisé
 	   	if (viewReturn)
 	   	{
 	   		HistoryStep[] steps = tasks[i].getBackSteps();
-	
+
 		    if (steps!=null && steps.length>0)
 		    {
 		    	for (int j=0; j<steps.length ; j++)
 				{
 		    		String actorName = steps[j].getUser().getFullName();
-	
+
 				    buttonPane.addButton((Button) gef.getFormButton(resource.getString("processManager.backTo") + " "+ actorName, "editQuestion?state="+state.getName()+"&stepId="+steps[j].getId() , false));
 				}
-			} 
+			}
 	   	}
-	   				
+
 		  out.println(buttonPane.print());
 %>
 				   </td>

@@ -27,13 +27,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -106,7 +105,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Builds and init a new session controller
    * @param mainSessionCtrl
    * @param context
-   * @throws ProcessManagerException 
+   * @throws ProcessManagerException
    */
   public ProcessManagerSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context) throws ProcessManagerException {
@@ -152,7 +151,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * built.
    * @param mainSessionCtrl
    * @param context
-   * @param fatal 
+   * @param fatal
    */
   public ProcessManagerSessionController(MainSessionController mainSessionCtrl,
       ComponentContext context, ProcessManagerException fatal) {
@@ -345,7 +344,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Get the process instance Id referred by the todo with the given todo id
    * @param externalTodoId
    * @return the process instance Id referred by the todo with the given todo id.
-   * @throws ProcessManagerException 
+   * @throws ProcessManagerException
    */
   public String getProcessInstanceIdFromExternalTodoId(String externalTodoId) throws
       ProcessManagerException {
@@ -588,7 +587,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Returns the workflow user having the given id.
    * @param userId
    * @return the workflow user having the given id.
-   * @throws ProcessManagerException 
+   * @throws ProcessManagerException
    */
   public User getUser(String userId) throws ProcessManagerException {
     try {
@@ -599,11 +598,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
     }
   }
 
-  /**   
+  /**
    * Returns the process model having the given id.
    * @param modelId
    * @return the process model having the given id.
-   * @throws ProcessManagerException 
+   * @throws ProcessManagerException
    */
   public final ProcessModel getProcessModel(String modelId) throws ProcessManagerException {
     try {
@@ -616,7 +615,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Returns the current role name.
-   * @return 
+   * @return
    */
   public String getCurrentRole() {
     return currentRole;
@@ -624,8 +623,8 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Returns the current role name.
-   * @param role 
-   * @throws ProcessManagerException 
+   * @param role
+   * @throws ProcessManagerException
    */
   public void resetCurrentRole(String role) throws ProcessManagerException {
     if (role != null && role.length() > 0) {
@@ -1366,7 +1365,7 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
   /**
    * Returns the form used to display the i-th step. Returns null if the step is unkwown.
-   * @throws ProcessManagerException 
+   * @throws ProcessManagerException
    */
   public Form getStepForm(HistoryStep step) throws ProcessManagerException {
     try {
@@ -2047,6 +2046,24 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
 
     return trace.toString();
   }
+
+  /**
+   * Get the current tokenId. Token Id prevents users to use several windows with same session.
+   *
+   * @return the current token id
+   */
+  public String getCurrentTokenId() {
+    return currentTokenId;
+  }
+
+  /**
+   * Set the current tokenId. Token Id prevents users to use several windows with same session.
+   *
+   * @param newTokenId the current token id
+   */
+  public void setCurrentTokenId(String newTokenId) {
+    this.currentTokenId = newTokenId;
+  }
   /**
    * The session controller saves any fatal exception.
    */
@@ -2102,4 +2119,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Flag to indicate if user is currently resuming a saved instance
    */
   private boolean isResumingInstance = false;
+  /**
+   * Current token Id prevents users to use several windows with the same session.
+   */
+  private String currentTokenId = null;
+
+
+
 }
