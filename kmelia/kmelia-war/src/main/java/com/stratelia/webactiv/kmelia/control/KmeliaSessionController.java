@@ -2589,7 +2589,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     FileImport fileImport = new FileImport();
     fileImport.setFileUploaded(fileUploaded);
     fileImport.setTopicId(topicId);
-    fileImport.setDraftMode(draftMode);
+    if (isDraftEnabled() && isPDCClassifyingMandatory()) {
+      // classifying on PDC is mandatory, set publication in draft mode
+      fileImport.setDraftMode(true);
+    } else {
+      fileImport.setDraftMode(draftMode);
+    }
     fileImport.setVersionType(versionType);
     fileImport.setKmeliaScc(this);
     if (UNITARY_IMPORT_MODE.equals(importMode)) {
