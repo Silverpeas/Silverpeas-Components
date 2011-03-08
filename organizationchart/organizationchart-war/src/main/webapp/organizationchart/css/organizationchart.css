@@ -39,7 +39,8 @@
 */
 .cell1 {border-style: solid; border-width: 1; -moz-border-radius: 10px; width: 100; background-color: #EDB8FF; color: #000000; position: absolute; z-index: 2}
 .cell1 table {width: 100%; height: 40}
-.cell1 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #0000FF}
+.cell1 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #000000}
+.cell1 td.cellName A {color: #0000FF; font-size: 13;}
 .cell1 td.cellRole {font-family: Arial; font-size: 12; font-style: italic; text-align: center; color: #8800AA}
 .cell1 td.cellLinkLeft {font-family: Arial; font-size: 12; text-align: left; color: #666699; white-space: nowrap}
 .cell1 td.cellLinkRight {font-family: Arial; font-size: 12; text-align: right; color: #666699; white-space: nowrap}
