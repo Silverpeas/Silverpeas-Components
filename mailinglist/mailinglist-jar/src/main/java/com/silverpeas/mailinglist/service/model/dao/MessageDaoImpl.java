@@ -24,22 +24,20 @@
 
 package com.silverpeas.mailinglist.service.model.dao;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
-
 import com.silverpeas.mailinglist.service.model.beans.Activity;
 import com.silverpeas.mailinglist.service.model.beans.Attachment;
 import com.silverpeas.mailinglist.service.model.beans.Message;
 import com.silverpeas.mailinglist.service.util.OrderBy;
 import com.silverpeas.util.cryptage.CryptMD5;
 import com.stratelia.webactiv.util.exception.UtilException;
+import org.hibernate.Criteria;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
 
@@ -106,10 +104,10 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     criteria.add(Restrictions.eq("componentId", componentId));
     criteria.add(Restrictions.eq("moderated", Boolean.TRUE));
     if (month >= 0) {
-      criteria.add(Restrictions.eq("month", new Integer(month)));
+      criteria.add(Restrictions.eq("month", month));
     }
     if (year >= 0) {
-      criteria.add(Restrictions.eq("year", new Integer(year)));
+      criteria.add(Restrictions.eq("year", year));
     }
     criteria.addOrder(orderBy.getOrder());
     int firstResult = page * elementsPerPage;
@@ -145,7 +143,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     Criteria criteria = getSession().createCriteria(Message.class);
     criteria.add(Restrictions.eq("componentId", componentId));
     criteria.setProjection(Projections.rowCount());
-    return ((Integer) criteria.uniqueResult()).intValue();
+    return ((Long) criteria.uniqueResult()).intValue();
   }
 
   public int listTotalNumberOfDisplayableMessages(String componentId) {
@@ -153,7 +151,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     criteria.add(Restrictions.eq("componentId", componentId));
     criteria.add(Restrictions.eq("moderated", Boolean.TRUE));
     criteria.setProjection(Projections.rowCount());
-    return ((Integer) criteria.uniqueResult()).intValue();
+    return ((Long) criteria.uniqueResult()).intValue();
   }
 
   public int listTotalNumberOfUnmoderatedMessages(String componentId) {
@@ -161,7 +159,7 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     criteria.add(Restrictions.eq("componentId", componentId));
     criteria.add(Restrictions.eq("moderated", Boolean.FALSE));
     criteria.setProjection(Projections.rowCount());
-    return ((Integer) criteria.uniqueResult()).intValue();
+    return ((Long) criteria.uniqueResult()).intValue();
   }
 
   @SuppressWarnings("unchecked")
@@ -176,13 +174,12 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
     List<Activity> activities;
     if (result != null && !result.isEmpty()) {
       activities = new ArrayList<Activity>(result.size());
-      Iterator iter = result.iterator();
-      while (iter.hasNext()) {
-        Object[] line = (Object[]) iter.next();
+      for (Object aResult : result) {
+        Object[] line = (Object[]) aResult;
         Activity activity = new Activity();
-        activity.setNbMessages(((Integer) line[0]).intValue());
-        activity.setYear(((Integer) line[1]).intValue());
-        activity.setMonth(((Integer) line[2]).intValue());
+        activity.setNbMessages(((Long) line[0]).intValue());
+        activity.setYear((Integer) line[1]);
+        activity.setMonth((Integer) line[2]);
         activities.add(activity);
       }
     } else {
@@ -228,15 +225,14 @@ public class MessageDaoImpl extends HibernateDaoSupport implements MessageDao {
       final long size, final String fileName, final String attachmentId) {
     Criteria criteria = getSession().createCriteria(Attachment.class);
     criteria.add(Restrictions.eq("md5Signature", md5Hash));
-    criteria.add(Restrictions.eq("size", new Long(size)));
+    criteria.add(Restrictions.eq("size", size));
     criteria.add(Restrictions.eq("fileName", fileName));
     if (attachmentId != null) {
       criteria.add(Restrictions.not(Restrictions.eq("id", attachmentId)));
     }
     List<Attachment> result = criteria.list();
     if (result != null && !result.isEmpty()) {
-      Attachment existingFile = (Attachment) result.iterator().next();
-      return existingFile;
+      return result.iterator().next();
     }
     return null;
   }
