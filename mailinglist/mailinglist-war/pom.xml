@@ -67,6 +67,10 @@
       <artifactId>aspectjweaver</artifactId>
     </dependency>
     <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>
       <version>${core.version}</version>
