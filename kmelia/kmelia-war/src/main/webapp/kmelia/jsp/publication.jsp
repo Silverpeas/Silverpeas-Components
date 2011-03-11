@@ -114,22 +114,21 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	boolean isOwner = false;
 
 	if (action.equals("ValidationComplete") || action.equals("ValidationInProgress") || action.equals("Unvalidate") || action.equals("Suspend")) {
-		Board boardStatus = gef.getBoard();
-		screenMessage += boardStatus.printBefore();
-		screenMessage += "<TABLE ALIGN=\"CENTER\" WIDTH=\"100%\"><tr>";
-		screenMessage += "<td align=\"center\">";
-		if (action.equals("ValidationComplete"))
-			screenMessage += resources.getString("PubValidate");
-		else if (action.equals("ValidationInProgress"))
-			screenMessage += resources.getString("kmelia.PublicationValidationInProgress");
-		else if (action.equals("Unvalidate"))
-			screenMessage += resources.getString("PubUnvalidate");
-		else if (action.equals("Suspend"))
-			screenMessage += resources.getString("kmelia.PublicationSuspended");
-		screenMessage += ("</td></tr></TABLE>");
-		screenMessage += boardStatus.printAfter();
+		if (action.equals("ValidationComplete")) {
+			screenMessage = "<div class=\"inlineMessage-ok\">"+resources.getString("PubValidate")+"</div>";
+		} else if (action.equals("ValidationInProgress")) {
+		  	screenMessage = "<div class=\"inlineMessage\">"+resources.getString("kmelia.PublicationValidationInProgress")+"</div>";
+		} else if (action.equals("Unvalidate")) {
+		  	screenMessage = "<div class=\"inlineMessage-nok\">"+resources.getString("PublicationRefused")+"</div>";
+		} else if (action.equals("Suspend")) {
+		  	screenMessage = "<div class=\"inlineMessage-nok\">"+resources.getString("kmelia.PublicationSuspended")+"</div>";
+		}
 	    action = "ViewPublication";
 	}
+	if (pubDetail.isRefused()) {
+	  screenMessage = "<div class=\"inlineMessage-nok\">"+resources.getString("PublicationRefused")+"</div>";
+	}
+	
 	if (action.equals("ValidateView")) {
     	kmeliaScc.setSessionOwner(true);
         action = "UpdateView";
@@ -502,10 +501,6 @@ function addFavorite()
 		description = EncodeHelper.javaStringToHtmlParagraphe(description);
 
 		out.println("<br/><span class=\"publiDesc\">"+description+"</span><br/><br/>");
-		
-		if (pubDetail.isRefused()) { %>
-		  <div class="extraInformation_Refused"><%=resources.getString("PublicationRefused")%></div>
-		<% }
 
 		out.println("</td><td valign=\"top\" align=\"right\">");
 
