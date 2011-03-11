@@ -182,8 +182,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	boolean highlightFirst = resources.getSetting("highlightFirstOccurence", false);
 %>
 
-
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <%
 out.println(gef.getLookStyleSheet());
@@ -582,7 +583,7 @@ function addFavorite()
 			boolean showInfo 				= resources.getSetting("showInfo", true);
 			boolean showIcon = true;
 		    if (!"bottom".equals(resources.getSetting("attachmentPosition"))) {
-				out.println("<td valign=\"top\" align=\"center\">");
+				out.println("<td valign=\"top\">");
 				out.println("<a name=\"attachments\"></a>");
 		   	}
 		   	else {
