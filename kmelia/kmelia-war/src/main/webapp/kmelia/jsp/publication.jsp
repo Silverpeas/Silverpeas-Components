@@ -114,22 +114,21 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	boolean isOwner = false;
 
 	if (action.equals("ValidationComplete") || action.equals("ValidationInProgress") || action.equals("Unvalidate") || action.equals("Suspend")) {
-		Board boardStatus = gef.getBoard();
-		screenMessage += boardStatus.printBefore();
-		screenMessage += "<TABLE ALIGN=\"CENTER\" WIDTH=\"100%\"><tr>";
-		screenMessage += "<td align=\"center\">";
-		if (action.equals("ValidationComplete"))
-			screenMessage += resources.getString("PubValidate");
-		else if (action.equals("ValidationInProgress"))
-			screenMessage += resources.getString("kmelia.PublicationValidationInProgress");
-		else if (action.equals("Unvalidate"))
-			screenMessage += resources.getString("PubUnvalidate");
-		else if (action.equals("Suspend"))
-			screenMessage += resources.getString("kmelia.PublicationSuspended");
-		screenMessage += ("</td></tr></TABLE>");
-		screenMessage += boardStatus.printAfter();
+		if (action.equals("ValidationComplete")) {
+			screenMessage = "<div class=\"inlineMessage-ok\">"+resources.getString("PubValidate")+"</div>";
+		} else if (action.equals("ValidationInProgress")) {
+		  	screenMessage = "<div class=\"inlineMessage\">"+resources.getString("kmelia.PublicationValidationInProgress")+"</div>";
+		} else if (action.equals("Unvalidate")) {
+		  	screenMessage = "<div class=\"inlineMessage-nok\">"+resources.getString("PublicationRefused")+"</div>";
+		} else if (action.equals("Suspend")) {
+		  	screenMessage = "<div class=\"inlineMessage-nok\">"+resources.getString("kmelia.PublicationSuspended")+"</div>";
+		}
 	    action = "ViewPublication";
 	}
+	if (pubDetail.isRefused()) {
+	  screenMessage = "<div class=\"inlineMessage-nok\">"+resources.getString("PublicationRefused")+"</div>";
+	}
+	
 	if (action.equals("ValidateView")) {
     	kmeliaScc.setSessionOwner(true);
         action = "UpdateView";
@@ -182,8 +181,9 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	boolean highlightFirst = resources.getSetting("highlightFirstOccurence", false);
 %>
 
-
-<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <%
 out.println(gef.getLookStyleSheet());
@@ -501,10 +501,6 @@ function addFavorite()
 		description = EncodeHelper.javaStringToHtmlParagraphe(description);
 
 		out.println("<br/><span class=\"publiDesc\">"+description+"</span><br/><br/>");
-		
-		if (pubDetail.isRefused()) { %>
-		  <div class="extraInformation_Refused"><%=resources.getString("PublicationRefused")%></div>
-		<% }
 
 		out.println("</td><td valign=\"top\" align=\"right\">");
 
@@ -582,7 +578,7 @@ function addFavorite()
 			boolean showInfo 				= resources.getSetting("showInfo", true);
 			boolean showIcon = true;
 		    if (!"bottom".equals(resources.getSetting("attachmentPosition"))) {
-				out.println("<td valign=\"top\" align=\"center\">");
+				out.println("<td valign=\"top\">");
 				out.println("<a name=\"attachments\"></a>");
 		   	}
 		   	else {
@@ -597,16 +593,19 @@ function addFavorite()
 				if (indexIt) {
 					pIndexIt = "1";
 				}
+				String attProfile = kmeliaScc.getProfile();
 				if (kmeliaScc.isVersionControlled(componentId)) {
-					getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+id+"&ComponentId="+componentId+"&Alias="+alias+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Profile="+kmeliaScc.getProfile()+"&NodeId="+kmeliaScc.getSessionTopic().getNodePK().getId()+"&TopicRightsEnabled="+kmeliaScc.isRightsOnTopicsEnabled()+"&VersionningFileRightsMode="+kmeliaScc.getVersionningFileRightsMode()+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewPublication&IndexIt="+pIndexIt+"&ShowMenuNotif="+true).include(request, response);
-				} else {
-				  	String attProfile = kmeliaScc.getProfile();
-				  	if (!isOwner || pubDetail.haveGotClone()) {
-				  	  // Attachments can be updated in both cases only : 
-				  	  //  - on clone (if "publication always visible" is used)
-				  	  //  - if current user can modified publication
-				  	  attProfile = "user";
+				  	if (!isOwner) {
+						attProfile = "user";
 				  	}
+					getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+id+"&ComponentId="+componentId+"&Alias="+alias+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Profile="+attProfile+"&NodeId="+kmeliaScc.getSessionTopic().getNodePK().getId()+"&TopicRightsEnabled="+kmeliaScc.isRightsOnTopicsEnabled()+"&VersionningFileRightsMode="+kmeliaScc.getVersionningFileRightsMode()+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewPublication&IndexIt="+pIndexIt+"&ShowMenuNotif="+true).include(request, response);
+				} else {
+				  	if (!isOwner || pubDetail.haveGotClone()) {
+						// Attachments can be updated in both cases only : 
+				  	  	//  - on clone (if "publication always visible" is used)
+				  	  	//  - if current user can modified publication
+				  	  	attProfile = "user";
+			  		}
 				  	getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+id+"&ComponentId="+componentId+"&Alias="+alias+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Language="+language+"&Profile="+attProfile+"&CallbackUrl="+URLManager.getURL("useless",componentId)+"ViewPublication&IndexIt="+pIndexIt+"&ShowMenuNotif="+true).include(request, response);
 				}
 			} catch (Exception e) {
