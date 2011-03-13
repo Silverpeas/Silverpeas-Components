@@ -196,7 +196,7 @@ public class RssLastPublicationsServlet extends HttpServlet {
   public synchronized PersonalizationBm getPersonalization(String userId) {
     PersonalizationBm persoBm = null;
     try {
-      PersonalizationBmHome personalizationBmHome = EJBUtilitaire.getEJBObjectRef(
+      PersonalizationBmHome personalizationBmHome = (PersonalizationBmHome) EJBUtilitaire.getEJBObjectRef(
           JNDINames.PERSONALIZATIONBM_EJBHOME, PersonalizationBmHome.class);
       persoBm = personalizationBmHome.create();
       persoBm.setActor(userId);
