@@ -547,11 +547,13 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           }
         }
 
-        boolean checkPath = StringUtil.getBooleanValue(request.getParameter("CheckPath"));
-        if (checkPath) {
-          processPath(kmelia, id);
-        } else {
-          processPath(kmelia, null);
+        if (!kmaxMode) {
+          boolean checkPath = StringUtil.getBooleanValue(request.getParameter("CheckPath"));
+          if (checkPath) {
+            processPath(kmelia, id);
+          } else {
+            processPath(kmelia, null);
+          }
         }
 
         UserCompletePublication userPubComplete = null;
@@ -640,6 +642,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           } else if (!alreadyOpened && documentId != null) {
             request.setAttribute("SingleAttachmentURL", kmelia.getAttachmentURL(documentId));
           }
+          
+          // Attachments area must be displayed or not ?
+          request.setAttribute("AttachmentsEnabled", kmelia.isAttachmentsEnabled());
 
           destination = rootDestination + "publication.jsp";
         }

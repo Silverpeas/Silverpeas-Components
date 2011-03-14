@@ -157,6 +157,16 @@ function topicWysiwyg()
 	document.topicDetailForm.submit();
 }
 
+function pasteFromOperations() {
+	$.progressMessage();
+	var ieFix = new Date().getTime();
+	$.get('<%=m_context%>/KmeliaJSONServlet', {Action:'Paste',ComponentId:'<%=componentId%>',Language:'<%=language%>',IEFix:ieFix},
+			function(data){
+				displayPublications("0");
+				$.closeProgressMessage();
+			},"json");
+}
+
 $(document).ready(function() {
 	displayPublications("<%=id%>");
 	displayTopicDescription("0");

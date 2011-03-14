@@ -67,6 +67,7 @@ jCells[cellIndex] = new JCell( {
 	cellType : CELL_TYPE_ORGANIZATION,
 	showCenterLink : false,
 	showDetailsLink : ${organigramme.rootOrganization.detailLinkActive},
+	detailsURL : "${organigramme.rootOrganization.url}",
 	commonUserURL : "Details?login=",
 	usersIcon : "${usersIcon}"
 });

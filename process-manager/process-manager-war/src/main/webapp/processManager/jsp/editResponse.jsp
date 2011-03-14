@@ -70,11 +70,11 @@
 			document.<%=context.getFormName()%>.submit();
 		}
 	}
-	
+
 	function B_ANNULER_ONCLICK() {
-		location.href = "cancelResponse?state=<%=question.getTargetState().getName()%>&processId=<%=process.getInstanceId()%>";
+		location.href = "cancelResponse?state=<%=question.getTargetState().getName()%>&processId=<%=process.getInstanceId()%>&processManagertokenId=${currentTokenId}";
 	}
-	
+
 //-->
 </SCRIPT>
 
@@ -103,6 +103,7 @@
 </CENTER>
 
 <FORM NAME="<%=context.getFormName()%>" METHOD="POST" ACTION="saveResponse" ENCTYPE="multipart/form-data">
+<input type="hidden" name="processManagertokenId" value="${currentTokenId}"/>
 <CENTER>
 <table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH="98%" CLASS=intfdcolor>
 	<tr>

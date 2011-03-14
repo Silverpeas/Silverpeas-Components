@@ -109,6 +109,7 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/yui/element/element-min.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/yui/resize/resize-min.js"></script>
 
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.cookie.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/upload_applet.js"></script>
 <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/dragAndDrop.js"></script>
 <script type="text/javascript" src="javaScript/navigation.js"></script>
@@ -1378,6 +1379,9 @@ function loadNodeData(node, fnLoadComplete)  {
 					//display dNd according rights
 					checkDnD(id, data);
 					checkOperations(id, data);
+					if (data == 'admin') {
+						showRightClickHelp();
+					}
 				}, 'text');
 	}
 
@@ -1438,6 +1442,29 @@ function loadNodeData(node, fnLoadComplete)  {
 	}
 </script>
 <script>
+var rightClickHelpAlreadyShown = false;
+function showRightClickHelp() {
+	var rightClickCookieName = "Silverpeas_GED_RightClickHelp";
+	var rightClickCookieValue = $.cookie(rightClickCookieName);
+	if (!rightClickHelpAlreadyShown && "IKnowIt" != rightClickCookieValue) {
+		rightClickHelpAlreadyShown = true;
+		$( "#rightClick-message" ).dialog({
+			modal: true,
+			resizable: false,
+			width: 400,
+			dialogClass: 'help-modal-message',
+			buttons: {
+				"<%=resources.getString("kmelia.help.rightclick.buttons.ok") %>": function() {
+					$.cookie(rightClickCookieName, "IKnowIt", { expires: 3650, path: '/' });
+					$( this ).dialog( "close" );
+				},
+				"<%=resources.getString("kmelia.help.rightclick.buttons.remind") %>": function() {
+					$( this ).dialog( "close" );
+				}
+			}
+		});
+	}
+}
 (function() {
     var Dom = YAHOO.util.Dom,
         Event = YAHOO.util.Event,
@@ -1475,9 +1502,19 @@ function loadNodeData(node, fnLoadComplete)  {
         <% if (displaySearch.booleanValue()) { %>
     		document.getElementById("topicQuery").focus();
     	<% } %>
+
+    	<% if (KmeliaHelper.ROLE_ADMIN.equals(profile)) { %>
+			//Right-click concerns only admins
+	    	showRightClickHelp();
+		<% } %>
     });
 })();
 </script>
+</div>
+<div id="rightClick-message" title="<%=resources.getString("kmelia.help.rightclick.title") %>" style="display: none;">
+	<p>
+		<%=resources.getStringWithParam("kmelia.help.rightclick.content", componentLabel) %>
+	</p>
 </div>
 <view:progressMessage/>
 </BODY>

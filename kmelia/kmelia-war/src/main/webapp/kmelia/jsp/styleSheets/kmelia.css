@@ -252,3 +252,9 @@
     text-align: center;
  	padding-top: 10px;   
 }
+
+#rightClick-message p {
+	background: transparent url("../../../util/icons/rightClick.gif") 7px 0px no-repeat;
+    padding-left: 50px;
+    text-align: justify;
+}

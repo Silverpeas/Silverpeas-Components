@@ -41,39 +41,30 @@ context.setBorderPrinted(false);
 <HEAD>
 <% out.println(gef.getLookStyleSheet()); %>
 <% 
-if (formUpdate != null)
-	formUpdate.displayScripts(out, context); 
+if (formUpdate != null) {
+	formUpdate.displayScripts(out, context);
+}
 %>
-<script language="javaScript">
-
+<script type="text/javascript">
 function B_VALIDER_ONCLICK()
 {
 	<% if (formUpdate != null) { %>
-	  if (isCorrectForm())
-		{
-			if (!document.myForm.CheckCharte.checked)
-			{
-				var errorMsg = "<%=resource.getString("gallery.mesValidCharte")%>";
-				window.alert(errorMsg);
-			}
-			else
-			{
-				document.myForm.submit();
-			}
+		if (isCorrectForm()) {
+			checkAcceptation();
 		}
-	  <% } else { %>
-		  if (!document.myForm.CheckCharte.checked)
-	      {
-	        var errorMsg = "<%=resource.getString("gallery.mesValidCharte")%>";
-	        window.alert(errorMsg);
-	      }
-	      else
-	      {
-	        document.myForm.submit();
-	      }
-	  <% } %>
+	<% } else { %>
+		checkAcceptation();
+	<% } %>
 }
 
+function checkAcceptation() {
+	if (<%=StringUtil.isDefined(charteUrl)%> && !document.myForm.CheckCharte.checked) {
+		var errorMsg = "<%=resource.getString("gallery.mesValidCharte")%>";
+		window.alert(errorMsg);
+	} else {
+		document.myForm.submit();
+	}
+}
 </script>
 </HEAD>
 <BODY>
@@ -95,15 +86,13 @@ function B_VALIDER_ONCLICK()
 <FORM NAME="myForm" METHOD="POST" ACTION="OrderCreate"
 	ENCTYPE="multipart/form-data" accept-charset="UTF-8">
 <% 
-	if (formUpdate != null)
-	{
+	if (formUpdate != null) {
 		formUpdate.display(out, context, data);
 	}
 	
-	if (StringUtil.isDefined(charteUrl))
-	{
-		  %> <!--  ajout de la zone de la charte --> <iframe
-	   src="<%=charteUrl%>" height="200" width="600" scrolling="auto"></iframe>
+	if (StringUtil.isDefined(charteUrl)) {
+		  %> <!--  ajout de la zone de la charte --> 
+		  <iframe src="<%=charteUrl%>" height="200" width="600" scrolling="auto"></iframe>
 			<br />
 			<table>
 				<tr>
@@ -111,10 +100,7 @@ function B_VALIDER_ONCLICK()
 					<td><b><%=resource.getString("gallery.validCharte")%></b></td>
 				</tr>
 			</table>
-			<%} 
-			else {%>
-			   <input type="hidden" name="CheckCharte" checked="checked" />
-			<% } %>
+	<% } %>
 </form>
 <%
 	if (formUpdate == null && !StringUtil.isDefined(charteUrl)) {

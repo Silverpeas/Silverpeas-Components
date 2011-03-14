@@ -31,6 +31,8 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching
 %>
 
+<%@ page isELIgnored="false"%>
+
 <%@ page import="java.net.URLEncoder"%>
 <%@ page import="java.text.SimpleDateFormat"%>
 <%@ page import="java.util.Date"%>
