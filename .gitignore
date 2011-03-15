@@ -19,3 +19,4 @@ wiki/wiki-jar/Test de base/
 /rssaggregator/rssaggregator-war/.classpath
 /rssaggregator/rssaggregator-config/.project
 >>>>>>> master
+/target/
