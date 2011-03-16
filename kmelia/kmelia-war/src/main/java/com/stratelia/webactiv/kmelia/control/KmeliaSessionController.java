@@ -259,12 +259,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     // Remove all data store by this SessionController
     removeSessionObjects();
     currentLanguage = getLanguage();
-    if ("yes".equals(getSettings().getString("massiveDragAndDropAllowed"))) {
-      try {
+    if (StringUtil.getBooleanValue(getSettings().getString("massiveDragAndDropAllowed"))) {
         isDragAndDropEnableByUser = isDragAndDropEnableByUser();
-      } catch (RemoteException e) {
-        isDragAndDropEnableByUser = false;
-      }
     }
   }
 
@@ -802,7 +798,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
     if (displayNbPublis()) {
       List<NodeDetail> children = (List<NodeDetail>) currentTopic.getNodeDetail().getChildrenDetails();
-      for (NodeDetail node : children) {
+      for (NodeDetail node :
+          children) {
         if (node != null) {
           int index = treeview.indexOf(node);
           if (index != -1) {
@@ -883,7 +880,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         || SilverpeasRole.admin.isInRole(getUserTopicProfile(node.getFatherPK().getId()))) {
       // First, remove rights on topic and its descendants
       List<NodeDetail> treeview = getNodeBm().getSubTree(getNodePK(topicId));
-      for (int n = 0; n < treeview.size(); n++) {
+      for (int n = 0;
+          n < treeview.size();
+          n++) {
         node = treeview.get(n);
         deleteTopicRoles(node);
       }
@@ -1316,7 +1315,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     calendar.set(Calendar.MILLISECOND, 0);
     Date today = calendar.getTime();
 
-    for (int p = 0; p < publications.size(); p++) {
+    for (int p = 0;
+        p < publications.size();
+        p++) {
       userPub = publications.get(p);
       pub = userPub.getPublication();
       if (pub.getStatus() != null) {
@@ -1420,9 +1421,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   private List<UserPublication> sortByTitle(List<UserPublication> publications) {
     UserPublication[] pubs = publications.toArray(new UserPublication[publications.size()]);
-    for (int i = pubs.length; --i >= 0;) {
+    for (int i = pubs.length;
+        --i >= 0;) {
       boolean swapped = false;
-      for (int j = 0; j < i; j++) {
+      for (int j = 0;
+          j < i;
+          j++) {
         if (pubs[j].getPublication().getName(getCurrentLanguage()).compareToIgnoreCase(
             pubs[j + 1].getPublication().getName(getCurrentLanguage())) > 0) {
           UserPublication T = pubs[j];
@@ -1440,9 +1444,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   private List<UserPublication> sortByDescription(List<UserPublication> publications) {
     UserPublication[] pubs = publications.toArray(new UserPublication[publications.size()]);
-    for (int i = pubs.length; --i >= 0;) {
+    for (int i = pubs.length;
+        --i >= 0;) {
       boolean swapped = false;
-      for (int j = 0; j < i; j++) {
+      for (int j = 0;
+          j < i;
+          j++) {
         String p1 = pubs[j].getPublication().getDescription(getCurrentLanguage());
         if (p1 == null) {
           p1 = "";
@@ -1671,7 +1678,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     // Get users who have already validate this publication
     List<String> validators = new ArrayList<String>();
     ValidationStep step = null;
-    for (int s = 0; s < steps.size(); s++) {
+    for (int s = 0;
+        s < steps.size();
+        s++) {
       step = steps.get(s);
       step.setUserFullName(getOrganizationController().getUserDetail(step.getUserId()).
           getDisplayedName());
@@ -1683,7 +1692,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         getSessionPubliOrClone().getPublication().getPublicationDetail().getPK(),
         getValidationType());
 
-    for (int v = 0; v < allValidators.size(); v++) {
+    for (int v = 0;
+        v < allValidators.size();
+        v++) {
       if (!validators.contains(allValidators.get(v))) {
         step = new ValidationStep();
         step.setUserFullName(getOrganizationController().getUserDetail(
@@ -1884,7 +1895,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     Document document = null;
     List<DocumentVersion> versions = null;
     DocumentVersion version = null;
-    for (int d = 0; d < documents.size(); d++) {
+    for (int d = 0;
+        d < documents.size();
+        d++) {
       document = documents.get(d);
 
       SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocuments()",
@@ -1927,7 +1940,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       DocumentPK documentPK = getVersioningBm().createDocument(document, version);
       document.setPk(documentPK);
 
-      for (int v = 1; v < versions.size(); v++) {
+      for (int v = 1;
+          v < versions.size();
+          v++) {
         version = versions.get(v);
         version.setDocumentPK(documentPK);
         SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocuments()",
@@ -1955,7 +1970,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
     String userId = null;
     Worker worker = null;
-    for (int u = 0; u < userIds.length; u++) {
+    for (int u = 0;
+        u < userIds.length;
+        u++) {
       userId = userIds[u];
       worker =
           new Worker(new Integer(userId).intValue(), -1, u, false, true, getComponentId(), "U",
@@ -1988,7 +2005,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     // paste each document
     Document document = null;
     DocumentVersion version = null;
-    for (int d = 0; d < documents.size(); d++) {
+    for (int d = 0;
+        d < documents.size();
+        d++) {
       document = documents.get(d);
 
       SilverTrace.info("kmelia", "KmeliaSessionController.pasteDocumentsAsAttachments()",
@@ -2050,7 +2069,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     Document document = null;
     DocumentVersion version = null;
     AttachmentDetail attachment = null;
-    for (int d = 0; d < attachments.size(); d++) {
+    for (int d = 0;
+        d < attachments.size();
+        d++) {
       attachment = attachments.get(d);
 
       SilverTrace.info("kmelia", "KmeliaSessionController.pasteAttachmentsAsDocuments()",
@@ -2122,7 +2143,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     StringTokenizer tokens = null;
 
     List<ForeignPK> infoLinks = new ArrayList<ForeignPK>();
-    for (String link : links) {
+    for (String link :
+        links) {
       tokens = new StringTokenizer(link, "/");
       infoLinks.add(new ForeignPK(tokens.nextToken(), tokens.nextToken()));
     }
@@ -2300,7 +2322,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           getComponentId());
       if (profileInsts != null) {
         ProfileInst profileInst = null;
-        for (int p = 0; p < profileInsts.size(); p++) {
+        for (int p = 0;
+            p < profileInsts.size();
+            p++) {
           profileInst = profileInsts.get(p);
           if (profileInst != null) {
             if (profiles.contains(profileInst.getName())) {
@@ -2382,7 +2406,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     while (documentsIterator.hasNext()) {
       Document document = documentsIterator.next();
       List<Worker> writers = document.getWorkList();
-      for (int i = 0; i < writers.size(); i++) {
+      for (int i = 0;
+          i < writers.size();
+          i++) {
         Worker user = writers.get(i);
         if (user.getUserId() == new Integer(getUserId()).intValue()) {
           if (user.isApproval()) {
@@ -2987,13 +3013,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     this.sessionTreeview = new ArrayList<NodeDetail>(sessionTreeview);
   }
 
-  private synchronized boolean isDragAndDropEnableByUser() throws RemoteException {
-    try {
-      return getPersonalization().getDragAndDropStatus();
-    } catch (NoSuchObjectException nsoe) {
-      initPersonalization();
-      return getPersonalization().getDragAndDropStatus();
-    }
+  private synchronized boolean isDragAndDropEnableByUser() {
+    return getPersonalization().isDragAndDropEnabled();
   }
 
   public boolean isDragAndDropEnable() throws RemoteException {
@@ -3060,7 +3081,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (node != null && node.haveLocalRights()) {
       List<ProfileInst> profiles = getTopicProfiles(node.getNodePK().getId());
       ProfileInst profile = null;
-      for (int p = 0; profiles != null && p < profiles.size(); p++) {
+      for (int p = 0;
+          profiles != null && p < profiles.size();
+          p++) {
         profile = profiles.get(p);
         if (profile != null && StringUtil.isDefined(profile.getId())) {
           deleteTopicRole(profile.getId());
@@ -3115,7 +3138,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       List<ProfileInst> profiles =
           getAdmin().getProfilesByObject(node.getNodePK().getId(), ObjectType.NODE.getCode(),
           getComponentId());
-      for (int p = 0; profiles != null && p < profiles.size(); p++) {
+      for (int p = 0;
+          profiles != null && p < profiles.size();
+          p++) {
         ProfileInst profile = profiles.get(p);
         if (profile != null) {
           getAdmin().deleteProfileInst(profile.getId());
@@ -3131,7 +3156,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public ProfileInst getTopicProfile(String role, String topicId) {
     List<ProfileInst> profiles =
         getAdmin().getProfilesByObject(topicId, ObjectType.NODE.getCode(), getComponentId());
-    for (int p = 0; profiles != null && p < profiles.size(); p++) {
+    for (int p = 0;
+        profiles != null && p < profiles.size();
+        p++) {
       ProfileInst profile = profiles.get(p);
       if (profile.getName().equals(role)) {
         return profile;
@@ -3182,7 +3209,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public List<ProfileInst> getTopicProfiles(String topicId) {
     List<ProfileInst> alShowProfile = new ArrayList<ProfileInst>();
     String[] asAvailProfileNames = getAdmin().getAllProfilesNames("kmelia");
-    for (int nI = 0; nI < asAvailProfileNames.length; nI++) {
+    for (int nI = 0;
+        nI < asAvailProfileNames.length;
+        nI++) {
       SilverTrace.info("jobStartPagePeas", "JobStartPagePeasSessionController.getAllProfilesNames()",
           "root.MSG_GEN_PARAM_VALUE", "asAvailProfileNames = " + asAvailProfileNames[nI]);
       ProfileInst profile = getTopicProfile(asAvailProfileNames[nI], topicId);
@@ -3199,7 +3228,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     List<Group> res = new ArrayList<Group>();
     Group theGroup = null;
 
-    for (int nI = 0; groupIds != null && nI < groupIds.size(); nI++) {
+    for (int nI = 0;
+        groupIds != null && nI < groupIds.size();
+        nI++) {
       theGroup = getAdmin().getGroupById(groupIds.get(nI));
       if (theGroup != null) {
         res.add(theGroup);
@@ -3211,7 +3242,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public List<String> userIds2Users(List<String> userIds) {
     List<String> res = new ArrayList<String>();
-    for (int nI = 0; userIds != null && nI < userIds.size(); nI++) {
+    for (int nI = 0;
+        userIds != null && nI < userIds.size();
+        nI++) {
       UserDetail user = getUserDetail(userIds.get(nI));
       if (user != null) {
         res.add(user.getDisplayedName());
@@ -3228,7 +3261,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   private ProfileInst getProfile(List<ProfileInst> profiles, String role) {
-    for (int p = 0; p < profiles.size(); p++) {
+    for (int p = 0;
+        p < profiles.size();
+        p++) {
       ProfileInst profile = profiles.get(p);
       if (role.equals(profile.getName())) {
         return profile;
@@ -3247,7 +3282,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public void copyPublications(String[] pubIds) throws RemoteException {
-    for (int i = 0; i < pubIds.length; i++) {
+    for (int i = 0;
+        i < pubIds.length;
+        i++) {
       if (StringUtil.isDefined(pubIds[i])) {
         copyPublication(pubIds[i]);
       }
@@ -3266,7 +3303,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public void cutPublications(String[] pubIds) throws RemoteException {
-    for (int i = 0; i < pubIds.length; i++) {
+    for (int i = 0;
+        i < pubIds.length;
+        i++) {
       if (StringUtil.isDefined(pubIds[i])) {
         cutPublication(pubIds[i]);
       }
@@ -3354,7 +3393,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
       NodeDetail fromNode = null;
       NodePK toNodePK = null;
-      for (int i = 0; i < treeToPaste.size(); i++) {
+      for (int i = 0;
+          i < treeToPaste.size();
+          i++) {
         fromNode = treeToPaste.get(i);
         if (fromNode != null) {
           toNodePK = getNodePK(fromNode.getNodePK().getId());
@@ -3408,7 +3449,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
       List<NodePK> nodeIdsToPaste = new ArrayList<NodePK>();
       NodeDetail oneNodeToPaste = null;
-      for (int i = 0; i < treeToPaste.size(); i++) {
+      for (int i = 0;
+          i < treeToPaste.size();
+          i++) {
         oneNodeToPaste = treeToPaste.get(i);
         if (oneNodeToPaste != null) {
           nodeIdsToPaste.add(oneNodeToPaste.getNodePK());
@@ -3518,7 +3561,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         if (completePub.getModelDetail() != null && completePub.getInfoDetail() != null) {
           // Paste images of model
           if (completePub.getInfoDetail().getInfoImageList() != null) {
-            for (InfoImageDetail attachment : completePub.getInfoDetail().getInfoImageList()) {
+            for (InfoImageDetail attachment :
+                completePub.getInfoDetail().getInfoImageList()) {
               String from = fromAbsolutePath + imagesSubDirectory + File.separatorChar
                   + attachment.getPhysicalName();
               String type = FilenameUtils.getExtension(attachment.getPhysicalName());
@@ -3760,7 +3804,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       // Move images of model
       if (completePub.getInfoDetail().getInfoImageList() != null) {
         for (Iterator<InfoImageDetail> i =
-            completePub.getInfoDetail().getInfoImageList().iterator(); i.hasNext();) {
+            completePub.getInfoDetail().getInfoImageList().iterator();
+            i.hasNext();) {
           InfoImageDetail attachment = i.next();
           String from =
               fromAbsolutePath + imagesSubDirectory + File.separator
@@ -3834,7 +3879,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       // get attachments languages
       List<String> attLanguages = getAttachmentLanguages();
       String language = null;
-      for (int l = 0; l < attLanguages.size(); l++) {
+      for (int l = 0;
+          l < attLanguages.size();
+          l++) {
         language = attLanguages.get(l);
         if (!languages.contains(language)) {
           languages.add(language);
@@ -3854,7 +3901,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         AttachmentController.getLanguagesOfAttachments(new ForeignPK(pubPK.getId(), pubPK.
         getInstanceId()));
     String language = null;
-    for (int l = 0; l < attLanguages.size(); l++) {
+    for (int l = 0;
+        l < attLanguages.size();
+        l++) {
       language = attLanguages.get(l);
       if (!languages.contains(language)) {
         languages.add(language);
@@ -3878,7 +3927,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         getSessionPublication().getPublication().getPublicationDetail().getPK());
 
     // add user's displayed name
-    for (Iterator<Alias> iterator = aliases.iterator(); iterator.hasNext();) {
+    for (Iterator<Alias> iterator = aliases.iterator();
+        iterator.hasNext();) {
       Alias object = iterator.next();
       if (StringUtil.isDefined(object.getUserId())) {
         object.setUserName(getUserDetail(object.getUserId()).getDisplayedName());
@@ -3922,12 +3972,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       result.add(treeview);
     } else {
       List<SpaceInstLight> spaces = getOrganizationController().getSpaceTreeview(getUserId());
-      for (int s = 0; s < spaces.size(); s++) {
+      for (int s = 0;
+          s < spaces.size();
+          s++) {
         space = spaces.get(s);
         path = "";
         String[] componentIds =
             getOrganizationController().getAvailCompoIdsAtRoot(space.getFullId(), getUserId());
-        for (int k = 0; k < componentIds.length; k++) {
+        for (int k = 0;
+            k < componentIds.length;
+            k++) {
           instanceId = componentIds[k];
 
           if (instanceId.startsWith("kmelia")) {
@@ -3956,7 +4010,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
               if (!StringUtil.isDefined(path)) {
                 List<SpaceInst> sPath = getOrganizationController().getSpacePath(space.getFullId());
                 SpaceInst spaceInPath = null;
-                for (int i = 0; i < sPath.size(); i++) {
+                for (int i = 0;
+                    i < sPath.size();
+                    i++) {
                   spaceInPath = sPath.get(i);
                   if (i > 0) {
                     path += " > ";
@@ -4013,7 +4069,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private int getNbAliasesInComponent(List<Alias> aliases, String instanceId) {
     Alias alias = null;
     int nb = 0;
-    for (int a = 0; a < aliases.size(); a++) {
+    for (int a = 0;
+        a < aliases.size();
+        a++) {
       alias = aliases.get(a);
       if (alias.getInstanceId().equals(instanceId)) {
         nb++;
@@ -4276,7 +4334,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       List<NodeDetail> pathInReverse =
           (List<NodeDetail>) getNodeBm().getPath(new NodePK(topicId, getComponentId()));
       // reverse the path from root to leaf
-      for (int i = pathInReverse.size() - 1; i >= 0; i--) {
+      for (int i = pathInReverse.size() - 1;
+          i >= 0;
+          i--) {
         newPath.add(pathInReverse.get(i));
       }
     } catch (Exception e) {
@@ -4341,7 +4401,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     List<ComponentInstLight> galleries = null;
     OrganizationController orgaController = new OrganizationController();
     String[] compoIds = orgaController.getCompoId("gallery");
-    for (int c = 0; c < compoIds.length; c++) {
+    for (int c = 0;
+        c < compoIds.length;
+        c++) {
       if (StringUtil.getBooleanValue(orgaController.getComponentParameterValue(
           "gallery" + compoIds[c],
           "viewInWysiwyg"))) {
@@ -4433,7 +4495,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public boolean isSearchOnTopicsEnabled() {
     return "yes".equals(getComponentParameterValue("searchOnTopics").toLowerCase());
   }
-  
+
   public boolean isAttachmentsEnabled() {
     return StringUtil.getBooleanValue(getComponentParameterValue(TAB_ATTACHMENTS));
   }
@@ -4452,10 +4514,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
     // Search in all spaces and components (to find alias)
     String[] spacesIds = getOrganizationController().getAllSpaceIds(getUserDetail().getId());
-    for (int s = 0; s < spacesIds.length; s++) {
+    for (int s = 0;
+        s < spacesIds.length;
+        s++) {
       String[] componentsIds =
           getOrganizationController().getAvailCompoIds(spacesIds[s], getUserDetail().getId());
-      for (int c = 0; c < componentsIds.length; c++) {
+      for (int c = 0;
+          c < componentsIds.length;
+          c++) {
         queryDescription.addSpaceComponentPair(spacesIds[s], componentsIds[c]);
       }
     }
@@ -4488,13 +4554,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       // Get current topic too
       nodeIDs.add(getSessionTopic().getNodePK().getId());
       Collection<NodePK> nodePKs = getNodeBm().getDescendantPKs(getSessionTopic().getNodePK());
-      for (NodePK nodePK : nodePKs) {
+      for (NodePK nodePK :
+          nodePKs) {
         nodeIDs.add(nodePK.getId());
       }
 
       List<String> pubIds = new ArrayList<String>();
 
-      for (int r = 0; r < results.length; r++) {
+      for (int r = 0;
+          r < results.length;
+          r++) {
         result = results[r];
 
         if ("Publication".equals(result.getObjectType())
@@ -4506,7 +4575,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           Collection<Alias> pubAliases = getKmeliaBm().getAlias(pubPK);
 
           // Add the alias which have a link to the targets topics
-          for (Alias alias : pubAliases) {
+          for (Alias alias :
+              pubAliases) {
             if (nodeIDs.contains(alias.getId())) {
               if (!pubIds.contains(pubDetail.getId())) {
                 pubIds.add(pubDetail.getId());
@@ -4526,7 +4596,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
           }
         }
       }
-      for (String pubId : pubIds) {
+      for (String pubId :
+          pubIds) {
         publication = new UserPublication();
         publication.setPublication(getPublicationDetail(pubId));
         publication.setOwner(getUserDetail(pubDetail.getCreatorId()));
@@ -4545,7 +4616,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
     // add space path to filename
     List<SpaceInst> listSpaces = getSpacePath();
-    for (SpaceInst space : listSpaces) {
+    for (SpaceInst space :
+        listSpaces) {
       pdfName.append(space.getName(lang)).append('-');
     }
     // add component name to filename
@@ -4554,7 +4626,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (!isKmaxMode) {
       TopicDetail topic = getPublicationTopic(pubId);
       Collection<NodeDetail> path = topic.getPath();
-      for (NodeDetail node : path) {
+      for (NodeDetail node :
+          path) {
         pdfName.append('-').append(node.getName(lang));
       }
     }

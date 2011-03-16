@@ -24,13 +24,12 @@
 
 package com.silverpeas.mailinglist.service.model.dao;
 
-import java.util.List;
-
+import com.silverpeas.mailinglist.service.model.beans.MailingList;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-import com.silverpeas.mailinglist.service.model.beans.MailingList;
+import java.util.List;
 
 public class MailingListDaoImpl extends HibernateDaoSupport implements MailingListDao {
 

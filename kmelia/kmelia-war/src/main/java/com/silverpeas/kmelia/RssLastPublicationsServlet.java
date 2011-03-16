@@ -23,9 +23,10 @@
  */
 package com.silverpeas.kmelia;
 
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationServiceFactory;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.silverpeas.peasCore.PeasCoreRuntimeException;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -36,13 +37,8 @@ import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.beans.admin.UserFull;
 import com.stratelia.webactiv.kmelia.KmeliaTransversal;
-import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBm;
-import com.stratelia.webactiv.personalization.control.ejb.PersonalizationBmHome;
-import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
-import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import de.nava.informa.core.ChannelIF;
 import de.nava.informa.core.ItemIF;
@@ -94,7 +90,7 @@ public class RssLastPublicationsServlet extends HttpServlet {
           preferredLanguage = mainSessionController.getFavoriteLanguage();
         } else {
           kmeliaTransversal = new KmeliaTransversal(userId);
-          preferredLanguage = getPersonalization(userId).getFavoriteLanguage();
+          preferredLanguage = getPersonalization(userId).getLanguage();
         } 
 
         // récupération de la liste des N éléments à remonter dans le flux
@@ -193,19 +189,8 @@ public class RssLastPublicationsServlet extends HttpServlet {
    * @param userId
    * @return  
    */
-  public synchronized PersonalizationBm getPersonalization(String userId) {
-    PersonalizationBm persoBm = null;
-    try {
-      PersonalizationBmHome personalizationBmHome = EJBUtilitaire.getEJBObjectRef(
-          JNDINames.PERSONALIZATIONBM_EJBHOME, PersonalizationBmHome.class);
-      persoBm = personalizationBmHome.create();
-      persoBm.setActor(userId);
-    } catch (Exception e) {
-      SilverTrace.error("peasCore", "MainSessionController.getPersonalization()",
-          "root.EX_CANT_GET_REMOTE_OBJECT", e);
-      throw new PeasCoreRuntimeException("MainSessionController.getPersonalization()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return persoBm;
+  public UserPreferences getPersonalization(String userId) {
+    return PersonalizationServiceFactory.getFactory().getPersonalizationService().getUserSettings(
+        userId);
   }
 }
