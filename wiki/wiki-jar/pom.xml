@@ -89,10 +89,6 @@
       <artifactId>sandler</artifactId>
     </dependency>
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.silverpeas.core</groupId>
       <artifactId>test-core</artifactId>
       <version>${core.version}</version>

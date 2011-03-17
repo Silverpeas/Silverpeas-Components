@@ -48,7 +48,7 @@
       <artifactId>itext</artifactId>
     </dependency>
     <dependency>
-      <groupId>jtidy</groupId>
+      <groupId>net.sf.jtidy</groupId>
       <artifactId>jtidy</artifactId>
     </dependency>
     <dependency>
