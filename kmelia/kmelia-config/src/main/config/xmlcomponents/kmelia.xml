@@ -949,5 +949,21 @@
         <message lang="en">This feature allows to define height of the displayed thumbnail.</message>
       </help>
     </parameter>
+    <parameter>
+      <name>hideAllVersionsLink</name>
+      <label>
+        <message lang="fr">Hauteur de la vignette</message>
+        <message lang="en">Thumbnail's height</message>
+      </label>
+      <order>45</order>
+      <mandatory>false</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Ce paramètre permet d'autoriser aux lecteurs de voir l'ensemble des versions publiques.</message>
+        <message lang="en">This feature allows readers to see all the public versions of a document.</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>
