@@ -29,6 +29,7 @@ import java.io.Writer;
 import java.rmi.RemoteException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -40,6 +41,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
@@ -78,7 +80,7 @@ public class JSONServlet extends HttpServlet {
     KmeliaSessionController kmeliaSC =
         (KmeliaSessionController) req.getSession().getAttribute(
             "Silverpeas_" + "kmelia" + "_" + componentId);
-
+    
     NodePK nodePK = new NodePK(id, componentId);
 
     Writer writer = res.getWriter();
@@ -117,17 +119,17 @@ public class JSONServlet extends HttpServlet {
       NodeDetail node = getNodeBm().getDetail(nodePK);
       nodes.add(node);
       writer.write(getListAsJSONArray(nodes, language, kmeliaSC));
+    } else if ("GetOperations".equals(action)) {
+      JSONObject operations = getOperations(id, kmeliaSC);
+      writer.write(operations.toString());
     }
   }
 
   private String getListAsJSONArray(List<NodeDetail> nodes, String language,
       KmeliaSessionController kmelia) {
     JSONArray jsonArray = new JSONArray();
-
-    NodeDetail node;
     JSONObject jsonObject;
-    for (int i = 0; i < nodes.size(); i++) {
-      node = nodes.get(i);
+    for (NodeDetail node : nodes) {
       jsonObject = getNodeAsJSONObject(node, language, kmelia);
       jsonArray.put(jsonObject);
     }
@@ -178,6 +180,65 @@ public class JSONServlet extends HttpServlet {
           "kmelia.EX_IMPOSSIBLE_DE_FABRIQUER_NODEBM_HOME", e);
     }
     return nodeBm;
+  }
+  
+  private JSONObject getOperations(String id, KmeliaSessionController kmeliaSC) throws RemoteException {
+	// getting profile
+      String profile = kmeliaSC.getUserTopicProfile(id);
+      
+      // getting operations of topic according to profile and current
+      HashMap<String, Boolean> operations = new HashMap<String, Boolean>(10);
+      
+      boolean isAdmin = SilverpeasRole.admin.isInRole(profile); 
+      boolean isRoot = "0".equals(id);
+      boolean isBasket = "1".equals(id);
+      
+      // general operations
+      operations.put("pdc", isRoot && kmeliaSC.isPdcUsed() && isAdmin);
+      operations.put("templates", kmeliaSC.isContentEnabled() && isAdmin);
+      operations.put("exporting", kmeliaSC.isExportComponentAllowed() && kmeliaSC.isExportZipAllowed() && isAdmin);
+      operations.put("exportPDF", kmeliaSC.isExportComponentAllowed() && kmeliaSC.isExportPdfAllowed() && (isAdmin || SilverpeasRole.publisher.isInRole(profile)));
+      
+      // topic operations
+      operations.put("addTopic", isAdmin);
+      boolean updateTopicAllowed = isAdmin;
+      NodeDetail node = null;
+      if (!updateTopicAllowed) {
+        node = kmeliaSC.getNodeHeader(id);
+        String parentProfile = kmeliaSC.getUserTopicProfile(node.getFatherPK().getId());
+        updateTopicAllowed = SilverpeasRole.admin.isInRole(parentProfile);
+      }
+      operations.put("updateTopic", !isRoot && updateTopicAllowed);
+      operations.put("deleteTopic", !isRoot && updateTopicAllowed);
+      operations.put("sortSubTopics", isAdmin);
+      operations.put("copyTopic", !isRoot && isAdmin);
+      operations.put("cutTopic", !isRoot && isAdmin);
+      if (!isRoot && isAdmin && kmeliaSC.isOrientedWebContent()) {
+    	  if (node == null) {
+    	  	node = kmeliaSC.getNodeHeader(id);
+    	  }
+    	  operations.put("showTopic", NodeDetail.STATUS_INVISIBLE.equalsIgnoreCase(node.getStatus()));
+    	  operations.put("hideTopic", NodeDetail.STATUS_VISIBLE.equalsIgnoreCase(node.getStatus()));
+      }
+      operations.put("wysiwygTopic", isAdmin && (kmeliaSC.isOrientedWebContent() || kmeliaSC.isWysiwygOnTopicsEnabled()));
+      
+      // publication operations
+      boolean publicationsInTopic = !isRoot || (isRoot && (kmeliaSC.getNbPublicationsOnRoot() == 0 || !kmeliaSC.isTreeStructure()));
+      boolean addPublicationAllowed = !SilverpeasRole.user.isInRole(profile) && publicationsInTopic;
+      
+      operations.put("addPubli", addPublicationAllowed);
+      operations.put("wizard", addPublicationAllowed && kmeliaSC.isWizardEnabled());
+      operations.put("importFile", addPublicationAllowed && kmeliaSC.isImportFileAllowed());
+      operations.put("importFiles", addPublicationAllowed && kmeliaSC.isImportFilesAllowed());
+      operations.put("paste", addPublicationAllowed);
+      
+      operations.put("sortPublications", isAdmin && publicationsInTopic);
+      operations.put("updateChain", isAdmin && publicationsInTopic && kmeliaSC.isTopicHaveUpdateChainDescriptor(id));
+      
+      operations.put("subscriptions", !isBasket);
+      operations.put("favorites", !isBasket);
+      
+      return new JSONObject(operations);
   }
 
 }
