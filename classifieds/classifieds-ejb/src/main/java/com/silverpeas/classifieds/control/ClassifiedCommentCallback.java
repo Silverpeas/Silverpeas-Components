@@ -23,8 +23,10 @@
  */
 package com.silverpeas.classifieds.control;
 
+import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import java.util.Set;
+
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -36,7 +38,6 @@ import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.comment.service.CallBackOnCommentAction;
-import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.model.Comment;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
@@ -100,7 +101,7 @@ public class ClassifiedCommentCallback extends CallBackOnCommentAction {
 
   /**
    * Gets a business controller on comments of resources.
-   * @return a CommentService instance.
+   * @return a DefaultCommentService instance.
    */
   protected CommentService getCommentController() {
     if (commentController == null) {

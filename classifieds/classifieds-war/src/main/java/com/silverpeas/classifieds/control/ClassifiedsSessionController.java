@@ -34,6 +34,7 @@ import com.silverpeas.classifieds.control.ejb.ClassifiedsBmHome;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.classifieds.model.ClassifiedsRuntimeException;
 import com.silverpeas.classifieds.model.Subscribe;
+import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -41,7 +42,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.comment.service.CommentServiceFactory;
@@ -569,7 +569,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
 
   /**
    * Gets a service providing operations on comments.
-   * @return a CommentService instance.
+   * @return a DefaultCommentService instance.
    */
   public CommentService getCommentService() {
     if (commentService == null) {

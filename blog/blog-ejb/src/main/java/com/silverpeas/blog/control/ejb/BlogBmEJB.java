@@ -32,12 +32,12 @@ import com.silverpeas.blog.model.Archive;
 import com.silverpeas.blog.model.BlogRuntimeException;
 import com.silverpeas.blog.model.Category;
 import com.silverpeas.blog.model.PostDetail;
+import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.CommentRuntimeException;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
@@ -933,8 +933,8 @@ public class BlogBmEJB implements SessionBean {
   }
 
   /**
-   * Gets a CommentService instance.
-   * @return a CommentService instance.
+   * Gets a DefaultCommentService instance.
+   * @return a DefaultCommentService instance.
    */
   protected CommentService getCommentService() {
     return CommentServiceFactory.getFactory().getCommentService();
