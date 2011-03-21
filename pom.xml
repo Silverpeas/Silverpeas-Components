@@ -10,7 +10,7 @@
   <scm>
     <connection>scm:git:git@github.com:Silverpeas/Silverpeas-Components.git</connection>
     <developerConnection>scm:git:git@github.com:Silverpeas/Silverpeas-Components.git</developerConnection>
-    <url>http://gitub.com/Silverpeas/Silverpeas-Components.git</url>
+    <url>http://github.com/Silverpeas/Silverpeas-Components.git</url>
   </scm>
 
   <repositories>
