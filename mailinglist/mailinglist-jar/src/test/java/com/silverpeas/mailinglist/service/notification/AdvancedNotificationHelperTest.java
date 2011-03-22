@@ -89,7 +89,8 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
     super.setUp();
     registerMockJMS();
     context = new ClassPathXmlApplicationContext(new String[]{"spring-checker.xml",
-          "spring-advanced-notification.xml", "spring-hibernate.xml", "spring-datasource.xml"});
+          "spring-advanced-notification.xml", "spring-hibernate.xml", "spring-datasource.xml",
+          "spring-personalization.xml"});
     notificationHelper = (AdvancedNotificationHelper) context.getBean("notificationHelper");
     Mailbox.clearAll();
     IDatabaseConnection connection = null;
@@ -140,7 +141,8 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
     List<TextMessage> messages = MockObjectFactory.getMessages(JNDINames.JMS_QUEUE);
     assertNotNull(messages);
     assertEquals(5, messages.size());
-    for (TextMessage alert : messages) {
+    for (TextMessage alert :
+        messages) {
       assertNotNull(alert.getText());
       NotificationData data = NotificationServerUtil.convertXMLToNotificationData(alert.getText());
       assertNotNull(data);
@@ -323,13 +325,15 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
     list.setModerated(false);
     Collection<String> userIds = notificationHelper.getUsersIds(list);
     assertEquals(2, userIds.size());
-    for (String userId : userIds) {
+    for (String userId :
+        userIds) {
       assertTrue("201".equals(userId) || "204".equals(userId));
     }
     list.setModerated(true);
     userIds = notificationHelper.getUsersIds(list);
     assertEquals(2, userIds.size());
-    for (String userId : userIds) {
+    for (String userId :
+        userIds) {
       assertTrue("201".equals(userId) || "204".equals(userId));
     }
   }
@@ -339,14 +343,16 @@ public class AdvancedNotificationHelperTest extends AbstractTestDao {
         "100");
     Collection<String> userIds = notificationHelper.getModeratorsIds(list);
     assertEquals(3, userIds.size());
-    for (String userId : userIds) {
+    for (String userId :
+        userIds) {
       assertTrue("Erreur userid " + userId, "200".equals(userId)
           || "202".equals(userId) || "203".equals(userId));
     }
     list.setModerated(false);
     userIds = notificationHelper.getModeratorsIds(list);
     assertEquals(3, userIds.size());
-    for (String userId : userIds) {
+    for (String userId :
+        userIds) {
       assertTrue("Erreur userid " + userId, "200".equals(userId)
           || "202".equals(userId) || "203".equals(userId));
     }

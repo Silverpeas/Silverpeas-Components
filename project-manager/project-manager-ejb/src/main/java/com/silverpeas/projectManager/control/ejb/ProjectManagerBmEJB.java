@@ -33,6 +33,7 @@ import java.util.List;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
+import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.projectManager.model.Filtre;
 import com.silverpeas.projectManager.model.HolidayDetail;
 import com.silverpeas.projectManager.model.ProjectManagerCalendarDAO;
@@ -40,7 +41,6 @@ import com.silverpeas.projectManager.model.ProjectManagerDAO;
 import com.silverpeas.projectManager.model.ProjectManagerRuntimeException;
 import com.silverpeas.projectManager.model.TaskDetail;
 import com.silverpeas.projectManager.model.TaskPK;
-import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -68,7 +68,7 @@ public class ProjectManagerBmEJB implements ProjectManagerBmBusinessSkeleton, Se
 
   /**
    * Gets a comment service.
-   * @return a CommentService instance.
+   * @return a DefaultCommentService instance.
    */
   private CommentService getCommentService() {
     if (commentController == null) {

@@ -515,8 +515,8 @@ public class BlogSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * Gets a CommentService instance.
-   * @return a CommentService instance.
+   * Gets a DefaultCommentService instance.
+   * @return a DefaultCommentService instance.
    */
   protected CommentService getCommentService() {
     return CommentServiceFactory.getFactory().getCommentService();

@@ -384,22 +384,8 @@ function getHeight() {
          if (!pathString.equals(""))
         	namePath = namePath + " > " + pathString;
 
-        //Display operations
+        //Display operations - following lines are mandatory to init menu correctly
         OperationPane operationPane = window.getOperationPane();
-        operationPane.addOperation(pdcUtilizationSrc, resources.getString("GML.PDCParam"), "javascript:onClick=openSPWindow('"+m_context+"/RpdcUtilization/jsp/Main?ComponentId="+kmeliaScc.getComponentId()+"','utilizationPdc1')");
-        operationPane.addOperation(resources.getIcon("kmelia.modelUsed"), resources.getString("kmelia.ModelUsed"), "ModelUsed");
-        operationPane.addOperation(exportComponentSrc, kmeliaScc.getString("kmelia.ExportComponent"), "javascript:onClick=exportPublications()");
-        operationPane.addOperation(importFileSrc, kmeliaScc.getString("kmelia.ExportPDF"), "javascript:openExportPDFPopup()");
-		operationPane.addLine();
-        operationPane.addOperation(publicationAddSrc, kmeliaScc.getString("PubCreer"), "NewPublication");
-      	operationPane.addOperation(resources.getIcon("kmelia.wizard"), resources.getString("kmelia.Wizard"), "WizardStart");
-      	operationPane.addOperation(importFileSrc, kmeliaScc.getString("kmelia.ImportFile"), "javascript:onClick=importFile()");
-        operationPane.addOperation(importFilesSrc, kmeliaScc.getString("kmelia.ImportFiles"), "javascript:onClick=importFiles()");
-        operationPane.addOperation(resources.getIcon("kmelia.sortPublications"), kmeliaScc.getString("kmelia.OrderPublications"), "ToOrderPublications");
-        operationPane.addOperation(resources.getIcon("kmelia.updateByChain"), kmeliaScc.getString("kmelia.updateByChain"), "javascript:onClick=updateChain()");
-        operationPane.addOperation(resources.getIcon("kmelia.paste"), resources.getString("GML.paste"), "javascript:onClick=pasteFromOperations()");
-    	operationPane.addLine();
-    	operationPane.addOperation(subscriptionAddSrc, resources.getString("SubscriptionsAdd"), "javascript:onClick=addSubscription()");
       	operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAdd1")+" "+kmeliaScc.getString("FavoritesAdd2"), "javaScript:addCurrentNodeAsFavorite()");
 
     //Instanciation du cadre avec le view generator
@@ -590,7 +576,7 @@ function addCurrentNodeAsFavorite() {
 	var description = "";
 	var url = componentPermalink;
 	if (getCurrentNodeId() != "0") {
-		var node = oTreeView.getNodeByProperty("labelElId", getCurrentNodeId());
+		var node = getCurrentNode();
 		if (typeof node.data.description  != "undefined"){ 
 			description = node.data.description;
 		}
@@ -599,15 +585,21 @@ function addCurrentNodeAsFavorite() {
 	addFavorite(encodeURI(path), encodeURI(description), url);
 }
 
-function getCurrentNodeId()
-{
+function getCurrentNodeId() {
 	return currentNodeId;
 }
 
-function setCurrentNodeId(id)
-{
+function setCurrentNodeId(id) {
 	//alert("setCurrentNodeId : id = "+id);
 	currentNodeId = id;
+}
+
+function getCurrentNode() {
+	return getNode(getCurrentNodeId());	
+}
+
+function getNode(id) {
+	return oTreeView.getNodeByProperty("labelElId", id);
 }
 
 function loadNodeData(node, fnLoadComplete)  {
@@ -784,7 +776,7 @@ function loadNodeData(node, fnLoadComplete)  {
 }
 
 	var oCurrentTextNode = null;
-
+	
 	/*
 	     Adds a new TextNode as a child of the TextNode instance
 	     that was the target of the "contextmenu" event that
@@ -792,6 +784,10 @@ function loadNodeData(node, fnLoadComplete)  {
 	*/
 	function addNode() {
 		topicAdd(oCurrentTextNode.labelElId, false);
+	}
+
+	function addNodeToCurrentNode() {
+		topicAdd(getCurrentNodeId(), false);
 	}
 
 	/*
@@ -803,28 +799,42 @@ function loadNodeData(node, fnLoadComplete)  {
 		topicUpdate(oCurrentTextNode.labelElId);
 	}
 
-	/*
-	    Deletes the TextNode that was the target of the "contextmenu"
-	    event that triggered the display of the ContextMenu instance.
-	*/
-	function deleteNode()
-	{
-		var nodeId = oCurrentTextNode.labelElId;
-		if(window.confirm("<%=kmeliaScc.getString("ConfirmDeleteTopic")%> '" + oCurrentTextNode.data.name + "' ?"))
-		{
+	function updateCurrentNode() {
+		topicUpdate(getCurrentNodeId());
+	}
+
+	function deleteNode(nodeId, nodeLabel) {
+		if(window.confirm("<%=kmeliaScc.getString("ConfirmDeleteTopic")%> '" + nodeLabel + "' ?")) {
 			$.get('<%=m_context%>/KmeliaAJAXServlet', { Id:nodeId,ComponentId:'<%=componentId%>',Action:'Delete'},
 					function(data){
-						if (data == "ok")
-						{
-							oTreeView.removeNode(oCurrentTextNode);
+						if (data == "ok") {
+							var node = oTreeView.getNodeByProperty("labelElId", nodeIdToDelete);
+							// go to parent node
+							displayTopicContent(node.parent.data.id);
+							// remove node from treeview
+							oTreeView.removeNode(node);
 			                oTreeView.draw();
-						}
-						else
-						{
+						} else {
 							alert(data);
 						}
 					}, 'text');
 		}
+	}
+	
+	var nodeIdToDelete;
+	function deleteCurrentNode() {
+		nodeIdToDelete = getCurrentNodeId();
+		var node = oTreeView.getNodeByProperty("labelElId", getCurrentNodeId());
+		deleteNode(nodeIdToDelete, node.data.name);
+	}
+	
+	/*
+    	Deletes the TextNode that was the target of the "contextmenu"
+    	event that triggered the display of the ContextMenu instance.
+	*/
+	function deleteNodeFromTreeview() {
+		nodeIdToDelete = oCurrentTextNode.labelElId;
+		deleteNode(nodeIdToDelete, oCurrentTextNode.data.name);
 	}
 
 	function emptyTrash()
@@ -847,30 +857,52 @@ function loadNodeData(node, fnLoadComplete)  {
 		}
 	}
 
-	function copyNode()
-	{
+	function copyNode()	{
 		top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>copy?Object=Node&Id='+oCurrentTextNode.labelElId;
 	}
 
-	var nodeToCut;
-	function cutNode()
-	{
-		nodeToCut = oCurrentTextNode.labelElId;
-		top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>cut?Object=Node&Id='+oCurrentTextNode.labelElId;
+	function copyCurrentNode()	{
+		top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>copy?Object=Node&Id='+getCurrentNodeId();
 	}
 
-	function topicWysiwyg()
-	{
+	var nodeToCut;
+	function cutNode() {
+		nodeToCut = oCurrentTextNode.labelElId;
+		top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>cut?Object=Node&Id='+nodeToCut;
+	}
+
+	function cutCurrentNode() {
+		nodeToCut = getCurrentNodeId();
+		top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>cut?Object=Node&Id='+nodeToCut;
+	}
+
+	function topicWysiwyg() {
+		updateTopicWysiwyg(oCurrentTextNode.labelElId);
+	}
+
+	function updateCurrentTopicWysiwyg() {
+		updateTopicWysiwyg(getCurrentNodeId());
+	}
+
+	function updateTopicWysiwyg(id) {
 		closeWindows();
 		document.topicDetailForm.action = "ToTopicWysiwyg";
-		document.topicDetailForm.ChildId.value = oCurrentTextNode.labelElId;
+		document.topicDetailForm.ChildId.value = id;
 		document.topicDetailForm.submit();
 	}
 
-	function changeTopicStatus()
+	function changeTopicStatus() {
+		changeStatus(oCurrentTextNode.labelElId);
+	}
+
+	function changeCurrentTopicStatus() {
+		changeStatus(getCurrentNodeId());
+	}
+
+	function changeStatus(nodeId)
 	{
 		closeWindows();
-		var nodeId = oCurrentTextNode.labelElId;
+		var node = oTreeView.getNodeByProperty("labelElId", nodeId);
 		var currentStatus = oCurrentTextNode.data.status;
 		var newStatus = "Visible";
 		if (currentStatus == "Visible")
@@ -962,10 +994,14 @@ function loadNodeData(node, fnLoadComplete)  {
         YAHOO.util.Connect.asyncRequest('GET', sUrl, callback);
 	}
 
-	function sortTopics()
-	{
+	function sortTopics() {
 		closeWindows();
 		SP_openWindow("ToOrderTopics?Id="+oCurrentTextNode.labelElId, "topicAddWindow", "600", "500", "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised,resizable");
+	}
+
+	function sortSubTopics() {
+		closeWindows();
+		SP_openWindow("ToOrderTopics?Id="+getCurrentNodeId(), "topicAddWindow", "600", "500", "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised,resizable");
 	}
 
 	/*
@@ -998,7 +1034,6 @@ function loadNodeData(node, fnLoadComplete)  {
 							try
 							{
 								var profile = data[0].role;
-								var parentProfile =  oCurrentTextNode.parent.data.role;
 								if (profile == "admin")
 								{
 									//oContextMenu.cfg.setProperty("visible", true);
@@ -1014,6 +1049,7 @@ function loadNodeData(node, fnLoadComplete)  {
 								}
 								else if (profile == "user")
 								{
+									var parentProfile =  oCurrentTextNode.parent.data.role;
 									if (parentProfile != "admin")
 									{
 										//do not show the menu
@@ -1102,7 +1138,7 @@ function loadNodeData(node, fnLoadComplete)  {
 			        [
 			            { text: "<%=resources.getString("CreerSousTheme")%>", onclick: { fn: addNode } },
 			            { text: "<%=resources.getString("ModifierSousTheme")%>", onclick: { fn: editNodeLabel } },
-			            { text: "<%=resources.getString("SupprimerSousTheme")%>", onclick: { fn: deleteNode } },
+			            { text: "<%=resources.getString("SupprimerSousTheme")%>", onclick: { fn: deleteNodeFromTreeview } },
 			            { text: "<%=resources.getString("kmelia.SortTopics")%>", onclick: { fn: sortTopics } }
 			        ],
 		            [
@@ -1274,115 +1310,176 @@ function loadNodeData(node, fnLoadComplete)  {
 		displayTopicDescription(id);
 	}
 
-	function checkDnD(id, profile)
-	{
-		var displayIt = true;
-		if (id == "0" && <%=kmeliaScc.getNbPublicationsOnRoot() != 0 && kmeliaScc.isTreeStructure()%>)
-		{
-			displayIt = false;
-		}
-		else if (id == "1")
-		{
-			displayIt = false;
-		}
-		else
-		{
-			displayIt = (profile == "admin" || profile == "publisher" || profile == "writer");
-		}
+	function checkDnD(id, operations) {
 		//alert("checkDnD : "+displayIt);
-		if (displayIt)
-		{
+		if (operations.addPubli == true) {
 			$("#DnD").css({'display':'block'});
-		}
-		else
-		{
+		} else {
 			$("#DnD").css({'display':'none'});
 		}
 	}
 
-	function checkOperations(id, profile)
-	{
-		if (id == "1")
-		{
+	function initOperations(id, op) {
+		if (id == "1") {
 			$("#menutoggle").css({'display':'none'});
-		}
-		else
-		{
+		} else {
 			$("#menutoggle").css({'display':'block'});
 		}
-
-		oMenu.getItem(0,0).cfg.setProperty("classname", "operationHidden"); //pdc
-		if (id == "0" && <%=kmeliaScc.isPdcUsed()%> && profile == "admin")
-			oMenu.getItem(0,0).cfg.setProperty("classname", "operationVisible");
-
-		oMenu.getItem(1,0).cfg.setProperty("classname", "operationHidden"); //templates
-		if (<%=kmeliaScc.isContentEnabled()%> && profile == "admin")
-			oMenu.getItem(1,0).cfg.setProperty("classname", "operationVisible");
-
-		oMenu.getItem(2,0).cfg.setProperty("classname", "operationHidden"); //export
-		if (<%=kmeliaScc.isExportComponentAllowed()%> && <%=kmeliaScc.isExportZipAllowed()%> && profile == "admin")
-		{
-			oMenu.getItem(2,0).cfg.setProperty("classname", "operationVisible");
-			if (id == "0")
-				oMenu.getItem(2,0).cfg.setProperty("text", "<%=resources.getString("kmelia.ExportComponent")%>");
-			else
-				oMenu.getItem(2,0).cfg.setProperty("text", "<%=resources.getString("kmelia.ExportTopic")%>");
+		
+		oMenu.clearContent();
+		
+		var menuItem;
+		var groupIndex = 0;
+		var groupEmpty = true;
+		if (op.pdc) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("GML.PDCParam")%>", {url: "javascript:onClick=openSPWindow('<%=m_context%>/RpdcUtilization/jsp/Main?ComponentId=<%=kmeliaScc.getComponentId()%>','utilizationPdc1')"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
 		}
-
-		oMenu.getItem(3,0).cfg.setProperty("classname", "operationHidden"); //export PDF
-	 	if (<%=kmeliaScc.isExportComponentAllowed()%> && <%=kmeliaScc.isExportPdfAllowed()%> && (profile == "admin" || profile == "publisher"))
-			oMenu.getItem(3,0).cfg.setProperty("classname", "operationVisible");
-
-	 	oMenu.getItem(0,1).cfg.setProperty("classname", "operationHidden"); //add publi
-	 	oMenu.getItem(1,1).cfg.setProperty("classname", "operationHidden"); //wizard
-	 	oMenu.getItem(2,1).cfg.setProperty("classname", "operationHidden"); //import file
-	 	oMenu.getItem(3,1).cfg.setProperty("classname", "operationHidden"); //import files
-	 	oMenu.getItem(4,1).cfg.setProperty("classname", "operationHidden"); //sort publis
-	 	oMenu.getItem(5,1).cfg.setProperty("classname", "operationHidden"); //update chain
-	 	oMenu.getItem(6,1).cfg.setProperty("classname", "operationHidden"); //paste
-
-
-	 	if ((id != "0" && id != "1") || (id == "0" && (<%=kmeliaScc.getNbPublicationsOnRoot() == 0%> || <%=!kmeliaScc.isTreeStructure()%>)))
-	 	{
-		 	if (profile != "user")
-		 	{
-				oMenu.getItem(0,1).cfg.setProperty("classname", "operationVisible");
-				if (<%=kmeliaScc.isWizardEnabled()%>)
-					oMenu.getItem(1,1).cfg.setProperty("classname", "operationVisible");
-				if (<%=kmeliaScc.isImportFileAllowed()%>)
-					oMenu.getItem(2,1).cfg.setProperty("classname", "operationVisible");
-				if (<%=kmeliaScc.isImportFilesAllowed()%>)
-					oMenu.getItem(3,1).cfg.setProperty("classname", "operationVisible");
-				oMenu.getItem(6,1).cfg.setProperty("classname", "operationVisible"); //paste
-		 	}
-		 	if (profile == "admin")
-		 	{
-		 		oMenu.getItem(4,1).cfg.setProperty("classname", "operationVisible"); //sort publis
-
-		 	}
-		var node = oTreeView.getNodeByProperty("labelElId", id);
-		if (node.data.updateChain)
-		{
-			oMenu.getItem(5,1).cfg.setProperty("classname", "operationVisible"); //update chain
-
+		
+		if (op.templates) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.ModelUsed")%>", {url: "ModelUsed"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
 		}
-		oMenu.getItem(0,2).cfg.setProperty("classname", "operationVisible"); //subscriptions
-		oMenu.getItem(1,2).cfg.setProperty("classname", "operationVisible"); //favorites
-	 	}
+		
+		if (op.exporting) {
+			if (id == "0") {
+				menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.ExportTopic")%>", {url: "javascript:onClick=exportPublications()"});
+			} else {
+				menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.ExportComponent")%>", {url: "javascript:onClick=exportPublications()"});
+			}
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		
+		if (op.exportPDF) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.ExportPDF")%>", {url: "javascript:openExportPDFPopup()"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		
+		if (!groupEmpty) {
+			groupIndex++;
+			groupEmpty = true;
+		}
+		
+		if (op.addTopic) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("CreerSousTheme")%>", {url: "javascript:onclick=addNodeToCurrentNode()"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		if (op.updateTopic) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("ModifierSousTheme")%>", {url: "javascript:onclick=updateCurrentNode()"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		if (op.deleteTopic) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("SupprimerSousTheme")%>", {url: "javascript:onclick=deleteCurrentNode()"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		if (op.sortSubTopics) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.SortTopics")%>", {url: "javascript:onclick=sortSubTopics()"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		if (op.copyTopic) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("GML.copy")%>", {url: "javascript:onclick=copyCurrentNode()"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		if (op.cutTopic) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("GML.cut")%>", {url: "javascript:onclick=cutCurrentNode()"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		if (op.hideTopic) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("TopicVisible2Invisible")%>", {url: "javascript:onclick=changeCurrentTopicStatus()"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		if (op.showTopic) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("TopicInvisible2Visible")%>", {url: "javascript:onclick=changeCurrentTopicStatus()"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		if (op.wysiwygTopic) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("TopicWysiwyg")%>", {url: "javascript:onclick=updateCurrentTopicWysiwyg()"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		
+		if (!groupEmpty) {
+			groupIndex++;
+			groupEmpty = true;
+		}
+		
+		if (op.addPubli) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("PubCreer")%>", {url: "NewPublication"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		if (op.wizard) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.Wizard")%>", {url: "WizardStart"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		if (op.importFile) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.ImportFile")%>", {url: "javascript:onclick=importFile()"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		if (op.importFiles) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.ImportFiles")%>", {url: "javascript:onclick=importFiles()"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		if (op.sortPublications) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.OrderPublications")%>", {url: "ToOrderPublications"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		if (op.updateChain) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.updateByChain")%>", {url: "javascript:onclick=updateChain()"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		if (op.paste) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("GML.paste")%>", {url: "javascript:onclick=pasteFromOperations()"});
+			oMenu.addItem(menuItem, groupIndex);
+			groupEmpty = false;
+		}
+		
+		if (!groupEmpty) {
+			groupIndex++;
+			groupEmpty = true;
+		}
+		
+		if (op.subscriptions) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("SubscriptionsAdd")%>", {url: "javascript:onclick=addSubscription()"});
+			oMenu.addItem(menuItem, groupIndex);
+		}
+		if (op.favorites) {
+			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("FavoritesAdd1")+" "+resources.getString("FavoritesAdd2")%>", {url: "javascript:onclick=addCurrentNodeAsFavorite()"});
+			oMenu.addItem(menuItem, groupIndex);
+		}
+				
+		oMenu.render();
 	}
-
+	
 	function getProfile(id)
 	{
 		var ieFix = new Date().getTime();
-		$.get('<%=m_context%>/KmeliaAJAXServlet', { Id:id,Action:'GetProfile',ComponentId:'<%=componentId%>',IEFix:ieFix},
-				function(data){
+		$.get('<%=m_context%>/KmeliaJSONServlet', { Id:id,Action:'GetOperations',ComponentId:'<%=componentId%>',IEFix:ieFix},
+				function(operations){
 					//display dNd according rights
-					checkDnD(id, data);
-					checkOperations(id, data);
-					if (data == 'admin') {
+					checkDnD(id, operations);
+					initOperations(id, operations);
+					if (operations.addTopic) {
 						showRightClickHelp();
 					}
-				}, 'text');
+				}, 'json');
 	}
 
 	function displayPublications(id)

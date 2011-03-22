@@ -23,8 +23,8 @@
  */
 package com.silverpeas.kmelia;
 
+import com.silverpeas.SilverpeasServiceProvider;
 import com.silverpeas.personalization.UserPreferences;
-import com.silverpeas.personalization.service.PersonalizationServiceFactory;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.SilverpeasWebUtil;
@@ -190,7 +190,6 @@ public class RssLastPublicationsServlet extends HttpServlet {
    * @return  
    */
   public UserPreferences getPersonalization(String userId) {
-    return PersonalizationServiceFactory.getFactory().getPersonalizationService().getUserSettings(
-        userId);
+    return SilverpeasServiceProvider.getPersonalizationService().getUserSettings(userId);
   }
 }

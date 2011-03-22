@@ -25,6 +25,7 @@ package com.silverpeas.gallery.control.ejb;
 
 
 
+import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.gallery.GalleryContentManager;
 import com.silverpeas.gallery.ImageHelper;
@@ -42,7 +43,6 @@ import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.socialNetwork.model.SocialInformation;
 import com.silverpeas.util.StringUtil;
-import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.comment.CommentRuntimeException;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;

@@ -267,7 +267,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   /**
    * Gets a business service of comments.
    *
-   * @return a CommentService instance.
+   * @return a DefaultCommentService instance.
    */
   protected CommentService getCommentService() {
     if (commentService == null) {
