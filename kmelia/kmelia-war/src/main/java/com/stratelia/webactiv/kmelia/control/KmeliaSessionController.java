@@ -4650,4 +4650,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private PublicationTemplateManager getPublicationTemplateManager() {
     return PublicationTemplateManager.getInstance();
   }
+  
+  
+  /**
+   * Is news manage
+   *
+   * @return boolean
+   */
+  public boolean isNewsManage() {
+	  return StringUtil.getBooleanValue(getComponentParameterValue("isNewsManage"));
+  }
 }
