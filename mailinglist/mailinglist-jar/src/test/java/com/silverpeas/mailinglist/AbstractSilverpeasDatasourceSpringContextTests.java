@@ -86,8 +86,11 @@ public abstract class AbstractSilverpeasDatasourceSpringContextTests extends Abs
       ref.add(new StringRefAddr("removeAbandoned", "true"));
       ref.add(new StringRefAddr("removeAbandonedTimeout", "5000"));
       rebind(ic, config.getJndiName(), ref);
+      ic.rebind(config.getJndiName(), ref);
       rebind(ic, JNDINames.DATABASE_DATASOURCE, ref);
+      ic.rebind(JNDINames.DATABASE_DATASOURCE, ref);
       rebind(ic, JNDINames.ADMIN_DATASOURCE, ref);
+       ic.rebind(JNDINames.ADMIN_DATASOURCE, ref);
       registerMockJMS(ic);
     } catch (NamingException nex) {
       logger.error(nex);
