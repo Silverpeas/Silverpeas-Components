@@ -100,6 +100,8 @@ import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.silverpeas.delegatednews.service.ServicesFactory;
+import com.silverpeas.delegatednews.service.DelegatedNewsService;
 
 public class KmeliaRequestRouter extends ComponentRequestRouter {
 
@@ -1611,7 +1613,20 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         destination = rootDestination + "closeWindow.jsp";
       } else if (function.startsWith("UpdateChain")) {
         destination = processUpdateChainOperation(rootDestination, function, kmelia, request);
-      } /***************************
+      } else if (function.startsWith("SuggestDelegatedNew")) {
+    	  UserCompletePublication userPubComplete = kmelia.getSessionPublication();
+            
+    	  DelegatedNewsService delegatedNewsService = ServicesFactory.getDelegatedNewsService();
+    	  String pubId = userPubComplete.getId();
+    	  String instanceId = userPubComplete.getPublication().getPublicationDetail().getInstanceId();
+    	  String contributorId = userPubComplete.getPublication().getPublicationDetail().getUpdaterId();
+    	  delegatedNewsService.addDelegatedNew(Integer.parseInt(pubId), instanceId, contributorId); 
+    	  
+    	  request.setAttribute("PubId", pubId);
+    	  destination = getDestination("ViewPublication", componentSC, request);
+      }  
+      
+      /***************************
        * Kmax mode
        **************************/
       else if (function.equals("KmaxMain")) {

@@ -362,8 +362,9 @@ function addFavorite()
   	favoriteWindow = SP_openWindow(urlWindow, "favoriteWindow", "550", "250", "directories=0,menubar=0,toolbar=0,alwaysRaised");
 }
 
-function actuPropose() {
+function suggestDelegatedNew() {
 	alert("Actualité proposée en page d'accueil");
+	location.href= "<%=routerUrl%>SuggestDelegatedNew";
 }
 
 </script>
@@ -452,8 +453,8 @@ function actuPropose() {
     if (kmeliaScc.isNewsManage() && !kmaxMode && !toolboxMode && isOwner) {
 		operationPane.addLine();
 		operationPane.addOperation("#", resources.getString(
-            "kmelia.ActuPropose"),
-            "javaScript:actuPropose()");
+            "kmelia.DelegatedNewSuggest"),
+            "javaScript:suggestDelegatedNew()");
 	}
 	
         out.println(window.printBefore());
