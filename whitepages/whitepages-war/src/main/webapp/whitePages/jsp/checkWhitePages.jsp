@@ -76,7 +76,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
 <%
 
-MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
+MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 //OrganizationController organizationCtrl = m_MainSessionCtrl.getOrganizationController();
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
