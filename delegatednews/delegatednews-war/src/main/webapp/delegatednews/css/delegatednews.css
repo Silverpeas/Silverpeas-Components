@@ -1,0 +1,90 @@
+/**
+ * Copyright (C) 2000 - 2009 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+#chart {overflow: visible;}
+
+/*
+* style de la cellule centrale
+*/
+.cell0 {border-style: solid; border-width: 1; -moz-border-radius: 10px; width: 100; background-color: #FFFFFF; color: #000000; position: absolute; z-index: 2}
+.cell0 table {width: 100%; height: 40}
+.cell0 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #000000; font-weight: bold; padding-bottom: 5px;}
+.cell0 td.cellRole {font-family: Arial; font-size: 12; font-style: italic; text-align: center; color: #880088}
+.cell0 td.cellLinkLeft {font-family: Arial; font-size: 12; text-align: left; color: #666699; white-space: nowrap}
+.cell0 td.cellLinkRight {font-family: Arial; font-size: 12; text-align: right; color: #666699; white-space: nowrap}
+
+/*
+* style cellule Unit
+*/
+.cell1 {border-style: solid; border-width: 1; -moz-border-radius: 10px; width: 100; background-color: #EDB8FF; color: #000000; position: absolute; z-index: 2}
+.cell1 table {width: 100%; height: 40}
+.cell1 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #000000}
+.cell1 td.cellName A {color: #0000FF; font-size: 13;}
+.cell1 td.cellRole {font-family: Arial; font-size: 12; font-style: italic; text-align: center; color: #8800AA}
+.cell1 td.cellLinkLeft {font-family: Arial; font-size: 12; text-align: left; color: #666699; white-space: nowrap}
+.cell1 td.cellLinkRight {font-family: Arial; font-size: 12; text-align: right; color: #666699; white-space: nowrap}
+
+/*
+* style cellule personnes
+*/
+.cell2 {border-style: solid; border-width: 1; -moz-border-radius: 10px; width: 100; background-color: #FFFFCC; color: #000000; position: absolute; z-index: 2}
+.cell2 table {width: 100%; height: 40}
+.cell2 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #0000FF}
+.cell2 td.cellRole {font-family: Arial; font-size: 12; font-style: italic; text-align: center; color: #8800CC}
+.cell2 td.cellLinkLeft {font-family: Arial; font-size: 12; text-align: left; color: #666699; white-space: nowrap}
+.cell2 td.cellLinkRight {font-family: Arial; font-size: 12; text-align: right; color: #666699; white-space: nowrap}
+
+/*
+* style bloc droite
+*/
+.cell3 {border-style: solid; border-width: 1; -moz-border-radius: 10px; width: 100; background-color: #FFC963; color: #000000; position: absolute; z-index: 2}
+.cell3 table {width: 100%; height: 40}
+.cell3 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #0000FF}
+.cell3 td.cellRole {font-family: Arial; font-size: 12; font-style: italic; text-align: center; color: #8800EE}
+.cell3 td.cellLinkLeft {font-family: Arial; font-size: 12; text-align: left; color: #666699; white-space: nowrap}
+.cell3 td.cellLinkRight {font-family: Arial; font-size: 12; text-align: right; color: #666699; white-space: nowrap}
+
+/*
+* style bloc gauche
+*/
+.cell4 {border-style: solid; border-width: 1; -moz-border-radius: 10px; width: 100; background-color: #FFC963; color: #000000; position: absolute; z-index: 2}
+.cell4 table {width: 100%; height: 40}
+.cell4 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #0000FF}
+.cell4 td.cellRole {font-family: Arial; font-size: 12; font-style: italic; text-align: center; color: #8800EE}
+.cell4 td.cellLinkLeft {font-family: Arial; font-size: 12; text-align: left; color: #666699; white-space: nowrap}
+.cell4 td.cellLinkRight {font-family: Arial; font-size: 12; text-align: right; color: #666699; white-space: nowrap}
+
+/*
+* style categ personnel
+*/
+.cell5 {border-style: solid; border-width: 1; -moz-border-radius: 10px; width: 100; background-color: #CCFFFF; color: #000000; position: absolute; z-index: 2}
+.cell5 table {width: 100%; height: 40}
+.cell5 td.cellName  {font-family: Arial; font-size: 13; text-align: center; color: #0000FF}
+.cell5 td.cellRole {font-family: Arial; font-size: 12; font-style: italic; text-align: center; color: #8800EE}
+.cell5 td.cellLinkLeft {font-family: Arial; font-size: 12; text-align: left; color: #666699; white-space: nowrap}
+.cell5 td.cellLinkRight {font-family: Arial; font-size: 12; text-align: right; color: #666699; white-space: nowrap}
+
+.link0 {border-style: solid; border-width: 1; color: #663300 ; position: absolute; z-index: 1}
+.link1 {border-style: solid; border-width: 1; color: #663300 ; position: absolute; z-index: 1}
+.link2 {border-style: dotted; border-width: 1; color: #663300 ; position: absolute; z-index: 1}

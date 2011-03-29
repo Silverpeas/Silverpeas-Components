@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2000 - 2009 Silverpeas
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of the
+    License, or (at your option) any later version.
+
+    As a special exception to the terms and conditions of version 3.0 of
+    the GPL, you may redistribute this Program in connection with Free/Libre
+    Open Source Software ("FLOSS") applications as described in Silverpeas's
+    FLOSS exception.  You should have received a copy of the text describing
+    the FLOSS exception, and it is also available here:
+    "http://repository.silverpeas.com/legal/licensing"
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+-->
+
+<WAComponent xmlns="http://silverpeas.org/xml/ns/component" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
+  <name>delegatednews</name>
+  <label>
+    <message lang="fr">Actualités déléguées</message>
+    <message lang="en">Delegated news</message>
+  </label>
+  <description>
+    <message lang="fr">Ce composant permet la validation et la mise en ligne en page d'accueil des actualités soumises à validation depuis les Gestion documentaire I dont l'option Gestion des actualités est activée.</message>
+    <message lang="en">This component allows to validate and display news in home page. The news have been proposed from Theme Tracker which have the News manage option activated.</message>
+  </description>
+  <suite>
+    <message lang="fr">01 Gestion Documentaire</message>
+    <message lang="en">01 Document Management</message>
+  </suite>
+  <visible>true</visible>
+  <portlet>true</portlet>
+  <instanceClassName>com.silverpeas.delegatednews.DelegatedNewsInstanciator</instanceClassName>
+  <profiles>
+    <profile name="admin">
+      <label>
+        <message lang="fr">Editeur</message>
+        <message lang="en">Editor</message>
+      </label>
+      <help>
+        <message lang="fr">Editeur</message>
+        <message lang="en">Editor</message>
+      </help>
+    </profile>
+    <profile name="user">
+      <label>
+        <message lang="fr">Contributeur</message>
+        <message lang="en">Contributor</message>
+      </label>
+      <help>
+        <message lang="fr">Contributeur</message>
+        <message lang="en">Contributor</message>
+      </help>
+    </profile>
+  </profiles>
+  <parameters>
+  </parameters>
+</WAComponent>
