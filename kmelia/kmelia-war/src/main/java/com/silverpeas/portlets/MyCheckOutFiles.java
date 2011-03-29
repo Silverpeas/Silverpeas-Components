@@ -51,7 +51,7 @@ public class MyCheckOutFiles extends GenericPortlet implements FormNames {
       throws PortletException, IOException {
     PortletSession session = request.getPortletSession();
     MainSessionController m_MainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController",
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT,
         PortletSession.APPLICATION_SCOPE);
 
     Iterator<AttachmentDetail> attachments = null;

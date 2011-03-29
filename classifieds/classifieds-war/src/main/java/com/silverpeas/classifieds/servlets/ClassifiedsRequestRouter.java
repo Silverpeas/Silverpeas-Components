@@ -559,7 +559,7 @@ public class ClassifiedsRequestRouter
   }
 
   private boolean isAnonymousAccess(HttpServletRequest request) {
-    LookHelper lookHelper = (LookHelper) request.getSession().getAttribute("Silverpeas_LookHelper");
+    LookHelper lookHelper = (LookHelper) request.getSession().getAttribute(LookHelper.SESSION_ATT);
     if (lookHelper != null) {
       return lookHelper.isAnonymousAccess();
     }

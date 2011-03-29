@@ -75,7 +75,7 @@ public class LoginFilter implements Filter {
      * Retrieve main session controller
      */
     MainSessionController mainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController");
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
     /*
      * If no main session controller, forward user to timeout page
@@ -83,8 +83,7 @@ public class LoginFilter implements Filter {
     if (mainSessionCtrl == null) {
       SilverTrace.warn("whitePages", "LoginFilter.doFilter",
           "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId=" + session.getId());
-      RequestDispatcher dispatcher = request
-          .getRequestDispatcher(GeneralPropertiesManager
+      RequestDispatcher dispatcher = request.getRequestDispatcher(GeneralPropertiesManager
           .getGeneralResourceLocator().getString("sessionTimeout"));
       dispatcher.forward(request, response);
     }
@@ -96,8 +95,7 @@ public class LoginFilter implements Filter {
       String userId = mainSessionCtrl.getUserId();
       try {
         Admin admin = new Admin();
-        CompoSpace[] availableInstances = admin.getCompoForUser(userId,
-            "whitePages");
+        CompoSpace[] availableInstances = admin.getCompoForUser(userId, "whitePages");
 
         for (int i = 0; i < availableInstances.length; i++) {
           String instanceId = availableInstances[i].getComponentId();
