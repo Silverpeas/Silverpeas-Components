@@ -97,7 +97,7 @@ public class SilverCrawlerFileServer extends HttpServlet {
 
     HttpSession session = req.getSession(true);
     MainSessionController mainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController");
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (mainSessionCtrl == null || !isUserAllowed(mainSessionCtrl, componentId)) {
       SilverTrace.warn("silverCrawler", "FileServer.doPost()",
           "root.MSG_GEN_SESSION_TIMEOUT", "NewSessionId="

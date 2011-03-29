@@ -83,7 +83,7 @@ public class AliasFileServer extends HttpServlet {
     String userId = "undefined";
     HttpSession session = req.getSession(true);
     MainSessionController mainSessionCtrl = (MainSessionController) session
-        .getAttribute("SilverSessionController");
+        .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
     if (mainSessionCtrl != null)
       userId = mainSessionCtrl.getUserId();
 

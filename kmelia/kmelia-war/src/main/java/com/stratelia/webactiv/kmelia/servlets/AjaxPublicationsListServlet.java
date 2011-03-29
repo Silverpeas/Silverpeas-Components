@@ -119,7 +119,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
     if (kmeliaSC == null && (toLink || attachmentToLink)) {
       MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
-          "SilverSessionController");
+          MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
       ComponentContext componentContext =
           mainSessionCtrl.createComponentContext(null, componentId);
       kmeliaSC =
