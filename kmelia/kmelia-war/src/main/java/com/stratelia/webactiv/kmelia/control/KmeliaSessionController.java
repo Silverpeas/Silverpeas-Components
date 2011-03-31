@@ -28,6 +28,9 @@ import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.delegatednews.model.DelegatedNew;
+import com.silverpeas.delegatednews.service.DelegatedNewsService;
+import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -4660,4 +4663,34 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public boolean isNewsManage() {
 	  return StringUtil.getBooleanValue(getComponentParameterValue("isNewsManage"));
   }
+  
+  /**
+   * Récupère une actualité déléguée dans le composant delegatednews correspondant à la publication passée en paramètre
+   *
+   * @param pubId : l'id de la publication de Theme Tracker
+   * @return DelegatedNew : l'objet correspondant à l'actualité déléguée dans le composant delegatednews ou null si elle n'existe pas
+   */
+  public DelegatedNew getDelegatedNew(String pubId) {
+    
+    DelegatedNewsService delegatedNewsService = ServicesFactory.getDelegatedNewsService();
+    DelegatedNew delegatedNew = delegatedNewsService.getDelegatedNew(Integer.parseInt(pubId));
+    return delegatedNew;
+  }
+  
+  /**
+   * Ajout d'une actualité déléguée dans le composant delegatednews
+   *
+   * @return String : pubId
+   */
+  public String addDelegatedNew() {
+    UserCompletePublication userPubComplete = getSessionPublication();
+    
+    DelegatedNewsService delegatedNewsService = ServicesFactory.getDelegatedNewsService();
+    String pubId = userPubComplete.getId();
+    String instanceId = userPubComplete.getPublication().getPublicationDetail().getInstanceId();
+    String contributorId = userPubComplete.getPublication().getPublicationDetail().getUpdaterId();
+    delegatedNewsService.addDelegatedNew(Integer.parseInt(pubId), instanceId, contributorId);
+    return pubId;
+  }
+  
 }

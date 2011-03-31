@@ -1614,13 +1614,8 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
       } else if (function.startsWith("UpdateChain")) {
         destination = processUpdateChainOperation(rootDestination, function, kmelia, request);
       } else if (function.startsWith("SuggestDelegatedNew")) {
-    	  UserCompletePublication userPubComplete = kmelia.getSessionPublication();
-            
-    	  DelegatedNewsService delegatedNewsService = ServicesFactory.getDelegatedNewsService();
-    	  String pubId = userPubComplete.getId();
-    	  String instanceId = userPubComplete.getPublication().getPublicationDetail().getInstanceId();
-    	  String contributorId = userPubComplete.getPublication().getPublicationDetail().getUpdaterId();
-    	  delegatedNewsService.addDelegatedNew(Integer.parseInt(pubId), instanceId, contributorId); 
+    	   
+    	  String pubId = kmelia.addDelegatedNew();
     	  
     	  request.setAttribute("PubId", pubId);
     	  destination = getDestination("ViewPublication", componentSC, request);
