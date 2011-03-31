@@ -25,10 +25,12 @@
 package com.silverpeas.delegatednews.control;
 
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.silverpeas.delegatednews.model.DelegatedNew;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
 import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.silverpeas.util.StringUtil;
@@ -37,6 +39,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.AdminController;
+import static com.stratelia.webactiv.SilverpeasRole.*;
 
 public class DelegatedNewsSessionController extends AbstractComponentSessionController {
 
@@ -56,6 +59,34 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
 
     service = ServicesFactory.getDelegatedNewsService();
   }
-
   
+  public boolean isUser() {
+    String[] profiles = getUserRoles();
+    for (String profile : profiles) {
+      if (user.isInRole(profile)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public boolean isAdmin() {
+    String[] profiles = getUserRoles();
+    for (String profile : profiles) {
+      if (admin.isInRole(profile)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Récupère toutes les actualités déléguées inter Theme Tracker
+   *
+   * @return List<DelegatedNew> : liste d'actualités déléguées
+   */
+  public List<DelegatedNew> getAllDelegatedNew() {
+    List<DelegatedNew> list = service.getAllDelegatedNew();
+    return list;
+  }
 }

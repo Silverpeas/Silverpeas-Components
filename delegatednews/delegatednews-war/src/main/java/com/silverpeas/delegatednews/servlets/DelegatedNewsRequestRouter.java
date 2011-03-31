@@ -24,6 +24,8 @@
 
 package com.silverpeas.delegatednews.servlets;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -32,6 +34,7 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.silverpeas.delegatednews.control.DelegatedNewsSessionController;
+import com.silverpeas.delegatednews.model.DelegatedNew;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
 import com.silverpeas.delegatednews.service.ServicesFactory;
 
@@ -74,16 +77,14 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter {
     DelegatedNewsSessionController newsSC = (DelegatedNewsSessionController) componentSC;
 
     try {
-      if (function.startsWith("Main")) {
-    	  
-    	  DelegatedNewsService delegatedNewsService = ServicesFactory.getDelegatedNewsService();
-    	  String pubId = "1";
-    	  String instanceId = "kmelia1";
-    	  String contributorId = "0";
-    	  delegatedNewsService.addDelegatedNew(Integer.parseInt(pubId), instanceId, contributorId); 
-    	  
-    	  destination = "/delegatednews/jsp/welcome.jsp";
-      } 
+      if (function.equals("Main")) {
+        List<DelegatedNew> list = newsSC.getAllDelegatedNew();
+        request.setAttribute("ListNews", list);
+    	  destination = "/delegatednews/jsp/listNews.jsp";
+      } else if (function.equals("OpenPublication")) {
+        String pubId = request.getParameter("PubId");
+        destination = "/Publication/"+pubId;
+      }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";

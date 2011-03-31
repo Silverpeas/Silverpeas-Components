@@ -26,9 +26,12 @@ package com.silverpeas.delegatednews.service;
 
 import com.silverpeas.delegatednews.model.DelegatedNew;
 
+import java.util.List;
 import com.silverpeas.delegatednews.dao.DelegatedNewsDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.synyx.hades.domain.Sort;
+
 import javax.inject.Inject;
 
 @Service
@@ -38,13 +41,35 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
 	@Inject
 	private DelegatedNewsDao dao;
 	
-	/* 
-	 * Ajout d'une actualité
-	 */
+	/**
+   * Ajout d'une actualité déléguée
+   *
+   */
 	@Override
 	public void addDelegatedNew(int pubId, String instanceId, String contributorId) {
 		DelegatedNew delegatedNew = new DelegatedNew(pubId, instanceId, contributorId);
 		dao.saveAndFlush(delegatedNew);
 	}
+	
+	/**
+   * Récupère une actualité déléguée correspondant à la publication Theme Tracker passée en paramètre
+   *
+   * @param pubId : l'id de la publication de Theme Tracker
+   * @return DelegatedNew : l'objet correspondant à l'actualité déléguée ou null si elle n'existe pas
+   */
+	public DelegatedNew getDelegatedNew(int pubId) {
+	  DelegatedNew delegatedNew = dao.readByPrimaryKey(Integer.valueOf(pubId));
+	  return delegatedNew;
+	}
+	
+	/**
+   * Récupère toutes les actualités déléguées inter Theme Tracker
+   *
+   * @return List<DelegatedNew> : liste d'actualités déléguées
+   */
+  public List<DelegatedNew> getAllDelegatedNew() {
+    List<DelegatedNew> list = dao.readAll();
+    return list;
+  }
 
 }

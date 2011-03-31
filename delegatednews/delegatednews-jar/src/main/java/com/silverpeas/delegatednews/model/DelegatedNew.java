@@ -25,10 +25,20 @@
 package com.silverpeas.delegatednews.model;
 
 import java.util.Date;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+
+import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
+import com.stratelia.webactiv.util.publication.control.PublicationBm;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import com.stratelia.webactiv.util.publication.model.PublicationRuntimeException;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 @Entity
 @Table(name = "sc_delegatednews_new")
@@ -51,9 +61,11 @@ public class DelegatedNew implements java.io.Serializable {
 	@Column(name = "endDate", columnDefinition = "TIMESTAMP")
 	private Date endDate;
 	
-	public static final String VALID = "Valid";
-	public static final String TO_VALIDATE = "ToValidate";
-	public static final String REFUSED = "Unvalidate";
+	private PublicationDetail publicationDetail;
+	
+	public static final String NEW_TO_VALIDATE = "NewToValidate";
+	public static final String NEW_VALID = "NewValid";
+	public static final String NEW_REFUSED = "NewRefused";
 	  
 	public DelegatedNew() {
     
@@ -65,7 +77,7 @@ public class DelegatedNew implements java.io.Serializable {
 		this.pubId = pubId;
 		this.instanceId = instanceId;
 		this.contributorId = contributorId;
-		this.status = TO_VALIDATE;
+		this.status = NEW_TO_VALIDATE;
 	}
 
 	public int getPubId() {
@@ -123,6 +135,21 @@ public class DelegatedNew implements java.io.Serializable {
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
 	}
+	
+	public PublicationDetail getPublicationDetail() {
+	  try {
+      PublicationBmHome publicationBmEjbHome =
+          (PublicationBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.PUBLICATIONBM_EJBHOME,
+              PublicationBmHome.class);
+      PublicationBm publicationBm = publicationBmEjbHome.create();
+      PublicationPK pubPk = new PublicationPK(Integer.toString(this.pubId), this.instanceId);
+      this.publicationDetail = publicationBm.getDetail(pubPk);
+      return this.publicationDetail;
+    } catch (Exception e) {
+      throw new PublicationRuntimeException("DelegatedNew.getPublicationDetail()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", "pubId = "+this.pubId, e);
+    }
+  }
 
 	@Override
 	public boolean equals(Object obj) {
