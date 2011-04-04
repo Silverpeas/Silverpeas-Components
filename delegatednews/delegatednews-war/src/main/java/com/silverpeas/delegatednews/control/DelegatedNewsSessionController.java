@@ -24,21 +24,20 @@
 
 package com.silverpeas.delegatednews.control;
 
-import java.util.ArrayList;
-
-import java.util.HashMap;
+import java.text.ParseException;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.Map;
 
 import com.silverpeas.delegatednews.model.DelegatedNew;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
 import com.silverpeas.delegatednews.service.ServicesFactory;
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.AdminController;
+import com.stratelia.webactiv.util.DateUtil;
+
 import static com.stratelia.webactiv.SilverpeasRole.*;
 
 public class DelegatedNewsSessionController extends AbstractComponentSessionController {
@@ -88,5 +87,34 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
   public List<DelegatedNew> getAllDelegatedNew() {
     List<DelegatedNew> list = service.getAllDelegatedNew();
     return list;
+  }
+  
+  /**
+   * Valide l'actualité déléguée passée en paramètre
+   *
+   */
+  public void validateDelegatedNew(int pubId) {
+    service.validateDelegatedNew(pubId);
+  }
+  
+  /**
+   * Refuse l'actualité déléguée passée en paramètre
+   *
+   */
+  public void refuseDelegatedNew(int pubId, String refuseReasonText) {
+    service.refuseDelegatedNew(pubId);
+  }
+  
+  /**
+   * Met à jour les dates de visibilité de l'actualité déléguée passée en paramètre
+   * @throws ParseException 
+   *
+   */
+  public void updateDateDelegatedNew(int pubId, String beginDate, String beginHour, String endDate, String endHour) throws ParseException {
+    
+    Date dBegin = DateUtil.stringToDate(beginDate, beginHour, this.getLanguage());
+    Date dEnd = DateUtil.stringToDate(endDate, endHour, this.getLanguage());
+
+    service.updateDateDelegatedNew(pubId, dBegin, dEnd);
   }
 }

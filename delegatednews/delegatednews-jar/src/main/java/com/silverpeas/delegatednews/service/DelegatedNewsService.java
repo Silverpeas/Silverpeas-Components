@@ -24,6 +24,7 @@
 
 package com.silverpeas.delegatednews.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.silverpeas.delegatednews.model.DelegatedNew;
@@ -33,5 +34,8 @@ public interface DelegatedNewsService {
 	public void addDelegatedNew(int pubId, String instanceId, String contributorId); 
 	public DelegatedNew getDelegatedNew(int pubId); 
 	public List<DelegatedNew> getAllDelegatedNew();
+  public void validateDelegatedNew(int pubId);
+  public void refuseDelegatedNew(int pubId);
+  public void updateDateDelegatedNew(int pubId, Date dateHourBegin, Date dateHourEnd);
 	
 }

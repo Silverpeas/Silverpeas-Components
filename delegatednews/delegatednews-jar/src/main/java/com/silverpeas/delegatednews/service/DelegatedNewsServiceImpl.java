@@ -26,11 +26,12 @@ package com.silverpeas.delegatednews.service;
 
 import com.silverpeas.delegatednews.model.DelegatedNew;
 
+
+import java.util.Date;
 import java.util.List;
 import com.silverpeas.delegatednews.dao.DelegatedNewsDao;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.synyx.hades.domain.Sort;
 
 import javax.inject.Inject;
 
@@ -71,5 +72,35 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
     List<DelegatedNew> list = dao.readAll();
     return list;
   }
+  
+  /**
+   * Valide l'actualité déléguée passée en paramètre
+   *
+   */
+  public void validateDelegatedNew(int pubId) {
+    DelegatedNew delegatedNew = dao.readByPrimaryKey(Integer.valueOf(pubId));
+    delegatedNew.setStatus(DelegatedNew.NEW_VALID);
+    dao.saveAndFlush(delegatedNew);
+  }
 
+  /**
+   * Refuse l'actualité déléguée passée en paramètre
+   *
+   */
+  public void refuseDelegatedNew(int pubId) {
+    DelegatedNew delegatedNew = dao.readByPrimaryKey(Integer.valueOf(pubId));
+    delegatedNew.setStatus(DelegatedNew.NEW_REFUSED);
+    dao.saveAndFlush(delegatedNew);
+  }
+  
+  /**
+   * Met à jour les dates de visibilité de l'actualité déléguée passée en paramètre
+   *
+   */
+  public void updateDateDelegatedNew(int pubId, Date dateHourBegin, Date dateHourEnd) {
+    DelegatedNew delegatedNew = dao.readByPrimaryKey(Integer.valueOf(pubId));
+    delegatedNew.setBeginDate(dateHourBegin);
+    delegatedNew.setEndDate(dateHourEnd);
+    dao.saveAndFlush(delegatedNew);
+  }
 }

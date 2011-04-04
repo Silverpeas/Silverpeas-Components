@@ -84,7 +84,46 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("OpenPublication")) {
         String pubId = request.getParameter("PubId");
         destination = "/Publication/"+pubId;
-      }
+      } else if (function.equals("ValidateDelegatedNew")) {
+        String pubId = request.getParameter("PubId");
+        newsSC.validateDelegatedNew(Integer.parseInt(pubId));
+        List<DelegatedNew> list = newsSC.getAllDelegatedNew();
+        request.setAttribute("ListNews", list);
+        destination = "/delegatednews/jsp/listNews.jsp";
+      } else if (function.equals("EditRefuseReason")) {
+        String pubId = request.getParameter("PubId");        
+        request.setAttribute("PubId", pubId);
+        destination = "/delegatednews/jsp/editRefuseReason.jsp";
+      } else if (function.equals("RefuseDelegatedNew")) {
+        String pubId = request.getParameter("PubId");
+        String refuseReasonText = request.getParameter("RefuseReasonText");
+        newsSC.refuseDelegatedNew(Integer.parseInt(pubId), refuseReasonText);
+        List<DelegatedNew> list = newsSC.getAllDelegatedNew();
+        request.setAttribute("ListNews", list);
+        destination = "/delegatednews/jsp/listNews.jsp";
+      } else if (function.equals("EditUpdateDate")) {
+        String pubId = request.getParameter("PubId");
+        String beginDate = request.getParameter("BeginDate");
+        String beginHour = request.getParameter("BeginHour");
+        String endDate = request.getParameter("EndDate");
+        String endHour = request.getParameter("EndHour");
+        request.setAttribute("PubId", pubId);
+        request.setAttribute("BeginDate", beginDate);
+        request.setAttribute("BeginHour", beginHour);
+        request.setAttribute("EndDate", endDate);
+        request.setAttribute("EndHour", endHour);
+        destination = "/delegatednews/jsp/editUpdateDate.jsp";
+      } else if (function.equals("UpdateDateDelegatedNew")) {
+        String pubId = request.getParameter("PubId");
+        String beginDate = request.getParameter("BeginDate");
+        String beginHour = request.getParameter("BeginHour");
+        String endDate = request.getParameter("EndDate");
+        String endHour = request.getParameter("EndHour");
+        newsSC.updateDateDelegatedNew(Integer.parseInt(pubId), beginDate, beginHour, endDate, endHour);
+        List<DelegatedNew> list = newsSC.getAllDelegatedNew();
+        request.setAttribute("ListNews", list);
+        destination = "/delegatednews/jsp/listNews.jsp";
+      } 
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
