@@ -96,7 +96,7 @@ public class JSONServlet extends HttpServlet {
             kmeliaSC.getKmeliaBm().getPublicationsToValidate(componentId).size();
         NodeDetail temp = new NodeDetail();
         temp.getNodePK().setId("tovalidate");
-        temp.setName("To validate");
+        temp.setName(kmeliaSC.getString("ToValidateShort"));
         temp.setNbObjects(nbPublisToValidate);
         nodes.add(temp);
       }
@@ -107,8 +107,7 @@ public class JSONServlet extends HttpServlet {
     } else if ("Paste".equals(action)) {
       List<Object> pastedItems = kmeliaSC.paste();
       List<NodeDetail> nodes = new ArrayList<NodeDetail>();
-      for (int i = 0; i < pastedItems.size(); i++) {
-        Object pastedItem = pastedItems.get(i);
+      for (Object pastedItem : pastedItems) {
         if (pastedItem instanceof NodeDetail) {
           nodes.add((NodeDetail) pastedItem);
         }
@@ -193,50 +192,54 @@ public class JSONServlet extends HttpServlet {
       boolean isRoot = "0".equals(id);
       boolean isBasket = "1".equals(id);
       
-      // general operations
-      operations.put("pdc", isRoot && kmeliaSC.isPdcUsed() && isAdmin);
-      operations.put("templates", kmeliaSC.isContentEnabled() && isAdmin);
-      operations.put("exporting", kmeliaSC.isExportComponentAllowed() && kmeliaSC.isExportZipAllowed() && isAdmin);
-      operations.put("exportPDF", kmeliaSC.isExportComponentAllowed() && kmeliaSC.isExportPdfAllowed() && (isAdmin || SilverpeasRole.publisher.isInRole(profile)));
-      
-      // topic operations
-      operations.put("addTopic", isAdmin);
-      boolean updateTopicAllowed = isAdmin;
-      NodeDetail node = null;
-      if (!updateTopicAllowed) {
-        node = kmeliaSC.getNodeHeader(id);
-        String parentProfile = kmeliaSC.getUserTopicProfile(node.getFatherPK().getId());
-        updateTopicAllowed = SilverpeasRole.admin.isInRole(parentProfile);
+      if (isBasket) {
+    	  operations.put("emptyTrash", isAdmin || SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.writer.isInRole(profile));
+      } else {
+	      // general operations
+	      operations.put("pdc", isRoot && kmeliaSC.isPdcUsed() && isAdmin);
+	      operations.put("templates", kmeliaSC.isContentEnabled() && isAdmin);
+	      operations.put("exporting", kmeliaSC.isExportComponentAllowed() && kmeliaSC.isExportZipAllowed() && isAdmin);
+	      operations.put("exportPDF", kmeliaSC.isExportComponentAllowed() && kmeliaSC.isExportPdfAllowed() && (isAdmin || SilverpeasRole.publisher.isInRole(profile)));
+	      
+	      // topic operations
+	      operations.put("addTopic", isAdmin);
+	      boolean updateTopicAllowed = isAdmin;
+	      NodeDetail node = null;
+	      if (!updateTopicAllowed) {
+	        node = kmeliaSC.getNodeHeader(id);
+	        String parentProfile = kmeliaSC.getUserTopicProfile(node.getFatherPK().getId());
+	        updateTopicAllowed = SilverpeasRole.admin.isInRole(parentProfile);
+	      }
+	      operations.put("updateTopic", !isRoot && updateTopicAllowed);
+	      operations.put("deleteTopic", !isRoot && updateTopicAllowed);
+	      operations.put("sortSubTopics", isAdmin);
+	      operations.put("copyTopic", !isRoot && isAdmin);
+	      operations.put("cutTopic", !isRoot && isAdmin);
+	      if (!isRoot && isAdmin && kmeliaSC.isOrientedWebContent()) {
+	    	  if (node == null) {
+	    	  	node = kmeliaSC.getNodeHeader(id);
+	    	  }
+	    	  operations.put("showTopic", NodeDetail.STATUS_INVISIBLE.equalsIgnoreCase(node.getStatus()));
+	    	  operations.put("hideTopic", NodeDetail.STATUS_VISIBLE.equalsIgnoreCase(node.getStatus()));
+	      }
+	      operations.put("wysiwygTopic", isAdmin && (kmeliaSC.isOrientedWebContent() || kmeliaSC.isWysiwygOnTopicsEnabled()));
+	      
+	      // publication operations
+	      boolean publicationsInTopic = !isRoot || (isRoot && (kmeliaSC.getNbPublicationsOnRoot() == 0 || !kmeliaSC.isTreeStructure()));
+	      boolean addPublicationAllowed = !SilverpeasRole.user.isInRole(profile) && publicationsInTopic;
+	      
+	      operations.put("addPubli", addPublicationAllowed);
+	      operations.put("wizard", addPublicationAllowed && kmeliaSC.isWizardEnabled());
+	      operations.put("importFile", addPublicationAllowed && kmeliaSC.isImportFileAllowed());
+	      operations.put("importFiles", addPublicationAllowed && kmeliaSC.isImportFilesAllowed());
+	      operations.put("paste", addPublicationAllowed);
+	      
+	      operations.put("sortPublications", isAdmin && publicationsInTopic);
+	      operations.put("updateChain", isAdmin && publicationsInTopic && kmeliaSC.isTopicHaveUpdateChainDescriptor(id));
+	      
+	      operations.put("subscriptions", !isBasket);
+	      operations.put("favorites", !isBasket);
       }
-      operations.put("updateTopic", !isRoot && updateTopicAllowed);
-      operations.put("deleteTopic", !isRoot && updateTopicAllowed);
-      operations.put("sortSubTopics", isAdmin);
-      operations.put("copyTopic", !isRoot && isAdmin);
-      operations.put("cutTopic", !isRoot && isAdmin);
-      if (!isRoot && isAdmin && kmeliaSC.isOrientedWebContent()) {
-    	  if (node == null) {
-    	  	node = kmeliaSC.getNodeHeader(id);
-    	  }
-    	  operations.put("showTopic", NodeDetail.STATUS_INVISIBLE.equalsIgnoreCase(node.getStatus()));
-    	  operations.put("hideTopic", NodeDetail.STATUS_VISIBLE.equalsIgnoreCase(node.getStatus()));
-      }
-      operations.put("wysiwygTopic", isAdmin && (kmeliaSC.isOrientedWebContent() || kmeliaSC.isWysiwygOnTopicsEnabled()));
-      
-      // publication operations
-      boolean publicationsInTopic = !isRoot || (isRoot && (kmeliaSC.getNbPublicationsOnRoot() == 0 || !kmeliaSC.isTreeStructure()));
-      boolean addPublicationAllowed = !SilverpeasRole.user.isInRole(profile) && publicationsInTopic;
-      
-      operations.put("addPubli", addPublicationAllowed);
-      operations.put("wizard", addPublicationAllowed && kmeliaSC.isWizardEnabled());
-      operations.put("importFile", addPublicationAllowed && kmeliaSC.isImportFileAllowed());
-      operations.put("importFiles", addPublicationAllowed && kmeliaSC.isImportFilesAllowed());
-      operations.put("paste", addPublicationAllowed);
-      
-      operations.put("sortPublications", isAdmin && publicationsInTopic);
-      operations.put("updateChain", isAdmin && publicationsInTopic && kmeliaSC.isTopicHaveUpdateChainDescriptor(id));
-      
-      operations.put("subscriptions", !isBasket);
-      operations.put("favorites", !isBasket);
       
       return new JSONObject(operations);
   }

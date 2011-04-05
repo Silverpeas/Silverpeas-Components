@@ -110,12 +110,35 @@
       </label>
       <order>3</order>
       <mandatory>true</mandatory>
-      <value>yes</value>
-      <type>checkbox</type>
+      <value>0</value>
+      <options>
+        <option>
+          <name>
+            <message lang="fr">Oui avec explorateur de thèmes</message>
+            <message lang="en">Yes with explorer</message>
+          </name>
+          <value>0</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Oui sans explorateur de thèmes</message>
+            <message lang="en">Yes without explorer</message>
+          </name>
+          <value>1</value>
+        </option>
+        <option>
+          <name>
+            <message lang="fr">Non</message>
+            <message lang="en">No</message>
+          </name>
+          <value>2</value>
+        </option>
+      </options>
+      <type>select</type>
       <updatable>creation</updatable>
       <help>
-        <message lang="fr">Active l'organisation arborescente de thèmes. Une publication peut êtreplacée dans plusieurs thèmes.</message>
-        <message lang="en">Activates the tree organization of themes. A publication can be in various themes at the same time.</message>
+        <message lang="fr">Active l'organisation arborescente de thèmes.</message>
+        <message lang="en">Activates the tree organization of themes.</message>
       </help>
     </parameter>
     <parameter>

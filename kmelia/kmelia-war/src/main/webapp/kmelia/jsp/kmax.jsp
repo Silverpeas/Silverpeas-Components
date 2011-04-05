@@ -63,8 +63,6 @@ String topicBasketSrc		= m_context + "/util/icons/pubTrash.gif";
 String pubToValidateSrc		= m_context + "/util/icons/publicationstoValidate.gif";
 String exportComponentSrc	= m_context + "/util/icons/exportComponent.gif";
 
-ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", kmeliaScc.getLanguage());
-
 if (action == null) {
 	action = "KmaxView";
 }
