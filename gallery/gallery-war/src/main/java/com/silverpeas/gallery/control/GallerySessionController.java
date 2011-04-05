@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
+import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -62,7 +63,6 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.clipboard.ClipboardSelection;
 import com.stratelia.silverpeas.alertUser.AlertUser;
-import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -132,7 +132,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   /**
    * Gets the business service of operations on comments
-   * @return a CommentService instance.
+   * @return a DefaultCommentService instance.
    */
   private CommentService getCommentService() {
     if (commentService == null) {

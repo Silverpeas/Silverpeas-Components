@@ -59,7 +59,7 @@ public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpring
   @Override
   protected String[] getConfigLocations() {
     return new String[]{"spring-checker.xml", "spring-notification.xml",
-          "spring-hibernate.xml", "spring-datasource.xml"};
+          "spring-hibernate.xml", "spring-datasource.xml", "spring-personalization.xml"};
   }
 
   @Override
@@ -111,9 +111,11 @@ public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpring
   protected IDataSet getDataSet() throws DataSetException, IOException {
     FlatXmlDataSet dataSet;
     if (isOracle()) {
-      dataSet = new FlatXmlDataSet(TestMailingListComponent.class.getResourceAsStream("test-component-oracle-dataset.xml"));
+      dataSet = new FlatXmlDataSet(TestMailingListComponent.class.getResourceAsStream(
+          "test-component-oracle-dataset.xml"));
     } else {
-      dataSet = new FlatXmlDataSet(TestMailingListComponent.class.getResourceAsStream("test-component-dataset.xml"));
+      dataSet = new FlatXmlDataSet(TestMailingListComponent.class.getResourceAsStream(
+          "test-component-dataset.xml"));
     }
     return dataSet;
   }
@@ -151,7 +153,8 @@ public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpring
     List<TextMessage> jmsMessages = MockObjectFactory.getMessages(JNDINames.JMS_QUEUE);
     assertNotNull(jmsMessages);
     assertEquals(3, jmsMessages.size());
-    for (TextMessage alert : jmsMessages) {
+    for (TextMessage alert :
+        jmsMessages) {
       assertNotNull(alert.getText());
       NotificationData data = NotificationServerUtil.convertXMLToNotificationData(alert.getText());
       assertNotNull(data);
@@ -192,7 +195,8 @@ public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpring
     jmsMessages = MockObjectFactory.getMessages(JNDINames.JMS_QUEUE);
     assertNotNull(jmsMessages);
     assertEquals(6, jmsMessages.size());
-    for (TextMessage alert : jmsMessages) {
+    for (TextMessage alert :
+        jmsMessages) {
       assertNotNull(alert.getText());
       NotificationData data = NotificationServerUtil.convertXMLToNotificationData(alert.getText());
       assertNotNull(data);
@@ -248,7 +252,8 @@ public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpring
     List<TextMessage> jmsMessages = MockObjectFactory.getMessages(JNDINames.JMS_QUEUE);
     assertNotNull(jmsMessages);
     assertEquals(5, jmsMessages.size());
-    for (TextMessage alert : jmsMessages) {
+    for (TextMessage alert :
+        jmsMessages) {
       assertNotNull(alert.getText());
       NotificationData data = NotificationServerUtil.convertXMLToNotificationData(alert.getText());
       assertNotNull(data);
@@ -315,6 +320,4 @@ public class TestMailingListComponent extends AbstractSilverpeasDatasourceSpring
     assertEquals("text/plain; charset=\"UTF-8\"", alert.getContentType());
     assertEquals(textEmailContent, alert.getContent());
   }
-
-
 }

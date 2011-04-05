@@ -27,6 +27,7 @@ import java.util.List;
 import com.silverpeas.classifieds.control.ejb.ClassifiedsBm;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
 import com.silverpeas.comment.service.CommentService;
+import com.silverpeas.comment.service.DefaultCommentService;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.model.CommentPK;
 import com.silverpeas.util.ForeignPK;
@@ -176,15 +177,15 @@ public class ClassifiedCommentCallbackTest {
   }
 
   /**
-   * Mocks the CommentService to use by the callback.
+   * Mocks the DefaultCommentService to use by the callback.
    * It is expected all of other comments are asked by the callback to get their authors. So that
    * it can notify them about the new comment.
    * @return the mocked comment controller.
    * @throws Exception - it is just for satisfying the contract of some called methods of
-   * CommentService.
+   * DefaultCommentService.
    */
   protected CommentService mockCommentController() throws Exception {
-    CommentService commentController = mock(CommentService.class);
+    CommentService commentController = mock(DefaultCommentService.class);
     when(commentController.getAllCommentsOnPublication(
         new ForeignPK(String.valueOf(CLASSIFIED_ID), CLASSIFIED_INSTANCEID))).thenReturn(
         classifiedComments);

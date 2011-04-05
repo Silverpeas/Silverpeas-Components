@@ -44,6 +44,7 @@ import java.util.Vector;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
+import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -65,7 +66,6 @@ import com.silverpeas.util.ForeignPK;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -5221,7 +5221,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   /**
    * Gets a service object on the comments.
-   * @return a CommentService instance.
+   * @return a DefaultCommentService instance.
    */
   private CommentService getCommentService() {
     if (commentService == null) {

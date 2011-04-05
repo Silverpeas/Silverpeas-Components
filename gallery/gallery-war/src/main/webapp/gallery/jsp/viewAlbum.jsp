@@ -45,10 +45,7 @@
       boolean isPrivateSearch = ((Boolean) request.getAttribute("IsPrivateSearch")).booleanValue();
         
       //For Drag And Drop
-      String m_sAbsolute = request.getScheme() + "://" + request.getServerName() + ":" + request.
-          getServerPort();
       ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
-      String httpServerBase = generalSettings.getString("httpServerBase", m_sAbsolute);
         
       // declaration des variables :
       int nbAffiche = 0;
@@ -66,7 +63,7 @@
       String typeAff = "1";
         
       if (currentAlbum != null) {
-        albumId = new Integer(currentAlbum.getId()).toString();
+        albumId = String.valueOf(currentAlbum.getId());
         photos = (List) currentAlbum.getPhotos();
         albumDescription = currentAlbum.getDescription();
         albumUrl = currentAlbum.getLink();
@@ -270,8 +267,8 @@ function uploadCompleted(s)
 
 	function showDnD()
 	{
-		var url = "<%=httpServerBase+m_context%>/RgalleryDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&AlbumId=<%=currentAlbum.getNodePK().getId()%>";
-		var message = "<%=httpServerBase + m_context%>/upload/Gallery_<%=resource.getLanguage()%>.html";
+		var url = "<%=URLManager.getFullApplicationURL(request)%>/RgalleryDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&AlbumId=<%=currentAlbum.getNodePK().getId()%>";
+		var message = "<%=URLManager.getFullApplicationURL(request)%>/upload/Gallery_<%=resource.getLanguage()%>.html";
 		
 		<%
 		ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
@@ -375,7 +372,7 @@ function uploadCompleted(s)
 	
 	// favoris
 	if (!isGuest) {
-		operationPane.addOperation(resource.getIcon("gallery.addFavorite"),resource.getString("gallery.addFavorite"),"javaScript:addFavorite('"+m_sAbsolute+"','"+m_context+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(albumName))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(albumDescription))+"','"+albumUrl+"')");
+		operationPane.addOperation(resource.getIcon("gallery.addFavorite"),resource.getString("gallery.addFavorite"),"javaScript:addFavorite('"+URLManager.getServerURL(request)+"','"+m_context+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(albumName))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(albumDescription))+"','"+albumUrl+"')");
 	}
 	
 	if (isPrivateSearch) {

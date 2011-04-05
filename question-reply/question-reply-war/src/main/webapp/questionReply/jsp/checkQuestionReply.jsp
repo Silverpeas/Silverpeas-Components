@@ -77,7 +77,7 @@
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
 <%
 
-MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute("SilverSessionController");
+MainSessionController m_MainSessionCtrl = (MainSessionController) session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
 
 QuestionReplySessionController scc = (QuestionReplySessionController) request.getAttribute("questionReply");
