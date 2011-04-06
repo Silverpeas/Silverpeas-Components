@@ -388,7 +388,15 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (!StringUtil.isDefined(param)) {
       return true;
     }
-    return StringUtil.getBooleanValue(param);
+    return "0".equals(param) || "1".equals(param);
+  }
+  
+  public boolean isTreeviewUsed() {
+	String param = getComponentParameterValue("istree");
+	if (!StringUtil.isDefined(param)) {
+	  return true;
+	}
+	return "0".equals(param);
   }
 
   public boolean isPdcUsed() {
@@ -417,10 +425,6 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public boolean openSingleAttachmentAutomatically() {
     return StringUtil.getBooleanValue(getComponentParameterValue("openSingleAttachment"));
-  }
-
-  public boolean isTreeviewEnabled() {
-    return StringUtil.getBooleanValue(getComponentParameterValue("useTreeview"));
   }
 
   public boolean isImportFileAllowed() {
@@ -785,7 +789,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
 
     List<NodeDetail> treeview = null;
-    if (isTreeviewEnabled() || displayNbPublis()) {
+    if (isTreeviewUsed() || displayNbPublis()) {
       if (isUserComponentAdmin()) {
         treeview = getKmeliaBm().getTreeview(getNodePK("0"), "admin", isCoWritingEnable(),
             isDraftVisibleWithCoWriting(), getUserId(), displayNbPublis(), false);
@@ -829,7 +833,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public synchronized List<NodeDetail> getTreeview() throws RemoteException {
-    if (isTreeviewEnabled()) {
+    if (isTreeviewUsed()) {
       return getSessionTreeview();// getKmeliaBm().getTreeview(getNodePK("0"), getProfile(),
     } // isCoWritingEnable(), isDraftVisibleWithCoWriting(),
     // getUserId(), displayNbPublis());
@@ -873,7 +877,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return getKmeliaBm().addSubTopic(getNodePK(parentId), nd, alertType);
   }
 
-  public synchronized void deleteTopic(String topicId) throws RemoteException {
+  public synchronized String deleteTopic(String topicId) throws RemoteException {
     NodeDetail node = getNodeHeader(topicId);
     // check if user is allowed to delete this topic
     if (SilverpeasRole.admin.isInRole(getUserTopicProfile(topicId))
@@ -888,7 +892,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       }
       // Then, remove the topic itself
       getKmeliaBm().deleteTopic(getNodePK(topicId));
+      
+      return node.getFatherPK().getId();
     }
+    return null;
   }
 
   public synchronized void changeSubTopicsOrder(String way, String subTopicId)

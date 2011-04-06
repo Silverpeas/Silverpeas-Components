@@ -67,7 +67,6 @@ CoordinatePoint getPoint(NodeDetail nodeDetail, Collection points, String transl
 	String deletePubliSrc		= m_context + "/util/icons/publicationDelete.gif";
 	String hLineSrc			= m_context + "/util/icons/colorPix/1px.gif";
 
-	ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", kmeliaScc.getLanguage());
 	ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", kmeliaScc.getLanguage());
 	
 	UserCompletePublication userPubComplete = null;
