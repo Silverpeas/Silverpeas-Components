@@ -111,7 +111,6 @@ import java.util.List;
 import javax.swing.text.html.HTMLEditorKit.ParserCallback;
 import javax.swing.text.html.parser.ParserDelegator;
 import org.apache.commons.io.FilenameUtils;
-import org.w3c.tidy.Configuration;
 import org.w3c.tidy.Tidy;
 
 public class PdfGenerator extends PdfPageEventHelper {
@@ -309,7 +308,7 @@ public class PdfGenerator extends PdfPageEventHelper {
     cb.showText(text.toString());
     cb.endText();
     cb.addTemplate(pdfTemplate, document.right() - adjust, textBase);
-    cb.saveState();
+    cb.restoreState();
   }
 
   /**
@@ -507,7 +506,7 @@ public class PdfGenerator extends PdfPageEventHelper {
 
   private PdfPTable addHeaderToSection(String title) throws DocumentException {
     PdfPTable tblHeader = new PdfPTable(1);
-    tblHeader.setWidthPercentage(100f);    
+    tblHeader.setWidthPercentage(100f);
     PdfPCell cl = new PdfPCell(new Phrase(title, new Font(Font.HELVETICA, 10, Font.BOLD)));
     cl.setHorizontalAlignment(Element.ALIGN_CENTER);
     cl.setBorderWidthTop(1);
@@ -1183,7 +1182,7 @@ public class PdfGenerator extends PdfPageEventHelper {
       tidy.setIndentAttributes(true);
       tidy.setWord2000(true);
       tidy.setShowWarnings(false);
-      tidy.setCharEncoding(Configuration.UTF8);
+      //tidy.setCharEncoding(Configuration.UTF8);
       tidy.parseDOM(inputHtml, xhtml);
       InputStream inputXhtml = new ByteArrayInputStream(xhtml.toByteArray());
       // 4 - Transformation XHTML en PDF

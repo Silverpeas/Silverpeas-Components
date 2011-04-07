@@ -32,9 +32,9 @@
   <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>
-        <value>file://${SILVERPEAS_HOME}/properties/com/stratelia/silverpeas/notificationserver/channel/smtp/smtpSettings.properties</value>
-        <value>file://${SILVERPEAS_HOME}/properties/com/silverpeas/mailinglist/notification.properties</value>
-        <value>file://${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/util/jndi.properties</value>
+        <value>file:///${SILVERPEAS_HOME}/properties/com/stratelia/silverpeas/notificationserver/channel/smtp/smtpSettings.properties</value>
+        <value>file:///${SILVERPEAS_HOME}/properties/com/silverpeas/mailinglist/notification.properties</value>
+        <value>file:///${SILVERPEAS_HOME}/properties/com/stratelia/webactiv/util/jndi.properties</value>
       </list>
     </property>
     <property name="searchSystemEnvironment" value="true" />
