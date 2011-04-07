@@ -100,11 +100,12 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 				<!-- AFFICHAGE du formulaire -->
 					<%=board.printBefore()%>
 					<%
-						PagesContext xmlContext = new PagesContext("myForm", "0", resource.getLanguage(), false, instanceId, null);
-						xmlContext.setBorderPrinted(false);
-						xmlContext.setIgnoreDefaultValues(true);
+						PagesContext templateContext = new PagesContext("myForm", "0", resource.getLanguage(), false, instanceId, null);
+						templateContext.setBorderPrinted(false);
+						templateContext.setIgnoreDefaultValues(true);
+						templateContext.setUseMandatory(false);
 						
-						formSearch.display(out, xmlContext, data);
+						formSearch.display(out, templateContext, data);
 				    
 				    // bouton valider
 					ButtonPane buttonPane = gef.getButtonPane();

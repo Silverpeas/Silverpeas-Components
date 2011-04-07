@@ -74,6 +74,7 @@ String      dialogTitle     = resource.getString("classifieds.subscriptionsAdd")
 						PagesContext xmlContext = new PagesContext("myForm", "0", resource.getLanguage(), false, instanceId, null);
 						xmlContext.setBorderPrinted(false);
 						xmlContext.setIgnoreDefaultValues(true);
+						xmlContext.setUseMandatory(false);
 						
 						formSearch.display(out, xmlContext, data);
 				    %>
