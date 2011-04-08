@@ -869,7 +869,7 @@
 
       <% if (isFieldKeywordsVisible) {%>
       <TR id="keywordsArea"><TD class="txtlibform"><%=resources.getString("PubMotsCles")%></TD>
-        <TD><input type="text" name="Keywords" id="pubKeys" value="<%=EncodeHelper.javaStringToHtmlString(keywords)%>" size="68" maxlength="100"></TD></TR>
+        <TD><input type="text" name="Keywords" id="pubKeys" value="<%=EncodeHelper.javaStringToHtmlString(keywords)%>" size="68" maxlength="200"></TD></TR>
           <% }%>
 
       <!-- Author -->
