@@ -109,6 +109,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	
 	String screenMessage = "";
 	String user_id = kmeliaScc.getUserId();
+	UserDetail currentUser = kmeliaScc.getUserDetail();
 
 	//Vrai si le user connecte est le createur de cette publication ou si il est admin
 	boolean isOwner = false;
@@ -134,7 +135,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
         action = "UpdateView";
         isOwner = true;
     } else {
-        if (profile.equals("admin") || profile.equals("publisher") || profile.equals("supervisor") || (ownerDetail != null && kmeliaScc.getUserDetail().getId().equals(ownerDetail.getId()) && profile.equals("writer"))) {
+        if (profile.equals("admin") || profile.equals("publisher") || profile.equals("supervisor") || (ownerDetail != null && currentUser.getId().equals(ownerDetail.getId()) && profile.equals("writer"))) {
         	isOwner = true;
 
         	if (!kmeliaScc.isSuppressionOnlyForAdmin() || (profile.equals("admin") && kmeliaScc.isSuppressionOnlyForAdmin())) {
@@ -383,7 +384,7 @@ function addFavorite()
     
     OperationPane operationPane = window.getOperationPane();
 
-    if (notificationAllowed) {
+    if (notificationAllowed && !currentUser.isAnonymous()) {
         operationPane.addOperation(alertSrc, resources.getString("GML.notify"), 
             "javaScript:alertUsers()");
       }
@@ -392,8 +393,9 @@ function addFavorite()
       operationPane.addOperation(pdfSrc, resources.getString("GML.generatePDF"),
           "javascript:generatePdf()");
     }
-    operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication") + " " + resources.
-          getString("FavoritesAdd2"), "javaScript:addFavorite()");
+    if (!currentUser.isAnonymous()) {
+    	operationPane.addOperation(favoriteAddSrc, resources.getString("FavoritesAddPublication") + " " + resources.getString("FavoritesAdd2"), "javaScript:addFavorite()");
+    }
     operationPane.addLine();
       
     if (isOwner) {
@@ -418,8 +420,9 @@ function addFavorite()
       }
     }
     if (!kmaxMode) {
-      operationPane.addOperation(resources.getIcon("kmelia.copy"), resources.getString(
-          "GML.copy"), "javaScript:clipboardCopy()");
+      if (!currentUser.isAnonymous()) {
+      	operationPane.addOperation(resources.getIcon("kmelia.copy"), resources.getString("GML.copy"), "javaScript:clipboardCopy()");
+      }
       if (isOwner) {
         operationPane.addOperation(resources.getIcon("kmelia.cut"), resources.getString(
             "GML.cut"), "javaScript:clipboardCut()");
