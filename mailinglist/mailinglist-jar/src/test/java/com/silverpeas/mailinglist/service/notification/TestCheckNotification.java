@@ -64,7 +64,7 @@ public class TestCheckNotification extends
   @Override
   protected String[] getConfigLocations() {
     return new String[] { "spring-checker.xml", "spring-notification.xml",
-        "spring-hibernate.xml", "spring-datasource.xml" };
+        "spring-hibernate.xml", "spring-datasource.xml", "spring-personalization.xml" };
   }
 
   @SuppressWarnings("unchecked")
