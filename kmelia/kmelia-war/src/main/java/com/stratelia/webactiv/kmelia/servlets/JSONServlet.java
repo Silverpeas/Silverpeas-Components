@@ -237,8 +237,8 @@ public class JSONServlet extends HttpServlet {
 	      operations.put("sortPublications", isAdmin && publicationsInTopic);
 	      operations.put("updateChain", isAdmin && publicationsInTopic && kmeliaSC.isTopicHaveUpdateChainDescriptor(id));
 	      
-	      operations.put("subscriptions", !isBasket);
-	      operations.put("favorites", !isBasket);
+	      operations.put("subscriptions", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
+	      operations.put("favorites", !isBasket && !kmeliaSC.getUserDetail().isAnonymous());
       }
       
       return new JSONObject(operations);

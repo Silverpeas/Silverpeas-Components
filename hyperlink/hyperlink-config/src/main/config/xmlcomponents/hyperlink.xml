@@ -216,7 +216,7 @@
       <size>25</size>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Valeur du paramètre supplémentaire pourl'application SSO Client.</message>
+        <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO Client.</message>
         <message lang="en">Value of the first extra parameter</message>
       </help>
     </parameter>
@@ -284,7 +284,7 @@
       <size>25</size>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Valeur du paramètre supplémentaire pourl'application SSO Client.</message>
+        <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO Client.</message>
         <message lang="en">Value of the third extra parameter</message>
       </help>
     </parameter>
@@ -318,7 +318,7 @@
       <size>25</size>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Valeur du paramètre supplémentaire pourl'application SSO Client.</message>
+        <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO Client.</message>
         <message lang="en">Value of the fourth extra parameter</message>
       </help>
     </parameter>
@@ -340,7 +340,7 @@
       </help>
     </parameter>
     <parameter>
-      <name>valueParam1</name>
+      <name>valueParam5</name>
       <label>
         <message lang="fr">Valeur paramètre 5</message>
         <message lang="en">Value of the fifth extra parameter</message>
@@ -352,7 +352,7 @@
       <size>25</size>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Valeur du paramètre supplémentaire pourl'application SSO Client.</message>
+        <message lang="fr">Valeur du paramètre supplémentaire pour l'application SSO Client.</message>
         <message lang="en">Value of the fifth extra parameter</message>
       </help>
     </parameter>

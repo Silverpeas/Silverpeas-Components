@@ -192,6 +192,7 @@ function initOperations(id, op) {
 	var menuItem;
 	var groupIndex = 0;
 	var groupEmpty = true;
+	var menuEmpty = true;
 	
 	if (op.emptyTrash) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.emptyTrash"], {url: "javascript:onClick=emptyTrash()"});
@@ -230,6 +231,7 @@ function initOperations(id, op) {
 	if (!groupEmpty) {
 		groupIndex++;
 		groupEmpty = true;
+		menuEmpty = false;
 	}
 	
 	if (op.addTopic) {
@@ -281,6 +283,7 @@ function initOperations(id, op) {
 	if (!groupEmpty) {
 		groupIndex++;
 		groupEmpty = true;
+		menuEmpty = false;
 	}
 	
 	if (op.addPubli) {
@@ -322,18 +325,25 @@ function initOperations(id, op) {
 	if (!groupEmpty) {
 		groupIndex++;
 		groupEmpty = true;
+		menuEmpty = false;
 	}
 	
 	if (op.subscriptions) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.subscribe"], {url: "javascript:onclick=addSubscription()"});
 		oMenu.addItem(menuItem, groupIndex);
+		menuEmpty = false;
 	}
 	if (op.favorites) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.favorites"], {url: "javascript:onclick=addCurrentNodeAsFavorite()"});
 		oMenu.addItem(menuItem, groupIndex);
+		menuEmpty = false;
 	}
 			
 	oMenu.render();
+	
+	if (menuEmpty) {
+		$("#menutoggle").css({'display':'none'});
+	}
 }
 
 var currentNodeId;
