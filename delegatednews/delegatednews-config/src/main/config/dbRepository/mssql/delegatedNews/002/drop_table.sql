@@ -1,1 +1,1 @@
-drop table sc_delegatednews_new;
+drop table sc_delegatednews_news;

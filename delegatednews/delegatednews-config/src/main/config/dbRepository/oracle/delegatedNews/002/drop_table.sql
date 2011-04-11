@@ -1,1 +1,1 @@
-drop table sc_delegatednews_new cascade constraints;
+drop table sc_delegatednews_news cascade constraints;
