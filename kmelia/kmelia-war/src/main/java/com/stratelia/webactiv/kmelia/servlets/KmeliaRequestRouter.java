@@ -70,9 +70,7 @@ import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
-import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.ProfileInst;
@@ -240,8 +238,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           request.setAttribute("RightsOnTopicsEnabled", Boolean.valueOf(kmelia.
               isRightsOnTopicsEnabled()));
           request.setAttribute("WysiwygDescription", kmelia.getWysiwygOnTopic());
-          if (kmelia.isTreeStructure()) {
+          if (kmelia.isTreeviewUsed()) {
             destination = rootDestination + "topicManager.jsp";
+          } else if (kmelia.isTreeStructure()) {
+        	destination = rootDestination + "oneLevel.jsp";  
           } else {
             destination = rootDestination + "simpleListOfPublications.jsp";
           }

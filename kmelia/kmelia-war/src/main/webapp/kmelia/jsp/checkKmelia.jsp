@@ -139,10 +139,11 @@
 
 	String routerUrl = URLManager.getApplicationURL() + URLManager.getURL("kmelia", spaceId, componentId);
 
-	//R�cup�ration du contexte
 	String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
 	
 	boolean kmaxMode 	= (componentId != null && componentId.startsWith("kmax"));
 	boolean toolboxMode = (componentId != null && componentId.startsWith("toolbox"));
 	boolean kmeliaMode 	= (componentId != null && componentId.startsWith("kmelia"));
+	
+	ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", kmeliaScc.getLanguage());
 %>

@@ -38,8 +38,7 @@ public class DeleteHandler implements AjaxHandler {
   public String handleRequest(HttpServletRequest request, ComponentSessionController controller) {
     String id = request.getParameter("Id");
     try {
-      ((KmeliaSessionController) controller).deleteTopic(id);
-      return "ok";
+      return ((KmeliaSessionController) controller).deleteTopic(id);
     } catch (RemoteException e) {
       SilverTrace.error("kmelia", "DeleteHandler.handleRequest", "root.MSG_GEN_PARAM_VALUE", e);
       return e.getMessage();

@@ -35,8 +35,6 @@
 String		rootId				= "0";
 String		name				= "";
 String		description			= "";
-String		namePath			= "";
-String		urlTopic			= "";
 
 //R?cup?ration des param?tres
 String 	profile			= (String) request.getAttribute("Profile");
@@ -73,8 +71,6 @@ if (id == null) {
 	id = rootId;
 }
 
-ResourceLocator settings = new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", kmeliaScc.getLanguage());
-
 //For Drag And Drop
 boolean dragAndDropEnable = kmeliaScc.isDragAndDropEnable();
 
@@ -91,8 +87,8 @@ boolean userCanManageTopics = rightsOnTopics.booleanValue() || "admin".equalsIgn
 
 %>
 
-<HTML>
-<HEAD>
+<html>
+<head>
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <%
 out.println(gef.getLookStyleSheet());
@@ -120,12 +116,6 @@ out.println(gef.getLookStyleSheet());
 <link rel="stylesheet" type="text/css" href="<%=m_context%>/util/yui/resize/assets/skins/sam/resize.css" />
 
 <style type="text/css" >
-.tableFrame {
-}
-.hautFrame {
-	/*width: 950px;*/
-	/*border: 1px solid green;*/
-}
 /** resizable */
 #pg {
     /*width: 950px;*/
@@ -143,11 +133,6 @@ out.println(gef.getLookStyleSheet());
     float: left;
 }
 
-#DropZone {
-	padding-left: 5px;
-	padding-right: 5px;
-	margin-right: 5px;
-}
 #treeDiv1 {
 	/*width: 20%;*/
 	height : 500px;
@@ -163,16 +148,6 @@ out.println(gef.getLookStyleSheet());
 	/*width: 675px;*/
 	overflow: hidden;
 	/*border: 1px solid blue;*/
-}
-#pubList {
-	/*float: left;*/
-	/*width: 100%;*/
-	overflow: auto;
-}
-
-#DnD {
-	/*float: left;*/
-	/*width: 100%;*/
 }
 
 .ygtvfocus {
@@ -230,24 +205,10 @@ out.println(gef.getLookStyleSheet());
 }
 </style>
 
-<script language="JavaScript1.2">
+<script type="text/javascript">
 function topicGoTo(id) {
     closeWindows();
     displayTopicContent(id);
-}
-
-function reloadPage(id) {
-	closeWindows();
-    document.topicDetailForm.action = "GoToTopic";
-    document.topicDetailForm.Id.value = id;
-    document.topicDetailForm.submit();
-}
-
-function dirGoTo(id) {
-    closeWindows();
-    document.topicDetailForm.action = "GoToDirectory";
-    document.topicDetailForm.Id.value = id;
-    document.topicDetailForm.submit();
 }
 
 function clipboardCopy() {
@@ -258,47 +219,15 @@ function clipboardCut() {
     top.IdleFrame.location.href = '../..<%=kmeliaScc.getComponentUrl()%>cut?Object=Node&Id=<%=id%>';
 }
 
-function updateChain()
-{
-    document.updateChain.submit();
-}
-
-function topicAdd(topicId, isLinked) {
-	//alert("topicAdd : topicId = "+topicId);
-	if (!topicWindow.closed && topicWindow.name== "topicAddWindow")
-		topicWindow.close();
-    var url = "ToAddTopic?Id="+topicId+"&Translation=<%=translation%>";
-    if (isLinked)
-    	url += "&IsLink=true";
-	<% if (rightsOnTopics.booleanValue()) { %>
-		location.href = url;
-	<% } else { %>
-		topicWindow = SP_openWindow(url, "topicWindow", "570", "350", "directories=0,menubar=0,toolbar=0, alwaysRaised");
-	<% } %>
-}
-
-function topicUpdate(id)
-{
-	document.topicDetailForm.ChildId.value = id;
-    if (!topicWindow.closed && topicWindow.name== "topicUpdateWindow")
-    	topicWindow.close();
-
-	<% if (rightsOnTopics.booleanValue()) { %>
-		location.href = "ToUpdateTopic?Id="+id+"&Translation=<%=translation%>";
-	<% } else { %>
-		topicWindow = SP_openWindow("ToUpdateTopic?Id="+id+"&Translation=<%=translation%>", "topicWindow", "550", "350", "directories=0,menubar=0,toolbar=0,alwaysRaised");
-	<% } %>
-}
-
 function showDnD()
 {
 	<%
 	ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", "");
 	String maximumFileSize = uploadSettings.getString("MaximumFileSize", "10000000");
 	if (profile.equals("publisher") || profile.equals("writer")) { %>
-		showHideDragDrop('<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeNormal_<%=language%>.html','<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&Draft=1&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeDraft_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
+		showHideDragDrop('<%=URLManager.getFullApplicationURL(request)%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&SessionId=<%=session.getId()%>','<%=URLManager.getFullApplicationURL(request)%>/upload/ModeNormal_<%=language%>.html','<%=URLManager.getFullApplicationURL(request)%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&IgnoreFolders=1&Draft=1&SessionId=<%=session.getId()%>','<%=URLManager.getFullApplicationURL(request)%>/upload/ModeDraft_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
 	<% } else { %>
-		showHideDragDrop('<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeNormal_<%=language%>.html','<%=httpServerBase+m_context%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&Draft=1&SessionId=<%=session.getId()%>','<%=httpServerBase + m_context%>/upload/ModeDraft_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
+		showHideDragDrop('<%=URLManager.getFullApplicationURL(request)%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&SessionId=<%=session.getId()%>','<%=URLManager.getFullApplicationURL(request)%>/upload/ModeNormal_<%=language%>.html','<%=URLManager.getFullApplicationURL(request)%>/RImportDragAndDrop/jsp/Drop?UserId=<%=userId%>&ComponentId=<%=componentId%>&Draft=1&SessionId=<%=session.getId()%>','<%=URLManager.getFullApplicationURL(request)%>/upload/ModeDraft_<%=language%>.html','<%=resources.getString("GML.applet.dnd.alt")%>','<%=maximumFileSize%>','<%=m_context%>','<%=resources.getString("GML.DragNDropExpand")%>','<%=resources.getString("GML.DragNDropCollapse")%>');
 	<% } %>
 }
 
@@ -310,31 +239,54 @@ function getComponentId() {
 	return "<%=componentId%>";
 }
 
-function publicationGoToFromMain(id){
-    closeWindows();
-    document.pubForm.CheckPath.value = "1";
-    document.pubForm.PubId.value = id;
-    document.pubForm.submit();
+function getLanguage() {
+	return "<%=language%>"; 
 }
 
-function fileUpload()
-{
-    document.fupload.submit();
+function getPubIdToHighlight() {
+	return "<%=pubIdToHighlight%>";
 }
 
-function doPagination(index)
-{
-	var paramToValidate = "0";
-	if (getCurrentNodeId() == "tovalidate") {
-		paramToValidate = "1";
-	}
-	var topicQuery = getSearchQuery();
-	var ieFix = new Date().getTime();
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:'<%=componentId%>',ToValidate:paramToValidate,Query:topicQuery,IEFix:ieFix},
-							function(data){
-								$('#pubList').html(data);
-							},"html");
+function getTranslation() {
+	return "<%=translation%>";
 }
+
+var labels = new Object();
+labels["ConfirmDeleteTopic"] = "<%=EncodeHelper.javaStringToJsString(resources.getString("ConfirmDeleteTopic"))%>";
+labels["ConfirmFlushTrashBean"] = "<%=EncodeHelper.javaStringToJsString(kmeliaScc.getString("ConfirmFlushTrashBean"))%>";
+labels["ToValidate"] = "<%=EncodeHelper.javaStringToJsString(resources.getString("ToValidate"))%>";
+labels["topic.info"] = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.topic.info"))%>";
+
+labels["operation.pdc"] = "<%=resources.getString("GML.PDCParam")%>";
+labels["operation.templates"] = "<%=resources.getString("kmelia.ModelUsed")%>";
+labels["operation.exportTopic"] = "<%=resources.getString("kmelia.ExportTopic")%>";
+labels["operation.exportComponent"] = "<%=resources.getString("kmelia.ExportComponent")%>";
+labels["operation.exportPDF"] = "<%=resources.getString("kmelia.ExportPDF")%>";
+labels["operation.addTopic"] = "<%=resources.getString("CreerSousTheme")%>";
+labels["operation.updateTopic"] = "<%=resources.getString("ModifierSousTheme")%>";
+labels["operation.deleteTopic"] = "<%=resources.getString("SupprimerSousTheme")%>";
+labels["operation.sortTopics"] = "<%=resources.getString("kmelia.SortTopics")%>";
+labels["operation.copy"] = "<%=resources.getString("GML.copy")%>";
+labels["operation.cut"] = "<%=resources.getString("GML.cut")%>";
+labels["operation.paste"] = "<%=resources.getString("GML.paste")%>";
+labels["operation.visible2invisible"] = "<%=resources.getString("TopicVisible2Invisible")%>";
+labels["operation.invisible2visible"] = "<%=resources.getString("TopicInvisible2Visible")%>";
+labels["operation.wysiwygTopic"] = "<%=resources.getString("TopicWysiwyg")%>";
+labels["operation.addPubli"] = "<%=resources.getString("PubCreer")%>";
+labels["operation.wizard"] = "<%=resources.getString("kmelia.Wizard")%>";
+labels["operation.importFile"] = "<%=resources.getString("kmelia.ImportFile")%>";
+labels["operation.importFiles"] = "<%=resources.getString("kmelia.ImportFiles")%>";
+labels["operation.sortPublis"] = "<%=resources.getString("kmelia.OrderPublications")%>";
+labels["operation.updateChain"] = "<%=resources.getString("kmelia.updateByChain")%>";
+labels["operation.subscribe"] = "<%=resources.getString("SubscriptionsAdd")%>";
+labels["operation.favorites"] = "<%=resources.getString("FavoritesAdd1")%> <%=resources.getString("FavoritesAdd2")%>";
+labels["operation.emptyTrash"] = "<%=resources.getString("EmptyBasket")%>";
+
+var icons = new Object();
+icons["permalink"] = "<%=resources.getIcon("kmelia.link")%>";
+
+var params = new Object();
+params["rightsOnTopic"] = <%=rightsOnTopics.booleanValue()%>;
 
 function getWidth() {
 	  var myWidth = 0;
@@ -367,22 +319,13 @@ function getHeight() {
 }
 
 </script>
-</HEAD>
-<BODY id="kmelia" onUnload="closeWindows()" class="yui-skin-sam">
+</head>
+<body id="kmelia" onUnload="closeWindows()" class="yui-skin-sam">
 <div id="<%=componentId %>">
 <%
-        namePath = "";
-
-        urlTopic = nodeDetail.getLink();
-
         Window window = gef.getWindow();
         BrowseBar browseBar = window.getBrowseBar();
         browseBar.setI18N("GoToCurrentTopic", translation);
-
-        // cr?ation du nom pour les favoris
-        namePath = spaceLabel + " > " + componentLabel;
-         if (!pathString.equals(""))
-        	namePath = namePath + " > " + pathString;
 
         //Display operations - following lines are mandatory to init menu correctly
         OperationPane operationPane = window.getOperationPane();
@@ -455,8 +398,7 @@ function getHeight() {
 						 out.println(board.printAfter());
 					 %>
 					</div>
-					<div id="footer" class="txtBaseline">
-					</div>
+					<div id="footer" class="txtBaseline"></div>
 				</div>
 			</div>
 			</div>
@@ -466,36 +408,32 @@ function getHeight() {
 		out.println(window.printAfter());
 	%>
 
-<FORM NAME="topicDetailForm" METHOD="POST">
-	<input type="hidden" name="Id" value="<%=id%>">
-	<input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>">
-	<input type="hidden" name="ChildId">
-	<input type="hidden" name="Status"><input type="hidden" name="Recursive">
-</FORM>
+<form name="topicDetailForm" method="POST">
+	<input type="hidden" name="Id" value="<%=id%>"/>
+	<input type="hidden" name="Path" value="<%=EncodeHelper.javaStringToHtmlString(pathString)%>"/>
+	<input type="hidden" name="ChildId"/>
+	<input type="hidden" name="Status"/>
+	<input type="hidden" name="Recursive"/>
+</form>
 
-<FORM NAME="pubForm" action="ViewPublication" METHOD="POST">
-	<input type="hidden" name="PubId">
-	<input type="hidden" name="CheckPath">
-</FORM>
+<form name="pubForm" action="ViewPublication" method="POST">
+	<input type="hidden" name="PubId"/>
+	<input type="hidden" name="CheckPath"/>
+</form>
 
-<FORM NAME="fupload" ACTION="fileUpload.jsp" METHOD="POST" enctype="multipart/form-data" accept-charset="UTF-8">
-	<input type="hidden" name="Action" value="initial">
-</FORM>
+<form name="fupload" action="fileUpload.jsp" method="POST" enctype="multipart/form-data" accept-charset="UTF-8">
+	<input type="hidden" name="Action" value="initial"/>
+</form>
 
 <form name="updateChain" action="UpdateChainInit">
 </form>
 <script type="text/javascript">
-
 //Declarations
 var Dom = YAHOO.util.Dom;
 var Event = YAHOO.util.Event;
 
-var initCreatorName = "<%=kmeliaScc.getUserDetail(nodeDetail.getCreatorId()).getDisplayedName()%>";
-var initCreationDate = "<%=resources.getOutputDate(nodeDetail.getCreationDate())%>";
-
 var oTreeView;
 var root;
-var currentNodeId;
 var currentNodeIndex;
 var basketNode;
 var toValidateNode;
@@ -569,29 +507,8 @@ function initTree(id)
 
 }
 
-var componentPermalink = "<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId)%>";
-
-function addCurrentNodeAsFavorite() {
-	var path = $("#breadCrumb").text();
-	var description = "";
-	var url = componentPermalink;
-	if (getCurrentNodeId() != "0") {
-		var node = getCurrentNode();
-		if (typeof node.data.description  != "undefined"){ 
-			description = node.data.description;
-		}
-		url = $("#topicPermalink").attr("href");
-	}
-	addFavorite(encodeURI(path), encodeURI(description), url);
-}
-
-function getCurrentNodeId() {
-	return currentNodeId;
-}
-
-function setCurrentNodeId(id) {
-	//alert("setCurrentNodeId : id = "+id);
-	currentNodeId = id;
+function getComponentPermalink() {
+	return "<%=URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentId)%>";
 }
 
 function getCurrentNode() {
@@ -786,10 +703,6 @@ function loadNodeData(node, fnLoadComplete)  {
 		topicAdd(oCurrentTextNode.labelElId, false);
 	}
 
-	function addNodeToCurrentNode() {
-		topicAdd(getCurrentNodeId(), false);
-	}
-
 	/*
 	     Edits the label of the TextNode that was the target of the
 	     "contextmenu" event that triggered the display of the
@@ -807,7 +720,7 @@ function loadNodeData(node, fnLoadComplete)  {
 		if(window.confirm("<%=kmeliaScc.getString("ConfirmDeleteTopic")%> '" + nodeLabel + "' ?")) {
 			$.get('<%=m_context%>/KmeliaAJAXServlet', { Id:nodeId,ComponentId:'<%=componentId%>',Action:'Delete'},
 					function(data){
-						if (data == "ok") {
+						if ((data - 0) == data && data.length > 0) {
 							var node = oTreeView.getNodeByProperty("labelElId", nodeIdToDelete);
 							// go to parent node
 							displayTopicContent(node.parent.data.id);
@@ -880,17 +793,6 @@ function loadNodeData(node, fnLoadComplete)  {
 		updateTopicWysiwyg(oCurrentTextNode.labelElId);
 	}
 
-	function updateCurrentTopicWysiwyg() {
-		updateTopicWysiwyg(getCurrentNodeId());
-	}
-
-	function updateTopicWysiwyg(id) {
-		closeWindows();
-		document.topicDetailForm.action = "ToTopicWysiwyg";
-		document.topicDetailForm.ChildId.value = id;
-		document.topicDetailForm.submit();
-	}
-
 	function changeTopicStatus() {
 		changeStatus(oCurrentTextNode.labelElId);
 	}
@@ -943,65 +845,14 @@ function loadNodeData(node, fnLoadComplete)  {
 				}, 'text');
 	}
 
-	function pasteFromOperations()
-	{
-		//alert("paste : currentNodeId = "+getCurrentNodeId());
-		pasteNode(getCurrentNodeId());
-	}
-
 	function pasteFromTree()
 	{
 		pasteNode(oCurrentTextNode.labelElId);
 	}
 
-	function pasteNode(id)
-	{
-		$.progressMessage();
-
-		//alert("pasteNode : id = "+id);
-		//prepare URL for XHR request:
-        var sUrl = "<%=m_context%>/KmeliaJSONServlet?Action=Paste&ComponentId=<%=componentId%>&Language=<%=language%>&Id="+id+"&IEFix="+new Date().getTime();
-
-        //prepare our callback object
-        var callback = {
-
-            //if our XHR call is successful, we want to make use
-            //of the returned data and create child nodes.
-            success: function(oResponse) {
-                var messages = [];
-                // Use the JSON Utility to parse the data returned from the server
-                try {
-                    messages = YAHOO.lang.JSON.parse(oResponse.responseText);
-                }
-                catch (x) {
-                    alert("JSON Parse failed!");
-                    return;
-                }
-
-				reloadPage(id);
-
-				$.closeProgressMessage();
-            },
-
-            //timeout -- if more than 7 seconds go by, we'll abort
-            //the transaction and assume there are no children:
-            timeout: 7000
-        };
-
-        //With our callback object ready, it's now time to
-        //make our XHR call using Connection Manager's
-        //asyncRequest method:
-        YAHOO.util.Connect.asyncRequest('GET', sUrl, callback);
-	}
-
 	function sortTopics() {
 		closeWindows();
 		SP_openWindow("ToOrderTopics?Id="+oCurrentTextNode.labelElId, "topicAddWindow", "600", "500", "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised,resizable");
-	}
-
-	function sortSubTopics() {
-		closeWindows();
-		SP_openWindow("ToOrderTopics?Id="+getCurrentNodeId(), "topicAddWindow", "600", "500", "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised,resizable");
 	}
 
 	/*
@@ -1235,9 +1086,6 @@ function loadNodeData(node, fnLoadComplete)  {
 
 	function displayTopicContent(id)
 	{
-		var node = oTreeView.getNodeByProperty("labelElId", id);
-		//alert(node.data.name);
-
 		clearSearchQuery();
 
 		if (id != "1" && id != "tovalidate")
@@ -1245,44 +1093,37 @@ function loadNodeData(node, fnLoadComplete)  {
 			//highlight current topic
 			$("#ygtvcontentel"+currentNodeIndex).css({'font-weight':'normal'});
 
-			try
-			{
+			try {
+				var node = oTreeView.getNodeByProperty("labelElId", id);
 				setCurrentNodeId(node.data.id);
 				currentNodeIndex = node.index;
 				$("#ygtvcontentel"+currentNodeIndex).css({'font-weight':'bold'});
-			}
-			catch (e)
-			{
+			} catch (e) {
 				//TO FIX
 			}
 		}
 
-		if (id == "tovalidate" || id == "1")
-		{
+		if (id == "tovalidate" || id == "1") {
 			$("#DnD").css({'display':'none'}); //hide dropzone
-			$("#menutoggle").css({'display':'none'}); //hide operations
 			$("#footer").css({'visibility':'hidden'}); //hide footer
 			$("#searchZone").css({'display':'none'}); //hide search
 
-			if (id == "tovalidate")
-			{
+			if (id == "tovalidate")	{
+				$("#menutoggle").css({'display':'none'}); //hide operations
 				displayPublicationsToValidate();
 
 				//update breadcrumb
                 removeBreadCrumbElements();
                 addBreadCrumbElement("#", "<%=resources.getString("ToValidate")%>");
-			}
-			else
-			{
+			} else {
+				displayOperations(id);
 				displayPublications(id);
 				displayPath(id);
 			}
-		}
-		else
-		{
+		} else {
 			displayPublications(id);
 			displayPath(id);
-			getProfile(id);
+			displayOperations(id);
 			if (id != "0" || <%=kmeliaScc.getNbPublicationsOnRoot() == 0%>) {
 				$("#searchZone").css({'display':'block'});
 			} else if (<%=kmeliaScc.getNbPublicationsOnRoot() != 0%>) {
@@ -1291,254 +1132,12 @@ function loadNodeData(node, fnLoadComplete)  {
 		}
 
 		//display topic information
-		if (id != "0" && id != "1" && id != "tovalidate")
-		{
-			$("#footer").css({'visibility':'visible'});
-			if (node != null) {
-				initCreatorName = node.data.creatorName;
-				initCreationDate = node.data.date;
-			}
-			$("#footer").html("<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.topic.info"))%>"+initCreatorName+" - "+initCreationDate+" - <a id=\"topicPermalink\" href=\"#\"><img src=\"<%=resources.getIcon("kmelia.link")%>\"/></a>");
-			$("#footer #topicPermalink").attr("href", "<%=m_context%>/Topic/"+id+"?ComponentId=<%=componentId%>");
-		}
-		else
-		{
-			$("#footer").css({'visibility':'hidden'});
-		}
+		displayTopicInformation(id);
 
 		//display topic rich description
 		displayTopicDescription(id);
 	}
 
-	function checkDnD(id, operations) {
-		//alert("checkDnD : "+displayIt);
-		if (operations.addPubli == true) {
-			$("#DnD").css({'display':'block'});
-		} else {
-			$("#DnD").css({'display':'none'});
-		}
-	}
-
-	function initOperations(id, op) {
-		if (id == "1") {
-			$("#menutoggle").css({'display':'none'});
-		} else {
-			$("#menutoggle").css({'display':'block'});
-		}
-		
-		oMenu.clearContent();
-		
-		var menuItem;
-		var groupIndex = 0;
-		var groupEmpty = true;
-		if (op.pdc) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("GML.PDCParam")%>", {url: "javascript:onClick=openSPWindow('<%=m_context%>/RpdcUtilization/jsp/Main?ComponentId=<%=kmeliaScc.getComponentId()%>','utilizationPdc1')"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		
-		if (op.templates) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.ModelUsed")%>", {url: "ModelUsed"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		
-		if (op.exporting) {
-			if (id == "0") {
-				menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.ExportTopic")%>", {url: "javascript:onClick=exportPublications()"});
-			} else {
-				menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.ExportComponent")%>", {url: "javascript:onClick=exportPublications()"});
-			}
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		
-		if (op.exportPDF) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.ExportPDF")%>", {url: "javascript:openExportPDFPopup()"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		
-		if (!groupEmpty) {
-			groupIndex++;
-			groupEmpty = true;
-		}
-		
-		if (op.addTopic) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("CreerSousTheme")%>", {url: "javascript:onclick=addNodeToCurrentNode()"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		if (op.updateTopic) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("ModifierSousTheme")%>", {url: "javascript:onclick=updateCurrentNode()"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		if (op.deleteTopic) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("SupprimerSousTheme")%>", {url: "javascript:onclick=deleteCurrentNode()"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		if (op.sortSubTopics) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.SortTopics")%>", {url: "javascript:onclick=sortSubTopics()"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		if (op.copyTopic) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("GML.copy")%>", {url: "javascript:onclick=copyCurrentNode()"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		if (op.cutTopic) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("GML.cut")%>", {url: "javascript:onclick=cutCurrentNode()"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		if (op.hideTopic) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("TopicVisible2Invisible")%>", {url: "javascript:onclick=changeCurrentTopicStatus()"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		if (op.showTopic) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("TopicInvisible2Visible")%>", {url: "javascript:onclick=changeCurrentTopicStatus()"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		if (op.wysiwygTopic) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("TopicWysiwyg")%>", {url: "javascript:onclick=updateCurrentTopicWysiwyg()"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		
-		if (!groupEmpty) {
-			groupIndex++;
-			groupEmpty = true;
-		}
-		
-		if (op.addPubli) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("PubCreer")%>", {url: "NewPublication"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		if (op.wizard) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.Wizard")%>", {url: "WizardStart"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		if (op.importFile) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.ImportFile")%>", {url: "javascript:onclick=importFile()"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		if (op.importFiles) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.ImportFiles")%>", {url: "javascript:onclick=importFiles()"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		if (op.sortPublications) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.OrderPublications")%>", {url: "ToOrderPublications"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		if (op.updateChain) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("kmelia.updateByChain")%>", {url: "javascript:onclick=updateChain()"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		if (op.paste) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("GML.paste")%>", {url: "javascript:onclick=pasteFromOperations()"});
-			oMenu.addItem(menuItem, groupIndex);
-			groupEmpty = false;
-		}
-		
-		if (!groupEmpty) {
-			groupIndex++;
-			groupEmpty = true;
-		}
-		
-		if (op.subscriptions) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("SubscriptionsAdd")%>", {url: "javascript:onclick=addSubscription()"});
-			oMenu.addItem(menuItem, groupIndex);
-		}
-		if (op.favorites) {
-			menuItem = new YAHOO.widget.MenuItem("<%=resources.getString("FavoritesAdd1")+" "+resources.getString("FavoritesAdd2")%>", {url: "javascript:onclick=addCurrentNodeAsFavorite()"});
-			oMenu.addItem(menuItem, groupIndex);
-		}
-				
-		oMenu.render();
-	}
-	
-	function getProfile(id)
-	{
-		var ieFix = new Date().getTime();
-		$.get('<%=m_context%>/KmeliaJSONServlet', { Id:id,Action:'GetOperations',ComponentId:'<%=componentId%>',IEFix:ieFix},
-				function(operations){
-					//display dNd according rights
-					checkDnD(id, operations);
-					initOperations(id, operations);
-					if (operations.addTopic) {
-						showRightClickHelp();
-					}
-				}, 'json');
-	}
-
-	function displayPublications(id)
-	{
-		//display publications of topic
-		var pubIdToHighlight = "<%=pubIdToHighlight%>";
-		var ieFix = new Date().getTime();
-		$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Id:id,ComponentId:'<%=componentId%>',PubIdToHighlight:pubIdToHighlight,IEFix:ieFix},
-				function(data){
-					$('#pubList').html(data);
-				},"html");
-	}
-
-	function displayPath(id)
-	{
-		//prepare URL for XHR request:
-        var sUrl = "<%=m_context%>/KmeliaJSONServlet?Action=GetPath&ComponentId=<%=componentId%>&Language=<%=language%>&Id="+id+"&IEFix="+new Date().getTime();
-
-        //prepare our callback object
-        var callback = {
-
-            //if our XHR call is successful, we want to make use
-            //of the returned data and create child nodes.
-            success: function(oResponse) {
-                var messages = [];
-                // Use the JSON Utility to parse the data returned from the server
-                try {
-                    messages = YAHOO.lang.JSON.parse(oResponse.responseText);
-                }
-                catch (x) {
-                    alert("JSON Parse failed!");
-                    return;
-                }
-
-                //remove topic breadcrumb
-                removeBreadCrumbElements();
-
-                // The returned data was parsed into an array of objects.
-                for (var i = messages.length-1; i >= 0 ; i--) {
-                    var m = messages[i];
-                    if (m.id != 0) {
-                    	addBreadCrumbElement("javascript:topicGoTo("+m.id+")", m.name);
-                    }
-                }
-                //alert(path);
-            },
-
-            //timeout -- if more than 7 seconds go by, we'll abort
-            //the transaction and assume there are no children:
-            timeout: 7000
-        };
-
-        //With our callback object ready, it's now time to
-        //make our XHR call using Connection Manager's
-        //asyncRequest method:
-        YAHOO.util.Connect.asyncRequest('GET', sUrl, callback);
-	}
-</script>
-<script>
 var rightClickHelpAlreadyShown = false;
 function showRightClickHelp() {
 	var rightClickCookieName = "Silverpeas_GED_RightClickHelp";
@@ -1614,5 +1213,5 @@ function showRightClickHelp() {
 	</p>
 </div>
 <view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>
