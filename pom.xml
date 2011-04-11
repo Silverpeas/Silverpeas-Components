@@ -139,6 +139,7 @@
     <module>survey</module>
     <module>gallery</module>
     <module>newsedito</module>
+    <module>delegatednews</module>
     <module>kmelia</module>
     <module>organizationchart</module>
     <module>classifieds</module>
