@@ -28,7 +28,7 @@ import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
-import com.silverpeas.delegatednews.model.DelegatedNew;
+import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
 import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.silverpeas.form.DataRecord;
@@ -4668,13 +4668,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * Récupère une actualité déléguée dans le composant delegatednews correspondant à la publication passée en paramètre
    *
    * @param pubId : l'id de la publication de Theme Tracker
-   * @return DelegatedNew : l'objet correspondant à l'actualité déléguée dans le composant delegatednews ou null si elle n'existe pas
+   * @return DelegatedNews : l'objet correspondant à l'actualité déléguée dans le composant delegatednews ou null si elle n'existe pas
    */
-  public DelegatedNew getDelegatedNew(String pubId) {
+  public DelegatedNews getDelegatedNews(String pubId) {
     
     DelegatedNewsService delegatedNewsService = ServicesFactory.getDelegatedNewsService();
-    DelegatedNew delegatedNew = delegatedNewsService.getDelegatedNew(Integer.parseInt(pubId));
-    return delegatedNew;
+    DelegatedNews delegatedNews = delegatedNewsService.getDelegatedNews(Integer.parseInt(pubId));
+    return delegatedNews;
   }
   
   /**
@@ -4682,14 +4682,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    *
    * @return String : pubId
    */
-  public String addDelegatedNew() {
+  public String addDelegatedNews() {
     UserCompletePublication userPubComplete = getSessionPublication();
     
     DelegatedNewsService delegatedNewsService = ServicesFactory.getDelegatedNewsService();
     String pubId = userPubComplete.getId();
     String instanceId = userPubComplete.getPublication().getPublicationDetail().getInstanceId();
     String contributorId = userPubComplete.getPublication().getPublicationDetail().getUpdaterId();
-    delegatedNewsService.addDelegatedNew(Integer.parseInt(pubId), instanceId, contributorId);
+    delegatedNewsService.addDelegatedNews(Integer.parseInt(pubId), instanceId, contributorId, new Date());
     return pubId;
   }
   

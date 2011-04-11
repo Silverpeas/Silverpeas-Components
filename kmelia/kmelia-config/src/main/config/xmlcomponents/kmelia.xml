@@ -968,8 +968,8 @@
     <parameter>
       <name>isNewsManage</name>
       <label>
-        <message lang="fr">Gestion des actualités</message>
-        <message lang="en">News manage</message>
+        <message lang="fr">Actualités décentralisées</message>
+        <message lang="en">Decentralized news</message>
       </label>
       <order>46</order>
       <mandatory>true</mandatory>
@@ -977,7 +977,7 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Active l'option de gestion des actualités soumises à validation dans le composant Actualités déléguées.</message>
+        <message lang="fr">Permet de gérer les actualités soumises à validation dans le composant Actualités déléguées.</message>
         <message lang="en">Activates the news manage option. The news are valided in the peas Delegated news.</message>
       </help>
     </parameter>

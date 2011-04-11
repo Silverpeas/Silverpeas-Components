@@ -27,7 +27,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator"
-	prefix="view"%>
+  prefix="view"%>
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
   response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -44,7 +44,7 @@
 <%@ page import="com.silverpeas.form.*"%>
 <%@page import="com.stratelia.silverpeas.versioning.model.DocumentPK"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
-<%@page import="com.silverpeas.delegatednews.model.DelegatedNew"%>
+<%@page import="com.silverpeas.delegatednews.model.DelegatedNews"%>
 
 
 <%
@@ -75,6 +75,8 @@
       ((Boolean) request.getAttribute("NotificationAllowed")).booleanValue();
   boolean attachmentsEnabled =
       ((Boolean) request.getAttribute("AttachmentsEnabled")).booleanValue();
+  boolean isNewsManage = ((Boolean) request.getAttribute("NewsManage")).booleanValue();
+  DelegatedNews delegatedNews = (DelegatedNews) request.getAttribute("DelegatedNews");
 
   if (action == null) {
     action = "View";
@@ -181,6 +183,16 @@
       kmeliaScc.setSessionOwner(false);
     }
   }
+  
+  if (isNewsManage && !kmaxMode && !toolboxMode && isOwner && delegatedNews != null) {
+     if (DelegatedNews.NEWS_TO_VALIDATE.equals(delegatedNews.getStatus())) {
+       screenMessage = "<div class=\"inlineMessage\">" + resources.getString("kmelia.DelegatedNewsToValidate") + "</div>";
+     } else if (DelegatedNews.NEWS_VALID.equals(delegatedNews.getStatus())) {
+       screenMessage = "<div class=\"inlineMessage-ok\">" + resources.getString("kmelia.DelegatedNewsValid") + "</div>";
+     } else if (DelegatedNews.NEWS_REFUSED.equals(delegatedNews.getStatus())) {
+       screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("kmelia.DelegatedNewsRefused") + "</div>";
+     }
+  }
 
   String creationDate = resources.getOutputDate(pubDetail.getCreationDate());
 
@@ -216,13 +228,13 @@
 %>
 <title></title>
 <link type="text/css" rel="stylesheet"
-	href="<%=m_context%>/kmelia/jsp/styleSheets/pubHighlight.css">
+  href="<%=m_context%>/kmelia/jsp/styleSheets/pubHighlight.css">
 <script type="text/javascript"
-	src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
+  src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <script type="text/javascript"
-	src="<%=m_context%>/util/javaScript/animation.js"></script>
+  src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript"
-	src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
+  src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
 
 <script type="text/javascript">
 
@@ -252,25 +264,25 @@ function generatePdf() {
 }
 
 function pubDeleteConfirm() {
-	closeWindows();
+  closeWindows();
     if(window.confirm("<%=resources.getString("ConfirmDeletePub")%>")){
-		document.toRouterForm.action = "<%=routerUrl%>DeletePublication";
+    document.toRouterForm.action = "<%=routerUrl%>DeletePublication";
         document.toRouterForm.PubId.value = "<%=id%>";
         document.toRouterForm.submit();
     }
 }
 
 function pubValidate() {
-	document.toRouterForm.action = "<%=routerUrl%>ValidatePublication";
-	document.toRouterForm.submit();
+  document.toRouterForm.action = "<%=routerUrl%>ValidatePublication";
+  document.toRouterForm.submit();
 }
 
 function pubUnvalidate() {
-	document.pubForm.PubId.value = "<%=id%>";
-	url = "WantToRefusePubli?PubId="+<%=id%>;
+  document.pubForm.PubId.value = "<%=id%>";
+  url = "WantToRefusePubli?PubId="+<%=id%>;
     windowName = "refusalMotiveWindow";
-	larg = "550";
-	haut = "350";
+  larg = "550";
+  haut = "350";
     windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
     if (!refusalMotiveWindow.closed && refusalMotiveWindow.name== "refusalMotiveWindow")
         refusalMotiveWindow.close();
@@ -278,11 +290,11 @@ function pubUnvalidate() {
 }
 
 function pubSuspend() {
-	document.pubForm.PubId.value = "<%=id%>";
-	url = "WantToSuspendPubli?PubId="+<%=id%>;
+  document.pubForm.PubId.value = "<%=id%>";
+  url = "WantToSuspendPubli?PubId="+<%=id%>;
     windowName = "suspendMotiveWindow";
-	larg = "550";
-	haut = "350";
+  larg = "550";
+  haut = "350";
     windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
     if (!suspendMotiveWindow.closed && suspendMotiveWindow.name== "suspendMotiveWindow")
         suspendMotiveWindow.close();
@@ -290,66 +302,66 @@ function pubSuspend() {
 }
 
 function pubDraftIn() {
-	location.href = "<%=routerUrl%>DraftIn?From=ViewPublication";
+  location.href = "<%=routerUrl%>DraftIn?From=ViewPublication";
 }
 
 function pubDraftOut() {
-	if (<%=kmeliaScc.isDraftOutAllowed()%>) {
-		location.href = "<%=routerUrl%>DraftOut?From=ViewPublication";
-	} else {
-		window.alert("<%=resources.getString("kmelia.PdcClassificationMandatory")%>");
-	}
+  if (<%=kmeliaScc.isDraftOutAllowed()%>) {
+    location.href = "<%=routerUrl%>DraftOut?From=ViewPublication";
+  } else {
+    window.alert("<%=resources.getString("kmelia.PdcClassificationMandatory")%>");
+  }
 }
 
 function topicGoTo(id) {
-	closeWindows();
-	location.href="GoToTopic?Id="+id;
+  closeWindows();
+  location.href="GoToTopic?Id="+id;
 }
 
 function closeWindows() {
     if (window.publicationWindow != null)
         window.publicationWindow.close();
     if (window.publicVersionsWindow != null)
-    	window.publicVersionsWindow.close();
+      window.publicVersionsWindow.close();
 }
 
 function alertUsers()
 {
-	<%if (!pubDetail.isValid()) {%>
+  <%if (!pubDetail.isValid()) {%>
               if (window.confirm("<%=EncodeHelper.javaStringToJsString(resources
             .getString("kmelia.AlertButPubNotValid"))%>"))
               {
                 goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
               }
-	<%} else {%>
+  <%} else {%>
               goToOperationInAnotherWindow('ToAlertUser', '<%=id%>', 'ViewAlert');
-	<%}%>
+  <%}%>
 }
 
 function alertUsersAttachment(attachmentId)
 {
-	<%if (!pubDetail.isValid()) {%>
+  <%if (!pubDetail.isValid()) {%>
               if (window.confirm("<%=EncodeHelper.javaStringToJsString(resources
             .getString("kmelia.AlertButPubNotValid"))%>"))
               {
                 goToOperationInAnotherWindow('ToAlertUserAttachment', '<%=id%>', attachmentId, 'ViewAlert');
               }
-	<%} else {%>
+  <%} else {%>
                 goToOperationInAnotherWindow('ToAlertUserAttachment', '<%=id%>', attachmentId, 'ViewAlert');
-	<%}%>
+  <%}%>
 }
 
 function alertUsersDocument(documentId)
 {
-	<%if (!pubDetail.isValid()) {%>
+  <%if (!pubDetail.isValid()) {%>
               if (window.confirm("<%=EncodeHelper.javaStringToJsString(resources
             .getString("kmelia.AlertButPubNotValid"))%>"))
               {
                 goToOperationInAnotherWindow('ToAlertUserDocument', '<%=id%>', documentId, 'ViewAlert');
               }
-	<%} else {%>
+  <%} else {%>
                 goToOperationInAnotherWindow('ToAlertUserDocument', '<%=id%>', documentId, 'ViewAlert');
-	<%}%>
+  <%}%>
 }
 
 function openSingleAttachment() {
@@ -382,27 +394,26 @@ function reloadPage() {
 
 function addFavorite()
 {
-	var name = encodeURI($("#breadCrumb").text());
-	var description = encodeURI("<%=EncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>");
-	var url = "<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId())%>";
-  	urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
+  var name = encodeURI($("#breadCrumb").text());
+  var description = encodeURI("<%=EncodeHelper.javaStringToJsString(pubDetail.getDescription(language))%>");
+  var url = "<%=URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId())%>";
+    urlWindow = "<%=m_context%>/RmyLinksPeas/jsp/CreateLinkFromComponent?Name="+name+"&Description="+description+"&Url="+url+"&Visible=true";
   
-  	if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow") {
-    	favoriteWindow.close();
-  	}
+    if (!favoriteWindow.closed && favoriteWindow.name== "favoriteWindow") {
+      favoriteWindow.close();
+    }
   
-  	favoriteWindow = SP_openWindow(urlWindow, "favoriteWindow", "550", "250", "directories=0,menubar=0,toolbar=0,alwaysRaised");
+    favoriteWindow = SP_openWindow(urlWindow, "favoriteWindow", "550", "250", "directories=0,menubar=0,toolbar=0,alwaysRaised");
 }
 
-function suggestDelegatedNew() {
-	alert("Actualité proposée en page d'accueil");
-	location.href= "<%=routerUrl%>SuggestDelegatedNew";
+function suggestDelegatedNews() {
+  location.href= "<%=routerUrl%>SuggestDelegatedNews";
 }
 
 </script>
 </head>
 <body class="yui-skin-sam" onunload="closeWindows()"
-	onload="openSingleAttachment()" id="<%=componentId%>">
+  onload="openSingleAttachment()" id="<%=componentId%>">
 <div id="preview">
 <%
   Window window = gef.getWindow();
@@ -486,15 +497,11 @@ function suggestDelegatedNew() {
     }
   }
 
-  DelegatedNew delegatedNew = null;
-  if (kmeliaScc.isNewsManage() && !kmaxMode && !toolboxMode && isOwner) {
-    delegatedNew = kmeliaScc.getDelegatedNew(id);
-    if (delegatedNew == null) {
+ if (isNewsManage && isOwner && delegatedNews == null) {
       operationPane.addLine();
       operationPane.addOperation("#", resources.getString(
-          "kmelia.DelegatedNewSuggest"),
-          "javaScript:suggestDelegatedNew()");
-    }
+          "kmelia.DelegatedNewsSuggest"),
+          "javaScript:suggestDelegatedNews()");
   }
 
   out.println(window.printBefore());
@@ -528,7 +535,7 @@ function suggestDelegatedNew() {
   }
 
   /*********************************************************************************************************************/
-  /** Affichage du header de la publication																			**/
+  /** Affichage du header de la publication                                     **/
   /*********************************************************************************************************************/
   out.println("<table border=\"0\" width=\"98%\" align=\"center\">");
   out.println("<tr><td align=\"left\">");
@@ -554,16 +561,6 @@ function suggestDelegatedNew() {
     }
   }
 
-  if (delegatedNew != null) {
-    if (DelegatedNew.NEW_TO_VALIDATE.equals(delegatedNew.getStatus())) {
-      out.println("<span class=\"publiDesc\">"+resources.getString("kmelia.DelegatedNewToValidate")+"</span><br/><br/>");
-    } else if (DelegatedNew.NEW_VALID.equals(delegatedNew.getStatus())) {
-      out.println("<span class=\"publiDesc\">"+resources.getString("kmelia.DelegatedNewValid")+"</span><br/><br/>");
-    } else if (DelegatedNew.NEW_REFUSED.equals(delegatedNew.getStatus())) {
-      out.println("<span class=\"publiDesc\">"+resources.getString("kmelia.DelegatedNewRefused")+"</span><br/><br/>");
-    }
-  }
-
   String description = EncodeHelper.javaStringToHtmlString(pubDetail.getDescription(language));
   description = EncodeHelper.javaStringToHtmlParagraphe(description);
 
@@ -572,40 +569,40 @@ function suggestDelegatedNew() {
   out.println("</td><td valign=\"top\" align=\"right\">");
 
   /*********************************************************************************************************************/
-  /** Affichage des boutons de navigation (next / previous)															**/
+  /** Affichage des boutons de navigation (next / previous)                             **/
   /*********************************************************************************************************************/
   if (nbPublis.intValue() > 1) {
 %> <!-- AFFICHAGE des boutons de navigation -->
 <table border="0" cellspacing="0" cellpadding="0" id="pagination">
-	<tr>
-		<td align="center" width="15">
-		<%
-		  if (!debut) {
-		%> <a href="PreviousPublication"><img
-			src="<%=resources.getIcon("kmelia.previous")%>" align="middle"
-			border="0" alt="<%=resources.getString("kmelia.previous")%>"
-			title="<%=resources.getString("kmelia.previous")%>" /></a> <%
+  <tr>
+    <td align="center" width="15">
+    <%
+      if (!debut) {
+    %> <a href="PreviousPublication"><img
+      src="<%=resources.getIcon("kmelia.previous")%>" align="middle"
+      border="0" alt="<%=resources.getString("kmelia.previous")%>"
+      title="<%=resources.getString("kmelia.previous")%>" /></a> <%
    } else {
  %>&nbsp;<%
    }
  %>
-		</td>
-		<td nowrap="nowrap" class="txtnav">
-		<center><%=rang.intValue() + 1%> / <%=nbPublis.intValue()%></center>
-		</td>
-		<td align="center" width="15">
-		<%
-		  if (!fin) {
-		%> <a href="NextPublication"><img
-			src="<%=resources.getIcon("kmelia.next")%>" align="middle" border="0"
-			alt="<%=resources.getString("kmelia.next")%>"
-			title="<%=resources.getString("kmelia.next")%>" /></a> <%
+    </td>
+    <td nowrap="nowrap" class="txtnav">
+    <center><%=rang.intValue() + 1%> / <%=nbPublis.intValue()%></center>
+    </td>
+    <td align="center" width="15">
+    <%
+      if (!fin) {
+    %> <a href="NextPublication"><img
+      src="<%=resources.getIcon("kmelia.next")%>" align="middle" border="0"
+      alt="<%=resources.getString("kmelia.next")%>"
+      title="<%=resources.getString("kmelia.next")%>" /></a> <%
    } else {
  %> &nbsp; <%
    }
  %>
-		</td>
-	</tr>
+    </td>
+  </tr>
 </table>
 <%
   }
@@ -613,7 +610,7 @@ function suggestDelegatedNew() {
   out.println("</td></tr></table>");
 
   /*********************************************************************************************************************/
-  /** Affichage du contenu de la publication																			**/
+  /** Affichage du contenu de la publication                                      **/
   /*********************************************************************************************************************/
   out.println("<table border=\"0\" width=\"98%\" align=\"center\">");
   out.println("<tr><td valign=\"top\" width=\"100%\" id=\"richContent\">");
@@ -640,11 +637,11 @@ function suggestDelegatedNew() {
       xmlContext.setBorderPrinted(false);
       xmlContext.setContentLanguage(language);
 %> <view:highlight axisId="<%=kmeliaScc.getAxisIdGlossary()%>"
-	className="highlight-silver" language="<%=language%>"
-	onlyFirst="<%=highlightFirst%>">
-	<%
-	  xmlForm.display(out, xmlContext, xmlData);
-	%>
+  className="highlight-silver" language="<%=language%>"
+  onlyFirst="<%=highlightFirst%>">
+  <%
+    xmlForm.display(out, xmlContext, xmlData);
+  %>
 </view:highlight> <%
    }
    }
@@ -652,7 +649,7 @@ function suggestDelegatedNew() {
 
    if (attachmentsEnabled) {
      /*********************************************************************************************************************/
-     /** Affichage des fichiers joints																					**/
+     /** Affichage des fichiers joints                                          **/
      /*********************************************************************************************************************/
 
      boolean showTitle = resources.getSetting("showTitle", true);
@@ -767,9 +764,9 @@ function suggestDelegatedNew() {
        link = URLManager.getSimpleURL(URLManager.URL_PUBLI, pubDetail.getPK().getId());
      }
  %> <span id="permalinkInfo"> | <a href="<%=link%>"><img
-	src="<%=resources.getIcon("kmelia.link")%>" align="absmiddle"
-	alt="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>"
-	title="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>" /></a></span>
+  src="<%=resources.getIcon("kmelia.link")%>" align="absmiddle"
+  alt="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>"
+  title="<%=Encode.convertHTMLEntities(resources.getString("kmelia.CopyPublicationLink"))%>" /></a></span>
 <%
   }
 %> </span> <%
@@ -779,18 +776,18 @@ function suggestDelegatedNew() {
    out.println(window.printAfter());
  %>
 <form name="pubForm" action="<%=routerUrl%>publication.jsp"
-	method="POST"><input type="hidden" name="Action" /> <input
-	type="hidden" name="PubId" /> <input type="hidden" name="Profile"
-	value="<%=profile%>" /></form>
+  method="POST"><input type="hidden" name="Action" /> <input
+  type="hidden" name="PubId" /> <input type="hidden" name="Profile"
+  value="<%=profile%>" /></form>
 <form name="refusalForm" action="<%=routerUrl%>Unvalidate"><input
-	type="hidden" name="PubId" value="<%=id%>" /> <input type="hidden"
-	name="Motive" value="" /></form>
+  type="hidden" name="PubId" value="<%=id%>" /> <input type="hidden"
+  name="Motive" value="" /></form>
 <form name="defermentForm" action="<%=routerUrl%>SuspendPublication"
-	method="POST"><input type="hidden" name="PubId" value="<%=id%>" />
+  method="POST"><input type="hidden" name="PubId" value="<%=id%>" />
 <input type="hidden" name="Motive" value="" /></form>
 <form name="toRouterForm"><input type="hidden" name="PubId"
-	value="<%=id%>" /> <input type="hidden" name="ComponentId"
-	value="<%=componentId%>" /></form>
+  value="<%=id%>" /> <input type="hidden" name="ComponentId"
+  value="<%=componentId%>" /></form>
 </div>
 </body>
 </html>
