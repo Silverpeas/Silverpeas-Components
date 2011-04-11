@@ -194,16 +194,16 @@ String endHour = "";
 		return result;
     }
     
-    function updateDateDelegatedNew(pubBeginDate, pubBeginHour, pubEndDate, pubEndHour)
+    function updateDateDelegatedNews(pubBeginDate, pubBeginHour, pubEndDate, pubEndHour)
 	{
 		if (isCorrectForm(pubBeginDate, pubBeginHour, pubEndDate, pubEndHour)) {
-			window.opener.document.listDelegatedNew.action = "UpdateDateDelegatedNew";
-			window.opener.document.listDelegatedNew.PubId.value = document.updateDateForm.PubId.value;
-			window.opener.document.listDelegatedNew.BeginDate.value = document.updateDateForm.BeginDate.value;
-			window.opener.document.listDelegatedNew.BeginHour.value = document.updateDateForm.BeginHour.value;
-			window.opener.document.listDelegatedNew.EndDate.value = document.updateDateForm.EndDate.value;
-			window.opener.document.listDelegatedNew.EndHour.value = document.updateDateForm.EndHour.value;
-			window.opener.document.listDelegatedNew.submit();
+			window.opener.document.listDelegatedNews.action = "UpdateDateDelegatedNews";
+			window.opener.document.listDelegatedNews.PubId.value = document.updateDateForm.PubId.value;
+			window.opener.document.listDelegatedNews.BeginDate.value = document.updateDateForm.BeginDate.value;
+			window.opener.document.listDelegatedNews.BeginHour.value = document.updateDateForm.BeginHour.value;
+			window.opener.document.listDelegatedNews.EndDate.value = document.updateDateForm.EndDate.value;
+			window.opener.document.listDelegatedNews.EndHour.value = document.updateDateForm.EndHour.value;
+			window.opener.document.listDelegatedNews.submit();
 			window.close();
         }
     }
@@ -240,7 +240,7 @@ String endHour = "";
         <fmt:message key="GML.validate" var="validate" bundle="${GML}"/>
         <fmt:message key="GML.cancel" var="cancel" bundle="${GML}"/>
           <view:buttonPane>
-            <view:button action="javascript:onClick=updateDateDelegatedNew('${beginDate}', '${beginHour}', '${endDate}', '${endHour}')" label="${validate}" disabled="false" />
+            <view:button action="javascript:onClick=updateDateDelegatedNews('${beginDate}', '${beginHour}', '${endDate}', '${endHour}')" label="${validate}" disabled="false" />
             <view:button action="javascript:onClick=window.close()" label="${cancel}" disabled="false" />
           </view:buttonPane>
         </center>

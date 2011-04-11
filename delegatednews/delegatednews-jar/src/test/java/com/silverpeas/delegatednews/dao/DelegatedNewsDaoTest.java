@@ -23,7 +23,7 @@
  */
 package com.silverpeas.delegatednews.dao;
 
-import com.silverpeas.delegatednews.model.DelegatedNew;
+import com.silverpeas.delegatednews.model.DelegatedNews;
 
 import org.dbunit.operation.DatabaseOperation;
 import org.dbunit.dataset.ReplacementDataSet;
@@ -40,6 +40,7 @@ import org.junit.AfterClass;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import java.lang.String;
 import java.lang.Integer;
+import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -71,21 +72,24 @@ public class DelegatedNewsDaoTest {
   }
 
   @Test
-  public void testInsertDelegatedNew() throws Exception {
+  public void testInsertDelegatedNews() throws Exception {
     Integer pubId = new Integer("3");
-	String instanceId = "kmelia1";  
+    String instanceId = "kmelia1";  
     String contributorId = "1";
-    DelegatedNew expectedDetail = new DelegatedNew(pubId.intValue(), instanceId, contributorId);
-    dao.save(expectedDetail);
-    DelegatedNew detail = dao.readByPrimaryKey(pubId);
+    DelegatedNews expectedDetail = new DelegatedNews(pubId.intValue(), instanceId, contributorId, new Date());
+    expectedDetail = dao.save(expectedDetail);
+    DelegatedNews detail = dao.readByPrimaryKey(pubId);
     assertThat(detail, notNullValue());
-    assertThat(detail, is(expectedDetail));
+    assertThat(detail.getPubId(), is(expectedDetail.getPubId()));
+    assertThat(detail.getInstanceId(), is(expectedDetail.getInstanceId()));
+    assertThat(detail.getContributorId(), is(expectedDetail.getContributorId()));
+    //assertThat(detail, is(expectedDetail));
   }
   
   @Test
-  public void testGetPersonalizedDetail() throws Exception {
-	Integer pubId = new Integer("1");
-	DelegatedNew detail = dao.readByPrimaryKey(pubId);
+  public void testGetDelegatedNews() throws Exception {
+    Integer pubId = new Integer("1");
+	  DelegatedNews detail = dao.readByPrimaryKey(pubId);
     assertThat(detail, notNullValue());
 
     pubId = new Integer("2");

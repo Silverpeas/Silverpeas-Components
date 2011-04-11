@@ -24,9 +24,7 @@
 
 package com.silverpeas.delegatednews.service;
 
-import com.silverpeas.delegatednews.model.DelegatedNew;
-
-
+import com.silverpeas.delegatednews.model.DelegatedNews;
 import java.util.Date;
 import java.util.List;
 import com.silverpeas.delegatednews.dao.DelegatedNewsDao;
@@ -47,29 +45,31 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    *
    */
 	@Override
-	public void addDelegatedNew(int pubId, String instanceId, String contributorId) {
-		DelegatedNew delegatedNew = new DelegatedNew(pubId, instanceId, contributorId);
-		dao.saveAndFlush(delegatedNew);
+	public void addDelegatedNews(int pubId, String instanceId, String contributorId, Date validationDate) {
+		DelegatedNews delegatedNews = new DelegatedNews(pubId, instanceId, contributorId, validationDate);
+		dao.saveAndFlush(delegatedNews);
 	}
 	
 	/**
    * Récupère une actualité déléguée correspondant à la publication Theme Tracker passée en paramètre
    *
    * @param pubId : l'id de la publication de Theme Tracker
-   * @return DelegatedNew : l'objet correspondant à l'actualité déléguée ou null si elle n'existe pas
+   * @return DelegatedNews : l'objet correspondant à l'actualité déléguée ou null si elle n'existe pas
    */
-	public DelegatedNew getDelegatedNew(int pubId) {
-	  DelegatedNew delegatedNew = dao.readByPrimaryKey(Integer.valueOf(pubId));
-	  return delegatedNew;
+	@Override
+	public DelegatedNews getDelegatedNews(int pubId) {
+	  DelegatedNews delegatedNews = dao.readByPrimaryKey(Integer.valueOf(pubId));
+	  return delegatedNews;
 	}
 	
 	/**
    * Récupère toutes les actualités déléguées inter Theme Tracker
    *
-   * @return List<DelegatedNew> : liste d'actualités déléguées
+   * @return List<DelegatedNews> : liste d'actualités déléguées
    */
-  public List<DelegatedNew> getAllDelegatedNew() {
-    List<DelegatedNew> list = dao.readAll();
+	@Override
+  public List<DelegatedNews> getAllDelegatedNews() {
+    List<DelegatedNews> list = dao.readAll(); //TODO utiliser plutot readAll(Sort) sur la date de validation 
     return list;
   }
   
@@ -77,30 +77,33 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    * Valide l'actualité déléguée passée en paramètre
    *
    */
-  public void validateDelegatedNew(int pubId) {
-    DelegatedNew delegatedNew = dao.readByPrimaryKey(Integer.valueOf(pubId));
-    delegatedNew.setStatus(DelegatedNew.NEW_VALID);
-    dao.saveAndFlush(delegatedNew);
+	@Override
+  public void validateDelegatedNews(int pubId) {
+    DelegatedNews delegatedNews = dao.readByPrimaryKey(Integer.valueOf(pubId));
+    delegatedNews.setStatus(DelegatedNews.NEWS_VALID);
+    dao.saveAndFlush(delegatedNews);
   }
 
   /**
    * Refuse l'actualité déléguée passée en paramètre
    *
    */
-  public void refuseDelegatedNew(int pubId) {
-    DelegatedNew delegatedNew = dao.readByPrimaryKey(Integer.valueOf(pubId));
-    delegatedNew.setStatus(DelegatedNew.NEW_REFUSED);
-    dao.saveAndFlush(delegatedNew);
+	@Override
+  public void refuseDelegatedNews(int pubId) {
+    DelegatedNews delegatedNews = dao.readByPrimaryKey(Integer.valueOf(pubId));
+    delegatedNews.setStatus(DelegatedNews.NEWS_REFUSED);
+    dao.saveAndFlush(delegatedNews);
   }
   
   /**
    * Met à jour les dates de visibilité de l'actualité déléguée passée en paramètre
    *
    */
-  public void updateDateDelegatedNew(int pubId, Date dateHourBegin, Date dateHourEnd) {
-    DelegatedNew delegatedNew = dao.readByPrimaryKey(Integer.valueOf(pubId));
-    delegatedNew.setBeginDate(dateHourBegin);
-    delegatedNew.setEndDate(dateHourEnd);
-    dao.saveAndFlush(delegatedNew);
+	@Override
+  public void updateDateDelegatedNews(int pubId, Date dateHourBegin, Date dateHourEnd) {
+    DelegatedNews delegatedNews = dao.readByPrimaryKey(Integer.valueOf(pubId));
+    delegatedNews.setBeginDate(dateHourBegin);
+    delegatedNews.setEndDate(dateHourEnd);
+    dao.saveAndFlush(delegatedNews);
   }
 }

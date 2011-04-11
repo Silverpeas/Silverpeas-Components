@@ -45,12 +45,12 @@
       SP_openWindow(url,'publication','500','230','scrollbars=no, noresize, alwaysRaised');
     }
     
-    function refuseDelegatedNew(pubId) {
+    function refuseDelegatedNews(pubId) {
       url = "EditRefuseReason?PubId="+pubId;
       SP_openWindow(url,'refuseReason','500','150','scrollbars=no, noresize, alwaysRaised');
     }
     
-    function updateDateDelegatedNew(pubId, BeginDate, BeginHour, EndDate, EndHour) {
+    function updateDateDelegatedNews(pubId, BeginDate, BeginHour, EndDate, EndHour) {
       url = "EditUpdateDate?PubId="+pubId+"&BeginDate="+BeginDate+"&BeginHour="+BeginHour+"&EndDate="+EndDate+"&EndHour="+EndHour;
       SP_openWindow(url,'updateDate','500','240','scrollbars=no, noresize, alwaysRaised');
     }
@@ -63,7 +63,7 @@
           <fmt:message key="delegatednews.listNews" bundle="${DML}"/>
       <view:tabs>
         
-      <FORM NAME="listDelegatedNew" ACTION="" METHOD="POST">
+      <FORM NAME="listDelegatedNews" ACTION="" METHOD="POST">
       <input type="hidden" name="PubId">
       <input type="hidden" name="RefuseReasonText">
       <input type="hidden" name="BeginDate">
@@ -74,7 +74,6 @@
       <table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
         <tr class="ArrayColumn">
           <td align="center" nowrap="nowrap"><fmt:message key="PubTitre" bundle="${KML}"/></td>
-          <td align="center" nowrap="nowrap"><fmt:message key="PubDescription" bundle="${KML}"/></td>
           <td align="center" nowrap="nowrap"><fmt:message key="delegatednews.updateDate" bundle="${DML}"/></td>
           <td align="center" nowrap="nowrap"><fmt:message key="delegatednews.contributor" bundle="${DML}"/></td>
           <td align="center" nowrap="nowrap"><fmt:message key="PubState" bundle="${KML}"/></td>
@@ -92,34 +91,33 @@
         
         <c:if test="${not empty listNews}">
       <c:forEach var="i" begin="0" end="${fn:length(listNews) - 1}" step="1">
-      <c:set var="delegatedNew" value="${listNews[i]}"/>
-      <c:set var="pubId" value="${delegatedNew.pubId}" />
+      <c:set var="delegatedNews" value="${listNews[i]}"/>
+      <c:set var="pubId" value="${delegatedNews.pubId}" />
       <%
       Integer thePubId = (Integer) pageContext.getAttribute("pubId");
       %>
       <tr>
-        <td><a href="javascript:onClick=openPublication('<%=thePubId%>')"><c:out value='${delegatedNew.publicationDetail.name}'/></a></td>
-        <td><c:out value='${delegatedNew.publicationDetail.description}'/></td>
+        <td><a href="javascript:onClick=openPublication('<%=thePubId%>')"><c:out value='${delegatedNews.publicationDetail.name}'/></a></td>
         <fmt:message key="GML.dateFormat" bundle="${GML}" var="dateFormat"/>
-        <fmt:formatDate var="updateDate" pattern="${dateFormat}" value="${delegatedNew.publicationDetail.updateDate}" />
+        <fmt:formatDate var="updateDate" pattern="${dateFormat}" value="${delegatedNews.publicationDetail.updateDate}" />
         <td><c:out value='${updateDate}'/></td>
-        <c:set var="contributorId" value="${delegatedNew.contributorId}" />
+        <c:set var="contributorId" value="${delegatedNews.contributorId}" />
         <%
         String theContributorId = (String) pageContext.getAttribute("contributorId");
         String contributorName = newsScc.getUserDetail(theContributorId).getDisplayedName();
         %>
         <td><%=contributorName%></td>
-        <c:set var="keyStatus">delegatednews.status.<c:out value="${delegatedNew.status}" /></c:set>
+        <c:set var="keyStatus">delegatednews.status.<c:out value="${delegatedNews.status}" /></c:set>
         <td><fmt:message key='${keyStatus}' bundle="${DML}"/></td>
-        <td><c:out value='${delegatedNew.beginDate}'/></td>
-        <td><c:out value='${delegatedNew.endDate}'/></td>
+        <td><c:out value='${delegatedNews.beginDate}'/></td>
+        <td><c:out value='${delegatedNews.endDate}'/></td>
         <%
         if(isAdmin) {
         %>
         <td>
-        <a href="javascript:onClick=updateDateDelegatedNew('<%=thePubId%>', '', '', '', '')"><img src="/silverpeas/util/icons/update.gif" title="<fmt:message key="GML.modify" bundle="${GML}"/>" alt="<fmt:message key="GML.modify" bundle="${GML}"/>" /></a>
-        <a href="ValidateDelegatedNew?PubId=<%=thePubId%>"><img src="/silverpeas/util/icons/ok.gif" title="<fmt:message key="Validate" bundle="${KML}"/>" alt="<fmt:message key="Validate" bundle="${KML}"/>" /></a>
-        <a href="javascript:onClick=refuseDelegatedNew('<%=thePubId%>')"><img src="/silverpeas/util/icons/delete.gif" title="<fmt:message key="PubUnvalidate?" bundle="${KML}"/>" alt="<fmt:message key="PubUnvalidate?" bundle="${KML}"/>" /></a>
+        <a href="javascript:onClick=updateDateDelegatedNews('<%=thePubId%>', '', '', '', '')"><img src="/silverpeas/util/icons/update.gif" title="<fmt:message key="GML.modify" bundle="${GML}"/>" alt="<fmt:message key="GML.modify" bundle="${GML}"/>" /></a>
+        <a href="ValidateDelegatedNews?PubId=<%=thePubId%>"><img src="/silverpeas/util/icons/ok.gif" title="<fmt:message key="Validate" bundle="${KML}"/>" alt="<fmt:message key="Validate" bundle="${KML}"/>" /></a>
+        <a href="javascript:onClick=refuseDelegatedNews('<%=thePubId%>')"><img src="/silverpeas/util/icons/delete.gif" title="<fmt:message key="PubUnvalidate?" bundle="${KML}"/>" alt="<fmt:message key="PubUnvalidate?" bundle="${KML}"/>" /></a>
         </td>
         <%
         }

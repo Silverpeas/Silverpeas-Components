@@ -24,9 +24,9 @@
 
 package com.silverpeas.delegatednews.dao;
 
-import com.silverpeas.delegatednews.model.DelegatedNew;
+import com.silverpeas.delegatednews.model.DelegatedNews;
 
 import org.synyx.hades.dao.GenericDao;
 
-public interface DelegatedNewsDao extends GenericDao<DelegatedNew, Integer> {
+public interface DelegatedNewsDao extends GenericDao<DelegatedNews, Integer> {
 }

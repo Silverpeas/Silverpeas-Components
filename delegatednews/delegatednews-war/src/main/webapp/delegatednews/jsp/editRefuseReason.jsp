@@ -37,12 +37,12 @@
     <view:looknfeel />
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript">
-    function refuseDelegatedNew()
+    function refuseDelegatedNews()
   {
-    window.opener.document.listDelegatedNew.action = "RefuseDelegatedNew";
-    window.opener.document.listDelegatedNew.PubId.value = document.refuseReasonForm.PubId.value;
-    window.opener.document.listDelegatedNew.RefuseReasonText.value = stripInitialWhitespace(document.refuseReasonForm.refuseReasonText.value);
-    window.opener.document.listDelegatedNew.submit();
+    window.opener.document.listDelegatedNews.action = "RefuseDelegatedNews";
+    window.opener.document.listDelegatedNews.PubId.value = document.refuseReasonForm.PubId.value;
+    window.opener.document.listDelegatedNews.RefuseReasonText.value = stripInitialWhitespace(document.refuseReasonForm.refuseReasonText.value);
+    window.opener.document.listDelegatedNews.submit();
     window.close();
     }
     </script>
@@ -72,7 +72,7 @@
         <fmt:message key="GML.validate" var="validate" bundle="${GML}"/>
         <fmt:message key="GML.cancel" var="cancel" bundle="${GML}"/>
           <view:buttonPane>
-            <view:button action="javascript:onClick=refuseDelegatedNew()" label="${validate}" disabled="false" />
+            <view:button action="javascript:onClick=refuseDelegatedNews()" label="${validate}" disabled="false" />
             <view:button action="javascript:onClick=window.close()" label="${cancel}" disabled="false" />
           </view:buttonPane>
         </center>

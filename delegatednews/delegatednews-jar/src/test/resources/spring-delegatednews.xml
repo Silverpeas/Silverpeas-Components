@@ -5,6 +5,7 @@
        xmlns:jdbc="http://www.springframework.org/schema/jdbc"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:hades="http://schemas.synyx.org/hades"
+       xmlns:p="http://www.springframework.org/schema/p"
        xsi:schemaLocation="
 	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
@@ -35,9 +36,9 @@
   </jdbc:embedded-database>
 
   <bean id="entityManagerFactory"
-        class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
-    <property name="dataSource" ref="dataSource"/>
-    <property name="persistenceUnitName" value="silverpeas-pu"/>
+        class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
+        p:dataSource-ref="dataSource"
+        p:persistenceUnitName="silverpeas-pu">
     <property name="jpaVendorAdapter">
       <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
         <property name="showSql" value="true"/>

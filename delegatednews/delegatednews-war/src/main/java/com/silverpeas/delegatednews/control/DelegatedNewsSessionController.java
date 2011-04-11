@@ -25,12 +25,11 @@
 package com.silverpeas.delegatednews.control;
 
 import java.text.ParseException;
-import java.util.Calendar;
+
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
 
-import com.silverpeas.delegatednews.model.DelegatedNew;
+import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
 import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
@@ -82,10 +81,10 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
   /**
    * Récupère toutes les actualités déléguées inter Theme Tracker
    *
-   * @return List<DelegatedNew> : liste d'actualités déléguées
+   * @return List<DelegatedNews> : liste d'actualités déléguées
    */
-  public List<DelegatedNew> getAllDelegatedNew() {
-    List<DelegatedNew> list = service.getAllDelegatedNew();
+  public List<DelegatedNews> getAllDelegatedNews() {
+    List<DelegatedNews> list = service.getAllDelegatedNews();
     return list;
   }
   
@@ -93,16 +92,16 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
    * Valide l'actualité déléguée passée en paramètre
    *
    */
-  public void validateDelegatedNew(int pubId) {
-    service.validateDelegatedNew(pubId);
+  public void validateDelegatedNews(int pubId) {
+    service.validateDelegatedNews(pubId);
   }
   
   /**
    * Refuse l'actualité déléguée passée en paramètre
    *
    */
-  public void refuseDelegatedNew(int pubId, String refuseReasonText) {
-    service.refuseDelegatedNew(pubId);
+  public void refuseDelegatedNews(int pubId, String refuseReasonText) {
+    service.refuseDelegatedNews(pubId);
   }
   
   /**
@@ -110,11 +109,11 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
    * @throws ParseException 
    *
    */
-  public void updateDateDelegatedNew(int pubId, String beginDate, String beginHour, String endDate, String endHour) throws ParseException {
+  public void updateDateDelegatedNews(int pubId, String beginDate, String beginHour, String endDate, String endHour) throws ParseException {
     
     Date dBegin = DateUtil.stringToDate(beginDate, beginHour, this.getLanguage());
     Date dEnd = DateUtil.stringToDate(endDate, endHour, this.getLanguage());
 
-    service.updateDateDelegatedNew(pubId, dBegin, dEnd);
+    service.updateDateDelegatedNews(pubId, dBegin, dEnd);
   }
 }

@@ -6,7 +6,6 @@ package com.silverpeas.delegatednews.service;
 
 import javax.sql.DataSource;
 
-import com.silverpeas.delegatednews.model.DelegatedNew;
 import com.silverpeas.delegatednews.dao.DelegatedNewsDaoTest;
 
 import org.dbunit.DatabaseUnitException;
@@ -22,10 +21,10 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Date;
+
 import org.junit.AfterClass;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 
 public class DelegatedNewsServiceTest {
 
@@ -65,10 +64,10 @@ public class DelegatedNewsServiceTest {
   }
 
   @Test
-  public void testAddDelegatedNew() throws Exception {
-	int pubId = 4;
-	String instanceId = "kmelia1";  
+  public void testAddDelegatedNews() throws Exception {
+    int pubId = 4;
+	  String instanceId = "kmelia1";  
     String contributorId = "1";
-    service.addDelegatedNew(pubId, instanceId, contributorId);
+    service.addDelegatedNews(pubId, instanceId, contributorId, new Date());
   }
 }
