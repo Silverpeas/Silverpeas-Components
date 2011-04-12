@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas.components</groupId>
     <artifactId>mailinglist</artifactId>
-    <version>5.5.5-SNAPSHOT</version>
+    <version>5.5.5</version>
   </parent>
 	
   <groupId>com.silverpeas.components.mailinglist</groupId>
