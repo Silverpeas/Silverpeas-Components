@@ -24,6 +24,8 @@
 
 package com.silverpeas.delegatednews.servlets;
 
+import java.util.Date;
+
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,12 +35,17 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
+import com.stratelia.webactiv.util.DateUtil;
 import com.silverpeas.delegatednews.control.DelegatedNewsSessionController;
 import com.silverpeas.delegatednews.model.DelegatedNews;
-import com.silverpeas.delegatednews.service.DelegatedNewsService;
-import com.silverpeas.delegatednews.service.ServicesFactory;
+import com.silverpeas.util.StringUtil;
 
 public class DelegatedNewsRequestRouter extends ComponentRequestRouter {
+  /**
+   * 
+   */
+  private static final long serialVersionUID = 1L;
+
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
@@ -119,7 +126,17 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter {
         String beginHour = request.getParameter("BeginHour");
         String endDate = request.getParameter("EndDate");
         String endHour = request.getParameter("EndHour");
-        newsSC.updateDateDelegatedNews(Integer.parseInt(pubId), beginDate, beginHour, endDate, endHour);
+        Date jBeginDate = null;
+        Date jEndDate = null;
+
+        if (StringUtil.isDefined(beginDate)) {
+          jBeginDate = DateUtil.stringToDate(beginDate, beginHour, newsSC.getLanguage());
+        }
+        if (StringUtil.isDefined(endDate)) {
+          jEndDate = DateUtil.stringToDate(endDate, endHour, newsSC.getLanguage());
+        }
+        
+        newsSC.updateDateDelegatedNews(Integer.parseInt(pubId), jBeginDate, jEndDate);
         List<DelegatedNews> list = newsSC.getAllDelegatedNews();
         request.setAttribute("ListNews", list);
         destination = "/delegatednews/jsp/listNews.jsp";

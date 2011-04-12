@@ -68,6 +68,6 @@ public class DelegatedNewsServiceTest {
     int pubId = 4;
 	  String instanceId = "kmelia1";  
     String contributorId = "1";
-    service.addDelegatedNews(pubId, instanceId, contributorId, new Date());
+    service.addDelegatedNews(pubId, instanceId, contributorId, new Date(), null, null);
   }
 }

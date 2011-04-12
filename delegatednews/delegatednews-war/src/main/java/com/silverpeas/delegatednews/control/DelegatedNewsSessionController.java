@@ -24,8 +24,6 @@
 
 package com.silverpeas.delegatednews.control;
 
-import java.text.ParseException;
-
 import java.util.Date;
 import java.util.List;
 
@@ -35,7 +33,6 @@ import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
-import com.stratelia.webactiv.util.DateUtil;
 
 import static com.stratelia.webactiv.SilverpeasRole.*;
 
@@ -106,14 +103,10 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
   
   /**
    * Met à jour les dates de visibilité de l'actualité déléguée passée en paramètre
-   * @throws ParseException 
    *
    */
-  public void updateDateDelegatedNews(int pubId, String beginDate, String beginHour, String endDate, String endHour) throws ParseException {
+  public void updateDateDelegatedNews(int pubId, Date beginDate, Date endDate) {
     
-    Date dBegin = DateUtil.stringToDate(beginDate, beginHour, this.getLanguage());
-    Date dEnd = DateUtil.stringToDate(endDate, endHour, this.getLanguage());
-
-    service.updateDateDelegatedNews(pubId, dBegin, dEnd);
+    service.updateDateDelegatedNews(pubId, beginDate, endDate);
   }
 }

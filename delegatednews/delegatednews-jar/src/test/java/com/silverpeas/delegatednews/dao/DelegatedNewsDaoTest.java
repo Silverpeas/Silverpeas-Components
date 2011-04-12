@@ -41,6 +41,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import java.lang.String;
 import java.lang.Integer;
 import java.util.Date;
+import java.util.GregorianCalendar;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -76,14 +77,13 @@ public class DelegatedNewsDaoTest {
     Integer pubId = new Integer("3");
     String instanceId = "kmelia1";  
     String contributorId = "1";
-    DelegatedNews expectedDetail = new DelegatedNews(pubId.intValue(), instanceId, contributorId, new Date());
+    DelegatedNews expectedDetail = new DelegatedNews(pubId.intValue(), instanceId, contributorId, new Date(), new Date(), null);
     expectedDetail = dao.save(expectedDetail);
     DelegatedNews detail = dao.readByPrimaryKey(pubId);
     assertThat(detail, notNullValue());
     assertThat(detail.getPubId(), is(expectedDetail.getPubId()));
     assertThat(detail.getInstanceId(), is(expectedDetail.getInstanceId()));
     assertThat(detail.getContributorId(), is(expectedDetail.getContributorId()));
-    //assertThat(detail, is(expectedDetail));
   }
   
   @Test

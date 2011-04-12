@@ -31,9 +31,10 @@ import com.silverpeas.delegatednews.model.DelegatedNews;
 
 public interface DelegatedNewsService {
 
-	public void addDelegatedNews(int pubId, String instanceId, String contributorId, Date validationDate); 
+	public void addDelegatedNews(int pubId, String instanceId, String contributorId, Date validationDate, Date beginDate, Date endDate); 
 	public DelegatedNews getDelegatedNews(int pubId); 
 	public List<DelegatedNews> getAllDelegatedNews();
+	public List<DelegatedNews> getAllValidDelegatedNews();
   public void validateDelegatedNews(int pubId);
   public void refuseDelegatedNews(int pubId);
   public void updateDateDelegatedNews(int pubId, Date dateHourBegin, Date dateHourEnd);

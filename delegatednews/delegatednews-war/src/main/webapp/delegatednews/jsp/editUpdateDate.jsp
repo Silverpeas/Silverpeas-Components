@@ -25,49 +25,6 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp"%>
-<%
-/*String beginDate = "";
-String beginHour = "";
-String endDate = "";
-String endHour = "";
-
-	 if (pubDetail.getBeginDate() != null) {
-        beginDate = resources.getInputDate(pubDetail.getBeginDate());
-      } else {
-        beginDate = "";
-      }
-      if (pubDetail.getEndDate() != null) {
-        if (resources.getDBDate(pubDetail.getEndDate()).equals("1000/01/01")) {
-          endDate = "";
-        } else {
-          endDate = resources.getInputDate(pubDetail.getEndDate());
-        }
-      } else {
-        if (action.equals("View")) {
-          endDate = "&nbsp;";
-        } else {
-          endDate = "";
-        }
-      }
-      if (beginDate == null || beginDate.length() == 0) {
-        beginHour = "";
-      } else {
-        beginHour = pubDetail.getBeginHour();
-      }
-      if (endDate == null || endDate.length() == 0) {
-        endHour = "";
-      } else {
-        endHour = pubDetail.getEndHour();
-      }
-
-      if (beginHour == null) {
-        beginHour = "";
-      }
-      if (endHour == null) {
-        endHour = "";
-      }*/
-      
-%>
   <c:set var="pubId" value="${requestScope.PubId}"/>
   <c:set var="beginDate" value="${requestScope.BeginDate}"/>
   <c:set var="beginHour" value="${requestScope.BeginHour}"/>

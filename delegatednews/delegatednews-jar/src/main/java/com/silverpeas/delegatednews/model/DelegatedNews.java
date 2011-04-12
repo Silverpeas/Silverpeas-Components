@@ -72,13 +72,21 @@ public class DelegatedNews implements java.io.Serializable {
 	}
 
 	public DelegatedNews(int pubId, String instanceId, 
-			String contributorId, Date validationDate) {
+			String contributorId, Date validationDate, Date beginDate, Date endDate) {
 		super();
 		this.pubId = pubId;
 		this.instanceId = instanceId;
-		this.contributorId = contributorId;
 		this.status = NEWS_TO_VALIDATE;
-		this.validationDate = new Date(validationDate.getTime());
+		this.contributorId = contributorId;
+		if(validationDate != null) {
+		  this.validationDate = new Date(validationDate.getTime());
+		}
+		if(beginDate != null) {
+		  this.beginDate = new Date(beginDate.getTime());
+		}
+		if(endDate != null) {
+		  this.endDate = new Date(endDate.getTime());
+		}
 	}
 
 	public int getPubId() {
