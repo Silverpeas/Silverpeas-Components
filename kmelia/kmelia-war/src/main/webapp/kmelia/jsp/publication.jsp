@@ -466,7 +466,7 @@ function suggestDelegatedNews() {
       }
     }
     
-    if (isNewsManage && isOwner && delegatedNews == null) {
+    if (isNewsManage && isOwner && pubDetail.isValid() && delegatedNews == null) {
       operationPane.addLine();
       operationPane.addOperation("#", resources.getString(
           "kmelia.DelegatedNewsSuggest"),

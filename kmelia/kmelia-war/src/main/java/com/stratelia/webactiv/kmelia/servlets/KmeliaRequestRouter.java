@@ -98,8 +98,6 @@ import com.stratelia.webactiv.util.publication.info.model.ModelDetail;
 import com.stratelia.webactiv.util.publication.model.Alias;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
-import com.silverpeas.delegatednews.service.ServicesFactory;
-import com.silverpeas.delegatednews.service.DelegatedNewsService;
 
 public class KmeliaRequestRouter extends ComponentRequestRouter {
 

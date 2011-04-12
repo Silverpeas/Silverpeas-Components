@@ -83,6 +83,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.ComponentInstManager;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -4690,13 +4691,30 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @return String : pubId
    */
   public String addDelegatedNews() {
+    //ajoute l'actualité déléguée dans le composant delegatednews
     UserCompletePublication userPubComplete = getSessionPublication();
-    
-    DelegatedNewsService delegatedNewsService = ServicesFactory.getDelegatedNewsService();
     String pubId = userPubComplete.getId();
-    String instanceId = userPubComplete.getPublication().getPublicationDetail().getInstanceId();
-    String contributorId = userPubComplete.getPublication().getPublicationDetail().getUpdaterId();
-    delegatedNewsService.addDelegatedNews(Integer.parseInt(pubId), instanceId, contributorId, new Date());
+    PublicationDetail pubDetail = userPubComplete.getPublication().getPublicationDetail();
+    String instanceId = pubDetail.getInstanceId();
+    String contributorId = pubDetail.getUpdaterId();
+    Date beginDateAndHour = DateUtil.getDate(pubDetail.getBeginDate(), pubDetail.getBeginHour());
+    Date endDateAndHour = DateUtil.getDate(pubDetail.getEndDate(), pubDetail.getEndHour());
+    DelegatedNewsService delegatedNewsService = ServicesFactory.getDelegatedNewsService();
+    delegatedNewsService.addDelegatedNews(Integer.parseInt(pubId), instanceId, contributorId, new Date(), beginDateAndHour, endDateAndHour);
+    
+    //alerte l'équipe éditoriale du composant delegatednews
+    String[] tabSpace = getOrganizationController().getAllSpaceIds();
+    ComponentInstManager compInstManager = new ComponentInstManager();
+    for (int i=0; i<tabSpace.length; i++) {
+      String[] componentIds = compInstManager.getComponentIdsInSpace(Integer.parseInt(tabSpace[i]));
+      for (int j=0; j<tabSpace.length; j++) {
+        componentIds
+      }
+    }
+    
+    String delegatednewsInstanceId = getOrganizationController().getAllComponentsNames()
+    delegatedNewsService.notifyDelegatedNewsToValidate(pubId, pubDetail.getName(this.getLanguage()), this.getUserDetail().getDisplayedName());
+    
     return pubId;
   }
   

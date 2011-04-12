@@ -171,7 +171,7 @@ String pathString = "";
 String user_id = kmeliaScc.getUserId();
 
       //Calcul du chemin de la publication
-      currentTopic = kmeliaScc.getPublicationFather(id);
+      currentTopic = kmeliaScc.getPublicationTopic(id);
       Collection pathColl = currentTopic.getPath();
 	  pathString = displayPath(pathColl, false, 3);
 
