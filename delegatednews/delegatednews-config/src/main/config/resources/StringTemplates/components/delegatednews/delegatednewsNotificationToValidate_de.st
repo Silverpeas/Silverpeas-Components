@@ -1,15 +1,17 @@
 <div style="font-family:Arial;font-size:11px">
-Zu genehmigende Veröffentlichungen <b>$publicationName$</b>
+The news $publicationName$ (id $publicationId$) has been suggested in homepage.
+
+It must be validated.
 
 $if(notification_receiver_users)$
-Diese Nachricht wurde gesendet
- nutzer : $notification_receiver_users$
+This message has been sent 
+ to users : $notification_receiver_users$
 $endif$
 
 $if(notification_receiver_groups)$
   $if(!notification_receiver_users)$
-  Diese Nachricht wurde gesendet
+  This message has been sent 
   $endif$
- gruppen : $notification_receiver_groups$
+ to groups : $notification_receiver_groups$
 $endif$
 </div>

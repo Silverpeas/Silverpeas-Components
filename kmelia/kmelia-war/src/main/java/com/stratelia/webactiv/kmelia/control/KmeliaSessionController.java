@@ -4703,17 +4703,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     delegatedNewsService.addDelegatedNews(Integer.parseInt(pubId), instanceId, contributorId, new Date(), beginDateAndHour, endDateAndHour);
     
     //alerte l'équipe éditoriale du composant delegatednews
-    String[] tabSpace = getOrganizationController().getAllSpaceIds();
-    ComponentInstManager compInstManager = new ComponentInstManager();
-    for (int i=0; i<tabSpace.length; i++) {
-      String[] componentIds = compInstManager.getComponentIdsInSpace(Integer.parseInt(tabSpace[i]));
-      for (int j=0; j<tabSpace.length; j++) {
-        componentIds
-      }
+    String[] tabInstanceId = getOrganizationController().getCompoId("delegatednews");
+    String delegatednewsInstanceId = null;
+    for(int i=0; i<tabInstanceId.length; i++) {
+      delegatednewsInstanceId = tabInstanceId[i];
+      break;
     }
-    
-    String delegatednewsInstanceId = getOrganizationController().getAllComponentsNames()
-    delegatedNewsService.notifyDelegatedNewsToValidate(pubId, pubDetail.getName(this.getLanguage()), this.getUserDetail().getDisplayedName());
+   
+    delegatedNewsService.notifyDelegatedNewsToValidate(pubId, pubDetail.getName(this.getLanguage()), this.getUserId(), this.getUserDetail().getDisplayedName(), delegatednewsInstanceId);
     
     return pubId;
   }

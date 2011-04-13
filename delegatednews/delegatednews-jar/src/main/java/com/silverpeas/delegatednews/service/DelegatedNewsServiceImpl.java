@@ -24,8 +24,11 @@
 
 package com.silverpeas.delegatednews.service;
 
+import com.silverpeas.delegatednews.DelegatedNewsRuntimeException;
+
 import com.silverpeas.delegatednews.model.DelegatedNews;
 
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,14 +41,21 @@ import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
+import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.NotificationSender;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.stratelia.webactiv.util.DBUtil;
+import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.synyx.hades.domain.Order;
+import org.synyx.hades.domain.Sort;
 
 import javax.inject.Inject;
 
@@ -85,7 +95,11 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    */
   @Override
   public List<DelegatedNews> getAllDelegatedNews() {
-    List<DelegatedNews> list = dao.readAll(); //TODO utiliser plutot readAll(Sort) sur la date de validation 
+    List<Sort.Property> properties = new ArrayList<Sort.Property>();
+    Sort.Property property = new Sort.Property(Order.ASCENDING, "pubId");
+    properties.add(property);
+    Sort sort = new Sort(properties);
+    List<DelegatedNews> list = dao.readAll(sort); 
     return list;
   }
   
@@ -105,9 +119,11 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    *
    */
 	@Override
-  public void validateDelegatedNews(int pubId) {
+  public void validateDelegatedNews(int pubId, String validatorId) {
     DelegatedNews delegatedNews = dao.readByPrimaryKey(Integer.valueOf(pubId));
     delegatedNews.setStatus(DelegatedNews.NEWS_VALID);
+    delegatedNews.setValidatorId(validatorId);
+    delegatedNews.setValidationDate(new Date());
     dao.saveAndFlush(delegatedNews);
   }
 
@@ -116,9 +132,11 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    *
    */
 	@Override
-  public void refuseDelegatedNews(int pubId) {
+  public void refuseDelegatedNews(int pubId, String validatorId) {
     DelegatedNews delegatedNews = dao.readByPrimaryKey(Integer.valueOf(pubId));
     delegatedNews.setStatus(DelegatedNews.NEWS_REFUSED);
+    delegatedNews.setValidatorId(validatorId);
+    delegatedNews.setValidationDate(new Date());
     dao.saveAndFlush(delegatedNews);
   }
   
@@ -158,46 +176,107 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
     OrganizationController orga = new OrganizationController();
     return orga;
   }
+	
+	/**
+	 * @param componentId
+	 * @return
+	 */
+	private NotificationSender getNotificationSender(String componentId) {
+    // must return a new instance each time
+    // This is to resolve Serializable problems
+    NotificationSender notifSender = new NotificationSender(componentId);
+    return notifSender;
+  }
+	
+	/**
+	 * @param notifMetaData
+	 * @param senderId
+	 */
+	private void notifyUsers(NotificationMetaData notifMetaData, String senderId) {
+    Connection con = null;
+    try {
+      con = getConnection();
+      notifMetaData.setConnection(con);
+      if (!StringUtil.isDefined(notifMetaData.getSender())) {
+        notifMetaData.setSender(senderId);
+      }
+      getNotificationSender(notifMetaData.getComponentId()).notifyUser(notifMetaData);
+    } catch (NotificationManagerException e) {
+      SilverTrace.warn("delegatednews", "DelegatedNewsServiceImpl.notifyUsers()",
+          "delegatednews.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", e);
+    } finally {
+      freeConnection(con);
+    }
+  }
+
 
 	
 	/**
    * Notifie l'Equipe éditoriale d'une actualité à valider
    *
    */
-  public void notifyDelegatedNewsToValidate(String pubId, String pubName, String senderName, String[] editors) {
+  public void notifyDelegatedNewsToValidate(String pubId, String pubName, String senderId, String senderName, String delegatednewsInstanceId) {
     
     //Notification des membres de l'équipe éditoriale
-    
     try {
-        Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-        ResourceLocator message = new ResourceLocator(
-            "com.silverpeas.delegatednews.multilang.DelegatedNewsBundle", DisplayI18NHelper.getDefaultLanguage());
-        String subject = message.getString("delegatednews.newsSuggest");
-        
-        NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "delegatednewsNotificationToValidate");
-        for (String lang : DisplayI18NHelper.getLanguages()) {
-          SilverpeasTemplate template = getNewTemplate();
-          templates.put(lang, template);
-          template.setAttribute("publicationId", pubId);
-          template.setAttribute("publicationName", pubName);
-          template.setAttribute("senderName", senderName);
-          ResourceLocator localizedMessage = new ResourceLocator(
-              "com.silverpeas.delegatednews.multilang.DelegatedNewsBundle", lang);
-          subject = localizedMessage.getString("delegatednews.newsSuggest");
-          notifMetaData.addLanguage(lang, subject, "");
+        if(delegatednewsInstanceId == null) {
+          SilverTrace.warn("delegatednews", "DelegatedNewsServiceImpl.notifyDelegatedNewsToValidate()",
+              "delegatednews.EX_AUCUNE_INSTANCE_DISPONIBLE");
+        } else {
+          Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+          ResourceLocator message = new ResourceLocator(
+              "com.silverpeas.delegatednews.multilang.DelegatedNewsBundle", DisplayI18NHelper.getDefaultLanguage());
+          String subject = message.getString("delegatednews.newsSuggest");
+          
+          NotificationMetaData notifMetaData =
+              new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "delegatednewsNotificationToValidate");
+          for (String lang : DisplayI18NHelper.getLanguages()) {
+            SilverpeasTemplate template = getNewTemplate();
+            templates.put(lang, template);
+            template.setAttribute("publicationId", pubId);
+            template.setAttribute("publicationName", pubName);
+            template.setAttribute("senderName", senderName);
+            ResourceLocator localizedMessage = new ResourceLocator(
+                "com.silverpeas.delegatednews.multilang.DelegatedNewsBundle", lang);
+            subject = localizedMessage.getString("delegatednews.newsSuggest");
+            notifMetaData.addLanguage(lang, subject, "");
+          }
+          List<String> roles = new ArrayList<String>();
+          roles.add("admin");
+          String[] editors = getOrganizationController().getUsersIdsByRoleNames(delegatednewsInstanceId, roles);
+          notifMetaData.addUserRecipients(editors);
+          notifMetaData.setComponentId(delegatednewsInstanceId);
+          notifyUsers(notifMetaData, senderId);
         }
-        List<String> roles = new ArrayList<String>();
-        roles.add("admin");
-        String[] editors = getOrganizationController().getUsersIdsByRoleNames(pubDetail.getPK().
-            getInstanceId(), roles);
-        notifMetaData.addUserRecipients(editors);
-        notifMetaData.setComponentId(pubDetail.getPK().getInstanceId());
-        notifyUsers(notifMetaData, userIdWhoRefuse);
     } catch (Exception e) {
-      SilverTrace.warn("kmelia", "KmeliaBmEJB.sendValidationNotification()",
-          "kmelia.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS", "fatherId = "
-          + fatherPK.getId() + ", pubPK = " + pubDetail.getPK(), e);
+      SilverTrace.warn("delegatednews", "DelegatedNewsServiceImpl.notifyDelegatedNewsToValidate()",
+          "delegatednews.EX_IMPOSSIBLE_DALERTER_LES_EDITEURS", "pubId = "
+          + pubId + ", pubName = " + pubName, e);
+    }
+  }
+  
+  /*****************************************************************************************************************/
+  /** Connection management methods used for the content service **/
+  /*****************************************************************************************************************/
+  
+  private Connection getConnection() {
+    try {
+      Connection con = DBUtil.makeConnection(JNDINames.SILVERPEAS_DATASOURCE);
+      return con;
+    } catch (Exception e) {
+      throw new DelegatedNewsRuntimeException("DelegatedNewsServiceImpl.getConnection()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+    }
+  }
+
+  private void freeConnection(Connection con) {
+    if (con != null) {
+      try {
+        con.close();
+      } catch (Exception e) {
+        SilverTrace.error("delegatednews", "DelegatedNewsServiceImpl.freeConnection()",
+            "root.EX_CONNECTION_CLOSE_FAILED", "", e);
+      }
     }
   }
 }

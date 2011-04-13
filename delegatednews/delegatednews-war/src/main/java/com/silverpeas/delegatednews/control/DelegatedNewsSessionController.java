@@ -90,7 +90,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
    *
    */
   public void validateDelegatedNews(int pubId) {
-    service.validateDelegatedNews(pubId);
+    service.validateDelegatedNews(pubId, this.getUserId());
   }
   
   /**
@@ -98,7 +98,7 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
    *
    */
   public void refuseDelegatedNews(int pubId, String refuseReasonText) {
-    service.refuseDelegatedNews(pubId);
+    service.refuseDelegatedNews(pubId, this.getUserId());
   }
   
   /**

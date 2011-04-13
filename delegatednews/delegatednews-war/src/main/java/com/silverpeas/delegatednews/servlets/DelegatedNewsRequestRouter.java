@@ -88,27 +88,32 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter {
         List<DelegatedNews> list = newsSC.getAllDelegatedNews();
         request.setAttribute("ListNews", list);
     	  destination = "/delegatednews/jsp/listNews.jsp";
-      } else if (function.equals("OpenPublication")) {
+      } 
+      else if (function.equals("OpenPublication")) {
         String pubId = request.getParameter("PubId");
         destination = "/Rkmelia/kmelia1/ViewOnly?documentId="+pubId;
-      } else if (function.equals("ValidateDelegatedNews")) {
+      } 
+      else if (function.equals("ValidateDelegatedNews")) {
         String pubId = request.getParameter("PubId");
         newsSC.validateDelegatedNews(Integer.parseInt(pubId));
         List<DelegatedNews> list = newsSC.getAllDelegatedNews();
         request.setAttribute("ListNews", list);
         destination = "/delegatednews/jsp/listNews.jsp";
-      } else if (function.equals("EditRefuseReason")) {
+      } 
+      else if (function.equals("EditRefuseReason")) {
         String pubId = request.getParameter("PubId");        
         request.setAttribute("PubId", pubId);
         destination = "/delegatednews/jsp/editRefuseReason.jsp";
-      } else if (function.equals("RefuseDelegatedNews")) {
+      } 
+      else if (function.equals("RefuseDelegatedNews")) {
         String pubId = request.getParameter("PubId");
         String refuseReasonText = request.getParameter("RefuseReasonText");
         newsSC.refuseDelegatedNews(Integer.parseInt(pubId), refuseReasonText);
         List<DelegatedNews> list = newsSC.getAllDelegatedNews();
         request.setAttribute("ListNews", list);
         destination = "/delegatednews/jsp/listNews.jsp";
-      } else if (function.equals("EditUpdateDate")) {
+      } 
+      else if (function.equals("EditUpdateDate")) {
         String pubId = request.getParameter("PubId");
         String beginDate = request.getParameter("BeginDate");
         String beginHour = request.getParameter("BeginHour");
@@ -120,7 +125,8 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter {
         request.setAttribute("EndDate", endDate);
         request.setAttribute("EndHour", endHour);
         destination = "/delegatednews/jsp/editUpdateDate.jsp";
-      } else if (function.equals("UpdateDateDelegatedNews")) {
+      } 
+      else if (function.equals("UpdateDateDelegatedNews")) {
         String pubId = request.getParameter("PubId");
         String beginDate = request.getParameter("BeginDate");
         String beginHour = request.getParameter("BeginHour");

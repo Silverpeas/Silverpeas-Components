@@ -35,8 +35,9 @@ public interface DelegatedNewsService {
 	public DelegatedNews getDelegatedNews(int pubId); 
 	public List<DelegatedNews> getAllDelegatedNews();
 	public List<DelegatedNews> getAllValidDelegatedNews();
-  public void validateDelegatedNews(int pubId);
-  public void refuseDelegatedNews(int pubId);
+  public void validateDelegatedNews(int pubId, String validatorId);
+  public void refuseDelegatedNews(int pubId, String validatorId);
   public void updateDateDelegatedNews(int pubId, Date dateHourBegin, Date dateHourEnd);
+  public void notifyDelegatedNewsToValidate(String pubId, String pubName, String senderId, String senderName, String delegatednewsInstanceId);
 	
 }
