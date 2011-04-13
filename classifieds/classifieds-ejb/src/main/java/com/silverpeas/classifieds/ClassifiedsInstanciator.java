@@ -69,7 +69,7 @@ public class ClassifiedsInstanciator implements ComponentsInstanciatorIntf {
     ClassifiedsBm classifiedsBm = null;
     try {
       ClassifiedsBmHome classifiedsBmHome =
-          (ClassifiedsBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.CLASSIFIEDSBM_EJBHOME,
+          EJBUtilitaire.getEJBObjectRef(JNDINames.CLASSIFIEDSBM_EJBHOME,
           ClassifiedsBmHome.class);
       classifiedsBm = classifiedsBmHome.create();
     } catch (Exception e) {
