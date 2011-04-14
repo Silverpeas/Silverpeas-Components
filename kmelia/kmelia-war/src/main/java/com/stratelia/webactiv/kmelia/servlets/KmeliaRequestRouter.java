@@ -649,6 +649,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           //option Actualités décentralisées
           request.setAttribute("NewsManage", kmelia.isNewsManage());
           request.setAttribute("DelegatedNews", kmelia.getDelegatedNews(id));
+          request.setAttribute("IsBasket", NodePK.BIN_NODE_ID.equals(kmelia.getSessionTopic().getNodePK().getId()));
 
           destination = rootDestination + "publication.jsp";
         }

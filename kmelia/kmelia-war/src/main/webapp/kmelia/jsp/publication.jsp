@@ -68,6 +68,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
   boolean attachmentsEnabled = ((Boolean) request.getAttribute("AttachmentsEnabled")).booleanValue();
   boolean isNewsManage = ((Boolean) request.getAttribute("NewsManage")).booleanValue();
   DelegatedNews delegatedNews = (DelegatedNews) request.getAttribute("DelegatedNews");
+  boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
+  
 
   if (action == null) {
     action = "View";
@@ -466,7 +468,7 @@ function suggestDelegatedNews() {
       }
     }
     
-    if (isNewsManage && isOwner && pubDetail.isValid() && delegatedNews == null) {
+    if (isNewsManage && isOwner && pubDetail.isValid() && delegatedNews == null && ! isBasket) {
       operationPane.addLine();
       operationPane.addOperation("#", resources.getString(
           "kmelia.DelegatedNewsSuggest"),

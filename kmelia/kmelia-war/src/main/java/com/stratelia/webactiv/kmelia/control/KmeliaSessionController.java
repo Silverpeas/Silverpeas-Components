@@ -1077,9 +1077,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public synchronized void deletePublication(String pubId, boolean kmaxMode)
       throws RemoteException {
-    // récupération de la position de la publication pour savoir s'il elle se trouve déjà dans
+    // récupération de la position de la publication pour savoir si elle se trouve déjà dans
     // la corbeille node=1
-    // s'il elle se trouve déjà au node 1, il est nécessaire de supprimer les fichier joints
+    // si elle se trouve déjà au node 1, il est nécessaire de supprimer les fichier joints
     // sinon non
     String nodeId = "";
     if (getSessionTopic() != null) {
