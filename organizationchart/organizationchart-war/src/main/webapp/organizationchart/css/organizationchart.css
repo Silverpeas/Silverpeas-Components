@@ -54,6 +54,7 @@
 .cell2 td.cellRole {font-family: Arial; font-size: 12; font-style: italic; text-align: center; color: #8800CC}
 .cell2 td.cellLinkLeft {font-family: Arial; font-size: 12; text-align: left; color: #666699; white-space: nowrap}
 .cell2 td.cellLinkRight {font-family: Arial; font-size: 12; text-align: right; color: #666699; white-space: nowrap}
+.innerUser {border-style: solid; border-width: 1; -moz-border-radius: 10px; width: 100; background-color: #FFFFCC; color: #000000; z-index: 2; margin-top: 5px; margin-bottom: 5px; width: 95%;}
 
 /*
 * style bloc droite
