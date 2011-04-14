@@ -39,5 +39,7 @@ public interface DelegatedNewsService {
   public void refuseDelegatedNews(int pubId, String validatorId);
   public void updateDateDelegatedNews(int pubId, Date dateHourBegin, Date dateHourEnd);
   public void notifyDelegatedNewsToValidate(String pubId, String pubName, String senderId, String senderName, String delegatednewsInstanceId);
-	
+  public void updateDelegatedNews(int pubId, String instanceId, String status, String updaterId, String validatorId, Date validationDate, Date dateHourBegin, Date dateHourEnd);
+  public void deleteDelegatedNews(int pubId);
+  public void notifyDelegatedNewsValid(String pubId, String pubName, String senderId, String senderName, String contributorId, String delegatednewsInstanceId);
 }

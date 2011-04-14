@@ -255,6 +255,74 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
     }
   }
   
+  /**
+   * Met à jour l'actualité déléguée passée en paramètre
+   *
+   */
+  @Override
+  public void updateDelegatedNews(int pubId, String instanceId, String status, String updaterId, String validatorId, Date validationDate, Date dateHourBegin, Date dateHourEnd) {
+    DelegatedNews delegatedNews = dao.readByPrimaryKey(Integer.valueOf(pubId));
+    delegatedNews.setInstanceId(instanceId);
+    delegatedNews.setStatus(status);
+    delegatedNews.setContributorId(updaterId);
+    delegatedNews.setValidatorId(validatorId);
+    delegatedNews.setValidationDate(validationDate);
+    delegatedNews.setBeginDate(dateHourBegin);
+    delegatedNews.setEndDate(dateHourEnd);
+    dao.saveAndFlush(delegatedNews);
+  }
+  
+  /**
+   * Supprime l'actualité déléguée passée en paramètre
+   *
+   */
+  @Override
+  public void deleteDelegatedNews(int pubId) {
+    DelegatedNews delegatedNews = dao.readByPrimaryKey(Integer.valueOf(pubId));
+    dao.delete(delegatedNews);
+  }
+  
+  /**
+   * Notifie le dernier contributeur que l'actualité est validée
+   *
+   */
+  public void notifyDelegatedNewsValid(String pubId, String pubName, String senderId, String senderName, String contributorId, String delegatednewsInstanceId) {
+    
+    //Notification du dernier contributeur
+    try {
+        if(delegatednewsInstanceId == null) {
+          SilverTrace.warn("delegatednews", "DelegatedNewsServiceImpl.notifyDelegatedNewsValid()",
+              "delegatednews.EX_AUCUNE_INSTANCE_DISPONIBLE");
+        } else {
+          Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+          ResourceLocator message = new ResourceLocator(
+              "com.silverpeas.delegatednews.multilang.DelegatedNewsBundle", DisplayI18NHelper.getDefaultLanguage());
+          String subject = message.getString("delegatednews.newsValid");
+          
+          NotificationMetaData notifMetaData =
+              new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "delegatednewsNotificationValid");
+          for (String lang : DisplayI18NHelper.getLanguages()) {
+            SilverpeasTemplate template = getNewTemplate();
+            templates.put(lang, template);
+            template.setAttribute("publicationId", pubId);
+            template.setAttribute("publicationName", pubName);
+            template.setAttribute("senderName", senderName);
+            ResourceLocator localizedMessage = new ResourceLocator(
+                "com.silverpeas.delegatednews.multilang.DelegatedNewsBundle", lang);
+            subject = localizedMessage.getString("delegatednews.newsValid");
+            notifMetaData.addLanguage(lang, subject, "");
+          }
+          notifMetaData.addUserRecipient(contributorId);
+          notifMetaData.setComponentId(delegatednewsInstanceId);
+          notifyUsers(notifMetaData, senderId);
+        }
+    } catch (Exception e) {
+      SilverTrace.warn("delegatednews", "DelegatedNewsServiceImpl.notifyDelegatedNewsValid()",
+          "delegatednews.EX_IMPOSSIBLE_DALERTER_LE_CONTRIBUTEUR", "pubId = "
+          + pubId + ", pubName = " + pubName, e);
+    }
+  }
+  
   /*****************************************************************************************************************/
   /** Connection management methods used for the content service **/
   /*****************************************************************************************************************/

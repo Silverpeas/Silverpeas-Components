@@ -90,7 +90,16 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
    *
    */
   public void validateDelegatedNews(int pubId) {
+    //valide l'actualité
     service.validateDelegatedNews(pubId, this.getUserId());
+    
+    //TODO : A finir
+    
+    /*DelegatedNews delegatedNews = service.getDelegatedNews(pubId);
+    
+    //alerte le dernier contributeur de la décision
+    /*service.notifyDelegatedNewsValid(pubId, pubDetail.getName(this.getLanguage()), this.getUserId(), this.getUserDetail().getDisplayedName(), delegatednewsInstanceId);*/
+    
   }
   
   /**
