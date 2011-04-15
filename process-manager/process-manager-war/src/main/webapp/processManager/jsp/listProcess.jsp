@@ -45,7 +45,7 @@ Item getItem(Item[] items, String itemName)
 
   RecordTemplate listHeaders=(RecordTemplate) request.getAttribute("listHeaders");
   FieldTemplate[] headers = listHeaders.getFieldTemplates();
-  
+
   Item[] items = (Item[]) request.getAttribute("FolderItems");
 
   browseBar.setDomainName(spaceLabel);
@@ -55,16 +55,16 @@ Item getItem(Item[] items, String itemName)
   if (canCreate.equals("1"))
 		operationPane.addOperation(resource.getIcon("processManager.add"),
 									resource.getString("processManager.createProcess"),
-									"createProcess");	
+									"createProcess");
 
   String hasUserSettings = (String) request.getAttribute("hasUserSettings");
   if (hasUserSettings.equals("1"))
 	operationPane.addOperation(resource.getIcon("processManager.userSettings"),
 								resource.getString("processManager.userSettings"),
 								"editUserSettings");
-  
+
   Boolean isCSVExportEnabled = (Boolean) request.getAttribute("isCSVExportEnabled");
-  
+
   if (isCSVExportEnabled != null && isCSVExportEnabled.booleanValue())
   {
   	operationPane.addLine();
@@ -72,9 +72,9 @@ Item getItem(Item[] items, String itemName)
 			resource.getString("processManager.csvExport"),
 			"javaScript:exportCSV();");
   }
-  
+
 	String collapse = (String) request.getAttribute("collapse");
-	if (collapse == null) 
+	if (collapse == null)
 		collapse = "true";
    	com.silverpeas.form.Form form = (com.silverpeas.form.Form) request.getAttribute("form");
    PagesContext context = (PagesContext) request.getAttribute("context");
@@ -83,7 +83,7 @@ Item getItem(Item[] items, String itemName)
    ButtonPane buttonPane = gef.getButtonPane();
    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:setFilter()", false));
    buttonPane.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:resetFilter()", false));
-   
+
    boolean isProcessIdVisible = ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
 
    ArrayPane arrayPane = gef.getArrayPane("List", "listSomeProcess", request,session);
@@ -110,7 +110,7 @@ Item getItem(Item[] items, String itemName)
 			document.<%=context.getFormName()%>.submit();
 		}
 	}
-	
+
 	function resetFilter() {
 			document.<%=context.getFormName()%>.reset();
 	}
@@ -141,7 +141,7 @@ Item getItem(Item[] items, String itemName)
 			<table cellpadding="2" cellspacing="1" border="0" width="100%" bgcolor="000000">
 				<tr>
 					<form name="roleChoice" method="POST" action="changeRole">
-						<td class="intfdcolor" align="center" nowrap width="100%" height="24"> 
+						<td class="intfdcolor" align="center" nowrap width="100%" height="24">
 							<select name="role" onChange="document.roleChoice.submit()">
 							   <% for (int i=0; i<roles.length ; i++) { %>
 								   <option <%=currentRole.equals(roles[i].name)?"selected":""%> 	value="<%=roles[i].name%>"><%=roles[i].value%></option>
@@ -152,7 +152,7 @@ Item getItem(Item[] items, String itemName)
 				</tr>
 			</table>
 		</td>
-		<td width="100%"> 
+		<td width="100%">
 		&nbsp;
 		</td>
 	</tr>
@@ -187,14 +187,14 @@ Item getItem(Item[] items, String itemName)
 				</tr>
 			</table>
 				<%
-				if (collapse.equals("false")) 
+				if (collapse.equals("false"))
 				{
 				%>
 					<table CELLPADDING="5" CELLSPACING="0" BORDER="0" WIDTH="100%">
 						<tr>
 							<td>
-						      <br><center><% form.display(out, context, data); %></center>	
-									<br><center><% out.println(buttonPane.print()); %></center>				
+						      <br><center><% form.display(out, context, data); %></center>
+									<br><center><% out.println(buttonPane.print()); %></center>
 							</td>
 						</tr>
 						<!-- <tr>
@@ -212,7 +212,7 @@ Item getItem(Item[] items, String itemName)
 				%>
 	<% out.println(board.printAfter()); %>
    <INPUT type="hidden" name="collapse" value="<%=collapse%>">
-</FORM>	
+</FORM>
 <%
 	ArrayColumn arrayColumn;
 
@@ -220,19 +220,19 @@ Item getItem(Item[] items, String itemName)
 		arrayColumn = arrayPane.addArrayColumn("#");
 
 	arrayColumn = arrayPane.addArrayColumn("<>");
-	
+
 	for (int i=0; i<headers.length; i++)
 	{
 		arrayColumn = arrayPane.addArrayColumn(headers[i].getLabel(language));
 		arrayColumn.setSortable(true);
 	}
-	
+
 	if ("supervisor".equalsIgnoreCase(currentRole))
 	{
 		ArrayColumn arrayColumn0 = arrayPane.addArrayColumn("&nbsp;");
 		arrayColumn0.setSortable(false);
 	}
-	
+
 	// Les lignes
 	ProcessInstanceRowRecord instance;
 	for (int i=0; i<processList.length; i++) // boucle sur tous les process
@@ -257,9 +257,14 @@ Item getItem(Item[] items, String itemName)
 			if (isProcessIdVisible)
 				cellId = arrayLine.addArrayCellText(instance.getId());
 			arrayLine.addArrayCellText("<img border=\"0\" width=\"15\" height=\"15\" alt=\"" + resource.getString("processManager.lockedByAdmin") + "\" src=\""  + resource.getIcon("processManager.locked") + "\">");
-			arrayLine.addArrayCellText(instance.getField(0).getValue(language));
+			if ("supervisor".equalsIgnoreCase(currentRole))
+			{
+				arrayLine.addArrayCellLink(instance.getField(0).getValue(language), "viewProcess?processId=" + instance.getId());
+			}else {
+				arrayLine.addArrayCellText(instance.getField(0).getValue(language));
+			}
 		}
-		
+
 		else if (instance.isInTimeout())
 		{
 			if (isProcessIdVisible)
@@ -307,10 +312,10 @@ Item getItem(Item[] items, String itemName)
 							while (tokenizer.hasMoreTokens())
 							{
 								t = tokenizer.nextToken();
-								
+
 								t = (String) keyValuePairs.get(t);
 								newValue += t;
-								
+
 								if (tokenizer.hasMoreTokens())
 									newValue += ", ";
 							}
@@ -325,7 +330,7 @@ Item getItem(Item[] items, String itemName)
 				arrayLine.addArrayCellText(fieldString);
 			}
 		}
-		
+
 		if ("supervisor".equalsIgnoreCase(currentRole))
 		{
 			arrayLine.addArrayCellLink("<img border=\"0\" width=\"15\" height=\"15\" alt=\"" + resource.getString("processManager.delete") + "\" src=\""  + resource.getIcon("processManager.small_remove") + "\">", "javascript:confirmURL('adminRemoveProcess?processId=" + processList[i].getId() + "', '"+ resource.getString("processManager.confirmDelete") +"')");
