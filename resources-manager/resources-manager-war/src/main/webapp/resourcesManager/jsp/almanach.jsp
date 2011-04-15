@@ -33,12 +33,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="check.jsp"%>
 
 <% 
-// listOfReservation : liste des réservations de l'utilisateur
-//listReservationsOfCategory : liste des catégories qui ont des ressources qui sont réservées dans le mois
-//listResourcesofCategory : liste des ressources de chaque catégorie, sert pour la sélection de la ressource dans menu déroulant
-//listOfCategories : liste des catégories, sert pour la sélection de la catégorie dans menu déroulant
-List listOfReservation = (List)request.getAttribute("listOfReservation");
-List listReservationsOfCategory = (List)request.getAttribute("listReservationsOfCategory");
+//listResourcesofCategory : liste des ressources de chaque catï¿½gorie, sert pour la sï¿½lection de la ressource dans menu dï¿½roulant
+//listOfCategories : liste des catï¿½gories, sert pour la sï¿½lection de la catï¿½gorie dans menu dï¿½roulant
 List listResourcesofCategory = (List)request.getAttribute("listResourcesofCategory");
 List listOfCategories = (List)request.getAttribute("listOfCategories");
 
@@ -50,119 +46,22 @@ String lastName = (String)request.getAttribute("lastName");
 MonthCalendar monthC = (MonthCalendar)request.getAttribute("monthC");
 String objectView = (String)request.getAttribute("idCategory");
 if(objectView == null){
-	//objectView = "viewUser";
 	objectView = "myReservation";
 }
-
 
 String idResourceFromRR = (String)request.getAttribute("resourceId");
 String personalReservation = "myReservation";
 
-// sert a différencier les ressources réservées faites pour une même réservation ou pour deux réservations différentes
-String currentReservationId = "";
-
 // identifiant du role de l'utilisateur en cours
 String flag = (String)request.getAttribute("Profile");
 boolean isResponsible = ((Boolean) request.getAttribute("IsResponsible")).booleanValue();
-  
-//transformation des réservations (ReservationDetail) en Event du MonthCalendar
-  if(listOfReservation != null){
-	  for(int i=0; i<listOfReservation.size(); i++){
-		ReservationDetail maReservation = (ReservationDetail)listOfReservation.get(i);
-		String reservationId = maReservation.getId();
-		String event = maReservation.getEvent();
-		String place = maReservation.getPlace();
-		String reason = maReservation.getReason();
-		Date endDate = maReservation.getEndDate();
-		Date startDate = maReservation.getBeginDate();
-		String minuteHourDateBegin = DateUtil.getFormattedTime(maReservation.getBeginDate());
-		String minuteHourDateEnd = DateUtil.getFormattedTime(maReservation.getEndDate());
-		String url = null;
-	    int priority = 0;
-	    Event evt = new Event(reservationId, event, startDate, endDate, url, priority);
-	    evt.setStartHour(minuteHourDateBegin);
-	    evt.setEndHour(minuteHourDateEnd);
-	    evt.setPlace(maReservation.getPlace());
-	    evt.setInstanceId(componentId);
-	    evt.setTooltip(resource.getString("resourcesManager.bookedBy")+resourcesManagerSC.getUserDetail(maReservation.getUserId()).getDisplayedName());
-	    String color = "black";
-	    if (STATUS_FOR_VALIDATION.equals(maReservation.getStatus())) {
-	      color = "red";
-	    }
-	    else if (STATUS_REFUSED.equals(maReservation.getStatus())) {
-	      color = "gray";
-	    }
-	    evt.setColor(color);
-	    monthC.addEvent(evt);
-	}
-  }
-  // on affiche le planning d'une catégorie ou d'une ressource
-  else if(listReservationsOfCategory != null){
-	  // listReservationsOfCategory.size()est le nombre des resources de la catégorie sélectionnée
-	  //System.out.println(listReservationsOfCategory.size());
-	  for(int i=0; i<listReservationsOfCategory.size(); i++){
-		  ReservationDetail maReservation = (ReservationDetail)listReservationsOfCategory.get(i);
-		  String reservationId = maReservation.getId();
-		  if((currentReservationId.equals("")) || (!currentReservationId.equals(reservationId))){
-			  currentReservationId = reservationId;
-			  String event = maReservation.getEvent();
-			  String place = maReservation.getPlace();
-			  String reason = maReservation.getReason();
-			  Date endDate = maReservation.getEndDate();
-			  Date startDate = maReservation.getBeginDate();
-			  String minuteHourDateBegin = DateUtil.getFormattedTime(maReservation.getBeginDate());
-			  String minuteHourDateEnd = DateUtil.getFormattedTime(maReservation.getEndDate());
-			  String url = null;
-			  int priority = 0;
-			  List listResourcesReserved = maReservation.getListResourcesReserved();
-			  // listResourcesReserved contient la liste des ressources réservées de la réservation pour la catégorie
-			  if(listResourcesReserved != null){
-				  //System.out.println(listResourcesReserved.size());
-				  for(int j =0; j<listResourcesReserved.size();j++){
-					  ResourceDetail myResource = (ResourceDetail)listResourcesReserved.get(j);
-					  String resourceName = myResource.getName();
-
-					  String resourceId = myResource.getId();
-					  String categoryId = myResource.getCategoryId();
-					  // on affiche les ressources de la réservation qui possèdent la même categoryId que la catégorie sélectionnée 
-					  if(categoryId.equals(objectView)){
-						  // si idResourceFromRR est nulle aucune resource n'a été séléctionnée
-						  // donc on affiche toutes les ressources de la catégorie
-						  if(idResourceFromRR == null){
-							  Event evt = new Event(resourceId, resourceName, startDate, endDate, url, priority);
-							  evt.setStartHour(minuteHourDateBegin);
-							  evt.setEndHour(minuteHourDateEnd);
-							  evt.setPlace(maReservation.getPlace());
-							  evt.setInstanceId(componentId);
-							  evt.setTooltip(resource.getString("resourcesManager.bookedBy")+resourcesManagerSC.getUserDetail(maReservation.getUserId()).getDisplayedName());
-							  monthC.addEvent(evt);
-						  }
-						  // sinon on affiche seulement ce qui correspon a la ressource sélectionnée
-						  else if(resourceId.equals(idResourceFromRR)){
-							  Event evt = new Event(resourceId, resourceName, startDate, endDate, url, priority);
-							  evt.setStartHour(minuteHourDateBegin);
-							  evt.setEndHour(minuteHourDateEnd);
-							  evt.setPlace(maReservation.getPlace());
-							  evt.setInstanceId(componentId);
-							  evt.setTooltip(resource.getString("resourcesManager.bookedBy")+resourcesManagerSC.getUserDetail(maReservation.getUserId()).getDisplayedName());
-							  monthC.addEvent(evt);		
-						  }
-					  }
-				  }
-			  }
-		  }
-	  }
-  }
-  //initialisation de monthC avec la date courrante issue de almanach
-  monthC.setCurrentMonth(resourcesManagerSC.getCurrentDay().getTime());
 %>
 
-<HTML>
-<HEAD>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<html>
+<head>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/overlib.js"></script>
-<script language="JavaScript">
+<script type="text/javascript">
 
 function nextMonth(object)
 {
@@ -246,8 +145,8 @@ function viewOtherPlanning()
 <%
 out.println(gef.getLookStyleSheet());
 %>
-</HEAD>
-<BODY id="resourcesManager">
+</head>
+<body id="resourcesManager">
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 <% 
 	String selectUserLab = resource.getString("resourcesManager.selectUser");
@@ -272,7 +171,7 @@ out.println(gef.getLookStyleSheet());
 %>
 
 <!-- AFFICHAGE HEADER -->
-<CENTER>
+<center>
   <table width="98%" border="0" cellspacing="0" cellpadding="1">
     <tr>
       <td>
@@ -376,21 +275,20 @@ out.println(gef.getLookStyleSheet());
       
     </tr>
   </table>
-  <BR>
+  <br/>
 <%=monthC.print()%>
 
-</CENTER>
-
+</center>
 <%		
-		out.println(frame.printAfter());				
-		out.println(window.printAfter());
+	out.println(frame.printAfter());				
+	out.println(window.printAfter());
 %>
-<form name="almanachForm" action="" method="POST">
-  <input type="hidden" name="objectView" value="">
-  <input type="hidden" name="resourceId" value="">
-  <input type="hidden" name="idUser" value="">
-  <input type="hidden" name="firstNameUser" value="">
-  <input type="hidden" name="lastName" value="">
+<form name="almanachForm" action="" method="post">
+  <input type="hidden" name="objectView" value=""/>
+  <input type="hidden" name="resourceId" value=""/>
+  <input type="hidden" name="idUser" value=""/>
+  <input type="hidden" name="firstNameUser" value=""/>
+  <input type="hidden" name="lastName" value=""/>
 </form>
 </body>
 </html>

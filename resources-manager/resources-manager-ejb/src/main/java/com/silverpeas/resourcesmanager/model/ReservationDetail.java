@@ -28,6 +28,10 @@ import java.util.Date;
 import java.util.List;
 
 public class ReservationDetail implements Serializable {
+  
+  public final static String STATUS_VALIDATE = "V";
+  public final static String STATUS_REFUSED = "R";
+  public final static String STATUS_FOR_VALIDATION = "A";
 
   private static final long serialVersionUID = 1L;
   private String id;
