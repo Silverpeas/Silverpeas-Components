@@ -213,7 +213,7 @@
     <parameter>
       <name>tabAttachments</name>
       <label>
-        <message lang="fr">Fichiers Joints</message>
+        <message lang="fr">Fichiers joints</message>
         <message lang="en">Attachments</message>
       </label>
       <order>6</order>
@@ -245,7 +245,7 @@
     <parameter>
       <name>tabAccessPaths</name>
       <label>
-        <message lang="fr">Emplacements Multiples</message>
+        <message lang="fr">Emplacements multiples</message>
         <message lang="en">Multiple locations</message>
       </label>
       <order>8</order>
@@ -262,7 +262,7 @@
     <parameter>
       <name>tabReadersList</name>
       <label>
-        <message lang="fr">Contrôles de Lecture</message>
+        <message lang="fr">Contrôles de lecture</message>
         <message lang="en">Readers list</message>
       </label>
       <order>9</order>
@@ -295,7 +295,7 @@
     <parameter>
       <name>versionControl</name>
       <label>
-        <message lang="fr">Pièces jointes versionnées</message>
+        <message lang="fr">Fichiers joints versionnés</message>
         <message lang="en">Versioned attachments</message>
       </label>
       <order>11</order>
@@ -482,7 +482,7 @@
       <type>select</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Valeurs possibles:Non, Import unitaire, Import massif, Importunitaire et massif.</message>
+        <message lang="fr">Valeurs possibles: Non, Import unitaire, Import massif, Import unitaire et massif.</message>
         <message lang="en">Available values : No, Unit import, Massive import, Unit and massive import.</message>
       </help>
     </parameter>
@@ -544,8 +544,8 @@
     <parameter>
       <name>exportComponent</name>
       <label>
-        <message lang="fr">Exportation du composant</message>
-        <message lang="en">Export component</message>
+        <message lang="fr">Exportation</message>
+        <message lang="en">Export</message>
       </label>
       <order>21</order>
       <mandatory>true</mandatory>
@@ -666,8 +666,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Affiche le nombre de publications par thème.</message>
-        <message lang="en">Display the number of publications per theme.</message>
+        <message lang="fr">Affiche le nombre de publications par thème</message>
+        <message lang="en">Display the number of publications per theme</message>
       </help>
     </parameter>
     <parameter>
@@ -775,7 +775,7 @@
       <name>notifications</name>
       <label>
         <message lang="fr">Notifications</message>
-        <message lang="en">Notifictions</message>
+        <message lang="en">Notifications</message>
       </label>
       <order>34</order>
       <mandatory>true</mandatory>
@@ -863,7 +863,7 @@
       <name>publicFiles</name>
       <label>
         <message lang="fr">Fichiers réutilisables</message>
-        <message lang="en">Re-usable files.</message>
+        <message lang="en">Re-usable files</message>
       </label>
       <order>39</order>
       <mandatory>false</mandatory>
@@ -975,8 +975,8 @@
     <parameter>
       <name>hideAllVersionsLink</name>
       <label>
-        <message lang="fr">Hauteur de la vignette</message>
-        <message lang="en">Thumbnail's height</message>
+        <message lang="fr">Dernière version publique</message>
+        <message lang="en">Last public version</message>
       </label>
       <order>45</order>
       <mandatory>false</mandatory>
@@ -984,8 +984,8 @@
       <type>checkbox</type>
       <updatable>always</updatable>
       <help>
-        <message lang="fr">Ce paramètre permet d'autoriser aux lecteurs de voir l'ensemble des versions publiques.</message>
-        <message lang="en">This feature allows readers to see all the public versions of a document.</message>
+        <message lang="fr">Ce paramètre permet de limiter l'accès à la dernière version publique d'un document.</message>
+        <message lang="en">This feature allows readers to see only the last public version of a document.</message>
       </help>
     </parameter>
   </parameters>
