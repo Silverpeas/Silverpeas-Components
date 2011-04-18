@@ -33,7 +33,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.silverpeas.treeMenu.process.TreeHandler"%>
 <%@page import="com.silverpeas.treeMenu.model.MenuConstants"%>
 <%@ include file="checkKmelia.jsp" %>
-<%@ taglib uri="/WEB-INF/menuTree.tld" prefix="menuTree"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/menuTree.tld" prefix="menuTree"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <% 
 String pubId = kmeliaScc.getSessionPublication().getPublication().getPublicationDetail().getPK().getId();
@@ -52,9 +53,7 @@ if(request.getAttribute("NbLinks")!=null){
 <title><%=resources.getString("GML.popupTitle")%></title>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <link rel="stylesheet" type="text/css" href="<%=m_context %>/kmelia/jsp/styleSheets/kmelia.css">
-<%
-out.println(gef.getLookStyleSheet());
-%>
+<view:looknfeel />
 <%-- load the css and js file used by tree menu --%>
 <menuTree:head displayCssFile="true" displayJavascriptFile="true" displayIconsStyles="true" contextName="<%=m_context%>"></menuTree:head>
 <%-- personalizable Javascript for  YUI treeView menu --%>

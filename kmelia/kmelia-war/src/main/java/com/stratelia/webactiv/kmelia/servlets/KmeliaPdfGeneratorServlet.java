@@ -4,20 +4,21 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.google.common.io.Closeables;
-import com.silverpeas.util.EncodeHelper;
 import com.silverpeas.util.MimeTypes;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.PdfGenerator;
 import com.stratelia.webactiv.util.ClientBrowserUtil;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  *

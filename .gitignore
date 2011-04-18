@@ -20,3 +20,19 @@ wiki/wiki-jar/Test de base/
 /rssaggregator/rssaggregator-config/.project
 >>>>>>> master
 /target/
+/survey/survey-war/.classpath
+/survey/survey-war/.project
+/survey/survey-jar/.classpath
+/survey/survey-jar/.project
+/kmelia/kmelia-war/.project
+/kmelia/kmelia-war/.classpath
+/kmelia/kmelia-ejb/.project
+/kmelia/kmelia-ejb/.classpath
+/kmelia/kmelia-ejb/.settings
+/kmelia/kmelia-config/.settings
+/kmelia/kmelia-war/.settings
+/kmelia/kmelia-config/.project
+/kmelia/kmelia-war/src/main/webapp/META-INF
+/kmelia/kmelia-ejb/src/main/resources/META-INF/MANIFEST.MF
+/process-manager/process-manager-ejb/.classpath
+/process-manager/process-manager-war/.classpath

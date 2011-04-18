@@ -810,7 +810,6 @@ public class PdfGenerator extends PdfPageEventHelper {
     String instanceId = kmelia.getComponentId();
     VersioningUtil versioningUtil = new VersioningUtil();
     ForeignPK foreignKey = new ForeignPK(idPubli, instanceId);
-    @SuppressWarnings("unchecked")
     List<com.stratelia.silverpeas.versioning.model.Document> documents =
         versioningUtil.getDocuments(foreignKey);
     if (documents != null && !documents.isEmpty()) {
