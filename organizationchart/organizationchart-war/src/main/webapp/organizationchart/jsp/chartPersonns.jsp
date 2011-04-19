@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2011 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -68,27 +68,43 @@ jCells[cellIndex] = new JCell( {
 	currentCategoryIndex = cellIndex;
 	jCells[cellIndex] = new JCell( {
 		id : cellIndex,
-		title: "${category.name}",
+		title: "${(category.name eq 'Personnel') ? '' : category.name}",
 		level : 1,
 		className : 5,
 		cellType : CELL_TYPE_CATEGORY
+		<%--<c:if test="${category.name eq 'Personnel'}"> --%>
+		, innerUsers : new Array(
+			<c:forEach items="${category.users}" var="user" varStatus="mainLoopInfo">
+					{login : "${user.login}", userFullName: "${user.fullName}",
+					userAttributes: new Array(
+					<c:forEach items="${user.details}" var="detail" varStatus="loopInfo">
+						{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
+					</c:forEach>
+					)
+					} ${(not mainLoopInfo.last) ? ',' : ''}
+			</c:forEach>
+			)
+		<%--</c:if> --%>
 	});
 	jLinks[linkIndex++] = new JLink(0,cellIndex++, 0, ORIENTATION_HORIZONTAL);
 
-	<c:forEach items="${category.users}" var="user">
-		jCells[cellIndex] = new JCell( {
-			id : cellIndex,
-			title: "${user.fullName}",
-			level : 2,
-			className : 2,
-			userAttributes: new Array(
-				<c:forEach items="${user.details}" var="detail" varStatus="loopInfo">
-					{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
-				</c:forEach>
-			),
-			cellType : CELL_TYPE_PERSON,
-			onClickURL : "Details?login=${user.login}"
-		});
-		jLinks[linkIndex++] = new JLink(currentCategoryIndex,cellIndex++, 0, ORIENTATION_VERTICAL);
-	</c:forEach>
+<%--
+	<c:if test="${!(category.name eq 'Personnel')}">
+		<c:forEach items="${category.users}" var="user">
+			jCells[cellIndex] = new JCell( {
+				id : cellIndex,
+				title: "${user.fullName}",
+				level : 2,
+				className : 2,
+				userAttributes: new Array(
+					<c:forEach items="${user.details}" var="detail" varStatus="loopInfo">
+						{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
+					</c:forEach>
+				),
+				cellType : CELL_TYPE_PERSON,
+				onClickURL : "Details?login=${user.login}"
+			});
+			jLinks[linkIndex++] = new JLink(currentCategoryIndex,cellIndex++, 0, ORIENTATION_VERTICAL);
+		</c:forEach>
+	</c:if> --%>
 </c:forEach>

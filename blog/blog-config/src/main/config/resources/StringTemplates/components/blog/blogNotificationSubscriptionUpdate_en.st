@@ -1,11 +1,10 @@
-The following post has been updated : 
+The following post have been updated : 
 
 Name of the post : $blogName$
-Date if the event : $blogDate$
+Date of the event : $blogDate$
 $if(blogCategorie)$
 Category : $blogCategorie$
 $endif$
-
 
 $if(notification_receiver_users)$
 This message has been sent

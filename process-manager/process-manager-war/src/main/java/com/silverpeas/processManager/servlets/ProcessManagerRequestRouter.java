@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -39,6 +39,7 @@ import org.apache.commons.fileupload.FileItem;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordTemplate;
+import com.silverpeas.processManager.LockVO;
 import com.silverpeas.processManager.ProcessFilter;
 import com.silverpeas.processManager.ProcessManagerException;
 import com.silverpeas.processManager.ProcessManagerSessionController;
@@ -176,6 +177,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
     handlerMap.put("changeRole", changeRoleHandler);
     handlerMap.put("filterProcess", filterProcessHandler);
     handlerMap.put("viewProcess", viewProcessHandler);
+    handlerMap.put("removeLock",removeLockHandler);
     handlerMap.put("viewHistory", viewHistoryHandler);
     handlerMap.put("createProcess", createProcessHandler);
     handlerMap.put("saveCreation", saveCreationHandler);
@@ -410,7 +412,7 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("filterProcess", ""));
 
       ProcessFilter filter = session.getCurrentFilter();
-      updateProcessFilter(session, request, filter);
+      updateProcessFilter(session, request, filter, items);
 
       return listProcessHandler.getDestination(function, session, request);
     }
@@ -436,6 +438,29 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       return "/processManager/jsp/attachmentManager.jsp";
     }
   };
+
+  /**
+   * The removeLock handler
+   */
+  static private FunctionHandler removeLockHandler = new SessionSafeFunctionHandler()
+      {
+    protected String computeDestination(String function,
+        ProcessManagerSessionController session,
+        HttpServletRequest request, List<FileItem> items)
+        throws ProcessManagerException {
+      String processId = request.getParameter("processId");
+      String stateName = request.getParameter("stateName");
+      String userId = request.getParameter("userId");
+
+      session.resetCurrentProcessInstance(processId);
+
+      SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("removeLock", "stateName="+stateName+",lock_userId="+userId));
+
+      session.unlock(userId, stateName);
+
+      return viewProcessHandler.getDestination(function, session, request);
+    }
+      };
 
   /**
    * The viewProcess handler
@@ -475,9 +500,9 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       if (deleteAction != null)
         request.setAttribute("deleteAction", deleteAction);
 
-      List<User> lockingUsers = session.getLockingUsers();
-      if (lockingUsers != null) {
-        request.setAttribute("lockingUsers", lockingUsers);
+      List<LockVO> locks = session.getLockingUsers();
+      if (locks != null) {
+        request.setAttribute("locks", locks);
         request.setAttribute("isCurrentUserIsLockingUser", session.isCurrentUserIsLockingUser());
       }
       else {
@@ -552,9 +577,9 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       if (deleteAction != null)
         request.setAttribute("deleteAction", deleteAction);
 
-      List<User> lockingUsers = session.getLockingUsers();
-      if (lockingUsers != null) {
-        request.setAttribute("lockingUsers", lockingUsers);
+      List<LockVO> locks = session.getLockingUsers();
+      if (locks != null) {
+        request.setAttribute("locks", locks);
         request.setAttribute("isCurrentUserIsLockingUser", session.isCurrentUserIsLockingUser());
       }
       else {
@@ -700,13 +725,13 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
       SilverTrace.debug("processManagerTrace", "ProcessManagerRequestRouter.getDestination()", "root.MSG_GEN_ENTER_METHOD", session.getTrace("listTasks", ""));
 
       // checking locking users
-      List<User> lockingUsers = session.getLockingUsers();
-      if ( (!lockingUsers.isEmpty()) && (!session.isCurrentUserIsLockingUser()) ) {
+      List<LockVO> locks = session.getLockingUsers();
+      if ( (!locks.isEmpty()) && (!session.isCurrentUserIsLockingUser()) ) {
         return listProcessHandler.getDestination(function, session, request);
       }
 
       // check if an action must be resumed
-      if (!lockingUsers.isEmpty()) {
+      if (!locks.isEmpty()) {
 
         // Detects special case where user has killed his navigator while filling an action form
         HistoryStep savedStep = session.getSavedStep();
@@ -1200,12 +1225,10 @@ public class ProcessManagerRequestRouter extends ComponentRequestRouter {
   static private void updateProcessFilter(
       ProcessManagerSessionController session,
       HttpServletRequest request,
-      ProcessFilter filter)
+      ProcessFilter filter, List<FileItem> items)
       throws ProcessManagerException {
 
     try {
-      List<FileItem> items = FileUploadUtil.parseRequest(request);
-
       String collapse = FileUploadUtil.getParameter(items, "collapse");
 
       String oldC = filter.getCollapse();

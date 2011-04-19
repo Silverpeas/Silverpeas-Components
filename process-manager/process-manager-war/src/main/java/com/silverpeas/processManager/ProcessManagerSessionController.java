@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -81,7 +81,9 @@ import com.silverpeas.workflow.api.task.Task;
 import com.silverpeas.workflow.api.user.User;
 import com.silverpeas.workflow.api.user.UserInfo;
 import com.silverpeas.workflow.api.user.UserSettings;
+import com.silverpeas.workflow.engine.WorkflowHub;
 import com.silverpeas.workflow.engine.dataRecord.ProcessInstanceRowRecord;
+import com.silverpeas.workflow.engine.instance.LockingUser;
 import com.silverpeas.workflow.engine.model.ItemImpl;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -1147,17 +1149,19 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
    * Get locking users list
    * @throws ProcessManagerException
    */
-  public List<User> getLockingUsers() throws ProcessManagerException {
+  public List<LockVO> getLockingUsers() throws ProcessManagerException {
     this.currentUserIsLockingUser = false;
 
     try {
-      List<User> lockingUsers = new ArrayList<User>();
+      List<LockVO> lockingUsers = new ArrayList<LockVO>();
       String[] states = currentProcessInstance.getActiveStates();
       if (states != null) {
         for (String stateName : states) {
-          User lockingUser = currentProcessInstance.getLockingUser(stateName);
+          LockingUser lockingUser = currentProcessInstance.getLockingUser(stateName);
           if (lockingUser != null) {
-            lockingUsers.add(lockingUser);
+            User user = WorkflowHub.getUserManager().getUser(lockingUser.getUserId());
+            boolean isDraftPending = ( currentProcessInstance.getSavedStep(lockingUser.getUserId()) != null);
+            lockingUsers.add(new LockVO(user, lockingUser.getLockDate(), lockingUser.getState(), !isDraftPending));
             if (lockingUser.getUserId().equals(getUserId())) {
               this.currentUserIsLockingUser = true;
             }
@@ -1166,9 +1170,11 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       }
 
       // special case : instance saved in creation step
-      User lockingUser = currentProcessInstance.getLockingUser("");
+      LockingUser lockingUser = currentProcessInstance.getLockingUser("");
       if (lockingUser != null) {
-        lockingUsers.add(lockingUser);
+        User user = WorkflowHub.getUserManager().getUser(lockingUser.getUserId());
+        boolean isDraftPending = ( currentProcessInstance.getSavedStep(lockingUser.getUserId()) != null);
+        lockingUsers.add(new LockVO(user, lockingUser.getLockDate(), lockingUser.getState(), !isDraftPending));
         if (lockingUser.getUserId().equals(getUserId())) {
           this.currentUserIsLockingUser = true;
         }
@@ -1191,6 +1197,23 @@ public class ProcessManagerSessionController extends AbstractComponentSessionCon
       State state = processModel.getState(stateName);
       ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager()).lock(
           currentProcessInstance, state, currentUser);
+    } catch (WorkflowException e) {
+      throw new ProcessManagerException("SessionController",
+          "processManager.ERR_LOCK_FAILED", e);
+    }
+  }
+
+  /**
+   * Un-Lock the current instance for given user and given state
+   * @param userId user Id
+   * @param stateName state name
+   */
+  public void unlock(String userId, String stateName) throws ProcessManagerException {
+    try {
+      State state = processModel.getState(stateName);
+      User user = WorkflowHub.getUserManager().getUser(userId);
+      ((UpdatableProcessInstanceManager) Workflow.getProcessInstanceManager()).unlock(
+          currentProcessInstance, state, user);
     } catch (WorkflowException e) {
       throw new ProcessManagerException("SessionController",
           "processManager.ERR_LOCK_FAILED", e);

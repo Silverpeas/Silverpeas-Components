@@ -72,6 +72,7 @@ function JCell(options)
 	this.parentURL 		= options['parentURL'];			// URL to call when parent link is clicked
 	this.className 		= options['className'];			// CSS class name
 	this.usersIcon 		= options['usersIcon'];			// icon to display details Link
+	this.innerUsers         = options['innerUsers'];		// users to display inside the same cell
 
 	// calculated variables
 	// --------------------
@@ -189,6 +190,8 @@ function buildCellDIVs()
 
 function buildCellDIV(jCell)
 {
+	var firstInnerDiv = null;
+
 	// Main DIV
 	var div = document.createElement("DIV");
 	div.className = "cell"+jCell.className;
@@ -261,6 +264,31 @@ function buildCellDIV(jCell)
 					memberCell.innerHTML = "<a target=\"_blank\" href=\"" + jCell.commonUserURL + jCell.catMembers[i]['login'] + "\">" + jCell.catMembers[i]['userFullName'] + "</a>";
 				}
 			}
+
+			if (jCell.innerUsers) {
+				for (var i = 0; i < jCell.innerUsers.length; i++) {
+					var divMembers = document.createElement("DIV");
+					divMembers.className = "innerUser";
+					divMembers.innerHTML = "<a target=\"_blank\" href=\"" + jCell.commonUserURL + jCell.innerUsers[i]['login'] + "\">" + jCell.innerUsers[i]['userFullName'] + "</a>";
+					div.appendChild(divMembers);
+
+					// DIV Content as a HTML table
+					var tableMembers = document.createElement("TABLE");
+					for (var j = 0; j < jCell.innerUsers[i]['userAttributes'].length; j++) {
+						var userAttributeRow = tableMembers.insertRow(-1);
+						var userAttributeCell = userAttributeRow.insertCell(-1);
+						userAttributeCell.className = "celluserAttribute";
+						userAttributeCell.colSpan = 2;
+						userAttributeCell.align = "center";
+						userAttributeCell.innerHTML = jCell.innerUsers[i]['userAttributes'][j]['label'] + " : " + jCell.innerUsers[i]['userAttributes'][j]['value'];
+					}
+					divMembers.appendChild(tableMembers);
+
+					if (i==0) {
+						firstInnerDiv = divMembers;
+					}
+				}
+			}
 			break;
 
 		case CELL_TYPE_PERSON:
@@ -279,7 +307,12 @@ function buildCellDIV(jCell)
 			break;
 	}
 
-	div.appendChild(table);
+	if (firstInnerDiv) {
+		div.insertBefore(table, firstInnerDiv);
+	}
+	else {
+		div.appendChild(table);
+	}
 	mainDiv.appendChild(div);
 
 	div.style.width = CELLSIZE; // table.offsetWidth + 10; on fixe pour eviter les pbs

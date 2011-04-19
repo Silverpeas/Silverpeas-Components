@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -33,7 +33,10 @@ import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import javax.annotation.PostConstruct;
+import javax.inject.Named;
 
+@Named
 public class BlogCallBack implements CallBack {
 
   private BlogBmHome blogHome = null;
@@ -88,6 +91,7 @@ public class BlogCallBack implements CallBack {
    * @see com.stratelia.silverpeas.silverpeasinitialize.CallBack#subscribe()
    */
   @Override
+  @PostConstruct
   public void subscribe() {
     CallBackManager callBackManager = CallBackManager.get();
     callBackManager.subscribeAction(CallBackManager.ACTION_ON_WYSIWYG, this);
@@ -97,8 +101,7 @@ public class BlogCallBack implements CallBack {
     if (!pubId.startsWith("Node")
         && action == CallBackManager.ACTION_ON_WYSIWYG) {
       return true;
-    }
-    else {
+    } else {
       return false;
     }
   }
@@ -117,7 +120,7 @@ public class BlogCallBack implements CallBack {
   private BlogBmHome getBlogHome() {
     if (blogHome == null) {
       try {
-        blogHome = (BlogBmHome) EJBUtilitaire.getEJBObjectRef(
+        blogHome = EJBUtilitaire.getEJBObjectRef(
             JNDINames.BLOGBM_EJBHOME, BlogBmHome.class);
       } catch (Exception e) {
         throw new BlogRuntimeException("BlogCallback.getBlogHome()",

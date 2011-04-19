@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -108,10 +108,10 @@ public class SurveySessionController extends AbstractComponentSessionController 
   private boolean hasAlreadyParticipated = false;
   public static final String COOKIE_NAME = "surpoll";
 
-  /** 
-   * Creates new sessionClientController 
+  /**
+   * Creates new sessionClientController
    * @param mainSessionCtrl
-   * @param componentContext 
+   * @param componentContext
    */
   public SurveySessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -228,7 +228,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
 
   /**
    * Set status of anonymous user (if he has already participated with this ip)
-   * @param state 
+   * @param state
    */
   public void hasAlreadyParticipated(boolean state) {
     this.hasAlreadyParticipated = state;
@@ -241,24 +241,10 @@ public class SurveySessionController extends AbstractComponentSessionController 
   private boolean userIsAnonymous() {
     boolean userIsAnonymous = false;
 
-    String monLook;
-    try {
-      monLook =
-          new ResourceLocator("com.stratelia.webactiv.util.viewGenerator.settings.lookSettings", "").
-          getString("Initial");
-    } catch (Exception e) {
-      // No specific look is defined, get the default one
-      monLook = new ResourceLocator(
-          "com.stratelia.webactiv.util.viewGenerator.settings.defaultLookSettings", "").getString(
-          "Initial");
-    }
-
-    ResourceLocator settings = new ResourceLocator(monLook, "");
-    String guestId = settings.getString("guestId");
-
-    if (getUserId().equals(guestId)) {
+    UserDetail user = getUserDetail();
+    if (user.isAnonymous()) {
       if (getComponentId() != null
-          && getOrganizationController().isComponentAvailable(getComponentId(), guestId)) {
+          && getOrganizationController().isComponentAvailable(getComponentId(), user.getId())) {
         userIsAnonymous = true;
       }
     }
@@ -367,7 +353,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(null, null, componentId);
       return questionContainerBm.createQuestionContainer(qcPK, surveyDetail, getUserId());
-    } catch (Exception e) {      
+    } catch (Exception e) {
       throw new SurveyException("SurveySessionController.createSurvey", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_CREATE", "title = " + surveyDetail.getHeader().getTitle(), e);
     }
@@ -513,8 +499,8 @@ public class SurveySessionController extends AbstractComponentSessionController 
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerBm.openQuestionContainer(qcPK);
-    } catch (Exception e) {     
-      throw new SurveyException("SurveySessionController.openSurvey", SurveyException.WARNING,          
+    } catch (Exception e) {
+      throw new SurveyException("SurveySessionController.openSurvey", SurveyException.WARNING,
       "Survey.EX_PROBLEM_TO_OPEN_SURVEY", "id = " + surveyId, e);
     }
   }
@@ -525,7 +511,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerBm.recordReplyToQuestionContainerByUser(qcPK, getUserId(), reply);
     } catch (Exception e) {
-      
+
       throw new SurveyException("SurveySessionController.recordReply", SurveyException.WARNING,
           "Survey.EX_RECORD_REPLY_FAILED", "id = " + surveyId, e);
     }
@@ -537,7 +523,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       questionContainerBm.recordReplyToQuestionContainerByUser(qcPK, getUserId(), reply, comment,
           isAnonymousComment);
-    } catch (Exception e) {      
+    } catch (Exception e) {
       throw new SurveyException("SurveySessionController.recordReply", SurveyException.WARNING,
           "Survey.EX_RECORD_REPLY_FAILED", "id = " + surveyId, e);
     }
@@ -547,7 +533,7 @@ public class SurveySessionController extends AbstractComponentSessionController 
     try {
       QuestionContainerPK qcPK = new QuestionContainerPK(surveyId, getSpaceId(), getComponentId());
       return questionContainerBm.getSuggestions(qcPK);
-    } catch (Exception e) {      
+    } catch (Exception e) {
       throw new SurveyException("SurveySessionController.getSuggestions", SurveyException.WARNING,
           "Survey.EX_PROBLEM_TO_RETURN_SUGGESTION", "id = " + surveyId, e);
     }

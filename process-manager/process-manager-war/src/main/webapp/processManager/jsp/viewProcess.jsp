@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2009 Silverpeas
+    Copyright (C) 2000 - 2011 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -26,6 +26,8 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkProcessManager.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
 <%
 	ProcessInstance 			process 					= (ProcessInstance) request.getAttribute("process");
@@ -40,40 +42,40 @@
 	Boolean 					isHistoryTabEnable 			= (Boolean) request.getAttribute("isHistoryTabEnable");
 	boolean 					isProcessIdVisible 			= ((Boolean) request.getAttribute("isProcessIdVisible")).booleanValue();
 	boolean 					isPrintButtonEnabled 		= ((Boolean) request.getAttribute("isPrintButtonEnabled")).booleanValue();
-	List	 					lockingUsers 				= ((List) request.getAttribute("lockingUsers"));
-	boolean						hasLockingUsers				= (lockingUsers != null) && (lockingUsers.size()>0);
+	List	 					locks		 				= ((List) request.getAttribute("locks"));
+	boolean						hasLockingUsers				= (locks != null) && (locks.size()>0);
 	boolean						isCurrentUserIsLockingUser 	= ((Boolean) request.getAttribute("isCurrentUserIsLockingUser")).booleanValue();
 	boolean						isReturnEnabled 			= ((Boolean) request.getAttribute("isReturnEnabled")).booleanValue();
 	String 						versionning 				= (String) request.getAttribute("isVersionControlled");
 	boolean isVersionControlled = "1".equals(versionning);
-	
+
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel,"listProcess");
-	
+
 	String processId = "";
 	if (isProcessIdVisible)
 		processId = "#"+process.getInstanceId()+" > ";
 	browseBar.setPath(processId+process.getTitle(currentRole, language));
-	
+
 	if (isPrintButtonEnabled)
 	{
 		operationPane.addOperation(resource.getIcon("processManager.print"),
 			resource.getString("processManager.print"),
 			"javascript:printProcess()");
-	}	
+	}
 	tabbedPane.addTab(resource.getString("processManager.details"), "", true, false);
-	
+
 	if ("supervisor".equalsIgnoreCase(currentRole))
 	{
 		operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("processManager.reassign"),
 				resource.getString("processManager.reassign"),
 				"adminReAssign?processId="+process.getInstanceId());
-		
+
 		operationPane.addOperation(resource.getIcon("processManager.remove"),
 				resource.getString("processManager.remove"),
 				"adminRemoveProcess?processId="+process.getInstanceId());
-		
+
 		tabbedPane.addTab(resource.getString("processManager.history"), "viewHistory?processId=" + process.getInstanceId(), false, true);
 		tabbedPane.addTab(resource.getString("processManager.errors"), "adminViewErrors?processId=" + process.getInstanceId(), false, true);
 	}
@@ -85,7 +87,7 @@
 										deleteAction[2],
 										"editAction?state="+deleteAction[1]+"&action="+deleteAction[0]);
 		}
-		
+
 		if (isAttachmentTabEnable.booleanValue() && isActiveUser != null && isActiveUser.booleanValue())
 			tabbedPane.addTab(resource.getString("processManager.attachments"), "attachmentManager?processId=" + process.getInstanceId(), false, true);
 		if (!hasLockingUsers || isCurrentUserIsLockingUser)
@@ -112,14 +114,14 @@
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <SCRIPT Language="Javascript">
 
-function printProcess() 
+function printProcess()
 {
     url = "printProcessFrameset";
     windowName = "printProcess";
     larg = "600";
     haut = "600";
     windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars=1";
-    SP_openWindow(url, windowName, larg , haut, windowParams);    
+    SP_openWindow(url, windowName, larg , haut, windowParams);
 }
 
 </SCRIPT>
@@ -145,37 +147,35 @@ function printProcess()
 			</table>
 			<table CELLPADDING=5 CELLSPACING=0 BORDER=0 WIDTH="100%">
 				<tr><td><img src="<%=resource.getIcon("processManager.px") %>"></td></tr>
-					<% if (isCurrentUserIsLockingUser) {%>
+
+				<c:choose>
+					<c:when test="${isCurrentUserIsLockingUser}">
+						<tr>
+						<td class="textePetitBold">
+						<%=resource.getString("processManager.youHaveAnActionToFinish") %>
+						</td>
+						</tr>
+					</c:when>
+
+					<c:otherwise>
+						<c:forEach items="${locks}" var="userlock">
 							<tr>
-							<td class="textePetitBold">
-							<%=resource.getString("processManager.youHaveAnActionToFinish") %>
-							</td>
+								<td class="textePetitBold">
+									<%=resource.getString("processManager.instanceLockedBy")%> ${userlock.user.fullName}
+									<%=resource.getString("processManager.since")%> <fmt:formatDate value="${userlock.lockDate}" pattern="dd MMM yyyy"/>
+									<c:if test="${currentRole eq 'supervisor'}">
+										<c:if test="${userlock.removableBySupervisor}">
+											<c:url value="/util/icons/delete.gif" var="removeIconUrl" />
+											<a href="removeLock?processId=${process.instanceId}&stateName=${userlock.state}&userId=${userlock.user.userId}">
+												<img src="${removeIconUrl}" border="0"/>
+											</a>
+										</c:if>
+									</c:if>
+								</td>
 							</tr>
-					<%
-					}
-					else {%>
-							<tr>
-							<td class="textePetitBold">
-								<%=resource.getString("processManager.instanceLockedBy")%>
-								<%
-								Iterator itLockingUsers = lockingUsers.iterator();
-								boolean firstUser = true;
-								while (itLockingUsers.hasNext()) {
-								  if (firstUser) {
-								    firstUser = false;
-								  }
-								  else {
-								    out.print(", ");
-								  }
-								  User lockingUser = (User) itLockingUsers.next();
-								  out.print(lockingUser.getFullName());
-								}
-								%>
-							</td>
-							</tr>
-					<%
-					}
-					%>
+						</c:forEach>
+					</c:otherwise>
+				</c:choose>
 			</table>
 			<% out.println(board.printAfter()); %>
 			<br>

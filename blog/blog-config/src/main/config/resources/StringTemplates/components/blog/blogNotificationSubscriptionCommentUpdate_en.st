@@ -1,7 +1,7 @@
-One of the comments of the following post has been updated : 
+One of the comments of the following post have been updated : 
 
 Name of the post : $blogName$
-Date if the event : $blogDate$
+Date of the event : $blogDate$
 $if(blogCategorie)$
 Category : $blogCategorie$
 $endif$

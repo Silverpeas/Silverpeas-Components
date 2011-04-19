@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2009 Silverpeas
+ * Copyright (C) 2000 - 2011 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -40,10 +40,6 @@ import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class ResourcesManagerDAO {
-
-  private static String STATUS_VALIDATE = "V";
-  private static String STATUS_REFUSED = "R";
-  private static String STATUS_FOR_VALIDATION = "A";
 
   /*** Gestion des catégories ***/
   private static CategoryDetail resultSetToCategoryDetail(ResultSet rs)
@@ -537,22 +533,22 @@ public class ResourcesManagerDAO {
     StringTokenizer tokenizer = new StringTokenizer(listReservationCurrent, ",");
     boolean refused = false;
     boolean ok = false;
-    String reservationStatus = STATUS_VALIDATE;
+    String reservationStatus = ReservationDetail.STATUS_VALIDATE;
     while (tokenizer.hasMoreTokens() && !ok) {
       String idResource = tokenizer.nextToken();
       String status = getResourceStatus(con, idResource, reservation.getUserId());
       refused = false;
-      if (status.equals(STATUS_FOR_VALIDATION)) {
+      if (status.equals(ReservationDetail.STATUS_FOR_VALIDATION)) {
         // si une ressource reste à valider, la reservation est à valider
         reservationStatus = status;
         ok = true;
       }
-      if (status.equals(STATUS_REFUSED)) {
+      if (status.equals(ReservationDetail.STATUS_REFUSED)) {
         refused = true;
       }
     }
     if (refused) {
-      reservationStatus = STATUS_REFUSED;
+      reservationStatus = ReservationDetail.STATUS_REFUSED;
     }
     return reservationStatus;
   }
@@ -569,7 +565,7 @@ public class ResourcesManagerDAO {
 
   public static String getResourceStatus(Connection con, String resourceId, String userId)
       throws SQLException {
-    String status = STATUS_VALIDATE;
+    String status = ReservationDetail.STATUS_VALIDATE;
     ResourceDetail resource = getResource(con, resourceId);
     // si le status n'existe pas sur cette ressource
     if (!StringUtil.isDefined(resource.getStatus())) {
@@ -577,7 +573,7 @@ public class ResourcesManagerDAO {
       if (managers != null && managers.size() > 0) {
         // il y a des responsables sur cette ressource
         if (!managers.contains(userId)) {
-          status = STATUS_FOR_VALIDATION;
+          status = ReservationDetail.STATUS_FOR_VALIDATION;
         }
       }
     }
@@ -1035,7 +1031,7 @@ public class ResourcesManagerDAO {
     String query =
         "select A.reservationId from SC_Resources_ReservedResource A, SC_Resources_Managers B " +
         "where A.resourceId=B.resourceId AND B.managerId = ? AND A.status = '" +
-        STATUS_FOR_VALIDATION + "'";
+        ReservationDetail.STATUS_FOR_VALIDATION + "'";
     int idUser = Integer.parseInt(userId);
     try {
       prepStmt = con.prepareStatement(query);
@@ -1161,7 +1157,7 @@ public class ResourcesManagerDAO {
       StringTokenizer tokenizer = new StringTokenizer(listReservation, ",");
       boolean refused = false;
       boolean forValidation = false;
-      String reservationStatus = STATUS_VALIDATE;
+      String reservationStatus = ReservationDetail.STATUS_VALIDATE;
       while (tokenizer.hasMoreTokens()) {
         String idResource = tokenizer.nextToken();
         String status = null;
@@ -1172,18 +1168,18 @@ public class ResourcesManagerDAO {
           status = getResourceStatus(con, idResource, reservationCourante.getUserId());
         }
         insertIntoReservedResource(con, reservationId, idResource, status);
-        if (status.equals(STATUS_FOR_VALIDATION)) {
+        if (status.equals(ReservationDetail.STATUS_FOR_VALIDATION)) {
           forValidation = true;
         }
-        if (status.equals(STATUS_REFUSED)) {
+        if (status.equals(ReservationDetail.STATUS_REFUSED)) {
           refused = true;
         }
       }
       if (forValidation) {
-        reservationStatus = STATUS_FOR_VALIDATION;
+        reservationStatus = ReservationDetail.STATUS_FOR_VALIDATION;
       }
       if (refused) {
-        reservationStatus = STATUS_REFUSED;
+        reservationStatus = ReservationDetail.STATUS_REFUSED;
       }
       reservationCourante.setStatus(reservationStatus);
       updateIntoReservation(con, reservationCourante);
@@ -1210,7 +1206,7 @@ public class ResourcesManagerDAO {
       throws SQLException {
     PreparedStatement prepStmt = null;
     try {
-      String reservationStatus = STATUS_VALIDATE;
+      String reservationStatus = ReservationDetail.STATUS_VALIDATE;
       List<ResourceDetail> resources = reservationCourante.getListResourcesReserved();
       if (resources != null) {
         Iterator<ResourceDetail> it = resources.iterator();
@@ -1220,18 +1216,18 @@ public class ResourcesManagerDAO {
         while (it.hasNext()) {
           ResourceDetail resource = it.next();
           String status = resource.getStatus();
-          if (status.equals(STATUS_FOR_VALIDATION)) {
+          if (status.equals(ReservationDetail.STATUS_FOR_VALIDATION)) {
             forValidation = true;
           }
-          if (status.equals(STATUS_REFUSED)) {
+          if (status.equals(ReservationDetail.STATUS_REFUSED)) {
             refused = true;
           }
         }
         if (forValidation) {
-          reservationStatus = STATUS_FOR_VALIDATION;
+          reservationStatus = ReservationDetail.STATUS_FOR_VALIDATION;
         }
         if (refused) {
-          reservationStatus = STATUS_REFUSED;
+          reservationStatus = ReservationDetail.STATUS_REFUSED;
         }
       }
       reservationCourante.setStatus(reservationStatus);
