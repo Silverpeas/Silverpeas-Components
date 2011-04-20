@@ -37,11 +37,20 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <c:out value="${error}"/>
 
 <%@ page import="com.silverpeas.delegatednews.control.DelegatedNewsSessionController"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory "%>
 <%@ page import="com.stratelia.webactiv.util.GeneralPropertiesManager"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayPane"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayLine"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayColumn"%>
+<%@ page import="com.stratelia.webactiv.util.viewGenerator.html.arrayPanes.ArrayCellText"%>
+<%@ page import="com.stratelia.silverpeas.util.ResourcesWrapper"%>
+
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 <%
 	DelegatedNewsSessionController newsScc = (DelegatedNewsSessionController) request.getAttribute("DelegatedNews");
+	GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
+	ResourcesWrapper resources = (ResourcesWrapper)request.getAttribute("resources");
 	
 	if (newsScc == null) {
 	    // No session controller in the request -> security exception

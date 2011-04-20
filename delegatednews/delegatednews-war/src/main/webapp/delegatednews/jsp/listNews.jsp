@@ -24,18 +24,28 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List"%>
+<%@ page import="java.text.SimpleDateFormat"%>
+<%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
+<%@ page import="com.silverpeas.delegatednews.model.DelegatedNews"%>
+
+
 <%@ include file="check.jsp"%>
   <c:set var="componentId" value="${requestScope.componentId}" />
   <c:set var="browseContext" value="${requestScope.browseContext}" />
-  <c:set var="listNews" value="${requestScope.ListNews}"/>
   <fmt:setLocale value="${sessionScope[sessionController].language}" />
   <view:setBundle bundle="${requestScope.resources.multilangBundle}" var="DML"/>
   <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
   <view:setBundle basename="com.stratelia.webactiv.kmelia.multilang.kmeliaBundle" var="KML"/>
   <view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML"/>
-  <fmt:message key="GML.dateFormat" bundle="${GML}" var="dateFormat"/>
+  
   <fmt:message key="GML.hourFormat" bundle="${GML}" var="hourFormat"/>
   <c:set var="dateHourFormat"><c:out value="${dateFormat}" /> <c:out value="${hourFormat}" /></c:set>
+  
+<%
+	List listNews = (List) request.getAttribute("ListNews"); //List<DelegatedNews> 
+%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
@@ -63,7 +73,6 @@
     <view:window>
       <view:frame>
         <view:board>
-          <fmt:message key="delegatednews.listNews" bundle="${DML}"/>
       <view:tabs>
         
       <FORM NAME="listDelegatedNews" ACTION="" METHOD="POST">
@@ -74,63 +83,48 @@
       <input type="hidden" name="EndDate">
       <input type="hidden" name="EndHour">
       
-      <table width="100%" border="0" align="center" cellpadding="4" cellspacing="1" class="testTableau">
-        <tr class="ArrayColumn">
-          <td align="center" nowrap="nowrap"><fmt:message key="PubTitre" bundle="${KML}"/></td>
-          <td align="center" nowrap="nowrap"><fmt:message key="delegatednews.updateDate" bundle="${DML}"/></td>
-          <td align="center" nowrap="nowrap"><fmt:message key="delegatednews.contributor" bundle="${DML}"/></td>
-          <td align="center" nowrap="nowrap"><fmt:message key="PubState" bundle="${KML}"/></td>
-          <td align="center" nowrap="nowrap"><fmt:message key="delegatednews.visibilityBeginDate" bundle="${DML}"/></td>
-          <td align="center" nowrap="nowrap"><fmt:message key="delegatednews.visibilityEndDate" bundle="${DML}"/></td>
-          <%
-          boolean isAdmin = newsScc.isAdmin();
-          if(isAdmin) {
-          %>
-      <td align="center" nowrap="nowrap"><fmt:message key="Operations" bundle="${KML}"/></td>
-          <%
-          }
-          %>
-        </tr>
+
+      
+      
+  <%
+	ResourceLocator kmeliaResourceLocator = new ResourceLocator("com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", newsScc.getLanguage());
+    ArrayPane arrayPane = gef.getArrayPane("newsList", "Main", request, session);
+    arrayPane.setVisibleLineNumber(10);
+    arrayPane.setTitle(resources.getString("delegatednews.listNews"));
+    arrayPane.addArrayColumn(kmeliaResourceLocator.getString("PubTitre"));
+    arrayPane.addArrayColumn(resources.getString("delegatednews.updateDate"));
+    arrayPane.addArrayColumn(resources.getString("delegatednews.contributor"));
+    arrayPane.addArrayColumn(kmeliaResourceLocator.getString("PubState"));
+    arrayPane.addArrayColumn(resources.getString("delegatednews.visibilityBeginDate"));
+    arrayPane.addArrayColumn(resources.getString("delegatednews.visibilityEndDate"));
+    
+	boolean isAdmin = newsScc.isAdmin();
+    if(isAdmin) {
+		ArrayColumn arrayColumnOp = arrayPane.addArrayColumn(kmeliaResourceLocator.getString("Operations"));
+		arrayColumnOp.setSortable(false);
+	}
+    
+    SimpleDateFormat dateFormat = new SimpleDateFormat(resources.getString("GML.dateFormat"));
+    for (int i=0; i<listNews.size(); i++) {
+		DelegatedNews delegatedNews = (DelegatedNews) listNews.get(i);
+		int pubId = delegatedNews.getPubId();
+		
+		ArrayLine arrayLine = arrayPane.addArrayLine();
+		arrayLine.addArrayCellLink(delegatedNews.getPublicationDetail().getName(), "javascript:onClick=openPublication('"+pubId+"')");
+		
+		/*String updateDate = dateFormat.format(delegatedNews.getPublicationDetail().getUpdateDate());
+		System.out.println("updateDate"=+updateDate);*/
+		/*ArrayCellText cellUpdateDate = arrayLine.addArrayCellText(resources.getOutputDate(updateDate));
+		cellUpdateDate.setCompareOn(updateDate);*/
+		//<fmt:formatDate var="updateDate" pattern="${dateFormat}" value="${delegatedNews.publicationDetail.updateDate}" />
         
-        <c:if test="${not empty listNews}">
-      <c:forEach var="i" begin="0" end="${fn:length(listNews) - 1}" step="1">
-      <c:set var="delegatedNews" value="${listNews[i]}"/>
-      <c:set var="pubId" value="${delegatedNews.pubId}" />
-      <tr>
-        <td><a href="javascript:onClick=openPublication('${pubId}')"><c:out value='${delegatedNews.publicationDetail.name}'/></a></td>
-        <fmt:formatDate var="updateDate" pattern="${dateFormat}" value="${delegatedNews.publicationDetail.updateDate}" />
-        <td><c:out value='${updateDate}'/></td>
-        <c:set var="contributorId" value="${delegatedNews.contributorId}" />
-        <%
-        String theContributorId = (String) pageContext.getAttribute("contributorId");
-        String contributorName = newsScc.getUserDetail(theContributorId).getDisplayedName();
-        %>
-        <td><%=contributorName%></td>
-        <c:set var="keyStatus">delegatednews.status.<c:out value="${delegatedNews.status}" /></c:set>
-        <td><fmt:message key='${keyStatus}' bundle="${DML}"/></td>
-        <fmt:formatDate var="beginDate" pattern="${dateFormat}" value="${delegatedNews.beginDate}" />
-        <fmt:formatDate var="beginHour" pattern="${hourFormat}" value="${delegatedNews.beginDate}" />
-        <fmt:formatDate var="beginDateHour" pattern="${dateHourFormat}" value="${delegatedNews.beginDate}" />
-        <td><c:out value='${beginDateHour}'/></td>
-        <fmt:formatDate var="endDate" pattern="${dateFormat}" value="${delegatedNews.endDate}" />
-        <fmt:formatDate var="endHour" pattern="${hourFormat}" value="${delegatedNews.endDate}" />
-        <fmt:formatDate var="endDateHour" pattern="${dateHourFormat}" value="${delegatedNews.endDate}" />
-        <td><c:out value='${endDateHour}'/></td>
-        <%
-        if(isAdmin) {
-        %>
-        <td>
-        <a href="javascript:onClick=updateDateDelegatedNews('${pubId}', '${beginDate}', '${beginHour}', '${endDate}', '${endHour}')"><img src="/silverpeas/util/icons/update.gif" title="<fmt:message key="GML.modify" bundle="${GML}"/>" alt="<fmt:message key="GML.modify" bundle="${GML}"/>" /></a>
-        <a href="ValidateDelegatedNews?PubId=${pubId}"><img src="/silverpeas/util/icons/ok.gif" title="<fmt:message key="Validate" bundle="${KML}"/>" alt="<fmt:message key="Validate" bundle="${KML}"/>" /></a>
-        <a href="javascript:onClick=refuseDelegatedNews('${pubId}')"><img src="/silverpeas/util/icons/delete.gif" title="<fmt:message key="PubUnvalidate?" bundle="${KML}"/>" alt="<fmt:message key="PubUnvalidate?" bundle="${KML}"/>" /></a>
-        </td>
-        <%
-        }
-        %>
-      </tr>
-      </c:forEach>
-        </c:if>
-      </table>
+	}
+   
+       
+  out.print(arrayPane.print());
+  %>
+  
+     
       </FORM>  
        
       </view:tabs>
