@@ -41,6 +41,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.silverpeas.delegatednews.model.DelegatedNews;
+import com.silverpeas.delegatednews.service.DelegatedNewsService;
+import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
@@ -471,6 +474,24 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           out.write(displayImportance(pub.getImportance(), 5, fullStarSrc, emptyStarSrc, out));
           out.write("</nobr></span>");
         }
+        
+        //Gestion actualités décentralisées
+        if(kmeliaScc.isNewsManage()) {
+          
+          DelegatedNews delegatedNews = kmeliaScc.getDelegatedNews(pub.getPK().getId());
+          if(delegatedNews != null) {
+            out.write("<span class=\"actualite\"><nobr>");
+            if (DelegatedNews.NEWS_TO_VALIDATE.equals(delegatedNews.getStatus())) {
+              out.write(" ("+resources.getString("kmelia.DelegatedNewsToValidate")+")");
+            } else if (DelegatedNews.NEWS_VALID.equals(delegatedNews.getStatus())) {
+              out.write(" ("+resources.getString("kmelia.DelegatedNewsValid")+")");
+            } else if (DelegatedNews.NEWS_REFUSED.equals(delegatedNews.getStatus())) {
+              out.write(" ("+resources.getString("kmelia.DelegatedNewsRefused")+")");
+            }
+            out.write("</nobr></span>");  
+          }
+        }
+        
         out.write("</div>");
         out.write("<div class=\"line2\">");
         out.write("<font color=\"");

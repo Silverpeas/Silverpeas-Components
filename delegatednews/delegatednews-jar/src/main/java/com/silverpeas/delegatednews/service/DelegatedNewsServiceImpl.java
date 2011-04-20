@@ -323,6 +323,48 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
     }
   }
   
+  /**
+   * Notifie le dernier contributeur que l'actualité est refusée
+   *
+   */
+  public void notifyDelegatedNewsRefused(String pubId, String pubName, String refusalMotive, String senderId, String senderName, String contributorId, String delegatednewsInstanceId) {
+    
+    //Notification du dernier contributeur
+    try {
+        if(delegatednewsInstanceId == null) {
+          SilverTrace.warn("delegatednews", "DelegatedNewsServiceImpl.notifyDelegatedNewsRefused()",
+              "delegatednews.EX_AUCUNE_INSTANCE_DISPONIBLE");
+        } else {
+          Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+          ResourceLocator message = new ResourceLocator(
+              "com.silverpeas.delegatednews.multilang.DelegatedNewsBundle", DisplayI18NHelper.getDefaultLanguage());
+          String subject = message.getString("delegatednews.newsRefused");
+          
+          NotificationMetaData notifMetaData =
+              new NotificationMetaData(NotificationParameters.NORMAL, subject, templates, "delegatednewsNotificationRefused");
+          for (String lang : DisplayI18NHelper.getLanguages()) {
+            SilverpeasTemplate template = getNewTemplate();
+            templates.put(lang, template);
+            template.setAttribute("publicationId", pubId);
+            template.setAttribute("publicationName", pubName);
+            template.setAttribute("refusalMotive", refusalMotive);
+            template.setAttribute("senderName", senderName);
+            ResourceLocator localizedMessage = new ResourceLocator(
+                "com.silverpeas.delegatednews.multilang.DelegatedNewsBundle", lang);
+            subject = localizedMessage.getString("delegatednews.newsRefused");
+            notifMetaData.addLanguage(lang, subject, "");
+          }
+          notifMetaData.addUserRecipient(contributorId);
+          notifMetaData.setComponentId(delegatednewsInstanceId);
+          notifyUsers(notifMetaData, senderId);
+        }
+    } catch (Exception e) {
+      SilverTrace.warn("delegatednews", "DelegatedNewsServiceImpl.notifyDelegatedNewsRefused()",
+          "delegatednews.EX_IMPOSSIBLE_DALERTER_LE_CONTRIBUTEUR", "pubId = "
+          + pubId + ", pubName = " + pubName, e);
+    }
+  }
+  
   /*****************************************************************************************************************/
   /** Connection management methods used for the content service **/
   /*****************************************************************************************************************/

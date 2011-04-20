@@ -33,6 +33,7 @@ import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
+import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 
 import static com.stratelia.webactiv.SilverpeasRole.*;
 
@@ -93,12 +94,11 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
     //valide l'actualité
     service.validateDelegatedNews(pubId, this.getUserId());
     
-    //TODO : A finir
-    
-    /*DelegatedNews delegatedNews = service.getDelegatedNews(pubId);
+    DelegatedNews delegatedNews = service.getDelegatedNews(pubId);
+    PublicationDetail pubDetail = delegatedNews.getPublicationDetail();
     
     //alerte le dernier contributeur de la décision
-    /*service.notifyDelegatedNewsValid(pubId, pubDetail.getName(this.getLanguage()), this.getUserId(), this.getUserDetail().getDisplayedName(), delegatednewsInstanceId);*/
+    service.notifyDelegatedNewsValid(pubDetail.getPK().getId(), pubDetail.getName(this.getLanguage()), this.getUserId(), this.getUserDetail().getDisplayedName(), delegatedNews.getContributorId(), this.getComponentId());
     
   }
   
@@ -107,7 +107,15 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
    *
    */
   public void refuseDelegatedNews(int pubId, String refuseReasonText) {
+    //refuse l'actualité
     service.refuseDelegatedNews(pubId, this.getUserId());
+    
+    DelegatedNews delegatedNews = service.getDelegatedNews(pubId);
+    PublicationDetail pubDetail = delegatedNews.getPublicationDetail();
+    
+    //alerte le dernier contributeur de la décision
+    service.notifyDelegatedNewsRefused(pubDetail.getPK().getId(), pubDetail.getName(this.getLanguage()), refuseReasonText, this.getUserId(), this.getUserDetail().getDisplayedName(), delegatedNews.getContributorId(), this.getComponentId());
+    
   }
   
   /**
