@@ -114,7 +114,7 @@
     <view:frame>
       <view:board>
     <table cellpadding="5" width="100%">
-      <form name="categoryForm" action="<c:out value="${pageScope.action}" />" method="POST" enctype="multipart/form-data;charset=UTF-8">
+      <form name="categoryForm" action="<c:out value="${pageScope.action}" />" method="post">
         <input type="hidden" name="CategoryId" value="<c:out value="${categoryId}" />"/>
         <input type="hidden" name="Langue" value="<%=resources.getLanguage()%>"/>
         <tr>
