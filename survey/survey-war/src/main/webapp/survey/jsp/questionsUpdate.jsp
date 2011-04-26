@@ -129,7 +129,8 @@ $(document).ready(function(){
 <%-- //TODO add the operation Pane only if there is no question (depends on vote or survey) --%>
 <view:operationPane>
   <c:if test="${!isPolling}">
-    <view:operation altText="<%=resources.getString("QuestionAdd")%>" icon="icons/questionAdd.gif" action="javaScript:addQuestion();"></view:operation>
+    <fmt:message var="addQuestionLabel" key="QuestionAdd"/>
+    <view:operation altText="${addQuestionLabel}" icon="icons/questionAdd.gif" action="javaScript:addQuestion();"></view:operation>
   </c:if>
 </view:operationPane>
 <fmt:message var="extraInfoBB" key="SurveyUpdate"/>
