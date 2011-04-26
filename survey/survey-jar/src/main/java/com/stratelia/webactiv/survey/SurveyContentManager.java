@@ -59,8 +59,9 @@ public class SurveyContentManager implements ContentInterface {
    * @return a List of SilverContent
    */
   public List getSilverContentById(List<Integer> ids, String peasId, String userId, List<String> userRoles) {
-    if (getContentManager() == null)
+    if (getContentManager() == null) {
       return new ArrayList<SilverContentInterface>();
+    }
 
     return getHeaders(makePKArray(ids, peasId));
   }

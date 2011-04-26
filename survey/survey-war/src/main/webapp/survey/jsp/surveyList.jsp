@@ -49,7 +49,11 @@
 <fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
+<c:set var="isPolling" value="${requestScope['PollingStationMode']}" />
 <fmt:message var="surveyConfirmUpdateLabel" key="survey.confirmUpdateSurvey" />
+<c:if test="${isPolling}">
+  <fmt:message var="surveyConfirmUpdateLabel" key="survey.confirmUpdatePoll"/>
+</c:if>
 
 <%!String lockSrc = "";
   String unlockSrc = "";

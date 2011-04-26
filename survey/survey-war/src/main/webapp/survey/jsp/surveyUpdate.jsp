@@ -242,9 +242,8 @@ function isCorrectForm() {
 <%
 
         out.println(frame.printBefore());
-        out.println(board.printBefore());
 %>
-
+<view:board>
 
 <center>
 <form name="surveyForm" action="surveyUpdate.jsp" method="post">
@@ -279,7 +278,27 @@ function isCorrectForm() {
         <input type="text" class="dateToPick" name="endDate" size="14" value="<%=endDate%>" maxlength="<%=DBUtil.getDateFieldLength()%>"/>
       </td>
     </tr>
-    <tr>
+    <%
+    String anonymousCheck = "";
+    if (anonymous) {
+      anonymousCheck = "checked";
+    }
+
+    //Mode anonyme -> force les enquetes a etre toutes anonymes
+    String anonymousDisabled = "";
+    if(surveyScc.isAnonymousModeEnabled()) {
+      anonymousDisabled = "disabled";
+    }
+  
+    String anonymousLabel = resources.getString("survey.surveyAnonymous");
+    String displayVote = "";
+    if (surveyScc.isPollingStationMode()) {
+      anonymousLabel = resources.getString("survey.pollAnonymous");
+      displayVote="display:none;";
+    }
+  
+    %>
+    <tr style="<%=displayVote%>">
       <td class="txtlibform"><%=resources.getString("SurveyCreationNbQuestionPerPage")%>
         :</td>
       <td>
@@ -288,20 +307,7 @@ function isCorrectForm() {
       </td>
     </tr>
     <tr>
-    <%
-    String anonymousCheck = "";
-    if (anonymous)
-    {
-    	anonymousCheck = "checked";
-    }
-
-    //Mode anonyme -> force les enquetes a etre toutes anonymes
-	String anonymousDisabled = "";
-	if(surveyScc.isAnonymousModeEnabled()) {
-		anonymousDisabled = "disabled";
-	}
-    %>
-    	<td class="txtlibform"><%=resources.getString("survey.surveyAnonymous")%> :</td>
+    	<td class="txtlibform"><%=anonymousLabel%> :</td>
     	<td>
     	  <input type="checkbox" name="anonymous" value="true" <%=anonymousCheck%> <%=anonymousDisabled%>>
     	  <input type="hidden" name="anonymousString" value="<%=anonymousString%>">
@@ -321,14 +327,14 @@ function isCorrectForm() {
 </table>
 </form>
 </center>
+</view:board>
 <%
-		out.println(board.printAfter());
         out.println(frame.printMiddle());
         Button validateButton = (Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=sendData()", false);
         ButtonPane buttonPane = gef.getButtonPane();
         buttonPane.addButton(validateButton);
         buttonPane.setHorizontalPosition();
-        out.println("<BR><center>"+buttonPane.print()+"</center>");
+        out.println("<br/><center>"+buttonPane.print()+"</center>");
         out.println(frame.printAfter());
         out.println(window.printAfter());
 %>
