@@ -548,7 +548,8 @@ function doPagination(index) {
 	var topicQuery = getSearchQuery();
 	var ieFix = new Date().getTime();
 	var componentId = getComponentId();
-	$.get('<%=m_context%>/RAjaxPublicationsListServlet', {Index:index,ComponentId:componentId,ToValidate:paramToValidate,Query:topicQuery,IEFix:ieFix},
+	var url = getWebContext()+'/RAjaxPublicationsListServlet';
+	$.get(url, {Index:index,ComponentId:componentId,ToValidate:paramToValidate,Query:topicQuery,IEFix:ieFix},
 							function(data){
 								$('#pubList').html(data);
 							},"html");
