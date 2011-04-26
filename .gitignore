@@ -54,3 +54,4 @@ wiki/wiki-jar/Test de base/
 /process-manager/process-manager-war/src/main/webapp/META-INF
 /project-manager/project-manager-ejb/src/main/resources/META-INF/MANIFEST.MF
 /project-manager/project-manager-war/src/main/webapp/META-INF
+/survey/survey-config/.project
