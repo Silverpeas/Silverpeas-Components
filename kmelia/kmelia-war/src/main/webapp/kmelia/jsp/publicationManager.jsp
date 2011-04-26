@@ -508,16 +508,9 @@
         var errorNb = 0;
         var title = stripInitialWhitespace(document.pubForm.Name.value);
      
-        var re = /(\d\d\/\d\d\/\d\d\d\d)/i;
         var beginDate = document.pubForm.BeginDate.value;
         var endDate = document.pubForm.EndDate.value;
 
-        var yearBegin = extractYear(beginDate, '<%=kmeliaScc.getLanguage()%>');
-        var monthBegin = extractMonth(beginDate, '<%=kmeliaScc.getLanguage()%>');
-        var dayBegin = extractDay(beginDate, '<%=kmeliaScc.getLanguage()%>');
-        var yearEnd = extractYear(endDate, '<%=kmeliaScc.getLanguage()%>');
-        var monthEnd = extractMonth(endDate, '<%=kmeliaScc.getLanguage()%>');
-        var dayEnd = extractDay(endDate, '<%=kmeliaScc.getLanguage()%>');
         var beginHour = document.pubForm.BeginHour.value;
         var endHour = document.pubForm.EndHour.value;
 
@@ -550,17 +543,11 @@
              }
       <% }%>
              if (!isWhitespace(beginDate)) {
-           if (beginDate.replace(re, "OK") !=     "OK") {
-                 errorMsg+="  - '<%=resources.getString("PubDateDebut")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-                 errorNb++;
-                 beginDateOK = false;
-               } else {
-             if (isCorrectDate(yearBegin, monthBegin, dayBegin)    ==false) {
-                   errorMsg+="  - '<%=resources.getString("PubDateDebut")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-                   errorNb++;
-                   beginDateOK = false;
-                 }
-               }
+            	if (!isDateOK(beginDate, '<%=kmeliaScc.getLanguage()%>')) {
+	                 errorMsg+="  - '<%=resources.getString("PubDateDebut")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+    	             errorNb++;
+        	         beginDateOK = false;
+               	} 
              }
              if (!checkHour(beginHour))
              {
@@ -568,28 +555,23 @@
                errorNb++;
              }
              if (!isWhitespace(endDate)) {
-           if (endDate.replace(re,     "OK") != "OK") {
-                 errorMsg+="  - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-                 errorNb++;
-               } else {
-             if (isCorrectDate(yearEnd, monthEnd, dayEnd)==false) {
-                   errorMsg+="  - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-                   errorNb++;
-                 } else {
-                   if ((isWhitespace(beginDate) == false) && (isWhitespace(endDate) == false)) {
-                 if (beginDateOK && isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin,     monthBegin, dayBegin) == false) {
-                       errorMsg+="  - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDate+"\n";
-                       errorNb++;
-                     }
-                   } else {
-                     if ((isWhitespace(beginDate) == true) && (isWhitespace(endDate) == false)) {
-                   if (isFutureDate(yearEnd, monthEnd, dayEnd) == false) {
-                         errorMsg+="  - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
-                         errorNb++;
-                       }
-                     }
-                   }
-                 }
+            	 if (!isDateOK(endDate, '<%=kmeliaScc.getLanguage()%>')) {
+                	errorMsg+="  - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+                 	errorNb++;
+               	} else {
+                	if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
+              			if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, '<%=kmeliaScc.getLanguage()%>')) {
+                    		errorMsg+="  - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDate+"\n";
+                    		errorNb++;
+                  		}
+                	} else {
+                  		if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
+                			if (!isFuture(endDate, '<%=kmeliaScc.getLanguage()%>')) {
+                      			errorMsg+="  - '<%=resources.getString("PubDateFin")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
+                      			errorNb++;
+                    		}
+                  		}
+                	}
                }
              }
              if (!checkHour(endHour))

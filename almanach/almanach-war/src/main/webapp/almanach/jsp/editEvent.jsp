@@ -75,22 +75,9 @@ out.println(graphicFactory.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
-
-<script language="JavaScript">
+<script type="text/javascript">
 <!--
 var oEditor;
-var yearDateDebut;
-var yearDateFin;
-var monthDateDebut;
-var monthDateFin;
-var dayDateDebut;
-var dayDateFin;
-var hourHeureDebut;
-var hourHeureFin;
-var minuteHeureDebut;
-var minuteHeureFin;
-var hour;
-var minute;
 
 function FCKeditor_OnComplete( editorInstance )
 {
@@ -135,29 +122,14 @@ function isCorrectForm() {
      var errorMsg = "";
      var errorNb = 0;
      var title = stripInitialWhitespace(document.eventForm.Title.value);
-     var re = /(\d\d\/\d\d\/\d\d\d\d)/i;
      var beginDate = document.eventForm.StartDate.value;
      var endDate = document.eventForm.EndDate.value;
      var beginHour = stripInitialWhitespace(document.eventForm.StartHour.value);
      var endHour = stripInitialWhitespace(document.eventForm.EndHour.value);
-     var yearBegin = extractYear(beginDate, '<%=language%>');
-     var monthBegin = extractMonth(beginDate, '<%=language%>');
-     var dayBegin = extractDay(beginDate, '<%=language%>');
-     var yearEnd = extractYear(endDate, '<%=language%>');
-     var monthEnd = extractMonth(endDate, '<%=language%>');
-     var dayEnd = extractDay(endDate, '<%=language%>');
-     var hour = "";
-     var minute = "";
 	 var unity = document.eventForm.Unity.value;
 	 var frequency = stripInitialWhitespace(document.eventForm.Frequency.value);
 	 var beginPeriodicity = document.eventForm.PeriodicityStartDate.value;
-	 var yearBeginPeriodicity = extractYear(beginPeriodicity, '<%=language%>');
-     var monthBeginPeriodicity = extractMonth(beginPeriodicity, '<%=language%>');
-     var dayBeginPeriodicity = extractDay(beginPeriodicity, '<%=language%>');
 	 var untilDate = document.eventForm.PeriodicityUntilDate.value;
-	 var yearUntil = extractYear(untilDate, '<%=language%>');
-     var monthUntil = extractMonth(untilDate, '<%=language%>');
-     var dayUntil = extractDay(untilDate, '<%=language%>');
 
 	 var beginDateOK = true;
 	 var beginPeriodicityOK = true;
@@ -172,17 +144,11 @@ function isCorrectForm() {
      }
      else
      {
-	       if (beginDate.replace(re, "OK") != "OK") {
-	           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateBegin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-	           errorNb++;
-			   beginDateOK = false;
-	       } else {
-	           if (isCorrectDate(yearBegin, monthBegin, dayBegin)==false) {
-	             errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateBegin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-	             errorNb++;
-				 beginDateOK = false;
-	           }
-	       }
+     	if (!isDateOK(beginDate, '<%=language%>')) {
+        	errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateBegin")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+            errorNb++;
+			beginDateOK = false;
+        }
      }
 
      if (!checkHour(beginHour))
@@ -191,31 +157,26 @@ function isCorrectForm() {
 	     errorNb++;
      }
 
-     if (!isWhitespace(endDate)) {
-           if (endDate.replace(re, "OK") != "OK") {
-                 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateEnd")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-                 errorNb++;
-           } else {
-                 if (isCorrectDate(yearEnd, monthEnd, dayEnd)==false) {
-                     errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateEnd")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-                     errorNb++;
-                 } else {
-                     if ((isWhitespace(beginDate) == false) && (isWhitespace(endDate) == false)) {
-                           if (beginDateOK && isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin, monthBegin, dayBegin) == false) {
-                                  errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateEnd")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDate+"\n";
-                                  errorNb++;
-                           }
-                     } else {
-						   if ((isWhitespace(beginDate) == true) && (isWhitespace(endDate) == false)) {
-							   if (isFutureDate(yearEnd, monthEnd, dayEnd) == false) {
-									  errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateEnd")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
-									  errorNb++;
-							   }
-						   }
-					 }
-                 }
-           }
-     }
+	if (!isWhitespace(endDate)) {
+    	if (!isDateOK(endDate, '<%=language%>')) {
+			errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateEnd")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+            errorNb++;
+		} else {
+			if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
+            	if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, '<%=language%>')) {
+                	errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateEnd")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDate+"\n";
+                    errorNb++;
+                }
+            } else {
+			   	if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
+			   		if (!isFuture(endDate, '<%=language%>')) {
+						errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.dateEnd")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
+						errorNb++;
+				   	}
+			   	}
+		 	}
+		}
+	}
 
      if (!checkHour(endHour))
      {
@@ -234,45 +195,33 @@ function isCorrectForm() {
 			}
 		}
 
-		if (! isWhitespace(beginPeriodicity)) {
-			   if (beginPeriodicity.replace(re, "OK") != "OK") {
-				   errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("beginDatePeriodicity")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-				   errorNb++;
-				   beginPeriodicityOK = false;
-			   } else {
-				   if (isCorrectDate(yearBeginPeriodicity, monthBeginPeriodicity, dayBeginPeriodicity)==false) {
-					 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("beginDatePeriodicity")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-					 errorNb++;
-					 beginPeriodicityOK = false;
-				   }
-			   }
+		if (!isWhitespace(beginPeriodicity)) {
+			if (!isDateOK(beginPeriodicity, '<%=language%>')) {
+				errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("beginDatePeriodicity")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+				errorNb++;
+				beginPeriodicityOK = false;
+			}
 		 }
 
-		 if (! isWhitespace(untilDate)) {
-			   if (untilDate.replace(re, "OK") != "OK") {
-				   errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("endDatePeriodicity")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-				   errorNb++;
-			   } else {
-				   if (isCorrectDate(yearUntil, monthUntil, dayUntil)==false) {
-					 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("endDatePeriodicity")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-					 errorNb++;
-				   }
-				   else {
-                     if ((isWhitespace(beginPeriodicity) == false) && (isWhitespace(untilDate) == false)) {
-                           if (beginPeriodicityOK && isD1AfterD2(yearUntil, monthUntil, dayUntil, yearBeginPeriodicity, monthBeginPeriodicity, dayBeginPeriodicity) == false) {
-                                  errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("endDatePeriodicity")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginPeriodicity+"\n";
-                                  errorNb++;
-                           }
-                     } else {
-						   if ((isWhitespace(beginPeriodicity) == true) && (isWhitespace(untilDate) == false)) {
-							   if (isFutureDate(yearUntil, monthUntil, dayUntil) == false) {
-									  errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("endDatePeriodicity")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
-									  errorNb++;
-							   }
-						   }
-					 }
-                 }
-			   }
+		 if (!isWhitespace(untilDate)) {
+			if (!isDateOK(untilDate, '<%=language%>')) {
+				errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("endDatePeriodicity")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+				errorNb++;
+			} else {
+				if (!isWhitespace(beginPeriodicity) && !isWhitespace(untilDate)) {
+                	if (beginPeriodicityOK && !isDate1AfterDate2(untilDate, beginPeriodicity, '<%=language%>')) {
+                    	errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("endDatePeriodicity")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginPeriodicity+"\n";
+                        errorNb++;
+                     }
+				} else {
+					if (isWhitespace(beginPeriodicity) && !isWhitespace(untilDate)) {
+						if (!isFuture(untilDate, '<%=language%>')) {
+							errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("endDatePeriodicity")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
+							errorNb++;
+						}
+					}
+				}
+			}
 		 }
      }
 

@@ -126,7 +126,7 @@ if ("UpdateSurveyHeader".equals(action))
 <view:looknfeel />
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript1.2">
+<script type="text/javascript">
 function sendData() {
     if (isCorrectForm()) {
 		document.surveyForm.anonymous.disabled = false;
@@ -139,22 +139,8 @@ function isCorrectForm() {
      var errorNb = 0;
      var title = stripInitialWhitespace(document.surveyForm.title.value);
      var nbQuestions = document.surveyForm.nbQuestions.value;
-     var re = /(\d\d\/\d\d\/\d\d\d\d)/i;
-     //today
-     var today = "<%=resources.getInputDate(new Date())%>";
-     var yearToday = extractYear(today, '<%=surveyScc.getLanguage()%>');
-     var monthToday = extractMonth(today, '<%=surveyScc.getLanguage()%>');
-     var dayToday = extractDay(today, '<%=surveyScc.getLanguage()%>');
-     //begin Date
      var beginDate = document.surveyForm.beginDate.value;
-     var yearBegin = extractYear(beginDate, '<%=surveyScc.getLanguage()%>');
-     var monthBegin = extractMonth(beginDate, '<%=surveyScc.getLanguage()%>');
-     var dayBegin = extractDay(beginDate, '<%=surveyScc.getLanguage()%>');
-     //end Date
      var endDate = document.surveyForm.endDate.value;
-     var yearEnd = extractYear(endDate, '<%=surveyScc.getLanguage()%>');
-     var monthEnd = extractMonth(endDate, '<%=surveyScc.getLanguage()%>');
-     var dayEnd = extractDay(endDate, '<%=surveyScc.getLanguage()%>');
      if (isWhitespace(title)) {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
            errorNb++;
@@ -163,41 +149,33 @@ function isCorrectForm() {
           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationDescription")%>' <%=resources.getString("ContainsTooLargeText")%> <%=DBUtil.getTextAreaLength()%> <%=resources.getString("Characters")%>\n";
           errorNb++;
      }
-     if (isWhitespace(beginDate)) {
-     } else {
-           if (beginDate.replace(re, "OK") != "OK") {
-                 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationBeginDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-                 errorNb++;
-           } else {
-               if (isCorrectDate(yearBegin, monthBegin, dayBegin)==false) {
-                 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationBeginDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+     if (!isWhitespace(beginDate)) {
+     	if (!isDateOK(beginDate, '<%=resources.getLanguage()%>')) {
+           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationBeginDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+           errorNb++;
+           beginDateOK = false;
+         }
+       }
+       if (!isWhitespace(endDate)) {
+         if (!isDateOK(endDate, '<%=resources.getLanguage()%>')) {
+           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
+           errorNb++;
+         } else {
+             if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
+               if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, '<%=resources.getLanguage()%>')) {
+                 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("MustContainsPostDateToBeginDate")%>\n";
                  errorNb++;
                }
-           }
-     }
-     if (isWhitespace(endDate)) {
-     } else {
-           if (endDate.replace(re, "OK") != "OK") {
-                     errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-                     errorNb++;
-           } else {
-                 if (isCorrectDate(yearEnd, monthEnd, dayEnd)==false) {
-                     errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-                     errorNb++;
-                 } else {
-                     if ((isWhitespace(beginDate) == false) && (isWhitespace(endDate) == false)) {
-                           if (isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin, monthBegin, dayBegin) == false) {
-                                  errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-                                  errorNb++;
-                           }
-                     }
+             } else {
+               if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
+                 if (!isFuture(endDate, '<%=resources.getLanguage()%>')) {
+                   errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("MustContainsPostDate")%>\n";
+                   errorNb++;
                  }
-                 if (isD1AfterD2(yearEnd, monthEnd, dayEnd, yearToday, monthToday, dayToday) == false) {
-                              errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-                              errorNb++;
-                 }
-          }
-     }
+               }
+             }
+         }
+       }
      if (isWhitespace(nbQuestions)) {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationNbQuestionPerPage")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
            errorNb++;

@@ -27,14 +27,14 @@
 <%@ include file="check.jsp" %>
 
 <% 
-	// récupération des paramètres :
+	// rï¿½cupï¿½ration des paramï¿½tres :
 	String 		albumId			= (String) request.getAttribute("AlbumId");
 	List  	path 			= (List) request.getAttribute("Path");
 	Form 		formUpdate 		= (Form) request.getAttribute("Form");
 	DataRecord	data			= (DataRecord) request.getAttribute("Data");
 	String		searchKeyWord	= (String) request.getAttribute("SearchKeyWord");
 		
-	// déclaration des variables :
+	// dï¿½claration des variables :
 	String 		title 				= "";
 	String 		description 		= "";
 	String 		author 				= "";
@@ -51,7 +51,7 @@
 	context.setUseBlankFields(true);
 	context.setUseMandatory(false);
 		
-	// déclaration des boutons
+	// dï¿½claration des boutons
 	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
 	Button cancelButton;
 	if (albumId != null && !albumId.equals("") &&  !albumId.equals("null"))
@@ -74,7 +74,7 @@
 	} %>
 	<script language="javascript">
 	
-	// fonctions de contrôle des zones du formulaire avant validation
+	// fonctions de contrï¿½le des zones du formulaire avant validation
 	function sendData() 
 	{
 		<% if (formUpdate != null) { %>
@@ -101,21 +101,6 @@
      	var beginDate = document.photoForm.Im$BeginDate.value;
      	var endDate = document.photoForm.Im$EndDate.value;
      	var langue = "<%=resource.getLanguage()%>";
-     	var re = /(\d\d\/\d\d\/\d\d\d\d)/i;
-		     	
-		var yearDownloadBegin = extractYear(beginDownloadDate, langue);
-		var monthDownloadBegin = extractMonth(beginDownloadDate, langue);
-		var dayDownloadBegin = extractDay(beginDownloadDate, langue);
-		var yearDownloadEnd = extractYear(endDownloadDate, langue);
-		var monthDownloadEnd = extractMonth(endDownloadDate, langue);
-		var dayDownloadEnd = extractDay(endDownloadDate, langue);
-		var yearBegin = extractYear(beginDate, langue);
-		var monthBegin = extractMonth(beginDate, langue);
-		var dayBegin = extractDay(beginDate, langue);
-		var yearEnd = extractYear(endDate, langue);
-		var monthEnd = extractMonth(endDate, langue);
-		var dayEnd = extractDay(endDate, langue);
-     					
 		var beginDownloadDateOK = true;
 		var beginDateOK = true;
 		     	
@@ -129,121 +114,63 @@
      		errorMsg+="  - '<%=resource.getString("GML.description")%>'  <%=resource.getString("gallery.MsgTaille")%>\n";
            	errorNb++;
      	}				
-     	// vérifier les dates de début et de fin de période
-     	// les dates de téléchargements
-     	if (!isWhitespace(beginDownloadDate)) 
-     	{
-   			if (beginDownloadDate.replace(re, "OK") != "OK") 
-   			{
-       			errorMsg+="  - '<%=resource.getString("gallery.dateBegin")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
+   		// vÃ©rifier les dates de dÃ©but et de fin de pÃ©riode
+     	// les dates de tÃ©lÃ©chargements
+     	if (!isWhitespace(beginDownloadDate)) {
+     		if (!isDateOK(beginDownloadDate, langue)) {
+       			errorMsg+="  - '<%=resource.getString("gallery.beginDownloadDate")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
        			errorNb++;
 	   			beginDownloadDateOK = false;
-   			} 
-   			else 
-   			{
-	   			if (isCorrectDate(yearDownloadBegin, monthDownloadBegin, dayDownloadBegin)==false) 
-	   			{
-	       			errorMsg+="  - '<%=resource.getString("GML.dateBegin")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
+   			}
+		 }
+	     if (!isWhitespace(endDownloadDate)) {
+			   if (!isDateOK(endDownloadDate, langue)) {
+	                 errorMsg+="  - '<%=resource.getString("gallery.endDownloadDate")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
+	                 errorNb++;
+	           } else {
+					if (!isWhitespace(beginDownloadDate) && !isWhitespace(endDownloadDate)) {
+						if (beginDownloadDateOK && !isDate1AfterDate2(endDownloadDate, beginDownloadDate, langue)) {
+                        	errorMsg+="  - '<%=resource.getString("gallery.endDownloadDate")%>' <%=resource.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDownloadDate+"\n";
+							errorNb++;
+						}
+                    } else {
+						if (isWhitespace(beginDownloadDate) && !isWhitespace(endDownloadDate)) {
+							if (!isFuture(endDownloadDate, langue)) {
+								errorMsg+="  - '<%=resource.getString("gallery.endDownloadDate")%>' <%=resource.getString("GML.MustContainsPostDate")%>\n";
+								errorNb++;
+							}
+						}
+					 }
+	           }
+	     }
+	     // les dates de visibilitÃ©
+	     if (!isWhitespace(beginDate)) {
+	    	 	if (!isDateOK(beginDate, langue)) {
+	   				errorMsg+="  - '<%=resource.getString("GML.dateBegin")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
 	       			errorNb++;
-		 			beginDownloadDateOK = false;
+		   			beginDateOK = false;
 	   			}
-			}
-   		}
-	    if (!isWhitespace(endDownloadDate)) 
-	    {
-	        if (endDownloadDate.replace(re, "OK") != "OK") 
-	        {
-	             errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-	             errorNb++;
-	        } 
-	        else 
-	        {
-	            if (isCorrectDate(yearDownloadEnd, monthDownloadEnd, dayDownloadEnd)==false) 
-	            {
-	                errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-	                errorNb++;
-	            } 
-	            else 
-	            {
-	                if ((isWhitespace(beginDownloadDate) == false) && (isWhitespace(endDownloadDate) == false)) 
-	                {
-	                    if (beginDownloadDateOK && isD1AfterD2(yearDownloadEnd, monthDownloadEnd, dayDownloadEnd, yearDownloadBegin, monthDownloadBegin, dayDownloadBegin) == false) 
-	                    {
-	                         errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDownloadDate+"\n";
-	                         errorNb++;
+ 		 }
+	     if (!isWhitespace(endDate)) {
+	    	   if (!isDateOK(endDate, langue)) { 
+	                 errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
+	                 errorNb++;
+	           } else {
+					if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
+	                	if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, langue)) {
+	                    	errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDate+"\n";
+	                        errorNb++;
 	                    }
-	                } 
-	                else 
-	                {
-					   if ((isWhitespace(beginDownloadDate) == true) && (isWhitespace(endDownloadDate) == false)) 
-					   {
-						   if (isFutureDate(yearDownloadEnd, monthDownloadEnd, dayDownloadEnd) == false) 
-						   {
-							  errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsPostDate")%>\n";
-							  errorNb++;
-						   }
-					   }
-					}
-			    }
-			}
-		}		
-		// les dates de visibilité
-		if (!isWhitespace(beginDate)) 
-		{
-			if (beginDate.replace(re, "OK") != "OK") 
-			{
-				errorMsg+="  - '<%=resource.getString("GML.dateBegin")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-			    errorNb++;
-				beginDateOK = false;
-			} 
-			else 
-			{
-				if (isCorrectDate(yearBegin, monthBegin, dayBegin)==false) 
-				{
-					errorMsg+="  - '<%=resource.getString("GML.dateBegin")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-					errorNb++;
-					beginDateOK = false;
-			    }
-			}
-	    }
-		if (!isWhitespace(endDate)) 
-		{
-		    if (endDate.replace(re, "OK") != "OK") 
-		    {
-		        errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-		        errorNb++;
-		    } 
-		    else 
-		    {
-		        if (isCorrectDate(yearEnd, monthEnd, dayEnd)==false) 
-		        {
-		             errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-		             errorNb++;
-		        } 
-		        else 
-		        {
-		             if ((isWhitespace(beginDate) == false) && (isWhitespace(endDate) == false)) 
-		             {
-		                  if (beginDateOK && isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin, monthBegin, dayBegin) == false) 
-		                  {
-		                       errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDate+"\n";
-		                       errorNb++;
-		                  }
-		             } 
-		             else 
-		             {
-		            	 if ((isWhitespace(beginDate) == true) && (isWhitespace(endDate) == false)) 
-						 {
-		            		 if (isFutureDate(yearEnd, monthEnd, dayEnd) == false) 
-							 {
-								  errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsPostDate")%>\n";
-								  errorNb++;
-						     }
-				         }
+	                } else {
+						if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
+							if (!isFuture(endDate, langue)) {
+								errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsPostDate")%>\n";
+								errorNb++;
+							}
+						}
 					}
 				}
-			}
-		}				
+	    }
      	switch(errorNb) 
      	{
         	case 0 :
@@ -278,7 +205,7 @@
 %>
 <FORM Name="photoForm" action="UpdateSelectedPhoto" Method="POST" ENCTYPE="multipart/form-data">
 	<%=board.printBefore()%>
-	<!-- Affichage des données entête -->
+	<!-- Affichage des donnï¿½es entï¿½te -->
 	<table cellpadding="5">
 		<tr>
 			<td class="txtlibform"><%=resource.getString("GML.title")%> :</td>

@@ -111,7 +111,7 @@ if (formUpdate != null)
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 		
 	// fonctions de contr�le des zones des formulaires avant validation
 	function sendData() 
@@ -132,7 +132,6 @@ if (formUpdate != null)
 	   	var errorMsg = "";
 	   	var errorNb = 0;
 	   	var title = stripInitialWhitespace(document.classifiedForm.Title.value);
-	   	var re = /(\d\d\/\d\d\/\d\d\d\d)/i;
 			
 		if (title == "") 
 		{ 
