@@ -31,16 +31,7 @@
 
 
 <%@ include file="check.jsp"%>
-  <c:set var="componentId" value="${requestScope.componentId}" />
-  <c:set var="browseContext" value="${requestScope.browseContext}" />
   <fmt:setLocale value="${sessionScope[sessionController].language}" />
-  <view:setBundle bundle="${requestScope.resources.multilangBundle}" var="DML"/>
-  <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-  <view:setBundle basename="com.stratelia.webactiv.kmelia.multilang.kmeliaBundle" var="KML"/>
-  <view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML"/>
-  
-  <fmt:message key="GML.hourFormat" bundle="${GML}" var="hourFormat"/>
-  <c:set var="dateHourFormat"><c:out value="${dateFormat}" /> <c:out value="${hourFormat}" /></c:set>
   
 <%
 	List listNews = (List) request.getAttribute("ListNews"); //List<DelegatedNews> 
@@ -82,10 +73,7 @@
       <input type="hidden" name="BeginHour">
       <input type="hidden" name="EndDate">
       <input type="hidden" name="EndHour">
-      
-
-      
-      
+          
   <%
 	ResourceLocator kmeliaResourceLocator = new ResourceLocator("com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", newsScc.getLanguage());
     ArrayPane arrayPane = gef.getArrayPane("newsList", "Main", request, session);
@@ -105,25 +93,70 @@
 	}
     
     SimpleDateFormat dateFormat = new SimpleDateFormat(resources.getString("GML.dateFormat"));
+    SimpleDateFormat hourFormat = new SimpleDateFormat(resources.getString("GML.hourFormat"));
+    SimpleDateFormat dateHourFormat = new SimpleDateFormat(resources.getString("GML.dateFormat") + " " + resources.getString("GML.hourFormat"));
     for (int i=0; i<listNews.size(); i++) {
 		DelegatedNews delegatedNews = (DelegatedNews) listNews.get(i);
+		
 		int pubId = delegatedNews.getPubId();
-		
 		ArrayLine arrayLine = arrayPane.addArrayLine();
-		arrayLine.addArrayCellLink(delegatedNews.getPublicationDetail().getName(), "javascript:onClick=openPublication('"+pubId+"')");
+		arrayLine.addArrayCellLink(delegatedNews.getPublicationDetail().getName(newsScc.getLanguage()), "javascript:onClick=openPublication('"+pubId+"')");
 		
-		/*String updateDate = dateFormat.format(delegatedNews.getPublicationDetail().getUpdateDate());
-		System.out.println("updateDate"=+updateDate);*/
-		/*ArrayCellText cellUpdateDate = arrayLine.addArrayCellText(resources.getOutputDate(updateDate));
-		cellUpdateDate.setCompareOn(updateDate);*/
-		//<fmt:formatDate var="updateDate" pattern="${dateFormat}" value="${delegatedNews.publicationDetail.updateDate}" />
-        
+		String updateDate = dateFormat.format(delegatedNews.getPublicationDetail().getUpdateDate());
+		ArrayCellText cellUpdateDate = arrayLine.addArrayCellText(updateDate);
+		cellUpdateDate.setCompareOn(updateDate);
+		
+		String contributorId = delegatedNews.getContributorId();
+        String contributorName = newsScc.getUserDetail(contributorId).getDisplayedName();
+		arrayLine.addArrayCellText(contributorName);
+		
+		String status = delegatedNews.getStatus();
+		arrayLine.addArrayCellText(resources.getString("delegatednews.status."+status));
+		
+		String beginDate = "";
+		String beginHour = "";
+		String beginDateHour = "";
+		if(delegatedNews.getBeginDate() != null) {
+			beginDate = dateFormat.format(delegatedNews.getBeginDate());
+			beginHour = hourFormat.format(delegatedNews.getBeginDate());
+			beginDateHour = dateHourFormat.format(delegatedNews.getBeginDate());
+			ArrayCellText cellBeginDate = arrayLine.addArrayCellText(beginDateHour);
+			cellBeginDate.setCompareOn(beginDateHour);
+		} else {
+			arrayLine.addArrayCellText("");
+		}
+		
+		String endDate = "";
+		String endHour = "";
+		String endDateHour = "";
+		if(delegatedNews.getEndDate() != null) {
+			endDate = dateFormat.format(delegatedNews.getEndDate());
+			endHour = hourFormat.format(delegatedNews.getEndDate());
+			endDateHour = dateHourFormat.format(delegatedNews.getEndDate());
+			ArrayCellText cellEndDate = arrayLine.addArrayCellText(endDateHour);
+			cellEndDate.setCompareOn(endDateHour);
+		} else {
+			arrayLine.addArrayCellText("");
+		}
+
+        if(isAdmin) {
+			IconPane iconPane = gef.getIconPane();
+			Icon iconUpdate = iconPane.addIcon();
+			iconUpdate.setProperties(m_context+"/util/icons/update.gif", resources.getString("GML.modify"), "javascript:onClick=updateDateDelegatedNews('"+pubId+"', '"+beginDate+"', '"+beginHour+"', '"+endDate+"', '"+endHour+"')");
+			
+			Icon iconValidate = iconPane.addIcon();
+			iconValidate.setProperties(m_context+"/util/icons/ok.gif", kmeliaResourceLocator.getString("Validate"), "ValidateDelegatedNews?PubId="+pubId);
+			
+			Icon iconRefused = iconPane.addIcon();
+			iconRefused.setProperties(m_context+"/util/icons/delete.gif", kmeliaResourceLocator.getString("PubUnvalidate?"), "javascript:onClick=refuseDelegatedNews('"+pubId+"')");
+			
+			arrayLine.addArrayCellIconPane(iconPane);	
+		}
 	}
    
        
   out.print(arrayPane.print());
   %>
-  
      
       </FORM>  
        

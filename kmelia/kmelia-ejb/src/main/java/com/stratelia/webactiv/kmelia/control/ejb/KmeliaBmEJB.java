@@ -3304,6 +3304,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       updateSilverContentVisibility(pubDetail);
       unIndexExternalElementsOfPublication(pubDetail.getPK());
       removeAllTodosForPublication(pubPK);
+      
+      boolean isNewsManage = StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(pubDetail.getPK().getInstanceId(), "isNewsManage"));
+      if(isNewsManage) {
+        // mécanisme de callback
+        CallBackManager callBackManager = CallBackManager.get();
+        callBackManager.invoke(CallBackManager.ACTION_PUBLICATION_REMOVE,
+            Integer.parseInt(pubDetail.getId()), pubDetail.getInstanceId(), pubDetail);
+      }
 
       SilverTrace.info("kmelia", "KmeliaBmEJB.draftInPublication()",
           "root.MSG_GEN_PARAM_VALUE", "new status = " + pubDetail.getStatus());

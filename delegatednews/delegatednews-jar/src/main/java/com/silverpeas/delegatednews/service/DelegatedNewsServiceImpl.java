@@ -279,7 +279,9 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
   @Override
   public void deleteDelegatedNews(int pubId) {
     DelegatedNews delegatedNews = dao.readByPrimaryKey(Integer.valueOf(pubId));
-    dao.delete(delegatedNews);
+    if(delegatedNews != null) {
+      dao.delete(delegatedNews);
+    }
   }
   
   /**
