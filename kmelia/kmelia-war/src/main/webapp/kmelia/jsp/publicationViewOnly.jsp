@@ -202,6 +202,7 @@ out.println(gef.getLookStyleSheet());
         browseBar.setComponentName(kmeliaScc.getComponentLabel());
         browseBar.setPath(pathString);
 		browseBar.setExtraInformation(pubName);
+		browseBar.setClickable(false);
 
         out.println(window.printBefore());
 		out.println(frame.printBefore());
