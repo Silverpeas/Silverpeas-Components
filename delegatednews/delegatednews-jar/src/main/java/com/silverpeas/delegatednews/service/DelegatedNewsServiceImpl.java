@@ -89,14 +89,16 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
 	}
 	
 	 /**
-   * Récupère toutes les actualités déléguées valides inter Theme Tracker
+   * Récupère toutes les actualités déléguées inter Theme Tracker
    *
    * @return List<DelegatedNews> : liste d'actualités déléguées
    */
   @Override
   public List<DelegatedNews> getAllDelegatedNews() {
     List<Sort.Property> properties = new ArrayList<Sort.Property>();
-    Sort.Property property = new Sort.Property(Order.ASCENDING, "pubId");
+    Sort.Property property = new Sort.Property(Order.DESCENDING, "validationDate");
+    properties.add(property);
+    property = new Sort.Property(Order.DESCENDING, "pubId");
     properties.add(property);
     Sort sort = new Sort(properties);
     List<DelegatedNews> list = dao.readAll(sort); 
@@ -104,13 +106,13 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
   }
   
   /**
-   * Récupère toutes les actualités déléguées inter Theme Tracker
+   * Récupère toutes les actualités déléguées valides inter Theme Tracker
    *
    * @return List<DelegatedNews> : liste d'actualités déléguées
    */
   @Override
   public List<DelegatedNews> getAllValidDelegatedNews() {
-    List<DelegatedNews> list = dao.readAll(); //TODO utiliser plutot readAll(Specification) sur la date de validation et sur le statut valid 
+    List<DelegatedNews> list = dao.findByStatus(DelegatedNews.NEWS_VALID); //TODO Méthode pour renvoyer la liste des actus valides et dont la date de visibilité est en cours, triées par date de début de visibilité décroissante
     return list;
   }
   

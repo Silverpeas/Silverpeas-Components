@@ -1,5 +1,5 @@
 <div style="font-family:Arial;font-size:11px">
-The news $publicationName$ (id $publicationId$) has been suggested in homepage.
+The news $publicationName$ has been suggested in homepage.
 
 It must be validated.
 

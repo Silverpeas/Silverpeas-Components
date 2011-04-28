@@ -24,9 +24,18 @@
 
 package com.silverpeas.delegatednews.dao;
 
-import com.silverpeas.delegatednews.model.DelegatedNews;
+import java.util.List;
 
 import org.synyx.hades.dao.GenericDao;
+import org.synyx.hades.dao.Param;
+import org.synyx.hades.dao.Query;
+
+import com.silverpeas.delegatednews.model.DelegatedNews;
 
 public interface DelegatedNewsDao extends GenericDao<DelegatedNews, Integer> {
+  
+
+  @Query("from DelegatedNews dn WHERE dn.status = :status")
+  List<DelegatedNews> findByStatus(@Param("status") String status);
+
 }

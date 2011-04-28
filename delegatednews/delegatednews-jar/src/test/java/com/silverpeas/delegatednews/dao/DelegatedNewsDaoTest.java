@@ -41,7 +41,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import java.lang.String;
 import java.lang.Integer;
 import java.util.Date;
-import java.util.GregorianCalendar;
+import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -95,5 +95,21 @@ public class DelegatedNewsDaoTest {
     pubId = new Integer("2");
     detail = dao.readByPrimaryKey(pubId);
     assertThat(detail, notNullValue());
+  }
+  
+  
+  @Test
+  public void testFindDelegatedNewsByStatus() throws Exception {
+    String status = "Valid";
+    List<DelegatedNews> listDetail = dao.findByStatus(status);
+    assertThat(listDetail, notNullValue());
+    assertThat(listDetail.size(), is(1));
+    DelegatedNews detail = listDetail.get(0);
+    assertThat(detail.getPubId(), is(2));
+    
+    status = "Refused";
+    listDetail = dao.findByStatus(status);
+    assertThat(listDetail, notNullValue());
+    assertThat(listDetail.size(), is(0));
   }
 }

@@ -86,18 +86,19 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter {
 
     try {
       if (function.equals("Main")) {
-        List<DelegatedNews> list = newsSC.getAllDelegatedNews();
+        List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews();
         request.setAttribute("ListNews", list);
     	  destination = "/delegatednews/jsp/listNews.jsp";
       } 
       else if (function.equals("OpenPublication")) {
         String pubId = request.getParameter("PubId");
-        destination = "/Rkmelia/kmelia1/ViewOnly?documentId="+pubId;
+        String instanceId = request.getParameter("InstanceId");
+        destination = "/Rkmelia/"+instanceId+"/ViewOnly?documentId="+pubId;
       } 
       else if (function.equals("ValidateDelegatedNews")) {
         String pubId = request.getParameter("PubId");
         newsSC.validateDelegatedNews(Integer.parseInt(pubId));
-        List<DelegatedNews> list = newsSC.getAllDelegatedNews();
+        List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews();
         request.setAttribute("ListNews", list);
         destination = "/delegatednews/jsp/listNews.jsp";
       } 
@@ -110,7 +111,7 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter {
         String pubId = request.getParameter("PubId");
         String refuseReasonText = request.getParameter("RefuseReasonText");
         newsSC.refuseDelegatedNews(Integer.parseInt(pubId), refuseReasonText);
-        List<DelegatedNews> list = newsSC.getAllDelegatedNews();
+        List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews();
         request.setAttribute("ListNews", list);
         destination = "/delegatednews/jsp/listNews.jsp";
       } 
@@ -144,7 +145,7 @@ public class DelegatedNewsRequestRouter extends ComponentRequestRouter {
         }
         
         newsSC.updateDateDelegatedNews(Integer.parseInt(pubId), jBeginDate, jEndDate);
-        List<DelegatedNews> list = newsSC.getAllDelegatedNews();
+        List<DelegatedNews> list = newsSC.getAllAvailDelegatedNews(); 
         request.setAttribute("ListNews", list);
         destination = "/delegatednews/jsp/listNews.jsp";
       } 

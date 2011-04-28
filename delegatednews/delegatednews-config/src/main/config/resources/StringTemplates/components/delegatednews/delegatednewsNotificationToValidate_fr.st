@@ -1,5 +1,5 @@
 <div style="font-family:Arial;font-size:11px">
-L'actualité </b>$publicationName$</b> (id $publicationId$) est proposée en page d'accueil.
+L'actualité </b>$publicationName$</b> est proposée en page d'accueil.
 
 Elle doit être validée.
 

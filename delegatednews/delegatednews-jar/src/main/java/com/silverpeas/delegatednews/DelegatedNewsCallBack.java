@@ -24,7 +24,9 @@
  */
 package com.silverpeas.delegatednews;
 
+import java.util.Calendar;
 import java.util.Date;
+
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
 import com.silverpeas.delegatednews.service.ServicesFactory;
@@ -73,34 +75,52 @@ public class DelegatedNewsCallBack implements CallBack {
       DelegatedNews delegatedNews = getDelegatedNewsService().getDelegatedNews(pubId);
       if (delegatedNews != null) {
 
-        // met à jour l'actualité
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        Date today = calendar.getTime();
         Date dateHourBegin = DateUtil.getDate(pubDetail.getBeginDate(), pubDetail.getBeginHour());
         Date dateHourEnd = DateUtil.getDate(pubDetail.getEndDate(), pubDetail.getEndHour());
-        getDelegatedNewsService().updateDelegatedNews(pubId, instanceId,
-            DelegatedNews.NEWS_TO_VALIDATE, pubDetail.getUpdaterId(), null, new Date(),
-            dateHourBegin, dateHourEnd);
-
-        // alerte l'équipe éditoriale
-        String[] tabInstanceId = getOrganizationController().getCompoId("delegatednews");
-        String delegatednewsInstanceId = null;
-        for (int i = 0; i < tabInstanceId.length; i++) {
-          delegatednewsInstanceId = tabInstanceId[i];
-          break;
+     
+        if (dateHourBegin != null && dateHourBegin.after(today)) {
+          pubDetail.setNotYetVisible(true);
+        } else if (dateHourEnd != null && dateHourEnd.before(today)) {
+          pubDetail.setNoMoreVisible(true);
         }
-
-        UserDetail updaterUserDetail =
-            getOrganizationController().getUserDetail(pubDetail.getUpdaterId());
-        String updaterUserName = "";
-        if (updaterUserDetail.getFirstName() != null) {
-          updaterUserName = updaterUserDetail.getFirstName() + " ";
+        
+        // supprime l'actualité si la publication n'est plus visible (les dates de visibilité ont été modifiées sur la publication) 
+        if (! pubDetail.isVisible()) {
+          getDelegatedNewsService().deleteDelegatedNews(pubId);
+        } 
+        else {
+        
+          // met à jour l'actualité
+          getDelegatedNewsService().updateDelegatedNews(pubId, instanceId,
+              DelegatedNews.NEWS_TO_VALIDATE, pubDetail.getUpdaterId(), null, new Date(),
+              dateHourBegin, dateHourEnd);
+  
+          // alerte l'équipe éditoriale
+          String[] tabInstanceId = getOrganizationController().getCompoId("delegatednews");
+          String delegatednewsInstanceId = null;
+          for (String element : tabInstanceId) {
+            delegatednewsInstanceId = element;
+            break;
+          }
+  
+          UserDetail updaterUserDetail =
+              getOrganizationController().getUserDetail(pubDetail.getUpdaterId());
+          String updaterUserName = "";
+          if (updaterUserDetail.getFirstName() != null) {
+            updaterUserName = updaterUserDetail.getFirstName() + " ";
+          }
+          if (updaterUserDetail.getLastName() != null) {
+            updaterUserName += updaterUserDetail.getLastName();
+          }
+  
+          getDelegatedNewsService().notifyDelegatedNewsToValidate(Integer.toString(pubId),
+              pubDetail.getName(DisplayI18NHelper.getDefaultLanguage()), pubDetail.getUpdaterId(),
+              updaterUserName, delegatednewsInstanceId);
         }
-        if (updaterUserDetail.getLastName() != null) {
-          updaterUserName += updaterUserDetail.getLastName();
-        }
-
-        getDelegatedNewsService().notifyDelegatedNewsToValidate(Integer.toString(pubId),
-            pubDetail.getName(DisplayI18NHelper.getDefaultLanguage()), pubDetail.getUpdaterId(),
-            updaterUserName, delegatednewsInstanceId);
       }
     } else if (action == CallBackManager.ACTION_PUBLICATION_REMOVE) {
         getDelegatedNewsService().deleteDelegatedNews(pubId);

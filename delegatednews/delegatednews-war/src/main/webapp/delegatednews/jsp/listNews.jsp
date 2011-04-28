@@ -44,8 +44,8 @@
     <view:looknfeel />
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
     <script type="text/javascript">
-    function openPublication(pubId) {
-      url = "OpenPublication?PubId="+pubId;
+    function openPublication(pubId, instanceId) {
+      url = "OpenPublication?PubId="+pubId+"&InstanceId="+instanceId;
       SP_openWindow(url,'publication','800','600','scrollbars=yes, noresize, alwaysRaised');
     }
     
@@ -99,8 +99,9 @@
 		DelegatedNews delegatedNews = (DelegatedNews) listNews.get(i);
 		
 		int pubId = delegatedNews.getPubId();
+		String instanceId = delegatedNews.getInstanceId();
 		ArrayLine arrayLine = arrayPane.addArrayLine();
-		arrayLine.addArrayCellLink(delegatedNews.getPublicationDetail().getName(newsScc.getLanguage()), "javascript:onClick=openPublication('"+pubId+"')");
+		arrayLine.addArrayCellLink(delegatedNews.getPublicationDetail().getName(newsScc.getLanguage()), "javascript:onClick=openPublication('"+pubId+"', '"+instanceId+"')");
 		
 		String updateDate = dateFormat.format(delegatedNews.getPublicationDetail().getUpdateDate());
 		ArrayCellText cellUpdateDate = arrayLine.addArrayCellText(updateDate);

@@ -24,6 +24,7 @@
 
 package com.silverpeas.delegatednews.control;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -75,15 +76,42 @@ public class DelegatedNewsSessionController extends AbstractComponentSessionCont
     }
     return false;
   }
+  
+  /**
+   * Est-ce qu'une instanceId fait partie d'un tableau ?
+   *
+   * @return boolean : true si l'instanceId passsée en paramètre appartient au tableau passé en paramètre 2 
+   */
+  private boolean isAvailComponentId(String instanceId, String[] allowedComponentIds) {
+    if(instanceId == null) {
+      return false;
+    }
+    
+    for (String element : allowedComponentIds) {
+      if(instanceId.equals(element)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   /**
-   * Récupère toutes les actualités déléguées inter Theme Tracker
+   * Récupère toutes les actualités déléguées inter Theme Tracker dont l'utilisateur courant a des droits
    *
    * @return List<DelegatedNews> : liste d'actualités déléguées
    */
-  public List<DelegatedNews> getAllDelegatedNews() {
+  public List<DelegatedNews> getAllAvailDelegatedNews() {
+    List<DelegatedNews> listResult = new ArrayList<DelegatedNews>();
+    String[] allowedComponentIds = this.getUserAvailComponentIds();
+     
     List<DelegatedNews> list = service.getAllDelegatedNews();
-    return list;
+    for (DelegatedNews delegatedNews : list) {
+      String instanceId = delegatedNews.getInstanceId();
+      if(isAvailComponentId(instanceId, allowedComponentIds)) {
+        listResult.add(delegatedNews);
+      }
+    }
+    return listResult;
   }
   
   /**
