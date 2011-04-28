@@ -476,7 +476,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         }
         
         //Gestion actualités décentralisées
-        if(kmeliaScc.isNewsManage()) {
+        if(kmeliaScc.isNewsManage() && !user.isInRole(profile)) {
           
           DelegatedNews delegatedNews = kmeliaScc.getDelegatedNews(pub.getPK().getId());
           if(delegatedNews != null) {
