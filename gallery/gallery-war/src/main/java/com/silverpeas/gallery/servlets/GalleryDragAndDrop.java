@@ -67,6 +67,7 @@ import java.util.Arrays;
  * @author
  */
 public class GalleryDragAndDrop extends HttpServlet {
+
   private static final long serialVersionUID = -3063286463794353943L;
 
   @Override
@@ -94,30 +95,23 @@ public class GalleryDragAndDrop extends HttpServlet {
       String componentId = request.getParameter("ComponentId");
       String albumId = request.getParameter("AlbumId");
       String userId = request.getParameter("UserId");
-      SilverTrace.info("gallery", "GalleryDragAndDrop.doPost",
-          "root.MSG_GEN_PARAM_VALUE", "componentId = " + componentId + " albumId = "
-          + albumId + " userId = " + userId);
-      String savePath = FileRepositoryManager.getTemporaryPath() + File.separator + userId
-          + new Date().getTime() + File.separator;
-
+      SilverTrace.info("gallery", "GalleryDragAndDrop.doPost", "root.MSG_GEN_PARAM_VALUE",
+          "componentId = " + componentId + " albumId = " + albumId + " userId = " + userId);
+      String savePath = FileRepositoryManager.getTemporaryPath() + File.separatorChar + userId
+          + System.currentTimeMillis() + File.separatorChar;
       List<FileItem> items = FileUploadUtil.parseRequest(request);
-
       String parentPath = getParameterValue(items, "userfile_parent");
       SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
           "root.MSG_GEN_PARAM_VALUE", "parentPath = " + parentPath);
 
       SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
           "root.MSG_GEN_PARAM_VALUE", "debut de la boucle");
-
       for (FileItem item : items) {
         if (!item.isFormField()) {
-          String fileName = item.getName();
-          SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
-              "root.MSG_GEN_PARAM_VALUE", "item = "
-              + item.getFieldName() + " - " + fileName);
+          String fileName = FileUploadUtil.getFileName(item);
+          SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE",
+              "item = " + item.getFieldName() + " - " + fileName);
           if (fileName != null) {
-            fileName = fileName.replace('\\', File.separatorChar);
-            fileName = fileName.replace('/', File.separatorChar);
             SilverTrace.info("gallery", "GalleryDragAndDrop.doPost.doPost",
                 "root.MSG_GEN_PARAM_VALUE", "fileName = " + fileName);
             // modifier le nom avant de l'écrire
@@ -137,8 +131,7 @@ public class GalleryDragAndDrop extends HttpServlet {
       importRepository(new File(savePath), userId, componentId, albumId);
       FileFolderManager.deleteFolder(savePath);
     } catch (Exception e) {
-      SilverTrace.debug("gallery", "GalleryDragAndDrop.doPost.doPost",
-          "root.MSG_GEN_PARAM_VALUE", e);
+      SilverTrace.debug("gallery", "GalleryDragAndDrop.doPost.doPost", "root.MSG_GEN_PARAM_VALUE", e);
       res.getOutputStream().println("ERROR");
     }
     res.getOutputStream().println("SUCCESS");
@@ -147,36 +140,36 @@ public class GalleryDragAndDrop extends HttpServlet {
   private void importRepository(File dir, String userId, String componentId, String albumId)
       throws Exception {
     OrganizationController orga = new OrganizationController();
-    boolean watermark = "yes".equalsIgnoreCase(orga.getComponentParameterValue(componentId, "watermark"));
-    boolean download = !"no".equalsIgnoreCase(orga.getComponentParameterValue(componentId, "download"));
+    boolean watermark = "yes".equalsIgnoreCase(orga.getComponentParameterValue(componentId,
+        "watermark"));
+    boolean download = !"no".equalsIgnoreCase(orga.getComponentParameterValue(componentId,
+        "download"));
     String watermarkHD = orga.getComponentParameterValue(componentId, "WatermarkHD");
     String watermarkOther = orga.getComponentParameterValue(componentId, "WatermarkOther");
     importRepository(dir, userId, componentId, albumId, watermark, watermarkHD,
         watermarkOther, download);
   }
 
-  private void importRepository(File dir, String userId, String componentId,
-      String albumId, boolean watermark, String watermarkHD,
-      String watermarkOther, boolean download) throws Exception {
+  private void importRepository(File dir, String userId, String componentId, String albumId,
+      boolean watermark, String watermarkHD, String watermarkOther, boolean download) throws
+      Exception {
     Iterator<File> itPathContent = getPathContent(dir);
     while (itPathContent.hasNext()) {
       File file = itPathContent.next();
       if (file.isFile()) {
         if (ImageType.isImage(file.getName())) {
           try {
-            createPhoto(file.getName(), userId, componentId, albumId, file,
-                watermark, watermarkHD, watermarkOther, download);
+            createPhoto(file.getName(), userId, componentId, albumId, file, watermark, watermarkHD,
+                watermarkOther, download);
           } catch (Exception e) {
             SilverTrace.info("gallery", "GalleryDragAndDrop.importRepository",
                 "gallery.MSG_NOT_ADD_METADATA", "photo =  " + file.getName());
           }
         }
       } else if (file.isDirectory()) {
-        String newAlbumId = createAlbum(file.getName(), userId, componentId,
-            albumId);
+        String newAlbumId = createAlbum(file.getName(), userId, componentId, albumId);
         // Traitement récursif spécifique
-        importRepository(file.getAbsoluteFile(), userId, componentId,
-            newAlbumId, watermark, watermarkHD, watermarkOther, download);
+        importRepository(file.getAbsoluteFile(), userId, componentId, newAlbumId, watermark, watermarkHD, watermarkOther, download);
       }
     }
   }
@@ -212,7 +205,7 @@ public class GalleryDragAndDrop extends HttpServlet {
         + albumId);
 
     // création de la photo
-    PhotoDetail newPhoto = new PhotoDetail(name, null, new Date(), null, null,  null, download, false);
+    PhotoDetail newPhoto = new PhotoDetail(name, null, new Date(), null, null, null, download, false);
     newPhoto.setAlbumId(albumId);
     newPhoto.setCreatorId(userId);
     PhotoPK pk = new PhotoPK("unknown", componentId);
