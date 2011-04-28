@@ -206,7 +206,7 @@ function buildCellDIV(jCell)
 		backCell.className = "cellInfos";
 		backCell.colSpan = 2;
 		backCell.align = "right";
-		backCell.innerHTML = "<a href=\"" + jCell.parentURL + "\">^</a>";
+		backCell.innerHTML = "<a href=\"" + jCell.parentURL + "\" class=\"gotoParent\">&nbsp;</a>";
 	}
 
 	// Title

@@ -46,8 +46,9 @@ public class RecordParticipation extends HttpServlet {
 
     // Cookie Validity
     int cookieDuration = 3650;
-    if (request.getParameter("duration") != null)
-      cookieDuration = new Integer(request.getParameter("duration")).intValue();
+    if (request.getParameter("duration") != null) {
+      cookieDuration = Integer.parseInt(request.getParameter("duration"));
+    }
 
     String componentId = request.getParameter("cid");
     String surveyId = request.getParameter("sid");

@@ -162,7 +162,7 @@
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript1.2">
+<script type="text/javascript">
   function sendData()
   {
     if (isCorrectForm()) {
@@ -246,19 +246,8 @@
       var title = stripInitialWhitespace(window.document.pollForm.title.value);
       var question = stripInitialWhitespace(window.document.pollForm.question.value);
       var nbAnswers = window.document.pollForm.nbAnswers.value;
-
-      var re = /(\d\d\/\d\d\/\d\d\d\d)/i;
-
       var beginDate = window.document.pollForm.beginDate.value;
-      var yearBegin = extractYear(window.document.pollForm.beginDate.value, '<%=surveyScc.getLanguage()%>');
-      var monthBegin = extractMonth(window.document.pollForm.beginDate.value, '<%=surveyScc.getLanguage()%>');
-      var dayBegin = extractDay(window.document.pollForm.beginDate.value, '<%=surveyScc.getLanguage()%>');
-
       var endDate = window.document.pollForm.endDate.value;
-      var yearEnd = extractYear(window.document.pollForm.endDate.value, '<%=surveyScc.getLanguage()%>');
-      var monthEnd = extractMonth(window.document.pollForm.endDate.value, '<%=surveyScc.getLanguage()%>');
-      var dayEnd = extractDay(window.document.pollForm.endDate.value, '<%=surveyScc.getLanguage()%>');
-
       var beginDateOK = true;
 
       if (isWhitespace(title)) {
@@ -270,45 +259,31 @@
         errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("survey.style")%>' <%=resources.getString("GML.MustBeFilled")%> \n";
         errorNb++;
       }
-      if (isWhitespace(beginDate)) {
-      } else {
-        if (beginDate.replace(re, "OK") != "OK") {
+      if (!isWhitespace(beginDate)) {
+    	if (!isDateOK(beginDate, '<%=resources.getLanguage()%>')) {
           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationBeginDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
           errorNb++;
           beginDateOK = false;
-        } else {
-          if (isCorrectDate(yearBegin, monthBegin, dayBegin)==false) {
-            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationBeginDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-            errorNb++;
-            beginDateOK = false;
-          }
         }
       }
-      if (isWhitespace(endDate)) {
-      } else {
-        if (endDate.replace(re, "OK") != "OK") {
+      if (!isWhitespace(endDate)) {
+        if (!isDateOK(endDate, '<%=resources.getLanguage()%>')) {
           errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
           errorNb++;
         } else {
-          if (isCorrectDate(yearEnd, monthEnd, dayEnd)==false) {
-            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-            errorNb++;
-          } else {
-            if ((isWhitespace(beginDate) == false) && (isWhitespace(endDate) == false)) {
-              if (beginDateOK && isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin, monthBegin, dayBegin) == false) {
+            if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
+              if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, '<%=resources.getLanguage()%>')) {
                 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("MustContainsPostDateToBeginDate")%>\n";
                 errorNb++;
               }
             } else {
-              if ((isWhitespace(beginDate) == true) && (isWhitespace(endDate) == false)) {
-                //window.alert("ici");
-                if (isFutureDate(yearEnd, monthEnd, dayEnd) == false) {
+              if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
+                if (!isFuture(endDate, '<%=resources.getLanguage()%>')) {
                   errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("SurveyCreationEndDate")%>' <%=resources.getString("MustContainsPostDate")%>\n";
                   errorNb++;
                 }
               }
             }
-          }
         }
       }
       if (isWhitespace(question)) {

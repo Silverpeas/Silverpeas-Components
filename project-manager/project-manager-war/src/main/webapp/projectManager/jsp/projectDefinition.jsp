@@ -59,7 +59,7 @@ if (project != null)
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-<script language="javascript">
+<script type="text/javascript">
 function editDate(indiceElem)
 {
 		chemin = "<%=m_context%><%=URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm=0&indiceElem="+indiceElem;
@@ -67,38 +67,12 @@ function editDate(indiceElem)
 		hauteur = "200";
 		SP_openWindow(chemin,"Calendrier_Todo",largeur,hauteur,"");
 }
-function isCorrectDate(input)
-{
-	var re 		= /(\d\d\/\d\d\/\d\d\d\d)/i;
-    var date	= input.value;
-    
-    if (!isWhitespace(date)) {
-           if (date.replace(re, "OK") != "OK") {
-               return false;
-           } else {
-           		var year 	= extractYear(date, '<%=resource.getLanguage()%>'); 
-    			var month	= extractMonth(date, '<%=resource.getLanguage()%>');
-    			var day 	= extractDay(date, '<%=resource.getLanguage()%>');
-               if (isCorrectDate(year, month, day)==false) {
-                 return false;
-               }
-           }
-     }
-     return true;
-}
 function isCorrectForm() {
 
      var errorMsg 			= "";
      var errorNb 			= 0;
-     var beginDateOK 		= true;
      var name 				= document.projectForm.Nom.value;
-     
-     var re 				= /(\d\d\/\d\d\/\d\d\d\d)/i;
-
      var beginDate 			= document.projectForm.DateDebut.value;
-     var yearBegin 			= extractYear(beginDate, '<%=resource.getLanguage()%>'); 
-     var monthBegin 		= extractMonth(beginDate, '<%=resource.getLanguage()%>');
-     var dayBegin 			= extractDay(beginDate, '<%=resource.getLanguage()%>');
 
      if (isWhitespace(name)) {
            errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.ProjetNom")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
@@ -108,12 +82,11 @@ function isCorrectForm() {
            errorMsg +="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDateDebut")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
            errorNb++;
      } else {
-     	   if (!isCorrectDate(document.projectForm.DateDebut))
+     	   if (!isDateOK(beginDate, '<%=resource.getLanguage()%>'))
      	   {
    	   			errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDateDebut")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
                	errorNb++;
-			   	beginDateOK = false;
-     	   } 
+	 	   } 
      }
      switch(errorNb) {
         case 0 :
@@ -140,7 +113,7 @@ function sendActionData() {
 }
 </script>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
 <%
 browseBar.setDomainName(spaceLabel);
 browseBar.setComponentName(componentLabel, "Main");

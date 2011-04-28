@@ -46,7 +46,7 @@ String getStatusIcon(int statut, ResourcesWrapper resource)
 		default : 	icon = resource.getIcon("projectManager.nondemarree");
 					break;
 	}
-	return "<img src=\""+icon+"\" border=\"0\" align=\"absmiddle\">";
+	return "<img src=\""+icon+"\" align=\"absmiddle\"/>";
 }
 
 boolean otherActionOnSameLevel(List tasks, TaskDetail task, int debut)
@@ -190,7 +190,7 @@ String imgUnfold 	= "<img src=\""+resource.getIcon("projectManager.treeMinus")+"
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 function exportTasks(){
 	SP_openWindow('Export', 'exportTasks', '750', '550','scrollbars=yes, menubar=yes, resizable, alwaysRaised');
 }
@@ -213,23 +213,13 @@ function editDate(indiceElem)
 }
 function isCorrectDate(input)
 {
-	var re 				= /(\d\d\/\d\d\/\d\d\d\d)/i;
-
-    var date		= input.value;
-    
+	var date = input.value;
     if (!isWhitespace(date)) {
-           if (date.replace(re, "OK") != "OK") {
-               return false;
-           } else {
-           		var year 	= extractYear(date, '<%=resource.getLanguage()%>'); 
-    			var month	= extractMonth(date, '<%=resource.getLanguage()%>');
-    			var day 	= extractDay(date, '<%=resource.getLanguage()%>');
-               if (isCorrectDate(year, month, day)==false) {
-                 return false;
-               }
-           }
-     }
-     return true;
+    	if (!isDateOK(date, '<%=resource.getLanguage()%>')) {
+    		return false;
+    	}
+    }
+    return true;
 }
 function isCorrectForm() {
      var errorMsg 			= "";

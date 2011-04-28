@@ -128,7 +128,7 @@ out.println(gef.getLookStyleSheet());
 %>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script language="JavaScript1.2">
+<script type="text/javascript">
 function sendData() {
     if (isCorrectForm()) {
         document.quizzForm.submit();
@@ -146,13 +146,6 @@ function isCorrectForm() {
      var nbAnswersMax =  document.quizzForm.nbAnswersMax.value;
      var beginDate = document.quizzForm.beginDate.value;
      var endDate = document.quizzForm.endDate.value;
-     var yearBegin = extractYear(beginDate, '<%=quizzScc.getLanguage()%>');
-     var monthBegin = extractMonth(beginDate, '<%=quizzScc.getLanguage()%>');
-     var dayBegin = extractDay(beginDate, '<%=quizzScc.getLanguage()%>');
-     var yearEnd = extractYear(endDate, '<%=quizzScc.getLanguage()%>');
-     var monthEnd = extractMonth(endDate, '<%=quizzScc.getLanguage()%>');
-     var dayEnd = extractDay(endDate, '<%=quizzScc.getLanguage()%>');
-     var re = /(\d\d\/\d\d\/\d\d\d\d)/i;
 
      if (isWhitespace(title)) {
            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("GML.name")%>' <%=resources.getString("GML.MustBeFilled")%>\n";
@@ -174,34 +167,22 @@ function isCorrectForm() {
            errorNb++;
         }
 
-     if (isWhitespace(beginDate)) {
-     } else {
-           if (beginDate.replace(re, "OK") != "OK") {
+     if (!isWhitespace(beginDate)) {
+  	   if (!isDateOK(beginDate, '<%=resources.getLanguage()%>')) {
 		     errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationBeginDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
 		     errorNb++;
-           } else {
-                 if (isCorrectDate(yearBegin, monthBegin, dayBegin)==false) {
-		     errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationBeginDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-		     errorNb++;
-                 }
-           }
-     }
-     if (isWhitespace(endDate)) {
-     } else {
-           if (endDate.replace(re, "OK") != "OK") {
+         }
+  	 }
+     if (!isWhitespace(endDate)) {
+    	 if (!isDateOK(endDate, '<%=resources.getLanguage()%>')) {
                errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationEndDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
                errorNb++;
 	   } else {
-           if (isCorrectDate(yearEnd, monthEnd, dayEnd)==false) {
-               errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationEndDate")%>' <%=resources.getString("GML.MustContainsCorrectDate")%>\n";
-               errorNb++;
-           } else {
-               if ((isWhitespace(beginDate) == false) && (isWhitespace(endDate) == false)) {
-                     if (isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin, monthBegin, dayBegin) == false) {
-                            errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationEndDate")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
-                            errorNb++;
-                     }
-               }
+           if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
+        	   if (!isDate1AfterDate2(endDate, beginDate, '<%=resources.getLanguage()%>')) {
+                        errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=resources.getString("QuizzCreationEndDate")%>' <%=resources.getString("GML.MustContainsPostDate")%>\n";
+                        errorNb++;
+                 }
            }
 	   }
      }

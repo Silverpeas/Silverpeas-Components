@@ -44,7 +44,7 @@
 <%@page import="com.silverpeas.treeMenu.process.TreeHandler"%>
 <%@page import="com.silverpeas.treeMenu.model.MenuConstants"%>
 
-<%@ taglib uri="/WEB-INF/menuTree.tld" prefix="menuTree"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/menuTree" prefix="menuTree"%>
 
 <%
 GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");

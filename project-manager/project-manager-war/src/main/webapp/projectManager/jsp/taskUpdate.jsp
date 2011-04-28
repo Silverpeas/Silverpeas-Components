@@ -92,7 +92,7 @@ boolean	isOrganisateur = "admin".equals(role);
 <script type="text/javascript" src="<%=m_context%>/util/ajax/ricoAjax.js"></script>
 
 
-<script language="javascript" type="text/javascript">
+<script type="text/javascript">
 
 var language = '<%=resource.getLanguage()%>';
 
@@ -111,93 +111,25 @@ function setDate(day)
 	reloadDateFinAndOccupations();
 }
 
-/*function processEndDate()
-{
-	var errorMsg 	= "";
-    var errorNb 	= 0;
-    
-    var beginDate 	= document.actionForm.DateDebut.value;
-	var yearBegin 	= extractYear(beginDate, language); 
-	var monthBegin 	= extractMonth(beginDate, language);
-	var dayBegin 	= extractDay(beginDate, language);
-    
-	var charge = document.actionForm.Charge.value;
-	if (isWhitespace(charge) || !isNumericField(charge)) {
-    	errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheCharge")%>' <%=resource.getString("GML.MustContainsFloat")%>\n";
-        errorNb++;
-    }
-	if (isWhitespace(document.actionForm.DateDebut.value) || !isCorrectDate(document.actionForm.DateDebut))
-    {
-    	errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDateDebut")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-        errorNb++;
-	}
-	else 
-	{
- 		var beginDateMin 	= extractBeginDateFromPrevious();
- 	   	var yearBeginMin	= extractYear(beginDateMin, language);
- 		var monthBeginMin	= extractMonth(beginDateMin, language);
- 		var dayBeginMin		= extractDay(beginDateMin, language);
- 				
- 		if (!isD1AfterD2(yearBegin, monthBegin, dayBegin, yearBeginMin, monthBeginMin, dayBeginMin))
- 		{
-			errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDateDebut")%>' <%=resource.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDateMin+"\n";
-           	errorNb++;
-           	beginDateOK = false;
- 		}
- 
-	}
-	switch(errorNb) {
-        case 0 :
-        	document.actionForm.PreviousId.value = extractPreviousId();
-            document.actionForm.action = "ProcessEndDate";
-            document.actionForm.submit();
-            break;
-        case 1 :
-            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            break;
-        default :
-            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            break;
-     }
-}*/
 function isFieldDateCorrect(input)
 {
-	var re 		= /(\d\d\/\d\d\/\d\d\d\d)/i;
-    var date	= input.value;
-	
+	var date = input.value;
     if (!isWhitespace(date)) {
-           if (date.replace(re, "OK") != "OK") {
-               return false;
-           } else {
-        	   var year 	= extractYear(date, language); 
-        	   var month	= extractMonth(date, language);
-        	   var day 	= extractDay(date, language);
-               if (isCorrectDate(year, month, day)==false) {
-                 return false;
-               }
-           }
-     }
-     return true;
+    	if (!isDateOK(date, '<%=resource.getLanguage()%>')) {
+    		return false;
+    	}
+    }
+    return true;
 }
-function dateDansPeriodeMere(yearBegin, monthBegin, dayBegin)
+function dateDansPeriodeMere(beginDate)
 {
 	<%
 		if (actionMere != null)
 		{
 			out.println("var beginDateMere = \""+actionMere.getUiDateDebut()+"\";");
 			out.println("var endDateMere = \""+actionMere.getUiDateFin()+"\";");
-	%>
-			var yearBMere 	= extractYear(beginDateMere, language); 
-     		var monthBMere 	= extractMonth(beginDateMere, language);
-     		var dayBMere 	= extractDay(beginDateMere, language);
-     		
-     		var yearEMere 	= extractYear(endDateMere, language); 
-     		var monthEMere 	= extractMonth(endDateMere, language);
-     		var dayEMere 	= extractDay(endDateMere, language);
-     		
-     		return isD1AfterD2(yearBegin, monthBegin, dayBegin, yearBMere, monthBMere, dayBMere) && isD1AfterD2(yearEMere, monthEMere, dayEMere, yearBegin, monthBegin, dayBegin);
+	%>     		
+     		return isDate1AfterDate2(beginDate, beginDateMere, '<%=resource.getLanguage()%>') && isDate1AfterDate2(endDateMere, beginDate, '<%=resource.getLanguage()%>');
 	<%
 		}
 		else
@@ -209,7 +141,6 @@ function dateDansPeriodeMere(yearBegin, monthBegin, dayBegin)
 function isCorrectForm() {
 	 var i=0;
 	 var str = "";
-	 //while(document.getElementById("Resource"+i).value != null)
 	 var hasNext = 1;
    var errorMsg 			= "";
    var errorNb 			= 0;
@@ -238,24 +169,14 @@ function isCorrectForm() {
 	 //str = resourceId0_pourcentage0,resourceId1_pourcentage1,resourceId2_pourcentage2
 	 document.actionForm.allResources.value = str;
      
-     var beginDateOK 		= true;
      var name 				= document.actionForm.Nom.value;
      var responsable		= document.actionForm.ResponsableId.value;
      var charge 			= document.actionForm.Charge.value;
      var consomme			= document.actionForm.Consomme.value;
      var raf				= document.actionForm.Raf.value;
-     
-     var re 				= /(\d\d\/\d\d\/\d\d\d\d)/i;
 
      var beginDate 			= document.actionForm.DateDebut.value;
-     var yearBegin 			= extractYear(beginDate, language); 
-     var monthBegin 		= extractMonth(beginDate, language);
-     var dayBegin 			= extractDay(beginDate, language);
-
      var endDate 			= document.actionForm.DateFin.value;
-     var yearEnd 			= extractYear(endDate, language); 
-     var monthEnd 			= extractMonth(endDate, language);
-     var dayEnd 			= extractDay(endDate, language);
 
      if (isWhitespace(name)) {
            errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheNom")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
@@ -281,68 +202,26 @@ function isCorrectForm() {
            errorMsg +="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDateDebut")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
            errorNb++;
      } else {
-           if (beginDate.replace(re, "OK") != "OK") {
+           if (!isDateOK(beginDate, '<%=resource.getLanguage()%>')) {
                errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDateDebut")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
                errorNb++;
-			   beginDateOK = false;
            } else {
-               if (!isCorrectDate(yearBegin, monthBegin, dayBegin)) {
-                 errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDateDebut")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-                 errorNb++;
-				 beginDateOK = false;
-               }
-               else
-		 	   {
 	 	   			var beginDateMin 	= extractBeginDateFromPrevious();
-	 	   			var yearBeginMin	= extractYear(beginDateMin, language); 
-	 				var monthBeginMin	= extractMonth(beginDateMin, language);
-	 				var dayBeginMin		= extractDay(beginDateMin, language);
-	 				
-	 				if (!isD1AfterD2(yearBegin, monthBegin, dayBegin, yearBeginMin, monthBeginMin, dayBeginMin))
+	 	   			if (!isDate1AfterDate2(beginDate, beginDateMin, language))
 	 				{
 						errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDateDebut")%>' <%=resource.getString("GML.MustContainsPostOrEqualDateTo")%> "+beginDateMin+"\n";
 	           			errorNb++;
-	           			beginDateOK = false;
 	 				}
-		 	   } 
+		 	    
                <% if (actionMere != null) { %>
-	     	   		if (!dateDansPeriodeMere(yearBegin, monthBegin, dayBegin))
+	     	   		if (!dateDansPeriodeMere(beginDate))
 	     	   		{
 	     	   			errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDateDebut")%>' <%=resource.getString("GML.MustContainsDateBetween1")%> <%=actionMere.getUiDateDebut()%> <%=resource.getString("GML.MustContainsDateBetween2")%> <%=actionMere.getUiDateFin()%> \n";
 		               	errorNb++;
-					   	beginDateOK = false;
 	     	   		}
 	     	   <% } %>
            }
      }
-     /*if (isWhitespace(endDate)) {
-           errorMsg +="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDateFin")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-           errorNb++;
-     } else {
-           if (endDate.replace(re, "OK") != "OK") {
-                 errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDateFin")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-                 errorNb++;
-           } else {
-                 if (!isCorrectDate(yearEnd, monthEnd, dayEnd)) {
-                     errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDateFin")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-                     errorNb++;
-                 } else {
-                     if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
-                           if (beginDateOK && !isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin, monthBegin, dayBegin)) {
-                                  errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDateFin")%>' <%=resource.getString("GML.MustContainsPostDateTo")%> <%=resource.getString("projectManager.TacheDateDebut")%>\n";
-                                  errorNb++;
-                           }
-                     }
-					  <% if (actionMere != null) { %>
-			     	   		if (!dateDansPeriodeMere(yearEnd, monthEnd, dayEnd))
-			     	   		{
-			     	   			errorMsg+="  - <%=resource.getString("GML.theField")%> '<%=resource.getString("projectManager.TacheDateFin")%>' <%=resource.getString("GML.MustContainsDateBetween1")%> <%=actionMere.getUiDateDebut()%> <%=resource.getString("GML.MustContainsDateBetween2")%> <%=actionMere.getUiDateFin()%> \n";
-				               	errorNb++;
-			     	   		}
-			     	   <% } %>
-                 }
-           }
-     }*/
      switch(errorNb) {
         case 0 :
             result = true;

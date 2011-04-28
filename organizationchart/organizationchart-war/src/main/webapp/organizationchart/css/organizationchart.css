@@ -89,3 +89,12 @@
 .link0 {border-style: solid; border-width: 1; color: #663300 ; position: absolute; z-index: 1}
 .link1 {border-style: solid; border-width: 1; color: #663300 ; position: absolute; z-index: 1}
 .link2 {border-style: dotted; border-width: 1; color: #663300 ; position: absolute; z-index: 1}
+
+.gotoParent {
+	background-image: url(/silverpeas/util/icons/arrow/arrowUp.gif);
+	display: block;
+	width: 13px;
+	height: 13px;
+	text-indent: -2000px;
+	float: right;
+}

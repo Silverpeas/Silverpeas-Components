@@ -59,6 +59,7 @@ import java.util.Collection;
 
 public class RssLastPublicationsServlet extends HttpServlet {
 
+  private static final long serialVersionUID = 5196503014070113044L;
   public static final String SPACE_ID_PARAM = "spaceId";
   public static final String USER_ID_PARAM = "userId";
   public static final String PASSWORD_PARAM = "password";

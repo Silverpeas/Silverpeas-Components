@@ -70,19 +70,6 @@
 <script type="text/javascript" src="<c:url value='/util/javaScript/dateUtils.js'/>"></script>
 <script type="text/javascript" src="<c:url value='/wysiwyg/jsp/FCKeditor/fckeditor.js'/>"></script>
 <script type="text/javascript">
-var yearDateDebut;
-var yearDateFin;
-var monthDateDebut;
-var monthDateFin;
-var dayDateDebut;
-var dayDateFin;
-var hourHeureDebut;
-var hourHeureFin;
-var minuteHeureDebut;
-var minuteHeureFin;
-var hour;
-var minute;
-
 function reallyAdd() {
   document.eventForm.WeekDayWeek2.disabled = false;
   document.eventForm.WeekDayWeek3.disabled = false;
@@ -110,29 +97,14 @@ function isCorrectForm() {
   var errorMsg = "";
   var errorNb = 0;
   var title = stripInitialWhitespace(document.eventForm.Title.value);
-  var re = /(\d\d\/\d\d\/\d\d\d\d)/i;
   var beginDate = document.eventForm.StartDate.value;
   var endDate = document.eventForm.EndDate.value;
   var beginHour = stripInitialWhitespace(document.eventForm.StartHour.value);
   var endHour = stripInitialWhitespace(document.eventForm.EndHour.value);
-  var yearBegin = extractYear(beginDate, '<c:out value="${language}"/>');
-  var monthBegin = extractMonth(beginDate, '<c:out value="${language}"/>');
-  var dayBegin = extractDay(beginDate, '<c:out value="${language}"/>');
-  var yearEnd = extractYear(endDate, '<c:out value="${language}"/>');
-  var monthEnd = extractMonth(endDate, '<c:out value="${language}"/>');
-  var dayEnd = extractDay(endDate, '<c:out value="${language}"/>');
-  var hour = "";
-  var minute = "";
   var unity = document.eventForm.Unity.value;
   var frequency = stripInitialWhitespace(document.eventForm.Frequency.value);
   var beginPeriodicity = document.eventForm.PeriodicityStartDate.value;
-  var yearBeginPeriodicity = extractYear(beginPeriodicity, '<c:out value="${language}"/>');
-  var monthBeginPeriodicity = extractMonth(beginPeriodicity, '<c:out value="${language}"/>');
-  var dayBeginPeriodicity = extractDay(beginPeriodicity, '<c:out value="${language}"/>');
   var untilDate = document.eventForm.PeriodicityUntilDate.value;
-  var yearUntil = extractYear(untilDate, '<c:out value="${language}"/>');
-  var monthUntil = extractMonth(untilDate, '<c:out value="${language}"/>');
-  var dayUntil = extractDay(untilDate, '<c:out value="${language}"/>');
 
   var beginDateOK = true;
   var beginPeriodicityOK = true;
@@ -146,16 +118,10 @@ function isCorrectForm() {
     errorNb++;
   }
   else {
-    if (beginDate.replace(re, "OK") != "OK") {
+	if (!isDateOK(beginDate, '<c:out value="${language}"/>')) {
       errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.dateBegin'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
       errorNb++;
       beginDateOK = false;
-    } else {
-      if (isCorrectDate(yearBegin, monthBegin, dayBegin) == false) {
-        errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.dateBegin'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
-        errorNb++;
-        beginDateOK = false;
-      }
     }
   }
 
@@ -165,29 +131,23 @@ function isCorrectForm() {
   }
 
   if (!isWhitespace(endDate)) {
-    if (endDate.replace(re, "OK") != "OK") {
+	if (!isDateOK(endDate, '<c:out value="${language}"/>')) {
       errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.dateEnd'/> <fmt:message key='GML.MustContainsCorrectDate'/>\n";
       errorNb++;
     } else {
-      if (isCorrectDate(yearEnd, monthEnd, dayEnd) == false) {
-        errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.dateEnd'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
-        errorNb++;
-      } else {
-        if ((isWhitespace(beginDate) == false) && (isWhitespace(endDate) == false)) {
-          if (beginDateOK && isD1AfterD2(yearEnd, monthEnd, dayEnd, yearBegin, monthBegin,
-              dayBegin) == false) {
+        if (!isWhitespace(beginDate) && !isWhitespace(endDate)) {
+          if (beginDateOK && !isDate1AfterDate2(endDate, beginDate, '<c:out value="${language}"/>')) {
             errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.dateEnd'/>' <fmt:message key='GML.MustContainsPostOrEqualDateTo'/> " + beginDate + "\n";
             errorNb++;
           }
         } else {
-          if ((isWhitespace(beginDate) == true) && (isWhitespace(endDate) == false)) {
-            if (isFutureDate(yearEnd, monthEnd, dayEnd) == false) {
+          if (isWhitespace(beginDate) && !isWhitespace(endDate)) {
+            if (!isFuture(endDate, '<c:out value="${language}"/>')) {
               errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='GML.dateEnd'/>' <fmt:message key='GML.MustContainsPostDate'/>\n";
               errorNb++;
             }
           }
         }
-      }
     }
   }
 
@@ -208,39 +168,26 @@ function isCorrectForm() {
     }
 
     if (! isWhitespace(beginPeriodicity)) {
-      if (beginPeriodicity.replace(re, "OK") != "OK") {
-        errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='beginDatePeriodicity'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
-        errorNb++;
-        beginPeriodicityOK = false;
-      } else {
-        if (isCorrectDate(yearBeginPeriodicity, monthBeginPeriodicity,
-            dayBeginPeriodicity) == false) {
-          errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='beginDatePeriodicity'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
-          errorNb++;
-          beginPeriodicityOK = false;
-        }
-      }
+		if (!isDateOK(beginPeriodicity, '<c:out value="${language}"/>')) {
+        	errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='beginDatePeriodicity'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
+        	errorNb++;
+        	beginPeriodicityOK = false;
+      	}
     }
 
     if (! isWhitespace(untilDate)) {
-      if (untilDate.replace(re, "OK") != "OK") {
-        errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='endDatePeriodicity'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
-        errorNb++;
-      } else {
-        if (isCorrectDate(yearUntil, monthUntil, dayUntil) == false) {
-          errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='endDatePeriodicity'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
-          errorNb++;
-        }
-        else {
-          if ((isWhitespace(beginPeriodicity) == false) && (isWhitespace(untilDate) == false)) {
-            if (beginPeriodicityOK && isD1AfterD2(yearUntil, monthUntil, dayUntil,
-                yearBeginPeriodicity, monthBeginPeriodicity, dayBeginPeriodicity) == false) {
+    	if (!isDateOK(untilDate, '<c:out value="${language}"/>')) {
+	        errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='endDatePeriodicity'/>' <fmt:message key='GML.MustContainsCorrectDate'/>\n";
+	        errorNb++;
+      	} else {
+          if (!isWhitespace(beginPeriodicity) && !isWhitespace(untilDate)) {
+            if (beginPeriodicityOK && !isDate1AfterDate2(untilDate, beginPeriodicity, '<c:out value="${language}"/>')) {
               errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='endDatePeriodicity'/>' <fmt:message key='GML.MustContainsPostOrEqualDateTo'/> " + beginPeriodicity + "\n";
               errorNb++;
             }
           } else {
-            if ((isWhitespace(beginPeriodicity) == true) && (isWhitespace(untilDate) == false)) {
-              if (isFutureDate(yearUntil, monthUntil, dayUntil) == false) {
+            if (isWhitespace(beginPeriodicity) && !isWhitespace(untilDate)) {
+              if (!isFuture(untilDate, '<c:out value="${language}"/>')) {
                 errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='endDatePeriodicity'/>' <fmt:message key='GML.MustContainsPostDate'/>\n";
                 errorNb++;
               }
@@ -248,7 +195,6 @@ function isCorrectForm() {
           }
         }
       }
-    }
   }
 
   switch (errorNb) {

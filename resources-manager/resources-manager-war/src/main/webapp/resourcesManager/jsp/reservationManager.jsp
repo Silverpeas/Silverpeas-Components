@@ -76,29 +76,9 @@
 <%
 	out.println(gef.getLookStyleSheet());
 %>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script type="text/javascript">
-
-function verificationHour(hour){
-	      var tab = hour.match(/\d{2}:\d{2}/)
-	      if(tab==null){
-	    	  return 0;
-	      }
-	      else
-	    	  return 1;
-	   }
-
-function verificationDate(Date){
-    var tab = Date.match(/\d{2}[/]\d{2}[/]\d{2}/)
-    if(tab==null){
-  	  return 0;
-    }
-    else
-  	  return 1;
- }
-
-
 function validerNom(){
 	if(document.getElementById("evenement").value == 0){
 		document.getElementById('validationNom').innerHTML="Evenement obligatoire";
@@ -111,40 +91,50 @@ function isCorrectForm()
 {
 	var errorNb = 0;
 	var errorMsg = "";
-	if(document.getElementById("evenement").value == 0){
+	var startDate = document.getElementById("startDate").value;
+	var startHour = document.getElementById("startHour").value;
+	var endDate = document.getElementById("endDate").value;
+	var endHour = document.getElementById("endHour").value;
+		
+	if(isWhitespace(document.getElementById("evenement").value)){
 		errorNb++;
 		errorMsg+="  - '<%=resource.getString("resourcesManager.evenement")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
 	}
-	if(document.getElementById("startDate").value == 0 || (verificationDate(document.getElementById("startDate").value) == 0)){
+	if (isWhitespace(startDate)) {
 		errorNb++;
 		errorMsg+="  - '<%=resource.getString("GML.dateBegin")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+	} else {
+		if (!isDateOK(startDate, '<%=resource.getLanguage()%>')) {
+			errorNb++;
+			errorMsg+="  - '<%=resource.getString("GML.dateBegin")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
+		}
 	}
-	if((document.getElementById("startHour").value == 0) || (verificationHour(document.getElementById("startHour").value) == 0)){
+	if (isWhitespace(startHour)) {
 		errorNb++;
 		errorMsg+="  - '<%=resource.getString("resourcesManager.beginHour")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+	} else {
+		if (!checkHour(startHour)) {
+			errorNb++;
+			errorMsg+="  - '<%=resource.getString("resourcesManager.beginHour")%>' <%=resource.getString("GML.MustContainsCorrectHour")%>\n";
+		}
 	}
-	if(document.getElementById("endDate").value == 0 ||(verificationDate(document.getElementById("endDate").value) == 0)){
+	if (isWhitespace(endDate)) {
 		errorNb++;
 		errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+	} else {
+		if (!isDateOK(endDate, '<%=resource.getLanguage()%>')) {
+			errorNb++;
+			errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
+		}
 	}
-	if(document.getElementById("endHour").value == 0 ||(verificationHour(document.getElementById("endHour").value) == 0)){
+	if (isWhitespace(endHour)) {
 		errorNb++;
 		errorMsg+="  - '<%=resource.getString("resourcesManager.endHour")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-	}
-	var dayStartDate = extractDay(document.getElementById("startDate").value, '<%=resourcesManagerSC.getLanguage()%>');
-	var monthStartDate = extractMonth(document.getElementById("startDate").value, '<%=resourcesManagerSC.getLanguage()%>');
-	var yearStartDate = extractYear(document.getElementById("startDate").value, '<%=resourcesManagerSC.getLanguage()%>');
-	if (!isCorrectDate(yearStartDate, monthStartDate, dayStartDate)) {
-		errorNb++;
-		errorMsg+="  - '<%=resource.getString("GML.dateBegin")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
-	}
-
-	var dayEndDate = extractDay(document.getElementById("endDate").value, '<%=resourcesManagerSC.getLanguage()%>');
-	var monthEndDate = extractMonth(document.getElementById("endDate").value, '<%=resourcesManagerSC.getLanguage()%>');
-	var yearEndDate = extractYear(document.getElementById("endDate").value, '<%=resourcesManagerSC.getLanguage()%>');
-	if (!isCorrectDate(yearEndDate, monthEndDate, dayEndDate )) {
-		errorNb++;
-		errorMsg+="  - '<%=resource.getString("GML.dateEnd")%>' <%=resource.getString("GML.MustContainsCorrectDate")%>\n";
+	} else {
+		if (!checkHour(endHour)) {
+			errorNb++;
+			errorMsg+="  - '<%=resource.getString("resourcesManager.endHour")%>' <%=resource.getString("GML.MustContainsCorrectHour")%>\n";
+		}
 	}
 
 	switch(errorNb)
@@ -171,21 +161,6 @@ function verification(){
 		if(isCorrectDateOrder(document.getElementById("startDate").value,document.getElementById("startHour").value,document.getElementById("endDate").value,document.getElementById("endHour").value))
 			document.createForm.submit();
 	}
-}
-
-function calendar(indexForm, indexField) {
-	SP_openWindow('<%=m_context+URLManager.getURL(URLManager.CMP_AGENDA)%>calendar.jsp?indiceForm='+indexForm+'&indiceElem='+indexField,'Calendrier',180,200,'');
-}
-
-function getResourceProblem()
-{
-	var beginDate = document.getElementById("startDate").value;
-	var endDate = document.getElementById("endDate").value;
-	var beginHour = document.getElementById("startHour").value;
-	var endHour = document.getElementById("endHour").value;
-	$.post("<%=m_context%>/RAjaxResourcesManagerServlet/dummy", {ComponentId:'<%=componentId%>',reservationId:'<%=reservationId%>',beginDate:beginDate,beginHour:beginHour,endDate:endDate,endHour:endHour}, function(data){
-		$("#listResourceProblem").html(data);
-	}, 'html');
 }
 
 /* fonction permettant de v�rifier que dateBegin,hourBegin est bien inf�rieur � dateEnd,hourEnd*/
@@ -233,15 +208,15 @@ buttonPane.addButton(cancelButton);
 	<tr>
 		<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.dateBegin")%>&nbsp;:&nbsp;</td>
 		<td valign="baseline">
-		<input type="text" class="dateToPick" name="startDate" size="14" id="startDate" maxlength="<%=DBUtil.getDateFieldLength()%>" value="<%=dateBegin%>" onBlur="getResourceProblem();">&nbsp;<a href="javascript:calendar('0', '1');" onBlur="getResourceProblem();"><img src="<%=resource.getIcon("resourcesManager.calendrier")%>" border="0" align="middle" alt="Afficher le calendrier" title="Afficher le calendrier"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>
-		<span class="txtlibform">&nbsp;</span><input type="text" name="startHour" id="startHour" size="5" maxlength="5" value="<%=minuteHourDateBegin%>" onBlur="getResourceProblem();">&nbsp;<span class="txtnote">(hh:mm)</span>&nbsp;<img src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5">
+		<input type="text" class="dateToPick" name="startDate" size="14" id="startDate" maxlength="<%=DBUtil.getDateFieldLength()%>" value="<%=dateBegin%>"/>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>
+		<span class="txtlibform">&nbsp;</span><input type="text" name="startHour" id="startHour" size="5" maxlength="5" value="<%=minuteHourDateBegin%>"/>&nbsp;<span class="txtnote">(hh:mm)</span>&nbsp;<img src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5"/>
 	</tr>
 
 	<tr>
 		<td class="txtlibform" nowrap="nowrap"><%=resource.getString("GML.dateEnd")%>&nbsp;:&nbsp;</td>
 		<td valign="baseline">
-		<input type="text" class="dateToPick" name="endDate" id="endDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" value="<%=dateEnd%>" onBlur="getResourceProblem();" >&nbsp;<a href="javascript:calendar('0', '3');" onBlur="getResourceProblem();"><img src="<%=resource.getIcon("resourcesManager.calendrier")%>" border="0" align="middle" alt="Afficher le calendrier" title="Afficher le calendrier"></a>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>
-		<span class="txtlibform">&nbsp;</span><input type="text" name="endHour" id="endHour" size="5" maxlength="5" value="<%=minuteHourDateEnd%>" onBlur="getResourceProblem();">&nbsp;<span class="txtnote">(hh:mm)</span>&nbsp;<img src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5">
+		<input type="text" class="dateToPick" name="endDate" id="endDate" size="14" maxlength="<%=DBUtil.getDateFieldLength()%>" value="<%=dateEnd%>"/>&nbsp;<span class="txtnote">(<%=resource.getString("GML.dateFormatExemple")%>)</span>
+		<span class="txtlibform">&nbsp;</span><input type="text" name="endHour" id="endHour" size="5" maxlength="5" value="<%=minuteHourDateEnd%>"/>&nbsp;<span class="txtnote">(hh:mm)</span>&nbsp;<img src="<%=resource.getIcon("resourcesManager.obligatoire")%>" width="5" height="5"/>
 	</tr>
 
 	<tr>
@@ -267,8 +242,6 @@ buttonPane.addButton(cancelButton);
   <%}%>
 </TABLE>
 </form>
-
-<div id="listResourceProblem"></div>
 
 <SCRIPT>document.createForm.evenement.focus();</SCRIPT>
 <%
