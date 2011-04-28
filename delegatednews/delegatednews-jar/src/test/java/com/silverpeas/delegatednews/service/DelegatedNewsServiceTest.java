@@ -4,9 +4,13 @@
  */
 package com.silverpeas.delegatednews.service;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+
 import javax.sql.DataSource;
 
 import com.silverpeas.delegatednews.dao.DelegatedNewsDaoTest;
+import com.silverpeas.delegatednews.model.DelegatedNews;
 
 import org.dbunit.DatabaseUnitException;
 import org.dbunit.database.DatabaseConnection;
@@ -22,6 +26,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 
 import org.junit.AfterClass;
 
@@ -70,4 +75,38 @@ public class DelegatedNewsServiceTest {
     String contributorId = "1";
     service.addDelegatedNews(pubId, instanceId, contributorId, new Date(), null, null);
   }
+  
+  @Test
+  public void testGetDelegatedNews() throws Exception {
+    int pubId = 1;
+    DelegatedNews detail = service.getDelegatedNews(pubId);
+    assertThat(detail, notNullValue());
+    assertThat(detail.getInstanceId(), is("kmelia1"));
+  }
+  
+
+  @Test
+  public void testGetAllDelegatedNews() throws Exception {
+    List<DelegatedNews> listDetail = service.getAllDelegatedNews();
+    assertThat(listDetail, notNullValue());
+    assertThat(listDetail.size(), is(2));
+  }
+  
+  @Test
+  public void testGetAllValidDelegatedNews() throws Exception {
+    List<DelegatedNews> listDetail = service.getAllValidDelegatedNews();
+    assertThat(listDetail, notNullValue());
+    assertThat(listDetail.size(), is(1));
+  }
+  
+  @Test
+  public void testValidateDelegatedNews() throws Exception {
+    int pubId = 1; 
+    String validatorId = "2"; 
+    service.validateDelegatedNews(pubId, validatorId);
+    DelegatedNews detail = service.getDelegatedNews(pubId);
+    assertThat(detail, notNullValue());
+    assertThat(detail.getPubId(), is(1));
+  }
+  
 }

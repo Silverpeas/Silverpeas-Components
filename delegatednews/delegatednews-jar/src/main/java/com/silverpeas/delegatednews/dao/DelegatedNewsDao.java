@@ -35,7 +35,7 @@ import com.silverpeas.delegatednews.model.DelegatedNews;
 public interface DelegatedNewsDao extends GenericDao<DelegatedNews, Integer> {
   
 
-  @Query("from DelegatedNews dn WHERE dn.status = :status")
+  @Query("from DelegatedNews dn WHERE dn.status = :status order by dn.validationDate DESC")
   List<DelegatedNews> findByStatus(@Param("status") String status);
 
 }

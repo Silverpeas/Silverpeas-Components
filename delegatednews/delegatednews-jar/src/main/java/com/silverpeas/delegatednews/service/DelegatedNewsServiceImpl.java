@@ -96,9 +96,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
   @Override
   public List<DelegatedNews> getAllDelegatedNews() {
     List<Sort.Property> properties = new ArrayList<Sort.Property>();
-    Sort.Property property = new Sort.Property(Order.DESCENDING, "validationDate");
-    properties.add(property);
-    property = new Sort.Property(Order.DESCENDING, "pubId");
+    Sort.Property property = new Sort.Property(Order.DESCENDING, "pubId");
     properties.add(property);
     Sort sort = new Sort(properties);
     List<DelegatedNews> list = dao.readAll(sort); 
@@ -112,7 +110,7 @@ public class DelegatedNewsServiceImpl implements DelegatedNewsService {
    */
   @Override
   public List<DelegatedNews> getAllValidDelegatedNews() {
-    List<DelegatedNews> list = dao.findByStatus(DelegatedNews.NEWS_VALID); //TODO Méthode pour renvoyer la liste des actus valides et dont la date de visibilité est en cours, triées par date de début de visibilité décroissante
+    List<DelegatedNews> list = dao.findByStatus(DelegatedNews.NEWS_VALID);
     return list;
   }
   
