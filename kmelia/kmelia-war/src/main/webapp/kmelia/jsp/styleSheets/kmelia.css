@@ -171,7 +171,8 @@
 }
 
 #pubList .publication .line1 {
-	height: 15px;
+  height: auto;
+  min-height: 15px;
 }
 
 #pubList .publication .line2, 
