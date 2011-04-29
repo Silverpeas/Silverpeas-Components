@@ -37,8 +37,8 @@
     <message lang="en">This component allows to validate and display news in home page. The news have been proposed from Theme Tracker which have the News manage option activated.</message>
   </description>
   <suite>
-    <message lang="fr">01 Gestion Documentaire</message>
-    <message lang="en">01 Document Management</message>
+    <message lang="fr">04 Gestion de contenu</message>
+    <message lang="en">04 Content Management</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -46,22 +46,22 @@
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Editeur</message>
-        <message lang="en">Editor</message>
+        <message lang="fr">Equipe éditoriale</message>
+        <message lang="en">Editorial team</message>
       </label>
       <help>
-        <message lang="fr">Editeur</message>
-        <message lang="en">Editor</message>
+        <message lang="fr">Equipe éditoriale</message>
+        <message lang="en">Editorial team</message>
       </help>
     </profile>
     <profile name="user">
       <label>
-        <message lang="fr">Contributeur</message>
-        <message lang="en">Contributor</message>
+        <message lang="fr">Contributeurs</message>
+        <message lang="en">Contributors</message>
       </label>
       <help>
-        <message lang="fr">Contributeur</message>
-        <message lang="en">Contributor</message>
+        <message lang="fr">Contributeurs</message>
+        <message lang="en">Contributors</message>
       </help>
     </profile>
   </profiles>

@@ -42,8 +42,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.silverpeas.delegatednews.model.DelegatedNews;
-import com.silverpeas.delegatednews.service.DelegatedNewsService;
-import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.silverpeas.kmelia.KmeliaConstants;
 import com.silverpeas.thumbnail.ThumbnailException;
 import com.silverpeas.thumbnail.model.ThumbnailDetail;
