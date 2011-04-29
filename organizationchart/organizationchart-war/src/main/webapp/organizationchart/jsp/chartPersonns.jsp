@@ -60,7 +60,8 @@ jCells[cellIndex] = new JCell( {
 	parentURL : "${organigramme.rootOrganization.parentUrl}",
 	level : 0,
 	className : 0,
-	cellType : CELL_TYPE_ORGANIZATION
+	cellType : CELL_TYPE_ORGANIZATION,
+	commonUserURL : "Details?login="
 });
 
 <%-- CATEGORIES --%>
@@ -71,7 +72,8 @@ jCells[cellIndex] = new JCell( {
 		title: "${(category.name eq 'Personnel') ? '' : category.name}",
 		level : 1,
 		className : 5,
-		cellType : CELL_TYPE_CATEGORY
+		cellType : CELL_TYPE_CATEGORY,
+		commonUserURL : "Details?login="
 		<%--<c:if test="${category.name eq 'Personnel'}"> --%>
 		, innerUsers : new Array(
 			<c:forEach items="${category.users}" var="user" varStatus="mainLoopInfo">
