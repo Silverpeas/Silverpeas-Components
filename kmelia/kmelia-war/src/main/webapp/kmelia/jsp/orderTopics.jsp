@@ -62,7 +62,7 @@ li {
 </style>
 </HEAD>
 <body>
-<view:browseBar extraInformations="<%=resources.getString("kmelia.SortTopics")%>"/>
+<view:browseBar extraInformations='<%=resources.getString("kmelia.SortTopics")%>'/>
 <view:window>
 <view:frame>
 <view:board>
@@ -92,7 +92,7 @@ while(items.hasNext())
 %>
 	<li id="item_<%=node.getNodePK().getId()%>"><b><%=node.getName(currentLang)%></b><br/>
 		<% if (StringUtil.isDefined(node.getDescription(currentLang))) { %>
-			<%=Encode.javaStringToHtmlParagraphe(node.getDescription(currentLang))%><br/>
+			<%=EncodeHelper.javaStringToHtmlParagraphe(node.getDescription(currentLang))%><br/>
 		<% } %>
 		<br/>
 	</li>
