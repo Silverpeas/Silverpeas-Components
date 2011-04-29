@@ -1615,6 +1615,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       }
       // notification pour modification
       sendSubscriptionsNotification(pubDetail, true);
+      
+      boolean isNewsManage = StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(pubDetail.getPK().getInstanceId(), "isNewsManage"));
+      if(isNewsManage) {
+        // mécanisme de callback
+        CallBackManager callBackManager = CallBackManager.get();
+        callBackManager.invoke(CallBackManager.ACTION_HEADER_PUBLICATION_UPDATE,
+            Integer.parseInt(pubDetail.getId()), pubDetail.getInstanceId(), pubDetail);
+      }
 
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.updatePublication()",
@@ -1866,6 +1874,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       updateSilverContentVisibility(pubPK, false);
 
       unIndexExternalElementsOfPublication(pubPK);
+      
+      boolean isNewsManage = StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(pubPK.getInstanceId(), "isNewsManage"));
+      if(isNewsManage) {
+        // mécanisme de callback
+        CallBackManager callBackManager = CallBackManager.get();
+        callBackManager.invoke(CallBackManager.ACTION_PUBLICATION_REMOVE,
+            Integer.parseInt(pubPK.getId()), pubPK.getInstanceId(), "");
+      }
 
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.sendPublicationToBasket()",
@@ -3288,6 +3304,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       updateSilverContentVisibility(pubDetail);
       unIndexExternalElementsOfPublication(pubDetail.getPK());
       removeAllTodosForPublication(pubPK);
+      
+      boolean isNewsManage = StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(pubDetail.getPK().getInstanceId(), "isNewsManage"));
+      if(isNewsManage) {
+        // mécanisme de callback
+        CallBackManager callBackManager = CallBackManager.get();
+        callBackManager.invoke(CallBackManager.ACTION_PUBLICATION_REMOVE,
+            Integer.parseInt(pubDetail.getId()), pubDetail.getInstanceId(), pubDetail);
+      }
 
       SilverTrace.info("kmelia", "KmeliaBmEJB.draftInPublication()",
           "root.MSG_GEN_PARAM_VALUE", "new status = " + pubDetail.getStatus());
