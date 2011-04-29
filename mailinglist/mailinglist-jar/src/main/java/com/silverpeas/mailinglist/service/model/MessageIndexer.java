@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mailinglist.service.model;
 
 import java.util.Set;
@@ -37,8 +36,7 @@ public class MessageIndexer {
   public static void indexMessage(Message message) {
     if (message.isModerated()) {
       unindexMessage(message);
-      FullIndexEntry index = new FullIndexEntry(message.getComponentId(),
-          "message", message.getId());
+      FullIndexEntry index = new FullIndexEntry(message.getComponentId(), "message", message.getId());
       index.setTitle(message.getTitle());
       index.setCreationDate(message.getSentDate());
       index.setPreView(message.getSummary());
@@ -48,8 +46,7 @@ public class MessageIndexer {
       Set<Attachment> attachments = message.getAttachments();
       if (attachments != null && !attachments.isEmpty()) {
         for (Attachment attachment : attachments) {
-          index.addFileContent(attachment.getPath(), "UTF-8", attachment
-              .getContentType(), "fr");
+          index.addFileContent(attachment.getPath(), "UTF-8", attachment.getContentType(), "fr");
         }
       }
       IndexEngineProxy.addIndexEntry(index);
@@ -57,8 +54,10 @@ public class MessageIndexer {
   }
 
   public static void unindexMessage(Message message) {
-    IndexEntryPK indexEntry = new IndexEntryPK(message.getComponentId(),
-        "message", message.getId());
+    IndexEntryPK indexEntry = new IndexEntryPK(message.getComponentId(), "message", message.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
+  }
+
+  private MessageIndexer() {
   }
 }

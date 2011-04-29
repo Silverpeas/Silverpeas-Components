@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@page import="com.silverpeas.util.EncodeHelper"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="check.jsp" %>
@@ -61,11 +62,11 @@ window.onload = function()
 	var http = getHTTPObject(); 
 	if (http) 
 	{
-		http.open("get", "<%=Encode.javaStringToJsString(url)%>", false, "<%=domain%>\\<%=login%>", "<%=Encode.javaStringToJsString(password)%>");
+		http.open("get", "<%=EncodeHelper.javaStringToJsString(url)%>", false, "<%=domain%>\\<%=login%>", "<%=EncodeHelper.javaStringToJsString(password)%>");
 		http.send(""); 
 		if (http.status == 200) 
 		{
-			document.location = "<%=Encode.javaStringToJsString(url)%>"; 
+			document.location = "<%=EncodeHelper.javaStringToJsString(url)%>"; 
 		} 
 		else 
 		{ 

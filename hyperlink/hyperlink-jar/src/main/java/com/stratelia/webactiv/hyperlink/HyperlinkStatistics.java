@@ -21,26 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.stratelia.webactiv.hyperlink;
 
-import java.util.ArrayList;
-import java.util.Collection;
 
 import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
 import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
-
-/*
- * CVS Informations
- *
- * $Id:
- *
- * $Log:
- *
- */
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Class declaration
@@ -48,9 +36,9 @@ import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple
  */
 public class HyperlinkStatistics implements ComponentStatisticsInterface {
 
-  public Collection getVolume(String spaceId, String componentId)
-      throws Exception {
-    ArrayList myArrayList = new ArrayList();
+  @Override
+  public Collection getVolume(String spaceId, String componentId) throws Exception {
+    List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
 
     UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
     myCouple.setUserId("-2"); // unknown userId
@@ -59,5 +47,4 @@ public class HyperlinkStatistics implements ComponentStatisticsInterface {
 
     return myArrayList;
   }
-
 }
