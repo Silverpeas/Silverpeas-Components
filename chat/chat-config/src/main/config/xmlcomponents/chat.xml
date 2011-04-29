@@ -28,7 +28,7 @@
     xsi:schemaLocation="http://silverpeas.org/xml/ns/component http://www.silverpeas.org/xsd/component.xsd">
   <name>chat</name>
   <label>
-    <message lang="fr">Dscussion en ligne</message>
+    <message lang="fr">Discussion en ligne</message>
     <message lang="en">Online chat</message>
   </label>
   <description>

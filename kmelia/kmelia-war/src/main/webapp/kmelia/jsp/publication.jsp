@@ -43,6 +43,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ page import="com.silverpeas.form.*"%>
 <%@page import="com.stratelia.silverpeas.versioning.model.DocumentPK"%>
 <%@page import="com.stratelia.silverpeas.peasCore.URLManager"%>
+<%@page import="com.silverpeas.delegatednews.model.DelegatedNews"%>
 
 <%
   	ResourceLocator uploadSettings 		= new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", resources.getLanguage());
@@ -65,6 +66,10 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	boolean isWriterApproval = ((Boolean) request.getAttribute("WriterApproval")).booleanValue();
 	boolean notificationAllowed = ((Boolean) request.getAttribute("NotificationAllowed")).booleanValue();
 	boolean attachmentsEnabled = ((Boolean) request.getAttribute("AttachmentsEnabled")).booleanValue();
+	boolean isNewsManage = ((Boolean) request.getAttribute("NewsManage")).booleanValue();
+	DelegatedNews delegatedNews = (DelegatedNews) request.getAttribute("DelegatedNews");
+	boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
+
 
 	if (action == null) {
 		action = "View";
@@ -155,6 +160,16 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 		    //modification pour acceder e l'onglet voir aussi
             kmeliaScc.setSessionOwner(false);
         }
+	}
+	
+	if (isNewsManage && !kmaxMode && !toolboxMode && isOwner && delegatedNews != null) {
+		if (DelegatedNews.NEWS_TO_VALIDATE.equals(delegatedNews.getStatus())) {
+			screenMessage = "<div class=\"inlineMessage\">" + resources.getString("kmelia.DelegatedNewsToValidate") + "</div>";
+		} else if (DelegatedNews.NEWS_VALID.equals(delegatedNews.getStatus())) {
+			screenMessage = "<div class=\"inlineMessage-ok\">" + resources.getString("kmelia.DelegatedNewsValid") + "</div>";
+		} else if (DelegatedNews.NEWS_REFUSED.equals(delegatedNews.getStatus())) {
+			screenMessage = "<div class=\"inlineMessage-nok\">" + resources.getString("kmelia.DelegatedNewsRefused") + "</div>";
+		}
 	}
 
     String creationDate = resources.getOutputDate(pubDetail.getCreationDate());
@@ -363,6 +378,10 @@ function addFavorite()
   	favoriteWindow = SP_openWindow(urlWindow, "favoriteWindow", "550", "250", "directories=0,menubar=0,toolbar=0,alwaysRaised");
 }
 
+function suggestDelegatedNews() {
+	location.href= "<%=routerUrl%>SuggestDelegatedNews";
+}
+
 </script>
 </head>
 <body class="yui-skin-sam" onunload="closeWindows()" onload="openSingleAttachment()" id="<%=componentId %>">
@@ -448,6 +467,14 @@ function addFavorite()
             "javaScript:pubSuspend()");
       }
     }
+    
+	if (isNewsManage && isOwner && pubDetail.isValid() && delegatedNews == null && ! isBasket) {
+		operationPane.addLine();
+		operationPane.addOperation("#", resources.getString(
+			"kmelia.DelegatedNewsSuggest"),
+			"javaScript:suggestDelegatedNews()");
+	}
+  
         out.println(window.printBefore());
         action = "View";
         if (isOwner) {

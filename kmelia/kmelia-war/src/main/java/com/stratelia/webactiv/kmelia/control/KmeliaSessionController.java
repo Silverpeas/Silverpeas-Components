@@ -28,6 +28,9 @@ import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.delegatednews.model.DelegatedNews;
+import com.silverpeas.delegatednews.service.DelegatedNewsService;
+import com.silverpeas.delegatednews.service.ServicesFactory;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.FormException;
 import com.silverpeas.form.RecordSet;
@@ -80,6 +83,7 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.ComponentInstManager;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -1073,9 +1077,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public synchronized void deletePublication(String pubId, boolean kmaxMode)
       throws RemoteException {
-    // récupération de la position de la publication pour savoir s'il elle se trouve déjà dans
+    // récupération de la position de la publication pour savoir si elle se trouve déjà dans
     // la corbeille node=1
-    // s'il elle se trouve déjà au node 1, il est nécessaire de supprimer les fichier joints
+    // si elle se trouve déjà au node 1, il est nécessaire de supprimer les fichier joints
     // sinon non
     String nodeId = "";
     if (getSessionTopic() != null) {
@@ -4657,4 +4661,58 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private PublicationTemplateManager getPublicationTemplateManager() {
     return PublicationTemplateManager.getInstance();
   }
+  
+  
+  /**
+   * Is news manage
+   *
+   * @return boolean
+   */
+  public boolean isNewsManage() {
+	  return StringUtil.getBooleanValue(getComponentParameterValue("isNewsManage"));
+  }
+  
+  /**
+   * Récupère une actualité déléguée dans le composant delegatednews correspondant à la publication passée en paramètre
+   *
+   * @param pubId : l'id de la publication de Theme Tracker
+   * @return DelegatedNews : l'objet correspondant à l'actualité déléguée dans le composant delegatednews ou null si elle n'existe pas
+   */
+  public DelegatedNews getDelegatedNews(String pubId) {
+    
+    DelegatedNewsService delegatedNewsService = ServicesFactory.getDelegatedNewsService();
+    DelegatedNews delegatedNews = delegatedNewsService.getDelegatedNews(Integer.parseInt(pubId));
+    return delegatedNews;
+  }
+  
+  /**
+   * Ajout d'une actualité déléguée dans le composant delegatednews
+   *
+   * @return String : pubId
+   */
+  public String addDelegatedNews() {
+    //ajoute l'actualité déléguée dans le composant delegatednews
+    UserCompletePublication userPubComplete = getSessionPublication();
+    String pubId = userPubComplete.getId();
+    PublicationDetail pubDetail = userPubComplete.getPublication().getPublicationDetail();
+    String instanceId = pubDetail.getInstanceId();
+    String contributorId = pubDetail.getUpdaterId();
+    Date beginDateAndHour = DateUtil.getDate(pubDetail.getBeginDate(), pubDetail.getBeginHour());
+    Date endDateAndHour = DateUtil.getDate(pubDetail.getEndDate(), pubDetail.getEndHour());
+    DelegatedNewsService delegatedNewsService = ServicesFactory.getDelegatedNewsService();
+    delegatedNewsService.addDelegatedNews(Integer.parseInt(pubId), instanceId, contributorId, new Date(), beginDateAndHour, endDateAndHour);
+    
+    //alerte l'équipe éditoriale du composant delegatednews
+    String[] tabInstanceId = getOrganizationController().getCompoId("delegatednews");
+    String delegatednewsInstanceId = null;
+    for(int i=0; i<tabInstanceId.length; i++) {
+      delegatednewsInstanceId = tabInstanceId[i];
+      break;
+    }
+   
+    delegatedNewsService.notifyDelegatedNewsToValidate(pubId, pubDetail.getName(this.getLanguage()), this.getUserId(), this.getUserDetail().getDisplayedName(), delegatednewsInstanceId);
+    
+    return pubId;
+  }
+  
 }
