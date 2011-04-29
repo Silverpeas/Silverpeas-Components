@@ -82,7 +82,8 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
     // Parent definition = top of the chart
     String[] ous = rootOu.split(",");
     String[] firstOu = ous[0].split("=");
-    OrganizationalUnit parent = new OrganizationalUnit(firstOu[1], rootOu, config.getLdapAttUnit());
+    OrganizationalUnit parent = new OrganizationalUnit(firstOu[1], rootOu);
+    setParents(parent, config.getLdapAttUnit());
 
     DirContext ctx = null;
     try {
@@ -132,6 +133,26 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
     }
 
     return chart;
+  }
+
+  private void setParents(OrganizationalUnit unit, String ou) {
+    String parentName = null;
+
+    String[] ous = unit.getCompleteName().split(",");
+    if (ous.length > 1) {
+      String[] values = ous[1].split("=");
+      if (values != null && values.length > 1 && values[0].equalsIgnoreCase(ou)) {
+        parentName = values[1];
+      }
+    }
+    unit.setParentName(parentName);
+
+    if (parentName != null) {
+      // there is a parent so define is path for return to top level ou
+      int indexStart = unit.getCompleteName().lastIndexOf(parentName);
+      String parentOu = unit.getCompleteName().substring(indexStart - 3);
+      unit.setParentOu(parentOu);
+    }
   }
 
   /**
@@ -208,7 +229,8 @@ public class OrganizationChartLdapServiceImpl implements OrganizationChartServic
       Attributes attrs = entry.getAttributes();
       String ou = getFirstAttributeValue(attrs.get(config.getLdapAttUnit()));
       String completeOu = entry.getNameInNamespace();
-      OrganizationalUnit unit = new OrganizationalUnit(ou, completeOu, config.getLdapAttUnit());
+      OrganizationalUnit unit = new OrganizationalUnit(ou, completeOu);
+      setParents(unit, config.getLdapAttUnit());
       units.add(unit);
     }
 

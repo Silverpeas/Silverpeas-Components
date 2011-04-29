@@ -40,25 +40,11 @@ public class OrganizationalUnit {
   private String parentOu;
   private String completeName;
 
-  public OrganizationalUnit(String name) {
+  public OrganizationalUnit(String name, String completeName) {
     this.name = name;
-    this.otherCategory = true;
     this.key = null;
-    this.completeName = null;
-    this.parentName = null;
-  }
-
-  public OrganizationalUnit(String name, String key) {
-    this.name = name;
-    this.key = key;
-    this.completeName = null;
-    this.parentName = null;
-  }
-
-  public OrganizationalUnit(String name, String completeName, String ou) {
-    this.name = name;
     this.completeName = completeName;
-    setParentName(ou);
+    this.parentName = null;
   }
 
   public String getName() {
@@ -69,24 +55,16 @@ public class OrganizationalUnit {
     return completeName;
   }
 
-  public void setParentName(String ou) {
-    this.parentName = null;
-    String[] ous = completeName.split(",");
-    if (ous.length > 1) {
-      String[] values = ous[1].split("=");
-      if (values != null && values.length > 1 && values[0].equalsIgnoreCase(ou)) {
-        parentName = values[1];
-      }
-    }
-    if (parentName != null) {
-      // there is a parent so define is path for return to top level ou
-      int indexStart = completeName.lastIndexOf(parentName);
-      parentOu = completeName.substring(indexStart - 3);
-    }
+  public void setParentName(String parentName) {
+    this.parentName = parentName;
   }
 
   public String getParentName() {
     return parentName;
+  }
+
+  public void setParentOu(String parentOu) {
+    this.parentOu = parentOu;
   }
 
   public String getParentOu() {
