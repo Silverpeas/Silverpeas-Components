@@ -645,6 +645,11 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           
           // Attachments area must be displayed or not ?
           request.setAttribute("AttachmentsEnabled", kmelia.isAttachmentsEnabled());
+          
+          //option Actualités décentralisées
+          request.setAttribute("NewsManage", kmelia.isNewsManage());
+          request.setAttribute("DelegatedNews", kmelia.getDelegatedNews(id));
+          request.setAttribute("IsBasket", NodePK.BIN_NODE_ID.equals(kmelia.getSessionTopic().getNodePK().getId()));
 
           destination = rootDestination + "publication.jsp";
         }
@@ -1611,7 +1616,15 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         destination = rootDestination + "closeWindow.jsp";
       } else if (function.startsWith("UpdateChain")) {
         destination = processUpdateChainOperation(rootDestination, function, kmelia, request);
-      } /***************************
+      } else if (function.equals("SuggestDelegatedNews")) {
+    	   
+    	  String pubId = kmelia.addDelegatedNews();
+    	  
+    	  request.setAttribute("PubId", pubId);
+    	  destination = getDestination("ViewPublication", componentSC, request);
+      }  
+      
+      /***************************
        * Kmax mode
        **************************/
       else if (function.equals("KmaxMain")) {
