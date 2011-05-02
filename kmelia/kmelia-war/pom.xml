@@ -120,6 +120,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>com.silverpeas.components.delegatednews</groupId>
+      <artifactId>delegatednews-jar</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>com.thoughtworks.xstream</groupId>
       <artifactId>xstream</artifactId>
     </dependency>
