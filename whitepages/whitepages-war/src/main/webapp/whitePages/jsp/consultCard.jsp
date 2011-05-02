@@ -104,9 +104,10 @@
 <view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML" />
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
    out.println(gef.getLookStyleSheet());
 %>
@@ -218,8 +219,8 @@ function openSPWindow(fonction,windowName){
 	       
       });
 </script>
-</HEAD>
-<BODY id="whitePagesSheet">
+</head>
+<body id="whitePagesSheet">
 <%
 out.println(window.printBefore());
 out.println(frame.printBefore());
@@ -394,7 +395,7 @@ if (userFull != null) {
 </div>
 
 <div class="divSee" id="sheetExpert">
-<form name="myForm" method="POST" action="<%=routerUrl%>effectiveCreate">
+<form name="myForm" method="post" action="<%=routerUrl%>effectiveCreate">
 <%	
 	viewForm.display(out, context, data);
 %>
@@ -412,9 +413,9 @@ out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 
-<FORM NAME="choixFiche" METHOD="POST">
-	<input type="hidden" name="userCardId">
-</FORM>
+<form name="choixFiche" method="post">
+	<input type="hidden" name="userCardId" />
+</form>
 <!-- Dialog to notify a user -->
 	<div id="directoryDialog">
 		<view:board>
@@ -455,5 +456,5 @@ out.println(window.printAfter());
         </div>
 	</div>
 	<view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>
