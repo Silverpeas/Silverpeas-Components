@@ -253,7 +253,7 @@ if(!main){
         <p class="txtexform"><fmt:message key="whitePages.keywordssample" bundle="${LML}"/></p>
     </div>
 <%
-if (primaryPdcFields != null && primaryPdcFields.size() > 0) {   
+if (primaryPdcFields != null && !primaryPdcFields.isEmpty()) {   
 %>
 <div id="primaryAxe" class="arbre">
     <img title="Axe primaire" alt="primaire" src="<%=m_context%>/pdcPeas/jsp/icons/primary.gif"/>
@@ -263,7 +263,7 @@ if (primaryPdcFields != null && primaryPdcFields.size() > 0) {
     </div> 	
 <%
 }
-if (secondaryPdcFields != null && secondaryPdcFields.size() > 0) {   
+if (secondaryPdcFields != null && !secondaryPdcFields.isEmpty()) {   
 %>
 <a href="#" id="link_secondaryAxe" 
                 			title="<fmt:message key="whitePages.secondary" bundle="${LML}"/>" 
@@ -274,12 +274,12 @@ if (secondaryPdcFields != null && secondaryPdcFields.size() > 0) {
 <div  id="secondaryAxe" class="arbre">
 <img title="<fmt:message key="whitePages.secondary"  bundle="${LML}"/>" alt="<fmt:message key="whitePages.secondary"  bundle="${LML}"/>" src="<%=m_context%>/pdcPeas/jsp/icons/secondary.gif"/> 	
 <%
-	out.println(WhitePagesHtmlTools.generateHtmlForPdc(primaryPdcFields, language, request));
+	out.println(WhitePagesHtmlTools.generateHtmlForPdc(secondaryPdcFields, language, request));
 %> 
     </div> 	
 <%
 }
-if (searchFields != null && searchFields.size() > 0) {
+if (searchFields != null && !searchFields.isEmpty()) {
 %>
 <a href="#" id="link_additionalElements" 
             title="<fmt:message key="whitePages.suppl" bundle="${LML}"/>" 
