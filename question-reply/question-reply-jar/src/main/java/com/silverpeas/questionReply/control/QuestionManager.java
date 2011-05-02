@@ -32,7 +32,6 @@ import java.util.List;
 
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.index.QuestionIndexer;
-import com.silverpeas.questionReply.index.ReplyIndexer;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Recipient;
 import com.silverpeas.questionReply.model.Reply;
@@ -50,26 +49,25 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
 
 public class QuestionManager {
-  
+
   private final QuestionIndexer questionIndexer = new QuestionIndexer();
-  private final ReplyIndexer replyIndexer = new ReplyIndexer();
   private static QuestionManager instance;
   private SilverpeasBeanDAO<Question> questionDao = null;
   private SilverpeasBeanDAO<Reply> replyDao = null;
   private SilverpeasBeanDAO<Recipient> recipientDao = null;
   private QuestionReplyContentManager contentManager = null;
   private OrganizationController controller = new OrganizationController();
-  
+
   private QuestionManager() {
   }
-  
+
   private QuestionReplyContentManager getQuestionReplyContentManager() {
     if (contentManager == null) {
       contentManager = new QuestionReplyContentManager();
     }
     return contentManager;
   }
-  
+
   static public QuestionManager getInstance() {
     synchronized (QuestionManager.class) {
       if (instance == null) {
@@ -78,28 +76,26 @@ public class QuestionManager {
     }
     return instance;
   }
-  
-  @SuppressWarnings("unchecked")
-  private SilverpeasBeanDAO<Question> getQdao() throws PersistenceException {
+
+  private SilverpeasBeanDAO<Question> getQuestionDao() throws PersistenceException {
     if (questionDao == null) {
-      questionDao = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.questionReply.model.Question");
+      questionDao = SilverpeasBeanDAOFactory.<Question>getDAO(
+          "com.silverpeas.questionReply.model.Question");
     }
     return questionDao;
   }
-  
-  @SuppressWarnings("unchecked")
-  private SilverpeasBeanDAO<Reply> getRdao() throws PersistenceException {
+
+  private SilverpeasBeanDAO<Reply> getReplyDao() throws PersistenceException {
     if (replyDao == null) {
-      replyDao = SilverpeasBeanDAOFactory.getDAO("com.silverpeas.questionReply.model.Reply");
+      replyDao = SilverpeasBeanDAOFactory.<Reply>getDAO("com.silverpeas.questionReply.model.Reply");
     }
     return replyDao;
   }
-  
-  @SuppressWarnings("unchecked")
-  private SilverpeasBeanDAO<Recipient> getUdao() throws PersistenceException {
+
+  private SilverpeasBeanDAO<Recipient> getRecipientDao() throws PersistenceException {
     if (recipientDao == null) {
-      recipientDao =
-          SilverpeasBeanDAOFactory.getDAO("com.silverpeas.questionReply.model.Recipient");
+      recipientDao = SilverpeasBeanDAOFactory.<Recipient>getDAO(
+          "com.silverpeas.questionReply.model.Recipient");
     }
     return recipientDao;
   }
@@ -114,8 +110,8 @@ public class QuestionManager {
     try {
       Collection<Recipient> recipients = question.readRecipients();
       con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
-      IdPK pkQ = (IdPK) getQdao().add(con, question);
-      questionIndexer.createQuestionIndex(question);
+      IdPK pkQ = (IdPK) getQuestionDao().add(con, question);
+      questionIndexer.createIndex(question, Collections.<Reply>emptyList());
       idQ = pkQ.getIdAsLong();
       if (recipients != null) {
         for (Recipient recipient : recipients) {
@@ -149,13 +145,13 @@ public class QuestionManager {
     Connection con = null;
     try {
       con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
-      IdPK pkR = (IdPK) getRdao().add(con, reply);
-      replyIndexer.createReplyIndex(reply);
+      IdPK pkR = (IdPK) getReplyDao().add(con, reply);
       idR = pkR.getIdAsLong();
       if (question.getStatus() == 0) {
         question.setStatus(1);
       }
       updateQuestion(con, question);
+      questionIndexer.updateIndex(question, getAllReplies(reply.getQuestionId()));
     } catch (UtilException e) {
       throw new QuestionReplyException("QuestionManager.createReply", SilverpeasException.ERROR,
           "questionReply.EX_CREATE_REPLY_FAILED", "", e);
@@ -173,7 +169,7 @@ public class QuestionManager {
    */
   private void createRecipient(Connection con, Recipient recipient) throws QuestionReplyException {
     try {
-      getUdao().add(con, recipient);
+      getRecipientDao().add(con, recipient);
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.createQuestion",
           SilverpeasException.ERROR, "questionReply.EX_CREATE_RECIPIENT_FAILED", "", e);
@@ -186,7 +182,7 @@ public class QuestionManager {
   private void deleteRecipients(Connection con, long questionId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      getUdao().removeWhere(con, pk, " questionId = " + String.valueOf(questionId));
+      getRecipientDao().removeWhere(con, pk, " questionId = " + String.valueOf(questionId));
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.deleteRecipients", SilverpeasException.ERROR,
           "questionReply.EX_DELETE_RECIPIENTS_FAILED", "", e);
@@ -214,7 +210,7 @@ public class QuestionManager {
       }
     }
   }
-  
+
   public void openQuestions(Collection<Long> questionIds) throws QuestionReplyException {
     if (questionIds != null) {
       Connection con = null;
@@ -268,7 +264,7 @@ public class QuestionManager {
   public void updateQuestionRepliesPublicStatus(Collection<Long> questionIds)
       throws QuestionReplyException {
     Connection con = null;
-    
+
     try {
       con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
       if (questionIds != null) {
@@ -332,7 +328,7 @@ public class QuestionManager {
       closeConnection(con);
     }
   }
-  
+
   private void addComponentId(Reply reply, String componentId) {
     WAPrimaryKey pk = reply.getPK();
     pk.setComponentName(componentId);
@@ -406,18 +402,17 @@ public class QuestionManager {
    * sont à 0 et que la question est close => met à jour publicReplyNumber et/ou privateReplyNumber
    * et replyNumber de la question
    */
-  private void updateQuestion(Connection con, Question question)
-      throws QuestionReplyException {
+  private void updateQuestion(Connection con, Question question) throws QuestionReplyException {
     try {
       long idQ = ((IdPK) question.getPK()).getIdAsLong();
       question.setReplyNumber(getQuestionRepliesNumber(idQ));
       question.setPublicReplyNumber(getQuestionPublicRepliesNumber(idQ));
-      question.setPrivateReplyNumber(getQuestionPrivateRepliesNumber(idQ));      
+      question.setPrivateReplyNumber(getQuestionPrivateRepliesNumber(idQ));
       if ((question.getReplyNumber() == 0) && (question.getStatus() == 2)) {
         deleteQuestion(con, idQ);
       } else {
-        getQdao().update(con, question);
-        questionIndexer.createQuestionIndex(question);
+        getQuestionDao().update(con, question);
+        questionIndexer.updateIndex(question, getAllReplies(idQ));
         question.getPK().setComponentName(question.getInstanceId());
         getQuestionReplyContentManager().updateSilverContentVisibility(question);
       }
@@ -437,12 +432,12 @@ public class QuestionManager {
       long idQ = ((IdPK) question.getPK()).getIdAsLong();
       question.setReplyNumber(getQuestionRepliesNumber(idQ));
       question.setPublicReplyNumber(getQuestionPublicRepliesNumber(idQ));
-      question.setPrivateReplyNumber(getQuestionPrivateRepliesNumber(idQ));      
+      question.setPrivateReplyNumber(getQuestionPrivateRepliesNumber(idQ));
       if ((question.getReplyNumber() == 0) && (question.getStatus() == 2)) {
         deleteQuestion(idQ);
       } else {
-        getQdao().update(question);
-        questionIndexer.createQuestionIndex(question);
+        getQuestionDao().update(question);
+        questionIndexer.updateIndex(question, getAllReplies(idQ));
         question.getPK().setComponentName(question.getInstanceId());
         getQuestionReplyContentManager().updateSilverContentVisibility(question);
       }
@@ -458,13 +453,13 @@ public class QuestionManager {
    */
   private void updateReply(Connection con, Reply reply) throws QuestionReplyException {
     try {
+      Question question = getQuestion(reply.getQuestionId());
       if ((reply.getPublicReply() == 0) && (reply.getPrivateReply() == 0)) {
         deleteReply(con, ((IdPK) reply.getPK()).getIdAsLong());
-        replyIndexer.deleteReplyIndex(reply);
       } else {
-        getRdao().update(con, reply);
-        replyIndexer.createReplyIndex(reply);
+        getReplyDao().update(con, reply);
       }
+      questionIndexer.updateIndex(question, getAllReplies(reply.getQuestionId()));
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.updateReply",
           SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLY_FAILED", "", e);
@@ -477,13 +472,13 @@ public class QuestionManager {
    */
   public void updateReply(Reply reply) throws QuestionReplyException {
     try {
+      Question question = getQuestion(reply.getQuestionId());
       if ((reply.getPublicReply() == 0) && (reply.getPrivateReply() == 0)) {
         deleteReply(((IdPK) reply.getPK()).getIdAsLong());
-        replyIndexer.deleteReplyIndex(reply);
       } else {
-        getRdao().update(reply);
-        replyIndexer.createReplyIndex(reply);
+        getReplyDao().update(reply);
       }
+      questionIndexer.updateIndex(question, getAllReplies(reply.getQuestionId()));
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.updateReply",
           SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLY_FAILED", "", e);
@@ -499,9 +494,9 @@ public class QuestionManager {
       IdPK pk = new IdPK();
       pk.setIdAsLong(questionId);
       Question question = getQuestion(questionId);
-      String peasId = question.getInstanceId();      
-      getQdao().remove(con, pk);
-      questionIndexer.deleteQuestionIndex(question);
+      String peasId = question.getInstanceId();
+      getQuestionDao().remove(con, pk);
+      questionIndexer.deleteIndex(question);
       pk.setComponentName(peasId);
       getQuestionReplyContentManager().deleteSilverContent(con, pk);
     } catch (Exception e) {
@@ -522,8 +517,8 @@ public class QuestionManager {
       pk.setIdAsLong(questionId);
       Question question = getQuestion(questionId);
       String peasId = question.getInstanceId();
-      getQdao().remove(con, pk);
-      questionIndexer.deleteQuestionIndex(question);
+      getQuestionDao().remove(con, pk);
+      questionIndexer.deleteIndex(question);
       pk.setComponentName(peasId);
       getQuestionReplyContentManager().deleteSilverContent(con, pk);
     } catch (UtilException e) {
@@ -536,7 +531,7 @@ public class QuestionManager {
       closeConnection(con);
     }
   }
-  
+
   public void deleteQuestionAndReplies(Collection<Long> questionIds) throws QuestionReplyException {
     // pour chaque question
     for (Long questionId : questionIds) {
@@ -549,7 +544,6 @@ public class QuestionManager {
         pk.setIdAsLong(qId);
         Question question = getQuestion(qId);
         String peasId = question.getInstanceId();
-        questionIndexer.deleteQuestionIndex(question);
         // rechercher les réponses
         Collection<Reply> replies = getAllReplies(qId);
         for (Reply reply : replies) {
@@ -559,10 +553,10 @@ public class QuestionManager {
           reply.setPK(pkR);
           // supprimer la réponse et son index
           deleteReply(replyId);
-          replyIndexer.deleteReplyIndex(reply);
         }
+        questionIndexer.deleteIndex(question);
         // supprimer la question
-        getQdao().remove(con, pk);
+        getQuestionDao().remove(con, pk);
         pk.setComponentName(peasId);
         getQuestionReplyContentManager().deleteSilverContent(con, pk);
       } catch (UtilException e) {
@@ -575,10 +569,10 @@ public class QuestionManager {
       } finally {
         closeConnection(con);
       }
-      
+
     }
   }
-  
+
   public Collection<Reply> getAllReplies(long questionId)
       throws QuestionReplyException {
     Collection<Reply> allReplies = new ArrayList<Reply>();
@@ -603,7 +597,7 @@ public class QuestionManager {
       con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
       IdPK pk = new IdPK();
       pk.setIdAsLong(replyId);
-      getRdao().remove(con, pk);
+      getReplyDao().remove(con, pk);
     } catch (UtilException e) {
       throw new QuestionReplyException("QuestionManager.deleteReply",
           SilverpeasException.ERROR, "questionReply.EX_DELETE_REPLY_FAILED", "", e);
@@ -622,7 +616,7 @@ public class QuestionManager {
     try {
       IdPK pk = new IdPK();
       pk.setIdAsLong(replyId);
-      getRdao().remove(con, pk);
+      getReplyDao().remove(con, pk);
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.deleteReply", SilverpeasException.ERROR,
           "questionReply.EX_DELETE_REPLY_FAILED", "", e);
@@ -636,18 +630,18 @@ public class QuestionManager {
     try {
       IdPK pk = new IdPK();
       pk.setIdAsLong(questionId);
-      return getQdao().findByPrimaryKey(pk);
+      return getQuestionDao().findByPrimaryKey(pk);
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestion",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_QUESTION", "", e);
     }
   }
-  
+
   public Question getQuestionAndReplies(long questionId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
       pk.setIdAsLong(questionId);
-      Question question = getQdao().findByPrimaryKey(pk);
+      Question question = getQuestionDao().findByPrimaryKey(pk);
       Collection<Reply> replies = getQuestionReplies(questionId);
       question.writeReplies(replies);
       return question;
@@ -656,7 +650,7 @@ public class QuestionManager {
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_QUESTION", "", e);
     }
   }
-  
+
   @SuppressWarnings("unchecked")
   public Collection<Question> getQuestionsByIds(List<String> ids) throws QuestionReplyException {
     StringBuilder where = new StringBuilder();
@@ -669,7 +663,7 @@ public class QuestionManager {
     }
     try {
       IdPK pk = new IdPK();
-      return getQdao().findByWhereClause(pk, where.toString());
+      return getQuestionDao().findByWhereClause(pk, where.toString());
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestions",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_QUESTION", "", e);
@@ -683,7 +677,7 @@ public class QuestionManager {
   public Collection<Reply> getQuestionReplies(long questionId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      return getRdao().findByWhereClause(pk, " questionId = " + String.valueOf(questionId));
+      return getReplyDao().findByWhereClause(pk, " questionId = " + String.valueOf(questionId));
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestionReplies",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_REPLIES", "", e);
@@ -696,7 +690,8 @@ public class QuestionManager {
   public Collection<Reply> getQuestionPublicReplies(long questionId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      return getRdao().findByWhereClause(pk, " publicReply = 1 and questionId = " + String.valueOf(
+      return getReplyDao().findByWhereClause(pk, " publicReply = 1 and questionId = " + String.
+          valueOf(
           questionId));
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestionPublicReplies",
@@ -710,7 +705,8 @@ public class QuestionManager {
   public Collection<Reply> getQuestionPrivateReplies(long questionId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      return getRdao().findByWhereClause(pk, " privateReply = 1 and questionId = " + String.valueOf(
+      return getReplyDao().findByWhereClause(pk, " privateReply = 1 and questionId = " + String.
+          valueOf(
           questionId));
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestionPrivateReplies",
@@ -724,7 +720,7 @@ public class QuestionManager {
   public Collection<Recipient> getQuestionRecipients(long questionId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      return getUdao().findByWhereClause(pk, " questionId = " + String.valueOf(questionId));
+      return getRecipientDao().findByWhereClause(pk, " questionId = " + String.valueOf(questionId));
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestionRecipients",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_RECIPIENTS", "", e);
@@ -738,7 +734,7 @@ public class QuestionManager {
     try {
       IdPK pk = new IdPK();
       pk.setIdAsLong(replyId);
-      return getRdao().findByPrimaryKey(pk);
+      return getReplyDao().findByPrimaryKey(pk);
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getReply",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_REPLY", "", e);
@@ -753,7 +749,7 @@ public class QuestionManager {
       throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      return getQdao().findByWhereClause(pk, " instanceId = '" + instanceId
+      return getQuestionDao().findByWhereClause(pk, " instanceId = '" + instanceId
           + "' and (status <> 2 or privateReplyNumber > 0) and creatorId = " + userId);
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getSendQuestions",
@@ -769,7 +765,7 @@ public class QuestionManager {
       throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      return getQdao().findByWhereClause(pk,
+      return getQuestionDao().findByWhereClause(pk,
           " instanceId = '" + instanceId
           + "' and status <> 2 and id IN (select questionId from SC_QuestionReply_Recipient where userId = "
           + userId + ")");
@@ -785,7 +781,7 @@ public class QuestionManager {
   public Collection<Question> getQuestions(String instanceId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      return getQdao().findByWhereClause(pk, " instanceId = '" + instanceId
+      return getQuestionDao().findByWhereClause(pk, " instanceId = '" + instanceId
           + "' and  (status <> 2 or publicReplyNumber > 0) order by creationdate desc, id desc");
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestions",
@@ -796,7 +792,7 @@ public class QuestionManager {
   /*
    * Recupère la liste de toutes les questions avec toutes ses réponses
    */
-  public Collection<Question> getAllQuestions(String instanceId) throws QuestionReplyException {    
+  public Collection<Question> getAllQuestions(String instanceId) throws QuestionReplyException {
     Collection<Question> allQuestions = getQuestions(instanceId);
     List<Question> questions = new ArrayList<Question>(allQuestions.size());
     for (Question question : allQuestions) {
@@ -808,9 +804,9 @@ public class QuestionManager {
     }
     return questions;
   }
-  
+
   public Collection<Question> getAllQuestionsByCategory(String instanceId, String categoryId) throws
-      QuestionReplyException {    
+      QuestionReplyException {
     Collection<Question> allQuestions = getQuestions(instanceId);
     List<Question> questions = new ArrayList<Question>(allQuestions.size());
     for (Question question : allQuestions) {
@@ -837,7 +833,7 @@ public class QuestionManager {
   public Collection<Question> getPublicQuestions(String instanceId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      return getQdao().findByWhereClause(pk,
+      return getQuestionDao().findByWhereClause(pk,
           " instanceId = '" + instanceId + "' and publicReplyNumber > 0 ");
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getPublicQuestions",
@@ -853,12 +849,11 @@ public class QuestionManager {
     long idQ = -1;
     try {
       con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
-      IdPK pkQ = (IdPK) getQdao().add(con, question);
-      questionIndexer.createQuestionIndex(question);
+      IdPK pkQ = (IdPK) getQuestionDao().add(con, question);
       idQ = pkQ.getIdAsLong();
       reply.setQuestionId(idQ);
-      getRdao().add(con, reply);
-      replyIndexer.createReplyIndex(reply);      
+      getReplyDao().add(con, reply);
+      questionIndexer.createIndex(question, Collections.singletonList(reply));
       Question updatedQuestion = getQuestion(idQ);
       getQuestionReplyContentManager().createSilverContent(con, updatedQuestion);
     } catch (UtilException e) {
@@ -879,7 +874,8 @@ public class QuestionManager {
   private int getQuestionRepliesNumber(long questionId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      Collection<Reply> replies = getRdao().findByWhereClause(pk, " questionId = " + String.valueOf(
+      Collection<Reply> replies = getReplyDao().findByWhereClause(pk, " questionId = " + String.
+          valueOf(
           questionId));
       return replies.size();
     } catch (PersistenceException e) {
@@ -894,7 +890,8 @@ public class QuestionManager {
   private int getQuestionPublicRepliesNumber(long questionId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      Collection<Reply> replies = getRdao().findByWhereClause(pk, " publicReply = 1 and questionId = "
+      Collection<Reply> replies = getReplyDao().findByWhereClause(pk,
+          " publicReply = 1 and questionId = "
           + String.valueOf(questionId));
       return replies.size();
     } catch (PersistenceException e) {
@@ -909,7 +906,7 @@ public class QuestionManager {
   private int getQuestionPrivateRepliesNumber(long questionId) throws QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      Collection<Reply> replies = getRdao().findByWhereClause(pk,
+      Collection<Reply> replies = getReplyDao().findByWhereClause(pk,
           " privateReply = 1 and questionId = "
           + String.valueOf(questionId));
       return replies.size();
@@ -918,7 +915,7 @@ public class QuestionManager {
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_REPLIES", "", e);
     }
   }
-  
+
   private void closeConnection(Connection con) throws QuestionReplyException {
     if (con != null) {
       try {
@@ -929,7 +926,7 @@ public class QuestionManager {
       }
     }
   }
-  
+
   protected boolean isSortable(String instanceId) {
     return StringUtil.getBooleanValue(controller.getComponentParameterValue(instanceId, "sortable"));
   }

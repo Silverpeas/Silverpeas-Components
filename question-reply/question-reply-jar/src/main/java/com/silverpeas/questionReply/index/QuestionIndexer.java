@@ -24,10 +24,12 @@
 package com.silverpeas.questionReply.index;
 
 import com.silverpeas.questionReply.model.Question;
+import com.silverpeas.questionReply.model.Reply;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
+import java.util.Collection;
 
 /**
  *
@@ -35,8 +37,7 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
  */
 public class QuestionIndexer {
 
-
-  public void createQuestionIndex(Question question) {
+  public void createIndex(Question question, Collection<Reply> replies) {
     SilverTrace.info("questionReply", "QuestionManager.createQuestionIndex()",
         "root.MSG_GEN_ENTER_METHOD", "Question = " + question.getTitle());
     if (question != null) {
@@ -48,22 +49,31 @@ public class QuestionIndexer {
       indexEntry.setCreationUser(question.getCreatorId());
       indexEntry.addTextContent(question.getContent());
       indexEntry.addTextContent(question.getTitle());
+      for (Reply reply : replies) {
+        indexEntry.addTextContent(reply.getTitle());
+        indexEntry.addTextContent(reply.getContent());
+      }
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
+  }
+  
+  
+  public void updateIndex(Question question, Collection<Reply> replies) {
+    deleteIndex(question);
+    createIndex(question, replies);
   }
 
   /**
    * Be carefull we don't delete Replies indexes.
    * @param question 
    */
-  public void deleteQuestionIndex(Question question) {
+  public void deleteIndex(Question question) {
     SilverTrace.info("questionReply", "QuestionManager.deleteQuestionIndex()",
         "root.MSG_GEN_ENTER_METHOD", "Question = " + question.toString());
     IndexEntryPK indexEntry = new IndexEntryPK(question.getInstanceId(),
         "Question", question.getPK().getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
-
 
   public QuestionIndexer() {
   }

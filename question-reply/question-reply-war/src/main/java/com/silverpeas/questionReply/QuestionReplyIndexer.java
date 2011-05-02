@@ -25,7 +25,6 @@ package com.silverpeas.questionReply;
 
 import com.silverpeas.questionReply.control.QuestionManager;
 import com.silverpeas.questionReply.index.QuestionIndexer;
-import com.silverpeas.questionReply.index.ReplyIndexer;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Reply;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
@@ -40,7 +39,6 @@ import java.util.Collection;
 public class QuestionReplyIndexer implements ComponentIndexerInterface {
 
   private final QuestionIndexer questionIndexer = new QuestionIndexer();
-  private final ReplyIndexer replyIndexer = new ReplyIndexer();
 
   public QuestionReplyIndexer() {
   }
@@ -51,14 +49,9 @@ public class QuestionReplyIndexer implements ComponentIndexerInterface {
     Collection<Question> questions = QuestionManager.getInstance().getAllQuestions(context.
         getCurrentComponentId());
     for (Question question : questions) {
-      questionIndexer.deleteQuestionIndex(question);
-      questionIndexer.createQuestionIndex(question);
       Collection<Reply> replies = QuestionManager.getInstance().getAllReplies(Long.parseLong(question.
           getPK().getId()));
-      for (Reply reply : replies) {
-        replyIndexer.deleteReplyIndex(reply);
-        replyIndexer.createReplyIndex(reply);
-      }
+      questionIndexer.updateIndex(question, replies);
     }
   }
 }
