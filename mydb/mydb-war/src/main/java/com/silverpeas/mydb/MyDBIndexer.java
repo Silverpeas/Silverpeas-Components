@@ -34,6 +34,7 @@ import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterfa
  */
 public class MyDBIndexer implements ComponentIndexerInterface {
 
+  @Override
   public void index(MainSessionController mainSessionCtrl,
       ComponentContext context) throws Exception {
 
