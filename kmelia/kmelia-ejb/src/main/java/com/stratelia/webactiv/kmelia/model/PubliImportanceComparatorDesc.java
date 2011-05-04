@@ -26,11 +26,11 @@ package com.stratelia.webactiv.kmelia.model;
 
 import java.util.Comparator;
 
-import com.stratelia.webactiv.kmelia.model.UserPublication;
 
 public class PubliImportanceComparatorDesc implements Comparator<UserPublication> {
   static public PubliImportanceComparatorDesc comparator = new PubliImportanceComparatorDesc();
 
+  @Override
   public int compare(UserPublication p1, UserPublication p2) {
     int compareResult =
         Integer.valueOf(p2.getPublication().getImportance()).compareTo(

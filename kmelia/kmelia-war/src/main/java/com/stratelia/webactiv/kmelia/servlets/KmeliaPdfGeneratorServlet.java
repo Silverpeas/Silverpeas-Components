@@ -17,8 +17,17 @@ import com.google.common.io.Closeables;
 import com.silverpeas.util.MimeTypes;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.PdfGenerator;
+import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.util.ClientBrowserUtil;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
+import com.stratelia.webactiv.util.publication.model.PublicationPK;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import org.apache.commons.io.FileUtils;
+import static com.silverpeas.converter.DocumentFormat.*;
+import static com.stratelia.webactiv.kmelia.model.KmeliaPublication.*;
+import static org.apache.commons.io.FileUtils.*;
 
 /**
  *
@@ -41,15 +50,17 @@ public class KmeliaPdfGeneratorServlet extends HttpServlet {
         "Silverpeas_kmelia_" + componentId);
     String pubId = request.getParameter("PubId");
     OutputStream out = response.getOutputStream();
-    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-    CompletePublication complete = kmelia.getCompletePublication(pubId);
-    String pdfName = ClientBrowserUtil.rfc2047EncodeFilename(request, kmelia.getPublicationPdfName(pubId));
-    PdfGenerator pdfGenerator = new PdfGenerator();
-    pdfGenerator.generate(buffer, complete, kmelia);
-    response.setHeader("Content-Disposition", "inline; filename=\"" + pdfName + "\"");
+//    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    File pdfExport = kmelia.generatePdf(pubId);
+    byte[] data = readFileToByteArray(pdfExport);
+//    CompletePublication complete = kmelia.getCompletePublication(pubId);
+//    String pdfName = ClientBrowserUtil.rfc2047EncodeFilename(request, kmelia.getPublicationPdfName(pubId));
+//    PdfGenerator pdfGenerator = new PdfGenerator();
+//    pdfGenerator.generate(buffer, complete, kmelia);
+    response.setHeader("Content-Disposition", "inline; filename=\"" + pdfExport.getName() + "\"");
     response.setContentType(MimeTypes.PDF_MIME_TYPE);
-    byte[] data = buffer.toByteArray();
-    Closeables.closeQuietly(buffer);
+//    byte[] data = buffer.toByteArray();
+//    Closeables.closeQuietly(buffer);
     response.setContentLength(data.length);
     out.write(data);
     out.flush();

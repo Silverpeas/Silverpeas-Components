@@ -26,11 +26,11 @@ package com.stratelia.webactiv.kmelia.model;
 
 import java.util.Comparator;
 
-import com.stratelia.webactiv.kmelia.model.UserPublication;
 
 public class PubliUpdateDateComparatorAsc implements Comparator<UserPublication> {
   static public PubliUpdateDateComparatorAsc comparator = new PubliUpdateDateComparatorAsc();
 
+  @Override
   public int compare(UserPublication p1, UserPublication p2) {
     int compareResult =
         p1.getPublication().getUpdateDate().compareTo(p2.getPublication().getUpdateDate());

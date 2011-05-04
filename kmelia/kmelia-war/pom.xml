@@ -139,6 +139,11 @@
       <artifactId>portlet-api</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.odftoolkit</groupId>
+      <artifactId>simple-odf</artifactId>
+      <version>0.5.5</version>
+    </dependency>
   </dependencies>
 
 </project>

@@ -32,6 +32,7 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
 public class FileFolder extends Object implements java.io.Serializable {
+  private static final long serialVersionUID = 5071147110169726697L;
 
   /**
    * A File collection representing all items in folder

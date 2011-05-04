@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import javax.ejb.SessionBean;
 import javax.ejb.SessionContext;
 
@@ -1089,7 +1088,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           }
           statusSubQuery.append("OR (sb_publication_publi.pubStatus = 'ToValidate' ").append(
               "AND sb_publication_publi.pubUpdaterId = '").append(userId).append("') ");
-          statusSubQuery.append("OR sb_publication_publi.pubUpdaterId = '" + userId + "')");
+          statusSubQuery.append("OR sb_publication_publi.pubUpdaterId = '").append(userId).append("')");
         } else {
           statusSubQuery.append(" AND (");
           if (coWritingEnable && draftVisibleWithCoWriting) {
@@ -1615,14 +1614,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       }
       // notification pour modification
       sendSubscriptionsNotification(pubDetail, true);
-      
-      boolean isNewsManage = StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(pubDetail.getPK().getInstanceId(), "isNewsManage"));
-      if(isNewsManage) {
-        // mécanisme de callback
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_HEADER_PUBLICATION_UPDATE,
-            Integer.parseInt(pubDetail.getId()), pubDetail.getInstanceId(), pubDetail);
-      }
 
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.updatePublication()",
@@ -1874,14 +1865,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       updateSilverContentVisibility(pubPK, false);
 
       unIndexExternalElementsOfPublication(pubPK);
-      
-      boolean isNewsManage = StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(pubPK.getInstanceId(), "isNewsManage"));
-      if(isNewsManage) {
-        // mécanisme de callback
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_PUBLICATION_REMOVE,
-            Integer.parseInt(pubPK.getId()), pubPK.getInstanceId(), "");
-      }
 
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaBmEJB.sendPublicationToBasket()",
@@ -2102,7 +2085,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
                 "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", lang);
             notifMetaData.addLanguage(lang, localizedMessage.getString("Subscription", subject), "");
           }
-          notifMetaData.setUserRecipients(new Vector<String>(newSubscribers));
+          notifMetaData.setUserRecipients(new ArrayList<String>(newSubscribers));
           notifMetaData.setLink(getPublicationUrl(pubDetail));
           notifMetaData.setComponentId(fatherPK.getInstanceId());
           String senderId = "";
@@ -3208,7 +3191,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
    * Change publication status from draft to valid (for publisher) or toValidate (for redactor).
    * @param pubPK
    * @param topicPK
-   * @param userProfile 
+   * @param userProfile
    */
   @Override
   public void draftOutPublication(PublicationPK pubPK, NodePK topicPK, String userProfile) {
@@ -3282,13 +3265,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
 
   /**
    * Change publication status from any state to draft.
-   * @param pubPK 
+   * @param pubPK
    */
   @Override
   public void draftInPublication(PublicationPK pubPK) {
     draftInPublication(pubPK, null);
   }
 
+  @Override
   public void draftInPublication(PublicationPK pubPK, String userId) {
     SilverTrace.info("kmelia", "KmeliaBmEJB.draftInPublication()",
         "root.MSG_GEN_ENTER_METHOD", "pubPK = " + pubPK.toString());
@@ -3304,14 +3288,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       updateSilverContentVisibility(pubDetail);
       unIndexExternalElementsOfPublication(pubDetail.getPK());
       removeAllTodosForPublication(pubPK);
-      
-      boolean isNewsManage = StringUtil.getBooleanValue(getOrganizationController().getComponentParameterValue(pubDetail.getPK().getInstanceId(), "isNewsManage"));
-      if(isNewsManage) {
-        // mécanisme de callback
-        CallBackManager callBackManager = CallBackManager.get();
-        callBackManager.invoke(CallBackManager.ACTION_PUBLICATION_REMOVE,
-            Integer.parseInt(pubDetail.getId()), pubDetail.getInstanceId(), pubDetail);
-      }
 
       SilverTrace.info("kmelia", "KmeliaBmEJB.draftInPublication()",
           "root.MSG_GEN_PARAM_VALUE", "new status = " + pubDetail.getStatus());
@@ -3358,12 +3334,12 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   /**
-   * 
+   *
    * @param pubPK
    * @param attachmentPk
    * @param topicPK
    * @param senderName
-   * @return 
+   * @return
    */
   @Override
   public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK,
@@ -3407,13 +3383,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
   }
 
   /**
-   * 
+   *
    * @param pubPK
    * @param documentPk
    * @param topicPK
    * @param senderName
    * @return
-   * @throws RemoteException 
+   * @throws RemoteException
    */
   @Override
   public NotificationMetaData getAlertNotificationMetaData(PublicationPK pubPK,
@@ -3612,7 +3588,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         attendees.add(new Attendee(users[i]));
       }
     }
-    todo.setAttendees(new Vector<Attendee>(attendees));
+    todo.setAttendees(attendees);
     if (StringUtil.isDefined(pubDetail.getUpdaterId())) {
       todo.setDelegatorId(pubDetail.getUpdaterId());
     } else {
@@ -5098,8 +5074,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
       // récupération de la publi de référence
       PublicationDetail refPub = refPubComplete.getPublicationDetail();
 
-      String fromId = new String(refPub.getPK().getId());
-      String fromComponentId = new String(refPub.getPK().getInstanceId());
+      String fromId = refPub.getPK().getId();
+      String fromComponentId = refPub.getPK().getInstanceId();
 
       PublicationDetail clone = getClone(refPub);
 
