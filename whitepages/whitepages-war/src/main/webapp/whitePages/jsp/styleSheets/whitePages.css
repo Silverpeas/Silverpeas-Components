@@ -232,7 +232,13 @@
     width: 180px;
 }
 
-
+.userProfil .userName {
+    color: #000000;
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+}
 .userProfil address { font-style:normal;}
 
 .userProfil .action {
