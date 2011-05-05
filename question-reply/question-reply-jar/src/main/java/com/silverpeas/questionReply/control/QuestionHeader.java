@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.questionReply.control;
 
 import java.util.Iterator;
@@ -35,6 +34,7 @@ import com.stratelia.webactiv.persistence.IdPK;
  * The questionReply implementation of SilverContentInterface
  */
 public final class QuestionHeader extends AbstractI18NBean implements SilverContentInterface {
+
   private static final long serialVersionUID = 311303663095375317L;
   private long id;
   private String label;
@@ -56,8 +56,7 @@ public final class QuestionHeader extends AbstractI18NBean implements SilverCont
     init(id, question);
   }
 
-  public QuestionHeader(long id, Question question, String instanceId,
-      String date, String creatorId) {
+  public QuestionHeader(long id, Question question, String instanceId, String date, String creatorId) {
     init(id, question);
     this.instanceId = instanceId;
     this.date = date;
@@ -108,18 +107,22 @@ public final class QuestionHeader extends AbstractI18NBean implements SilverCont
     return this.date;
   }
 
+  @Override
   public String getIconUrl() {
     return "questionReplySmall.gif";
   }
 
+  @Override
   public String getCreatorId() {
     return this.creatorId;
   }
 
+  @Override
   public String getSilverCreationDate() {
     return this.date;
   }
 
+  @Override
   public Iterator<String> getLanguages() {
     return null;
   }

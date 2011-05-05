@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,23 +21,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package com.silverpeas.questionReply;
 
-package com.silverpeas.mydb;
-
+import com.silverpeas.questionReply.control.QuestionManager;
+import com.silverpeas.questionReply.index.QuestionIndexer;
+import com.silverpeas.questionReply.model.Question;
+import com.silverpeas.questionReply.model.Reply;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.webactiv.applicationIndexer.control.ComponentIndexerInterface;
+import java.util.Collection;
 
 /**
- * MyDB Indexer.
- * @author Antoine HEDIN
+ *
+ * @author ehugonnet
  */
-public class MyDBIndexer implements ComponentIndexerInterface {
+public class QuestionReplyIndexer implements ComponentIndexerInterface {
 
-  @Override
-  public void index(MainSessionController mainSessionCtrl,
-      ComponentContext context) throws Exception {
+  private final QuestionIndexer questionIndexer = new QuestionIndexer();
 
+  public QuestionReplyIndexer() {
   }
 
+  @Override
+  public void index(MainSessionController mainSessionCtrl, ComponentContext context) throws
+      Exception {
+    Collection<Question> questions = QuestionManager.getInstance().getAllQuestions(context.
+        getCurrentComponentId());
+    for (Question question : questions) {
+      Collection<Reply> replies = QuestionManager.getInstance().getAllReplies(Long.parseLong(question.
+          getPK().getId()));
+      questionIndexer.updateIndex(question, replies);
+    }
+  }
 }
