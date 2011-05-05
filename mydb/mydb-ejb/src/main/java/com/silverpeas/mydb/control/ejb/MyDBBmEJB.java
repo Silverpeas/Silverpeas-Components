@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.mydb.control.ejb;
 
 import java.rmi.RemoteException;
@@ -36,6 +35,7 @@ import com.silverpeas.mydb.model.MyDBConnectionInfoDetail;
 import com.silverpeas.mydb.model.MyDBConnectionInfoPK;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.PersistenceException;
+import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 
 /**
@@ -45,56 +45,65 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAOFactory;
 public class MyDBBmEJB implements MyDBBmBusinessSkeleton, SessionBean {
 
   private static final long serialVersionUID = -3635064500545742524L;
-  private static final String BEAN_NAME = MyDBConnectionInfoDetail.class
-      .getName();
+  private static final String BEAN_NAME = MyDBConnectionInfoDetail.class.getName();
 
+  @Override
   public Collection<MyDBConnectionInfoDetail> getConnectionList(MyDBConnectionInfoPK pk)
       throws RemoteException, PersistenceException {
-    return SilverpeasBeanDAOFactory.getDAO(BEAN_NAME).findByWhereClause(pk,
+    return getMyDBConnectionDao().findByWhereClause(pk,
         "instanceId = " + "'" + pk.getComponentName() + "'");
   }
 
-  public MyDBConnectionInfoDetail getConnection(MyDBConnectionInfoPK pk)
-      throws RemoteException, PersistenceException {
-    return (MyDBConnectionInfoDetail) SilverpeasBeanDAOFactory
-        .getDAO(BEAN_NAME).findByPrimaryKey(pk);
+  @Override
+  public MyDBConnectionInfoDetail getConnection(MyDBConnectionInfoPK pk) throws RemoteException,
+      PersistenceException {
+    return getMyDBConnectionDao().findByPrimaryKey(pk);
   }
 
-  public MyDBConnectionInfoPK addConnection(MyDBConnectionInfoDetail detail)
-      throws RemoteException, PersistenceException {
-    return (MyDBConnectionInfoPK) SilverpeasBeanDAOFactory.getDAO(BEAN_NAME)
-        .add(detail);
+  @Override
+  public MyDBConnectionInfoPK addConnection(MyDBConnectionInfoDetail detail) throws RemoteException,
+      PersistenceException {
+    return (MyDBConnectionInfoPK) getMyDBConnectionDao().add(detail);
   }
 
-  public void updateConnection(MyDBConnectionInfoDetail detail)
-      throws RemoteException, PersistenceException {
-    SilverpeasBeanDAOFactory.getDAO(BEAN_NAME).update(detail);
+  @Override
+  public void updateConnection(MyDBConnectionInfoDetail detail) throws RemoteException,
+      PersistenceException {
+    getMyDBConnectionDao().update(detail);
   }
 
+  @Override
   public void removeConnection(MyDBConnectionInfoPK pk) throws RemoteException,
       PersistenceException {
-    SilverpeasBeanDAOFactory.getDAO(BEAN_NAME).remove(pk);
+     getMyDBConnectionDao().remove(pk);
   }
 
   public void ejbCreate() throws CreateException {
     SilverTrace.info("myDB", "MyDBBmEJB.ejbCreate()", "myDB.MSG_ENTER");
   }
 
-  public void setSessionContext(final SessionContext p1) throws EJBException,
-      RemoteException {
+  @Override
+  public void setSessionContext(final SessionContext p1) throws EJBException, RemoteException {
     SilverTrace.info("myDB", "MyDBBmEJB.setSessionContext()", "myDB.MSG_ENTER");
   }
 
+  @Override
   public void ejbRemove() throws EJBException, RemoteException {
     SilverTrace.info("myDB", "MyDBBmEJB.ejbRemove()", "myDB.MSG_ENTER");
   }
 
+  @Override
   public void ejbActivate() throws EJBException, RemoteException {
     SilverTrace.info("myDB", "MyDBBmEJB.ejbActivate()", "myDB.MSG_ENTER");
   }
 
+  @Override
   public void ejbPassivate() throws EJBException, RemoteException {
     SilverTrace.info("myDB", "MyDBBmEJB.ejbPassivate()", "myDB.MSG_ENTER");
   }
 
+  private SilverpeasBeanDAO<MyDBConnectionInfoDetail> getMyDBConnectionDao() throws
+      PersistenceException {
+    return SilverpeasBeanDAOFactory.<MyDBConnectionInfoDetail>getDAO(BEAN_NAME);
+  }
 }
