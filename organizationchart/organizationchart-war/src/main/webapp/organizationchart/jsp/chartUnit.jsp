@@ -57,8 +57,15 @@ jCells[cellIndex] = new JCell( {
 	id : cellIndex++,
 	title: "${organigramme.rootOrganization.name}",
 	roles : new Array(
-		<c:forEach items="${organigramme.rootOrganization.mainActors}" var="mainActor" varStatus="loopInfo">
-			{role : "${mainActor.role}", userFullName: "${mainActor.fullName}", login : "${mainActor.login}"} ${(not loopInfo.last) ? ',' : ''}
+		<c:forEach items="${organigramme.rootOrganization.mainActors}" var="mainActor" varStatus="mainLoopInfo">
+			{role : "${mainActor.role}", userFullName: "${mainActor.fullName}", login : "${mainActor.login}",
+				userAttributes: new Array(
+					<c:forEach items="${mainActor.details}" var="detail" varStatus="loopInfo">
+						{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
+					</c:forEach>
+				)
+			} 
+			${(not mainLoopInfo.last) ? ',' : ''}
 		</c:forEach>
 	),
 	parentURL : "${organigramme.rootOrganization.parentUrl}",
@@ -77,9 +84,14 @@ jCells[cellIndex] = new JCell( {
 jCells[cellIndex] = new JCell( {
 	id: cellIndex,
 	title: "${organigramme.rightRole.name}",
-	catMembers : new Array(
-		<c:forEach items="${organigramme.rightRole.users}" var="user" varStatus="loopInfo">
-			{userFullName: "${user.fullName}", login : "${user.login}"} ${(not loopInfo.last) ? ',' : ''}
+	innerUsers : new Array(
+		<c:forEach items="${organigramme.rightRole.users}" var="user" varStatus="mainLoopInfo">
+			{userFullName: "${user.fullName}", login : "${user.login}",
+				userAttributes: new Array(
+					<c:forEach items="${user.details}" var="detail" varStatus="loopInfo">
+						{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
+					</c:forEach>
+				)} ${(not mainLoopInfo.last) ? ',' : ''}
 		</c:forEach>
 	),
 	level : 1,
@@ -98,9 +110,14 @@ levelOffset = 1;
 jCells[cellIndex] = new JCell( {
 	id: cellIndex,
 	title: "${organigramme.leftRole.name}",
-	catMembers : new Array(
-		<c:forEach items="${organigramme.leftRole.users}" var="user" varStatus="loopInfo">
-			{userFullName: "${user.fullName}", login : "${user.login}"} ${(not loopInfo.last) ? ',' : ''}
+	innerUsers : new Array(
+		<c:forEach items="${organigramme.leftRole.users}" var="user" varStatus="mainLoopInfo">
+			{userFullName: "${user.fullName}", login : "${user.login}",
+				userAttributes: new Array(
+					<c:forEach items="${user.details}" var="detail" varStatus="loopInfo">
+						{label : "${detail.key}", value: "${detail.value}"} ${(not loopInfo.last) ? ',' : ''}
+					</c:forEach>
+				)} ${(not mainLoopInfo.last) ? ',' : ''}
 		</c:forEach>
 	),
 	level : 1,
