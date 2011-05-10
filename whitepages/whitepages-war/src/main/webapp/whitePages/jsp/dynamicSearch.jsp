@@ -47,9 +47,10 @@
 <view:setBundle basename="com.stratelia.webactiv.multilang.generalMultilang" var="GML" />
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <%
    out.println(gef.getLookStyleSheet());
 %>
@@ -203,8 +204,8 @@ $(document).ready(function(){
 	       
       });
     </script>
-</HEAD>
-<BODY id="whitePages">
+</head>
+<body id="whitePages">
 <%
 List cards = (List)request.getAttribute("cards");
 
@@ -243,13 +244,13 @@ String queryValue = request.getAttribute("query") != null ?  (String)request.get
 if(!main){
   // no form search in Main
 %>
-<br><fmt:message key="whitePages.op.searchCard" bundle="${LML}"/><br>
+<br/><fmt:message key="whitePages.op.searchCard" bundle="${LML}"/><br/>
 <div class="zoneNavAndSearch">
           <div id="search">
-<FORM id="searchform" name="searchform" method="POST" action="<%=routerUrl + "getSearchResult"%>" >
+<form id="searchform" name="searchform" method="post" action="<%=routerUrl + "getSearchResult"%>" >
 	<div>
     	<label class="txtlibform" for="query"><fmt:message key="whitePages.keywords" bundle="${LML}"/></label>
-        <input type="text" id="query" value="<%=queryValue%>" size="60" name="query" class="ac_input champTexte">
+        <input type="text" id="query" value="<%=queryValue%>" size="60" name="query" class="ac_input champTexte"/>
         <p class="txtexform"><fmt:message key="whitePages.keywordssample" bundle="${LML}"/></p>
     </div>
 <%
@@ -319,7 +320,7 @@ if (searchFields != null && !searchFields.isEmpty()) {
        </tr></tbody>
   </table>  
 </div>
-</FORM>
+</form>
 </div> 	
 </div>
 <%
@@ -440,5 +441,5 @@ if(cards != null && cards.size() > 0){
         </div>
 	</div>
 	<view:progressMessage/>
-</BODY>
-</HTML>
+</body>
+</html>
