@@ -169,18 +169,15 @@
 }
 
 .listinUsers .link {
-  color:#333366;
-  border-bottom:1px solid #9E9ECF;
-  display:block;
-  padding:5px 0 3px 0; 
-  font-size:11px;
+    border-bottom: 1px solid #9E9ECF;
+    color: #333366;
+    display: block;
+    font-size: 11px;
+    padding: 0 0 3px;
 }
 .listinUsers .link:hover, #directory .link:focus {
   color:#000;
-  border-bottom:1px solid #000;
-  display:block;
-  padding:5px 0 3px 0; 
-  font-size:11px;
+  border-color:1px solid #000;
 }
 
 .listinUsers .action .invitation {
@@ -212,8 +209,13 @@
   right:10px;
 }
 
+.userProfil .statut img {
+	position: absolute;
+    right: 33px;
+    top: 12px;
+}
+
 .userProfil .statut {
-	background:transparent url(images_annuaire/sep-2-tiraits.gif)  50% top no-repeat;
 	color:#333333; font-size:10px;
 	padding:10px 0 0;
 	margin:0;
@@ -224,12 +226,19 @@
 }
 
 .userProfil { 
-   float: left;
+    float: left;
+    padding: 8px;
     position: relative;
-    width: 20%;
+    width: 180px;
 }
 
-
+.userProfil .userName {
+    color: #000000;
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+}
 .userProfil address { font-style:normal;}
 
 .userProfil .action {
@@ -252,11 +261,15 @@
 }
 
 .sheet { 
-	width:78%; 
-	margin-left:15px; 
-	float:left;
+ margin-left: 210px;
 }
+.sheet .divSee {
+	float:left;
+	width:100%;
+	margin-bottom: 10px;}
+
 .sheet address { font-style:normal;}
+
 
 
 /*- [ whitePages BEGIN ] --------------------------- */
@@ -407,10 +420,30 @@
 	width:62px;
 }
 
-.profilPhoto img{
- 	height:80px;
-	width:62px;
+.profilPhoto {
+	border: 1px solid #CCCCCC;
+    overflow: hidden;
 }
+
+#whitePagesSheet .profilPhoto {
+    height: auto;
+    margin: 7px 6px;
+    width: 108px;
+}
+
+#whitePagesSheet .profilPhoto img{
+	width:108px;
+}
+
+	
+html > body #whitePagesSheet .profilPhoto img{
+	max-height: 140px;
+	max-width:108px;
+	height:auto;
+	width:auto;
+}
+
+
 
 #whitePages .listinUsers .profilPhoto img {
 	height:80px;

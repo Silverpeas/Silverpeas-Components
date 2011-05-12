@@ -48,7 +48,7 @@ public class Reply extends SilverpeasBean {
 
   public Reply(String creatorId) {
     this.creatorId = creatorId;
-    setCreationDate();
+     this.creationDate = DateUtil.date2SQLDate(new Date());
   }
 
   public Reply(long questionId, String creatorId) {
@@ -92,7 +92,7 @@ public class Reply extends SilverpeasBean {
     this.creatorId = creatorId;
   }
 
-  public final void setCreationDate() {
+  public void setCreationDate() {
     this.creationDate = DateUtil.date2SQLDate(new Date());
   }
 
