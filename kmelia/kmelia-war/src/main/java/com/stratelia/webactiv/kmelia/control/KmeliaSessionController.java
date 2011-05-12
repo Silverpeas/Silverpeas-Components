@@ -676,6 +676,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         aKmeliaPublicationExporter().export(descriptor, publication);
       } catch (Exception ex) {
         Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage(), ex);
+        if (pdfDocument != null) {
+          pdfDocument.delete();
+        }
         throw new KmeliaRuntimeException("KmeliaSessionController.generatePdf()",
             SilverpeasRuntimeException.ERROR, ex.getMessage(), ex);
       }
@@ -4324,10 +4327,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public File exportPublication() {
     PublicationPK pubPK = getSessionPublication().getPublication().getPublicationDetail().getPK();
+    File pdf = null;
     try {
       // get PDF
-//      String pdf = generatePdf(pubPK.getId());
-      File pdf = generatePdf(pubPK.getId());
+      pdf = generatePdf(pubPK.getId());
       String pdfWithoutExtension = FilenameUtils.removeExtension(pdf.getName());
       // create subdir to zip
       String subdir = "ExportPubli_" + pubPK.getId() + "_" + new Date().getTime();
@@ -4335,8 +4338,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
               FileRepositoryManager.getTemporaryPath() + subdir + File.separator + pdfWithoutExtension;
       FileFolderManager.createFolder(subDirPath);
       // copy pdf into zip
-//      String filePath = FileRepositoryManager.getTemporaryPath("useless", getComponentId()) + pdf;
-      FileRepositoryManager.copyFile(pdf.getPath(), subDirPath + File.separator + pdf);
+      FileRepositoryManager.copyFile(pdf.getPath(), subDirPath + File.separator + pdf.getName());
       // copy files
       new AttachmentImportExport().getAttachments(pubPK, subDirPath, "useless", null);
       new VersioningImportExport().exportDocuments(pubPK, subDirPath, "useless", null);
@@ -4348,6 +4350,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaSessionController.exportPublication()",
               SilverpeasRuntimeException.ERROR, "kmelia.CANT_EXPORT_PUBLICATION", e);
+    } finally {
+      if (pdf != null) {
+        pdf.delete();
+      }
     }
   }
 
@@ -4764,6 +4770,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     String lang = getLanguage();
     String pubId = publication.getPk().getId();
     StringBuilder fileName = new StringBuilder(250);
+    
+    fileName.append(getUserDetail().getLogin()).append('-');
 
     // add space path to filename
     List<SpaceInst> listSpaces = getSpacePath();

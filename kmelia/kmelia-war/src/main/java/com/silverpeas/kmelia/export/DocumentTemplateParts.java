@@ -60,6 +60,11 @@ public interface DocumentTemplateParts {
   static final String FIELD_DESCRIPTION = "Subject";
   
   /**
+   * The section in the template relative to the information about the publication.
+   */
+  static final String SECTION_INFO = "Info";
+  
+  /**
    * The section in the template relative to the attachments of the publication.
    */
   static final String SECTION_ATTACHMENTS = "Attachments";
@@ -84,18 +89,27 @@ public interface DocumentTemplateParts {
    */
   static final String SECTION_CONTENT = "Content";
   
+  /**
+   * The area in which the metadata about the publication are rendered. The metadata are displayed
+   * in the text section defined by SECTION_INFO.
+   */
+  static final String LIST_OF_METADATA = "PubliInfo";
+  
   /*
-   * The area in wich all the comments of the publication have to be rendered.
+   * The area in wich all the comments of the publication have to be rendered. The comments are
+   * displayed in the text section defined by SECTION_COMMENTS.
    */
   static final String LIST_OF_COMMENTS = "PubliComments";
   
   /*
-   * The area in wich all the attachments of the publication have to be rendered.
+   * The area in wich all the attachments of the publication have to be rendered. The attachments
+   * are displayed in the text section defined by SECTION_ATTACHMENTS.
    */
   static final String LIST_OF_ATTACHMENTS = "PubliAttachments";
   
   /*
-   * The area in wich all the publications to which the publication is linked are rendered.
+   * The area in wich all the publications to which the publication is linked are rendered. The
+   * links are displayed in the text section defined by SECTION_SEEALSO.
    */
   static final String LIST_OF_LINKS = "PubliSeeAlso";
   

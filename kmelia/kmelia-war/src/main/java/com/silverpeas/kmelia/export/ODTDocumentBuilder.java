@@ -23,6 +23,7 @@
  */
 package com.silverpeas.kmelia.export;
 
+import org.odftoolkit.simple.table.Column;
 import com.silverpeas.converter.HTMLConverter;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.silverpeas.form.PagesContext;
@@ -42,9 +43,9 @@ import org.odftoolkit.simple.table.Table;
 import com.silverpeas.converter.DocumentFormatConverterFactory;
 import com.silverpeas.form.DataRecord;
 import com.silverpeas.form.RecordSet;
+import com.silverpeas.form.RenderingContext;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
-import com.silverpeas.util.FileUtil;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.pdc.model.ClassifyValue;
 import com.stratelia.silverpeas.pdc.model.Value;
@@ -73,12 +74,12 @@ import static com.silverpeas.converter.DocumentFormat.*;
 import static com.silverpeas.kmelia.export.DocumentTemplateParts.*;
 import static com.silverpeas.kmelia.export.VersionedAttachmentHolder.*;
 import static com.silverpeas.kmelia.export.ODTDocumentsMerging.*;
+import static com.silverpeas.kmelia.export.ODTDocumentTextTranslator.*;
 import static com.silverpeas.util.StringUtil.*;
 
 /**
  * A builder of an ODT document based on a given template and from a specified
  * Kmelia publication.
- * @TODO translate the text in the doc built from the template
  */
 public class ODTDocumentBuilder {
 
@@ -88,6 +89,7 @@ public class ODTDocumentBuilder {
   private UserDetail user;
   private String language = "";
   private TopicDetail topicToConsider;
+  private ResourceLocator messages;
 
   /**
    * Gets an instance of a builder of ODT documents.
@@ -104,7 +106,7 @@ public class ODTDocumentBuilder {
    * @param user the user for which the build of the documents should be done.
    * @return itself.
    */
-  public synchronized ODTDocumentBuilder forUser(final UserDetail user) {
+  public ODTDocumentBuilder forUser(final UserDetail user) {
     this.user = user;
     return this;
   }
@@ -116,7 +118,7 @@ public class ODTDocumentBuilder {
    * @param language the language in which the text should be displayed in the built documents.
    * @return itself.
    */
-  public synchronized ODTDocumentBuilder inLanguage(String language) {
+  public ODTDocumentBuilder inLanguage(String language) {
     this.language = (language == null ? "" : language);
     return this;
   }
@@ -130,7 +132,7 @@ public class ODTDocumentBuilder {
    * @param topic the topic to explicitly consider.
    * @return itself.
    */
-  public synchronized ODTDocumentBuilder inTopic(final TopicDetail topic) {
+  public ODTDocumentBuilder inTopic(final TopicDetail topic) {
     this.topicToConsider = topic;
     return this;
   }
@@ -154,7 +156,7 @@ public class ODTDocumentBuilder {
    * @param documentPath the path of the ODT document to build.
    * @return the file corresponding to the ODT document built from the publication.
    */
-  public synchronized File buildFrom(final KmeliaPublication publication, String documentPath) {
+  public File buildFrom(final KmeliaPublication publication, String documentPath) {
     boolean isUserSet = true;
     try {
       String odtFilePath = documentPath;
@@ -167,6 +169,7 @@ public class ODTDocumentBuilder {
         forUser(publication.getCreator());
         isUserSet = false;
       }
+      translate(odtDocument);
       fill(odtDocument, with(publication));
       File odtFile = new File(odtFilePath);
       odtDocument.save(odtFile);
@@ -198,6 +201,11 @@ public class ODTDocumentBuilder {
     String templateDoc = settings.getString(DOCUMENT_TEMPLATE);
     TextDocument template = TextDocument.loadDocument(new File(exportTemplateDir + templateDoc));
     return template;
+  }
+
+  private void translate(final TextDocument odtDocument) {
+    ODTDocumentTextTranslator translator = aTranslatorWith(getMessagesBundle());
+    translator.translate(odtDocument);
   }
 
   private void fill(final TextDocument odtDocument, final KmeliaPublication publication) throws
@@ -261,7 +269,7 @@ public class ODTDocumentBuilder {
     try {
       htmlFile = new File(
           FileRepositoryManager.getTemporaryPath() + UUID.randomUUID().toString() + ".html");
-      // warning: the content of HTML text is in fact in ISO-8859-1!
+      // warning: the content of HTML text is actually in ISO-8859-1!
       FileUtils.writeStringToFile(htmlFile, htmlText, "ISO-8859-1");
       HTMLConverter converter = DocumentFormatConverterFactory.getFactory().getHTMLConverter();
       odtConvertedHtmlFile = converter.convert(htmlFile, inFormat(odt));
@@ -291,6 +299,7 @@ public class ODTDocumentBuilder {
         dataRecord.setId(publication.getPk().getId());
       }
       PagesContext context = new PagesContext();
+      context.setRenderingContext(RenderingContext.EXPORT);
       context.setLanguage(getLanguage());
       context.setComponentId(publication.getPk().getInstanceId());
       context.setObjectId(publication.getPk().getId());
@@ -476,6 +485,14 @@ public class ODTDocumentBuilder {
 
   private UserDetail getUser() {
     return this.user;
+  }
+
+  private ResourceLocator getMessagesBundle() {
+    if (this.messages == null) {
+      this.messages = new ResourceLocator(
+          "com.stratelia.webactiv.kmelia.multilang.kmeliaExport", getLanguage());
+    }
+    return this.messages;
   }
 
   /**

@@ -27,6 +27,7 @@ import com.stratelia.webactiv.beans.admin.SpaceInst;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import java.util.List;
+import java.util.UUID;
 import static com.silverpeas.util.StringUtil.*;
 
 /**
@@ -54,7 +55,7 @@ public class DefaultExportFileNameProducer implements ExportFileNameProducer {
     fileName.append(getComponentLabelOf(publication.getPk().getInstanceId()));
 
     fileName.append('-').append(publication.getDetail().getTitle()).append('-');
-    fileName.append(publication.getPk().getId());
+    fileName.append(publication.getPk().getId()).append('-').append(UUID.randomUUID().hashCode());
     return fileName.toString();
   }
 
