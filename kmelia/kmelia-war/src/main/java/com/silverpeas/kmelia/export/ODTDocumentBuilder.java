@@ -23,57 +23,77 @@
  */
 package com.silverpeas.kmelia.export;
 
-import java.io.Writer;
+import com.silverpeas.converter.HTMLConverter;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
+import com.silverpeas.form.PagesContext;
+import com.silverpeas.form.Form;
+import org.odftoolkit.odfdom.dom.element.text.TextAElement;
+import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
+import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
+import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.model.DocumentVersion;
 import java.util.List;
-import org.w3c.dom.NodeList;
 import org.odftoolkit.simple.table.Row;
 import com.silverpeas.comment.model.Comment;
 import org.odftoolkit.simple.table.Table;
 import com.silverpeas.converter.DocumentFormatConverterFactory;
-import com.silverpeas.converter.ODTConverter;
+import com.silverpeas.form.DataRecord;
+import com.silverpeas.form.RecordSet;
+import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.util.FileUtil;
+import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
+import com.stratelia.silverpeas.pdc.model.ClassifyValue;
+import com.stratelia.silverpeas.pdc.model.Value;
+import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
+import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import java.io.File;
-import java.io.FileWriter;
-import java.io.OutputStreamWriter;
 import java.util.Calendar;
+import java.util.UUID;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.odftoolkit.simple.TextDocument;
 import org.odftoolkit.simple.meta.Meta;
 import org.odftoolkit.simple.table.Cell;
 import org.odftoolkit.simple.text.Paragraph;
 import org.odftoolkit.simple.text.Section;
-import org.w3c.dom.Node;
+import org.odftoolkit.simple.text.list.ListItem;
 import static com.stratelia.webactiv.util.DateUtil.*;
 import static com.silverpeas.converter.DocumentFormat.*;
 import static com.silverpeas.kmelia.export.DocumentTemplateParts.*;
 import static com.silverpeas.kmelia.export.VersionedAttachmentHolder.*;
+import static com.silverpeas.kmelia.export.ODTDocumentsMerging.*;
 import static com.silverpeas.util.StringUtil.*;
 
 /**
  * A builder of an ODT document based on a given template and from a specified
  * Kmelia publication.
- * @TODO translate the text in the doc to build from the template
+ * @TODO translate the text in the doc built from the template
  */
 public class ODTDocumentBuilder {
 
   private static final String DOCUMENT_TEMPLATE = "kmelia.export.template";
   private static final ResourceLocator settings = new ResourceLocator(
-          "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "");
+      "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "");
   private UserDetail user;
   private String language = "";
+  private TopicDetail topicToConsider;
 
   /**
    * Gets an instance of a builder of ODT documents.
    * @return an ODTDocumentBuilder instance.
    */
-  public static ODTDocumentBuilder getODTDocumentBuilder() {
+  public static ODTDocumentBuilder anODTDocumentBuilder() {
     return new ODTDocumentBuilder();
   }
 
@@ -84,46 +104,63 @@ public class ODTDocumentBuilder {
    * @param user the user for which the build of the documents should be done.
    * @return itself.
    */
-  public ODTDocumentBuilder forUser(final UserDetail user) {
+  public synchronized ODTDocumentBuilder forUser(final UserDetail user) {
     this.user = user;
     return this;
   }
 
   /**
-   * Informs this builder the prefered language in which the documents to build will be.
+   * Informs this builder the prefered language to use for the content of the documents to build.
+   * If the publication doesn't have a content in the specified language, then it is the default
+   * publication's text that will be taken (whatever the language in which it is written).
    * @param language the language in which the text should be displayed in the built documents.
    * @return itself.
    */
-  public ODTDocumentBuilder inLanguage(String language) {
-    this.language = (language == null? "":language);
+  public synchronized ODTDocumentBuilder inLanguage(String language) {
+    this.language = (language == null ? "" : language);
     return this;
-  }
-  
-  /**
-   * A convenient method to improve the readability in the call of the method
-   * buildFromPublication(). It can be uses as:
-   * <code>File odt = builder.buildFrom(mypublication, anODTNamed("foo"));</code>
-   * @param documentName
-   * @return 
-   */
-  public static String anODTNamed(String documentName) {
-    return documentName;
   }
 
   /**
-   * Builds an ODT document from the specified Kmelia publication.
+   * Informs explicitly the topic to consider when building a document from publications.
+   * This topic can be provided by the caller itself as it was already computed for the publications
+   * to export and according to the rights of the user on a such topic.
+   * If this topic isn't provided explicitly, then it is computed directly from the publication and
+   * according to the rights of the user on the topics the publication belongs to.
+   * @param topic the topic to explicitly consider.
+   * @return itself.
+   */
+  public synchronized ODTDocumentBuilder inTopic(final TopicDetail topic) {
+    this.topicToConsider = topic;
+    return this;
+  }
+
+  /**
+   * A convenient method to improve the readability in the call of the method
+   * buildFromPublication(). It can be uses as:
+   * <code>File odt = builder.buildFrom(mypublication, anODTAt("/tmp/foo.odt"));</code>
+   * @param documentPath the path of the document to build.
+   * @return the document path as passed as parameter.
+   */
+  public static String anODTAt(String documentPath) {
+    return documentPath;
+  }
+
+  /**
+   * Builds an ODT document at the specified path and from the specified Kmelia publication.
    * If an error occurs while building the document, a runtime exception DocumentBuildException is
    * thrown.
    * @param publication the publication from which an ODT document is built.
-   * @param documentName the name of the ODT document to build.
+   * @param documentPath the path of the ODT document to build.
    * @return the file corresponding to the ODT document built from the publication.
    */
-  public File buildFrom(final KmeliaPublication publication, String documentName) {
+  public synchronized File buildFrom(final KmeliaPublication publication, String documentPath) {
     boolean isUserSet = true;
     try {
-      String odtFileName = documentName;
-      if (!isDefined(FilenameUtils.getExtension(documentName))) {
-       odtFileName += ".odt"; 
+      String odtFilePath = documentPath;
+      String extension = FilenameUtils.getExtension(odtFilePath);
+      if (!isDefined(extension) || !"odt".equalsIgnoreCase(extension)) {
+        odtFilePath += ".odt";
       }
       TextDocument odtDocument = loadTemplate();
       if (getUser() == null) {
@@ -131,8 +168,7 @@ public class ODTDocumentBuilder {
         isUserSet = false;
       }
       fill(odtDocument, with(publication));
-      File odtFile = new File(FileRepositoryManager.getTemporaryPath() + odtFileName);
-      Writer writer = null;
+      File odtFile = new File(odtFilePath);
       odtDocument.save(odtFile);
       return odtFile;
     } catch (Exception ex) {
@@ -165,28 +201,34 @@ public class ODTDocumentBuilder {
   }
 
   private void fill(final TextDocument odtDocument, final KmeliaPublication publication) throws
-          Exception {
+      Exception {
     buildInfoSection(in(odtDocument), with(publication));
     buildAttachmentsSection(in(odtDocument), with(publication));
+    buildSeeAlsoSection(in(odtDocument), with(publication));
+    buildPdCSection(in(odtDocument), with(publication));
     buildCommentSection(in(odtDocument), with(publication));
-    //buildWysiwygContentSection(in(odtDocument), new File(getClass().getResource("/" + WYSIWYG_CONTENT).toURI()));
+    buildContentSection(in(odtDocument), with(publication));
   }
 
   private void buildInfoSection(final TextDocument odtDocument, final KmeliaPublication publication) {
     PublicationDetail detail = publication.getDetail();
     Meta metadata = odtDocument.getOfficeMetadata();
-    metadata.setCreationDate(Calendar.getInstance());
     metadata.setCreator(detail.getCreatorName());
+    metadata.setCreationDate(Calendar.getInstance());
     metadata.setSubject(detail.getDescription(getLanguage()));
     metadata.setDcdate(Calendar.getInstance());
     metadata.setTitle(detail.getName(getLanguage()));
+    metadata.setUserDefinedDataValue(FIELD_CREATION_DATE,
+        getOutputDate(detail.getCreationDate(), getLanguage()));
     metadata.setUserDefinedDataValue(FIELD_MODIFICATION_DATE,
-            getOutputDateAndHour(detail.getUpdateDate(), getLanguage()));
-    metadata.setUserDefinedDataValue(FIELD_AUTHOR, detail.getCreatorName());
+        getOutputDate(detail.getUpdateDate(), getLanguage()));
+    metadata.setUserDefinedDataValue(FIELD_AUTHOR, publication.getCreator().getDisplayedName());
+    metadata.setUserDefinedDataValue(FIELD_URL, publication.getURL());
+    metadata.setUserDefinedDataValue(FIELD_VERSION, detail.getVersion());
   }
 
   private void buildCommentSection(final TextDocument odtDocument,
-          final KmeliaPublication publication) {
+      final KmeliaPublication publication) {
     Table commentsTable = odtDocument.getTableByName(LIST_OF_COMMENTS);
     int i = 1;
     for (Comment comment : publication.getComments()) {
@@ -198,27 +240,71 @@ public class ODTDocumentBuilder {
     }
   }
 
-  private void buildWysiwygContentSection(final TextDocument odtDocument, final File wysiwyg) throws
-          Exception {
+  private void buildContentSection(final TextDocument odtDocument,
+      final KmeliaPublication publication) throws Exception {
+    String htmlContent = WysiwygController.load(publication.getPk().getInstanceId(), publication.
+        getPk().getId(), getLanguage());
+    if (isDefined(htmlContent)) {
+      buildWithHTMLText(htmlContent, in(odtDocument));
+    } else {
+      buildWithXMLText(publication, in(odtDocument));
+    }
+  }
+
+  private void buildWithHTMLText(String htmlText, final TextDocument odtDocument) throws Exception {
     Section content = odtDocument.getSectionByName(SECTION_CONTENT);
     Paragraph p = content.getParagraphByIndex(1, false);
     if (p != null) {
       content.removeParagraph(p);
     }
-    ODTConverter converter = DocumentFormatConverterFactory.getFactory().getODTConverter();
-    File wysiwygInOdt = converter.convert(wysiwyg, inFormat(odt));
-    TextDocument odt = TextDocument.loadDocument(wysiwygInOdt);
-    Node wysiwygNode = odtDocument.getContentDom().importNode(odt.getContentDom().getFirstChild(),
-            true);
-    Node textNode = wysiwygNode.getLastChild().getFirstChild();
-    NodeList children = textNode.getChildNodes();
-    for (int i = 0; i < children.getLength(); i++) {
-      content.getOdfElement().appendChild(children.item(i).cloneNode(true));
+    File htmlFile = null, odtConvertedHtmlFile = null;
+    try {
+      htmlFile = new File(
+          FileRepositoryManager.getTemporaryPath() + UUID.randomUUID().toString() + ".html");
+      // warning: the content of HTML text is in fact in ISO-8859-1!
+      FileUtils.writeStringToFile(htmlFile, htmlText, "ISO-8859-1");
+      HTMLConverter converter = DocumentFormatConverterFactory.getFactory().getHTMLConverter();
+      odtConvertedHtmlFile = converter.convert(htmlFile, inFormat(odt));
+      TextDocument htmlContent = TextDocument.loadDocument(odtConvertedHtmlFile);
+      decorates(odtDocument).merge(htmlContent, atSection(SECTION_CONTENT));
+    } finally {
+      if (htmlFile != null) {
+        htmlFile.delete();
+      }
+      if (odtConvertedHtmlFile != null) {
+        odtConvertedHtmlFile.delete();
+      }
+    }
+  }
+
+  private void buildWithXMLText(final KmeliaPublication publication, final TextDocument odtDocument)
+      throws Exception {
+    String templateId = publication.getDetail().getInfoId();
+    if (!isInteger(templateId)) {
+      PublicationTemplate template = PublicationTemplateManager.getInstance().getPublicationTemplate(
+          publication.getPk().getInstanceId() + ":" + templateId);
+      Form viewForm = template.getViewForm();
+      RecordSet recordSet = template.getRecordSet();
+      DataRecord dataRecord = recordSet.getRecord(publication.getPk().getId(), getLanguage());
+      if (dataRecord == null) {
+        dataRecord = recordSet.getEmptyRecord();
+        dataRecord.setId(publication.getPk().getId());
+      }
+      PagesContext context = new PagesContext();
+      context.setLanguage(getLanguage());
+      context.setComponentId(publication.getPk().getInstanceId());
+      context.setObjectId(publication.getPk().getId());
+      context.setBorderPrinted(false);
+      context.setContentLanguage(getLanguage());
+      context.setUserId(getUser().getId());
+      context.setNodeId(getTopicOf(publication).getNodeDetail().getNodePK().getId());
+      String htmlText = viewForm.toString(context, dataRecord);
+      buildWithHTMLText(htmlText, in(odtDocument));
     }
   }
 
   private void buildAttachmentsSection(final TextDocument odtDocument,
-          final KmeliaPublication publication) {
+      final KmeliaPublication publication) {
     if (publication.isVersioned()) {
       buildWithVersionedAttachments(publication.getVersionedAttachments(), in(odtDocument));
     } else {
@@ -227,7 +313,7 @@ public class ODTDocumentBuilder {
   }
 
   private void buildWithVersionedAttachments(final List<Document> versionedAttachments,
-          final TextDocument odtDocument) {
+      final TextDocument odtDocument) {
     Table attachmentsTable = odtDocument.getTableByName(LIST_OF_ATTACHMENTS);
     updateTableForVersionedAttachments(attachmentsTable);
     int i = 1;
@@ -237,10 +323,10 @@ public class ODTDocumentBuilder {
         DocumentVersion lastVersion = attachmentHolder.getLastVersionAccessibleBy(getUser());
         if (lastVersion != null) {
           String creatorOrValidators = attachmentHolder.getCreatorOrValidatorsDisplayedName(
-                  lastVersion);
+              lastVersion);
           String version = attachmentHolder.getVersionNumber(lastVersion);
           String creationDate = dateToString(versionedAttachment.getLastCheckOutDate(),
-                  getLanguage());
+              getLanguage());
 
           Row row = attachmentsTable.getRowByIndex(i++);
           row.getCellByIndex(0).setStringValue(lastVersion.getLogicalName());
@@ -255,7 +341,7 @@ public class ODTDocumentBuilder {
   }
 
   private void buildWithAttachments(final List<AttachmentDetail> attachments,
-          final TextDocument odtDocument) {
+      final TextDocument odtDocument) {
     Table attachmentsTable = odtDocument.getTableByName(LIST_OF_ATTACHMENTS);
     int i = 1;
     for (AttachmentDetail attachment : attachments) {
@@ -265,7 +351,87 @@ public class ODTDocumentBuilder {
       row.getCellByIndex(2).setStringValue(attachment.getInfo(getLanguage()));
       row.getCellByIndex(3).setStringValue(attachment.getAttachmentFileSize(getLanguage()));
       row.getCellByIndex(4).setStringValue(getOutputDate(attachment.getCreationDate(getLanguage()),
-              getLanguage()));
+          getLanguage()));
+    }
+  }
+
+  private void buildSeeAlsoSection(final TextDocument odtDocument,
+      final KmeliaPublication publication) {
+    try {
+      Section seeAlso = odtDocument.getSectionByName(SECTION_SEEALSO);
+      List<KmeliaPublication> linkedPublications = getKmeliaService().getLinkedPublications(
+          publication, getUser().getId());
+      if (!linkedPublications.isEmpty()) {
+        Paragraph p = seeAlso.getParagraphByIndex(1, false);
+        if (p != null) {
+          seeAlso.removeParagraph(p);
+        }
+        for (KmeliaPublication aLinkedPublication : linkedPublications) {
+          PublicationDetail publicationDetail = aLinkedPublication.getDetail();
+          if (publicationDetail.getStatus() != null
+              && "Valid".equals(publicationDetail.getStatus())
+              && !publicationDetail.getPK().getId().equals(publication.getPk().getId())) {
+            TextAElement hyperlink = new TextAElement(odtDocument.getContentDom());
+            hyperlink.setXlinkHrefAttribute(aLinkedPublication.getURL());
+            hyperlink.setXlinkTypeAttribute("simple");
+            hyperlink.setTextContent(publicationDetail.getId() + " - " + publicationDetail.getName(
+                getLanguage()));
+            org.odftoolkit.simple.text.list.List ul = odtDocument.addList();
+            ListItem li = ul.addItem("");
+            li.getOdfElement().getFirstChild().appendChild(hyperlink);
+            seeAlso.getOdfElement().appendChild(ul.getOdfElement().cloneNode(true));
+            ul.remove();
+            seeAlso.addParagraph(aLinkedPublication.getLastModifier().getDisplayedName()
+                + " - " + getOutputDate(publicationDetail.getUpdateDate(), getLanguage()));
+            seeAlso.addParagraph(publicationDetail.getDescription(getLanguage()));
+          }
+        }
+      }
+    } catch (Exception ex) {
+      throw new DocumentBuildException(ex.getMessage(), ex);
+    }
+  }
+
+  private void buildPdCSection(TextDocument odtDocument, KmeliaPublication publication) {
+    Section classification = odtDocument.getSectionByName(SECTION_CLASSIFICATION);
+    List<ClassifyPosition> positions = publication.getPDCPositions();
+    int pathMaxLength = 5;
+    int pathNodeMinNb = 2;
+    String pathSeparator = "/";
+    int rank = 1;
+    if (!positions.isEmpty()) {
+      Paragraph p = classification.getParagraphByIndex(1, false);
+      if (p != null) {
+        classification.removeParagraph(p);
+      }
+      for (ClassifyPosition aPosition : positions) {
+        classification.addParagraph("Position " + rank++);
+        org.odftoolkit.simple.text.list.List ul = odtDocument.addList();
+        for (ClassifyValue positionValue : aPosition.getValues()) {
+          StringBuilder pathToRender = new StringBuilder();
+          List<Value> pathNodes = positionValue.getFullPath();
+          int pathLength = pathNodes.size();
+          if (pathLength > pathMaxLength) {
+            for (int i = 0; i < pathNodeMinNb; i++) {
+              pathToRender.append(pathNodes.get(i).getName(getLanguage())).append(pathSeparator);
+            }
+            pathToRender.append("...").append(pathSeparator);
+            for (int i = pathNodeMinNb; i > 0; i--) {
+              pathToRender.append(pathNodes.get(pathLength - i).getName(getLanguage())).append(
+                  pathSeparator);
+            }
+          } else {
+            for (Value pathNode : pathNodes) {
+              pathToRender.append(pathNode.getName(getLanguage())).append(pathSeparator);
+            }
+          }
+          if (!pathSeparator.equals(pathToRender.toString()) && pathToRender.length() > 0) {
+            ul.addItem(pathToRender.substring(0, pathToRender.length() - pathSeparator.length()));
+          }
+        }
+        classification.getOdfElement().appendChild(ul.getOdfElement().cloneNode(true));
+        ul.remove();
+      }
     }
   }
 
@@ -280,6 +446,30 @@ public class ODTDocumentBuilder {
     newCell.addParagraph("Validateur").getOdfElement().setStyleName(textStyle);
   }
 
+  private boolean isRightsOnTopicsEnabled(final String componentInstanceId) {
+    return Boolean.valueOf(getOrganizationService().getComponentParameterValue(componentInstanceId,
+        "rightsOnTopics"));
+  }
+
+  private boolean isTree(final String componentInstanceId) {
+    String isTree = getOrganizationService().getComponentParameterValue(componentInstanceId,
+        "istree");
+    if (!isDefined(isTree)) {
+      return true;
+    }
+    return "0".equals(isTree) || "1".equals(isTree);
+  }
+
+  private TopicDetail getTopicOf(final KmeliaPublication publication) throws Exception {
+    TopicDetail theTopic = this.topicToConsider;
+    if (theTopic == null) {
+      String componentId = publication.getPk().getInstanceId();
+      theTopic = getKmeliaService().getPublicationFather(publication.getPk(), isTree(componentId),
+          getUser().getId(), isRightsOnTopicsEnabled(componentId));
+    }
+    return theTopic;
+  }
+
   private String getLanguage() {
     return this.language;
   }
@@ -288,4 +478,27 @@ public class ODTDocumentBuilder {
     return this.user;
   }
 
+  /**
+   * Gets the Kmelia service.
+   * @return an instance of KmeliaBm.
+   */
+  protected KmeliaBm getKmeliaService() {
+    try {
+      KmeliaBmHome kscEjbHome =
+          (KmeliaBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME,
+          KmeliaBmHome.class);
+      return kscEjbHome.create();
+    } catch (Exception e) {
+      throw new KmeliaRuntimeException(getClass().getSimpleName() + ".getKmeliaService()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
+  }
+
+  /**
+   * Gets the organization controller.
+   * @return an instance of OrganizationController.
+   */
+  protected OrganizationController getOrganizationService() {
+    return new OrganizationController();
+  }
 }

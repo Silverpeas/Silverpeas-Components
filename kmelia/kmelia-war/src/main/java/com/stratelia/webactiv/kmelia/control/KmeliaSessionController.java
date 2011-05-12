@@ -23,12 +23,11 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
+import java.util.logging.Level;
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
-import com.silverpeas.converter.DocumentFormatConverterFactory;
-import com.silverpeas.converter.ODTConverter;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
 import com.silverpeas.delegatednews.service.ServicesFactory;
@@ -40,8 +39,6 @@ import com.silverpeas.form.fieldDisplayer.WysiwygFCKFieldDisplayer;
 import com.silverpeas.form.record.GenericRecordSetManager;
 import com.silverpeas.form.record.IdentifiedRecordTemplate;
 import com.silverpeas.kmelia.export.ExportFileNameProducer;
-import com.silverpeas.kmelia.export.KmeliaPublicationExporter;
-import com.silverpeas.kmelia.export.ODTDocumentBuilder;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
@@ -161,6 +158,7 @@ import javax.ejb.EJBObject;
 import javax.ejb.RemoveException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.rmi.NoSuchObjectException;
@@ -181,8 +179,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.Vector;
+import java.util.logging.Logger;
 import static com.silverpeas.converter.DocumentFormat.*;
-import static com.silverpeas.kmelia.export.ODTDocumentBuilder.*;
+import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.*;
 
 public class KmeliaSessionController extends AbstractComponentSessionController implements
         ExportFileNameProducer {
@@ -661,13 +660,22 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     File pdfDocument = null;
     if (pubID != null) {
       try {
-        KmeliaPublication publication = KmeliaPublication.aKmeliaPublicationWithId(new PublicationPK(
+        KmeliaPublication publication = KmeliaPublication.aKmeliaPublicationWithPk(new PublicationPK(
               pubID, getComponentId()));
+        if (isVersionControlled()) {
+          publication.versioned();
+        }
         String fileName = getPublicationExportFileName(publication, getLanguage());
-        ExportDescriptor descriptor = ExportDescriptor.withWriter(null);
-        KmeliaPublicationExporter exporter = new KmeliaPublicationExporter();
-        
+        pdfDocument = new File(FileRepositoryManager.getTemporaryPath() + fileName + ".pdf");
+        FileOutputStream pdfOutput = new FileOutputStream(pdfDocument);
+        ExportDescriptor descriptor = ExportDescriptor.withOutputStream(pdfOutput).
+                withParameter(EXPORT_FOR_USER, getUserDetail()).
+                withParameter(EXPORT_LANGUAGE, getLanguage()).
+                withParameter(EXPORT_TOPIC, getSessionTopic()).
+                inFormat(pdf.name());
+        aKmeliaPublicationExporter().export(descriptor, publication);
       } catch (Exception ex) {
+        Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage(), ex);
         throw new KmeliaRuntimeException("KmeliaSessionController.generatePdf()",
             SilverpeasRuntimeException.ERROR, ex.getMessage(), ex);
       }
@@ -4754,7 +4762,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   @Override
   public String getPublicationExportFileName(KmeliaPublication publication, String language) {
     String lang = getLanguage();
-    String pubId = publication.getId().getId();
+    String pubId = publication.getPk().getId();
     StringBuilder fileName = new StringBuilder(250);
 
     // add space path to filename
@@ -4780,7 +4788,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     }
 
     fileName.append('-').append(publication.getDetail().getTitle()).append('-');
-    fileName.append(publication.getId().getId()).append(".pdf");
+    fileName.append(publication.getPk().getId());
     return StringUtil.toAcceptableFilename(fileName.toString());
   }
 }

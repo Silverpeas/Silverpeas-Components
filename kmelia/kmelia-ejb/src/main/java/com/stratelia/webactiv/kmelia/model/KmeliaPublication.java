@@ -28,6 +28,7 @@ import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.silverpeas.util.ForeignPK;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
+import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.versioning.model.Document;
 import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -35,7 +36,9 @@ import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBm;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaBmHome;
 import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.publication.model.CompletePublication;
@@ -46,6 +49,7 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import static com.silverpeas.util.StringUtil.*;
 
 /**
  * A publication as defined in a Kmelia component.
@@ -59,8 +63,17 @@ public class KmeliaPublication implements Serializable {
   private CompletePublication completeDetail;
   private boolean versioned = false;
 
-  public static KmeliaPublication aKmeliaPublicationWithId(final PublicationPK id) {
-    return new KmeliaPublication(id);
+  /**
+   * Gets the Kmelia publication with the specified primary key identifying it uniquely.
+   * If no such publication exists with the specified key, then the runtime exception
+   * SilverpeasRuntimeException is thrown.
+   * @param pk the primary key of the publication to get.
+   * @return the Kmelia publication matching the primary key.
+   */
+  public static KmeliaPublication aKmeliaPublicationWithPk(final PublicationPK pk) {
+    KmeliaPublication publication = new KmeliaPublication(pk);
+    publication.getDetail();
+    return publication;
   }
   
   /**
@@ -80,8 +93,24 @@ public class KmeliaPublication implements Serializable {
     return this.versioned;
   }
 
-  public PublicationPK getId() {
+  /**
+   * Gets the primary key of this publication.
+   * @return the publication primary key.
+   */
+  public PublicationPK getPk() {
     return id;
+  }
+  
+  /**
+   * Gets the complete URL at which this publication is located.
+   * @return the publication URL.
+   */
+  public String getURL() {
+    String defaultURL =
+            getOrganizationService().getDomain(getCreator().getDomainId()).getSilverpeasServerURL();
+    ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
+    String serverURL = generalSettings.getString("httpServerBase", defaultURL);
+    return serverURL + URLManager.getSimpleURL(URLManager.URL_PUBLI, getPk().getId());
   }
 
   /**
@@ -126,12 +155,21 @@ public class KmeliaPublication implements Serializable {
   }
 
   /**
-   * Gets the user that has lastly modified this publication.
+   * Gets the user that has lastly modified this publication. He's the last one that has worked on
+   * this publication.
+   * If this publication was not modified since its creation, the creator is returned as he's the
+   * last user that has worked on this publication.
    * @return the detail about the last modifier of this publication.
    */
   public UserDetail getLastModifier() {
+    UserDetail lastModifier = null;
     String modifierId = getDetail().getUpdaterId();
-    return getOrganizationService().getUserDetail(modifierId);
+    if (modifierId == null) {
+      lastModifier = getCreator();
+    } else {
+      lastModifier = getOrganizationService().getUserDetail(modifierId);
+    }
+    return lastModifier;
   }
 
   /**

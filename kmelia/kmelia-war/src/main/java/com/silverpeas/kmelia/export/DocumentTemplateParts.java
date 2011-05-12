@@ -37,7 +37,27 @@ public interface DocumentTemplateParts {
   /**
    * Field in the template corresponding to the last modification date of the publication to export.
    */
-  static final String FIELD_MODIFICATION_DATE = "Modification";
+  static final String FIELD_MODIFICATION_DATE = "ModifiedAt";
+  
+  /**
+   * Field in the template corresponding to the creation date of the publication to export.
+   */
+  static final String FIELD_CREATION_DATE = "CreatedAt";
+  
+  /**
+   * Field in the template corresponding to the URL of the publication to export.
+   */
+  static final String FIELD_URL = "URL";
+  
+  /**
+   * Field in the template corresponding to the version of the publication to export.
+   */
+  static final String FIELD_VERSION = "Version";
+  
+  /**
+   * The field in the template corresponding to the description of the publication to export.
+   */
+  static final String FIELD_DESCRIPTION = "Subject";
   
   /**
    * The section in the template relative to the attachments of the publication.
@@ -48,6 +68,11 @@ public interface DocumentTemplateParts {
    * The section in the template relative to the links to others publications.
    */
   static final String SECTION_SEEALSO = "SeeAlso";
+  
+  /**
+   * The section in the template relative to the classification of the publication.
+   */
+  static final String SECTION_CLASSIFICATION = "Classification";
   
   /**
    * The section in the template that renders the publication's comments.
@@ -68,4 +93,10 @@ public interface DocumentTemplateParts {
    * The area in wich all the attachments of the publication have to be rendered.
    */
   static final String LIST_OF_ATTACHMENTS = "PubliAttachments";
+  
+  /*
+   * The area in wich all the publications to which the publication is linked are rendered.
+   */
+  static final String LIST_OF_LINKS = "PubliSeeAlso";
+  
 }

@@ -22,6 +22,7 @@
  */
 package com.silverpeas.kmelia.export;
 
+import java.io.IOException;
 import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.converter.ODTConverter;
 import com.silverpeas.converter.DocumentFormatConverterFactory;
@@ -31,8 +32,13 @@ import com.silverpeas.export.ExportException;
 import com.silverpeas.export.Exporter;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
+import com.stratelia.webactiv.kmelia.model.TopicDetail;
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
+import org.apache.commons.io.FileUtils;
 import static com.silverpeas.kmelia.export.ODTDocumentBuilder.*;
 import static com.silverpeas.converter.DocumentFormat.*;
 
@@ -48,11 +54,6 @@ import static com.silverpeas.converter.DocumentFormat.*;
 public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
 
   /**
-   * Expected export parameter giving the name of the document into which the publication has
-   * to be performed.
-   */
-  public static final String EXPORT_DOCUMENT_NAME = "kmelia.export.documentName";
-  /**
    * Expected export parameter giving the detail about the user that calls the export of a
    * publication.
    */
@@ -63,10 +64,18 @@ public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
    */
   public static final String EXPORT_LANGUAGE = "kmelia.export.language";
   /**
-   * The parameter giving the File object that corresponds to the document into which the
-   * publication is exported. This parameter is set in the descriptor by the export process itself.
+   * Optional export parameter giving the topic within which the export of a publication has to be
+   * performed.
    */
-  public static final String EXPORT_DOCUMENT = "kmelia.export.document";
+  public static final String EXPORT_TOPIC = "kmelia.export.topic";
+
+  /**
+   * Gets a new exporter of Kmelia publications.
+   * @return a KmeliaPublicationExporter instance.
+   */
+  public static KmeliaPublicationExporter aKmeliaPublicationExporter() {
+    return new KmeliaPublicationExporter();
+  }
 
   /**
    * Only the first publication is taken in charge by this exporter.
@@ -79,7 +88,7 @@ public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
    */
   @Override
   public void export(ExportDescriptor descriptor, KmeliaPublication... publications) throws
-          ExportException {
+      ExportException {
     export(descriptor, Arrays.asList(publications));
   }
 
@@ -94,18 +103,40 @@ public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
    */
   @Override
   public void export(ExportDescriptor descriptor,
-          List<KmeliaPublication> publications) throws ExportException {
+      List<KmeliaPublication> publications) throws ExportException {
     if (!publications.isEmpty()) {
       KmeliaPublication publication = publications.get(0);
-      String fileName = descriptor.getParameter(EXPORT_DOCUMENT_NAME);
+      OutputStream output = descriptor.getOutputStream();
       UserDetail user = descriptor.getParameter(EXPORT_FOR_USER);
       String language = descriptor.getParameter(EXPORT_LANGUAGE);
-      DocumentFormat format   = DocumentFormat.inFormat(descriptor.getFormat());
-      ODTDocumentBuilder builder = getODTDocumentBuilder().forUser(user).inLanguage(language);
-      File odtDocument = builder.buildFrom(publication, anODTNamed(fileName));
-      ODTConverter converter = DocumentFormatConverterFactory.getFactory().getODTConverter();
-      File exportFile = converter.convert(odtDocument, inFormat(format));
-      descriptor.setParameter(EXPORT_DOCUMENT, exportFile);
+      TopicDetail topic = descriptor.getParameter(EXPORT_TOPIC);
+      DocumentFormat format = DocumentFormat.inFormat(descriptor.getFormat());
+      String documentPath = getTemporaryExportFilePathFor(publication);
+      File odtDocument = null, exportFile = null;
+      try {
+        ODTDocumentBuilder builder = anODTDocumentBuilder().forUser(user).inLanguage(language).
+            inTopic(topic);
+        odtDocument = builder.buildFrom(publication, anODTAt(documentPath));
+        ODTConverter converter = DocumentFormatConverterFactory.getFactory().getODTConverter();
+        exportFile = converter.convert(odtDocument, inFormat(format));
+        output.write(FileUtils.readFileToByteArray(exportFile));
+        output.flush();
+        output.close();
+      } catch (IOException ex) {
+        throw new ExportException(ex.getMessage(), ex);
+      } finally {
+        if (odtDocument != null && odtDocument.exists()) {
+          odtDocument.delete();
+        }
+        if (exportFile != null && exportFile.exists()) {
+          exportFile.delete();
+        }
+      }
     }
+  }
+
+  private String getTemporaryExportFilePathFor(final KmeliaPublication publication) {
+    return FileRepositoryManager.getTemporaryPath() + publication.getPk().getId() + "-"
+        + UUID.randomUUID().toString();
   }
 }

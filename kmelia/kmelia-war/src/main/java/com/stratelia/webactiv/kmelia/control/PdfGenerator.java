@@ -113,6 +113,7 @@ import javax.swing.text.html.parser.ParserDelegator;
 import org.apache.commons.io.FilenameUtils;
 import org.w3c.tidy.Tidy;
 
+@Deprecated
 public class PdfGenerator extends PdfPageEventHelper {
 
   private static final Font NORMAL_FONT = new Font(Font.HELVETICA, 10, Font.NORMAL);

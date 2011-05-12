@@ -47,20 +47,20 @@ public class DefaultExportFileNameProducer implements ExportFileNameProducer {
     // add space path to filename
     List<SpaceInst> listSpaces = getSpacePathOf(publication);
     for (SpaceInst space :
-            listSpaces) {
+        listSpaces) {
       fileName.append(space.getName(language)).append('-');
     }
     // add component name to filename
-    fileName.append(getComponentLabelOf(publication.getId().getInstanceId()));
+    fileName.append(getComponentLabelOf(publication.getPk().getInstanceId()));
 
     fileName.append('-').append(publication.getDetail().getTitle()).append('-');
-    fileName.append(publication.getId().getId());
+    fileName.append(publication.getPk().getId());
     return fileName.toString();
   }
 
   private List<SpaceInst> getSpacePathOf(final KmeliaPublication publication) {
     List<SpaceInst> spacePath;
-    PublicationPK id = publication.getId();
+    PublicationPK id = publication.getPk();
     if (isDefined(id.getSpaceId())) {
       spacePath = getOrganizationController().getSpacePath(id.getSpaceId());
     } else {

@@ -33,6 +33,7 @@ import com.stratelia.webactiv.util.publication.model.CompletePublication;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
 import com.stratelia.silverpeas.versioning.model.DocumentPK;
+import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 
 /**
  * @author sfariello
@@ -358,6 +359,27 @@ public interface KmeliaBmBusinessSkeleton {
   public Collection<UserPublication> getPublications(List<ForeignPK> links,
       String userId,
       boolean isRightsOnTopicsUsed) throws RemoteException;
+  
+  /**
+   * Gets the publications linked with the specified one and for which the specified user is
+   * authorized to access.
+   * @param publication the publication from which linked publications are get.
+   * @param userId the unique identifier of a user. It allows to check if a linked publication is
+   * accessible for the specified user.
+   * @return a list of Kmelia publications.
+   * @throws RemoteException if an error occurs while communicating with the remote business service.
+   */
+  public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication,
+      String userId) throws RemoteException;
+  
+  /**
+   * Gets all the publications linked with the specified one.
+   * @param publication the publication from which linked publications are get.
+   * @return a list of Kmelia publications.
+   * @throws RemoteException if an error occurs while communicating with the remote business service.
+   */
+  public List<KmeliaPublication> getLinkedPublications(KmeliaPublication publication)
+      throws RemoteException;
 
   public List<UserPublication> getPublicationsToValidate(String componentId)
       throws RemoteException;
