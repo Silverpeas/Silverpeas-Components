@@ -110,15 +110,19 @@ public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
       UserDetail user = descriptor.getParameter(EXPORT_FOR_USER);
       String language = descriptor.getParameter(EXPORT_LANGUAGE);
       TopicDetail topic = descriptor.getParameter(EXPORT_TOPIC);
-      DocumentFormat format = DocumentFormat.inFormat(descriptor.getFormat());
+      DocumentFormat targetFormat = DocumentFormat.inFormat(descriptor.getFormat());
       String documentPath = getTemporaryExportFilePathFor(publication);
       File odtDocument = null, exportFile = null;
       try {
         ODTDocumentBuilder builder = anODTDocumentBuilder().forUser(user).inLanguage(language).
             inTopic(topic);
         odtDocument = builder.buildFrom(publication, anODTAt(documentPath));
-        ODTConverter converter = DocumentFormatConverterFactory.getFactory().getODTConverter();
-        exportFile = converter.convert(odtDocument, inFormat(format));
+        if (targetFormat != odt) {
+          ODTConverter converter = DocumentFormatConverterFactory.getFactory().getODTConverter();
+          exportFile = converter.convert(odtDocument, inFormat(targetFormat));
+        } else {
+          exportFile = odtDocument;
+        }
         output.write(FileUtils.readFileToByteArray(exportFile));
         output.flush();
         output.close();

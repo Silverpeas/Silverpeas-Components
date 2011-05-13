@@ -166,14 +166,6 @@ function compileResult(fileName) {
     SP_openWindow(fileName, "PdfGeneration","770", "550", "toolbar=no, directories=no, menubar=no, locationbar=no ,resizable, scrollbars");
 }
 
-function generatePdf(id)
-{
- document.toRouterForm.action = "<c:url value="/generatePublicationPdf"/>";
- document.toRouterForm.PubId.value = id;
- document.toRouterForm.ComponentId.value = "<%=pubDetail.getPK().getInstanceId()%>";
- document.toRouterForm.submit();
-}
-
 function pubDeleteConfirm(id) {
 	closeWindows();
     if(window.confirm("<%=resources.getString("ConfirmDeletePub")%> ?")){
@@ -427,10 +419,6 @@ function pubDraftOut() {
 <FORM NAME="defermentForm" ACTION="<%=routerUrl%>SuspendPublication" METHOD="POST">
   	<input type="hidden" name="PubId" value="<%=id%>">
   	<input type="hidden" name="Motive" value="">
-</FORM>
-<FORM name="toRouterForm">
-	<input type="hidden" name="PubId">
-    <input type="hidden" name="ComponentId">
 </FORM>
 </BODY>
 </HTML>

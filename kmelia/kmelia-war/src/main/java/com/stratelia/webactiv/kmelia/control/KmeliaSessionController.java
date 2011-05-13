@@ -28,6 +28,7 @@ import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.comment.service.CommentServiceFactory;
+import com.silverpeas.converter.DocumentFormat;
 import com.silverpeas.delegatednews.model.DelegatedNews;
 import com.silverpeas.delegatednews.service.DelegatedNewsService;
 import com.silverpeas.delegatednews.service.ServicesFactory;
@@ -655,60 +656,42 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     return invisibleTabs;
   }
 
-  public File generatePdf(String pubID) {
+  /**
+   * Generates a document in the specified format from the specified publication.
+   * @param format the format of the document to generate.
+   * @param fromPubId the unique identifier of the publication from which the document will be generated.
+   * @return the generated document as a File instance.
+   */
+  public File generateDocument(final DocumentFormat inFormat, String fromPubId) {
     SilverTrace.info("kmelia", "KmeliaSessionControl.generatePdf", "root.MSG_ENTRY_METHOD");
-    File pdfDocument = null;
-    if (pubID != null) {
+    File document = null;
+    if (fromPubId != null) {
       try {
         KmeliaPublication publication = KmeliaPublication.aKmeliaPublicationWithPk(new PublicationPK(
-              pubID, getComponentId()));
+              fromPubId, getComponentId()));
         if (isVersionControlled()) {
           publication.versioned();
         }
         String fileName = getPublicationExportFileName(publication, getLanguage());
-        pdfDocument = new File(FileRepositoryManager.getTemporaryPath() + fileName + ".pdf");
-        FileOutputStream pdfOutput = new FileOutputStream(pdfDocument);
+        document = new File(FileRepositoryManager.getTemporaryPath() + fileName + "." +
+            inFormat.name());
+        FileOutputStream pdfOutput = new FileOutputStream(document);
         ExportDescriptor descriptor = ExportDescriptor.withOutputStream(pdfOutput).
                 withParameter(EXPORT_FOR_USER, getUserDetail()).
                 withParameter(EXPORT_LANGUAGE, getLanguage()).
                 withParameter(EXPORT_TOPIC, getSessionTopic()).
-                inFormat(pdf.name());
+                inFormat(inFormat.name());
         aKmeliaPublicationExporter().export(descriptor, publication);
       } catch (Exception ex) {
         Logger.getLogger(getClass().getSimpleName()).log(Level.SEVERE, ex.getMessage(), ex);
-        if (pdfDocument != null) {
-          pdfDocument.delete();
+        if (document != null) {
+          document.delete();
         }
         throw new KmeliaRuntimeException("KmeliaSessionController.generatePdf()",
             SilverpeasRuntimeException.ERROR, ex.getMessage(), ex);
       }
     }
-    return pdfDocument;
-//     SilverTrace.info("kmelia", "KmeliaSessionControl.generatePdf", "root.MSG_ENTRY_METHOD");
-//    if (pubID != null) {
-//      CompletePublication complete = null;
-//      try {
-//        complete = getKmeliaBm().getPublicationBm().getCompletePublication(getPublicationPK(pubID));
-//        nameFilePdf = StringUtil.toAcceptableFilename(getPublicationPdfName(pubID));
-//      } catch (Exception e) {
-//        SilverTrace.info("kmelia", "KmeliaSessionControl.generatePdf",
-//            "kmelia.MSG_RETURN_COMPLETE_LIST_OF_PUBLI", "pubId=" + pubID);
-//      }
-//      ResourceLocator resourceGeneral = new ResourceLocator("com.stratelia.webactiv.general", "");
-//      String tempDir = resourceGeneral.getString("tempPath");
-//      FileOutputStream out = null;
-//      try {
-//        out = new FileOutputStream(new File(tempDir, nameFilePdf));
-//        PdfGenerator pdfGenerator = new PdfGenerator();
-//        pdfGenerator.generate(out, complete, this);
-//      } catch (Exception e) {
-//        throw new KmeliaRuntimeException("KmeliaSessionController.setKmeliaBm()",
-//            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-//      } finally {
-//        Closeables.closeQuietly(out);
-//      }
-//    }
-//    return nameFilePdf;
+    return document;
   }
 
   /************************************************************************************************/
@@ -4329,8 +4312,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     PublicationPK pubPK = getSessionPublication().getPublication().getPublicationDetail().getPK();
     File pdf = null;
     try {
-      // get PDF
-      pdf = generatePdf(pubPK.getId());
+      // generate from the publication a document in PDF
+      pdf = generateDocument(DocumentFormat.pdf, pubPK.getId());
       String pdfWithoutExtension = FilenameUtils.removeExtension(pdf.getName());
       // create subdir to zip
       String subdir = "ExportPubli_" + pubPK.getId() + "_" + new Date().getTime();

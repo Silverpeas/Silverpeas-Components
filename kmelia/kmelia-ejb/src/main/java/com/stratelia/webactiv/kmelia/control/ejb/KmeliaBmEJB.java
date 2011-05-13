@@ -2569,15 +2569,14 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     List<ForeignPK> allLinkIds = publication.getCompleteDetail().getLinkList();
     List<KmeliaPublication> authorizedLinks = new ArrayList<KmeliaPublication>(allLinkIds.size());
     for (ForeignPK linkId : allLinkIds) {
-      if (security.isObjectAvailable(linkId.getInstanceId(), userId, linkId.getId(),
-          KmeliaSecurity.PUBLICATION_TYPE)) {
+      if (security.isAccessAuthorized(linkId.getInstanceId(), userId, linkId.getId())) {
         PublicationPK pubPk = new PublicationPK(linkId.getId(), linkId.getInstanceId());
         authorizedLinks.add(KmeliaPublication.aKmeliaPublicationWithPk(pubPk));
       }
     }
     return authorizedLinks;
   }
-  
+
   /**
    * Gets all the publications linked with the specified one.
    * @param publication the publication from which linked publications are get.
