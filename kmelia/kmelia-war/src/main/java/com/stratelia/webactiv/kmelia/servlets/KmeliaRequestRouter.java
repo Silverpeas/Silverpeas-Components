@@ -536,6 +536,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
         putXMLDisplayerIntoRequest(userPubComplete.getPublication().getPublicationDetail(), kmelia,
             request);
+        
+        // Attachments area must be displayed or not ?
+        request.setAttribute("AttachmentsEnabled", kmelia.isAttachmentsEnabled());
 
         destination = rootDestination + "clone.jsp";
       } else if (function.equals("ViewPublication")) {

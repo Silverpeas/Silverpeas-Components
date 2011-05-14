@@ -60,6 +60,7 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 	String 					checkPath 		= (String) request.getAttribute("CheckPath");
 	UserCompletePublication userPubComplete = (UserCompletePublication) request.getAttribute("Publication");
 	String					visiblePubId	= (String) request.getAttribute("VisiblePublicationId");
+	boolean 				attachmentsEnabled = ((Boolean) request.getAttribute("AttachmentsEnabled")).booleanValue();
 
 	if (action == null) {
 		action = "ViewClone";
@@ -353,46 +354,36 @@ function pubDraftOut() {
             }
           }
     	out.println("</TD>");
-
-    	/*********************************************************************************************************************/
-		/** Affichage des fichiers joints																					**/
-		/*********************************************************************************************************************/
-		boolean showTitle 				= true;
-		boolean showFileSize 			= true;
-		boolean showDownloadEstimation 	= true;
-		boolean showInfo 				= true;
-		if ("no".equals(resources.getSetting("showTitle"))) {
-			showTitle = false;
-		}
-		if ("no".equals(resources.getSetting("showFileSize"))) {
-			showFileSize = false;
-		}
-		if ("no".equals(resources.getSetting("showDownloadEstimation"))) {
-			showDownloadEstimation = false;
-		}
-		if ("no".equals(resources.getSetting("showInfo"))) {
-			showInfo = false;
-		}
-		boolean showIcon = true;
-	    if (!"bottom".equals(resources.getSetting("attachmentPosition"))) {
-			out.println("<TD width=\"25%\" valign=\"top\" align=\"center\">");
-			out.println("<A NAME=attachments></a>");
-	   	} else {
-			out.println("</TR><TR>");
-			out.println("<TD valign=\"top\" align=\"left\">");
-			out.println("<A NAME=attachments></a>");
-	    }
-		try {
-			out.flush();
-			if (kmeliaScc.isVersionControlled()) {
-				getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+visiblePubId+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()).include(request, response);
-			} else {
-				getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+id+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Profile="+profile).include(request, response);
+    	
+    	if (attachmentsEnabled) {
+	    	/*********************************************************************************************************************/
+			/** Affichage des fichiers joints																					**/
+			/*********************************************************************************************************************/
+			boolean showTitle 				= resources.getSetting("showTitle", true);
+			boolean showFileSize 			= resources.getSetting("showFileSize", true);
+			boolean showDownloadEstimation 	= resources.getSetting("showDownloadEstimation", true);
+			boolean showInfo 				= resources.getSetting("showInfo", true);
+			boolean showIcon = true;
+		    if (!"bottom".equals(resources.getSetting("attachmentPosition"))) {
+				out.println("<td width=\"25%\" valign=\"top\" align=\"center\">");
+				out.println("<a name=\"attachments\"></a>");
+		   	} else {
+				out.println("</tr><tr>");
+				out.println("<td valign=\"top\" align=\"left\">");
+				out.println("<a name=\"attachments\"></a>");
+		    }
+			try {
+				out.flush();
+				if (kmeliaScc.isVersionControlled()) {
+					getServletConfig().getServletContext().getRequestDispatcher("/versioningPeas/jsp/displayDocuments.jsp?Id="+visiblePubId+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()).include(request, response);
+				} else {
+					getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/displayAttachments.jsp?Id="+id+"&ComponentId="+componentId+"&Context=Images&AttachmentPosition="+resources.getSetting("attachmentPosition")+"&ShowIcon="+showIcon+"&ShowTitle="+showTitle+"&ShowFileSize="+showFileSize+"&ShowDownloadEstimation="+showDownloadEstimation+"&ShowInfo="+showInfo+"&UpdateOfficeMode="+kmeliaScc.getUpdateOfficeMode()+"&Profile="+profile).include(request, response);
+				}
+			} catch (Exception e) {
+				throw new KmeliaException("JSPpublicationManager.displayUserModelAndAttachmentsView()",SilverpeasException.ERROR,"root.EX_DISPLAY_ATTACHMENTS_FAILED", e);
 			}
-		} catch (Exception e) {
-			throw new KmeliaException("JSPpublicationManager.displayUserModelAndAttachmentsView()",SilverpeasException.ERROR,"root.EX_DISPLAY_ATTACHMENTS_FAILED", e);
-		}
-		out.println("</TD>");
+			out.println("</td>");
+    	}
 	    out.println("</TR>");
 		out.println("</TABLE>");
 
