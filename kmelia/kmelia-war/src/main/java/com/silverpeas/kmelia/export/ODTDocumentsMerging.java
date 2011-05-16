@@ -23,15 +23,22 @@
  */
 package com.silverpeas.kmelia.export;
 
+import com.stratelia.webactiv.util.FileRepositoryManager;
+import java.net.URI;
+import java.net.URISyntaxException;
 import org.w3c.dom.NamedNodeMap;
 import org.odftoolkit.odfdom.incubator.doc.office.OdfOfficeAutomaticStyles;
 import org.odftoolkit.odfdom.dom.element.style.StyleMasterPageElement;
 import java.util.Iterator;
+import org.odftoolkit.odfdom.dom.element.draw.DrawFrameElement;
+import org.odftoolkit.odfdom.dom.element.draw.DrawImageElement;
 import org.odftoolkit.odfdom.dom.style.OdfStyleFamily;
 import org.odftoolkit.odfdom.incubator.doc.office.OdfOfficeMasterStyles;
 import org.odftoolkit.odfdom.incubator.doc.office.OdfOfficeStyles;
 import org.odftoolkit.odfdom.incubator.doc.style.OdfStyle;
 import org.odftoolkit.simple.TextDocument;
+import org.odftoolkit.simple.draw.Frame;
+import org.odftoolkit.simple.draw.Image;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import static com.silverpeas.util.StringUtil.*;
@@ -61,7 +68,6 @@ class ODTDocumentsMerging extends TextDocument {
    * The prefix to concat with thr name of the styles to import.
    */
   protected static final String MERGE_STYLE_NAME_PREFIX = MERGE_STYLE_PREFIX + "_";
-  //private final TextDocument odtDocument;
 
   /**
    * Creates a merger for the specified ODT document.
@@ -146,7 +152,8 @@ class ODTDocumentsMerging extends TextDocument {
       StyleMasterPageElement existingMasterPage =
           templateMasterStyles.getMasterPage(styleMasterPageElement.getStyleNameAttribute());
       if (existingMasterPage == null) {
-        Node masterPageNode = getTextDocument().getStylesDom().importNode(styleMasterPageElement, true);
+        Node masterPageNode = getTextDocument().getStylesDom().importNode(styleMasterPageElement,
+            true);
         getTextDocument().getOfficeMasterStyles().appendChild(masterPageNode.cloneNode(true));
       }
     }
@@ -173,8 +180,11 @@ class ODTDocumentsMerging extends TextDocument {
   }
 
   /**
-   * Imports the text of the specified document and appends it at the specified location of this
-   * document.
+   * Imports the text content of the specified document and appends it at the specified location of
+   * this document.
+   * 
+   * During the import of the text content, the external images referenced in the text of the
+   * specified document are embedded into this document.
    * @param document the document to import.
    * @param content a node in the XML structure of this document within which the text has to be
    * imported.
@@ -182,14 +192,13 @@ class ODTDocumentsMerging extends TextDocument {
    */
   protected void importContentTextOf(final TextDocument document, final Node content) throws
       Exception {
-    Node textContent = document.getContentDom().getElementsByTagName("office:text").item(0);
-    Node importedTextContent = getTextDocument().getContentDom().importNode(textContent, true);
-    NodeList importedTextContentNodes = importedTextContent.getChildNodes();
-    for (int i = 0; i < importedTextContentNodes.getLength(); i++) {
-      Node aTextContent = importedTextContentNodes.item(i);
-      updateStylesIn(aTextContent);
-      content.appendChild(aTextContent.cloneNode(true));
-    }
+    Node textContent = document.getContentDom().getElementsByTagName(
+        OpenDocumentTextElements.ELEMENT_OFFICE_TEXT).item(0);
+    copyXMLNode(textContent, content);
+
+    NodeList imageNodes = getTextDocument().getContentDom().getElementsByTagName(
+        OpenDocumentTextElements.ELEMENT_DRAW_IMAGE);
+    embedImages(imageNodes);
   }
 
   /**
@@ -224,7 +233,7 @@ class ODTDocumentsMerging extends TextDocument {
   private void updateStylesIn(final Node node) {
     NamedNodeMap attributes = node.getAttributes();
     if (attributes != null) {
-      Node attribute = attributes.getNamedItem("text:style-name");
+      Node attribute = attributes.getNamedItem(OpenDocumentTextElements.ATTRIBUTE_STYLE_NAME);
       if (attribute != null) {
         attribute.setNodeValue(MERGE_STYLE_NAME_PREFIX + attribute.getNodeValue());
       }
@@ -238,6 +247,48 @@ class ODTDocumentsMerging extends TextDocument {
   }
 
   /**
+   * Copies the XML tree from the specified source node into the destination node of another XML
+   * tree.
+   * @param source the root node from which the XML tree should be copied.
+   * @param destination the XML node at which the source has to be copied.
+   * @throws Exception if an error occurs while copying a node to another one.
+   */
+  private void copyXMLNode(final Node source, final Node destination) throws Exception {
+    Node importedTextContent = getTextDocument().getContentDom().importNode(source, true);
+    NodeList importedTextContentNodes = importedTextContent.getChildNodes();
+    for (int i = 0; i < importedTextContentNodes.getLength(); i++) {
+      Node aTextContent = importedTextContentNodes.item(i);
+      updateStylesIn(aTextContent);
+      destination.appendChild(aTextContent.cloneNode(true));
+    }
+  }
+
+  /**
+   * Embeds external images mapped with the specified XML nodes into this document.
+   * @param imageNodes a list of XML nodes mapping each of them an image.
+   * @throws URISyntaxException if the URI defining an image is malformed.
+   */
+  private void embedImages(final NodeList imageNodes) throws URISyntaxException {
+    for (int i = 0; i < imageNodes.getLength(); i++) {
+      Node imageNode = imageNodes.item(i);
+      Node urlNode = imageNode.getAttributes().getNamedItem(
+          OpenDocumentTextElements.ATTRIBUTE_LINK_REF);
+      if (urlNode != null) {
+        URI imageURI = new URI(FileRepositoryManager.getUploadPath() + urlNode.getNodeValue());
+        Image image = Image.getInstanceof((DrawImageElement) imageNode);
+        Frame imageFrame = image.getFrame();
+        String height = imageFrame.getDrawFrameElement().getSvgHeightAttribute();
+        String width = imageFrame.getDrawFrameElement().getSvgWidthAttribute();
+        Image embeddedImage = Image.newImage(imageFrame, imageURI);
+        DrawFrameElement drawFrame = embeddedImage.getFrame().getDrawFrameElement();
+        drawFrame.setSvgWidthAttribute(width);
+        drawFrame.setSvgHeightAttribute(height);
+        image.remove();
+      }
+    }
+  }
+
+  /**
    * Constructs a new TextDocument instance decorated with merging features.
    * As the specified text document is already opened, this one will refer the same data of the
    * specified parameter.
@@ -246,14 +297,38 @@ class ODTDocumentsMerging extends TextDocument {
    */
   private ODTDocumentsMerging(final TextDocument document) {
     super(document.getPackage(), document.getDocumentPath(), TextDocument.OdfMediaType.TEXT);
-    //this.odtDocument = document;
   }
-  
+
   private TextDocument getTextDocument() {
     return this;
   }
 
   private static Node in(final Node node) {
     return node;
+  }
+
+  /**
+   * This interface defines the qualified name of all of the XML elements that made up the text of
+   * an ODT document.
+   */
+  protected static interface OpenDocumentTextElements {
+
+    /**
+     * The root XML element of the text content of an ODT document.
+     */
+    final String ELEMENT_OFFICE_TEXT = "office:text";
+    /**
+     * The XML element of an image within a text content.
+     */
+    final String ELEMENT_DRAW_IMAGE = "draw:image";
+    /**
+     * The attribute of an XML element refering an external inserted object.
+     */
+    final String ATTRIBUTE_LINK_REF = "xlink:href";
+    /**
+     * The attribute an XML element indicating the name of a style. It can be the name of a style
+     * definition as well the name of the style to apply onto a text element of a text content.
+     */
+    final String ATTRIBUTE_STYLE_NAME = "text:style-name";
   }
 }

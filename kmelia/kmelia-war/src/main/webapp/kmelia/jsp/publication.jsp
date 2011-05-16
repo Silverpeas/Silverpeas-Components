@@ -229,10 +229,10 @@
           autoOpen: false,
           modal: true,
           buttons: {
-            Cancel: function() {
+            '<%= resources.getString("GML.cancel") %>': function() {
               $( this ).dialog( "close" );
             },
-            Ok: function() {
+            '<%= resources.getString("GML.create") %>': function() {
               $( "#generationForm").submit();
               $( this ).dialog( "close" );
             }

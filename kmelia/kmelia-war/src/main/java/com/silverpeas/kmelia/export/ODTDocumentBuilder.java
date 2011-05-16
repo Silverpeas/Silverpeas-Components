@@ -23,7 +23,6 @@
  */
 package com.silverpeas.kmelia.export;
 
-import org.odftoolkit.simple.table.Column;
 import com.silverpeas.converter.HTMLConverter;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.silverpeas.form.PagesContext;
