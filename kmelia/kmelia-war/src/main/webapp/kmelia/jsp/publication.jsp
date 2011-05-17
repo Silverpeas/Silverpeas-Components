@@ -225,15 +225,16 @@
     <script type="text/javascript">
   
       $(function() {
-        $( "#document-generation" ).dialog({
+        $( "#publication-export" ).dialog({
           autoOpen: false,
           modal: true,
+          minWidth: 350,
           buttons: {
             '<%= resources.getString("GML.cancel") %>': function() {
               $( this ).dialog( "close" );
             },
-            '<%= resources.getString("GML.create") %>': function() {
-              $( "#generationForm").submit();
+            '<%= resources.getString("kmelia.export") %>': function() {
+              $( "#exportForm").submit();
               $( this ).dialog( "close" );
             }
           }
@@ -246,8 +247,8 @@
       var attachmentWindow = window;
       var favoriteWindow = window;
       
-      function generateDocument() {
-        $( '#document-generation' ).dialog('open');
+      function exportPublication() {
+        $( '#publication-export' ).dialog('open');
       }
 
       function clipboardCopy() {
@@ -381,12 +382,12 @@
           location.href="ViewPublication?SwitchLanguage="+lang;
         }
 
-        function zipPublication() {
-          document.toRouterForm.action = "<c:url value="/exportPublication"/>";
-          document.toRouterForm.PubId.value = "<%=id%>";
-          document.toRouterForm.ComponentId.value = "<%=componentId%>";
-          document.toRouterForm.submit();
-        }
+//        function zipPublication() {
+//          document.toRouterForm.action = "<c:url value="/exportPublication"/>";
+//          document.toRouterForm.PubId.value = "<%=id%>";
+//          document.toRouterForm.ComponentId.value = "<%=componentId%>";
+//          document.toRouterForm.submit();
+//        }
 
         function reloadPage() {
           location.href= "<%=routerUrl%>ViewPublication";
@@ -437,11 +438,11 @@
           operationPane.addOperation(alertSrc, resources.getString("GML.notify"),
               "javaScript:alertUsers()");
         }
-        operationPane.addOperation(exportSrc, resources.getString("kmelia.DownloadPublication"),
-            "javaScript:zipPublication()");
+        //operationPane.addOperation(exportSrc, resources.getString("kmelia.DownloadPublication"),
+        //    "javaScript:zipPublication()");
         if (!toolboxMode) {
-          operationPane.addOperation(pdfSrc, resources.getString("kmelia.GenerateDocument"),
-              "javascript:generateDocument()");
+          operationPane.addOperation(pdfSrc, resources.getString("kmelia.ExportPublication"),
+              "javascript:exportPublication()");
         }
         if (!currentUser.isAnonymous()) {
           operationPane.addOperation(favoriteAddSrc,
@@ -748,10 +749,11 @@
                                                                      "kmelia.CopyPublicationLink"))%>"/></a></span>
             <% }%>
       </span>
-      <div id="document-generation">
-        <p><%=resources.getString("kmelia.chooseFormat")%>&nsp;:</p>
-        <form id="generationForm" action="<c:url value='/generateDocument'/>">
+      <div id="publication-export">
+        <p><%=resources.getString("kmelia.chooseFormat")%>:</p>
+        <form id="exportForm" action="<c:url value='/exportPublication'/>">
           <fieldset>
+            <input type="radio" name="Format" value="zip" class="text ui-widget-content ui-corner-all">ZIP</input>
             <input type="radio" checked="checked" name="Format" value="pdf" class="text ui-widget-content ui-corner-all">PDF</input>
             <input type="radio" name="Format" value="odt" class="text ui-widget-content ui-corner-all">OpenDocument Text</input>
             <input type="radio" name="Format" value="doc" class="text ui-widget-content ui-corner-all">MS-Word</input>
