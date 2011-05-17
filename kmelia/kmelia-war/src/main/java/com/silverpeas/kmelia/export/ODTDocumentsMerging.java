@@ -23,7 +23,11 @@
  */
 package com.silverpeas.kmelia.export;
 
+import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import org.odftoolkit.odfdom.pkg.OdfPackage;
 import com.stratelia.webactiv.util.FileRepositoryManager;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.w3c.dom.NamedNodeMap;
@@ -271,10 +275,10 @@ class ODTDocumentsMerging extends TextDocument {
   private void embedImages(final NodeList imageNodes) throws URISyntaxException {
     for (int i = 0; i < imageNodes.getLength(); i++) {
       Node imageNode = imageNodes.item(i);
-      Node urlNode = imageNode.getAttributes().getNamedItem(
+      Node hrefNode = imageNode.getAttributes().getNamedItem(
           OpenDocumentTextElements.ATTRIBUTE_LINK_REF);
-      if (urlNode != null) {
-        URI imageURI = new URI(FileRepositoryManager.getUploadPath() + urlNode.getNodeValue());
+      if (hrefNode != null) {
+        URI imageURI = new URI(getAttachedImagePath(hrefNode.getNodeValue()));
         Image image = Image.getInstanceof((DrawImageElement) imageNode);
         Frame imageFrame = image.getFrame();
         String height = imageFrame.getDrawFrameElement().getSvgHeightAttribute();
@@ -286,6 +290,32 @@ class ODTDocumentsMerging extends TextDocument {
         image.remove();
       }
     }
+  }
+
+  private String getAttachedImagePath(String href) {
+    String path = "";
+    String attachmentId = null;
+    String lang = null;
+    if (href.contains("attached_file")) {
+      String[] tokens = href.split("/");
+      for (int i = 0; i < tokens.length; i++) {
+        if ("attachmentId".equals(tokens[i])) {
+          attachmentId = tokens[++i];
+        }
+        if ("lang".equals(tokens[i])) {
+          lang = tokens[++i];
+        }
+        if (attachmentId != null && lang != null) {
+          break;
+        }
+      }
+      AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
+          attachmentId));
+      path = attachment.getAttachmentPath(lang);
+    } else {
+      path = FileRepositoryManager.getUploadPath() + href;
+    }
+    return path;
   }
 
   /**
