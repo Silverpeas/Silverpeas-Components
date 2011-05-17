@@ -55,7 +55,7 @@
   String profile = (String) request.getAttribute("Profile");
   String alias = (String) request.getAttribute("IsAlias");
   String action = (String) request.getAttribute("Action");
-  UserCompletePublication userPubComplete = (UserCompletePublication) request.getAttribute(
+  KmeliaPublication kmeliaPublication = (KmeliaPublication) request.getAttribute(
       "Publication");
   String wizard = (String) request.getAttribute("Wizard");
   Integer rang = (Integer) request.getAttribute("Rang");
@@ -81,9 +81,9 @@
   SilverTrace.info("kmelia", "JSPdesign", "root.MSG_GEN_PARAM_VALUE",
       "ACTION pubManager = " + action);
 
-  CompletePublication pubComplete = userPubComplete.getPublication();
+  CompletePublication pubComplete = kmeliaPublication.getCompleteDetail();
   PublicationDetail pubDetail = pubComplete.getPublicationDetail();
-  UserDetail ownerDetail = userPubComplete.getOwner();
+  UserDetail ownerDetail = kmeliaPublication.getCreator();
   String pubName = pubDetail.getName(language);
   String id = pubDetail.getPK().getId();
 

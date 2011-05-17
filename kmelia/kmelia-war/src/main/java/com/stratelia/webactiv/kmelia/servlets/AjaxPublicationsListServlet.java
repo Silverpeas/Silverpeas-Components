@@ -23,6 +23,8 @@
  */
 package com.stratelia.webactiv.kmelia.servlets;
 
+import com.stratelia.webactiv.kmelia.model.KmeliaPublicationComparator;
+import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
@@ -65,8 +67,6 @@ import com.stratelia.webactiv.kmelia.KmeliaSecurity;
 import com.stratelia.webactiv.kmelia.control.KmeliaSessionController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
-import com.stratelia.webactiv.kmelia.model.UserPublication;
-import com.stratelia.webactiv.kmelia.model.UserPublicationComparator;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
@@ -171,7 +171,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
       boolean linksAllowed = true;
       boolean checkboxAllowed = false;
       List<String> selectedIds = new ArrayList<String>();
-      List<UserPublication> publications = null;
+      List<KmeliaPublication> publications = null;
       boolean subTopics = false;
       String role = kmeliaSC.getProfile();
       if (toLink) {
@@ -189,7 +189,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         }
         publications = currentTopic.getValidPublications(publicationPK);
         if (resources.getSetting("linkManagerSortByPubId", false)) {
-          Collections.sort(publications, new UserPublicationComparator());
+          Collections.sort(publications, new KmeliaPublicationComparator());
         }
       } else if (toPortlet) {
         sortAllowed = false;
@@ -236,17 +236,14 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         writer.write(board.printAfter());
       } else if (currentTopic != null && "0".equals(currentTopic.getNodePK().getId()) && kmeliaSC.
           getNbPublicationsOnRoot() != 0 && kmeliaSC.isTreeStructure()) {
-        List<UserPublication> publicationsToDisplay = new ArrayList<UserPublication>();
+        List<KmeliaPublication> publicationsToDisplay = new ArrayList<KmeliaPublication>();
         KmeliaSecurity kmeliaSecurity = new KmeliaSecurity();
-        Iterator<UserPublication> iterator = currentTopic.getPublicationDetails().iterator();
-        UserPublication userPub;
-        while (iterator.hasNext()) {
-          userPub = iterator.next();
-          if (!kmeliaSC.isPublicationDeleted(userPub.getPublication().getPK().getId())
-              && kmeliaSecurity.isObjectAvailable(componentId, kmeliaSC.getUserId(), userPub.
-              getPublication().getPK().
+        for (KmeliaPublication aPublication : currentTopic.getKmeliaPublications()) {
+          if (!kmeliaSC.isPublicationDeleted(aPublication.getPk().getId())
+              && kmeliaSecurity.isObjectAvailable(componentId, kmeliaSC.getUserId(), aPublication.
+              getPk().
               getId(), "Publication")) {
-            publicationsToDisplay.add(userPub);
+            publicationsToDisplay.add(aPublication);
           }
         }
         displayLastPublications(publicationsToDisplay, kmeliaSC, resources, gef, writer);
@@ -278,7 +275,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
    * @throws ThumbnailException 
    * @throws NumberFormatException 
    */
-  private void displayPublications(List<UserPublication> allPubs, boolean subtopicsExist,
+  private void displayPublications(List<KmeliaPublication> allPubs, boolean subtopicsExist,
       boolean sortAllowed, boolean linksAllowed, boolean checkboxAllowed, boolean toSearch,
       KmeliaSessionController kmeliaScc, String profile,
       GraphicElementFactory gef, String context, ResourcesWrapper resources,
@@ -314,16 +311,16 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     int nbPubs = allPubs.size();
     Board board = gef.getBoard();
     Pagination pagination = gef.getPagination(nbPubs, nbPubsPerPage, firstDisplayedItemIndex);
-    List<UserPublication> pubs = allPubs.subList(pagination.getFirstItemIndex(), pagination.
+    List<KmeliaPublication> pubs = allPubs.subList(pagination.getFirstItemIndex(), pagination.
         getLastItemIndex());
     out.write("<form name=\"publicationsForm\">");
     if (!pubs.isEmpty()) {
       out.write(board.printBefore());
       displayPublicationsListHeader(nbPubs, sortAllowed, pagination, resources, kmeliaScc, out);
       out.write("<ul>");
-      for (UserPublication userPub : pubs) {
-        PublicationDetail pub = userPub.getPublication();
-        UserDetail currentUser = userPub.getOwner();
+      for (KmeliaPublication aPub : pubs) {
+        PublicationDetail pub = aPub.getDetail();
+        UserDetail currentUser = aPub.getCreator();
         name = pub.getName(language);
         description = pub.getDescription(language);
 
@@ -472,24 +469,24 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           out.write(displayImportance(pub.getImportance(), 5, fullStarSrc, emptyStarSrc, out));
           out.write("</nobr></span>");
         }
-        
+
         //Gestion actualités décentralisées
-        if(kmeliaScc.isNewsManage() && !user.isInRole(profile)) {
-          
+        if (kmeliaScc.isNewsManage() && !user.isInRole(profile)) {
+
           DelegatedNews delegatedNews = kmeliaScc.getDelegatedNews(pub.getPK().getId());
-          if(delegatedNews != null) {
+          if (delegatedNews != null) {
             out.write("<span class=\"actualite\"><nobr>");
             if (DelegatedNews.NEWS_TO_VALIDATE.equals(delegatedNews.getStatus())) {
-              out.write(" ("+resources.getString("kmelia.DelegatedNewsToValidate")+")");
+              out.write(" (" + resources.getString("kmelia.DelegatedNewsToValidate") + ")");
             } else if (DelegatedNews.NEWS_VALID.equals(delegatedNews.getStatus())) {
-              out.write(" ("+resources.getString("kmelia.DelegatedNewsValid")+")");
+              out.write(" (" + resources.getString("kmelia.DelegatedNewsValid") + ")");
             } else if (DelegatedNews.NEWS_REFUSED.equals(delegatedNews.getStatus())) {
-              out.write(" ("+resources.getString("kmelia.DelegatedNewsRefused")+")");
+              out.write(" (" + resources.getString("kmelia.DelegatedNewsRefused") + ")");
             }
-            out.write("</nobr></span>");  
+            out.write("</nobr></span>");
           }
         }
-        
+
         out.write("</div>");
         out.write("<div class=\"line2\">");
         out.write("<font color=\"");
@@ -506,7 +503,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         }
         if (showUserNameInList) {
           out.write("<span class=\"user\">");
-          out.write(getUserName(userPub, kmeliaScc));
+          out.write(getUserName(aPub, kmeliaScc));
           out.write(" - </span>");
         }
         // check if the pub date must be display
@@ -668,18 +665,18 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write("<option>-------------------------------</option>");
     out.write("<option value=\"1\" id=\"sort1\">" + resources.getString("DateAsc") + "</option>");
     out.write("<option value=\"2\" id=\"sort2\">" + resources.getString("DateDesc") + "</option>");
-    out.write("<option value=\"5\" id=\"sort5\">" + resources.getString("CreateDateAsc") +
-        "</option>");
-    out.write("<option value=\"6\" id=\"sort6\">" + resources.getString("CreateDateDesc") +
-        "</option>");
+    out.write("<option value=\"5\" id=\"sort5\">" + resources.getString("CreateDateAsc")
+        + "</option>");
+    out.write("<option value=\"6\" id=\"sort6\">" + resources.getString("CreateDateDesc")
+        + "</option>");
     out.write("<option value=\"0\" id=\"sort0\">" + resources.getString("PubAuteur") + "</option>");
     if (ksc.isFieldImportanceVisible()) {
-      out.write("<option value=\"3\" id=\"sort3\">" + resources.getString("PubImportance") +
-          "</option>");
+      out.write("<option value=\"3\" id=\"sort3\">" + resources.getString("PubImportance")
+          + "</option>");
     }
     out.write("<option value=\"4\" id=\"sort4\">" + resources.getString("PubTitre") + "</option>");
-    out.write("<option value=\"7\" id=\"sort7\">" + resources.getString("PubDescription") +
-        "</option>");
+    out.write("<option value=\"7\" id=\"sort7\">" + resources.getString("PubDescription")
+        + "</option>");
     out.write("</select>");
   }
 
@@ -705,9 +702,9 @@ public class AjaxPublicationsListServlet extends HttpServlet {
     out.write("</div>");
   }
 
-  String getUserName(UserPublication userPub, KmeliaSessionController kmeliaScc) {
-    UserDetail currentUser = userPub.getOwner(); // contains creator
-    PublicationDetail pub = userPub.getPublication();
+  String getUserName(KmeliaPublication userPub, KmeliaSessionController kmeliaScc) {
+    UserDetail currentUser = userPub.getCreator(); // contains creator
+    PublicationDetail pub = userPub.getDetail();
     String updaterId = pub.getUpdaterId();
     UserDetail updater = null;
     if (updaterId != null && updaterId.length() > 0) {
@@ -977,16 +974,16 @@ public class AjaxPublicationsListServlet extends HttpServlet {
 
   }
 
-  private void displayLastPublications(List<UserPublication> pubs,
+  private void displayLastPublications(List<KmeliaPublication> pubs,
       KmeliaSessionController kmeliaScc, ResourcesWrapper resources, GraphicElementFactory gef,
       Writer writer) throws IOException {
 
     boolean displayLinks = URLManager.displayUniversalLinks();
     PublicationDetail pub;
-    UserPublication userPub;
+    KmeliaPublication kmeliaPub;
     String language = kmeliaScc.getCurrentLanguage();
 
-    Iterator<UserPublication> iterator = pubs.iterator();
+    Iterator<KmeliaPublication> iterator = pubs.iterator();
 
     Board board = gef.getBoard();
     writer.write(board.printBefore());
@@ -1017,8 +1014,8 @@ public class AjaxPublicationsListServlet extends HttpServlet {
           endRaw = false;
         }
         if (j <= nbCol) {
-          userPub = iterator.next();
-          pub = userPub.getPublication();
+          kmeliaPub = iterator.next();
+          pub = kmeliaPub.getDetail();
 
           if (!pub.getPK().getInstanceId().equals(kmeliaScc.getComponentId())) {
             shortcut = " (" + resources.getString("kmelia.Shortcut") + ")";
@@ -1035,7 +1032,7 @@ public class AjaxPublicationsListServlet extends HttpServlet {
               + "</a>" + shortcut + "</b><br/>");
 
           if (kmeliaScc.showUserNameInList()) {
-            writer.write(getUserName(userPub, kmeliaScc) + " - ");
+            writer.write(getUserName(kmeliaPub, kmeliaScc) + " - ");
           }
           writer.write(resources.getOutputDate(pub.getUpdateDate()));
           if (displayLinks) {

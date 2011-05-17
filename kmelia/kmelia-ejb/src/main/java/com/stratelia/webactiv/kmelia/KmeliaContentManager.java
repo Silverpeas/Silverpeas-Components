@@ -49,6 +49,7 @@ import com.stratelia.webactiv.util.publication.model.PublicationPK;
  * The kmelia implementation of ContentInterface.
  */
 public class KmeliaContentManager implements ContentInterface, java.io.Serializable {
+  private static final long serialVersionUID = 3525407153404515235L;
   /**
    * Find all the SilverContent with the given list of SilverContentId
    * @param ids list of silverContentId to retrieve
@@ -57,6 +58,7 @@ public class KmeliaContentManager implements ContentInterface, java.io.Serializa
    * @param userRoles the roles of the user
    * @return a List of SilverContent
    */
+  @Override
   public List getSilverContentById(List ids, String peasId, String userId,
       List userRoles) {
     if (getContentManager() == null)

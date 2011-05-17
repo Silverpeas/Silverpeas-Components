@@ -90,7 +90,7 @@
     ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", kmeliaScc.getLanguage());
     ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", kmeliaScc.getLanguage());
 
-    UserCompletePublication userPubComplete = null;
+    KmeliaPublication kmeliaPublication = null;
     UserDetail ownerDetail = null;
 
     CompletePublication pubComplete = null;
@@ -183,14 +183,14 @@
     if (action.equals("UpdateView") || action.equals("ValidateView")) {
 
       //Recuperation des parametres de la publication
-      userPubComplete = kmeliaScc.getUserCompletePublication(id);
+      kmeliaPublication = kmeliaScc.getPublication(id);
 
       if (kmeliaScc.getSessionClone() != null) {
-        userPubComplete = kmeliaScc.getSessionClone();
-        id = userPubComplete.getId();
+        kmeliaPublication = kmeliaScc.getSessionClone();
+        id = kmeliaPublication.getId();
       }
 
-      pubComplete = userPubComplete.getPublication();
+      pubComplete = kmeliaPublication.getCompleteDetail();
       pubDetail = pubComplete.getPublicationDetail();
       pubName = pubDetail.getName(language);
       if (pubDetail.getImage() != null) {
@@ -200,7 +200,7 @@
           vignette_url = FileServer.getUrl("useless", pubDetail.getPK().getComponentName(), "vignette", pubDetail.getImage(), pubDetail.getImageMimeType(), publicationSettings.getString("imagesSubDirectory"));
         }
       }
-      ownerDetail = userPubComplete.getOwner();
+      ownerDetail = kmeliaPublication.getCreator();
 
       if (action.equals("ValidateView")) {
         kmeliaScc.setSessionOwner(true);

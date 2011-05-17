@@ -75,8 +75,8 @@ import com.stratelia.silverpeas.versioning.util.VersioningUtil;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
+import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
-import com.stratelia.webactiv.kmelia.model.UserPublication;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.ResourceLocator;
@@ -630,8 +630,8 @@ public class PdfGenerator extends PdfPageEventHelper {
     tbl2.setWidths(new int[]{25, 30, 15, 30});
 
     String creatorName = "";
-    UserDetail ownerDetail = kmelia.getUserCompletePublication(publicationDetail.getPK().getId()).
-        getOwner();
+    UserDetail ownerDetail = kmelia.getPublication(publicationDetail.getPK().getId()).
+        getCreator();
     if (ownerDetail != null) {
       creatorName = ownerDetail.getDisplayedName();
     } else {
@@ -867,9 +867,9 @@ public class PdfGenerator extends PdfPageEventHelper {
     }
   }
 
-  private String getUserName(UserPublication userPub) {
-    UserDetail user = userPub.getOwner(); // contains creator
-    PublicationDetail pub = userPub.getPublication();
+  private String getUserName(KmeliaPublication userPub) {
+    UserDetail user = userPub.getCreator(); // contains creator
+    PublicationDetail pub = userPub.getDetail();
     String updaterId = pub.getUpdaterId();
     UserDetail updater = null;
     if (updaterId != null && updaterId.length() > 0) {
@@ -899,10 +899,10 @@ public class PdfGenerator extends PdfPageEventHelper {
       com.lowagie.text.List list = new com.lowagie.text.List(false, 20);
       list.setListSymbol(new Chunk("\u2022", new Font(Font.HELVETICA, 20,
           Font.BOLD, new Color(0, 0, 0))));
-      Collection<UserPublication> linkedPublications = kmelia.getPublications(
+      Collection<KmeliaPublication> linkedPublications = kmelia.getPublications(
           targets);
-      Iterator<UserPublication> iterator = linkedPublications.iterator();
-      UserPublication userPub;
+      Iterator<KmeliaPublication> iterator = linkedPublications.iterator();
+      KmeliaPublication userPub;
       PublicationDetail pub;
       Chunk permalinkPubli;
       String importance;
@@ -916,7 +916,7 @@ public class PdfGenerator extends PdfPageEventHelper {
       if (iterator.hasNext()) {
         while (iterator.hasNext()) {
           userPub = iterator.next();
-          pub = userPub.getPublication();
+          pub = userPub.getDetail();
 
           if (pub.getStatus() != null && pub.getStatus().equals("Valid")
               && !pub.getPK().getId().equals(publicationDetail.getPK().getId())) {

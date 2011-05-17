@@ -49,7 +49,6 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import static com.silverpeas.util.StringUtil.*;
 
 /**
  * A publication as defined in a Kmelia component.
@@ -59,10 +58,13 @@ import static com.silverpeas.util.StringUtil.*;
 public class KmeliaPublication implements Serializable {
 
   private static final long serialVersionUID = 4861635754389280165L;
+  private static final OrganizationController organisationService = new OrganizationController();
   private PublicationDetail detail;
   private CompletePublication completeDetail;
   private boolean versioned = false;
-
+  private boolean alias = false;
+  private final PublicationPK pk;
+  
   /**
    * Gets the Kmelia publication with the specified primary key identifying it uniquely.
    * If no such publication exists with the specified key, then the runtime exception
@@ -77,12 +79,51 @@ public class KmeliaPublication implements Serializable {
   }
   
   /**
+   * Gets the Kmelia publication from the specified publication detail.
+   * @param detail the detail about the publication to get.
+   * @return the Kmelia publication matching the specified publication detail.
+   */
+  public static KmeliaPublication aKmeliaPublicationFromDetail(final PublicationDetail detail) {
+    KmeliaPublication publication = new KmeliaPublication(detail.getPK());
+    publication.setPublicationDetail(detail);
+    return publication;
+  }
+  
+  /**
+   * Gets the Kmelia publication from the specified complete publication detail.
+   * @param detail the complete detail about the publication to get.
+   * @return the Kmelia publication matching the specified complete publication detail.
+   */
+  public static KmeliaPublication aKmeliaPublicationFromCompleteDetail(final CompletePublication detail) {
+    KmeliaPublication publication = new KmeliaPublication(detail.getPublicationDetail().getPK());
+    publication.setPublicationCompleteDetail(detail);
+    return publication;
+  }
+  
+  /**
    * Sets this publication as versionned.
    * @return itself.
    */
   public KmeliaPublication versioned() {
     this.versioned = true;
     return this;
+  }
+  
+  /**
+   * Sets this Kmelia publication as an alias one.
+   * @return itself.
+   */
+  public KmeliaPublication asAlias() {
+    this.alias = true;
+    return this;
+  } 
+  
+  /**
+   * Is this publication an alias of an existing Kmelia publication?
+   * @return true if this publication is an alias, false otherwise.
+   */
+  public boolean isAlias() {
+    return this.alias;
   }
   
   /**
@@ -98,7 +139,15 @@ public class KmeliaPublication implements Serializable {
    * @return the publication primary key.
    */
   public PublicationPK getPk() {
-    return id;
+    return pk;
+  }
+  
+  /**
+   * Gets the unique identifier of this publication.
+   * @return the unique identifier of this publication.
+   */
+  public String getId() {
+    return pk.getId();
   }
   
   /**
@@ -120,7 +169,7 @@ public class KmeliaPublication implements Serializable {
   public PublicationDetail getDetail() {
     if (detail == null) {
       try {
-        detail = getKmeliaService().getPublicationDetail(id);
+        setPublicationDetail(getKmeliaService().getPublicationDetail(pk));
       } catch (RemoteException ex) {
         throw new KmeliaRuntimeException(getClass().getSimpleName() + ".getDetail()",
                 SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", ex);
@@ -136,7 +185,7 @@ public class KmeliaPublication implements Serializable {
   public CompletePublication getCompleteDetail() {
     if (completeDetail == null) {
       try {
-        completeDetail = getKmeliaService().getCompletePublication(id);
+        setPublicationCompleteDetail(getKmeliaService().getCompletePublication(pk));
       } catch (RemoteException ex) {
         throw new KmeliaRuntimeException(getClass().getSimpleName() + ".getCompleteDetail()",
                 SilverpeasRuntimeException.ERROR, "kmelia.EX_IMPOSSIBLE_DOBTENIR_LA_PUBLICATION", ex);
@@ -177,7 +226,7 @@ public class KmeliaPublication implements Serializable {
    * @return an unmodifiable list with the comments on this publication.
    */
   public List<Comment> getComments() {
-    return Collections.unmodifiableList(getCommentService().getAllCommentsOnPublication(id));
+    return Collections.unmodifiableList(getCommentService().getAllCommentsOnPublication(pk));
   }
 
   /**
@@ -192,7 +241,7 @@ public class KmeliaPublication implements Serializable {
     }
     try {
       return Collections.unmodifiableList(new ArrayList<AttachmentDetail>(getKmeliaService().
-              getAttachments(id)));
+              getAttachments(pk)));
     } catch (RemoteException ex) {
       throw new KmeliaRuntimeException(getClass().getSimpleName() + ".getAttachments()",
               SilverpeasRuntimeException.ERROR,
@@ -211,7 +260,7 @@ public class KmeliaPublication implements Serializable {
       throw new UnsupportedOperationException();
     }
     try {
-      return Collections.unmodifiableList(getVersioningService().getDocuments(new ForeignPK(id)));
+      return Collections.unmodifiableList(getVersioningService().getDocuments(new ForeignPK(pk)));
     } catch (RemoteException ex) {
       throw new KmeliaRuntimeException(getClass().getSimpleName() + ".getVersionedAttachments()",
               SilverpeasRuntimeException.ERROR,
@@ -225,8 +274,8 @@ public class KmeliaPublication implements Serializable {
    */
   public List<ClassifyPosition> getPDCPositions() {
     try {
-      int silverObjectId = getKmeliaService().getSilverObjectId(id);
-      return getKmeliaService().getPdcBm().getPositions(silverObjectId, id.getInstanceId());
+      int silverObjectId = getKmeliaService().getSilverObjectId(pk);
+      return getKmeliaService().getPdcBm().getPositions(silverObjectId, pk.getInstanceId());
     } catch (RemoteException ex) {
       throw new KmeliaRuntimeException(getClass().getSimpleName() + ".getPDCPositions()",
               SilverpeasRuntimeException.ERROR,
@@ -243,7 +292,7 @@ public class KmeliaPublication implements Serializable {
       return false;
     }
     final KmeliaPublication other = (KmeliaPublication) obj;
-    if (this.id != other.id && (this.id == null || !this.id.equals(other.id))) {
+    if (this.pk != other.pk && (this.pk == null || !this.pk.equals(other.pk))) {
       return false;
     }
     return true;
@@ -252,14 +301,21 @@ public class KmeliaPublication implements Serializable {
   @Override
   public int hashCode() {
     int hash = 7;
-    hash = 67 * hash + (this.id != null ? this.id.hashCode() : 0);
+    hash = 67 * hash + (this.pk != null ? this.pk.hashCode() : 0);
     return hash;
   }
-  private static final OrganizationController organisationService = new OrganizationController();
-  private final PublicationPK id;
 
   private KmeliaPublication(PublicationPK id) {
-    this.id = id;
+    this.pk = id;
+  }
+  
+  private void setPublicationDetail(final PublicationDetail detail) {
+    this.detail = detail;
+  }
+  
+  private void setPublicationCompleteDetail(final CompletePublication detail) {
+    setPublicationDetail(detail.getPublicationDetail());
+    this.completeDetail = detail;
   }
 
   private KmeliaBm getKmeliaService() {
@@ -288,4 +344,5 @@ public class KmeliaPublication implements Serializable {
   private OrganizationController getOrganizationService() {
     return organisationService;
   }
+
 }

@@ -27,13 +27,13 @@ package com.stratelia.webactiv.kmelia.model;
 import java.util.Comparator;
 
 /**
- * @author ehugonnet
+ * A comparator of two Kmelia publications.
  */
-public class UserPublicationComparator implements Comparator<UserPublication> {
+public class KmeliaPublicationComparator implements Comparator<KmeliaPublication> {
 
   @Override
-  public int compare(UserPublication obj1, UserPublication obj2) {
-    return Integer.parseInt(obj1.getPublication().getId())
-        - Integer.parseInt(obj2.getPublication().getId());
+  public int compare(KmeliaPublication obj1, KmeliaPublication obj2) {
+    return Integer.parseInt(obj1.getDetail().getId())
+        - Integer.parseInt(obj2.getDetail().getId());
   }
 }

@@ -58,16 +58,16 @@ void displayViewWysiwyg(String id, String spaceId, String componentId, HttpServl
 	String 					profile 		= (String) request.getAttribute("Profile");
 	String 					action 			= (String) request.getAttribute("Action");
 	String 					checkPath 		= (String) request.getAttribute("CheckPath");
-	UserCompletePublication userPubComplete = (UserCompletePublication) request.getAttribute("Publication");
+	KmeliaPublication kmeliaPublication = (KmeliaPublication) request.getAttribute("Publication");
 	String					visiblePubId	= (String) request.getAttribute("VisiblePublicationId");
 
 	if (action == null) {
 		action = "ViewClone";
 	}
 
-	CompletePublication 		pubComplete 	= userPubComplete.getPublication();
+	CompletePublication 		pubComplete 	= kmeliaPublication.getCompleteDetail();
 	PublicationDetail 			pubDetail 		= pubComplete.getPublicationDetail();
-	UserDetail 					ownerDetail 	= userPubComplete.getOwner();
+	UserDetail 					ownerDetail 	= kmeliaPublication.getCreator();
 	String						pubName			= pubDetail.getName();
 	String 						id 				= pubDetail.getPK().getId();
 

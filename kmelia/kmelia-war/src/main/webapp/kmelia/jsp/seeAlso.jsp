@@ -104,9 +104,9 @@ TopicDetail currentTopic = null;
 
 String linkedPathString = kmeliaScc.getSessionPath();
 
-UserCompletePublication userPubComplete = kmeliaScc.getSessionPublication();
-CompletePublication 	pubComplete 	= userPubComplete.getPublication();
-UserDetail 				ownerDetail 	= userPubComplete.getOwner();
+KmeliaPublication kmeliaPublication = kmeliaScc.getSessionPublication();
+CompletePublication 	pubComplete 	= kmeliaPublication.getCompleteDetail();
+UserDetail 				ownerDetail 	= kmeliaPublication.getCreator();
 String					id				= pubComplete.getPublicationDetail().getPK().getId();
 String 					pubName 		= pubComplete.getPublicationDetail().getName(currentLang);
 String					instanceId		= pubComplete.getPublicationDetail().getPK().getInstanceId();
@@ -213,11 +213,11 @@ function closeWindows() {
         } else if (action.equals("SameTopicView")) {
             displayLinkViewSelection(3, kmeliaScc, out);
             currentTopic = kmeliaScc.getSessionTopic();
-            displaySameSubjectPublications(kmeliaScc.getSessionTopic().getPublicationDetails(), resources.getString("PubDeMemeTheme"), kmeliaScc, id, false, resources, out);
+            displaySameSubjectPublications(kmeliaScc.getSessionTopic().getKmeliaPublications(), resources.getString("PubDeMemeTheme"), kmeliaScc, id, false, resources, out);
         } else if (action.equals("SameSubjectView")) {
             displayLinkViewSelection(2, kmeliaScc, out);
             
-            String keywords = kmeliaScc.getSessionPublication().getPublication().getPublicationDetail().getKeywords();
+            String keywords = kmeliaScc.getSessionPublication().getDetail().getKeywords();
             
             SearchEngineBm searchEngine = kmeliaScc.getSearchEngine();
             String queryStr = pubName+" "+keywords;
