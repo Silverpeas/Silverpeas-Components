@@ -40,7 +40,7 @@
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
   </suite>
-  <visible>true</visible>
+  <visible>false</visible>
   <portlet>true</portlet>
   <instanceClassName>com.silverpeas.delegatednews.DelegatedNewsInstanciator</instanceClassName>
   <profiles>

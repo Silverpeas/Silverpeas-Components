@@ -44,7 +44,7 @@
   </description>
   <suite>
     <message lang="fr">03 Gestion de la connaissance</message>
-    <message lang="en">03 Knowledge management</message>
+    <message lang="en">03 Knowledge Management</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>

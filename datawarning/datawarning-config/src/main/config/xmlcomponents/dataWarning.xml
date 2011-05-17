@@ -37,10 +37,10 @@
     <message lang="en">Warn when the data are beyond a specified level.</message>
   </description>
   <suite>
-    <message lang="fr">80 Nouveau composant</message>
-    <message lang="en">80 New components</message>
+    <message lang="fr">06 Connecteurs</message>
+    <message lang="en">06 Connectors</message>
   </suite>
-  <visible>false</visible>
+  <visible>true</visible>
   <portlet>false</portlet>
   <instanceClassName>com.silverpeas.dataWarning.DataWarningInstanciator</instanceClassName>
   <profiles>

@@ -271,6 +271,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
                 security.isAccessAuthorized(kmelia.getComponentId(), kmelia.getUserId(), id,
                 "Publication");
             if (accessAuthorized) {
+              processPath(kmelia, id);
               if (type.equals("Attachment")) {
                 String attachmentId = request.getParameter("AttachmentId");
                 request.setAttribute("AttachmentId", attachmentId);
@@ -283,8 +284,7 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
                 if (kmaxMode) {
                   request.setAttribute("FileAlreadyOpened", fileAlreadyOpened);
                   destination = getDestination("ViewPublication", kmelia, request);
-                } else if (toolboxMode) {
-                  processPath(kmelia, id);
+                } else if (toolboxMode) {                  
                   // we have to find which page contains the right publication
                   List<UserPublication> publications =
                       new ArrayList<UserPublication>(
@@ -307,7 +307,6 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
                   destination = getDestination("GoToCurrentTopic", kmelia, request);
                 } else {
                   request.setAttribute("FileAlreadyOpened", fileAlreadyOpened);
-                  processPath(kmelia, id);
                   destination = getDestination("ViewPublication", kmelia, request);
                 }
               }
@@ -536,6 +535,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
         putXMLDisplayerIntoRequest(userPubComplete.getPublication().getPublicationDetail(), kmelia,
             request);
+        
+        // Attachments area must be displayed or not ?
+        request.setAttribute("AttachmentsEnabled", kmelia.isAttachmentsEnabled());
 
         destination = rootDestination + "clone.jsp";
       } else if (function.equals("ViewPublication")) {
@@ -2150,18 +2152,20 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
   private void processPath(KmeliaSessionController kmeliaSC, String id)
       throws RemoteException {
-    TopicDetail currentTopic = null;
-    if (!StringUtil.isDefined(id)) {
-      currentTopic = kmeliaSC.getSessionTopic();
-    } else {
-      currentTopic = kmeliaSC.getPublicationTopic(id); // Calcul du chemin de la
-    } // publication
+    if (!kmeliaSC.isKmaxMode) {
+      TopicDetail currentTopic = null;
+      if (!StringUtil.isDefined(id)) {
+        currentTopic = kmeliaSC.getSessionTopic();
+      } else {
+        currentTopic = kmeliaSC.getPublicationTopic(id); // Calcul du chemin de la
+      } // publication
 
-    Collection<NodeDetail> pathColl = currentTopic.getPath();
-    String linkedPathString = kmeliaSC.displayPath(pathColl, true, 3);
-    String pathString = kmeliaSC.displayPath(pathColl, false, 3);
-    kmeliaSC.setSessionPath(linkedPathString);
-    kmeliaSC.setSessionPathString(pathString);
+      Collection<NodeDetail> pathColl = currentTopic.getPath();
+      String linkedPathString = kmeliaSC.displayPath(pathColl, true, 3);
+      String pathString = kmeliaSC.displayPath(pathColl, false, 3);
+      kmeliaSC.setSessionPath(linkedPathString);
+      kmeliaSC.setSessionPathString(pathString);
+    }
   }
 
   private void putXMLDisplayerIntoRequest(PublicationDetail pubDetail,
