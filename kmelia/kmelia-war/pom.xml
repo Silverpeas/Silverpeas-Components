@@ -148,7 +148,6 @@
     <dependency>
       <groupId>org.odftoolkit</groupId>
       <artifactId>simple-odf</artifactId>
-      <version>0.5.5</version>
     </dependency>
   </dependencies>
 
