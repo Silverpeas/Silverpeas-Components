@@ -28,7 +28,7 @@
 <dataset>
   <st_domain id="0" name="domainSilverpeas" description="default domain for Silverpeas"
     propfilename="com.stratelia.silverpeas.domains.domainSP"
-    classname="com.stratelia.silverpeas.domains.silverpeasdriver.SilverpeasDriver" authenticationserver="autDomainSP"
+    classname="com.silverpeas.domains.silverpeasdriver.SilverpeasDomainDriver" authenticationserver="autDomainSP"
     thetimestamp="0" silverpeasserverurl="http://localhost:8000" />
 
   <st_domain id="-1" name="internal" description="Do not remove - Used by Silverpeas engine" propfilename="-"
@@ -90,6 +90,7 @@
   <st_notifdefaultaddress id="3" userid="9" notifaddressid="-12" />
   <st_notifdefaultaddress id="4" userid="10" notifaddressid="-12" />
 
+<<<<<<< HEAD
   <personalization id="11" languages="en," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1"
      />
   <personalization id="7" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1"
@@ -102,6 +103,14 @@
      />
   <personalization id="0" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1"
      />
+=======
+  <personalization id="11" languages="en," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1" />
+  <personalization id="7" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1" />
+  <personalization id="8" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1" />
+  <personalization id="9" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1" />
+  <personalization id="10" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1" />
+  <personalization id="0" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1" />
+>>>>>>> 4103b04... Cleaning the tests to use the new JPA domain driver, removing the old SilverpeasDriver and adding the possibility to run DAO old style tests with JUnit4
 
 
   <st_userrole id="58" instanceid="45" name="Gestionnaire" rolename="admin" isinherited="0" />
