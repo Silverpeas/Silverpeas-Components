@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<web-app>
+  <display-name>Crm War</display-name>
+  <description>no description</description>
+  <servlet>
+    <servlet-name>CrmRequestRouter</servlet-name>
+    <display-name>CrmRequestRouter</display-name>
+    <description>no description</description>
+    <servlet-class>com.silverpeas.crm.servlets.CrmRequestRouter</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CrmRequestRouter</servlet-name>
+    <url-pattern>/Rcrm/*</url-pattern>
+  </servlet-mapping>
+</web-app>
