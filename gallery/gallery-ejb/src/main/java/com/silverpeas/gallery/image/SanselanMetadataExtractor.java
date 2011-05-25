@@ -23,12 +23,6 @@
  */
 package com.silverpeas.gallery.image;
 
-import com.drew.metadata.exif.ExifDirectory;
-import com.silverpeas.gallery.model.MetaData;
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -38,7 +32,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.print.DocFlavor.READER;
+import java.util.Properties;
+
 import org.apache.sanselan.ImageReadException;
 import org.apache.sanselan.Sanselan;
 import org.apache.sanselan.common.IImageMetadata;
@@ -50,12 +45,30 @@ import org.apache.sanselan.formats.tiff.constants.TagInfo;
 import org.apache.sanselan.formats.tiff.constants.TiffConstants;
 import org.apache.sanselan.formats.tiff.constants.TiffFieldTypeConstants;
 
+import com.drew.metadata.exif.ExifDirectory;
+import com.silverpeas.gallery.model.MetaData;
+import com.silverpeas.util.ConfigurationClassLoader;
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.ResourceLocator;
+
 /**
- *
  * @author ehugonnet
  */
 public class SanselanMetadataExtractor implements ImageMetadataExtractor {
 
+  static final Properties defaultSettings = new Properties();
+  static final ConfigurationClassLoader loader = new ConfigurationClassLoader(
+      SanselanMetadataExtractor.class.getClassLoader());
+  static {
+    try {
+      defaultSettings.load(loader
+          .getResourceAsStream("/com/silverpeas/gallery/settings/metadataSettings.properties"));
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
   public static final int TAG_RECORD_VERSION = 0x0200;
   public static final int TAG_CAPTION = 0x0278;
   public static final int TAG_WRITER = 0x027a;
@@ -80,35 +93,40 @@ public class SanselanMetadataExtractor implements ImageMetadataExtractor {
   public static final int TAG_RELEASE_TIME = 0x0200 | 35;
   public static final int TAG_TIME_CREATED = 0x0200 | 60;
   public static final int TAG_ORIGINATING_PROGRAM = 0x0200 | 65;
-  private ResourceLocator settings;
+  private Properties settings = new Properties(defaultSettings);
   private Map<String, ResourceLocator> metaDataBundles;
   private List<ExifProperty> imageProperties;
   private List<IptcProperty> imageIptcProperties;
 
-  public SanselanMetadataExtractor() {
-    this.settings = new ResourceLocator("com.silverpeas.gallery.settings.metadataSettings",
-        I18NHelper.defaultLanguage);
+  public SanselanMetadataExtractor(String instanceId) {
+    try {
+      this.settings.load(loader
+          .getResourceAsStream("/com/silverpeas/gallery/settings/metadataSettings_" + instanceId +
+              ".properties"));
+    } catch (Exception e) {
+      this.settings = defaultSettings;
+    }
+
     this.metaDataBundles = new HashMap<String, ResourceLocator>(I18NHelper.allLanguages.size());
     for (String lang : I18NHelper.allLanguages.keySet()) {
       metaDataBundles.put(lang, new ResourceLocator(
           "com.silverpeas.gallery.multilang.metadataBundle",
           lang));
     }
-    this.imageProperties = defineImageProperties();
-    this.imageIptcProperties = defineImageIptcProperties();
+    String display = settings.getProperty("display");
+
+    this.imageProperties = defineImageProperties(COMMA_SPLITTER.split(display));
+    this.imageIptcProperties = defineImageIptcProperties(COMMA_SPLITTER.split(display));
 
   }
 
   @Override
-  public final List<ExifProperty> defineImageProperties() {
+  public final List<ExifProperty> defineImageProperties(Iterable<String> propertyNames) {
     List<ExifProperty> properties = new ArrayList<ExifProperty>();
-    int indice = 1;
-    boolean hasMore = true;
-    while (hasMore) {
-      String property = settings.getString("METADATA_" + indice + "_TAG");
-      String labelKey = settings.getString("METADATA_" + indice + "_LABEL");
-      hasMore = StringUtil.isInteger(property);
-      if (hasMore) {
+    for (String value : propertyNames) {
+      if (value.startsWith("METADATA_")) {
+        String property = settings.getProperty(value + "_TAG");
+        String labelKey = settings.getProperty(value + "_LABEL");
         ExifProperty exifProperty = new ExifProperty(Integer.valueOf(property));
         for (Map.Entry<String, ResourceLocator> labels : metaDataBundles.entrySet()) {
           String label = labels.getValue().getString(labelKey);
@@ -116,22 +134,18 @@ public class SanselanMetadataExtractor implements ImageMetadataExtractor {
         }
         properties.add(exifProperty);
       }
-      indice++;
     }
     return properties;
   }
 
   @Override
-  public final List<IptcProperty> defineImageIptcProperties() {
+  public final List<IptcProperty> defineImageIptcProperties(Iterable<String> propertyNames) {
     List<IptcProperty> properties = new ArrayList<IptcProperty>();
-    int indice = 1 + imageProperties.size();
-    boolean hasMore = true;
-    while (hasMore) {
-      String property = settings.getString("IPTC_" + indice + "_TAG");
-      String labelKey = settings.getString("IPTC_" + indice + "_LABEL");
-      boolean isDate = settings.getBoolean("IPTC_" + indice + "_DATE", false);
-      hasMore = StringUtil.isInteger(property);
-      if (hasMore) {
+    for (String value : propertyNames) {
+      if (value.startsWith("IPTC_")) {
+        String property = settings.getProperty(value + "_TAG");
+        String labelKey = settings.getProperty(value + "_LABEL");
+        boolean isDate = StringUtil.getBooleanValue(settings.getProperty(value + "_DATE", "false"));
         IptcProperty iptcProperty = new IptcProperty(Integer.valueOf(property));
         for (Map.Entry<String, ResourceLocator> labels : metaDataBundles.entrySet()) {
           String label = labels.getValue().getString(labelKey);
@@ -140,7 +154,6 @@ public class SanselanMetadataExtractor implements ImageMetadataExtractor {
         iptcProperty.setDate(isDate);
         properties.add(iptcProperty);
       }
-      indice++;
     }
     return properties;
   }
@@ -197,7 +210,7 @@ public class SanselanMetadataExtractor implements ImageMetadataExtractor {
             metaData.setValue(value.replaceAll("\\s", " ").trim());
             SilverTrace.debug("gallery", "GallerySessionController.addMetaData()",
                 "root.MSG_GEN_ENTER_METHOD", "METADATA EXIF label = " + property.getLabel()
-                + " value = " + value);
+                    + " value = " + value);
             result.add(metaData);
           }
         }
@@ -318,7 +331,7 @@ public class SanselanMetadataExtractor implements ImageMetadataExtractor {
             SilverTrace.debug("gallery",
                 "GallerySessionController.addMetaData()",
                 "root.MSG_GEN_ENTER_METHOD", "METADATA IPTC label = " + iptcProperty.getLabel()
-                + " value = " + value);
+                    + " value = " + value);
           }
         }
       }
@@ -354,11 +367,11 @@ public class SanselanMetadataExtractor implements ImageMetadataExtractor {
   }
 
   private Date getDateValue(String value) throws ImageMetadataException {
-    String datePatterns[] = {"yyyyMMdd",
-      "yyyy:MM:dd HH:mm:ss",
-      "yyyy:MM:dd HH:mm",
-      "yyyy-MM-dd HH:mm:ss",
-      "yyyy-MM-dd HH:mm"};
+    String datePatterns[] = { "yyyyMMdd",
+        "yyyy:MM:dd HH:mm:ss",
+        "yyyy:MM:dd HH:mm",
+        "yyyy-MM-dd HH:mm:ss",
+        "yyyy-MM-dd HH:mm" };
     for (int i = 0; i < datePatterns.length; i++) {
       try {
         DateFormat parser = new java.text.SimpleDateFormat(datePatterns[i]);
