@@ -23,9 +23,40 @@
  */
 package com.silverpeas.gallery.image;
 
+import static com.drew.metadata.iptc.IptcDirectory.TAG_BY_LINE;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_BY_LINE_TITLE;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_CAPTION;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_CATEGORY;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_CITY;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_COPYRIGHT_NOTICE;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_COUNTRY_OR_PRIMARY_LOCATION;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_CREDIT;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_DATE_CREATED;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_HEADLINE;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_KEYWORDS;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_OBJECT_NAME;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_ORIGINAL_TRANSMISSION_REFERENCE;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_ORIGINATING_PROGRAM;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_PROVINCE_OR_STATE;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_RECORD_VERSION;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_RELEASE_DATE;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_RELEASE_TIME;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_SOURCE;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_SPECIAL_INSTRUCTIONS;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_SUPPLEMENTAL_CATEGORIES;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_TIME_CREATED;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_URGENCY;
+import static com.drew.metadata.iptc.IptcDirectory.TAG_WRITER;
+
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
-import com.drew.imaging.jpeg.JpegProcessingException;
 import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.MetadataException;
@@ -37,15 +68,6 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import static com.drew.metadata.iptc.IptcDirectory.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -59,29 +81,27 @@ public class DrewMetadataExtractor implements ImageMetadataExtractor {
   private List<IptcProperty> imageIptcProperties;
 
   public
-  DrewMetadataExtractor() {
-    this.settings = new ResourceLocator("com.silverpeas.gallery.settings.metadataSettings",
-        I18NHelper.defaultLanguage);
+  DrewMetadataExtractor(String instanceId) {
+    this.settings = new ResourceLocator("com.silverpeas.gallery.settings.metadataSettings_" + instanceId, "");
     this.metaDataBundles = new HashMap<String, ResourceLocator>(I18NHelper.allLanguages.size());
     for (String lang : I18NHelper.allLanguages.keySet()) {
-      metaDataBundles.put(lang, new ResourceLocator(
-          "com.silverpeas.gallery.multilang.metadataBundle",
+      metaDataBundles.put(lang, new ResourceLocator("com.silverpeas.gallery.multilang.metadataBundle",
           lang));
     }
-    this.imageProperties = defineImageProperties();
-    this.imageIptcProperties = defineImageIptcProperties();
+    String display = settings.getString("display");
+    this.imageProperties = defineImageProperties(COMMA_SPLITTER.split(display));
+    this.imageIptcProperties = defineImageIptcProperties(COMMA_SPLITTER.split(display));
 
   }
 
-  public final List<ExifProperty> defineImageProperties() {
+  @Override
+  public final List<ExifProperty> defineImageProperties(Iterable<String> propertyNames) {
     List<ExifProperty> properties = new ArrayList<ExifProperty>();
-    int indice = 1;
-    boolean hasMore = true;
-    while (hasMore) {
-      String property = settings.getString("METADATA_" + indice + "_TAG");
-      String labelKey = settings.getString("METADATA_" + indice + "_LABEL");
-      hasMore = StringUtil.isInteger(property);
-      if (hasMore) {
+
+    for (String value : propertyNames) {
+      if (value.startsWith("METADATA_")) {
+        String property = settings.getString(value + "_TAG");
+        String labelKey = settings.getString(value + "_LABEL");
         ExifProperty exifProperty = new ExifProperty(Integer.valueOf(property));
         for (Map.Entry<String, ResourceLocator> labels : metaDataBundles.entrySet()) {
           String label = labels.getValue().getString(labelKey);
@@ -89,21 +109,18 @@ public class DrewMetadataExtractor implements ImageMetadataExtractor {
         }
         properties.add(exifProperty);
       }
-      indice++;
     }
     return properties;
   }
-
-  public final List<IptcProperty> defineImageIptcProperties() {
+  
+  @Override
+  public final List<IptcProperty> defineImageIptcProperties(Iterable<String> propertyNames) {
     List<IptcProperty> properties = new ArrayList<IptcProperty>();
-    int indice = 1 + imageProperties.size();
-    boolean hasMore = true;
-    while (hasMore) {
-      String property = settings.getString("IPTC_" + indice + "_TAG");
-      String labelKey = settings.getString("IPTC_" + indice + "_LABEL");
-      boolean isDate = settings.getBoolean("IPTC_" + indice + "_DATE", false);
-      hasMore = StringUtil.isInteger(property);
-      if (hasMore) {
+    for (String value : propertyNames) {
+      if (value.startsWith("IPTC_")) {
+        String property = settings.getString(value + "_TAG");
+        String labelKey = settings.getString(value + "_LABEL");
+        boolean isDate = settings.getBoolean(value + "_DATE", false);
         IptcProperty iptcProperty = new IptcProperty(Integer.valueOf(property));
         for (Map.Entry<String, ResourceLocator> labels : metaDataBundles.entrySet()) {
           String label = labels.getValue().getString(labelKey);
@@ -112,7 +129,6 @@ public class DrewMetadataExtractor implements ImageMetadataExtractor {
         iptcProperty.setDate(isDate);
         properties.add(iptcProperty);
       }
-      indice++;
     }
     return properties;
   }

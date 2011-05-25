@@ -35,28 +35,31 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 /**
- *
  * @author ehugonnet
  */
 public class SanselanMetadataExtractorTest {
 
   ImageMetadataExtractor extractor;
-  File koala = new File(PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar + "Koala.jpg");
+  File koala =
+      new File(PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar + "Koala.jpg");
   File sunset = new File(
       PathTestUtil.TARGET_DIR + "test-classes" + File.separatorChar + "Sunset.jpg");
 
   @Before
   public void setUp() {
-    extractor = new SanselanMetadataExtractor();
+    extractor = new SanselanMetadataExtractor("gallery52");
   }
 
   @Test
   public void testLoadExtractor() {
-    List<IptcProperty> properties = extractor.defineImageIptcProperties();
+    List<IptcProperty> properties = extractor.defineImageIptcProperties(
+            AbstractMetadataExtractor.COMMA_SPLITTER
+                .split("IPTC_8,IPTC_9,IPTC_10,IPTC_11,IPTC_12,IPTC_13,IPTC_14,IPTC_15,IPTC_16,IPTC_17,IPTC_18,IPTC_19,IPTC_20,IPTC_21,IPTC_22,IPTC_23,IPTC_24,IPTC_25,IPTC_26,IPTC_27,IPTC_28,IPTC_29,IPTC_30,IPTC_31"));
     assertNotNull(properties);
     assertEquals(24, properties.size());
 
-    List<ExifProperty> exifProperties = extractor.defineImageProperties();
+    List<ExifProperty> exifProperties = extractor.defineImageProperties(AbstractMetadataExtractor.COMMA_SPLITTER
+        .split("METADATA_1,METADATA_2,METADATA_3,METADATA_4,METADATA_5,METADATA_6,METADATA_7"));
     assertNotNull(exifProperties);
     assertEquals(7, exifProperties.size());
   }
@@ -70,7 +73,6 @@ public class SanselanMetadataExtractorTest {
       metadata = extractor.extractImageIptcMetaData(sunset);
       assertNotNull(metadata);
       assertEquals(17, metadata.size());
-
 
       MetaData meta = metadata.get(0);
       assertEquals("622", meta.getProperty());
@@ -86,8 +88,6 @@ public class SanselanMetadataExtractorTest {
       assertEquals("592", meta.getProperty());
       assertEquals("Créateur", meta.getLabel());
       assertEquals("Nom du créateur : Tag_by_line", meta.getValue());
-
-
 
     } catch (Exception ex) {
       ex.printStackTrace();
@@ -139,7 +139,7 @@ public class SanselanMetadataExtractorTest {
       assertEquals("40091", meta.getProperty());
       assertEquals("(Windows) Titre", meta.getLabel());
       assertEquals("Le titre EXIF", meta.getValue());
-      
+
       meta = metadata.get(4);
       assertEquals("40095", meta.getProperty());
       assertEquals("(Windows) Sujet", meta.getLabel());
