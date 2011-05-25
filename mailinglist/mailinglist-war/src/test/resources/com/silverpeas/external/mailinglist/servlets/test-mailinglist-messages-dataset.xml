@@ -103,6 +103,7 @@
      />
   <personalization id="0" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1"
      />
+<<<<<<< HEAD
 =======
   <personalization id="11" languages="en," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1" />
   <personalization id="7" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1" />
@@ -111,6 +112,8 @@
   <personalization id="10" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1" />
   <personalization id="0" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1" />
 >>>>>>> 4103b04... Cleaning the tests to use the new JPA domain driver, removing the old SilverpeasDriver and adding the possibility to run DAO old style tests with JUnit4
+=======
+>>>>>>> 539c774... Updating dataset for 5.7 db schema
 
 
   <st_userrole id="58" instanceid="45" name="Gestionnaire" rolename="admin" isinherited="0" />
