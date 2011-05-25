@@ -26,20 +26,9 @@ package com.stratelia.webactiv.almanach.control;
 import java.util.Date;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
-import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
-import com.stratelia.webactiv.almanach.model.EventDetail;
-import com.stratelia.webactiv.almanach.model.EventPK;
-import com.stratelia.webactiv.almanach.model.Periodicity;
 import java.util.Calendar;
-import java.util.List;
-import net.fortuna.ical4j.model.DateTime;
-import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.CalScale;
-import net.fortuna.ical4j.model.property.RRule;
-import net.fortuna.ical4j.model.property.Uid;
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Matchers;
 import static org.mockito.Mockito.*;
 
 /**
@@ -129,82 +118,5 @@ public class AlmanachSessionControllerTest {
     instance.setCurrentDay(expResult.getTime());
     Date result = instance.getCurrentDay();
     Assert.assertEquals(expResult.getTimeInMillis(), result.getTime());
-  }
-
-  /**
-   * Test of listCurrentMonthEvents method, of class AlmanachSessionController.
-   * @throws Exception
-   */
-  @Test
-  public void testListCurrentMonthEvents() throws Exception {
-    MainSessionController mainController = mock(MainSessionController.class);
-    ComponentContext context = mock(ComponentContext.class);
-    when(context.getCurrentComponentId()).thenReturn("almanach121");
-
-    Calendar recurDate = Calendar.getInstance();
-    recurDate.set(Calendar.YEAR, 2010);
-    recurDate.set(Calendar.MONTH, Calendar.JUNE);
-    recurDate.set(Calendar.DAY_OF_MONTH, 30);
-    recurDate.set(Calendar.HOUR_OF_DAY, 11);
-    recurDate.set(Calendar.MINUTE, 0);
-    recurDate.set(Calendar.SECOND, 0);
-    recurDate.set(Calendar.MILLISECOND, 0);
-
-    Periodicity periodicity = new Periodicity();
-    periodicity.setFrequency(1);
-    periodicity.setUnity(Periodicity.UNIT_DAY);
-    periodicity.setUntilDatePeriod(recurDate.getTime());
-    RRule rrule = periodicity.generateRecurrenceRule();
-
-    Calendar eventDate = Calendar.getInstance();
-    eventDate.set(Calendar.YEAR, 2010);
-    eventDate.set(Calendar.MONTH, Calendar.JUNE);
-    eventDate.set(Calendar.DAY_OF_MONTH, 1);
-    eventDate.set(Calendar.HOUR_OF_DAY, 10);
-    eventDate.set(Calendar.MINUTE, 0);
-    eventDate.set(Calendar.SECOND, 0);
-    eventDate.set(Calendar.MILLISECOND, 0);
-    DateTime startDate = new DateTime(eventDate.getTimeInMillis());
-    eventDate.set(Calendar.HOUR_OF_DAY, 11);
-    DateTime endDate = new DateTime(eventDate.getTimeInMillis());
-
-    EventDetail detail = new EventDetail();
-    detail.setPK(new EventPK("10", "", "almanach121"));
-    detail.setTitle("Daily recurence June Event");
-    detail.setPriority(5);
-    detail.setStartHour("10:00");
-    detail.setEndHour("11:00");
-    AlmanachBm almanach = mock(AlmanachBm.class);
-    when(almanach.getEventDetail(Matchers.any(EventPK.class))).thenReturn(detail);
-
-    net.fortuna.ical4j.model.Calendar icalCalendar = new net.fortuna.ical4j.model.Calendar();
-    icalCalendar.getProperties().add(CalScale.GREGORIAN);
-    VEvent event = new VEvent(startDate, endDate, "Daily recurence June Event");
-    Uid uid = new Uid("10");
-    event.getProperties().add(uid);
-    event.getProperties().add(rrule);
-    icalCalendar.getComponents().add(event);
-    when(almanach.getICal4jCalendar(anyCollectionOf(EventDetail.class), anyString())).thenReturn(icalCalendar);
-
-    Calendar currentDay = Calendar.getInstance();
-    currentDay.set(Calendar.YEAR, 2010);
-    currentDay.set(Calendar.MONTH, Calendar.JUNE);
-    currentDay.set(Calendar.DAY_OF_MONTH, 15);
-    currentDay.set(Calendar.HOUR_OF_DAY, 12);
-    currentDay.set(Calendar.MINUTE, 0);
-    currentDay.set(Calendar.SECOND, 0);
-    currentDay.set(Calendar.MILLISECOND, 0);
-
-    AlmanachSessionController instance = new AlmanachSessionController(mainController, context);
-    instance.setCurrentDay(currentDay.getTime());
-    instance.setAlmanachBm(almanach);
-
-    List<EventOccurrenceDTO> events = instance.listCurrentMonthEvents();
-    Assert.assertNotNull(events);
-    Assert.assertEquals(30, events.size());
-
-    events = instance.listCurrentWeekEvents();
-    Assert.assertNotNull(events);
-    Assert.assertEquals(7, events.size());
   }
 }

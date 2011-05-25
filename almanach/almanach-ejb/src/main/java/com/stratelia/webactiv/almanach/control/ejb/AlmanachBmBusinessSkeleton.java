@@ -27,11 +27,10 @@ import java.util.Collection;
 import java.rmi.RemoteException;
 
 import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.property.ExDate;
-import net.fortuna.ical4j.model.property.RRule;
 
 import com.stratelia.webactiv.almanach.model.*;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import java.util.List;
 
 public interface AlmanachBmBusinessSkeleton {
 
@@ -43,6 +42,7 @@ public interface AlmanachBmBusinessSkeleton {
    * @param String [] of instanceIds
    * @return Collection of Events
    */
+  @Deprecated
   public Collection<EventDetail> getMonthEvents(EventPK pk, java.util.Date date,
       String[] instanceIds) throws RemoteException;
 
@@ -53,8 +53,33 @@ public interface AlmanachBmBusinessSkeleton {
    * @param date
    * @return Collection of Events
    */
+  @Deprecated
   public Collection<EventDetail> getMonthEvents(EventPK pk, java.util.Date date)
       throws RemoteException;
+
+  /**
+   * Gets the event occurrences that occur in the specified month and that are defined in the
+   * specified almanachs.
+   * @param month the month in which the events occur.
+   * @param almanachIds the identifier of the alamachs in which the events in the specified month
+   * are defined.
+   * @return a list of event occurrences.
+   * @throws RemoteException if an error occurs with the remote business service.
+   */
+  public List<EventOccurrence> getEventOccurrencesInMonth(java.util.Calendar month,
+      String... almanachIds) throws RemoteException;
+
+  /**
+   * Gets the event occurrences that occur in the specified week and that are defined in the
+   * specified almanachs.
+   * @param week the week in which the events occur.
+   * @param almanachIds the identifier of the alamachs in which the events in the specified week
+   * are defined.
+   * @return a list of event occurrences.
+   * @throws RemoteException if an error occurs with the remote business service.
+   */
+  public List<EventOccurrence> getEventOccurrencesInWeek(java.util.Calendar week,
+      String... almanachIds) throws RemoteException;
 
   /**
    * this method provide a collection of event
@@ -97,26 +122,23 @@ public interface AlmanachBmBusinessSkeleton {
 
   public void createIndex(EventDetail detail) throws RemoteException;
 
-  public Collection<EventDetail> getNextEvents(String instanceId, int nbReturned)
-      throws RemoteException;
+//  public Collection<EventDetail> getNextEvents(String instanceId, int nbReturned)
+//      throws RemoteException;
 
-  public void addPeriodicity(Periodicity periodicity) throws RemoteException;
-
-  public Periodicity getPeriodicity(String eventId) throws RemoteException;
-
-  public void removePeriodicity(Periodicity periodicity) throws RemoteException;
-
-  public void updatePeriodicity(Periodicity periodicity) throws RemoteException;
-
+//  public void addPeriodicity(Periodicity periodicity) throws RemoteException;
+//
+//  public Periodicity getPeriodicity(String eventId) throws RemoteException;
+//
+//  public void removePeriodicity(Periodicity periodicity) throws RemoteException;
+//
+//  public void updatePeriodicity(Periodicity periodicity) throws RemoteException;
   public void addPeriodicityException(PeriodicityException exception)
       throws RemoteException;
 
-  public Collection<PeriodicityException> getListPeriodicityException(String periodicityId)
-      throws RemoteException;
-
-  public void removeAllPeriodicityException(String periodicityId)
-      throws RemoteException;
-
+//  public Collection<PeriodicityException> getListPeriodicityException(String periodicityId)
+//      throws RemoteException;
+//  public void removeAllPeriodicityException(String periodicityId)
+//      throws RemoteException;
   public Calendar getICal4jCalendar(Collection<EventDetail> events, String language)
       throws RemoteException;
 
@@ -124,12 +146,11 @@ public interface AlmanachBmBusinessSkeleton {
       java.util.Calendar currentDay, String spaceId, String instanceId, boolean yearScope)
       throws RemoteException;
 
-  public RRule generateRecurrenceRule(Periodicity periodicity)
-      throws RemoteException;
-
-  public ExDate generateExceptionDate(Periodicity periodicity)
-      throws RemoteException;
-
+//  public RRule generateRecurrenceRule(Periodicity periodicity)
+//      throws RemoteException;
+//
+//  public ExDate generateExceptionDate(Periodicity periodicity)
+//      throws RemoteException;
   /**************************************************************************************/
   /* Interface - Fichiers joints */
   /**************************************************************************************/

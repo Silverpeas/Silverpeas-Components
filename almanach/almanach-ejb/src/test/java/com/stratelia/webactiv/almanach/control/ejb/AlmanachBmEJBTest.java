@@ -1,33 +1,55 @@
+/*
+ * Copyright (C) 2000 - 2011 Silverpeas
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ * 
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package com.stratelia.webactiv.almanach.control.ejb;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
+import org.junit.Before;
+import com.stratelia.webactiv.almanach.BaseAlmanachTest;
+import com.stratelia.webactiv.almanach.model.EventOccurrence;
 import com.stratelia.webactiv.almanach.model.Periodicity;
 import java.util.Calendar;
+import java.util.List;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.property.RRule;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.*;
+import static com.stratelia.webactiv.almanach.model.EventDetailBuilder.*;
+import static com.stratelia.webactiv.almanach.model.EventOccurrenceMatcher.*;
 
 /**
- *
- * @author ehugonnet
+ * Unit tests on the implementation of some almanach EJB business operations.
  */
-public class AlmanachBmEJBTest {
+public class AlmanachBmEJBTest extends BaseAlmanachTest {
+
+  private AlmanachBmEJB almanachBmEJB;
 
   public AlmanachBmEJBTest() {
   }
 
   @Before
-  public void setUp() {
-  }
-
-  @After
-  public void tearDown() {
+  public void prepareAlmanachBmEJB() {
+    almanachBmEJB = new AlmanachBmEJB();
   }
 
   /**
@@ -47,17 +69,66 @@ public class AlmanachBmEJBTest {
     calend.set(Calendar.SECOND, 0);
     calend.set(Calendar.MILLISECOND, 0);
     periodicity.setUntilDatePeriod(calend.getTime());
-    AlmanachBmEJB instance = new AlmanachBmEJB();
-    RRule result = instance.generateRecurrenceRule(periodicity);
-    Assert.assertNotNull(result);
-    Assert.assertFalse(result.isComponentProperty());
+    RRule result = almanachBmEJB.generateRecurrenceRule(periodicity);
+    assertNotNull(result);
+    assertFalse(result.isCalendarProperty());
     Recur recur = result.getRecur();
-    Assert.assertNotNull(recur);
-    Assert.assertNotNull(recur.getUntil());
+    assertNotNull(recur);
+    assertNotNull(recur.getUntil());
     calend.set(Calendar.HOUR_OF_DAY, 23);
     calend.set(Calendar.MINUTE, 59);
     calend.set(Calendar.SECOND, 59);
-    Assert.assertEquals(calend.getTimeInMillis(), recur.getUntil().getTime());
-    Assert.assertEquals(Recur.DAILY, recur.getFrequency());
+    assertEquals(calend.getTimeInMillis(), recur.getUntil().getTime());
+    assertEquals(Recur.DAILY, recur.getFrequency());
+  }
+
+  @Test
+  public void eventOccurrencesInAGivenMonthShouldBeCorrectlyObtained() throws Exception {
+    List<EventOccurrence> occurrences = almanachBmEJB.getEventOccurrencesInMonth(april2011(),
+        almanachIds);
+    assertThat(occurrences.size(), is(5));
+    assertThat(occurrences.get(0), is(anOccurrenceOfEvent(PERIODIC_EVENTS[0],
+        startingAt("2011-04-05T09:30"),
+        endingAt("2011-04-05T12:00"))));
+    assertThat(occurrences.get(1), is(anOccurrenceOfEvent(PERIODIC_EVENTS[0],
+        startingAt("2011-04-12T09:30"),
+        endingAt("2011-04-12T12:00"))));
+    assertThat(occurrences.get(2), is(anOccurrenceOfEvent(NON_PERIODIC_EVENTS[0],
+        startingAt("2011-04-13T09:30"),
+        endingAt("2011-04-13"))));
+    assertThat(occurrences.get(3), is(anOccurrenceOfEvent(NON_PERIODIC_EVENTS[1],
+        startingAt("2011-04-15"),
+        endingAt("2011-04-15"))));
+    assertThat(occurrences.get(4), is(anOccurrenceOfEvent(PERIODIC_EVENTS[1],
+        startingAt("2011-04-20"),
+        endingAt("2011-04-20"))));
+  }
+
+  @Test
+  public void eventOccurrencesInAGivenWeekShouldBeCorrectlyObtained() throws Exception {
+    List<EventOccurrence> occurrences = almanachBmEJB.getEventOccurrencesInWeek(week15In2011(),
+        almanachIds);
+    assertThat(occurrences.size(), is(3));
+    assertThat(occurrences.get(0), is(anOccurrenceOfEvent(PERIODIC_EVENTS[0],
+        startingAt("2011-04-12T09:30"),
+        endingAt("2011-04-12T12:00"))));
+    assertThat(occurrences.get(1), is(anOccurrenceOfEvent(NON_PERIODIC_EVENTS[0],
+        startingAt("2011-04-13T09:30"),
+        endingAt("2011-04-13"))));
+    assertThat(occurrences.get(2), is(anOccurrenceOfEvent(NON_PERIODIC_EVENTS[1],
+        startingAt("2011-04-15"),
+        endingAt("2011-04-15"))));
+  }
+
+  private Calendar april2011() {
+    Calendar april = Calendar.getInstance();
+    april.setTime(dateToUseInTests());
+    return april;
+  }
+
+  private Calendar week15In2011() {
+    Calendar week15 = Calendar.getInstance();
+    week15.setTime(dateToUseInTests());
+    return week15;
   }
 }

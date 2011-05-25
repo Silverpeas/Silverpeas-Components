@@ -144,7 +144,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         String id = request.getParameter("Id"); // not null
 
         // récupère l'Event et sa périodicité
-        EventDetail event = almanach.getCompleteEventDetail(id);
+        EventDetail event = almanach.getEventDetail(id);
 
         // Met en session l'événement courant
         almanach.setCurrentEvent(event);
@@ -286,7 +286,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         // création
         String dateIteration = request.getParameter("Date"); // peut etre null
         // récupère l'Event et sa périodicité
-        EventDetail event = almanach.getCompleteEventDetail(id);
+        EventDetail event = almanach.getEventDetail(id);
 
         java.util.Calendar calDateIteration = java.util.Calendar.getInstance();
         calDateIteration.setTime(DateUtil.parse(dateIteration));
@@ -314,7 +314,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         String dateFinIteration = request.getParameter("DateFinIteration"); // format
         // client
 
-        EventDetail event = almanach.getCompleteEventDetail(id);
+        EventDetail event = almanach.getEventDetail(id);
 
         String title = request.getParameter("Title");
         String description = request.getParameter("Description");
@@ -472,7 +472,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         String id = request.getParameter("Id");
 
         // récupère l'Event et sa périodicité
-        EventDetail event = almanach.getCompleteEventDetail(id);
+        EventDetail event = almanach.getEventDetail(id);
 
         java.util.Calendar calDateIteration = java.util.Calendar.getInstance();
         calDateIteration.setTime(event.getStartDate());
