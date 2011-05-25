@@ -81,6 +81,13 @@ public class AlmanachBmEJBTest extends BaseAlmanachTest {
     assertEquals(calend.getTimeInMillis(), recur.getUntil().getTime());
     assertEquals(Recur.DAILY, recur.getFrequency());
   }
+  
+  @Test
+  public void eventOccurrencesInAGivenYearShouldBeCorrectlyObtained() throws Exception {
+    List<EventOccurrence> occurrences = almanachBmEJB.getEventOccurrencesInYear(year2011(),
+        almanachIds);
+    assertThat(occurrences.size(), is(27));
+  }
 
   @Test
   public void eventOccurrencesInAGivenMonthShouldBeCorrectlyObtained() throws Exception {
@@ -118,6 +125,12 @@ public class AlmanachBmEJBTest extends BaseAlmanachTest {
     assertThat(occurrences.get(2), is(anOccurrenceOfEvent(NON_PERIODIC_EVENTS[1],
         startingAt("2011-04-15"),
         endingAt("2011-04-15"))));
+  }
+  
+  private Calendar year2011() {
+    Calendar year2011 = Calendar.getInstance();
+    year2011.setTime(dateToUseInTests());
+    return year2011;
   }
 
   private Calendar april2011() {

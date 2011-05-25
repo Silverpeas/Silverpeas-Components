@@ -52,6 +52,48 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
     generator = generatorFactory.getEventOccurrenceGenerator();
     assertThat(generator, notNullValue());
   }
+  
+  @Test
+  public void generateOccurrencesInYearWithNoEvents() {
+    List<EventDetail> events = new ArrayList<EventDetail>();
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInYear(aPeriod(), events);
+    assertThat(occurrences.isEmpty(), is(true));
+  }
+  
+  @Test
+  public void generateOccurrencesInYearWithNonPeriodicEvents() throws Exception {
+    List<EventDetail> events = new ArrayList<EventDetail>();
+    events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[0]).build());
+    events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[1]).build());
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInYear(aPeriod(), events);
+    assertThat(occurrences.size(), is(events.size()));
+    assertThat(occurrences.get(0), is(anOccurrenceOfEvent(NON_PERIODIC_EVENTS[0],
+        startingAt("2011-04-13T09:30"),
+        endingAt("2011-04-13"))));
+    assertThat(occurrences.get(1), is(anOccurrenceOfEvent(NON_PERIODIC_EVENTS[1],
+        startingAt("2011-04-15"),
+        endingAt("2011-04-15"))));
+  }
+  
+  @Test
+  public void generateOccurrencesInYearWithPeriodicEvents() throws Exception {
+    List<EventDetail> events = new ArrayList<EventDetail>();
+    events.add(anEventDetailOfId(PERIODIC_EVENTS[0]).build()); // it has 20 occurrences in the given year
+    events.add(anEventDetailOfId(PERIODIC_EVENTS[1]).build()); // it has 5 occurrences in the given year
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInYear(aPeriod(), events);
+    assertThat(occurrences.size(), is(25));
+  }
+  
+  @Test
+  public void generateOccurrencesInYearWithPeriodicAndNonPeriodicEvents() throws Exception {
+    List<EventDetail> events = new ArrayList<EventDetail>();
+    events.add(anEventDetailOfId(PERIODIC_EVENTS[0]).build()); // it has 20 occurrences in the given year
+    events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[0]).build());
+    events.add(anEventDetailOfId(PERIODIC_EVENTS[1]).build()); // it has 5 occurrences in the given year
+    events.add(anEventDetailOfId(NON_PERIODIC_EVENTS[1]).build());
+    List<EventOccurrence> occurrences = generator.generateOccurrencesInYear(aPeriod(), events);
+    assertThat(occurrences.size(), is(27));
+  }
 
   @Test
   public void generateOccurrencesInMonthWithNoEvents() {

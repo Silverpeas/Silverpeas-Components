@@ -57,7 +57,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkAlmanach.jsp" %>
 <%
-	Collection events = (Collection) request.getAttribute("Events");
+	AlmanachCalendarView almanachView = (AlmanachCalendarView) request.getAttribute("AlmanachView");
 	String function = (String) request.getAttribute("Function");
 %>
 
@@ -124,17 +124,18 @@ out.println(graphicFactory.getLookStyleSheet());
 		boolean firstBgColor = true;
 
 		while (currentMonth == calendar.get(Calendar.MONTH)) {
-			for (Iterator i = events.iterator(); i.hasNext(); ) {
-				EventDetail event = (EventDetail) i.next();
+            List<DisplayableEventOccurrence> occurrences = almanachView.getEvents();
+			for (DisplayableEventOccurrence occurrence: occurrences) {
+				EventDetail event = occurrence.getEventDetail();
 				String theDay = dateFormat.format(calendar.getTime());
-				String startDay = dateFormat.format(event.getStartDate());
+				String startDay = dateFormat.format(occurrence.getStartDate());
 				String startHour = event.getStartHour();
 				String endHour = event.getEndHour();
 				String url = m_context+"/Ralmanach/"+event.getPK().getInstanceId()+"/viewEventContent.jsp?Id="+event.getPK().getId()+"&amp;Date="+dateFormat.format(calendar.getTime())+"&amp;Function="+function;
 				if (startDay.compareTo(theDay) > 0) continue;
 				String endDay = startDay;
-				if (event.getEndDate() != null)
-					endDay = dateFormat.format(event.getEndDate());
+				if (occurrence.getEndDate() != null)
+					endDay = dateFormat.format(occurrence.getEndDate());
 				if (endDay.compareTo(theDay) < 0) continue;
 
 

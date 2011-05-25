@@ -56,13 +56,23 @@ public interface AlmanachBmBusinessSkeleton {
   @Deprecated
   public Collection<EventDetail> getMonthEvents(EventPK pk, java.util.Date date)
       throws RemoteException;
+  
+  /**
+   * Gets the event occurrences that occur in the specified year and that are defined in the
+   * specified almanachs.
+   * @param year the year in which the events occur.
+   * @param almanachIds the identifier of the alamachs in which the events are defined.
+   * @return a list of event occurrences.
+   * @throws RemoteException if an error occurs with the remote business service.
+   */
+  public List<EventOccurrence> getEventOccurrencesInYear(java.util.Calendar year,
+      String... almanachIds) throws RemoteException;
 
   /**
    * Gets the event occurrences that occur in the specified month and that are defined in the
    * specified almanachs.
    * @param month the month in which the events occur.
-   * @param almanachIds the identifier of the alamachs in which the events in the specified month
-   * are defined.
+   * @param almanachIds the identifier of the alamachs in which the events are defined.
    * @return a list of event occurrences.
    * @throws RemoteException if an error occurs with the remote business service.
    */
@@ -73,8 +83,7 @@ public interface AlmanachBmBusinessSkeleton {
    * Gets the event occurrences that occur in the specified week and that are defined in the
    * specified almanachs.
    * @param week the week in which the events occur.
-   * @param almanachIds the identifier of the alamachs in which the events in the specified week
-   * are defined.
+   * @param almanachIds the identifier of the alamachs in which the events are defined.
    * @return a list of event occurrences.
    * @throws RemoteException if an error occurs with the remote business service.
    */

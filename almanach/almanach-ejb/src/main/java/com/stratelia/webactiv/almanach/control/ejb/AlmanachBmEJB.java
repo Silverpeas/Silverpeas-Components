@@ -52,6 +52,7 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
 import java.rmi.RemoteException;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -80,6 +81,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
   private AlmanachContentManager almanachContentManager = null;
   private SilverpeasBeanDAO eventPeriodicityDAO = null;
   private SilverpeasBeanDAO periodicityExceptionDAO = null;
+  private EventDAO eventDAO = new EventDAO();
 
   /**
    * Get the events of the month
@@ -94,13 +96,14 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
       String[] instanceIds) {
     SilverTrace.info("almanach", "AlmanachBmEJB.getMonthsEvents()",
         "root.MSG_GEN_ENTER_METHOD");
-    Connection con = null;
     try {
       List<EventDetail> monthEvents = new ArrayList<EventDetail>();
-      con = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
+      
+      String[] almanachIds = Arrays.copyOf(instanceIds, instanceIds.length + 1);
+      almanachIds[instanceIds.length] = pk.getInstanceId();
 
       // getting events without periodicity
-      Collection<EventDetail> events = EventDAO.getMonthEvents(con, pk, date, instanceIds);
+      Collection<EventDetail> events = getEventDAO().findAllEventsInMonth(date, almanachIds);
       List<EventDetail> periodicEvents = new ArrayList<EventDetail>();
       for (EventDetail event : events) {
         if (event.isPeriodic()) {
@@ -125,8 +128,6 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
       throw new AlmanachRuntimeException("AlmanachBmEJB.getMonthEvents()",
           SilverpeasRuntimeException.ERROR,
           "almanach.EXE_GET_MONTH_EVENTS_FAIL", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -150,17 +151,13 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
   @Override
   public Collection<EventDetail> getAllEvents(EventPK pk) {
     SilverTrace.info("almanach", "AlmanachBmEJB.getAllEvents()", "root.MSG_GEN_ENTER_METHOD");
-    Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
-      Collection<EventDetail> events = EventDAO.getAllEvents(con, pk);
+      Collection<EventDetail> events = getEventDAO().findAllEvents(pk.getInstanceId());
       return events;
     } catch (Exception e) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.getAllEvents()",
           SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL",
           e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -174,17 +171,15 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
   public Collection<EventDetail> getAllEvents(EventPK pk, String[] instanceIds) {
     SilverTrace.info("almanach", "AlmanachBmEJB.getAllEvents()",
         "root.MSG_GEN_ENTER_METHOD");
-    Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
-      Collection<EventDetail> events = EventDAO.getAllEvents(con, pk, instanceIds);
+      String[] almanachIds = Arrays.copyOf(instanceIds, instanceIds.length + 1);
+      almanachIds[instanceIds.length] = pk.getInstanceId();
+      Collection<EventDetail> events = getEventDAO().findAllEvents(almanachIds);
       return events;
     } catch (Exception e) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.getAllEvents()",
           SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL",
           e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -197,16 +192,12 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
   public Collection<EventDetail> getEvents(Collection<EventPK> pks) {
     SilverTrace.info("almanach", "AlmanachBmEJB.getEvents()",
         "root.MSG_GEN_ENTER_METHOD");
-    Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
-      Collection<EventDetail> events = EventDAO.getEvents(con, pks);
+      Collection<EventDetail> events = getEventDAO().findAllEventsByPK(pks);
       return events;
     } catch (Exception e) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.getEvents()",
           SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_EVENTS_FAIL", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -219,17 +210,13 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
   public EventDetail getEventDetail(EventPK pk) {
     SilverTrace.info("almanach", "AlmanachBmEJB.getEventDetail()",
         "root.MSG_GEN_ENTER_METHOD");
-    Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
-      EventDetail event = EventDAO.getEventDetail(con, pk);
+      EventDetail event = getEventDAO().findEventByPK(pk);
       return event;
     } catch (Exception e) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.getEventDetail()",
           SilverpeasRuntimeException.ERROR,
           "almanach.EXE_GET_EVENT_DETAIL_FAIL", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -242,10 +229,10 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
   public String addEvent(EventDetail event) {
     SilverTrace.info("almanach", "AlmanachBmEJB.addEvent()",
         "root.MSG_GEN_ENTER_METHOD");
-    Connection con = null;
+    Connection connection = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
-      String id = EventDAO.addEvent(con, event);
+      connection = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
+      String id = getEventDAO().addEvent(connection, event);
       event.setPK(new EventPK(id, event.getPK()));
 
       // manage periodicity
@@ -257,13 +244,13 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
       }
 
       createIndex(event);
-      createSilverContent(con, event, event.getCreatorId());
+      createSilverContent(connection, event, event.getCreatorId());
       return id;
     } catch (Exception e) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.addEvent()",
           SilverpeasRuntimeException.ERROR, "almanach.EXE_ADD_EVENT_FAIL", e);
     } finally {
-      DBUtil.close(con);
+      DBUtil.close(connection);
     }
   }
 
@@ -274,10 +261,8 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
   public void updateEvent(EventDetail event) {
     SilverTrace.info("almanach", "AlmanachBmEJB.updateEvent()",
         "root.MSG_GEN_ENTER_METHOD");
-    Connection con = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
-      EventDAO.updateEvent(con, event);
+      getEventDAO().updateEvent(event);
 
       Periodicity previousPeriodicity = getPeriodicity(event.getPK().getId());
       Periodicity currentPeriodicity = event.getPeriodicity();
@@ -305,8 +290,6 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
     } catch (Exception e) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.updateEvent()",
           SilverpeasRuntimeException.ERROR, "almanach.EXE_UPDATE_EVENT_FAIL", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -317,23 +300,23 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
   public void removeEvent(EventPK pk) {
     SilverTrace.info("almanach", "AlmanachBmEJB.removeEvent()",
         "root.MSG_GEN_ENTER_METHOD");
-    Connection con = null;
+    Connection connection = null;
     try {
-      con = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
+      connection = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
       // remove periodicity and periodicity exceptions
       Periodicity periodicity = getPeriodicity(pk.getId());
       if (periodicity != null) {
         removeAllPeriodicityException(periodicity.getPK().getId());
         removePeriodicity(periodicity);
       }
-      EventDAO.removeEvent(con, pk);
+      getEventDAO().removeEvent(connection, pk);
       deleteIndex(pk);
-      deleteSilverContent(con, pk);
+      deleteSilverContent(connection, pk);
     } catch (Exception e) {
       throw new AlmanachRuntimeException("AlmanachBmEJB.removeEvent()",
           SilverpeasRuntimeException.ERROR, "almanach.EXE_REMOVE_EVENT_FAIL", e);
     } finally {
-      DBUtil.close(con);
+      DBUtil.close(connection);
     }
   }
 
@@ -415,7 +398,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 //    try {
 //      EventPK pk = new EventPK("", "", instanceId);
 //      con = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
-//      Collection<EventDetail> events = EventDAO.getNextEvents(con, pk, nbReturned);
+//      Collection<EventDetail> events = getEventDAO().getNextEvents(con, pk, nbReturned);
 //      for (EventDetail event : events) {
 //        event.setPeriodicity(getPeriodicity(event.getId()));
 //      }
@@ -959,26 +942,39 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
     SilverTrace.info("almanach", "AlmanachBmEJB.setSessionContext()",
         "root.MSG_GEN_ENTER_METHOD");
   }
+  
+  @Override
+  public List<EventOccurrence> getEventOccurrencesInYear(java.util.Calendar year,
+      String... almanachIds) throws RemoteException {
+    try {
+      Collection<EventDetail> events = getEventDAO().findAllEventsInYear(year.getTime(),
+          almanachIds);
+      EventOccurrenceGenerator occurrenceGenerator = EventOccurrenceGeneratorFactory.getFactory().
+          getEventOccurrenceGenerator();
+      return occurrenceGenerator.generateOccurrencesInYear(year,
+          new ArrayList<EventDetail>(events));
+    } catch (Exception e) {
+      throw new AlmanachRuntimeException("AlmanachBmEJB.getEventOccurrencesInYear()",
+          SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL",
+          e);
+    }
+
+  }
 
   @Override
   public List<EventOccurrence> getEventOccurrencesInMonth(java.util.Calendar month,
       String... almanachIds) throws RemoteException {
-    Connection connection = null;
     try {
-      connection = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
-      EventPK pk = new EventPK("", null, almanachIds[0]);
-      Collection<EventDetail> events = EventDAO.getMonthEvents(connection, pk, month.getTime(),
+      Collection<EventDetail> events = getEventDAO().findAllEventsInMonth(month.getTime(),
           almanachIds);
       EventOccurrenceGenerator occurrenceGenerator = EventOccurrenceGeneratorFactory.getFactory().
           getEventOccurrenceGenerator();
       return occurrenceGenerator.generateOccurrencesInMonth(month,
           new ArrayList<EventDetail>(events));
     } catch (Exception e) {
-      throw new AlmanachRuntimeException("AlmanachBmEJB.getAllEvents()",
+      throw new AlmanachRuntimeException("AlmanachBmEJB.getEventOccurrencesInMonth()",
           SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL",
           e);
-    } finally {
-      DBUtil.close(connection);
     }
 
   }
@@ -986,22 +982,21 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
   @Override
   public List<EventOccurrence> getEventOccurrencesInWeek(java.util.Calendar week,
       String... almanachIds) throws RemoteException {
-    Connection connection = null;
     try {
-      connection = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
-      EventPK pk = new EventPK("", null, almanachIds[0]);
-      Collection<EventDetail> events = EventDAO.getWeekEvents(connection, pk, week.getTime(),
+      Collection<EventDetail> events = getEventDAO().findAllEventsInWeek(week.getTime(),
           almanachIds);
       EventOccurrenceGenerator occurrenceGenerator = EventOccurrenceGeneratorFactory.getFactory().
           getEventOccurrenceGenerator();
       return occurrenceGenerator.generateOccurrencesInWeek(week,
           new ArrayList<EventDetail>(events));
     } catch (Exception e) {
-      throw new AlmanachRuntimeException("AlmanachBmEJB.getAllEvents()",
+      throw new AlmanachRuntimeException("AlmanachBmEJB.getEventOccurrencesInWeek()",
           SilverpeasRuntimeException.ERROR, "almanach.EXE_GET_ALL_EVENTS_FAIL",
           e);
-    } finally {
-      DBUtil.close(connection);
     }
+  }
+  
+  protected EventDAO getEventDAO() {
+    return this.eventDAO;
   }
 }

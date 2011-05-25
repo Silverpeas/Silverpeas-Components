@@ -27,6 +27,8 @@ import static com.stratelia.webactiv.util.DateUtil.*;
 
 /**
  * A builder of event details used in tests.
+ * The events built by this builder are thoses expected in the database.
+ * So the events built by this builder have to reflect any change performed in the test database.
  */
 public class EventDetailBuilder {
   
@@ -60,7 +62,7 @@ public class EventDetailBuilder {
       periodicity.setFrequency(1);
       periodicity.setNumWeek(1);
       periodicity.setUnity(2);
-      periodicity.setUntilDatePeriod(parseDate("2011/12/31"));
+      periodicity.setUntilDatePeriod(parseDate("2011/05/31"));
       event.setPeriodicity(periodicity);
       builder.setEventDetail(event);
     } else if ("1001".equals(id)) {
@@ -104,7 +106,7 @@ public class EventDetailBuilder {
       periodicity.setFrequency(1);
       periodicity.setNumWeek(1);
       periodicity.setUnity(2);
-      periodicity.setUntilDatePeriod(parseDate("2011/12/31"));
+      periodicity.setUntilDatePeriod(parseDate("2011/05/31"));
       event.setPeriodicity(periodicity);
       builder.setEventDetail(event);
     } else {

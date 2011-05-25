@@ -32,6 +32,15 @@ import java.util.List;
  * Generator of occurrences of one or more events in a given window in time.
  */
 public interface EventOccurrenceGenerator {
+  
+  /**
+   * Generates the occurrences of the specified events in the specified year.
+   * @param year the year in which occurrences of events occur.
+   * @param events the events for which the occurrences have to be generated.
+   * @return a list of occurrences occuring in the specified year.
+   */
+  List<EventOccurrence> generateOccurrencesInYear(final Calendar year,
+      final List<EventDetail> events);
 
   /**
    * Generates the occurrences of the specified events in the specified month.
