@@ -61,6 +61,32 @@ import static com.stratelia.webactiv.util.DateUtil.*;
  * A generator of event occurrences built on the iCal4J library.
  */
 public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator {
+  
+  @Override
+  public List<EventOccurrence> generateOccurrencesInYear(java.util.Calendar year,
+      List<EventDetail> events) {
+    java.util.Calendar firstDayYear = java.util.Calendar.getInstance();
+    firstDayYear.set(java.util.Calendar.YEAR, year.get(java.util.Calendar.YEAR));
+    firstDayYear.set(java.util.Calendar.DAY_OF_MONTH, 1);
+    firstDayYear.set(java.util.Calendar.MONTH, java.util.Calendar.JANUARY);
+    firstDayYear.set(java.util.Calendar.HOUR_OF_DAY, 0);
+    firstDayYear.set(java.util.Calendar.MINUTE, 0);
+    firstDayYear.set(java.util.Calendar.SECOND, 0);
+    firstDayYear.set(java.util.Calendar.MILLISECOND, 0);
+    java.util.Calendar lastDayYear = java.util.Calendar.getInstance();
+    lastDayYear.set(java.util.Calendar.YEAR, year.get(java.util.Calendar.YEAR));
+    lastDayYear.set(java.util.Calendar.DAY_OF_MONTH, 1);
+    lastDayYear.set(java.util.Calendar.MONTH, java.util.Calendar.JANUARY);
+    lastDayYear.set(java.util.Calendar.HOUR_OF_DAY, 0);
+    lastDayYear.set(java.util.Calendar.MINUTE, 0);
+    lastDayYear.set(java.util.Calendar.SECOND, 0);
+    lastDayYear.set(java.util.Calendar.MILLISECOND, 0);
+    lastDayYear.add(java.util.Calendar.YEAR, 1);
+    Period theYear = new Period(new DateTime(firstDayYear.getTime()),
+        new DateTime(lastDayYear.getTime()));
+
+    return generateOccurrencesOf(events, occuringIn(theYear));
+  }
 
   @Override
   public List<EventOccurrence> generateOccurrencesInMonth(java.util.Calendar month,

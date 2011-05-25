@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.almanach.servlets;
 
+import java.util.List;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.NoDataToExportException;
@@ -40,7 +41,9 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.almanach.control.AlmanachCalendarView;
 import com.stratelia.webactiv.almanach.control.AlmanachSessionController;
+import com.stratelia.webactiv.almanach.control.DisplayableEventOccurrence;
 import com.stratelia.webactiv.almanach.model.EventDetail;
+import com.stratelia.webactiv.almanach.model.EventOccurrence;
 import com.stratelia.webactiv.almanach.model.Periodicity;
 import com.stratelia.webactiv.util.DBUtil;
 import com.stratelia.webactiv.util.DateUtil;
@@ -520,14 +523,19 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         } catch (Exception e) {
           request.setAttribute("javax.servlet.jsp.jspException", e);
         }
-      } else if ("ViewYearEvents".equals(function) || "ViewMonthEvents".equals(function)) {
-        Collection<EventDetail> events = almanach.getListRecurrentEvent(true);
-        request.setAttribute("Events", events);
+      } else if ("ViewYearEvents".equals(function)) {
+        AlmanachCalendarView calendar = almanach.getYearlyAlmanachCalendarView();
+        request.setAttribute("AlmanachView", calendar);
+        request.setAttribute("Function", function);
+        destination = "/almanach/jsp/viewEvents.jsp";
+      } else if ("ViewMonthEvents".equals(function)) {
+        AlmanachCalendarView calendar = almanach.getMonthlyAlmanachCalendarView();
+        request.setAttribute("AlmanachView", calendar);
         request.setAttribute("Function", function);
         destination = "/almanach/jsp/viewEvents.jsp";
       } else if ("ViewYearEventsPOPUP".equals(function)) {
-        Collection<EventDetail> events = almanach.getListRecurrentEvent(true);
-        request.setAttribute("Events", events);
+        AlmanachCalendarView almanachView = almanach.getYearlyAlmanachCalendarView();
+        request.setAttribute("AlmanachView", almanachView);
         destination = "/almanach/jsp/viewEventsPopup.jsp";
       } else if ("exportToICal".equals(function)) {
         try {

@@ -23,6 +23,8 @@
  */
 package com.stratelia.webactiv.almanach.model;
 
+import com.stratelia.webactiv.util.JNDINames;
+import com.stratelia.webactiv.util.exception.UtilException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -44,8 +46,8 @@ public class EventDAO {
       "eventId, eventName, eventDelegatorId, eventStartDay, eventEndDay, eventStartHour, "
       + "eventEndHour, eventPriority, eventTitle, eventPlace, eventUrl, instanceId";
 
-  public static void updateEvent(Connection con, EventDetail event)
-      throws SQLException, Exception {
+  public void updateEvent(final EventDetail event) throws SQLException, Exception {
+    Connection connection = openConnection();
 
     String updateQuery = "update " + event.getPK().getTableName();
     updateQuery +=
@@ -56,7 +58,7 @@ public class EventDAO {
 
     PreparedStatement updateStmt = null;
     try {
-      updateStmt = con.prepareStatement(updateQuery);
+      updateStmt = connection.prepareStatement(updateQuery);
 
       // updateStmt.setString(1, event.getNameDescription()); //No more used
       // (replaced by wysiwyg)
@@ -80,12 +82,12 @@ public class EventDAO {
       updateStmt.executeUpdate();
     } finally {
       DBUtil.close(updateStmt);
+      closeConnection(connection);
     }
   }
 
-  public static String addEvent(Connection con, EventDetail event)
-      throws SQLException, Exception {
-
+  public String addEvent(final Connection connection, final EventDetail event) throws SQLException,
+      Exception {
     String insertQuery = "insert into " + event.getPK().getTableName();
     insertQuery += " (" + EVENT_COLUMNNAMES + ") ";
     insertQuery += " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -93,7 +95,7 @@ public class EventDAO {
 
     int id = 0;
     try {
-      insertStmt = con.prepareStatement(insertQuery);
+      insertStmt = connection.prepareStatement(insertQuery);
 
       id = DBUtil.getNextId(event.getPK().getTableName(), "eventId");
       event.getPK().setId(String.valueOf(id));
@@ -121,214 +123,206 @@ public class EventDAO {
     } catch (com.stratelia.webactiv.util.exception.UtilException ue) {
       SilverTrace.warn("almanach", "EventDAO.addEvent()",
           "almanach.EXE_ADD_EVENT_FAIL", "id : " + id, ue);
-    } finally {
-      DBUtil.close(insertStmt);
     }
 
     return String.valueOf(id);
   }
 
-  public static void removeEvent(Connection con, EventPK pk)
-      throws SQLException {
+  public void removeEvent(final Connection connection, final EventPK pk)
+      throws SQLException, Exception {
     String deleteQuery = "delete from " + pk.getTableName();
     deleteQuery += " where eventId=" + pk.getId();
     Statement deleteStmt = null;
 
     try {
-      deleteStmt = con.createStatement();
+      deleteStmt = connection.createStatement();
       deleteStmt.executeUpdate(deleteQuery);
     } finally {
       DBUtil.close(deleteStmt);
     }
   }
 
-  public static Collection<EventDetail> getMonthEvents(Connection con, EventPK pk,
-      Date date, String[] instanceIds) throws SQLException, Exception {
+  /**
+   * Find all events that can occur in the specified range and for the specified almanachs.
+   * @param startDate the start date of the range. It has to be in the format yyyy/MM/dd.
+   * @param endDate the end date of the range. It has to be in the format yyyy/MM/dd.
+   * @param almanachIds the identifiers of the almanachs.
+   * @return a collection of events that should occur in the specified range.
+   * @throws SQLException if an error occurs while executing the SQL request.
+   * @throws Exception if an error occurs during the process of this method.
+   */
+  public Collection<EventDetail> findAllEventsInRange(String startDay, String endDay,
+      String... almanachIds) throws SQLException, Exception {
+    Connection connection = openConnection();
+
     ResultSet rs = null;
     Statement selectStmt = null;
     String paramInstanceIds = "";
-    if (instanceIds != null) {
-      if (instanceIds.length > 0) {
-        paramInstanceIds = " and (instanceId='" + pk.getComponentName() + "'";
-        for (int i = 0; i < instanceIds.length; i++) {
-          paramInstanceIds += " or instanceId='" + instanceIds[i] + "'";
-        }
-      } else {
-        paramInstanceIds = " and instanceId='" + pk.getComponentName() + "'";
+    if (almanachIds != null && almanachIds.length > 0) {
+      paramInstanceIds = " and (instanceId='" + almanachIds[0] + "'";
+      for (int i = 1; i < almanachIds.length; i++) {
+        paramInstanceIds += " or instanceId='" + almanachIds[i] + "'";
       }
+      paramInstanceIds += ")";
     } else {
-      paramInstanceIds = " and (instanceId='" + pk.getComponentName() + "'";
+      throw new SQLException("Missing instance identifiers");
     }
 
-    paramInstanceIds += ")";
-
-    SilverTrace.info("almanach", "EventDAO.getMonthEvents()",
-        "paramInstanceIds=" + paramInstanceIds);
+    String selectQuery = "select distinct *"
+        + " from " + EventPK.TABLE_NAME + " left outer join " + Periodicity.getTableName()
+        + " on " + EventPK.TABLE_NAME + ".eventId = " + Periodicity.getTableName() + ".eventId"
+        + " where ((eventStartDay < '" + endDay + "' and eventEndDay >= '" + endDay + "')"
+        + " or (eventStartDay < '" + endDay + "' and eventStartDay >= '" + startDay + "')"
+        + " or (eventEndDay < '" + endDay + "' and eventEndDay >= '" + startDay + "')"
+        + " or (id is not null and eventStartDay < '" + endDay + "'"
+        + " and (untildateperiod >= '" + startDay + "' or untildateperiod is null)))"
+        + paramInstanceIds + " order by eventStartDay";
     try {
-      String month = formatDate(date);
-      month = month.substring(0, month.length() - 2);
-      String startDay = month + "01";
-      String endDay = month + "31";
-      String selectQuery = "select distinct *"
-          + " from " + pk.getTableName() + " left outer join " + Periodicity.getTableName()
-          + " on " + pk.getTableName() + ".eventId = " + Periodicity.getTableName() + ".eventId"
-          + " where ((eventStartDay < '" + startDay + "' and eventEndDay > '" + endDay + "')"
-          + " or eventStartDay like '" + month + "%'"
-          + " or eventEndDay like '" + month + "%'"
-          + " or (id is not null and eventStartDay < '" + endDay + "'"
-          + " and (untildateperiod >= '" + startDay + "' or untildateperiod is null)))"
-          + paramInstanceIds + " order by eventStartDay";
-
-      SilverTrace.info("almanach", "EventDAO.getMonthEvents()", "selectQuery="
-          + selectQuery);
-
-      selectStmt = con.createStatement();
+      selectStmt = connection.createStatement();
       rs = selectStmt.executeQuery(selectQuery);
-      List<EventDetail> list = new ArrayList<EventDetail>();
+      List<EventDetail> events = new ArrayList<EventDetail>();
       while (rs.next()) {
-        EventDetail event = getEventDetailFromResultSet(rs);
-        list.add(event);
+        EventDetail event = decodeEventDetailFromResultSet(rs);
+        events.add(event);
       }
-      return list;
+      return events;
     } finally {
       DBUtil.close(rs, selectStmt);
+      closeConnection(connection);
     }
   }
 
-  public static Collection<EventDetail> getWeekEvents(Connection con, EventPK pk,
-      Date week, String[] instanceIds) throws SQLException, Exception {
-    ResultSet rs = null;
-    Statement selectStmt = null;
-    String paramInstanceIds = "";
-    if (instanceIds != null) {
-      if (instanceIds.length > 0) {
-        paramInstanceIds = " and (instanceId='" + pk.getComponentName() + "'";
-        for (int i = 0; i < instanceIds.length; i++) {
-          paramInstanceIds += " or instanceId='" + instanceIds[i] + "'";
-        }
-      } else {
-        paramInstanceIds = " and instanceId='" + pk.getComponentName() + "'";
-      }
-    } else {
-      paramInstanceIds = " and (instanceId='" + pk.getComponentName() + "'";
-    }
-
-    paramInstanceIds += ")";
-
-    SilverTrace.info("almanach", "EventDAO.getMonthEvents()",
-        "paramInstanceIds=" + paramInstanceIds);
-    try {
-      Calendar firstDayWeek = Calendar.getInstance();
-      firstDayWeek.setTime(week);
-      firstDayWeek.set(java.util.Calendar.DAY_OF_WEEK, firstDayWeek.getFirstDayOfWeek());
-      firstDayWeek.set(java.util.Calendar.HOUR_OF_DAY, 0);
-      firstDayWeek.set(java.util.Calendar.MINUTE, 0);
-      firstDayWeek.set(java.util.Calendar.SECOND, 0);
-      firstDayWeek.set(java.util.Calendar.MILLISECOND, 0);
-      Calendar lastDayWeek = Calendar.getInstance();
-      lastDayWeek.setTime(week);
-      lastDayWeek.set(java.util.Calendar.HOUR_OF_DAY, 0);
-      lastDayWeek.set(java.util.Calendar.MINUTE, 0);
-      lastDayWeek.set(java.util.Calendar.SECOND, 0);
-      lastDayWeek.set(java.util.Calendar.MILLISECOND, 0);
-      lastDayWeek.set(java.util.Calendar.DAY_OF_WEEK, lastDayWeek.getFirstDayOfWeek());
-      lastDayWeek.add(java.util.Calendar.WEEK_OF_YEAR, 1);
-      String startDay = formatDate(firstDayWeek.getTime());
-      String endDay = formatDate(lastDayWeek.getTime());
-
-      String selectQuery = "select distinct *"
-          + " from " + pk.getTableName() + " left outer join " + Periodicity.getTableName()
-          + " on " + pk.getTableName() + ".eventId = " + Periodicity.getTableName() + ".eventId"
-          + " where ((eventStartDay < '" + endDay + "' and eventEndDay >= '" + endDay + "')"
-          + " or (eventStartDay < '" + endDay + "' and eventStartDay >= '" + startDay + "')"
-          + " or (eventEndDay < '" + endDay + "' and eventEndDay >= '" + startDay + "')"
-          + " or (id is not null and eventStartDay < '" + endDay + "'"
-          + " and (untildateperiod >= '" + startDay + "' or untildateperiod is null)))"
-          + paramInstanceIds + " order by eventStartDay";
-
-      SilverTrace.info("almanach", "EventDAO.getWeekEvents()", "selectQuery="
-          + selectQuery);
-
-      selectStmt = con.createStatement();
-      rs = selectStmt.executeQuery(selectQuery);
-      List<EventDetail> list = new ArrayList<EventDetail>();
-      while (rs.next()) {
-        EventDetail event = getEventDetailFromResultSet(rs);
-        list.add(event);
-      }
-      return list;
-    } finally {
-      DBUtil.close(rs, selectStmt);
-    }
-  }
-
-  public static Collection<EventDetail> getAllEvents(Connection con, EventPK pk)
+  public Collection<EventDetail> findAllEventsInYear(final Date date, String... instanceIds)
       throws SQLException, Exception {
-    ResultSet rs = null;
-    Statement selectStmt = null;
-
-    String selectQuery = "select distinct * "
-        + " from " + pk.getTableName() + " left outer join " + Periodicity.getTableName()
-        + " on " + pk.getTableName() + ".eventId = " + Periodicity.getTableName() + ".eventId"
-        + " where instanceId='" + pk.getComponentName() + "'" + " order by eventStartDay";
-
-    try {
-      SilverTrace.info("almanach", "EventDAO.getAllEvents()",
-          "almanach.MSG_SQL_REQUEST", "selectRequest = " + selectQuery);
-
-      selectStmt = con.createStatement();
-      rs = selectStmt.executeQuery(selectQuery);
-      List<EventDetail> list = new ArrayList<EventDetail>();
-      while (rs.next()) {
-        list.add(getEventDetailFromResultSet(rs));
-      }
-      return list;
-    } finally {
-      DBUtil.close(rs, selectStmt);
-    }
+    String year = formatDate(date);
+    year = year.substring(0, 4);
+    String startDay = year + "/01/01";
+    String endDay = year + "/12/31";
+    return findAllEventsInRange(startDay, endDay, instanceIds);
   }
 
-  public static Collection<EventDetail> getAllEvents(Connection con, EventPK pk,
-      String[] instanceIds) throws SQLException, Exception {
+  public Collection<EventDetail> findAllEventsInMonth(final Date date, String... instanceIds)
+      throws SQLException, Exception {
+    String month = formatDate(date);
+    month = month.substring(0, month.length() - 2);
+    String startDay = month + "01";
+    String endDay = month + "31";
+    return findAllEventsInRange(startDay, endDay, instanceIds);
+  }
+
+  public Collection<EventDetail> findAllEventsInWeek(final Date week, String... instanceIds)
+      throws SQLException, Exception {
+    Calendar firstDayWeek = Calendar.getInstance();
+    firstDayWeek.setTime(week);
+    firstDayWeek.set(java.util.Calendar.DAY_OF_WEEK, firstDayWeek.getFirstDayOfWeek());
+    firstDayWeek.set(java.util.Calendar.HOUR_OF_DAY, 0);
+    firstDayWeek.set(java.util.Calendar.MINUTE, 0);
+    firstDayWeek.set(java.util.Calendar.SECOND, 0);
+    firstDayWeek.set(java.util.Calendar.MILLISECOND, 0);
+    Calendar lastDayWeek = Calendar.getInstance();
+    lastDayWeek.setTime(week);
+    lastDayWeek.set(java.util.Calendar.HOUR_OF_DAY, 0);
+    lastDayWeek.set(java.util.Calendar.MINUTE, 0);
+    lastDayWeek.set(java.util.Calendar.SECOND, 0);
+    lastDayWeek.set(java.util.Calendar.MILLISECOND, 0);
+    lastDayWeek.set(java.util.Calendar.DAY_OF_WEEK, lastDayWeek.getFirstDayOfWeek());
+    lastDayWeek.add(java.util.Calendar.WEEK_OF_YEAR, 1);
+    String startDay = formatDate(firstDayWeek.getTime());
+    String endDay = formatDate(lastDayWeek.getTime());
+    
+    return findAllEventsInRange(startDay, endDay, instanceIds);
+  }
+
+  public Collection<EventDetail> findAllEvents(String... instanceIds)
+      throws SQLException, Exception {
+    Connection connection = openConnection();
+
     ResultSet rs = null;
     Statement selectStmt = null;
     String paramInstanceIds = "";
     if (instanceIds != null && instanceIds.length > 0) {
-      paramInstanceIds = " (instanceId='" + pk.getComponentName() + "'";
-      for (int i = 0; i < instanceIds.length; i++) {
+      paramInstanceIds = " where (instanceId='" + instanceIds[0] + "'";
+      for (int i = 1; i < instanceIds.length; i++) {
         paramInstanceIds += " or instanceId='" + instanceIds[i] + "'";
       }
+      paramInstanceIds += ")";
     } else {
-      paramInstanceIds = " (instanceId='" + pk.getComponentName() + "'";
+      throw new SQLException("Missing instance identifiers");
     }
 
-    paramInstanceIds += ")";
-
-    SilverTrace.info("almanach", "EventDAO.getAllEvents()", "paramInstanceIds="
+    SilverTrace.debug("almanach", "EventDAO.findAllEvents()", "paramInstanceIds="
         + paramInstanceIds);
     try {
       String selectQuery = "select distinct * "
-          + " from " + pk.getTableName() + " left outer join " + Periodicity.getTableName()
-          + " on " + pk.getTableName() + ".eventId = " + Periodicity.getTableName() + ".eventId"
-          + " where " + paramInstanceIds + " order by eventStartDay";
+          + " from " + EventPK.TABLE_NAME + " left outer join " + Periodicity.getTableName()
+          + " on " + EventPK.TABLE_NAME + ".eventId = " + Periodicity.getTableName() + ".eventId"
+          + paramInstanceIds + " order by eventStartDay";
 
-      SilverTrace.info("almanach", "EventDAO.getAllEvents()", "selectQuery="
+      SilverTrace.debug("almanach", "EventDAO.getAllEvents()", "selectQuery="
           + selectQuery);
 
-      selectStmt = con.createStatement();
+      selectStmt = connection.createStatement();
       rs = selectStmt.executeQuery(selectQuery);
       List<EventDetail> list = new ArrayList<EventDetail>();
       while (rs.next()) {
-        EventDetail event = getEventDetailFromResultSet(rs);
+        EventDetail event = decodeEventDetailFromResultSet(rs);
         list.add(event);
       }
       return list;
     } finally {
       DBUtil.close(rs, selectStmt);
+      closeConnection(connection);
     }
   }
 
-  private static EventDetail getEventDetailFromResultSet(ResultSet rs)
+  public Collection<EventDetail> findAllEventsByPK(final Collection<EventPK> eventPKs)
+      throws SQLException, Exception {
+    Connection connection = openConnection();
+
+    List<EventDetail> events = new ArrayList<EventDetail>();
+    try {
+      for (EventPK pk : eventPKs) {
+        EventDetail event = getEventDetail(connection, pk);
+        events.add(event);
+      }
+    } finally {
+      closeConnection(connection);
+    }
+    return events;
+  }
+
+  public EventDetail findEventByPK(final EventPK pk) throws SQLException, Exception {
+    Connection connection = openConnection();
+    try {
+      return getEventDetail(connection, pk);
+    } finally {
+      closeConnection(connection);
+    }
+  }
+
+  private EventDetail getEventDetail(final Connection connection, final EventPK pk)
+      throws SQLException, Exception {
+    ResultSet rs = null;
+    Statement selectStmt = null;
+    String selectQuery = "select * "
+        + " from " + pk.getTableName() + " left outer join " + Periodicity.getTableName()
+        + " on " + pk.getTableName() + ".eventId = " + Periodicity.getTableName() + ".eventId"
+        + " where " + pk.getTableName() + ".eventId=" + pk.getId();
+
+    EventDetail event = null;
+    try {
+      selectStmt = connection.createStatement();
+      rs = selectStmt.executeQuery(selectQuery);
+      if (rs.next()) {
+        event = decodeEventDetailFromResultSet(rs);
+      }
+    } finally {
+      DBUtil.close(rs, selectStmt);
+    }
+    return event;
+  }
+
+  protected EventDetail decodeEventDetailFromResultSet(final ResultSet rs)
       throws SQLException, Exception {
     String id = "";
     try {
@@ -369,38 +363,13 @@ public class EventDAO {
     return event;
   }
 
-  public static Collection<EventDetail> getEvents(Connection con, Collection<EventPK> eventPKs)
-      throws SQLException, Exception {
-    List<EventDetail> events = new ArrayList<EventDetail>();
-    for (EventPK pk : eventPKs) {
-      EventDetail event = getEventDetail(con, pk);
-      events.add(event);
-    }
-    return events;
+  protected Connection openConnection() throws UtilException {
+    return DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
   }
 
-  public static EventDetail getEventDetail(Connection con, EventPK pk)
-      throws SQLException, Exception {
-    ResultSet rs = null;
-    Statement selectStmt = null;
-    String selectQuery = "select * "
-        + " from " + pk.getTableName() + " left outer join " + Periodicity.getTableName()
-        + " on " + pk.getTableName() + ".eventId = " + Periodicity.getTableName() + ".eventId"
-        + " where "+ pk.getTableName() + ".eventId=" + pk.getId();
-
-    EventDetail event = null;
-    try {
-      selectStmt = con.createStatement();
-      rs = selectStmt.executeQuery(selectQuery);
-      if (rs.next()) {
-        event = getEventDetailFromResultSet(rs);
-      }
-    } finally {
-      DBUtil.close(rs, selectStmt);
-    }
-    return event;
+  protected void closeConnection(final Connection connection) {
+    DBUtil.close(connection);
   }
-
 //  public static Collection<EventDetail> getNextEvents(Connection con, EventPK pk,
 //      int nbReturned) throws SQLException, Exception {
 //    ResultSet rs = null;

@@ -859,9 +859,9 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * Gets a view in time of the current underlying almanach.
    * The view depends on the current selected view mode and the current selected window in time.
    * @return an AlmanachCalendarView instance.
-   * @throws AlmanachException if an error occurs while getting the list of events.
-   * @throws AlmanachNoSuchFindEventException if a detail about an event in the underlying iCal
-   * calendar cannot be found.
+   * @throws AlmanachException if an error occurs while getting the calendar view.
+   * @throws AlmanachNoSuchFindEventException if a detail about an event in the almanach cannot be
+   * found.
    * @throws RemoteException if the communication with the remote business object fails.
    */
   public AlmanachCalendarView getAlmanachCalendarView() throws AlmanachException,
@@ -888,6 +888,57 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
             + " " + label);
         break;
     }
+    return view;
+  }
+
+  /**
+   * Gets a view in the current year of the current underlying almanach.
+   * @return an AlmanachCalendarView instance.
+   * @throws AlmanachException if an error occurs while getting the calendar view.
+   * @throws AlmanachNoSuchFindEventException if a detail about an event in the almanach cannot be
+   * found.
+   * @throws RemoteException if the communication with the remote business object fails.
+   */
+  public AlmanachCalendarView getYearlyAlmanachCalendarView() throws AlmanachException,
+      AlmanachNoSuchFindEventException, RemoteException {
+    AlmanachDTO almanachDTO = new AlmanachDTO().setColor(getAlmanachColor(getComponentId())).
+        setInstanceId(getComponentId()).setLabel(getComponentLabel()).setAgregated(
+        isAgregationUsed()).setUrl(getComponentUrl());
+    AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
+    AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentAlmanachDay, YEARLY);
+    view.setLocale(getLanguage());
+    if (isWeekendNotVisible()) {
+      view.unsetWeekendVisible();
+    }
+    String label = getString("year") + " " + String.valueOf(currentAlmanachDay.getYear());
+    view.setEvents(listCurrentYearEvents());
+    view.setLabel(label);
+    return view;
+  }
+  
+  /**
+   * Gets a view in the current month of the current underlying almanach.
+   * @return an AlmanachCalendarView instance.
+   * @throws AlmanachException if an error occurs while getting the calendar view.
+   * @throws AlmanachNoSuchFindEventException if a detail about an event in the almanach cannot be
+   * found.
+   * @throws RemoteException if the communication with the remote business object fails.
+   */
+  public AlmanachCalendarView getMonthlyAlmanachCalendarView() throws AlmanachException,
+      AlmanachNoSuchFindEventException, RemoteException {
+    AlmanachDTO almanachDTO = new AlmanachDTO().setColor(getAlmanachColor(getComponentId())).
+        setInstanceId(getComponentId()).setLabel(getComponentLabel()).setAgregated(
+        isAgregationUsed()).setUrl(getComponentUrl());
+    AlmanachDay currentAlmanachDay = new AlmanachDay(currentDay.getTime());
+    AlmanachCalendarView view = new AlmanachCalendarView(almanachDTO, currentAlmanachDay, YEARLY);
+    view.setLocale(getLanguage());
+    if (isWeekendNotVisible()) {
+      view.unsetWeekendVisible();
+    }
+    String label = getString("mois" + currentAlmanachDay.getMonth())
+        + " " + String.valueOf(currentAlmanachDay.getYear());
+    view.setEvents(listCurrentMonthEvents());
+    view.setLabel(label);
     return view;
   }
 
@@ -940,12 +991,29 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * Gets the event occurrences of the events defined in the underlying calendar in the current
+   * Gets the occurrences of the events defined in the underlying calendar in the current
+   * selected year.
+   * @return a list of event occurrences decorated with rendering features.
+   * @throws AlmanachException if an error occurs while getting the list of event occurrences.
+   * @throws AlmanachNoSuchFindEventException if the detail about an event cannot be found.
+   * @throws RemoteException if the communication with the remote business object fails.
+   */
+  protected List<DisplayableEventOccurrence> listCurrentYearEvents() throws AlmanachException,
+      AlmanachNoSuchFindEventException, RemoteException {
+    String[] almanachIds = new String[getAgregateAlmanachIds().size() + 1];
+    almanachIds = getAgregateAlmanachIds().toArray(almanachIds);
+    almanachIds[almanachIds.length - 1] = getComponentId();
+    List<EventOccurrence> occurrencesInYear = getAlmanachBm().getEventOccurrencesInYear(currentDay,
+        almanachIds);
+    return DisplayableEventOccurrence.decorate(occurrencesInYear);
+  }
+
+  /**
+   * Gets the occurrences of the events defined in the underlying calendar in the current
    * selected month.
-   * @return a list of event DTOs.
-   * @throws AlmanachException if an error occurs while getting the list of events.
-   * @throws AlmanachNoSuchFindEventException if a detail about an event in the underlying iCal
-   * calendar cannot be found.
+   * @return a list of event occurrences decorated with rendering features.
+   * @throws AlmanachException if an error occurs while getting the list of event occurrences.
+   * @throws AlmanachNoSuchFindEventException if the detail about an event cannot be found.
    * @throws RemoteException if the communication with the remote business object fails.
    */
   protected List<DisplayableEventOccurrence> listCurrentMonthEvents() throws AlmanachException,
@@ -959,12 +1027,11 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * Gets the event occurrences of the events defined in the underlying calendar in the current
+   * Gets the occurrences of the events defined in the underlying calendar in the current
    * selected week.
-   * @return a list of event DTOs.
-   * @throws AlmanachException if an error occurs while getting the list of events.
-   * @throws AlmanachNoSuchFindEventException if a detail about an event in the underlying iCal
-   * calendar cannot be found.
+   * @return a list of event occurrences decorated with rendering features.
+   * @throws AlmanachException if an error occurs while getting the list of event occurrences.
+   * @throws AlmanachNoSuchFindEventException if the detail about an event cannot be found.
    * @throws RemoteException if the communication with the remote business object fails.
    */
   protected List<DisplayableEventOccurrence> listCurrentWeekEvents() throws AlmanachException,

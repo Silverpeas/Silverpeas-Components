@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+ If you change the data defined in this file, don't forget to change also the events generated
+ by the EventDetailBuilder builder used to build event details for tests.
+-->
 <dataset>
   <uniqueid tableName="sc_almanach_event" maxId="10" />
   <uniqueid tableName="sc_almanach_periodicity" maxId="10" />
@@ -22,9 +27,9 @@
     eventUrl=""/>
     
   <sc_almanach_periodicity id="34" eventId="1000" unity="2" frequency="1" daysWeekBinary="0100000"
-    numweek="1" day="0" untilDatePeriod="2011/12/31"/>
+    numweek="1" day="0" untilDatePeriod="2011/05/31"/>
   <sc_almanach_periodicity id="35" eventId="1003" unity="2" frequency="1" daysWeekBinary="0010000"
-    numweek="1" day="0" untilDatePeriod="2011/12/31"/>
+    numweek="1" day="0" untilDatePeriod="2011/05/31"/>
     
   <sc_almanach_periodicityexcept id="80" periodicityId="34" beginDateException="2011/04/19"
     endDateException="2011/04/19"/>
