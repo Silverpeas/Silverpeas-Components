@@ -168,10 +168,8 @@ public class QuestionReplyExport {
       sb.append("<td nowrap=\"nowrap\">\n");
       sb.append("<table width=\"150\">\n");
 
-      Iterator<AttachmentDetail> it = attachments.iterator();
       // pour chaque fichier
-      while (it.hasNext()) {
-        AttachmentDetail attachment = it.next();
+      for (AttachmentDetail attachment : attachments) {
         exportAttachment(attachment, sb);
       }
       sb.append("</table>\n");

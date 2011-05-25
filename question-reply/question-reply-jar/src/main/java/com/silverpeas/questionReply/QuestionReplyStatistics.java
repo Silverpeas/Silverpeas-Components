@@ -22,19 +22,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) 
- ---*/
-
 package com.silverpeas.questionReply;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import com.silverpeas.questionReply.control.QuestionManager;
 import com.silverpeas.questionReply.model.Question;
 import com.stratelia.silverpeas.silverstatistics.control.ComponentStatisticsInterface;
 import com.stratelia.silverpeas.silverstatistics.control.UserIdCountVolumeCouple;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Class declaration
@@ -45,7 +42,7 @@ public class QuestionReplyStatistics implements ComponentStatisticsInterface {
   public Collection getVolume(String spaceId, String componentId)
       throws Exception {
     List<UserIdCountVolumeCouple> myArrayList = new ArrayList<UserIdCountVolumeCouple>();
-    Collection<Question> c = getQuestionReplys(spaceId, componentId);
+    Collection<Question> c = getQuestionReplies(componentId);
     for (Question detail : c) {
       UserIdCountVolumeCouple myCouple = new UserIdCountVolumeCouple();
 
@@ -56,10 +53,9 @@ public class QuestionReplyStatistics implements ComponentStatisticsInterface {
     return myArrayList;
   }
 
-  public Collection<Question> getQuestionReplys(String spaceId, String componentId)
+  public Collection<Question> getQuestionReplies(String componentId)
       throws QuestionReplyException {
-    Collection<Question> result = QuestionManager.getInstance().getQuestions(componentId);
-    return result;
+    return QuestionManager.getInstance().getQuestions(componentId);
   }
 
 }
