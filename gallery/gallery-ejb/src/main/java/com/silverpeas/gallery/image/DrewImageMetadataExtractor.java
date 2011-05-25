@@ -23,38 +23,6 @@
  */
 package com.silverpeas.gallery.image;
 
-import static com.drew.metadata.iptc.IptcDirectory.TAG_BY_LINE;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_BY_LINE_TITLE;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_CAPTION;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_CATEGORY;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_CITY;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_COPYRIGHT_NOTICE;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_COUNTRY_OR_PRIMARY_LOCATION;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_CREDIT;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_DATE_CREATED;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_HEADLINE;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_KEYWORDS;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_OBJECT_NAME;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_ORIGINAL_TRANSMISSION_REFERENCE;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_ORIGINATING_PROGRAM;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_PROVINCE_OR_STATE;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_RECORD_VERSION;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_RELEASE_DATE;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_RELEASE_TIME;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_SOURCE;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_SPECIAL_INSTRUCTIONS;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_SUPPLEMENTAL_CATEGORIES;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_TIME_CREATED;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_URGENCY;
-import static com.drew.metadata.iptc.IptcDirectory.TAG_WRITER;
-
-import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
 import com.drew.metadata.Directory;
@@ -67,70 +35,23 @@ import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
+
+import java.io.File;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
+import static com.drew.metadata.iptc.IptcDirectory.*;
 
 /**
  *
  * @author ehugonnet
  */
-public class DrewMetadataExtractor implements ImageMetadataExtractor {
+public class DrewImageMetadataExtractor extends AbstractImageMetadataExtractor {
 
-  private ResourceLocator settings;
-  private Map<String, ResourceLocator> metaDataBundles;
-  private List<ExifProperty> imageProperties;
-  private List<IptcProperty> imageIptcProperties;
+  public DrewImageMetadataExtractor(String instanceId) {
+    init(instanceId);
 
-  public
-  DrewMetadataExtractor(String instanceId) {
-    this.settings = new ResourceLocator("com.silverpeas.gallery.settings.metadataSettings_" + instanceId, "");
-    this.metaDataBundles = new HashMap<String, ResourceLocator>(I18NHelper.allLanguages.size());
-    for (String lang : I18NHelper.allLanguages.keySet()) {
-      metaDataBundles.put(lang, new ResourceLocator("com.silverpeas.gallery.multilang.metadataBundle",
-          lang));
-    }
-    String display = settings.getString("display");
-    this.imageProperties = defineImageProperties(COMMA_SPLITTER.split(display));
-    this.imageIptcProperties = defineImageIptcProperties(COMMA_SPLITTER.split(display));
-
-  }
-
-  @Override
-  public final List<ExifProperty> defineImageProperties(Iterable<String> propertyNames) {
-    List<ExifProperty> properties = new ArrayList<ExifProperty>();
-
-    for (String value : propertyNames) {
-      if (value.startsWith("METADATA_")) {
-        String property = settings.getString(value + "_TAG");
-        String labelKey = settings.getString(value + "_LABEL");
-        ExifProperty exifProperty = new ExifProperty(Integer.valueOf(property));
-        for (Map.Entry<String, ResourceLocator> labels : metaDataBundles.entrySet()) {
-          String label = labels.getValue().getString(labelKey);
-          exifProperty.setLabel(labels.getKey(), label);
-        }
-        properties.add(exifProperty);
-      }
-    }
-    return properties;
-  }
-  
-  @Override
-  public final List<IptcProperty> defineImageIptcProperties(Iterable<String> propertyNames) {
-    List<IptcProperty> properties = new ArrayList<IptcProperty>();
-    for (String value : propertyNames) {
-      if (value.startsWith("IPTC_")) {
-        String property = settings.getString(value + "_TAG");
-        String labelKey = settings.getString(value + "_LABEL");
-        boolean isDate = settings.getBoolean(value + "_DATE", false);
-        IptcProperty iptcProperty = new IptcProperty(Integer.valueOf(property));
-        for (Map.Entry<String, ResourceLocator> labels : metaDataBundles.entrySet()) {
-          String label = labels.getValue().getString(labelKey);
-          iptcProperty.setLabel(labels.getKey(), label);
-        }
-        iptcProperty.setDate(isDate);
-        properties.add(iptcProperty);
-      }
-    }
-    return properties;
   }
 
   public List<MetaData> extractImageExifMetaData(File image) throws ImageMetadataException,
@@ -138,6 +59,7 @@ public class DrewMetadataExtractor implements ImageMetadataExtractor {
     return extractImageExifMetaData(image, I18NHelper.defaultLanguage);
   }
 
+  @Override
   public List<MetaData> extractImageExifMetaData(File image, String lang) throws
       ImageMetadataException, UnsupportedEncodingException {
     try {
@@ -193,12 +115,14 @@ public class DrewMetadataExtractor implements ImageMetadataExtractor {
     }
   }
 
+  @Override
   public List<MetaData> extractImageIptcMetaData(File image) throws ImageMetadataException,
       UnsupportedEncodingException {
     return extractImageIptcMetaData(image, I18NHelper.defaultLanguage);
 
   }
 
+  @Override
   public List<MetaData> extractImageIptcMetaData(File image, String lang) throws
       UnsupportedEncodingException, ImageMetadataException {
     try {
