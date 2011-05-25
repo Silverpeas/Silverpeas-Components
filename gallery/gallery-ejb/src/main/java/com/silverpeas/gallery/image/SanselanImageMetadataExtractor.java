@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have recieved a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -32,7 +32,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import org.apache.sanselan.ImageReadException;
 import org.apache.sanselan.Sanselan;
@@ -47,28 +46,14 @@ import org.apache.sanselan.formats.tiff.constants.TiffFieldTypeConstants;
 
 import com.drew.metadata.exif.ExifDirectory;
 import com.silverpeas.gallery.model.MetaData;
-import com.silverpeas.util.ConfigurationClassLoader;
-import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.ResourceLocator;
 
 /**
  * @author ehugonnet
  */
-public class SanselanMetadataExtractor implements ImageMetadataExtractor {
+public class SanselanImageMetadataExtractor extends AbstractImageMetadataExtractor {
 
-  static final Properties defaultSettings = new Properties();
-  static final ConfigurationClassLoader loader = new ConfigurationClassLoader(
-      SanselanMetadataExtractor.class.getClassLoader());
-  static {
-    try {
-      defaultSettings.load(loader
-          .getResourceAsStream("/com/silverpeas/gallery/settings/metadataSettings.properties"));
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-  }
   public static final int TAG_RECORD_VERSION = 0x0200;
   public static final int TAG_CAPTION = 0x0278;
   public static final int TAG_WRITER = 0x027a;
@@ -93,70 +78,12 @@ public class SanselanMetadataExtractor implements ImageMetadataExtractor {
   public static final int TAG_RELEASE_TIME = 0x0200 | 35;
   public static final int TAG_TIME_CREATED = 0x0200 | 60;
   public static final int TAG_ORIGINATING_PROGRAM = 0x0200 | 65;
-  private Properties settings = new Properties(defaultSettings);
-  private Map<String, ResourceLocator> metaDataBundles;
-  private List<ExifProperty> imageProperties;
-  private List<IptcProperty> imageIptcProperties;
 
-  public SanselanMetadataExtractor(String instanceId) {
-    try {
-      this.settings.load(loader
-          .getResourceAsStream("/com/silverpeas/gallery/settings/metadataSettings_" + instanceId +
-              ".properties"));
-    } catch (Exception e) {
-      this.settings = defaultSettings;
-    }
-
-    this.metaDataBundles = new HashMap<String, ResourceLocator>(I18NHelper.allLanguages.size());
-    for (String lang : I18NHelper.allLanguages.keySet()) {
-      metaDataBundles.put(lang, new ResourceLocator(
-          "com.silverpeas.gallery.multilang.metadataBundle",
-          lang));
-    }
-    String display = settings.getProperty("display");
-
-    this.imageProperties = defineImageProperties(COMMA_SPLITTER.split(display));
-    this.imageIptcProperties = defineImageIptcProperties(COMMA_SPLITTER.split(display));
-
+  public SanselanImageMetadataExtractor(String instanceId) {
+    init(instanceId);
   }
 
-  @Override
-  public final List<ExifProperty> defineImageProperties(Iterable<String> propertyNames) {
-    List<ExifProperty> properties = new ArrayList<ExifProperty>();
-    for (String value : propertyNames) {
-      if (value.startsWith("METADATA_")) {
-        String property = settings.getProperty(value + "_TAG");
-        String labelKey = settings.getProperty(value + "_LABEL");
-        ExifProperty exifProperty = new ExifProperty(Integer.valueOf(property));
-        for (Map.Entry<String, ResourceLocator> labels : metaDataBundles.entrySet()) {
-          String label = labels.getValue().getString(labelKey);
-          exifProperty.setLabel(labels.getKey(), label);
-        }
-        properties.add(exifProperty);
-      }
-    }
-    return properties;
-  }
-
-  @Override
-  public final List<IptcProperty> defineImageIptcProperties(Iterable<String> propertyNames) {
-    List<IptcProperty> properties = new ArrayList<IptcProperty>();
-    for (String value : propertyNames) {
-      if (value.startsWith("IPTC_")) {
-        String property = settings.getProperty(value + "_TAG");
-        String labelKey = settings.getProperty(value + "_LABEL");
-        boolean isDate = StringUtil.getBooleanValue(settings.getProperty(value + "_DATE", "false"));
-        IptcProperty iptcProperty = new IptcProperty(Integer.valueOf(property));
-        for (Map.Entry<String, ResourceLocator> labels : metaDataBundles.entrySet()) {
-          String label = labels.getValue().getString(labelKey);
-          iptcProperty.setLabel(labels.getKey(), label);
-        }
-        iptcProperty.setDate(isDate);
-        properties.add(iptcProperty);
-      }
-    }
-    return properties;
-  }
+  
 
   @Override
   public List<MetaData> extractImageExifMetaData(File image) throws ImageMetadataException,

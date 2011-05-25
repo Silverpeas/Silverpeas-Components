@@ -29,7 +29,7 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.iptc.IptcDirectory;
 import com.silverpeas.gallery.image.ImageMetadataException;
 import com.silverpeas.gallery.image.ImageMetadataExtractor;
-import com.silverpeas.gallery.image.SanselanMetadataExtractor;
+import com.silverpeas.gallery.image.SanselanImageMetadataExtractor;
 import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
@@ -260,7 +260,7 @@ public class ImageHelper {
           + File.separator
           + name);
       if (file != null && file.exists()) {
-        ImageMetadataExtractor extractor = new SanselanMetadataExtractor(photo.getInstanceId());
+        ImageMetadataExtractor extractor = new SanselanImageMetadataExtractor(photo.getInstanceId());
         List<MetaData> metadata = extractor.extractImageExifMetaData(file, lang);
         for (MetaData meta : metadata) {
           photo.addMetaData(meta);
