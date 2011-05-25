@@ -23,10 +23,12 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
+import com.silverpeas.calendar.Date;
 import java.util.Calendar;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import com.stratelia.webactiv.almanach.model.EventDetail;
+import com.stratelia.webactiv.almanach.model.EventOccurrence;
 import com.stratelia.webactiv.almanach.model.EventPK;
 import com.stratelia.webactiv.util.DateUtil;
 import java.util.Arrays;
@@ -37,14 +39,15 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import static com.stratelia.webactiv.almanach.model.EventOccurrence.*;
 
 /**
  * Unit tests on the EventOccurrenceDTO.
  * The tests are on the JSON encoding of the DTO.
  */
-public class EventOccurrenceDTOTest {
+public class DisplayableEventOccurrenceTest {
 
-  public EventOccurrenceDTOTest() {
+  public DisplayableEventOccurrenceTest() {
   }
 
   @BeforeClass
@@ -78,10 +81,8 @@ public class EventOccurrenceDTOTest {
   public void theCSSClassOfAnEventShouldBeTheAlmanachId() {
     final String almanachId = "almanach1";
     EventDetail detail = getEventDetail();
-    EventOccurrenceDTO eventDTO = new EventOccurrenceDTO(detail,
-        new DateDTO(DateUtil.formatAsISO8601Day(detail.getStartDate()), detail.getStartHour()),
-        new DateDTO(DateUtil.formatAsISO8601Day(detail.getEndDate()), detail.getEndHour()));
-    assertEquals("The CSS class should be the almanach instance id", almanachId, eventDTO.
+    DisplayableEventOccurrence occurrence = getADisplaybleEventOccurrenceOf(detail);
+    assertEquals("The CSS class should be the almanach instance id", almanachId, occurrence.
         getCSSClasses().get(0));
   }
 
@@ -92,12 +93,10 @@ public class EventOccurrenceDTOTest {
   @Test
   public void testJSONRepresentationOfAnEvent() throws Exception {
     EventDetail detail = getEventDetail();
-    EventOccurrenceDTO eventDTO = new EventOccurrenceDTO(detail,
-        new DateDTO(DateUtil.formatAsISO8601Day(detail.getStartDate()), detail.getStartHour()),
-        new DateDTO(DateUtil.formatAsISO8601Day(detail.getEndDate()), detail.getEndHour()));
-    String eventInJSON = eventDTO.toJSON();
+    DisplayableEventOccurrence occurrence = getADisplaybleEventOccurrenceOf(detail);
+    String eventInJSON = occurrence.toJSON();
     JSONObject jsonObject = new JSONObject(eventInJSON);
-    assertJSONEventMatchesEventDTO(eventDTO, jsonObject);
+    assertJSONEventMatchesEventDTO(occurrence, jsonObject);
   }
 
   /**
@@ -107,21 +106,15 @@ public class EventOccurrenceDTOTest {
   @Test
   public void testJSONRepresentationOfAListOfEvents() throws Exception {
     EventDetail detail = getEventDetail();
-    List<EventOccurrenceDTO> events = Arrays.asList(
-        new EventOccurrenceDTO(detail,
-          new DateDTO(DateUtil.formatAsISO8601Day(detail.getStartDate()), detail.getStartHour()),
-          new DateDTO(DateUtil.formatAsISO8601Day(detail.getEndDate()), detail.getEndHour())),
-        new EventOccurrenceDTO(detail,
-          new DateDTO(DateUtil.formatAsISO8601Day(detail.getStartDate()), detail.getStartHour()),
-          new DateDTO(DateUtil.formatAsISO8601Day(detail.getEndDate()), detail.getEndHour())),
-        new EventOccurrenceDTO(detail,
-          new DateDTO(DateUtil.formatAsISO8601Day(detail.getStartDate()), detail.getStartHour()),
-          new DateDTO(DateUtil.formatAsISO8601Day(detail.getEndDate()), detail.getEndHour())));
-    String eventsInJSON = EventOccurrenceDTO.toJSON(events);
-    JSONArray jsonArray = new org.json.JSONArray(eventsInJSON);
-    assertEquals("All events should be encoded in JSON", events.size(), jsonArray.length());
-    for (int i = 0; i < events.size(); i++) {
-      EventOccurrenceDTO eventDTO = events.get(i);
+    List<DisplayableEventOccurrence> occurrences = Arrays.asList(
+        getADisplaybleEventOccurrenceOf(detail),
+        getADisplaybleEventOccurrenceOf(detail),
+        getADisplaybleEventOccurrenceOf(detail));
+    String occurrencesInJSON = DisplayableEventOccurrence.toJSON(occurrences);
+    JSONArray jsonArray = new org.json.JSONArray(occurrencesInJSON);
+    assertEquals("All events should be encoded in JSON", occurrences.size(), jsonArray.length());
+    for (int i = 0; i < occurrences.size(); i++) {
+      DisplayableEventOccurrence eventDTO = occurrences.get(i);
       JSONObject jsonObject = jsonArray.getJSONObject(i);
       assertJSONEventMatchesEventDTO(eventDTO, jsonObject);
     }
@@ -143,13 +136,19 @@ public class EventOccurrenceDTOTest {
     eventDetail.setEndHour(DateUtil.formatTime(date));
     return eventDetail;
   }
+  
+  protected DisplayableEventOccurrence getADisplaybleEventOccurrenceOf(final EventDetail event) {
+    EventOccurrence occurrence = anOccurrenceOf(event, new Date(event.getStartDate()), 
+        new Date(event.getEndDate()));
+    return DisplayableEventOccurrence.decorate(occurrence);
+  }
 
   /**
    * Asserts the specified JSON object matches the specified event DTO.
    * @param eventDTO the expected object to match.
    * @param jsonObject the actual JSON object.
    */
-  protected void assertJSONEventMatchesEventDTO(final EventOccurrenceDTO eventDTO,
+  protected void assertJSONEventMatchesEventDTO(final DisplayableEventOccurrence eventDTO,
       final JSONObject jsonObject) {
     assertEquals(eventDTO.getEventDetail().getTitle(), jsonObject.get("title"));
     assertEquals(eventDTO.getEventDetail().getId(), jsonObject.get("id"));

@@ -90,6 +90,14 @@ public class EventDetail extends AbstractI18NBean implements
     this.place = place;
     this.eventUrl = eventUrl;
   }
+  
+  /**
+   * Is this event periodic?
+   * @return true if the event is recurrent, false otherwise.
+   */
+  public boolean isPeriodic() {
+    return this.periodicity != null;
+  }
 
   public EventPK getPK() {
     return _pk;
@@ -103,6 +111,7 @@ public class EventDetail extends AbstractI18NBean implements
     return _name;
   }
 
+  @Override
   public String getName() {
     return _title;
   }
@@ -126,6 +135,10 @@ public class EventDetail extends AbstractI18NBean implements
   public void setPriority(int priority) {
     _priority = priority;
   }
+  
+  public boolean isPriority() {
+    return getPriority() > 0;
+  }
 
   public Date getStartDate() {
     return _startDate;
@@ -142,6 +155,10 @@ public class EventDetail extends AbstractI18NBean implements
   public void setEndDate(Date date) {
     _endDate = date;
   }
+  
+  public boolean isAllDay() {
+    return !StringUtil.isDefined(this.startHour) && !StringUtil.isDefined(this.endHour);
+  }
 
   public String getTitle() {
     return _title;
@@ -151,26 +168,32 @@ public class EventDetail extends AbstractI18NBean implements
     _title = title;
   }
 
+  @Override
   public String getDescription() {
     return getNameDescription();
   }
 
+  @Override
   public String getURL() {
     return "searchResult?Type=Event&Id=" + getId();
   }
 
+  @Override
   public String getId() {
     return getPK().getId();
   }
 
+  @Override
   public String getInstanceId() {
     return getPK().getComponentName();
   }
 
+  @Override
   public String getDate() {
     return null;
   }
 
+  @Override
   public String getSilverCreationDate() {
     return null;
   }
@@ -179,10 +202,12 @@ public class EventDetail extends AbstractI18NBean implements
     this._iconUrl = iconUrl;
   }
 
+  @Override
   public String getIconUrl() {
     return this._iconUrl;
   }
 
+  @Override
   public String getCreatorId() {
     return getDelegatorId();
   }
@@ -219,14 +244,17 @@ public class EventDetail extends AbstractI18NBean implements
     return null;
   }
 
+  @Override
   public String getDescription(String language) {
     return getDescription();
   }
 
+  @Override
   public String getName(String language) {
     return getName();
   }
 
+  @Override
   public Iterator<String> getLanguages() {
     return null;
   }
@@ -273,7 +301,7 @@ public class EventDetail extends AbstractI18NBean implements
       calStartDate.set(java.util.Calendar.MINUTE, DateUtil.extractMinutes(startHour));
     }
     Calendar calEndDate = java.util.Calendar.getInstance();
-    calEndDate.setTime(_startDate);
+    calEndDate.setTime(calStartDate.getTime());
     if (_endDate != null) {
       calEndDate.setTime(_endDate);
       if (StringUtil.isDefined(endHour)) {

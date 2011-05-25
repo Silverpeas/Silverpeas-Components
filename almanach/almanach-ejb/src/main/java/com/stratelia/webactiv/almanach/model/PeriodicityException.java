@@ -62,6 +62,7 @@ public class PeriodicityException extends SilverpeasBean {
     this.periodicityId = periodicityId;
   }
 
+  @Override
   public String _getTableName() {
     return "SC_Almanach_PeriodicityExcept";
   }
