@@ -210,6 +210,15 @@
 	    albumWindow = SP_openWindow(urlWindow, "albumWindow", "550", "250", windowParams);
 	}
 	
+	function sendDataForAddPath() 
+	  {
+	    // envoi des photos selectionnees pour le placement par lot
+	    document.photoForm.SelectedIds.value  = getObjects(true);
+	    document.photoForm.NotSelectedIds.value = getObjects(false);
+	    document.photoForm.action       = "AddPathForSelectedPhoto";
+	    document.photoForm.submit();
+	  }
+	
 	function getObjects(selected)
 	{
 		var  items = "";
@@ -325,7 +334,7 @@ function uploadCompleted(s)
 		{
 	   		operationPane.addOperation(resource.getIcon("gallery.copy"), resource.getString("gallery.copyAlbum"), "javascript:onClick=clipboardCopy()");
 	   		operationPane.addOperation(resource.getIcon("gallery.cut"), resource.getString("gallery.cutAlbum"), "javascript:onClick=clipboardCut()");
-	       	operationPane.addLine();
+	      operationPane.addLine();
 		}
 		
 		// possibilite de modifier ou supprimer les photos par lot
@@ -335,6 +344,10 @@ function uploadCompleted(s)
 		{
 			// si on a le classement Pdc : possibilite de classer par lot
 			operationPane.addOperation(resource.getIcon("gallery.categorizeSelectedPhoto"),resource.getString("gallery.categorizeSelectedPhoto"),"javascript:onClick=sendDataCategorize();");
+		}
+		if ("admin".equals(profile)) {
+		  // possibilite de placer les photos par lot
+      operationPane.addOperation(resource.getIcon("gallery.addPathForSelectedPhoto"), resource.getString("gallery.addPathForSelectedPhoto"), "javascript:onClick=sendDataForAddPath()");
 		}
 	}
 	
