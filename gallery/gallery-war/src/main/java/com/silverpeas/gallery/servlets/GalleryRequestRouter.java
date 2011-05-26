@@ -198,18 +198,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
         if (index != null && index.length() > 0) {
           gallerySC.setIndexOfFirstItemToDisplay(index);
         }
-        // retour d'ou on viens
-        if (!gallerySC.isSearchResult() && !gallerySC.isViewNotVisible()) {
-          // retour à l'album en cours
-          destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-        } else {
-          // retour aux résultats de recherche ou à la liste des photos non visibles
-          if (gallerySC.isViewNotVisible()) {
-            destination = getDestination("ViewNotVisible", gallerySC, request);
-          } else {
-            destination = getDestination("SearchKeyWord", gallerySC, request);
-          }
-        }
+        destination = returnToAlbum(request, gallerySC);
 
       } else if (function.equals("GoToCurrentAlbum")) {
         // mise à blanc de l'index de pagination si on arrive de la recherche
@@ -658,35 +647,12 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
         // retourner au début de la liste des photos
         gallerySC.initIndex();
         // retour ... en fonction d'ou on viens
-        if (!gallerySC.isSearchResult() && !gallerySC.isViewNotVisible()) {
-          // retour à l'album en cours
-          destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-        } else {
-          // retour à la liste des mots clés ou à la liste des photos non visibles
-          if (gallerySC.isViewNotVisible()) {
-            destination = getDestination("ViewNotVisible", gallerySC, request);
-          } else {
-            destination = getDestination("SearchKeyWord", gallerySC, request);
-          }
+        destination = returnToAlbum(request, gallerySC);
 
-        }
       } else if (function.equals("SortBy")) {
         // traitement du tri
         String tri = request.getParameter("Tri");
-        // retour ... en fonction d'ou on viens
-        if ((!gallerySC.isSearchResult() && !gallerySC.isViewNotVisible())) {
-          gallerySC.setTri(tri);
-          // retour à l'album en cours
-          destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-        } else {
-          gallerySC.setTriSearch(tri);
-          // retour à la liste des mots clés ou à la liste des photos non visibles
-          if (gallerySC.isViewNotVisible()) {
-            destination = getDestination("ViewNotVisible", gallerySC, request);
-          } else {
-            destination = getDestination("SearchKeyWord", gallerySC, request);
-          }
-        }
+        destination = returnToAlbum(request, gallerySC);
       } else if (function.equals("ToAlertUser")) {
         String photoId = request.getParameter("PhotoId");
         try {
@@ -736,18 +702,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
 
           destination = rootDest + "selectedPhotoManager.jsp";
         } else {
-          // pas de photos sélectionnées, on retourne d'ou on viens
-          if ((!gallerySC.isSearchResult() && !gallerySC.isViewNotVisible())) {
-            // retour à l'album en cours
-            destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-          } else {
-            // retour à la liste des mots clés ou à la liste des photos non visibles
-            if (gallerySC.isViewNotVisible()) {
-              destination = getDestination("ViewNotVisible", gallerySC, request);
-            } else {
-              destination = getDestination("SearchKeyWord", gallerySC, request);
-            }
-          }
+          destination = returnToAlbum(request, gallerySC);
         }
       } else if (function.equals("UpdateSelectedPhoto")) {
         // récupération des photos modifiées
@@ -760,57 +715,25 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
         updateSelectedPhoto(request, gallerySC, photoIds, request.getCharacterEncoding());
 
         // tout déselectionner
-        gallerySC.setSelect(false);
-        gallerySC.clearListSelected();
-
-        // retour d'ou on viens
-        if (!gallerySC.isSearchResult() && !gallerySC.isViewNotVisible()) {
-          // retour à l'album en cours
-          destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-        } else {
-          // retour aux résultats de recherche ou à la liste des photos non visibles
-          if (gallerySC.isViewNotVisible()) {
-            destination = getDestination("ViewNotVisible", gallerySC, request);
-          } else {
-            destination = getDestination("SearchKeyWord", gallerySC, request);
-          }
-        }
+        deselectAll(gallerySC);
+        destination = returnToAlbum(request, gallerySC);
+        
       } else if (function.equals("UpdateSelectedPaths")) {
         // récupération des photos modifiées
         Collection<String> photoIds = gallerySC.getListSelected();
 
-        // mise à jour des emplacements des photos
-        if (!StringUtil.isDefined(request.getCharacterEncoding())) {
-          request.setCharacterEncoding("UTF-8");
-        }
-    
+        // mise à jour des emplacements des photos    
         String[] albums = request.getParameterValues("albumChoice");
 
         for (String photoId : photoIds) {
-          if (!gallerySC.isPhotoAdmin(flag, photoId, userId)) {
-            throw new AccessForbiddenException("GalleryRequestRouter.SelectPath",
-                    SilverpeasException.WARNING, null);
-          }
-          // ajouter les nouveau emplacements sur les anciens
-          gallerySC.addPhotoPaths(photoId, albums);
-        }
-
-        // tout déselectionner
-        gallerySC.setSelect(false);
-        gallerySC.clearListSelected();
-
-        // retour d'ou on viens
-        if (!gallerySC.isSearchResult() && !gallerySC.isViewNotVisible()) {
-          // retour à l'album en cours
-          destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-        } else {
-          // retour aux résultats de recherche ou à la liste des photos non visibles
-          if (gallerySC.isViewNotVisible()) {
-            destination = getDestination("ViewNotVisible", gallerySC, request);
-          } else {
-            destination = getDestination("SearchKeyWord", gallerySC, request);
+          if (gallerySC.isPhotoAdmin(flag, photoId, userId)) {
+            // ajouter les nouveau emplacements sur les anciens
+            gallerySC.addPhotoPaths(photoId, albums);
           }
         }
+        deselectAll(gallerySC);
+
+        destination = returnToAlbum(request, gallerySC);
       } else if (function.equals("DeleteSelectedPhoto")) {
         processSelection(request, gallerySC);
 
@@ -822,9 +745,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           // suppression des photos
           deleteSelectedPhoto(gallerySC, photoIds);
 
-          // tout déselectionner
-          gallerySC.setSelect(false);
-          gallerySC.clearListSelected();
+          deselectAll(gallerySC);
 
           // retour à l'album en cours
           destination = getDestination("GoToCurrentAlbum", gallerySC, request);
@@ -852,9 +773,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           request.setAttribute("ComponentId", gallerySC.getComponentId());
           destination = "/RpdcClassify/jsp/ToAddPositions";
 
-          // tout déselectionner
-          gallerySC.setSelect(false);
-          gallerySC.clearListSelected();
+          deselectAll(gallerySC);
         } else {
           destination = rootDest + "closeWindow.jsp";
         }
@@ -876,18 +795,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
 
           destination = rootDest + "pathsManager.jsp";
         } else {
-          // pas de photos sélectionnées, on retourne d'ou on viens
-          if ((!gallerySC.isSearchResult() && !gallerySC.isViewNotVisible())) {
-            // retour à l'album en cours
-            destination = getDestination("GoToCurrentAlbum", gallerySC, request);
-          } else {
-            // retour à la liste des mots clés ou à la liste des photos non visibles
-            if (gallerySC.isViewNotVisible()) {
-              destination = getDestination("ViewNotVisible", gallerySC, request);
-            } else {
-              destination = getDestination("SearchKeyWord", gallerySC, request);
-            }
-          }
+          destination = returnToAlbum(request, gallerySC);
         }
       } else if (function.equals("GoToXMLForm")) {
         // visualisation du formulaire associé à la photo
@@ -1365,9 +1273,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           // copie des photos
           gallerySC.copySelectedPhoto(photoIds);
 
-          // tout déselectionner
-          gallerySC.setSelect(false);
-          gallerySC.clearListSelected();
+          deselectAll(gallerySC);
         }
         // retour à l'album en cours
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);
@@ -1402,9 +1308,7 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
           // coupe des photos
           gallerySC.cutSelectedPhoto(photoIds);
 
-          // tout déselectionner
-          gallerySC.setSelect(false);
-          gallerySC.clearListSelected();
+          deselectAll(gallerySC);
         }
         // retour à l'album en cours
         destination = getDestination("GoToCurrentAlbum", gallerySC, request);
@@ -2343,6 +2247,28 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
     }
     return ids;
   }
+  
+  private String returnToAlbum(HttpServletRequest request, GallerySessionController gallerySC) {
+    String destination = "";
+    // retour d'où on vient
+    if (!gallerySC.isSearchResult() && !gallerySC.isViewNotVisible()) {
+      // retour à l'album en cours
+      destination = getDestination("GoToCurrentAlbum", gallerySC, request);
+    } else {
+      // retour aux résultats de recherche ou à la liste des photos non visibles
+      if (gallerySC.isViewNotVisible()) {
+        destination = getDestination("ViewNotVisible", gallerySC, request);
+      } else {
+        destination = getDestination("SearchKeyWord", gallerySC, request);
+      }
+    }
+    return destination;
+  }
+  
+  private void deselectAll(GallerySessionController gallerySC) {
+    gallerySC.setSelect(false);
+    gallerySC.clearListSelected();
+  }
 
   private String getDocumentNotFoundDestination(GallerySessionController gallery,
           HttpServletRequest request) {
@@ -2353,4 +2279,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
   private PublicationTemplateManager getPublicationTemplateManager() {
     return PublicationTemplateManager.getInstance();
   }
+  
+  
 }

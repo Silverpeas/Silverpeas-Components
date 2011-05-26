@@ -31,16 +31,6 @@
 	String 		  albumId		 = (String) request.getAttribute("AlbumId");
 	List  	    path 			 = (List) request.getAttribute("Path");
 	Collection  albums     = (Collection) request.getAttribute("Albums");
-
-		
-	// déclaration des variables :
-	
-	
-	PagesContext 		context 	= new PagesContext("photoForm", "0", resource.getLanguage(), false, componentId, gallerySC.getUserId(), gallerySC.getAlbum(gallerySC.getCurrentAlbumId()).getNodePK().getId()); //Pas de passage de l'objectId dans le contexte car on est en traitement par lot, ce passage se fera lors de la validation du formulaire
-	context.setBorderPrinted(false);
-	context.setCurrentFieldIndex("10");
-	context.setUseBlankFields(true);
-	context.setUseMandatory(false);
 		
 	// déclaration des boutons
 	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
@@ -52,28 +42,20 @@
 	<%
 		out.println(gef.getLookStyleSheet());
 	%>
-	<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
-	<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-	<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-	<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-	
-	<script language="javascript">
+
+	<script type="text/javascript">
 	function sendData() 
 	{
 	  document.paths.submit();
-	}
-
-	
+	}	
 	</script>
 		
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body>
 <%
   browseBar.setDomainName(spaceLabel);
   browseBar.setComponentName(componentLabel, "Main");
   displayPath(path, browseBar);
-
-  
   
   out.println(window.printBefore());
   out.println(frame.printBefore());
@@ -82,7 +64,7 @@
     
     out.println(board.printBefore());
     %>
-    <form name="paths" action="UpdateSelectedPaths" method="POST">
+    <form name="paths" action="UpdateSelectedPaths" method="post">
     <table>
     <%
   if(albums !=null && !albums.isEmpty())
@@ -110,10 +92,10 @@
         name = ind + name;  
         boolean used = false;
         String usedCheck = "";
-        if (used)
+        if (used) {
           usedCheck = " checked";
-            out.println("<tr><td>&nbsp;&nbsp;<input type=\"checkbox\" valign=\"absmiddle\" name=\"albumChoice\" value=\""+ album.getId() +"\""+usedCheck+">&nbsp;</td><td>"+name+"</td></tr>");
-
+        }
+        out.println("<tr><td>&nbsp;&nbsp;<input type=\"checkbox\" valign=\"absmiddle\" name=\"albumChoice\" value=\""+ album.getId() +"\""+usedCheck+"/>&nbsp;</td><td>"+name+"</td></tr>");
       }
     }
   }
@@ -126,7 +108,7 @@
   ButtonPane buttonPane = gef.getButtonPane();
   buttonPane.addButton(validateButton);
   buttonPane.addButton(cancelButton);
-  out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
+  out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
   
   out.println(frame.printAfter());
   out.println(window.printAfter());
