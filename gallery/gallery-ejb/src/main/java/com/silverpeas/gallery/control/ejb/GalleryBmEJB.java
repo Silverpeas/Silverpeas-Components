@@ -458,8 +458,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       SilverTrace.debug("gallery", "GalleryBmEJB.setPhotoPath()",
           "root.MSG_GEN_PARAM_VALUE", "photoId = " + photoId);
       Collection<String> paths = PhotoDAO.getPathList(con, instanceId, photoId);
-      for (int i = 0; i < albums.length; i++) {
-        String albumId = albums[i];
+      for (String albumId : albums) {
         if (!paths.contains(albumId)) {
           SilverTrace.debug("gallery", "GalleryBmEJB.setPhotoPath()",
               "root.MSG_GEN_PARAM_VALUE", "albumId = " + albumId);
