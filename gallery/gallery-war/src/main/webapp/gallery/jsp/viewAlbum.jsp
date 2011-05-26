@@ -796,6 +796,16 @@ function uploadCompleted(s)
 			</table>
 			<%
 			out.println(board.printAfter());
+		} else {
+		  %>
+		    <div class="inlineMessage">
+		    <% String[] params = new String[2]; 
+		    params[0] = resource.getString("gallery.ajoutPhoto");
+		    params[1] = "AddPhoto";
+		    %>
+		      <%=resource.getStringWithParams("gallery.album.empty",params ) %>
+		    </div>
+		  <%
 		}
   	}    
   	
