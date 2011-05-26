@@ -48,6 +48,7 @@
       ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
         
       // declaration des variables :
+      String fctAddPhoto = "AddPhoto";
       int nbAffiche = 0;
       String albumId = "";
       List photos = null;
@@ -364,7 +365,7 @@ function uploadCompleted(s)
 	if ( "admin".equals(profile) || "publisher".equals(profile) || "writer".equals(profile))
 	{
 		// possibilite d'ajouter des photos pour les "admin", "publisher" et "writer"
-		operationPane.addOperation(resource.getIcon("gallery.addPhoto"),resource.getString("gallery.ajoutPhoto"),"AddPhoto");
+		operationPane.addOperation(resource.getIcon("gallery.addPhoto"),resource.getString("gallery.ajoutPhoto"),fctAddPhoto);
 		operationPane.addLine();
 	}
 	
@@ -799,17 +800,31 @@ function uploadCompleted(s)
 		} else {
 		  %>
 		    <div class="inlineMessage">
-		    <% String[] params = new String[2]; 
-		    params[0] = resource.getString("gallery.ajoutPhoto");
-		    params[1] = "AddPhoto";
+		    <%
+		    if ("user".equals(profile) || "privilegedUser".equals(profile)) {
+		      out.println(resource.getString("gallery.album.emptyForUser"));
+		    } else if ("writer".equals(profile)) {
+		        String[] params = new String[2]; 
+            params[0] = resource.getString("gallery.ajoutPhoto");
+            params[1] = fctAddPhoto;
+		        out.println(resource.getStringWithParams("gallery.album.emptyForWriter",params));
+		      } else {
+		        // profile publisher et admin
+		        String[] params = new String[4]; 
+            params[0] = resource.getString("gallery.ajoutAlbum");
+            params[1] = "javaScript:addAlbum()";
+            params[2] = resource.getString("gallery.ajoutPhoto");
+            params[3] = fctAddPhoto;
+            out.println(resource.getStringWithParams("gallery.album.emptyForAdmin",params));
+		      }
 		    %>
-		      <%=resource.getStringWithParams("gallery.album.empty",params ) %>
 		    </div>
-		  <%
+		    <%
+      }
 		}
-  	}    
+ 
   	
-  	out.println(frame.printAfter());
+  out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
 <form name="albumForm" action="" Method="POST">
