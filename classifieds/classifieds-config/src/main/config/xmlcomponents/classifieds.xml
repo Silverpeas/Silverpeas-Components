@@ -84,8 +84,8 @@
     <parameter>
       <name>searchFields1</name>
       <label>
-        <message lang="fr">Champs recherche 1</message>
-        <message lang="en">Search field 1</message>
+        <message lang="fr">Champs de catégorisation</message>
+        <message lang="en">categorization field</message>
       </label>
       <order>2</order>
       <mandatory>false</mandatory>
@@ -94,25 +94,25 @@
       <size>25</size>     
       <updatable>always</updatable>      
       <help>
-        <message lang="fr">Premier champs de recherche</message>
-        <message lang="en">First search field</message>
+        <message lang="fr">Sur la page principale, les annonces seront regroupés selon ces catégories</message>
+        <message lang="en">On the main page, classifieds will be grouped according to these categories</message>
       </help>
     </parameter>
     <parameter>
       <name>searchFields2</name>
       <label>
-        <message lang="fr">Champs recherche 2</message>
+        <message lang="fr">Second critère</message>
         <message lang="en">Search field 2</message>
       </label>
       <order>3</order>
       <mandatory>false</mandatory>
-      <value>category</value>
+      <value>type</value>
       <type>text</type>
       <size>25</size>     
       <updatable>always</updatable>      
       <help>
-        <message lang="fr">Second champs de recherche</message>
-        <message lang="en">Second search field</message>
+        <message lang="fr">Ce second critère est le second champs dédié aux abonnements</message>
+        <message lang="en">This second criteria is devoted to subscriptions</message>
       </help>
     </parameter>
     <parameter>
