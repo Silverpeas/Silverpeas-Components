@@ -84,7 +84,7 @@
     <parameter>
       <name>searchFields1</name>
       <label>
-        <message lang="fr">Champs de catégorisation</message>
+        <message lang="fr">Champ de catégorisation</message>
         <message lang="en">categorization field</message>
       </label>
       <order>2</order>
@@ -111,7 +111,7 @@
       <size>25</size>     
       <updatable>always</updatable>      
       <help>
-        <message lang="fr">Ce second critère est le second champs dédié aux abonnements</message>
+        <message lang="fr">Ce second critère est le second champ dédié aux abonnements</message>
         <message lang="en">This second criteria is devoted to subscriptions</message>
       </help>
     </parameter>
