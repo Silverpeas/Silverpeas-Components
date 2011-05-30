@@ -855,9 +855,14 @@
         <TD><input type="text" name="Keywords" id="pubKeys" value="<%=EncodeHelper.javaStringToHtmlString(keywords)%>" size="68" maxlength="1000"/></TD></TR>
 =======
       <tr id="keywordsArea"><td class="txtlibform"><%=resources.getString("PubMotsCles")%></td>
+<<<<<<< HEAD
         <td><input type="text" name="Keywords" id="pubKeys" value="<%=EncodeHelper.javaStringToHtmlString(keywords)%>" size="68" maxlength="200"></td></tr>
 >>>>>>> b6c66a8... Clean HTML lower case and update git ignore list
           <% }%>
+=======
+        <td><input type="text" name="Keywords" id="pubKeys" value="<%=EncodeHelper.javaStringToHtmlString(keywords)%>" size="68" maxlength="1000"></td></tr>
+      <% }%>
+>>>>>>> 1c3ad64... Merge error from bug 2013 and 2014
 
       <!-- Author -->
       <% if (kmeliaScc.isAuthorUsed()) {%>
