@@ -186,7 +186,7 @@ function testCheckBoxes(){
 </form>
 <center><view:buttonPane>
 	<fmt:message key="whitePages.button.cancel" var="cancelLabel" />
-	<view:button label="${cancelLabel}" action="<%=routerUrl + "Main"%>" />
+	<view:button label="${cancelLabel}" action="Main" />
 
 	<fmt:message key="whitePages.button.valid" var="validLabel" />
 	<view:button label="${validLabel}"
