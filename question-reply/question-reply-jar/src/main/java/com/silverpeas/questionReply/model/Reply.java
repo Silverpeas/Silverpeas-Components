@@ -21,7 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.questionReply.model;
 
 import java.util.Date;
@@ -33,6 +32,7 @@ import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.DateUtil;
 
 public class Reply extends SilverpeasBean {
+
   private static final long serialVersionUID = 5638699228049557540L;
   private long questionId;
   private String title;
@@ -48,7 +48,7 @@ public class Reply extends SilverpeasBean {
 
   public Reply(String creatorId) {
     this.creatorId = creatorId;
-     this.creationDate = DateUtil.date2SQLDate(new Date());
+    this.creationDate = DateUtil.date2SQLDate(new Date());
   }
 
   public Reply(long questionId, String creatorId) {
@@ -135,4 +135,8 @@ public class Reply extends SilverpeasBean {
     return SilverpeasBeanDAO.CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
   }
 
+  @Override
+  public String toString() {
+    return "Reply{" + "questionId=" + questionId + ", title=" + title + ", content=" + content + ", creatorId=" + creatorId + ", creationDate=" + creationDate + ", publicReply=" + publicReply + ", privateReply=" + privateReply + '}';
+  }
 }

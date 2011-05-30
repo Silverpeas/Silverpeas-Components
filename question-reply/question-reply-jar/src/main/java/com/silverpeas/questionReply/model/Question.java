@@ -21,12 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.questionReply.model;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
 
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -35,7 +30,16 @@ import com.stratelia.webactiv.persistence.SilverpeasBean;
 import com.stratelia.webactiv.persistence.SilverpeasBeanDAO;
 import com.stratelia.webactiv.util.DateUtil;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+
 public class Question extends SilverpeasBean {
+
+  public static final int CLOSED = 2;
+  public static final int NEW = 0;
+  public static final int OPEN = 1;
   private static final long serialVersionUID = 8690405914141003827L;
   private String title;
   private String content;
@@ -47,12 +51,19 @@ public class Question extends SilverpeasBean {
   private int replyNumber = 0;
   private String instanceId;
   private String categoryId;
-  private Collection<Reply> replies = new ArrayList<Reply>();
-  private Collection<Recipient> recipients = new ArrayList<Recipient>();
-
+  private List<Reply> replies = new ArrayList<Reply>();
+  private List<Recipient> recipients = new ArrayList<Recipient>();
   private static OrganizationController organizationController = new OrganizationController();
 
   public Question() {
+  }
+
+  /**
+   * For tests only
+   * @param organizationController
+   */
+  Question(OrganizationController organizationController) {
+    Question.organizationController = organizationController;
   }
 
   public Question(String creatorId, String instanceId) {
@@ -97,11 +108,11 @@ public class Question extends SilverpeasBean {
     return instanceId;
   }
 
-  public Collection<Reply> readReplies() {
+  public List<Reply> readReplies() {
     return replies;
   }
 
-  public Collection<Recipient> readRecipients() {
+  public List<Recipient> readRecipients() {
     return recipients;
   }
 
@@ -146,35 +157,11 @@ public class Question extends SilverpeasBean {
   }
 
   public void writeReplies(Collection<Reply> replies) {
-    this.replies = replies;
+    this.replies = new ArrayList<Reply>(replies);
   }
 
   public void writeRecipients(Collection<Recipient> recipients) {
-    this.recipients = recipients;
-  }
-
-  public void incPublicReplyNumber(int nb) {
-    this.publicReplyNumber = this.publicReplyNumber + nb;
-  }
-
-  public void incPrivateReplyNumber(int nb) {
-    this.privateReplyNumber = this.privateReplyNumber + nb;
-  }
-
-  public void decPublicReplyNumber(int nb) {
-    this.publicReplyNumber = this.publicReplyNumber - nb;
-  }
-
-  public void decPrivateReplyNumber(int nb) {
-    this.privateReplyNumber = this.privateReplyNumber - nb;
-  }
-
-  public void incReplyNumber(int nb) {
-    this.replyNumber = this.replyNumber + nb;
-  }
-
-  public void decReplyNumber(int nb) {
-    this.replyNumber = this.replyNumber - nb;
+    this.recipients =  new ArrayList<Recipient>(recipients);
   }
 
   public String _getPermalink() {
@@ -191,11 +178,16 @@ public class Question extends SilverpeasBean {
 
   public String readCreatorName() {
     String creatorName = null;
-    UserDetail userDetail = organizationController.getUserDetail(String.valueOf(getCreatorId()));
+    UserDetail userDetail = readAuthor();
     if (userDetail != null) {
       creatorName = userDetail.getDisplayedName();
     }
     return creatorName;
+  }
+
+
+  public UserDetail readAuthor() {
+    return organizationController.getUserDetail(String.valueOf(getCreatorId()));
   }
 
   @Override
@@ -216,4 +208,32 @@ public class Question extends SilverpeasBean {
     this.categoryId = categoryId;
   }
 
+  public boolean hasOpenStatus() {
+    return this.status == OPEN;
+  }
+
+  public boolean hasClosedStatus() {
+    return this.status == CLOSED;
+  }
+
+  public boolean hasNewStatus() {
+    return this.status == NEW;
+  }
+
+  public void close() {
+    this.status = CLOSED;
+  }
+
+  public void open() {
+    this.status = OPEN;
+  }
+
+  @Override
+  public String toString() {
+    return "Question{" + "title=" + title + ", content=" + content + ", creatorId=" + creatorId
+        + ", creationDate=" + creationDate + ", status=" + status + ", publicReplyNumber="
+        + publicReplyNumber + ", privateReplyNumber=" + privateReplyNumber + ", replyNumber="
+        + replyNumber + ", instanceId=" + instanceId + ", categoryId=" + categoryId + ", replies="
+        + replies + ", recipients=" + recipients + '}';
+  }
 }
