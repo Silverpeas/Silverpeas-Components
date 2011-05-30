@@ -23,48 +23,17 @@
  */
 package com.silverpeas.questionReply.control;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.Arrays;
-import java.util.List;
-
-import com.silverpeas.questionReply.model.Question;
-
 /**
  *
  * @author ehugonnet
  */
-public class QuestionRegexpComparatorTest {
+public class QuestionManagerFactory {
+  private static final QuestionManager instance = new SilverpeasQuestionManager();
 
-  public QuestionRegexpComparatorTest() {
+  public static QuestionManager getQuestionManager() {
+    return instance;
   }
 
-  /**
-   * Test of compare method, of class QuestionRegexpComparator.
-   */
-  @org.junit.Test
-  public void testCompare() {
-    Question question1 = new Question();
-    question1.setTitle("1.0 - Test");
-    Question question2 = new Question();
-    question2.setTitle("1.1 - Test 1");
-    QuestionRegexpComparator instance = QuestionRegexpComparator.getInstance();
-    int result = instance.compare(question1, question2);
-    assertTrue(result < 0);
-    question1.setTitle("2.0 - Test");
-    result = instance.compare(question1, question2);
-    assertTrue(result > 0);
-  }
-
-  /**
-   * Test of extractNumber method, of class QuestionRegexpComparator.
-   */
-  @org.junit.Test
-  public void testCompareNumbers() {
-    QuestionRegexpComparator instance = QuestionRegexpComparator.getInstance();
-    List<Integer> list1 = Arrays.asList(1, 10, 5);
-    List<Integer> list2 = Arrays.asList(1, 5);
-    int result = instance.compareNumbers(list1, list2);   
-    assertTrue(result > 0);
+  private QuestionManagerFactory() {
   }
 }
