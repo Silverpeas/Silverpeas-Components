@@ -194,6 +194,16 @@ public interface KmeliaBmBusinessSkeleton {
    */
   public String createPublicationIntoTopic(PublicationDetail pubDetail,
       NodePK fatherPK) throws RemoteException;
+   
+   /**
+    * Create a new Publication (only the header - parameters) to the current Topic
+    * @param pubDetail a PublicationDetail
+    * @return the id of the new publication
+    * @see com.stratelia.webactiv.util.publication.model.PublicationDetail
+    * @since 1.0
+    */
+   public String createPublicationIntoTopicWithoutNotifications(PublicationDetail pubDetail,
+       NodePK fatherPK) throws RemoteException;
 
   /**
    * Update a publication (only the header - parameters)
@@ -230,6 +240,9 @@ public interface KmeliaBmBusinessSkeleton {
    * @since 1.0
    */
   public void addPublicationToTopic(PublicationPK pubPK, NodePK fatherPK,
+      boolean isACreation) throws RemoteException;
+  
+  public void addPublicationToTopicWithoutNotifications(PublicationPK pubPK, NodePK fatherPK,
       boolean isACreation) throws RemoteException;
 
   /**
