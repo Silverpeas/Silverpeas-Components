@@ -42,8 +42,8 @@ import static com.silverpeas.util.StringUtil.isDefined;
  */
 @XmlRootElement
 public class AuthorEntity implements Serializable {
-  private static final long serialVersionUID = 2470628480159572486L;
 
+  private static final long serialVersionUID = 2470628480159572486L;
   @XmlElement(defaultValue = "")
   private String fullName;
   @XmlElement(required = true)
@@ -154,14 +154,16 @@ public class AuthorEntity implements Serializable {
   }
 
   private AuthorEntity(final UserDetail userDetail) {
-    this.fullName = userDetail.getDisplayedName();
-    this.id = userDetail.getId();
-    this.avatar = userDetail.getAvatar();
-    UserPreferences prefs = getUserPreferences();
-    if (prefs != null) {
-      this.language = prefs.getLanguage();
-    } else {
-      this.language = DisplayI18NHelper.getDefaultLanguage();
+    if (userDetail != null) {
+      this.fullName = userDetail.getDisplayedName();
+      this.id = userDetail.getId();
+      this.avatar = userDetail.getAvatar();
+      UserPreferences prefs = getUserPreferences();
+      if (prefs != null) {
+        this.language = prefs.getLanguage();
+      } else {
+        this.language = DisplayI18NHelper.getDefaultLanguage();
+      }
     }
   }
 

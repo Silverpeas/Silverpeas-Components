@@ -26,8 +26,11 @@ package com.silverpeas.questionReply.web;
 import com.silverpeas.questionReply.control.QuestionManagerFactory;
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.rest.RESTWebService;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import java.net.URI;
 import java.util.List;
+import javax.inject.Inject;
 import javax.ws.rs.Produces;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -38,19 +41,22 @@ import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import static  com.stratelia.webactiv.SilverpeasRole.*;
+
 /**
- * A REST Web resource representing a given comment.
- * It is a web service that provides an access to a comment referenced by its URL.
+ * A REST Web resource representing a given question.
+ * It is a web service that provides an access to a question referenced by its URL.
  */
 @Service
 @Scope("request")
-@Path("comments/{componentId}/{questionId}")
+@Path("questionreply/{componentId}/questions")
 public class QuestionResource extends RESTWebService {
+
+  @Inject
+  private OrganizationController controller;
 
   @PathParam("componentId")
   private String componentId;
-  @PathParam("questionId")
-  private String questionId;
 
   @Override
   protected String getComponentId() {
@@ -81,6 +87,32 @@ public class QuestionResource extends RESTWebService {
     }
   }
 
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public QuestionEntity[] getAllQuestions(@PathParam("questionId") String onQuestionId) {
+    checkUserPriviledges();
+    try {
+      List<Question> questions = QuestionManagerFactory.getQuestionManager().getAllQuestions(
+          componentId);
+      return asWebEntities(questions);
+    } catch (Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
+
+  @GET
+  @Path("category/{categoryId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public QuestionEntity[] getAllQuestionsByCategory(@PathParam("categoryId") String categoryId) {
+    checkUserPriviledges();
+    try {
+      List<Question> questions = QuestionManagerFactory.getQuestionManager().
+          getAllQuestionsByCategory(componentId, categoryId);
+      return asWebEntities(questions);
+    } catch (Exception ex) {
+      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+    }
+  }
 
   protected URI identifiedBy(URI uri) {
     return uri;
@@ -95,11 +127,37 @@ public class QuestionResource extends RESTWebService {
     QuestionEntity[] entities = new QuestionEntity[questions.size()];
     for (int i = 0; i < questions.size(); i++) {
       Question question = questions.get(i);
-      URI commentURI = getUriInfo().getRequestUriBuilder().path(question.getPK().getId()).
+      URI questionURI = getUriInfo().getRequestUriBuilder().path(question.getPK().getId()).
           build();
-      entities[i] = asWebEntity(question, identifiedBy(commentURI));
+      entities[i] = asWebEntity(question, identifiedBy(questionURI));
     }
     return entities;
+  }
+
+  SilverpeasRole getUserProfile() {
+    String[] roles = controller.getUserProfiles(getUserDetail().getId(), componentId);
+    SilverpeasRole profile = user;
+    for (String currentRole : roles) {
+      SilverpeasRole role = SilverpeasRole.valueOf(currentRole);
+      switch (role) {
+        case admin:
+          return admin;
+        case writer:
+          profile = writer;
+          break;
+        case publisher:
+          if (profile != writer) {
+            profile = publisher;
+          }
+          break;
+        default:
+          if (profile != publisher && profile != writer) {
+            profile = role;
+          }
+          break;
+      }
+    }
+    return profile;
   }
 
   /**
@@ -109,10 +167,11 @@ public class QuestionResource extends RESTWebService {
    * @return the corresponding question entity.
    */
   protected QuestionEntity asWebEntity(final Question question, URI questionURI) {
-    QuestionEntity entity = QuestionEntity.fromQuestion(question).withURI(questionURI);
-    AuthorEntity author = AuthorEntity.fromUser(question.readAuthor());
+    QuestionEntity entity = QuestionEntity.fromQuestion(question).withURI(questionURI).withUser(
+        getUserDetail(), getUserProfile());
+    AuthorEntity author = AuthorEntity.fromUser(question.readAuthor(controller));
     author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
+    entity.setCreator(author);
     return entity;
   }
-
 }

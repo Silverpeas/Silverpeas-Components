@@ -39,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  *
@@ -47,6 +48,7 @@ import java.util.List;
 public class QuestionManagerTest extends AbstractTestDao {
 
   public QuestionManagerTest() {
+    new ClassPathXmlApplicationContext("spring-questionreply.xml");
   }
 
   /**

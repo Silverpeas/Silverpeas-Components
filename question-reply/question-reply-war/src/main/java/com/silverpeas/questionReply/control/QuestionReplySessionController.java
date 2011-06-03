@@ -31,7 +31,6 @@ import com.silverpeas.questionReply.model.Recipient;
 import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.ui.DisplayI18NHelper;
 import com.silverpeas.util.ZipManager;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.silverpeas.whitePages.control.CardManager;
@@ -70,6 +69,7 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -79,14 +79,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 public class QuestionReplySessionController extends AbstractComponentSessionController {
 
-  private String userProfil;
+  private SilverpeasRole userProfil;
   private Question currentQuestion;
   private Reply currentReply;
   private Question newQuestion;
@@ -101,8 +100,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Recupère la liste des questions selon le profil de l'utilisateur courant
    */
   public Collection<Question> getQuestions() throws QuestionReplyException {
-    SilverpeasRole role = SilverpeasRole.valueOf(userProfil);
-    switch (role) {
+    switch (userProfil) {
       case user:
         return getUserQuestions();
       case writer:
@@ -139,8 +137,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public Collection<Reply> getRepliesForQuestion(long id) throws QuestionReplyException {
-    SilverpeasRole role = SilverpeasRole.valueOf(userProfil);
-    switch (role) {
+    switch (userProfil) {
       case user:
         return getPublicRepliesForQuestion(id);
       case publisher:
@@ -195,33 +192,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * : newQuestion
    */
   public Question getNewQuestion() {
-    Question question = new Question(getUserId(), getComponentId());
-    newQuestion = question;
+    newQuestion = new Question(getUserId(), getComponentId());
     return newQuestion;
-  }
-
-  /*
-   * initialise les destinataires de la question à créer
-   */
-  public void setNewQuestionRecipients(Collection<String> userIds) {
-    Collection<Recipient> recipients = new ArrayList<Recipient>();
-    if (userIds != null) {
-      Iterator<String> it = userIds.iterator();
-      while (it.hasNext()) {
-        String userId = it.next();
-        Recipient recipient = new Recipient(userId);
-        recipients.add(recipient);
-      }
-    }
-    newQuestion.writeRecipients(recipients);
-  }
-
-  /*
-   * initialise le contenu de la question à créer
-   */
-  public void setNewQuestionContent(String title, String content) {
-    newQuestion.setTitle(title);
-    newQuestion.setContent(content);
   }
 
   public void setNewQuestionContent(String title, String content, String categoryId) {
@@ -295,41 +267,12 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     notifyReply(newReply);
   }
 
-  /*
-   * Modifie et enregistre la question courante
-   */
-  public void updateCurrentQuestion(String title, String content) throws QuestionReplyException {
-    getCurrentQuestion().setTitle(title);
-    getCurrentQuestion().setContent(content);
-    QuestionManagerFactory.getQuestionManager().updateQuestion(getCurrentQuestion());
-  }
-
   public void updateCurrentQuestion(String title, String content, String categoryId)
       throws QuestionReplyException {
     getCurrentQuestion().setTitle(title);
     getCurrentQuestion().setContent(content);
     getCurrentQuestion().setCategoryId(categoryId);
     QuestionManagerFactory.getQuestionManager().updateQuestion(getCurrentQuestion());
-  }
-
-  /*
-   * Modifie la réponse courante => supprime la réponse publique => deletePublicReplies() => crée
-   * une nouvelle réponse publique et privée met à jour en session la question courante
-   */
-  public void updateCurrentReplyOLD(String title, String content) throws QuestionReplyException {
-    getNewReply();
-    setNewReplyContent(title, content, getCurrentReply().getPublicReply(), 1);
-    WAPrimaryKey pk = newReply.getPK();
-    pk.setComponentName(getComponentId());
-    newReply.setPK(pk);
-    long replyId = QuestionManagerFactory.getQuestionManager().createReply(newReply,
-        getCurrentQuestion());
-    List<Long> replyIds = new ArrayList<Long>();
-    replyIds.add(((IdPK) getCurrentReply().getPK()).getIdAsLong());
-    deletePublicReplies(replyIds);
-    getReply(replyId);
-    getQuestion(((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
-    notifyReply(newReply);
   }
 
   public void updateCurrentReply(String title, String content)
@@ -369,49 +312,46 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public void deleteReplies(Collection<Long> replyIds) throws QuestionReplyException {
     try {
       int rest = 0;
-      if (userProfil.equals("publisher")) {
+      if (userProfil == SilverpeasRole.publisher) {
         rest = deletePrivateReplies(replyIds);
-      } else if ((userProfil.equals("writer")) || (userProfil.equals("admin"))) {
+      } else if (userProfil == SilverpeasRole.writer || userProfil == SilverpeasRole.admin) {
         rest = deletePublicReplies(replyIds);
       }
-      if ((((getCurrentQuestion().getReplyNumber()) == 0) || (rest == 0))
-          && (getCurrentQuestion().getStatus() == 2)) {
+      if (isQuestionClosedWithoutAnyReply(rest)) {
         reSetCurrentQuestion();
       } else {
         getQuestion(((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
       }
     } catch (QuestionReplyException e) {
-      throw new QuestionReplyException(
-          "QuestionReplySessionController.deleteReplies",
-          SilverpeasException.ERROR, "questionReply.EX_DELETE_REPLY_FAILED",
-          "", e);
+      throw new QuestionReplyException("QuestionReplySessionController.deleteReplies",
+          SilverpeasException.ERROR, "questionReply.EX_DELETE_REPLY_FAILED", "", e);
     }
   }
 
   public void deleteR(Collection<Long> replyIds) throws QuestionReplyException {
     try {
-      int rest = 0;
-      rest = deletePrivateReplies(replyIds);
-      rest = deletePublicReplies(replyIds);
-      if ((((getCurrentQuestion().getReplyNumber()) == 0) || (rest == 0))
-          && (getCurrentQuestion().getStatus() == 2)) {
+      deletePrivateReplies(replyIds);
+      int rest = deletePublicReplies(replyIds);
+      if (isQuestionClosedWithoutAnyReply(rest)) {
         reSetCurrentQuestion();
       } else {
         getQuestion(((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
       }
     } catch (QuestionReplyException e) {
-      throw new QuestionReplyException(
-          "QuestionReplySessionController.deleteReplies",
-          SilverpeasException.ERROR, "questionReply.EX_DELETE_REPLY_FAILED",
-          "", e);
+      throw new QuestionReplyException("QuestionReplySessionController.deleteReplies",
+          SilverpeasException.ERROR, "questionReply.EX_DELETE_REPLY_FAILED","", e);
     }
+  }
+
+  private boolean isQuestionClosedWithoutAnyReply(int rest) {
+    return (((getCurrentQuestion().getReplyNumber()) == 0) || (rest == 0))
+        && (getCurrentQuestion().hasClosedStatus());
   }
 
   /*
    * Clos une liste de questions
    */
-  public void closeQuestions(Collection<Long> questionIds)
-      throws QuestionReplyException {
+  public void closeQuestions(Collection<Long> questionIds) throws QuestionReplyException {
     QuestionManagerFactory.getQuestionManager().closeQuestions(questionIds);
   }
 
@@ -508,19 +448,19 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public void setUserProfil() {
-    this.userProfil = getUserRoleLevel();
+    this.userProfil = SilverpeasRole.valueOf(getUserRoleLevel());
   }
 
   public void setUserProfil(String profil) {
-    this.userProfil = profil;
+    this.userProfil = SilverpeasRole.valueOf(profil);
   }
 
   public String getUserProfil() {
-    return this.userProfil;
+    return this.userProfil.name();
   }
 
   public SilverpeasRole getUserRole() {
-    return SilverpeasRole.valueOf(this.userProfil);
+    return this.userProfil;
   }
 
   /**
@@ -555,22 +495,16 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * Retourne true si la liste contient deja le user
    */
   private boolean exist(UserDetail user, Collection<UserDetail> listUser) {
-    int i = 0;
-    List<UserDetail> arrayUser = new ArrayList<UserDetail>(listUser);
     if (user != null) {
       String idUser = user.getId();
-      while (i < arrayUser.size()) {
-        UserDetail theUser = arrayUser.get(i);
-        String theId = theUser.getId();
-        if (theId.equals(idUser)) {
+      for(UserDetail currentUser : listUser){
+        if (currentUser.getId().equals(idUser)) {
           return true;
         }
-        i++;
       }
-    } else {
-      return true;
+      return false;
     }
-    return false;
+    return true;
   }
 
   /*
@@ -689,29 +623,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   }
 
-  /*
-   * Récupère la liste des experts du domaine de la question qui ne sont pas déjà destinataires
-   */
-  public Collection<UserDetail> getCurrentQuestionAvailableWriters()
-      throws QuestionReplyException {
-    Collection<UserDetail> users = getCurrentQuestionWriters();
-    Collection<UserDetail> availableUsers = new ArrayList<UserDetail>();
-    Collection<Recipient> recipients = getCurrentQuestion().readRecipients();
-
-    for (UserDetail user : users) {
-      boolean isRecipient = false;
-      for (Recipient recipient : recipients) {
-        if (user.getId().equals(recipient.getUserId())) {
-          isRecipient = true;
-        }
-      }
-      if (!isRecipient) {
-        availableUsers.add(user);
-      }
-    }
-    return availableUsers;
-  }
-
   /**
    * @param question the current question-reply question
    * @param users list of users to notify
@@ -725,7 +636,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       String subject = getString("questionReply.notification") + getComponentLabel();
       // Get default resource bundle
       String resource = "com.silverpeas.questionReply.multilang.questionReplyBundle";
-      ResourceLocator message = new ResourceLocator(resource, I18NHelper.defaultLanguage);
+      ResourceLocator message;
 
       // Initialize templates
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
@@ -859,31 +770,19 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return notifSender;
   }
 
-  /*-------------- Methodes de la classe ------------------*/
-
-  /*
-   *
-   */
   public QuestionReplySessionController(MainSessionController mainSessionCtrl,
       ComponentContext context, String multilangBaseName, String iconBaseName) {
     super(mainSessionCtrl, context, multilangBaseName, iconBaseName);
     setUserProfil();
   }
 
-  /*-------------- Methodes utiles a l'integration du PDC ------------------*/
-
-  /*
-   *
-   */
   public String getCurrentQuestionContentId() {
     String contentId = null;
 
     if (currentQuestion != null) {
       try {
         ContentManager contentManager = new ContentManager();
-
-        contentId = ""
-            + contentManager.getSilverContentId(
+        contentId = "" + contentManager.getSilverContentId(
             currentQuestion.getPK().getId(), currentQuestion.getInstanceId());
       } catch (ContentManagerException ignored) {
         SilverTrace.error("questionReply", "QuestionReplySessionController",
@@ -925,18 +824,13 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return com.silverpeas.questionReply.control.QuestionReplyExport.isReplyVisible(question, reply, getUserRole(), getUserId());
   }
 
-  // Gestion des catégories
-  // ----------------------
   public Collection<NodeDetail> getAllCategories() throws QuestionReplyException {
     try {
-      NodePK nodePK = new NodePK("0", getComponentId());
-      Collection<NodeDetail> categories = getNodeBm().getChildrenDetails(nodePK);
-      return categories;
+      NodePK nodePK = new NodePK(NodePK.ROOT_NODE_ID, getComponentId());
+      return getNodeBm().getChildrenDetails(nodePK);
     } catch (Exception e) {
-      throw new QuestionReplyException(
-          "QuestionReplySessioncontroller.getAllCategories()",
-          SilverpeasRuntimeException.ERROR,
-          "QuestionReply.MSG_CATEGORIES_NOT_EXIST", e);
+      throw new QuestionReplyException("QuestionReplySessioncontroller.getAllCategories()",
+          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORIES_NOT_EXIST", e);
     }
   }
 
@@ -946,27 +840,20 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       category.setCreationDate(DateUtil.date2SQLDate(new Date()));
       category.setCreatorId(getUserId());
       category.getNodePK().setComponentName(getComponentId());
-
       getNodeBm().createNode(category, new NodeDetail());
     } catch (Exception e) {
-      throw new QuestionReplyException(
-          "QuestionReplySessioncontroller.createCategory()",
-          SilverpeasRuntimeException.ERROR,
-          "QuestionReply.MSG_CATEGORIES_NOT_CREATE", e);
+      throw new QuestionReplyException("QuestionReplySessioncontroller.createCategory()",
+          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORIES_NOT_CREATE", e);
     }
   }
 
   public Category getCategory(String categoryId) throws QuestionReplyException {
     try {
-      // rechercher la catégorie
       NodePK nodePK = new NodePK(categoryId, getComponentId());
-      Category category = new Category(getNodeBm().getDetail(nodePK));
-      return category;
+      return new Category(getNodeBm().getDetail(nodePK));
     } catch (Exception e) {
-      throw new QuestionReplyException(
-          "QuestionReplySessioncontroller.getCategory()",
-          SilverpeasRuntimeException.ERROR,
-          "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
+      throw new QuestionReplyException("QuestionReplySessioncontroller.getCategory()",
+          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
     }
   }
 
@@ -975,36 +862,27 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     try {
       getNodeBm().setDetail(category);
     } catch (Exception e) {
-      throw new QuestionReplyException(
-          "QuestionReplySessioncontroller.updateCategory()",
-          SilverpeasRuntimeException.ERROR,
-          "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
+      throw new QuestionReplyException("QuestionReplySessioncontroller.updateCategory()",
+          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
     }
   }
 
-  public synchronized void deleteCategory(String categoryId)
-      throws QuestionReplyException {
+  public synchronized void deleteCategory(String categoryId) throws QuestionReplyException {
     try {
-      // pour cette catégorie, rechercher les questions et mettre "" dans la
-      // catégorie
       Collection<Question> questions = getQuestionsByCategory(categoryId);
       for (Question question : questions) {
         question.setCategoryId("");
         QuestionManagerFactory.getQuestionManager().updateQuestion(question);
       }
-
-      // suppression de la catégorie
       NodePK nodePk = new NodePK(categoryId, getComponentId());
       getNodeBm().removeNode(nodePk);
     } catch (Exception e) {
-      throw new QuestionReplyException(
-          "QuestionReplySessioncontroller.deleteCategory()",
-          SilverpeasRuntimeException.ERROR,
-          "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
+      throw new QuestionReplyException("QuestionReplySessioncontroller.deleteCategory()",
+          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CATEGORY_NOT_EXIST", e);
     }
   }
 
-  public ExportReport export(ResourcesWrapper resource) throws QuestionReplyException, 
+  public ExportReport export(ResourcesWrapper resource) throws QuestionReplyException,
       ParseException {
     StringBuilder sb = new StringBuilder("exportFAQ");
     Date date = new Date();
@@ -1058,21 +936,20 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       }
     } catch (Exception ex) {
       throw new QuestionReplyException("QuestionReplySessionController.export()",
-          SilverpeasRuntimeException.ERROR,
-          "QuestionReply.EX_CANT_COPY_FILE", ex);
+          SilverpeasRuntimeException.ERROR, "QuestionReply.EX_CANT_COPY_FILE", ex);
     }
 
     // création du fichier html
     File fileHTML = new File(dir + File.separator + thisExportDir + ".html");
     FileWriter fileWriter = null;
     try {
-      fileHTML.createNewFile();
-      fileWriter = new FileWriter(fileHTML.getPath());
-      fileWriter.write(toHTML(fileHTML, resource));
+      if(fileHTML.createNewFile()){
+        fileWriter = new FileWriter(fileHTML.getPath());
+        fileWriter.write(toHTML(fileHTML, resource));
+      }
     } catch (IOException ex) {
       throw new QuestionReplyException("QuestionReplySessioncontroller.export()",
-          SilverpeasRuntimeException.ERROR,
-          "QuestionReply.MSG_CAN_WRITE_FILE", ex);
+          SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_CAN_WRITE_FILE", ex);
     } finally {
       try {
         fileWriter.close();
@@ -1098,7 +975,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return exportReport;
   }
 
-  public String toHTML(File file, ResourcesWrapper resource) throws QuestionReplyException, 
+  public String toHTML(File file, ResourcesWrapper resource) throws QuestionReplyException,
       ParseException {
     String fileName = file.getName();
     StringBuilder sb = new StringBuilder();
@@ -1154,7 +1031,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     return sb.toString();
   }
 
-  public String addBody(ResourcesWrapper resource, File file) throws QuestionReplyException, 
+  public String addBody(ResourcesWrapper resource, File file) throws QuestionReplyException,
       ParseException {
     StringBuilder sb = new StringBuilder();
     sb.append("<table width=\"100%\">\n");
@@ -1197,7 +1074,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   private NodeBm getNodeBm() throws QuestionReplyException {
-    NodeBm nodeBm = null;
+    NodeBm nodeBm;
     try {
       NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.NODEBM_EJBHOME, NodeBmHome.class);

@@ -38,15 +38,15 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>clipboard</artifactId>
-      <classifier>client</classifier>
+      <groupId>com.silverpeas.core</groupId>
+      <artifactId>ws-test-core</artifactId>
       <version>${core.version}</version>
-      <scope>provided</scope>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>com.silverpeas.core.ejb-core</groupId>
-      <artifactId>personalization</artifactId>
+      <artifactId>clipboard</artifactId>
+      <classifier>client</classifier>
       <version>${core.version}</version>
       <scope>provided</scope>
     </dependency>
