@@ -53,18 +53,10 @@ public class Question extends SilverpeasBean {
   private String categoryId;
   private List<Reply> replies = new ArrayList<Reply>();
   private List<Recipient> recipients = new ArrayList<Recipient>();
-  private static OrganizationController organizationController = new OrganizationController();
 
   public Question() {
   }
 
-  /**
-   * For tests only
-   * @param organizationController
-   */
-  Question(OrganizationController organizationController) {
-    Question.organizationController = organizationController;
-  }
 
   public Question(String creatorId, String instanceId) {
     this.creatorId = creatorId;
@@ -177,8 +169,13 @@ public class Question extends SilverpeasBean {
   }
 
   public String readCreatorName() {
+    OrganizationController organizationController = new OrganizationController();
+    return readCreatorName(organizationController);
+  }
+
+  public String readCreatorName(OrganizationController organizationController) {
     String creatorName = null;
-    UserDetail userDetail = readAuthor();
+    UserDetail userDetail = readAuthor(organizationController);
     if (userDetail != null) {
       creatorName = userDetail.getDisplayedName();
     }
@@ -186,8 +183,8 @@ public class Question extends SilverpeasBean {
   }
 
 
-  public UserDetail readAuthor() {
-    return organizationController.getUserDetail(String.valueOf(getCreatorId()));
+  public UserDetail readAuthor(OrganizationController organizationController) {
+    return organizationController.getUserDetail(getCreatorId());
   }
 
   @Override

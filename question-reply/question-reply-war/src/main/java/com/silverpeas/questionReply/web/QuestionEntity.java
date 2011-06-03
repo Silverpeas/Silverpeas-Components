@@ -25,12 +25,18 @@ package com.silverpeas.questionReply.web;
 
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.rest.Exposable;
+import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.persistence.IdPK;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+
+import static com.stratelia.webactiv.SilverpeasRole.*;
 
 /**
  *
@@ -39,6 +45,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class QuestionEntity implements Exposable {
 
+  @XmlTransient
   private static final long serialVersionUID = -5078903273496009079L;
   @XmlElement(defaultValue = "")
   private URI uri;
@@ -65,7 +72,14 @@ public class QuestionEntity implements Exposable {
   @XmlElement(required = true)
   private String instanceId;
   @XmlElement(defaultValue = "")
-  private String categoryId;
+  private String categoryId = "";
+  @XmlElement()
+  private boolean updatable = true;
+  @XmlElement()
+  private boolean reopenable = false;
+  @XmlElement(required = true)
+  private AuthorEntity creator;
+
 
   protected QuestionEntity() {
   }
@@ -74,10 +88,10 @@ public class QuestionEntity implements Exposable {
     this.id = question.getPK().getId();
     this.instanceId = question.getInstanceId();
     this.categoryId = question.getCategoryId();
+    this.title = question.getTitle();
     this.content = question.getContent();
     this.creationDate = question.getCreationDate();
     this.creatorId = question.getCreatorId();
-    this.creatorName = question.readCreatorName();
     this.privateReplyNumber = question.getPrivateReplyNumber();
     this.publicReplyNumber = question.getPublicReplyNumber();
     this.replyNumber = question.getReplyNumber();
@@ -119,10 +133,6 @@ public class QuestionEntity implements Exposable {
     return creatorId;
   }
 
-  public String getCreatorName() {
-    return creatorName;
-  }
-
   public String getId() {
     return id;
   }
@@ -149,6 +159,14 @@ public class QuestionEntity implements Exposable {
 
   public String getTitle() {
     return title;
+  }
+
+  public AuthorEntity getCreator() {
+    return creator;
+  }
+
+  void setCreator(AuthorEntity creator) {
+    this.creator = creator;
   }
 
   @Override
@@ -241,7 +259,7 @@ public class QuestionEntity implements Exposable {
   }
 
   /**
-   * Creates several new comment entities from the specified list of questions.
+   * Creates several new reply entities from the specified list of questions.
    * @param questions the list of questions to entitify.
    * @return a list of entities representing each of then one of the specified questions.
    */
@@ -254,8 +272,8 @@ public class QuestionEntity implements Exposable {
   }
 
   /**
-   * Gets the comment business objet this entity represent.
-   * @return a comment instance.
+   * Gets the reply business objet this entity represent.
+   * @return a reply instance.
    */
   public Question toQuestion() {
     Question question = new Question();
@@ -271,5 +289,39 @@ public class QuestionEntity implements Exposable {
     question.setStatus(status);
     question.setTitle(title);
     return question;
+  }
+
+  public QuestionEntity withUser(UserDetail userDetail, SilverpeasRole profile) {
+    this.updatable = isQuestionUpdatable(userDetail, profile);
+    return this;
+  }
+
+  boolean isQuestionUpdatable(UserDetail userDetail, SilverpeasRole profile) {
+    boolean questionUpdatable = true;
+    if (profile == publisher && !this.getCreatorId().equals(userDetail.getId())) {
+      questionUpdatable = false;
+    } else if (profile == publisher) {
+      if (this.getStatus() != Question.NEW) {
+        questionUpdatable = false;
+      }
+    }
+    if (profile == user) {
+      questionUpdatable = false;
+    }
+    return questionUpdatable;
+  }
+
+  boolean isQuestionReopenable(UserDetail userDetail, SilverpeasRole profile) {
+    return this.getStatus() == Question.CLOSED && profile == admin;
+  }
+
+  @Override
+  public String toString() {
+    return "QuestionEntity{" + "uri=" + uri + ", id=" + id + ", title=" + title + ", content="
+        + content + ", creatorId=" + creatorId + ", creatorName=" + creatorName + ", creationDate="
+        + creationDate + ", status=" + status + ", publicReplyNumber=" + publicReplyNumber
+        + ", privateReplyNumber=" + privateReplyNumber + ", replyNumber=" + replyNumber
+        + ", instanceId=" + instanceId + ", categoryId=" + categoryId + ", updatable="
+        + updatable + ", reopenable=" + reopenable + '}';
   }
 }

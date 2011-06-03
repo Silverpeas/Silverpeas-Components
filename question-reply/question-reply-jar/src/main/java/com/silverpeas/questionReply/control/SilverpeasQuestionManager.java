@@ -29,8 +29,11 @@ import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.questionReply.model.Recipient;
 import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
+import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.persistence.PersistenceException;
@@ -47,7 +50,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import javax.inject.Inject;
+import javax.inject.Named;
 
+@Named("questionManager")
 public class SilverpeasQuestionManager implements QuestionManager {
 
   private final QuestionIndexer questionIndexer = new QuestionIndexer();
@@ -55,7 +61,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
   private SilverpeasBeanDAO<Reply> replyDao = null;
   private SilverpeasBeanDAO<Recipient> recipientDao = null;
   private final QuestionReplyContentManager contentManager = new QuestionReplyContentManager();
-  private OrganizationController controller = new OrganizationController();
+  @Inject
+  private OrganizationController controller;
 
   SilverpeasQuestionManager() {
     try {
@@ -85,6 +92,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       Collection<Recipient> recipients = question.readRecipients();
       con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
       IdPK pkQ = (IdPK) questionDao.add(con, question);
+      question.setPK(pkQ);
       questionIndexer.createIndex(question, Collections.<Reply>emptyList());
       long idQ = pkQ.getIdAsLong();
       if (recipients != null) {
@@ -120,6 +128,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
     try {
       con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
       IdPK pkR = (IdPK) replyDao.add(con, reply);
+      WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(), "", question.
+          getInstanceId(), pkR.getId());
       long idR = pkR.getIdAsLong();
       if (question.hasNewStatus()) {
         question.open();
@@ -131,6 +141,9 @@ public class SilverpeasQuestionManager implements QuestionManager {
       throw new QuestionReplyException("QuestionManager.createReply", SilverpeasException.ERROR,
           "questionReply.EX_CREATE_REPLY_FAILED", "", e);
     } catch (PersistenceException e) {
+      throw new QuestionReplyException("QuestionManager.createReply", SilverpeasException.ERROR,
+          "questionReply.EX_CREATE_REPLY_FAILED", "", e);
+    } catch (WysiwygException e) {
       throw new QuestionReplyException("QuestionManager.createReply", SilverpeasException.ERROR,
           "questionReply.EX_CREATE_REPLY_FAILED", "", e);
     } finally {
@@ -436,12 +449,17 @@ public class SilverpeasQuestionManager implements QuestionManager {
   private void updateReply(Connection con, Reply reply) throws QuestionReplyException {
     try {
       Question question = getQuestion(reply.getQuestionId());
+      reply.getPK().setComponentName(question.getInstanceId());
       if ((reply.getPublicReply() == 0) && (reply.getPrivateReply() == 0)) {
-        deleteReply(con, ((IdPK) reply.getPK()).getIdAsLong());
+        deleteReply(con, reply.getPK());
       } else {
         replyDao.update(con, reply);
+        updateWysiwygContent(reply);
       }
       questionIndexer.updateIndex(question, getAllReplies(reply.getQuestionId()));
+    } catch (WysiwygException e) {
+       throw new QuestionReplyException("QuestionManager.updateReply",
+          SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLY_FAILED", "", e);
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.updateReply",
           SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLY_FAILED", "", e);
@@ -596,11 +614,10 @@ public class SilverpeasQuestionManager implements QuestionManager {
   /*
    * supprime une réponse
    */
-  private void deleteReply(Connection con, long replyId) throws QuestionReplyException {
+  private void deleteReply(Connection con, WAPrimaryKey replyId) throws QuestionReplyException {
     try {
-      IdPK pk = new IdPK();
-      pk.setIdAsLong(replyId);
-      replyDao.remove(con, pk);
+      replyDao.remove(con, replyId);
+      WysiwygController.deleteFile(replyId.getInstanceId(), replyId.getId(), I18NHelper.defaultLanguage);
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.deleteReply", SilverpeasException.ERROR,
           "questionReply.EX_DELETE_REPLY_FAILED", "", e);
@@ -913,6 +930,17 @@ public class SilverpeasQuestionManager implements QuestionManager {
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestionPrivateReplies",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_REPLIES", "", e);
+    }
+  }
+
+  protected void updateWysiwygContent(Reply reply) throws WysiwygException {
+    if (WysiwygController.haveGotWysiwyg("", reply.getPK().getInstanceId(),
+        reply.getPK().getId())) {
+      WysiwygController.updateFileAndAttachment(reply.readCurrentWysiwygContent(), "",
+          reply.getPK().getInstanceId(), reply.getPK().getId(), reply.getCreatorId());
+    } else {
+      WysiwygController.createFileAndAttachment(reply.readCurrentWysiwygContent(), "",
+          reply.getPK().getInstanceId(), reply.getPK().getId());
     }
   }
 

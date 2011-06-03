@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.com/legal/licensing"
+ * "http://repository.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,27 +21,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.questionReply.control;
+package com.silverpeas.questionReply.web;
 
-import javax.inject.Inject;
+import com.silverpeas.personalization.UserPreferences;
+import com.silverpeas.personalization.service.PersonalizationService;
+import javax.inject.Named;
 
 /**
  *
- * @author ehugonnet
+ * @author emmanuel.hugonnet@silverpeas.org
  */
-public class QuestionManagerFactory {
-  @Inject
-  private QuestionManager questionManager;
-  private static final QuestionManagerFactory instance = new QuestionManagerFactory();
+@Named
+public class MockablePersonalizationService implements PersonalizationService {
+private PersonalizationService service;
 
-  public static QuestionManagerFactory getFactory() {
-    return instance;
+  void setPersonalizationService(PersonalizationService questionManager) {
+    this.service = questionManager;
   }
 
-  public static QuestionManager getQuestionManager() {
-    return instance.questionManager;
+  PersonalizationService getPersonalizationService() {
+    return service;
+  }
+  @Override
+  public void saveUserSettings(UserPreferences userPreferences) {
+    service.saveUserSettings(userPreferences);
   }
 
-  private QuestionManagerFactory() {
+  @Override
+  public UserPreferences getUserSettings(String userId) {
+    return service.getUserSettings(userId);
   }
+
 }

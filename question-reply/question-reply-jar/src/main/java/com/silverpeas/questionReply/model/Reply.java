@@ -23,6 +23,9 @@
  */
 package com.silverpeas.questionReply.model;
 
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
+import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import java.util.Date;
 
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -37,11 +40,12 @@ public class Reply extends SilverpeasBean {
   private long questionId;
   private String title;
   private String content;
+  private String wysiwygContent;
   private String creatorId;
   private String creationDate;
   private int publicReply = 0;
   private int privateReply = 1;
-  private static OrganizationController organizationController = new OrganizationController();
+
 
   public Reply() {
   }
@@ -117,12 +121,38 @@ public class Reply extends SilverpeasBean {
   }
 
   public String readCreatorName() {
+    OrganizationController organizationController = new OrganizationController();
+    return readCreatorName(organizationController);
+  }
+
+  public String readCreatorName(OrganizationController organizationController) {
     String creatorName = null;
-    UserDetail userDetail = organizationController.getUserDetail(String.valueOf(this.creatorId));
+    UserDetail userDetail = readAuthor(organizationController);
     if (userDetail != null) {
       creatorName = userDetail.getDisplayedName();
     }
     return creatorName;
+  }
+
+  public UserDetail readAuthor(OrganizationController organizationController) {
+    return organizationController.getUserDetail(String.valueOf(getCreatorId()));
+  }
+
+  public String loadWysiwygContent() {
+    try {
+      return WysiwygController.load(getPK().getInstanceId(), getPK().getId(),
+          I18NHelper.defaultLanguage);
+    } catch (WysiwygException e) {
+      return this.wysiwygContent;
+    }
+  }
+
+  public String readCurrentWysiwygContent() {
+    return this.wysiwygContent;
+  }
+
+  public void writeWysiwygContent(String wysiwygContent) {
+    this.wysiwygContent = wysiwygContent;
   }
 
   @Override
