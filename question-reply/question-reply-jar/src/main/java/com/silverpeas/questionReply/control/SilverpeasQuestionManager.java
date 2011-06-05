@@ -132,10 +132,11 @@ public class SilverpeasQuestionManager implements QuestionManager {
           getInstanceId(), pkR.getId());
       long idR = pkR.getIdAsLong();
       if (question.hasNewStatus()) {
-        question.open();
+        question.waitForAnswer();
       }
       updateQuestion(con, question);
-      questionIndexer.updateIndex(question, getAllReplies(reply.getQuestionId()));
+      questionIndexer.updateIndex(question, getAllReplies(reply.getQuestionId(), question.
+          getInstanceId()));
       return idR;
     } catch (UtilException e) {
       throw new QuestionReplyException("QuestionManager.createReply", SilverpeasException.ERROR,
@@ -207,7 +208,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
         con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
         for (Long idQ : questionIds) {
           Question question = getQuestion(idQ);
-          question.open();
+          question.waitForAnswer();
           updateQuestion(con, question);
         }
       } catch (UtilException e) {
@@ -261,7 +262,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       if (questionIds != null) {
         for (Long idQ : questionIds) {
           Question question = getQuestion(idQ);
-          Collection<Reply> replies = getQuestionPublicReplies(idQ);
+          Collection<Reply> replies = getQuestionPublicReplies(idQ, question.getInstanceId());
           if (replies != null) {
             for (Reply reply : replies) {
               reply.setPublicReply(0);
@@ -299,7 +300,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       if (questionIds != null) {
         for (Long idQ : questionIds) {
           Question question = getQuestion(idQ);
-          Collection<Reply> replies = getQuestionPrivateReplies(idQ);
+          Collection<Reply> replies = getQuestionPrivateReplies(idQ, question.getInstanceId());
           if (replies != null) {
             for (Reply reply : replies) {
               reply.setPrivateReply(0);
@@ -406,7 +407,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
         deleteQuestion(con, idQ);
       } else {
         questionDao.update(con, question);
-        questionIndexer.updateIndex(question, getAllReplies(idQ));
+        questionIndexer.updateIndex(question, getAllReplies(idQ, question.getInstanceId()));
         question.getPK().setComponentName(question.getInstanceId());
         contentManager.updateSilverContentVisibility(question);
       }
@@ -432,7 +433,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
         deleteQuestion(idQ);
       } else {
         questionDao.update(question);
-        questionIndexer.updateIndex(question, getAllReplies(idQ));
+        questionIndexer.updateIndex(question, getAllReplies(idQ, question.getInstanceId()));
         question.getPK().setComponentName(question.getInstanceId());
         contentManager.updateSilverContentVisibility(question);
       }
@@ -456,9 +457,10 @@ public class SilverpeasQuestionManager implements QuestionManager {
         replyDao.update(con, reply);
         updateWysiwygContent(reply);
       }
-      questionIndexer.updateIndex(question, getAllReplies(reply.getQuestionId()));
+      questionIndexer.updateIndex(question, getAllReplies(reply.getQuestionId(), question.
+          getInstanceId()));
     } catch (WysiwygException e) {
-       throw new QuestionReplyException("QuestionManager.updateReply",
+      throw new QuestionReplyException("QuestionManager.updateReply",
           SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLY_FAILED", "", e);
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.updateReply",
@@ -478,8 +480,15 @@ public class SilverpeasQuestionManager implements QuestionManager {
         deleteReply(((IdPK) reply.getPK()).getIdAsLong());
       } else {
         replyDao.update(reply);
+        try {
+          updateWysiwygContent(reply);
+        } catch (WysiwygException e) {
+          throw new QuestionReplyException("QuestionManager.updateReply",
+              SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLY_FAILED", "", e);
+        }
       }
-      questionIndexer.updateIndex(question, getAllReplies(reply.getQuestionId()));
+      questionIndexer.updateIndex(question, getAllReplies(reply.getQuestionId(), question.
+          getInstanceId()));
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.updateReply",
           SilverpeasException.ERROR, "questionReply.EX_UPDATE_REPLY_FAILED", "", e);
@@ -546,7 +555,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
         Question question = getQuestion(questionId);
         String peasId = question.getInstanceId();
         // rechercher les réponses
-        Collection<Reply> replies = getAllReplies(questionId);
+        Collection<Reply> replies = getAllReplies(questionId, peasId);
         for (Reply reply : replies) {
           long replyId = Long.parseLong(reply.getPK().getId());
           WAPrimaryKey pkR = reply.getPK();
@@ -575,13 +584,12 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   @Override
-  public List<Reply> getAllReplies(long questionId)
-      throws QuestionReplyException {
+  public List<Reply> getAllReplies(long questionId, String instanceId) throws QuestionReplyException {
     List<Reply> allReplies = new ArrayList<Reply>();
     try {
-      Collection<Reply> privateReplies = getQuestionPrivateReplies(questionId);
+      Collection<Reply> privateReplies = getQuestionPrivateReplies(questionId, instanceId);
       allReplies.addAll(privateReplies);
-      Collection<Reply> publicReplies = getQuestionPublicReplies(questionId);
+      Collection<Reply> publicReplies = getQuestionPublicReplies(questionId, instanceId);
       allReplies.addAll(publicReplies);
       return allReplies;
     } catch (Exception e) {
@@ -617,7 +625,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
   private void deleteReply(Connection con, WAPrimaryKey replyId) throws QuestionReplyException {
     try {
       replyDao.remove(con, replyId);
-      WysiwygController.deleteFile(replyId.getInstanceId(), replyId.getId(), I18NHelper.defaultLanguage);
+      WysiwygController.deleteFile(replyId.getInstanceId(), replyId.getId(),
+          I18NHelper.defaultLanguage);
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.deleteReply", SilverpeasException.ERROR,
           "questionReply.EX_DELETE_REPLY_FAILED", "", e);
@@ -645,7 +654,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
       IdPK pk = new IdPK();
       pk.setIdAsLong(questionId);
       Question question = questionDao.findByPrimaryKey(pk);
-      Collection<Reply> replies = getQuestionReplies(questionId);
+      Collection<Reply> replies = getQuestionReplies(questionId, question.getInstanceId());
       question.writeReplies(replies);
       return question;
     } catch (PersistenceException e) {
@@ -677,11 +686,17 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * recupère la liste des réponses d'une question
    */
   @Override
-  public List<Reply> getQuestionReplies(long questionId) throws QuestionReplyException {
+  public List<Reply> getQuestionReplies(long questionId, String instanceId) throws
+      QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      return new ArrayList<Reply>(replyDao.findByWhereClause(pk, " questionId = " + String.valueOf(
+      List<Reply> replies = new ArrayList<Reply>(replyDao.findByWhereClause(pk,
+          " questionId = " + String.valueOf(
           questionId)));
+      for (Reply reply : replies) {
+        reply.getPK().setComponentName(instanceId);
+      }
+      return replies;
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestionReplies",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_REPLIES", "", e);
@@ -692,12 +707,16 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * recupère la liste des réponses publiques d'une question
    */
   @Override
-  public List<Reply> getQuestionPublicReplies(long questionId) throws QuestionReplyException {
+  public List<Reply> getQuestionPublicReplies(long questionId, String instanceId) throws
+      QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      return new ArrayList<Reply>(replyDao.findByWhereClause(pk,
-          " publicReply = 1 and questionId = " + String.valueOf(
-          questionId)));
+      List<Reply> replies = new ArrayList<Reply>(replyDao.findByWhereClause(pk,
+          " publicReply = 1 and questionId = " + String.valueOf(questionId)));
+      for (Reply reply : replies) {
+        reply.getPK().setComponentName(instanceId);
+      }
+      return replies;
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestionPublicReplies",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_REPLIES", "", e);
@@ -708,12 +727,16 @@ public class SilverpeasQuestionManager implements QuestionManager {
    * recupère la liste des réponses privées d'une question
    */
   @Override
-  public List<Reply> getQuestionPrivateReplies(long questionId) throws QuestionReplyException {
+  public List<Reply> getQuestionPrivateReplies(long questionId, String instanceId) throws
+      QuestionReplyException {
     try {
       IdPK pk = new IdPK();
-      return new ArrayList<Reply>(replyDao.findByWhereClause(pk,
-          " privateReply = 1 and questionId = " + String.valueOf(
-          questionId)));
+      List<Reply> replies = new ArrayList<Reply>(replyDao.findByWhereClause(pk,
+          " privateReply = 1 and questionId = " + String.valueOf(questionId)));
+      for (Reply reply : replies) {
+        reply.getPK().setComponentName(instanceId);
+      }
+      return replies;
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestionPrivateReplies",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_REPLIES", "", e);
@@ -908,8 +931,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
     try {
       IdPK pk = new IdPK();
       Collection<Reply> replies = replyDao.findByWhereClause(pk,
-          " publicReply = 1 and questionId = "
-          + String.valueOf(questionId));
+          " publicReply = 1 and questionId = " + String.valueOf(questionId));
       return replies.size();
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestionPublicReplies",
@@ -924,8 +946,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
     try {
       IdPK pk = new IdPK();
       Collection<Reply> replies = replyDao.findByWhereClause(pk,
-          " privateReply = 1 and questionId = "
-          + String.valueOf(questionId));
+          " privateReply = 1 and questionId = " + String.valueOf(questionId));
       return replies.size();
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getQuestionPrivateReplies",
@@ -934,8 +955,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
   }
 
   protected void updateWysiwygContent(Reply reply) throws WysiwygException {
-    if (WysiwygController.haveGotWysiwyg("", reply.getPK().getInstanceId(),
-        reply.getPK().getId())) {
+    if (WysiwygController.haveGotWysiwyg("", reply.getPK().getInstanceId(), reply.getPK().getId())) {
       WysiwygController.updateFileAndAttachment(reply.readCurrentWysiwygContent(), "",
           reply.getPK().getInstanceId(), reply.getPK().getId(), reply.getCreatorId());
     } else {

@@ -1,16 +1,35 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright (C) 2000 - 2011 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection withWriter Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have recieved a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along withWriter this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package com.silverpeas.questionReply.web;
 
+import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.control.QuestionManagerFactory;
 import com.silverpeas.questionReply.model.Reply;
-import com.silverpeas.rest.RESTWebService;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import java.net.URI;
-import java.util.List;
-import javax.inject.Inject;
+import com.stratelia.webactiv.SilverpeasRole;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -18,8 +37,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -32,12 +52,10 @@ import org.springframework.stereotype.Service;
 @Service
 @Scope("request")
 @Path("questionreply/{componentId}/replies")
-public class ReplyResource extends RESTWebService {
+public class ReplyResource extends QuestionRelyBaseWebService {
 
-  @Inject
-  private OrganizationController controller;
   @PathParam("componentId")
-  private String componentId;
+  protected String componentId;
 
   @Override
   protected String getComponentId() {
@@ -59,9 +77,10 @@ public class ReplyResource extends RESTWebService {
   public ReplyEntity[] getAllRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
     checkUserPriviledges();
     try {
-      List<Reply> replies = QuestionManagerFactory.getQuestionManager().getAllReplies(Long.parseLong(
-          onQuestionId));
-      return asWebEntities(replies);
+      long questionId = Long.parseLong(onQuestionId);
+      List<Reply> replies = QuestionManagerFactory.getQuestionManager().getAllReplies(questionId,
+          componentId);
+      return asWebEntities(extractVisibleReplies(questionId, replies));
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
@@ -69,12 +88,12 @@ public class ReplyResource extends RESTWebService {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  @Path("question/public/{questionId}")
+  @Path("public/question/{questionId}")
   public ReplyEntity[] getPublicRepliesForQuestion(@PathParam("questionId") String onQuestionId) {
     checkUserPriviledges();
     try {
-      List<Reply> replies = QuestionManagerFactory.getQuestionManager().getQuestionPublicReplies(Long.
-          parseLong(onQuestionId));
+      List<Reply> replies = QuestionManagerFactory.getQuestionManager().getQuestionPublicReplies(
+          Long.parseLong(onQuestionId), componentId);
       return asWebEntities(replies);
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
@@ -111,5 +130,40 @@ public class ReplyResource extends RESTWebService {
     AuthorEntity author = AuthorEntity.fromUser(reply.readAuthor(controller));
     author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
     return entity;
+  }
+
+  /**
+   * Private replies should be visible to writers or publishers that have asked the question.
+   * @param questionAuthor
+   * @param reply
+   * @param role
+   * @param userId
+   * @return
+   */
+  boolean isReplyVisible(String questionAuthor, Reply reply, SilverpeasRole role,
+      String userId) {
+    boolean isPrivate = reply.getPublicReply() <= 0;
+    if (isPrivate) {
+      boolean isAuthor = questionAuthor.equals(userId);
+      if (SilverpeasRole.user == role || (SilverpeasRole.publisher == role && !isAuthor)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  List<Reply> extractVisibleReplies(long questionId, List<Reply> replies) throws
+      QuestionReplyException {
+    List<Reply> visibleReplies = new ArrayList<Reply>(replies.size());
+    String authorId = QuestionManagerFactory.getQuestionManager().getQuestion(questionId).
+        getCreatorId();
+    SilverpeasRole profile = getUserProfile();
+    String userid = getUserDetail().getId();
+    for (Reply reply : replies) {
+      if (isReplyVisible(authorId, reply, profile, userid)) {
+        visibleReplies.add(reply);
+      }
+    }
+    return visibleReplies;
   }
 }

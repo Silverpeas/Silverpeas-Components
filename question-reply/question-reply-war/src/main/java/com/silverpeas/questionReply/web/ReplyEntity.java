@@ -60,6 +60,8 @@ public class ReplyEntity implements Exposable {
   private boolean publicReply = false;
   @XmlElement()
   private boolean privateReply = true;
+  @XmlElement
+  private boolean readOnly = true;
 
   protected ReplyEntity() {
   }
@@ -68,6 +70,7 @@ public class ReplyEntity implements Exposable {
     this.id = reply.getPK().getId();
     this.questionId = reply.getQuestionId();
     this.content = reply.readCurrentWysiwygContent();
+    this.title = reply.getTitle();
     this.creationDate = reply.getCreationDate();
     this.creatorId = reply.getCreatorId();
     this.creatorName = reply.readCreatorName();
@@ -224,6 +227,11 @@ public class ReplyEntity implements Exposable {
   public ReplyEntity withURI(final URI uri) {
     this.uri = uri;
     return this;
+  }
+
+  @Override
+  public String toString() {
+    return "ReplyEntity{" + "id=" + id + ", questionId=" + questionId + ", title=" + title + ", content=" + content + ", creatorId=" + creatorId + ", creatorName=" + creatorName + ", creationDate=" + creationDate + ", publicReply=" + publicReply + ", privateReply=" + privateReply + '}';
   }
 
 }

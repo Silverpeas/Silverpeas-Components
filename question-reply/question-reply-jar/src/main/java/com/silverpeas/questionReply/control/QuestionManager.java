@@ -100,8 +100,7 @@ public interface QuestionManager {
 
   void deleteQuestionAndReplies(Collection<Long> questionIds) throws QuestionReplyException;
 
-  List<Reply> getAllReplies(long questionId)
-      throws QuestionReplyException;
+  List<Reply> getAllReplies(long questionId, String instanceId) throws QuestionReplyException;
 
   /*
   * recupère une question
@@ -115,17 +114,17 @@ public interface QuestionManager {
   /*
   * recupère la liste des réponses d'une question
   */
-  List<Reply> getQuestionReplies(long questionId) throws QuestionReplyException;
+  List<Reply> getQuestionReplies(long questionId, String instanceId) throws QuestionReplyException;
 
   /*
   * recupère la liste des réponses publiques d'une question
   */
-  List<Reply> getQuestionPublicReplies(long questionId) throws QuestionReplyException;
+  List<Reply> getQuestionPublicReplies(long questionId, String instanceId) throws QuestionReplyException;
 
   /*
   * recupère la liste des réponses privées d'une question
   */
-  List<Reply> getQuestionPrivateReplies(long questionId) throws QuestionReplyException;
+  List<Reply> getQuestionPrivateReplies(long questionId, String instanceId) throws QuestionReplyException;
 
   /*
   * recupère la liste des destinataires d'une question

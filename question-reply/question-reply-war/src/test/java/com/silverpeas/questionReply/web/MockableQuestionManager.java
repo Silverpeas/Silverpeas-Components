@@ -116,8 +116,8 @@ public class MockableQuestionManager implements QuestionManager {
   }
 
   @Override
-  public List<Reply> getAllReplies(long questionId) throws QuestionReplyException {
-    return questionManager.getAllReplies(questionId);
+  public List<Reply> getAllReplies(long questionId, String instanceId) throws QuestionReplyException {
+    return questionManager.getAllReplies(questionId, instanceId);
   }
 
   @Override
@@ -136,18 +136,21 @@ public class MockableQuestionManager implements QuestionManager {
   }
 
   @Override
-  public List<Reply> getQuestionReplies(long questionId) throws QuestionReplyException {
-    return questionManager.getQuestionReplies(questionId);
+  public List<Reply> getQuestionReplies(long questionId, String instanceId) throws
+      QuestionReplyException {
+    return questionManager.getQuestionReplies(questionId, instanceId);
   }
 
   @Override
-  public List<Reply> getQuestionPublicReplies(long questionId) throws QuestionReplyException {
-    return questionManager.getQuestionPublicReplies(questionId);
+  public List<Reply> getQuestionPublicReplies(long questionId, String instanceId) throws
+      QuestionReplyException {
+    return questionManager.getQuestionPublicReplies(questionId, instanceId);
   }
 
   @Override
-  public List<Reply> getQuestionPrivateReplies(long questionId) throws QuestionReplyException {
-    return questionManager.getQuestionPrivateReplies(questionId);
+  public List<Reply> getQuestionPrivateReplies(long questionId, String instanceId) throws
+      QuestionReplyException {
+    return questionManager.getQuestionPrivateReplies(questionId, instanceId);
   }
 
   @Override

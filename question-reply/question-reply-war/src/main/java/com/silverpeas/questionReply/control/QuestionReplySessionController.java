@@ -234,7 +234,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   public void setNewReplyContent(String title, String content, int publicReply, int privateReply) {
     newReply.setTitle(title);
-    newReply.setContent(content);
+    newReply.writeWysiwygContent(content);
     newReply.setPublicReply(publicReply);
     newReply.setPrivateReply(privateReply);
   }
@@ -279,7 +279,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       throws QuestionReplyException {
     Reply reply = getCurrentReply();
     reply.setTitle(title);
-    reply.setContent(content);
+    reply.writeWysiwygContent(content);
     WAPrimaryKey pk = reply.getPK();
     pk.setComponentName(getComponentId());
     reply.setPK(pk);
@@ -339,7 +339,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       }
     } catch (QuestionReplyException e) {
       throw new QuestionReplyException("QuestionReplySessionController.deleteReplies",
-          SilverpeasException.ERROR, "questionReply.EX_DELETE_REPLY_FAILED","", e);
+          SilverpeasException.ERROR, "questionReply.EX_DELETE_REPLY_FAILED", "", e);
     }
   }
 
@@ -430,21 +430,23 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * liste les réponses publiques d'une question
    */
   private Collection<Reply> getPublicRepliesForQuestion(long id) throws QuestionReplyException {
-    return QuestionManagerFactory.getQuestionManager().getQuestionPublicReplies(id);
+    return QuestionManagerFactory.getQuestionManager().getQuestionPublicReplies(id,
+        getComponentName());
   }
 
   /*
    * liste les réponses privées d'une question
    */
   private Collection<Reply> getPrivateRepliesForQuestion(long id) throws QuestionReplyException {
-    return QuestionManagerFactory.getQuestionManager().getQuestionPrivateReplies(id);
+    return QuestionManagerFactory.getQuestionManager().getQuestionPrivateReplies(id,
+        getComponentName());
   }
 
   /*
    * liste les réponses à une question
    */
   private Collection<Reply> getAllRepliesForQuestion(long id) throws QuestionReplyException {
-    return QuestionManagerFactory.getQuestionManager().getQuestionReplies(id);
+    return QuestionManagerFactory.getQuestionManager().getQuestionReplies(id, getComponentName());
   }
 
   public void setUserProfil() {
@@ -497,7 +499,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   private boolean exist(UserDetail user, Collection<UserDetail> listUser) {
     if (user != null) {
       String idUser = user.getId();
-      for(UserDetail currentUser : listUser){
+      for (UserDetail currentUser : listUser) {
         if (currentUser.getId().equals(idUser)) {
           return true;
         }
@@ -821,7 +823,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public boolean isReplyVisible(Question question, Reply reply) {
-    return com.silverpeas.questionReply.control.QuestionReplyExport.isReplyVisible(question, reply, getUserRole(), getUserId());
+    return com.silverpeas.questionReply.control.QuestionReplyExport.isReplyVisible(question, reply,
+        getUserRole(), getUserId());
   }
 
   public Collection<NodeDetail> getAllCategories() throws QuestionReplyException {
@@ -943,7 +946,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     File fileHTML = new File(dir + File.separator + thisExportDir + ".html");
     FileWriter fileWriter = null;
     try {
-      if(fileHTML.createNewFile()){
+      if (fileHTML.createNewFile()) {
         fileWriter = new FileWriter(fileHTML.getPath());
         fileWriter.write(toHTML(fileHTML, resource));
       }

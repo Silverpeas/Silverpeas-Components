@@ -366,7 +366,7 @@ public class QuestionManagerTest extends AbstractTestDao {
     expectedResult.setStatus(2);
     expectedResult.setTitle("Les accents ça fonctionne ïci ?");
     assertThat(question.hasClosedStatus(), is(true));
-    assertThat(question.hasOpenStatus(), is(false));
+    assertThat(question.hasWaitingStatus(), is(false));
     assertThat(question.hasNewStatus(), is(false));
     assertThat(question, QuestionMatcher.matches(expectedResult));
   }
