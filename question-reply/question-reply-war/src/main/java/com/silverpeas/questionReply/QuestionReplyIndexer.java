@@ -49,8 +49,8 @@ public class QuestionReplyIndexer implements ComponentIndexerInterface {
     Collection<Question> questions = QuestionManagerFactory.getQuestionManager().getAllQuestions(context.
         getCurrentComponentId());
     for (Question question : questions) {
-      Collection<Reply> replies = QuestionManagerFactory.getQuestionManager().getAllReplies(Long.parseLong(question.
-          getPK().getId()));
+      Collection<Reply> replies = QuestionManagerFactory.getQuestionManager().getAllReplies(
+          Long.parseLong(question.getPK().getId()), question.getInstanceId());
       questionIndexer.updateIndex(question, replies);
     }
   }

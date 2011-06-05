@@ -499,7 +499,7 @@ window.onload = initShowHideContent;
 				{
 					Reply reply = (Reply) itR.next();
 					String creatorR = EncodeHelper.javaStringToHtmlString(reply.readCreatorName());
-					String contentR = EncodeHelper.javaStringToHtmlString(reply.getContent());
+					String contentR = reply.loadWysiwygContent();
 					String dateR = resource.getOutputDate(reply.getCreationDate());
 					String titleR = reply.getTitle();
 					String idR = reply.getPK().getId();
@@ -716,7 +716,7 @@ window.onload = initShowHideContent;
 							<% if (content != null && content.length() > 0)
 							{ %>
 								<table><tr><td>
-									<%=Encode.javaStringToHtmlParagraphe(content)%>
+									<%=EncodeHelper.javaStringToHtmlParagraphe(content)%>
 								</td></tr></table>
 								<br/>
 							<% }
@@ -727,7 +727,7 @@ window.onload = initShowHideContent;
 				{
 					Reply reply = (Reply) itR.next();
 					String creatorR = EncodeHelper.javaStringToHtmlString(reply.readCreatorName());
-					String contentR = EncodeHelper.javaStringToHtmlString(reply.getContent());
+					String contentR = reply.loadWysiwygContent();
 					String dateR = resource.getOutputDate(reply.getCreationDate());
 					String titleR = reply.getTitle();
 					String idR = reply.getPK().getId();

@@ -39,7 +39,7 @@ public class Question extends SilverpeasBean {
 
   public static final int CLOSED = 2;
   public static final int NEW = 0;
-  public static final int OPEN = 1;
+  public static final int WAITING = 1;
   private static final long serialVersionUID = 8690405914141003827L;
   private String title;
   private String content;
@@ -205,8 +205,8 @@ public class Question extends SilverpeasBean {
     this.categoryId = categoryId;
   }
 
-  public boolean hasOpenStatus() {
-    return this.status == OPEN;
+  public boolean hasWaitingStatus() {
+    return this.status == WAITING;
   }
 
   public boolean hasClosedStatus() {
@@ -221,8 +221,8 @@ public class Question extends SilverpeasBean {
     this.status = CLOSED;
   }
 
-  public void open() {
-    this.status = OPEN;
+  public void waitForAnswer() {
+    this.status = WAITING;
   }
 
   @Override

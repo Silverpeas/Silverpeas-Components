@@ -364,7 +364,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("UpdateRQuery")) {
         request.setAttribute("reply", scc.getCurrentReply());
         destination = "/questionReply/jsp/updateR.jsp";
-      } else if (function.equals("UpdateR")) {
+      } else if ("UpdateR".equals(function)) {
         String questionId = request.getParameter("QuestionId");
         Question question = scc.getQuestion(Long.parseLong(questionId));
         scc.setCurrentQuestion(question);
@@ -373,7 +373,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         scc.setCurrentReply(reply);
         request.setAttribute("reply", scc.getCurrentReply());
         destination = "/questionReply/jsp/updateR.jsp";
-      } else if (function.equals("EffectiveUpdateR")) {
+      } else if ("EffectiveUpdateR".equals(function)) {
         scc.updateCurrentReply(request.getParameter("title"), request.getParameter("content"));
         if (scc.getCurrentQuestion() != null) {
           request.setAttribute("QuestionId", scc.getCurrentQuestion().getPK().getId());

@@ -52,7 +52,6 @@ public class QuestionGettingTest extends RESTWebServiceTest {
   private MockableQuestionManager questionManager;
   @Inject
   private MockablePersonalizationService personalisationService;
-
   protected static final String COMPONENT_INSTANCE_ID = "questionReply12";
   protected static final String RESOURCE_PATH = "questionreply/" + COMPONENT_INSTANCE_ID + "/questions";
 
@@ -102,6 +101,39 @@ public class QuestionGettingTest extends RESTWebServiceTest {
     assertThat(entity, QuestionEntityMatcher.matches(question));
     assertThat(entity.getCreator(), is(notNullValue()));
     assertThat(entity.getCreator().getFullName(), is("Lisa Simpson"));
+  }
+
+  @Test
+  public void getAnInvisibleQuestionByAnAuthenticatedUser() throws Exception {
+    WebResource resource = resource();
+
+    UserDetail creator = new UserDetail();
+    creator.setFirstName("Lisa");
+    creator.setLastName("Simpson");
+    creator.setId("1");
+    authenticate(creator);
+
+    UserDetailWithProfiles user = new UserDetailWithProfiles();
+    user.setFirstName("Bart");
+    user.setLastName("Simpson");
+    user.setId("10");
+    user.addProfile(COMPONENT_INSTANCE_ID, SilverpeasRole.user);
+    String sessionKey = authenticate(user);
+    personalisationService.setPersonalizationService(mock(PersonalizationService.class));
+    QuestionManager mockedQuestionManager = mock(QuestionManager.class);
+    Question question = getNewSimpleQuestion(3);
+    question.waitForAnswer();
+    when(mockedQuestionManager.getQuestion(3L)).thenReturn(question);
+    questionManager.setQuestionManager(mockedQuestionManager);
+    try {
+      resource.path(RESOURCE_PATH + "/3").header(HTTP_SESSIONKEY, sessionKey).
+          accept(MediaType.APPLICATION_JSON).get(QuestionEntity.class);
+      fail("A non authenticated user shouldn't access the comment");
+    } catch (UniformInterfaceException ex) {
+      int recievedStatus = ex.getResponse().getStatus();
+      int unauthorized = Status.FORBIDDEN.getStatusCode();
+      assertThat(recievedStatus, is(unauthorized));
+    }
   }
 
   private Question getNewSimpleQuestion(int id) {

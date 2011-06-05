@@ -25,23 +25,21 @@ package com.silverpeas.questionReply.web;
 
 import com.silverpeas.questionReply.control.QuestionManagerFactory;
 import com.silverpeas.questionReply.model.Question;
-import com.silverpeas.rest.RESTWebService;
 import com.stratelia.webactiv.SilverpeasRole;
-import com.stratelia.webactiv.beans.admin.OrganizationController;
-import java.net.URI;
-import java.util.List;
-import javax.inject.Inject;
-import javax.ws.rs.Produces;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import static  com.stratelia.webactiv.SilverpeasRole.*;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response.Status;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A REST Web resource representing a given question.
@@ -50,13 +48,10 @@ import static  com.stratelia.webactiv.SilverpeasRole.*;
 @Service
 @Scope("request")
 @Path("questionreply/{componentId}/questions")
-public class QuestionResource extends RESTWebService {
-
-  @Inject
-  private OrganizationController controller;
+public class QuestionResource extends QuestionRelyBaseWebService {
 
   @PathParam("componentId")
-  private String componentId;
+  protected String componentId;
 
   @Override
   protected String getComponentId() {
@@ -81,9 +76,12 @@ public class QuestionResource extends RESTWebService {
       Question theQuestion = QuestionManagerFactory.getQuestionManager().getQuestion(Long.parseLong(
           onQuestionId));
       URI questionURI = getUriInfo().getRequestUri();
+      if (extractVisibleQuestions(Collections.singletonList(theQuestion)).isEmpty()) {
+        throw new WebApplicationException(Status.FORBIDDEN);
+      }
       return asWebEntity(theQuestion, identifiedBy(questionURI));
     } catch (Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+      throw encapsulateException(ex);
     }
   }
 
@@ -94,9 +92,9 @@ public class QuestionResource extends RESTWebService {
     try {
       List<Question> questions = QuestionManagerFactory.getQuestionManager().getAllQuestions(
           componentId);
-      return asWebEntities(questions);
+      return asWebEntities(extractVisibleQuestions(questions));
     } catch (Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+      throw encapsulateException(ex);
     }
   }
 
@@ -108,10 +106,26 @@ public class QuestionResource extends RESTWebService {
     try {
       List<Question> questions = QuestionManagerFactory.getQuestionManager().
           getAllQuestionsByCategory(componentId, categoryId);
-      return asWebEntities(questions);
+      return asWebEntities(extractVisibleQuestions(questions));
     } catch (Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
+      throw encapsulateException(ex);
     }
+  }
+
+  List<Question> extractVisibleQuestions(List<Question> questions) {
+    SilverpeasRole profile = getUserProfile();
+    List<Question> visibleQuestions;
+    if (profile == SilverpeasRole.user) {
+      visibleQuestions = new ArrayList<Question>(questions.size());
+      for (Question question : questions) {
+        if (!question.hasWaitingStatus()) {
+          visibleQuestions.add(question);
+        }
+      }
+    } else {
+      visibleQuestions = questions;
+    }
+    return visibleQuestions;
   }
 
   protected URI identifiedBy(URI uri) {
@@ -132,32 +146,6 @@ public class QuestionResource extends RESTWebService {
       entities[i] = asWebEntity(question, identifiedBy(questionURI));
     }
     return entities;
-  }
-
-  SilverpeasRole getUserProfile() {
-    String[] roles = controller.getUserProfiles(getUserDetail().getId(), componentId);
-    SilverpeasRole profile = user;
-    for (String currentRole : roles) {
-      SilverpeasRole role = SilverpeasRole.valueOf(currentRole);
-      switch (role) {
-        case admin:
-          return admin;
-        case writer:
-          profile = writer;
-          break;
-        case publisher:
-          if (profile != writer) {
-            profile = publisher;
-          }
-          break;
-        default:
-          if (profile != publisher && profile != writer) {
-            profile = role;
-          }
-          break;
-      }
-    }
-    return profile;
   }
 
   /**
