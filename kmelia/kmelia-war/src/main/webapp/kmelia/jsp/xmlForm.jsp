@@ -43,6 +43,7 @@
       String wizard = (String) request.getAttribute("Wizard");
       String wizardRow = (String) request.getAttribute("WizardRow");
       String currentLang = (String) request.getAttribute("Language");
+      boolean changingTemplateAllowed = ((Boolean) request.getAttribute("IsChangingTemplateAllowed")).booleanValue();
 
       SilverTrace.debug("kmelia", "xmlForm.jsp", "root.MSG_GEN_ENTER_METHOD", "formUpdate is null ? " + (formUpdate == null));
       SilverTrace.debug("kmelia", "xmlForm.jsp", "root.MSG_GEN_ENTER_METHOD", "data is null ? " + (data == null));
@@ -83,32 +84,44 @@
         location.href="GoToTopic?Id="+id;
       }
 
-      function B_VALIDER_ONCLICK()
-      {
-        if (isCorrectForm())
-        {
+      function B_VALIDER_ONCLICK() {
+        if (isCorrectForm()) {
           $.progressMessage();
           document.myForm.submit();
         }
       }
 
-      function B_ANNULER_ONCLICK()
-      {
+      function B_ANNULER_ONCLICK() {
         location.href = "Main";
       }
 
-      function closeWindows() {
-        if (window.publicationWindow != null)
-          window.publicationWindow.close();
-      }
-
-      function showTranslation(lang)
-      {
+      function showTranslation(lang) {
         location.href="ToPubliContent?SwitchLanguage="+lang;
       }
+      
+      function changeTemplate() {
+    	  $("#dialog-confirm").dialog("open");  
+      }
+      
+      $(function() {
+  		$("#dialog-confirm").dialog({
+  			autoOpen: false,
+  			height: 200,
+  			width: 350,
+  			modal: true,
+  			buttons: {
+  				"<%=resources.getSetting("kmelia.template.change.confirm")%>": function() {
+  					location.href="ChangeTemplate";
+  				},
+  				"<%=resources.getString("GML.cancel")%>": function() {
+  					$( this ).dialog( "close" );
+  				}
+  			}
+  		});
+  	});
     </script>
   </head>
-  <body class="yui-skin-sam" onunload="closeWindows()">
+  <body class="yui-skin-sam">
     <%
           Window window = gef.getWindow();
           Frame frame = gef.getFrame();
@@ -121,13 +134,18 @@
           browseBar.setPath(linkedPathString);
           browseBar.setExtraInformation(pubName);
           browseBar.setI18N(pubDetail, currentLang);
+          
+          if (changingTemplateAllowed) {
+          	OperationPane operations = window.getOperationPane();
+          	operations.addOperation("useless", resources.getString("kmelia.template.change"), "javascript:onclick=changeTemplate();");
+          }
 
-          Button cancelWButton = (Button) gef.getFormButton(resources.getString("GML.cancel"), "ToPubliContent?WizardRow=" + wizardRow, false);
+          Button cancelWButton = gef.getFormButton(resources.getString("GML.cancel"), "ToPubliContent?WizardRow=" + wizardRow, false);
           Button nextButton;
           if (isEnd) {
-            nextButton = (Button) gef.getFormButton(resources.getString("kmelia.End"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
+            nextButton = gef.getFormButton(resources.getString("kmelia.End"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
           } else {
-            nextButton = (Button) gef.getFormButton(resources.getString("GML.next"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
+            nextButton = gef.getFormButton(resources.getString("GML.next"), "javascript:onClick=B_VALIDER_ONCLICK();", false);
           }
 
           out.println(window.printBefore());
@@ -168,8 +186,8 @@
             buttonPane.addButton(nextButton);
             buttonPane.addButton(cancelWButton);
           } else {
-            buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
-            buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
+            buttonPane.addButton(gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
+            buttonPane.addButton(gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
           }
           out.println("<br/><center>" + buttonPane.print() + "</center>");
 
@@ -178,6 +196,10 @@
 	<script type="text/javascript">
     	document.myForm.elements[1].focus();
   	</script>
+  <div id="dialog-confirm" title="<%=resources.getString("kmelia.template.change")%> ?">
+	<p><%=resources.getString("kmelia.template.change.info") %></p>
+  </div>
   <view:progressMessage/>
+  
   </body>
 </html>
