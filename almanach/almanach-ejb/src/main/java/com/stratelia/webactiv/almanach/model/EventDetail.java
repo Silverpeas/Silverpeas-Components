@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.almanach.model;
 
-import com.silverpeas.util.StringUtil;
 import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
@@ -45,10 +44,14 @@ import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.Uid;
 
+import static com.silverpeas.util.StringUtil.*;
+
 public class EventDetail extends AbstractI18NBean implements
     SilverContentInterface, Serializable {
 
   private static final long serialVersionUID = 9077018265272108291L;
+  public static ResourceLocator almanachSettings =
+      new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings", "");
   private String _name = null;
   private EventPK _pk = null;
   private Date _startDate = null;
@@ -74,23 +77,16 @@ public class EventDetail extends AbstractI18NBean implements
   public EventDetail() {
   }
 
-  public EventDetail(EventPK pk, String name) {
+  public EventDetail(EventPK pk, String title, Date startDate, Date endDate) {
+    if (endDate.before(startDate)) {
+      throw new IllegalArgumentException("The end date cannot be before the start date of the event");
+    }
     this._pk = pk;
-    this._name = name;
+    this._title = title;
+    this._startDate = new Date(startDate.getTime());
+    this._endDate = new Date(endDate.getTime());
   }
 
-  public EventDetail(String _name, EventPK _pk, int _priority, String _title,
-      String startHour, String endHour, String place, String eventUrl) {
-    this._name = _name;
-    this._pk = _pk;
-    this._priority = _priority;
-    this._title = _title;
-    this.startHour = startHour;
-    this.endHour = endHour;
-    this.place = place;
-    this.eventUrl = eventUrl;
-  }
-  
   /**
    * Is this event periodic?
    * @return true if the event is recurrent, false otherwise.
@@ -135,29 +131,46 @@ public class EventDetail extends AbstractI18NBean implements
   public void setPriority(int priority) {
     _priority = priority;
   }
-  
+
   public boolean isPriority() {
     return getPriority() > 0;
   }
 
   public Date getStartDate() {
-    return _startDate;
+    return new Date(_startDate.getTime());
   }
 
   public void setStartDate(Date date) {
-    _startDate = date;
+    if (date == null) {
+      throw new IllegalArgumentException("The start date cannot be null");
+    }
+    _startDate = new Date(date.getTime());
+    if (getEndDate() == null) {
+      setEndDate(_startDate);
+    }
   }
 
   public Date getEndDate() {
-    return _endDate;
+    Date date = null;
+    if (_endDate != null) {
+      date = new Date(_endDate.getTime());
+    }
+    return date;
   }
 
+  /**
+   * Sets the date at which this event ends. The end date cannot be null.
+   * @param date end date of this event.
+   */
   public void setEndDate(Date date) {
-    _endDate = date;
+    if (date == null) {
+      throw new IllegalArgumentException("The end date cannot be null");
+    }
+    _endDate = new Date(date.getTime());
   }
-  
+
   public boolean isAllDay() {
-    return !StringUtil.isDefined(this.startHour) && !StringUtil.isDefined(this.endHour);
+    return !isDefined(this.startHour) || !isDefined(this.endHour);
   }
 
   public String getTitle() {
@@ -293,63 +306,82 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public VEvent icalConversion(ExDate exDate) {
-    // Construction du VEvent du Calendar ical4j (pour gestion)
-    Calendar calStartDate = java.util.Calendar.getInstance();
-    calStartDate.setTime(_startDate);
-    if (StringUtil.isDefined(startHour)) {
-      calStartDate.set(java.util.Calendar.HOUR_OF_DAY, DateUtil.extractHour(startHour));
-      calStartDate.set(java.util.Calendar.MINUTE, DateUtil.extractMinutes(startHour));
-    }
-    Calendar calEndDate = java.util.Calendar.getInstance();
-    calEndDate.setTime(calStartDate.getTime());
+    net.fortuna.ical4j.model.Date dtStart = toIcalDate(_startDate, startHour);
+    net.fortuna.ical4j.model.Date dtEnd = dtStart;
     if (_endDate != null) {
-      calEndDate.setTime(_endDate);
-      if (StringUtil.isDefined(endHour)) {
-        calEndDate.set(java.util.Calendar.HOUR_OF_DAY, DateUtil.extractHour(endHour));
-        calEndDate.set(java.util.Calendar.MINUTE, DateUtil.extractMinutes(endHour));
-      }
+      dtEnd = toIcalDate(_endDate, endHour);
     }
-    TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
-    ResourceLocator almanachSettings =
-        new ResourceLocator("com.stratelia.webactiv.almanach.settings.almanachSettings", "");
-    TimeZone localTimeZone = registry.getTimeZone(almanachSettings.getString("almanach.timezone"));
-
-    DateTime dtStart = new DateTime(calStartDate.getTime());
-    dtStart.setTimeZone(localTimeZone);
-    DateTime dtEnd = new DateTime(calEndDate.getTime());
-    dtEnd.setTimeZone(localTimeZone);
-    VEvent eventIcal4jCalendar = new VEvent(dtStart, dtEnd, _title);
+    VEvent iCalEvent = new VEvent(dtStart, dtEnd, _title);
 
     if (_pk != null) {
       Uid uid = new Uid(_pk.getId());
-      eventIcal4jCalendar.getProperties().add(uid);
+      iCalEvent.getProperties().add(uid);
     }
     Description description = new Description(getDescription());
-    eventIcal4jCalendar.getProperties().add(description);
+    iCalEvent.getProperties().add(description);
     if (periodicity != null) {
-      eventIcal4jCalendar.getProperties().add(periodicity.generateRecurrenceRule());
-      // Exceptions de périodicité
+      iCalEvent.getProperties().add(periodicity.generateRecurrenceRule());
+      // Exceptions in the recurrence
       if (exDate != null) {
-        eventIcal4jCalendar.getProperties().add(exDate);
+        iCalEvent.getProperties().add(exDate);
       }
     }
-    return eventIcal4jCalendar;
+    return iCalEvent;
+  }
+
+  /**
+   * Gets the time zone in which this event is defined.
+   * @return the time zone in which the event occur.
+   */
+  public TimeZone getTimeZone() {
+    TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
+    return registry.getTimeZone(almanachSettings.getString("almanach.timezone"));
   }
 
   @Override
   public boolean equals(Object obj) {
-    if (this == obj)
+    if (this == obj) {
       return true;
-    if (obj == null)
+    }
+    if (obj == null) {
       return false;
-    if (getClass() != obj.getClass())
+    }
+    if (getClass() != obj.getClass()) {
       return false;
+    }
     EventDetail other = (EventDetail) obj;
     if (_pk == null) {
-      if (other._pk != null)
+      if (other._pk != null) {
         return false;
-    } else if (!_pk.equals(other._pk))
+      }
+    } else if (!_pk.equals(other._pk)) {
       return false;
+    }
     return true;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 5;
+    hash = 59 * hash + (this._pk != null ? this._pk.hashCode() : 0);
+    return hash;
+  }
+
+  private net.fortuna.ical4j.model.Date toIcalDate(final Date date, final String hour) {
+    net.fortuna.ical4j.model.Date iCalDate;
+    Calendar calDate = java.util.Calendar.getInstance();
+    calDate.setTime(date);
+    if (isDefined(hour)) {
+      calDate.set(java.util.Calendar.HOUR_OF_DAY, DateUtil.extractHour(hour));
+      calDate.set(java.util.Calendar.MINUTE, DateUtil.extractMinutes(hour));
+    } else if (date == _endDate) {
+      calDate.set(java.util.Calendar.HOUR_OF_DAY, 23);
+      calDate.set(java.util.Calendar.MINUTE, 59);
+      calDate.set(java.util.Calendar.SECOND, 59);
+      calDate.set(java.util.Calendar.MILLISECOND, 999);
+    }
+    iCalDate = new DateTime(calDate.getTime());
+    ((DateTime) iCalDate).setTimeZone(getTimeZone());
+    return iCalDate;
   }
 }

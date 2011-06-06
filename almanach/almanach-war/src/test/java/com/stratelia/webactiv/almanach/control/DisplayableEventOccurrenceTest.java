@@ -125,15 +125,15 @@ public class DisplayableEventOccurrenceTest {
    * @return an event detail for testing pupose.
    */
   protected EventDetail getEventDetail() {
-    Calendar date = Calendar.getInstance();
+    Calendar endDate = Calendar.getInstance();
+    Calendar startDate = Calendar.getInstance();
+    endDate.add(Calendar.HOUR_OF_DAY, 2);
     EventDetail eventDetail = new EventDetail(new EventPK("1", "WA1", "almanach1"),
-        "An event for testing purpose");
+        "event test", startDate.getTime(), endDate.getTime());
+    eventDetail.setNameDescription("An event for testing purpose");
     eventDetail.setTitle("event test");
-    eventDetail.setStartDate(date.getTime());
-    eventDetail.setStartHour(DateUtil.formatTime(date));
-    date.add(Calendar.HOUR_OF_DAY, 2);
-    eventDetail.setEndDate(date.getTime());
-    eventDetail.setEndHour(DateUtil.formatTime(date));
+    eventDetail.setStartHour(DateUtil.formatTime(startDate));
+    eventDetail.setEndHour(DateUtil.formatTime(endDate));
     return eventDetail;
   }
   
@@ -145,17 +145,19 @@ public class DisplayableEventOccurrenceTest {
 
   /**
    * Asserts the specified JSON object matches the specified event DTO.
-   * @param eventDTO the expected object to match.
+   * @param occurrence the expected object to match.
    * @param jsonObject the actual JSON object.
    */
-  protected void assertJSONEventMatchesEventDTO(final DisplayableEventOccurrence eventDTO,
+  protected void assertJSONEventMatchesEventDTO(final DisplayableEventOccurrence occurrence,
       final JSONObject jsonObject) {
-    assertEquals(eventDTO.getEventDetail().getTitle(), jsonObject.get("title"));
-    assertEquals(eventDTO.getEventDetail().getId(), jsonObject.get("id"));
-    assertEquals(eventDTO.getCSSClasses().get(0), ((JSONArray) jsonObject.
+    assertEquals(occurrence.getEventDetail().getTitle(), jsonObject.get("title"));
+    assertEquals(occurrence.getEventDetail().getId(), jsonObject.get("id"));
+    assertEquals(occurrence.getCSSClasses().get(0), ((JSONArray) jsonObject.
         get("className")).get(0));
-    assertEquals(eventDTO.getStartDateTimeInISO(), jsonObject.get("start"));
-    assertEquals(eventDTO.getEndDateTimeInISO(), jsonObject.get("end"));
-    assertEquals(eventDTO.isAllDay(), jsonObject.getBoolean("allDay"));
+    String startDate = occurrence.getStartDateTimeInISO();
+    String endDate = occurrence.getEndDateTimeInISO();
+    assertEquals(startDate, jsonObject.get("start"));
+    assertEquals(endDate, jsonObject.get("end"));
+    assertEquals(occurrence.isAllDay(), jsonObject.getBoolean("allDay"));
   }
 }

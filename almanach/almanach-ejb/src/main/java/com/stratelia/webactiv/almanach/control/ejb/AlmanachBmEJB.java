@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.almanach.control.ejb;
 
-import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.almanach.AlmanachContentManager;
@@ -74,6 +73,8 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.property.CalScale;
 import net.fortuna.ical4j.model.property.ExDate;
 import net.fortuna.ical4j.model.property.RRule;
+import static com.silverpeas.util.StringUtil.*;
+import static com.stratelia.webactiv.util.DateUtil.*;
 
 public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 
@@ -98,7 +99,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
         "root.MSG_GEN_ENTER_METHOD");
     try {
       List<EventDetail> monthEvents = new ArrayList<EventDetail>();
-      
+
       String[] almanachIds = Arrays.copyOf(instanceIds, instanceIds.length + 1);
       almanachIds[instanceIds.length] = pk.getInstanceId();
 
@@ -229,6 +230,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
   public String addEvent(EventDetail event) {
     SilverTrace.info("almanach", "AlmanachBmEJB.addEvent()",
         "root.MSG_GEN_ENTER_METHOD");
+    checkEventDates(event);
     Connection connection = null;
     try {
       connection = DBUtil.makeConnection(JNDINames.ALMANACH_DATASOURCE);
@@ -261,6 +263,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
   public void updateEvent(EventDetail event) {
     SilverTrace.info("almanach", "AlmanachBmEJB.updateEvent()",
         "root.MSG_GEN_ENTER_METHOD");
+    checkEventDates(event);
     try {
       getEventDAO().updateEvent(event);
 
@@ -362,7 +365,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
       if (eventPK != null) {
         String wysiwygContent = WysiwygController.load(eventPK.getInstanceId(),
             eventPK.getId(), eventDetail.getLanguage());
-        if (StringUtil.isDefined(wysiwygContent)) {
+        if (isDefined(wysiwygContent)) {
           String wysiwygPath = WysiwygController.getWysiwygPath(eventPK.getInstanceId(), eventPK.
               getId(), eventDetail.getLanguage());
           indexEntry.addFileContent(wysiwygPath, null, "text/html", eventDetail.getLanguage());
@@ -410,7 +413,6 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
 //      DBUtil.close(con);
 //    }
 //  }
-
   /**
    * @return
    */
@@ -690,12 +692,15 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
       while (itPeriod.hasNext()) {
         Period recurrencePeriod = itPeriod.next();
         // Modification des dates de l'EventDetail
-        EventDetail copy =
-            new EventDetail(evtDetail.getNameDescription(), evtDetail.getPK(),
-            evtDetail.getPriority(), evtDetail.getTitle(), evtDetail.getStartHour(), evtDetail.
-            getEndHour(), evtDetail.getPlace(), evtDetail.getEventUrl());
-        copy.setStartDate(new Date(recurrencePeriod.getStart().getTime()));
-        copy.setEndDate(new Date(recurrencePeriod.getEnd().getTime()));
+        EventDetail copy = new EventDetail(evtDetail.getPK(), evtDetail.getTitle(),
+            new Date(recurrencePeriod.getStart().getTime()),
+            new Date(recurrencePeriod.getEnd().getTime()));
+        copy.setPriority(evtDetail.getPriority());
+        copy.setNameDescription(evtDetail.getNameDescription());
+        copy.setStartHour(evtDetail.getStartHour());
+        copy.setEndHour(evtDetail.getEndHour());
+        copy.setPlace(evtDetail.getPlace());
+        copy.setEventUrl(evtDetail.getEventUrl());
         events.add(copy);
       }
     }
@@ -942,7 +947,7 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
     SilverTrace.info("almanach", "AlmanachBmEJB.setSessionContext()",
         "root.MSG_GEN_ENTER_METHOD");
   }
-  
+
   @Override
   public List<EventOccurrence> getEventOccurrencesInYear(java.util.Calendar year,
       String... almanachIds) throws RemoteException {
@@ -995,8 +1000,23 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
           e);
     }
   }
-  
+
   protected EventDAO getEventDAO() {
     return this.eventDAO;
+  }
+
+  private void checkEventDates(final EventDetail event) {
+    if (event.getStartDate().before(event.getEndDate())) {
+      throw new IllegalArgumentException("The event ends before its start!");
+    }
+    if (event.getStartDate().equals(event.getEndDate()) && isDefined(event.getEndHour())) {
+      int endHour = extractHour(event.getEndHour());
+      int endMinute = extractMinutes(event.getEndHour());
+      int startHour = extractHour(event.getStartHour());
+      int startMinute = extractMinutes(event.getStartHour());
+      if (startHour > endHour || (startHour == endHour && startMinute > endMinute)) {
+        throw new IllegalArgumentException("The event ends before its start!");
+      }
+    }
   }
 }

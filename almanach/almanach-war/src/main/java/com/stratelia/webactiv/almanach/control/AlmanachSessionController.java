@@ -72,7 +72,6 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -585,15 +584,16 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * @return color of almanach
    */
   public String getAlmanachColor(final String instanceId) {
-    if (colors == null) {
-      colors = new HashMap<String, String>();
-      List<AlmanachDTO> almanachs = getOthersAlmanachs();
-      if (almanachs != null) {
-        for (AlmanachDTO almanach : almanachs) {
-          colors.put(almanach.getInstanceId(), almanach.getColor());
-        }
+    //if (colors == null) {
+    colors = new HashMap<String, String>();
+    colors.put(getComponentId(), getAlmanachColor(0));
+    List<AlmanachDTO> almanachs = getOthersAlmanachs();
+    if (almanachs != null) {
+      for (AlmanachDTO almanach : almanachs) {
+        colors.put(almanach.getInstanceId(), almanach.getColor());
       }
     }
+    //}
     return colors.get(instanceId);
   }
 
@@ -627,7 +627,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         ComponentInstLight almanachInst = organizationController.getComponentInstLight(
             instanceId);
         AlmanachDTO almanach = new AlmanachDTO().setInstanceId(instanceId).setAgregated(isAlmanachAgregated(
-            instanceId)).setColor(getAlmanachColor(i)).setLabel(almanachInst.getLabel());
+            instanceId)).setColor(getAlmanachColor(i + 1)).setLabel(almanachInst.getLabel());
         othersAlmanachs.add(almanach);
       }
     }
@@ -670,15 +670,12 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   /**
    * Gets the color with which the events in an almanach should be rendered.
    * @author dlesimple
-   * @param position in the array of supported colors
+   * @param position in the array of supported colors. 0 is for the current almanach, other
+   * positions are for the agregated almanachs.
    * @return the HTML/CSS code of the color.
    */
   private String getAlmanachColor(int pos) {
-    String almanachColor = SilverpeasSettings.readString(getSettings(),
-        "almanachColor" + (pos + 1), "");
-
-    SilverTrace.info("almanach", "AlmanachSessionController.getAlmanachColor",
-        "root.MSG_GEN_PARAM_VALUE", " color=" + almanachColor);
+    String almanachColor = getSettings().getString("almanachColor" + pos, "");
     return almanachColor;
   }
 
@@ -791,20 +788,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   }
 
   /**
-   * @param events
-   * @return
-   * @throws RemoteException
-   * @throws AlmanachException
-   */
-  protected net.fortuna.ical4j.model.Calendar getICal4jCalendar(Collection<EventDetail> events)
-      throws
-      RemoteException,
-      AlmanachException {
-    return getAlmanachBm().getICal4jCalendar(events, getLanguage());
-
-  }
-
-  /**
    * Update event occurence (cas particulier de modification d'une occurence d'événement périodique)
    * @param event
    * @param dateDebutIteration
@@ -835,26 +818,6 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
         "root.MSG_GEN_EXIT_METHOD");
   }
 
-//  private RRule generateRecurrenceRule(final Periodicity periodicity)
-//      throws RemoteException, AlmanachException {
-//    return getAlmanachBm().generateRecurrenceRule(periodicity);
-//  }
-  /**
-   * Gets the events defined in the underlying almanach.
-   * @param yearScope
-   * @return
-   * @throws RemoteException
-   * @throws AlmanachException
-   */
-  public Collection<EventDetail> getListRecurrentEvent(boolean yearScope) throws RemoteException,
-      AlmanachException {
-    // Récupère le Calendar ical4j
-    net.fortuna.ical4j.model.Calendar calendarAlmanach = getICal4jCalendar(getAllAgregationEvents());
-    return getAlmanachBm().getListRecurrentEvent(calendarAlmanach,
-        currentDay, getSpaceId(), getComponentId(), yearScope);
-
-  }
-
   /**
    * Gets a view in time of the current underlying almanach.
    * The view depends on the current selected view mode and the current selected window in time.
@@ -875,17 +838,26 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     if (isWeekendNotVisible()) {
       view.unsetWeekendVisible();
     }
-    String label = getString("mois" + currentAlmanachDay.getMonth())
-        + " " + String.valueOf(currentAlmanachDay.getYear());
     switch (viewMode) {
       case MONTHLY:
         view.setEvents(listCurrentMonthEvents());
-        view.setLabel(label);
+        view.setLabel(getString("mois" + currentAlmanachDay.getMonth()) + " " + String.valueOf(currentAlmanachDay.
+            getYear()));
         break;
       case WEEKLY:
+        String firstDayMonth = "";
+        String lastDayMonth = " " + getString("mois" + view.getLastDay().getMonth()) + " "
+            + String.valueOf(view.getLastDay().getYear());
+        if (view.getFirstDay().getMonth() != view.getLastDay().getMonth()) {
+          firstDayMonth = " " + getString("mois" + view.getFirstDay().getMonth());
+          if (view.getFirstDay().getYear() != view.getLastDay().getYear()) {
+            firstDayMonth += " " + String.valueOf(view.getFirstDay().getYear());
+          }
+        }
         view.setEvents(listCurrentWeekEvents());
-        view.setLabel(view.getFirstDay().getDayOfMonth() + " - " + view.getLastDay().getDayOfMonth()
-            + " " + label);
+        view.setLabel(view.getFirstDay().getDayOfMonth() + firstDayMonth + " - " + view.getLastDay().
+            getDayOfMonth()
+            + lastDayMonth);
         break;
     }
     return view;
@@ -915,7 +887,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     view.setLabel(label);
     return view;
   }
-  
+
   /**
    * Gets a view in the current month of the current underlying almanach.
    * @return an AlmanachCalendarView instance.

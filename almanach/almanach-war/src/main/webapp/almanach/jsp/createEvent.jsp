@@ -99,8 +99,8 @@ function isCorrectForm() {
   var title = stripInitialWhitespace(document.eventForm.Title.value);
   var beginDate = document.eventForm.StartDate.value;
   var endDate = document.eventForm.EndDate.value;
-  var beginHour = stripInitialWhitespace(document.eventForm.StartHour.value);
-  var endHour = stripInitialWhitespace(document.eventForm.EndHour.value);
+  var beginTime = stripInitialWhitespace(document.eventForm.StartHour.value);
+  var endTime = stripInitialWhitespace(document.eventForm.EndHour.value);
   var unity = document.eventForm.Unity.value;
   var frequency = stripInitialWhitespace(document.eventForm.Frequency.value);
   var beginPeriodicity = document.eventForm.PeriodicityStartDate.value;
@@ -125,7 +125,7 @@ function isCorrectForm() {
     }
   }
 
-  if (!checkHour(beginHour)) {
+  if (!checkHour(beginTime) || (isWhitespace(beginTime) && !isWhitespace(endTime))) {
     errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='hourBegin'/>' <fmt:message key='MustContainsCorrectHour'/>\n";
     errorNb++;
   }
@@ -151,9 +151,20 @@ function isCorrectForm() {
     }
   }
 
-  if (!checkHour(endHour)) {
+  if (!checkHour(endTime)) {
     errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='hourEnd'/>' <fmt:message key='MustContainsCorrectHour'/>\n";
     errorNb++;
+  }
+    
+  if (beginDate == endDate && !isWhitespace(endTime)) {
+    var beginHour = atoi(extractHour(beginTime));
+    var beginMinute = atoi(extractMinute(beginTime));
+    var endHour = atoi(extractHour(endTime));
+    var endMinute = atoi(extractMinute(endTime));
+    if (beginHour > endHour || (beginHour == endHour && beginMinute > endMinute)) {
+      errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='hourEnd'/>' <fmt:message key='GML.MustContainsPostOrEqualDateTo'/> " + beginTime + "\n";
+      errorNb++;
+    }
   }
 
   if (unity != "0") {
@@ -316,6 +327,12 @@ function changeChoiceMonth() {
     document.eventForm.MonthDayWeek[6].disabled = false;
   }
 }
+
+function updateDates() {
+  document.eventForm.EndDate.value = document.eventForm.StartDate.value;
+  document.eventForm.PeriodicityStartDate.value = document.eventForm.StartDate.value;
+}
+
 </script>
 </head>
 <BODY MARGINHEIGHT="5" MARGINWIDTH="5" TOPMARGIN="5" LEFTMARGIN="5"
@@ -349,9 +366,11 @@ function changeChoiceMonth() {
             <td valign="baseline">
               <input type="text" class="dateToPick" name="StartDate" size="14"
                      maxlength="<c:out value='${maxDateLength}'/>"
-                     value="<c:out value='${day[0]}'/>"/>
+                     value="<c:out value='${day[0]}'/>"
+                     onchange="javascript:updateDates();"/>
               <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
-              <span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span><input
+              <span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span>
+              <input
                 type="text" name="StartHour" size="5" maxlength="5"
                 value="<c:out value='${day[1]}'/>"/> <span class="txtnote">(hh:mm)</span>&nbsp;<img
                 src="icons/cube-rouge.gif" width="5" height="5"/>
@@ -361,9 +380,11 @@ function changeChoiceMonth() {
             <td nowrap class="txtlibform"><fmt:message key='GML.dateEnd'/>&nbsp;:&nbsp;</td>
             <td>
               <input type="text" class="dateToPick" name="EndDate" size="14"
-                     maxlength="<c:out value='${maxDateLength}'/>"/><span
-                class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
-              <span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span><input
+                     maxlength="<c:out value='${maxDateLength}'/>"
+                     value="<c:out value='${day[0]}'/>"/>
+              <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>
+              <span class="txtlibform">&nbsp;<fmt:message key='ToHour'/>&nbsp;</span>
+              <input
                 type="text" name="EndHour" size="5" maxlength="5"/> <span
                 class="txtnote">(hh:mm)</span>
             </td>
@@ -458,7 +479,7 @@ function changeChoiceMonth() {
             <td valign="baseline">
               <input type="text" name="PeriodicityStartDate" size="14"
                      maxlength="<c:out value='${maxDateLength}'/>" readonly="readonly"
-                     value="<c:out value='${day[0]}'/>"/>&nbsp;
+                     value="<c:out value='${day[0]}'/>" />&nbsp;
             </td>
           </tr>
           <tr>

@@ -57,7 +57,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkAlmanach.jsp" %>
 <%
-  AlmanachCalendarView almanachView = (AlmanachCalendarView) request.getAttribute("AlmanachView");
+  AlmanachCalendarView calendarView = (AlmanachCalendarView) request.getAttribute("calendarView");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -106,7 +106,7 @@ function viewEvent(componentId, id) {
   	ArrayColumn column2 = arrayPane.addArrayColumn(resources.getString("GML.dateEnd"));
   	column2.setWidth("100px");
 
-    List<DisplayableEventOccurrence> occurrences = almanachView.getEvents();
+    List<DisplayableEventOccurrence> occurrences = calendarView.getEvents();
 	for (DisplayableEventOccurrence occurrence: occurrences) {
 		EventDetail event = occurrence.getEventDetail();
 		String startDay = dateFormat.format(occurrence.getStartDate());

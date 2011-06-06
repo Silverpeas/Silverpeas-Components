@@ -23,7 +23,7 @@
     eventUrl=""/>
   <sc_almanach_event  eventId="1003" eventName="" eventStartDay="2011/04/20"
     eventEndDay="2011/04/20" eventDelegatorId="847" eventPriority="1" eventTitle="All day event"
-    instanceId="almanach509" eventStartHour="" eventEndHour="" eventPlace="Eybens"
+    instanceId="almanach509" eventStartHour="09:30" eventEndHour="" eventPlace="Eybens"
     eventUrl=""/>
     
   <sc_almanach_periodicity id="34" eventId="1000" unity="2" frequency="1" daysWeekBinary="0100000"

@@ -57,7 +57,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkAlmanach.jsp" %>
 <%
-	AlmanachCalendarView almanachView = (AlmanachCalendarView) request.getAttribute("AlmanachView");
+	AlmanachCalendarView calendarView = (AlmanachCalendarView) request.getAttribute("calendarView");
 	String function = (String) request.getAttribute("Function");
 %>
 
@@ -124,7 +124,7 @@ out.println(graphicFactory.getLookStyleSheet());
 		boolean firstBgColor = true;
 
 		while (currentMonth == calendar.get(Calendar.MONTH)) {
-            List<DisplayableEventOccurrence> occurrences = almanachView.getEvents();
+            List<DisplayableEventOccurrence> occurrences = calendarView.getEvents();
 			for (DisplayableEventOccurrence occurrence: occurrences) {
 				EventDetail event = occurrence.getEventDetail();
 				String theDay = dateFormat.format(calendar.getTime());
