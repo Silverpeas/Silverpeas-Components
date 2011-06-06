@@ -34,9 +34,7 @@ package com.stratelia.webactiv.almanach.control;
 import java.awt.Color;
 import java.io.FileOutputStream;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
-import java.util.Iterator;
 
 import com.lowagie.text.Chapter;
 import com.lowagie.text.Document;
@@ -58,6 +56,7 @@ import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.List;
 
 /**
  * @author squere
@@ -118,9 +117,16 @@ public class AlmanachPdfGenerator {
             + currentDay.get(Calendar.YEAR), titleFont);
         Chapter chapter = new Chapter(cTitle, 1);
 
-        Collection<EventDetail> events = almanach.getListRecurrentEvent(mode.equals(PDF_YEAR_EVENTSONLY));
+        //Collection<EventDetail> events = almanach.getListRecurrentEvent(mode.equals(PDF_YEAR_EVENTSONLY));
+        AlmanachCalendarView almanachView;
+        if (PDF_YEAR_EVENTSONLY.equals(mode)) {
+          almanachView = almanach.getYearlyAlmanachCalendarView();
+        } else {
+          almanachView = almanach.getMonthlyAlmanachCalendarView();
+        }
 
-        generateAlmanach(chapter, almanach, events, mode);
+        List<DisplayableEventOccurrence> occurrences = almanachView.getEvents();
+        generateAlmanach(chapter, almanach, occurrences, mode);
 
         document.add(chapter);
       } catch (Exception ex) {
@@ -168,7 +174,7 @@ public class AlmanachPdfGenerator {
   }
 
   private static void generateAlmanach(Chapter chapter,
-      AlmanachSessionController almanach, Collection<EventDetail> events,
+      AlmanachSessionController almanach, List<DisplayableEventOccurrence> occurrences,
       String mode) throws AlmanachException {
 
     boolean monthScope =
@@ -200,28 +206,20 @@ public class AlmanachPdfGenerator {
           0));
 
       // get the events of the current day
-      EventDetail event = null;
-      String theDay = null;
-      String startDay = null;
-      String endDay = null;
-      String eventTitle = null;
-      String startHour = null;
-      String endHour = null;
-      for (Iterator<EventDetail> i = events.iterator(); i.hasNext();) {
-        event = i.next();
-        theDay = DateUtil.date2SQLDate(calendar.getTime());
-        startDay = DateUtil.date2SQLDate(event.getStartDate());
-        startHour = event.getStartHour();
-        endHour = event.getEndHour();
+      for (DisplayableEventOccurrence occurrence : occurrences) {
+        EventDetail event = occurrence.getEventDetail();
+        String theDay = DateUtil.date2SQLDate(calendar.getTime());
+        String startDay = DateUtil.date2SQLDate(occurrence.getStartDate().asDate());
+        String startHour = event.getStartHour();
+        String endHour = event.getEndHour();
 
         if (startDay.compareTo(theDay) > 0) {
           continue;
         }
 
-        endDay = startDay;
-
+        String endDay = startDay;
         if (event.getEndDate() != null) {
-          endDay = DateUtil.date2SQLDate(event.getEndDate());
+          endDay = DateUtil.date2SQLDate(occurrence.getEndDate().asDate());
         }
 
         if (endDay.compareTo(theDay) < 0) {
@@ -243,8 +241,7 @@ public class AlmanachPdfGenerator {
           textFont = new Font(Font.HELVETICA, 10, Font.BOLD, new Color(0, 0, 0));
         }
 
-        eventTitle = event.getTitle();
-
+        String eventTitle = event.getTitle();
         if (startDay.compareTo(theDay) == 0 && startHour != null
             && startHour.length() != 0) {
           eventTitle += " (" + startHour;

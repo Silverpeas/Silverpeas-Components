@@ -146,12 +146,12 @@ public class EventOccurrence implements Comparable<EventOccurrence> {
 
   /**
    * Does this occurrence occur all the day defined?
-   * An occurrence occurs all the day if its start and end date are single dates instead of date
-   * times.
+   * An occurrence occurs all the day if its start or its end date is a single date instead of a
+   * date time.
    * @return true if the event is occurring all the day.
    */
   public boolean isAllDay() {
-    return startDate instanceof Date && endDate instanceof Date;
+    return startDate instanceof Date || endDate instanceof Date;
   }
 
   /**
@@ -160,7 +160,7 @@ public class EventOccurrence implements Comparable<EventOccurrence> {
    * @return the ISO 8601 format of the start date and time of this event.
    */
   public String getStartDateTimeInISO() {
-    return startDate.toISO8601();
+    return startDate.toShortISO8601();
   }
 
   /**
@@ -169,7 +169,7 @@ public class EventOccurrence implements Comparable<EventOccurrence> {
    * @return the ISO 8601 format of the end date and time of this event.
    */
   public String getEndDateTimeInISO() {
-    return endDate.toISO8601();
+    return endDate.toShortISO8601();
   }
   
   /**

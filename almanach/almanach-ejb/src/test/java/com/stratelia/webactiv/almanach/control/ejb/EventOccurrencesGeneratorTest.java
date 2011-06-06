@@ -131,7 +131,7 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
         startingAt("2011-04-12T09:30"),
         endingAt("2011-04-12T12:00"))));
     assertThat(occurrences.get(2), is(anOccurrenceOfEvent(PERIODIC_EVENTS[1],
-        startingAt("2011-04-20"),
+        startingAt("2011-04-20T09:30"),
         endingAt("2011-04-20"))));
   }
   
@@ -154,7 +154,7 @@ public class EventOccurrencesGeneratorTest extends BaseAlmanachTest {
         startingAt("2011-04-13T09:30"),
         endingAt("2011-04-13"))));
     assertThat(occurrences.get(3), is(anOccurrenceOfEvent(PERIODIC_EVENTS[1],
-        startingAt("2011-04-20"),
+        startingAt("2011-04-20T09:30"),
         endingAt("2011-04-20"))));
     assertThat(occurrences.get(4), is(anOccurrenceOfEvent(NON_PERIODIC_EVENTS[1],
         startingAt("2011-04-15"),

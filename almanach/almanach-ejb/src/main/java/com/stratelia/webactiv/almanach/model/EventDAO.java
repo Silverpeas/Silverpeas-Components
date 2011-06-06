@@ -23,6 +23,7 @@
  */
 package com.stratelia.webactiv.almanach.model;
 
+import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.UtilException;
 import java.sql.Connection;
@@ -229,7 +230,7 @@ public class EventDAO {
     lastDayWeek.add(java.util.Calendar.WEEK_OF_YEAR, 1);
     String startDay = formatDate(firstDayWeek.getTime());
     String endDay = formatDate(lastDayWeek.getTime());
-    
+
     return findAllEventsInRange(startDay, endDay, instanceIds);
   }
 
@@ -330,20 +331,18 @@ public class EventDAO {
     } catch (Exception ex) {
       id = rs.getString("eventId");
     }
-    String name = rs.getString("eventName");
-    EventDetail event = new EventDetail(new EventPK(id), name);
-    event.setDelegatorId(rs.getString("eventDelegatorId"));
-    event.setStartDate(parseDate(rs.getString("eventStartDay")));
-
+    String title = rs.getString("eventTitle");
+    Date startDate = parseDate(rs.getString("eventStartDay"));
+    Date endDate = startDate;
     if (rs.getString("eventEndDay") != null) {
-      event.setEndDate(parseDate(rs.getString("eventEndDay")));
+      endDate = parseDate(rs.getString("eventEndDay"));
     }
-
+    EventDetail event = new EventDetail(new EventPK(id), title, startDate, endDate);
+    event.setNameDescription(rs.getString("eventName"));
+    event.setDelegatorId(rs.getString("eventDelegatorId"));
     event.setStartHour(rs.getString("eventStartHour"));
     event.setEndHour(rs.getString("eventEndHour"));
-
     event.setPriority(rs.getInt("eventPriority"));
-    event.setTitle(rs.getString("eventTitle"));
     event.setPlace(rs.getString("eventPlace"));
     event.setEventUrl(rs.getString("eventUrl"));
     event.getPK().setComponentName(rs.getString("instanceId"));
@@ -360,7 +359,23 @@ public class EventDAO {
       periodicity.setUntilDatePeriod(parseDate(rs.getString("untildateperiod")));
       event.setPeriodicity(periodicity);
     }
+    fixIncorrectDatesForAlreadyExistingEvent(event);
     return event;
+  }
+
+  protected void fixIncorrectDatesForAlreadyExistingEvent(final EventDetail event) throws Exception {
+    if (event.getStartDate().equals(event.getEndDate()) && StringUtil.isDefined(event.getEndHour())) {
+      int endHour = extractHour(event.getEndHour());
+      int endMinute = extractMinutes(event.getEndHour());
+      int startHour = extractHour(event.getStartHour());
+      int startMinute = extractMinutes(event.getStartHour());
+      if (endHour < startHour || (endHour == startHour && endMinute < startMinute)) {
+        String hour = event.getStartHour();
+        event.setStartHour(event.getEndHour());
+        event.setEndHour(hour);
+        updateEvent(event);
+      }
+    }
   }
 
   protected Connection openConnection() throws UtilException {

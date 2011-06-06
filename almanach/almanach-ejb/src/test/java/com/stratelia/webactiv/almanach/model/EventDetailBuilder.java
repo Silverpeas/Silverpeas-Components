@@ -44,12 +44,10 @@ public class EventDetailBuilder {
   public static EventDetailBuilder anEventDetailOfId(String id) throws Exception {
     EventDetailBuilder builder = new EventDetailBuilder();
     if ("1000".equals(id)) {
-      EventDetail event = new EventDetail(new EventPK(id, null, "almanach272"), "");
-      event.setTitle("Complete event");
+      EventDetail event = new EventDetail(new EventPK(id, null, "almanach272"), "Complete event",
+          parseDate("2011/01/04"), parseDate("2011/01/04"));
       event.setDelegatorId("1298");
-      event.setStartDate(parseDate("2011/01/04"));
       event.setStartHour("09:30");
-      event.setEndDate(parseDate("2011/01/04"));
       event.setEndHour("12:00");
       event.setEventUrl("");
       event.setPlace("Eybens");
@@ -66,10 +64,9 @@ public class EventDetailBuilder {
       event.setPeriodicity(periodicity);
       builder.setEventDetail(event);
     } else if ("1001".equals(id)) {
-      EventDetail event = new EventDetail(new EventPK(id, null, "almanach701"), "");
-      event.setTitle("Event without end date");
+      EventDetail event = new EventDetail(new EventPK(id, null, "almanach701"),
+          "Event without end date", parseDate("2011/04/13"), parseDate("2011/04/13"));
       event.setDelegatorId("861");
-      event.setStartDate(parseDate("2011/04/13"));
       event.setStartHour("09:30");
       event.setEndHour("");
       event.setEventUrl("");
@@ -77,10 +74,9 @@ public class EventDetailBuilder {
       event.setPriority(0);
       builder.setEventDetail(event);
     } else if ("1002".equals(id)) {
-      EventDetail event = new EventDetail(new EventPK(id, null, "almanach509"), "");
-      event.setTitle("All day event without end date");
+      EventDetail event = new EventDetail(new EventPK(id, null, "almanach509"),
+          "All day event without end date", parseDate("2011/04/15"), parseDate("2011/04/15"));
       event.setDelegatorId("847");
-      event.setStartDate(parseDate("2011/04/15"));
       event.setStartHour("");
       event.setEndHour("");
       event.setEventUrl("");
@@ -88,12 +84,10 @@ public class EventDetailBuilder {
       event.setPriority(0);
       builder.setEventDetail(event);
     } else if ("1003".equals(id)) {
-      EventDetail event = new EventDetail(new EventPK(id, null, "almanach509"), "");
-      event.setTitle("All day event");
+      EventDetail event = new EventDetail(new EventPK(id, null, "almanach509"), "All day event",
+          parseDate("2011/04/20"), parseDate("2011/04/20"));
       event.setDelegatorId("847");
-      event.setStartDate(parseDate("2011/04/20"));
-      event.setStartHour("");
-      event.setEndDate(parseDate("2011/04/20"));
+      event.setStartHour("09:30");
       event.setEndHour("");
       event.setEventUrl("");
       event.setPlace("Eybens");

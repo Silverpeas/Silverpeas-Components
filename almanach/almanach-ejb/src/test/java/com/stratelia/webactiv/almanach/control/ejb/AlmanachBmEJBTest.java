@@ -107,7 +107,7 @@ public class AlmanachBmEJBTest extends BaseAlmanachTest {
         startingAt("2011-04-15"),
         endingAt("2011-04-15"))));
     assertThat(occurrences.get(4), is(anOccurrenceOfEvent(PERIODIC_EVENTS[1],
-        startingAt("2011-04-20"),
+        startingAt("2011-04-20T09:30"),
         endingAt("2011-04-20"))));
   }
 

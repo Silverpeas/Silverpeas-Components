@@ -140,6 +140,7 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
 
   /**
    * Generates the occurrences of the specified events that occur in the specified period.
+   * @param events the events for which the occurrences has to be generated.
    * @param inPeriod the period.
    * @return a list of event occurrences that occur in the specified period.
    */
@@ -150,7 +151,6 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
     ComponentList componentList = iCal4JCalendar.getComponents(Component.VEVENT);
     for (Object eventObject : componentList) {
       VEvent iCalEvent = (VEvent) eventObject;
-      //String idEvent = iCalEvent.getProperties().getProperty(Property.UID).getValue();
       int index = Integer.parseInt(iCalEvent.getProperties().getProperty(Property.CATEGORIES).
           getValue());
       EventDetail event = events.get(index);
@@ -204,7 +204,11 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
       Datable<?> datable = toDatable(periodicityException.getBeginDateException(), event.
           getStartHour());
       exceptionsStartDate.setTime(datable.asDate());
-      datable = toDatable(periodicityException.getEndDateException(), event.getEndHour());
+      if (!isDefined(event.getEndHour()) && isDefined(event.getStartHour())) {
+        datable = toDatable(periodicityException.getEndDateException(), event.getStartHour());
+      } else {
+        datable = toDatable(periodicityException.getEndDateException(), event.getEndHour());
+      }
       exceptionsEndDate.setTime(datable.asDate());
       while (exceptionsStartDate.before(exceptionsEndDate)
           || exceptionsStartDate.equals(exceptionsEndDate)) {
@@ -212,8 +216,7 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
         exceptionsStartDate.add(java.util.Calendar.DATE, 1);
       }
     }
-    ExDate exDate = new ExDate(exceptionDates);
-    return exDate;
+    return new ExDate(exceptionDates);
   }
 
   /**
@@ -221,7 +224,7 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
    * @param periodicity an event periodicity
    * @return a collection of exceptions that were applied to the specified periodicity.
    */
-  private Collection<PeriodicityException> getPeriodicityExceptions(final Periodicity periodicity) {
+  private Collection getPeriodicityExceptions(final Periodicity periodicity) {
     try {
       IdPK pk = new IdPK();
       return getPeriodicityExceptionDAO().findByWhereClause(pk, "periodicityId = " + periodicity.
@@ -258,6 +261,8 @@ public class ICal4JEventOccurrencesGenerator implements EventOccurrenceGenerator
       calendarDate.setTime(date);
       calendarDate.set(java.util.Calendar.HOUR_OF_DAY, extractHour(time));
       calendarDate.set(java.util.Calendar.MINUTE, extractMinutes(time));
+      calendarDate.set(java.util.Calendar.SECOND, 0);
+      calendarDate.set(java.util.Calendar.MILLISECOND, 0);
       datable = new com.silverpeas.calendar.DateTime(calendarDate.getTime()).inTimeZone(timeZone);
     } else {
       datable = new Date(date).inTimeZone(timeZone);

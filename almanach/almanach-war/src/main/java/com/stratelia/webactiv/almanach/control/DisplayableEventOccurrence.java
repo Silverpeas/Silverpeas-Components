@@ -100,12 +100,14 @@ public class DisplayableEventOccurrence extends EventOccurrence {
    * @return a JSON object of this event DTO.
    */
   protected JSONObject toJSONObject() {
+    String startDate = getStartDateTimeInISO();
+    String endDate = getEndDateTimeInISO();
     JSONObject jsonObject = new JSONObject();
     jsonObject.put("id", getEventDetail().getId());
     jsonObject.put("instanceId", getEventDetail().getInstanceId());
     jsonObject.put("title", getEventDetail().getTitle());
-    jsonObject.put("start", getStartDateTimeInISO());
-    jsonObject.put("end", getEndDateTimeInISO());
+    jsonObject.put("start", startDate);
+    jsonObject.put("end", endDate);
     jsonObject.put("className", new JSONArray(getCSSClasses()));
     jsonObject.put("allDay", isAllDay());
     return jsonObject;
