@@ -1006,10 +1006,11 @@ public class AlmanachBmEJB implements AlmanachBmBusinessSkeleton, SessionBean {
   }
 
   private void checkEventDates(final EventDetail event) {
-    if (event.getStartDate().before(event.getEndDate())) {
+    if (event.getEndDate().before(event.getStartDate())) {
       throw new IllegalArgumentException("The event ends before its start!");
     }
-    if (event.getStartDate().equals(event.getEndDate()) && isDefined(event.getEndHour())) {
+    if (event.getStartDate().equals(event.getEndDate()) && isDefined(event.getEndHour())
+        && isDefined(event.getStartHour())) {
       int endHour = extractHour(event.getEndHour());
       int endMinute = extractMinutes(event.getEndHour());
       int startHour = extractHour(event.getStartHour());

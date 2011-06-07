@@ -75,6 +75,8 @@ public class CalendarEventEncoder {
       String endTime = eventDetail.getEndHour();
       if (startDate instanceof com.silverpeas.calendar.Date) {
         endTime = "";
+      } else if (!isDefined(endTime)) {
+        endTime = eventDetail.getStartHour();
       }
       Datable<?> endDate = createDatable(eventDetail.getEndDate(), endTime).inTimeZone(timeZone);
 

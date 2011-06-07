@@ -60,10 +60,10 @@ public class EventDetail extends AbstractI18NBean implements
   private int _priority = 0;
   private String _title = null;
   private String _iconUrl = "";
-  private String startHour;
-  private String endHour;
-  private String place;
-  private String eventUrl;
+  private String startHour = "";
+  private String endHour = "";
+  private String place = "";
+  private String eventUrl = "";
   private Periodicity periodicity;
 
   public String getPlace() {
@@ -154,6 +154,8 @@ public class EventDetail extends AbstractI18NBean implements
     Date date = null;
     if (_endDate != null) {
       date = new Date(_endDate.getTime());
+    } else {
+      date = getStartDate();
     }
     return date;
   }
@@ -170,7 +172,7 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public boolean isAllDay() {
-    return !isDefined(this.startHour) || !isDefined(this.endHour);
+    return !isDefined(getStartHour()) || !isDefined(getEndHour());
   }
 
   public String getTitle() {
@@ -226,7 +228,11 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public String getEndHour() {
-    return endHour;
+    String hour = endHour;
+    if (!isDefined(hour)) {
+      hour = getStartHour();
+    }
+    return hour;
   }
 
   public void setEndHour(String endHour) {
@@ -306,11 +312,8 @@ public class EventDetail extends AbstractI18NBean implements
   }
 
   public VEvent icalConversion(ExDate exDate) {
-    net.fortuna.ical4j.model.Date dtStart = toIcalDate(_startDate, startHour);
-    net.fortuna.ical4j.model.Date dtEnd = dtStart;
-    if (_endDate != null) {
-      dtEnd = toIcalDate(_endDate, endHour);
-    }
+    net.fortuna.ical4j.model.Date dtStart = toIcalDate(getStartDate(), getStartHour());
+    net.fortuna.ical4j.model.Date dtEnd = toIcalDate(getEndDate(), getEndHour());
     VEvent iCalEvent = new VEvent(dtStart, dtEnd, _title);
 
     if (_pk != null) {
@@ -374,11 +377,6 @@ public class EventDetail extends AbstractI18NBean implements
     if (isDefined(hour)) {
       calDate.set(java.util.Calendar.HOUR_OF_DAY, DateUtil.extractHour(hour));
       calDate.set(java.util.Calendar.MINUTE, DateUtil.extractMinutes(hour));
-    } else if (date == _endDate) {
-      calDate.set(java.util.Calendar.HOUR_OF_DAY, 23);
-      calDate.set(java.util.Calendar.MINUTE, 59);
-      calDate.set(java.util.Calendar.SECOND, 59);
-      calDate.set(java.util.Calendar.MILLISECOND, 999);
     }
     iCalDate = new DateTime(calDate.getTime());
     ((DateTime) iCalDate).setTimeZone(getTimeZone());
