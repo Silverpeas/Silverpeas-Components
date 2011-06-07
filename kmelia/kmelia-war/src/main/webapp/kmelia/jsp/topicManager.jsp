@@ -257,6 +257,7 @@ labels["ConfirmFlushTrashBean"] = "<%=EncodeHelper.javaStringToJsString(kmeliaSc
 labels["ToValidate"] = "<%=EncodeHelper.javaStringToJsString(resources.getString("ToValidate"))%>";
 labels["topic.info"] = "<%=EncodeHelper.javaStringToJsString(resources.getString("kmelia.topic.info"))%>";
 
+labels["operation.admin"] = "<%=resources.getString("GML.operations.setupComponent")%>";
 labels["operation.pdc"] = "<%=resources.getString("GML.PDCParam")%>";
 labels["operation.templates"] = "<%=resources.getString("kmelia.ModelUsed")%>";
 labels["operation.exportTopic"] = "<%=resources.getString("kmelia.ExportTopic")%>";

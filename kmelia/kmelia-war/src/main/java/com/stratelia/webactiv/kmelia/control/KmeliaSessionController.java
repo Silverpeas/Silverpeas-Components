@@ -23,6 +23,35 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.rmi.NoSuchObjectException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import javax.ejb.EJBObject;
+import javax.ejb.RemoveException;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.commons.io.FilenameUtils;
+
 import com.google.common.io.Closeables;
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.comment.model.Comment;
@@ -83,7 +112,6 @@ import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.AdminController;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.ComponentInstManager;
 import com.stratelia.webactiv.beans.admin.Group;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -150,33 +178,6 @@ import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import org.apache.commons.io.FilenameUtils;
-
-import javax.ejb.EJBObject;
-import javax.ejb.RemoveException;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.rmi.NoSuchObjectException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.Vector;
 
 public class KmeliaSessionController extends AbstractComponentSessionController {
 
@@ -246,6 +247,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   // sauvegarde pour mise à jour à la chaine
   Fields saveFields = new Fields();
   boolean isDragAndDropEnableByUser = false;
+  boolean componentManageable = false;
 
   /**
    * Creates new sessionClientController
@@ -265,6 +267,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     currentLanguage = getLanguage();
     if (StringUtil.getBooleanValue(getSettings().getString("massiveDragAndDropAllowed"))) {
         isDragAndDropEnableByUser = isDragAndDropEnableByUser();
+    }
+    componentManageable = GeneralPropertiesManager.getGeneralResourceLocator().getBoolean("AdminFromComponentEnable", true);
+    if (componentManageable) {
+      componentManageable = getOrganizationController().isComponentManageable(getComponentId(), getUserId());
     }
   }
 
@@ -4713,6 +4719,17 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     delegatedNewsService.notifyDelegatedNewsToValidate(pubId, pubDetail.getName(this.getLanguage()), this.getUserId(), this.getUserDetail().getDisplayedName(), delegatednewsInstanceId);
     
     return pubId;
+  }
+  
+  public void removePublicationContent() throws RemoteException {
+    PublicationPK pubPK = getSessionPubliOrClone().getPublication().getPublicationDetail().getPK();
+    getKmeliaBm().removeContentOfPublication(pubPK);
+    // reset reference to content 
+    getSessionPubliOrClone().getPublication().getPublicationDetail().setInfoId("0");
+  }
+
+  public boolean isComponentManageable() {
+    return componentManageable;
   }
   
 }

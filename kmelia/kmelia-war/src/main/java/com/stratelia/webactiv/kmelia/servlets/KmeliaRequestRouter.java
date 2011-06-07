@@ -1183,16 +1183,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
                 destination = getDestination("ToDBModel", kmelia, request);
               } else {
                 // XML template
-                setXMLForm(request, kmelia, modelId);
+                request.setAttribute("Name", modelId);
 
-                // put current publication
-                request.setAttribute("CurrentPublicationDetail", kmelia.getSessionPubliOrClone().
-                    getPublication().getPublicationDetail());
-
-                // Parametres du Wizard
-                setWizardParams(request, kmelia);
-
-                destination = rootDestination + "xmlForm.jsp";
+                destination = getDestination("GoToXMLForm", kmelia, request);
               }
             } else {
               destination = getDestination("ListModels", kmelia, request);
@@ -1284,6 +1277,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
           kmelia.addModelUsed((String[]) o);
         }
         destination = getDestination("GoToCurrentTopic", kmelia, request);
+      } else if ("ChangeTemplate".equals(function)) {
+        kmelia.removePublicationContent();
+        destination = getDestination("ToPubliContent", kmelia, request);
       } else if (function.equals("ToWysiwyg")) {
         if (kmelia.isCloneNeeded()) {
           kmelia.clonePublication();
@@ -1430,6 +1426,9 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
         }
       } else if (function.equals("GoToXMLForm")) {
         String xmlFormName = request.getParameter("Name");
+        if (!StringUtil.isDefined(xmlFormName)) {
+          xmlFormName = (String) request.getAttribute("Name");
+        }
 
         setXMLForm(request, kmelia, xmlFormName);
 
@@ -1439,6 +1438,10 @@ public class KmeliaRequestRouter extends ComponentRequestRouter {
 
         // Parametres du Wizard
         setWizardParams(request, kmelia);
+        
+        // template can be changed only if current topic is using at least two templates
+        Collection<String> modelUsed = kmelia.getModelUsed();
+        request.setAttribute("IsChangingTemplateAllowed", modelUsed.size() >= 2);
 
         destination = rootDestination + "xmlForm.jsp";
       } else if (function.equals("UpdateXMLForm")) {
