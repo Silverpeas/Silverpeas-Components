@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,95 +24,140 @@
 
 package com.silverpeas.scheduleevent.service.model.beans;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
-public class ScheduleEvent {
+import com.silverpeas.scheduleevent.service.model.ScheduleEventBean;
 
+public class ScheduleEvent implements ScheduleEventBean, Serializable {
+
+  private static final long serialVersionUID = 1L;
   public String id;
   public String title;
   public String description;
   public Date creationDate;
   public int author;
-  public SortedSet<DateOption> dates = new TreeSet<DateOption>(new DateOptionsComparator());
-  public SortedSet<Contributor> contributors =
-      new TreeSet<Contributor>(new ContributorComparator());
+  public Set<DateOption> dates = new HashSet<DateOption>();
+  public Set<Contributor> contributors =
+      new HashSet<Contributor>();
   public Set<Response> responses = new HashSet<Response>();
   public int status;
 
+  @Override
   public String getId() {
     return id;
   }
 
+  @Override
   public void setId(String id) {
     this.id = id;
   }
 
+  @Override
   public String getTitle() {
     return title;
   }
 
+  @Override
   public void setTitle(String title) {
     this.title = title;
   }
 
+  @Override
   public String getDescription() {
     return description;
   }
 
+  @Override
   public void setDescription(String description) {
     this.description = description;
   }
 
+  @Override
   public Date getCreationDate() {
     return creationDate;
   }
 
+  @Override
   public void setCreationDate(Date creationDate) {
     this.creationDate = creationDate;
   }
 
+  @Override
   public int getAuthor() {
     return author;
   }
 
+  @Override
   public void setAuthor(int author) {
     this.author = author;
   }
 
-  public SortedSet<DateOption> getDates() {
+  @Override
+  public Set<DateOption> getDates() {
     return dates;
   }
 
-  public void setDates(SortedSet<DateOption> dates) {
+  @Override
+  public void setDates(Set<DateOption> dates) {
     this.dates = dates;
   }
 
-  public SortedSet<Contributor> getContributors() {
+  @Override
+  public Set<Contributor> getContributors() {
     return contributors;
   }
 
-  public void setContributors(SortedSet<Contributor> contributors) {
+  @Override
+  public void setContributors(Set<Contributor> contributors) {
     this.contributors = contributors;
   }
 
+  @Override
   public Set<Response> getResponses() {
     return responses;
   }
 
+  @Override
   public void setResponses(Set<Response> responses) {
     this.responses = responses;
   }
 
+  @Override
   public int getStatus() {
     return status;
   }
 
+  @Override
   public void setStatus(int status) {
     this.status = status;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    ScheduleEvent other = (ScheduleEvent) obj;
+    if (id == null) {
+      if (other.id != null)
+        return false;
+    } else if (!id.equals(other.id))
+      return false;
+    return true;
+  }
+  
 }

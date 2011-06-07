@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,22 +27,40 @@ package com.silverpeas.scheduleevent.servlets.handlers;
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
-import com.silverpeas.scheduleevent.service.model.beans.DateOption;
-import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
+import com.silverpeas.scheduleevent.view.ScheduleEventVO;
 
 public class ScheduleEventDeleteDateRequestHandler extends ScheduleEventActionDateRequestHandler {
+
+  private ScheduleEventRequestHandler forwardRequestHandler = null;
+
+  public void setForwardRequestHandler(ScheduleEventRequestHandler forwardRequestHandler) {
+    this.forwardRequestHandler = forwardRequestHandler;
+  }
 
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
       HttpServletRequest request) throws Exception {
-    ScheduleEvent current = scheduleeventSC.getCurrentScheduleEvent();
-    String dateIdSearch = request.getParameter("dateToDelete");
-    DateOption dateOptionToDelete = getExistingDateOption(current.getDates(), dateIdSearch);
-    if (dateOptionToDelete != null) {
-      current.getDates().remove(dateOptionToDelete);
+    if (forwardRequestHandler != null) {
+      return deleteSelectedDateAndForwardRequestHandler(function, scheduleeventSC, request);
+    } else {
+      throw UndefinedForwardRequestHandlerException();
     }
-    scheduleeventSC.setCurrentScheduleEvent(current);
-    request.setAttribute(CURRENT_SCHEDULE_EVENT, current);
-    return "form/options.jsp";
+  }
+
+  private String deleteSelectedDateAndForwardRequestHandler(String function,
+      ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws Exception {
+    removeDateOptions(scheduleeventSC, request);
+    return forwardRequestHandler.getDestination(function, scheduleeventSC, request);
+  }
+
+  private void removeDateOptions(ScheduleEventSessionController scheduleeventSC,
+      HttpServletRequest request) throws Exception {
+    ScheduleEventVO current = (ScheduleEventVO) scheduleeventSC.getCurrentScheduleEventVO();
+    current.deleteDate(request.getParameter("dateToDelete"));
+  }
+
+  private Exception UndefinedForwardRequestHandlerException() {
+    return new Exception(
+        "No forward request defines for" + this.getClass());
   }
 }

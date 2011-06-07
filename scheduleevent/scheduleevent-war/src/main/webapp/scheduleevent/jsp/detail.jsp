@@ -1,6 +1,7 @@
+
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2009 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -24,211 +25,200 @@
 
 --%>
 <%@ include file="check.jsp"%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<html>
-  <fmt:setLocale value="${sessionScope[sessionController].language}" />
-  <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-  <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
-  <head>
-    <view:looknfeel />
-    <script type="text/javascript">
-	    function deleteScheduleEvent(){
-	    	if(confirm('<fmt:message key="scheduleevent.form.delete.confirm"/>')){
-	    		document.utilForm.action="<c:url value="/Rscheduleevent/jsp/Delete"/>";
-	    		document.utilForm.submit();
-	    	}
-	    }
 
-	    function modifyState(){
-	    	document.utilForm.action="<c:url value="/Rscheduleevent/jsp/ModifyState"/>";
-	    	document.utilForm.submit();
-	    }
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<%@ include file="form/dateFormat.jspf"%>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+<head>
+<view:looknfeel />
+<c:url var="animationUrl" value="/util/javaScript/animation.js" />
+<c:url var="openUserPopupUrl" value="/Rscheduleevent/jsp/OpenUserPopup" />
+<c:url var="backPopupUrl" value="/Rscheduleevent/jsp/Detail" />
+<script type="text/javascript" src="${animationUrl}"></script>
+<script type="text/javascript">
+	function deleteScheduleEvent() {
+		if (confirm('<fmt:message key="scheduleevent.form.delete.confirm"/>')) {
+			document.utilForm.action = "<c:url value="/Rscheduleevent/jsp/Delete"/>";
+			document.utilForm.submit();
+		}
+	}
 
-	    function valid(){
-	    	document.reponseForm.submit();
-	    }
-  </script>
-  </head>
-  <%
-  ScheduleEventSessionController seScc = (ScheduleEventSessionController) request.getAttribute("ScheduleEvent");
-  
-  HashMap counter = new HashMap();
-  %>
-  <c:set var="userId" value="<%=seScc.getUserId()%>"/>
-  <body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-  
-  <fmt:message key="scheduleevent" var="scheduleEventTitle" />
-  <view:browseBar>
-  	<c:url value="/Rscheduleevent/jsp/Main" var="returnMain"/>
-  	<view:browseBarElt link="${returnMain}" label="${scheduleEventTitle}" />
-  </view:browseBar>
-  <fmt:message key="scheduleevent.form.hour.pm" var="hourChoicePM" />
-  <fmt:message key="scheduleevent.form.hour.am" var="hourChoiceAM" />
-  
-  <fmt:message key="scheduleevent.icons.open" var="openIcon" bundle="${icons}" />
-  <fmt:message key="scheduleevent.icons.open.alt" var="openIconAlt" />
-  <fmt:message key="scheduleevent.icons.close" var="closeIcon" bundle="${icons}" />
-  <fmt:message key="scheduleevent.icons.close.alt" var="closeIconAlt" />
-  <fmt:message key="scheduleevent.icons.delete" var="deleteIcon" bundle="${icons}" />
-  <fmt:message key="scheduleevent.icons.delete.alt" var="deleteIconAlt" />
-  
-   <c:set var="scheduleEvent" value="${requestScope.scheduleEventDetail}"/>
-  
-  <c:if test="${scheduleEvent.author == userId}">
-	  <view:operationPane>
-	    <view:operation altText="${deleteIconAlt}" icon="${deleteIcon}" action="${'javascript:deleteScheduleEvent();'}" />
-	    <c:if test="${scheduleEvent.status == 0}">
-	    	<view:operation altText="${openIconAlt}" icon="${openIcon}" action="${'javascript:modifyState();'}" />
-		</c:if>
-		<c:if test="${scheduleEvent.status != 0}">
-			<view:operation altText="${closeIconAlt}" icon="${closeIcon}" action="${'javascript:modifyState();'}" />
-		</c:if>
-	  </view:operationPane>
-  </c:if>
-    
-  <view:window>
-  	<form id="utilForm" name="utilForm" method="POST" action="">
-  		<input type="hidden" name="scheduleEventId" value="${scheduleEvent.id}"/>
-  	</form>
-  	<form id="reponseForm" name="reponseForm" method="POST" action="<c:url value="/Rscheduleevent/jsp/ValidResponse"/>">
-  		<input type="hidden" name="scheduleEventId" value="${scheduleEvent.id}"/>
-  	<table id="scheduleEventDetail" class="tableArrayPane" width="98%" cellspacing="2" cellpadding="2" border="0">
-  		<tr align="center">
-  			<td valign="top" align="center" class="ArrayColumn"><fmt:message key="scheduleevent.column.contributor"/></td>
-	  		<c:forEach items="${scheduleEvent.dates}" var="dateOption" varStatus="dateIndex">
-	  			<fmt:formatDate var="currentDate" pattern="dd MMM yy" value="${dateOption.day}"/>
-				<c:if test="${dateOption.hour == 8}">
-					<td valign="top" align="center" class="ArrayColumn">${currentDate}&nbsp;${hourChoiceAM}</td>
-				</c:if>
-				<c:if test="${dateOption.hour != 8}">
-					<td valign="top" align="center" class="ArrayColumn">${currentDate}&nbsp;${hourChoicePM}</td>
-				</c:if>
-	  		</c:forEach>
-	  	</tr>
-	  	<c:set var="isButtonPaneNecessary"/>
-  		<c:forEach items="${scheduleEvent.contributors}" var="contributor" varStatus="contribIndex">
-  			<c:set var="isName"/>
-  			<c:set var="contributorId" value="${contributor.userId}"/>
-  			<c:if test="${contributorId != userId}">
-  				<c:forEach items="${scheduleEvent.dates}" var="date" varStatus="dateIndex">
-  					<c:set var="isOk" value="false"/>
-  					<c:set var="dateId" value="${date.id}"/>
-  					<c:forEach items="${scheduleEvent.responses}" var="response" varStatus="responseIndex">
-  						<c:if test="${response.userId == contributorId}">	
-	  						<c:if test="${empty isName}">
-	  							<tr>
-	  							<%
-	  							Contributor currentContributor = (Contributor) pageContext.getAttribute("contributor");
-				      			UserDetail contributorDetail = seScc.getUserDetail(String.valueOf(currentContributor.getUserId()));
-				      			%>
-				      			<td valign="top" align="center" class="ArrayCell"><%=contributorDetail.getDisplayedName()%></td>
-	  							<c:set var="isName" value="done"/>	
-	  						</c:if>
-	  						<c:if test="${response.optionId == date.id}">
-	  							<c:set var="isOk" value="true"/>
-	  						</c:if>
-  						</c:if>
-  					</c:forEach>
-  					<c:if test="${not empty isName}">
-	  					<c:if test="${isOk == 'true'}">
-	  					<%
-	  					String currentDateId = (String) pageContext.getAttribute("dateId");
-	  					if(counter.get(currentDateId) == null){
-	  					  counter.put(currentDateId, new Integer(1));
-	  					}else{
-	  					  int count = ((Integer)counter.get(currentDateId)).intValue();
-	  					  count++;
-	  					  counter.put(currentDateId, new Integer(count));
-	  					}
-	  					%>
-	  					<td valign="top" align="center" class="ArrayCell" style="background-color: green">OK</td>
-						</c:if>
-						<c:if test="${isOk == 'false'}">
-							<td valign="top" align="center" class="ArrayCell" style="background-color: red">&nbsp;</td>
-						</c:if>
+	function setUsers(){
+		SP_openUserPanel('${openUserPopupUrl}', 'OpenUserPanel', 'menubar=no,scrollbars=no,statusbar=no');
+		document.utilForm.action = "${backPopupUrl}";
+		document.utilForm.submit();
+	}
+
+	function modifyState() {
+		document.utilForm.action = "<c:url value="/Rscheduleevent/jsp/ModifyState"/>";
+		document.utilForm.submit();
+	}
+
+	function valid() {
+		document.reponseForm.submit();
+	}
+</script>
+<link rel='stylesheet' type='text/css'
+	href="<c:url value='/scheduleevent/jsp/styleSheets/scheduleevent.css'/>" />
+</head>
+
+<body class="scheduleEvent" id="scheduleEvent_detail">
+
+<fmt:message key="scheduleevent" var="scheduleEventTitle" />
+<c:url value="/Rscheduleevent/jsp/Main" var="returnMain" />
+<view:browseBar extraInformations="${scheduleEventDetail.htmlParagraphTitle}">
+	<view:browseBarElt link="${returnMain}" label="${scheduleEventTitle}" />
+</view:browseBar>
+
+<c:set var="scheduleEventDetail" value="${requestScope.scheduleEventDetail}" />
+
+<c:if test="${scheduleEventDetail.allowedToChange}">
+	<fmt:message key="scheduleevent.icons.delete" var="deleteIcon" bundle="${icons}" />
+	<fmt:message key="scheduleevent.icons.delete.alt" var="deleteIconAlt" />
+	<c:if test="${scheduleEventDetail.closed}">
+		<fmt:message key="scheduleevent.icons.open" var="modifyStateIcon" bundle="${icons}" />
+		<fmt:message key="scheduleevent.icons.open.alt" var="modifyStateIconAlt" />
+	</c:if>
+	<c:if test="${!scheduleEventDetail.closed}">
+		<fmt:message key="scheduleevent.icons.close" var="modifyStateIcon" bundle="${icons}" />
+		<fmt:message key="scheduleevent.icons.close.alt" var="modifyStateIconAlt" />
+	</c:if>
+	<fmt:message key="scheduleevent.icons.users" var="usersIcon" bundle="${icons}" />
+	<fmt:message key="scheduleevent.icons.users.alt" var="usersIconAlt" />
+	<view:operationPane>
+		<view:operation altText="${deleteIconAlt}" icon="${deleteIcon}" action="${'javascript:deleteScheduleEvent();'}" />
+		<view:operation altText="${modifyStateIconAlt}" icon="${modifyStateIcon}" action="${'javascript:modifyState();'}" />
+		<view:operation altText="${usersIconAlt}" icon="${usersIcon}" action="${'javascript:setUsers();'}" />
+	</view:operationPane>
+</c:if>
+
+<view:window>
+	<c:set var="selectionTime" value="${scheduleEventDetail.bestTimes}" />
+	<c:if test="${selectionTime.bestDateExists}"><div class="inlineMessage">
+		<fmt:message key="${selectionTime.multilangLabel}">
+			<fmt:param value="${selectionTime.datesNumber}"/>
+			<fmt:param value="<strong>${scheduleEventDetail.presentParticipationPercentageRate}</strong>"/>
+		</fmt:message>
+		<c:set var="selectionTimeSeparator" value="" />
+		<strong><c:forEach var="time" items="${selectionTime.times}">
+			<fmt:message key="${time.multilangLabel}" var="selectedTime"/>
+			<fmt:formatDate pattern="${gmlDateFormat}" value="${time.date.date}" var="selectedDate"/>
+			<c:out value="${selectionTimeSeparator} ${selectedDate} ${fn:toLowerCase(selectedTime)}" />
+			<c:set var="selectionTimeSeparator" value="," />
+		</c:forEach></strong>
+	</div></c:if>
+
+	<table width="98%" cellspacing="0" cellpadding="5" border="0" class="tableBoard"><tbody><tr>
+		<td>
+			<fmt:message key="scheduleevent.form.title" var="titleLabel" />
+			<fmt:message key="scheduleevent.form.description" var="descLabel" />
+			<table width="100%" cellpadding="5">
+				<tbody>
+					<tr>
+						<td class="txtlibform">${titleLabel}&nbsp;:</td>
+						<td colspan="3">${scheduleEventDetail.htmlParagraphTitle}</td>
+					</tr>
+					<tr>
+						<td class="txtlibform">${descLabel}&nbsp;:</td>
+						<td colspan="3">${scheduleEventDetail.htmlParagraphDescription}</td>
+					</tr>
+					<tr>
+						<td class="txtlibform"><fmt:message key="scheduleevent.form.listcontributors" />&nbsp;:</td>
+						<td>${scheduleEventDetail.subscribersCount}</td>
+						<td class="txtlibform"><fmt:message key="scheduleevent.form.participationrate" />&nbsp;:</td>
+						<td>${scheduleEventDetail.participationPercentageRate}</td>
+					</tr>
+				</tbody>
+			</table>
+		</td></tr></tbody>
+	</table>
+
+	<p class="txtnav"><fmt:message key="scheduleevent.form.selectdateandvalidate" />&nbsp;:</p>
+
+	<form id="utilForm" name="utilForm" method="post" action="">
+		<input type="hidden" name="scheduleEventId" value="${scheduleEventDetail.id}" />
+	</form>
+	<form id="reponseForm" name="reponseForm" method="post" action="<c:url value="/Rscheduleevent/jsp/ValidResponse"/>"><div id="dateTable">
+	    <input type="hidden" name="scheduleEventId" value="${scheduleEventDetail.id}" />
+		<table class="questionResults" width="100%" cellspacing="0" cellpadding="0" border="0"><thead><tr class="questionResults-top">
+			<td class="titreLigne">
+				<table class="questionResults" width="100%" cellspacing="1" cellpadding="0" border="0"><thead>
+					<tr class="questionResults-top"><td class="hideDay">&nbsp;</td></tr>
+					<tr class="questionResults-top"><td class="hideTime">&nbsp;</td></tr>
+					<c:if test="${scheduleEventDetail.currentUserDefinedAsSubscriber}">
+						<c:set var="currentUser" value="${scheduleEventDetail.currentUser}" />
+						<tr class="${currentUser.htmlClassAttribute}"><td class="displayUserName">${currentUser.name}</td></tr>
 					</c:if>
-  				</c:forEach>
-  				<c:if test="${not empty isName}">
-	  					</tr>
-	  				</c:if>
-  			</c:if>
-  		</c:forEach>
-  		<c:forEach items="${scheduleEvent.contributors}" var="contributor" varStatus="contribIndex">
-  			<c:set var="contributorId" value="${contributor.userId}"/>
-  			<c:if test="${contributorId == userId}">
-  				<tr>
-  					<%
-	  				String currentUserId = (String) pageContext.getAttribute("userId");
-	      			UserDetail user = seScc.getUserDetail(currentUserId);
-	      			%>
-	      			<td valign="top" align="center" class="ArrayCell"><%=user.getDisplayedName()%></td>
-  					<c:set var="isButtonPaneNecessary" value="true"/>
-  					<c:forEach items="${scheduleEvent.dates}" var="date" varStatus="dateIndex">
-  						<c:set var="dateId" value="${date.id}"/>
-	  					<fmt:formatDate pattern="ddMMyy" value="${date.day}" var="dateTmpId"/>
-	  					<c:set var="isSet"/>
-	  					<c:forEach items="${scheduleEvent.responses}" var="response" varStatus="responseIndex">
-  							<c:if test="${response.userId == contributorId}">
-  								<c:if test="${response.optionId == dateId}">
-  									<c:set var="isSet" value="true"/>
-  								</c:if>
-  							</c:if>
-	  					</c:forEach>
-	  					<c:if test="${scheduleEvent.status == 0}">
-	  						<c:set var="isButtonPaneNecessary" value="false"/>
-	  						<c:if test="${isSet == 'true'}">
-	  							<td valign="top" align="center" class="ArrayCell" style="background-color: green"><fmt:message key="scheduleevent.reponse.ok"/></td>
-	  						</c:if>
-	  						<c:if test="${isSet != 'true'}">
-	  							<td valign="top" align="center" class="ArrayCell" style="background-color: red"><fmt:message key="scheduleevent.reponse.ko"/></td>
-	  						</c:if>
-	  					</c:if>
-  						<c:if test="${scheduleEvent.status != 0}">
-	  						<td valign="top" align="center" class="ArrayCell"><input type="checkbox" name="${dateTmpId}_${date.hour}" <c:if test="${isSet == 'true'}">checked="checked"</c:if>/></td>
-	  					</c:if>
-	  					<c:if test="${isSet == 'true'}">
-	  						<%
-		  						String currentDateId = (String) pageContext.getAttribute("dateId");
-		  						if(counter.get(currentDateId) == null){
-			  					  counter.put(currentDateId, new Integer(1));
-			  					}else{
-			  					  int count = ((Integer)counter.get(currentDateId)).intValue();
-			  					  count++;
-			  					  counter.put(currentDateId, new Integer(count));
-			  					}
-		  						%>
-	  					</c:if>
-	  				</c:forEach>
-  				</tr>
-  			</c:if>
-  		</c:forEach>
-  		
-  		<tr>
-  		<td valign="top" align="center" class="ArrayCell"><fmt:message key="scheduleevent.reponse.sum"/></td>
-  		<c:forEach items="${scheduleEvent.dates}" var="date" varStatus="dateIndex">
-  			<c:set var="dateId" value="${date.id}"/>
-  			<td valign="top" align="center" class="ArrayCell">
-			<%
-			String currentDateId = (String) pageContext.getAttribute("dateId");
-			if(counter.get(currentDateId) != null){%><%=((Integer)counter.get(currentDateId)).intValue()%><%}else{%>0<%}%>
-			</td>	
-  		</c:forEach>
-  		</tr>
-  		
-  	</table>
-  	</form>
-  	
-  	<c:if test="${isButtonPaneNecessary == 'true'}">
-  	<center>
-	  	<view:buttonPane>
+					<c:forEach var="subscriber" items="${scheduleEventDetail.otherSubscribers}">
+						<tr><td class="displayUserName">${subscriber.name}</td></tr>
+					</c:forEach>
+					<tr class="resultVote"><td>&nbsp;</td></tr>
+					</thead>
+				</table>
+			</td>
+
+			<c:set var="enableStyleTime" value="titreCouleur" />
+			<c:set var="disableStyleTime" value="titreCouleur inactif" />
+			<c:forEach var="date" items="${scheduleEventDetail.dates}">
+				<td>
+					<table class="questionResults" width="100%" cellspacing="1" cellpadding="0" border="0"><thead>
+						<tr class="questionResults-top"><td colspan="${date.timesNumber}" class="day">
+							<fmt:formatDate pattern="${gmlDateFormat}" value="${date.date}" /></td>
+						</tr>
+						<tr class="questionResults-top">
+						    <c:set var="widthRate" value="${100 / date.timesNumber}%" />
+							<c:forEach var="time" items="${date.times}">
+								<td class="${time.htmlClassAttribute}" width="${widthRate}"><fmt:message key="${time.multilangLabel}" /></td>
+							</c:forEach>
+						</tr>
+						<c:if test="${scheduleEventDetail.currentUserDefinedAsSubscriber}">
+							<tr class="${currentUser.htmlClassAttribute}">
+								<c:forEach var="time" items="${date.times}">
+									<c:set var="availability" value="${time.availabilities[currentUser]}" />
+									<td class="${availability.htmlClassAttribute}">
+										<c:choose>
+											<c:when test="${!scheduleEventDetail.closed && availability.editable}">
+												<input type="checkbox" name="userChoices" value="${time.id}" <c:out value="${availability.markLabel}"/> />&nbsp;
+											</c:when>
+											<c:otherwise>
+												${availability.markLabel}
+											</c:otherwise>
+										</c:choose>
+									</td>
+								</c:forEach>
+							</tr>
+						</c:if>
+						<c:forEach var="subscriber" items="${scheduleEventDetail.otherSubscribers}"><tr>
+							<c:forEach var="time" items="${date.times}">
+								<c:set var="availability" value="${time.availabilities[subscriber]}" />
+								<td class="${availability.htmlClassAttribute}">${availability.markLabel}</td>
+							</c:forEach>
+						</tr></c:forEach>
+						<tr class="resultVote"><c:forEach var="time" items="${date.times}">
+							<c:set var="participation" value="${time.presents}" />
+							<td class="${participation.htmlClassAttribute}">${participation.positiveAnswerPercentage}</td>
+						</c:forEach></tr>
+						</thead>
+					</table>
+				</td>
+			</c:forEach></tr></thead>
+		</table>
+	</div></form>
+
+	<c:if test="${!scheduleEventDetail.closed && scheduleEventDetail.currentUserDefinedAsSubscriber}">
+		<div class="buttonBar"><view:buttonPane>
 			<fmt:message key="scheduleevent.button.valid" var="validLabel" />
 			<view:button label="${validLabel}" action="${'javascript:valid();'}" />
-		</view:buttonPane>
-	</center>
-  	</c:if>
-  	
-  </view:window>
-  </body>
+		</view:buttonPane></div>
+	</c:if>
+
+</view:window>
+</body>
 </html>

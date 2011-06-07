@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -24,24 +24,37 @@
 
 package com.silverpeas.scheduleevent.servlets.handlers;
 
-import java.util.Set;
-
 import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.scheduleevent.control.ScheduleEventSessionController;
-import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
 
 public class ScheduleEventConfirmRequestHandler implements ScheduleEventRequestHandler {
 
+  private ScheduleEventRequestHandler forwardRequestHandler = null;
+
+  public void setForwardRequestHandler(ScheduleEventRequestHandler forwardRequestHandler) {
+    this.forwardRequestHandler = forwardRequestHandler;
+  }
+
   @Override
   public String getDestination(String function, ScheduleEventSessionController scheduleeventSC,
-      HttpServletRequest request) {
+      HttpServletRequest request) throws Exception {
+    if (forwardRequestHandler != null) {
+      return saveCurrentScheduleEventAndForwardRequestHandler(function, scheduleeventSC, request);
+    } else {
+      throw UndefinedForwardRequestHandlerException();
+    }
+  }
 
+  private String saveCurrentScheduleEventAndForwardRequestHandler(String function,
+      ScheduleEventSessionController scheduleeventSC, HttpServletRequest request) throws Exception {
     scheduleeventSC.save();
-    // set list objects in request
-    Set<ScheduleEvent> events = scheduleeventSC.getScheduleEventsByUserId();
-    request.setAttribute(LIST_SCHEDULE_EVENT, events);
-    return "list.jsp";
+    return forwardRequestHandler.getDestination(function, scheduleeventSC, request);
+  }
+
+  private Exception UndefinedForwardRequestHandlerException() {
+    return new Exception(
+        "No forward request defines for" + this.getClass());
   }
 
 }

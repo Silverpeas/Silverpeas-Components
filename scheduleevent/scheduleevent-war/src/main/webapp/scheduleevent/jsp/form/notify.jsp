@@ -1,6 +1,6 @@
 <%--
 
-    Copyright (C) 2000 - 2011 Silverpeas
+    Copyright (C) 2000 - 2009 Silverpeas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -26,15 +26,15 @@
 <%@ include file="../check.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator"
-	prefix="view"%>
-<html>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
-<c:url var="animationUrl" value="/util/javaScript/animation.js"/>
-<c:url var="openUserPopupUrl" value="/Rscheduleevent/jsp/OpenUserPopup"/>
-<c:url var="backPopupUrl" value="/Rscheduleevent/jsp/ConfirmScreen"/>
-<c:url var="confirmUrl" value="/Rscheduleevent/jsp/Confirm"/>
+<c:url var="animationUrl" value="/util/javaScript/animation.js" />
+<c:url var="openUserPopupUrl" value="/Rscheduleevent/jsp/OpenUserPopup" />
+<c:url var="backPopupUrl" value="/Rscheduleevent/jsp/ConfirmScreen" />
+<c:url var="confirmUrl" value="/Rscheduleevent/jsp/Confirm" />
 <script type="text/javascript" src="${animationUrl}"></script>
 <script type="text/javascript">
 	function setUsers(){
@@ -48,75 +48,96 @@
     	document.confirmForm.submit();
     }
   </script>
+<link rel='stylesheet' type='text/css'
+	href="<c:url value='/scheduleevent/jsp/styleSheets/scheduleevent.css'/>" />
 </head>
 <c:set var="sessionController">Silverpeas_ScheduleEvent</c:set>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
+<%@ include file="dateFormat.jspf"%>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<view:setBundle bundle="${requestScope.resources.iconsBundle}"
-	var="icons" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <c:set var="browseContext" value="${requestScope.browseContext}" />
 
 <c:set var="currentScheduleEvent" value="${requestScope.currentScheduleEvent}" />
 
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5"
-	marginheight="5">
+<body class="scheduleEvent" id="scheduleEvent_notify">
 
 <fmt:message key="scheduleevent.form.title.screen4" var="scheduleEventTitle" />
-<view:browseBar>
-	<view:browseBarElt link="" label="${scheduleEventTitle}" />
+<fmt:message key="scheduleevent" var="componentName" />
+<c:url value="/Rscheduleevent/jsp/Main" var="returnMain" />
+<view:browseBar extraInformations="${scheduleEventTitle}">
+	<view:browseBarElt link="${returnMain}" label="${componentName}" />
 </view:browseBar>
 
 <fmt:message key="scheduleevent.form.addcontributors.alt" var="addContribAltText" />
-<fmt:message key="scheduleevent.icons.add" var="addIconPath" bundle="${icons}" />
-  
-<view:operationPane>
-    <view:operation altText="${addContribAltText}" icon="${addIconPath}" action="${'javascript: setUsers();'}" />
-  </view:operationPane>
+
 <view:window>
-	
-	<table id="generalInfos" class="tableArrayPane" width="98%" cellspacing="2" cellpadding="2" border="0">
-		<tr align="center">
-  			<td valign="top" align="center" class="ArrayColumn"><fmt:message key="scheduleevent.column.title"/></td>
-  			<td valign="top" align="center" class="ArrayColumn"><fmt:message key="scheduleevent.column.description"/></td>
-  		</tr>
-  		<tr align="left">
-  			<td valign="top" align="center" class="ArrayCell">${currentScheduleEvent.title}</td>
-  			<td valign="top" align="center" class="ArrayCell">${currentScheduleEvent.description}</td>
-  		</tr>
-  	</table>
+	<%@ include file="descriptionBoard.jspf"%>
+	<div id="dateTable">
+		<table class="questionResults" width="100%" cellspacing="0" cellpadding="0" border="0"><thead><tr class="questionResults-top">
+			<td class="titreLigne">
+				<table cellspacing="0" cellpadding="0" border="0"><thead>
+				<tr><td>
+					<fmt:message key="scheduleevent.form.days" />&nbsp;:</td>
+				</tr>
+				<tr><td>
+					<fmt:message key="scheduleevent.form.times" />&nbsp;:</td>
+				</tr></thead>
+				</table>
+			</td>
+
+			<c:set var="enableStyleTime" value="titreCouleur" />
+			<c:set var="disableStyleTime" value="titreCouleur inactif" />
+			<c:forEach var="dateOption" items="${currentScheduleEvent.optionalDateIndexes}">
+				<td>
+					<table class="questionResult" width="100%" cellspacing="1" cellpadding="0" border="0"><thead>
+						<tr class="questionResults-top"><td colspan="2" class="day">
+							<fmt:formatDate pattern="${gmlDateFormat}" value="${dateOption.date}" /></td>
+						</tr>
+						<tr class="questionResults-top">
+							<c:set var="styleTimeClass" value="${disableStyleTime}" />
+							<c:if test="${dateOption.morning}"><c:set var="styleTimeClass" value="${enableStyleTime}" /></c:if>
+							<td class="${styleTimeClass}" width="50%" ><fmt:message key="scheduleevent.form.hour.columnam" /></td>
+
+							<c:set var="styleTimeClass" value="${disableStyleTime}" />
+							<c:if test="${dateOption.afternoon}"><c:set var="styleTimeClass" value="${enableStyleTime}" /></c:if>
+							<td class="${styleTimeClass}" width="50%"><fmt:message key="scheduleevent.form.hour.columnpm" /></td>
+						</tr></thead>
+					</table>
+				</td>
+			</c:forEach></tr></thead>
+		</table>
+	</div>
+
 	<br/>
-	<table id="contributorsInfos" class="tableArrayPane" width="98%" cellspacing="2" cellpadding="2" border="0">
-	<tr align="center">
-  		<td valign="top" align="center" class="ArrayColumn"><fmt:message key="scheduleevent.form.listcontributors"/></td>
-	</tr>
-  	<tr align="left">
-  		<td valign="top" align="center" class="ArrayCell">
+	<p class="txtnav"><fmt:message key="scheduleevent.form.selectContributors" /></p>
+
+	<div id="contributorsInfos">
+		<h3><fmt:message key="scheduleevent.form.listcontributors" />&nbsp;:</h3>
+		<ul>
 			<c:if test="${not empty currentScheduleEvent.contributors}">
 				<c:forEach var="currentContributor" items="${currentScheduleEvent.contributors}" varStatus="lineInfo">
-					<c:out value="${currentContributor.userName}"></c:out>
-					<c:if test="${!lineInfo.last}"><br/></c:if> 
+					<li><c:out value="${currentContributor.userName}"/></li>
 				</c:forEach>
 			</c:if>
-		</td>
-	</tr>
-	</table>
-	<form name="confirmForm" method="POST" action="">
-	</form>
-	
-	<center>
+			<li><a class="btnAction" href="${'javascript: setUsers();'}">${addContribAltText}</a></li>
+		</ul>
+	</div>
+
+	<form name="confirmForm" method="post" action=""></form>
+
+	<div class="buttonBar">
 	<view:buttonPane>
-	<fmt:message key="scheduleevent.button.cancel" var="cancelLabel" />
-	<c:url var="cancelUrl" value="/Rscheduleevent/jsp/Cancel"/>
-	<view:button label="${cancelLabel}" action="${cancelUrl}" />
-	<c:url var="backUrl" value="/Rscheduleevent/jsp/BackHour"/>
-	<fmt:message key="scheduleevent.button.back" var="backToDateLabel" />
-	<view:button label="${backToDateLabel}" action="${backUrl}" />
-	<c:if test="${not empty currentScheduleEvent.contributors}">
-		<fmt:message key="scheduleevent.button.finish" var="confirmLabel" />
-		<view:button label="${confirmLabel}" action="${'javascript: confirmEvent();'}" />
-	</c:if>
-	</view:buttonPane>
-	</center>
+		<%@ include file="navigationRessource.jspf"%>
+		<c:url var="backUrl" value="/Rscheduleevent/jsp/BackHour" />
+		<view:button label="${backLabel}" action="${backUrl}" />
+		<c:if test="${not empty currentScheduleEvent.contributors}">
+			<fmt:message key="scheduleevent.button.finish" var="confirmLabel" />
+			<view:button label="${confirmLabel}" action="${'javascript: confirmEvent();'}" />
+		</c:if>
+		<c:url var="cancelUrl" value="/Rscheduleevent/jsp/Cancel" />
+		<view:button label="${cancelLabel}" action="${cancelUrl}" />
+	</view:buttonPane></div>
 </view:window>
 </body>
 </html>
