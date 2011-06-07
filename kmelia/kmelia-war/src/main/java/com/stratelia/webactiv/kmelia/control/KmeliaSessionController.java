@@ -252,6 +252,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   // sauvegarde pour mise à jour à la chaine
   Fields saveFields = new Fields();
   boolean isDragAndDropEnableByUser = false;
+  boolean componentManageable = false;
 
   /**
    * Creates new sessionClientController
@@ -271,6 +272,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     currentLanguage = getLanguage();
     if (StringUtil.getBooleanValue(getSettings().getString("massiveDragAndDropAllowed"))) {
       isDragAndDropEnableByUser = isDragAndDropEnableByUser();
+    }
+    componentManageable = GeneralPropertiesManager.getGeneralResourceLocator().getBoolean("AdminFromComponentEnable", true);
+    if (componentManageable) {
+      componentManageable = getOrganizationController().isComponentManageable(getComponentId(), getUserId());
     }
   }
 
@@ -4781,6 +4786,10 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     getKmeliaBm().removeContentOfPublication(pubPK);
     // reset reference to content 
     publication.getDetail().setInfoId("0");
+  }
+
+  public boolean isComponentManageable() {
+    return componentManageable;
   }
   
 }

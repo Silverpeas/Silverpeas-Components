@@ -200,6 +200,12 @@ function initOperations(id, op) {
 		groupEmpty = false;
 	}
 	
+	if (op.admin) {
+		menuItem = new YAHOO.widget.MenuItem(labels["operation.admin"], {url: getWebContext()+"/RjobStartPagePeas/jsp/SetupComponent?ComponentId="+getComponentId()});
+		oMenu.addItem(menuItem, groupIndex);
+		groupEmpty = false;
+	}
+	
 	if (op.pdc) {
 		menuItem = new YAHOO.widget.MenuItem(labels["operation.pdc"], {url: "javascript:onClick=openSPWindow('"+getWebContext()+"/RpdcUtilization/jsp/Main?ComponentId="+getComponentId()+"','utilizationPdc1')"});
 		oMenu.addItem(menuItem, groupIndex);
