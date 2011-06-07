@@ -156,7 +156,7 @@ function isCorrectForm() {
     errorNb++;
   }
     
-  if (beginDate == endDate && !isWhitespace(endTime)) {
+  if (beginDate == endDate && !isWhitespace(endTime) && !isWhitespace(beginTime)) {
     var beginHour = atoi(extractHour(beginTime));
     var beginMinute = atoi(extractMinute(beginTime));
     var endHour = atoi(extractHour(endTime));

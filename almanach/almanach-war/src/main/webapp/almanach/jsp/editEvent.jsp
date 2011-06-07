@@ -184,13 +184,13 @@ function isCorrectForm() {
          errorNb++;
      }
      
-     if (beginDate == endDate && !isWhitespace(endTime)) {
+     if (beginDate == endDate && !isWhitespace(endTime) && !isWhitespace(beginTime)) {
       var beginHour = atoi(extractHour(beginTime));
       var beginMinute = atoi(extractMinute(beginTime));
       var endHour = atoi(extractHour(endTime));
       var endMinute = atoi(extractMinute(endTime));
       if (beginHour > endHour || (beginHour == endHour && beginMinute > endMinute)) {
-        errorMsg += "  - <fmt:message key='GML.theField'/> '<fmt:message key='hourEnd'/>' <fmt:message key='GML.MustContainsPostOrEqualDateTo'/> " + beginTime + "\n";
+        errorMsg += "  - <%=resources.getString("GML.theField")%> '<%=resources.getString("hourEnd")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> " + beginTime + "\n";
         errorNb++;
       }
      }

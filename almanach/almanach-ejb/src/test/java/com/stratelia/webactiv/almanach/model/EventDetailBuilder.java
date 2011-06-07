@@ -68,7 +68,6 @@ public class EventDetailBuilder {
           "Event without end date", parseDate("2011/04/13"), parseDate("2011/04/13"));
       event.setDelegatorId("861");
       event.setStartHour("09:30");
-      event.setEndHour("");
       event.setEventUrl("");
       event.setPlace("Eybens");
       event.setPriority(0);
@@ -77,8 +76,6 @@ public class EventDetailBuilder {
       EventDetail event = new EventDetail(new EventPK(id, null, "almanach509"),
           "All day event without end date", parseDate("2011/04/15"), parseDate("2011/04/15"));
       event.setDelegatorId("847");
-      event.setStartHour("");
-      event.setEndHour("");
       event.setEventUrl("");
       event.setPlace("Eybens");
       event.setPriority(0);
@@ -88,7 +85,6 @@ public class EventDetailBuilder {
           parseDate("2011/04/20"), parseDate("2011/04/20"));
       event.setDelegatorId("847");
       event.setStartHour("09:30");
-      event.setEndHour("");
       event.setEventUrl("");
       event.setPlace("Eybens");
       event.setPriority(1);
