@@ -328,7 +328,13 @@ public final class GallerySessionController extends AbstractComponentSessionCont
 
   public void deleteAlbum(String albumId) {
     try {
+      // rechercher l'album père
+      String rootAlbumId = "0";
+      rootAlbumId = getAlbum(albumId).getFatherPK().getId();
+      setCurrentAlbumId(rootAlbumId);
+      
       getGalleryBm().deleteAlbum(new NodePK(albumId, getComponentId()));
+      
       // recharger l'album courant pour prendre en comptes la suppression
       goToAlbum(currentAlbumId);
     } catch (RemoteException e) {

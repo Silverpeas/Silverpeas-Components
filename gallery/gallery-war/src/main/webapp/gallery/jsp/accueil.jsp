@@ -212,41 +212,17 @@ function clipboardPaste() {
              out.println(b.printAfter());
              out.println("<br>");
            }
-             
-           if ("user".equals(profile) || "privilegedUser".equals(profile) || "writer".equals(profile)) {
-             NavigationList navList = gef.getNavigationList();
-             navList.setTitle(root.getName());
-             Iterator it = root.getChildrenDetails().iterator();
-               
-             while (it.hasNext()) {
-               NodeDetail unAlbum = (NodeDetail) it.next();
-               int id = unAlbum.getId();
-               String nom = unAlbum.getName();
-               String lien = null;
-               navList.addItem(nom, "ViewAlbum?Id=" + id, -1, unAlbum.getDescription(), lien);
-             }
-             out.println(navList.print());
-           } else {
-             ArrayPane arrayPane = gef.getArrayPane("albumList", "GoToCurrentAlbum", request,
-                 session);
-             ArrayColumn columnIcon = arrayPane.addArrayColumn("&nbsp;");
-             columnIcon.setSortable(false);
-             arrayPane.addArrayColumn(resource.getString("gallery.albums"));
-             arrayPane.addArrayColumn(resource.getString("GML.description"));
-             ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("gallery.operation"));
-             columnOp.setSortable(false);
-               
-             // remplissage de l'ArrayPane avec les albums de niveau 1
-             // ------------------------------------------------------
+
+             // affichage des albums de niveau 1
+             // --------------------------------
+             out.println("<div id=\"subTopics\">");
+             out.println("<ul>");
              Iterator it = root.getChildrenDetails().iterator();
              while (it.hasNext()) {
-               ArrayLine ligne = arrayPane.addArrayLine();
-                 
                IconPane icon = gef.getIconPane();
                Icon albumIcon = icon.addIcon();
                albumIcon.setProperties(resource.getIcon("gallery.gallerySmall"), "");
                icon.setSpacing("30px");
-               ligne.addArrayCellIconPane(icon);
                  
                NodeDetail unAlbum = (NodeDetail) it.next();
                int id = unAlbum.getId();
@@ -258,34 +234,32 @@ function clipboardPaste() {
                      getString("gallery.CopyAlbumLink") + "\" title=\"" + resource.getString(
                      "gallery.CopyAlbumLink") + "\"></a>";
                }
-               //ligne.addArrayCellLink(unAlbum.getName()+link,"ViewAlbum?Id="+id);
+               out.println("<li>");
+               
+               out.println("<a href=\"ViewAlbum?Id=" + id + "\">" + unAlbum.getName());
+               out.println("<span>" + unAlbum.getDescription() + "</span></a>");
                  
-               ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"ViewAlbum?Id=" + id + "\">" + unAlbum.
-                   getName() + "</a>" + link);
-               arrayCellText0.setCompareOn(unAlbum.getName());
-                 
-               ligne.addArrayCellText(unAlbum.getDescription());
-               if ("admin".equals(profile) || ("publisher".equals(profile) && unAlbum.getCreatorId().
-                   equals(userId))) {
+               //ligne.addArrayCellText(unAlbum.getDescription());
+               //out.println("<td  class=\"ArrayCell\">" + unAlbum.getDescription() + "</td>");
+               
+               //if ("admin".equals(profile) || ("publisher".equals(profile) && unAlbum.getCreatorId().equals(userId))) {
                  // si publisher, possibilite de modif que sur ses albums
                  // creation de la colonne des icenes
-                 IconPane iconPane = gef.getIconPane();
-                 // icene "modifier"
-                 Icon updateIcon = iconPane.addIcon();
-                 updateIcon.setProperties(resource.getIcon("gallery.updateAlbum"), resource.
-                     getString("gallery.updateAlbum"), "javaScript:editAlbum('" + id + "')");
+                 //IconPane iconPane = gef.getIconPane();
+                 // icoene "modifier"
+                 //Icon updateIcon = iconPane.addIcon();
+                 //updateIcon.setProperties(resource.getIcon("gallery.updateAlbum"), resource.getString("gallery.updateAlbum"), "javaScript:editAlbum('" + id + "')");
                  // icene "supprimer"
-                 Icon deleteIcon = iconPane.addIcon();
-                 deleteIcon.setProperties(resource.getIcon("gallery.deleteAlbum"), resource.
-                     getString("gallery.deleteAlbum"), "javaScript:deleteConfirm('" + id + "','" + EncodeHelper.
-                     javaStringToHtmlString(EncodeHelper.javaStringToJsString(nom)) + "')");
-                 iconPane.setSpacing("30px");
-                 ligne.addArrayCellIconPane(iconPane);
-               }
-             }
-             out.println(arrayPane.print());
+                 //Icon deleteIcon = iconPane.addIcon();
+                 //deleteIcon.setProperties(resource.getIcon("gallery.deleteAlbum"), resource.getString("gallery.deleteAlbum"), "javaScript:deleteConfirm('" + id + "','" + EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(nom)) + "')");
+                 //iconPane.setSpacing("30px");
+                 //ligne.addArrayCellIconPane(iconPane);
+               //}
            }
-             
+           out.println("</li>");
+           out.println("</ul>");
+           out.println("</div>");
+           
            // afficher les dernieres photos telechargees
            // ------------------------------------------
              

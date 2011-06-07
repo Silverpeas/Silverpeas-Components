@@ -317,7 +317,6 @@ public class GalleryRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("DeleteAlbum")) {
         // récupération de l'Id de l'album
         String albumId = request.getParameter("Id");
-
         // check user rights
         if (!gallerySC.isAlbumAdmin(flag, albumId, userId)) {
           throw new AccessForbiddenException("GalleryRequestRouter.DeleteAlbum",

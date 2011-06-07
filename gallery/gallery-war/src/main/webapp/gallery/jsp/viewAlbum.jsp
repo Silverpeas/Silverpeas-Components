@@ -61,10 +61,12 @@
       boolean viewMetadata = isViewMetadata.booleanValue();
       boolean viewList = isViewList.booleanValue();
       String typeAff = "1";
+      String galleryName = "";
         
       if (currentAlbum != null) {
         albumId = String.valueOf(currentAlbum.getId());
         photos = (List) currentAlbum.getPhotos();
+        albumName = currentAlbum.getName();
         albumDescription = currentAlbum.getDescription();
         albumUrl = currentAlbum.getLink();
       }
@@ -77,7 +79,7 @@
       String namePath = "";
       boolean suivant = false;
       //Collections.reverse(path);
-      albumName = browseBar.getBreadCrumb();
+      galleryName = browseBar.getBreadCrumb();
         
       // calcul du nombre de photo par ligne en fonction de la taille
       if (taille.equals("66x50")) {
@@ -319,6 +321,9 @@ function uploadCompleted(s)
 	{
 		// possibilite d'ajouter des albums pour les "admin" et "publisher"
 		operationPane.addOperation(resource.getIcon("gallery.addAlbum"),resource.getString("gallery.ajoutAlbum"),"javaScript:addAlbum()");
+		// modification et suppression de l'album courant
+		operationPane.addOperation(resource.getIcon("gallery.addAlbum"),resource.getString("gallery.updateAlbum"),"javaScript:editAlbum('" + albumId + "')");
+		operationPane.addOperation(resource.getIcon("gallery.deleteAlbum"),resource.getString("gallery.deleteThisAlbum"),"javaScript:deleteConfirm('" + albumId + "','" + EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(albumName)) + "')");
 		operationPane.addLine();
 		
 		if ("admin".equals(profile))
@@ -372,7 +377,7 @@ function uploadCompleted(s)
 	
 	// favoris
 	if (!isGuest) {
-		operationPane.addOperation(resource.getIcon("gallery.addFavorite"),resource.getString("gallery.addFavorite"),"javaScript:addFavorite('"+URLManager.getServerURL(request)+"','"+m_context+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(albumName))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(albumDescription))+"','"+albumUrl+"')");
+		operationPane.addOperation(resource.getIcon("gallery.addFavorite"),resource.getString("gallery.addFavorite"),"javaScript:addFavorite('"+URLManager.getServerURL(request)+"','"+m_context+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(galleryName))+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(albumDescription))+"','"+albumUrl+"')");
 	}
 	
 	if (isPrivateSearch) {
@@ -387,86 +392,29 @@ function uploadCompleted(s)
 	
 	// afficher les sous albums
 	// ------------------------
-	// creation et remplissage d'un ArrayPane avec les sous albums de l'album courant (s'il y en a)
-	if (currentAlbum.getChildrenDetails() != null)
+ 	if (currentAlbum.getChildrenDetails() != null)
 	{
-		if ( "user".equals(profile) || "writer".equals(profile) )
-		{
-			NavigationList navList = gef.getNavigationList();
-      		navList.setTitle(currentAlbum.getName());
-      		boolean ok = false;
+ 	 out.println("<table width=\"98%\">");  
+   out.println("<tr><td>");  
+ 	  out.println("<div id=\"subTopics\">");
+		  out.println("<ul>");
 			Iterator it = currentAlbum.getChildrenDetails().iterator();
-			if (it.hasNext())
-				ok = true;
-			
-			while (it.hasNext()) 
-			{
-				NodeDetail unAlbum = (NodeDetail) it.next();
-				id = unAlbum.getId();
-				String nom = unAlbum.getName();
-				String lien = null;
-				navList.addItem(nom,"ViewAlbum?Id="+id,-1,unAlbum.getDescription(), lien);
-			}
-			if (ok)
-				out.println(navList.print());
-		}
-		else
-		{
-			ArrayPane arrayPane = gef.getArrayPane("albumList", "GoToCurrentAlbum", request, session);
-			ArrayColumn columnIcon = arrayPane.addArrayColumn("&nbsp;");
-        	columnIcon.setSortable(false);
-			boolean ok = false;
-			Iterator it = currentAlbum.getChildrenDetails().iterator();
-			if (it.hasNext())
-			{
-				arrayPane.addArrayColumn(resource.getString("gallery.albums"));
-				arrayPane.addArrayColumn(resource.getString("GML.description"));
-				ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("gallery.operation"));
-				columnOp.setSortable(false);
-				ok = true;
-			}
-			
-			while (it.hasNext()) 
-			{
-				ArrayLine ligne = arrayPane.addArrayLine();
-				
-				IconPane icon = gef.getIconPane();
-				Icon albumIcon = icon.addIcon();
-       			albumIcon.setProperties(resource.getIcon("gallery.gallerySmall"), "");
-       			icon.setSpacing("30px");
-       			ligne.addArrayCellIconPane(icon);
-       		
-				NodeDetail unAlbum = (NodeDetail) it.next();
+			while (it.hasNext())  {
+			  NodeDetail unAlbum = (NodeDetail) it.next();
 				id = unAlbum.getId();
 				String nom = unAlbum.getName();
 				String link = "";
-				if (unAlbum.getPermalink() != null)
-				{
+				if (unAlbum.getPermalink() != null) {
 					link = "&nbsp;<a href=\""+unAlbum.getPermalink()+"\"><img src=\""+resource.getIcon("gallery.link")+"\" border=\"0\" align=\"bottom\" alt=\""+resource.getString("gallery.CopyAlbumLink")+"\" title=\""+resource.getString("gallery.CopyAlbumLink")+"\"></a>";
 				}
-				
-				ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"ViewAlbum?Id="+id+"\">"+unAlbum.getName()+"</a>"+link);
-	            arrayCellText0.setCompareOn(unAlbum.getName());
-				
-				ligne.addArrayCellText(unAlbum.getDescription());
-				if ( "admin".equals(profile) || ("publisher".equals(profile) && unAlbum.getCreatorId().equals(userId)) )
-				{
-					// creation de la colonne des icenes
-					IconPane iconPane = gef.getIconPane();
-					// icene "modifier"
-					Icon updateIcon = iconPane.addIcon();
-	        		updateIcon.setProperties(resource.getIcon("gallery.updateAlbum"), resource.getString("gallery.updateAlbum"),"javaScript:editAlbum('"+id+"')");
-	        		// icene "supprimer"
-	        		Icon deleteIcon = iconPane.addIcon();
-	        		deleteIcon.setProperties(resource.getIcon("gallery.deleteAlbum"), resource.getString("gallery.deleteAlbum"),"javaScript:deleteConfirm('"+id+"','"+EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(nom))+"')");
-	        		iconPane.setSpacing("30px");
-	        		ligne.addArrayCellIconPane(iconPane);
-	        	}
+			  out.println("<li>");
+        out.println("<a href=\"ViewAlbum?Id=" + id + "\">" + unAlbum.getName());
+        out.println("<span>" + unAlbum.getDescription() + "</span></a>");
 			}
-			if (ok)
-				out.println(arrayPane.print());
+			out.println("</ul>");
+		  out.println("</div>");
 		}
-	}
+		out.println("</td></tr></table>");
 	%>
 	
 	<% if (!"user".equals(profile) && dragAndDropEnable != null && dragAndDropEnable.booleanValue()) { %>
