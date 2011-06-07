@@ -26,22 +26,26 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ include file="checkKmelia.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<fmt:setLocale value="${sessionScope['SilverSessionController'].favoriteLanguage}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
 <%
 List 	publications 		= (List) request.getAttribute("Publications");
 String	currentLang 		= (String) request.getAttribute("Language");
 %>
 
-<HTML>
-<HEAD>
+<html>
+<head>
 <view:looknfeel />
 <style>
 li {
 	list-style: none;
 }
 </style>
-<script type='text/javascript'>
+<script type="text/javascript">
 	$(document).ready(function(){
 		$("#publis").sortable({opacity: 0.4}); 
 	});
@@ -72,17 +76,18 @@ function topicGoTo(id)
 }
 
 </script>
-</HEAD>
+</head>
 <body>
-<view:browseBar extraInformations="<%=resources.getString("kmelia.OrderPublications")%>">
+<fmt:message key="kmelia.OrderPublications" var="browseBarXtra"/>
+<view:browseBar extraInformations="${browseBarXtra}">
   <view:browseBarElt link="Main" label="${requestScope['Path']}" />
 </view:browseBar>
 <view:window>
 <view:frame>
-<view:board>
+<div class="inlineMessage">
 <img src="<%=resources.getIcon("kmelia.info")%>" align="absmiddle"/> <%=resources.getString("kmelia.OrderPublicationsHelp")%><br/><br/>
 <center><%=gef.getFormButton(resources.getString("kmelia.SortItemsSave"), "javascript:sendData()", false).print() %></center> 
-</view:board>
+</div>
 <br/>
 <view:board>
 <table width="100%" cellspacing="0">
@@ -119,7 +124,7 @@ while(publis.hasNext())
 </view:board>
 </view:frame>
 </view:window>
-<form name="sortForm" method="POST" action="OrderPublications">
+<form name="sortForm" method="post" action="OrderPublications">
 <input type="hidden" name="sortedIds"/>
 </form>
 </body>

@@ -23,7 +23,37 @@
  */
 package com.stratelia.webactiv.kmelia.control;
 
+import java.util.logging.Logger;
 import java.util.logging.Level;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.rmi.NoSuchObjectException;
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
+import javax.ejb.EJBObject;
+import javax.ejb.RemoveException;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.commons.io.FilenameUtils;
+
 import com.silverpeas.attachment.importExport.AttachmentImportExport;
 import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentService;
@@ -151,34 +181,6 @@ import com.stratelia.webactiv.util.statistic.control.StatisticBmHome;
 import com.stratelia.webactiv.util.statistic.model.StatisticRuntimeException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-import org.apache.commons.io.FilenameUtils;
-
-import javax.ejb.EJBObject;
-import javax.ejb.RemoveException;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.IOException;
-import java.rmi.NoSuchObjectException;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
-import java.util.Vector;
-import java.util.logging.Logger;
 import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.*;
 
 public class KmeliaSessionController extends AbstractComponentSessionController implements
@@ -2263,10 +2265,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public KmeliaPublication getSessionPubliOrClone() {
-    if (getSessionClone() != null) {
-      return getSessionClone();
+    KmeliaPublication publication = getSessionClone();
+    if (publication == null) {
+      publication = getSessionPublication();
     }
-    return getSessionPublication();
+    return publication;
   }
 
   public String getSessionPath() {
@@ -4771,4 +4774,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     fileName.append(publication.getPk().getId());
     return StringUtil.toAcceptableFilename(fileName.toString());
   }
+  
+  public void removePublicationContent() throws RemoteException {
+    KmeliaPublication publication = getSessionPubliOrClone();
+    PublicationPK pubPK = publication.getPk();
+    getKmeliaBm().removeContentOfPublication(pubPK);
+    // reset reference to content 
+    publication.getDetail().setInfoId("0");
+  }
+  
 }
