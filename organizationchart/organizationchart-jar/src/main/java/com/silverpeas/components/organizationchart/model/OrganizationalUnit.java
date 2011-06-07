@@ -24,6 +24,8 @@
 
 package com.silverpeas.components.organizationchart.model;
 
+import java.util.List;
+
 public class OrganizationalUnit {
 
   private String name;
@@ -34,6 +36,7 @@ public class OrganizationalUnit {
 
   private boolean hasSubUnits = false;
   private boolean hasMembers = false;
+  private List<OrganizationalPerson> mainActors = null;
 
   // case organizational unit is a ldap unit
   private String parentName;
@@ -97,6 +100,14 @@ public class OrganizationalUnit {
 
   public boolean hasMembers() {
     return hasMembers;
+  }
+
+  public void setMainActors(List<OrganizationalPerson> mainActors) {
+    this.mainActors = mainActors;
+  }
+
+  public List<OrganizationalPerson> getMainActors() {
+    return mainActors;
   }
 
 }
