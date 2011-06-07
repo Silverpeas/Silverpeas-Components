@@ -175,7 +175,7 @@ out.println(window.printAfter());
   oFCKeditor.Config["AutoDetectLanguage"] = false;
   oFCKeditor.Config["DefaultLanguage"] = "<c:out value='${language}'/>";
   oFCKeditor.Config["CustomConfigurationsPath"] = "<c:out value='${configFile}'/>"
-  oFCKeditor.ToolbarSet = 'almanach';
+  oFCKeditor.ToolbarSet = 'questionreply';
   oFCKeditor.Config["ToolbarStartExpanded"] = true;
   oFCKeditor.ReplaceTextarea();
 </script>
