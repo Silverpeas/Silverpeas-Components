@@ -48,6 +48,7 @@ import com.stratelia.webactiv.kmelia.model.KmeliaRuntimeException;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.node.control.NodeBm;
@@ -196,6 +197,7 @@ public class JSONServlet extends HttpServlet {
     	  operations.put("emptyTrash", isAdmin || SilverpeasRole.publisher.isInRole(profile) || SilverpeasRole.writer.isInRole(profile));
       } else {
 	      // general operations
+        operations.put("admin", kmeliaSC.isComponentManageable());
 	      operations.put("pdc", isRoot && kmeliaSC.isPdcUsed() && isAdmin);
 	      operations.put("templates", kmeliaSC.isContentEnabled() && isAdmin);
 	      operations.put("exporting", kmeliaSC.isExportComponentAllowed() && kmeliaSC.isExportZipAllowed() && isAdmin);
