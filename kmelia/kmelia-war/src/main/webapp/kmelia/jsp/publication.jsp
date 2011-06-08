@@ -227,14 +227,15 @@
       $(function() {
         $( "#publication-export" ).dialog({
           autoOpen: false,
+          title: "<%=resources.getString("kmelia.chooseFormat")%>",
           modal: true,
           minWidth: 350,
           buttons: {
-            '<%= resources.getString("GML.cancel") %>': function() {
-              $( this ).dialog( "close" );
-            },
             '<%= resources.getString("kmelia.export") %>': function() {
               $( "#exportForm").submit();
+              $( this ).dialog( "close" );
+            },
+            '<%= resources.getString("GML.cancel") %>': function() {
               $( this ).dialog( "close" );
             }
           }
@@ -381,13 +382,6 @@
         {
           location.href="ViewPublication?SwitchLanguage="+lang;
         }
-
-//        function zipPublication() {
-//          document.toRouterForm.action = "<c:url value="/exportPublication"/>";
-//          document.toRouterForm.PubId.value = "<%=id%>";
-//          document.toRouterForm.ComponentId.value = "<%=componentId%>";
-//          document.toRouterForm.submit();
-//        }
 
         function reloadPage() {
           location.href= "<%=routerUrl%>ViewPublication";
@@ -750,9 +744,9 @@
             <% }%>
       </span>
       <div id="publication-export">
-        <p><%=resources.getString("kmelia.chooseFormat")%>:</p>
         <form id="exportForm" action="<c:url value='/exportPublication'/>">
           <fieldset>
+            <legend><%=resources.getString("kmelia.format")%></legend>
             <input type="radio" name="Format" value="zip" class="text ui-widget-content ui-corner-all">ZIP</input>
             <input type="radio" checked="checked" name="Format" value="pdf" class="text ui-widget-content ui-corner-all">PDF</input>
             <input type="radio" name="Format" value="odt" class="text ui-widget-content ui-corner-all">OpenDocument Text</input>

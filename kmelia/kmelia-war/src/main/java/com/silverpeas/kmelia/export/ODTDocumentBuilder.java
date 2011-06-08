@@ -236,14 +236,20 @@ public class ODTDocumentBuilder {
 
   private void buildCommentSection(final TextDocument odtDocument,
       final KmeliaPublication publication) {
-    Table commentsTable = odtDocument.getTableByName(LIST_OF_COMMENTS);
-    int i = 1;
-    for (Comment comment : publication.getComments()) {
-      Row row = commentsTable.getRowByIndex(i++);
-      row.getCellByIndex(0).setStringValue(comment.getOwnerDetail().getDisplayedName());
-      row.getCellByIndex(1).setStringValue(comment.getMessage());
-      row.getCellByIndex(2).setStringValue(comment.getCreationDate());
-      row.getCellByIndex(3).setStringValue(comment.getModificationDate());
+    List<Comment> comments = publication.getComments();
+    if (comments.isEmpty()) {
+      Section commentsSection = odtDocument.getSectionByName(SECTION_COMMENTS);
+      commentsSection.remove();
+    } else {
+      Table commentsTable = odtDocument.getTableByName(LIST_OF_COMMENTS);
+      int i = 1;
+      for (Comment comment : comments) {
+        Row row = commentsTable.getRowByIndex(i++);
+        row.getCellByIndex(0).setStringValue(comment.getOwnerDetail().getDisplayedName());
+        row.getCellByIndex(1).setStringValue(comment.getMessage());
+        row.getCellByIndex(2).setStringValue(comment.getCreationDate());
+        row.getCellByIndex(3).setStringValue(comment.getModificationDate());
+      }
     }
   }
 
@@ -260,27 +266,31 @@ public class ODTDocumentBuilder {
 
   private void buildWithHTMLText(String htmlText, final TextDocument odtDocument) throws Exception {
     Section content = odtDocument.getSectionByName(SECTION_CONTENT);
-    Paragraph p = content.getParagraphByIndex(1, false);
-    if (p != null) {
-      content.removeParagraph(p);
-    }
-    File htmlFile = null, odtConvertedHtmlFile = null;
-    try {
-      htmlFile = new File(
-          FileRepositoryManager.getTemporaryPath() + UUID.randomUUID().toString() + ".html");
-      // warning: the content of HTML text is actually in ISO-8859-1!
-      FileUtils.writeStringToFile(htmlFile, htmlText, "ISO-8859-1");
-      HTMLConverter converter = DocumentFormatConverterFactory.getFactory().getHTMLConverter();
-      odtConvertedHtmlFile = converter.convert(htmlFile, inFormat(odt));
-      TextDocument htmlContent = TextDocument.loadDocument(odtConvertedHtmlFile);
-      decorates(odtDocument).merge(htmlContent, atSection(SECTION_CONTENT));
-    } finally {
-      if (htmlFile != null) {
-        htmlFile.delete();
+    if (isDefined(htmlText)) {
+      Paragraph p = content.getParagraphByIndex(1, false);
+      if (p != null) {
+        content.removeParagraph(p);
       }
-      if (odtConvertedHtmlFile != null) {
-        odtConvertedHtmlFile.delete();
+      File htmlFile = null, odtConvertedHtmlFile = null;
+      try {
+        htmlFile = new File(
+            FileRepositoryManager.getTemporaryPath() + UUID.randomUUID().toString() + ".html");
+        // warning: the content of HTML text is actually in ISO-8859-1!
+        FileUtils.writeStringToFile(htmlFile, htmlText, "ISO-8859-1");
+        HTMLConverter converter = DocumentFormatConverterFactory.getFactory().getHTMLConverter();
+        odtConvertedHtmlFile = converter.convert(htmlFile, inFormat(odt));
+        TextDocument htmlContent = TextDocument.loadDocument(odtConvertedHtmlFile);
+        decorates(odtDocument).merge(htmlContent, atSection(SECTION_CONTENT));
+      } finally {
+        if (htmlFile != null) {
+          htmlFile.delete();
+        }
+        if (odtConvertedHtmlFile != null) {
+          odtConvertedHtmlFile.delete();
+        }
       }
+    } else {
+      content.remove();
     }
   }
 
@@ -322,27 +332,32 @@ public class ODTDocumentBuilder {
 
   private void buildWithVersionedAttachments(final List<Document> versionedAttachments,
       final TextDocument odtDocument) {
-    Table attachmentsTable = odtDocument.getTableByName(LIST_OF_ATTACHMENTS);
-    updateTableForVersionedAttachments(attachmentsTable);
-    int i = 1;
-    for (Document versionedAttachment : versionedAttachments) {
-      VersionedAttachmentHolder attachmentHolder = hold(versionedAttachment);
-      if (attachmentHolder.isUserAuthorized(getUser())) {
-        DocumentVersion lastVersion = attachmentHolder.getLastVersionAccessibleBy(getUser());
-        if (lastVersion != null) {
-          String creatorOrValidators = attachmentHolder.getCreatorOrValidatorsDisplayedName(
-              lastVersion);
-          String version = attachmentHolder.getVersionNumber(lastVersion);
-          String creationDate = dateToString(versionedAttachment.getLastCheckOutDate(),
-              getLanguage());
+    if (versionedAttachments.isEmpty()) {
+      Section attachmentsSection = odtDocument.getSectionByName(SECTION_ATTACHMENTS);
+      attachmentsSection.remove();
+    } else {
+      Table attachmentsTable = odtDocument.getTableByName(LIST_OF_ATTACHMENTS);
+      updateTableForVersionedAttachments(attachmentsTable);
+      int i = 1;
+      for (Document versionedAttachment : versionedAttachments) {
+        VersionedAttachmentHolder attachmentHolder = hold(versionedAttachment);
+        if (attachmentHolder.isUserAuthorized(getUser())) {
+          DocumentVersion lastVersion = attachmentHolder.getLastVersionAccessibleBy(getUser());
+          if (lastVersion != null) {
+            String creatorOrValidators = attachmentHolder.getCreatorOrValidatorsDisplayedName(
+                lastVersion);
+            String version = attachmentHolder.getVersionNumber(lastVersion);
+            String creationDate = dateToString(versionedAttachment.getLastCheckOutDate(),
+                getLanguage());
 
-          Row row = attachmentsTable.getRowByIndex(i++);
-          row.getCellByIndex(0).setStringValue(lastVersion.getLogicalName());
-          row.getCellByIndex(1).setStringValue(versionedAttachment.getName());
-          row.getCellByIndex(2).setStringValue(versionedAttachment.getDescription());
-          row.getCellByIndex(3).setStringValue(version);
-          row.getCellByIndex(4).setStringValue(creationDate);
-          row.getCellByIndex(5).setStringValue(creatorOrValidators);
+            Row row = attachmentsTable.getRowByIndex(i++);
+            row.getCellByIndex(0).setStringValue(lastVersion.getLogicalName());
+            row.getCellByIndex(1).setStringValue(versionedAttachment.getName());
+            row.getCellByIndex(2).setStringValue(versionedAttachment.getDescription());
+            row.getCellByIndex(3).setStringValue(version);
+            row.getCellByIndex(4).setStringValue(creationDate);
+            row.getCellByIndex(5).setStringValue(creatorOrValidators);
+          }
         }
       }
     }
@@ -350,16 +365,21 @@ public class ODTDocumentBuilder {
 
   private void buildWithAttachments(final List<AttachmentDetail> attachments,
       final TextDocument odtDocument) {
-    Table attachmentsTable = odtDocument.getTableByName(LIST_OF_ATTACHMENTS);
-    int i = 1;
-    for (AttachmentDetail attachment : attachments) {
-      Row row = attachmentsTable.getRowByIndex(i++);
-      row.getCellByIndex(0).setStringValue(attachment.getLogicalName(getLanguage()));
-      row.getCellByIndex(1).setStringValue(attachment.getTitle(getLanguage()));
-      row.getCellByIndex(2).setStringValue(attachment.getInfo(getLanguage()));
-      row.getCellByIndex(3).setStringValue(attachment.getAttachmentFileSize(getLanguage()));
-      row.getCellByIndex(4).setStringValue(getOutputDate(attachment.getCreationDate(getLanguage()),
-          getLanguage()));
+    if (attachments.isEmpty()) {
+      Section attachmentsSection = odtDocument.getSectionByName(SECTION_ATTACHMENTS);
+      attachmentsSection.remove();
+    } else {
+      Table attachmentsTable = odtDocument.getTableByName(LIST_OF_ATTACHMENTS);
+      int i = 1;
+      for (AttachmentDetail attachment : attachments) {
+        Row row = attachmentsTable.getRowByIndex(i++);
+        row.getCellByIndex(0).setStringValue(attachment.getLogicalName(getLanguage()));
+        row.getCellByIndex(1).setStringValue(attachment.getTitle(getLanguage()));
+        row.getCellByIndex(2).setStringValue(attachment.getInfo(getLanguage()));
+        row.getCellByIndex(3).setStringValue(attachment.getAttachmentFileSize(getLanguage()));
+        row.getCellByIndex(4).setStringValue(getOutputDate(attachment.getCreationDate(getLanguage()),
+            getLanguage()));
+      }
     }
   }
 
@@ -369,7 +389,9 @@ public class ODTDocumentBuilder {
       Section seeAlso = odtDocument.getSectionByName(SECTION_SEEALSO);
       List<KmeliaPublication> linkedPublications = getKmeliaService().getLinkedPublications(
           publication, getUser().getId());
-      if (!linkedPublications.isEmpty()) {
+      if (linkedPublications.isEmpty()) {
+        seeAlso.remove();
+      } else {
         Paragraph p = seeAlso.getParagraphByIndex(1, false);
         if (p != null) {
           seeAlso.removeParagraph(p);
@@ -407,7 +429,9 @@ public class ODTDocumentBuilder {
     int pathNodeMinNb = 2;
     String pathSeparator = "/";
     int rank = 1;
-    if (!positions.isEmpty()) {
+    if (positions.isEmpty()) {
+      classification.remove();
+    } else {
       Paragraph p = classification.getParagraphByIndex(1, false);
       if (p != null) {
         classification.removeParagraph(p);
