@@ -72,18 +72,19 @@ public class CalendarEventEncoder {
     for (EventDetail eventDetail : eventDetails) {
       Datable<?> startDate = createDatable(eventDetail.getStartDate(), eventDetail.getStartHour()).
           inTimeZone(timeZone);
+      String endTime = eventDetail.getEndHour();
+      if (startDate instanceof com.silverpeas.calendar.Date) {
+        endTime = "";
+      } else if (!isDefined(endTime)) {
+        endTime = eventDetail.getStartHour();
+      }
+      Datable<?> endDate = createDatable(eventDetail.getEndDate(), endTime).inTimeZone(timeZone);
 
       CalendarEvent event = anEventAt(startDate).
+          endingAt(endDate).
           withTitle(eventDetail.getName()).
           withDescription(eventDetail.getWysiwyg()).
           withPriority(eventDetail.getPriority());
-
-      Datable<?> endDate = null;
-      if (eventDetail.getEndDate() != null) {
-        endDate = createDatable(eventDetail.getEndDate(), eventDetail.getEndHour()).
-            inTimeZone(timeZone);
-        event.endingAt(endDate);
-      }
       if (isDefined(eventDetail.getPlace())) {
         event.withLocation(eventDetail.getPlace());
       }
