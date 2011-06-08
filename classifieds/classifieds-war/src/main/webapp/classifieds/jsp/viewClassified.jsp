@@ -45,6 +45,7 @@
 <c:set var="browseContext" value="${requestScope.browseContext}"/>
 <c:set var="componentLabel" value="${browseContext[1]}"/>
 <c:set var="isDraftEnabled" value="${requestScope.IsDraftEnabled}"/>
+<c:set var="isCommentsEnabled" value="${requestScope.IsCommentsEnabled}"/>
 <c:set var="profile"    value="${requestScope.Profile}"/>
 <c:set var="creationDate" value="${requestScope.CreationDate}"/>
 <c:set var="updateDate" value="${requestScope.UpdateDate}"/>
@@ -205,7 +206,9 @@
           <tr>
             <td>
               <!--Afficher les commentaires-->
+				<c:if test="${isCommentsEnabled}">
               <view:comments userId="${userId}" componentId="${instanceId}" resourceId="${classified.classifiedId}" />
+				</c:if>
             </td>
           </tr>
         </table>

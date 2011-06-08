@@ -585,4 +585,12 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
   private PublicationTemplateManager getPublicationTemplateManager() {
     return PublicationTemplateManager.getInstance();
   }
+
+  /**
+   * return true if comments feature is enabled
+   * @return boolean
+   */
+  public boolean isCommentsEnabled() {
+    return "yes".equalsIgnoreCase(getComponentParameterValue("comments"));
+  }
 }

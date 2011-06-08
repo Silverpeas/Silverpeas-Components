@@ -147,5 +147,21 @@
         <message lang="en">Enables validation of classified ads by the managers</message>
       </help>
     </parameter>
+    <parameter>
+      <name>comments</name>
+      <label>
+        <message lang="fr">Commentaires</message>
+        <message lang="en">Comments</message>
+      </label>
+      <order>6</order>
+      <mandatory>true</mandatory>
+      <value>yes</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet d'activer la possibilités de laisser des commentaires sur une annonce</message>
+        <message lang="en">Enables ability to post comments on a add</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>

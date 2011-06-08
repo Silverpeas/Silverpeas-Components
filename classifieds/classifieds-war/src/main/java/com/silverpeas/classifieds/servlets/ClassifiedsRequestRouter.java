@@ -221,6 +221,7 @@ public class ClassifiedsRequestRouter
         destination = rootDest + "classifiedsResult.jsp";
       } else if (function.equals("ViewClassified")) {
         request.setAttribute("IsDraftEnabled", classifiedsSC.isDraftEnabled());
+        request.setAttribute("IsCommentsEnabled", classifiedsSC.isCommentsEnabled());
         String classifiedId = request.getParameter("ClassifiedId");
         if (!StringUtil.isDefined(classifiedId)) {
           classifiedId = (String) request.getAttribute("ClassifiedId");
