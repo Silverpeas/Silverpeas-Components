@@ -29,6 +29,10 @@ package com.stratelia.webactiv.almanach.control;
 public enum CalendarViewType {
 
   /**
+   * The calendar view is yearly.
+   */
+  YEARLY("year"),
+  /**
    * The calendar view is monthly.
    */
   MONTHLY("month"),
@@ -46,6 +50,14 @@ public enum CalendarViewType {
   @Override
   public String toString() {
     return calendarView;
+  }
+  
+  /**
+   * Is this view type is a yearly one.
+   * @return true if this view type is for a yearly one, false otherwise.
+   */
+  public boolean isYearlyView() {
+    return this == YEARLY;
   }
 
   /**

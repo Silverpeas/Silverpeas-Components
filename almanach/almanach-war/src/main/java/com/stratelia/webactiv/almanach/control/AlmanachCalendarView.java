@@ -40,7 +40,7 @@ public class AlmanachCalendarView {
 
   private AlmanachDTO almanach;
   private AlmanachDay currentDay;
-  private List<EventOccurrenceDTO> events = new ArrayList<EventOccurrenceDTO>();
+  private List<DisplayableEventOccurrence> events = new ArrayList<DisplayableEventOccurrence>();
   private CalendarViewType type = MONTHLY;
   private String label = "";
   private boolean withWeekend = true;
@@ -182,7 +182,7 @@ public class AlmanachCalendarView {
    * Gets all events defined in the window in time this calendar view defines.
    * @return a list with all DTO on the events planned in this calendar view.
    */
-  public List<EventOccurrenceDTO> getEvents() {
+  public List<DisplayableEventOccurrence> getEvents() {
     return Collections.unmodifiableList(events);
   }
 
@@ -198,7 +198,7 @@ public class AlmanachCalendarView {
    * Sets the events that are defined in this calendar view.
    * @param events a list of event DTOs.
    */
-  public void setEvents(final List<EventOccurrenceDTO> events) {
+  public void setEvents(final List<DisplayableEventOccurrence> events) {
     this.events.clear();
     this.events.addAll(events);
   }
@@ -208,7 +208,7 @@ public class AlmanachCalendarView {
    * @return a JSON representation of the list of event occurrences.
    */
   public String getEventsInJSON() {
-    return EventOccurrenceDTO.toJSON(events);
+    return DisplayableEventOccurrence.toJSON(events);
   }
 
   /**

@@ -57,7 +57,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 
 <%@ include file="checkAlmanach.jsp" %>
 <%
-	Collection events = (Collection) request.getAttribute("Events");
+  AlmanachCalendarView calendarView = (AlmanachCalendarView) request.getAttribute("calendarView");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -106,15 +106,16 @@ function viewEvent(componentId, id) {
   	ArrayColumn column2 = arrayPane.addArrayColumn(resources.getString("GML.dateEnd"));
   	column2.setWidth("100px");
 
-	for (Iterator i = events.iterator(); i.hasNext(); ) {
-		EventDetail event = (EventDetail) i.next();
-		String startDay = dateFormat.format(event.getStartDate());
+    List<DisplayableEventOccurrence> occurrences = calendarView.getEvents();
+	for (DisplayableEventOccurrence occurrence: occurrences) {
+		EventDetail event = occurrence.getEventDetail();
+		String startDay = dateFormat.format(occurrence.getStartDate());
 		String url = m_context+"/Ralmanach/"+event.getPK().getInstanceId()+"/viewEventContent.jsp?Id="+event.getPK().getId()+"&amp;Date="+dateFormat.format(calendar.getTime());
 		String endDay = startDay;
-		if (event.getEndDate() != null) {
-			endDay = dateFormat.format(event.getEndDate());
+		if (occurrence.getEndDate() != null) {
+			endDay = dateFormat.format(occurrence.getEndDate());
 		}
-		calendar.setTime(event.getStartDate());
+		calendar.setTime(occurrence.getStartDate().asDate());
 
 		String title = EncodeHelper.javaStringToHtmlString(event.getTitle());
 		String description = null;

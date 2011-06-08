@@ -23,7 +23,6 @@
  */
 package com.stratelia.webactiv.almanach;
 
-import java.util.Iterator;
 
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -35,12 +34,13 @@ import com.stratelia.webactiv.util.attachment.control.AttachmentController;
 
 public class AlmanachIndexer implements ComponentIndexerInterface {
 
-  private AlmanachSessionController scc = null;
+  private AlmanachSessionController almanachSessionController = null;
 
+  @Override
   public void index(MainSessionController mainSessionCtrl,
       ComponentContext context) throws Exception {
 
-    scc = new AlmanachSessionController(mainSessionCtrl, context);
+    almanachSessionController = new AlmanachSessionController(mainSessionCtrl, context);
 
     indexEvents();
   }
@@ -48,14 +48,8 @@ public class AlmanachIndexer implements ComponentIndexerInterface {
   private void indexEvents() throws Exception {
     SilverTrace.info("almanach", "AlmanachIndexer.indexEvents()",
         "root.MSG_GEN_ENTER_METHOD");
-
-    Iterator<EventDetail> it = scc.getAllEvents().iterator();
-    while (it.hasNext()) {
-      EventDetail event = it.next();
-
-      // index event itself
-      scc.indexEvent(event);
-
+    for (EventDetail event : almanachSessionController.getAllEvents()) {
+      almanachSessionController.indexEvent(event);
       // index possible attachments to the event
       AttachmentController.attachmentIndexer(event.getPK());
     }
