@@ -143,6 +143,7 @@
     height: 33px;
     line-height: 11px;
     overflow: hidden;
+    font-weight: normal;
 
 	}
 /*** pour masquer les descriptions des topics
@@ -153,4 +154,40 @@
 #topicDescription {
 	color:#666;
 	}
+
+.ui-state-default, .ui-widget-content .ui-state-default, .ui-widget-header .ui-state-default {
+    background: none;
+    border: none;
+    color: #1C94C4;
+    font-weight: bold;
+}
+
+#albumList { 
+	list-style-type: none; 
+	margin: 0; 
+	padding: 0; 
+}
+
+#albumList li { 
+	margin: 3px 3px 3px 0; 
+	padding: 1px; 
+	float: left; 
+	width: 100px; 
+	height: 90px; 
+}
+
+
+.ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited {
+    color: #000000;
+    text-decoration: none;
+}
+
+ul#albumList li.ui-state-highlight {
+	border: 1px dashed #BFBFBF;
+	border-width: 1px;
+	padding:10px;
+	background-image: none;
+	background-color: #EAEAEA;
+}
+
 

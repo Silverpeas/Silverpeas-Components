@@ -89,6 +89,8 @@ import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentException;
+import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
@@ -618,7 +620,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     return (param != null && param.length() > 0 && !"".equals(param));
   }
 
-  private GalleryBm getGalleryBm() {
+  private static GalleryBm getGalleryBm() {
     GalleryBm galleryBm = null;
     try {
       GalleryBmHome galleryBmHome = (GalleryBmHome) EJBUtilitaire.getEJBObjectRef(
@@ -1889,5 +1891,14 @@ public final class GallerySessionController extends AbstractComponentSessionCont
    */
   private PublicationTemplateManager getPublicationTemplateManager() {
     return PublicationTemplateManager.getInstance();
+  }
+  
+  public static void sortAlbums(List<NodePK> albumPKs) {
+    try {
+      getGalleryBm().sortAlbums(albumPKs);
+    } catch (Exception e) {
+      throw new GalleryRuntimeException("GallerySessionController.sortAlbums()",
+          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+    }
   }
 }

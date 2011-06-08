@@ -131,4 +131,7 @@ public interface GalleryBmBusinessSkeleton {
    */
   public List<SocialInformation> getSocialInformationsListOfMyContacts(List<String> listOfuserId,
       List<String> availableComponent, Date begin, Date end) throws RemoteException;
+  
+  public void sortAlbums (List<NodePK> albumIds) throws RemoteException;
+  
 }

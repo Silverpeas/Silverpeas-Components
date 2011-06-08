@@ -41,6 +41,8 @@ boolean 	isGuest		 	= ((Boolean) request.getAttribute("IsGuest")).booleanValue()
 int nbAffiche 	= 0;
 int nbParLigne 	= 5;
 int nbTotal 	= 15;
+
+session.setAttribute("Silverpeas_Album_ComponentId", componentId);
 %>
 
 <html>
@@ -48,10 +50,46 @@ int nbTotal 	= 15;
 <%
 	out.println(gef.getLookStyleSheet());
 %>
+
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+	  $("#albumList").sortable({opacity: 0.4, cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
+	  
+	  $('#albumList').bind('sortupdate', function(event, ui) {
+		     var reg=new RegExp("album", "g");
+		     var data = $('#albumList').sortable('serialize');
+		     data += "&";  // pour que le dernier élément soit de la même longueur que les autres
+		     var tableau=data.split(reg);
+		     var param = "";
+		     for (var i=0; i<tableau.length; i++) {
+		        if (i > 0) {
+		          param += ",";
+		        }
+		        param += tableau[i].substring(3, tableau[i].length-1);
+		     }
+		     sortAlbums(param);
+		    });
+  });
+  
+  function sortAlbums(orderedList)
+  {
+    $.get('<%=m_context%>/Album', { orderedList:orderedList,Action:'Sort'},
+    function(data){
+      data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
+      if (data == "error")
+      {
+        alert("Une erreur s'est produite !");
+      }
+    }, 'text');
+    if (pageMustBeReloadingAfterSorting) {
+      //force page reloading to reinit menus
+      reloadIncludingPage();
+    }
+  }
 
-<script language="javascript">
+
 var albumWindow = window;
 var askWindow = window;
 
@@ -216,7 +254,7 @@ function clipboardPaste() {
              // affichage des albums de niveau 1
              // --------------------------------
              out.println("<div id=\"subTopics\">");
-             out.println("<ul>");
+             out.println("<ul id=\"albumList\">");
              Iterator it = root.getChildrenDetails().iterator();
              while (it.hasNext()) {
                IconPane icon = gef.getIconPane();
@@ -234,29 +272,12 @@ function clipboardPaste() {
                      getString("gallery.CopyAlbumLink") + "\" title=\"" + resource.getString(
                      "gallery.CopyAlbumLink") + "\"></a>";
                }
-               out.println("<li>");
+               out.println("<li id=\"album_" + id + "\" class=\"ui-state-default\">");
                
                out.println("<a href=\"ViewAlbum?Id=" + id + "\">" + unAlbum.getName());
                out.println("<span>" + unAlbum.getDescription() + "</span></a>");
-                 
-               //ligne.addArrayCellText(unAlbum.getDescription());
-               //out.println("<td  class=\"ArrayCell\">" + unAlbum.getDescription() + "</td>");
-               
-               //if ("admin".equals(profile) || ("publisher".equals(profile) && unAlbum.getCreatorId().equals(userId))) {
-                 // si publisher, possibilite de modif que sur ses albums
-                 // creation de la colonne des icenes
-                 //IconPane iconPane = gef.getIconPane();
-                 // icoene "modifier"
-                 //Icon updateIcon = iconPane.addIcon();
-                 //updateIcon.setProperties(resource.getIcon("gallery.updateAlbum"), resource.getString("gallery.updateAlbum"), "javaScript:editAlbum('" + id + "')");
-                 // icene "supprimer"
-                 //Icon deleteIcon = iconPane.addIcon();
-                 //deleteIcon.setProperties(resource.getIcon("gallery.deleteAlbum"), resource.getString("gallery.deleteAlbum"), "javaScript:deleteConfirm('" + id + "','" + EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(nom)) + "')");
-                 //iconPane.setSpacing("30px");
-                 //ligne.addArrayCellIconPane(iconPane);
-               //}
+               out.println("</li>");
            }
-           out.println("</li>");
            out.println("</ul>");
            out.println("</div>");
            

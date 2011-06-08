@@ -70,6 +70,7 @@ import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
 import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
+import com.stratelia.webactiv.util.node.ejb.NodeDAO;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
 import com.stratelia.webactiv.util.publication.control.PublicationBm;
@@ -1035,6 +1036,18 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     } catch (SQLException e) {
       throw new GalleryRuntimeException("GalleryBmEJB.getAllPhotosUpdatebyUserid()",
           SilverpeasRuntimeException.ERROR, "gallery.MSG_PHOTO_NOT_EXIST", e);
+    } finally {
+      fermerCon(con);
+    }
+  }
+  
+  public void sortAlbums (List<NodePK> nodePKs) {
+    Connection con = initCon();
+    try {
+      NodeDAO.sortNodes(con, nodePKs);
+    } catch (SQLException e) {
+      throw new GalleryRuntimeException("sortAlbums()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_NOT_ORDER", e);
     } finally {
       fermerCon(con);
     }
