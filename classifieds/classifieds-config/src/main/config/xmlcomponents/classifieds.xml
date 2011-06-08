@@ -45,22 +45,22 @@
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
       </label>
       <help>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
-        <message lang="fr">Annonceur</message>
-        <message lang="en">Author</message>
+        <message lang="fr">Annonceurs</message>
+        <message lang="en">Authors</message>
       </label>       
       <help>
-        <message lang="fr">Annonceur</message>
-        <message lang="en">Author</message>
+        <message lang="fr">Annonceurs</message>
+        <message lang="en">Authors</message>
       </help>        
     </profile>
   </profiles>
@@ -94,8 +94,8 @@
       <size>25</size>     
       <updatable>always</updatable>      
       <help>
-        <message lang="fr">Sur la page principale, les annonces seront regroupés selon ces catégories</message>
-        <message lang="en">On the main page, classifieds will be grouped according to these categories</message>
+        <message lang="fr">Sur la page principale, les annonces sont regroupées selon ces catégories</message>
+        <message lang="en">On the main page, classifieds are grouped according to these categories</message>
       </help>
     </parameter>
     <parameter>
