@@ -4048,6 +4048,21 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           e);
     }
   }
+  
+  public void removeContentOfPublication(PublicationPK pubPK) {
+    // TODO : remove wysiwyg content
+    // WysiwygController.deleteWysiwygAttachmentsOnly(spaceId, componentId, objectId)
+
+    // remove XML content
+    PublicationDetail publication = getPublicationDetail(pubPK);
+    if (!StringUtil.isInteger(publication.getInfoId())) {
+      removeXMLContentOfPublication(pubPK);
+    }
+
+    // reset reference to content
+    publication.setInfoId("0");
+    updatePublication(publication, KmeliaHelper.PUBLICATION_CONTENT, true);
+  }
 
   private void removeXMLContentOfPublication(PublicationPK pubPK) {
     try {

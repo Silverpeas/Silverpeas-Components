@@ -757,5 +757,7 @@ public interface KmeliaBmBusinessSkeleton {
    */
   public String clonePublication(CompletePublication refPubComplete, PublicationDetail pubDetail,
       String nextStatus) throws RemoteException;
+  
+  public void removeContentOfPublication(PublicationPK pubPK) throws RemoteException;
 
 }
