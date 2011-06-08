@@ -53,25 +53,28 @@ session.setAttribute("Silverpeas_Album_ComponentId", componentId);
 
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
-<script type="text/javascript">
-  $(document).ready(function(){
-	  $("#albumList").sortable({opacity: 0.4, cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
-	  
-	  $('#albumList').bind('sortupdate', function(event, ui) {
-		     var reg=new RegExp("album", "g");
-		     var data = $('#albumList').sortable('serialize');
-		     data += "&";  // pour que le dernier élément soit de la même longueur que les autres
-		     var tableau=data.split(reg);
-		     var param = "";
-		     for (var i=0; i<tableau.length; i++) {
-		        if (i > 0) {
-		          param += ",";
-		        }
-		        param += tableau[i].substring(3, tableau[i].length-1);
-		     }
-		     sortAlbums(param);
-		    });
-  });
+<script language="javascript" type="text/javascript">
+  
+	  $(document).ready(function(){
+		  <%if ( "admin".equals(profile)) { %>
+			  $("#albumList").sortable({opacity: 0.4, cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
+		  
+			  $('#albumList').bind('sortupdate', function(event, ui) {
+				     var reg=new RegExp("album", "g");
+				     var data = $('#albumList').sortable('serialize');
+				     data += "&";  // pour que le dernier élément soit de la même longueur que les autres
+				     var tableau=data.split(reg);
+				     var param = "";
+				     for (var i=0; i<tableau.length; i++) {
+				        if (i > 0) {
+				          param += ",";
+				        }
+				        param += tableau[i].substring(3, tableau[i].length-1);
+				     }
+				     sortAlbums(param);
+				    });
+		  <%} %>
+	  });
   
   function sortAlbums(orderedList)
   {
