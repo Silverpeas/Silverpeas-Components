@@ -120,7 +120,7 @@
     <view:browseBar>
       <view:browseBarElt label="${classifiedPath}" link=""/>
     </view:browseBar>
-    <c:if test="${userId == creatorId or profile == 'admin'}">
+    <c:if test="${userId == creatorId or profile.name == 'admin'}">
       <fmt:message var="updateOp" key="classifieds.updateClassified"/>
       <fmt:message var="updateIcon"  key="classifieds.update" bundle="${icons}"/>
       <fmt:message var="deleteOp" key="classifieds.deleteClassified"/>
@@ -148,7 +148,7 @@
             </c:otherwise>
           </c:choose>
         </c:if>
-        <c:if test="${'admin' == profile and 'ToValidate' == classified.status}">
+        <c:if test="${'admin' == profile.name and 'ToValidate' == classified.status}">
           <view:operationSeparator/>
           <fmt:message var="validateOp" key="classifieds.validate"/>
           <fmt:message var="validateIcon" key="classifieds.validate" bundle="${icons}"/>

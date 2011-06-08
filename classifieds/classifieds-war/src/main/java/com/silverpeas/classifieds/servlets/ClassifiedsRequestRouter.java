@@ -23,8 +23,6 @@
  */
 package com.silverpeas.classifieds.servlets;
 
-import com.silverpeas.look.LookHelper;
-import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.fileupload.FileItem;
 
+import com.silverpeas.classifieds.control.ClassifiedsRole;
 import com.silverpeas.classifieds.control.ClassifiedsSessionController;
 import com.silverpeas.classifieds.model.Category;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
@@ -44,7 +43,9 @@ import com.silverpeas.form.PagesContext;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.form.RecordTemplate;
 import com.silverpeas.form.form.XmlSearchForm;
+import com.silverpeas.look.LookHelper;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
+import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateImpl;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.silverpeas.util.StringUtil;
@@ -57,7 +58,6 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
-import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.indexEngine.model.FieldDescription;
 
 public class ClassifiedsRequestRouter
@@ -91,17 +91,6 @@ public class ClassifiedsRequestRouter
     return new ClassifiedsSessionController(mainSessionCtrl, componentContext);
   }
 
-  // recherche du profile de l'utilisateur
-  public String getFlag(String[] profiles) {
-    String flag = "publisher";
-    for (int i = 0; i < profiles.length; i++) {
-      if (profiles[i].equals("admin")) {
-        return profiles[i];
-      }
-    }
-    return flag;
-  }
-
   /**
    * This method has to be implemented by the component request rooter it has to compute a
    * destination page
@@ -122,16 +111,16 @@ public class ClassifiedsRequestRouter
         "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
 
     // création des paramètres généraux
-    String flag = getFlag(classifiedsSC.getUserRoles());
+    ClassifiedsRole highestRole = (isAnonymousAccess(request)) ? ClassifiedsRole.ANONYMOUS : ClassifiedsRole.getRole(classifiedsSC.getUserRoles());
     String userId = classifiedsSC.getUserId();
 
-    request.setAttribute("Profile", flag);
+    request.setAttribute("Profile", highestRole);
     request.setAttribute("UserId", userId);
     request.setAttribute("InstanceId", classifiedsSC.getComponentId());
     request.setAttribute("Language", classifiedsSC.getLanguage());
 
     SilverTrace.debug("classifieds", "classifiedsRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "Profile=" + flag);
+        "root.MSG_GEN_PARAM_VALUE", "Profile=" + highestRole);
 
     try {
       if (function.startsWith("Main")) {
@@ -158,21 +147,18 @@ public class ClassifiedsRequestRouter
         request.setAttribute("Data", data);
         request.setAttribute("NbTotal", classifiedsSC.getNbTotalClassifieds());
         request.setAttribute("Validation", classifiedsSC.isValidationEnabled());
-        request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
         destination = rootDest + "accueil.jsp";
       } else if (function.equals("ViewClassifiedToValidate")) {
         // récupérer les petites annonces à valider
         Collection<ClassifiedDetail> classifieds = classifiedsSC.getClassifiedsToValidate();
         request.setAttribute("Classifieds", classifieds);
         request.setAttribute("TitlePath", "classifieds.viewClassifiedToValidate");
-        request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
         destination = rootDest + "classifieds.jsp";
       } else if (function.equals("ViewMyClassifieds")) {
         // récupérer les petites annonces de l'utilisateur
         Collection<ClassifiedDetail> classifieds = classifiedsSC.getClassifiedsByUser();
         request.setAttribute("Classifieds", classifieds);
         request.setAttribute("TitlePath", "classifieds.myClassifieds");
-        request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
         destination = rootDest + "classifieds.jsp";
       } else if (function.equals("SearchClassifieds")) {
         if (FileUploadUtil.isRequestMultipart(request)) {
@@ -294,7 +280,7 @@ public class ClassifiedsRequestRouter
           List<FileItem> items = FileUploadUtil.parseRequest(request);
           String title = FileUploadUtil.getParameter(items, "Title");
           ClassifiedDetail classified = new ClassifiedDetail(title);
-          String classifiedId = classifiedsSC.createClassified(classified, flag);
+          String classifiedId = classifiedsSC.createClassified(classified, highestRole);
           PublicationTemplate pub = getPublicationTemplate(classifiedsSC);
           if (pub != null) {
             RecordSet set = pub.getRecordSet();
@@ -358,7 +344,7 @@ public class ClassifiedsRequestRouter
             form.update(items, data, context);
             set.save(data);
           }
-          classifiedsSC.updateClassified(classified, true, SilverpeasRole.admin.isInRole(flag));
+          classifiedsSC.updateClassified(classified, true, SilverpeasRole.admin.isInRole(highestRole.getName()));
           request.setAttribute("ClassifiedId", classifiedId);
         }
         destination = getDestination("ViewMyClassifieds", classifiedsSC, request);
@@ -408,7 +394,7 @@ public class ClassifiedsRequestRouter
         destination = getDestination("ViewClassified", classifiedsSC, request);
       } else if (function.equals("DraftOut")) {
         String classifiedId = request.getParameter("ClassifiedId");
-        classifiedsSC.draftOutClassified(classifiedId, flag);
+        classifiedsSC.draftOutClassified(classifiedId, highestRole);
         destination = getDestination("ViewClassified", classifiedsSC, request);
       } else if (function.equals("ValidateClassified")) {
         String classifiedId = request.getParameter("ClassifiedId");
@@ -489,7 +475,6 @@ public class ClassifiedsRequestRouter
         request.setAttribute("Classifieds", classifieds);
         request.setAttribute("TitlePath", "classifieds.viewByCategorie");
         request.setAttribute("Extra", categoryName);
-        request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
         destination = rootDest + "classifieds.jsp";
 
       } else {

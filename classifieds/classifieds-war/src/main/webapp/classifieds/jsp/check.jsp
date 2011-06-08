@@ -56,6 +56,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%@ page import="com.silverpeas.classifieds.model.ClassifiedDetail"%>
 <%@ page import="com.silverpeas.classifieds.model.Category"%>
 <%@ page import="com.silverpeas.classifieds.model.Subscribe"%>
+<%@ page import="com.silverpeas.classifieds.control.ClassifiedsRole"%>
+
 <%@ page import="java.util.Iterator"%>
 <%@ page import="java.util.ArrayList"%>
 <%@ page import="java.util.Date"%>

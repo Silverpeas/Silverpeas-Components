@@ -253,10 +253,10 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @throws PublicationTemplateException
    * @throws FormException
    */
-  public synchronized void draftOutClassified(String classifiedId, String profile)
+  public synchronized void draftOutClassified(String classifiedId, ClassifiedsRole highestRole)
       throws RemoteException, PublicationTemplateException, FormException {
-    getClassifiedsBm().draftOutClassified(classifiedId, profile);
-    if (profile.equals("admin")) {
+    getClassifiedsBm().draftOutClassified(classifiedId, highestRole.toString());
+    if (highestRole==ClassifiedsRole.MANAGER) {
       sendSubscriptionsNotification(classifiedId);
     }
   }
@@ -326,7 +326,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param profile : String
    * @return classifiedId : String
    */
-  public synchronized String createClassified(ClassifiedDetail classified, String profile) {
+  public synchronized String createClassified(ClassifiedDetail classified, ClassifiedsRole profile) {
     try {
       UserDetail user = getUserDetail();
       classified.setCreatorId(getUserId());
@@ -338,7 +338,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       if (isDraftEnabled()) {
         classified.setStatus(ClassifiedDetail.DRAFT);
       } else {
-        if ("admin".equals(profile) || !isValidationEnabled()) {
+        if (profile==ClassifiedsRole.MANAGER || !isValidationEnabled()) {
           classified.setStatus(ClassifiedDetail.VALID);
         } else {
           classified.setStatus(ClassifiedDetail.TO_VALIDATE);

@@ -26,15 +26,14 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
 
-<% 
-String 		profile			= (String) request.getAttribute("Profile");
+<%
+ClassifiedsRole	profile		= (ClassifiedsRole) request.getAttribute("Profile");
 Collection	categories		= (Collection) request.getAttribute("Categories");
 String 		nbTotal			= (String) request.getAttribute("NbTotal");
 //Form 		formSearch 		= (Form) request.getAttribute("Form");
-//DataRecord	data 			= (DataRecord) request.getAttribute("Data"); 
+//DataRecord	data 			= (DataRecord) request.getAttribute("Data");
 String		componentInstanceId		= (String) request.getAttribute("InstanceId");
 boolean		validation		= ((Boolean) request.getAttribute("Validation")).booleanValue();
-boolean		anonymousAccess	= ((Boolean) request.getAttribute("AnonymousAccess")).booleanValue();
 
 // d�claration des boutons
 Button validateButton = (Button) gef.getFormButton(resource.getString("GML.search")+" dans <b>"+nbTotal+"</b> "+resource.getString("classifieds.classifieds"), "javascript:onClick=sendData();", false);
@@ -69,30 +68,32 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
-	
+
 	// affichage des options
-	if (!anonymousAccess) {
-		operationPane.addOperation(resource.getIcon("classifieds.addClassified"),resource.getString("classifieds.addClassified"), "NewClassified");
+	if (profile != ClassifiedsRole.ANONYMOUS) {
+	  	if ( (profile == ClassifiedsRole.MANAGER) || (profile == ClassifiedsRole.PUBLISHER) ) {
+			operationPane.addOperation(resource.getIcon("classifieds.addClassified"),resource.getString("classifieds.addClassified"), "NewClassified");
+	  	}
 		operationPane.addOperation(resource.getIcon("classifieds.myClassifieds"), resource.getString("classifieds.myClassifieds"), "ViewMyClassifieds");
 		operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("classifieds.subscriptionsAdd"),resource.getString("classifieds.addSubscription"), "javaScript:addSubscription()");
 		operationPane.addOperation(resource.getIcon("classifieds.mySubscriptions"), resource.getString("classifieds.mySubscriptions"), "ViewMySubscriptions");
 	}
-	if ("admin".equals(profile) && validation) {
+	if ( profile==ClassifiedsRole.MANAGER && validation) {
 	  	operationPane.addLine();
 		operationPane.addOperation(resource.getIcon("classifieds.viewClassifiedToValidate"),resource.getString("classifieds.viewClassifiedToValidate"), "ViewClassifiedToValidate");
 	}
 
 	out.println(window.printBefore());
     out.println(frame.printBefore());
-    
+
     Board	board		 = gef.getBoard();
-    
+
 	// afficher les crit�res de tri
 	%>
-	
+
     <%@include file="subscriptionManager.jsp" %>
-    
+
     <FORM Name="classifiedForm" action="SearchClassifieds" Method="POST" ENCTYPE="multipart/form-data">
 		<% if (formSearch != null) { %>
 			<center>
@@ -104,21 +105,21 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 						templateContext.setBorderPrinted(false);
 						templateContext.setIgnoreDefaultValues(true);
 						templateContext.setUseMandatory(false);
-						
+
 						formSearch.display(out, templateContext, data);
-				    
+
 				    // bouton valider
 					ButtonPane buttonPane = gef.getButtonPane();
 					buttonPane.addButton(validateButton);
 					out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-			
+
 					out.println(board.printAfter());
 					%>
 			</div>
 			</center>
-		<% } %>	
+		<% } %>
 	</FORM>
-           
+
 	<%
 	// affichage des pav�s pour les petites annonces par cat�gorie
 	int nbAffiche = 0;
@@ -133,9 +134,9 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 				category = (Category) itC.next();
 				String categoryName = category.getValue();
 				out.println("<div id=\"category"+leftOrRight+"\" class=\"category"+category.getKey()+"\">");
-				//out.println(board.printBefore());				
+				//out.println(board.printBefore());
 				nbAffiche = nbAffiche + 1;
-							
+
 				// affichage des annonces de cette cat�gorie
 				Collection classifieds = category.getClassifieds();
 				int nbClassifieds = 0;
@@ -143,11 +144,11 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 				<div class="categoryTitle"><a href="ViewAllClassifiedsByCategory?CategoryName=<%=categoryName%>&FieldKey=<%=category.getKey()%>"><%=categoryName%></a></div>
 				<div class="categoryContent">
 				<%
-				if (classifieds == null || classifieds.size() == 0) 
+				if (classifieds == null || classifieds.size() == 0)
 				{
 					%>
 						<span class="emptyCategory"><%=resource.getString("classifieds.CategoryEmpty")%></span>
-					<%	
+					<%
 				}
 				else
 				{
@@ -166,18 +167,18 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
 					out.println("</ul>");
 				}
 				out.print("</div>");
-				
+
 			  // lien pour la visualisation de toutes les annonces de la cat�gorie
         %>
           <div id="ViewAllClassifiedsByCategory"><a href="ViewAllClassifiedsByCategory?CategoryName=<%=categoryName%>&FieldKey=<%=category.getKey()%>"><%=resource.getString("classifieds.viewAllClassifiedsByCategory")%></a></div>
         <%
 				// lien pour la saisie d'une nouvelle annonce
-				if (!anonymousAccess) {
+				if ( (profile==ClassifiedsRole.MANAGER) || (profile==ClassifiedsRole.PUBLISHER) ) {
 				%>
 					<div id="newClassified"><a href="NewClassified?FieldKey=<%=category.getKey()%>"><%=resource.getString("classifieds.newClassified")%></a></div>
 				<%
 				}
-				
+
 				out.print("</div>");
 				if ("left".equals(leftOrRight))
 				{
@@ -194,7 +195,7 @@ Button validateButton = (Button) gef.getFormButton(resource.getString("GML.searc
       <%=resource.getString("classifieds.infos")%>
     </div>
 	</div>
-	
+
 	<%
   	out.println(frame.printAfter());
 	 out.println(window.printAfter());

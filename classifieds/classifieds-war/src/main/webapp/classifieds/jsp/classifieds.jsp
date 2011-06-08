@@ -26,11 +26,11 @@
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
 
-<% 
+<%
 Collection	classifieds		= (Collection) request.getAttribute("Classifieds");
 String      title         = (String) request.getAttribute("TitlePath");
 String      extra         = (String) request.getAttribute("Extra");
-boolean		anonymousAccess	= ((Boolean) request.getAttribute("AnonymousAccess")).booleanValue();
+ClassifiedsRole	profile		= (ClassifiedsRole) request.getAttribute("Profile");
 
 if (!StringUtil.isDefined(title)) {
   title = "classifieds.myClassifieds";
@@ -67,45 +67,45 @@ function openSPWindow(fonction, windowName){
 	else {
 	 browseBar.setPath(resource.getString(title));
 	}
-	
+
 	// affichage des options
-	if (!anonymousAccess) {
+	if ( (profile==ClassifiedsRole.MANAGER) || (profile==ClassifiedsRole.PUBLISHER) ) {
 		operationPane.addOperation(resource.getIcon("classifieds.addClassified"),resource.getString("classifieds.addClassified"), "NewClassified");
 	}
-	
+
 	out.println(window.printBefore());
     out.println(frame.printBefore());
-		
+
 	// afficher les petites annonces
 	Board	board		 = gef.getBoard();
 	%>
 	<br/>
 	<%
 	out.println(board.printBefore());
-	
+
 	%>
 	<table>
 	<%
 	if (classifieds != null && classifieds.size() > 0) {
 		ClassifiedDetail classified;
 		Iterator it = (Iterator) classifieds.iterator();
-		
+
 		while (it.hasNext()) {
 			// affichage de l'annonce
 				classified 		= (ClassifiedDetail) it.next();
 				String status 	= classified.getStatus();
 				%>
-				
+
 				<tr>
 					<td>
 						<p>
 							&nbsp; &#149; &nbsp;&nbsp;<b><a href="ViewClassified?ClassifiedId=<%=classified.getClassifiedId()%>"><%=classified.getTitle()%></a></b>
 							<%if (status.equals(ClassifiedDetail.DRAFT)) { %>
 								(<%=resource.getString("classifieds.draft") %>)
-							<%} 
+							<%}
 							else if (status.equals(ClassifiedDetail.TO_VALIDATE)) { %>
 								(<%=resource.getString("classifieds.toValidate") %>)
-							<%} 
+							<%}
 							else if (status.equals(ClassifiedDetail.REFUSED)) { %>
 								(<%=resource.getString("classifieds.refuse") %>)
 							<%} %>
@@ -127,7 +127,7 @@ function openSPWindow(fonction, windowName){
 		</tr>
 	<% } %>
 	</table>
-	<%	
+	<%
   	out.println(board.printAfter());
   	out.println(frame.printAfter());
 	out.println(window.printAfter());
