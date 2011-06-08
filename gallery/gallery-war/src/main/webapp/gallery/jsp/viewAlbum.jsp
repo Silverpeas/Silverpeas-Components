@@ -115,24 +115,28 @@
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 
 <script language="javascript" type="text/javascript">
-$(document).ready(function(){
-    $("#albumList").sortable({opacity: 0.4, cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
-    
-    $('#albumList').bind('sortupdate', function(event, ui) {
-         var reg=new RegExp("album", "g");
-         var data = $('#albumList').sortable('serialize');
-         data += "&";  // pour que le dernier élément soit de la même longueur que les autres
-         var tableau=data.split(reg);
-         var param = "";
-         for (var i=0; i<tableau.length; i++) {
-            if (i > 0) {
-              param += ",";
-            }
-            param += tableau[i].substring(3, tableau[i].length-1);
-         }
-         sortAlbums(param);
-        });
-  });
+
+	$(document).ready(function(){
+		<%if ( "admin".equals(profile)) { %>
+        $("#albumList").sortable({opacity: 0.4, cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
+      
+        $('#albumList').bind('sortupdate', function(event, ui) {
+             var reg=new RegExp("album", "g");
+             var data = $('#albumList').sortable('serialize');
+             data += "&";  // pour que le dernier élément soit de la même longueur que les autres
+             var tableau=data.split(reg);
+             var param = "";
+             for (var i=0; i<tableau.length; i++) {
+                if (i > 0) {
+                  param += ",";
+                }
+                param += tableau[i].substring(3, tableau[i].length-1);
+             }
+             sortAlbums(param);
+            });
+      <%} %>
+	  });
+
   
   function sortAlbums(orderedList)
   {
@@ -350,9 +354,12 @@ function uploadCompleted(s)  {
 	  if ( "admin".equals(profile) || "publisher".equals(profile))   {
 	    operationPane.addOperation(resource.getIcon("gallery.addAlbum"), resource.getString("gallery.ajoutSousAlbum"), "javaScript:addAlbum()");
 	    // modification et suppression de l'album courant
-	    operationPane.addOperation(resource.getIcon("gallery.updatelbum"), resource.getString("gallery.updateAlbum"), "javaScript:editAlbum('" + albumId + "')");
-	    operationPane.addOperation(resource.getIcon("gallery.deleteAlbum"), resource.getString("gallery.deleteThisAlbum"), "javaScript:deleteConfirm('" + albumId + "','" + EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(albumName)) + "')");
-	    operationPane.addLine();
+	    if ("admin".equals(profile) || ("publisher".equals(profile) && currentAlbum.getCreatorId().equals(userId))) {
+	       // avec gestion des droits pour les publieurs
+	       operationPane.addOperation(resource.getIcon("gallery.updatelbum"), resource.getString("gallery.updateAlbum"), "javaScript:editAlbum('" + albumId + "')");
+	       operationPane.addOperation(resource.getIcon("gallery.deleteAlbum"), resource.getString("gallery.deleteThisAlbum"), "javaScript:deleteConfirm('" + albumId + "','" + EncodeHelper.javaStringToHtmlString(EncodeHelper.javaStringToJsString(albumName)) + "')");
+	       operationPane.addLine();
+	    }
 
 	    if ("admin".equals(profile)) {
 	      operationPane.addOperation(resource.getIcon("gallery.copy"), resource.getString("gallery.copyAlbum"), "javascript:onClick=clipboardCopy()");
