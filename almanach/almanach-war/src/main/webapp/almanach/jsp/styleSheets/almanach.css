@@ -99,17 +99,15 @@
 /**
  * CSS to apply to the events that have priority.
  */
-.priority a{
+.priority a, .priority .fc-event-inner {
   background-image: url('/silverpeas/util/icons/important.gif');
   background-repeat: no-repeat;
-  background-position:top left;
-  padding:0 2px 0 12px ;
+  background-position: 0 1px;
+  padding:0 2px 0 14px ;
   margin:0;
   width:auto;
   
 }
-.priority a span { 
-	display:block;}
 
 #agregatedAlmanachs {
 	background: url("../../../util/icons/arrow/bg_tri.png") no-repeat scroll left bottom #EAEAEA;
@@ -117,7 +115,8 @@
     width: 99%;
 	clear:both;
 	position:relative;
-	height:24px;
+	height:auto;
+    min-height: 24px;
 }
 
 #agregatedAlmanachs table {

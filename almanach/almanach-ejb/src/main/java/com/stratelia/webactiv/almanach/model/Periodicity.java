@@ -26,6 +26,7 @@ package com.stratelia.webactiv.almanach.model;
 import java.util.Date;
 
 import com.stratelia.webactiv.persistence.SilverpeasBean;
+import com.stratelia.webactiv.util.WAPrimaryKey;
 import java.util.Calendar;
 import java.util.Collection;
 import net.fortuna.ical4j.model.DateList;
@@ -38,6 +39,7 @@ import net.fortuna.ical4j.model.property.RRule;
 public class Periodicity extends SilverpeasBean {
 
   private static final long serialVersionUID = -5666462083577316755L;
+  private static String PERIODICITY_TABLE = "SC_Almanach_Periodicity";
   public static final int UNIT_NONE = 0;
   public static final int UNIT_DAY = 1;
   public static final int UNIT_WEEK = 2;
@@ -58,7 +60,7 @@ public class Periodicity extends SilverpeasBean {
     numWeek = 0;
     day = 0;
   }
-
+  
   public int getEventId() {
     return eventId;
   }
@@ -130,9 +132,12 @@ public class Periodicity extends SilverpeasBean {
 
   @Override
   public String _getTableName() {
-    return "SC_Almanach_Periodicity";
+    return getTableName();
   }
   
+  public static String getTableName() {
+    return PERIODICITY_TABLE;
+  }
   
   public RRule generateRecurrenceRule() {
     String typeRecurence = Recur.DAILY;

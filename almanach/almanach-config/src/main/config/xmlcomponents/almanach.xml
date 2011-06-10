@@ -54,7 +54,7 @@
         <message lang="en">Administrator</message>
       </label>
       <help>
-        <message lang="fr">Gestionnaire</message>
+        <message lang="fr">Les gestionnaires paramêtrent l'usage du Plan de Classement utilisé pour classer les événements.</message>
         <message lang="en">Administrator</message>
       </help>
     </profile>
@@ -64,7 +64,7 @@
         <message lang="en">Publisher</message>
       </label>
       <help>
-        <message lang="fr">Publieur</message>
+        <message lang="fr">Les publieurs peuvent créer, modifier et supprimer des événements. Ces événements peuvent être périodiques et être classés sur le Plan de Classement.</message>
         <message lang="en">Publisher</message>
       </help>
     </profile>
@@ -74,7 +74,7 @@
         <message lang="en">Reader</message> 
       </label>
       <help>
-        <message lang="fr">Lecteur</message>
+        <message lang="fr">Les lecteurs consultent les événements aux travers des différentes vues offertes.</message>
         <message lang="en">Reader</message>
       </help>
     </profile>

@@ -124,8 +124,8 @@ function isCorrectForm() {
      var title = stripInitialWhitespace(document.eventForm.Title.value);
      var beginDate = document.eventForm.StartDate.value;
      var endDate = document.eventForm.EndDate.value;
-     var beginHour = stripInitialWhitespace(document.eventForm.StartHour.value);
-     var endHour = stripInitialWhitespace(document.eventForm.EndHour.value);
+     var beginTime = stripInitialWhitespace(document.eventForm.StartHour.value);
+     var endTime = stripInitialWhitespace(document.eventForm.EndHour.value);
 	 var unity = document.eventForm.Unity.value;
 	 var frequency = stripInitialWhitespace(document.eventForm.Frequency.value);
 	 var beginPeriodicity = document.eventForm.PeriodicityStartDate.value;
@@ -151,7 +151,7 @@ function isCorrectForm() {
         }
      }
 
-     if (!checkHour(beginHour))
+     if (!checkHour(beginTime) || (isWhitespace(beginTime) && !isWhitespace(endTime)))
      {
     	 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=almanach.getString("hourBegin")%>' <%=almanach.getString("MustContainsCorrectHour")%>\n";
 	     errorNb++;
@@ -177,11 +177,22 @@ function isCorrectForm() {
 		 	}
 		}
 	}
-
-     if (!checkHour(endHour))
+    
+     if (!checkHour(endTime))
      {
     	 errorMsg+="  - <%=resources.getString("GML.theField")%> '<%=almanach.getString("hourEnd")%>' <%=almanach.getString("MustContainsCorrectHour")%>\n";
          errorNb++;
+     }
+     
+     if (beginDate == endDate && !isWhitespace(endTime) && !isWhitespace(beginTime)) {
+      var beginHour = atoi(extractHour(beginTime));
+      var beginMinute = atoi(extractMinute(beginTime));
+      var endHour = atoi(extractHour(endTime));
+      var endMinute = atoi(extractMinute(endTime));
+      if (beginHour > endHour || (beginHour == endHour && beginMinute > endMinute)) {
+        errorMsg += "  - <%=resources.getString("GML.theField")%> '<%=resources.getString("hourEnd")%>' <%=resources.getString("GML.MustContainsPostOrEqualDateTo")%> " + beginTime + "\n";
+        errorNb++;
+      }
      }
 
 	 if (unity != "0") {

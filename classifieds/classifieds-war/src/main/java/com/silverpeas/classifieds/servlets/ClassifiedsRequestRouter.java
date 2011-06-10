@@ -139,27 +139,35 @@ public class ClassifiedsRequestRouter
         Form formUpdate = null;
         DataRecord data = null;
         PublicationTemplate pubTemplate = getPublicationTemplate(classifiedsSC);
-        if (pubTemplate != null) {
-          String templateFileName = pubTemplate.getFileName();
-          String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
-          String field = classifiedsSC.getSearchFields1();
-          String keys = pubTemplate.getRecordTemplate().getFieldTemplate(field).
-              getParameters(classifiedsSC.getLanguage()).get("keys");
-          String values = pubTemplate.getRecordTemplate().getFieldTemplate(field).
-              getParameters(classifiedsSC.getLanguage()).get("values");
-          String label = pubTemplate.getRecordTemplate().getFieldTemplate(field).getFieldName();
-          categories = createCategory(templateName, label, keys, values, classifiedsSC);
-          formUpdate = pubTemplate.getSearchForm();
-          RecordSet recordSet = pubTemplate.getRecordSet();
-          data = recordSet.getEmptyRecord();
-          request.setAttribute("Categories", categories);
+        try {
+          if (pubTemplate != null) {
+            String templateFileName = pubTemplate.getFileName();
+            String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
+            String field = classifiedsSC.getSearchFields1();
+
+            String keys = pubTemplate.getRecordTemplate().getFieldTemplate(field).
+                getParameters(classifiedsSC.getLanguage()).get("keys");
+            String values = pubTemplate.getRecordTemplate().getFieldTemplate(field).
+                getParameters(classifiedsSC.getLanguage()).get("values");
+            String label = pubTemplate.getRecordTemplate().getFieldTemplate(field).getFieldName();
+            categories = createCategory(templateName, label, keys, values, classifiedsSC);
+
+            formUpdate = pubTemplate.getSearchForm();
+            RecordSet recordSet = pubTemplate.getRecordSet();
+            data = recordSet.getEmptyRecord();
+            request.setAttribute("Categories", categories);
+          }
+          request.setAttribute("Form", formUpdate);
+          request.setAttribute("Data", data);
+          request.setAttribute("NbTotal", classifiedsSC.getNbTotalClassifieds());
+          request.setAttribute("Validation", classifiedsSC.isValidationEnabled());
+          request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
+          destination = rootDest + "accueil.jsp";
+        } catch (Exception e) {
+          // form error
+          request.setAttribute("ErrorType", "labelErrorForm");
+          destination = rootDest + "error.jsp";
         }
-        request.setAttribute("Form", formUpdate);
-        request.setAttribute("Data", data);
-        request.setAttribute("NbTotal", classifiedsSC.getNbTotalClassifieds());
-        request.setAttribute("Validation", classifiedsSC.isValidationEnabled());
-        request.setAttribute("AnonymousAccess", isAnonymousAccess(request));
-        destination = rootDest + "accueil.jsp";
       } else if (function.equals("ViewClassifiedToValidate")) {
         // récupérer les petites annonces à valider
         Collection<ClassifiedDetail> classifieds = classifiedsSC.getClassifiedsToValidate();
@@ -447,6 +455,7 @@ public class ClassifiedsRequestRouter
         }
         destination = getDestination("ViewMySubscriptions", classifiedsSC, request);
       } else if (function.equals("ViewMySubscriptions")) {
+        try {
         Collection<Subscribe> subscribes = classifiedsSC.getSubscribesByUser();
         request.setAttribute("Subscribes", subscribes);
         Form formUpdate = null;
@@ -460,6 +469,12 @@ public class ClassifiedsRequestRouter
         request.setAttribute("Form", formUpdate);
         request.setAttribute("Data", data);
         destination = rootDest + "subscriptions.jsp";
+        } catch (Exception e) {
+          // form error for subscriptions
+          request.setAttribute("ErrorType", "labelErrorSubscriptions");
+          destination = rootDest + "error.jsp";
+        }
+        
       } else if (function.equals("DeleteSubscription")) {
         String subscribeId = request.getParameter("SubscribeId");
         classifiedsSC.deleteSubscribe(subscribeId);
@@ -505,9 +520,7 @@ public class ClassifiedsRequestRouter
   }
 
   private Collection<Category> createCategory(String templateName,
-      String label,
-      String stringKeys,
-      String stringValues,
+      String label, String stringKeys, String stringValues,
       ClassifiedsSessionController classifiedsSC) {
     Collection<Category> categories = new ArrayList<Category>();
     String[] keys = stringKeys.split("##");
@@ -544,8 +557,8 @@ public class ClassifiedsRequestRouter
           xmlFormName.indexOf("."));
       pubTemplate =
           (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-          classifiedsSC.getComponentId() + ":" + xmlFormShortName,
-          xmlFormName);
+              classifiedsSC.getComponentId() + ":" + xmlFormShortName,
+              xmlFormName);
     }
     return pubTemplate;
   }
