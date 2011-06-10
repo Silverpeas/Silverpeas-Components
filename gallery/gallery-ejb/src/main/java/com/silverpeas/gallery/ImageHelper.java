@@ -29,7 +29,7 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.iptc.IptcDirectory;
 import com.silverpeas.gallery.image.ImageMetadataException;
 import com.silverpeas.gallery.image.ImageMetadataExtractor;
-import com.silverpeas.gallery.image.SanselanMetadataExtractor;
+import com.silverpeas.gallery.image.SanselanImageMetadataExtractor;
 import com.silverpeas.gallery.model.MetaData;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
@@ -67,7 +67,6 @@ public class ImageHelper {
   static final String previewSuffix = "_preview.jpg";
   static final String thumbnailSuffix_Xlarge = "_600x400.jpg";
   static final String watermarkSuffix = "_watermark.jpg";
-  static final ImageMetadataExtractor extractor = new SanselanMetadataExtractor();
 
   /**
    * @param photo
@@ -253,6 +252,7 @@ public class ImageHelper {
     String photoId = photo.getPhotoPK().getId();
     String name = photo.getImageName();
     String mimeType = photo.getImageMimeType();
+       
     if ("image/jpeg".equals(mimeType) || "image/pjpeg".equals(mimeType)) {
       File file = new File(FileRepositoryManager.getAbsolutePath(photo.getInstanceId())
           + settings.getString("imagesSubDirectory")
@@ -260,6 +260,7 @@ public class ImageHelper {
           + File.separator
           + name);
       if (file != null && file.exists()) {
+        ImageMetadataExtractor extractor = new SanselanImageMetadataExtractor(photo.getInstanceId());
         List<MetaData> metadata = extractor.extractImageExifMetaData(file, lang);
         for (MetaData meta : metadata) {
           photo.addMetaData(meta);

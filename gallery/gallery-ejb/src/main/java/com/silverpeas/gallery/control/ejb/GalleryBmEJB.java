@@ -23,8 +23,6 @@
  */
 package com.silverpeas.gallery.control.ejb;
 
-
-
 import com.silverpeas.comment.service.CommentService;
 import com.silverpeas.form.RecordSet;
 import com.silverpeas.gallery.GalleryContentManager;
@@ -256,8 +254,9 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
     try {
       String albumId = nodePK.getId();
       String instanceId = nodePK.getInstanceId();
-      Collection<PhotoDetail> photos = PhotoDAO.getAllPhotosSorted(con, albumId, instanceId, parsedParameters,
-          viewAllPhoto);
+      Collection<PhotoDetail> photos =
+          PhotoDAO.getAllPhotosSorted(con, albumId, instanceId, parsedParameters,
+              viewAllPhoto);
 
       return photos;
     } catch (Exception e) {
@@ -453,6 +452,30 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
 
   @Override
+  public void addPhotoPaths(String photoId, String[] albums, String instanceId) {
+    Connection con = initCon();
+    try {
+      SilverTrace.debug("gallery", "GalleryBmEJB.setPhotoPath()",
+          "root.MSG_GEN_PARAM_VALUE", "photoId = " + photoId);
+      Collection<String> paths = PhotoDAO.getPathList(con, instanceId, photoId);
+      for (String albumId : albums) {
+        if (!paths.contains(albumId)) {
+          SilverTrace.debug("gallery", "GalleryBmEJB.setPhotoPath()",
+              "root.MSG_GEN_PARAM_VALUE", "albumId = " + albumId);
+          PhotoDAO.addPhotoPath(con, photoId, albumId, instanceId);
+        }
+      }
+    } catch (Exception e) {
+      throw new GalleryRuntimeException("GalleryBmEJB.setPhotoPath()",
+          SilverpeasRuntimeException.ERROR,
+          "gallery.IMPOSSIBLE_D_AJOUTER_LES_MODELES", e);
+    } finally {
+      // fermer la connexion
+      fermerCon(con);
+    }
+  }
+
+  @Override
   public void updatePhotoPath(String photoId, String[] albums,
       String instanceIdFrom, String instanceIdTo) {
     Connection con = initCon();
@@ -499,7 +522,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   private String getSpacesPath(String componentId) {
     String spacesPath = "";
     List<SpaceInst> spaces = getOrganizationController().getSpacePathToComponent(componentId);
-    for(SpaceInst spaceInst : spaces) {
+    for (SpaceInst spaceInst : spaces) {
       spacesPath += spaceInst.getName();
       spacesPath += " > ";
     }
@@ -576,7 +599,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
               SilverTrace.info("gallery", "GalleryBmEJB.indexGallery()",
                   "root.MSG_GEN_ENTER_METHOD",
                   "Impossible d'ajouter les métadata à la photo "
-                  + photo.toString());
+                      + photo.toString());
             }
             // indéxation de la photo
             createIndex(photo);
@@ -621,16 +644,16 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       String metaDataStr = "";
       MetaData metaData;
       Collection<String> properties = photo.getMetaDataProperties();
-       for(String property : properties) {
+      for (String property : properties) {
         metaData = photo.getMetaData(property);
         String value = metaData.getValue();
         metaDataStr = metaDataStr + " " + value;
       }
       indexEntry.addTextContent(metaDataStr);
       SilverTrace.info("gallery", "GalleryBmEJB.createIndex()", "root.MSG_GEN_ENTER_METHOD",
-          "metaData = " + metaDataStr  + " indexEntry = " + indexEntry.toString());
+          "metaData = " + metaDataStr + " indexEntry = " + indexEntry.toString());
       // indexation des méta données (une donnée par champ d'index)
-      for(String property : properties) {
+      for (String property : properties) {
         metaData = photo.getMetaData(property);
         String value = metaData.getValue();
         SilverTrace.info("gallery", "GalleryBmEJB.createIndex()",
@@ -659,7 +682,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
               indexEntry);
           SilverTrace.info("gallery", "GalleryBmEJB.createIndex()",
               "root.MSG_GEN_ENTER_METHOD", "indexEntry = "
-              + indexEntry.toString());
+                  + indexEntry.toString());
         } catch (Exception e) {
           SilverTrace.info("gallery", "GalleryBmEJB.createIndex()",
               "root.MSG_GEN_ENTER_METHOD", "xmlFormName = " + xmlFormName);
@@ -705,7 +728,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
       String creatorId) {
     SilverTrace.info("gallery", "GalleryBmEJB.createSilverContent()",
         "root.MSG_GEN_ENTER_METHOD", "photoId = "
-        + photoDetail.getPhotoPK().getId());
+            + photoDetail.getPhotoPK().getId());
     try {
       return getGalleryContentManager().createSilverContent(con, photoDetail,
           creatorId);
@@ -736,7 +759,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
           if (photo != null) {
             SilverTrace.info("gallery", "GalleryBmEJB.getResultSearch()",
                 "root.MSG_GEN_ENTER_METHOD", "photo = "
-                + photo.getPhotoPK().getId());
+                    + photo.getPhotoPK().getId());
             photos.add(photo);
           }
         }
@@ -961,8 +984,7 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
 
   /**
-   * @param userId
-   *         ID of user
+   * @param userId ID of user
    * @see PhotoDetail
    * @return the list of photos that the user has created or updated
    * @throws SQLException, ParseException
@@ -989,8 +1011,8 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
 
   /**
-   * get my list of SocialInformationGallery
-   * according to options and number of Item and the first Index
+   * get my list of SocialInformationGallery according to options and number of Item and the first
+   * Index
    * @return: List <SocialInformation>
    * @param : String myId
    * @param :List<String> myContactsIds
@@ -1014,8 +1036,8 @@ public class GalleryBmEJB implements SessionBean, GalleryBmBusinessSkeleton {
   }
 
   /**
-   * get list of SocialInformationGallery of my contacts
-   * according to options and number of Item and the first Index
+   * get list of SocialInformationGallery of my contacts according to options and number of Item and
+   * the first Index
    * @return: List <SocialInformation>
    * @param : String myId
    * @param :List<String> myContactsIds

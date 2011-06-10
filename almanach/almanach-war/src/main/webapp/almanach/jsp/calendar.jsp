@@ -38,9 +38,11 @@
     <link rel='stylesheet' type='text/css' href="<c:url value='/util/styleSheets/jquery/fullcalendar.css'/>" />
     <link rel='stylesheet' type='text/css' href="<c:url value='/almanach/jsp/styleSheets/almanach.css'/>" />
     <style type="text/css">
+      <c:out value=".${instanceId} { border-color: ${calendarView.almanach.color}; color: ${calendarView.almanach.color}; }"/>
+      <c:out value=".${instanceId} .fc-event-skin { background-color: ${calendarView.almanach.color}; border-color: ${calendarView.almanach.color}; color: white; }"/>
       <c:forEach var="almanach" items="${othersAlmanachs}">
         <c:out value=".${almanach.instanceId} { border-color: ${almanach.color}; color: ${almanach.color}; }"/>
-        <c:out value=".fc-agenda .${almanach.instanceId} .fc-event-time, .${almanach.instanceId} a { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
+        <c:out value=".${almanach.instanceId} .fc-event-skin { background-color: ${almanach.color}; border-color: ${almanach.color}; color: white; }"/>
       </c:forEach>
     </style>
     <script type="text/javascript" src="<c:url value='/util/javaScript/animation.js'/>"></script>
@@ -50,29 +52,34 @@
       function viewByMonth()
       {
         document.almanachForm.Action.value = "ViewByMonth";
+        $.progressMessage();
         document.almanachForm.submit();
       }
 
       function viewByWeek()
       {
         document.almanachForm.Action.value = "ViewByWeek";
+        $.progressMessage();
         document.almanachForm.submit();
       }
 
       function nextView()
       {
         document.almanachForm.Action.value = "NextView";
+        $.progressMessage();
         document.almanachForm.submit();
       }
 
       function previousView()
       {
         document.almanachForm.Action.value = "PreviousView";
+        $.progressMessage();
         document.almanachForm.submit();
       }
       function goToDay()
       {
         document.almanachForm.Action.value = "GoToday";
+        $.progressMessage();
         document.almanachForm.submit();
       }
 
@@ -130,12 +137,14 @@
             if (!actionAll)
             {
               document.agregateAlmanachs.action = "UpdateAgregation";
+              $.progressMessage();
               document.agregateAlmanachs.submit();
             }
           }
           else
           {
             document.agregateAlmanachs.action = "UpdateAgregation";
+            $.progressMessage();
             document.agregateAlmanachs.submit();
           }
         }
@@ -162,6 +171,7 @@
             }
           }
           document.agregateAlmanachs.action = "UpdateAgregation";
+          $.progressMessage();
           document.agregateAlmanachs.submit();
         }
       </c:if>
@@ -171,6 +181,7 @@
           // page is now ready, initialize the calendar...
 
           $('#calendar').fullCalendar({
+            header: false,
             // put your options and callbacks here
             monthNames: ['<fmt:message key="GML.mois0"/>', '<fmt:message key="GML.mois1"/>', '<fmt:message key="GML.mois2"/>', '<fmt:message key="GML.mois3"/>',
               '<fmt:message key="GML.mois4"/>', '<fmt:message key="GML.mois5"/>', '<fmt:message key="GML.mois6"/>', '<fmt:message key="GML.mois7"/>',
@@ -192,6 +203,7 @@
             minHour: 8,
             allDayText: '',
             allDayDefault: false,
+            ignoreTimezone: false,
             timeFormat: 'HH:mm{ - HH:mm}',
             axisFormat: 'HH:mm',
             columnFormat: { agendaWeek: 'ddd d' },
@@ -343,6 +355,7 @@
                 </tr>
               </table>
             </form>
+            <br clear="all"/>
           </div>
         </c:if>
 
@@ -368,7 +381,7 @@
 
       </view:frame>
     </view:window>
-
+    
     <form name="almanachForm" action="almanach.jsp" method="post">
       <input type="hidden" name="Action"/>
       <input type="hidden" name="Id"/>
@@ -377,5 +390,7 @@
     <form name="eventForm" action="createEvent.jsp" method="post">
       <input type="hidden" name="Day"/>
     </form>
+        
+    <view:progressMessage/>
   </body>
 </html>
