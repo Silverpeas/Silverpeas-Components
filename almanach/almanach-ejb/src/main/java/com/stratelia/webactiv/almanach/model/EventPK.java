@@ -35,6 +35,7 @@ import com.stratelia.webactiv.util.*;
 public class EventPK extends WAPrimaryKey implements Serializable {
 
   private static final long serialVersionUID = 7561613372489097714L;
+  protected static final String TABLE_NAME = "SC_Almanach_Event";
 
   /**
    * Constructor which set only the id
@@ -71,6 +72,7 @@ public class EventPK extends WAPrimaryKey implements Serializable {
    * @return the root table name of the object
    * @since 1.0
    */
+  @Override
   public String getRootTableName() {
     return "Event";
   }
@@ -81,8 +83,9 @@ public class EventPK extends WAPrimaryKey implements Serializable {
    * @return the root table name of the object
    * @since 1.0
    */
+  @Override
   public String getTableName() {
-    return "SC_Almanach_Event";
+    return TABLE_NAME;
   }
 
   /**
@@ -93,11 +96,17 @@ public class EventPK extends WAPrimaryKey implements Serializable {
    *          the object to compare to this NodePK
    * @since 1.0
    */
+  @Override
   public boolean equals(Object other) {
-    if (!(other instanceof EventPK))
+    if (!(other instanceof EventPK)) {
       return false;
+    }
+    EventPK otherPk = (EventPK) other;
+    if ((space != null && !space.equals(otherPk.getSpace()))
+        || (otherPk.getSpace() != null && !otherPk.getSpace().equals(space))) {
+      return false;
+    }
     return (id.equals(((EventPK) other).getId()))
-        && (space.equals(((EventPK) other).getSpace()))
         && (componentName.equals(((EventPK) other).getComponentName()));
   }
 
@@ -106,6 +115,7 @@ public class EventPK extends WAPrimaryKey implements Serializable {
    * 
    * @return A hash code for this object
    */
+  @Override
   public int hashCode() {
     return toString().hashCode();
   }

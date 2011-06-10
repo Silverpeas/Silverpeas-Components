@@ -55,6 +55,7 @@ import com.silverpeas.gallery.model.OrderRow;
 import com.silverpeas.gallery.model.PhotoDetail;
 import com.silverpeas.gallery.model.PhotoPK;
 import com.silverpeas.gallery.model.PhotoSelection;
+import com.silverpeas.peasUtil.AccessForbiddenException;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
@@ -292,6 +293,19 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         SilverTrace.debug("gallery", "GallerySessionController.addAlbumPath()",
             "root.MSG_GEN_PARAM_VALUE", "photoId = " + photoId);
         getGalleryBm().setPhotoPath(photoId, albums, getComponentId());
+      }
+    } catch (RemoteException e) {
+      throw new GalleryRuntimeException("GallerySessionController.addAlbumPath()",
+          SilverpeasRuntimeException.ERROR, "gallery.MSG_ERR_GENERAL", e);
+    }
+  }
+  
+  public void addPhotoPaths(String photoId, String[] albums) {
+    try {
+      if (albums != null) {
+        SilverTrace.debug("gallery", "GallerySessionController.addAlbumPath()",
+            "root.MSG_GEN_PARAM_VALUE", "photoId = " + photoId);
+        getGalleryBm().addPhotoPaths(photoId, albums, getComponentId());
       }
     } catch (RemoteException e) {
       throw new GalleryRuntimeException("GallerySessionController.addAlbumPath()",
