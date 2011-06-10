@@ -679,8 +679,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         String fileName = getPublicationExportFileName(publication, getLanguage());
         document = new File(FileRepositoryManager.getTemporaryPath() + fileName + "." +
             inFormat.name());
-        FileOutputStream pdfOutput = new FileOutputStream(document);
-        ExportDescriptor descriptor = ExportDescriptor.withOutputStream(pdfOutput).
+        FileOutputStream output = new FileOutputStream(document);
+        ExportDescriptor descriptor = ExportDescriptor.withOutputStream(output).
                 withParameter(EXPORT_FOR_USER, getUserDetail()).
                 withParameter(EXPORT_LANGUAGE, getLanguage()).
                 withParameter(EXPORT_TOPIC, getSessionTopic()).

@@ -35,8 +35,6 @@ import com.stratelia.webactiv.kmelia.model.KmeliaPublication;
 import com.stratelia.webactiv.kmelia.model.TopicDetail;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import java.io.OutputStream;
-import java.util.Arrays;
-import java.util.List;
 import java.util.UUID;
 import org.apache.commons.io.FileUtils;
 import static com.silverpeas.kmelia.export.ODTDocumentBuilder.*;
@@ -87,54 +85,36 @@ public class KmeliaPublicationExporter implements Exporter<KmeliaPublication> {
    * @throws ExportException if an error occurs while exporting the publication.
    */
   @Override
-  public void export(ExportDescriptor descriptor, KmeliaPublication... publications) throws
+  public void export(ExportDescriptor descriptor, KmeliaPublication publication) throws
       ExportException {
-    export(descriptor, Arrays.asList(publications));
-  }
-
-  /**
-   * Only the first publication is taken in charge by this exporter.
-   * @param descriptor the descriptor providing enough information about the export to perform
-   * (document name, user for which the export is, the language in which the export has to be done,
-   * ...)
-   * @param publications the publications to export. If several publications are passed as parameter,
-   * only the first one is taken. If no publications are passed as parameter, nothing is done.
-   * @throws ExportException if an error occurs while exporting the publication.
-   */
-  @Override
-  public void export(ExportDescriptor descriptor,
-      List<KmeliaPublication> publications) throws ExportException {
-    if (!publications.isEmpty()) {
-      KmeliaPublication publication = publications.get(0);
-      OutputStream output = descriptor.getOutputStream();
-      UserDetail user = descriptor.getParameter(EXPORT_FOR_USER);
-      String language = descriptor.getParameter(EXPORT_LANGUAGE);
-      TopicDetail topic = descriptor.getParameter(EXPORT_TOPIC);
-      DocumentFormat targetFormat = DocumentFormat.inFormat(descriptor.getFormat());
-      String documentPath = getTemporaryExportFilePathFor(publication);
-      File odtDocument = null, exportFile = null;
-      try {
-        ODTDocumentBuilder builder = anODTDocumentBuilder().forUser(user).inLanguage(language).
-            inTopic(topic);
-        odtDocument = builder.buildFrom(publication, anODTAt(documentPath));
-        if (targetFormat != odt) {
-          ODTConverter converter = DocumentFormatConverterFactory.getFactory().getODTConverter();
-          exportFile = converter.convert(odtDocument, inFormat(targetFormat));
-        } else {
-          exportFile = odtDocument;
-        }
-        output.write(FileUtils.readFileToByteArray(exportFile));
-        output.flush();
-        output.close();
-      } catch (IOException ex) {
-        throw new ExportException(ex.getMessage(), ex);
-      } finally {
-        if (odtDocument != null && odtDocument.exists()) {
-          odtDocument.delete();
-        }
-        if (exportFile != null && exportFile.exists()) {
-          exportFile.delete();
-        }
+    OutputStream output = descriptor.getOutputStream();
+    UserDetail user = descriptor.getParameter(EXPORT_FOR_USER);
+    String language = descriptor.getParameter(EXPORT_LANGUAGE);
+    TopicDetail topic = descriptor.getParameter(EXPORT_TOPIC);
+    DocumentFormat targetFormat = DocumentFormat.inFormat(descriptor.getFormat());
+    String documentPath = getTemporaryExportFilePathFor(publication);
+    File odtDocument = null, exportFile = null;
+    try {
+      ODTDocumentBuilder builder = anODTDocumentBuilder().forUser(user).inLanguage(language).
+          inTopic(topic);
+      odtDocument = builder.buildFrom(publication, anODTAt(documentPath));
+      if (targetFormat != odt) {
+        ODTConverter converter = DocumentFormatConverterFactory.getFactory().getODTConverter();
+        exportFile = converter.convert(odtDocument, inFormat(targetFormat));
+      } else {
+        exportFile = odtDocument;
+      }
+      output.write(FileUtils.readFileToByteArray(exportFile));
+      output.flush();
+      output.close();
+    } catch (IOException ex) {
+      throw new ExportException(ex.getMessage(), ex);
+    } finally {
+      if (odtDocument != null && odtDocument.exists()) {
+        odtDocument.delete();
+      }
+      if (exportFile != null && exportFile.exists()) {
+        exportFile.delete();
       }
     }
   }
