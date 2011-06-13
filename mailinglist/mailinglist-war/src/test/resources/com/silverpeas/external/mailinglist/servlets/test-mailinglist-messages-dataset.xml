@@ -97,7 +97,6 @@
   <personalization id="10" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1" />
   <personalization id="0" languages="fr," look="Initial" personalwspace="WA3" thesaurusstatus="0" draganddropstatus="1" />
 
-
   <st_userrole id="58" instanceid="45" name="Gestionnaire" rolename="admin" isinherited="0" />
   <st_userrole id="59" instanceid="45" name="Modérateur" rolename="moderator" isinherited="0" />
   <st_userrole id="61" instanceid="45" name="Lecteurs" rolename="reader" isinherited="0" />

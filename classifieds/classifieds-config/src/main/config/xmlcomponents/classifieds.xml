@@ -45,22 +45,22 @@
   <profiles>
     <profile name="admin">
       <label>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
       </label>
       <help>
-        <message lang="fr">Gestionnaire</message>
-        <message lang="en">Administrator</message>
+        <message lang="fr">Gestionnaires</message>
+        <message lang="en">Administrators</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
-        <message lang="fr">Annonceur</message>
-        <message lang="en">Author</message>
+        <message lang="fr">Annonceurs</message>
+        <message lang="en">Authors</message>
       </label>       
       <help>
-        <message lang="fr">Annonceur</message>
-        <message lang="en">Author</message>
+        <message lang="fr">Annonceurs</message>
+        <message lang="en">Authors</message>
       </help>        
     </profile>
   </profiles>
@@ -84,8 +84,8 @@
     <parameter>
       <name>searchFields1</name>
       <label>
-        <message lang="fr">Champs recherche 1</message>
-        <message lang="en">Search field 1</message>
+        <message lang="fr">Champ de catégorisation</message>
+        <message lang="en">categorization field</message>
       </label>
       <order>2</order>
       <mandatory>false</mandatory>
@@ -94,25 +94,25 @@
       <size>25</size>     
       <updatable>always</updatable>      
       <help>
-        <message lang="fr">Premier champs de recherche</message>
-        <message lang="en">First search field</message>
+        <message lang="fr">Sur la page principale, les annonces sont regroupées selon ces catégories</message>
+        <message lang="en">On the main page, classifieds are grouped according to these categories</message>
       </help>
     </parameter>
     <parameter>
       <name>searchFields2</name>
       <label>
-        <message lang="fr">Champs recherche 2</message>
+        <message lang="fr">Second critère</message>
         <message lang="en">Search field 2</message>
       </label>
       <order>3</order>
       <mandatory>false</mandatory>
-      <value>category</value>
+      <value>type</value>
       <type>text</type>
       <size>25</size>     
       <updatable>always</updatable>      
       <help>
-        <message lang="fr">Second champs de recherche</message>
-        <message lang="en">Second search field</message>
+        <message lang="fr">Ce second critère est le second champ dédié aux abonnements</message>
+        <message lang="en">This second criteria is devoted to subscriptions</message>
       </help>
     </parameter>
     <parameter>

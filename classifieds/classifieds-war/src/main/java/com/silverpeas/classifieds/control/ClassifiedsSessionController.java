@@ -63,8 +63,10 @@ import java.util.Map;
 public final class ClassifiedsSessionController extends AbstractComponentSessionController {
 
   private int indexOfFirstItemToDisplay = 0;
-  private Map<String, String> fields1 = createListField(getSearchFields1());
-  private Map<String, String> fields2 = createListField(getSearchFields2());
+  //private Map<String, String> fields1 = createListField(getSearchFields1());
+  //private Map<String, String> fields2 = createListField(getSearchFields2());
+  private Map<String, String> fields1 = null;
+  private Map<String, String> fields2 = null;
   private CommentService commentService = null;
   private ResourcesWrapper resources = null;
 
@@ -100,7 +102,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * Gets the resources associated with this session controller.
    * @return all of the resources (messages, settings, icons, ...)
    */
-  public synchronized  ResourcesWrapper getResources() {
+  public synchronized ResourcesWrapper getResources() {
     if (resources == null) {
       resources = new ResourcesWrapper(getMultilang(), getIcon(), getSettings(), getLanguage());
     }
@@ -119,7 +121,8 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       classified.setCreatorName(getUserDetail(classified.getCreatorId()).getDisplayedName());
       classified.setCreatorEmail(getUserDetail(classified.getCreatorId()).geteMail());
       if (StringUtil.isDefined(classified.getValidatorId())) {
-        classified.setValidatorName((getUserDetail(classified.getValidatorId()).getDisplayedName()));
+        classified
+            .setValidatorName((getUserDetail(classified.getValidatorId()).getDisplayedName()));
       }
     } catch (RemoteException e) {
       throw new ClassifiedsRuntimeException("ClassifedsSessionController.getClassified()",
@@ -426,7 +429,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
             xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
         PublicationTemplateImpl pubTemplate =
             (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-            getComponentId() + ":" + xmlFormShortName, xmlFormName);
+                getComponentId() + ":" + xmlFormShortName, xmlFormName);
         if (pubTemplate != null) {
           RecordSet recordSet = pubTemplate.getRecordSet();
           data = recordSet.getRecord(classifiedId);
@@ -452,6 +455,12 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       subscribe.setUserId(getUserId());
       subscribe.setInstanceId(getComponentId());
       // ajouter les libellés des zones du formulaire
+      if (fields1 == null) {
+        fields1 = createListField(getSearchFields1());
+      }
+      if (fields2 == null) {
+        fields2 = createListField(getSearchFields2());
+      }
       subscribe.setFieldName1(fields1.get(subscribe.getField1()));
       subscribe.setFieldName2(fields2.get(subscribe.getField2()));
       getClassifiedsBm().createSubscribe(subscribe);
@@ -481,31 +490,36 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   private Map<String, String> createListField(String listName) {
     Map<String, String> fields = Collections.synchronizedMap(new HashMap<String, String>());
-    // création de la hashtable (key,value)
-    String xmlFormName = getXMLFormName();
-    if (StringUtil.isDefined(xmlFormName)) {
-      String xmlFormShortName =
-          xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
-      PublicationTemplateImpl pubTemplate;
-      try {
-        pubTemplate =
-            (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
-            getComponentId() + ":" + xmlFormShortName, xmlFormName);
-        String key =
-            pubTemplate.getRecordTemplate().getFieldTemplate(listName).getParameters(
-            getLanguage()).get("keys");
-        String value =
-            pubTemplate.getRecordTemplate().getFieldTemplate(listName).getParameters(
-            getLanguage()).get("values");
-        String[] keys = key.split("##");
-        String[] values = value.split("##");
-        for (int i = 0; i < keys.length; i++) {
-          fields.put(keys[i], values[i]);
+    if (StringUtil.isDefined(listName)) {  
+      // création de la hashtable (key,value)
+      String xmlFormName = getXMLFormName();
+      if (StringUtil.isDefined(xmlFormName)) {
+        String xmlFormShortName =
+            xmlFormName.substring(xmlFormName.indexOf("/") + 1, xmlFormName.indexOf("."));
+        PublicationTemplateImpl pubTemplate;
+        try {
+          pubTemplate =
+              (PublicationTemplateImpl) getPublicationTemplateManager().getPublicationTemplate(
+                  getComponentId() + ":" + xmlFormShortName, xmlFormName);
+          String key =
+              pubTemplate.getRecordTemplate().getFieldTemplate(listName).getParameters(
+                  getLanguage()).get("keys");
+          String value =
+              pubTemplate.getRecordTemplate().getFieldTemplate(listName).getParameters(
+                  getLanguage()).get("values");
+          String[] keys = key.split("##");
+          String[] values = value.split("##");
+          for (int i = 0; i < keys.length; i++) {
+            fields.put(keys[i], values[i]);
+          }
+        } catch (Exception e) {
+          // ERREUR : le champ de recherche renseigné n'est pas une liste déroulante
+          throw new ClassifiedsRuntimeException("ClassifedsSessionController.createListField()",
+              SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
         }
-      } catch (Exception e) {
-        throw new ClassifiedsRuntimeException("ClassifedsSessionController.createListField()",
-            SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
       }
+    } else {
+      // ERREUR : le champs de recherche n'est pas renseigné
     }
     return fields;
   }
@@ -520,6 +534,12 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       subscribes = getClassifiedsBm().getSubscribesByUser(getComponentId(), getUserId());
 
       Iterator<Subscribe> it = subscribes.iterator();
+      if (fields1 == null) {
+        fields1 = createListField(getSearchFields1());
+      }
+      if (fields2 == null) {
+        fields2 = createListField(getSearchFields2());
+      }
       while (it.hasNext()) {
         Subscribe subscribe = it.next();
         // ajout des libellés
@@ -558,7 +578,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
     try {
       ClassifiedsBmHome classifiedsBmHome =
           (ClassifiedsBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.CLASSIFIEDSBM_EJBHOME,
-          ClassifiedsBmHome.class);
+              ClassifiedsBmHome.class);
       classifiedsBm = classifiedsBmHome.create();
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException("ClassifedsSessionController.getClassifiedsBm()",
