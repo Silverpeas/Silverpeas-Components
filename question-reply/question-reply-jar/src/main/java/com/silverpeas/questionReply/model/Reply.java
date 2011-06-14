@@ -140,8 +140,9 @@ public class Reply extends SilverpeasBean {
 
   public String loadWysiwygContent() {
     try {
-      return WysiwygController.load(getPK().getInstanceId(), getPK().getId(),
+       this.wysiwygContent = WysiwygController.load(getPK().getInstanceId(), getPK().getId(),
           I18NHelper.defaultLanguage);
+       return  this.wysiwygContent;
     } catch (WysiwygException e) {
       return this.wysiwygContent;
     }

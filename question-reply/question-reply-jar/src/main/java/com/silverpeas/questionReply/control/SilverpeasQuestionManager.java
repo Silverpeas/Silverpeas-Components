@@ -691,10 +691,10 @@ public class SilverpeasQuestionManager implements QuestionManager {
     try {
       IdPK pk = new IdPK();
       List<Reply> replies = new ArrayList<Reply>(replyDao.findByWhereClause(pk,
-          " questionId = " + String.valueOf(
-          questionId)));
+          " questionId = " + String.valueOf(questionId)));
       for (Reply reply : replies) {
         reply.getPK().setComponentName(instanceId);
+        reply.loadWysiwygContent();
       }
       return replies;
     } catch (PersistenceException e) {
@@ -714,7 +714,8 @@ public class SilverpeasQuestionManager implements QuestionManager {
       List<Reply> replies = new ArrayList<Reply>(replyDao.findByWhereClause(pk,
           " publicReply = 1 and questionId = " + String.valueOf(questionId)));
       for (Reply reply : replies) {
-        reply.getPK().setComponentName(instanceId);
+        reply.getPK().setComponentName(instanceId);        
+        reply.loadWysiwygContent();
       }
       return replies;
     } catch (PersistenceException e) {
@@ -735,6 +736,7 @@ public class SilverpeasQuestionManager implements QuestionManager {
           " privateReply = 1 and questionId = " + String.valueOf(questionId)));
       for (Reply reply : replies) {
         reply.getPK().setComponentName(instanceId);
+        reply.loadWysiwygContent();
       }
       return replies;
     } catch (PersistenceException e) {
@@ -766,7 +768,9 @@ public class SilverpeasQuestionManager implements QuestionManager {
     try {
       IdPK pk = new IdPK();
       pk.setIdAsLong(replyId);
-      return replyDao.findByPrimaryKey(pk);
+      Reply reply = replyDao.findByPrimaryKey(pk);
+      reply.loadWysiwygContent();
+      return reply;
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getReply",
           SilverpeasException.ERROR, "questionReply.EX_CANT_GET_REPLY", "", e);
@@ -849,11 +853,11 @@ public class SilverpeasQuestionManager implements QuestionManager {
     List<Question> allQuestions = getQuestions(instanceId);
     List<Question> questions = new ArrayList<Question>(allQuestions.size());
     for (Question question : allQuestions) {
-      if (!StringUtil.isDefined(question.getCategoryId()) && categoryId == null) {
+      if (!StringUtil.isDefined(question.getCategoryId()) && !StringUtil.isDefined(categoryId)) {
         // la question est sans catégorie
         Question fullQuestion = getQuestionAndReplies(Long.parseLong(question.getPK().getId()));
         questions.add(fullQuestion);
-      } else if (categoryId != null && StringUtil.isDefined(question.getCategoryId())) {
+      } else if (StringUtil.isDefined(categoryId) && StringUtil.isDefined(question.getCategoryId())) {
         if (question.getCategoryId().equals(categoryId)) {
           Question fullQuestion = getQuestionAndReplies(Long.parseLong(question.getPK().getId()));
           questions.add(fullQuestion);

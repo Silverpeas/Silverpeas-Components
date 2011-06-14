@@ -108,8 +108,7 @@ public class ReplyGettingTest extends RESTWebServiceTest {
     when(mockedQuestionManager.getAllReplies(3L, COMPONENT_INSTANCE_ID)).thenReturn(replies);
     questionManager.setQuestionManager(mockedQuestionManager);
     ReplyEntity[] entities = resource.path(RESOURCE_PATH + "/question/3").header(HTTP_SESSIONKEY,
-        sessionKey).
-        accept(MediaType.APPLICATION_JSON).get(ReplyEntity[].class);
+        sessionKey).accept(MediaType.APPLICATION_JSON).get(ReplyEntity[].class);
     assertNotNull(entities);
     assertThat(entities.length, is(2));
     assertThat(entities[0], ReplyEntityMatcher.matches(replies.get(0)));
@@ -178,6 +177,7 @@ public class ReplyGettingTest extends RESTWebServiceTest {
     reply.setTitle("Public reply");
     reply.writeWysiwygContent("This reply content should be visible for all");
     reply.setCreationDate("2011/06/03");
+    reply.setContent("");
     reply.setPrivateReply(0);
     reply.setPublicReply(1);
     replies.add(reply);

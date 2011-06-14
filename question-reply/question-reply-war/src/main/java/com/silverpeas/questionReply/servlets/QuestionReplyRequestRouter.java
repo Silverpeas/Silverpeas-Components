@@ -353,7 +353,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("EffectiveCreateR")) {
         int publicReply = Integer.parseInt(request.getParameter("publicReply")); // 0 = private, 1 = public
         scc.setNewReplyContent(request.getParameter("title"), request.getParameter("content"),
-            publicReply, 1);
+            publicReply, publicReply == 1 ? 0 :1);
         scc.saveNewReply();
 
         if (scc.getCurrentQuestion() != null) {
