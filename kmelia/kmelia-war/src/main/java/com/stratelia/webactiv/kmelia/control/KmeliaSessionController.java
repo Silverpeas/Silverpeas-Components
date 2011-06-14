@@ -40,13 +40,11 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 import javax.ejb.EJBObject;
 import javax.ejb.RemoveException;
@@ -186,6 +184,11 @@ import static com.silverpeas.kmelia.export.KmeliaPublicationExporter.*;
 public class KmeliaSessionController extends AbstractComponentSessionController implements
         ExportFileNameProducer {
 
+  /**
+   * The different export formats the KmeliaPublicationExporter should support.
+   */
+  private static final String EXPORT_FORMATS = "kmelia.export.formats";
+
   /* EJBs used by sessionController */
   private ThumbnailService thumbnailService = null;
   private SearchEngineBm searchEngineEjb = null;
@@ -273,9 +276,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (StringUtil.getBooleanValue(getSettings().getString("massiveDragAndDropAllowed"))) {
       isDragAndDropEnableByUser = isDragAndDropEnableByUser();
     }
-    componentManageable = GeneralPropertiesManager.getGeneralResourceLocator().getBoolean("AdminFromComponentEnable", true);
+    componentManageable = GeneralPropertiesManager.getGeneralResourceLocator().getBoolean(
+            "AdminFromComponentEnable", true);
     if (componentManageable) {
-      componentManageable = getOrganizationController().isComponentManageable(getComponentId(), getUserId());
+      componentManageable = getOrganizationController().isComponentManageable(getComponentId(),
+              getUserId());
     }
   }
 
@@ -667,18 +672,24 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    * @return the generated document as a File instance.
    */
   public File generateDocument(final DocumentFormat inFormat, String fromPubId) {
-    SilverTrace.info("kmelia", "KmeliaSessionControl.generatePdf", "root.MSG_ENTRY_METHOD");
+    SilverTrace.info("kmelia", "KmeliaSessionControl.KmeliaSessionController.generateDocument()",
+            "root.MSG_ENTRY_METHOD");
+    if (!isFormatSupported(inFormat.name())) {
+      throw new KmeliaRuntimeException("kmelia", SilverTrace.TRACE_LEVEL_ERROR,
+              "kmelia.EX_EXPORT_FORMAT_NOT_SUPPORTED");
+    }
     File document = null;
     if (fromPubId != null) {
       try {
-        KmeliaPublication publication = KmeliaPublication.aKmeliaPublicationWithPk(new PublicationPK(
-              fromPubId, getComponentId()));
+        KmeliaPublication publication =
+                KmeliaPublication.aKmeliaPublicationWithPk(new PublicationPK(
+                fromPubId, getComponentId()));
         if (isVersionControlled()) {
           publication.versioned();
         }
         String fileName = getPublicationExportFileName(publication, getLanguage());
-        document = new File(FileRepositoryManager.getTemporaryPath() + fileName + "." +
-            inFormat.name());
+        document = new File(FileRepositoryManager.getTemporaryPath() + fileName + "." + inFormat.
+                name());
         FileOutputStream output = new FileOutputStream(document);
         ExportDescriptor descriptor = ExportDescriptor.withOutputStream(output).
                 withParameter(EXPORT_FOR_USER, getUserDetail()).
@@ -691,8 +702,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         if (document != null) {
           document.delete();
         }
-        throw new KmeliaRuntimeException("KmeliaSessionController.generatePdf()",
-            SilverpeasRuntimeException.ERROR, ex.getMessage(), ex);
+        throw new KmeliaRuntimeException("KmeliaSessionController.generateDocument()",
+                SilverpeasRuntimeException.ERROR, "kmelia.EX_CANT_EXPORT_PUBLICATION", ex);
       }
     }
     return document;
@@ -825,7 +836,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
       setSessionTreeview(treeview);
     }
     if (displayNbPublis()) {
-      List<NodeDetail> children = (List<NodeDetail>) currentTopic.getNodeDetail().getChildrenDetails();
+      List<NodeDetail> children =
+              (List<NodeDetail>) currentTopic.getNodeDetail().getChildrenDetails();
       for (NodeDetail node :
               children) {
         if (node != null) {
@@ -2319,9 +2331,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     PairObject[] hostPath = new PairObject[1];
     hostPath[0] = new PairObject(getString("kmelia.SelectValidator"), "");
     String hostUrl =
-            m_context + URLManager.getURL("useless", getComponentId()) + "SetValidator?PubId=" + pubId;
+            m_context + URLManager.getURL("useless", getComponentId()) + "SetValidator?PubId="
+            + pubId;
     String cancelUrl =
-            m_context + URLManager.getURL("useless", getComponentId()) + "SetValidator?PubId=" + pubId;
+            m_context + URLManager.getURL("useless", getComponentId()) + "SetValidator?PubId="
+            + pubId;
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -2424,16 +2438,16 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public boolean isVersionControlled() {
     String strVersionControlled = this.getComponentParameterValue("versionControl");
-    return ((strVersionControlled != null) && !("").equals(strVersionControlled) && !("no").equals(strVersionControlled.
-            toLowerCase()));
+    return ((strVersionControlled != null) && !("").equals(strVersionControlled)
+            && !("no").equals(strVersionControlled.toLowerCase()));
   }
 
   public boolean isVersionControlled(String anotherComponentId) {
     String strVersionControlled =
             getOrganizationController().getComponentParameterValue(anotherComponentId,
             "versionControl");
-    return ((strVersionControlled != null) && !("").equals(strVersionControlled) && !("no").equals(strVersionControlled.
-            toLowerCase()));
+    return ((strVersionControlled != null) && !("").equals(strVersionControlled)
+            && !("no").equals(strVersionControlled.toLowerCase()));
   }
 
   /**
@@ -2476,10 +2490,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public boolean isValidationTabVisible() {
     boolean tabVisible =
-            PublicationDetail.TO_VALIDATE.equalsIgnoreCase(getSessionPubliOrClone().getDetail().getStatus());
+            PublicationDetail.TO_VALIDATE.equalsIgnoreCase(getSessionPubliOrClone().getDetail().
+            getStatus());
 
     return tabVisible
-            && (getValidationType() == KmeliaHelper.VALIDATION_COLLEGIATE || getValidationType() == KmeliaHelper.VALIDATION_TARGET_N);
+            && (getValidationType() == KmeliaHelper.VALIDATION_COLLEGIATE || getValidationType()
+            == KmeliaHelper.VALIDATION_TARGET_N);
   }
 
   public int getValidationType() {
@@ -3626,7 +3642,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
                     + xmlFormShortName, xmlFormShortName + ".xml");
 
             // Paste images
-            Hashtable<String, String> imageIds = AttachmentController.
+            Map<String, String> imageIds = AttachmentController.
                     copyAttachmentByCustomerPKAndContext(fromPubPK, fromPubPK, "XMLFormImages");
 
             if (imageIds != null) {
@@ -3640,8 +3656,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
             // get xmlContent to paste
             PublicationTemplate pubTemplateFrom = getPublicationTemplateManager().
                     getPublicationTemplate(fromComponentId + ":" + xmlFormShortName);
-            IdentifiedRecordTemplate recordTemplateFrom = (IdentifiedRecordTemplate) pubTemplateFrom.
-                    getRecordSet().getRecordTemplate();
+            IdentifiedRecordTemplate recordTemplateFrom =
+                    (IdentifiedRecordTemplate) pubTemplateFrom.getRecordSet().getRecordTemplate();
 
             PublicationTemplate pubTemplate = getPublicationTemplateManager().getPublicationTemplate(
                     getComponentId() + ":" + xmlFormShortName);
@@ -4145,7 +4161,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
         }
       }
     } else {
-      Vector<AttachmentDetail> attachments = AttachmentController.searchAttachmentByPKAndContext(
+      List<AttachmentDetail> attachments = AttachmentController.searchAttachmentByPKAndContext(
               pubPK, "Images");
       if (!attachments.isEmpty()) {
         AttachmentDetail attachment = attachments.get(0);
@@ -4309,30 +4325,36 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public File exportPublication() {
+    if (!isFormatSupported("zip")) {
+      throw new KmeliaRuntimeException("KmeliaSessionController.exportPublication()",
+              SilverpeasRuntimeException.ERROR, "kmelia.EX_EXPORT_FORMAT_NOT_SUPPORTED");
+    }
     PublicationPK pubPK = getSessionPublication().getDetail().getPK();
     File pdf = null;
     try {
-      // generate from the publication a document in PDF
-      pdf = generateDocument(DocumentFormat.pdf, pubPK.getId());
-      String pdfWithoutExtension = FilenameUtils.removeExtension(pdf.getName());
       // create subdir to zip
       String subdir = "ExportPubli_" + pubPK.getId() + "_" + new Date().getTime();
+      String fileName = getPublicationExportFileName(getSessionPublication(), getLanguage());
       String subDirPath =
-              FileRepositoryManager.getTemporaryPath() + subdir + File.separator + pdfWithoutExtension;
+              FileRepositoryManager.getTemporaryPath() + subdir + File.separator + fileName;
       FileFolderManager.createFolder(subDirPath);
-      // copy pdf into zip
-      FileRepositoryManager.copyFile(pdf.getPath(), subDirPath + File.separator + pdf.getName());
+      // generate from the publication a document in PDF
+      if (isFormatSupported(DocumentFormat.pdf.name())) {
+        pdf = generateDocument(DocumentFormat.pdf, pubPK.getId());
+        // copy pdf into zip
+        FileRepositoryManager.copyFile(pdf.getPath(), subDirPath + File.separator + pdf.getName());
+      }
       // copy files
       new AttachmentImportExport().getAttachments(pubPK, subDirPath, "useless", null);
       new VersioningImportExport().exportDocuments(pubPK, subDirPath, "useless", null);
-      String zipFileName = FileRepositoryManager.getTemporaryPath() + pdfWithoutExtension + ".zip";
+      String zipFileName = FileRepositoryManager.getTemporaryPath() + fileName + ".zip";
       // zip PDF and files
       ZipManager.compressPathToZip(subDirPath, zipFileName);
 
       return new File(zipFileName);
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaSessionController.exportPublication()",
-              SilverpeasRuntimeException.ERROR, "kmelia.CANT_EXPORT_PUBLICATION", e);
+              SilverpeasRuntimeException.ERROR, "kmelia.EX_CANT_EXPORT_PUBLICATION", e);
     } finally {
       if (pdf != null) {
         pdf.delete();
@@ -4750,7 +4772,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     String lang = getLanguage();
     String pubId = publication.getPk().getId();
     StringBuilder fileName = new StringBuilder(250);
-    
+
     fileName.append(getUserDetail().getLogin()).append('-');
 
     // add space path to filename
@@ -4779,7 +4801,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     fileName.append(publication.getPk().getId());
     return StringUtil.toAcceptableFilename(fileName.toString());
   }
-  
+
   public void removePublicationContent() throws RemoteException {
     KmeliaPublication publication = getSessionPubliOrClone();
     PublicationPK pubPK = publication.getPk();
@@ -4791,5 +4813,28 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public boolean isComponentManageable() {
     return componentManageable;
   }
-  
+
+  /**
+   * Gets the export formats that are supported by the current Kmelia component instance.
+   * As some of the export formats can be deactivated in the Kmelia settings
+   * file, this method returns all the formats that are currently active.
+   * @return a list of export formats.
+   */
+  public List<String> getSupportedFormats() {
+    String exportFormats = getSettings().getString(EXPORT_FORMATS, "");
+    if (exportFormats.trim().isEmpty()) {
+      return new ArrayList<String>();
+    }
+    return Arrays.asList(exportFormats.split(" "));
+  }
+
+  /**
+   * Is the specified export format is supported by the Kmelia component instance?
+   * @param format a recognized export format.
+   * @return true if the specified format is currently supported for the publication export,
+   * false otherwise.
+   */
+  public boolean isFormatSupported(String format) {
+    return getSupportedFormats().contains(format);
+  }
 }

@@ -119,6 +119,7 @@
   String screenMessage = "";
   String user_id = kmeliaScc.getUserId();
   UserDetail currentUser = kmeliaScc.getUserDetail();
+  List<String> exportFormats = kmeliaScc.getSupportedFormats();
 
   //Vrai si le user connecte est le createur de cette publication ou si il est admin
   boolean isOwner = false;
@@ -434,7 +435,7 @@
         }
         //operationPane.addOperation(exportSrc, resources.getString("kmelia.DownloadPublication"),
         //    "javaScript:zipPublication()");
-        if (!toolboxMode) {
+        if (!toolboxMode && !exportFormats.isEmpty()) {
           operationPane.addOperation(pdfSrc, resources.getString("kmelia.ExportPublication"),
               "javascript:exportPublication()");
         }
@@ -747,10 +748,16 @@
         <form id="exportForm" action="<c:url value='/exportPublication'/>">
           <fieldset>
             <legend><%=resources.getString("kmelia.format")%></legend>
-            <input type="radio" name="Format" value="zip" class="text ui-widget-content ui-corner-all">ZIP</input>
-            <input type="radio" checked="checked" name="Format" value="pdf" class="text ui-widget-content ui-corner-all">PDF</input>
-            <input type="radio" name="Format" value="odt" class="text ui-widget-content ui-corner-all">OpenDocument Text</input>
-            <input type="radio" name="Format" value="doc" class="text ui-widget-content ui-corner-all">MS-Word</input>
+            <%
+            int i = 0;
+            for(String format: exportFormats) {
+              String checked = "";
+              if (i++ == 0) {
+                checked = "checked='checked'";
+              }
+            %>
+            <input type="radio" name="Format" value="<%=format %>" <%=checked %> class="text ui-widget-content ui-corner-all"><%=resources.getString("kmelia.export.format." + format)%></input>
+            <% } %>
             <input type="hidden" name="PubId" value="<%=id%>"/>
             <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
           </fieldset>

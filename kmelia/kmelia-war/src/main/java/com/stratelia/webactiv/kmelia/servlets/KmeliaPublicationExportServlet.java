@@ -15,6 +15,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -23,8 +25,7 @@ import static com.silverpeas.util.StringUtil.*;
 import static com.silverpeas.converter.DocumentFormat.*;
 
 /**
- *
- * @author ehugonnet
+ * An HTTP servlet dedicated to the export of Kmelia publications.
  */
 public class KmeliaPublicationExportServlet extends HttpServlet {
 
@@ -45,26 +46,35 @@ public class KmeliaPublicationExportServlet extends HttpServlet {
    */
   @Override
   protected void service(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException,
-      IOException {
+          throws ServletException, IOException {
     String format = request.getParameter(DOCUMENT_FORMAT_PARAMETER);
-    if (!isDefined(format) || ZIP_EXPORT.equals(format)) {
-      exportInArchive(request, response);
-    } else {
-      exportInDocument(request, response);
+    if (!isDefined(format)) {
+      format = ZIP_EXPORT;
+    }
+    try {
+      if (ZIP_EXPORT.equals(format)) {
+        exportInArchive(request, response);
+      } else {
+        exportInDocument(request, response);
+      }
+    } catch (Exception ex) {
+      Logger.getLogger(getClass().getName()).log(Level.SEVERE, ex.getMessage(), ex);
+      request.setAttribute("javax.servlet.jsp.jspException", ex);
+      getServletConfig().getServletContext().getRequestDispatcher(
+              "/admin/jsp/errorpageMain.jsp").forward(request, response);
     }
   }
 
   private void exportInArchive(final HttpServletRequest request,
-      final HttpServletResponse response) throws IOException {
+          final HttpServletResponse response) throws IOException {
     response.setContentType(MimeTypes.ARCHIVE_MIME_TYPE);
     String componentId = request.getParameter("ComponentId");
     KmeliaSessionController kmelia = (KmeliaSessionController) request.getSession().getAttribute(
-        "Silverpeas_kmelia_" + componentId);
-    OutputStream out = response.getOutputStream();
+            "Silverpeas_kmelia_" + componentId);
     File exportFile = kmelia.exportPublication();
     String fileName = ClientBrowserUtil.rfc2047EncodeFilename(request, exportFile.getName());
     InputStream in = new FileInputStream(exportFile);
+    OutputStream out = response.getOutputStream();
     try {
       response.setContentLength(Long.valueOf(exportFile.length()).intValue());
       response.setHeader("Content-Disposition", "inline; filename=\"" + fileName + "\"");
@@ -76,18 +86,18 @@ public class KmeliaPublicationExportServlet extends HttpServlet {
   }
 
   private void exportInDocument(final HttpServletRequest request,
-      final HttpServletResponse response) throws IOException {
+          final HttpServletResponse response) throws IOException {
     String fromPublicationId = request.getParameter(PUBLICATION_ID_PARAMETER);
     DocumentFormat format = inFormat(request.getParameter(DOCUMENT_FORMAT_PARAMETER));
     String componentId = request.getParameter(COMPONENT_INSTANCE_ID_PARAMETER);
     KmeliaSessionController kmelia = (KmeliaSessionController) request.getSession().getAttribute(
-        "Silverpeas_kmelia_" + componentId);
-    OutputStream out = response.getOutputStream();
+            "Silverpeas_kmelia_" + componentId);
     File generatedDocument = kmelia.generateDocument(inFormat(format), fromPublicationId);
+    InputStream in = new FileInputStream(generatedDocument);
+    OutputStream out = response.getOutputStream();
     try {
-      FileInputStream in = new FileInputStream(generatedDocument);
       String documentName = ClientBrowserUtil.rfc2047EncodeFilename(request, generatedDocument.
-          getName());
+              getName());
       response.setHeader("Content-Disposition", "inline; filename=\"" + documentName + "\"");
       response.setContentType(format.getMimeType());
       response.setContentLength(Long.valueOf(generatedDocument.length()).intValue());
@@ -96,6 +106,8 @@ public class KmeliaPublicationExportServlet extends HttpServlet {
       if (generatedDocument != null) {
         generatedDocument.delete();
       }
+      Closeables.closeQuietly(in);
+      Closeables.closeQuietly(out);
     }
   }
 }
