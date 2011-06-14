@@ -26,6 +26,7 @@ package com.stratelia.webactiv.almanach.servlets;
 import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.Exporter;
 import com.silverpeas.export.ExporterFactory;
+import com.silverpeas.export.ical.ExportableCalendar;
 import com.stratelia.webactiv.almanach.control.CalendarEventEncoder;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBm;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBmHome;
@@ -95,8 +96,8 @@ public class AlmanachICSProducer {
         List<CalendarEvent> allEvents = encoder.encode(allEventDetails);
 
         ExporterFactory exporterFactory = ExporterFactory.getFactory();
-        Exporter<CalendarEvent> iCalExporter = exporterFactory.getICalExporter();
-        iCalExporter.export(withWriter(writer), allEvents);
+        Exporter<ExportableCalendar> iCalExporter = exporterFactory.getICalExporter();
+        iCalExporter.export(withWriter(writer), ExportableCalendar.with(allEvents));
       } catch (Exception ex) {
         throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
       }
