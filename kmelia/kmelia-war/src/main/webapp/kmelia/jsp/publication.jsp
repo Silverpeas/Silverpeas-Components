@@ -120,6 +120,7 @@
   String user_id = kmeliaScc.getUserId();
   UserDetail currentUser = kmeliaScc.getUserDetail();
   List<String> exportFormats = kmeliaScc.getSupportedFormats();
+  List<String> availableFormats = kmeliaScc.getAvailableFormats();
 
   //Vrai si le user connecte est le createur de cette publication ou si il est admin
   boolean isOwner = false;
@@ -749,14 +750,19 @@
           <fieldset>
             <legend><%=resources.getString("kmelia.format")%></legend>
             <%
-            int i = 0;
-            for(String format: exportFormats) {
+            boolean selectedFormat = false;
+            for(String format: availableFormats) {
               String checked = "";
-              if (i++ == 0) {
+              String disabled = "";
+              if (!exportFormats.contains(format)) {
+                disabled = "disabled='disabled'";
+              }
+              if (!selectedFormat && disabled.isEmpty()) {
                 checked = "checked='checked'";
+                selectedFormat = true;
               }
             %>
-            <input type="radio" name="Format" value="<%=format %>" <%=checked %> class="text ui-widget-content ui-corner-all"><%=resources.getString("kmelia.export.format." + format)%></input>
+            <input type="radio" name="Format" value="<%=format %>" <%=checked %> <%=disabled %> ><%=resources.getString("kmelia.export.format." + format)%></input>
             <% } %>
             <input type="hidden" name="PubId" value="<%=id%>"/>
             <input type="hidden" name="ComponentId" value="<%=componentId%>"/>

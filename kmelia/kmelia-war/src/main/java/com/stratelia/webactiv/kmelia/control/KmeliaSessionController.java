@@ -187,7 +187,11 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   /**
    * The different export formats the KmeliaPublicationExporter should support.
    */
-  private static final String EXPORT_FORMATS = "kmelia.export.formats";
+  private static final String EXPORT_FORMATS = "kmelia.export.formats.active";
+  /**
+   * All the formats that are available for the export of publications.
+   */
+  private static final String[] AVAILABLE_EXPORT_FORMATS = {"zip", "pdf", "odt", "doc"};
 
   /* EJBs used by sessionController */
   private ThumbnailService thumbnailService = null;
@@ -3642,8 +3646,9 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
                     + xmlFormShortName, xmlFormShortName + ".xml");
 
             // Paste images
-            Map<String, String> imageIds = AttachmentController.
-                    copyAttachmentByCustomerPKAndContext(fromPubPK, fromPubPK, "XMLFormImages");
+            Map<String, String> imageIds =
+                    AttachmentController.copyAttachmentByCustomerPKAndContext(fromPubPK, fromPubPK,
+                    "XMLFormImages");
 
             if (imageIds != null) {
               fileIds.putAll(imageIds);
@@ -4815,6 +4820,14 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   /**
+   * Gets all available export formats.
+   * @return a list of export formats Silverpeas supports for export.
+   */
+  public List<String> getAvailableFormats() {
+    return Arrays.asList(AVAILABLE_EXPORT_FORMATS);
+  }
+
+  /**
    * Gets the export formats that are supported by the current Kmelia component instance.
    * As some of the export formats can be deactivated in the Kmelia settings
    * file, this method returns all the formats that are currently active.
@@ -4822,10 +4835,18 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   public List<String> getSupportedFormats() {
     String exportFormats = getSettings().getString(EXPORT_FORMATS, "");
-    if (exportFormats.trim().isEmpty()) {
-      return new ArrayList<String>();
+    List<String> supportedFormats = new ArrayList<String>();
+    if (!exportFormats.trim().isEmpty()) {
+      List<String> availableFormats = getAvailableFormats();
+      for (String exportFormat : exportFormats.trim().split(" ")) {
+        if (!availableFormats.contains(exportFormat)) {
+          throw new KmeliaRuntimeException("KmeliaSessionController.getSupportedFormats()",
+                  SilverTrace.TRACE_LEVEL_ERROR, "kmelia.EX_UNKNOWN_EXPORT_FORMAT");
+        }
+        supportedFormats.add(exportFormat);
+      }
     }
-    return Arrays.asList(exportFormats.split(" "));
+    return supportedFormats;
   }
 
   /**
