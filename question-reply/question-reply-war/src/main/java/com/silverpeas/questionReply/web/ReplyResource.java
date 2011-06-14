@@ -80,7 +80,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
       long questionId = Long.parseLong(onQuestionId);
       List<Reply> replies = QuestionManagerFactory.getQuestionManager().getAllReplies(questionId,
           componentId);
-      return asWebEntities(extractVisibleReplies(questionId, replies));
+      return asWebEntities(extractVisibleReplies(questionId, replies), getUserProfile());
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
@@ -94,7 +94,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
     try {
       List<Reply> replies = QuestionManagerFactory.getQuestionManager().getQuestionPublicReplies(
           Long.parseLong(onQuestionId), componentId);
-      return asWebEntities(replies);
+      return asWebEntities(replies, getUserProfile());
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
@@ -107,14 +107,15 @@ public class ReplyResource extends QuestionRelyBaseWebService {
   /**
    * Converts the specified list of replies into their corresponding web entities.
    * @param replies the replies to convert.
+   * @param profile the profile of the user.
    * @return an array with the corresponding reply entities.
    */
-  protected ReplyEntity[] asWebEntities(List<Reply> replies) {
+  protected ReplyEntity[] asWebEntities(List<Reply> replies, SilverpeasRole profile) {
     ReplyEntity[] entities = new ReplyEntity[replies.size()];
     for (int i = 0; i < replies.size(); i++) {
       Reply reply = replies.get(i);
       URI commentURI = getUriInfo().getRequestUriBuilder().path(reply.getPK().getId()).build();
-      entities[i] = asWebEntity(reply, identifiedBy(commentURI));
+      entities[i] = asWebEntity(reply, identifiedBy(commentURI), profile);
     }
     return entities;
   }
@@ -123,10 +124,11 @@ public class ReplyResource extends QuestionRelyBaseWebService {
    * Converts the reply into its corresponding web entity.
    * @param reply the reply to convert.
    * @param replyURI the URI of the reply.
+   * @param profile the profile of the user.
    * @return the corresponding reply entity.
    */
-  protected ReplyEntity asWebEntity(final Reply reply, URI replyURI) {
-    ReplyEntity entity = ReplyEntity.fromReply(reply).withURI(replyURI);
+  protected ReplyEntity asWebEntity(final Reply reply, URI replyURI, SilverpeasRole profile) {
+    ReplyEntity entity = ReplyEntity.fromReply(reply).withURI(replyURI).withProfile(profile);
     AuthorEntity author = AuthorEntity.fromUser(reply.readAuthor(controller));
     author.setAvatar(getHttpServletContext().getContextPath() + author.getAvatar());
     return entity;
@@ -151,6 +153,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
     }
     return true;
   }
+  
 
   List<Reply> extractVisibleReplies(long questionId, List<Reply> replies) throws
       QuestionReplyException {
@@ -166,4 +169,5 @@ public class ReplyResource extends QuestionRelyBaseWebService {
     }
     return visibleReplies;
   }
+  
 }

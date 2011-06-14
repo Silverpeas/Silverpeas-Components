@@ -77,9 +77,12 @@ public class QuestionEntity implements Exposable {
   private boolean updatable = true;
   @XmlElement()
   private boolean reopenable = false;
+  @XmlElement()
+  private boolean replyable = false;
+  @XmlElement()
+  private boolean closeable = false;
   @XmlElement(required = true)
   private AuthorEntity creator;
-
 
   protected QuestionEntity() {
   }
@@ -188,15 +191,15 @@ public class QuestionEntity implements Exposable {
       return false;
     }
     if ((this.creatorId == null) ? (other.creatorId != null) : !this.creatorId.equals(
-        other.creatorId)) {
+            other.creatorId)) {
       return false;
     }
     if ((this.creatorName == null) ? (other.creatorName != null) : !this.creatorName.equals(
-        other.creatorName)) {
+            other.creatorName)) {
       return false;
     }
     if ((this.creationDate == null) ? (other.creationDate != null) : !this.creationDate.equals(
-        other.creationDate)) {
+            other.creationDate)) {
       return false;
     }
     if (this.status != other.status) {
@@ -212,11 +215,11 @@ public class QuestionEntity implements Exposable {
       return false;
     }
     if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId.equals(
-        other.instanceId)) {
+            other.instanceId)) {
       return false;
     }
     if ((this.categoryId == null) ? (other.categoryId != null) : !this.categoryId.equals(
-        other.categoryId)) {
+            other.categoryId)) {
       return false;
     }
     return true;
@@ -293,6 +296,9 @@ public class QuestionEntity implements Exposable {
 
   public QuestionEntity withUser(UserDetail userDetail, SilverpeasRole profile) {
     this.updatable = isQuestionUpdatable(userDetail, profile);
+    this.reopenable = isQuestionReopenable(userDetail, profile);
+    this.replyable = isQuestionReplyable(userDetail, profile);
+    this.closeable = isQuestionCloseable(userDetail, profile);
     return this;
   }
 
@@ -311,6 +317,16 @@ public class QuestionEntity implements Exposable {
     return questionUpdatable;
   }
 
+  boolean isQuestionCloseable(UserDetail userDetail, SilverpeasRole profile) {
+    return publisher != profile && this.getStatus() == Question.WAITING && isQuestionUpdatable(
+            userDetail, profile);
+  }
+
+  boolean isQuestionReplyable(UserDetail userDetail, SilverpeasRole profile) {
+    return publisher != profile && this.getStatus() != Question.CLOSED && isQuestionUpdatable(
+            userDetail, profile);
+  }
+
   boolean isQuestionReopenable(UserDetail userDetail, SilverpeasRole profile) {
     return this.getStatus() == Question.CLOSED && profile == admin;
   }
@@ -318,10 +334,10 @@ public class QuestionEntity implements Exposable {
   @Override
   public String toString() {
     return "QuestionEntity{" + "uri=" + uri + ", id=" + id + ", title=" + title + ", content="
-        + content + ", creatorId=" + creatorId + ", creatorName=" + creatorName + ", creationDate="
-        + creationDate + ", status=" + status + ", publicReplyNumber=" + publicReplyNumber
-        + ", privateReplyNumber=" + privateReplyNumber + ", replyNumber=" + replyNumber
-        + ", instanceId=" + instanceId + ", categoryId=" + categoryId + ", updatable="
-        + updatable + ", reopenable=" + reopenable + '}';
+            + content + ", creatorId=" + creatorId + ", creatorName=" + creatorName + ", creationDate="
+            + creationDate + ", status=" + status + ", publicReplyNumber=" + publicReplyNumber
+            + ", privateReplyNumber=" + privateReplyNumber + ", replyNumber=" + replyNumber
+            + ", instanceId=" + instanceId + ", categoryId=" + categoryId + ", updatable="
+            + updatable + ", reopenable=" + reopenable + '}';
   }
 }

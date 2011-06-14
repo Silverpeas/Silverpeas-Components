@@ -25,6 +25,7 @@ package com.silverpeas.questionReply.web;
 
 import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.rest.Exposable;
+import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.persistence.IdPK;
 import java.net.URI;
 import java.util.ArrayList;
@@ -32,6 +33,8 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+
+import static com.stratelia.webactiv.SilverpeasRole.*;
 /**
  *
  * @author emmanuel.hugonnet@silverpeas.org
@@ -136,13 +139,16 @@ public class ReplyEntity implements Exposable {
     if ((this.content == null) ? (other.content != null) : !this.content.equals(other.content)) {
       return false;
     }
-    if ((this.creatorId == null) ? (other.creatorId != null) : !this.creatorId.equals(other.creatorId)) {
+    if ((this.creatorId == null) ? (other.creatorId != null) : !this.creatorId.equals(
+            other.creatorId)) {
       return false;
     }
-    if ((this.creatorName == null) ? (other.creatorName != null) : !this.creatorName.equals(other.creatorName)) {
+    if ((this.creatorName == null) ? (other.creatorName != null) : !this.creatorName.equals(
+            other.creatorName)) {
       return false;
     }
-    if ((this.creationDate == null) ? (other.creationDate != null) : !this.creationDate.equals(other.creationDate)) {
+    if ((this.creationDate == null) ? (other.creationDate != null) : !this.creationDate.equals(
+            other.creationDate)) {
       return false;
     }
     if (this.publicReply != other.publicReply) {
@@ -169,7 +175,6 @@ public class ReplyEntity implements Exposable {
     hash = 79 * hash + (this.privateReply ? 1 : 0);
     return hash;
   }
-
 
   /**
    * Creates a new reply entity from the specified reply.
@@ -213,12 +218,13 @@ public class ReplyEntity implements Exposable {
     reply.setContent(content);
     reply.setCreationDate(creationDate);
     reply.setCreatorId(creatorId);
-    reply.setPrivateReply(privateReply ? 1 :0);
-    reply.setPublicReply(publicReply ? 1 :0);
+    reply.setPrivateReply(privateReply ? 1 : 0);
+    reply.setPublicReply(publicReply ? 1 : 0);
     reply.setTitle(title);
     return reply;
   }
-/**
+
+  /**
    * Sets a URI to this entity.
    * With this URI, it can then be accessed through the Web.
    * @param uri the web entity URI.
@@ -228,10 +234,21 @@ public class ReplyEntity implements Exposable {
     this.uri = uri;
     return this;
   }
+  
+  
+  /**
+   * Sets a URI to this entity.
+   * With this URI, it can then be accessed through the Web.
+   * @param uri the web entity URI.
+   * @return itself.
+   */
+  public ReplyEntity withProfile(final SilverpeasRole profile) {
+    this.readOnly = profile != admin && profile != writer;
+    return this;
+  }
 
   @Override
   public String toString() {
     return "ReplyEntity{" + "id=" + id + ", questionId=" + questionId + ", title=" + title + ", content=" + content + ", creatorId=" + creatorId + ", creatorName=" + creatorName + ", creationDate=" + creationDate + ", publicReply=" + publicReply + ", privateReply=" + privateReply + '}';
   }
-
 }
