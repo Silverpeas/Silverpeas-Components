@@ -909,9 +909,9 @@
           <% if (kmeliaScc.isTargetValidationEnable()) {%>
           <input type="text" name="Valideur" value="<%=targetValidatorName%>" size="60" readonly>
           <% } else {%>
-          <textarea name="Valideur" value="<%=targetValidatorName%>" rows="4" cols="40" readonly><%=targetValidatorName%></textarea>
+          <textarea name="Valideur" id="Valideur" value="<%=targetValidatorName%>" rows="4" cols="40" readonly><%=targetValidatorName%></textarea>
           <% }%>
-          <input type="hidden" name="ValideurId" value="<%=targetValidatorId%>"><%=link%>&nbsp;<img src="<%=mandatorySrc%>" align="absmiddle" width="5" height="5" border="0"></TD></TR>
+          <input type="hidden" name="ValideurId" id="ValideurId" value="<%=targetValidatorId%>"><%=link%>&nbsp;<img src="<%=mandatorySrc%>" align="absmiddle" width="5" height="5" border="0"></td></tr>
           <% }%>
 
       <TR id="beginArea"><TD class="txtlibform"><%=resources.getString("PubDateDebut")%></TD>
