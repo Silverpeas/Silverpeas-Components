@@ -50,6 +50,7 @@
 			ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
 
 			// declaration des variables :
+			String fctAddPhoto = "AddPhoto";
 			int nbAffiche = 0;
 			String albumId = "";
 			List photos = null;
@@ -103,8 +104,6 @@
 			}
 			largeurCellule = 100 / nbParLigne;
 %>
-
-
 <html>
 <head>
 <%
@@ -248,7 +247,17 @@
 	    albumWindow = SP_openWindow(urlWindow, "albumWindow", "550", "250", windowParams);
 	}
 	
-	function getObjects(selected)	{
+	function sendDataForAddPath() 
+	  {
+	    // envoi des photos selectionnees pour le placement par lot
+	    document.photoForm.SelectedIds.value  = getObjects(true);
+	    document.photoForm.NotSelectedIds.value = getObjects(false);
+	    document.photoForm.action       = "AddPathForSelectedPhoto";
+	    document.photoForm.submit();
+	  }
+	
+	function getObjects(selected)
+	{
 		var  items = "";
 		try {
 			var boxItems = document.photoForm.SelectPhoto;
@@ -334,8 +343,8 @@ function uploadCompleted(s)  {
 	  }
 	  
 </script>
-	</head>
-	<body>
+</head>
+<body>
 	<%
 	  // creation de la barre de navigation
 	  browseBar.setDomainName(spaceLabel);
@@ -364,6 +373,10 @@ function uploadCompleted(s)  {
 	    if (isPdcUsed) {
 	      // si on a le classement Pdc : possibilite de classer par lot
 	      operationPane.addOperation(resource.getIcon("gallery.categorizeSelectedPhoto"), resource.getString("gallery.categorizeSelectedPhoto"), "javascript:onClick=sendDataCategorize();");
+	    }
+	    if ("admin".equals(profile)) {
+	      // possibilite de placer les photos par lot
+	      operationPane.addOperation(resource.getIcon("gallery.addPathForSelectedPhoto"), resource.getString("gallery.addPathForSelectedPhoto"), "javascript:onClick=sendDataForAddPath()");
 	    }
 	  }
 
@@ -411,9 +424,9 @@ function uploadCompleted(s)  {
 	  out.println(window.printBefore());
 	  out.println(frame.printBefore());
 
-	  // afficher les sous albums
-	  // ------------------------
-	  if (currentAlbum.getChildrenDetails() != null) {
+// afficher les sous albums
+// ------------------------
+if (currentAlbum.getChildrenDetails() != null) {
 	    out.println("<table width=\"98%\">");
 	    out.println("<tr><td>");
 	    out.println("<div id=\"subTopics\">");
@@ -434,12 +447,13 @@ function uploadCompleted(s)  {
 	    }
 	    out.println("</ul>");
 	    out.println("</div>");
-	  }
-	  out.println("</td></tr></table>");
+}
+out.println("</td></tr></table>");
+
 	%>
 
-	<%if (!"user".equals(profile) && dragAndDropEnable != null
-					&& dragAndDropEnable.booleanValue()) {%>
+	<%
+if (!"user".equals(profile) && dragAndDropEnable != null && dragAndDropEnable.booleanValue()) {%>
 	<!-- Affichage de la zone de drag And Drop -->
 	<center>
 		<table width="98%">
@@ -451,21 +465,24 @@ function uploadCompleted(s)  {
 			</tr>
 		</table>
 	</center>
-	<%}%>
+<%}%>
 
-	<%// afficher les photos
-			// -------------------
-			// affichage des photos sous forme de vignettes	
-			if (photos != null) {%>
+
+<%
+// afficher les photos
+// -------------------
+// affichage des photos sous forme de vignettes	
+if (photos != null) {%>
 	<br>
-	<%String vignette_url = null;
-				int nbPhotos = photos.size();
-				Board board = gef.getBoard();
+	<%
+	String vignette_url = null;
+	int nbPhotos = photos.size();
+	Board board = gef.getBoard();
 
-				if (photos.size() > 0) {
-					out.println(board.printBefore());
-					// affichage de l'entete%>
-	<table width="98%" border="0" cellspacing="0" cellpadding="0"
+	if (photos.size() > 0) {
+	 out.println(board.printBefore());
+	 // affichage de l'entete%>
+	 <table width="98%" border="0" cellspacing="0" cellpadding="0"
 		align="center">
 		<form name="photoForm" action="EditSelectedPhoto">
 			<input type="hidden" name="AlbumId" value="<%=albumId%>"> 
@@ -518,7 +535,8 @@ function uploadCompleted(s)  {
 					</table></td>
 			</tr>
 	</table>
-	<%String photoColor = "";
+	<%
+	  String photoColor = "";
 		String altTitle = "";
 		PhotoDetail photo;
 		String idP;
@@ -530,13 +548,12 @@ function uploadCompleted(s)  {
 		Date today = calendar.getTime();
 		Iterator it = affPhotos.iterator();
 		while (it.hasNext()) {
-						// affichage de la photo%>
-	<table width="98%" border="0" cellspacing="5" cellpadding="0"
-		align=center>
-		<tr>
-			<td colspan="<%=nbParLigne + textColonne%>">&nbsp;</td>
-		</tr>
-		<tr>
+		  // affichage de la photo%>
+	   <table width="98%" border="0" cellspacing="5" cellpadding="0" align=center>
+			<tr>
+				<td colspan="<%=nbParLigne + textColonne%>">&nbsp;</td>
+			</tr>
+		  <tr>
 			<%while (it.hasNext() && nbAffiche < nbParLigne) {
 							photo = (PhotoDetail) it.next();
 							altTitle = "";
@@ -714,14 +731,14 @@ function uploadCompleted(s)  {
 				</table></td>
 			<%}
 							}
-						}
+		}
 
-						// on prepare pour la ligne suivante
-						nbAffiche = 0;%>
+		// on prepare pour la ligne suivante
+		nbAffiche = 0;%>
 		</tr>
-		<%}
+	<%}
 
-					if (nbPhotos > nbPhotosPerPage) {%>
+	  if (nbPhotos > nbPhotosPerPage) {%>
 		<tr>
 			<td colspan="<%=nbParLigne + textColonne%>">&nbsp;</td>
 		</tr>
@@ -732,26 +749,51 @@ function uploadCompleted(s)  {
 		<%}%>
 		</form>
 	</table>
-	<%out.println(board.printAfter());
-				}
-			}
 
-			out.println(frame.printAfter());
-			out.println(window.printAfter());%>
-	<form name="albumForm" action="" Method="POST">
-		<input type="hidden" name="Id"> 
-		<input type="hidden" name="Name"> 
-		<input type="hidden" name="Description">
-	</form>
-	<form name="ChoiceSelectForm" action="ChoiceSize" Method="POST">
-		<input type="hidden" name="Choice">
-	</form>
-	<form name="OrderBySelectForm" action="SortBy" Method="POST">
-		<input type="hidden" name="Tri">
-	</form>
-	<form name="favorite" action="" Method="POST">
-		<input type="hidden" name="Id">
-	</form>
+		<% out.println(board.printAfter());
+		} else {
+		  %>
+		    <div class="inlineMessage">
+		    <%
+		    if ("user".equals(profile) || "privilegedUser".equals(profile)) {
+		      out.println(resource.getString("gallery.album.emptyForUser"));
+		    } else if ("writer".equals(profile)) {
+		        String[] params = new String[2]; 
+            params[0] = resource.getString("gallery.ajoutPhoto");
+            params[1] = fctAddPhoto;
+		        out.println(resource.getStringWithParams("gallery.album.emptyForWriter",params));
+		      } else {
+		        // profile publisher et admin
+		        String[] params = new String[4]; 
+            params[0] = resource.getString("gallery.ajoutAlbum");
+            params[1] = "javaScript:addAlbum()";
+            params[2] = resource.getString("gallery.ajoutPhoto");
+            params[3] = fctAddPhoto;
+            out.println(resource.getStringWithParams("gallery.album.emptyForAdmin",params));
+		      }
+		    %>
+		    </div>
+		    <%
+   }
+}
+
+  out.println(frame.printAfter());
+	out.println(window.printAfter());
+%>
+<form name="albumForm" action="" Method="POST">
+	<input type="hidden" name="Id">
+	<input type="hidden" name="Name">
+	<input type="hidden" name="Description">
+</form>
+<form name="ChoiceSelectForm" action="ChoiceSize" Method="POST" >
+  	<input type="hidden" name="Choice">
+</form>
+<form name="OrderBySelectForm" action="SortBy" Method="POST" >
+  	<input type="hidden" name="Tri">
+</form>
+<form name="favorite" action="" Method="POST">
+	<input type="hidden" name="Id">
+</form>
 
 </body>
 </html>

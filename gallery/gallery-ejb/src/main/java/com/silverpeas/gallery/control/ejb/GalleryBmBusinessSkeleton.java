@@ -34,6 +34,9 @@ public interface GalleryBmBusinessSkeleton {
 
   public void setPhotoPath(String photoId, String[] albums, String instanceId)
       throws RemoteException;
+  
+  public void addPhotoPaths(String photoId, String[] albums, String instanceId)
+  throws RemoteException;
 
   public void updatePhotoPath(String photoId, String[] albums,
       String instanceIdFrom, String instanceIdTo) throws RemoteException;

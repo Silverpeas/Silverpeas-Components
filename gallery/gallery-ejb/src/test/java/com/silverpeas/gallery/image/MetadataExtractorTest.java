@@ -33,7 +33,7 @@ import java.io.File;
 import java.io.UnsupportedEncodingException;
 import org.junit.Test;
 import static org.junit.Assert.*;
-
+import static com.silverpeas.gallery.image.ImageMetadataExtractor.*;
 /**
  *
  * @author ehugonnet
@@ -47,16 +47,20 @@ public class MetadataExtractorTest {
 
   @Before
   public void setUp() {
-    extractor = new DrewMetadataExtractor();
+    extractor = new DrewImageMetadataExtractor("gallery52");
   }
 
   @Test
   public void testLoadExtractor() {
-    List<IptcProperty> properties = extractor.defineImageIptcProperties();
+    List<IptcProperty> properties = extractor.defineImageIptcProperties(
+        COMMA_SPLITTER.split("IPTC_8,IPTC_9,IPTC_10,IPTC_11,IPTC_12," +
+        		"IPTC_13,IPTC_14,IPTC_15,IPTC_16,IPTC_17,IPTC_18,IPTC_19,IPTC_20,IPTC_21,IPTC_22," +
+        		"IPTC_23,IPTC_24,IPTC_25,IPTC_26,IPTC_27,IPTC_28,IPTC_29,IPTC_30,IPTC_31"));
     assertNotNull(properties);
     assertEquals(24, properties.size());
 
-    List<ExifProperty> exifProperties = extractor.defineImageProperties();
+    List<ExifProperty> exifProperties = extractor.defineImageProperties(COMMA_SPLITTER
+        .split("METADATA_1,METADATA_2,METADATA_3,METADATA_4,METADATA_5,METADATA_6,METADATA_7"));
     assertNotNull(exifProperties);
     assertEquals(7, exifProperties.size());
   }
