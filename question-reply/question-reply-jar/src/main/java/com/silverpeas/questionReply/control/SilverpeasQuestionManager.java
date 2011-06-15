@@ -769,7 +769,9 @@ public class SilverpeasQuestionManager implements QuestionManager {
       IdPK pk = new IdPK();
       pk.setIdAsLong(replyId);
       Reply reply = replyDao.findByPrimaryKey(pk);
-      reply.loadWysiwygContent();
+      if(reply != null) {
+        reply.loadWysiwygContent();
+      }
       return reply;
     } catch (PersistenceException e) {
       throw new QuestionReplyException("QuestionManager.getReply",
