@@ -52,11 +52,7 @@
   <link rel="stylesheet" type="text/css" href="css/question-reply-css.jsp" />
 <script type="text/javascript">
 <!-- 
-$(document).ready(function() {
-  $('.questions').hide();
-  $("ul li:first-child .questions").show();
-  $("ul li:first-child").addClass('select');
-
+$(document).ready(function() {  
   var etat = new Array();
 
   $('.question').live('click', function() {
@@ -69,12 +65,15 @@ $(document).ready(function() {
         if(etat[id] != "open"){
           $('#a'+id).show();
           etat[id] = "open";
-          $.getJSON(answersUrl,function(data) {
-            $('#a'+id + ' > ul').html('');
-            $.each(data, function(key, answer) {
-              $('#a'+ id + ' > ul').append(displayAnswer(answer));
+          var found = $('#a'+id + '>ul>li');
+          if (found.length == 0) {  
+            $.getJSON(answersUrl,function(data) {
+              $('#a'+id + ' > ul').html('');
+              $.each(data, function(key, answer) {
+                $('#a'+ id + ' > ul').append(displayAnswer(answer));
+              });
             });
-          });
+          }
         } else {
           $('#a'+id).hide();
           etat[id] = "close";
@@ -91,21 +90,29 @@ $(document).ready(function() {
       if (typeLien!="l") {
         $('.category').removeClass('select');
         $('.questions').hide();
-        $.getJSON(questionUrl,function(data) {
-          $('#qc'+id).html('');
-          $.each(data, function(key, question) {
-            answersDiv = $('<div>').addClass('answers').attr('id', 'a' + question.id)
-            answersDiv.append($('<p>').text(question.content));
-            answersDiv.append($('<ul>'));
-            answersDiv.hide();            
-            $('#qc'+id).append($('<li>').append(displayQuestion(question)).append(answersDiv));
+        var found = $('#qc'+id + '>li');
+        if (found.length == 0) {  
+          $.getJSON(questionUrl,function(data) {
+            $('#qc'+id).html('');
+            $.each(data, function(key, question) {
+              answersDiv = $('<div>').addClass('answers').attr('id', 'a' + question.id)
+              answersDiv.append($('<p>').text(question.content));
+              answersDiv.append($('<ul>'));
+              answersDiv.hide();            
+              $('#qc'+id).append($('<li>').append(displayQuestion(question)).append(answersDiv));
+            });
           });
-        });
+        }
         $('#qc'+id).show();        	   
         $(this).parent().addClass('select');			
       }
     }, function() {}
-  );
+  );  
+    
+  $('.questions').hide();
+  $("ul li:first-child .questions").show();
+  $("ul li:first-child").addClass('select');
+  $("ul li:first-child .categoryTitle").trigger($.Event("click"));
 
   $('.category').hover(function() {
       $(this).addClass('hover');
@@ -113,6 +120,7 @@ $(document).ready(function() {
       $(this).removeClass('hover');
     }
   );
+
 });
   <fmt:message key="questionReply.link" bundle="${icons}" var="hyperlinkIcon"/>
   <fmt:message key="questionReply.open" bundle="${icons}" var="openIcon"/>
