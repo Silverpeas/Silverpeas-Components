@@ -44,7 +44,7 @@ int nbTotal 	= 15;
 
 session.setAttribute("Silverpeas_Album_ComponentId", componentId);
 %>
-
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
 <%
@@ -53,12 +53,16 @@ session.setAttribute("Silverpeas_Album_ComponentId", componentId);
 
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/jquery.cookie.js"></script>
+
 <script language="javascript" type="text/javascript">
   
 	  $(document).ready(function(){
 		  <%if ( "admin".equals(profile)) { %>
-			  $("#albumList").sortable({opacity: 0.4, cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
-		  
+		    showAlbumsHelp();
+		    
+		    $("#albumList").sortable({opacity: 0.4, cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
+			  
 			  $('#albumList').bind('sortupdate', function(event, ui) {
 				     var reg=new RegExp("album", "g");
 				     var data = $('#albumList').sortable('serialize');
@@ -76,6 +80,31 @@ session.setAttribute("Silverpeas_Album_ComponentId", componentId);
 		  <%} %>
 	  });
   
+	  var albumsHelpAlreadyShown = false;
+
+	  function showAlbumsHelp() {
+		  var albumsCookieName = "Silverpeas_GALLERY_AlbumsHelp";
+		  var albumsCookieValue = $.cookie(albumsCookieName);
+		  if (!albumsHelpAlreadyShown && "IKnowIt" != albumsCookieValue) {
+		    albumsHelpAlreadyShown = true;
+		    $( "#albums-message" ).dialog({
+		      modal: true,
+		      resizable: false,
+		      width: 400,
+		      dialogClass: 'help-modal-message',
+		      buttons: {
+		        "<%=resource.getString("gallery.help.albums.buttons.ok") %>": function() {
+		          $.cookie(albumsCookieName, "IKnowIt", { expires: 3650, path: '/' });
+		          $( this ).dialog( "close" );
+		        },
+		        "<%=resource.getString("gallery.help.albums.buttons.remind") %>": function() {
+		          $( this ).dialog( "close" );
+		        }
+		      }
+		    });
+		  }
+		}
+	  
   function sortAlbums(orderedList)
   {
     $.get('<%=m_context%>/Album', { orderedList:orderedList,Action:'Sort'},
@@ -91,7 +120,10 @@ session.setAttribute("Silverpeas_Album_ComponentId", componentId);
       reloadIncludingPage();
     }
   }
-
+  
+  function clipboardPaste() {     
+	  top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RGallery&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("GoToCurrentAlbum"))%>&TargetFrame=MyMain&message=REFRESH');
+	}
 
 var albumWindow = window;
 var askWindow = window;
@@ -151,15 +183,11 @@ function sendData()
     }
 }
 
-function clipboardPaste() {    	
-	top.IdleFrame.document.location.replace('../..<%=URLManager.getURL(URLManager.CMP_CLIPBOARD)%>paste?compR=RGallery&SpaceFrom=<%=spaceId%>&ComponentFrom=<%=componentId%>&JSPPage=<%=response.encodeURL(URLEncoder.encode("GoToCurrentAlbum"))%>&TargetFrame=MyMain&message=REFRESH');
-}
-
 </script>
 </head>
 
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
-
+<body>
+<div id="<%=componentId %>">
 <%
 	browseBar.setDomainName(spaceLabel);
 	browseBar.setComponentName(componentLabel, "Main");
@@ -397,5 +425,12 @@ function clipboardPaste() {
 	<input type="hidden" name="Name">
 	<input type="hidden" name="Description">
 </form>
+</div>
+<div id="albums-message" title="<%=resource.getString("gallery.help.albums.title") %>" style="display: none;">
+  <p>
+    <%=resource.getStringWithParam("gallery.help.albums.content", componentLabel) %>
+  </p>
+</div>
+<view:progressMessage/>
 </body>
 </html>
