@@ -55,12 +55,12 @@
 $(document).ready(function() {  
   var etat = new Array();
 
-  $('.question').live('click', function() {
+  $('.question').live('click', function(objectEvent) {
       question = this.id;
       id = question.substring(1);
       answersUrl = '<c:url value="/services/questionreply/${pageScope.componentId}/replies/question/"/>' + id;
       typeLien = question.substring(0,1);
-      if (typeLien!="l") {
+      if (typeLien!="l" && !$(objectEvent.target).hasClass('actionQuestion')) {
         $('.answers').hide();
         if(etat[id] != "open"){
           $('#a'+id).show();
@@ -138,7 +138,7 @@ $(document).ready(function() {
     questionTitle.append(questionTitleLink);
     questionTitleDiv.append(questionTitle);
     questionHyperlink = $('<a>').addClass('hyperlink').attr('href', '<c:url value="/Question/" />' + questionToBeDisplayed.id).attr('title', '<fmt:message key="questionReply.CopyQuestionLink"/>');
-    hyperlinkImg = $('<img>').attr('src', '<c:url value="${hyperlinkIcon}"/>').attr('alt', '<fmt:message key="questionReply.CopyQuestionLink"/>').attr('border', '0');
+    hyperlinkImg = $('<img>').addClass('actionQuestion').attr('src', '<c:url value="${hyperlinkIcon}"/>').attr('alt', '<fmt:message key="questionReply.CopyQuestionLink"/>').attr('border', '0');
     questionHyperlink.append(hyperlinkImg);    
     questionTitleDiv.append(questionHyperlink);
     switch(questionToBeDisplayed.status) {
@@ -166,19 +166,19 @@ $(document).ready(function() {
     actionDiv = $('<div>').addClass('action');
     if(questionToBeDisplayed.replyable){
       replyQuestionLink = $('<a>').addClass('reply').attr('title', '<fmt:message key="questionReply.ajoutR"/>').attr('href', 'CreateRQuery?QuestionId=' + questionToBeDisplayed.id);
-      replyQuestionImg = $('<img>').attr('alt', '<fmt:message key="questionReply.ajoutR"/>').attr('src', '<c:url value="${addReplyIcon}" />' );
+      replyQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.ajoutR"/>').attr('src', '<c:url value="${addReplyIcon}" />' );
       replyQuestionLink.append(replyQuestionImg);
       actionDiv.append(replyQuestionLink);
     }
     if(questionToBeDisplayed.reopenable){
       reopenQuestionLink = $('<a>').addClass('open').attr('title', '<fmt:message key="questionReply.open"/>').attr('href', 'javascript:openQ(\'' + questionToBeDisplayed.id + '\')');
-      reopenQuestionImg = $('<img>').attr('alt', '<fmt:message key="questionReply.open"/>').attr('src', '<c:url value="${openIcon}" />' );
+      reopenQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.open"/>').attr('src', '<c:url value="${openIcon}" />' );
       reopenQuestionLink.append(reopenQuestionImg);
       actionDiv.append(reopenQuestionLink);
     }
     if(questionToBeDisplayed.updatable){
       updateQuestionLink = $('<a>').addClass('update').attr('title', '<fmt:message key="questionReply.modifQ"/>').attr('href', 'UpdateQ?QuestionId=' + questionToBeDisplayed.id);
-      updateQuestionImg = $('<img>').attr('alt', '<fmt:message key="questionReply.modifQ"/>').attr('src', '<c:url value="${updateIcon}" />' );
+      updateQuestionImg = $('<img>').addClass('actionQuestion').attr('alt', '<fmt:message key="questionReply.modifQ"/>').attr('src', '<c:url value="${updateIcon}" />' );
       updateQuestionLink.append(updateQuestionImg);
       actionDiv.append(updateQuestionLink);
       
