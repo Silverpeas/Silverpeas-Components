@@ -566,7 +566,14 @@ function suggestDelegatedNews() {
         
         %>
         
-        <div id="classification"></div>
+        <table border="0" width="98%" align="center">
+          <tr><td>
+              <div id="classification">
+                <span><%=resources.getString("GML.PDC")%></span>
+          <div id="pdcpositions"></div>
+        </div>
+            </td></tr>
+        </table>
         
         <%
 
@@ -720,18 +727,21 @@ function suggestDelegatedNews() {
 </form>
 </div>
 
+  <%
+  ResourceLocator pdcResources = new ResourceLocator("com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language);
+  %>
 <script type="text/javascript">
-  $.getJSON('/services/pdc/<%=componentId %>/<%= id %>', function(classification) {
+  $.getJSON('http://localhost:8000/silverpeas/services/pdc/<%=componentId %>/<%= id %>', function(classification) {
     var positions = [];
     $.each(classification.positions, function(posindex, position) {
       var values =  [];
       $.each(position.values, function(valindex, value) {
-        values.push('<li>' + value.path + '</li>');
+        values.push('<li>' + value.path + '<i>' + value.synonyms.join(', ') + '</i></li>');
       });
-      positions.push('<div class="pdcposition"><span><%=resources.getString("pdcPeas.position")%> ' + posindex +
+      positions.push('<div class="pdcposition"><span><%=pdcResources.getString("pdcPeas.position")%> ' + (posindex + 1) +
         '</span><ul class="pdcvalues">' + values.join('') + '</ul></div>');
     });
-    $(positions.join('')).appendTo('#classification');
+    $(positions.join('')).appendTo('#pdcpositions');
   })
 </script>
 </body>
