@@ -563,6 +563,12 @@ function suggestDelegatedNews() {
 		}
 
 		out.println("</td></tr></table>");
+        
+        %>
+        
+        <div id="classification"></div>
+        
+        <%
 
 		/*********************************************************************************************************************/
 		/** Affichage du contenu de la publication																			**/
@@ -713,5 +719,20 @@ function suggestDelegatedNews() {
     <input type="hidden" name="ComponentId" value="<%=componentId%>"/>
 </form>
 </div>
+
+<script type="text/javascript">
+  $.getJSON('/services/pdc/<%=componentId %>/<%= id %>', function(classification) {
+    var positions = [];
+    $.each(classification.positions, function(posindex, position) {
+      var values =  [];
+      $.each(position.values, function(valindex, value) {
+        values.push('<li>' + value.path + '</li>');
+      });
+      positions.push('<div class="pdcposition"><span><%=resources.getString("pdcPeas.position")%> ' + posindex +
+        '</span><ul class="pdcvalues">' + values.join('') + '</ul></div>');
+    });
+    $(positions.join('')).appendTo('#classification');
+  })
+</script>
 </body>
 </html>
