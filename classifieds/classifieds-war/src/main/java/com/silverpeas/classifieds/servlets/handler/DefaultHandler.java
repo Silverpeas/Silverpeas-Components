@@ -61,6 +61,8 @@ public class DefaultHandler extends FunctionHandler {
     request.setAttribute("NbTotal", classifiedsSC.getNbTotalClassifieds());
     request.setAttribute("Validation", classifiedsSC.isValidationEnabled());
     request.setAttribute("Categories", categories);
+    request.setAttribute("wysiwygHeader", classifiedsSC.getWysiwygHeader());
+
 
     // Returns jsp to redirect to
     return "accueil.jsp";

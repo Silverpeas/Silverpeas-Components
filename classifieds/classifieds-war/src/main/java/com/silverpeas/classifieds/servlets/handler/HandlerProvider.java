@@ -48,6 +48,9 @@ public class HandlerProvider {
     handlerMap.put("AddSubscription", new SubscriptionCreateHandler());
     handlerMap.put("ViewMySubscriptions", new SubscriptionListHandler());
     handlerMap.put("DeleteSubscription", new SubscriptionDeleteHandler());
+
+    handlerMap.put("ToWysiwygHeader", new ToWysiwygHeaderHandler());
+    handlerMap.put("FromTopicWysiwyg", new DefaultHandler());
   }
 
   /**

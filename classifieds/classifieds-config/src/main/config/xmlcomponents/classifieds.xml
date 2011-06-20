@@ -190,5 +190,21 @@
         <message lang="en">Allow a specific setup of expiration delay for this instance</message>
       </help>
     </parameter>
+    <parameter>
+      <name>wysiwygHeader</name>
+      <label>
+        <message lang="fr">Entête personnalisable</message>
+        <message lang="en">Customisable header</message>
+      </label>
+      <order>8</order>
+      <mandatory>true</mandatory>
+      <value>no</value>
+      <type>checkbox</type>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet d'activer la possibilité de personnaliser l'entête de la page d'accueil</message>
+        <message lang="en">Enables ability to customize welcome page header</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>

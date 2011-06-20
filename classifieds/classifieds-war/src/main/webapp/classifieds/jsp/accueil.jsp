@@ -53,6 +53,8 @@
 <c:set var="data" value="${requestScope.Data}" />
 <c:set var="instanceId" value="${requestScope.InstanceId}" />
 <c:set var="language" value="${sessionScope[sessionController].language}"/>
+<c:set var="isWysiwygHeaderEnabled" value="${requestScope.isWysiwygHeaderEnabled}"/>
+<c:set var="wysiwygHeader" value="${requestScope.wysiwygHeader}"/>
 
 <html>
 <head>
@@ -85,6 +87,14 @@
 
 			<view:operationPane>
 				<c:if test="${profile.name != 'anonymous'}">
+					<c:if test="${(profile.name == 'admin') && (isWysiwygHeaderEnabled)}">
+						<fmt:message var="updateWysiwygLabel" key="classifieds.updateWysiwygClassified" />
+						<fmt:message var="updateWysiwygIcon" key="classifieds.updateWysiwygClassified"
+							bundle="${icons}" />
+						<view:operation action="ToWysiwygHeader" altText="${updateWysiwygLabel}"
+							icon="${updateWysiwygIcon}" />
+					</c:if>
+
 					<c:if
 						test="${(profile.name == 'admin') || (profile.name == 'publisher')}">
 						<fmt:message var="addOp" key="classifieds.addClassified" />
@@ -127,6 +137,9 @@
 			</view:operationPane>
 
 			<view:window>
+
+				${wysiwygHeader}
+
 				<view:frame>
 					<jsp:include page="subscriptionManager.jsp"/>
 					<FORM Name="classifiedForm" action="SearchClassifieds"

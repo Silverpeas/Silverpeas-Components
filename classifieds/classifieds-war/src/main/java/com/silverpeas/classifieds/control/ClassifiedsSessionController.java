@@ -50,6 +50,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
+import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
@@ -602,5 +604,30 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   public boolean isCommentsEnabled() {
     return "yes".equalsIgnoreCase(getComponentParameterValue("comments"));
+  }
+
+  /**
+   * return true if wysiwyg header feature is enabled
+   * @return boolean
+   */
+  public boolean isWysiwygHeaderEnabled() {
+    return "yes".equals(getComponentParameterValue("wysiwygHeader").toLowerCase());
+  }
+
+
+  /**
+   * return wysiwyg header html code
+   *
+   * @return wysiwyg header html code
+   */
+  public String getWysiwygHeader() {
+    if (isWysiwygHeaderEnabled()) {
+      try {
+        return WysiwygController.load(getComponentId(), "Node_0", getLanguage());
+      } catch (WysiwygException e) {
+        return "";
+      }
+    }
+    return "";
   }
 }
