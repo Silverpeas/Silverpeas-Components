@@ -24,130 +24,137 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="check.jsp" %>
 
-<% 
-Collection	classifieds		= (Collection) request.getAttribute("Classifieds");
-Form 		formSearch 		= (Form) request.getAttribute("Form");
-DataRecord	data 			= (DataRecord) request.getAttribute("Data"); 
-String		instanceId		= (String) request.getAttribute("InstanceId");
-String 		nbTotal			= (String) request.getAttribute("NbTotal");
+<%@page import="com.silverpeas.form.Form"%>
+<%@page import="com.silverpeas.form.PagesContext"%>
+<%@page import="com.silverpeas.form.DataRecord"%>
 
-//d�claration des boutons
-Button validateButton = (Button) gef.getFormButton(resource.getString("GML.search")+" dans <b>"+nbTotal+"</b> "+resource.getString("classifieds.classifieds"), "javascript:onClick=sendData();", false);
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator"
+	prefix="view"%>
 
+<%
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+			response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
+
+<c:set var="sessionController"
+	value="Silverpeas_classifieds_${requestScope.InstanceId}" />
+
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}"
+	var="icons" />
+
+<c:set var="browseContext" value="${requestScope.browseContext}" />
+<c:set var="componentLabel" value="${browseContext[1]}" />
+
+<c:set var="classifieds" value="${requestScope.Classifieds}" />
+<c:set var="formSearch" value="${requestScope.Form}" />
+<c:set var="data" value="${requestScope.Data}" />
+<c:set var="instanceId" value="${requestScope.InstanceId}" />
+<c:set var="nbTotal" value="${requestScope.NbTotal}" />
+<c:set var="language" value="${sessionScope[sessionController].language}"/>
 
 <html>
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel />
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/util/javaScript/animation.js"></script>
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/util/javaScript/checkForm.js"></script>
 
 <script language="javascript">
-var classifiedWindow = window;
+	var classifiedWindow = window;
 
-function openSPWindow(fonction, windowName){
-	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
-}
+	function openSPWindow(fonction, windowName) {
+		pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600',
+				'400', 'scrollbars=yes, resizable, alwaysRaised');
+	}
 
-function sendData() {
-	document.classifiedForm.submit();
-}
-
-
+	function sendData() {
+		document.classifiedForm.submit();
+	}
 </script>
 
 </head>
 
 <body>
+	<fmt:message var="classifiedPath" key="classifieds.classifiedsResult" />
+	<view:browseBar>
+		<view:browseBarElt label="${classifiedPath}" link="" />
+	</view:browseBar>
 
-<%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-	browseBar.setPath(resource.getString("classifieds.classifiedsResult"));
-	
-	out.println(window.printBefore());
-    out.println(frame.printBefore());
+	<view:window>
+		<view:frame>
+			<br />
+			<FORM Name="classifiedForm" action="SearchClassifieds" Method="POST"
+				ENCTYPE="multipart/form-data">
+				<c:if test="${not empty formSearch}">
+					<center>
+						<div id="search">
+							<!-- AFFICHAGE du formulaire -->
+							<view:board>
+								<%
+								String language = (String) pageContext.getAttribute("language");
+								String instanceId = (String) pageContext.getAttribute("instanceId");
+								Form formSearch = (Form) pageContext.getAttribute("formSearch");
+								DataRecord data = (DataRecord) pageContext.getAttribute("data");
 
-    // afficher les petites annonces
-	Board	board		 = gef.getBoard();
-	%>
-	<br/>
-	<FORM Name="classifiedForm" action="SearchClassifieds" Method="POST" ENCTYPE="multipart/form-data">
-		<% if (formSearch != null) { %>
-			<center>
-			<div id="search">
-				<!-- AFFICHAGE du formulaire -->
-					<%=board.printBefore()%>
-					<%
-						PagesContext xmlContext = new PagesContext("myForm", "0", resource.getLanguage(), false, instanceId, null);
-						xmlContext.setBorderPrinted(false);
-						xmlContext.setIgnoreDefaultValues(true);
-						xmlContext.setUseMandatory(false);
-						
-						formSearch.display(out, xmlContext, data);
-				    
-				    // bouton valider
-					ButtonPane buttonPane = gef.getButtonPane();
-					buttonPane.addButton(validateButton);
-					out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
-			
-					out.println(board.printAfter());
-					%>
-			</div>
-			</center>
-		<% } %>	
-	</FORM>
-	<br/>
-	<%
-	out.println(board.printBefore());
-	%>
-	<table>
-	<%
-	if (classifieds != null && classifieds.size() > 0) {
-		ClassifiedDetail classified;
-		Iterator it = (Iterator) classifieds.iterator();
-		
-		while (it.hasNext()) {
-			// affichage de l'annonce
-			while (it.hasNext()) {			
-				classified 		= (ClassifiedDetail) it.next();
-				%>
-				<tr>
-					<td>
-						<p>
-							&nbsp; &#149; &nbsp;&nbsp;<b><a href="ViewClassified?ClassifiedId=<%=classified.getClassifiedId()%>"><%=classified.getTitle()%></a></b>
-							
-							<br/>
-							&nbsp;&nbsp;&nbsp;<%=classified.getCreatorName()%> - <%=resource.getOutputDate(classified.getCreationDate())%>
-						</p>
-					</td>
-				</tr>
-			<%}
-		}
-	}
-	else {
-		%>
-		<tr>
-			<td colspan="5" valign="middle" align="center" width="100%">
-				<br/>
-				<% out.println(resource.getString("classifieds.noResult"));%>
-				<br/>
-			</td>
-		</tr>
-	<%
-	}
-	%>
-	</table>
-	<%
-		
-  	out.println(board.printAfter());
-	
-  	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
+								PagesContext context = new PagesContext("myForm", "0", language, false, instanceId, null, null);
+							    context.setIgnoreDefaultValues(true);
+							    context.setUseMandatory(false);
+								formSearch.display(out, context, data);
+								%>
+
+								<view:buttonPane>
+									<fmt:message var="searchLabel" key="classifieds.searchButton">
+										<fmt:param value="${nbTotal}" />
+									</fmt:message>
+									<view:button label="${searchLabel}"
+										action="javascript:onClick=sendData();" />
+								</view:buttonPane>
+							</view:board>
+						</div>
+					</center>
+				</c:if>
+			</FORM>
+			<br />
+
+			<view:board>
+				<table>
+					<c:if test="${not empty classifieds}">
+						<c:forEach items="${classifieds}" var="classified">
+							<tr>
+								<td>
+									<p>
+										&nbsp; &#149; &nbsp;&nbsp;
+										<b>
+											<a href="ViewClassified?ClassifiedId=${classified.classifiedId}">
+												${classified.title}
+											</a>
+										</b> <br />
+										&nbsp;&nbsp;&nbsp;${classified.creatorName} - <fmt:formatDate value="${classified.creationDate}" />
+									</p>
+								</td>
+							</tr>
+						</c:forEach>
+					</c:if>
+					<c:if test="${empty classifieds}">
+						<tr>
+							<td colspan="5" valign="middle" align="center" width="100%">
+								<br />
+								<fmt:message key="classifieds.noResult" /> <br />
+							</td>
+						</tr>
+					</c:if>
+				</table>
+			</view:board>
+		</view:frame>
+	</view:window>
+
 </body>
 </html>

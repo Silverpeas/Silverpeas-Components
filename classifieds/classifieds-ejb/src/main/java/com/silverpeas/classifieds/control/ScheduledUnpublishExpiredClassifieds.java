@@ -35,13 +35,16 @@ import com.silverpeas.scheduler.SchedulerEvent;
 import com.silverpeas.scheduler.SchedulerEventListener;
 import com.silverpeas.scheduler.SchedulerFactory;
 import com.silverpeas.scheduler.trigger.JobTrigger;
+import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.beans.admin.Admin;
+import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.util.EJBUtilitaire;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 
-public class ScheduledDeleteClassifieds
+public class ScheduledUnpublishExpiredClassifieds
     implements SchedulerEventListener {
 
   public static final String CLASSIFIEDSENGINE_JOB_NAME = "ClassifiedsEngineJobDelete";
@@ -57,38 +60,54 @@ public class ScheduledDeleteClassifieds
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(CLASSIFIEDSENGINE_JOB_NAME, trigger, this);
     } catch (Exception e) {
-      SilverTrace.error("classifieds", "ScheduledDeleteClassifieds.initialize()",
+      SilverTrace.error("classifieds", "ScheduledUnpublishExpiredClassifieds.initialize()",
           "classifieds.EX_CANT_INIT_SCHEDULED_DELETE_CLASSIFIEDS", e);
     }
   }
 
   public void doScheduledDeleteClassifieds() {
-    SilverTrace.info("classifieds", "ScheduledDeleteClassifieds.doScheduledDeleteClassifieds()",
+    SilverTrace.info("classifieds", "ScheduledUnpublishExpiredClassifieds.doScheduledDeleteClassifieds()",
         "root.MSG_GEN_ENTER_METHOD");
     try {
-      // recherche du nombre de jours avant suppression
-      int nbDays = Integer.parseInt(resources.getString("nbDaysForDeleteClassifieds"));
-      SilverTrace.info("classifieds", "ScheduledDeleteClassifieds.doScheduledDeleteClassifieds()",
-          "root.MSG_GEN_PARAM_VALUE", "nbDays = " + nbDays);
+      // Retrieves all classifieds instances
+      OrganizationController controller = new OrganizationController();
+      String[] instanceIds = controller.getCompoId("classifieds");
 
-      // rechercher toutes les petites annonces arrivant à échéance
-      Collection<ClassifiedDetail> classifieds =
-          getClassifiedsBm().getAllClassifiedsToDelete(nbDays);
-      SilverTrace.info("classifieds", "ScheduledDeleteClassifieds.doScheduledDeleteClassifieds()",
-          "root.MSG_GEN_PARAM_VALUE", "Petites annonces = " + classifieds.toString());
+      // Get default expiration delay from properties
+      int defaultExpirationDelay = Integer.parseInt(resources.getString("nbDaysForDeleteClassifieds"));
+      SilverTrace.info("classifieds", "ScheduledUnpublishExpiredClassifieds.doScheduledDeleteClassifieds()",
+          "root.MSG_GEN_PARAM_VALUE", "defaultExpirationDelay = " + defaultExpirationDelay);
 
-      if (classifieds != null) {
-        Iterator<ClassifiedDetail> it = classifieds.iterator();
-        while (it.hasNext()) {
-          // pour chaque petite annonce, la supprimer
-          ClassifiedDetail classified = (ClassifiedDetail) it.next();
-          int classifiedId = classified.getClassifiedId();
-          getClassifiedsBm().deleteClassified(Integer.toString(classifiedId));
+      // Iterate over all instances
+      for (String instanceId : instanceIds) {
+        // take default expiration delay if none is defined in instance setup
+        int expirationDelay = defaultExpirationDelay;
+        instanceId = "classifieds"+instanceId;
+        String specificExpirationDelay = controller.getComponentParameterValue(instanceId, "expirationDelay");
+        if (StringUtil.isDefined(specificExpirationDelay) && StringUtil.isInteger(specificExpirationDelay)) {
+          expirationDelay = Integer.parseInt(specificExpirationDelay);
+        }
+
+        // search for expired classifieds
+        Collection<ClassifiedDetail> classifieds =
+            getClassifiedsBm().getAllClassifiedsToUnpublish(expirationDelay, instanceId);
+        SilverTrace.info("classifieds", "ScheduledUnpublishExpiredClassifieds.doScheduledDeleteClassifieds()",
+            "root.MSG_GEN_PARAM_VALUE", "Petites annonces = " + classifieds.toString());
+
+        // iterate over classified to unpublished them
+        if (classifieds != null) {
+          Iterator<ClassifiedDetail> it = classifieds.iterator();
+          while (it.hasNext()) {
+            // unpublish classified
+            ClassifiedDetail classified = (ClassifiedDetail) it.next();
+            int classifiedId = classified.getClassifiedId();
+            getClassifiedsBm().unpublishClassified(Integer.toString(classifiedId));
+          }
         }
       }
     } catch (Exception e) {
       throw new ClassifiedsRuntimeException(
-          "ScheduledDeleteClassifieds.doScheduledDeleteClassifieds()",
+          "ScheduledUnpublishExpiredClassifieds.doScheduledDeleteClassifieds()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
     SilverTrace.info("classifieds", "ScheduledDeleteClassifieds.doScheduledDeleteClassifieds()",
@@ -111,20 +130,20 @@ public class ScheduledDeleteClassifieds
 
   @Override
   public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    SilverTrace.debug("classifieds", "ScheduledDeleteClassifieds.handleSchedulerEvent",
+    SilverTrace.debug("classifieds", "ScheduledUnpublishExpiredClassifieds.handleSchedulerEvent",
         "The job '" + anEvent.getJobExecutionContext().getJobName() + "' is executed");
     doScheduledDeleteClassifieds();
   }
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
-    SilverTrace.debug("classifieds", "ScheduledDeleteClassifieds.handleSchedulerEvent",
+    SilverTrace.debug("classifieds", "ScheduledUnpublishExpiredClassifieds.handleSchedulerEvent",
         "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was successfull");
   }
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("classifieds", "ScheduledDeleteClassifieds.handleSchedulerEvent",
+    SilverTrace.error("classifieds", "ScheduledUnpublishExpiredClassifieds.handleSchedulerEvent",
         "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

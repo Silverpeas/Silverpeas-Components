@@ -173,5 +173,22 @@
         <message lang="en">Enables ability to post comments on a add</message>
       </help>
     </parameter>
+    <parameter>
+      <name>expirationDelay</name>
+      <label>
+        <message lang="fr">Délai d'expiration des annonces en jours</message>
+        <message lang="en">Classifieds expiration delay in days</message>
+      </label>
+      <order>7</order>
+      <mandatory>false</mandatory>
+      <value></value>
+      <type>text</type>
+      <size>5</size>
+      <updatable>always</updatable>
+      <help>
+        <message lang="fr">Permet de spécifier un délai d'expiration spécifique à cette instance</message>
+        <message lang="en">Allow a specific setup of expiration delay for this instance</message>
+      </help>
+    </parameter>
   </parameters>
 </WAComponent>

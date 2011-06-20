@@ -24,110 +24,144 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="check.jsp" %>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator"
+	prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/formTemplate"
+	prefix="form"%>
 
 <%
-ClassifiedDetail classified 	= (ClassifiedDetail) request.getAttribute("ClassifiedToRefuse");
-
-String classifiedId = Integer.toString(classified.getClassifiedId());
-
-Button cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=window.close();", false);
-Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData()", false);
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+			response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
+
+<c:set var="sessionController"
+	value="Silverpeas_classifieds_${requestScope.InstanceId}" />
+
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}"
+	var="icons" />
+
+<c:set var="browseContext" value="${requestScope.browseContext}" />
+<c:set var="componentLabel" value="${browseContext[1]}" />
+
+<c:set var="classified" value="${requestScope.ClassifiedToRefuse}" />
+<c:set var="classifiedId" value="${classified.classifiedId}" />
+
 <HTML>
 <HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<TITLE><fmt:message key="GML.popupTitle" />
+</TITLE>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<%
-out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel />
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/util/javaScript/checkForm.js"></script>
 <script LANGUAGE="JavaScript" TYPE="text/javascript">
-function sendData() {
-     if (isCorrectForm()) {
+	function sendData() {
+		if (isCorrectForm()) {
 			document.refusalForm.submit();
 			window.close();
-      }
-}
+		}
+	}
 
-function isCorrectForm() {
-     var errorMsg = "";
-     var errorNb = 0;
-     var motive = stripInitialWhitespace(document.refusalForm.Motive.value);
-     if (isWhitespace(motive)) {
-       errorMsg+="  - '<%=resource.getString("classifieds.refusalMotive")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
-       errorNb++; 
-     }
-     switch(errorNb)
-     {
-        case 0 :
-            result = true;
-            break;
-        case 1 :
-            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-        default :
-            errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
-            window.alert(errorMsg);
-            result = false;
-            break;
-     }
-     return result;
-}
+	function isCorrectForm() {
+		var errorMsg = "";
+		var errorNb = 0;
+		var motive = stripInitialWhitespace(document.refusalForm.Motive.value);
+		if (isWhitespace(motive)) {
+			errorMsg += "  - '<fmt:message key="classifieds.refusalMotive"/>' <fmt:message key="GML.MustBeFilled"/>\n";
+			errorNb++;
+		}
+		switch (errorNb) {
+		case 0:
+			result = true;
+			break;
+		case 1:
+			errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n"
+					+ errorMsg;
+			window.alert(errorMsg);
+			result = false;
+			break;
+		default:
+			errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb
+					+ " <fmt:message key="GML.errors"/> :\n" + errorMsg;
+			window.alert(errorMsg);
+			result = false;
+			break;
+		}
+		return result;
+	}
 </script>
 </HEAD>
 
 <BODY>
-<%
-    browseBar.setDomainName(spaceLabel);
-    browseBar.setComponentName(componentLabel);
-    browseBar.setPath(resource.getString("Classifieds.refused"));
 
-    out.println(window.printBefore());
-    out.println(frame.printBefore());
-%>
+	<fmt:message var="classifiedPath" key="classifieds.refused" />
+	<view:browseBar>
+		<view:browseBarElt label="${classifiedPath}" link="" />
+	</view:browseBar>
 
-<FORM NAME="refusalForm" Action="RefusedClassified" Method="POST">
-<TABLE>
-	<tr>
-		<td>
-		<TABLE>
-			<TR><TD class="txtlibform"><%=resource.getString("classifieds.number")%> :</TD>
-				<td><%=Encode.javaStringToHtmlString(classifiedId)%>
-					<input type="hidden" name="ClassifiedId" value="<%=Encode.javaStringToHtmlString(classifiedId)%>">    	  
-				</TD>
-			</TR>
-		    <TR>
-		  		<TD class="txtlibform"><%=resource.getString("GML.title")%> :</TD>
-		      	<TD valign="top"><%=Encode.javaStringToHtmlString(classified.getTitle())%></TD>
-		  	<TR><TD class="txtlibform" valign=top><%=resource.getString("classifieds.refusalMotive")%> :</TD>
-		      	<TD><textarea name="Motive" rows="5" cols="60"></textarea>&nbsp;<img border="0" src="<%=resource.getIcon("classifieds.mandatory")%>" width="5" height="5"> </TD>
-		    </TR>
-		  	<TR><TD colspan="2">( <img border="0" src="<%=resource.getIcon("classifieds.mandatory")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%> )</TD>
-		  	</TR>
-        </TABLE>	
-		</td>
-	</tr>
-</TABLE>
+	<view:window>
+		<view:frame>
 
-</FORM>
-<%
-    out.println(frame.printMiddle());
+			<c:set var="displayedId">
+				<view:encodeHtml string="${classifiedId}" />
+			</c:set>
+			<c:set var="displayedTitle">
+				<view:encodeHtml string="${classified.title}" />
+			</c:set>
 
-    ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(validateButton);
-    buttonPane.addButton(cancelButton);
-	
-	String bodyPart ="<center>";
-	bodyPart += buttonPane.print();
-	bodyPart +="</center><br>";
+			<FORM NAME="refusalForm" Action="RefusedClassified" Method="POST">
+				<TABLE>
+					<tr>
+						<td>
+							<TABLE>
+								<TR>
+									<TD class="txtlibform"><fmt:message
+											key="classifieds.number" /> :</TD>
+									<td>${displayedId} <input type="hidden"
+										name="ClassifiedId" value="${displayedId}"></TD>
+								</TR>
+								<TR>
+									<TD class="txtlibform"><fmt:message key="GML.title" /> :</TD>
+									<TD valign="top">${displayedTitle}</TD>
+								<TR>
+									<TD class="txtlibform" valign=top><fmt:message
+											key="classifieds.refusalMotive" /> :</TD>
+									<TD><textarea name="Motive" rows="5" cols="60"></textarea>&nbsp;<img
+										border="0"
+										src="<fmt:message key="classifieds.mandatory" bundle="${icons}"/>"
+										width="5" height="5"></TD>
+								</TR>
+								<TR>
+									<TD colspan="2">( <img border="0"
+										src="<fmt:message key="classifieds.mandatory" bundle="${icons}"/>"
+										width="5" height="5"> : <fmt:message
+											key="GML.requiredField" /> )</TD>
+								</TR>
+							</TABLE></td>
+					</tr>
+				</TABLE>
 
-	out.println(bodyPart);
+			</FORM>
 
-	out.println(frame.printAfter());
-	out.println(window.printAfter());	
-%>
+			<view:buttonPane>
+				<fmt:message var="validateLabel" key="GML.validate" />
+				<fmt:message var="cancelLabel" key="GML.cancel" />
+
+				<view:button label="${validateLabel}"
+					action="javascript:onClick=sendData();" />
+				<view:button label="${cancelLabel}"
+					action="javascript:onClick=window.close();" />
+			</view:buttonPane>
+
+		</view:frame>
+	</view:window>
+
 </BODY>
 </HTML>

@@ -385,7 +385,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       boolean notify = false;
       if (isUpdate) {
         classified.setUpdateDate(new Date());
-        // c'est une "vraie" modification
+        // That's a real update
         if (isDraftEnabled()) {
           if (classified.getStatus().equals(ClassifiedDetail.VALID)) {
             notify = true;
@@ -395,10 +395,20 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
             classified.setStatus(ClassifiedDetail.TO_VALIDATE);
           }
         }
+
+        // special case : status is UNPUBLISHED, user requested classified republication
+        if (classified.getStatus().equals(ClassifiedDetail.UNPUBLISHED)) {
+          if (!isAdmin && isValidationEnabled() ) {
+            classified.setStatus(ClassifiedDetail.TO_VALIDATE);
+          }
+          else {
+            classified.setStatus(ClassifiedDetail.VALID);
+          }
+        }
       }
       getClassifiedsBm().updateClassified(classified, notify);
-      // traitement des abonnements pour les cas de créations de petites annonces par les admin sans
-      // mode brouillon
+
+      // for newly created classifieds by admin : need to force notification
       if (!isUpdate && classified.getStatus().equals(ClassifiedDetail.VALID)) {
         sendSubscriptionsNotification(Integer.toString(classified.getClassifiedId()));
       }

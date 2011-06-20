@@ -24,113 +24,110 @@
 
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ include file="check.jsp" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator"
+	prefix="view"%>
 
-<%
-Collection	classifieds		= (Collection) request.getAttribute("Classifieds");
-String      title         = (String) request.getAttribute("TitlePath");
-String      extra         = (String) request.getAttribute("Extra");
-ClassifiedsRole	profile		= (ClassifiedsRole) request.getAttribute("Profile");
+<%@page import="com.silverpeas.util.StringUtil"%>
 
-if (!StringUtil.isDefined(title)) {
-  title = "classifieds.myClassifieds";
-}
-%>
+<c:set var="sessionController" value="Silverpeas_classifieds_${requestScope.InstanceId}" />
+
+<fmt:setLocale value="${sessionScope[sessionController].language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}"
+	var="icons" />
+
+<c:set var="browseContext" value="${requestScope.browseContext}" />
+<c:set var="componentLabel" value="${browseContext[1]}" />
+<c:set var="classifieds" value="${requestScope.Classifieds}" />
+<c:set var="title" value="${requestScope.TitlePath}" />
+<c:set var="extra" value="${requestScope.Extra}" />
+<c:set var="profile" value="${requestScope.Profile}" />
 
 
-<%@page import="com.silverpeas.util.StringUtil"%><html>
+<html>
 <head>
-<%
-	out.println(gef.getLookStyleSheet());
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel />
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/util/javaScript/animation.js"></script>
+<script type="text/javascript"
+	src="${pageContext.request.contextPath}/util/javaScript/checkForm.js"></script>
 
 <script language="javascript">
-var classifiedWindow = window;
+	var classifiedWindow = window;
 
-function openSPWindow(fonction, windowName){
-	pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600', '400','scrollbars=yes, resizable, alwaysRaised');
-}
-
+	function openSPWindow(fonction, windowName) {
+		pdcUtilizationWindow = SP_openWindow(fonction, windowName, '600',
+				'400', 'scrollbars=yes, resizable, alwaysRaised');
+	}
 </script>
 </head>
 
 <body>
 
-<%
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-	if (StringUtil.isDefined(extra)) {
-	  browseBar.setPath(resource.getString(title) + " '" + extra + "'");
-	}
-	else {
-	 browseBar.setPath(resource.getString(title));
-	}
+	<fmt:message var="classifiedPath"
+		key="${ (empty title) ? 'classifieds.myClassifieds' : title}" />
+	<view:browseBar extraInformations="${extra}">
+		<view:browseBarElt label="${classifiedPath}" link="" />
+	</view:browseBar>
 
-	// affichage des options
-	if ( (profile==ClassifiedsRole.MANAGER) || (profile==ClassifiedsRole.PUBLISHER) ) {
-		operationPane.addOperation(resource.getIcon("classifieds.addClassified"),resource.getString("classifieds.addClassified"), "NewClassified");
-	}
+	<c:if
+		test="${(profile.name == 'manager') || (profile.name == 'publisher') }">
+		<view:operationPane>
+			<fmt:message var="addOp" key="classifieds.addClassified" />
+			<fmt:message var="addIcon" key="classifieds.addClassified"
+				bundle="${icons}" />
+			<view:operation action="NewClassified" altText="${addOp}"
+				icon="${addIcon}" />
+		</view:operationPane>
+	</c:if>
 
-	out.println(window.printBefore());
-    out.println(frame.printBefore());
+	<view:window>
+		<view:frame>
+			<view:board>
+				<table>
+					<c:if test="${not empty classifieds}">
+						<c:forEach items="${classifieds}" var="classified">
+							<tr>
+								<td>
+									<p>
+										&nbsp; &#149; &nbsp;&nbsp;<b><a
+											href="ViewClassified?ClassifiedId=${classified.classifiedId}">${classified.title}</a>
+										</b>
+										<c:choose>
+											<c:when test="${classified.status == 'Draft'}">
+												<fmt:message key="classifieds.draft" />
+											</c:when>
 
-	// afficher les petites annonces
-	Board	board		 = gef.getBoard();
-	%>
-	<br/>
-	<%
-	out.println(board.printBefore());
+											<c:when test="${classified.status == 'ToValidate'}">
+												<fmt:message key="classifieds.toValidate" />
+											</c:when>
+											<c:when test="${classified.status == 'Unvalidate'}">
+												<fmt:message key="classifieds.refuse" />
+											</c:when>
+											<c:when test="${classified.status == 'Unpublished'}">
+												<fmt:message key="classifieds.unpublished" />
+											</c:when>
+										</c:choose>
 
-	%>
-	<table>
-	<%
-	if (classifieds != null && classifieds.size() > 0) {
-		ClassifiedDetail classified;
-		Iterator it = (Iterator) classifieds.iterator();
+										<br /> &nbsp;&nbsp;&nbsp;
+										<c:out value="${classified.validateDate}" />
+									</p></td>
+							</tr>
+						</c:forEach>
+					</c:if>
 
-		while (it.hasNext()) {
-			// affichage de l'annonce
-				classified 		= (ClassifiedDetail) it.next();
-				String status 	= classified.getStatus();
-				%>
-
-				<tr>
-					<td>
-						<p>
-							&nbsp; &#149; &nbsp;&nbsp;<b><a href="ViewClassified?ClassifiedId=<%=classified.getClassifiedId()%>"><%=classified.getTitle()%></a></b>
-							<%if (status.equals(ClassifiedDetail.DRAFT)) { %>
-								(<%=resource.getString("classifieds.draft") %>)
-							<%}
-							else if (status.equals(ClassifiedDetail.TO_VALIDATE)) { %>
-								(<%=resource.getString("classifieds.toValidate") %>)
-							<%}
-							else if (status.equals(ClassifiedDetail.REFUSED)) { %>
-								(<%=resource.getString("classifieds.refuse") %>)
-							<%} %>
-							<br/>
-							&nbsp;&nbsp;&nbsp;<%=resource.getOutputDate(classified.getCreationDate())%>
-						</p>
-					</td>
-				</tr>
-			<%}
-	}
-	else {
-		%>
-		<tr>
-			<td colspan="5" valign="middle" align="center" width="100%">
-				<br/>
-				<%out.println(resource.getString("classifieds.CategoryEmpty"));%>
-				<br/>
-			</td>
-		</tr>
-	<% } %>
-	</table>
-	<%
-  	out.println(board.printAfter());
-  	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
+					<c:if test="${empty classifieds}">
+						<tr>
+							<td colspan="5" valign="middle" align="center" width="100%">
+								<br /> <fmt:message key="classifieds.CategoryEmpty" /> <br /></td>
+						</tr>
+					</c:if>
+				</table>
+			</view:board>
+		</view:frame>
+	</view:window>
 </body>
 </html>
