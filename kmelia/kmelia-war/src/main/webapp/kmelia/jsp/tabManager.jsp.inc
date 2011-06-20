@@ -3,6 +3,7 @@
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.GraphicElementFactory"%>
 <%@ page import="com.stratelia.webactiv.util.viewGenerator.html.tabs.TabbedPane"%>
 <%@ page import="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
+<%@ page import="java.util.Iterator"%>
 <%!
 
 void displayJavascriptAndFormToOperations(KmeliaSessionController kmeliaScc, JspWriter out) throws IOException {
@@ -140,17 +141,31 @@ public void displayAllOperations(String id, KmeliaSessionController kmeliaScc, G
           i++;
 		  List seeAlsoList = kmeliaScc.getSessionPublication().getPublication().getLinkList();
 		  List authorizedSeeAlsoList = new ArrayList();
-            ForeignPK curFPK = null;
-            String curComponentId = null;
-            for (int cpt=0; cpt < seeAlsoList.size(); cpt++) {
-              curFPK = (ForeignPK) seeAlsoList.get(cpt);
-              curComponentId = curFPK.getComponentName();
-              if (curComponentId != null && kmeliaScc.getOrganizationController().isComponentAvailable(curComponentId, kmeliaScc.getUserId())) {
-                authorizedSeeAlsoList.add(curFPK);
-              }
-            }
-
-          String nbSeeAlso = Integer.toString(authorizedSeeAlsoList.size());
+		  List authorizedAndValidSeeAlsoList = new ArrayList();
+	      ForeignPK curFPK = null;
+	      String curComponentId = null;
+	      for (int cpt=0; cpt < seeAlsoList.size(); cpt++) {
+	        curFPK = (ForeignPK) seeAlsoList.get(cpt);
+	        curComponentId = curFPK.getComponentName();
+	        if (curComponentId != null && kmeliaScc.getOrganizationController().isComponentAvailable(curComponentId, kmeliaScc.getUserId())) {
+	          authorizedSeeAlsoList.add(curFPK);
+	        }
+	      }
+	      
+	      UserPublication 	userPub;
+	      PublicationDetail 	pub;
+		  Collection linkedPublications = kmeliaScc.getPublications(authorizedSeeAlsoList);
+	      Iterator iterator = linkedPublications.iterator();
+	      if (iterator.hasNext()) {
+	        while (iterator.hasNext()) {
+	          userPub = (UserPublication) iterator.next();
+	          pub = userPub.getPublication();
+	          if (pub.getStatus() != null && pub.getStatus().equals("Valid")) {
+	            authorizedAndValidSeeAlsoList.add(pub);
+	          }
+	        }
+	      }
+          String nbSeeAlso = Integer.toString(authorizedAndValidSeeAlsoList.size());
           tabbedPane.addTab(resources.getString("PubReferenceeParAuteur")+" ("+nbSeeAlso+")", routerUrl+"SeeAlso?PubId="+id, action.equals("LinkAuthorView") || action.equals("SameSubjectView") || action.equals("SameTopicView"), enabled, row);
       }
       if (invisibleTabs.indexOf(kmeliaScc.TAB_COMMENT) == -1) {
