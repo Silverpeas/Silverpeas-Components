@@ -209,6 +209,7 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
+<script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc.js"></script>
 
 <script type="text/javascript">
 
@@ -568,10 +569,7 @@ function suggestDelegatedNews() {
         
         <table border="0" width="98%" align="center">
           <tr><td>
-              <div id="classification">
-                <span><%=resources.getString("GML.PDC")%></span>
-                <div id="pdcpositions"></div>
-              </div>
+              <div id="classification"></div>
             </td></tr>
         </table>
         
@@ -727,22 +725,15 @@ function suggestDelegatedNews() {
 </form>
 </div>
 
+<script type="text/javascript">
   <%
   ResourceLocator pdcResources = new ResourceLocator("com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language);
   %>
-<script type="text/javascript">
-  $.getJSON('http://localhost:8000/silverpeas/services/pdc/<%=componentId %>/<%= id %>', function(classification) {
-    var positions = [];
-    $.each(classification.positions, function(posindex, position) {
-      var values =  [];
-      $.each(position.values, function(valindex, value) {
-        values.push('<li>' + value.path + '<i>' + value.synonyms.join(', ') + '</i></li>');
-      });
-      positions.push('<div class="pdcposition"><span><%=pdcResources.getString("pdcPeas.position")%> ' + (posindex + 1) +
-        '</span><ul class="pdcvalues">' + values.join('') + '</ul></div>');
-    });
-    $(positions.join('')).appendTo('#pdcpositions');
-  })
+  $('#classification').pdc({
+    url: '<%=m_context%>/services/pdc/<%=componentId%>/<%=id%>',
+    title: '<%=resources.getString("GML.PDC")%>',
+    positionLabel: '<%=pdcResources.getString("pdcPeas.position")%>'
+  });
 </script>
 </body>
 </html>
