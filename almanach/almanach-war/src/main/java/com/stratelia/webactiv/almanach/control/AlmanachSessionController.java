@@ -29,6 +29,7 @@ import com.silverpeas.calendar.CalendarEvent;
 import com.silverpeas.export.ExporterFactory;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.silverpeas.export.ExportException;
+import com.silverpeas.export.ical.ExportableCalendar;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
@@ -947,10 +948,10 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
       throw new ExportException(ex.getMessage(), ex);
     }
     ExporterFactory exporterFactory = ExporterFactory.getFactory();
-    Exporter<CalendarEvent> iCalExporter = exporterFactory.getICalExporter();
+    Exporter<ExportableCalendar> iCalExporter = exporterFactory.getICalExporter();
     FileWriter fileWriter = new FileWriter(icsFilePath);
     try {
-      iCalExporter.export(withWriter(fileWriter), eventsToExport);
+      iCalExporter.export(withWriter(fileWriter), ExportableCalendar.with(eventsToExport));
     } catch (ExportException ex) {
       File fileToDelete = new File(icsFilePath);
       if (fileToDelete.exists()) {

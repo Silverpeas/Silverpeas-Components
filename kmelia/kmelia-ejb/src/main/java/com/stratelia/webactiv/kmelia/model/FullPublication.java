@@ -32,8 +32,11 @@ import com.stratelia.webactiv.util.publication.model.CompletePublication;
  * This object contains elements which are displayed in a kmelia Topic
  * @author Nicolas Eysseric
  * @version 1.0
+ * @deprecated this class is now deprecated. Please use instead the KmeliaPublication objects.
  */
+@Deprecated
 public class FullPublication extends Object implements java.io.Serializable {
+  private static final long serialVersionUID = 7021715318778228441L;
 
   private List attachments;
   private CompletePublication publication;
