@@ -23,6 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
 
@@ -853,6 +854,16 @@
       <tr id="keywordsArea"><td class="txtlibform"><%=resources.getString("PubMotsCles")%></td>
         <td><input type="text" name="Keywords" id="pubKeys" value="<%=EncodeHelper.javaStringToHtmlString(keywords)%>" size="68" maxlength="1000"></td></tr>
       <% }%>
+      
+      <tr id="classificationArea">
+        <td colspan="2" width="100%">
+          <fillset id="classification">
+            <legend><%=resources.getString("GML.PDC")%></legend>
+            <img src="/silverpeas/pdcPeas/jsp/icons/add.gif" alt="<%=resources.getString("GML.PDCNewPosition") %>" onClick="javascript: addNewPosition();"/>
+            <div id="pdcpositions"></div>
+          </fillset>
+        </td>
+      </tr>
 
       <!-- Author -->
       <% if (kmeliaScc.isAuthorUsed()) {%>
@@ -1000,5 +1011,52 @@
   <form name="toRouterForm">
     <input type="hidden" name="PubId" value="<%=id%>">
   </form>
+  
+    <%
+  ResourcesWrapper pdcResources = new ResourcesWrapper(new ResourceLocator("com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language), language);
+  %>
+<script type="text/javascript">
+  function openSPWindow(fonction,windowName){
+    SP_openWindow(fonction, windowName, '600', '300','scrollbars=yes, resizable, alwaysRaised');
+  }
+  
+  function addNewPosition() {
+    openSPWindow("<%=m_context%>/RpdcClassify/jsp/NewPosition?ComponentId=<%=componentId%>&ContentId=<%=id %>", "newposition");
+    refreshClassification();
+  }
+  
+  function updatePosition(positionId) {
+    openSPWindow("<%=m_context%>/RpdcClassify/jsp/EditPosition?ComponentId=<%=componentId%>&ContentId=<%=id %>&Id=" + positionId, "updateposition");
+    refreshClassification();
+  }
+  
+  function deletePosition(positionId) {
+    $.ajax({
+        url: 'http://localhost:8000/silverpeas/services/pdc/<%=componentId %>/<%=id %>/' + positionId,
+        type: "DELETE",
+        success: function(data) {
+          refreshClassification();
+        }
+      });
+  }
+  
+  function refreshClassification() {
+    $('#pdcpositions').children().remove();
+    $.getJSON('http://localhost:8000/silverpeas/services/pdc/<%=componentId %>/<%=id %>', function(classification) {
+      var positions = [];
+      $.each(classification.positions, function(posindex, position) {
+        var values =  [];
+        $.each(position.values, function(valindex, value) {
+          values.push('<li>' + value.path + '<i>' + value.synonyms.join(', ') + '</i></li>');
+        });
+        positions.push('<div id="pdcposition' + position.id + '" class="pdcposition"><span><%=pdcResources.getString("pdcPeas.position")%> ' + (posindex + 1) +
+          '</span><img src="/silverpeas/pdcPeas/jsp/icons/edit_button.gif" alt="<%=pdcResources.getString("GML.modify")%>" onClick="javascript: updatePosition(' +position.id + ');"/><img src="/silverpeas/pdcPeas/jsp/icons/delete.gif" alt="<%=pdcResources.getString("GML.PDCDeletePosition")%>" onClick="javascript: deletePosition(' +position.id + ');"/><ul class="pdcvalues">' + values.join('') + '</ul></div>');
+      });
+      $(positions.join('')).appendTo('#pdcpositions');
+    })
+  }
+  
+  refreshClassification();
+</script>
 </body>
 </html>

@@ -570,8 +570,8 @@ function suggestDelegatedNews() {
           <tr><td>
               <div id="classification">
                 <span><%=resources.getString("GML.PDC")%></span>
-          <div id="pdcpositions"></div>
-        </div>
+                <div id="pdcpositions"></div>
+              </div>
             </td></tr>
         </table>
         
