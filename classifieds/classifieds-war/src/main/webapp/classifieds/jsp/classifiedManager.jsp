@@ -164,7 +164,7 @@
 	function setData()
 	{
 		<c:if test="${not empty fieldName}">
-	      document.classifiedForm.${fieldName}.value = ${fieldKey};
+	      document.classifiedForm.${fieldName}.value = '${fieldKey}';
 	    </c:if>
 	}
 

@@ -158,6 +158,7 @@
 											PagesContext context = new PagesContext("myForm", "0", language, false, instanceId, null, null);
 										    context.setIgnoreDefaultValues(true);
 										    context.setUseMandatory(false);
+										    context.setBorderPrinted(false);
 											formSearch.display(out, context, data);
 										%>
 										<view:buttonPane>

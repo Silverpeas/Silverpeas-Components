@@ -33,7 +33,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ taglib uri="http://www.silverpeas.com/tld/formTemplate" prefix="form"%>
 
 <c:set var="sessionController" value="Silverpeas_classifieds_${requestScope.InstanceId}" />
 
