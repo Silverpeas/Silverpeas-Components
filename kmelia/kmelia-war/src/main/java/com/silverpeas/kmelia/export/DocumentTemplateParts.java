@@ -30,9 +30,14 @@ package com.silverpeas.kmelia.export;
 public interface DocumentTemplateParts {
   
   /**
-   * Field in the template corresponding to the author of the publication to export.
+   * Field in the template corresponding to the author (the creator) of the publication to export.
    */
   static final String FIELD_AUTHOR = "Author";
+  
+  /**
+   * Field in the template corresponding to the user that has lastly modified the publication to export.
+   */
+  static final String FIELD_LAST_MODIFIER = "Modifier";
   
   /**
    * Field in the template corresponding to the last modification date of the publication to export.
