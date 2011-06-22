@@ -31,16 +31,19 @@
   <label>
     <message lang="fr">Agregateur RSS</message>
     <message lang="en">RSS aggregator</message>
+    <message lang="de">RSS aggregator</message>
   </label>
   <description>
     <message lang="fr">Permet d'afficher, au sein de Silverpeas, des informations provenant de sites web
   externes. Ce composant permet d'agréger plusieurs sources d'informations au format RSS.
     </message>
     <message lang="en">Aggregate inside Silverpeas data from external web sites using their RSS streams.</message>
+    <message lang="de">Aggregierte in der Plateform, Daten aus externe Websiten die über RSS Streams verfügen.</message>
   </description>
   <suite>
     <message lang="fr">06 Connecteurs</message>
     <message lang="en">06 Connectors</message>
+    <message lang="de">06 Verbinder</message>
   </suite>
   <visible>true</visible>
   <visibleInPersonalSpace>true</visibleInPersonalSpace>
@@ -51,20 +54,24 @@
       <label>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>

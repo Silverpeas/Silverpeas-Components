@@ -31,16 +31,19 @@
   <label>
     <message lang="fr">Wiki</message>
     <message lang="en">Wiki</message>
+    <message lang="de">Wiki</message>
   </label>
   <description>
     <message lang="fr">Un wiki rend ses pages web librement modifiables par tous les contributeurs.
   Un wiki est utilisé pour faciliter l'écriture collaborative de documents avec un minimum de contraintes.
     </message>
     <message lang="en">A wiki allows every users to easily edit its pages thus providing an easy way to collaborate.</message>
+    <message lang="de">Ein Wiki ermöglicht es jedem Benutzer auf einfacher Weise seine Seiten zu bearbeiten und ist auch eine einfache lösung um zusammenzuarbeiten.</message>
   </description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
+    <message lang="de">04 Inhaltsverwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>false</portlet>
@@ -50,30 +53,36 @@
       <label>
         <message lang="fr">Administrateur</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Administrateur</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="writer">
       <label>
         <message lang="fr">Contributeur</message>
         <message lang="en">Contributor</message>
+        <message lang="de">Kontributor</message>
       </label>
       <help>
         <message lang="fr">Contributeur</message>
         <message lang="en">Contributor</message>
+        <message lang="de">Kontributor</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>

@@ -31,14 +31,17 @@
   <label>
     <message lang="fr">Journal périodique</message>
     <message lang="en">Editorial</message>
+    <message lang="de">Periodische Zeitung</message>
   </label>
   <description>
     <message lang="fr">Permet de créer un journal d'entreprise, contenant des articles, éditoriaux, première page.</message>
     <message lang="en">Create an enterprise journal with articles, editorials, first page.</message>
+    <message lang="de">Erstellt eine Unternehmen Zeitschrift mit Artikeln, Editorials und Hauptseiten.</message>
   </description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content management</message>
+    <message lang="de">04 Inhaltsverwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -48,30 +51,36 @@
       <label>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
         <message lang="fr">Rédacteur</message>
         <message lang="en">Writer</message>
+        <message lang="de">Schreiber</message>
       </label>
       <help>
         <message lang="fr">Rédacteur</message>
         <message lang="en">Writer</message>
+        <message lang="de">Schreiber</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>

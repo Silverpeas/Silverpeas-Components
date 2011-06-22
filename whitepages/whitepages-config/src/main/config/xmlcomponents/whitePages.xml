@@ -31,6 +31,7 @@
   <label>
     <message lang="fr">Annuaire d'experts</message>
     <message lang="en">Expert directory</message>
+    <message lang="de">Experten Verzeichnis</message>
   </label>
   <description>
     <message lang="fr">
@@ -38,13 +39,16 @@
       L'indexation du CV sur le plan de classement permet de trouver rapidement une compétence.
     </message>
     <message lang="en">
-      Create a directory of skills, whith each expert described by an xm form. The resume is classified on the classification scheme 
+      Create a directory of skills, whith each expert described by an xml form. The resume is classified on the classification scheme 
       to search quickly for a skill.
     </message>
+    <message lang="de">Erstellt ein Verzeichnis von Fähigkeiten, jeder Experte wird dürch ein XML Formular beschrieben. 
+      Der Lebenslauf ist auf dem KP für ein Schnelles Suchen eingestuft.</message>
   </description>
   <suite>
     <message lang="fr">03 Gestion de la connaissance</message>
     <message lang="en">03 Knowledge Management</message>
+    <message lang="de">03 Wissens Verwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -54,20 +58,24 @@
       <label>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>
@@ -77,6 +85,7 @@
       <label>
         <message lang="fr">Modèle de fiche</message>
         <message lang="en">Template card</message>
+        <message lang="de">Vorlage-Karte</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -86,6 +95,7 @@
       <help>
         <message lang="fr">Modèle xml spécifique permettant de saisir des informations sur l'expert.</message>
         <message lang="en">XML form to describe the skills of an expert.</message>
+        <message lang="de">XML-Formular, um die Fähigkeiten eines Experten zu beschreiben.</message>
       </help>
     </parameter>
     <parameter>
@@ -93,6 +103,7 @@
       <label>
         <message lang="fr">Modèle d'identité</message>
         <message lang="en">Display template</message>
+        <message lang="de">Vorlage anzeigen</message>
       </label>
       <order>3</order>
       <mandatory>true</mandatory>
@@ -102,6 +113,7 @@
       <help>
         <message lang="fr">Fichier html permettant de présenter les informations de l'expert.</message>
         <message lang="en">HTML file used for displaying the expert's skills.</message>
+        <message lang="de">HTML-Datei die Verwendet wird um die Fähigkeiten des Experten zu zeigen.</message>
       </help>
     </parameter>
     <parameter>
@@ -109,6 +121,7 @@
       <label>
         <message lang="fr">Masquage de l'email</message>
         <message lang="en">Hide the email address</message>
+        <message lang="de">Blenden Sie die E-Mail-Adresse aus</message>
       </label>      
       <order>2</order>
       <mandatory>true</mandatory>
@@ -118,6 +131,7 @@
       <help>
         <message lang="fr">Active le masquage des mails dans l'IHM. Les notifications envoyées à partir de ce composant auront un expéditeur générique.</message>
         <message lang="en">Hide the emailaddress. The sender of notifications will be generic.</message>
+        <message lang="de">Blendet die E-Mailadresse aus. Der Absender der eingegangenen Meldungen wird anonym sein.</message>
       </help>
     </parameter>
     <parameter>
@@ -125,6 +139,7 @@
       <label>
         <message lang="fr">Forcer le remplissage de la fiche</message>
         <message lang="en">Force filling of the card</message>
+        <message lang="de">Ausfüllen der Karte zwingen</message>
       </label>        
       <order>4</order>
       <mandatory>true</mandatory>
@@ -138,6 +153,8 @@
         <message lang="en">          
         The user will have access only to his card until he has filled it.
         </message>
+        <message lang="de">Wenn dieser Parameter aktiviert ist, wird der Benutzer nur Zugang zu seiner Karteikarte haben.  
+        Der Rest des Portals wird für ihm unerreichbar sein, solange er seine Karteikarte nicht fertiggestellt hat.</message>
       </help>
     </parameter>
     <parameter>
@@ -145,6 +162,7 @@
       <label>
         <message lang="fr">Masquage de l'onglet fiche</message>
         <message lang="en">Hide the card tab</message>
+        <message lang="de">Blenden Sie die Registerkarte aus</message>
       </label>
       <order>5</order>
       <mandatory>true</mandatory>
@@ -154,6 +172,7 @@
       <help>
         <message lang="fr">Active le masquage de l'onglet fiche pour les lecteurs.</message>
         <message lang="en">Hide the tab displaying the expert card for readers.</message>
+        <message lang="de">Activiert das Ausblenden der Registerkarte Experten-Karte für den Leser</message>
       </help>
     </parameter>
     <parameter>
@@ -161,6 +180,7 @@
       <label>
         <message lang="fr">Domaine auquel rattachée l'annuaire</message>
         <message lang="en">Silverpeas's domains to which the directory is attached</message>
+        <message lang="de">Silverpeas-Domänen auf, die das Verzeichnis angeschlossen ist</message>
       </label>      
       <order>6</order>
       <mandatory>true</mandatory>
@@ -170,6 +190,7 @@
       <help>
         <message lang="fr">Définit le domaine auquel on souhaite rattacher l'annuaire.</message>
         <message lang="en">Define the Silverpeas's domain attached to the directory.</message>
+        <message lang="de">Definiert die Silverpeas-Domänen auf, die das Verzeichnis angeschlossen ist</message>
       </help>
     </parameter>
   </parameters>

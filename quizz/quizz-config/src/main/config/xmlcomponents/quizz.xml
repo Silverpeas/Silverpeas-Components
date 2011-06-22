@@ -31,16 +31,19 @@
   <label>
     <message lang="fr">Quiz</message>
     <message lang="en">Quizz</message>
+    <message lang="de">Quizz</message>
   </label>
   <description>
     <message lang="fr">Permet d'évaluer la compréhension ou niveau de connaissance acquis d'un sujet.
   L'utilisateur peut se faire aider d'indices. Un scoring évalue sa performance.
     </message>
     <message lang="en">Evaluates the understanding or the knowledge on a subject. The user can use hints lowering his score.</message>
+    <message lang="de">Wertet das Verständnis oder das Wissen über ein Thema. Der Benutzer kann Hinweise benützen die sein Ergebnis Senken.</message>
   </description>
   <suite>
     <message lang="fr">02 Gestion Collaborative</message>
     <message lang="en">02 Collaborative Management</message>
+    <message lang="de">02 kollaborative Verwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -50,30 +53,36 @@
       <label>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Gestionnaire</message>
         <message lang="en">Administrator</message>
+        <message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </label>
       <help>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>
@@ -83,6 +92,7 @@
       <label>
         <message lang="fr">Classification PDC</message>
         <message lang="en">Classification Scheme</message>
+        <message lang="de">Klassierungsplan</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -92,6 +102,7 @@
       <help>
         <message lang="fr">Les quizz créés au sein de ce composant pourront être classés sur le Plan de Classement.</message>
         <message lang="en">The quizz will be classified on the classification scheme.</message>
+        <message lang="de">Ein Quizz kann auf dem KP klassifiziert werden</message>
       </help>
     </parameter>
   </parameters>

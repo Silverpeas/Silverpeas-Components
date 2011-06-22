@@ -30,14 +30,17 @@
   <label>
     <message lang="fr">Petites annonces</message>
     <message lang="en">Classifieds</message>
+    <message lang="de">Kleinanzeigen</message>
   </label>
   <description>
     <message lang="fr">Les petites annonces seront classées par catégories et type</message>
-    <message lang="en"> Classified adds organized by type and category</message>
+    <message lang="en">Classified adds organized by type and category</message>
+    <message lang="de">Kleinanzeigen organisiert nach Art und Kategorie</message>
   </description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
+    <message lang="de">04 Inhaltsverwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>false</portlet>
@@ -47,20 +50,24 @@
       <label>
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Administrators</message>
+        <message lang="de">Administrator</message>
       </label>
       <help>
         <message lang="fr">Gestionnaires</message>
         <message lang="en">Administrators</message>
+	<message lang="de">Administrator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
         <message lang="fr">Annonceurs</message>
         <message lang="en">Authors</message>
+	<message lang="de">Autor</message>
       </label>       
       <help>
         <message lang="fr">Annonceurs</message>
         <message lang="en">Authors</message>
+     	<message lang="de">Autor</message>
       </help>        
     </profile>
   </profiles>
@@ -70,6 +77,7 @@
       <label>
         <message lang="fr">Formulaire XML</message>
         <message lang="en">XML Form</message>
+	<message lang="de">XML Formular</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -79,6 +87,7 @@
       <help>
         <message lang="fr">Nom du formulaire XML associé aux petites annonces</message>
         <message lang="en">Form XML name attached to classifieds</message>
+        <message lang="de">Name des XML Formulars der mit der Kleinanzeigen verbunden ist</message>
       </help>
     </parameter>
     <parameter>
@@ -86,6 +95,7 @@
       <label>
         <message lang="fr">Champ de catégorisation</message>
         <message lang="en">categorization field</message>
+        <message lang="de">Suchfeld 1</message>
       </label>
       <order>2</order>
       <mandatory>false</mandatory>
@@ -96,6 +106,7 @@
       <help>
         <message lang="fr">Sur la page principale, les annonces sont regroupées selon ces catégories</message>
         <message lang="en">On the main page, classifieds are grouped according to these categories</message>
+	<message lang="de">Erstes Suchfeld</message>
       </help>
     </parameter>
     <parameter>
@@ -103,6 +114,7 @@
       <label>
         <message lang="fr">Second critère</message>
         <message lang="en">Search field 2</message>
+	<message lang="de">Erstes Suchfeld</message>
       </label>
       <order>3</order>
       <mandatory>false</mandatory>
@@ -113,6 +125,7 @@
       <help>
         <message lang="fr">Ce second critère est le second champ dédié aux abonnements</message>
         <message lang="en">This second criteria is devoted to subscriptions</message>
+	<message lang="de">Zweites Suchfeld</message>
       </help>
     </parameter>
     <parameter>
@@ -120,6 +133,7 @@
       <label>
         <message lang="fr">Mode brouillon</message>
         <message lang="en">Draf</message>
+        <message lang="de">Entwurf</message>
       </label>
       <order>4</order>
       <mandatory>true</mandatory>
@@ -129,6 +143,7 @@
       <help>
         <message lang="fr">Le mode brouillon permet de travailler sur une annonce sans que personne d'autre ne puisse la voir.</message>
         <message lang="en">Draft mode enables you to work on a classified whilst being invisible to other users.</message>
+        <message lang="de">Eine Kleinanzeigen im Entwurfs-Modus ist nur für den Autor sichtbar, so kann er daran arbeiten.</message>
       </help>
     </parameter>
     <parameter>
@@ -136,6 +151,7 @@
       <label>
         <message lang="fr">Validation</message>
         <message lang="en">Validation</message>
+        <message lang="de">Validierung</message>
       </label>
       <order>5</order>      
       <mandatory>true</mandatory>
@@ -145,6 +161,7 @@
       <help>
         <message lang="fr">Permet d'activer la validation des annonces par les gestionnaires</message>
         <message lang="en">Enables validation of classified ads by the managers</message>
+        <message lang="de">Ermöglicht die Validierung von Kleinanzeigen von den Managern</message>
       </help>
     </parameter>
   </parameters>

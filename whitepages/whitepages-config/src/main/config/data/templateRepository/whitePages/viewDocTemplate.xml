@@ -39,6 +39,10 @@
 			<labelName>type texte dans input</labelName>
 			<language>fr</language>
 		</label>
+		<label>
+			<labelName>A_TRADUIRE</labelName>
+			<language>de</language>
+		</label>
 	</fieldTemplate>
 
 	<fieldTemplate>
@@ -52,6 +56,10 @@
 		<label>
 			<labelName>Affichage dans textarea</labelName>
 			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Anzeige in Textarea</labelName>
+			<language>de</language>
 		</label>
 	</fieldTemplate>
 
@@ -67,6 +75,10 @@
 			<labelName>Affichage editeur WYSIWYG</labelName>
 			<language>fr</language>
 		</label>
+		<label>
+			<labelName>Anzeige des WYSIWYG Editors</labelName>
+			<language>de</language>
+		</label>
 	</fieldTemplate>
 
 	<fieldTemplate>
@@ -81,13 +93,18 @@
 			<labelName>Une liste de choix</labelName>
 			<language>fr</language>
 		</label>
+		<label>
+			<labelName>Liste der Auswahlen</labelName>
+			<language>de</language>
+		</label>
 		<parameter>
 			<name>keys</name>
 			<value>1##2##3</value>
 		</parameter>
 		<parameter>
 			<name>values</name>
-			<value>Choix 1##Choix 2##Choix 3</value>
+			<value lang="fr">Choix 1##Choix 2##Choix 3</value>
+			<value lang="de">Auswah 1##Auswah 2##Auswah 3</value>
 		</parameter>
 	</fieldTemplate>
 
@@ -99,9 +116,13 @@
 		<isReadOnly>true</isReadOnly>
 		<isDisabled>true</isDisabled>
 		<isHidden>false</isHidden>
-			<label>
+		<label>
 			<labelName>type url dans input</labelName>
 			<language>fr</language>
+		</label>
+		<label>
+			<labelName>URLtyp in Input</labelName>
+			<language>de</language>
 		</label>
 	</fieldTemplate>
 
@@ -116,6 +137,10 @@
 		<label>
 			<labelName>date dans input</labelName>
 			<language>fr</language>
+		</label>
+		<label>
+			<labelName>Datum in Input</labelName>
+			<language>de</language>
 		</label>
 	</fieldTemplate>
 	

@@ -31,14 +31,17 @@
   <label>
     <message lang="fr">Designer de page web</message>
     <message lang="en">WebPage Designer</message>
+    <message lang="de">Webpage-Designer</message>
   </label>
   <description>
     <message lang="fr">Permet de créer une page web via l'éditeur WYSIWYG</message>
     <message lang="en">Create a web page using the WYSIWYG editor</message>
+    <message lang="de">Ermöglicht es Ihnen, eine Webseite mit einem WYSIWYG-Editor zu erstellen.</message>
   </description>
   <suite>
     <message lang="fr">04 Gestion de contenu</message>
     <message lang="en">04 Content Management</message>
+    <message lang="de">04 Inhaltsverwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -48,20 +51,24 @@
       <label>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </label>
       <help>
         <message lang="fr">Publieur</message>
         <message lang="en">Publisher</message>
+        <message lang="de">Herausgeber</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>
@@ -71,6 +78,7 @@
       <label>
         <message lang="fr">Gestion de l'abonnement</message>
         <message lang="en">Manage subscription</message>
+        <message lang="de">Abonnement verwalten</message>
       </label>
       <order>1</order>      
       <mandatory>true</mandatory>
@@ -80,6 +88,7 @@
       <help>
         <message lang="fr">Permet d'envoyer une notification aux utilisateurs abonnés à la page Web.</message>
         <message lang="en">Allows to send a notification to the users who have subscribed to the Web page.</message>
+        <message lang="de">Ermöglicht es eine Benachrichtigung an den Benutzern zu senden, die sich an der Web-Seite abonniert haben .</message>
       </help>
     </parameter>
     <parameter>
@@ -87,6 +96,7 @@
       <label>
         <message lang="fr">Formulaire utilisé</message>
         <message lang="en">XML form</message>
+        <message lang="de">XML formular</message>
       </label>
       <order>2</order>
       <mandatory>false</mandatory>
@@ -96,6 +106,7 @@
       <help>
         <message lang="fr">Permet d'utiliser un formulaire comme masque de saisie.</message>
         <message lang="en">Allows you to use a form as an input mask.</message>
+        <message lang="de">Damit können Sie ein Formular als Eingabemaske verwenden</message>
       </help>
     </parameter>
   </parameters>

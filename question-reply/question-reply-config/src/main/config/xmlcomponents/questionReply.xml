@@ -31,6 +31,7 @@
   <label>
     <message lang="fr">Questions/Réponses - Questions aux experts</message>
     <message lang="en">Questions/Answers - Questions to experts</message>
+    <message lang="de">Fragen/Antworten - Fragen an die Experten</message>
   </label>
   <description>
     <message lang="fr">Permet de gérer la base de connaissances des questions posées par les utilisateurs
@@ -41,10 +42,14 @@
     The users can locate the experts that have the best chance of knowing the answer.
     The expert manage the diffusion of answers towards the users.
     </message>
+    <message lang="de">Erstellt eine Wissens-Datenbank mit Fragen von Benutzern an Experten.  
+    Die Benutzern können die Experten finden, die die beste Chance haben, eine Antwort zu haben.  
+    Die Experten verwalten die Verbreitung von Antworten.</message>
   </description>
   <suite>
     <message lang="fr">03 Gestion de la connaissance</message>
     <message lang="en">03 Knowledge Management</message>
+    <message lang="de">03 Wissens Verwaltung</message>
   </suite>
   <visible>true</visible>
   <portlet>true</portlet>
@@ -54,40 +59,48 @@
       <label>
         <message lang="fr">Animateur</message>
         <message lang="en">Quiz master</message>
+        <message lang="de">Animator</message>
       </label>
       <help>
         <message lang="fr">Animateur</message>
         <message lang="en">Quiz master</message>
+        <message lang="de">Animator</message>
       </help>
     </profile>
     <profile name="publisher">
       <label>
         <message lang="fr">Demandeur</message>
         <message lang="en">Applicant</message>
+        <message lang="de">Antragsteller</message>
       </label>
       <help>
         <message lang="fr">Demandeur</message>
         <message lang="en">Applicant</message>
+        <message lang="de">Antragsteller</message>
       </help>
     </profile>
     <profile name="writer">
       <label>
         <message lang="fr">Expert</message>
         <message lang="en">Expert</message>
+        <message lang="de">Experte</message>
       </label>
       <help>
         <message lang="fr">Expert</message>
         <message lang="en">Expert</message>
+        <message lang="de">Experte</message>
       </help>
     </profile>
     <profile name="user">
       <label>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </label>
       <help>
         <message lang="fr">Lecteur</message>
         <message lang="en">Reader</message>
+        <message lang="de">Leser</message>
       </help>
     </profile>
   </profiles>
@@ -97,6 +110,7 @@
       <label>
         <message lang="fr">Utilisation des réponses privées</message>
         <message lang="en">Private answers</message>
+        <message lang="de">Private Antworten</message>
       </label>
       <order>1</order>
       <mandatory>true</mandatory>
@@ -106,6 +120,7 @@
       <help>
         <message lang="fr">Possibilité de créer des réponses privées.</message>
         <message lang="en">Experts can send private answers.</message>
+        <message lang="de">Experten können private Antworten senden.</message>
       </help>
     </parameter>
     <parameter>
@@ -113,6 +128,7 @@
       <label>
         <message lang="fr">Questions triées par ordre</message>
         <message lang="en">Sort by questions</message>
+        <message lang="de">Sortieren nach Fragen</message>
       </label>
       <order>2</order>
       <mandatory>false</mandatory>
@@ -122,6 +138,7 @@
       <help>
         <message lang="fr">Possibilité de trier les questions.</message>
         <message lang="en">Questions are sortable.</message>
+        <message lang="de">Fragen sind sortierbar.</message>
       </help>
     </parameter>
   </parameters>
