@@ -4,7 +4,7 @@
   <parent>
     <groupId>com.silverpeas</groupId>
     <artifactId>parent</artifactId>
-    <version>19</version>
+    <version>20-SNAPSHOT</version>
   </parent>
 
   <scm>
@@ -162,6 +162,7 @@
     <module>classifieds</module>
     <module>formsonline</module>
     <module>scheduleevent</module>
+    <module>crm</module>
   </modules>
 
 </project>

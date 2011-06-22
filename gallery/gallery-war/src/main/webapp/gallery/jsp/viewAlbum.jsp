@@ -48,6 +48,7 @@
       ResourceLocator generalSettings = GeneralPropertiesManager.getGeneralResourceLocator();
         
       // declaration des variables :
+      String fctAddPhoto = "AddPhoto";
       int nbAffiche = 0;
       String albumId = "";
       List photos = null;
@@ -210,6 +211,15 @@
 	    albumWindow = SP_openWindow(urlWindow, "albumWindow", "550", "250", windowParams);
 	}
 	
+	function sendDataForAddPath() 
+	  {
+	    // envoi des photos selectionnees pour le placement par lot
+	    document.photoForm.SelectedIds.value  = getObjects(true);
+	    document.photoForm.NotSelectedIds.value = getObjects(false);
+	    document.photoForm.action       = "AddPathForSelectedPhoto";
+	    document.photoForm.submit();
+	  }
+	
 	function getObjects(selected)
 	{
 		var  items = "";
@@ -325,7 +335,7 @@ function uploadCompleted(s)
 		{
 	   		operationPane.addOperation(resource.getIcon("gallery.copy"), resource.getString("gallery.copyAlbum"), "javascript:onClick=clipboardCopy()");
 	   		operationPane.addOperation(resource.getIcon("gallery.cut"), resource.getString("gallery.cutAlbum"), "javascript:onClick=clipboardCut()");
-	       	operationPane.addLine();
+	      operationPane.addLine();
 		}
 		
 		// possibilite de modifier ou supprimer les photos par lot
@@ -335,6 +345,10 @@ function uploadCompleted(s)
 		{
 			// si on a le classement Pdc : possibilite de classer par lot
 			operationPane.addOperation(resource.getIcon("gallery.categorizeSelectedPhoto"),resource.getString("gallery.categorizeSelectedPhoto"),"javascript:onClick=sendDataCategorize();");
+		}
+		if ("admin".equals(profile)) {
+		  // possibilite de placer les photos par lot
+      operationPane.addOperation(resource.getIcon("gallery.addPathForSelectedPhoto"), resource.getString("gallery.addPathForSelectedPhoto"), "javascript:onClick=sendDataForAddPath()");
 		}
 	}
 	
@@ -351,7 +365,7 @@ function uploadCompleted(s)
 	if ( "admin".equals(profile) || "publisher".equals(profile) || "writer".equals(profile))
 	{
 		// possibilite d'ajouter des photos pour les "admin", "publisher" et "writer"
-		operationPane.addOperation(resource.getIcon("gallery.addPhoto"),resource.getString("gallery.ajoutPhoto"),"AddPhoto");
+		operationPane.addOperation(resource.getIcon("gallery.addPhoto"),resource.getString("gallery.ajoutPhoto"),fctAddPhoto);
 		operationPane.addLine();
 	}
 	
@@ -783,10 +797,34 @@ function uploadCompleted(s)
 			</table>
 			<%
 			out.println(board.printAfter());
+		} else {
+		  %>
+		    <div class="inlineMessage">
+		    <%
+		    if ("user".equals(profile) || "privilegedUser".equals(profile)) {
+		      out.println(resource.getString("gallery.album.emptyForUser"));
+		    } else if ("writer".equals(profile)) {
+		        String[] params = new String[2]; 
+            params[0] = resource.getString("gallery.ajoutPhoto");
+            params[1] = fctAddPhoto;
+		        out.println(resource.getStringWithParams("gallery.album.emptyForWriter",params));
+		      } else {
+		        // profile publisher et admin
+		        String[] params = new String[4]; 
+            params[0] = resource.getString("gallery.ajoutAlbum");
+            params[1] = "javaScript:addAlbum()";
+            params[2] = resource.getString("gallery.ajoutPhoto");
+            params[3] = fctAddPhoto;
+            out.println(resource.getStringWithParams("gallery.album.emptyForAdmin",params));
+		      }
+		    %>
+		    </div>
+		    <%
+      }
 		}
-  	}    
+ 
   	
-  	out.println(frame.printAfter());
+  out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
 <form name="albumForm" action="" Method="POST">

@@ -27,7 +27,6 @@ import com.stratelia.webactiv.util.FileServerUtils;
 import com.silverpeas.export.ExportException;
 import com.silverpeas.export.NoDataToExportException;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
-import java.util.Collection;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -144,7 +143,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         String id = request.getParameter("Id"); // not null
 
         // récupère l'Event et sa périodicité
-        EventDetail event = almanach.getCompleteEventDetail(id);
+        EventDetail event = almanach.getEventDetail(id);
 
         // Met en session l'événement courant
         almanach.setCurrentEvent(event);
@@ -286,7 +285,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         // création
         String dateIteration = request.getParameter("Date"); // peut etre null
         // récupère l'Event et sa périodicité
-        EventDetail event = almanach.getCompleteEventDetail(id);
+        EventDetail event = almanach.getEventDetail(id);
 
         java.util.Calendar calDateIteration = java.util.Calendar.getInstance();
         calDateIteration.setTime(DateUtil.parse(dateIteration));
@@ -314,7 +313,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         String dateFinIteration = request.getParameter("DateFinIteration"); // format
         // client
 
-        EventDetail event = almanach.getCompleteEventDetail(id);
+        EventDetail event = almanach.getEventDetail(id);
 
         String title = request.getParameter("Title");
         String description = request.getParameter("Description");
@@ -472,7 +471,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         String id = request.getParameter("Id");
 
         // récupère l'Event et sa périodicité
-        EventDetail event = almanach.getCompleteEventDetail(id);
+        EventDetail event = almanach.getEventDetail(id);
 
         java.util.Calendar calDateIteration = java.util.Calendar.getInstance();
         calDateIteration.setTime(event.getStartDate());
@@ -520,14 +519,19 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         } catch (Exception e) {
           request.setAttribute("javax.servlet.jsp.jspException", e);
         }
-      } else if ("ViewYearEvents".equals(function) || "ViewMonthEvents".equals(function)) {
-        Collection<EventDetail> events = almanach.getListRecurrentEvent(true);
-        request.setAttribute("Events", events);
+      } else if ("ViewYearEvents".equals(function)) {
+        AlmanachCalendarView calendar = almanach.getYearlyAlmanachCalendarView();
+        request.setAttribute("calendarView", calendar);
+        request.setAttribute("Function", function);
+        destination = "/almanach/jsp/viewEvents.jsp";
+      } else if ("ViewMonthEvents".equals(function)) {
+        AlmanachCalendarView calendar = almanach.getMonthlyAlmanachCalendarView();
+        request.setAttribute("calendarView", calendar);
         request.setAttribute("Function", function);
         destination = "/almanach/jsp/viewEvents.jsp";
       } else if ("ViewYearEventsPOPUP".equals(function)) {
-        Collection<EventDetail> events = almanach.getListRecurrentEvent(true);
-        request.setAttribute("Events", events);
+        AlmanachCalendarView calendarView = almanach.getYearlyAlmanachCalendarView();
+        request.setAttribute("calendarView", calendarView);
         destination = "/almanach/jsp/viewEventsPopup.jsp";
       } else if ("exportToICal".equals(function)) {
         try {

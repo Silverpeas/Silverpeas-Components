@@ -23,23 +23,24 @@
  */
 package com.silverpeas.gallery.image;
 
-import com.drew.imaging.ImageProcessingException;
-import com.drew.imaging.jpeg.JpegProcessingException;
-import com.drew.metadata.MetadataException;
-import com.silverpeas.gallery.model.MetaData;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+
+import com.google.common.base.Splitter;
+import com.silverpeas.gallery.model.MetaData;
 
 /**
  *
  * @author ehugonnet
  */
 public interface ImageMetadataExtractor {
+  
+  final Splitter COMMA_SPLITTER = Splitter.on(',');
 
-  List<IptcProperty> defineImageIptcProperties();
+  List<IptcProperty> defineImageIptcProperties(Iterable<String> propertyNames);
 
-  List<ExifProperty> defineImageProperties();
+  List<ExifProperty> defineImageProperties(Iterable<String> propertyNames);
 
   List<MetaData> extractImageExifMetaData(File image) throws ImageMetadataException, UnsupportedEncodingException;
 

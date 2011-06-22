@@ -123,7 +123,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
     return chartVO;
   }
 
-  private UserVO OrganizationalPerson2UserVO(OrganizationalPerson person, OrganizationalRole role) {
+  private UserVO organizationalPerson2UserVO(OrganizationalPerson person, OrganizationalRole role) {
     String displayedRole = (role == null) ? "" : role.getLabel();
     return new UserVO(person.getName(), person.getSilverpeasAccount(), displayedRole, person
         .getDetail());
@@ -152,15 +152,15 @@ public class OrganizationChartSessionController extends AbstractComponentSession
 
     for (OrganizationalPerson person : chart.getPersonns()) {
       if (person.isVisibleOnCenter()) {
-        mainActors.add(OrganizationalPerson2UserVO(person, person.getVisibleCenterRole()));
+        mainActors.add(organizationalPerson2UserVO(person, person.getVisibleCenterRole()));
       }
 
       else if (person.isVisibleOnLeft()) {
-        leftUsers.add(OrganizationalPerson2UserVO(person, person.getVisibleLeftRole()));
+        leftUsers.add(organizationalPerson2UserVO(person, person.getVisibleLeftRole()));
       }
 
       else if (person.isVisibleOnRight()) {
-        rightUsers.add(OrganizationalPerson2UserVO(person, person.getVisibleRightRole()));
+        rightUsers.add(organizationalPerson2UserVO(person, person.getVisibleRightRole()));
       }
     }
 
@@ -191,6 +191,14 @@ public class OrganizationChartSessionController extends AbstractComponentSession
       subUnit.setName(subOrganization.getName());
       subUnit.setCenterLinkActive(subOrganization.hasSubUnits());
       subUnit.setDetailLinkActive(subOrganization.hasMembers());
+      // setting main actors of subunit
+      List<UserVO> subUnitMainActors = new ArrayList<UserVO>();
+      for (OrganizationalPerson person : subOrganization.getMainActors()) {
+        if (person.isVisibleOnCenter()) {
+          subUnitMainActors.add(organizationalPerson2UserVO(person, person.getVisibleCenterRole()));
+        }
+      }
+      subUnit.setMainActors(subUnitMainActors);
       subOrganizations.add(subUnit);
     }
     chartVO.setSubOrganizations(subOrganizations);
@@ -212,7 +220,7 @@ public class OrganizationChartSessionController extends AbstractComponentSession
 
     for (OrganizationalPerson person : chart.getPersonns()) {
       if (person.isVisibleOnCenter()) {
-        mainActors.add(OrganizationalPerson2UserVO(person, person.getVisibleCenterRole()));
+        mainActors.add(organizationalPerson2UserVO(person, person.getVisibleCenterRole()));
       }
     }
 

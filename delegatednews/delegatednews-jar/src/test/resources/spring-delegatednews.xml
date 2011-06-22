@@ -23,7 +23,7 @@
   <bean name="delegatedNewsServiceFactory"
         class="com.silverpeas.delegatednews.service.ServicesFactory" factory-method="getInstance"/>
 
-  <hades:dao-config base-package="com.silverpeas" transaction-manager-ref="jpaTransactionManager"/>
+  <hades:dao-config base-package="com.silverpeas.delegatednews" transaction-manager-ref="jpaTransactionManager"/>
 
   <tx:annotation-driven transaction-manager="jpaTransactionManager"/>
 
@@ -38,7 +38,7 @@
   <bean id="entityManagerFactory"
         class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"
         p:dataSource-ref="dataSource"
-        p:persistenceXmlLocation="classpath*:META-INF/silverpeas-persistence.xml"
+        p:persistenceXmlLocation="classpath*:META-INF/persistence-delegatednews.xml"
         p:persistenceUnitName="silverpeas-pu">
     <property name="jpaVendorAdapter">
       <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">

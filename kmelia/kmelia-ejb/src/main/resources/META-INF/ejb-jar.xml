@@ -102,7 +102,7 @@
       <method>
         <ejb-name>ejb/KmeliaBm</ejb-name>
         <method-intf>Remote</method-intf>
-        <method-name>addPublicationToTopic</method-name>
+        <method-name>addPublicationToTopicWithoutNotifications</method-name>
       </method>
       <trans-attribute>Required</trans-attribute>
     </container-transaction>
@@ -142,7 +142,7 @@
     	<method>
     		<ejb-name>ejb/KmeliaBm</ejb-name>
     		<method-intf>Remote</method-intf>
-    		<method-name>createPublicationIntoTopic</method-name>
+    		<method-name>createPublicationIntoTopicWithoutNotifications</method-name>
     		<method-params>
     			<method-param>com.stratelia.webactiv.util.publication.model.PublicationDetail</method-param>
     			<method-param>com.stratelia.webactiv.util.node.model.NodePK</method-param>
