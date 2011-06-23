@@ -28,12 +28,14 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import org.odftoolkit.odfdom.pkg.OdfPackage;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.w3c.dom.NamedNodeMap;
 import org.odftoolkit.odfdom.incubator.doc.office.OdfOfficeAutomaticStyles;
 import org.odftoolkit.odfdom.dom.element.style.StyleMasterPageElement;
 import java.util.Iterator;
+import org.apache.commons.lang.SystemUtils;
 import org.odftoolkit.odfdom.dom.element.draw.DrawFrameElement;
 import org.odftoolkit.odfdom.dom.element.draw.DrawImageElement;
 import org.odftoolkit.odfdom.dom.style.OdfStyleFamily;
@@ -320,6 +322,11 @@ class ODTDocumentsMerging extends TextDocument {
       path = attachment.getAttachmentPath(lang);
     } else {
       path = FileRepositoryManager.getUploadPath() + href;
+    }
+    if (SystemUtils.IS_OS_WINDOWS) {
+      path = "file:/" + path.replaceAll("\\\\", "/");
+    } else {
+      path = "file://" + path;
     }
     return path;
   }

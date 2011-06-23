@@ -210,11 +210,11 @@ public class ODTDocumentBuilder {
   private void fill(final TextDocument odtDocument, final KmeliaPublication publication) throws
       Exception {
     buildInfoSection(in(odtDocument), with(publication));
+    buildContentSection(in(odtDocument), with(publication));
     buildAttachmentsSection(in(odtDocument), with(publication));
     buildSeeAlsoSection(in(odtDocument), with(publication));
     buildPdCSection(in(odtDocument), with(publication));
     buildCommentSection(in(odtDocument), with(publication));
-    buildContentSection(in(odtDocument), with(publication));
   }
 
   private void buildInfoSection(final TextDocument odtDocument, final KmeliaPublication publication) {
