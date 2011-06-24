@@ -404,4 +404,83 @@
 #topicDescription {
 	color:#666;
 	}
+	
+/* Pour Kmax */
+#listAxis{
+	display:inline;
+	float:left;
+}
 
+#btnForm{
+	display:inline;
+	float:left;
+	padding-top:12px;
+	width:100px;
+}
+
+.oneAxis {
+    background-color: #FFFFFF;
+    border-left: 1px solid #CECECE;
+    display: inline;
+    float: left;
+    margin: 5px 25px 5px 4px;
+    padding: 0 5px 4px 4px;
+    position:relative;
+}
+
+#kmax .sousNavBulle, #kmaxManager .sousNavBull{
+	position:relative;
+	margin:0 2% 0 1%;
+	width:97%;
+}
+#kmax .sousNavBulle .milieuBoutonV5 a {
+	background-color:transparent;
+	border:0;
+}
+
+.oneAxis  label {
+	display: block;
+	padding: 4px 0 3px 0;
+	font-weight:100;
+	color:#26334A;
+}
+
+.oneAxis select {
+	border: 1px solid #CECECE;
+    color: #666666;
+}
+
+.axisManagment .oneAxis label{
+	padding-right:8px;
+	cursor:pointer;
+}
+
+.oneAxis .action {
+	position:absolute;
+	top:6px;
+	right:6px;
+	border:0;
+	background-color:transparent;
+}
+.oneAxis .action:hover {
+	background-color:#FFFFCC;
+}
+.oneAxis .action img {
+	width:13px;
+}
+
+.axisManagment .oneAxis{
+
+	background-color: #EAEAEA;
+    border-left: 1px solid #CECECE;
+    display: inline;
+    float: left;
+    margin: 5px 25px 5px 4px;
+    padding: 6px 15px 14px 14px;
+    position:relative;
+	border:1px solid #EAEAEA ;
+	border-radius:10px;
+	-moz-border-radius:10px;
+	-webkit-border-radius:10px;
+}
+	
