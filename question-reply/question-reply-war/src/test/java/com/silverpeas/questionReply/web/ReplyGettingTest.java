@@ -23,7 +23,7 @@
  */
 package com.silverpeas.questionReply.web;
 
-import java.util.List;
+import com.silverpeas.personalization.service.MockablePersonalizationService;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.silverpeas.questionReply.control.QuestionManager;
 import com.silverpeas.questionReply.model.Question;
@@ -35,6 +35,7 @@ import com.stratelia.webactiv.persistence.IdPK;
 import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import java.util.ArrayList;
+import java.util.List;
 import javax.inject.Inject;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
@@ -66,7 +67,7 @@ public class ReplyGettingTest extends RESTWebServiceTest {
     WebResource resource = resource();
     try {
       resource.path(RESOURCE_PATH + "/question/3").accept(MediaType.APPLICATION_JSON).get(
-          String.class);
+              String.class);
       fail("A non authenticated user shouldn't access the comment");
     } catch (UniformInterfaceException ex) {
       int recievedStatus = ex.getResponse().getStatus();
@@ -108,21 +109,21 @@ public class ReplyGettingTest extends RESTWebServiceTest {
     when(mockedQuestionManager.getAllReplies(3L, COMPONENT_INSTANCE_ID)).thenReturn(replies);
     questionManager.setQuestionManager(mockedQuestionManager);
     ReplyEntity[] entities = resource.path(RESOURCE_PATH + "/question/3").header(HTTP_SESSIONKEY,
-        sessionKey).accept(MediaType.APPLICATION_JSON).get(ReplyEntity[].class);
+            sessionKey).accept(MediaType.APPLICATION_JSON).get(ReplyEntity[].class);
     assertNotNull(entities);
     assertThat(entities.length, is(2));
     assertThat(entities[0], ReplyEntityMatcher.matches(replies.get(0)));
     assertThat(entities[1], ReplyEntityMatcher.matches(replies.get(1)));
     entities = resource.path(RESOURCE_PATH + "/question/3").header(HTTP_SESSIONKEY,
-        creatorSessionKey).
-        accept(MediaType.APPLICATION_JSON).get(ReplyEntity[].class);
+            creatorSessionKey).
+            accept(MediaType.APPLICATION_JSON).get(ReplyEntity[].class);
     assertNotNull(entities);
     assertThat(entities.length, is(2));
     assertThat(entities[0], ReplyEntityMatcher.matches(replies.get(0)));
     assertThat(entities[1], ReplyEntityMatcher.matches(replies.get(1)));
     entities = resource.path(RESOURCE_PATH + "/question/3").header(HTTP_SESSIONKEY,
-        publisherSessionKey).
-        accept(MediaType.APPLICATION_JSON).get(ReplyEntity[].class);
+            publisherSessionKey).
+            accept(MediaType.APPLICATION_JSON).get(ReplyEntity[].class);
     assertNotNull(entities);
     assertThat(entities.length, is(1));
     assertThat(entities[0], ReplyEntityMatcher.matches(replies.get(0)));
@@ -131,13 +132,13 @@ public class ReplyGettingTest extends RESTWebServiceTest {
   /* @Test
   public void getAnInvisibleQuestionByAnAuthenticatedUser() throws Exception {
   WebResource resource = resource();
-
+  
   UserDetail creator = new UserDetail();
   creator.setFirstName("Lisa");
   creator.setLastName("Simpson");
   creator.setId("1");
   authenticate(creator);
-
+  
   UserDetailWithProfiles user = new UserDetailWithProfiles();
   user.setFirstName("Bart");
   user.setLastName("Simpson");
@@ -186,7 +187,7 @@ public class ReplyGettingTest extends RESTWebServiceTest {
     reply.setPK(new IdPK(101));
     reply.setTitle("Private reply");
     reply.writeWysiwygContent(
-        "This reply content should be visible for writers and question creator only");
+            "This reply content should be visible for writers and question creator only");
     reply.setCreationDate("2011/06/03");
     reply.setPrivateReply(01);
     reply.setPublicReply(0);
