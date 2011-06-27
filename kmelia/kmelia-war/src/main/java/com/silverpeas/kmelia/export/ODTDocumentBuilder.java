@@ -210,11 +210,11 @@ public class ODTDocumentBuilder {
   private void fill(final TextDocument odtDocument, final KmeliaPublication publication) throws
       Exception {
     buildInfoSection(in(odtDocument), with(publication));
+    buildContentSection(in(odtDocument), with(publication));
     buildAttachmentsSection(in(odtDocument), with(publication));
     buildSeeAlsoSection(in(odtDocument), with(publication));
     buildPdCSection(in(odtDocument), with(publication));
     buildCommentSection(in(odtDocument), with(publication));
-    buildContentSection(in(odtDocument), with(publication));
   }
 
   private void buildInfoSection(final TextDocument odtDocument, final KmeliaPublication publication) {
@@ -230,6 +230,7 @@ public class ODTDocumentBuilder {
     metadata.setUserDefinedDataValue(FIELD_MODIFICATION_DATE,
         getOutputDate(detail.getUpdateDate(), getLanguage()));
     metadata.setUserDefinedDataValue(FIELD_AUTHOR, publication.getCreator().getDisplayedName());
+    metadata.setUserDefinedDataValue(FIELD_LAST_MODIFIER, publication.getLastModifier().getDisplayedName());
     metadata.setUserDefinedDataValue(FIELD_URL, publication.getURL());
     metadata.setUserDefinedDataValue(FIELD_VERSION, detail.getVersion());
   }
@@ -267,6 +268,7 @@ public class ODTDocumentBuilder {
   private void buildWithHTMLText(String htmlText, final TextDocument odtDocument) throws Exception {
     Section content = odtDocument.getSectionByName(SECTION_CONTENT);
     if (isDefined(htmlText)) {
+      String html = "<html><body>" + htmlText + "</body></html>";
       Paragraph p = content.getParagraphByIndex(1, false);
       if (p != null) {
         content.removeParagraph(p);
@@ -276,7 +278,7 @@ public class ODTDocumentBuilder {
         htmlFile = new File(
             FileRepositoryManager.getTemporaryPath() + UUID.randomUUID().toString() + ".html");
         // warning: the content of HTML text is actually in ISO-8859-1!
-        FileUtils.writeStringToFile(htmlFile, htmlText, "ISO-8859-1");
+        FileUtils.writeStringToFile(htmlFile, html, "ISO-8859-1");
         HTMLConverter converter = DocumentFormatConverterFactory.getFactory().getHTMLConverter();
         odtConvertedHtmlFile = converter.convert(htmlFile, inFormat(odt));
         TextDocument htmlContent = TextDocument.loadDocument(odtConvertedHtmlFile);
@@ -296,6 +298,7 @@ public class ODTDocumentBuilder {
 
   private void buildWithXMLText(final KmeliaPublication publication, final TextDocument odtDocument)
       throws Exception {
+    boolean removeSection = true;
     String templateId = publication.getDetail().getInfoId();
     if (!isInteger(templateId)) {
       PublicationTemplate template = PublicationTemplateManager.getInstance().getPublicationTemplate(
@@ -317,7 +320,14 @@ public class ODTDocumentBuilder {
       context.setUserId(getUser().getId());
       context.setNodeId(getTopicOf(publication).getNodeDetail().getNodePK().getId());
       String htmlText = viewForm.toString(context, dataRecord);
-      buildWithHTMLText(htmlText, in(odtDocument));
+      if (isDefined(htmlText)) {
+        buildWithHTMLText(htmlText, in(odtDocument));
+        removeSection = false;
+      }
+    }
+    if (removeSection) {
+      Section contentSection = odtDocument.getSectionByName(SECTION_CONTENT);
+      contentSection.remove();
     }
   }
 
@@ -404,8 +414,7 @@ public class ODTDocumentBuilder {
             TextAElement hyperlink = new TextAElement(odtDocument.getContentDom());
             hyperlink.setXlinkHrefAttribute(aLinkedPublication.getURL());
             hyperlink.setXlinkTypeAttribute("simple");
-            hyperlink.setTextContent(publicationDetail.getId() + " - " + publicationDetail.getName(
-                getLanguage()));
+            hyperlink.setTextContent(publicationDetail.getName(getLanguage()));
             org.odftoolkit.simple.text.list.List ul = odtDocument.addList();
             ListItem li = ul.addItem("");
             li.getOdfElement().getFirstChild().appendChild(hyperlink);

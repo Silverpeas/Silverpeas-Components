@@ -28,12 +28,14 @@ import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
 import org.odftoolkit.odfdom.pkg.OdfPackage;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.w3c.dom.NamedNodeMap;
 import org.odftoolkit.odfdom.incubator.doc.office.OdfOfficeAutomaticStyles;
 import org.odftoolkit.odfdom.dom.element.style.StyleMasterPageElement;
 import java.util.Iterator;
+import org.apache.commons.lang.SystemUtils;
 import org.odftoolkit.odfdom.dom.element.draw.DrawFrameElement;
 import org.odftoolkit.odfdom.dom.element.draw.DrawImageElement;
 import org.odftoolkit.odfdom.dom.style.OdfStyleFamily;
@@ -52,8 +54,9 @@ import static com.silverpeas.util.StringUtil.*;
  * merging capabilities to it.
  * 
  * With the content of the document to merge, the merging operation imports only the text and
- * paragraph styles; styles on tables, lists, and so one aren't imported and it is the ones of the
- * document source that are taken into account on the imported  content text.
+ * paragraph styles; styles on tables, lists, and others elements aren't imported, so it is the
+ * styles defined in the document source that are applied on theses elements of the imported content.
+ * 
  * The merger is smart enough to rename the imported text and paragraph styles in order to avoid
  * conflicts with eponymous styles defined in the document source, and to take new 
  * document layout definitions from the document to merge.
@@ -104,7 +107,7 @@ class ODTDocumentsMerging extends TextDocument {
       importContentStylesOf(theDocument);
       Node myContent = getTextDocument().getContentDom().getFirstChild().getLastChild().
           getFirstChild();
-      importContentTextOf(theDocument, in(myContent));
+      insertContentTextOf(theDocument, into(myContent));
       return getTextDocument();
     } catch (Exception ex) {
       throw new DocumentMergeException(ex.getMessage(), ex);
@@ -122,8 +125,8 @@ class ODTDocumentsMerging extends TextDocument {
     try {
       importGlobalStylesOf(theDocument);
       importContentStylesOf(theDocument);
-      Node aGivenSection = getTextDocument().getSectionByName(section).getOdfElement();
-      importContentTextOf(theDocument, in(aGivenSection));
+      Node theSection = getTextDocument().getSectionByName(section).getOdfElement();
+      insertContentTextOf(theDocument, into(theSection));
       return getTextDocument();
     } catch (Exception ex) {
       throw new DocumentMergeException(ex.getMessage(), ex);
@@ -194,7 +197,7 @@ class ODTDocumentsMerging extends TextDocument {
    * imported.
    * @throws Exception if an error occurs while importing the text of the document.
    */
-  protected void importContentTextOf(final TextDocument document, final Node content) throws
+  protected void insertContentTextOf(final TextDocument document, final Node content) throws
       Exception {
     Node textContent = document.getContentDom().getElementsByTagName(
         OpenDocumentTextElements.ELEMENT_OFFICE_TEXT).item(0);
@@ -239,7 +242,12 @@ class ODTDocumentsMerging extends TextDocument {
     if (attributes != null) {
       Node attribute = attributes.getNamedItem(OpenDocumentTextElements.ATTRIBUTE_STYLE_NAME);
       if (attribute != null) {
-        attribute.setNodeValue(MERGE_STYLE_NAME_PREFIX + attribute.getNodeValue());
+        String style = attribute.getNodeValue();
+        if (style.startsWith("P") || style.startsWith("Text")) {
+          attribute.setNodeValue("T3");
+        } else {
+          attribute.setNodeValue(MERGE_STYLE_NAME_PREFIX + style);
+        }
       }
     }
     if (node.hasChildNodes()) {
@@ -315,6 +323,11 @@ class ODTDocumentsMerging extends TextDocument {
     } else {
       path = FileRepositoryManager.getUploadPath() + href;
     }
+    if (SystemUtils.IS_OS_WINDOWS) {
+      path = "file:/" + path.replaceAll("\\\\", "/");
+    } else {
+      path = "file://" + path;
+    }
     return path;
   }
 
@@ -333,7 +346,7 @@ class ODTDocumentsMerging extends TextDocument {
     return this;
   }
 
-  private static Node in(final Node node) {
+  private static Node into(final Node node) {
     return node;
   }
 

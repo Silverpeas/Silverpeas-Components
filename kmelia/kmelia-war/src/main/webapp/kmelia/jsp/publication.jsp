@@ -234,7 +234,7 @@
           minWidth: 350,
           buttons: {
             '<%= resources.getString("kmelia.export") %>': function() {
-              $( "#exportForm").submit();
+              $("#exportForm").submit();
               $( this ).dialog( "close" );
             },
             '<%= resources.getString("GML.cancel") %>': function() {
@@ -746,7 +746,7 @@
             <% }%>
       </span>
       <div id="publication-export">
-        <form id="exportForm" action="<c:url value='/exportPublication'/>">
+        <form id="exportForm" action="<c:url value='/exportPublication'/>" target="_blank">
           <fieldset>
             <legend><%=resources.getString("kmelia.format")%></legend>
             <%
