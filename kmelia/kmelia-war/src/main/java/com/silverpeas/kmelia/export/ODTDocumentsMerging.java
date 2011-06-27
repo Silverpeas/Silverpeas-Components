@@ -23,19 +23,15 @@
  */
 package com.silverpeas.kmelia.export;
 
-import com.stratelia.webactiv.util.attachment.control.AttachmentController;
-import com.stratelia.webactiv.util.attachment.ejb.AttachmentPK;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.odftoolkit.odfdom.pkg.OdfPackage;
-import com.stratelia.webactiv.util.FileRepositoryManager;
-import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
-import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import org.w3c.dom.NamedNodeMap;
 import org.odftoolkit.odfdom.incubator.doc.office.OdfOfficeAutomaticStyles;
 import org.odftoolkit.odfdom.dom.element.style.StyleMasterPageElement;
 import java.util.Iterator;
-import org.apache.commons.lang.SystemUtils;
 import org.odftoolkit.odfdom.dom.element.draw.DrawFrameElement;
 import org.odftoolkit.odfdom.dom.element.draw.DrawImageElement;
 import org.odftoolkit.odfdom.dom.style.OdfStyleFamily;
@@ -106,7 +102,7 @@ class ODTDocumentsMerging extends TextDocument {
       importGlobalStylesOf(theDocument);
       importContentStylesOf(theDocument);
       Node myContent = getTextDocument().getContentDom().getFirstChild().getLastChild().
-          getFirstChild();
+              getFirstChild();
       insertContentTextOf(theDocument, into(myContent));
       return getTextDocument();
     } catch (Exception ex) {
@@ -144,11 +140,11 @@ class ODTDocumentsMerging extends TextDocument {
   protected void importGlobalStylesOf(final TextDocument document) throws Exception {
     OdfOfficeStyles documentStyles = document.getDocumentStyles();
     OdfOfficeStyles stylesNode = (OdfOfficeStyles) getTextDocument().getStylesDom().importNode(
-        documentStyles, true);
+            documentStyles, true);
     renameAndImportStyles(stylesNode.getStylesForFamily(OdfStyleFamily.Paragraph),
-        getTextDocument().getDocumentStyles());
+            getTextDocument().getDocumentStyles());
     renameAndImportStyles(stylesNode.getStylesForFamily(OdfStyleFamily.Text),
-        getTextDocument().getDocumentStyles());
+            getTextDocument().getDocumentStyles());
 
     // import new master styles (page layouts)
     OdfOfficeMasterStyles documentMasterStyles = document.getOfficeMasterStyles();
@@ -157,10 +153,10 @@ class ODTDocumentsMerging extends TextDocument {
     while (masterPages.hasNext()) {
       StyleMasterPageElement styleMasterPageElement = masterPages.next();
       StyleMasterPageElement existingMasterPage =
-          templateMasterStyles.getMasterPage(styleMasterPageElement.getStyleNameAttribute());
+              templateMasterStyles.getMasterPage(styleMasterPageElement.getStyleNameAttribute());
       if (existingMasterPage == null) {
         Node masterPageNode = getTextDocument().getStylesDom().importNode(styleMasterPageElement,
-            true);
+                true);
         getTextDocument().getOfficeMasterStyles().appendChild(masterPageNode.cloneNode(true));
       }
     }
@@ -179,11 +175,11 @@ class ODTDocumentsMerging extends TextDocument {
   protected void importContentStylesOf(final TextDocument document) throws Exception {
     OdfOfficeAutomaticStyles automaticStyles = document.getContentDom().getAutomaticStyles();
     OdfOfficeAutomaticStyles automaticStylesNode = (OdfOfficeAutomaticStyles) getTextDocument().
-        getContentDom().importNode(automaticStyles, true);
+            getContentDom().importNode(automaticStyles, true);
     renameAndImportStyles(automaticStylesNode.getStylesForFamily(OdfStyleFamily.Paragraph),
-        getTextDocument().getContentDom().getAutomaticStyles());
+            getTextDocument().getContentDom().getAutomaticStyles());
     renameAndImportStyles(automaticStylesNode.getStylesForFamily(OdfStyleFamily.Text),
-        getTextDocument().getContentDom().getAutomaticStyles());
+            getTextDocument().getContentDom().getAutomaticStyles());
   }
 
   /**
@@ -198,13 +194,13 @@ class ODTDocumentsMerging extends TextDocument {
    * @throws Exception if an error occurs while importing the text of the document.
    */
   protected void insertContentTextOf(final TextDocument document, final Node content) throws
-      Exception {
+          Exception {
     Node textContent = document.getContentDom().getElementsByTagName(
-        OpenDocumentTextElements.ELEMENT_OFFICE_TEXT).item(0);
+            OpenDocumentTextElements.ELEMENT_OFFICE_TEXT).item(0);
     copyXMLNode(textContent, content);
 
     NodeList imageNodes = getTextDocument().getContentDom().getElementsByTagName(
-        OpenDocumentTextElements.ELEMENT_DRAW_IMAGE);
+            OpenDocumentTextElements.ELEMENT_DRAW_IMAGE);
     embedImages(imageNodes);
   }
 
@@ -284,51 +280,37 @@ class ODTDocumentsMerging extends TextDocument {
     for (int i = 0; i < imageNodes.getLength(); i++) {
       Node imageNode = imageNodes.item(i);
       Node hrefNode = imageNode.getAttributes().getNamedItem(
-          OpenDocumentTextElements.ATTRIBUTE_LINK_REF);
+              OpenDocumentTextElements.ATTRIBUTE_LINK_REF);
       if (hrefNode != null) {
-        URI imageURI = new URI(getAttachedImagePath(hrefNode.getNodeValue()));
-        Image image = Image.getInstanceof((DrawImageElement) imageNode);
-        Frame imageFrame = image.getFrame();
-        String height = imageFrame.getDrawFrameElement().getSvgHeightAttribute();
-        String width = imageFrame.getDrawFrameElement().getSvgWidthAttribute();
-        Image embeddedImage = Image.newImage(imageFrame, imageURI);
-        DrawFrameElement drawFrame = embeddedImage.getFrame().getDrawFrameElement();
-        drawFrame.setSvgWidthAttribute(width);
-        drawFrame.setSvgHeightAttribute(height);
-        image.remove();
+        URI imageURI = getAttachedImageURI(hrefNode.getNodeValue());
+        if (imageURI != null) {
+          Image image = Image.getInstanceof((DrawImageElement) imageNode);
+          Frame imageFrame = image.getFrame();
+          String height = imageFrame.getDrawFrameElement().getSvgHeightAttribute();
+          String width = imageFrame.getDrawFrameElement().getSvgWidthAttribute();
+          Image embeddedImage = Image.newImage(imageFrame, imageURI);
+          DrawFrameElement drawFrame = embeddedImage.getFrame().getDrawFrameElement();
+          drawFrame.setSvgWidthAttribute(width);
+          drawFrame.setSvgHeightAttribute(height);
+          image.remove();
+        } else {
+          imageNode.getParentNode().removeChild(imageNode);
+        }
       }
     }
   }
 
-  private String getAttachedImagePath(String href) {
-    String path = "";
-    String attachmentId = null;
-    String lang = null;
-    if (href.contains("attached_file")) {
-      String[] tokens = href.split("/");
-      for (int i = 0; i < tokens.length; i++) {
-        if ("attachmentId".equals(tokens[i])) {
-          attachmentId = tokens[++i];
-        }
-        if ("lang".equals(tokens[i])) {
-          lang = tokens[++i];
-        }
-        if (attachmentId != null && lang != null) {
-          break;
-        }
-      }
-      AttachmentDetail attachment = AttachmentController.searchAttachmentByPK(new AttachmentPK(
-          attachmentId));
-      path = attachment.getAttachmentPath(lang);
-    } else {
-      path = FileRepositoryManager.getUploadPath() + href;
+  private URI getAttachedImageURI(String href) {
+    URI imageURI = null;
+    SilverpeasImageFinder imageFinder = SilverpeasImageFinder.getImageFinder();
+    try {
+      String imagePath = imageFinder.findImageReferenceddBy(href);
+      imageURI = URI.create(imagePath);
+    } catch (Exception ex) {
+      Logger.getLogger(ODTDocumentsMerging.class.getName()).log(Level.SEVERE, "Cannot find "
+              + "the image referenced by the href='" + href + "'", ex);
     }
-    if (SystemUtils.IS_OS_WINDOWS) {
-      path = "file:/" + path.replaceAll("\\\\", "/");
-    } else {
-      path = "file://" + path;
-    }
-    return path;
+    return imageURI;
   }
 
   /**
