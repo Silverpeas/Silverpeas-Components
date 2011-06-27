@@ -21,13 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package com.silverpeas.webpages.control;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import com.silverpeas.subscribe.SubscriptionService;
+import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import org.apache.commons.fileupload.FileItem;
 
 import com.silverpeas.form.DataRecord;
@@ -38,6 +39,8 @@ import com.silverpeas.form.RecordSet;
 import com.silverpeas.publicationTemplate.PublicationTemplate;
 import com.silverpeas.publicationTemplate.PublicationTemplateException;
 import com.silverpeas.publicationTemplate.PublicationTemplateManager;
+import com.silverpeas.subscribe.service.ComponentSubscription;
+import com.silverpeas.subscribe.service.Subscription;
 import com.silverpeas.util.StringUtil;
 import com.silverpeas.webpages.WebPagesNotifier;
 import com.silverpeas.webpages.model.WebPagesException;
@@ -49,15 +52,11 @@ import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.util.EJBUtilitaire;
-import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.node.model.NodePK;
-import com.stratelia.webactiv.util.subscribe.control.SubscribeBm;
-import com.stratelia.webactiv.util.subscribe.control.SubscribeBmHome;
 
 public class WebPagesSessionController extends AbstractComponentSessionController {
 
@@ -70,19 +69,19 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
    * @see
    */
   public WebPagesSessionController(MainSessionController mainSessionCtrl,
-      ComponentContext componentContext) {
+          ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.silverpeas.webpages.multilang.webPagesBundle",
-        "com.silverpeas.webpages.settings.webPagesIcons");
+            "com.silverpeas.webpages.multilang.webPagesBundle",
+            "com.silverpeas.webpages.settings.webPagesIcons");
 
     if (isXMLTemplateUsed()) {
       // register xmlForm to component
       try {
         PublicationTemplateManager.getInstance().addDynamicPublicationTemplate(getComponentId()
-            + ":" + getUsedXMLTemplateShortname(), getUsedXMLTemplate());
+                + ":" + getUsedXMLTemplateShortname(), getUsedXMLTemplate());
       } catch (PublicationTemplateException e) {
-        SilverTrace.error("webPages", "WebPagesSessionController()", "", "template = " +
-            getUsedXMLTemplate(), e);
+        SilverTrace.error("webPages", "WebPagesSessionController()", "", "template = "
+                + getUsedXMLTemplate(), e);
       }
     }
   }
@@ -108,17 +107,16 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
    */
   public boolean haveGotWysiwygNotEmpty() {
     boolean returnValue = false;
-    if (WysiwygController.haveGotWysiwyg(this.getSpaceId(), this
-        .getComponentId(), this.getComponentId())) {
+    if (WysiwygController.haveGotWysiwyg(this.getSpaceId(), getComponentId(), getComponentId())) {
       try {
-        String contenuWysiwyg = WysiwygController.loadFileAndAttachment(this
-            .getSpaceId(), this.getComponentId(), this.getComponentId());
+        String contenuWysiwyg = WysiwygController.loadFileAndAttachment(getSpaceId(),
+                getComponentId(), getComponentId());
         if ((contenuWysiwyg != null) && (contenuWysiwyg.length() != 0)) {
           returnValue = true;
         }
       } catch (WysiwygException ex) {
         SilverTrace.error("webPages",
-            "WebPagesSessionController.haveGotWysiwyg()", "root.", ex);
+                "WebPagesSessionController.haveGotWysiwyg()", "root.", ex);
       }
     }
     return returnValue;
@@ -128,76 +126,38 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     try {
       String content = WysiwygController.load(getComponentId(), getComponentId(), null);
       WysiwygController.updateFileAndAttachment(content, getSpaceId(), getComponentId(),
-          getComponentId(), getUserId());
+              getComponentId(), getUserId());
     } catch (WysiwygException ex) {
     }
   }
 
-  /**************************************************************************************/
-  /* webPages - Gestion des abonnements */
-  /**************************************************************************************/
   public synchronized void removeSubscription() {
-    SilverTrace.info("webPages", "WebPagesSessionController.removeSubscription()",
-        "root.MSG_GEN_ENTER_METHOD");
-    try {
-      getSubscribeBm().removeSubscribe(getUserId(), getNodePK());
-    } catch (Exception e) {
-      throw new WebPagesRuntimeException(
-          "WebPagesSessionController.removeSubscription()",
-          SilverpeasRuntimeException.ERROR,
-          "webPages.EX_IMPOSSIBLE_DE_SUPPRIMER_ABONNEMENT", e);
-    }
+    SilverTrace.info("webPages", "WebPagesSessionController.unsubscribeFromNode()",
+            "root.MSG_GEN_ENTER_METHOD");
+    getSubscribeBm().unsubscribe(new ComponentSubscription(getUserId(), getComponentName()));
   }
 
   public synchronized void addSubscription() {
     SilverTrace.info("webPages", "WebPagesSessionController.addSubscription()",
-        "root.MSG_GEN_ENTER_METHOD");
-
+            "root.MSG_GEN_ENTER_METHOD");
     if (isSubscriber()) {
       return;
     }
-
-    try {
-      getSubscribeBm().addSubscribe(getUserId(), getNodePK());
-    } catch (Exception e) {
-      SilverTrace.warn("webPages",
-          "WebPagesSessionController.addSubscription()",
-          "webPages.EX_SUBSCRIPTION_ADD_FAILED", e);
-    }
+    getSubscribeBm().subscribe(new ComponentSubscription(getUserId(), getComponentName()));
   }
 
   public boolean isSubscriber() {
     SilverTrace.info("webPages", "WebPagesSessionController.isSubscriber()",
-        "root.MSG_GEN_ENTER_METHOD");
-    try {
-      Collection<NodePK> list =
-          getSubscribeBm().getUserSubscribePKsByComponent(getUserId(), getComponentId());
-      return (list != null && !list.isEmpty());
-    } catch (Exception e) {
-      throw new WebPagesRuntimeException(
-          "WebPagesSessionController.isSubscriber()",
-          SilverpeasRuntimeException.ERROR,
-          "webPages.EX_IMPOSSIBLE_DOBTENIR_LES_ABONNEMENTS", e);
-    }
+            "root.MSG_GEN_ENTER_METHOD");
+    return getSubscribeBm().isSubscribedToComponent(getUserId(), getComponentId());
   }
 
   private NodePK getNodePK() {
-    return new NodePK("0", getSpaceId(), getComponentId());
+    return new NodePK(NodePK.ROOT_NODE_ID, getSpaceId(), getComponentId());
   }
 
-  private SubscribeBm getSubscribeBm() {
-    SubscribeBm subscribeBm = null;
-    try {
-      SubscribeBmHome subscribeBmHome = (SubscribeBmHome) EJBUtilitaire
-          .getEJBObjectRef(JNDINames.SUBSCRIBEBM_EJBHOME, SubscribeBmHome.class);
-      subscribeBm = subscribeBmHome.create();
-    } catch (Exception e) {
-      throw new WebPagesRuntimeException(
-          "WebPagesSessionController.getSubscribeBm()",
-          SilverpeasRuntimeException.ERROR,
-          "webPages.EX_IMPOSSIBLE_DE_FABRIQUER_SUBSCRIBEBM_HOME", e);
-    }
-    return subscribeBm;
+  private SubscriptionService getSubscribeBm() {
+    return SubscriptionServiceFactory.getFactory().getSubscribeService();
   }
 
   /**
@@ -226,14 +186,12 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
 
   private PublicationTemplate getXMLTemplate() throws WebPagesException {
     try {
-      PublicationTemplate pubTemplate =
-          PublicationTemplateManager.getInstance().getPublicationTemplate(
-              getComponentId() + ":" + getUsedXMLTemplateShortname());
-
+      PublicationTemplate pubTemplate = PublicationTemplateManager.getInstance().
+              getPublicationTemplate(getComponentId() + ":" + getUsedXMLTemplateShortname());
       return pubTemplate;
     } catch (PublicationTemplateException e) {
       throw new WebPagesException("WebPagesSessionController.getXMLTemplate()",
-          SilverpeasException.ERROR, "webPages.EX_CANT_GET_TEMPLATE", e);
+              SilverpeasException.ERROR, "webPages.EX_CANT_GET_TEMPLATE", e);
     }
   }
 
@@ -252,7 +210,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       return data;
     } catch (Exception e) {
       throw new WebPagesException("WebPagesSessionController.getDataRecord()",
-          SilverpeasException.ERROR, "webPages.EX_CANT_GET_DATA", e);
+              SilverpeasException.ERROR, "webPages.EX_CANT_GET_DATA", e);
     }
   }
 
@@ -266,7 +224,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       return data != null;
     } catch (Exception e) {
       throw new WebPagesException("WebPagesSessionController.isXMLContentDefined()",
-          SilverpeasException.ERROR, "webPages.EX_CANT_GET_DATA", e);
+              SilverpeasException.ERROR, "webPages.EX_CANT_GET_DATA", e);
     }
   }
 
@@ -277,7 +235,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       return pubTemplate.getViewForm();
     } catch (PublicationTemplateException e) {
       throw new WebPagesException("WebPagesSessionController.getViewForm()",
-          SilverpeasException.ERROR, "webPages.EX_CANT_GET_VIEWFORM", e);
+              SilverpeasException.ERROR, "webPages.EX_CANT_GET_VIEWFORM", e);
     }
   }
 
@@ -288,7 +246,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       return pubTemplate.getUpdateForm();
     } catch (PublicationTemplateException e) {
       throw new WebPagesException("WebPagesSessionController.getUpdateForm()",
-          SilverpeasException.ERROR, "webPages.EX_CANT_GET_UPDATEFORM", e);
+              SilverpeasException.ERROR, "webPages.EX_CANT_GET_UPDATEFORM", e);
     }
   }
 
@@ -297,10 +255,8 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     RecordSet set;
     try {
       PublicationTemplate pub = getXMLTemplate();
-
       set = pub.getRecordSet();
       Form form = pub.getUpdateForm();
-
       DataRecord data = set.getRecord("0", getLanguage());
       if (data == null) {
         data = set.getEmptyRecord();
@@ -308,8 +264,8 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
         data.setLanguage(getLanguage());
       }
 
-      PagesContext context =
-          new PagesContext("useless", "0", getLanguage(), false, getComponentId(), getUserId());
+      PagesContext context = new PagesContext("useless", "0", getLanguage(), false, getComponentId(),
+              getUserId());
       context.setEncoding("UTF-8");
       context.setObjectId("0");
       context.setContentLanguage(getLanguage());
@@ -318,7 +274,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       set.save(data);
     } catch (Exception e) {
       throw new WebPagesException("WebPagesSessionController.saveDataRecord()",
-          SilverpeasException.ERROR, "webPages.EX_CANT_SAVE_DATA", e);
+              SilverpeasException.ERROR, "webPages.EX_CANT_SAVE_DATA", e);
     }
 
     // send subscriptions
@@ -327,12 +283,12 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
     // index updated data
     try {
       FullIndexEntry indexEntry =
-          new FullIndexEntry(getComponentId(), "Component", getComponentId());
+              new FullIndexEntry(getComponentId(), "Component", getComponentId());
       indexEntry.setCreationDate(new Date());
       indexEntry.setCreationUser(getUserId());
       indexEntry.setTitle(getComponentLabel());
       ComponentInstLight component =
-          getOrganizationController().getComponentInstLight(getComponentId());
+              getOrganizationController().getComponentInstLight(getComponentId());
       if (component != null) {
         indexEntry.setPreView(component.getDescription());
       }
@@ -342,7 +298,7 @@ public class WebPagesSessionController extends AbstractComponentSessionControlle
       IndexEngineProxy.addIndexEntry(indexEntry);
     } catch (FormException e) {
       throw new WebPagesException("WebPagesSessionController.saveDataRecord()",
-          SilverpeasException.ERROR, "webPages.EX_CANT_INDEX_DATA", e);
+              SilverpeasException.ERROR, "webPages.EX_CANT_INDEX_DATA", e);
     }
   }
 
