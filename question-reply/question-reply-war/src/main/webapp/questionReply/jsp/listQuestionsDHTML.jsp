@@ -402,6 +402,22 @@ function confirmDeleteCategory(categoryId) {
 		window.location.href=("DeleteCategory?CategoryId=" + categoryId + "");
 	}
 }
+
+function successUnsubscribe() {
+   $( "#yui-gen1" ).empty().append( $('<a>').addClass('yuimenuitemlabel').attr('href', "javascript:subscribe();").attr('title', 'subscribe').append('subscribe') );
+}
+
+function successSubscribe() {
+   $( "#yui-gen1" ).empty().append( $('<a>').addClass('yuimenuitemlabel').attr('href', "javascript:unsubscribe();").attr('title', 'unsubscribe').append('unsubscribe') );
+}
+
+function unsubscribe() {
+  $.post('<c:url value="/services/unsubscribe/${pageScope.componentId}" />',successUnsubscribe(), 'json');
+}
+
+function subscribe() {
+  $.post('<c:url value="/services/subscribe/${pageScope.componentId}" />', successSubscribe(), 'json');
+}
 </script>
 </head>
 <body>
@@ -436,6 +452,16 @@ function confirmDeleteCategory(categoryId) {
   operationPane.addLine();
   operationPane.addOperation(resource.getIcon("questionReply.export"), resource.getString(
           "questionReply.export"), "javascript:onClick=openSPWindow('Export','export')");
+  
+  if(((Boolean)request.getAttribute("userAlreadySubscribed"))) {
+    operationPane.addOperation(resource.getIcon("questionReply.unsubscribe"), resource.getString(
+          "questionReply.unsubscribe"), "javascript:unsubscribe();");
+  }else {
+    /*operationPane.addOperation(resource.getIcon("questionReply.subscribe"), resource.getString(
+          "questionReply.subscribe"), "javascript:$.post('" + m_context +"/services/subscribe/" + componentId + "', $('#RForm').serialize(), function(data) { alert(data);}, 'json');");*/
+    operationPane.addOperation(resource.getIcon("questionReply.subscribe"), resource.getString(
+          "questionReply.subscribe"), "javascript:subscribe();");
+  }
             
   out.println(window.printBefore());
   out.println(frame.printBefore());
@@ -473,7 +499,7 @@ function confirmDeleteCategory(categoryId) {
   <input type="hidden" name="Id" />
 </form>
   
-<form name="RForm" action="" method="post">
+<form id ="RForm" name="RForm" action="" method="post">
   <input type="hidden" name="replyId" />
   <input type="hidden" name="QuestionId" />
 </form>

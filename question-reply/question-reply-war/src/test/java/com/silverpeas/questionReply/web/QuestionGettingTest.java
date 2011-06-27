@@ -23,6 +23,7 @@
  */
 package com.silverpeas.questionReply.web;
 
+import com.silverpeas.personalization.service.MockablePersonalizationService;
 import com.silverpeas.personalization.service.PersonalizationService;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.silverpeas.questionReply.control.QuestionManager;
