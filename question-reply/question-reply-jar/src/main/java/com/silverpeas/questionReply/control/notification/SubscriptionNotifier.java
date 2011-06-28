@@ -22,18 +22,23 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package com.silverpeas.questionReply.control;
+package com.silverpeas.questionReply.control.notification;
 
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Question;
+import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.ui.DisplayI18NHelper;
+import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,49 +47,46 @@ import java.util.Map;
  *
  * @author ehugonnet
  */
-public class QuestionNotifier extends Notifier {
+public class SubscriptionNotifier extends Notifier {
 
-  public QuestionNotifier(UserDetail sender, Question question, String subject, String source,
-          String componentLabel, String componentId) {
-    super(sender, question, subject, source, componentLabel, componentId);
-  }
+  private final Reply reply;
+  private final Question question;
+  final NotificationSender notificationSender;
+  private static final String BUNDLE_NAME = "com.silverpeas.questionReply.multilang.questionReplyBundle";
 
-  /**
-   * @param question the current question-reply question
-   * @param users list of users to notify
-   * @throws QuestionReplyException
-   */
-  @Override
-  public void sendNotification(UserDetail[] users) throws QuestionReplyException {
+  public SubscriptionNotifier(UserDetail sender, Question question, Reply reply) {
+    super(sender);
+    this.reply = reply;
+    this.question = question;
+    this.notificationSender = new NotificationSender(question.getInstanceId());
+  } 
+
+  public void sendNotification(Collection<UserRecipient> recipients) throws QuestionReplyException {
     try {
       // Get default resource bundle
-      String resource = "com.silverpeas.questionReply.multilang.questionReplyBundle";
-      ResourceLocator message;
-      // Initialize templates
+      ResourceLocator message = new ResourceLocator(BUNDLE_NAME, I18NHelper.defaultLanguage);
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
       NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-              subject, templates, "question");
-
+              String.format(message.getString("questionReply.subscription.title", "Réponse à :"),
+              question.getTitle()), templates, "reply_subscription");
       List<String> languages = DisplayI18NHelper.getLanguages();
       for (String language : languages) {
-        // initialize new resource locator
-        message = new ResourceLocator(resource, language);
-        // Create a new silverpeas template
-        SilverpeasTemplate template = loadTemplate();
-        template.setAttribute("UserDetail", sender);
+        message = new ResourceLocator(BUNDLE_NAME, language);
+        SilverpeasTemplate template = loadTemplate();        
         template.setAttribute("userName", getSendername());
         template.setAttribute("QuestionDetail", question);
         template.setAttribute("questionTitle", question.getTitle());
-        template.setAttribute("questionContent", question.getContent());
+        template.setAttribute("replyTitle", reply.getTitle());
+        template.setAttribute("replyContent", reply.loadWysiwygContent());
         template.setAttribute("url", question._getPermalink());
         templates.put(language, template);
-        notifMetaData.addLanguage(language, message.getString("questionReply.notification", "")
-                + componentLabel, "");
+        notifMetaData.addLanguage(language, String.format(message.getString(
+                "questionReply.subscription.title", "Réponse à :"), question.getTitle()), "");
+      }      
+      if (recipients != null && !recipients.isEmpty()) {
+        notifMetaData.addUserRecipients(recipients);
+        notificationSender.notifyUser(notifMetaData);
       }
-      notifMetaData.setSender(sender.getId());
-      notifMetaData.addUserRecipients(users);
-      notifMetaData.setSource(source);
-      notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
       throw new QuestionReplyException("QuestionReplySessionController.notify()",
               SilverpeasException.ERROR, "questionReply.EX_NOTIFICATION_MANAGER_FAILED", "", e);

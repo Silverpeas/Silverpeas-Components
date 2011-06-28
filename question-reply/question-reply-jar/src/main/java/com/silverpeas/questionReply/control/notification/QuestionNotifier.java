@@ -22,92 +22,85 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package com.silverpeas.questionReply.control;
+package com.silverpeas.questionReply.control.notification;
 
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Question;
-import com.silverpeas.questionReply.model.Reply;
-import com.silverpeas.subscribe.SubscriptionServiceFactory;
 import com.silverpeas.ui.DisplayI18NHelper;
-import com.silverpeas.util.ForeignPK;
-import com.silverpeas.util.i18n.I18NHelper;
 import com.silverpeas.util.template.SilverpeasTemplate;
-import com.silverpeas.util.template.SilverpeasTemplateFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
+import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  *
  * @author ehugonnet
  */
-public class SubscriptionNotifier {
-
-  private final Reply reply;
-  private final String componentId;
-  private final Question question;
-  final NotificationSender notificationSender;
-  private static final String BUNDLE_NAME = "com.silverpeas.questionReply.multilang.questionReplyBundle";
-  private final String source;
-
-  public SubscriptionNotifier(Question question, Reply reply, String componentId, String source) {
-    this.componentId = componentId;
-    this.reply = reply;
+public class QuestionNotifier extends Notifier {
+final Question question;
+  final String componentLabel;
+  final String subject;
+  final String source;
+  final NotificationSender notifSender;
+  
+  public QuestionNotifier(UserDetail sender, Question question, String subject, String source,
+          String componentLabel, String componentId) {
+    super(sender);
     this.question = question;
+    this.componentLabel = componentLabel;
+    this.subject = subject;
     this.source = source;
-    this.notificationSender = new NotificationSender(componentId);
+    this.notifSender = new NotificationSender(componentId);
   }
 
-  public void sendNotification() throws QuestionReplyException {
+  /**
+   * @param question the current question-reply question
+   * @param users list of users to notify
+   * @throws QuestionReplyException
+   */
+  @Override
+  public void sendNotification(Collection<UserRecipient> users) throws QuestionReplyException {
     try {
       // Get default resource bundle
-      ResourceLocator message = new ResourceLocator(BUNDLE_NAME, I18NHelper.defaultLanguage);
+      String resource = "com.silverpeas.questionReply.multilang.questionReplyBundle";
+      ResourceLocator message;
+      // Initialize templates
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
       NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-              String.format(message.getString("questionReply.subscription.title", "Réponse à :"),
-              question.getTitle()), templates, "faq_subscription");
+              subject, templates, "question");
+
       List<String> languages = DisplayI18NHelper.getLanguages();
       for (String language : languages) {
-        message = new ResourceLocator(BUNDLE_NAME, language);
+        // initialize new resource locator
+        message = new ResourceLocator(resource, language);
+        // Create a new silverpeas template
         SilverpeasTemplate template = loadTemplate();
+        template.setAttribute("UserDetail", sender);
+        template.setAttribute("userName", getSendername());
         template.setAttribute("QuestionDetail", question);
         template.setAttribute("questionTitle", question.getTitle());
-        template.setAttribute("replyTitle", reply.getTitle());
-        template.setAttribute("replyContent", reply.loadWysiwygContent());
+        template.setAttribute("questionContent", question.getContent());
         template.setAttribute("url", question._getPermalink());
         templates.put(language, template);
-        notifMetaData.addLanguage(language, String.format(message.getString(
-                "questionReply.subscription.title", "Réponse à :"), question.getTitle()), "");
+        notifMetaData.addLanguage(language, message.getString("questionReply.notification", "")
+                + componentLabel, "");
       }
-      Collection<String> recipients = SubscriptionServiceFactory.getFactory().getSubscribeService().
-              getSubscribers(new ForeignPK("0", componentId));
-      if (recipients != null && !recipients.isEmpty()) {
-        notifMetaData.addUserRecipients(recipients.toArray(new String[recipients.size()]));
-        notifMetaData.setSource(source);
-        notificationSender.notifyUser(notifMetaData);
-      }
+      notifMetaData.setSender(sender.getId());
+      notifMetaData.addUserRecipients(users);
+      notifMetaData.setSource(source);
+      notifSender.notifyUser(notifMetaData);
     } catch (NotificationManagerException e) {
       throw new QuestionReplyException("QuestionReplySessionController.notify()",
               SilverpeasException.ERROR, "questionReply.EX_NOTIFICATION_MANAGER_FAILED", "", e);
     }
-  }
-
-  protected SilverpeasTemplate loadTemplate() {
-    ResourceLocator rs = new ResourceLocator(
-            "com.silverpeas.questionReply.settings.questionReplySettings", "");
-    Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString(
-            "templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString(
-            "customersTemplatePath"));
-    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
 }

@@ -22,7 +22,7 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package com.silverpeas.questionReply.control;
+package com.silverpeas.questionReply.control.notification;
 
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Question;
@@ -32,9 +32,12 @@ import com.silverpeas.util.template.SilverpeasTemplate;
 import com.stratelia.silverpeas.notificationManager.NotificationManagerException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,13 +49,22 @@ import java.util.Map;
 public class ReplyNotifier extends Notifier {
 
   private static final String RESOURCE_NAME = "com.stratelia.webactiv.survey.multilang.surveyBundle";
-  private final Reply reply;
+  final Reply reply;
+  final Question question;
+  final String componentLabel;
+  final String subject;
+  final String source;
+  final NotificationSender notifSender;
 
   public ReplyNotifier(UserDetail sender, Question question, Reply reply, String subject,
-          String source,
-          String componentLabel, String componentId) {
-    super(sender, question, subject, source, componentLabel, componentId);
+          String source, String componentLabel, String componentId) {
+    super(sender);
     this.reply = reply;
+    this.question = question;
+    this.componentLabel = componentLabel;
+    this.subject = subject;
+    this.source = source;
+    this.notifSender = new NotificationSender(componentId);
   }
 
   /**
@@ -61,7 +73,7 @@ public class ReplyNotifier extends Notifier {
    * @throws QuestionReplyException
    */
   @Override
-  public void sendNotification(UserDetail[] users) throws QuestionReplyException {
+  public void sendNotification(Collection<UserRecipient> users) throws QuestionReplyException {
     try {
 
       // Initialize templates
