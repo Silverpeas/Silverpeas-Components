@@ -23,6 +23,8 @@
  */
 package com.silverpeas.questionReply.control;
 
+import com.silverpeas.questionReply.control.notification.ReplyNotifier;
+import com.silverpeas.questionReply.control.notification.QuestionNotifier;
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Category;
@@ -37,6 +39,7 @@ import com.stratelia.silverpeas.containerManager.ContainerPositionInterface;
 import com.stratelia.silverpeas.contentManager.ContentManager;
 import com.stratelia.silverpeas.contentManager.ContentManagerException;
 import com.stratelia.silverpeas.genericPanel.GenericPanel;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -63,6 +66,7 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+import edu.emory.mathcs.backport.java.util.Collections;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;
@@ -617,7 +621,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * @param users list of users to notify
    * @throws QuestionReplyException
    */
-  private void notifyTemplateQuestion(Question question, UserDetail[] users)
+  private void notifyTemplateQuestion(Question question, Collection<UserRecipient> users)
           throws QuestionReplyException {
     QuestionNotifier notifier = new QuestionNotifier(getUserDetail(getUserId()), question,
             getString("questionReply.notification") + getComponentLabel(),
@@ -631,11 +635,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   private void notifyQuestion(Question question) throws QuestionReplyException {
     Collection<Recipient> recipients = question.readRecipients();
-    UserDetail[] users = new UserDetail[recipients.size()];
-    int i = 0;
+    List<UserRecipient> users = new ArrayList<UserRecipient>(recipients.size());
     for (Recipient recipient : recipients) {
-      users[i] = getUserDetail(recipient.getUserId());
-      i++;
+     users.add(new UserRecipient(recipient.getUserId()));
     }
     notifyTemplateQuestion(question, users);
   }
@@ -648,11 +650,10 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
           throws QuestionReplyException {
     List<String> profils = new ArrayList<String>();
     profils.add(SilverpeasRole.writer.name());
-    String[] usersIds =
-            getOrganizationController().getUsersIdsByRoleNames(getComponentId(), profils);
-    UserDetail[] users = new UserDetail[usersIds.length];
-    for (int i = 0; i < usersIds.length; i++) {
-      users[i] = getUserDetail(usersIds[i]);
+    String[] usersIds = getOrganizationController().getUsersIdsByRoleNames(getComponentId(), profils);
+    List<UserRecipient> users = new ArrayList<UserRecipient>(usersIds.length);
+    for (String userId : usersIds) {
+     users.add(new UserRecipient(userId));
     }
     notifyTemplateQuestion(question, users);
   }
@@ -661,15 +662,14 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    * @param reply
    * @throws QuestionReplyException
    */
+  @SuppressWarnings("unchecked")
   private void notifyReply(Reply reply) throws QuestionReplyException {
     UserDetail user =
             getOrganizationController().getUserDetail(getCurrentQuestion().getCreatorId());
-    UserDetail[] users = new UserDetail[1];
-    users[0] = user;
     ReplyNotifier notifier = new ReplyNotifier(getUserDetail(getUserId()), getCurrentQuestion(),
             reply, getString("questionReply.notification") + getComponentLabel(),
             getSpaceLabel() + " - " + getComponentLabel(), getComponentLabel(), getComponentId());
-    notifier.sendNotification(users);
+    notifier.sendNotification((List<UserRecipient>) Collections.singletonList(new UserRecipient(user)));
   }
 
   public QuestionReplySessionController(MainSessionController mainSessionCtrl,

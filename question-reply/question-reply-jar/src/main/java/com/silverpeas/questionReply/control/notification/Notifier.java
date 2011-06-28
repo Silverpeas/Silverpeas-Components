@@ -22,15 +22,15 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * 
  */
-package com.silverpeas.questionReply.control;
+package com.silverpeas.questionReply.control.notification;
 
 import com.silverpeas.questionReply.QuestionReplyException;
-import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.util.template.SilverpeasTemplate;
 import com.silverpeas.util.template.SilverpeasTemplateFactory;
-import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.util.ResourceLocator;
+import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -39,25 +39,14 @@ import java.util.Properties;
  */
 public abstract class Notifier {
 
-  final Question question;
-  final String componentLabel;
   final UserDetail sender;
-  final String subject;
-  final String source;
-  final NotificationSender notifSender;
 
-  public Notifier(UserDetail sender, Question question, String subject, String source,
-          String componentLabel, String componentId) {
-    this.question = question;
-    this.componentLabel = componentLabel;
+  public Notifier(UserDetail sender) {
     this.sender = sender;
-    this.subject = subject;
-    this.source = source;
-    this.notifSender = new NotificationSender(componentId);
   }
-  
+
   public String getSendername() {
-   return sender.getFirstName() + " " + sender.getLastName();
+    return sender.getFirstName() + " " + sender.getLastName();
   }
 
   /**
@@ -74,5 +63,6 @@ public abstract class Notifier {
     return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
 
-  public abstract void sendNotification(UserDetail[] users) throws QuestionReplyException;
+  public abstract void sendNotification(Collection<UserRecipient> recipients) throws
+          QuestionReplyException;
 }
