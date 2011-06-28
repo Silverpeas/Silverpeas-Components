@@ -69,9 +69,11 @@ import com.stratelia.silverpeas.infoLetter.model.InfoLetter;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterDataInterface;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublication;
 import com.stratelia.silverpeas.infoLetter.model.InfoLetterPublicationPdC;
+import com.stratelia.silverpeas.notificationManager.GroupRecipient;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -110,7 +112,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   private InfoLetterDataInterface dataInterface = null;
   /** the tuning parameters */
   private static final ResourceLocator smtpSettings = new ResourceLocator(
-      "com.stratelia.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
+          "com.stratelia.silverpeas.notificationserver.channel.smtp.smtpSettings", "");
   /** the current publication id */
   private String currentPublicationId = null;
   public final static String EXPORT_CSV_NAME = "_emails.csv";
@@ -123,11 +125,11 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * @see
    */
   public InfoLetterSessionController(MainSessionController mainSessionCtrl,
-      ComponentContext componentContext) {
+          ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext,
-        "com.stratelia.silverpeas.infoLetter.multilang.infoLetterBundle",
-        "com.stratelia.silverpeas.infoLetter.settings.infoLetterIcons",
-        "com.stratelia.silverpeas.infoLetter.settings.infoLetterSettings");
+            "com.stratelia.silverpeas.infoLetter.multilang.infoLetterBundle",
+            "com.stratelia.silverpeas.infoLetter.settings.infoLetterIcons",
+            "com.stratelia.silverpeas.infoLetter.settings.infoLetterSettings");
     // Initialisation de l'interface metier
     if (dataInterface == null) {
       dataInterface = ServiceFactory.getInfoLetterData();
@@ -140,10 +142,10 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   public String initUserPanel(WAPrimaryKey letterPK) throws InfoLetterException {
     int i = 0;
     String m_context = GeneralPropertiesManager.getGeneralResourceLocator().getString(
-        "ApplicationURL");
+            "ApplicationURL");
     String hostSpaceName = getSpaceLabel();
     PairObject hostComponentName = new PairObject(getComponentLabel(),
-        m_context + "/RinfoLetter/" + getComponentId() + "/Main");
+            m_context + "/RinfoLetter/" + getComponentId() + "/Main");
     String hostUrl = m_context + "/RinfoLetter/" + getComponentId() + "/RetourPanel";
     Selection sel = getSelection();
     sel.resetAll();
@@ -237,8 +239,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       WysiwygController.deleteWysiwygAttachments(getSpaceId(), getComponentId(), pk.getId());
     } catch (Exception e) {
       throw new InfoLetterException(
-          "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
-          SilverpeasRuntimeException.ERROR, e.getMessage());
+              "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
+              SilverpeasRuntimeException.ERROR, e.getMessage());
     }
     dataInterface.deleteInfoLetterPublication(pk, getComponentId());
   }
@@ -261,17 +263,18 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     currentPublicationId = publiPK.getId();
     return dataInterface.getInfoLetterPublication(publiPK);
   }
-  
+
   protected SilverpeasTemplate getNewTemplate() {
-	ResourceLocator rs =
-        new ResourceLocator("com.stratelia.silverpeas.infoLetter.settings.infoLetterSettings", "");
+    ResourceLocator rs =
+            new ResourceLocator("com.stratelia.silverpeas.infoLetter.settings.infoLetterSettings",
+            "");
     Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs
-        .getString("templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs
-        .getString("customersTemplatePath"));
-	
-	return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString(
+            "templatePath"));
+    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString(
+            "customersTemplatePath"));
+
+    return SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
   }
 
   // Notification des abonnes internes
@@ -281,7 +284,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     int i = 0;
     pk.setId(String.valueOf(ilp.getLetterId()));
     InfoLetter il = dataInterface.getInfoLetter(pk);
-	String sSubject = getString("infoLetter.emailSubject") + ilp.getName();
+    String sSubject = getString("infoLetter.emailSubject") + ilp.getName();
 
     Vector v = dataInterface.getInternalSuscribers(pk);
     Vector groups = (Vector) v.elementAt(0);
@@ -295,45 +298,48 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       t_groups[i] = (Group) groups.elementAt(i);
     }
 
-    String[] aToUserIds = NotificationSender.getIdsArrayFromIdsLine(NotificationSender.
-        getIdsLineFromUserArray(t_users));
-    String[] aToGroupIds = NotificationSender.getIdsArrayFromIdsLine(NotificationSender.
-        getIdsLineFromGroupArray(t_groups));
+
     try {
-    	Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
-    	NotificationMetaData notifMetaData =
-            new NotificationMetaData(NotificationParameters.NORMAL, sSubject, templates, "infoLetterNotification");
-    	
-    	String url = "/RinfoLetter/" + getComponentId() + "/View?parution=" + ilp.getPK().getId();
-    	for (String lang : DisplayI18NHelper.getLanguages()) {
-    		SilverpeasTemplate template = getNewTemplate();
-    		templates.put(lang, template);
-    		template.setAttribute("infoLetter", ilp);
-    		template.setAttribute("infoLetterTitle", ilp.getName(lang));
-    		String desc = ilp.getDescription(lang);
-    		if("".equals(desc)) {
-    			desc = null;
-    		}
-    		template.setAttribute("infoLetterDesc", desc);
-    		template.setAttribute("senderName", getUserDetail().getDisplayedName());    		
-    		template.setAttribute("silverpeasURL", url);
-      	
-    		ResourceLocator localizedMessage = new ResourceLocator(
-          "com.stratelia.silverpeas.infoLetter.multilang.infoLetterBundle", lang);
-    		notifMetaData.addLanguage(lang, localizedMessage.getString("infoLetter.emailSubject", getString("infoLetter.emailSubject")) + ilp.getName(), "");
-    	}
-    	notifMetaData.setSender(getUserId());
-        notifMetaData.addUserRecipients(aToUserIds);
-        notifMetaData.addGroupRecipients(aToGroupIds);
-        notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
-        notifMetaData.setLink(url);
-        
-        ns.notifyUser(notifMetaData);
-    	
+      Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
+      NotificationMetaData notifMetaData =
+              new NotificationMetaData(NotificationParameters.NORMAL, sSubject, templates,
+              "infoLetterNotification");
+
+      String url = "/RinfoLetter/" + getComponentId() + "/View?parution=" + ilp.getPK().getId();
+      for (String lang : DisplayI18NHelper.getLanguages()) {
+        SilverpeasTemplate template = getNewTemplate();
+        templates.put(lang, template);
+        template.setAttribute("infoLetter", ilp);
+        template.setAttribute("infoLetterTitle", ilp.getName(lang));
+        String desc = ilp.getDescription(lang);
+        if ("".equals(desc)) {
+          desc = null;
+        }
+        template.setAttribute("infoLetterDesc", desc);
+        template.setAttribute("senderName", getUserDetail().getDisplayedName());
+        template.setAttribute("silverpeasURL", url);
+
+        ResourceLocator localizedMessage = new ResourceLocator(
+                "com.stratelia.silverpeas.infoLetter.multilang.infoLetterBundle", lang);
+        notifMetaData.addLanguage(lang, localizedMessage.getString("infoLetter.emailSubject",
+                getString("infoLetter.emailSubject")) + ilp.getName(), "");
+      }
+      notifMetaData.setSender(getUserId());
+      for (UserDetail userDetail : t_users) {
+        notifMetaData.addUserRecipient(new UserRecipient(userDetail));
+      }
+      for (Group group : t_groups) {
+        notifMetaData.addGroupRecipient(new GroupRecipient(group));
+      }
+      notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
+      notifMetaData.setLink(url);
+
+      ns.notifyUser(notifMetaData);
+
     } catch (com.stratelia.silverpeas.notificationManager.NotificationManagerException e) {
       throw new InfoLetterException(
-          "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
-          SilverpeasRuntimeException.ERROR, e.getMessage());
+              "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
+              SilverpeasRuntimeException.ERROR, e.getMessage());
     }
   }
 
@@ -365,39 +371,34 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       // create some properties and get the default Session
       Properties props = System.getProperties();
       props.put("mail.smtp.host", host);
-      props.put("mail.smtp.auth", new Boolean(m_SmtpAuthentication).toString());
+      props.put("mail.smtp.auth", String.valueOf(m_SmtpAuthentication));
 
       Session session = Session.getInstance(props, null);
       session.setDebug(m_SmtpDebug); // print on the console all SMTP messages.
 
       SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "subject = " + subject);
+              "root.MSG_GEN_PARAM_VALUE", "subject = " + subject);
       SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "from = " + from);
+              "root.MSG_GEN_PARAM_VALUE", "from = " + from);
       SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
-          "root.MSG_GEN_PARAM_VALUE",
-          "host= " + host);
+              "root.MSG_GEN_PARAM_VALUE", "host= " + host);
 
       try {
         // create a message
         MimeMessage msg = new MimeMessage(session);
         msg.setFrom(new InternetAddress(from));
         msg.setSubject(subject, "UTF-8");
-        // email.setSubject(pSubject == null ? "" : pSubject, "UTF-8");
-        // email.setText(pMessage == null ? "" : pMessage, "UTF-8");
 
         // create and fill the first message part
         MimeBodyPart mbp1 = new MimeBodyPart();
         String fileName = WysiwygController.getWysiwygFileName(ilp.getPK().getId());
         String htmlMessagePath =
-            com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath(
-                getComponentId()) + "Attachment" + java.io.File.separator + "wysiwyg" +
-                java.io.File.separator;
+                com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath(
+                getComponentId()) + "Attachment" + java.io.File.separator + "wysiwyg"
+                + java.io.File.separator;
         FileReader htmlCodeFile = new FileReader(new File(htmlMessagePath + fileName));
 
-        StringBuffer msgText1 = new StringBuffer();
+        StringBuilder msgText1 = new StringBuilder();
         int c;
         c = htmlCodeFile.read();
         while (c != -1) {
@@ -407,8 +408,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
         // mbp1.setText(msgText1.toString());
         mbp1.setDataHandler(new DataHandler(
-            new ByteArrayDataSource(replaceFileServerWithLocal(msgText1.toString(), server),
-            "text/html")));
+                new ByteArrayDataSource(replaceFileServerWithLocal(msgText1.toString(), server),
+                "text/html")));
 
         // Fichiers joints
         // AttachmentController ac = new AttachmentController();
@@ -424,13 +425,11 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
 
         // Images jointes
         AttachmentPK foreignKey = new AttachmentPK(ilp.getPK().getId(), getSpaceId(),
-            getComponentId());
-        Collection fichiers =
-            AttachmentController.searchAttachmentByPKAndContext(foreignKey, WysiwygController.
-                getImagesFileName(ilp.getPK().getId()));
+                getComponentId());
+        Collection fichiers = AttachmentController.searchAttachmentByPKAndContext(foreignKey,
+                WysiwygController.getImagesFileName(ilp.getPK().getId()));
 
-        String attachmentPath =
-            AttachmentController.createPath(getComponentId(), WysiwygController.
+        String attachmentPath = AttachmentController.createPath(getComponentId(), WysiwygController.
                 getImagesFileName(ilp.getPK().getId()));
         Iterator imageIter = fichiers.iterator();
         while (imageIter.hasNext()) {
@@ -445,7 +444,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
           mbp2.setFileName(ad.getLogicalName());
           mbp2.setHeader("Content-ID", ad.getLogicalName());
           SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
-              "root.MSG_GEN_PARAM_VALUE", "content-ID= " + mbp2.getContentID());
+                  "root.MSG_GEN_PARAM_VALUE", "content-ID= " + mbp2.getContentID());
 
           // create the Multipart and its parts to it
           mp.addBodyPart(mbp2);
@@ -454,9 +453,9 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         // Fichiers joints
         fichiers = AttachmentController.searchAttachmentByPKAndContext(publiPK, "Images");
         attachmentPath =
-            com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath(
-                getComponentId()) + "Attachment" + java.io.File.separator + "Images" +
-                java.io.File.separator;
+                com.stratelia.webactiv.util.FileRepositoryManager.getAbsolutePath(
+                getComponentId()) + "Attachment" + java.io.File.separator + "Images"
+                + java.io.File.separator;
 
         if (fichiers.size() > 0) {
           imageIter = fichiers.iterator();
@@ -472,7 +471,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
             // For Displaying images in the mail
             mbp2.setHeader("Content-ID", ad.getLogicalName());
             SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
-                "root.MSG_GEN_PARAM_VALUE", "content-ID= " + mbp2.getContentID());
+                    "root.MSG_GEN_PARAM_VALUE", "content-ID= " + mbp2.getContentID());
 
             // create the Multipart and its parts to it
             mp.addBodyPart(mbp2);
@@ -497,7 +496,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
            * @see
            */
           public void messageDelivered(TransportEvent e) { // catch all messages delivered to the
-                                                           // SMTP server.
+            // SMTP server.
           }
 
           /**
@@ -506,7 +505,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
            * @see
            */
           public void messageNotDelivered(TransportEvent e) { // catch all messages NOT delivered to
-                                                              // the SMTP server.
+            // the SMTP server.
           }
 
           /**
@@ -531,8 +530,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
             // add Transport Listener to the transport connection.
             if (m_SmtpAuthentication) {
               SilverTrace.info("infoLetter", "InfoLetterSessionController.notifyExternals()",
-                  "root.MSG_GEN_PARAM_VALUE",
-                  "host = " + host + " m_Port=" + m_Port + " m_User=" + m_User);
+                      "root.MSG_GEN_PARAM_VALUE",
+                      "host = " + host + " m_Port=" + m_Port + " m_User=" + m_User);
               transport.connect(host, m_Port, m_User, m_Pwd);
               msg.saveChanges();
             } else {
@@ -541,9 +540,9 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
             transport.sendMessage(msg, address);
           } catch (Exception ex) {
             SilverTrace.error("infoLetter", "InfoLetterSessionController.notifyExternals()",
-                "root.MSG_GEN_PARAM_VALUE", "Email = " + email, new InfoLetterException(
-                "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
-                SilverpeasRuntimeException.ERROR, ex.getMessage()));
+                    "root.MSG_GEN_PARAM_VALUE", "Email = " + email, new InfoLetterException(
+                    "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
+                    SilverpeasRuntimeException.ERROR, ex.getMessage()));
             emailErrors.add(email);
           } finally {
             if (transport != null) {
@@ -551,15 +550,15 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
                 transport.close();
               } catch (Exception e) {
                 SilverTrace.error("infoLetter", "InfoLetterSessionController.notifyExternals()",
-                    "root.EX_IGNORED", "ClosingTransport", e);
+                        "root.EX_IGNORED", "ClosingTransport", e);
               }
             }
           }
         }
       } catch (Exception e) {
         throw new InfoLetterException(
-            "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
-            SilverpeasRuntimeException.ERROR, e.getMessage());
+                "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
+                SilverpeasRuntimeException.ERROR, e.getMessage());
       }
     }
     return (String[]) emailErrors.toArray(new String[0]);
@@ -657,11 +656,11 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         WysiwygController.deleteWysiwygAttachments(getSpaceId(), getComponentId(), target);
       }
       WysiwygController.copy(getSpaceId(), getComponentId(), source, getSpaceId(),
-          getComponentId(),
-          target, getUserId());
+              getComponentId(),
+              target, getUserId());
     } catch (Exception e) {
       throw new InfoLetterException("InfoLetterSessionController.copyWYSIWYG",
-          SilverpeasRuntimeException.ERROR, e.getMessage());
+              SilverpeasRuntimeException.ERROR, e.getMessage());
     }
   }
 
@@ -669,20 +668,18 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     String template;
     try {
       template =
-          WysiwygController.loadFileAndAttachment("useless", getComponentId(),
-              InfoLetterPublication.TEMPLATE_ID + ilp.
-                  getLetterId());
+              WysiwygController.loadFileAndAttachment("useless", getComponentId(),
+              InfoLetterPublication.TEMPLATE_ID + ilp.getLetterId());
     } catch (WysiwygException e) {
       throw new InfoLetterException("InfoLetterSessionController.isTemplateExist",
-          SilverpeasRuntimeException.ERROR, e.getMessage());
+              SilverpeasRuntimeException.ERROR, e.getMessage());
     }
     return !"<body></body>".equals(template);
   }
 
   public String getTemplate(InfoLetterPublicationPdC ilp) {
-    return WysiwygController.getWysiwygPath(getComponentId(), InfoLetterPublication.TEMPLATE_ID +
-        ilp.
-            getLetterId());
+    return WysiwygController.getWysiwygPath(getComponentId(), InfoLetterPublication.TEMPLATE_ID
+            + ilp.getLetterId());
   }
 
   // Indexation d'une publication
@@ -701,7 +698,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   // Suppression de l'index d'une publication
   private void deleteIndex(InfoLetterPublicationPdC ilp) {
     IndexEntryPK indexEntry =
-        new IndexEntryPK(getComponentId(), "Publication", ilp.getPK().getId());
+            new IndexEntryPK(getComponentId(), "Publication", ilp.getPK().getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
@@ -725,7 +722,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   // Remplacement des appels au FileServer par le nom de fichier simple
   private String replaceFileServerWithLocal(String message, String server) {
     SilverTrace.info("infoLetter", "InfoLetterSessionController.replaceFileServerWithLocal()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText avant = " + message);
+            "root.MSG_GEN_PARAM_VALUE", "wysiwygText avant = " + message);
     String retour = replacePermalinkWithServer(message, server);
     while (retour.indexOf("/FileServer/") > -1) {
       int place = retour.indexOf("/FileServer/");
@@ -733,7 +730,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       int srcPlace = debut.lastIndexOf("\"");
       debut = debut.substring(0, srcPlace + 1);
       String suite =
-          retour.substring(place + (new String("/FileServer/")).length(), retour.length());
+              retour.substring(place + (new String("/FileServer/")).length(), retour.length());
       int finNom = suite.indexOf("?");
       String nomFichier = "cid:" + suite.substring(0, finNom);
       nomFichier.replace('_', ' ');
@@ -742,7 +739,7 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
       retour = debut + nomFichier + suite;
     }
     SilverTrace.info("infoLetter", "InfoLetterSessionController.replaceFileServerWithLocal()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText après = " + retour);
+            "root.MSG_GEN_PARAM_VALUE", "wysiwygText après = " + retour);
     return retour;
   }
 
@@ -754,12 +751,12 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    */
   private String replacePermalinkWithServer(String message, String server) {
     SilverTrace.info("infoLetter", "InfoLetterSessionController.replacePermalinkWithServer()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText avant = " + message);
+            "root.MSG_GEN_PARAM_VALUE", "wysiwygText avant = " + message);
     String m_context = URLManager.getApplicationURL();
     String retour = message.replaceAll("\"".toLowerCase() + m_context + "/",
-        "\"" + server + m_context + "/");
+            "\"" + server + m_context + "/");
     SilverTrace.info("infoLetter", "InfoLetterSessionController.replacePermalinkWithServer()",
-        "root.MSG_GEN_PARAM_VALUE", "wysiwygText après = " + retour);
+            "root.MSG_GEN_PARAM_VALUE", "wysiwygText après = " + retour);
     return retour;
   }
 
@@ -789,20 +786,20 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
    * @throws InfoLetterException
    */
   public void importCsvEmails(FileItem filePart) throws UtilTrappedException,
-      InfoLetterPeasTrappedException, InfoLetterException {
+          InfoLetterPeasTrappedException, InfoLetterException {
     InputStream is;
     try {
       is = filePart.getInputStream();
     } catch (IOException e) {
       InfoLetterPeasTrappedException ie = new InfoLetterPeasTrappedException(
-          "InfoLetterSessionController.importCsvEmails", SilverpeasException.ERROR,
-          "infoLetter.EX_CSV_FILE", e);
+              "InfoLetterSessionController.importCsvEmails", SilverpeasException.ERROR,
+              "infoLetter.EX_CSV_FILE", e);
       ie.setGoBackPage("Emails");
       throw ie;
     }
     CSVReader csvReader = new CSVReader(getLanguage());
     csvReader.initCSVFormat("com.stratelia.silverpeas.infoLetter.settings.usersCSVFormat", "User",
-        ";");
+            ";");
 
     Variant[][] csvValues;
     try {
@@ -827,15 +824,15 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
         listErrors.append(getString("GML.ligne") + " = " + Integer.toString(i + 1) + ", ");
         listErrors.append(getString("GML.colonne") + " = 1, ");
         listErrors.append(getString("GML.valeur") + " = " + email + ", ");
-        listErrors.append(getString("GML.nbCarMax") + " 100 " + getString("GML.caracteres") +
-            "<BR>");
+        listErrors.append(getString("GML.nbCarMax") + " 100 " + getString("GML.caracteres")
+                + "<BR>");
       }
     }
 
     if (listErrors.length() > 0) {
       InfoLetterPeasTrappedException ie = new InfoLetterPeasTrappedException(
-          "InfoLetterSessionController.importCsvEmails", SilverpeasException.ERROR,
-          "infoLetter.EX_CSV_FILE", listErrors.toString());
+              "InfoLetterSessionController.importCsvEmails", SilverpeasException.ERROR,
+              "infoLetter.EX_CSV_FILE", listErrors.toString());
       ie.setGoBackPage("Emails");
       throw ie;
     }
@@ -860,15 +857,15 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
   public boolean exportCsvEmails() throws FileNotFoundException, IOException, InfoLetterException {
     boolean exportOk = true;
     FileOutputStream fileOutput =
-        new FileOutputStream(FileRepositoryManager.getTemporaryPath() + getCurrentLetter().
+            new FileOutputStream(FileRepositoryManager.getTemporaryPath() + getCurrentLetter().
             getName() + EXPORT_CSV_NAME);
     try {
       Vector emails = getExternalsSuscribers(getCurrentLetter().getPK());
 
       CSVWriter csvWriter = new CSVWriter(getLanguage());
       csvWriter.initCSVFormat("com.stratelia.silverpeas.infoLetter.settings.usersCSVFormat",
-          "User",
-          ";");
+              "User",
+              ";");
 
       String email;
       for (int i = 0; i < emails.size(); i++) {
@@ -879,8 +876,8 @@ public class InfoLetterSessionController extends AbstractComponentSessionControl
     } catch (Exception e) {
       exportOk = false;
       throw new InfoLetterException(
-          "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
-          SilverpeasRuntimeException.ERROR, e.getMessage());
+              "com.stratelia.silverpeas.infoLetter.control.InfoLetterSessionController",
+              SilverpeasRuntimeException.ERROR, e.getMessage());
     } finally {
       fileOutput.flush();
       fileOutput.close();

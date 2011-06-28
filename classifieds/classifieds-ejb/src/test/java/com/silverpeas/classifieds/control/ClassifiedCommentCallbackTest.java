@@ -23,6 +23,7 @@
  */
 package com.silverpeas.classifieds.control;
 
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import java.util.List;
 import com.silverpeas.classifieds.control.ejb.ClassifiedsBm;
 import com.silverpeas.classifieds.model.ClassifiedDetail;
@@ -124,8 +125,8 @@ public class ClassifiedCommentCallbackTest {
     assertEquals("The sender should be the author of the comment from which the callback is invoked",
         COMMENT_AUTHORID, notif.getSender());
     for (Comment aComment : classifiedComments) {
-      String authorId = String.valueOf(aComment.getOwnerId());
-      if (!authorId.equals(String.valueOf(concernedComment.getOwnerId()))) {
+      UserRecipient authorId = new UserRecipient(String.valueOf(aComment.getOwnerId()));
+      if (!authorId.getUserId().equals(String.valueOf(concernedComment.getOwnerId()))) {
         assertThat("The author '" + authorId + "' should be in the notification recipients",
             notif.getUserRecipients(), hasItem(authorId));
       } else {
