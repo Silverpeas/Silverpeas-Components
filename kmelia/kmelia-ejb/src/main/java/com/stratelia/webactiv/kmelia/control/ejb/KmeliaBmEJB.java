@@ -53,6 +53,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.pdc.model.ClassifyPosition;
 import com.stratelia.silverpeas.silverpeasinitialize.CallBackManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
@@ -628,21 +629,22 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
     }
 
     if (!haveRights) {
-      if (alertType.equals("All")) {
-        UserDetail[] users = getOrganizationController().getAllUsers(
-                pk.getInstanceId());
-        notifMetaData.addUserRecipients(users);
-      } else if (alertType.equals("Publisher")) {
+      if ("All".equals(alertType)) {
+        UserDetail[] users = getOrganizationController().getAllUsers(pk.getInstanceId());
+        for (UserDetail userDetail : users) {
+          notifMetaData.addUserRecipient(new UserRecipient(userDetail));
+        }
+      } else if ("Publisher".equals(alertType)) {
         // Get the list of all publishers and admin
         List<String> profileNames = new ArrayList<String>();
         profileNames.add("admin");
         profileNames.add("publisher");
         profileNames.add("writer");
-
-        String[] users = getOrganizationController().getUsersIdsByRoleNames(
-                pk.getInstanceId(), profileNames);
-
-        notifMetaData.addUserRecipients(users);
+        String[] users = getOrganizationController().getUsersIdsByRoleNames(pk.getInstanceId(),
+                profileNames);
+        for (String user : users) {
+          notifMetaData.addUserRecipient(new UserRecipient(user));
+        }
       }
     } else {
       List<String> profileNames = new ArrayList<String>();
@@ -654,11 +656,15 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         profileNames.add("user");
         String[] users = getOrganizationController().getUsersIdsByRoleNames(pk.getInstanceId(),
                 String.valueOf(rightsDependOn), ObjectType.NODE, profileNames);
-        notifMetaData.addUserRecipients(users);
+        for (String user : users) {
+          notifMetaData.addUserRecipient(new UserRecipient(user));
+        }
       } else if (alertType.equals("Publisher")) {
         String[] users = getOrganizationController().getUsersIdsByRoleNames(pk.getInstanceId(),
                 String.valueOf(rightsDependOn), ObjectType.NODE, profileNames);
-        notifMetaData.addUserRecipients(users);
+        for (String user : users) {
+          notifMetaData.addUserRecipient(new UserRecipient(user));
+        }
       }
     }
     notifMetaData.setLink(getNodeUrl(nodeDetail));
@@ -1979,8 +1985,8 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         }
 
         if (!newSubscribers.isEmpty()) {
-          ResourceLocator rs =
-                  new ResourceLocator("com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "");
+          ResourceLocator rs = new ResourceLocator(
+                  "com.stratelia.webactiv.kmelia.settings.kmeliaSettings", "");
 
           Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
           ResourceLocator message = new ResourceLocator(
@@ -1991,7 +1997,6 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           if (update) {
             fileName = "notificationSubscriptionUpdate";
           }
-
           NotificationMetaData notifMetaData = new NotificationMetaData(
                   NotificationParameters.NORMAL, subject, templates, fileName);
           for (String lang : DisplayI18NHelper.getLanguages()) {
@@ -2008,7 +2013,9 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
                     "com.stratelia.webactiv.kmelia.multilang.kmeliaBundle", lang);
             notifMetaData.addLanguage(lang, localizedMessage.getString("Subscription", subject), "");
           }
-          notifMetaData.setUserRecipients(newSubscribers);
+          for (String subscriberId : newSubscribers) {
+            notifMetaData.addUserRecipient(new UserRecipient(subscriberId));
+          }
           notifMetaData.setLink(getPublicationUrl(pubDetail));
           notifMetaData.setComponentId(fatherPK.getInstanceId());
           String senderId = "";
@@ -2490,7 +2497,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
           }
           notifMetaData.addLanguage(lang, subject, "");
         }
-        notifMetaData.addUserRecipient(userId);
+        notifMetaData.addUserRecipient(new UserRecipient(userId));
         notifMetaData.setLink(getPublicationUrl(pubDetail));
         notifMetaData.setComponentId(pubDetail.getPK().getInstanceId());
         notifyUsers(notifMetaData, userIdWhoRefuse);
@@ -2575,14 +2582,13 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
         notifMetaData.setSender(pubDetail.getUpdaterId());
         List<String> roles = new ArrayList<String>();
         roles.add("supervisor");
-        String[] supervisors =
-                getOrganizationController().getUsersIdsByRoleNames(pubDetail.getPK().
+        String[] supervisors = getOrganizationController().getUsersIdsByRoleNames(pubDetail.getPK().
                 getInstanceId(), roles);
         SilverTrace.debug("kmelia", "KmeliaBmEJB.alertSupervisors()",
-                "root.MSG_GEN_PARAM_VALUE", supervisors.length
-                + " users in role supervisor !");
-        notifMetaData.addUserRecipients(supervisors);
-
+                "root.MSG_GEN_PARAM_VALUE", supervisors.length + " users in role supervisor !");
+        for (String supervisorId : supervisors) {
+          notifMetaData.addUserRecipient(new UserRecipient(supervisorId));
+        }
         notifMetaData.setLink(getPublicationUrl(pubDetail));
         notifMetaData.setComponentId(pubDetail.getPK().getInstanceId());
         notifyUsers(notifMetaData, pubDetail.getUpdaterId());
@@ -3541,7 +3547,9 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
                 "");
       }
       notifMetaData.setSender(userId);
-      notifMetaData.addUserRecipients(users);
+      for (String user : users) {
+        notifMetaData.addUserRecipient(new UserRecipient(user));
+      }
       notifMetaData.setLink(getPublicationUrl(pubDetail));
       notifMetaData.setComponentId(pubDetail.getPK().getInstanceId());
       notifyUsers(notifMetaData, pubDetail.getUpdaterId());
@@ -3585,7 +3593,7 @@ public class KmeliaBmEJB implements KmeliaBmBusinessSkeleton, SessionBean {
                 subject), "");
       }
       notifMetaData.setSender(userId);
-      notifMetaData.addUserRecipient(userId);
+      notifMetaData.addUserRecipient(new UserRecipient(userId));
       notifMetaData.setLink(getPublicationUrl(pubDetail));
       notifMetaData.setComponentId(pubDetail.getPK().getInstanceId());
       notifyUsers(notifMetaData, userId);

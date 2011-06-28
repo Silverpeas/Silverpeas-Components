@@ -33,6 +33,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
@@ -78,7 +79,9 @@ public class WebPagesNotifier {
           notifMetaData.addLanguage(lang, localizedMessage.getString("webPages.subscription",
                   subject), "");
         }
-        notifMetaData.setUserRecipients(subscriberIds);
+        for (String subscriberId : subscriberIds) {
+          notifMetaData.addUserRecipient(new UserRecipient(subscriberId));
+        }
         notifMetaData.setLink(URLManager.getURL(null, null, nodePK.getInstanceId()) + "Main");
         notifMetaData.setComponentId(nodePK.getInstanceId());
         notifyUsers(notifMetaData, userId);

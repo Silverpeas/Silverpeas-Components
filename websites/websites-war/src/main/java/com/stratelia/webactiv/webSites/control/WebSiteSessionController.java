@@ -51,6 +51,7 @@ import javax.ejb.RemoveException;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -987,11 +988,16 @@ public class WebSiteSessionController extends AbstractComponentSessionController
       profileNames.add("Publisher");
       String[] users = getOrganizationController().getUsersIdsByRoleNames(
           getComponentId(), profileNames);
+      
+      List<UserRecipient> recipients = new ArrayList<UserRecipient>(users.length);
+      for (String userId : users) {
+        recipients.add(new UserRecipient(userId));
+      }
 
       NotificationMetaData notifMetaData = new NotificationMetaData(
           NotificationParameters.NORMAL, subject, messageText);
       notifMetaData.setSender(getUserId());
-      notifMetaData.addUserRecipients(users);
+      notifMetaData.addUserRecipients(recipients);
       notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
       getNotificationSender().notifyUser(notifMetaData);
     } catch (Exception e) {

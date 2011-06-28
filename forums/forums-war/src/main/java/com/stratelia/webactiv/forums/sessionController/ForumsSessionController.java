@@ -45,6 +45,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.peasCore.AbstractComponentSessionController;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
@@ -616,30 +617,28 @@ public class ForumsSessionController extends AbstractComponentSessionController 
   public void sendNotification(String title, String text, int parentId,
       int messageId) throws NotificationManagerException {
     List<String> subscribers = listAllSubscribers(parentId);
-    if (subscribers.size() > 0) {
+    if (!subscribers.isEmpty()) {
       ResourceLocator resource = new ResourceLocator(
-          "com.stratelia.webactiv.forums.settings.forumsMails", getLanguage());
-      String[] targetUserIds = subscribers.toArray(new String[subscribers.size()]);
+          "com.stratelia.webactiv.forums.settings.forumsMails", getLanguage());      
       Map<String, String> values = new HashMap<String, String>();
       values.put("title", title);
       values.put("text", text);
       values.put("originTitle", getMessageTitle(parentId));
       values.put("componentId", getComponentId());
       values.put("messageId", String.valueOf(messageId));
-
       String mailSubject = StringUtil.format(resource.getString(mailType + ".subject"), values);
       String mailBody = StringUtil.format(resource.getString(mailType + ".body"), values);
-      String url = StringUtil.format(resource.getString(mailType + ".link"),
-          values);
+      String url = StringUtil.format(resource.getString(mailType + ".link"), values);
 
       // envoi des mails de notification
       NotificationMetaData notifMetaData = new NotificationMetaData(
           NotificationParameters.NORMAL, mailSubject, mailBody);
       notifMetaData.setSender(getUserId());
-      notifMetaData.addUserRecipients(targetUserIds);
+      for (String subscriberId : subscribers) {
+        notifMetaData.addUserRecipient(new UserRecipient(subscriberId));
+      }
       notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
       notifMetaData.setLink(url);
-
       getNotificationSender().notifyUser(notifMetaData);
     }
   }
@@ -650,8 +649,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     if (moderators.size() > 0) {
       ResourceLocator resource = new ResourceLocator(
           "com.stratelia.webactiv.forums.settings.forumsMails", getLanguage());
-      // Preparation des donnees
-      String[] targetUserIds = moderators.toArray(new String[moderators.size()]);
 
       Map<String, String> values = new HashMap<String, String>();
       values.put("title", title);
@@ -669,7 +666,9 @@ public class ForumsSessionController extends AbstractComponentSessionController 
       NotificationMetaData notifMetaData = new NotificationMetaData(
           NotificationParameters.NORMAL, mailSubject, mailBody);
       notifMetaData.setSender(getUserId());
-      notifMetaData.addUserRecipients(targetUserIds);
+      for (String moderator : moderators) {
+        notifMetaData.addUserRecipient(new UserRecipient(moderator));
+      }
       notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
       notifMetaData.setLink(url);
 
@@ -683,8 +682,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
         "com.stratelia.webactiv.forums.settings.forumsMails", getLanguage());
     // Preparation des donnees
     Message message = getMessage(messageId);
-    String[] targetUserIds = new String[1];
-    targetUserIds[0] = message.getAuthor();
 
     Map<String, String> values = new HashMap<String, String>();
     values.put("title", title);
@@ -702,7 +699,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     NotificationMetaData notifMetaData = new NotificationMetaData(
         NotificationParameters.NORMAL, mailSubject, mailBody);
     notifMetaData.setSender(getUserId());
-    notifMetaData.addUserRecipients(targetUserIds);
+    notifMetaData.addUserRecipient(new UserRecipient(message.getAuthor()));
     notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
     notifMetaData.setLink(url);
 
@@ -715,9 +712,6 @@ public class ForumsSessionController extends AbstractComponentSessionController 
         "com.stratelia.webactiv.forums.settings.forumsMails", getLanguage());
     // Preparation des donnees
     Message message = getMessage(messageId);
-    String[] targetUserIds = new String[1];
-    targetUserIds[0] = message.getAuthor();
-
     Map<String, String> values = new HashMap<String, String>();
     values.put("title", title);
     values.put("text", text);
@@ -734,7 +728,7 @@ public class ForumsSessionController extends AbstractComponentSessionController 
     NotificationMetaData notifMetaData = new NotificationMetaData(
         NotificationParameters.NORMAL, mailSubject, mailBody);
     notifMetaData.setSender(getUserId());
-    notifMetaData.addUserRecipients(targetUserIds);
+    notifMetaData.addUserRecipient(new UserRecipient(message.getAuthor()));
     notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
     notifMetaData.setLink(url);
 
