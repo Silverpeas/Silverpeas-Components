@@ -623,7 +623,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @return boolean
    */
   public boolean isCommentsEnabled() {
-    return "yes".equalsIgnoreCase(getComponentParameterValue("comments"));
+    return !"no".equalsIgnoreCase(getComponentParameterValue("comments"));
   }
 
   /**
