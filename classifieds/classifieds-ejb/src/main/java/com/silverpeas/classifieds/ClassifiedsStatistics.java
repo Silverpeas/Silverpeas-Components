@@ -26,7 +26,6 @@ package com.silverpeas.classifieds;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import com.silverpeas.classifieds.control.ejb.ClassifiedsBm;
 import com.silverpeas.classifieds.control.ejb.ClassifiedsBmHome;

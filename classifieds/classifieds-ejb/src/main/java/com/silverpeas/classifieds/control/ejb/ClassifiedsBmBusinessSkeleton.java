@@ -161,10 +161,11 @@ public interface ClassifiedsBmBusinessSkeleton {
   /**
    * get all expiring classifieds (corresponding of a number of day nbDays)
    * @param nbDays : int
+   * @param instanceId : classified component instance id
    * @return a collection of ClassifiedDetail
    * @throws RemoteException
    */
-  public Collection<ClassifiedDetail> getAllClassifiedsToDelete(int nbDays) throws RemoteException;
+  public Collection<ClassifiedDetail> getAllClassifiedsToUnpublish(int nbDays, String instanceId) throws RemoteException;
 
   /**
    * create a subscription
@@ -179,6 +180,13 @@ public interface ClassifiedsBmBusinessSkeleton {
    * @throws RemoteException
    */
   public void deleteSubscribe(String subscribeId) throws RemoteException;
+
+  /**
+   * unpublish a subscription corresponding to subscribeId
+   * @param subscribeId : String
+   * @throws RemoteException
+   */
+  public void unpublishClassified(String classifiedId) throws RemoteException;
 
   /**
    * get all subscriptions for user and instance corresponding to userId and instanceId
@@ -216,4 +224,14 @@ public interface ClassifiedsBmBusinessSkeleton {
    */
   public void sendSubscriptionsNotification(String field1, String field2,
       ClassifiedDetail classified) throws RemoteException;
+
+  /**
+   * get all classifieds unpublished for an instance corresponding to instanceId and for given user
+   * @param instanceId : String
+   * @param userId : creator user id
+   * @return a collection of ClassifiedDetail
+   * @throws RemoteException
+   */
+  Collection<ClassifiedDetail> getUnpublishedClassifieds(String instanceId, String userId) throws RemoteException;
+
 }

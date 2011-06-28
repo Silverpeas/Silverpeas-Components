@@ -50,6 +50,8 @@ import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
+import com.stratelia.silverpeas.wysiwyg.WysiwygException;
+import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import com.stratelia.webactiv.searchEngine.model.QueryDescription;
 import com.stratelia.webactiv.util.DateUtil;
@@ -256,10 +258,10 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @throws PublicationTemplateException
    * @throws FormException
    */
-  public synchronized void draftOutClassified(String classifiedId, String profile)
+  public synchronized void draftOutClassified(String classifiedId, ClassifiedsRole highestRole)
       throws RemoteException, PublicationTemplateException, FormException {
-    getClassifiedsBm().draftOutClassified(classifiedId, profile);
-    if (profile.equals("admin")) {
+    getClassifiedsBm().draftOutClassified(classifiedId, highestRole.toString());
+    if (highestRole==ClassifiedsRole.MANAGER) {
       sendSubscriptionsNotification(classifiedId);
     }
   }
@@ -329,7 +331,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    * @param profile : String
    * @return classifiedId : String
    */
-  public synchronized String createClassified(ClassifiedDetail classified, String profile) {
+  public synchronized String createClassified(ClassifiedDetail classified, ClassifiedsRole profile) {
     try {
       UserDetail user = getUserDetail();
       classified.setCreatorId(getUserId());
@@ -341,7 +343,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       if (isDraftEnabled()) {
         classified.setStatus(ClassifiedDetail.DRAFT);
       } else {
-        if ("admin".equals(profile) || !isValidationEnabled()) {
+        if (profile==ClassifiedsRole.MANAGER || !isValidationEnabled()) {
           classified.setStatus(ClassifiedDetail.VALID);
         } else {
           classified.setStatus(ClassifiedDetail.TO_VALIDATE);
@@ -388,7 +390,7 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
       boolean notify = false;
       if (isUpdate) {
         classified.setUpdateDate(new Date());
-        // c'est une "vraie" modification
+        // That's a real update
         if (isDraftEnabled()) {
           if (classified.getStatus().equals(ClassifiedDetail.VALID)) {
             notify = true;
@@ -398,10 +400,20 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
             classified.setStatus(ClassifiedDetail.TO_VALIDATE);
           }
         }
+
+        // special case : status is UNPUBLISHED, user requested classified republication
+        if (classified.getStatus().equals(ClassifiedDetail.UNPUBLISHED)) {
+          if (!isAdmin && isValidationEnabled() ) {
+            classified.setStatus(ClassifiedDetail.TO_VALIDATE);
+          }
+          else {
+            classified.setStatus(ClassifiedDetail.VALID);
+          }
+        }
       }
       getClassifiedsBm().updateClassified(classified, notify);
-      // traitement des abonnements pour les cas de créations de petites annonces par les admin sans
-      // mode brouillon
+
+      // for newly created classifieds by admin : need to force notification
       if (!isUpdate && classified.getStatus().equals(ClassifiedDetail.VALID)) {
         sendSubscriptionsNotification(Integer.toString(classified.getClassifiedId()));
       }
@@ -604,5 +616,38 @@ public final class ClassifiedsSessionController extends AbstractComponentSession
    */
   private PublicationTemplateManager getPublicationTemplateManager() {
     return PublicationTemplateManager.getInstance();
+  }
+
+  /**
+   * return true if comments feature is enabled
+   * @return boolean
+   */
+  public boolean isCommentsEnabled() {
+    return "yes".equalsIgnoreCase(getComponentParameterValue("comments"));
+  }
+
+  /**
+   * return true if wysiwyg header feature is enabled
+   * @return boolean
+   */
+  public boolean isWysiwygHeaderEnabled() {
+    return "yes".equals(getComponentParameterValue("wysiwygHeader").toLowerCase());
+  }
+
+
+  /**
+   * return wysiwyg header html code
+   *
+   * @return wysiwyg header html code
+   */
+  public String getWysiwygHeader() {
+    if (isWysiwygHeaderEnabled()) {
+      try {
+        return WysiwygController.load(getComponentId(), "Node_0", getLanguage());
+      } catch (WysiwygException e) {
+        return "";
+      }
+    }
+    return "";
   }
 }
