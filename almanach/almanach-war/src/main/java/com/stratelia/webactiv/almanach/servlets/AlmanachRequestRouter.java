@@ -30,7 +30,6 @@ import com.stratelia.silverpeas.util.ResourcesWrapper;
 
 import javax.servlet.http.HttpServletRequest;
 
-
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
@@ -168,13 +167,13 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         String day = request.getParameter("Day");
 
         EventDetail event = new EventDetail();
-        String[] startDay = {"", "" };
+        String[] startDay = { "", "" };
         if (day != null && day.length() > 0) {
           event.setStartDate(DateUtil.parseISO8601Date(day));
           ResourcesWrapper resources = (ResourcesWrapper) request.getAttribute("resources");
           startDay[0] = resources.getInputDate(event.getStartDate());
-          if (! day.endsWith("00:00")) {
-            startDay[1] = day.substring(day.indexOf("T") + 1);
+          if (!day.endsWith("00:00")) {
+            startDay[1] = day.substring(day.indexOf('T') + 1);
             event.setStartHour(startDay[1]);
           }
         }
@@ -263,8 +262,8 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
               break;
             case Periodicity.UNIT_MONTH:
               if ("MonthDay".equals(choiceMonth)) {
-                periodicity.setNumWeek(new Integer(monthNumWeek).intValue());
-                periodicity.setDay(new Integer(monthDayWeek).intValue());
+                periodicity.setNumWeek(Integer.parseInt(monthNumWeek));
+                periodicity.setDay(Integer.parseInt(monthDayWeek));
               }
               break;
           }
@@ -371,8 +370,8 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
           if (periodicity == null) {
             periodicity = new Periodicity();
           }
-          periodicity.setUnity(new Integer(unity).intValue());
-          periodicity.setFrequency(new Integer(frequency).intValue());
+          periodicity.setUnity(Integer.parseInt(unity));
+          periodicity.setFrequency(Integer.parseInt(frequency));
 
           if ("2".equals(unity)) {// Periodicity.UNIT_WEEK
             String daysWeekBinary = "";
@@ -386,8 +385,8 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
             periodicity.setDaysWeekBinary(daysWeekBinary);
           } else if ("3".equals(unity)) {// Periodicity.UNIT_MONTH
             if ("MonthDay".equals(choiceMonth)) {
-              periodicity.setNumWeek(new Integer(monthNumWeek).intValue());
-              periodicity.setDay(new Integer(monthDayWeek).intValue());
+              periodicity.setNumWeek(Integer.parseInt(monthNumWeek));
+              periodicity.setDay(Integer.parseInt(monthDayWeek));
             }
           }
 
@@ -406,8 +405,7 @@ public class AlmanachRequestRouter extends ComponentRequestRouter {
         if ("ReallyUpdateOccurence".equals(action)) {
 
           // Met à jour l'événement et toutes les occurences de la série
-          almanach.updateEventOccurence(event, dateDebutIteration,
-              dateFinIteration);
+          almanach.updateEventOccurence(event, dateDebutIteration, dateFinIteration);
         } else if ("ReallyUpdateSerial".equals(action)) {
           java.util.Date startDateEvent = DateUtil.stringToDate(
               periodicityStartDate, almanach.getLanguage());

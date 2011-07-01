@@ -63,8 +63,4 @@ public class EventDetailBeginDateComparatorAsc implements Comparator<EventDetail
 
     return compareResult;
   }
-
-  public boolean equals(Object o) {
-    return o == this;
-  }
 }
