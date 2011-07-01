@@ -76,6 +76,7 @@ import com.silverpeas.comment.model.Comment;
 import com.silverpeas.comment.service.CommentServiceFactory;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.pdc.control.PdcBm;
 import com.stratelia.silverpeas.pdc.control.PdcBmImpl;
 import com.stratelia.silverpeas.pdc.model.SearchContext;
@@ -918,8 +919,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
         subject, messageBody.toString());
     notifMetaData.addLanguage("en", subject_en, messageBody_en.toString());
-
-    notifMetaData.addUserRecipients(admins);
+    for (UserDetail admin : admins) {
+      notifMetaData.addUserRecipient(new UserRecipient(admin));
+    }
     notifMetaData.setLink(URLManager.getURL(null, getComponentId()) + "Main");
     notifMetaData.setComponentId(getComponentId());
 
@@ -1521,8 +1523,9 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
         subject, messageBody.toString());
     notifMetaData.addLanguage("en", subject_en, messageBody_en.toString());
-
-    notifMetaData.addUserRecipients(admins);
+    for (UserDetail admin : admins) {
+      notifMetaData.addUserRecipient(new UserRecipient(admin));
+    }
     notifMetaData.setLink(URLManager.getURL(null, getComponentId()) + "OrderView?OrderId="
         + orderId);
     notifMetaData.setComponentId(getComponentId());
@@ -1542,9 +1545,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
     // 1. création du message
 
     OrganizationController orga = new OrganizationController();
-    UserDetail[] users = new UserDetail[1];
     Order order = getOrder(orderId);
-    users[0] = orga.getUserDetail(Integer.toString(order.getUserId()));
     String user = orga.getUserDetail(Integer.toString(order.getProcessUserId())).getDisplayedName();
 
     ResourceLocator message = new ResourceLocator("com.silverpeas.gallery.multilang.galleryBundle",
@@ -1569,7 +1570,7 @@ public final class GallerySessionController extends AbstractComponentSessionCont
         subject, messageBody.toString());
     notifMetaData.addLanguage("en", subject_en, messageBody_en.toString());
 
-    notifMetaData.addUserRecipients(users);
+    notifMetaData.addUserRecipient(new UserRecipient(String.valueOf(order.getUserId())));
     notifMetaData.setLink(URLManager.getURL(null, getComponentId()) + "OrderView?OrderId="
         + orderId);
     notifMetaData.setComponentId(getComponentId());

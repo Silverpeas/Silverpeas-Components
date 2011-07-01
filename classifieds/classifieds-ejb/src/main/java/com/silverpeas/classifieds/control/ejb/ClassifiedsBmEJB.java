@@ -55,6 +55,7 @@ import com.stratelia.silverpeas.notificationManager.NotificationManagerException
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
 import com.stratelia.silverpeas.notificationManager.NotificationSender;
+import com.stratelia.silverpeas.notificationManager.UserRecipient;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.searchEngine.control.ejb.SearchEngineBm;
@@ -293,7 +294,7 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
               getValidationNotificationSubject(classified, language), "");
         }
 
-        notifMetaData.addUserRecipient(userId);
+        notifMetaData.addUserRecipient(new UserRecipient(userId));
         notifMetaData.setLink(getClassifiedUrl(classified));
         notifMetaData.setComponentId(classified.getInstanceId());
         notifyUsers(notifMetaData, userIdWhoRefuse);
@@ -324,8 +325,9 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
           notifMetaData.addLanguage(language, getMessage(
               "classifieds.mailNewPublicationSubscription", subject, language), "");
         }
-
-        notifMetaData.setUserRecipients(users);
+        for (String user : users) {
+          notifMetaData.addUserRecipient(new UserRecipient(user));
+        }
         notifMetaData.setLink(getClassifiedUrl(classified));
         notifMetaData.setComponentId(classified.getInstanceId());
         notifyUsers(notifMetaData, classified.getCreatorId());
@@ -529,9 +531,9 @@ public class ClassifiedsBmEJB implements SessionBean, ClassifiedsBmBusinessSkele
         roles.add("admin");
         OrganizationController orga = new OrganizationController();
         String[] admins = orga.getUsersIdsByRoleNames(classified.getInstanceId(), roles);
-
-        notifMetaData.addUserRecipients(admins);
-
+        for (String admin : admins) {
+          notifMetaData.addUserRecipient(new UserRecipient(admin));
+        }
         notifMetaData.setLink(getClassifiedUrl(classified));
         notifMetaData.setComponentId(classified.getInstanceId());
         notifyUsers(notifMetaData, classified.getCreatorId());

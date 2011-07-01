@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://repository.silverpeas.com/legal/licensing"
+ * "http://www.silverpeas.com/legal/licensing"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -20,11 +20,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
  */
 package com.silverpeas.questionReply.control;
 
@@ -49,7 +44,6 @@ public class QuestionRegexpComparatorTest {
    */
   @org.junit.Test
   public void testCompare() {
-    System.out.println("compare");
     Question question1 = new Question();
     question1.setTitle("1.0 - Test");
     Question question2 = new Question();
@@ -67,7 +61,6 @@ public class QuestionRegexpComparatorTest {
    */
   @org.junit.Test
   public void testCompareNumbers() {
-    System.out.println("compareNumbers");
     QuestionRegexpComparator instance = QuestionRegexpComparator.getInstance();
     List<Integer> list1 = Arrays.asList(1, 10, 5);
     List<Integer> list2 = Arrays.asList(1, 5);

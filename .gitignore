@@ -6,6 +6,5 @@
 .classpath
 .project
 /target/
-
-/kmelia/kmelia-ejb/src/main/resources/META-INF/MANIFEST.MF
-/kmelia/kmelia-war/src/main/webapp/META-INF
+@IndexDir@
+*/**/META-INF/MANIFEST.MF

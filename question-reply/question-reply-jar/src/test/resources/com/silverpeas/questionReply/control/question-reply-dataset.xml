@@ -9,11 +9,49 @@
 -->
 
 <dataset>
-  <sb_containermanager_instance instanceid="14" componentid="questionReply12" containertype="containerPDC"
+  <sb_containermanager_instance instanceid="50" componentid="questionReply12" containertype="containerPDC"
 contenttype="questionReply"/>
-  <sc_questionreply_question id="1" title="Les accents ça fonctionne ïci ?" content="la mise en œuvre désigne la création"
+  <sb_containermanager_instance instanceid="55" componentid="questionReply35" containertype="containerPDC"
+contenttype="questionReply"/>
+  <sb_contentmanager_content silvercontentid="500" internalcontentid="100" contentinstanceid="50" authorid="0"
+  creationdate="2010-09-14" begindate="2010/09/14" enddate="9999/99/99" isvisible="1" />
+  <sb_contentmanager_content silvercontentid="501" internalcontentid="101" contentinstanceid="50" authorid="0"
+  creationdate="2010-05-25" begindate="2010/02/17" enddate="9999/99/99" isvisible="1" />
+  <sb_contentmanager_content silvercontentid="502" internalcontentid="102" contentinstanceid="55" authorid="1"
+  creationdate="2011-05-27" begindate="2010/09/14" enddate="2012/04/21" isvisible="1" />
+
+
+
+  <sc_questionreply_question id="100" title="Les accents ça fonctionne ïci ?" content="la mise en œuvre désigne la création"
   creatorid="0" creationdate="2010/09/14" status="2" publicreplynumber="1" privatereplynumber="0"
   replynumber="1" instanceid="questionReply12" categoryid="" />
-<!-- 2;"Ma question";"C'est une super question";"0";"2010/10/19";1;0;1;1;"questionReply27";"''"-->
+  <sc_questionreply_question id="101" title="Oh Marlène" content="Les cœurs saignent Et s'accrochent en haut De tes bas"
+  creatorid="0" creationdate="1993/06/14" status="1" publicreplynumber="1" privatereplynumber="1"
+  replynumber="2" instanceid="questionReply12" categoryid="3" />
+  <sc_questionreply_question id="102" title="Private closed question" content="Cette question ne devrait pas ressortir"
+  creatorid="0" creationdate="2010/09/14" status="2" publicreplynumber="0" privatereplynumber="5"
+  replynumber="5" instanceid="questionReply12" categoryid="3" />
+  <sc_questionreply_question id="103" title="Question with private answers only" content="This question has only private answers"
+  creatorid="0" creationdate="2010/09/14" status="1" publicreplynumber="0" privatereplynumber="1"
+  replynumber="1" instanceid="questionReply12" categoryid="1" />
+  <sc_questionreply_question id="104" title="Les accents ça fonctionne ïci ?" content="la mise en œuvre désigne la création"
+  creatorid="1" creationdate="2010/09/14" status="0" publicreplynumber="0" privatereplynumber="0"
+  replynumber="0" instanceid="questionReply35" categoryid="" />
+
+  <sc_questionreply_reply id="200" title="Oui les accents fonctionnent" questionid="100"
+  content="Les accents fonctionnent correctement grâce à l'UTF-8" creatorid="1"
+  creationdate="2010/10/02" publicreply="1" privatereply="0" />
+  <sc_questionreply_reply id="201" title="Oh Marlène" questionid="101"
+  content="Dans tes veines Coule l'amour Des soldats" creatorid="1"
+  creationdate="1993/10/02" publicreply="1" privatereply="0" />
+  <sc_questionreply_reply id="202" title="Oh Marlène" questionid="101"
+  content="Et quand ils meurent ou s'endorment C'est la chaleur de ta voix Qui les apaise, et les traîne Jusqu'en dehors des combats" creatorid="2"
+  creationdate="1993/11/15" publicreply="0" privatereply="1" />
+  <sc_questionreply_reply id="203" title="Private reply" questionid="103"
+  content="Réponse privée" creatorid="1" creationdate="2010/10/02" publicreply="0" privatereply="1" />
+
+  <sc_questionreply_reply id="250" title="Oh Marlène" questionid="104"
+  content="la mise en œuvre désigne la création" creatorid="2"
+  creationdate="2010/11/15" publicreply="0" privatereply="1" />
 
 </dataset>

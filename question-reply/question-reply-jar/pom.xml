@@ -6,12 +6,12 @@
     <artifactId>question-reply</artifactId>
     <version>5.7-SNAPSHOT</version>
   </parent>
-	
+
   <groupId>com.silverpeas.components.question-reply</groupId>
   <artifactId>question-reply-jar</artifactId>
   <packaging>jar</packaging>
   <name>Lib question-reply</name>
-	
+
   <dependencies>
     <dependency>
       <groupId>com.silverpeas.core</groupId>
@@ -46,14 +46,9 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>com.silverpeas.core</groupId>
-      <artifactId>test-core</artifactId>
+      <groupId>com.silverpeas.core.ejb-core</groupId>
+      <artifactId>pdc</artifactId>
       <version>${core.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.h2database</groupId>
-      <artifactId>h2</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -66,6 +61,6 @@
     </testResources>
     <filters>
       <filter>src/test/filters/filters.properties</filter>
-    </filters>  
+    </filters>
   </build>
 </project>
