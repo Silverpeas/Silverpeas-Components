@@ -23,11 +23,14 @@
  */
 package com.silverpeas.questionReply.web;
 
+import com.silverpeas.attachment.web.AttachmentEntity;
 import com.silverpeas.questionReply.model.Reply;
 import com.silverpeas.rest.Exposable;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.persistence.IdPK;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlElement;
@@ -233,13 +236,12 @@ public class ReplyEntity implements Exposable {
   public ReplyEntity withURI(final URI uri) {
     this.uri = uri;
     return this;
-  }
-  
+  } 
   
   /**
-   * Sets a URI to this entity.
-   * With this URI, it can then be accessed through the Web.
-   * @param uri the web entity URI.
+   * Sets the accessing user profile to this entity.
+   * With this profile the status of this reply can be defined.
+   * @param profile the profile of the accessing user.
    * @return itself.
    */
   public ReplyEntity withProfile(final SilverpeasRole profile) {

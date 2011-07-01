@@ -159,10 +159,8 @@ $(document).ready(function() {
     questionAuthor = $('<span>').addClass('questionAuthor').addClass('txtBaseline').text(questionToBeDisplayed.creator.fullName + ' ');
     questionCreationDate = $('<span>').addClass('questionDate').text('- ' + questionToBeDisplayed.creationDate);
     questionAuthor.append(questionCreationDate);    
-    questionTitleDiv.append(questionAuthor);
-    
-    questionDiv.append(questionTitleDiv);
-    
+    questionTitleDiv.append(questionAuthor);    
+    questionDiv.append(questionTitleDiv);    
     actionDiv = $('<div>').addClass('action');
     if(questionToBeDisplayed.replyable){
       replyQuestionLink = $('<a>').addClass('reply').attr('title', '<fmt:message key="questionReply.ajoutR"/>').attr('href', 'CreateRQuery?QuestionId=' + questionToBeDisplayed.id);
@@ -217,7 +215,14 @@ $(document).ready(function() {
     }
     answerTitle.append(actionDiv);
     answerBlock.append(answerTitle);
-    answerContentDiv = $('<div>').addClass('answerContent').append(answer.content);
+    answerContentDiv = $('<div>').addClass('answerContent');
+    answerAttachmentDiv = $('<div>').addClass('answerAttachment');
+    if(answer.attachments != null && answer.attachments.length > 0) {
+      attachementDivUrl = '<c:url value="/attachment/jsp/displayAttachments.jsp?Context=Images&ComponentId=${pageScope.componentId}" />&Id=' + answer.id;
+      $.get(attachementDivUrl, function(data){answerAttachmentDiv.append(data);}, 'html');
+      answerContentDiv.append(answerAttachmentDiv);
+    }
+    answerContentDiv.append(answer.content);
     answerBlock.append(answerContentDiv);
     answerAuthorBlock = $('<span>').addClass('answerAuthor txtBaseline').text(answer.creatorName);
     answerDateBlock = $('<span>').addClass('answerDate').text(' - ' + answer.creationDate);
@@ -264,9 +269,9 @@ function openQ(id)
 	//confirmation de l'ouverture de la question
 	if(window.confirm("<%=resource.getString("MessageOpenQ")%>"))
 	{
-			document.QForm.action = "OpenQ";
-			document.QForm.Id.value = id;
-			document.QForm.submit();
+      document.QForm.action = "OpenQ";
+      document.QForm.Id.value = id;
+      document.QForm.submit();
 	}
 }
 
@@ -387,14 +392,13 @@ function existSelect()
 // supprimer une reponse
 function deleteConfirmR(replyId, questionId)
 {
-	//confirmation de suppression de la question
-	if(window.confirm("<%=resource.getString("MessageSuppressionR")%>"))
-	{
-			document.RForm.action = "DeleteR";
-			document.RForm.replyId.value = replyId;
-			document.RForm.QuestionId.value = questionId;
-			document.RForm.submit();
-	}
+  //confirmation de suppression de la question
+  if(window.confirm("<%=resource.getString("MessageSuppressionR")%>")) {
+    document.RForm.action = "DeleteR";
+    document.RForm.replyId.value = replyId;
+    document.RForm.QuestionId.value = questionId;
+    document.RForm.submit();
+  }
 }
 
 function confirmDeleteCategory(categoryId) {
@@ -402,13 +406,18 @@ function confirmDeleteCategory(categoryId) {
 		window.location.href=("DeleteCategory?CategoryId=" + categoryId + "");
 	}
 }
-
+<fmt:message key="GML.subscribe" var="labelSubscribe"/>
+<fmt:message key="GML.unsubscribe" var="labelUnsubscribe"/>
 function successUnsubscribe() {
-   $( "#yui-gen1" ).empty().append( $('<a>').addClass('yuimenuitemlabel').attr('href', "javascript:subscribe();").attr('title', 'subscribe').append('subscribe') );
+   $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr('href', 
+   "javascript:subscribe();").attr('title', 
+   '<view:encodeJs string="${labelUnsubscribe}" />').append('<view:encodeJs string="${labelSubscribe}" />') );
 }
 
 function successSubscribe() {
-   $( "#yui-gen1" ).empty().append( $('<a>').addClass('yuimenuitemlabel').attr('href', "javascript:unsubscribe();").attr('title', 'unsubscribe').append('unsubscribe') );
+   $("#yui-gen1").empty().append($('<a>').addClass('yuimenuitemlabel').attr(
+   'href', "javascript:unsubscribe();").attr('title', 
+   '<view:encodeJs string="${labelUnsubscribe}" />').append('<view:encodeJs string="${labelUnsubscribe}" />') );
 }
 
 function unsubscribe() {
@@ -454,13 +463,11 @@ function subscribe() {
           "questionReply.export"), "javascript:onClick=openSPWindow('Export','export')");
   
   if(((Boolean)request.getAttribute("userAlreadySubscribed"))) {
-    operationPane.addOperation(resource.getIcon("questionReply.unsubscribe"), resource.getString(
-          "questionReply.unsubscribe"), "javascript:unsubscribe();");
+    operationPane.addOperation(resource.getIcon("GML.unsubscribe"), resource.getString(
+          "GML.unsubscribe"), "javascript:unsubscribe();");
   }else {
-    /*operationPane.addOperation(resource.getIcon("questionReply.subscribe"), resource.getString(
-          "questionReply.subscribe"), "javascript:$.post('" + m_context +"/services/subscribe/" + componentId + "', $('#RForm').serialize(), function(data) { alert(data);}, 'json');");*/
-    operationPane.addOperation(resource.getIcon("questionReply.subscribe"), resource.getString(
-          "questionReply.subscribe"), "javascript:subscribe();");
+    operationPane.addOperation(resource.getIcon("GML.subscribe"), resource.getString(
+          "GML.subscribe"), "javascript:subscribe();");
   }
             
   out.println(window.printBefore());
