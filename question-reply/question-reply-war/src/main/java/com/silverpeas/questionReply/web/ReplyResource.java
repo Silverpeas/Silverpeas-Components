@@ -27,6 +27,8 @@ import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.control.QuestionManagerFactory;
 import com.silverpeas.questionReply.model.Reply;
 import com.stratelia.webactiv.SilverpeasRole;
+import com.stratelia.webactiv.util.attachment.control.AttachmentController;
+import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +41,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -79,7 +82,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
     try {
       long questionId = Long.parseLong(onQuestionId);
       List<Reply> replies = QuestionManagerFactory.getQuestionManager().getAllReplies(questionId,
-          componentId);
+              componentId);
       return asWebEntities(extractVisibleReplies(questionId, replies), getUserProfile());
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
@@ -93,7 +96,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
     checkUserPriviledges();
     try {
       List<Reply> replies = QuestionManagerFactory.getQuestionManager().getQuestionPublicReplies(
-          Long.parseLong(onQuestionId), componentId);
+              Long.parseLong(onQuestionId), componentId);
       return asWebEntities(replies, getUserProfile());
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
@@ -143,7 +146,7 @@ public class ReplyResource extends QuestionRelyBaseWebService {
    * @return
    */
   boolean isReplyVisible(String questionAuthor, Reply reply, SilverpeasRole role,
-      String userId) {
+          String userId) {
     boolean isPrivate = reply.getPublicReply() <= 0;
     if (isPrivate) {
       boolean isAuthor = questionAuthor.equals(userId);
@@ -153,13 +156,12 @@ public class ReplyResource extends QuestionRelyBaseWebService {
     }
     return true;
   }
-  
 
   List<Reply> extractVisibleReplies(long questionId, List<Reply> replies) throws
-      QuestionReplyException {
+          QuestionReplyException {
     List<Reply> visibleReplies = new ArrayList<Reply>(replies.size());
     String authorId = QuestionManagerFactory.getQuestionManager().getQuestion(questionId).
-        getCreatorId();
+            getCreatorId();
     SilverpeasRole profile = getUserProfile();
     String userid = getUserDetail().getId();
     for (Reply reply : replies) {
@@ -169,5 +171,4 @@ public class ReplyResource extends QuestionRelyBaseWebService {
     }
     return visibleReplies;
   }
-  
 }

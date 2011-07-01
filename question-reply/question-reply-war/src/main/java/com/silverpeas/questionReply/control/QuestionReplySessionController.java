@@ -981,10 +981,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
               JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {
-      throw new QuestionReplyException(
-              "QuestionReplySessioncontroller.getNodeBm()",
-              SilverpeasRuntimeException.ERROR,
-              "QuestionReply.MSG_NODEBM_NOT_EXIST", e);
+      throw new QuestionReplyException("QuestionReplySessioncontroller.getNodeBm()",
+              SilverpeasRuntimeException.ERROR, "QuestionReply.MSG_NODEBM_NOT_EXIST", e);
     }
     return nodeBm;
   }

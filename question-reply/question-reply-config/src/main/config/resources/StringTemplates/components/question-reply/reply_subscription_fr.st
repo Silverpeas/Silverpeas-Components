@@ -2,5 +2,5 @@
 <b>Question : $QuestionDetail.title$</b><br/>
 $QuestionDetail.content$
 
-<b><a href="$url">Réponse : $replyTitle$</a></b>
+<b><a href="$url$">Réponse : $replyTitle$</a></b>
 </p>

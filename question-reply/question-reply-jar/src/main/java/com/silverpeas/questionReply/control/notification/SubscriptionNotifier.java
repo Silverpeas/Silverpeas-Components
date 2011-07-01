@@ -61,13 +61,14 @@ public class SubscriptionNotifier extends Notifier {
     this.notificationSender = new NotificationSender(question.getInstanceId());
   } 
 
+  @Override
   public void sendNotification(Collection<UserRecipient> recipients) throws QuestionReplyException {
     try {
       // Get default resource bundle
       ResourceLocator message = new ResourceLocator(BUNDLE_NAME, I18NHelper.defaultLanguage);
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
       NotificationMetaData notifMetaData = new NotificationMetaData(NotificationParameters.NORMAL,
-              String.format(message.getString("questionReply.subscription.title", "Réponse à :"),
+              String.format(message.getString("questionReply.subscription.title", "Réponse à : %1$"),
               question.getTitle()), templates, "reply_subscription");
       List<String> languages = DisplayI18NHelper.getLanguages();
       for (String language : languages) {
