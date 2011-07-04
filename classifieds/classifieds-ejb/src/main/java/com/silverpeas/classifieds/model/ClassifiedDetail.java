@@ -46,6 +46,7 @@ public class ClassifiedDetail implements Serializable {
   public static final String VALID = "Valid";
   public static final String TO_VALIDATE = "ToValidate";
   public static final String REFUSED = "Unvalidate";
+  public static final String UNPUBLISHED = "Unpublished";
 
   public ClassifiedDetail() {
   }
