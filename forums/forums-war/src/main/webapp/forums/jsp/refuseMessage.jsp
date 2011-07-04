@@ -39,7 +39,7 @@
     String title = message.getTitle();
 
     ResourceLocator settings = fsc.getSettings();
-    String configFile = SilverpeasSettings.readString(settings, "configFile",
+    String configFile = settings.getString("configFile",
         URLManager.getApplicationURL() + "/wysiwyg/jsp/javaScript/myconfig.js");
 
     //Icons

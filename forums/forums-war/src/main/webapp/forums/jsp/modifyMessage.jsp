@@ -39,8 +39,8 @@
     String title = message.getTitle();
 
     ResourceLocator settings = fsc.getSettings();
-    String configFile = SilverpeasSettings.readString(settings, "configFile",
-        URLManager.getApplicationURL() + "/wysiwyg/jsp/javaScript/myconfig.js");
+    String configFile = settings.getString("configFile", URLManager.getApplicationURL()
+        + "/wysiwyg/jsp/javaScript/myconfig.js");
 %>
 <html>
 <head>

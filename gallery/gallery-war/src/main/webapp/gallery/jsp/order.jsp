@@ -48,8 +48,6 @@
 	PagesContext 		context 	= new PagesContext("myForm", "0", resource.getLanguage(), false, componentId, null);
 	context.setBorderPrinted(false);
 %>
-
-<%@page import="com.stratelia.silverpeas.util.SilverpeasSettings"%>
 <%@page import="javax.swing.text.View"%>
 <html>
 <head>

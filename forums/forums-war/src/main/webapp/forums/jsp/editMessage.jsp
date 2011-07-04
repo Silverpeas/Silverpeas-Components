@@ -130,8 +130,8 @@ public void listFolders(JspWriter out, String userId, boolean admin, int rootId,
     if (!move)
     {
         ResourceLocator settings = fsc.getSettings();
-        configFile = SilverpeasSettings.readString(settings, "configFile",
-            URLManager.getApplicationURL() + "/wysiwyg/jsp/javaScript/myconfig.js");
+        configFile = settings.getString("configFile", URLManager.getApplicationURL()
+            + "/wysiwyg/jsp/javaScript/myconfig.js");
     }
 %>
 <html>
