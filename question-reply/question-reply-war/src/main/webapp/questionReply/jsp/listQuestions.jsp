@@ -275,7 +275,7 @@ function existSelect()
 		String date = resource.getOutputDate(question.getCreationDate());
 		String id = question.getPK().getId();
 		int status = question.getStatus();
-		// r�cup�ration du nombre de r�ponses (suivant le profil)
+		// recuperation du nombre de reponses (suivant le profil)
 		int nb = question.getReplyNumber();
 		int nbPublic = question.getPublicReplyNumber();
 		int nbPrive = question.getPrivateReplyNumber();
@@ -294,21 +294,21 @@ function existSelect()
 			arrayLine.addArrayCellLink(title, routerUrl+"ConsultQuestionQuery?questionId=" + id);
 			arrayLine.addArrayCellText(date);
 			ArrayCellText cell0 = arrayLine.addArrayCellText(new Integer(nb).toString());
-			cell0.setCompareOn((Integer) new Integer(nb));
+			cell0.setCompareOn(Integer.valueOf(nb));
 	
-			//cr�ation de la colonne des ic�nes
+			//creation de la colonne des icones
 			IconPane iconPane = gef.getIconPane();
 			if (!profil.equals("user"))
 			{
 				if (!profil.equals("publisher"))
 				{
-					// ic�ne "supprimer"
+					// icone "supprimer"
 					if (status == 0 || status == 2)
 					{
 						Icon deleteIcon = iconPane.addIcon();
 						deleteIcon.setProperties(resource.getIcon("questionReply.delete"), resource.getString("questionReply.delQ"),"javaScript:deleteConfirm('"+id+"')");
 					}
-					//ic�ne "clore"
+					//icone "clore"
 					if (status == 1)
 					{
 						Icon closeIcon = iconPane.addIcon();
@@ -316,7 +316,7 @@ function existSelect()
 					}
 					if (status == 0 || status == 1)
 					{
-						//ic�ne "r�pondre"
+						//icone "repondre"
 						Icon repIcon = iconPane.addIcon();
 						repIcon.setProperties(resource.getIcon("questionReply.miniconeReponse"), resource.getString("questionReply.ajoutR"),"CreateRQuery?QuestionId="+ id);
 					}
@@ -327,7 +327,7 @@ function existSelect()
 				}
 				else 
 					// pour le demandeur (publisher)
-					// ic�ne "supprimer" que si la question est la sienne et si elle n'a pas encore de r�ponses
+					// icone "supprimer" que si la question est la sienne et si elle n'a pas encore de reponses
 					if (status == 0 && question.getCreatorId().equals(userId))
 					{
 						Icon deleteIcon = iconPane.addIcon();

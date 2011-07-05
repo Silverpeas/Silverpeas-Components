@@ -110,7 +110,7 @@ function save()
 	<FORM METHOD=POST NAME="myForm" ACTION="EffectiveUpdateR">
 	<tr> 
 		<td class="txtlibform"><%=resource.getString("questionReply.reponse")%> :</td>
-		<td><input type="text" name="title" size="120" maxlength="100" value="<%=title%>">&nbsp;<img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"></td>
+		<td><input type="text" name="title" size="120" maxlength="100" value="<%=title%>"><img src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"></td>
 	</tr>
 	<tr valign="top"> 
 		<td class="txtlibform"><%=resource.getString("GML.description")%> :</td>

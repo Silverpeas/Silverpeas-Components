@@ -28,7 +28,7 @@
 <%@page import="com.stratelia.webactiv.beans.admin.UserDetail"%>
 
 <% 
-	// récupération des paramètres :
+	// rï¿½cupï¿½ration des paramï¿½tres :
 	PostDetail 	post			= (PostDetail) request.getAttribute("Post");
 	Collection 	categories		= (Collection) request.getAttribute("AllCategories");
 	String 		userName		= (String) request.getAttribute("UserName");
@@ -36,7 +36,7 @@
 	UserDetail  updater			= (UserDetail) request.getAttribute("Updater");
 	
 	
-	// déclaration des variables :
+	// dï¿½claration des variables :
 	String 		         title			  = "";
 	String 		         postId			  = "";
 	String 		         categoryId		= "";
@@ -50,7 +50,7 @@
 	
 	boolean		isPdcUsed 	= isUsePdc.booleanValue();
 	
-	// dans le cas d'une mise à jour, récupération des données :
+	// dans le cas d'une mise ï¿½ jour, rï¿½cupï¿½ration des donnï¿½es :
 	if (post != null)
 	{
 		title 			= post.getPublication().getName();
@@ -65,9 +65,9 @@
 
 	}
 	
-	String configFile = SilverpeasSettings.readString(new ResourceLocator("com.silverpeas.blog.settings.blogSettings", "fr"), "configFile", URLManager.getApplicationURL() + "/wysiwyg/jsp/javaScript/myconfig.js");
+	String configFile = new ResourceLocator("com.silverpeas.blog.settings.blogSettings", "fr").getString("configFile", URLManager.getApplicationURL() + "/wysiwyg/jsp/javaScript/myconfig.js");
 	
-	// déclaration des boutons
+	// declaration des boutons
 	Button validateButton 	= (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
 	Button cancelButton 	= (Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
 %>
@@ -86,7 +86,7 @@
 		<script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
     <script type="text/javascript">
 			
-			// fonctions de contrôle des zones du formulaire avant validation
+			// fonctions de contrï¿½le des zones du formulaire avant validation
 			function sendData() 
 			{
 				if (isCorrectForm()) 

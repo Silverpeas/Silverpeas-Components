@@ -1,8 +1,28 @@
+/**
+ * Copyright (C) 2000 - 2011 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package com.silverpeas.crm.servlets;
-
-import java.util.ArrayList;
-
-import javax.servlet.http.HttpServletRequest;
 
 import com.silverpeas.crm.control.CrmSessionController;
 import com.silverpeas.crm.model.Crm;
@@ -19,6 +39,9 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 public class CrmRequestRouter extends ComponentRequestRouter {
 
@@ -57,7 +80,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
     String destination = "";
     CrmSessionController crmSC = (CrmSessionController) componentSC;
     SilverTrace.info("crm", "CrmRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-      "User=" + componentSC.getUserId() + " Function=" + function);
+        "User=" + componentSC.getUserId() + " Function=" + function);
 
     try {
       resetContainerContext(crmSC, request);
@@ -163,7 +186,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
         String deliveryContact = param(request, "deliveryContact");
         int contactId = (deliveryContact.length() > 0 ? Integer.parseInt(deliveryContact) : 0);
         String deliveryContactName = crmSC.getContactName(crmSC.getCurrentCrm().getPK(), contactId);
-        
+
         String media = request.getParameter("deliveryMedia");
         String sort = param(request, "ArrayPaneAction");
         if (!sort.equals("Sort")) {
@@ -184,7 +207,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
           delivery.setContactId(contactId);
           delivery.setContactName(deliveryContactName);
           delivery.setMedia(media);
-          delivery.setCrmId(Integer.parseInt(crmSC.getCurrentCrm().getPK().getId()));          
+          delivery.setCrmId(Integer.parseInt(crmSC.getCurrentCrm().getPK().getId()));
           if (creation) {
             crmSC.createCrmDelivery(delivery);
           } else {
@@ -201,7 +224,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
         crmSC.setFilterId(param(request, "FilterId"));
         String deliveryContact = param(request, "deliveryContact");
         int contactId = (StringUtil.isDefined(deliveryContact)
-          ? Integer.parseInt(deliveryContact) : 0);
+            ? Integer.parseInt(deliveryContact) : 0);
         crmSC.setDeliveryContact(contactId);
         crmSC.setDeliveryMedia(request.getParameter("deliveryMedia"));
 
@@ -280,7 +303,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
 
         if (contactId != null) {
           // 1. suppression des Delivrables liés au contact
-          ArrayList<CrmDelivery> deliveries = crmSC.getCrmDeliverys(crmSC.getCurrentCrm().getPK());
+          List<CrmDelivery> deliveries = crmSC.getCrmDeliverys(crmSC.getCurrentCrm().getPK());
           for (CrmDelivery delivery : deliveries) {
             if (contactId.equals(delivery.getContactId())) {
               crmSC.deleteCrmDelivery(delivery.getPK());
@@ -342,7 +365,7 @@ public class CrmRequestRouter extends ComponentRequestRouter {
           participant.setEmail(participantEmail);
           participant.setActive(participantActif);
           participant.setCrmId(Integer.parseInt(crmSC.getCurrentCrm().getPK().getId()));
-          if (creation) {            
+          if (creation) {
             crmSC.createCrmParticipant(participant);
             participantId = participant.getPK().getId();
           } else {
@@ -408,12 +431,12 @@ public class CrmRequestRouter extends ComponentRequestRouter {
       request.setAttribute("javax.servlet.jsp.jspException", e);
       destination = "/admin/jsp/errorpageMain.jsp";
     }
-    
+
     request.setAttribute("context",
-      GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL"));
+        GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL"));
 
     SilverTrace.info("crm", "CrmRequestRouter.getDestination()", "root.MSG_GEN_PARAM_VALUE",
-      "Destination=" + destination);
+        "Destination=" + destination);
     return destination;
   }
 
@@ -591,6 +614,8 @@ public class CrmRequestRouter extends ComponentRequestRouter {
    * Extract the container context from the request and save it in the session controller. If this
    * context is null then get the last one from the session controller. So the containerContext is
    * the same in the request and the session.
+   * @param crmSC
+   * @param request
    */
   private void resetContainerContext(CrmSessionController crmSC, HttpServletRequest request) {
     ContainerContext containerContext = (ContainerContext) request.getAttribute("ContainerContext");
@@ -610,18 +635,18 @@ public class CrmRequestRouter extends ComponentRequestRouter {
       returnURL = crmSC.getReturnURL();
     }
     request.setAttribute("ReturnURL", returnURL);
-  }  
+  }
 
   private String param(HttpServletRequest request, String name) {
     String result = request.getParameter(name);
     return (result != null ? result : "");
   }
-  
+
   private void setAdminAttribute(CrmSessionController crmSC, HttpServletRequest request) {
     String flag = getFlag(crmSC.getUserRoles());
     if (flag.equals("publisher") || flag.equals("admin")) {
       request.setAttribute("admin", "true");
     }
   }
-  
+
 }

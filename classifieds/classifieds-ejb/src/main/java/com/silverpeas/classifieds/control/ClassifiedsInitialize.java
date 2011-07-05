@@ -44,7 +44,7 @@ public class ClassifiedsInitialize implements IInitialize {
   protected void initializeJobsScheduling() {
     SilverTrace.info("classifieds", getClass().getSimpleName(), "root.EX_NO_MESSAGE",
         "Initialize the scheduling");
-    ScheduledDeleteClassifieds sc = new ScheduledDeleteClassifieds();
+    ScheduledUnpublishExpiredClassifieds sc = new ScheduledUnpublishExpiredClassifieds();
     sc.initialize();
   }
 

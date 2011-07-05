@@ -67,9 +67,12 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 	boolean notificationAllowed = ((Boolean) request.getAttribute("NotificationAllowed")).booleanValue();
 	boolean attachmentsEnabled = ((Boolean) request.getAttribute("AttachmentsEnabled")).booleanValue();
 	boolean isNewsManage = ((Boolean) request.getAttribute("NewsManage")).booleanValue();
-	DelegatedNews delegatedNews = (DelegatedNews) request.getAttribute("DelegatedNews");
-	boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
-
+	DelegatedNews delegatedNews = null;
+    boolean isBasket = false;
+    if (isNewsManage) {
+      delegatedNews = (DelegatedNews) request.getAttribute("DelegatedNews");
+      isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
+    }
 
 	if (action == null) {
 		action = "View";

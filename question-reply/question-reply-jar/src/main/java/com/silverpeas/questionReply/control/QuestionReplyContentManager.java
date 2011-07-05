@@ -23,11 +23,6 @@
  */
 package com.silverpeas.questionReply.control;
 
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Question;
 import com.stratelia.silverpeas.classifyEngine.ClassifyEngine;
@@ -39,7 +34,11 @@ import com.stratelia.silverpeas.contentManager.SilverContentVisibility;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.persistence.IdPK;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * The questionReply implementation of ContentInterface.
@@ -60,14 +59,9 @@ public class QuestionReplyContentManager implements ContentInterface {
 
   private List<String> makeIdArray(List<Integer> idList) {
     List<String> ids = new ArrayList<String>(idList.size());
-    Iterator<Integer> iter = idList.iterator();
-
-    int contentId = 0;
-    String id = null;
-    while (iter.hasNext()) {
-      contentId = iter.next().intValue();
+    for(int contentId : idList){
       try {
-        id = getContentManager().getInternalContentId(contentId);
+        String id = getContentManager().getInternalContentId(contentId);
         ids.add(id);
       } catch (ClassCastException ignored) {
         // ignore unknown item
@@ -84,7 +78,7 @@ public class QuestionReplyContentManager implements ContentInterface {
       Collection<Question> questions = QuestionManager.getInstance().getQuestionsByIds(
           new ArrayList<String>(ids));
       for (Question question : questions) {
-        headers.add(new QuestionHeader(Long.parseLong(question.getPK().getId()), question,
+        headers.add(new QuestionHeader(question,
             instanceId, question.getCreationDate(), question.getCreatorId()));
       }
     } catch (QuestionReplyException e) {

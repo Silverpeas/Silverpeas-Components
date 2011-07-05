@@ -253,15 +253,15 @@ public class ClassifiedsDAO {
   }
 
   /**
-   * get all classifieds to validate for an instance corresponding to instanceId
+   * get all classifieds with given status for an instance corresponding to instanceId
    * @param con : Connection
    * @param instanceId : String
+   * @param status : status
    * @return a collection of ClassifiedDetail
    * @throws SQLException
    */
-  public static Collection<ClassifiedDetail> getClassifiedsToValidate(Connection con,
-      String instanceId) throws SQLException {
-    // récupérer toutes les petites annonces à valider
+  public static Collection<ClassifiedDetail> getClassifiedsWithStatus(Connection con,
+      String instanceId, String status) throws SQLException {
     ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<ClassifiedDetail>();
     String query = "select * from SC_Classifieds_Classifieds where instanceId = ? and status = ? ";
     PreparedStatement prepStmt = null;
@@ -269,7 +269,7 @@ public class ClassifiedsDAO {
     try {
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, instanceId);
-      prepStmt.setString(2, ClassifiedDetail.TO_VALIDATE);
+      prepStmt.setString(2, status);
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         ClassifiedDetail classified = recupClassified(rs);
@@ -286,12 +286,13 @@ public class ClassifiedsDAO {
    * get all expiring classifieds (corresponding of a number of day nbDays)
    * @param con : Connection
    * @param nbDays : int
+   * @param instanceId : component instance id
    * @return a list of ClassifiedDetail
    * @throws SQLException
    */
-  public static List<ClassifiedDetail> getAllClassifiedsToDelete(Connection con, int nbDays)
+  public static List<ClassifiedDetail> getAllClassifiedsToUnpublish(Connection con, int nbDays, String instanceId)
       throws SQLException {
-    SilverTrace.debug("classifieds", "ClassifiedsDAO.getAllClassifiedsToDelete()",
+    SilverTrace.debug("classifieds", "ClassifiedsDAO.getAllClassifiedsToUnpublish()",
         "root.MSG_GEN_PARAM_VALUE", "nbDays = " + nbDays);
     // récupérer toutes les petites annonces arrivant à échéance
     ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<ClassifiedDetail>();
@@ -301,22 +302,24 @@ public class ClassifiedsDAO {
     calendar.add(Calendar.DATE, -nbDays);
     Date date = calendar.getTime();
 
-    SilverTrace.debug("classifieds", "ClassifiedsDAO.getAllClassifiedsToDelete()",
+    SilverTrace.debug("classifieds", "ClassifiedsDAO.getAllClassifiedsToUnpublish()",
         "root.MSG_GEN_PARAM_VALUE", "date = " + Long.toString(date.getTime()));
 
-    String query = "select * from SC_Classifieds_Classifieds where creationDate < ? ";
+    String query = "select * from SC_Classifieds_Classifieds where ( (updateDate is null and creationDate < ?) or (updateDate is not null and updateDate < ?) ) and instanceId = ? and status = 'Valid'";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(query);
       prepStmt.setString(1, Long.toString(date.getTime()));
+      prepStmt.setString(2, Long.toString(date.getTime()));
+      prepStmt.setString(3, instanceId);
 
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         ClassifiedDetail classified = recupClassified(rs);
-        SilverTrace.debug("classifieds", "ClassifiedsDAO.getAllClassifiedsToDelete()",
+        SilverTrace.debug("classifieds", "ClassifiedsDAO.getAllClassifiedsToUnpublish()",
             "root.MSG_GEN_PARAM_VALUE", "classifiedId = " + classified.getClassifiedId());
-        SilverTrace.debug("classifieds", "ClassifiedsDAO.getAllClassifiedsToDelete()",
+        SilverTrace.debug("classifieds", "ClassifiedsDAO.getAllClassifiedsToUnpublish()",
             "root.MSG_GEN_PARAM_VALUE", "classifiedTitle = " + classified.getTitle());
 
         listClassifieds.add(classified);
@@ -571,6 +574,30 @@ public class ClassifiedsDAO {
     prepStmt.setString(3, subscribe.getInstanceId());
     prepStmt.setString(4, subscribe.getField1());
     prepStmt.setString(5, subscribe.getField2());
+  }
+
+  public static Collection<ClassifiedDetail> getUnpublishedClassifieds(Connection con,
+      String instanceId, String userId)
+      throws SQLException {
+    ArrayList<ClassifiedDetail> listClassifieds = new ArrayList<ClassifiedDetail>();
+    String query = "select * from SC_Classifieds_Classifieds where instanceId = ? and status = 'Unpublished' and creatorId = ? ";
+    PreparedStatement prepStmt = null;
+    ResultSet rs = null;
+    try {
+      prepStmt = con.prepareStatement(query);
+      prepStmt.setString(1, instanceId);
+      prepStmt.setString(2, userId);
+
+      rs = prepStmt.executeQuery();
+      while (rs.next()) {
+        ClassifiedDetail classified = recupClassified(rs);
+        listClassifieds.add(classified);
+      }
+    } finally {
+      // fermeture
+      DBUtil.close(rs, prepStmt);
+    }
+    return listClassifieds;
   }
 
 }
