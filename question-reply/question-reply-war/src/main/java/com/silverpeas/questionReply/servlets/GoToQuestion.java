@@ -24,16 +24,15 @@
 
 package com.silverpeas.questionReply.servlets;
 
-import java.net.URLEncoder;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.silverpeas.peasUtil.GoTo;
 import com.silverpeas.questionReply.control.QuestionManager;
 import com.silverpeas.questionReply.model.Question;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
 
 public class GoToQuestion extends GoTo {
   private static final long serialVersionUID = 8074965533055941265L;
@@ -41,7 +40,7 @@ public class GoToQuestion extends GoTo {
   public String getDestination(String objectId, HttpServletRequest req,
       HttpServletResponse res) throws Exception {
     Question question = getQuestionManager().getQuestion(
-        new Long(objectId).longValue());
+        Long.parseLong(objectId));
     String componentId = question.getInstanceId();
 
     SilverTrace.info("questionReply", "GoToQuestion.doPost",

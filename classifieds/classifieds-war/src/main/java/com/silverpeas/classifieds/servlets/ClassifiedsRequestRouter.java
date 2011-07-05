@@ -29,20 +29,15 @@ import com.silverpeas.classifieds.control.ClassifiedsRole;
 import com.silverpeas.classifieds.control.ClassifiedsSessionController;
 import com.silverpeas.classifieds.servlets.handler.HandlerProvider;
 import com.silverpeas.look.LookHelper;
-import com.silverpeas.publicationTemplate.PublicationTemplateManager;
 import com.stratelia.silverpeas.peasCore.ComponentContext;
 import com.stratelia.silverpeas.peasCore.ComponentSessionController;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 
-public class ClassifiedsRequestRouter
-    extends ComponentRequestRouter {
-
-  /**
-   *
-   */
-  private static final long serialVersionUID = 1L;
+public class ClassifiedsRequestRouter extends ComponentRequestRouter {
+  
+  private static final long serialVersionUID = -4872776979680116068L;  
 
   /**
    * This method has to be implemented in the component request rooter class. returns the session
@@ -62,8 +57,7 @@ public class ClassifiedsRequestRouter
    */
   @Override
   public ComponentSessionController createComponentSessionController(
-      MainSessionController mainSessionCtrl,
-      ComponentContext componentContext) {
+      MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     return new ClassifiedsSessionController(mainSessionCtrl, componentContext);
   }
 
@@ -76,12 +70,10 @@ public class ClassifiedsRequestRouter
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
   @Override
-  public String getDestination(String function,
-      ComponentSessionController componentSC,
+  public String getDestination(String function, ComponentSessionController componentSC,
       HttpServletRequest request) {
     String destination = "";
     String rootDest = "/classifieds/jsp/";
-
     ClassifiedsSessionController classifiedsSC = (ClassifiedsSessionController) componentSC;
     SilverTrace.info("classifieds", "classifiedsRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "User=" + componentSC.getUserId() + " Function=" + function);
@@ -112,16 +104,6 @@ public class ClassifiedsRequestRouter
     SilverTrace.info("classifieds", "classifiedsRequestRouter.getDestination()",
         "root.MSG_GEN_PARAM_VALUE", "Destination=" + destination);
     return destination;
-  }
-
-
-
-  /**
-   * Gets an instance of PublicationTemplateManager.
-   * @return an instance of PublicationTemplateManager.
-   */
-  private PublicationTemplateManager getPublicationTemplateManager() {
-    return PublicationTemplateManager.getInstance();
   }
 
   private boolean isAnonymousAccess(HttpServletRequest request) {

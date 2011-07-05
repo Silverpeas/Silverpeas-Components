@@ -23,12 +23,12 @@
  */
 package com.silverpeas.questionReply.control;
 
-import java.util.Iterator;
-
 import com.silverpeas.questionReply.model.Question;
 import com.silverpeas.util.i18n.AbstractI18NBean;
 import com.stratelia.silverpeas.contentManager.SilverContentInterface;
 import com.stratelia.webactiv.persistence.IdPK;
+
+import java.util.Iterator;
 
 /**
  * The questionReply implementation of SilverContentInterface
@@ -44,7 +44,7 @@ public final class QuestionHeader extends AbstractI18NBean implements SilverCont
   private String creatorId;
   private String description;
 
-  public void init(long id, Question question) {
+  public void init(Question question) {
     this.id = ((IdPK) question.getPK()).getIdAsLong();
     this.label = question.getTitle();
     this.title = question.getTitle();
@@ -52,12 +52,12 @@ public final class QuestionHeader extends AbstractI18NBean implements SilverCont
     this.description = question.getContent();
   }
 
-  public QuestionHeader(long id, Question question) {
-    init(id, question);
+  public QuestionHeader(Question question) {
+    init(question);
   }
 
-  public QuestionHeader(long id, Question question, String instanceId, String date, String creatorId) {
-    init(id, question);
+  public QuestionHeader(Question question, String instanceId, String date, String creatorId) {
+    init(question);
     this.instanceId = instanceId;
     this.date = date;
     this.creatorId = creatorId;

@@ -131,7 +131,7 @@ function save()
 			if (allCategories != null)
     		{
 				String selected = "";
-    			Iterator it = (Iterator) allCategories.iterator();
+    			Iterator it = allCategories.iterator();
     			while (it.hasNext()) 
 		  		{
     				NodeDetail uneCategory = (NodeDetail) it.next();
