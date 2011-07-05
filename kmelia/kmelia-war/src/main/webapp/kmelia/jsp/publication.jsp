@@ -725,6 +725,10 @@ function suggestDelegatedNews() {
 </form>
 </div>
 
+  <%
+  if(!kmaxMode) {
+  %>
+
 <script type="text/javascript">
   <%
   ResourceLocator pdcResources = new ResourceLocator("com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language);
@@ -735,5 +739,8 @@ function suggestDelegatedNews() {
     positionLabel: '<%=pdcResources.getString("pdcPeas.position")%>'
   });
 </script>
+    <%
+       }
+    %>
 </body>
 </html>

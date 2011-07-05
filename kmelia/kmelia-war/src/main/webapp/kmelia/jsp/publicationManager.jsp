@@ -1028,6 +1028,9 @@
     return true;
   }
   
+    <%
+    if(!kmaxMode) {
+    %>
   $('#classification').pdc({
     url: '<%=m_context%>/services/pdc/<%=componentId%>/<%=id%>',
     title: '<%=resources.getString("GML.PDC")%>',
@@ -1041,11 +1044,14 @@
       altText: '<%=pdcResources.getString("GML.modify")%>'
     },
     deletion: {
-      confirmation: '<%=resources.getString("pdcPeas.confirmDeleteAxis")%>',
-      altText: '<%=pdcResources.getString("GML.PDCDeletePosition")%>'
+      confirmation: '<%=pdcResources.getString("pdcPeas.confirmDeleteAxis")%>',
+      altText: '<%=resources.getString("GML.PDCDeletePosition")%>'
     },
     mode: 'edition'
   });
+    <%
+       }
+    %>
 </script>
 </body>
 </html>
