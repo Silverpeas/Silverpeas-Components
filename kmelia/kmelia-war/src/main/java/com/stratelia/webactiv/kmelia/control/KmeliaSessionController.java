@@ -99,7 +99,6 @@ import com.stratelia.silverpeas.selection.Selection;
 import com.stratelia.silverpeas.selection.SelectionUsersGroups;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBm;
 import com.stratelia.silverpeas.versioning.ejb.VersioningBmHome;
 import com.stratelia.silverpeas.versioning.ejb.VersioningRuntimeException;
@@ -302,9 +301,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
 
   public KmeliaBm getKmeliaBm() {
     try {
-      KmeliaBmHome kscEjbHome =
-              (KmeliaBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME,
-              KmeliaBmHome.class);
+      KmeliaBmHome kscEjbHome = EJBUtilitaire.getEJBObjectRef(JNDINames.KMELIABM_EJBHOME,
+          KmeliaBmHome.class);
       return kscEjbHome.create();
     } catch (Exception e) {
       throw new KmeliaRuntimeException("KmeliaSessionController.getKmeliaBm()",
@@ -315,9 +313,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public StatisticBm getStatisticBm() {
     if (statisticBm == null) {
       try {
-        StatisticBmHome statisticHome =
-                (StatisticBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
-                StatisticBmHome.class);
+        StatisticBmHome statisticHome = EJBUtilitaire.getEJBObjectRef(JNDINames.STATISTICBM_EJBHOME,
+            StatisticBmHome.class);
         statisticBm = statisticHome.create();
       } catch (Exception e) {
         throw new StatisticRuntimeException("KmeliaSessionController.getStatisticBm()",
@@ -331,9 +328,8 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   private VersioningBm getVersioningBm() {
     if (versioningBm == null) {
       try {
-        VersioningBmHome vscEjbHome =
-                (VersioningBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.VERSIONING_EJBHOME,
-                VersioningBmHome.class);
+        VersioningBmHome vscEjbHome = EJBUtilitaire.getEJBObjectRef(JNDINames.VERSIONING_EJBHOME,
+            VersioningBmHome.class);
         versioningBm = vscEjbHome.create();
       } catch (Exception e) {
         throw new VersioningRuntimeException("KmeliaSessionController.getVersioningBm()",
@@ -355,8 +351,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   public SearchEngineBm getSearchEngine() {
     if (this.searchEngineEjb == null) {
       try {
-        SearchEngineBmHome home =
-                (SearchEngineBmHome) EJBUtilitaire.getEJBObjectRef(JNDINames.SEARCHBM_EJBHOME,
+        SearchEngineBmHome home = EJBUtilitaire.getEJBObjectRef(JNDINames.SEARCHBM_EJBHOME,
                 SearchEngineBmHome.class);
         this.searchEngineEjb = home.create();
       } catch (Exception e) {
@@ -371,14 +366,13 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (nbPublicationsOnRoot == -1) {
       String parameterValue = getComponentParameterValue("nbPubliOnRoot");
       if (StringUtil.isDefined(parameterValue)) {
-        nbPublicationsOnRoot = new Integer(parameterValue).intValue();
+        nbPublicationsOnRoot = Integer.parseInt(parameterValue);
       } else {
         if (KmeliaHelper.isToolbox(getComponentId())) {
           nbPublicationsOnRoot = 0;
         } else {
           // lecture du properties
-          nbPublicationsOnRoot =
-                  SilverpeasSettings.readInt(getSettings(), "HomeNbPublications", 15);
+          nbPublicationsOnRoot = getSettings().getInteger("HomeNbPublications", 15);
         }
       }
     }
@@ -389,14 +383,12 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
     if (nbPublicationsPerPage == -1) {
       String parameterValue = this.getComponentParameterValue("nbPubliPerPage");
       if (parameterValue == null || parameterValue.length() <= 0) {
-        nbPublicationsPerPage =
-                SilverpeasSettings.readInt(getSettings(), "NbPublicationsParPage", 10);
+        nbPublicationsPerPage = getSettings().getInteger("NbPublicationsParPage", 10);
       } else {
         try {
-          nbPublicationsPerPage = new Integer(parameterValue).intValue();
+          nbPublicationsPerPage = Integer.parseInt(parameterValue);
         } catch (Exception e) {
-          nbPublicationsPerPage =
-                  SilverpeasSettings.readInt(getSettings(), "NbPublicationsParPage", 10);
+          nbPublicationsPerPage = getSettings().getInteger("NbPublicationsParPage", 10);
         }
       }
     }
@@ -404,7 +396,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean isDraftVisibleWithCoWriting() {
-    return SilverpeasSettings.readBoolean(getSettings(), "draftVisibleWithCoWriting", false);
+    return getSettings().getBoolean("draftVisibleWithCoWriting", false);
   }
 
   public boolean isTreeStructure() {
@@ -594,7 +586,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
   }
 
   public boolean showUserNameInList() {
-    return SilverpeasSettings.readBoolean(getSettings(), "showUserNameInList", true);
+    return getSettings().getBoolean("showUserNameInList", true);
   }
 
   /**
@@ -1538,7 +1530,7 @@ public class KmeliaSessionController extends AbstractComponentSessionController 
    */
   public Collection<PublicationDetail> getAllPublications(String sortedBy) throws RemoteException {
     String publication_default_sorting =
-            SilverpeasSettings.readString(getSettings(), "publication_defaultsorting", "pubId desc");
+        getSettings().getString("publication_defaultsorting", "pubId desc");
     if (StringUtil.isDefined(sortedBy)) {
       publication_default_sorting = sortedBy;
     }

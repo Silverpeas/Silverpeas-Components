@@ -23,11 +23,6 @@
  */
 package com.silverpeas.questionReply.servlets;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import javax.servlet.http.HttpServletRequest;
-
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.questionReply.control.QuestionReplySessionController;
 import com.silverpeas.questionReply.model.Category;
@@ -41,9 +36,14 @@ import com.stratelia.silverpeas.peasCore.servlets.ComponentRequestRouter;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.ResourcesWrapper;
 import com.stratelia.webactiv.SilverpeasRole;
-import static com.stratelia.webactiv.SilverpeasRole.*;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+
+import static com.stratelia.webactiv.SilverpeasRole.*;
 /**
  * Class declaration
  * @author
@@ -72,7 +72,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
   public ComponentSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
     ComponentSessionController component =
-        (ComponentSessionController) new QuestionReplySessionController(
+        new QuestionReplySessionController(
         mainSessionCtrl, componentContext,
         "com.silverpeas.questionReply.multilang.questionReplyBundle",
         "com.silverpeas.questionReply.settings.questionReplyIcons");
@@ -201,8 +201,8 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
           String[] checkQuestions = request.getParameterValues("checkedQuestion");
           List<Long> listToDelete = new ArrayList<Long>();
           if (checkQuestions != null) {
-            for (int i = 0; i < checkQuestions.length; i++) {
-              Long questionId = Long.valueOf(checkQuestions[i]);
+            for (String checkQuestion : checkQuestions) {
+              Long questionId = Long.valueOf(checkQuestion);
               listToDelete.add(questionId);
             }
           }
@@ -224,8 +224,8 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
           String[] checkQuestions = request.getParameterValues("checkedQuestion");
           List<Long> listToClose = new ArrayList<Long>();
           if (checkQuestions != null) {
-            for (int i = 0; i < checkQuestions.length; i++) {
-              Long questionId = Long.valueOf(checkQuestions[i]);
+            for (String checkQuestion : checkQuestions) {
+              Long questionId = Long.valueOf(checkQuestion);
               listToClose.add(questionId);
             }
           }
@@ -291,8 +291,8 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
           String[] checkReplies = request.getParameterValues("checkedReply");
           List<Long> listToDelete = new ArrayList<Long>();
           if (checkReplies != null) {
-            for (int i = 0; i < checkReplies.length; i++) {
-              Long replyId = Long.valueOf(checkReplies[i]);
+            for (String checkReply : checkReplies) {
+              Long replyId = Long.valueOf(checkReply);
               listToDelete.add(replyId);
             }
           }
@@ -334,7 +334,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
       } else if (function.equals("ConsultReplyQuery")) {
         if ((flag.equals("admin")) || (flag.equals("writer"))
             || (flag.equals("publisher")) || (flag.equals("user"))) {
-          scc.getReply(new Long(request.getParameter("replyId")).longValue());
+          scc.getReply(Long.valueOf(request.getParameter("replyId")));
           destination = getDestination("ConsultReply", componentSC, request);
         } else {
           destination = "/admin/jsp/errorpage.jsp";
@@ -356,7 +356,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         Question question = scc.getQuestion(Long.parseLong(id));
         scc.setCurrentQuestion(question);
         // passer le paramètre pour savoir si on utilise les réponses privées
-        Boolean usedPrivateReplies = Boolean.valueOf(scc.isPrivateRepliesEnabled());
+        Boolean usedPrivateReplies = scc.isPrivateRepliesEnabled();
         request.setAttribute("UsedPrivateReplies", usedPrivateReplies);
         if ((flag.equals("admin")) || (flag.equals("writer"))) {
           request.setAttribute("reply", scc.getNewReply());
@@ -365,7 +365,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
           destination = "/admin/jsp/errorpage.jsp";
         }
       } else if (function.equals("EffectiveCreateR")) {
-        int publicReply = new Integer(request.getParameter("publicReply")).intValue(); // 0 = private, 1 = public
+        int publicReply = Integer.parseInt(request.getParameter("publicReply")); // 0 = private, 1 = public
         scc.setNewReplyContent(request.getParameter("title"), request.getParameter("content"),
             publicReply, 1);
         scc.saveNewReply();
@@ -418,7 +418,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
             getParameter("CategoryId"));
         scc.setNewReplyContent(request.getParameter("titleR"), request.getParameter("contentR"), 1,
             0);
-        long id = new Long(scc.saveNewFAQ()).longValue();
+        long id = scc.saveNewFAQ();
         scc.getQuestion(id);
         request.setAttribute("contentId", scc.getCurrentQuestionContentId());
         destination = getDestination("Main", componentSC, request);
@@ -440,7 +440,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
             || flag.equals("writer")) {
           scc.setNewQuestionContent(request.getParameter("title"), request.getParameter("content"), request.
               getParameter("CategoryId"));
-          String id = new Long(scc.saveNewQuestion()).toString();
+          String id = Long.toString(scc.saveNewQuestion());
           request.setAttribute("QuestionId", id);
           destination = getDestination("Main", componentSC, request);
         } else {
@@ -478,13 +478,13 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
 
         destination = getDestination("ViewCategory", componentSC, request);
       } else if (function.equals("EditCategory")) {
-        String categoryId = (String) request.getParameter("CategoryId");
+        String categoryId = request.getParameter("CategoryId");
         Category category = scc.getCategory(categoryId);
         request.setAttribute("Category", category);
 
         destination = "/questionReply/jsp/categoryManager.jsp";
       } else if (function.equals("UpdateCategory")) {
-        String categoryId = (String) request.getParameter("CategoryId");
+        String categoryId = request.getParameter("CategoryId");
         Category category = scc.getCategory(categoryId);
         String name = request.getParameter("Name");
         category.setName(name);
@@ -495,7 +495,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
 
         destination = getDestination("ViewCategory", componentSC, request);
       } else if (function.equals("DeleteCategory")) {
-        String categoryId = (String) request.getParameter("CategoryId");
+        String categoryId = request.getParameter("CategoryId");
         scc.deleteCategory(categoryId);
 
         destination = getDestination("ViewCategory", componentSC, request);
@@ -515,7 +515,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
         } else if (type.startsWith("Reply")) {
           // traitement des réponses, on arrive sur la question contenant la
           // réponse
-          Reply reply = scc.getReply(new Long(id).longValue());
+          Reply reply = scc.getReply(Long.parseLong(id));
           long questionId = reply.getQuestionId();
           request.setAttribute("QuestionId", Long.toString(questionId));
 
@@ -527,7 +527,7 @@ public class QuestionReplyRequestRouter extends ComponentRequestRouter {
           destination = getDestination("Main", scc, request);
         } else if (type.startsWith("Publication")) {
           // traitement des fichiers joints
-          Reply reply = scc.getReply(new Long(id).longValue());
+          Reply reply = scc.getReply(Long.valueOf(id));
           long questionId = reply.getQuestionId();
           request.setAttribute("QuestionId", Long.toString(questionId));
 

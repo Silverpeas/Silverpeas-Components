@@ -28,7 +28,6 @@
 <%@ include file="checkKmelia.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
-<%@page import="com.stratelia.silverpeas.util.SilverpeasSettings"%>
 <%@page import="com.stratelia.webactiv.SilverpeasRole"%>
 
 <%

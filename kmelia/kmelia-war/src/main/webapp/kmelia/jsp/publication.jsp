@@ -46,17 +46,14 @@
 <%@page import="com.silverpeas.delegatednews.model.DelegatedNews"%>
 
 <%
-  ResourceLocator uploadSettings = new ResourceLocator(
-      "com.stratelia.webactiv.util.uploads.uploadSettings", resources.getLanguage());
-  ResourceLocator publicationSettings = new ResourceLocator(
-      "com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());
+  ResourceLocator uploadSettings = new ResourceLocator("com.stratelia.webactiv.util.uploads.uploadSettings", resources.getLanguage());
+  ResourceLocator publicationSettings = new ResourceLocator("com.stratelia.webactiv.util.publication.publicationSettings", resources.getLanguage());
 
   //Recuperation des parametres
   String profile = (String) request.getAttribute("Profile");
   String alias = (String) request.getAttribute("IsAlias");
   String action = (String) request.getAttribute("Action");
-  KmeliaPublication kmeliaPublication = (KmeliaPublication) request.getAttribute(
-      "Publication");
+  KmeliaPublication kmeliaPublication = (KmeliaPublication) request.getAttribute("Publication");
   String wizard = (String) request.getAttribute("Wizard");
   Integer rang = (Integer) request.getAttribute("Rang");
   Integer nbPublis = (Integer) request.getAttribute("NbPublis");
@@ -70,9 +67,12 @@
   boolean notificationAllowed = ((Boolean) request.getAttribute("NotificationAllowed")).booleanValue();
   boolean attachmentsEnabled = ((Boolean) request.getAttribute("AttachmentsEnabled")).booleanValue();
   boolean isNewsManage = ((Boolean) request.getAttribute("NewsManage")).booleanValue();
-  DelegatedNews delegatedNews = (DelegatedNews) request.getAttribute("DelegatedNews");
-  boolean isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
-
+  DelegatedNews delegatedNews = null;
+  boolean isBasket = false;
+  if (isNewsManage) {
+    delegatedNews = (DelegatedNews) request.getAttribute("DelegatedNews");
+    isBasket = ((Boolean) request.getAttribute("IsBasket")).booleanValue();
+  }
 
   if (action == null) {
     action = "View";
@@ -219,7 +219,7 @@
       out.println(gef.getLookStyleSheet());
     %>
     <title></title>
-    <link type="text/css" rel="stylesheet" href="<%=m_context%>/kmelia/jsp/styleSheets/pubHighlight.css" >
+    <link type="text/css" rel="stylesheet" href="<%=m_context%>/kmelia/jsp/styleSheets/pubHighlight.css"/>
     <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
     <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>

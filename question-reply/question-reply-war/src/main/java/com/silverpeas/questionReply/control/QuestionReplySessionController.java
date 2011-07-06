@@ -23,20 +23,6 @@
  */
 package com.silverpeas.questionReply.control;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-
 import com.silverpeas.importExport.report.ExportReport;
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.model.Category;
@@ -84,6 +70,20 @@ import com.stratelia.webactiv.util.node.control.NodeBm;
 import com.stratelia.webactiv.util.node.control.NodeBmHome;
 import com.stratelia.webactiv.util.node.model.NodeDetail;
 import com.stratelia.webactiv.util.node.model.NodePK;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
 
 public class QuestionReplySessionController extends AbstractComponentSessionController {
 
@@ -332,7 +332,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     newReply.setPK(pk);
     long replyId = getQuestionManager().createReply(newReply, getCurrentQuestion());
     List<Long> replyIds = new ArrayList<Long>();
-    replyIds.add(Long.valueOf(((IdPK) getCurrentReply().getPK()).getIdAsLong()));
+    replyIds.add(((IdPK) getCurrentReply().getPK()).getIdAsLong());
     deletePublicReplies(replyIds);
     getReply(replyId);
     getQuestion(((IdPK) getCurrentQuestion().getPK()).getIdAsLong());
@@ -511,24 +511,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   }
 
   public void setUserProfil() {
-    String[] profiles = getUserRoles();
-    String flag = "user";
-
-    for (int i = 0; i < profiles.length; i++) {
-      // if admin, return it, we won't find a better profile
-      if (profiles[i].equals("admin")) {
-        flag = profiles[i];
-        break;
-      }
-      if (profiles[i].equals("writer")) {
-        flag = profiles[i];
-        break;
-      }
-      if (profiles[i].equals("publisher")) {
-        flag = profiles[i];
-      }
-    }
-    this.userProfil = flag;
+    this.userProfil = getUserRoleLevel();
   }
 
   public void setUserProfil(String profil) {
@@ -545,25 +528,29 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
 
   /**
    * Redefinition method de abstractComponentSessionController car 4 rôles Return the highest user's
-   * role (admin, publisher or user)
+   * role (admin, publisher, writer or user)
    */
   public String getUserRoleLevel() {
     String[] profiles = getUserRoles();
-    String flag = "user";
+    SilverpeasRole flag = SilverpeasRole.user;
 
-    for (int i = 0; i < profiles.length; i++) {
+    for (String profile : profiles) {
       // if admin, return it, we won't find a better profile
-      if (profiles[i].equals("admin")) {
-        return profiles[i];
-      }
-      if (profiles[i].equals("writer")) {
-        flag = profiles[i];
-      }
-      if (profiles[i].equals("publisher")) {
-        flag = profiles[i];
+      SilverpeasRole role = SilverpeasRole.valueOf(profile);
+      switch(role) {
+        case admin:
+          return profile;
+        case publisher:
+          flag = SilverpeasRole.publisher;
+          break;
+        case writer :
+          if(flag != SilverpeasRole.publisher ) {
+            flag = SilverpeasRole.writer;
+          }
+        break;
       }
     }
-    return flag;
+    return flag.name();
   }
 
   /*
@@ -608,12 +595,12 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
         "ApplicationURL");
     String theURL = webContext + "/RquestionReply/" + getComponentId() + "/EffectiveRelaunch";
     String cancelURL = webContext + "/RquestionReply/" + getComponentId()
-        + "/ConsultQuestionQuery?questionId=" + ((IdPK) getCurrentQuestion().getPK()).getId();
+        + "/ConsultQuestionQuery?questionId=" + getCurrentQuestion().getPK().getId();
     PairObject hostComponentName = new PairObject(getComponentLabel(), webContext
         + "/RquestionReply/" + getComponentId() + "/Main");
     PairObject hostPath1 = new PairObject(getCurrentQuestion().getTitle(),
         "/RquestionReply/" + getComponentId() + "/ConsultQuestionQuery?questionId="
-            + ((IdPK) getCurrentQuestion().getPK()).getId());
+            + getCurrentQuestion().getPK().getId());
     PairObject[] hostPath = { hostPath1 };
 
     gp.resetAll();
@@ -645,9 +632,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
     Collection<Recipient> recipients = new ArrayList<Recipient>();
 
     if (uids != null) {
-      for (int i = 0; i < uids.length; i++) {
+      for (String uid : uids) {
         Recipient recipient = new Recipient(((IdPK) getCurrentQuestion().getPK()).getIdAsLong(),
-            uids[i]);
+            uid);
         recipients.add(recipient);
       }
     }
@@ -682,8 +669,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
               containerContext.getSilverContentIdByPosition(position, listeInstanceId);
 
         CardManager cardManager = CardManager.getInstance();
-        for (Integer integer : liste) {
-          int silverContentId = integer.intValue();
+        for (Integer silverContentId : liste) {
           String internalContentId = contentManager.getInternalContentId(silverContentId);
           long userCardId = Long.parseLong(internalContentId);
           Card card = cardManager.getCard(userCardId);
@@ -740,8 +726,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       UserDetail user = getUserDetail(getUserId());
       String senderName = user.getFirstName() + " " + user.getLastName();
       String subject = getString("questionReply.notification") + getComponentLabel();
-      // String message = senderName + intro + " \n" + content + "\n \n";
-
       // Get default resource bundle
       String resource = "com.silverpeas.questionReply.multilang.questionReplyBundle";
       ResourceLocator message = new ResourceLocator(resource, I18NHelper.defaultLanguage);
@@ -770,7 +754,6 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       }
       notifMetaData.setSender(getUserId());
       notifMetaData.addUserRecipients(users);
-      // notifMetaData.setLink(question._getURL());
       notifMetaData.setSource(getSpaceLabel() + " - " + getComponentLabel());
       getNotificationSender().notifyUser(notifMetaData);
     } catch (Exception e) {
@@ -790,12 +773,8 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       UserDetail user = getUserDetail(getUserId());
       String senderName = user.getFirstName() + " " + user.getLastName();
       String subject = getString("questionReply.notification") + getComponentLabel();
-      // String message = senderName + intro + " \n" + content + "\n \n";
-
       // Get default resource bundle
       String resource = "com.stratelia.webactiv.survey.multilang.surveyBundle";
-      ResourceLocator message = new ResourceLocator(resource, I18NHelper.defaultLanguage);
-
       // Initialize templates
       Map<String, SilverpeasTemplate> templates = new HashMap<String, SilverpeasTemplate>();
       NotificationMetaData notifMetaData =
@@ -804,8 +783,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       List<String> languages = DisplayI18NHelper.getLanguages();
       for (String language : languages) {
         // initialize new resource locator
-        message = new ResourceLocator(resource, language);
-
+        ResourceLocator message = new ResourceLocator(resource, language);
         // Create a new silverpeas template
         SilverpeasTemplate template = getNewTemplate();
         template.setAttribute("UserDetail", user);
@@ -836,12 +814,9 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
    */
   private void notifyQuestion(Question question) throws QuestionReplyException {
     Collection<Recipient> recipients = question.readRecipients();
-
     UserDetail[] users = new UserDetail[recipients.size()];
-    Iterator<Recipient> it = recipients.iterator();
     int i = 0;
-    while (it.hasNext()) {
-      Recipient recipient = it.next();
+    for(Recipient recipient : recipients) {
       users[i] = getUserDetail(recipient.getUserId());
       i++;
     }
@@ -855,14 +830,13 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   private void notifyQuestionFromExpert(Question question)
       throws QuestionReplyException {
     List<String> profils = new ArrayList<String>();
-    profils.add("writer");
+    profils.add(SilverpeasRole.writer.name());
     String[] usersIds =
         getOrganizationController().getUsersIdsByRoleNames(getComponentId(), profils);
     UserDetail[] users = new UserDetail[usersIds.length];
     for (int i = 0; i < usersIds.length; i++) {
       users[i] = getUserDetail(usersIds[i]);
     }
-    // notify(getString("questionReply.msgQuestion"), message, users);
     notifyTemplateQuestion(question, users);
   }
 
@@ -976,7 +950,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
       category.setCreatorId(getUserId());
       category.getNodePK().setComponentName(getComponentId());
 
-      getNodeBm().createNode((NodeDetail) category, new NodeDetail());
+      getNodeBm().createNode(category, new NodeDetail());
     } catch (Exception e) {
       throw new QuestionReplyException(
           "QuestionReplySessioncontroller.createCategory()",
@@ -1002,7 +976,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   public synchronized void updateCategory(Category category)
       throws QuestionReplyException {
     try {
-      getNodeBm().setDetail((NodeDetail) category);
+      getNodeBm().setDetail(category);
     } catch (Exception e) {
       throw new QuestionReplyException(
           "QuestionReplySessioncontroller.updateCategory()",
@@ -1228,7 +1202,7 @@ public class QuestionReplySessionController extends AbstractComponentSessionCont
   private NodeBm getNodeBm() throws QuestionReplyException {
     NodeBm nodeBm = null;
     try {
-      NodeBmHome nodeBmHome = (NodeBmHome) EJBUtilitaire.getEJBObjectRef(
+      NodeBmHome nodeBmHome = EJBUtilitaire.getEJBObjectRef(
           JNDINames.NODEBM_EJBHOME, NodeBmHome.class);
       nodeBm = nodeBmHome.create();
     } catch (Exception e) {

@@ -248,9 +248,11 @@ public class AjaxPublicationsListServlet extends HttpServlet {
         }
         displayLastPublications(publicationsToDisplay, kmeliaSC, resources, gef, writer);
       } else {
+        if(publications != null) {
         displayPublications(publications, subTopics, sortAllowed, linksAllowed, checkboxAllowed,
             toSearch, kmeliaSC, role, gef, context, resources, selectedIds, pubIdToHighlight,
             writer, attachmentToLink);
+        }
       }
     }
   }

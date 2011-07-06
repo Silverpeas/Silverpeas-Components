@@ -87,7 +87,7 @@ out.println(gef.getLookStyleSheet());
 		if (status == 2)
 			arrayLine.addArrayCellText(displayIcon(resource.getIcon("questionReply.close"), resource.getString("questionReply.close")));
 		ArrayCellText cell0 = arrayLine.addArrayCellText(new Integer(nb).toString());
-		cell0.setCompareOn((Integer) new Integer(nb));
+		cell0.setCompareOn(Integer.valueOf(nb));
 		if (status == 2)
 			arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"checkedQuestion\" value=\""+id+"\">");
 		else

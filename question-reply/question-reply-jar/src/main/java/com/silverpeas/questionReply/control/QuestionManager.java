@@ -23,13 +23,6 @@
  */
 package com.silverpeas.questionReply.control;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
 import com.silverpeas.questionReply.QuestionReplyException;
 import com.silverpeas.questionReply.index.QuestionIndexer;
 import com.silverpeas.questionReply.model.Question;
@@ -47,6 +40,13 @@ import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.WAPrimaryKey;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.UtilException;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public class QuestionManager {
 
@@ -79,8 +79,7 @@ public class QuestionManager {
 
   private SilverpeasBeanDAO<Question> getQuestionDao() throws PersistenceException {
     if (questionDao == null) {
-      questionDao = SilverpeasBeanDAOFactory.<Question>getDAO(
-          "com.silverpeas.questionReply.model.Question");
+      questionDao = SilverpeasBeanDAOFactory.<Question>getDAO("com.silverpeas.questionReply.model.Question");
     }
     return questionDao;
   }
@@ -538,14 +537,13 @@ public class QuestionManager {
       Connection con = null;
       try {
         con = DBUtil.makeConnection(JNDINames.QUESTIONREPLY_DATASOURCE);
-        long qId = questionId.longValue();
-        deleteRecipients(con, qId);
+        deleteRecipients(con, questionId);
         IdPK pk = new IdPK();
-        pk.setIdAsLong(qId);
-        Question question = getQuestion(qId);
+        pk.setIdAsLong(questionId);
+        Question question = getQuestion(questionId);
         String peasId = question.getInstanceId();
         // rechercher les réponses
-        Collection<Reply> replies = getAllReplies(qId);
+        Collection<Reply> replies = getAllReplies(questionId);
         for (Reply reply : replies) {
           long replyId = Long.parseLong(reply.getPK().getId());
           WAPrimaryKey pkR = reply.getPK();
