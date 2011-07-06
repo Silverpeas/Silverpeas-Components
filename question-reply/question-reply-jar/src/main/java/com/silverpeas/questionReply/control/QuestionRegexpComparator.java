@@ -102,8 +102,8 @@ public class QuestionRegexpComparator implements Comparator<Question> {
 
   protected int compareNumbers(List<Integer> bigList, List<Integer> smallList) {
     for (int i = 0; i < smallList.size(); i++) {
-      int value1 = bigList.get(i).intValue();
-      int value2 = smallList.get(i).intValue();
+      int value1 = bigList.get(i);
+      int value2 = smallList.get(i);
       if (value1 != value2) {
         return value1 - value2;
       }

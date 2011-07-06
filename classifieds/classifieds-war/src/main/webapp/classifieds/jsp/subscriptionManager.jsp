@@ -25,30 +25,46 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<% 
-Form 		formSearch 		= (Form) request.getAttribute("Form");
-DataRecord	data 			= (DataRecord) request.getAttribute("Data"); 
-String		instanceId		= (String) request.getAttribute("InstanceId");
-String      dialogTitle     = resource.getString("classifieds.subscriptionsAdd");
-%>
+<%@page import="com.silverpeas.form.Form"%>
+<%@page import="com.silverpeas.form.PagesContext"%>
+<%@page import="com.silverpeas.form.DataRecord"%>
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<c:set var="language" value="${requestScope.resources.language}"/>
+
+<fmt:setLocale value="${language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<c:set var="formSearch" value="${requestScope.Form}" />
+<c:set var="data" value="${requestScope.Data}" />
+<c:set var="instanceId" value="${requestScope.InstanceId}" />
+
+<fmt:message var="dialogTitle" key="classifieds.subscriptionsAdd"/>
+<fmt:message var="validateLabel" key="GML.validate"/>
+<fmt:message var="cancelLabel" key="GML.cancel"/>
 
 <script type="text/javascript">
   function addSubscription() {
     $( "#subscription-adding" ).dialog( "open" );
   }
-  
+
   $(function() {
 		$( "#subscription-adding" ).dialog({
-            title: "<%= dialogTitle %>",
+            title: "${dialogTitle}",
 			autoOpen: false,
 			height: 'auto',
 			width: 400,
 			modal: true,
 			buttons: {
-				'<%= resource.getString("GML.validate") %>': function() {
+				'${validateLabel}': function() {
                     sendSubscriptionData();
                 },
-				'<%= resource.getString("GML.cancel") %>' : function() {
+				'${cancelLabel}' : function() {
 					$( this ).dialog( "close" );
 				}
 			}
@@ -64,24 +80,26 @@ String      dialogTitle     = resource.getString("classifieds.subscriptionsAdd")
 <div id="subscription-adding" style="display: none">
 	<br/>
 	<FORM Name="SubscriptionForm" action="AddSubscription" Method="POST" ENCTYPE="multipart/form-data">
-		<% if (formSearch != null) { %>
-			
-			<table border="0" width="100%" align="center">
-				<!-- AFFICHAGE du formulaire -->
-				<tr>
-					<td colspan="2">
+	<c:if test="${not empty formSearch}">
+		<table border="0" width="100%" align="center">
+			<!-- AFFICHAGE du formulaire -->
+			<tr>
+				<td colspan="2">
 					<%
-						PagesContext xmlContext = new PagesContext("myForm", "0", resource.getLanguage(), false, instanceId, null);
-						xmlContext.setBorderPrinted(false);
-						xmlContext.setIgnoreDefaultValues(true);
-						xmlContext.setUseMandatory(false);
-						
-						formSearch.display(out, xmlContext, data);
-				    %>
-					</td>	
-				</tr>
-			</table>
-			<br/>
-		<% } %>	
+						String language = (String) pageContext.getAttribute("language");
+						String instanceId = (String) pageContext.getAttribute("instanceId");
+						Form formSearch = (Form) pageContext.getAttribute("formSearch");
+						DataRecord data = (DataRecord) pageContext.getAttribute("data");
+
+						PagesContext context = new PagesContext("formSearch", "0", language, false, instanceId, null, null);
+					    context.setIgnoreDefaultValues(true);
+					    context.setUseMandatory(false);
+						formSearch.display(out, context, data);
+					%>
+				</td>
+			</tr>
+		</table>
+		<br/>
+	</c:if>
 	</FORM>
 </div>

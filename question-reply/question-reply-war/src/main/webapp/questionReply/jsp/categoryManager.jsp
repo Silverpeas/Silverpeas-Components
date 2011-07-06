@@ -60,10 +60,10 @@
 	// d�claration des boutons
 	Button validateButton;
 	if (action.equals("CreateCategory"))
-		validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData()", false);
+		validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData()", false);
 	else
-		validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendDataUpdate()", false);
-	Button cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
+		validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendDataUpdate()", false);
+	Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
 
 	
 %>
@@ -161,7 +161,7 @@
 	</tr>
 	<tr>
 		<td class="txtlibform"><%=resource.getString("GML.date")%> :</td>
-		<TD><%=creationDate%>&nbsp;<span class="txtlibform"></TD>
+		<TD><%=creationDate%>&nbsp;<span class="txtlibform" /></TD>
 	</tr>
 	<tr><td colspan="2">( <img border="0" src="<%=resource.getIcon("questionReply.mandatory")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%> )</td></tr>
   </form>

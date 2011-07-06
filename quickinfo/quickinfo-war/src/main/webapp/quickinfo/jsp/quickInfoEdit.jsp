@@ -27,11 +27,11 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkQuickInfo.jsp" %>
 <%@ page import="com.stratelia.silverpeas.wysiwyg.control.WysiwygController" %>
-<%@ page import="com.stratelia.silverpeas.util.SilverpeasSettings" %>
 <%@ page import="com.stratelia.webactiv.util.FileRepositoryManager" %>
 <%@ page import="com.stratelia.webactiv.util.fileFolder.FileFolderManager" %>
 <%@ page import="com.stratelia.webactiv.util.fileFolder.FileFolderManager" %>
 <%@ page import="com.stratelia.silverpeas.peasCore.URLManager" %>
+<%@ page import="com.silverpeas.util.EncodeHelper" %>
 
 <%
   PublicationDetail quickInfoDetail = (PublicationDetail) request.getAttribute("info");
@@ -46,7 +46,7 @@
 			if (quickInfoDetail.getWysiwyg() != null && !"".equals(quickInfoDetail.getWysiwyg()))
 	       codeHtml = quickInfoDetail.getWysiwyg();
       else if (quickInfoDetail.getDescription() != null)
-	       codeHtml = Encode.javaStringToHtmlParagraphe(quickInfoDetail.getDescription());
+	       codeHtml = EncodeHelper.javaStringToHtmlParagraphe(quickInfoDetail.getDescription());
   }
 
 %>
@@ -261,7 +261,7 @@ out.println("oFCKeditor.BasePath = \""+URLManager.getApplicationURL()+"/wysiwyg/
 out.println("oFCKeditor.DisplayErrors = true;");
 out.println("oFCKeditor.Config[\"AutoDetectLanguage\"] = false");
 out.println("oFCKeditor.Config[\"DefaultLanguage\"] = \""+quickinfo.getLanguage()+"\";");
-String configFile = SilverpeasSettings.readString(settings, "configFile", URLManager.getApplicationURL() +"/wysiwyg/jsp/javaScript/myconfig.js");
+String configFile = settings.getString("configFile", URLManager.getApplicationURL() +"/wysiwyg/jsp/javaScript/myconfig.js");
 out.println("oFCKeditor.Config[\"CustomConfigurationsPath\"] = \""+configFile+"\";");
 out.println("oFCKeditor.ToolbarSet = 'quickinfo';");
 out.println("oFCKeditor.Config[\"ToolbarStartExpanded\"] = true;");

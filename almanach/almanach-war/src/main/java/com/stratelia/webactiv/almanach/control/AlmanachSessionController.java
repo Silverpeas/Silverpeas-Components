@@ -23,13 +23,10 @@
  */
 package com.stratelia.webactiv.almanach.control;
 
-import java.io.File;
-import com.silverpeas.export.Exporter;
 import com.silverpeas.calendar.CalendarEvent;
-import com.silverpeas.export.ExporterFactory;
-import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.silverpeas.export.ExportException;
-import com.stratelia.webactiv.util.GeneralPropertiesManager;
+import com.silverpeas.export.Exporter;
+import com.silverpeas.export.ExporterFactory;
 import com.stratelia.silverpeas.alertUser.AlertUser;
 import com.stratelia.silverpeas.notificationManager.NotificationMetaData;
 import com.stratelia.silverpeas.notificationManager.NotificationParameters;
@@ -39,7 +36,6 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.silverpeas.util.PairObject;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.silverpeas.wysiwyg.WysiwygException;
 import com.stratelia.silverpeas.wysiwyg.control.WysiwygController;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachBadParamException;
@@ -56,7 +52,9 @@ import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.EJBUtilitaire;
+import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.FileServerUtils;
+import com.stratelia.webactiv.util.GeneralPropertiesManager;
 import com.stratelia.webactiv.util.JNDINames;
 import com.stratelia.webactiv.util.ResourceLocator;
 import com.stratelia.webactiv.util.attachment.control.AttachmentController;
@@ -64,6 +62,10 @@ import com.stratelia.webactiv.util.exception.SilverpeasException;
 import com.stratelia.webactiv.util.exception.SilverpeasRuntimeException;
 import com.stratelia.webactiv.util.exception.UtilException;
 import com.stratelia.webactiv.util.fileFolder.FileFolderManager;
+import org.apache.commons.io.FileUtils;
+
+import javax.ejb.RemoveException;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -76,12 +78,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.RemoveException;
-import org.apache.commons.io.FileUtils;
-import static com.stratelia.webactiv.almanach.control.CalendarViewType.*;
-import static com.stratelia.webactiv.util.DateUtil.*;
-import static com.silverpeas.util.StringUtil.*;
-import static com.silverpeas.export.ExportDescriptor.*;
+
+import static com.silverpeas.export.ExportDescriptor.withWriter;
+import static com.silverpeas.util.StringUtil.isDefined;
+import static com.stratelia.webactiv.almanach.control.CalendarViewType.MONTHLY;
+import static com.stratelia.webactiv.almanach.control.CalendarViewType.YEARLY;
+import static com.stratelia.webactiv.util.DateUtil.parse;
 
 /**
  * The AlmanachSessionController provides features to handle almanachs and theirs events.
@@ -604,8 +606,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
   public List<AlmanachDTO> getOthersAlmanachs() {
     List<AlmanachDTO> othersAlmanachs = new ArrayList<AlmanachDTO>();
 
-    String agregationMode = SilverpeasSettings.readString(getSettings(),
-        "almanachAgregationMode", ALMANACHS_IN_SUBSPACES);
+    String agregationMode = getSettings().getString("almanachAgregationMode", ALMANACHS_IN_SUBSPACES);
     String[] instanceIds = null;
     boolean inCurrentSpace = false;
     boolean inAllSpaces = false;
@@ -617,8 +618,7 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
     }
     instanceIds = organizationController.getAllComponentIdsRecur(getSpaceId(),
         getUserId(), getComponentRootName(), inCurrentSpace, inAllSpaces);
-    SilverTrace.debug("almanach",
-        "AlmanachSessionController.getOthersAlmanachs()",
+    SilverTrace.debug("almanach", "AlmanachSessionController.getOthersAlmanachs()",
         "root.MSG_GEN_PARAM_VALUE", "instanceIds=" + instanceIds + " spaceId="
         + getSpaceId());
     for (int i = 0; i < instanceIds.length; i++) {
@@ -674,8 +674,8 @@ public class AlmanachSessionController extends AbstractComponentSessionControlle
    * positions are for the agregated almanachs.
    * @return the HTML/CSS code of the color.
    */
-  private String getAlmanachColor(int pos) {
-    String almanachColor = getSettings().getString("almanachColor" + pos, "");
+  private String getAlmanachColor(int position) {
+    String almanachColor = getSettings().getString("almanachColor" + position, "");
     return almanachColor;
   }
 
