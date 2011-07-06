@@ -1032,20 +1032,26 @@
     if(!kmaxMode) {
     %>
   $('#classification').pdc({
-    url: '<%=m_context%>/services/pdc/<%=componentId%>/<%=id%>',
+    resource: {context: '<%= m_context %>', component: '<%= componentId %>', content: '<%= id %>'},
     title: '<%=resources.getString("GML.PDC")%>',
     positionLabel: '<%=pdcResources.getString("pdcPeas.position")%>',
+    edition: {
+      ok: '<%= resources.getString("GML.validate") %>',
+      cancel: '<%= resources.getString("GML.cancel") %>',
+      mandatoryLegend: '<%=resources.getString("GML.requiredField")%>',
+      invariantLegend: '<%=pdcResources.getString("pdcPeas.notVariants")%>'
+    },
     addition: {
       call: function() { return addNewPosition(); },
-      altText: '<%=resources.getString("GML.PDCNewPosition") %>'
+      title: '<%=resources.getString("GML.PDCNewPosition") %>'
     },
     update: {
       call: function(positionId) { return updatePosition(positionId); },
-      altText: '<%=pdcResources.getString("GML.modify")%>'
+      title: '<%=pdcResources.getString("GML.modify")%>'
     },
     deletion: {
       confirmation: '<%=pdcResources.getString("pdcPeas.confirmDeleteAxis")%>',
-      altText: '<%=resources.getString("GML.PDCDeletePosition")%>'
+      title: '<%=resources.getString("GML.PDCDeletePosition")%>'
     },
     mode: 'edition'
   });

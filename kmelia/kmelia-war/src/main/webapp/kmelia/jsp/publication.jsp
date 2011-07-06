@@ -737,7 +737,7 @@ function suggestDelegatedNews() {
   ResourceLocator pdcResources = new ResourceLocator("com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language);
   %>
   $('#classification').pdc({
-    url: '<%=m_context%>/services/pdc/<%=componentId%>/<%=id%>',
+    resource: {context: '<%= m_context %>', component: '<%= componentId %>', content: '<%= id %>'},
     title: '<%=resources.getString("GML.PDC")%>',
     positionLabel: '<%=pdcResources.getString("pdcPeas.position")%>'
   });
