@@ -1018,11 +1018,6 @@
     SP_openWindow(fonction, windowName, '600', '300','scrollbars=yes, resizable, alwaysRaised');
   }
   
-  function addNewPosition() {
-    openSPWindow("<%=m_context%>/RpdcClassify/jsp/NewPosition?ComponentId=<%=componentId%>&ContentId=<%=id %>", "newposition");
-    return true;
-  }
-  
   function updatePosition(positionId) {
     openSPWindow("<%=m_context%>/RpdcClassify/jsp/EditPosition?ComponentId=<%=componentId%>&ContentId=<%=id %>&Id=" + positionId, "updateposition");
     return true;
@@ -1042,7 +1037,6 @@
       invariantLegend: '<%=pdcResources.getString("pdcPeas.notVariants")%>'
     },
     addition: {
-      call: function() { return addNewPosition(); },
       title: '<%=resources.getString("GML.PDCNewPosition") %>'
     },
     update: {
