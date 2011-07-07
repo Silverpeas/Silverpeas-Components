@@ -27,13 +27,13 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
 import com.stratelia.webactiv.calendar.backbone.TodoDetail;
 import com.stratelia.webactiv.calendar.model.Attendee;
 import com.stratelia.webactiv.util.attachment.model.AttachmentDetail;
+import java.util.ArrayList;
 
 /**
  * @author neysseri
@@ -418,7 +418,7 @@ public class TaskDetail implements Serializable {
     todo.setDelegatorId(Integer.toString(getOrganisateurId()));
     Attendee attendee = new Attendee(String.valueOf(getResponsableId()));
     if (attendee != null) {
-      Vector<Attendee> attendees = new Vector<Attendee>();
+      List<Attendee> attendees = new ArrayList<Attendee>();
       attendees.add(attendee);
       todo.setAttendees(attendees);
     }

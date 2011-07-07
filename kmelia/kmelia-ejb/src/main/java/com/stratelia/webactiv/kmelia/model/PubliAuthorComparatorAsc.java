@@ -26,15 +26,15 @@ package com.stratelia.webactiv.kmelia.model;
 
 import java.util.Comparator;
 
-import com.stratelia.webactiv.kmelia.model.UserPublication;
 
-public class PubliAuthorComparatorAsc implements Comparator<UserPublication> {
+public class PubliAuthorComparatorAsc implements Comparator<KmeliaPublication> {
   static public PubliAuthorComparatorAsc comparator = new PubliAuthorComparatorAsc();
 
-  public int compare(UserPublication p1, UserPublication p2) {
-    int compareResult = p1.getOwner().getLastName().compareTo(p2.getOwner().getLastName());
+  @Override
+  public int compare(KmeliaPublication p1, KmeliaPublication p2) {
+    int compareResult = p1.getCreator().getLastName().compareTo(p2.getCreator().getLastName());
     if (compareResult == 0) {
-      compareResult = p1.getPublication().getId().compareTo(p2.getPublication().getId());
+      compareResult = p1.getDetail().getId().compareTo(p2.getDetail().getId());
     }
 
     return compareResult;

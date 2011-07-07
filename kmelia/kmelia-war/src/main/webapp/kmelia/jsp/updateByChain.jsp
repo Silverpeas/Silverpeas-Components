@@ -39,7 +39,7 @@ String creatorName		= "";
 String creationDate		= "";
 String name				= "";
 
-UserCompletePublication userPubComplete = null;
+KmeliaPublication kmeliaPublication = null;
 UserDetail ownerDetail = null;
 
 CompletePublication pubComplete = null;
@@ -76,12 +76,12 @@ Button endButton = (Button) gef.getFormButton(resources.getString("kmelia.end"),
 Button updateAllButton = (Button) gef.getFormButton(resources.getString("kmelia.updateAll"), "javascript:onClick=sendPublicationDataToRouter('UpdateChainUpdateAll');", false);
 
       //Recuperation des parametres de la publication
-	  userPubComplete = kmeliaScc.getUserCompletePublication(id);
+	  kmeliaPublication = kmeliaScc.getPublication(id);
 
- 	  kmeliaScc.setSessionPublication(userPubComplete);
-      pubComplete 	= userPubComplete.getPublication();
+ 	  kmeliaScc.setSessionPublication(kmeliaPublication);
+      pubComplete 	= kmeliaPublication.getCompleteDetail();
       pubDetail 	= pubComplete.getPublicationDetail();
-      ownerDetail 	= userPubComplete.getOwner();
+      ownerDetail 	= kmeliaPublication.getCreator();
 
       creationDate 	= resources.getOutputDate(pubDetail.getCreationDate());
       if (ownerDetail != null)
