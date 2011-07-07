@@ -428,14 +428,16 @@
     position:relative;
 }
 
-#kmax .sousNavBulle, #kmaxManager .sousNavBull{
+.kmax .sousNavBulle, .kmaxManager .sousNavBull{
 	position:relative;
 	margin:0 2% 0 1%;
 	width:97%;
 }
-#kmax .sousNavBulle .milieuBoutonV5 a {
+
+.kmax .sousNavBulle #btnForm .milieuBoutonV5 a {
 	background-color:transparent;
 	border:0;
+	 color: inherit;
 }
 
 .oneAxis  label {
@@ -449,6 +451,7 @@
 	border: 1px solid #CECECE;
     color: #666666;
 }
+
 
 .axisManagment .oneAxis label{
 	padding-right:8px;
@@ -470,7 +473,7 @@
 }
 
 .axisManagment .oneAxis{
-
+	position:relative;
 	background-color: #EAEAEA;
     border-left: 1px solid #CECECE;
     display: inline;
@@ -482,5 +485,6 @@
 	border-radius:10px;
 	-moz-border-radius:10px;
 	-webkit-border-radius:10px;
+	behavior: url("/silverpeas/util/styleSheets/PIE.htc");
 }
 	

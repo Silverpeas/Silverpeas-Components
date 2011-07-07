@@ -199,7 +199,7 @@ function exportPublications()
 
 </script>
 </head>
-<body  id="kmax" class="<%=componentId %>" onLoad="init()">
+<body  id="<%=componentId %>" class="kmax" onLoad="init()">
 <%
 Window window = gef.getWindow();
 
