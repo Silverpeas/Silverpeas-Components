@@ -1,0 +1,18 @@
+<table width="98%" cellspacing="0" cellpadding="5" border="0" class="tableBoard"><tbody><tr>
+	<td>
+		<fmt:message key="scheduleevent.form.title" var="titleLabel" />
+		<fmt:message key="scheduleevent.form.description" var="descLabel" />
+		<table width="100%" cellpadding="5">
+			<tbody>
+				<tr>
+					<td class="txtlibform">${titleLabel}&nbsp;:</td>
+					<td>${currentScheduleEvent.htmlParagraphTitle}</td>
+				</tr>
+				<tr>
+					<td class="txtlibform">${descLabel}&nbsp;:</td>
+					<td>${currentScheduleEvent.htmlParagraphDescription}</td>
+				</tr>
+			</tbody>
+		</table>
+	</td></tr></tbody>
+</table>

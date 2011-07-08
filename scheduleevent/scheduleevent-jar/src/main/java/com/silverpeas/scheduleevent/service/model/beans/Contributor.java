@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -33,6 +33,7 @@ public class Contributor implements Comparable<Contributor> {
   private int userId;
   private String userName;
   private Date lastVisit;
+  private Date lastValidation;
 
   public String getId() {
     return id;
@@ -69,26 +70,88 @@ public class Contributor implements Comparable<Contributor> {
     }
   }
 
-  public int hashCode() {
-    final int prime = 31;
-    int result = super.hashCode();
-    result = prime * result + ((id == null) ? 0 : id.hashCode());
-    result = prime * result + (int) (userId ^ (userId >>> 32));
-    result = prime * result + ((lastVisit == null) ? 0 : lastVisit.hashCode());
+//  @Override
+//  public int hashCode() {
+//    final int prime = 31;
+//    int result = super.hashCode();
+//    result = prime * result + ((lastValidation == null) ? 0 : lastValidation.hashCode());
+//    result = prime * result + ((lastVisit == null) ? 0 : lastVisit.hashCode());
+//    result = prime * result + (int) (userId ^ (userId >>> 32));
+//    result = prime * result + ((userName == null) ? 0 : userName.hashCode());
+//    return result;
+//  }
+//
+//  @Override
+//  public boolean equals(Object obj) {
+//    if (this == obj)
+//      return true;
+//    if (obj == null)
+//      return false;
+//    if (getClass() != obj.getClass())
+//      return false;
+//    Contributor other = (Contributor) obj;
+//    if (lastValidation == null) {
+//      if (other.lastValidation != null)
+//        return false;
+//    } else if (!lastValidation.equals(other.lastValidation))
+//      return false;
+//    if (lastVisit == null) {
+//      if (other.lastVisit != null)
+//        return false;
+//    } else if (!lastVisit.equals(other.lastVisit))
+//      return false;
+//    if (userId != other.userId)
+//      return false;
+//    if (userName == null) {
+//      if (other.userName != null)
+//        return false;
+//    } else if (!userName.equals(other.userName))
+//      return false;
+//    return true;
+//  }
 
-    return result;
-  }
-
-  public boolean equals(Object obj) {
-    return super.equals(obj);
-  }
-
+  
   public void setLastVisit(Date lastVisit) {
     this.lastVisit = lastVisit;
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Contributor other = (Contributor) obj;
+    if (id == null) {
+      if (other.id != null)
+        return false;
+      else
+        return (userId == other.userId);
+    } else if (!id.equals(other.id))
+      return false;
+    return true;
+  }
+
   public Date getLastVisit() {
     return lastVisit;
+  }
+
+  public Date getLastValidation() {
+    return lastValidation;
+  }
+
+  public void setLastValidation(Date lastValidation) {
+    this.lastValidation = lastValidation;
   }
 
   public void setScheduleEvent(ScheduleEvent scheduleEvent) {

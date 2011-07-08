@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -29,15 +29,21 @@ import java.util.Comparator;
 public class ContributorComparator implements Comparator<Contributor> {
 
   public int compare(Contributor contr1, Contributor contr2) {
-    if (contr1.getUserName() != null) {
-      return contr1.getUserName().compareTo(contr2.getUserName());
+    if (contr1.getId() != null) {
+      if (contr2.getId() == null)
+        return -1;
+      else
+        return contr1.getId().compareTo(contr2.getId());
+    } else if (contr2.getId() != null) {
+      return 1;
     } else {
       if (contr1.getUserId() > contr2.getUserId()) {
         return 1;
+      } else if (contr1.getUserId() == contr2.getUserId()) {
+        return 0;
       } else {
         return -1;
       }
     }
   }
-
 }

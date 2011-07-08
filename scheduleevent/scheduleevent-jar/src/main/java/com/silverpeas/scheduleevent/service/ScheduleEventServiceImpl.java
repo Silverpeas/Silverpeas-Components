@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2000 - 2011 Silverpeas
+ * Copyright (C) 2000 - 2009 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -27,7 +27,6 @@ package com.silverpeas.scheduleevent.service;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.SortedSet;
 
 import com.silverpeas.scheduleevent.service.model.beans.Contributor;
 import com.silverpeas.scheduleevent.service.model.beans.ScheduleEvent;
@@ -92,7 +91,7 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
 
   public void setLastVisited(String scheduleEventId, int userId) {
     ScheduleEvent event = scheduleEventDao.getScheduleEventComplete(scheduleEventId);
-    SortedSet<Contributor> contributors = event.getContributors();
+    Set<Contributor> contributors = event.getContributors();
     Iterator<Contributor> iter = contributors.iterator();
     boolean finish = false;
     while (iter.hasNext() && !finish) {
@@ -105,4 +104,11 @@ public class ScheduleEventServiceImpl implements ScheduleEventService {
     scheduleEventDao.updateScheduleEvent(event);
   }
 
+  @Override
+  public void deleteContributor(String id) {
+    Contributor contrib = scheduleEventDao.getContributor(id);
+    scheduleEventDao.deleteContributor(contrib);
+  }
+
+  
 }
