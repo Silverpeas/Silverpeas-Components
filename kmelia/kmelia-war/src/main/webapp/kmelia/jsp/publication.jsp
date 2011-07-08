@@ -212,7 +212,6 @@ out.println(gef.getLookStyleSheet());
 <script type="text/javascript" src="<%=m_context%>/wysiwyg/jsp/FCKeditor/fckeditor.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/kmelia/jsp/javaScript/glossaryHighlight.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc.js"></script>
 
 <script type="text/javascript">
 
@@ -567,16 +566,17 @@ function suggestDelegatedNews() {
 		}
 
 		out.println("</td></tr></table>");
-        
+        if(!kmaxMode) {
         %>
         
         <table border="0" width="98%" align="center">
           <tr><td>
-              <div id="classification"></div>
+              <view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" />
             </td></tr>
         </table>
         
         <%
+               }
 
 		/*********************************************************************************************************************/
 		/** Affichage du contenu de la publication																			**/
@@ -728,22 +728,5 @@ function suggestDelegatedNews() {
 </form>
 </div>
 
-  <%
-  if(!kmaxMode) {
-  %>
-
-<script type="text/javascript">
-  <%
-  ResourceLocator pdcResources = new ResourceLocator("com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language);
-  %>
-  $('#classification').pdc({
-    resource: {context: '<%= m_context %>', component: '<%= componentId %>', content: '<%= id %>'},
-    title: '<%=resources.getString("GML.PDC")%>',
-    positionLabel: '<%=pdcResources.getString("pdcPeas.position")%>'
-  });
-</script>
-    <%
-       }
-    %>
 </body>
 </html>

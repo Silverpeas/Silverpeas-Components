@@ -26,6 +26,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@page import="com.stratelia.webactiv.beans.admin.ComponentInstLight"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <%@ include file="checkKmelia.jsp" %>
 <%@ include file="modelUtils.jsp" %>
@@ -402,7 +403,6 @@
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
     <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
-    <script type="text/javascript" src="<%=m_context%>/util/javaScript/silverpeas-pdc.js"></script>
     <!-- <script type="text/javascript" src="<%=m_context%>/util/javaScript/jquery/ui.thickbox.js"></script>
     <link type="text/css" rel="stylesheet" href="<%=m_context%>/util/styleSheets/jquery-thickbox.css"> -->
     <script language="javascript">
@@ -854,16 +854,17 @@
       <% if (isFieldKeywordsVisible) {%>
       <tr id="keywordsArea"><td class="txtlibform"><%=resources.getString("PubMotsCles")%></td>
         <td><input type="text" name="Keywords" id="pubKeys" value="<%=EncodeHelper.javaStringToHtmlString(keywords)%>" size="68" maxlength="1000"></td></tr>
-      <% }%>
-      
+      <% }
+        if (!kmaxMode) { %>
       <tr id="classificationArea">
         <td colspan="2" width="100%">
-          <fillset id="classification"></fillset>
+          <view:pdcClassification componentId="<%= componentId %>" contentId="<%= id %>" editable="true" />
         </td>
       </tr>
 
       <!-- Author -->
-      <% if (kmeliaScc.isAuthorUsed()) {%>
+      <% }
+      if (kmeliaScc.isAuthorUsed()) {%>
       <tr id="authorArea">
         <td class="txtlibform"><%=resources.getString("GML.author")%></TD>
         <td><input type="text" name="Author" value="<%=EncodeHelper.javaStringToHtmlString(author)%>" size="68" maxlength="50"></td>
@@ -1008,50 +1009,6 @@
   <form name="toRouterForm">
     <input type="hidden" name="PubId" value="<%=id%>">
   </form>
-  
-<script type="text/javascript">
-  <%
-    ResourcesWrapper pdcResources = new ResourcesWrapper(new ResourceLocator("com.stratelia.silverpeas.pdcPeas.multilang.pdcBundle", language), language);
-  %>
-          
-  function openSPWindow(fonction,windowName){
-    SP_openWindow(fonction, windowName, '600', '300','scrollbars=yes, resizable, alwaysRaised');
-  }
-  
-  function updatePosition(positionId) {
-    openSPWindow("<%=m_context%>/RpdcClassify/jsp/EditPosition?ComponentId=<%=componentId%>&ContentId=<%=id %>&Id=" + positionId, "updateposition");
-    return true;
-  }
-  
-    <%
-    if(!kmaxMode) {
-    %>
-  $('#classification').pdc({
-    resource: {context: '<%= m_context %>', component: '<%= componentId %>', content: '<%= id %>'},
-    title: '<%=resources.getString("GML.PDC")%>',
-    positionLabel: '<%=pdcResources.getString("pdcPeas.position")%>',
-    edition: {
-      ok: '<%= resources.getString("GML.validate") %>',
-      cancel: '<%= resources.getString("GML.cancel") %>',
-      mandatoryLegend: '<%=resources.getString("GML.requiredField")%>',
-      invariantLegend: '<%=pdcResources.getString("pdcPeas.notVariants")%>'
-    },
-    addition: {
-      title: '<%=resources.getString("GML.PDCNewPosition") %>'
-    },
-    update: {
-      call: function(positionId) { return updatePosition(positionId); },
-      title: '<%=pdcResources.getString("GML.modify")%>'
-    },
-    deletion: {
-      confirmation: '<%=pdcResources.getString("pdcPeas.confirmDeleteAxis")%>',
-      title: '<%=resources.getString("GML.PDCDeletePosition")%>'
-    },
-    mode: 'edition'
-  });
-    <%
-       }
-    %>
-</script>
+
 </body>
 </html>
