@@ -31,8 +31,10 @@ import com.stratelia.webactiv.util.publication.model.PublicationDetail;
  * This object contains elements which are displayed in a kmelia Topic
  * @author Nicolas Eysseric
  * @version 1.0
+ * @deprecated this class is now deprecated. Please use instead the KmeliaPublication objects.
  */
 public class UserPublication extends Object implements java.io.Serializable {
+  private static final long serialVersionUID = -1706351702013064074L;
 
   /**  */
   private UserDetail owner;

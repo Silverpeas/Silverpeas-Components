@@ -31,11 +31,6 @@
 
 package com.stratelia.webactiv.almanach.control;
 
-import java.awt.Color;
-import java.io.FileOutputStream;
-import java.util.Calendar;
-import java.util.Date;
-
 import com.lowagie.text.Chapter;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -49,13 +44,17 @@ import com.lowagie.text.Section;
 import com.lowagie.text.pdf.PdfWriter;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachException;
 import com.stratelia.webactiv.almanach.control.ejb.AlmanachRuntimeException;
 import com.stratelia.webactiv.almanach.model.EventDetail;
 import com.stratelia.webactiv.util.DateUtil;
 import com.stratelia.webactiv.util.FileRepositoryManager;
 import com.stratelia.webactiv.util.exception.SilverpeasException;
+
+import java.awt.*;
+import java.io.FileOutputStream;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -80,10 +79,8 @@ public class AlmanachPdfGenerator {
       Document document = new Document(PageSize.A4, 50, 50, 50, 50);
 
       // we add some meta information to the document
-      document.addAuthor(SilverpeasSettings.readString(almanach.getSettings(),
-          "author", ""));
-      document.addSubject(SilverpeasSettings.readString(almanach.getSettings(),
-          "subject", ""));
+      document.addAuthor(almanach.getSettings().getString("author", ""));
+      document.addSubject(almanach.getSettings().getString("subject", ""));
       document.addCreationDate();
 
       PdfWriter.getInstance(document, new FileOutputStream(fileName));

@@ -28,7 +28,6 @@
 <%@ include file="checkKmelia.jsp" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@page import="com.silverpeas.util.EncodeHelper"%>
-<%@page import="com.stratelia.silverpeas.util.SilverpeasSettings"%>
 <%@page import="com.stratelia.webactiv.util.viewGenerator.html.browseBars.BrowseBarElement"%>
 
 <%
@@ -461,7 +460,7 @@ function initTree(id)
 	//let the time to tree to be loaded !
 	setTimeout("displayTopicContent("+id+")", 500);
 
-	<% if (SilverpeasSettings.readBoolean(settings, "DisplayDnDOnLoad", false)) { %>
+	<% if (settings.getBoolean("DisplayDnDOnLoad", false)) { %>
 		showDnD();
 	<% } %>
 

@@ -26,17 +26,17 @@ package com.stratelia.webactiv.kmelia.model;
 
 import java.util.Comparator;
 
-import com.stratelia.webactiv.kmelia.model.UserPublication;
 
-public class PubliImportanceComparatorDesc implements Comparator<UserPublication> {
+public class PubliImportanceComparatorDesc implements Comparator<KmeliaPublication> {
   static public PubliImportanceComparatorDesc comparator = new PubliImportanceComparatorDesc();
 
-  public int compare(UserPublication p1, UserPublication p2) {
+  @Override
+  public int compare(KmeliaPublication p1, KmeliaPublication p2) {
     int compareResult =
-        Integer.valueOf(p2.getPublication().getImportance()).compareTo(
-        Integer.valueOf(p1.getPublication().getImportance()));
+        Integer.valueOf(p2.getDetail().getImportance()).compareTo(
+        Integer.valueOf(p1.getDetail().getImportance()));
     if (compareResult == 0) {
-      compareResult = p1.getPublication().getId().compareTo(p2.getPublication().getId());
+      compareResult = p1.getDetail().getId().compareTo(p2.getDetail().getId());
     }
 
     return compareResult;

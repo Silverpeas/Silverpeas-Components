@@ -25,235 +25,235 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<%@ include file="check.jsp" %>
+<%@page import="com.silverpeas.form.Form"%>
+<%@page import="com.silverpeas.form.PagesContext"%>
+<%@page import="com.silverpeas.form.DataRecord"%>
 
-<% 
-	// r�cup�ration des param�tres :
-	ClassifiedDetail 	classified		= (ClassifiedDetail) request.getAttribute("Classified");
-	String 				userName		= (String) request.getAttribute("UserName");
-	String 				userEmail		= (String) request.getAttribute("UserEmail");
-	String 				userId			= (String) request.getAttribute("UserId");
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-	// param�tres pour le formulaire
-	Form 			formUpdate 			= (Form) request.getAttribute("Form");
-	DataRecord 		data 				= (DataRecord) request.getAttribute("Data"); 
-	
-	String 			fieldKey			= (String) request.getAttribute("FieldKey");
-	String 			fieldName			= (String) request.getAttribute("FieldName");
-	
-	// d�claration des variables :
-	String 		classifiedId 			= "";
-	String 		title 					= "";
-	String 		instanceId				= "";
-	String 		creatorId				= "";
-	String 		creatorName				= userName;
-	String		creatorEmail			= userEmail;
-	String 		creationDate			= resource.getOutputDateAndHour(new Date());
-	String 		updateDate				= "";
-	String 		status					= "";
-	String 		validatorId				= "";
-	String 		validatorName			= null;
-	String 		validateDate			= "";
-	String 		action 					= "CreateClassified";
-	
-	PagesContext 		context 		= new PagesContext("classifiedForm", "0", resource.getLanguage(), false, instanceId, null);
-	context.setBorderPrinted(false);
-	context.setCurrentFieldIndex("11");
-	context.setIgnoreDefaultValues(true);
-	
-	boolean isCreator = userId.equals(creatorId);
-
-	if (classified != null)
-	{
-		classifiedId 		= Integer.toString(classified.getClassifiedId());
-		title 				= classified.getTitle();
-		instanceId			= classified.getInstanceId();
-		creatorId			= classified.getCreatorId();
-		creatorName			= classified.getCreatorName();
-		creatorEmail		= classified.getCreatorEmail();
-		action				= "UpdateClassified";
-		status				= classified.getStatus();
-		validatorId			= classified.getValidatorId();
-		validatorName 		= classified.getValidatorName();
-		if (classified.getCreationDate() != null){
-			creationDate = resource.getOutputDateAndHour(classified.getCreationDate());
-		}
-      	else {
-      		creationDate = "";
-      	}
-		if (classified.getValidateDate() != null) {
-			validateDate = resource.getOutputDateAndHour(classified.getValidateDate());
-		}
-      	else {
-      		validateDate = "";
-      	}
-		if (classified.getUpdateDate() != null) {
-			updateDate = resource.getOutputDateAndHour(classified.getUpdateDate());
-		}
-      	else {
-      		updateDate = "";
-      	}
-	}
-	
-	// d�claration des boutons
-	Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javaScript:onClick=sendData();", false);
-	Button cancelButton   = (Button) gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
-	
+<%
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+			response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+			response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
-<%@page import="com.silverpeas.util.StringUtil"%>
+
+<c:set var="language" value="${requestScope.resources.language}"/>
+
+<fmt:setLocale value="${language}" />
+<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+
+<c:set var="browseContext" value="${requestScope.browseContext}" />
+<c:set var="componentLabel" value="${browseContext[1]}" />
+
+<c:set var="classified" value="${requestScope.Classified}" />
+<c:set var="userName" value="${requestScope.UserName}" />
+<c:set var="userEmail" value="${requestScope.UserEmail}" />
+<c:set var="userId" value="${requestScope.UserId}" />
+
+<c:set var="formUpdate" value="${requestScope.Form}" />
+<c:set var="data" value="${requestScope.Data}" />
+<c:set var="fieldKey" value="${requestScope.FieldKey}" />
+<c:set var="fieldName" value="${requestScope.FieldName}" />
+
+<c:set var="action" value="${(not empty classified) ? 'UpdateClassified' : 'CreateClassified' }" />
+<c:set var="creatorName" value="${(not empty classified) ? classified.creatorName : userName }" />
+<c:set var="creatorEmail" value="${(not empty classified) ? classified.creatorEmail : userEmail }" />
+
+<c:if test="${not empty classified}">
+	<c:set var="classifiedId" value="${classified.classifiedId}" />
+	<c:set var="title" value="${classified.title}" />
+	<c:set var="instanceId" value="${classified.instanceId}" />
+	<c:set var="creatorId" value="${classified.creatorId}" />
+	<c:set var="status" value="${classified.status}" />
+	<c:set var="validatorId" value="${classified.validatorId}" />
+	<c:set var="validatorName" value="${classified.validatorName}" />
+	<c:set var="creationDate" value="${classified.creationDate}" />
+	<c:set var="validateDate" value="${classified.validateDate}" />
+	<c:set var="updateDate" value="${classified.updateDate}" />
+</c:if>
+
+<%
+	String language = (String) pageContext.getAttribute("language");
+	String instanceId = (String) pageContext.getAttribute("instanceId");
+	Form formUpdate = (Form) pageContext.getAttribute("formUpdate");
+	DataRecord data = (DataRecord) pageContext.getAttribute("data");
+
+	PagesContext context = new PagesContext("classifiedForm", "11", language, false, instanceId, null, null);
+	context.setIgnoreDefaultValues(true);
+	context.setBorderPrinted(false);
+%>
+
 <html>
 <head>
-<%
-out.println(gef.getLookStyleSheet());
-if (formUpdate != null)
-	formUpdate.displayScripts(out, context); 
-%>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
-<script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<view:looknfeel/>
+<c:if test="${not empty formUpdate}">
+	<%
+  	formUpdate.displayScripts(out, context);
+	%>
+</c:if>
+<script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/animation.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/dateUtils.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/util/javaScript/checkForm.js"></script>
+
+<fmt:message var="GML_title" key="GML.title"/>
+<fmt:message var="GML_MustBeFilled" key="GML.MustBeFilled"/>
+<fmt:message var="GML_msgSize" key="GML.msgSize"/>
+<fmt:message var="GML_ThisFormContains" key="GML.ThisFormContains"/>
+<fmt:message var="GML_error" key="GML.error"/>
+<fmt:message var="GML_errors" key="GML.errors"/>
+
 <script type="text/javascript">
-		
-	// fonctions de contr�le des zones des formulaires avant validation
-	function sendData() 
+
+	// form validation
+	function sendData()
 	{
-		<% if (formUpdate != null) { %>
+		<c:if test="${not empty formUpdate}">
 			if (isCorrectForm() && isCorrectLocalForm()) {
 		    	document.classifiedForm.submit();
 		    }
-		<% } else { %>
+		 </c:if>
+		<c:if test="${empty formUpdate}">
 				if (isCorrectLocalForm()) {
 					document.classifiedForm.submit();
 		    	}
-		<% } %>
+		</c:if>
 	}
-			
-	function isCorrectLocalForm() 
+
+	function isCorrectLocalForm()
 	{
 	   	var errorMsg = "";
 	   	var errorNb = 0;
 	   	var title = stripInitialWhitespace(document.classifiedForm.Title.value);
-			
-		if (title == "") 
-		{ 
-			errorMsg+="  - '<%=resource.getString("GML.title")%>'  <%=resource.getString("GML.MustBeFilled")%>\n";
+
+		if (title == "")
+		{
+			errorMsg+="  - '${GML_title}'  ${GML_MustBeFilled}\n";
 		    errorNb++;
-		}     	
-	   	if (title.length > 255) 
-	   	{ 
-			errorMsg+="  - '<%=resource.getString("GML.title")%>'  <%=resource.getString("classifieds.msgSize")%>\n";
+		}
+	   	if (title.length > 255)
+	   	{
+			errorMsg+="  - '${GML_title}'  ${GML_msgSize}\n";
 	       	errorNb++;
 	   	}
-	   	switch(errorNb) 
+	   	switch(errorNb)
 	   	{
 	       	case 0 :
 	           	result = true;
 	           	break;
 	       	case 1 :
-	           	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+	           	errorMsg = "${GML_ThisFormContains} 1 ${GML_error} : \n" + errorMsg;
 	           	window.alert(errorMsg);
 	           	result = false;
 	           	break;
 	       	default :
-	           	errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+	           	errorMsg = "${GML_ThisFormContains} " + errorNb + " ${GML_errors} :\n" + errorMsg;
 	           	window.alert(errorMsg);
 	           	result = false;
 	           	break;
-	   	} 
+	   	}
 	   	return result;
 	}
-	
+
 	function setData()
 	{
-		<% if (StringUtil.isDefined(fieldName)) { %>
-	      document.classifiedForm.<%=fieldName%>.value = <%=fieldKey%>;
-	    <% } %>
+		<c:if test="${not empty fieldName}">
+	      document.classifiedForm.${fieldName}.value = '${fieldKey}';
+	    </c:if>
 	}
-	
+
 </script>
-		
+
 </head>
 <body onload="setData()">
-<%
+	<fmt:message var="classifiedPath"
+		key="${ (action eq 'CreateClassified') ? 'classifieds.addClassified' : 'classifieds.updateClassified'}" />
+	<view:browseBar>
+		<view:browseBarElt label="${classifiedPath}" link="" />
+	</view:browseBar>
 
-	browseBar.setDomainName(spaceLabel);
-	browseBar.setComponentName(componentLabel, "Main");
-	if (action.equals("CreateClassified")) {
-		browseBar.setPath(resource.getString("classifieds.addClassified"));
-	}
-	else {
-		browseBar.setPath(resource.getString("classifieds.updateClassified"));
-	}
-		
-	Board board	= gef.getBoard();
-	
-	out.println(window.printBefore());
-    out.println(frame.printBefore());
-%>
+<view:window>
+<view:frame>
 
-<FORM Name="classifiedForm" action="<%=action%>" Method="POST" ENCTYPE="multipart/form-data" onsubmit="sendData();return false;">
-<table CELLPADDING="5" WIDTH="100%">
-<tr> 
-	<td> 
-		<%=board.printBefore()%>		
+<c:set var="displayedTitle"><view:encodeHtml string="${title}" /></c:set>
+<c:set var="displayedId"><view:encodeHtml string="${classifiedId}" /></c:set>
+<c:set var="displayedEmail"><view:encodeHtml string="${creatorEmail}" /></c:set>
+<view:formatDateTime var="displayedCreationDate" value="${creationDate}" language="${language}"/>
+<view:formatDateTime var="displayedUpdateDate" value="${updateDate}" language="${language}" />
+<view:formatDateTime var="displayedValidateDate" value="${validateDate}" language="${language}" />
+
+<form name="classifiedForm" action="${action}" method="post" enctype="multipart/form-data" onsubmit="sendData();return false;">
+<table cellpadding="5" width="100%">
+<tr>
+	<td>
+		<view:board>
 		<table cellpadding="5">
-			<% if (action.equals("UpdateClassified")) { %>
+			<c:if test="${action eq 'UpdateClassified'}">
 				<tr>
-					<td class="txtlibform"><%=resource.getString("classifieds.number")%> :</td>
-					<TD><%=Encode.javaStringToHtmlString(classifiedId)%></TD>
+					<td class="txtlibform"><fmt:message key="classifieds.number"/> :</td>
+					<td>${displayedId}</td>
 				</tr>
-			<% } %> 
+			</c:if>
 			<tr>
-				<td class="txtlibform"><%=resource.getString("GML.title")%> :</td>
-				<TD><input type="text" name="Title" size="60" maxlength="150" value="<%=Encode.javaStringToHtmlString(title)%>">
-					<IMG src="<%=resource.getIcon("classifieds.mandatory")%>" width="5" height="5" border="0">
-					<input type="hidden" name="ClassifiedId" value="<%=Encode.javaStringToHtmlString(classifiedId)%>">
-				</TD>
+				<td class="txtlibform"><fmt:message key="GML.title"/> :</td>
+				<td><input type="text" name="Title" size="60" maxlength="150" value="${displayedTitle}"/>
+					<img src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}"/>" width="5" height="5" border="0"/>
+					<input type="hidden" name="ClassifiedId" value="${displayedId}"/>
+				</td>
 			</tr>
-			<tr>
-				<td class="txtlibform"><%=resource.getString("classifieds.creationDate")%> :</td>
-				<TD><%=creationDate%>&nbsp;<span class="txtlibform"><%=resource.getString("classifieds.by")%></span>&nbsp;<%=creatorName%> (<%=Encode.javaStringToHtmlString(creatorEmail)%> )</TD>
-			</tr>
-			<% if (StringUtil.isDefined(updateDate)) { %>
+			<c:if test="${action eq 'UpdateClassified'}">
 				<tr>
-					<td class="txtlibform"><%=resource.getString("classifieds.updateDate")%> :</td>
-					<TD><%=updateDate%></TD>
+					<td class="txtlibform"><fmt:message key="classifieds.creationDate"/> :</td>
+					<td>${displayedCreationDate} <span class="txtlibform"><fmt:message key="classifieds.by"/></span> ${creatorName} ( ${displayedEmail} )</td>
 				</tr>
-			<% } %>
-			<% if (validateDate != null && validatorName != null) { %>
+			</c:if>
+			<c:if test="${not empty updateDate}">
 				<tr>
-					<td class="txtlibform"><%=resource.getString("classifieds.validateDate")%> :</td>
-					<TD><%=validateDate%>&nbsp;<span class="txtlibform"><%=resource.getString("classifieds.by")%></span>&nbsp;<%=validatorName%></TD>
+					<td class="txtlibform"><fmt:message key="classifieds.updateDate"/> :</td>
+					<td>${displayedUpdateDate}</td>
 				</tr>
-			<% } %>
-			<tr><td colspan="2">( <img border="0" src=<%=resource.getIcon("classifieds.mandatory")%> width="5" height="5"> : <%=resource.getString("classifieds.mandatory")%> )</td></tr>
+			</c:if>
+			<c:if test="${(not empty validateDate) && (not empty validatorName)}">
+				<tr>
+					<td class="txtlibform"><fmt:message key="classifieds.validateDate"/> :</td>
+					<td>${displayedValidateDate} <span class="txtlibform"><fmt:message key="classifieds.by"/></span> ${validatorName}</td>
+				</tr>
+			</c:if>
+			<tr><td colspan="2">( <img border="0" src="${pageContext.request.contextPath}<fmt:message key="classifieds.mandatory" bundle="${icons}" />" width="5" height="5"> : <fmt:message key="classifieds.mandatory"/> )</td></tr>
 		</table>
-		<%=board.printAfter()%>
+		</view:board>
 		<br/>
-			<% if (formUpdate != null) { %>
-	  				<%=board.printBefore()%>
+			<c:if test="${not empty formUpdate}">
+	  				<view:board>
 					<!-- AFFICHAGE du formulaire -->
 					<table>
 					<tr>
 						<td>
-							<% 
-								formUpdate.display(out, context, data); 
+							<%
+							formUpdate.display(out, context, data);
 							%>
-						</td>	
+						</td>
 					</tr>
 					</table>
-					<%=board.printAfter()%>
-			<% } %>	
+					</view:board>
+			</c:if>
 	</td>
 </tr>
-</table>	
+</table>
 </form>
-<% 
-	ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(validateButton);
-    buttonPane.addButton(cancelButton);
-	out.println("<BR><center>"+buttonPane.print()+"</center><BR>");
- 	out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
+<center>
+<view:buttonPane>
+	<fmt:message var="validateLabel" key="GML.validate"/>
+	<fmt:message var="cancelLabel" key="GML.cancel"/>
+
+	<view:button label="${validateLabel}" action="javascript:onClick=sendData();" />
+	<view:button label="${cancelLabel}" action="Main" />
+</view:buttonPane>
+</center>
+</view:frame>
+</view:window>
 </body>
 </html>

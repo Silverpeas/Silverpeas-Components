@@ -52,10 +52,6 @@
         <servlet-class>com.stratelia.webactiv.kmelia.servlets.AjaxServlet</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>KmeliaPdfGeneratorServlet</servlet-name>
-        <servlet-class>com.stratelia.webactiv.kmelia.servlets.KmeliaPdfGeneratorServlet</servlet-class>
-    </servlet>
-    <servlet>
         <servlet-name>KmeliaPublicationExportServlet</servlet-name>
         <servlet-class>com.stratelia.webactiv.kmelia.servlets.KmeliaPublicationExportServlet</servlet-class>
     </servlet>
@@ -93,15 +89,11 @@
         <url-pattern>/AliasFileServer/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>KmeliaPdfGeneratorServlet</servlet-name>
-        <url-pattern>/generatePublicationPdf</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
         <servlet-name>KmeliaPublicationExportServlet</servlet-name>
         <url-pattern>/exportPublication</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LastPublicationsServlet</servlet-name>
         <url-pattern>/rsslastpublications/*</url-pattern>
-      </servlet-mapping>
+    </servlet-mapping>
 </web-app>

@@ -37,8 +37,8 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <% 
-String pubId = kmeliaScc.getSessionPublication().getPublication().getPublicationDetail().getPK().getId();
-String pubComponentId = kmeliaScc.getSessionPublication().getPublication().getPublicationDetail().getPK().getComponentName();
+String pubId = kmeliaScc.getSessionPublication().getDetail().getPK().getId();
+String pubComponentId = kmeliaScc.getSessionPublication().getDetail().getPK().getComponentName();
 Button closeButton = (Button) gef.getFormButton(resources.getString("GML.close"), "javaScript:closeAndReturn('"+pubId+"');", false);
 Button linkButton = (Button) gef.getFormButton(resources.getString("GML.linkTo"), "javaScript:linkTo();", false);
 String closeWindow="";

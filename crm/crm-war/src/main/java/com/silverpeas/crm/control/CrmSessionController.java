@@ -1,14 +1,31 @@
-package com.silverpeas.crm.control;
+/**
+ * Copyright (C) 2000 - 2011 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://repository.silverpeas.com/legal/licensing"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
+package com.silverpeas.crm.control;
 
 import com.silverpeas.crm.model.Crm;
 import com.silverpeas.crm.model.CrmContact;
-import com.silverpeas.crm.model.CrmDataInterface;
 import com.silverpeas.crm.model.CrmDelivery;
 import com.silverpeas.crm.model.CrmEvent;
 import com.silverpeas.crm.model.CrmParticipant;
@@ -31,12 +48,19 @@ import com.stratelia.webactiv.util.indexEngine.model.FullIndexEntry;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEngineProxy;
 import com.stratelia.webactiv.util.indexEngine.model.IndexEntryPK;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 public class CrmSessionController extends AbstractComponentSessionController {
-  
+
   private ContainerContext containerContext;
   private String returnURL = "";
 
-  private CrmDataInterface dataInterface = null;
+  private CrmDataManager dataManager = null;
 
   // Participant data
   private String participantId = null;
@@ -65,29 +89,29 @@ public class CrmSessionController extends AbstractComponentSessionController {
   private String[] functions = null;
   private String[] eventStates = null;
   private String[] medias = null;
-  
+
   private ResourcesWrapper resources = null;
-  
+
   private DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
   private DateFormat displayDateFormat = null;
 
   public CrmSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
     super(mainSessionCtrl, componentContext, "com.silverpeas.crm.multilang.crmBundle",
-      "com.silverpeas.crm.settings.crmIcons");
+        "com.silverpeas.crm.settings.crmIcons");
     functions = CrmSettings.getFunction();
     eventStates = CrmSettings.getEventState();
     medias = CrmSettings.getMedia();
-    dataInterface = ServiceFactory.getCrmData();
+    dataManager = ServiceFactory.getCrmData();
   }
-  
+
   public ResourcesWrapper getResouces() {
     if (resources == null) {
       resources = new ResourcesWrapper(getMultilang(), getIcon(), getSettings(), getLanguage());
     }
     return resources;
   }
-  
+
   public void setContainerContext(ContainerContext containerContext) {
     this.containerContext = containerContext;
   }
@@ -106,37 +130,37 @@ public class CrmSessionController extends AbstractComponentSessionController {
 
   // Creation d'un crm
   public void createCrm(Crm crm) {
-    dataInterface.createCrm(crm);
+    dataManager.createCrm(crm);
     createIndex(crm);
   }
 
   // Suppression d'un crm
   public void deleteCrm(WAPrimaryKey pk) {
-    deleteIndex(dataInterface.getCrm(pk));
-    dataInterface.deleteCrm(pk);
+    deleteIndex(dataManager.getCrm(pk));
+    dataManager.deleteCrm(pk);
   }
 
   // Mise a jour d'un crm
   public void updateCrm(Crm crm) {
-    dataInterface.updateCrm(crm);
+    dataManager.updateCrm(crm);
     deleteIndex(crm);
     createIndex(crm);
   }
 
   // Recuperation de la liste des crm
-  public ArrayList<Crm> getCrms() {
-    return dataInterface.getCrms(getComponentId());
+  public List<Crm> getCrms() {
+    return dataManager.listAllCrms(getComponentId());
   }
 
   // Recuperation de la liste des contacts
-  public ArrayList<CrmContact> getCrmContacts(WAPrimaryKey crmPK) {
-    return dataInterface.getCrmContacts(crmPK);
+  public List<CrmContact> getCrmContacts(WAPrimaryKey crmPK) {
+    return dataManager.listContactsOfCrm(crmPK);
   }
 
   // Creation d'un contact
   public void createCrmContact(CrmContact contact) {
     contact.setInstanceId(getComponentId());
-    dataInterface.createCrmContact(contact);
+    dataManager.createCrmContact(contact);
     createIndex(contact);
   }
 
@@ -145,20 +169,20 @@ public class CrmSessionController extends AbstractComponentSessionController {
     CrmContact contact = getCrmContact(pk);
     deleteIndex(contact);
     contact.deleteAttachments();
-    dataInterface.deleteCrmContact(pk, getComponentId());
+    dataManager.deleteCrmContact(pk, getComponentId());
   }
 
   // Mise a jour d'un contact
   public void updateCrmContact(CrmContact contact) {
     contact.setInstanceId(getComponentId());
-    dataInterface.updateCrmContact(contact);
+    dataManager.updateCrmContact(contact);
     deleteIndex(contact);
     createIndex(contact);
   }
 
   // Recuperation d'un contact par sa clef
   public CrmContact getCrmContact(WAPrimaryKey contactPK) {
-    return dataInterface.getCrmContact(contactPK);
+    return dataManager.getCrmContact(contactPK);
   }
 
   // Indexation d'un contact
@@ -175,7 +199,8 @@ public class CrmSessionController extends AbstractComponentSessionController {
 
   // Suppression de l'index d'un contact
   private void deleteIndex(CrmContact contact) {
-    IndexEntryPK indexEntry = new IndexEntryPK(getComponentId(), "Contact", contact.getPK().getId());
+    IndexEntryPK indexEntry =
+        new IndexEntryPK(getComponentId(), "Contact", contact.getPK().getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
@@ -198,14 +223,14 @@ public class CrmSessionController extends AbstractComponentSessionController {
   }
 
   // Recuperation de la liste des participants
-  public ArrayList<CrmParticipant> getCrmParticipants(WAPrimaryKey crmPK) {
-    return dataInterface.getCrmParticipants(crmPK);
+  public List<CrmParticipant> getCrmParticipants(WAPrimaryKey crmPK) {
+    return dataManager.listCrmParticipantsOfCrm(crmPK);
   }
 
   // Creation d'un participant
   public void createCrmParticipant(CrmParticipant participant) {
     participant.setInstanceId(getComponentId());
-    dataInterface.createCrmParticipant(participant);
+    dataManager.createCrmParticipant(participant);
     createIndex(participant);
   }
 
@@ -214,20 +239,20 @@ public class CrmSessionController extends AbstractComponentSessionController {
     CrmParticipant participant = getCrmParticipant(pk);
     deleteIndex(participant);
     participant.deleteAttachments();
-    dataInterface.deleteCrmParticipant(pk, getComponentId());
+    dataManager.deleteCrmParticipant(pk, getComponentId());
   }
 
   // Mise a jour d'un participant
   public void updateCrmParticipant(CrmParticipant participant) {
     participant.setInstanceId(getComponentId());
-    dataInterface.updateCrmParticipant(participant);
+    dataManager.updateCrmParticipant(participant);
     deleteIndex(participant);
     createIndex(participant);
   }
 
   // Recuperation d'un participant par sa clef
   public CrmParticipant getCrmParticipant(WAPrimaryKey participantPK) {
-    return dataInterface.getCrmParticipant(participantPK);
+    return dataManager.getCrmParticipant(participantPK);
   }
 
   // Indexation d'un participant
@@ -245,48 +270,48 @@ public class CrmSessionController extends AbstractComponentSessionController {
   // Suppression de l'index d'un participant
   private void deleteIndex(CrmParticipant participant) {
     IndexEntryPK indexEntry = new IndexEntryPK(
-      getComponentId(), "Participant", participant.getPK().getId());
+        getComponentId(), "Participant", participant.getPK().getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
   // Recuperation de la liste des events
-  public ArrayList<CrmEvent> getCrmEvents(WAPrimaryKey crmPK) {
-    return dataInterface.getCrmEvents(crmPK);
+  public List<CrmEvent> getCrmEvents(WAPrimaryKey crmPK) {
+    return dataManager.listEventsOfCrm(crmPK);
   }
-  
-  public ArrayList<EventVO> getEventVOs() {
-    ArrayList<EventVO> eventVOs = new ArrayList<EventVO>();
-    ArrayList<CrmEvent> events = getCrmEvents(getCurrentCrm().getPK());
+
+  public List<EventVO> getEventVOs() {
+    List<EventVO> eventVOs = new ArrayList<EventVO>();
+    List<CrmEvent> events = getCrmEvents(getCurrentCrm().getPK());
     for (CrmEvent event : events) {
       event.setState(getLibState(event.getState()));
       eventVOs.add(new EventVO(event, getResouces()));
     }
     return eventVOs;
   }
-  
-  public ArrayList<ContactVO> getContactVOs() {
-    ArrayList<ContactVO> contactVOs = new ArrayList<ContactVO>();
-    ArrayList<CrmContact> contacts = getCrmContacts(getCurrentCrm().getPK());
+
+  public List<ContactVO> getContactVOs() {
+    List<ContactVO> contactVOs = new ArrayList<ContactVO>();
+    List<CrmContact> contacts = getCrmContacts(getCurrentCrm().getPK());
     for (CrmContact contact : contacts) {
       contactVOs.add(new ContactVO(contact, getResouces()));
     }
     return contactVOs;
   }
-  
-  public ArrayList<ParticipantVO> getParticipantVOs() {
-    ArrayList<ParticipantVO> participantVOs = new ArrayList<ParticipantVO>();
-    ArrayList<CrmParticipant> participants = getCrmParticipants(getCurrentCrm().getPK());
+
+  public List<ParticipantVO> getParticipantVOs() {
+    List<ParticipantVO> participantVOs = new ArrayList<ParticipantVO>();
+    List<CrmParticipant> participants = getCrmParticipants(getCurrentCrm().getPK());
     for (CrmParticipant participant : participants) {
       participant.setFunctionParticipant(getLibFunction(participant.getFunctionParticipant()));
       participantVOs.add(new ParticipantVO(participant, getResouces()));
     }
     return participantVOs;
   }
-  
-  public ArrayList<DeliveryVO> getDeliveryVOs() {
-    ArrayList<DeliveryVO> deliveryVOs = new ArrayList<DeliveryVO>();
+
+  public List<DeliveryVO> getDeliveryVOs() {
+    List<DeliveryVO> deliveryVOs = new ArrayList<DeliveryVO>();
     WAPrimaryKey crmPK = getCurrentCrm().getPK();
-    ArrayList<CrmDelivery> deliverys = getCrmDeliverys(crmPK);
+    List<CrmDelivery> deliverys = getCrmDeliverys(crmPK);
     for (CrmDelivery delivery : deliverys) {
       delivery.setMedia(getLibMedia(delivery.getMedia()));
       delivery.setContactName(getContactName(crmPK, delivery.getContactId()));
@@ -298,7 +323,7 @@ public class CrmSessionController extends AbstractComponentSessionController {
   // Creation d'un event
   public void createCrmEvent(CrmEvent event) {
     event.setInstanceId(getComponentId());
-    dataInterface.createCrmEvent(event);
+    dataManager.createCrmEvent(event);
     createIndex(event);
   }
 
@@ -307,20 +332,20 @@ public class CrmSessionController extends AbstractComponentSessionController {
     CrmEvent event = getCrmEvent(pk);
     deleteIndex(event);
     event.deleteAttachments();
-    dataInterface.deleteCrmEvent(pk, getComponentId());
+    dataManager.deleteCrmEvent(pk, getComponentId());
   }
 
   // Mise a jour d'un event
   public void updateCrmEvent(CrmEvent event) {
     event.setInstanceId(getComponentId());
-    dataInterface.updateCrmEvent(event);
+    dataManager.updateCrmEvent(event);
     deleteIndex(event);
     createIndex(event);
   }
 
   // Recuperation d'un event par sa clef
   public CrmEvent getCrmEvent(WAPrimaryKey eventPK) {
-    return dataInterface.getCrmEvent(eventPK);
+    return dataManager.getCrmEvent(eventPK);
   }
 
   // Indexation d'un event
@@ -342,14 +367,14 @@ public class CrmSessionController extends AbstractComponentSessionController {
   }
 
   // Recuperation de la liste des deliverys
-  public ArrayList<CrmDelivery> getCrmDeliverys(WAPrimaryKey crmPK) {
-    return dataInterface.getCrmDeliverys(crmPK);
+  public List<CrmDelivery> getCrmDeliverys(WAPrimaryKey crmPK) {
+    return dataManager.listDeliveriesOfCrm(crmPK);
   }
 
   // Creation d'un delivery
   public void createCrmDelivery(CrmDelivery delivery) {
     delivery.setInstanceId(getComponentId());
-    dataInterface.createCrmDelivery(delivery);
+    dataManager.createCrmDelivery(delivery);
     createIndex(delivery);
   }
 
@@ -358,20 +383,20 @@ public class CrmSessionController extends AbstractComponentSessionController {
     CrmDelivery delivery = getCrmDelivery(pk);
     deleteIndex(delivery);
     delivery.deleteAttachments();
-    dataInterface.deleteCrmDelivery(pk, getComponentId());
+    dataManager.deleteCrmDelivery(pk, getComponentId());
   }
 
   // Mise a jour d'un delivery
   public void updateCrmDelivery(CrmDelivery delivery) {
     delivery.setInstanceId(getComponentId());
-    dataInterface.updateCrmDelivery(delivery);
+    dataManager.updateCrmDelivery(delivery);
     deleteIndex(delivery);
     createIndex(delivery);
   }
 
   // Recuperation d'un delivery par sa clef
   public CrmDelivery getCrmDelivery(WAPrimaryKey deliveryPK) {
-    return dataInterface.getCrmDelivery(deliveryPK);
+    return dataManager.getCrmDelivery(deliveryPK);
   }
 
   // Indexation d'un delivery
@@ -389,7 +414,7 @@ public class CrmSessionController extends AbstractComponentSessionController {
   // Suppression de l'index d'un delivery
   private void deleteIndex(CrmDelivery delivery) {
     IndexEntryPK indexEntry = new IndexEntryPK(
-      getComponentId(), "Delivery", delivery.getPK().getId());
+        getComponentId(), "Delivery", delivery.getPK().getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
   }
 
@@ -398,7 +423,7 @@ public class CrmSessionController extends AbstractComponentSessionController {
         GeneralPropertiesManager.getGeneralResourceLocator().getString("ApplicationURL");
     String hostSpaceName = getSpaceLabel();
     PairObject hostComponentName = new PairObject(getComponentLabel(),
-                m_context + getComponentUrl() + compoName);
+        m_context + getComponentUrl() + compoName);
     String hostUrl = m_context + getComponentUrl() + operation;
 
     Selection sel = getSelection();
@@ -451,7 +476,7 @@ public class CrmSessionController extends AbstractComponentSessionController {
     }
 
     SilverTrace.debug("crm", "CrmSessionController.userPanelReturn()",
-      "filterId=" + filterId + " ; filterLib=" + filterLib);
+        "filterId=" + filterId + " ; filterLib=" + filterLib);
   }
 
   public void setParticipantId(String participantId) {
@@ -599,7 +624,7 @@ public class CrmSessionController extends AbstractComponentSessionController {
   }
 
   public String getContactName(WAPrimaryKey crmPK, int contactId) {
-    ArrayList<CrmContact> crmContacts = getCrmContacts(crmPK);
+    List<CrmContact> crmContacts = getCrmContacts(crmPK);
     for (CrmContact crmContact : crmContacts) {
       if (crmContact.getPK().getId().equals(String.valueOf(contactId))) {
         return crmContact.getName();
@@ -631,11 +656,11 @@ public class CrmSessionController extends AbstractComponentSessionController {
   public Collection<String[]> getMedias() {
     return getComboValues(medias);
   }
-  
+
   private Collection<String[]> getComboValues(String[] values) {
-    ArrayList<String[]> comboValues = new ArrayList<String[]>();
+    List<String[]> comboValues = new ArrayList<String[]>();
     for (int i = 0; i < values.length; i++) {
-      comboValues.add(new String[] {String.valueOf(i + 1), values[i]});
+      comboValues.add(new String[] { String.valueOf(i + 1), values[i] });
     }
     return comboValues;
   }
@@ -645,17 +670,17 @@ public class CrmSessionController extends AbstractComponentSessionController {
   }
 
   public Collection<String[]> getContacts() {
-    ArrayList<String[]> crmList = new ArrayList<String[]>();
-    ArrayList<CrmContact> crmContacts = getCrmContacts(getCurrentCrm().getPK());
+    List<String[]> crmList = new ArrayList<String[]>();
+    List<CrmContact> crmContacts = getCrmContacts(getCurrentCrm().getPK());
     for (CrmContact crmContact : crmContacts) {
       crmList.add(new String[] {
-        crmContact.getPK().getId(), crmContact.getName() + " - " + crmContact.getFunctionContact()});
+          crmContact.getPK().getId(),
+          crmContact.getName() + " - " + crmContact.getFunctionContact() });
     }
     return crmList;
   }
-  
+
   /**
-   * 
    * @param date The date corresponding to the user's language (dd/mm/yyyy or mm/dd/yyyy)
    * @return The equivalent yyyy/mm/dd date
    */
@@ -669,7 +694,7 @@ public class CrmSessionController extends AbstractComponentSessionController {
     }
     return "";
   }
-  
+
   /**
    * @param date a yyyy/mm/dd date
    * @return The formatted date corresponding to the user's language (dd/mm/yyyy or mm/dd/yyyy)
@@ -684,16 +709,16 @@ public class CrmSessionController extends AbstractComponentSessionController {
     }
     return "";
   }
-  
+
   private DateFormat getDisplayDateFormat() {
     if (displayDateFormat == null) {
       displayDateFormat = new SimpleDateFormat(getString("GML.dateFormat"));
     }
     return displayDateFormat;
   }
-  
+
   public Crm getCurrentCrm() {
     return getCrms().get(0);
   }
-  
+
 }

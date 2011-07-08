@@ -39,7 +39,7 @@ response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 <%@ include file="topicReport.jsp.inc" %>
 
 <%
-PublicationDetail pubDetail  = kmeliaScc.getSessionPublication().getPublication().getPublicationDetail();
+PublicationDetail pubDetail  = kmeliaScc.getSessionPublication().getDetail();
 
 String profile = request.getParameter("Profile");
 String id = request.getParameter("PubId");

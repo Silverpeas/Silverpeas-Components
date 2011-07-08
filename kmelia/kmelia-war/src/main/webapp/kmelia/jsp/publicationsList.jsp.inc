@@ -18,7 +18,7 @@
 <%@ page import="com.stratelia.webactiv.searchEngine.model.* "%>
 <%@ page import="com.stratelia.webactiv.util.ResourceLocator"%>
 <%@ page import="com.stratelia.webactiv.util.publication.model.PublicationDetail"%>
-<%@ page import="com.stratelia.webactiv.kmelia.model.UserPublication"%>
+<%@ page import="com.stratelia.webactiv.kmelia.model.KmeliaPublication"%>
 <%@ page import="com.stratelia.webactiv.beans.admin.UserDetail "%>
 <%@ page import="com.stratelia.webactiv.kmelia.control.KmeliaSessionController"%>
 <%@ page import="com.stratelia.webactiv.servlets.FileServer"%>
@@ -40,10 +40,10 @@ String displayImportance(int importance, int maxImportance, String fullStar, Str
   return stars;
 }
 
-String getUserName(UserPublication userPub, KmeliaSessionController kmeliaScc)
+String getUserName(KmeliaPublication kmeliaPub, KmeliaSessionController kmeliaScc)
 {
-	UserDetail			user		= userPub.getOwner(); //contains creator
-	PublicationDetail	pub			= userPub.getPublication();
+	UserDetail			user		= kmeliaPub.getCreator(); //contains creator
+	PublicationDetail	pub			= kmeliaPub.getDetail();
 	String 				updaterId	= pub.getUpdaterId();
 	UserDetail			updater		= null;
 	if (updaterId != null && updaterId.length()>0)
@@ -64,7 +64,7 @@ void displayLastPublications(Collection pubs, boolean subtopicsExist, String pat
 
 	boolean				displayLinks = URLManager.displayUniversalLinks();
     PublicationDetail 	pub;
-    UserPublication 	userPub;
+    KmeliaPublication 	kmeliaPub;
     UserDetail 			user;
     String				language = kmeliaScc.getCurrentLanguage();
 
@@ -97,9 +97,9 @@ out.println("<table border=\"0\" width=\"98%\" align=\"center\">");
                         endRaw = false;
               }
               if (j<=nbCol){
-                userPub = (UserPublication) iterator.next();
-                pub = userPub.getPublication();
-                user = userPub.getOwner();
+                kmeliaPub = (KmeliaPublication) iterator.next();
+                pub = kmeliaPub.getDetail();
+                user = kmeliaPub.getCreator();
                 
                 if (!pub.getPK().getInstanceId().equals(kmeliaScc.getComponentId()))
 					shortcut = " ("+resources.getString("kmelia.Shortcut")+")";
@@ -112,7 +112,7 @@ out.println("<table border=\"0\" width=\"98%\" align=\"center\">");
                 out.println("<p><b><a href=\"javascript:onClick=publicationGoToFromMain('"+pub.getPK().getId()+"')\">"+Encode.javaStringToHtmlString(pub.getName(language))+"</a>"+shortcut+"</b><br/>");
                 
                 if (kmeliaScc.showUserNameInList())
-                	out.println(getUserName(userPub, kmeliaScc)+" - ");
+                	out.println(getUserName(kmeliaPub, kmeliaScc)+" - ");
                 out.println(resources.getOutputDate(pub.getUpdateDate()));
                 if (displayLinks)
 				{
@@ -157,7 +157,7 @@ out.println("</table>");
 void displaySameSubjectPublications(Collection pubs, String publicationLabel, KmeliaSessionController kmeliaScc, String currentPubId, boolean checkboxAllowed, ResourcesWrapper resources, JspWriter out) throws IOException {
 
     PublicationDetail 	pub;
-    UserPublication 	userPub;
+    KmeliaPublication 	kmeliaPub;
     UserDetail 			user;
    	boolean 			showImportance 	= !"no".equals(resources.getSetting("showImportance"));
    	String				language = kmeliaScc.getCurrentLanguage();
@@ -179,9 +179,9 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
            	out.println("<tr><td colspan=\"2\">&nbsp;</td></tr>");
             out.println("<!-- Publications Header End -->");
             while (iterator.hasNext()) {
-                userPub = (UserPublication) iterator.next();
-                pub = userPub.getPublication();
-                user = userPub.getOwner();
+                kmeliaPub = (KmeliaPublication) iterator.next();
+                pub = kmeliaPub.getDetail();
+                user = kmeliaPub.getCreator();
                 out.println("<!-- Publication Body -->");
                   if ( pub.getStatus() != null && pub.getStatus().equals("Valid") && !pub.getPK().getId().equals(currentPubId)) {
                       out.println("<tr>");
@@ -202,7 +202,7 @@ void displaySameSubjectPublications(Collection pubs, String publicationLabel, Km
 						if (checkboxAllowed)
 							out.println("<td width=\"1\">&nbsp;</td>");
 						out.println("<td width=\"1\">&nbsp;</td>");
-						out.println("<td colspan=\"3\">"+getUserName(userPub, kmeliaScc)+" - "+resources.getOutputDate(pub.getUpdateDate())+"<br>");
+						out.println("<td colspan=\"3\">"+getUserName(kmeliaPub, kmeliaScc)+" - "+resources.getOutputDate(pub.getUpdateDate())+"<br>");
 						out.println(Encode.javaStringToHtmlString(pub.getDescription(language))+"<BR><BR></td>");
 						out.println("</td></tr></table>");
 						out.println("</td>");

@@ -44,7 +44,7 @@ String pubName			= "";
 String nextAction 		= "";
 String screenMessage 	= "";
   
-UserCompletePublication userPubComplete = null;
+KmeliaPublication kmeliaPublication = null;
 UserDetail ownerDetail = null;
 
 CompletePublication pubComplete = null;
@@ -79,13 +79,13 @@ Button nextButton = null;
 if (action.equals("UpdateWizard")) 
 {
       //Recuperation des parametres de la publication
-	  userPubComplete = kmeliaScc.getUserCompletePublication(id);
+	  kmeliaPublication = kmeliaScc.getPublication(id);
 	  
- 	  //kmeliaScc.setSessionPublication(userPubComplete);
-      pubComplete 	= userPubComplete.getPublication();
+ 	  //kmeliaScc.setSessionPublication(kmeliaPublication);
+      pubComplete 	= kmeliaPublication.getCompleteDetail();
       pubDetail 	= pubComplete.getPublicationDetail();
       pubName 		= pubDetail.getName(currentLang);
-      ownerDetail 	= userPubComplete.getOwner();
+      ownerDetail 	= kmeliaPublication.getCreator();
 
       description 	= pubDetail.getDescription(currentLang);
       creationDate 	= resources.getOutputDate(pubDetail.getCreationDate());

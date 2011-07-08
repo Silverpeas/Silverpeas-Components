@@ -24,14 +24,8 @@
 package com.stratelia.webactiv.kmelia;
 
 import com.silverpeas.util.StringUtil;
-import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import com.silverpeas.util.security.ComponentSecurity;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.silverpeas.util.SilverpeasSettings;
 import com.stratelia.webactiv.beans.admin.ObjectType;
 import com.stratelia.webactiv.beans.admin.OrganizationController;
 import com.stratelia.webactiv.kmelia.control.ejb.KmeliaHelper;
@@ -48,12 +42,22 @@ import com.stratelia.webactiv.util.publication.control.PublicationBm;
 import com.stratelia.webactiv.util.publication.control.PublicationBmHome;
 import com.stratelia.webactiv.util.publication.model.PublicationDetail;
 import com.stratelia.webactiv.util.publication.model.PublicationPK;
+
+import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
 import static com.stratelia.webactiv.SilverpeasRole.*;
 
+/**
+ * Kmelia security provides a way to check the rights of a user to access the content of a Kmelia
+ * instance (publications, ...).
+ */
 public class KmeliaSecurity implements ComponentSecurity {
 
   private static final String CO_WRITING_PARAM = "coWriting";

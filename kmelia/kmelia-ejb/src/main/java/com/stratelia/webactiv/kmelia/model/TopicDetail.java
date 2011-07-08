@@ -50,7 +50,7 @@ public class TopicDetail extends Object implements java.io.Serializable {
   private NodeDetail nodeDetail;
 
   /** A NodeDetail collection representing the path from leaf to root */
-  private Collection<UserPublication> publicationDetails;
+  private Collection<KmeliaPublication> publications;
 
   /**
    * Construct an empty TopicDetail
@@ -65,8 +65,8 @@ public class TopicDetail extends Object implements java.io.Serializable {
    * @since 1.0
    */
   public TopicDetail(Collection<NodeDetail> path, NodeDetail nodeDetail,
-      Collection<UserPublication> pubDetails) {
-    init(path, nodeDetail, pubDetails);
+      Collection<KmeliaPublication> kmeliaPublication) {
+    init(path, nodeDetail, kmeliaPublication);
   }
 
   /**
@@ -74,10 +74,10 @@ public class TopicDetail extends Object implements java.io.Serializable {
    * @since 1.0
    */
   private void init(Collection<NodeDetail> path, NodeDetail nodeDetail,
-      Collection<UserPublication> pubDetails) {
+      Collection<KmeliaPublication> kmeliaPublications) {
     this.path = path;
     this.nodeDetail = nodeDetail;
-    this.publicationDetails = pubDetails;
+    this.publications = kmeliaPublications;
   }
 
   /**
@@ -116,8 +116,8 @@ public class TopicDetail extends Object implements java.io.Serializable {
    * @see java.util.Collection
    * @since 1.0
    */
-  public Collection<UserPublication> getPublicationDetails() {
-    return this.publicationDetails;
+  public Collection<KmeliaPublication> getKmeliaPublications() {
+    return this.publications;
   }
 
   /**
@@ -143,28 +143,24 @@ public class TopicDetail extends Object implements java.io.Serializable {
    * @param pd a PublicationDetail Collection
    * @since 1.0
    */
-  public void setPublicationDetails(Collection<UserPublication> pd) {
-    this.publicationDetails = pd;
+  public void setPublicationDetails(Collection<KmeliaPublication> pd) {
+    this.publications = pd;
   }
 
-  public List<UserPublication> getValidPublications() {
+  public List<KmeliaPublication> getValidPublications() {
     return getValidPublications(null);
   }
 
-  public List<UserPublication> getValidPublications(PublicationPK pubPKToExclude) {
-    UserPublication userPub;
-    PublicationDetail pub;
-    List<UserPublication> validPublications = new ArrayList<UserPublication>();
-    Iterator<UserPublication> iterator = publicationDetails.iterator();
-    while (iterator.hasNext()) {
-      userPub = (UserPublication) iterator.next();
-      pub = userPub.getPublication();
-      if (pub.getStatus() != null && pub.getStatus().equals("Valid")) {
+  public List<KmeliaPublication> getValidPublications(PublicationPK pubPKToExclude) {
+    List<KmeliaPublication> validPublications = new ArrayList<KmeliaPublication>();
+    for (KmeliaPublication aPublication : publications) {
+      PublicationDetail detail = aPublication.getDetail();
+      if (detail.getStatus() != null && detail.getStatus().equals("Valid")) {
         if (pubPKToExclude == null)
-          validPublications.add(userPub);
+          validPublications.add(aPublication);
         else {
-          if (!pub.getPK().equals(pubPKToExclude))
-            validPublications.add(userPub);
+          if (!detail.getPK().equals(pubPKToExclude))
+            validPublications.add(aPublication);
         }
       }
     }
