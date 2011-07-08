@@ -41,6 +41,8 @@ boolean 	isGuest		 	= ((Boolean) request.getAttribute("IsGuest")).booleanValue()
 int nbAffiche 	= 0;
 int nbParLigne 	= 5;
 int nbTotal 	= 15;
+
+session.setAttribute("Silverpeas_Album_ComponentId", componentId);
 %>
 
 <html>
@@ -48,10 +50,46 @@ int nbTotal 	= 15;
 <%
 	out.println(gef.getLookStyleSheet());
 %>
+
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/animation.js"></script>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/checkForm.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+	  $("#albumList").sortable({opacity: 0.4, cursor: 'move', placeholder: 'ui-state-highlight', forcePlaceholderSize: true});
+	  
+	  $('#albumList').bind('sortupdate', function(event, ui) {
+		     var reg=new RegExp("album", "g");
+		     var data = $('#albumList').sortable('serialize');
+		     data += "&";  // pour que le dernier élément soit de la même longueur que les autres
+		     var tableau=data.split(reg);
+		     var param = "";
+		     for (var i=0; i<tableau.length; i++) {
+		        if (i > 0) {
+		          param += ",";
+		        }
+		        param += tableau[i].substring(3, tableau[i].length-1);
+		     }
+		     sortAlbums(param);
+		    });
+  });
+  
+  function sortAlbums(orderedList)
+  {
+    $.get('<%=m_context%>/Album', { orderedList:orderedList,Action:'Sort'},
+    function(data){
+      data = data.replace(/^\s+/g,'').replace(/\s+$/g,'');
+      if (data == "error")
+      {
+        alert("Une erreur s'est produite !");
+      }
+    }, 'text');
+    if (pageMustBeReloadingAfterSorting) {
+      //force page reloading to reinit menus
+      reloadIncludingPage();
+    }
+  }
 
-<script language="javascript">
+
 var albumWindow = window;
 var askWindow = window;
 
@@ -216,6 +254,11 @@ function clipboardPaste() {
            if ("user".equals(profile) || "privilegedUser".equals(profile) || "writer".equals(profile)) {
              NavigationList navList = gef.getNavigationList();
              navList.setTitle(root.getName());
+
+             // affichage des albums de niveau 1
+             // --------------------------------
+             out.println("<div id=\"subTopics\">");
+             out.println("<ul id=\"albumList\">");
              Iterator it = root.getChildrenDetails().iterator();
                
              while (it.hasNext()) {
@@ -258,6 +301,7 @@ function clipboardPaste() {
                      getString("gallery.CopyAlbumLink") + "\" title=\"" + resource.getString(
                      "gallery.CopyAlbumLink") + "\"></a>";
                }
+<<<<<<< HEAD
                //ligne.addArrayCellLink(unAlbum.getName()+link,"ViewAlbum?Id="+id);
                  
                ArrayCellText arrayCellText0 = ligne.addArrayCellText("<a href=\"ViewAlbum?Id=" + id + "\">" + unAlbum.
@@ -286,6 +330,17 @@ function clipboardPaste() {
              out.println(arrayPane.print());
            }
              
+=======
+               out.println("<li id=\"album_" + id + "\" class=\"ui-state-default\">");
+               
+               out.println("<a href=\"ViewAlbum?Id=" + id + "\">" + unAlbum.getName());
+               out.println("<span>" + unAlbum.getDescription() + "</span></a>");
+               out.println("</li>");
+           }
+           out.println("</ul>");
+           out.println("</div>");
+           
+>>>>>>> 02a3aa9... fixing Feature #1993 : management of order of the albums
            // afficher les dernieres photos telechargees
            // ------------------------------------------
              
